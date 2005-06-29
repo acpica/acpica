@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.96 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -148,7 +148,7 @@ AcpiExCreateAlias (
 {
     ACPI_NAMESPACE_NODE     *TargetNode;
     ACPI_NAMESPACE_NODE     *AliasNode;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     ACPI_FUNCTION_TRACE ("ExCreateAlias");
@@ -161,10 +161,10 @@ AcpiExCreateAlias (
 
     if (TargetNode->Type == ACPI_TYPE_LOCAL_ALIAS)
     {
-        /* 
+        /*
          * Dereference an existing alias so that we don't create a chain
          * of aliases.  With this code, we guarantee that an alias is
-         * always exactly one level of indirection away from the 
+         * always exactly one level of indirection away from the
          * actual aliased name.
          */
         TargetNode = (ACPI_NAMESPACE_NODE *) TargetNode->Object;
@@ -191,7 +191,7 @@ AcpiExCreateAlias (
          * types, the object can change dynamically via a Store.
          */
         AliasNode->Type = ACPI_TYPE_LOCAL_ALIAS;
-        AliasNode->Object = (ACPI_OPERAND_OBJECT *) TargetNode;
+        AliasNode->Object = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, TargetNode);
         break;
 
     default:
@@ -212,7 +212,7 @@ AcpiExCreateAlias (
 
     /* Since both operands are Nodes, we don't need to delete them */
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -367,7 +367,7 @@ AcpiExCreateRegion (
     ACPI_FUNCTION_TRACE ("ExCreateRegion");
 
 
-    /* Get the Node from the object stack  */
+    /* Get the Namespace Node */
 
     Node = WalkState->Op->Common.Node;
 
@@ -393,7 +393,6 @@ AcpiExCreateRegion (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "Region Type - %s (%X)\n",
                     AcpiUtGetRegionName (RegionSpace), RegionSpace));
-
 
     /* Create the region descriptor */
 
@@ -459,6 +458,7 @@ AcpiExCreateTableRegion (
 
     ACPI_FUNCTION_TRACE ("ExCreateTableRegion");
 
+
     /* Get the Node from the object stack  */
 
     Node = WalkState->Op->Common.Node;
@@ -477,7 +477,6 @@ AcpiExCreateTableRegion (
     Status = AcpiTbFindTable (Operand[1]->String.Pointer,
                               Operand[2]->String.Pointer,
                               Operand[3]->String.Pointer, &Table);
-
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -581,7 +580,6 @@ AcpiExCreateProcessor (
     Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
                     ObjDesc, ACPI_TYPE_PROCESSOR);
 
-
     /* Remove local reference to the object */
 
     AcpiUtRemoveReference (ObjDesc);
@@ -632,7 +630,6 @@ AcpiExCreatePowerResource (
 
     Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
                     ObjDesc, ACPI_TYPE_POWER);
-
 
     /* Remove local reference to the object */
 
@@ -704,7 +701,6 @@ AcpiExCreateMethod (
         ObjDesc->Method.Concurrency = (UINT8)
                         (((MethodFlags & METHOD_FLAGS_SYNCH_LEVEL) >> 4) + 1);
     }
-
     else
     {
         ObjDesc->Method.Concurrency = INFINITE_CONCURRENCY;
