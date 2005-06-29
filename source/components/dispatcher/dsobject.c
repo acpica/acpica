@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -374,12 +374,22 @@ AcpiDsInitObjectFromOp (
 
         /* Allocate the buffer */
 
-        (*ObjDesc)->Buffer.Pointer =
-                        AcpiCmCallocate ((*ObjDesc)->Buffer.Length);
-
-        if (!(*ObjDesc)->Buffer.Pointer)
+        if ((*ObjDesc)->Buffer.Length == 0)
         {
-            return (AE_NO_MEMORY);
+            (*ObjDesc)->Buffer.Pointer = NULL;
+            REPORT_WARNING (("Buffer created with zero length in AML\n"));
+            break;
+        }
+
+        else
+        {
+            (*ObjDesc)->Buffer.Pointer =
+                            AcpiCmCallocate ((*ObjDesc)->Buffer.Length);
+
+            if (!(*ObjDesc)->Buffer.Pointer)
+            {
+                return (AE_NO_MEMORY);
+            }
         }
 
         /*
@@ -767,7 +777,7 @@ AcpiDsCreateNode (
                                         Op->Value.Arg, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
-        goto Cleanup;
+        return_ACPI_STATUS (Status);
     }
 
 
