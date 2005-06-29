@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -196,7 +196,7 @@ AcpiNsDumpPathname (
     UINT32                  Component)
 {
     NATIVE_CHAR             *Buffer;
-    UINT32                  Length;
+    ACPI_SIZE               Length;
 
 
     FUNCTION_TRACE ("NsDumpPathname");
