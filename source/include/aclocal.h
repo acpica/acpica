@@ -169,7 +169,7 @@ typedef UINT32                      ACPI_MUTEX_HANDLE;
 
 /* Names for the mutexes used in the subsystem */
 
-static INT8                 *AcpiGbl_MutexNames[] =
+static NATIVE_CHAR          *AcpiGbl_MutexNames[] =
 {
     "ACPI_MTX_Hardware",
     "ACPI_MTX_Memory",
@@ -306,9 +306,9 @@ typedef struct AcpiTableDesc
 
 typedef struct
 {
-    INT8                    *SearchFor;
+    NATIVE_CHAR             *SearchFor;
     ACPI_HANDLE             *List;
-    INT32                   *Count;
+    UINT32                  *Count;
 
 } FIND_CONTEXT;
 
@@ -331,9 +331,9 @@ typedef struct
 
 typedef struct
 {
-    INT8                    *Name;
+    NATIVE_CHAR             *Name;
     ACPI_OBJECT_TYPE        Type;
-    INT8                    *Val;
+    NATIVE_CHAR             *Val;
 
 } PREDEFINED_NAMES;
 
@@ -566,7 +566,7 @@ typedef struct acpi_op_info
     UINT32                  RuntimeArgs;    /* Interpret time arguments */
 
     DEBUG_ONLY_MEMBERS (
-    INT8                    *Name)          /* op name (debug only) */
+    NATIVE_CHAR             *Name)          /* op name (debug only) */
 
 } ACPI_OP_INFO;
 
@@ -575,9 +575,9 @@ typedef union acpi_op_value
 {
     UINT32                  Integer;        /* integer constant */
     UINT32                  Size;           /* bytelist or field size */
-    INT8                    *String;        /* NULL terminated string */
+    NATIVE_CHAR             *String;        /* NULL terminated string */
     UINT8                   *Buffer;        /* buffer or string */
-    INT8                    *Name;          /* NULL terminated string */
+    NATIVE_CHAR             *Name;          /* NULL terminated string */
     struct acpi_generic_op  *Arg;           /* arguments and contained ops */
     ACPI_NAMED_OBJECT       *Entry;         /* entry in interpreter namespace tbl */
 
@@ -592,7 +592,7 @@ typedef union acpi_op_value
     struct acpi_generic_op  *Parent;        /* parent op */\
     struct acpi_generic_op  *Next;          /* next op */\
     DEBUG_ONLY_MEMBERS (\
-    INT8                    OpName[16])     /* op name (debug only) */\
+    NATIVE_CHAR             OpName[16])     /* op name (debug only) */\
                                             /* NON-DEBUG members below: */\
     ACPI_NAMED_OBJECT       *AcpiNamedObject;/* for use by interpreter */\
     ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
@@ -688,8 +688,9 @@ typedef struct acpi_walk_state
 
     union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
     union AcpiObjInternal   *MethodDesc;                        /* Method descriptor if running a method */
+    struct AcpiNamedObject  *MethodEntry;                       /* Method nte if running a method */
     ACPI_GENERIC_OP         *MethodCallOp;                      /* MethodCall Op if running a method */
-    struct AcpiNamedObject  *MethodEntry;
+    struct AcpiNamedObject  *MethodCallEntry;                   /* NTE of called method */
     union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
     union AcpiObjInternal   *Results[OBJ_NUM_OPERANDS];         /* Accumulated results */
     struct AcpiNamedObject  Arguments[MTH_NUM_ARGS];            /* Control method arguments */
@@ -925,8 +926,8 @@ typedef struct
     union
     {
         UINT32              Number;
-        INT8                *StringPtr;
-        INT8                Buffer[9];
+        NATIVE_CHAR         *StringPtr;
+        NATIVE_CHAR         Buffer[9];
     } Data;
 
 } DEVICE_ID;
@@ -955,7 +956,7 @@ typedef struct AllocationInfo
     UINT32                  Size;
     UINT32                  Component;
     UINT32                  Line;
-    INT8                    Module[MAX_MODULE_NAME];
+    NATIVE_CHAR             Module[MAX_MODULE_NAME];
     UINT8                   AllocType;
 
 } ALLOCATION_INFO;
