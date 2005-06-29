@@ -117,8 +117,6 @@
 #ifndef _ACPITYPES_H
 #define _ACPITYPES_H
 
-//#include <environment.h>
-
 
 /* 
  * Data types - Fixed across all compilation models
