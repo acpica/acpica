@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.95 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -412,6 +412,7 @@ AcpiExPrepRegionFieldValue (
                                             FieldBitPosition, FieldBitLength);
     if (ACPI_FAILURE (Status))
     {
+        AcpiUtDeleteObjectDesc (ObjDesc);
         return_ACPI_STATUS (Status);
     }
 
@@ -439,6 +440,10 @@ AcpiExPrepRegionFieldValue (
      * preserving the current type of that NamedObj.
      */
     Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) AcpiNsGetType (Node));
+
+    /* Remove local reference to the object */
+
+    AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
 
@@ -517,6 +522,7 @@ AcpiExPrepBankFieldValue (
                                             FieldBitPosition, FieldBitLength);
     if (ACPI_FAILURE (Status))
     {
+        AcpiUtDeleteObjectDesc (ObjDesc);
         return_ACPI_STATUS (Status);
     }
 
@@ -547,6 +553,10 @@ AcpiExPrepBankFieldValue (
      * preserving the current type of that NamedObj.
      */
     Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) AcpiNsGetType (Node));
+
+    /* Remove local reference to the object */
+
+    AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
 
@@ -607,6 +617,7 @@ AcpiExPrepIndexFieldValue (
                                             FieldBitPosition, FieldBitLength);
     if (ACPI_FAILURE (Status))
     {
+        AcpiUtDeleteObjectDesc (ObjDesc);
         return_ACPI_STATUS (Status);
     }
 
@@ -616,6 +627,12 @@ AcpiExPrepIndexFieldValue (
     ObjDesc->IndexField.IndexObj = AcpiNsGetAttachedObject (IndexReg);
     ObjDesc->IndexField.Value    = (UINT32) (FieldBitPosition /
                                             ObjDesc->Field.AccessBitWidth);
+
+    if (!ObjDesc->IndexField.DataObj || !ObjDesc->IndexField.IndexObj)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null Index Object\n"));
+        return_ACPI_STATUS (AE_AML_INTERNAL);
+    }
 
     /* An additional reference for the attached objects */
 
@@ -638,6 +655,10 @@ AcpiExPrepIndexFieldValue (
      * preserving the current type of that NamedObj.
      */
     Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) AcpiNsGetType (Node));
+
+    /* Remove local reference to the object */
+
+    AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
 
