@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -891,6 +891,7 @@ Target
 
 RequiredTarget
     : ',' SuperName                 {$$ = TrSetNodeFlags ($2, NODE_IS_TARGET);}
+    ;
 
 SimpleTarget
     : NameString                    {}
@@ -2779,6 +2780,7 @@ OptionalNameString_First
 OptionalObjectTypeKeyword
     :                               {$$ = TrCreateLeafNode (PARSEOP_OBJECTTYPE_UNK);}
     | ',' ObjectTypeKeyword         {$$ = $2;}
+    ;
 
 OptionalRangeType
     : ','                           {$$ = NULL;}
