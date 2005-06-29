@@ -123,11 +123,11 @@
 #include <interp.h>
 #include <debugger.h>
 
-
 #ifdef ACPI_DEBUG
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbdisply");
+
 
 
 /******************************************************************************
@@ -178,12 +178,13 @@ DbDecodeAndDisplayObject (
     char                    *Target,
     char                    *OutputType)
 {
-    UINT32                  Value;
+    void                    *ObjPtr;
     NAME_TABLE_ENTRY        *Entry;
     UINT32                  Display = DB_BYTE_DISPLAY;
     char                    Buffer[80];
     ACPI_BUFFER             RetBuf;
     ACPI_STATUS             Status;
+    UINT32                  Size;
 
     
     
@@ -217,43 +218,73 @@ DbDecodeAndDisplayObject (
 
     if ((Target[0] >= 0x30) && (Target[0] <= 0x39))
     {
-        Value = STRTOUL (Target, NULL, 16);
+        ObjPtr = (void *) STRTOUL (Target, NULL, 16);
+        if (!OsdVerifyReadable (ObjPtr, 16))
+        {
+            OsdPrintf ("Address %p is invalid in this address space\n", ObjPtr);
+            return;
+        }
 
-        if (VALID_DESCRIPTOR_TYPE (((void *) Value), DESC_TYPE_NTE))
+        if (VALID_DESCRIPTOR_TYPE ((ObjPtr), DESC_TYPE_NTE))
         {
             /* This is an NTE */
 
-            Status = AcpiGetName ((ACPI_HANDLE) Value, ACPI_FULL_PATHNAME, &RetBuf);
+            if (!OsdVerifyReadable (ObjPtr, sizeof (NAME_TABLE_ENTRY)))
+            {
+                OsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
+                return;
+            }
+
+            Status = AcpiGetName ((ACPI_HANDLE) ObjPtr, ACPI_FULL_PATHNAME, &RetBuf);
             if (ACPI_SUCCESS (Status))
             {
                 OsdPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
             }
 
-            CmDumpBuffer ((void *) Value, sizeof (NAME_TABLE_ENTRY), Display, ACPI_UINT32_MAX);
-            AmlDumpNameTableEntry ((void *) Value, 1);
+            CmDumpBuffer (ObjPtr, sizeof (NAME_TABLE_ENTRY), Display, ACPI_UINT32_MAX);
+            AmlDumpNameTableEntry (ObjPtr, 1);
         }
 
-        else if (VALID_DESCRIPTOR_TYPE (((void *) Value), DESC_TYPE_ACPI_OBJ))
+        else if (VALID_DESCRIPTOR_TYPE ((ObjPtr), DESC_TYPE_ACPI_OBJ))
         {
             /* This is an ACPI OBJECT */
 
-            CmDumpBuffer ((void *) Value, sizeof (ACPI_OBJECT_INTERNAL), Display, ACPI_UINT32_MAX);
-            AmlDumpObjectDescriptor ((void *) Value, 1);
+            if (!OsdVerifyReadable (ObjPtr, sizeof (ACPI_OBJECT_INTERNAL)))
+            {
+                OsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
+                return;
+            }
+
+            CmDumpBuffer (ObjPtr, sizeof (ACPI_OBJECT_INTERNAL), Display, ACPI_UINT32_MAX);
+            AmlDumpObjectDescriptor (ObjPtr, 1);
         }
 
-        else if (VALID_DESCRIPTOR_TYPE (((void *) Value), DESC_TYPE_PARSER))
+        else if (VALID_DESCRIPTOR_TYPE ((ObjPtr), DESC_TYPE_PARSER))
         {
-            /* This is an ACPI OBJECT */
+            /* This is an Parser Op object */
 
-            CmDumpBuffer ((void *) Value, sizeof (ACPI_GENERIC_OP), Display, ACPI_UINT32_MAX);
-            DbDumpParserDescriptor ((ACPI_GENERIC_OP *) Value);
+            if (!OsdVerifyReadable (ObjPtr, sizeof (ACPI_GENERIC_OP)))
+            {
+                OsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
+                return;
+            }
+
+
+            CmDumpBuffer (ObjPtr, sizeof (ACPI_GENERIC_OP), Display, ACPI_UINT32_MAX);
+            DbDumpParserDescriptor ((ACPI_GENERIC_OP *) ObjPtr);
         }
 
         else
         {
+            Size = 16;
+            if (OsdVerifyReadable (ObjPtr, 64))
+            {
+                Size = 64;
+            }
+
             /* Just dump some memory */
 
-            CmDumpBuffer ((void *) Value, 64, Display, ACPI_UINT32_MAX);
+            CmDumpBuffer (ObjPtr, Size, Display, ACPI_UINT32_MAX);
         }
 
         return;
@@ -271,9 +302,17 @@ DbDecodeAndDisplayObject (
     /* Now dump the NTE */
 
     Status = AcpiGetName (Entry, ACPI_FULL_PATHNAME, &RetBuf);
-    if (ACPI_SUCCESS (Status))
+    if (ACPI_FAILURE (Status))
     {
-        OsdPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
+        OsdPrintf ("Could not convert name to pathname\n");
+        return;
+    }
+
+    OsdPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
+    if (!OsdVerifyReadable (Entry, sizeof (NAME_TABLE_ENTRY)))
+    {
+        OsdPrintf ("Invalid NTE at address %p\n", Entry);
+        return;
     }
 
     CmDumpBuffer ((void *) Entry, sizeof (NAME_TABLE_ENTRY), Display, ACPI_UINT32_MAX);
@@ -282,6 +321,12 @@ DbDecodeAndDisplayObject (
     if (Entry->Object)
     {
         OsdPrintf ("\nAttached Object (0x%X):\n", Entry->Object);
+        if (!OsdVerifyReadable (Entry->Object, sizeof (ACPI_OBJECT_INTERNAL)))
+        {
+            OsdPrintf ("Invalid internal ACPI Object at address %p\n", Entry->Object);
+            return;
+        }
+
         CmDumpBuffer (Entry->Object, sizeof (ACPI_OBJECT_INTERNAL), Display, ACPI_UINT32_MAX);
         AmlDumpObjectDescriptor (Entry->Object, 1);
     }
