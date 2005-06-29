@@ -171,24 +171,14 @@ CmBuildExternalSimpleObject (
     FUNCTION_TRACE ("CmBuildExternalSimpleObject");
 
 
-    /* Check for an NTE which will become an ACPI_HANDLE */
+    /* In general, the external object will be the same type as the internal object */
 
-    if (VALID_DESCRIPTOR_TYPE (InternalObj, DESC_TYPE_NTE))
-    {
-        ExternalObj->Type = ACPI_TYPE_Any;
-    }
+    ExternalObj->Type = InternalObj->Common.Type;
 
-    else
-    {
-        ExternalObj->Type = InternalObj->Common.Type;
-    }
+    /* However, only a limited number of external types are supported */
 
     switch (ExternalObj->Type)
     {
-    case ACPI_TYPE_Any:
-        ExternalObj->Reference.Handle = InternalObj;
-        break;
-
 
     case ACPI_TYPE_String:
 
@@ -214,11 +204,26 @@ CmBuildExternalSimpleObject (
         break;
 
 
+    case INTERNAL_TYPE_Lvalue:
+
+        /* 
+         * This is an object reference.  We use the object type of "Any" to
+         * indicate a reference object containing a handle to an ACPI
+         * named object.
+         */
+
+        ExternalObj->Type = ACPI_TYPE_Any;
+        ExternalObj->Reference.Handle = InternalObj->Lvalue.Nte;
+        break;
+
+        
     default:
         return_ACPI_STATUS (AE_RETURN_VALUE);
         break;
     }
 
+
+    /* Copy data if necessary (strings or buffers) */
 
     if (Length)
     {
