@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.98 $
+ *       $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -321,8 +321,8 @@
  * MASK_BITS_ABOVE creates a mask starting AT the position and above
  * MASK_BITS_BELOW creates a mask starting one bit BELOW the position
  */
-#define MASK_BITS_ABOVE(position)       (~(((UINT32)(-1)) << ((UINT32) (position))))
-#define MASK_BITS_BELOW(position)       (((UINT32)(-1)) << ((UINT32) (position)))
+#define MASK_BITS_ABOVE(position)       (~(((ACPI_INTEGER)(-1)) << ((UINT32) (position))))
+#define MASK_BITS_BELOW(position)       (((ACPI_INTEGER)(-1)) << ((UINT32) (position)))
 
 
 /* Macros for GAS addressing */
@@ -348,18 +348,19 @@
 #endif
 
 /*
- * An ACPI_HANDLE (which is actually an ACPI_NAMESPACE_NODE *) can appear in some contexts,
- * such as on apObjStack, where a pointer to an ACPI_OPERAND_OBJECT  can also
+ * An ACPI_NAMESPACE_NODE * can appear in some contexts,
+ * where a pointer to an ACPI_OPERAND_OBJECT  can also
  * appear.  This macro is used to distinguish them.
  *
- * The DataType field is the first field in both structures.
+ * The "Descriptor" field is the first field in both structures.
  */
-#define VALID_DESCRIPTOR_TYPE(d,t)      (((ACPI_NAMESPACE_NODE *)d)->DataType == t)
+#define ACPI_GET_DESCRIPTOR_TYPE(d)     (((ACPI_NAMESPACE_NODE *)d)->Descriptor)
+#define ACPI_SET_DESCRIPTOR_TYPE(d,t)   (((ACPI_NAMESPACE_NODE *)d)->Descriptor = t)
 
 
 /* Macro to test the object type */
 
-#define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OPERAND_OBJECT  *)d)->Common.Type == (UINT8)t)
+#define ACPI_GET_OBJECT_TYPE(d)         (((ACPI_OPERAND_OBJECT *)d)->Common.Type)
 
 /* Macro to check the table flags for SINGLE or MULTIPLE tables are allowed */
 
