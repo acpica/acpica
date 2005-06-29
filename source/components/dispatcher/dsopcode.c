@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.53 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -172,7 +172,7 @@ AcpiDsGetBufferFieldArguments (
 
     DEBUG_EXEC(AcpiUtDisplayInitPathname (Node, "  [Field]"));
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] BufferField JIT Init\n",
-        &Node->Name));
+        (char*)&Node->Name));
 
 
     /*
@@ -206,8 +206,8 @@ AcpiDsGetBufferFieldArguments (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.Pcode, 
-                    ExtraDesc->Extra.PcodeLength, 1);
+    Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.AmlStart, 
+                    ExtraDesc->Extra.AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -256,8 +256,8 @@ AcpiDsGetBufferFieldArguments (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.Pcode,
-                    ExtraDesc->Extra.PcodeLength, 3);
+    Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.AmlStart,
+                    ExtraDesc->Extra.AmlLength, NULL, NULL, 3);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -320,9 +320,8 @@ AcpiDsGetRegionArguments (
 
     DEBUG_EXEC(AcpiUtDisplayInitPathname (Node, "  [Operation Region]"));
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] OpRegion Init at AML %p[%x]\n",
-        &Node->Name, ExtraDesc->Extra.Pcode,
-        *(UINT32*) ExtraDesc->Extra.Pcode));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] OpRegion Init at AML %p\n",
+        (char*)&Node->Name, ExtraDesc->Extra.AmlStart));
 
     /*
      * Allocate a new parser op to be the root of the parsed
@@ -355,8 +354,8 @@ AcpiDsGetRegionArguments (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.Pcode, 
-                    ExtraDesc->Extra.PcodeLength, 1);
+    Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.AmlStart, 
+                    ExtraDesc->Extra.AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -405,8 +404,8 @@ AcpiDsGetRegionArguments (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.Pcode,
-                    ExtraDesc->Extra.PcodeLength, 3);
+    Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.AmlStart,
+                    ExtraDesc->Extra.AmlLength, NULL, NULL, 3);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -850,7 +849,7 @@ AcpiDsEvalRegionOperands (
     AcpiUtRemoveReference (OperandDesc);
 
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "RgnObj %p Addr %8.8lX%8.8lX Len %X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "RgnObj %p Addr %8.8X%8.8X Len %X\n",
         ObjDesc, HIDWORD(ObjDesc->Region.Address), LODWORD(ObjDesc->Region.Address),
         ObjDesc->Region.Length));
 
