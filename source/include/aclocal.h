@@ -117,7 +117,7 @@
 #ifndef _ACPI_INTERNAL_H
 #define _ACPI_INTERNAL_H
 
-#include "config.h"
+#include <config.h>
 
 
 #define WAIT_FOREVER        -1
@@ -137,14 +137,15 @@ typedef UINT32              ACPI_MUTEX_HANDLE;
  * All mutex objects are automatically created by CmMutexInitialize.
  */
 
-#define MTX_INTERPRETER     0
-#define MTX_NAMESPACE       1
-#define MTX_MEMORY          2
-#define MTX_GP_EVENT        3
-#define MTX_FIXED_EVENT     4
-#define MTX_OP_REGIONS      5
+#define MTX_EXECUTE         0
+#define MTX_INTERPRETER     1
+#define MTX_NAMESPACE       2
+#define MTX_MEMORY          3
+#define MTX_GP_EVENT        4
+#define MTX_FIXED_EVENT     5
+#define MTX_OP_REGIONS      6
 
-#define MAX_MTX             5
+#define MAX_MTX             6
 #define NUM_MTX             MAX_MTX+1
 
 
