@@ -209,7 +209,7 @@ AmlBufSeq (void)
  *
  ****************************************************************************/
 
-VOID
+void
 DeleteObject (OBJECT_DESCRIPTOR **ObjDesc)
 {
     FUNCTION_TRACE ("DeleteObject");
@@ -482,7 +482,7 @@ static INT32    LeftMargin = 0;
 static char     LeftMarginChars[AML_MAX_INDENT + 1] = "\0";
 
 
-VOID
+void
 LineSet (INT32 NumBytes, OpMode LoadExecMode)
 { 
     /* Offset in AML block of 1st byte in this line */
@@ -559,7 +559,7 @@ LineSet (INT32 NumBytes, OpMode LoadExecMode)
  *
  *****************************************************************************/
 
-VOID
+void
 Indent (INT32 NumChars)
 {
     FUNCTION_TRACE ("Indent");
