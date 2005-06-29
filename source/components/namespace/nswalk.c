@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nswalk - Functions for walking the ACPI namespace
- *              $Revision: 1.34 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -245,6 +245,7 @@ AcpiNsWalkNamespace (
     void                    **ReturnValue)
 {
     ACPI_STATUS             Status;
+    ACPI_STATUS             MutexStatus;
     ACPI_NAMESPACE_NODE     *ChildNode;
     ACPI_NAMESPACE_NODE     *ParentNode;
     ACPI_OBJECT_TYPE        ChildType;
@@ -298,10 +299,10 @@ AcpiNsWalkNamespace (
                  */
                 if (UnlockBeforeCallback)
                 {
-                    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-                    if (ACPI_FAILURE (Status))
+                    MutexStatus = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+                    if (ACPI_FAILURE (MutexStatus))
                     {
-                        return_ACPI_STATUS (Status);
+                        return_ACPI_STATUS (MutexStatus);
                     }
                 }
 
@@ -310,10 +311,10 @@ AcpiNsWalkNamespace (
 
                 if (UnlockBeforeCallback)
                 {
-                    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-                    if (ACPI_FAILURE (Status))
+                    MutexStatus = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+                    if (ACPI_FAILURE (MutexStatus))
                     {
-                        return_ACPI_STATUS (Status);
+                        return_ACPI_STATUS (MutexStatus);
                     }
                 }
 

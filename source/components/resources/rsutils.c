@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.35 $
+ *              $Revision: 1.38 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -289,6 +289,60 @@ AcpiRsGetPrsMethodData (
     return_ACPI_STATUS (Status);
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsGetMethodData
+ *
+ * PARAMETERS:  Handle          - a handle to the containing object
+ *              RetBuffer       - a pointer to a buffer structure for the
+ *                                  results
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This function is called to get the _CRS or _PRS value of an
+ *              object contained in an object specified by the handle passed in
+ *
+ *              If the function fails an appropriate status will be returned
+ *              and the contents of the callers buffer is undefined.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiRsGetMethodData (
+    ACPI_HANDLE             Handle,
+    char                    *Path,
+    ACPI_BUFFER             *RetBuffer)
+{
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE ("RsGetMethodData");
+
+
+    /* Parameters guaranteed valid by caller */
+
+    /*
+     * Execute the method, no parameters
+     */
+    Status = AcpiUtEvaluateObject (Handle, Path, ACPI_BTYPE_BUFFER, &ObjDesc);
+    if (ACPI_FAILURE (Status)) {
+        return_ACPI_STATUS (Status);
+    }
+
+    /*
+     * Make the call to create a resource linked list from the
+     * byte stream buffer that comes back from the method
+     * execution.
+     */
+    Status = AcpiRsCreateResourceList (ObjDesc, RetBuffer);
+
+    /* On exit, we must delete the object returned by EvaluateObject */
+
+    AcpiUtRemoveReference (ObjDesc);
+    return_ACPI_STATUS (Status);
+}
 
 /*******************************************************************************
  *

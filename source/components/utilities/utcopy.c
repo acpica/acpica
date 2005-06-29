@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.110 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -734,21 +734,30 @@ AcpiUtCopySimpleObject (
 
         /*
          * Allocate and copy the actual buffer if and only if:
-         * 1) There is a valid buffer (length > 0)
+         * 1) There is a valid buffer pointer
          * 2) The buffer is not static (not in an ACPI table) (in this case,
          *    the actual pointer was already copied above)
          */
-        if ((SourceDesc->Buffer.Length) &&
+        if ((SourceDesc->Buffer.Pointer) &&
             (!(SourceDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
         {
-            DestDesc->Buffer.Pointer = ACPI_MEM_ALLOCATE (SourceDesc->Buffer.Length);
-            if (!DestDesc->Buffer.Pointer)
-            {
-                return (AE_NO_MEMORY);
-            }
+            DestDesc->Buffer.Pointer = NULL;
 
-            ACPI_MEMCPY (DestDesc->Buffer.Pointer, SourceDesc->Buffer.Pointer,
-                         SourceDesc->Buffer.Length);
+            /* Create an actual buffer only if length > 0 */
+
+            if (SourceDesc->Buffer.Length)
+            {
+                DestDesc->Buffer.Pointer = ACPI_MEM_ALLOCATE (SourceDesc->Buffer.Length);
+                if (!DestDesc->Buffer.Pointer)
+                {
+                    return (AE_NO_MEMORY);
+                }
+
+                /* Copy the actual buffer data */
+
+                ACPI_MEMCPY (DestDesc->Buffer.Pointer, SourceDesc->Buffer.Pointer,
+                             SourceDesc->Buffer.Length);
+            }
         }
         break;
 
@@ -756,21 +765,21 @@ AcpiUtCopySimpleObject (
 
         /*
          * Allocate and copy the actual string if and only if:
-         * 1) There is a valid string (length > 0)
+         * 1) There is a valid string pointer
          * 2) The string is not static (not in an ACPI table) (in this case,
          *    the actual pointer was already copied above)
          */
-        if ((SourceDesc->String.Length) &&
+        if ((SourceDesc->String.Pointer) &&
             (!(SourceDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
         {
-            DestDesc->String.Pointer = ACPI_MEM_ALLOCATE (SourceDesc->String.Length + 1);
+            DestDesc->String.Pointer = ACPI_MEM_ALLOCATE ((ACPI_SIZE) SourceDesc->String.Length + 1);
             if (!DestDesc->String.Pointer)
             {
                 return (AE_NO_MEMORY);
             }
 
             ACPI_MEMCPY (DestDesc->String.Pointer, SourceDesc->String.Pointer,
-                         SourceDesc->String.Length + 1);
+                         (ACPI_SIZE) SourceDesc->String.Length + 1);
         }
         break;
 

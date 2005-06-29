@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.81 $
+ *       $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -165,10 +165,6 @@ AcpiEvInitGlobalLockHandler (
     void);
 
 UINT32
-AcpiEvGetGpeRegisterIndex (
-    UINT32                  GpeNumber);
-
-UINT32
 AcpiEvGetGpeNumberIndex (
     UINT32                  GpeNumber);
 
@@ -187,20 +183,43 @@ AcpiEvNotifyDispatch (
  */
 
 ACPI_STATUS
+AcpiEvWalkGpeList (
+    ACPI_GPE_CALLBACK       GpeWalkCallback);
+
+BOOLEAN
+AcpiEvValidGpeEvent (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
+ACPI_GPE_EVENT_INFO *
+AcpiEvGetGpeEventInfo (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber);
+
+ACPI_STATUS
 AcpiEvGpeInitialize (
     void);
 
 ACPI_STATUS
-AcpiEvInitGpeControlMethods (
-    void);
+AcpiEvCreateGpeBlock (
+    ACPI_NAMESPACE_NODE     *GpeDevice,
+    ACPI_GENERIC_ADDRESS    *GpeBlockAddress,
+    UINT32                  RegisterCount,
+    UINT8                   GpeBlockBaseNumber,
+    UINT32                  InterruptLevel,
+    ACPI_GPE_BLOCK_INFO     **ReturnGpeBlock);
+
+ACPI_STATUS
+AcpiEvDeleteGpeBlock (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
 
 UINT32
 AcpiEvGpeDispatch (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
     UINT32                  GpeNumber);
 
 UINT32
 AcpiEvGpeDetect (
-    void);
+    ACPI_GPE_XRUPT_INFO     *GpeXruptList);
 
 /*
  * Evregion - Address Space handling
@@ -219,7 +238,7 @@ AcpiEvAddressSpaceDispatch (
     void                    *Value);
 
 ACPI_STATUS
-AcpiEvAddrHandlerHelper (
+AcpiEvInstallHandler (
     ACPI_HANDLE             ObjHandle,
     UINT32                  Level,
     void                    *Context,
@@ -236,6 +255,17 @@ AcpiEvDetachRegion (
     ACPI_OPERAND_OBJECT    *RegionObj,
     BOOLEAN                 AcpiNsIsLocked);
 
+ACPI_STATUS
+AcpiEvExecuteRegMethod (
+    ACPI_OPERAND_OBJECT    *RegionObj,
+    UINT32                  Function);
+
+ACPI_STATUS
+AcpiEvRegRun (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
 
 /*
  * Evregini - Region initialization and setup
@@ -292,6 +322,10 @@ AcpiEvInitializeRegion (
 /*
  * Evsci - SCI (System Control Interrupt) handling/dispatch
  */
+
+UINT32 ACPI_SYSTEM_XFACE
+AcpiEvGpeXruptHandler (
+    void                    *Context);
 
 UINT32
 AcpiEvInstallSciHandler (

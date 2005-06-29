@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.25 $
+ *              $Revision: 1.27 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -286,7 +286,7 @@ AcpiRsVendorResource (
 
         /* Dereference */
 
-        ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+        ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
 
         /* Calculate bytes consumed */
 
@@ -385,7 +385,7 @@ AcpiRsVendorStream (
 
         Temp16 = (UINT16) LinkedList->Data.VendorSpecific.Length;
 
-        ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
+        ACPI_MOVE_16_TO_16 (Buffer, &Temp16);
         Buffer += 2;
     }
     else

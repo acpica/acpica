@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.68 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -260,7 +260,7 @@ AcpiGetFirmwareTable (
         if ((Flags & ACPI_MEMORY_MODE) == ACPI_LOGICAL_ADDRESSING)
         {
             Status = AcpiOsMapMemory (RsdpAddress.Pointer.Physical, sizeof (RSDP_DESCRIPTOR),
-                                        (void **) &AcpiGbl_RSDP);
+                                        (void *) &AcpiGbl_RSDP);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -296,8 +296,7 @@ AcpiGetFirmwareTable (
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "RSDP located at %p, RSDT physical=%8.8X%8.8X \n",
         AcpiGbl_RSDP,
-        ACPI_HIDWORD (Address.Pointer.Value),
-        ACPI_LODWORD (Address.Pointer.Value)));
+        ACPI_FORMAT_UINT64 (Address.Pointer.Value)));
 
     /* Insert ProcessorMode flags */
 
@@ -331,12 +330,12 @@ AcpiGetFirmwareTable (
 
         if (AcpiGbl_RSDP->Revision < 2)
         {
-            Address.Pointer.Value = ((RSDT_DESCRIPTOR *) RsdtInfo.Pointer)->TableOffsetEntry[i];
+            Address.Pointer.Value = (ACPI_CAST_PTR (RSDT_DESCRIPTOR, RsdtInfo.Pointer))->TableOffsetEntry[i];
         }
         else
         {
             Address.Pointer.Value = ACPI_GET_ADDRESS (
-                ((XSDT_DESCRIPTOR *) RsdtInfo.Pointer)->TableOffsetEntry[i]);
+                (ACPI_CAST_PTR (XSDT_DESCRIPTOR, RsdtInfo.Pointer))->TableOffsetEntry[i]);
         }
 
         /* Get the table header */
@@ -521,7 +520,7 @@ AcpiTbFindRsdp (
          * 1) Search EBDA (low memory) paragraphs
          */
         Status = AcpiOsMapMemory ((UINT64) ACPI_LO_RSDP_WINDOW_BASE, ACPI_LO_RSDP_WINDOW_SIZE,
-                                    (void **) &TablePtr);
+                                    (void *) &TablePtr);
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not map memory at %X for length %X\n",
@@ -547,7 +546,7 @@ AcpiTbFindRsdp (
          * 2) Search upper memory: 16-byte boundaries in E0000h-F0000h
          */
         Status = AcpiOsMapMemory ((UINT64) ACPI_HI_RSDP_WINDOW_BASE, ACPI_HI_RSDP_WINDOW_SIZE,
-                                    (void **) &TablePtr);
+                                    (void *) &TablePtr);
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not map memory at %X for length %X\n",

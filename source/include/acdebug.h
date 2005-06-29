@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.66 $
+ *       $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -142,15 +142,15 @@ typedef struct ArgumentInfo
 #define VERBOSE_PRINT(fp)               DBTEST_OUTPUT_LEVEL(lvl) {\
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
-#define EX_NO_SINGLE_STEP       1
-#define EX_SINGLE_STEP          2
+#define EX_NO_SINGLE_STEP               1
+#define EX_SINGLE_STEP                  2
 
 
 /* Prototypes */
 
 
 /*
- * dbapi - external debugger interfaces
+ * dbxface - external debugger interfaces
  */
 
 ACPI_STATUS
@@ -166,6 +166,15 @@ AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  OpType);
+
+ACPI_STATUS
+AcpiDbStartCommand (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+AcpiDbMethodEnd (
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -243,6 +252,9 @@ AcpiDbDisplayResources (
     char                    *ObjectArg);
 
 void
+AcpiDbDisplayGpes (void);
+
+void
 AcpiDbCheckIntegrity (
     void);
 
@@ -274,6 +286,10 @@ AcpiDbWalkForSpecificObjects (
     void                    *Context,
     void                    **ReturnValue);
 
+void
+AcpiDbGenerateGpe (
+    char                    *GpeArg,
+    char                    *BlockArg);
 
 /*
  * dbdisply - debug display commands
@@ -289,10 +305,6 @@ AcpiDbDecodeAndDisplayObject (
     char                    *OutputType);
 
 void
-AcpiDbDecodeNode (
-    ACPI_NAMESPACE_NODE     *Node);
-
-void
 AcpiDbDisplayResultObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
@@ -300,11 +312,6 @@ AcpiDbDisplayResultObject (
 ACPI_STATUS
 AcpiDbDisplayAllMethods (
     char                    *DisplayCountArg);
-
-void
-AcpiDbDisplayInternalObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState);
 
 void
 AcpiDbDisplayArguments (
@@ -323,6 +330,10 @@ AcpiDbDisplayCallingTree (
     void);
 
 void
+AcpiDbDisplayObjectType (
+    char                    *ObjectArg);
+
+void
 AcpiDbDisplayArgumentObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
@@ -334,10 +345,6 @@ AcpiDbDumpParserDescriptor (
 void *
 AcpiDbGetPointer (
     void                    *Target);
-
-void
-AcpiDbDecodeInternalObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
 /*
@@ -373,6 +380,13 @@ void ACPI_SYSTEM_XFACE
 AcpiDbMethodThread (
     void                    *Context);
 
+ACPI_STATUS
+AcpiDbExecutionWalk (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
 
 /*
  * dbfileio - Debugger file I/O commands
@@ -400,8 +414,14 @@ AcpiDbLoadAcpiTable (
     char                    *Filename);
 
 ACPI_STATUS
-AcpiDbGetAcpiTable (
-    char                    *Filename);
+AcpiDbGetTableFromFile (
+    char                    *Filename,
+    ACPI_TABLE_HEADER       **Table);
+
+ACPI_STATUS
+AcpiDbReadTableFromFile (
+    char                    *Filename,
+    ACPI_TABLE_HEADER       **Table);
 
 /*
  * dbhistry - debugger HISTORY command

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.153 $
+ *              $Revision: 1.157 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,8 +125,8 @@
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsdump")
 
-#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
+#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
 /*******************************************************************************
  *
@@ -152,7 +152,7 @@ AcpiNsPrintPathname (
         return;
     }
 
-        /* Print the entire name */
+    /* Print the entire name */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "["));
 
@@ -337,8 +337,7 @@ AcpiNsDumpOneObject (
         case ACPI_TYPE_INTEGER:
 
             AcpiOsPrintf ("= %8.8X%8.8X\n",
-                        ACPI_HIDWORD (ObjDesc->Integer.Value),
-                        ACPI_LODWORD (ObjDesc->Integer.Value));
+                        ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
             break;
 
 
@@ -396,8 +395,7 @@ AcpiNsDumpOneObject (
             if (ObjDesc->Region.Flags & AOPOBJ_DATA_VALID)
             {
                 AcpiOsPrintf (" Addr %8.8X%8.8X Len %.4X\n",
-                            ACPI_HIDWORD (ObjDesc->Region.Address),
-                            ACPI_LODWORD (ObjDesc->Region.Address),
+                            ACPI_FORMAT_UINT64 (ObjDesc->Region.Address),
                             ObjDesc->Region.Length);
             }
             else
@@ -468,7 +466,7 @@ AcpiNsDumpOneObject (
         case ACPI_TYPE_LOCAL_BANK_FIELD:
         case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
-            AcpiOsPrintf ("Off %.2X Len %.2X Acc %.2hd\n",
+            AcpiOsPrintf (" Off %.3X Len %.2X Acc %.2hd\n",
                     (ObjDesc->CommonField.BaseByteOffset * 8)
                         + ObjDesc->CommonField.StartFieldBitOffset,
                     ObjDesc->CommonField.BitLength,
@@ -507,8 +505,8 @@ AcpiNsDumpOneObject (
 
         case ACPI_TYPE_INTEGER:
 
-            AcpiOsPrintf (" N:%X%X\n", ACPI_HIDWORD(ObjDesc->Integer.Value),
-                                       ACPI_LODWORD(ObjDesc->Integer.Value));
+            AcpiOsPrintf (" I:%8.8X8.8%X\n",
+                    ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
             break;
 
         case ACPI_TYPE_STRING:
@@ -589,7 +587,8 @@ AcpiNsDumpOneObject (
 
         default:
 
-            AcpiOsPrintf ("(String or Buffer ptr - not an object descriptor)\n");
+            AcpiOsPrintf ("(String or Buffer ptr - not an object descriptor) [%s]\n",
+                    AcpiUtGetDescriptorName (ObjDesc));
             BytesToDump = 16;
             break;
         }
@@ -687,7 +686,6 @@ AcpiNsDumpObjects (
     Info.OwnerId = OwnerId;
     Info.DisplayType = DisplayType;
 
-
     (void) AcpiNsWalkNamespace (Type, StartHandle, MaxDepth,
                 ACPI_NS_WALK_NO_UNLOCK, AcpiNsDumpOneObject,
                 (void *) &Info, NULL);
@@ -735,7 +733,6 @@ AcpiNsDumpTables (
         SearchHandle = AcpiGbl_RootNode;
         ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "\\\n"));
     }
-
 
     AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_OBJECTS, MaxDepth,
             ACPI_UINT32_MAX, SearchHandle);

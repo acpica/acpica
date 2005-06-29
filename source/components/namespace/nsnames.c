@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.82 $
+ *              $Revision: 1.84 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -174,7 +174,7 @@ AcpiNsBuildExternalPath (
 
         /* Put the name into the buffer */
 
-        ACPI_MOVE_UNALIGNED32_TO_32 ((NameBuffer + Index), &ParentNode->Name);
+        ACPI_MOVE_32_TO_32 ((NameBuffer + Index), &ParentNode->Name);
         ParentNode = AcpiNsGetParentNode (ParentNode);
 
         /* Prefix name with the path separator */

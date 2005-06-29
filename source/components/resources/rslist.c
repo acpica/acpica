@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.32 $
+ *              $Revision: 1.34 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -390,8 +390,8 @@ AcpiRsByteStreamToList (
          * Set the Buffer to the next structure
          */
         Resource = ACPI_CAST_PTR (ACPI_RESOURCE, Buffer);
-        Resource->Length = ACPI_ALIGN_RESOURCE_SIZE(Resource->Length);
-        Buffer += ACPI_ALIGN_RESOURCE_SIZE(StructureSize);
+        Resource->Length = (UINT32) ACPI_ALIGN_RESOURCE_SIZE (Resource->Length);
+        Buffer += ACPI_ALIGN_RESOURCE_SIZE (StructureSize);
 
     } /*  end while */
 

@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.88 $
+ *              $Revision: 1.90 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -182,7 +182,8 @@ AcpiNsAttachObject (
     {
         /* Not a name handle */
 
-        ACPI_REPORT_ERROR (("NsAttachObject: Invalid handle\n"));
+        ACPI_REPORT_ERROR (("NsAttachObject: Invalid handle %p [%s]\n",
+                Node, AcpiUtGetDescriptorName (Node)));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 

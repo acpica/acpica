@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.64 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -420,7 +420,7 @@ AcpiRsCreatePciRoutingTable (
 
         /* Now align the current length */
 
-        UserPrt->Length = ACPI_ROUND_UP_TO_64BITS (UserPrt->Length);
+        UserPrt->Length = (UINT32) ACPI_ROUND_UP_TO_64BITS (UserPrt->Length);
 
         /*
          * 4) Fourth subobject: Dereference the PRT.SourceIndex

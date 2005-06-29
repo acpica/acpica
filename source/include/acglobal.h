@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.136 $
+ *       $Revision: 1.145 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -178,6 +178,12 @@ ACPI_EXTERN ACPI_COMMON_FACS            AcpiGbl_CommonFACS;
  */
 ACPI_EXTERN UINT8                       AcpiGbl_IntegerBitWidth;
 ACPI_EXTERN UINT8                       AcpiGbl_IntegerByteWidth;
+ACPI_EXTERN UINT8                       AcpiGbl_IntegerNybbleWidth;
+
+/* Keep local copies of these FADT-based registers */
+
+ACPI_EXTERN ACPI_GENERIC_ADDRESS        AcpiGbl_XPm1aEnable;
+ACPI_EXTERN ACPI_GENERIC_ADDRESS        AcpiGbl_XPm1bEnable;
 
 /*
  * Since there may be multiple SSDTs and PSDTS, a single pointer is not
@@ -188,15 +194,15 @@ ACPI_EXTERN UINT8                       AcpiGbl_IntegerByteWidth;
 /*
  * ACPI Table info arrays
  */
-extern      ACPI_TABLE_DESC             AcpiGbl_AcpiTables[NUM_ACPI_TABLES];
-extern      ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES];
+extern      ACPI_TABLE_LIST             AcpiGbl_TableLists[NUM_ACPI_TABLE_TYPES];
+extern      ACPI_TABLE_SUPPORT          AcpiGbl_TableData[NUM_ACPI_TABLE_TYPES];
 
 /*
  * Predefined mutex objects.  This array contains the
  * actual OS mutex handles, indexed by the local ACPI_MUTEX_HANDLEs.
  * (The table maps local handles to the real OS handles)
  */
-ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_AcpiMutexInfo [NUM_MTX];
+ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_MutexInfo[NUM_MUTEX];
 
 
 /*****************************************************************************
@@ -207,8 +213,8 @@ ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_AcpiMutexInfo [NUM_MTX];
 
 
 ACPI_EXTERN ACPI_MEMORY_LIST            AcpiGbl_MemoryLists[ACPI_NUM_MEM_LISTS];
-ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_DrvNotify;
-ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_SysNotify;
+ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_DeviceNotify;
+ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_SystemNotify;
 ACPI_EXTERN ACPI_INIT_HANDLER           AcpiGbl_InitHandler;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GlobalLockSemaphore;
@@ -273,7 +279,7 @@ ACPI_EXTERN UINT32                      AcpiGbl_DeepestNesting;
  ****************************************************************************/
 
 
-ACPI_EXTERN ACPI_THREAD_STATE           *AcpiGbl_CurrentWalkList;
+ACPI_EXTERN ACPI_THREAD_STATE          *AcpiGbl_CurrentWalkList;
 
 /* Control method single step flag */
 
@@ -286,7 +292,7 @@ ACPI_EXTERN UINT8                       AcpiGbl_CmSingleStep;
  *
  ****************************************************************************/
 
-ACPI_EXTERN ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
+ACPI_EXTERN ACPI_PARSE_OBJECT          *AcpiGbl_ParsedNamespaceRoot;
 
 /*****************************************************************************
  *
@@ -307,22 +313,9 @@ ACPI_EXTERN UINT8                       AcpiGbl_SleepTypeB;
 
 extern      ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS];
 ACPI_EXTERN ACPI_FIXED_EVENT_HANDLER    AcpiGbl_FixedEventHandlers[ACPI_NUM_FIXED_EVENTS];
-
-ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeObjHandle;
-ACPI_EXTERN UINT32                      AcpiGbl_GpeRegisterCount;
-ACPI_EXTERN UINT32                      AcpiGbl_GpeNumberMax;
-ACPI_EXTERN ACPI_GPE_REGISTER_INFO     *AcpiGbl_GpeRegisterInfo;
-ACPI_EXTERN ACPI_GPE_NUMBER_INFO       *AcpiGbl_GpeNumberInfo;
-ACPI_EXTERN ACPI_GPE_BLOCK_INFO         AcpiGbl_GpeBlockInfo[ACPI_MAX_GPE_BLOCKS];
-
-/*
- * GPE translation table
- * Indexed by the GPE number, returns a valid index into the global GPE tables.
- *
- * This table is needed because the GPE numbers supported by block 1 do not
- * have to be contiguous with the GPE numbers supported by block 0.
- */
-ACPI_EXTERN ACPI_GPE_INDEX_INFO        *AcpiGbl_GpeNumberToIndex;
+ACPI_EXTERN ACPI_GPE_XRUPT_INFO        *AcpiGbl_GpeXruptListHead;
+ACPI_EXTERN ACPI_GPE_BLOCK_INFO        *AcpiGbl_GpeFadtBlocks[ACPI_MAX_GPE_BLOCKS];
+ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeLock;
 
 
 /*****************************************************************************
