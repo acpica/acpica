@@ -193,6 +193,10 @@ AcpiTerminate (void)
 
     CmLocalCleanup ();
 
+    CmDumpCurrentAllocations (ACPI_UINT_MAX, NULL);
+
+    BREAKPOINT3;
+
     FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 
