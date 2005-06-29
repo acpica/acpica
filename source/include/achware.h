@@ -303,41 +303,50 @@ HwObtainSleepTypeRegisterData (
     UINT8                   *Slp_TypB);
 
 
-/* C state Prototypes */
+/* Cx State Prototypes */
 
 ACPI_STATUS
-HwSetIa32CxState(NATIVE_UINT PBlkAddress, UINT32 State);
+HwIa32EnterCx (
+    ACPI_IO_ADDRESS         PBlkAddress);
 
 ACPI_STATUS
-HwSetIa32CxHandler(UINT32 State, ACPI_SET_C_STATE_HANDLER ReturnHandler);
+HwIa32GetCxHandler (
+    UINT32                  State, 
+    ACPI_SET_C_STATE_HANDLER *Handler);
 
 ACPI_STATUS
-HwGetIa32CxHandler(UINT32 State, ACPI_SET_C_STATE_HANDLER *ReturnHandler);
+HwIa32SetCxHandler (
+    UINT32                  State, 
+    ACPI_SET_C_STATE_HANDLER Handler);
 
 
 /* Throttling Prototypes */
 
 void 
-HwEnableThrottling (ACPI_IO_ADDRESS PBlkAddress);
+HwEnableThrottling (
+    ACPI_IO_ADDRESS         PBlkAddress);
 
 void 
-HwDisableThrottling (ACPI_IO_ADDRESS PBlkAddress);
+HwDisableThrottling (
+    ACPI_IO_ADDRESS         PBlkAddress);
 
 UINT32
 HwGetDutyCycle (
-    UINT8 DutyOffset,
-    NATIVE_UINT PBlkAddress,
-    UINT32 NumThrottleStates);
+    UINT8                   DutyOffset,
+    ACPI_IO_ADDRESS         PBlkAddress,
+    UINT32                  NumThrottleStates);
 
 void
 HwProgramDutyCycle (
-    UINT8 DutyOffset,
-    UINT32 DutyCycle,
-    NATIVE_UINT PBlkAddress,
-    UINT32 NumThrottleStates);
+    UINT8                   DutyOffset,
+    UINT32                  DutyCycle,
+    ACPI_IO_ADDRESS         PBlkAddress,
+    UINT32                  NumThrottleStates);
 
 NATIVE_UINT
-HwLocalPow(NATIVE_UINT x,NATIVE_UINT y);
+HwLocalPow (
+    NATIVE_UINT             x,
+    NATIVE_UINT             y);
 
 /* ACPI Timer prototypes */
 
@@ -348,5 +357,6 @@ HwPmtTicks (
 UINT32
 HwPmtResolution (
     void);
+
 
 #endif /* __HARDWARE_H__ */
