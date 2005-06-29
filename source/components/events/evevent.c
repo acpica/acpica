@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -945,19 +945,19 @@ AcpiEvGpeDispatch (
     else if (GpeInfo->MethodHandle)
     {
         /*
+         * Disable GPE, so it doesn't keep firing before the method has a
+         * chance to run.
+         */
+        AcpiHwDisableGpe (GpeNumber);
+
+        /*
          * Execute the method associated with the GPE.
          */
         if (ACPI_FAILURE (AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
                                 AcpiEvAsynchExecuteGpeMethod,
                                 ACPI_TO_POINTER (GpeNumber))))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to queue handler for GPE[%X], disabling event\n", GpeNumber));
-
-            /*
-             * Disable the GPE on error.  The GPE will remain disabled until the ACPI
-             * Core Subsystem is restarted, or the handler is reinstalled.
-             */
-            AcpiHwDisableGpe (GpeNumber);
+            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to queue handler for GPE[%X], event is disabled\n", GpeNumber));
         }
     }
     else
