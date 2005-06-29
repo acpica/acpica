@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.52 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -118,12 +118,11 @@
 #define __TBINSTAL_C__
 
 #include "acpi.h"
-#include "achware.h"
 #include "actables.h"
 
 
 #define _COMPONENT          ACPI_TABLES
-        MODULE_NAME         ("tbinstal")
+        ACPI_MODULE_NAME    ("tbinstal")
 
 
 /*******************************************************************************
@@ -148,7 +147,7 @@ AcpiTbMatchSignature (
     NATIVE_UINT             i;
 
 
-    FUNCTION_TRACE ("TbMatchSignature");
+    ACPI_FUNCTION_TRACE ("TbMatchSignature");
 
 
     /*
@@ -199,7 +198,7 @@ AcpiTbInstallTable (
 {
     ACPI_STATUS             Status;
 
-    FUNCTION_TRACE ("TbInstallTable");
+    ACPI_FUNCTION_TRACE ("TbInstallTable");
 
 
     /*
@@ -214,7 +213,11 @@ AcpiTbInstallTable (
 
     /* Lock tables while installing */
 
-    AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Install the table into the global data structure */
 
@@ -223,7 +226,7 @@ AcpiTbInstallTable (
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%s located at %p\n",
         AcpiGbl_AcpiTableData[TableInfo->Type].Name, TableInfo->Pointer));
 
-    AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     return_ACPI_STATUS (Status);
 }
 
@@ -258,7 +261,7 @@ AcpiTbRecognizeTable (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("TbRecognizeTable");
+    ACPI_FUNCTION_TRACE ("TbRecognizeTable");
 
 
     /* Ensure that we have a valid table pointer */
@@ -327,7 +330,7 @@ AcpiTbInitTableDescriptor (
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    FUNCTION_TRACE_U32 ("TbInitTableDescriptor", TableType);
+    ACPI_FUNCTION_TRACE_U32 ("TbInitTableDescriptor", TableType);
 
     /*
      * Install the table into the global data structure
@@ -340,7 +343,7 @@ AcpiTbInitTableDescriptor (
      * includes most ACPI tables such as the DSDT.  2) Multiple instances of
      * the table are allowed.  This includes SSDT and PSDTs.
      */
-    if (IS_SINGLE_TABLE (AcpiGbl_AcpiTableData[TableType].Flags))
+    if (ACPI_IS_SINGLE_TABLE (AcpiGbl_AcpiTableData[TableType].Flags))
     {
         /*
          * Only one table allowed, and a table has alread been installed
@@ -400,7 +403,7 @@ AcpiTbInitTableDescriptor (
     TableDesc->AmlStart             = (UINT8 *) (TableDesc->Pointer + 1),
     TableDesc->AmlLength            = (UINT32) (TableDesc->Length -
                                         (UINT32) sizeof (ACPI_TABLE_HEADER));
-    TableDesc->TableId              = AcpiUtAllocateOwnerId (OWNER_TYPE_TABLE);
+    TableDesc->TableId              = AcpiUtAllocateOwnerId (ACPI_OWNER_TYPE_TABLE);
     TableDesc->LoadedIntoNamespace  = FALSE;
 
     /*
@@ -468,7 +471,7 @@ AcpiTbDeleteAcpiTable (
     ACPI_TABLE_TYPE             Type)
 {
 
-    FUNCTION_TRACE_U32 ("TbDeleteAcpiTable", Type);
+    ACPI_FUNCTION_TRACE_U32 ("TbDeleteAcpiTable", Type);
 
 
     if (Type > ACPI_TABLE_MAX)
@@ -476,7 +479,10 @@ AcpiTbDeleteAcpiTable (
         return_VOID;
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+    if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_TABLES)))
+    {
+        return;
+    }
 
     /* Free the table */
 
@@ -512,7 +518,7 @@ AcpiTbDeleteAcpiTable (
         break;
     }
 
-    AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     return_VOID;
 }
 
@@ -539,7 +545,7 @@ AcpiTbFreeAcpiTablesOfType (
     UINT32                  i;
 
 
-    FUNCTION_TRACE_PTR ("TbFreeAcpiTablesOfType", ListHead);
+    ACPI_FUNCTION_TRACE_PTR ("TbFreeAcpiTablesOfType", ListHead);
 
 
     /* Get the head of the list */
@@ -627,7 +633,7 @@ AcpiTbUninstallTable (
     ACPI_TABLE_DESC         *NextDesc;
 
 
-    FUNCTION_TRACE_PTR ("TbDeleteSingleTable", TableDesc);
+    ACPI_FUNCTION_TRACE_PTR ("TbDeleteSingleTable", TableDesc);
 
 
     if (!TableDesc)
