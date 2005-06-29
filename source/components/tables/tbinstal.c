@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -281,26 +281,34 @@ AcpiTbRecognizeTable (
      * the tables that is consumed by the core subsystem
      */
     Status = AcpiTbMatchSignature (TableHeader->Signature, TableInfo);
-    if (ACPI_SUCCESS (Status))
+    if (ACPI_FAILURE (Status))
     {
-        /* Return the table type and length via the info struct */
+        return_ACPI_STATUS (Status);
+    }
 
-        TableInfo->Length   = TableHeader->Length;
+    Status = AcpiTbValidateTableHeader (TableHeader);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
-        /*
-         * Validate checksum for _most_ tables,
-         * even the ones whose signature we don't recognize
-         */
-        if (TableInfo->Type != ACPI_TABLE_FACS)
+    /* Return the table type and length via the info struct */
+
+    TableInfo->Length   = TableHeader->Length;
+
+    /*
+     * Validate checksum for _most_ tables,
+     * even the ones whose signature we don't recognize
+     */
+    if (TableInfo->Type != ACPI_TABLE_FACS)
+    {
+        Status = AcpiTbVerifyTableChecksum (TableHeader);
+        if (ACPI_FAILURE (Status) &&
+            (!ACPI_CHECKSUM_ABORT))
         {
-            Status = AcpiTbVerifyTableChecksum (TableHeader);
-            if (ACPI_FAILURE (Status) &&
-                (!ACPI_CHECKSUM_ABORT))
-            {
-                /* Ignore the error if configuration says so */
+            /* Ignore the error if configuration says so */
 
-                Status = AE_OK;
-            }
+            Status = AE_OK;
         }
     }
 
