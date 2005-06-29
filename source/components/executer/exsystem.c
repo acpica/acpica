@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.74 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -212,7 +212,7 @@ AcpiExSystemDoStall (
 
         AcpiExExitInterpreter ();
 
-        AcpiOsStall (HowLong);
+        AcpiOsSleep (0, (HowLong / 1000) + 1);
 
         /* And now we must get the interpreter again */
 
@@ -221,7 +221,7 @@ AcpiExSystemDoStall (
 
     else
     {
-        AcpiOsSleep (0, (HowLong / 1000) + 1);
+        AcpiOsStall (HowLong);
     }
 
     return (Status);
