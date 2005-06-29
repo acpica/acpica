@@ -151,14 +151,14 @@ AmlExecStore (
     ACPI_OBJECT_INTERNAL    *ValDesc, 
     ACPI_OBJECT_INTERNAL    *DestDesc)
 {
-    ACPI_HANDLE             TempHandle;
     ACPI_STATUS             Status = AE_OK;
-    BOOLEAN                 Locked = FALSE;
     ACPI_OBJECT_INTERNAL    *DeleteDestDesc = NULL;
-    UINT8                   *Location=NULL;
-    UINT32                  Mask;
+    NAME_TABLE_ENTRY        *Entry;
     UINT8                   *Buffer;
     UINT32                  Length;
+    UINT32                  Mask;
+    BOOLEAN                 Locked = FALSE;
+    UINT8                   *Location=NULL;
 
 
 
@@ -182,7 +182,7 @@ AmlExecStore (
     {
         /* Dest is an ACPI_HANDLE, create a new object */
 
-        TempHandle = (ACPI_HANDLE) DestDesc;
+        Entry = (NAME_TABLE_ENTRY *) DestDesc;
         DestDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
         if (!DestDesc)
         {   
@@ -194,7 +194,7 @@ AmlExecStore (
         /* Build a new Lvalue wrapper around the handle */
 
         DestDesc->Lvalue.OpCode = AML_NameOp;
-        DestDesc->Lvalue.Object = TempHandle;
+        DestDesc->Lvalue.Object = Entry;
     }
 
     else
@@ -211,8 +211,7 @@ AmlExecStore (
     {   
         /* Destination is not an Lvalue */
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Destination is not an Lvalue [%p]\n",
-                        DestDesc));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Destination is not an Lvalue [%p]\n", DestDesc));
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
@@ -231,15 +230,20 @@ AmlExecStore (
 
         /* Storing into a Name */
 
-        TempHandle = DestDesc->Lvalue.Object;
-        switch (NsGetType (TempHandle)) 
+        Entry = DestDesc->Lvalue.Object;
+        switch (NsGetType (Entry)) 
         {
             /* Type of Name's existing value */
 
         case INTERNAL_TYPE_Alias:
 
+            /* 
+             * This case should never happen.
+             * Aliases are resolved by PrepOperands
+             */
+
             DEBUG_PRINT (ACPI_WARN, ("AmlExecStore/NameOp: Store into %s not implemented\n",
-                            Gbl_NsTypeNames[NsGetType (TempHandle)]));
+                            Gbl_NsTypeNames[NsGetType (Entry)]));
             
             Status = AE_NOT_IMPLEMENTED;
             DeleteDestDesc = DestDesc;
@@ -261,9 +265,8 @@ AmlExecStore (
 
             else if (ValDesc->Common.Type != ACPI_TYPE_Number)
             {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore: Value assigned to BankField must be Number, not %d\n",
-                        ValDesc->Common.Type));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Value assigned to BankField must be Number, not %d\n",
+                                ValDesc->Common.Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -278,7 +281,7 @@ AmlExecStore (
 
                 DeleteDestDesc = DestDesc;
 
-                DestDesc = NsGetAttachedObject (TempHandle);
+                DestDesc = NsGetAttachedObject (Entry);
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/BankField: Internal error - null old-value pointer\n"));
@@ -290,10 +293,9 @@ AmlExecStore (
             if ((AE_OK == Status) && 
                 (INTERNAL_TYPE_BankField != DestDesc->Common.Type))
             {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore/BankField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        &(((NAME_TABLE_ENTRY *) TempHandle)->Name), NsGetType (TempHandle), 
-                        DestDesc->Common.Type, DestDesc));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/BankField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                                &Entry->Name, NsGetType (Entry), 
+                                DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -342,9 +344,8 @@ AmlExecStore (
                      (ValDesc->Common.Type != ACPI_TYPE_Buffer) &&
                      (ValDesc->Common.Type != ACPI_TYPE_String))
             {
-                DEBUG_PRINT (ACPI_ERROR, 
-                        ("AmlExecStore/DefField: Assign wrong type to Field [0x%X] (must be type Num/Str/Buf)\n",
-                        ValDesc->Common.Type));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/DefField: Assign wrong type to Field [0x%X] (must be type Num/Str/Buf)\n",
+                                ValDesc->Common.Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -359,7 +360,7 @@ AmlExecStore (
 
                 DeleteDestDesc = DestDesc;
 
-                DestDesc = NsGetAttachedObject (TempHandle);
+                DestDesc = NsGetAttachedObject (Entry);
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/DefField: Internal error - null old-value pointer\n"));
@@ -370,10 +371,9 @@ AmlExecStore (
             if ((AE_OK == Status) && 
                 (INTERNAL_TYPE_DefField != DestDesc->Common.Type))
             {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore/DefField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        &(((NAME_TABLE_ENTRY *) TempHandle)->Name), NsGetType (TempHandle), 
-                        DestDesc->Common.Type, DestDesc));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/DefField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                                &Entry->Name, NsGetType (Entry), 
+                                DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -404,7 +404,7 @@ AmlExecStore (
                     break;
                 }
 
-                Status = AmlSetNamedFieldValue (TempHandle, Buffer, Length);
+                Status = AmlSetNamedFieldValue (Entry, Buffer, Length);
             }
                 
             break;      /* Global Lock released below   */
@@ -425,9 +425,8 @@ AmlExecStore (
 
             else if (ValDesc->Common.Type != ACPI_TYPE_Number)
             {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore: Value assigned to IndexField must be Number, not %d\n",
-                        ValDesc->Common.Type));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Value assigned to IndexField must be Number, not %d\n",
+                                ValDesc->Common.Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -442,7 +441,7 @@ AmlExecStore (
 
                 DeleteDestDesc = DestDesc;
 
-                DestDesc = NsGetAttachedObject (TempHandle);
+                DestDesc = NsGetAttachedObject (Entry);
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, 
@@ -454,10 +453,9 @@ AmlExecStore (
             if ((AE_OK == Status) &&
                 (INTERNAL_TYPE_IndexField != DestDesc->Common.Type))
             {
-                DEBUG_PRINT (ACPI_ERROR, 
-                        ("AmlExecStore/IndexField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        &(((NAME_TABLE_ENTRY *) TempHandle)->Name), NsGetType (TempHandle), 
-                        DestDesc->Common.Type, DestDesc));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/IndexField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                                &Entry->Name, NsGetType (Entry), 
+                                DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -473,8 +471,7 @@ AmlExecStore (
 
                 Status = AmlSetNamedFieldValue (DestDesc->IndexField.Index,
                                                &DestDesc->IndexField.Value, sizeof (DestDesc->IndexField.Value));
-                DEBUG_PRINT (ACPI_INFO,
-                            ("AmlExecStore: IndexField: set index returned %s\n", Gbl_ExceptionNames[Status]));
+                DEBUG_PRINT (ACPI_INFO, ("AmlExecStore: IndexField: set index returned %s\n", Gbl_ExceptionNames[Status]));
             }
 
             if (AE_OK == Status)
@@ -483,8 +480,7 @@ AmlExecStore (
                 
                 Status = AmlSetNamedFieldValue (DestDesc->IndexField.Data,
                                                &ValDesc->Number.Value, sizeof (ValDesc->Number.Value));
-                DEBUG_PRINT (ACPI_INFO,
-                            ("AmlExecStore: IndexField: set data returned %s\n", Gbl_ExceptionNames[Status]));
+                DEBUG_PRINT (ACPI_INFO, ("AmlExecStore: IndexField: set data returned %s\n", Gbl_ExceptionNames[Status]));
             }
 
             break;      /* Global Lock released below   */
@@ -504,9 +500,8 @@ AmlExecStore (
 
             else if (ValDesc->Common.Type != ACPI_TYPE_Number)
             {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
-                          ValDesc->Common.Type));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
+                                ValDesc->Common.Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -522,7 +517,7 @@ AmlExecStore (
 
                 DeleteDestDesc = DestDesc;
 
-                DestDesc = NsGetAttachedObject (TempHandle);
+                DestDesc = NsGetAttachedObject (Entry);
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: Internal error - null old-value pointer\n"));
@@ -531,19 +526,17 @@ AmlExecStore (
 
                 else
                 {
-                    DEBUG_PRINT (ACPI_INFO,
-                        ("AmlExecStore: FieldUnit: Name's value DestDesc=%p, DestDesc->Common.Type=%02Xh\n",
-                        DestDesc, DestDesc->Common.Type));
+                    DEBUG_PRINT (ACPI_INFO, ("AmlExecStore: FieldUnit: Name's value DestDesc=%p, DestDesc->Common.Type=%02Xh\n",
+                                    DestDesc, DestDesc->Common.Type));
                 }
             }
 
             if ((AE_OK == Status) &&
-                (DestDesc->Common.Type != (UINT8) NsGetType (TempHandle)))
+                (DestDesc->Common.Type != (UINT8) NsGetType (Entry)))
             {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore/FieldUnit: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                          &(((NAME_TABLE_ENTRY *) TempHandle)->Name), NsGetType(TempHandle), 
-                          DestDesc->Common.Type, DestDesc));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                                &Entry->Name, NsGetType (Entry), 
+                                DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -551,14 +544,12 @@ AmlExecStore (
             if ((AE_OK == Status) &&
                (!DestDesc->FieldUnit.Container ||
                 ACPI_TYPE_Buffer != DestDesc->FieldUnit.Container->Common.Type ||
-                DestDesc->FieldUnit.Sequence
-                    != DestDesc->FieldUnit.Container->Buffer.Sequence))
+                DestDesc->FieldUnit.Sequence != DestDesc->FieldUnit.Container->Buffer.Sequence))
             {
-                DUMP_PATHNAME (TempHandle, "AmlExecStore/FieldUnit: Bad container in ", 
-                                ACPI_ERROR, _COMPONENT);
-                DUMP_ENTRY (TempHandle, ACPI_ERROR);
-
+                DUMP_PATHNAME (Entry, "AmlExecStore/FieldUnit: Bad container in ", ACPI_ERROR, _COMPONENT);
+                DUMP_ENTRY (Entry, ACPI_ERROR);
                 DEBUG_PRINT (ACPI_ERROR, ("Container: %p", DestDesc->FieldUnit.Container));
+
                 if (DestDesc->FieldUnit.Container)
                 {
                     DEBUG_PRINT_RAW (ACPI_ERROR, (" Type %d, FuSeq %x BufSeq %x",
@@ -634,7 +625,7 @@ AmlExecStore (
              * ValDesc reference count is incremented by AttachObject.
              */
 
-            NsAttachObject (TempHandle, ValDesc, ValDesc->Common.Type);
+            NsAttachObject (Entry, ValDesc, ValDesc->Common.Type);
             DeleteDestDesc = DestDesc;
             break;
         }
@@ -655,9 +646,8 @@ AmlExecStore (
 
         else if (ValDesc->Common.Type != ACPI_TYPE_Number)
         {
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecStore/Index: Index value must be Number, not %d\n",
-                      ValDesc->Common.Type));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Index value must be Number, not %d\n",
+                            ValDesc->Common.Type));
 
             DeleteDestDesc = DestDesc;
             Status = AE_AML_ERROR;
@@ -673,7 +663,7 @@ AmlExecStore (
 
             DeleteDestDesc = DestDesc;
 
-            DestDesc = NsGetAttachedObject (TempHandle);
+            DestDesc = NsGetAttachedObject (Entry);
             if (!DestDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Internal error - null old-value pointer\n"));
@@ -682,9 +672,8 @@ AmlExecStore (
 
             else
             {
-                DEBUG_PRINT (ACPI_INFO,
-                    ("AmlExecStore/Index: Value DestDesc=%p, Type=0x%X\n",
-                    DestDesc, DestDesc->Common.Type));
+                DEBUG_PRINT (ACPI_INFO, ("AmlExecStore/Index: Value DestDesc=%p, Type=0x%X\n",
+                                DestDesc, DestDesc->Common.Type));
             }
         }
 
@@ -705,9 +694,8 @@ AmlExecStore (
 
             if (DestDesc->Common.Type != ACPI_TYPE_Number)
             {
-                DEBUG_PRINT (ACPI_INFO,
-                    ("AmlExecStore/Index: Dest type must be a number - DestDesc=%p, Type=0x%X\n",
-                    DestDesc, DestDesc->Common.Type));
+                DEBUG_PRINT (ACPI_INFO, ("AmlExecStore/Index: Dest type must be a number - DestDesc=%p, Type=0x%X\n",
+                                DestDesc, DestDesc->Common.Type));
                 
                 Status = AE_AML_ERROR;
             }
@@ -771,9 +759,8 @@ AmlExecStore (
 
 
     default:
-        DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlExecStore: Internal error - Unknown Lvalue subtype %02x\n",
-                    DestDesc->Lvalue.OpCode));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Internal error - Unknown Lvalue subtype %02x\n",
+                        DestDesc->Lvalue.OpCode));
         
         /* TBD:  use object dump routine !! */
 
