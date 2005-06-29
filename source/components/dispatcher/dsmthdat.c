@@ -457,7 +457,7 @@ DsMethodDataGetType (
     Status = DsMethodDataGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
-        return_VALUE ((ACPI_OBJECT_TYPE) -1);
+        return_VALUE ((ACPI_OBJECT_TYPE) (-1));
     }
 
     /* Get the object from the method stack */
@@ -510,7 +510,7 @@ DsMethodDataGetNte (
         {
             DEBUG_PRINT (ACPI_ERROR, ("DsMethodDataGetEntry: LocalVar index %d is invalid (max %d)\n",
                                     Index, MTH_MAX_LOCAL));
-            return_VALUE (Entry);
+            return_PTR (Entry);
         }
         
         Entry =  &WalkState->LocalVariables[Index];
@@ -523,7 +523,7 @@ DsMethodDataGetNte (
         {
             DEBUG_PRINT (ACPI_ERROR, ("DsMethodDataGetEntry: Argument index %d is invalid (max %d)\n",
                                     Index, MTH_MAX_ARG));
-            return_VALUE (Entry);
+            return_PTR (Entry);
         }
         
         Entry = &WalkState->Arguments[Index];
@@ -537,7 +537,7 @@ DsMethodDataGetNte (
     }
 
 
-    return_VALUE (Entry);
+    return_PTR (Entry);
 }
 
 
