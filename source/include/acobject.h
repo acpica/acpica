@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: acpiobj.h - Definition of ACPI_OBJECT
+ * Name: acpiobj.h - Definition of ACPI_OBJECT_INTERNAL (Internal object only)
  *
  *****************************************************************************/
 
@@ -101,7 +101,7 @@
 #include <datatypes.h>
 
 /* 
- * All variants of the ACPI_OBJECT are defined with the same
+ * All variants of the ACPI_OBJECT_INTERNAL are defined with the same
  * sequence of field types, with fields that are not used in a particular
  * variant being named "Reserved".  This is not strictly necessary, but
  * may in some circumstances simplify understanding if these structures
@@ -367,13 +367,13 @@ typedef union od                    /* OBJECT DESCRIPTOR */
         void            *Ref;               /* bOpCode  Use of pvRef field
                                              * -------  ----------------------------
                                              * NameOp   ACPI_HANDLE for referenced name
-                                             * IndexOp  ACPI_OBJECT **
+                                             * IndexOp  ACPI_OBJECT_INTERNAL **
                                              */
         void            *Reserved_p2;
         void            *Reserved_p3;
     } Lvalue;
 
-} ACPI_OBJECT;
+} ACPI_OBJECT_INTERNAL;
 
 
 /*
@@ -381,7 +381,7 @@ typedef union od                    /* OBJECT DESCRIPTOR */
  */
 
 /* 
- * The sLvalue case of ACPI_OBJECT includes a one-byte field which
+ * The sLvalue case of ACPI_OBJECT_INTERNAL includes a one-byte field which
  * contains an AML opcode identifying the type of lvalue.  Debug1 is used
  * in this field as a stand-in for the (two-byte) AML encoding of DebugOp.
  */

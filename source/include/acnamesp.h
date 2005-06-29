@@ -224,27 +224,27 @@ NsDumpRootDevices (
 ACPI_STATUS
 NsEvaluateByHandle (
     NAME_TABLE_ENTRY        *ObjectNte, 
-    ACPI_OBJECT             **Params,
-    ACPI_OBJECT             *ReturnObject);
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    *ReturnObject);
 
 ACPI_STATUS
 NsEvaluateByName (
     char                    *Pathname, 
-    ACPI_OBJECT             **Params,
-    ACPI_OBJECT             *ReturnObject);
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    *ReturnObject);
 
 ACPI_STATUS
 NsEvaluateRelative (
     NAME_TABLE_ENTRY        *ObjectNte, 
     char                    *Pathname, 
-    ACPI_OBJECT             **Params,
-    ACPI_OBJECT             *ReturnObject);
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    *ReturnObject);
 
 
 ACPI_STATUS
 NsExecuteControlMethod (
     NAME_TABLE_ENTRY        *MethodNte, 
-    ACPI_OBJECT             **Params);
+    ACPI_OBJECT_INTERNAL    **Params);
 
 ACPI_STATUS
 NsGetObjectValue (
@@ -344,7 +344,7 @@ NsCompareValue (
 
 ACPI_HANDLE
 NsFindValue (
-    ACPI_OBJECT             *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
     ACPI_HANDLE             SearchBase, 
     INT32                   MaxDepth);
 
@@ -445,7 +445,7 @@ NsInternalizeName (
 
 INT32
 IsNsValue (
-    ACPI_OBJECT             *pOD);
+    ACPI_OBJECT_INTERNAL    *pOD);
 
 INT32
 NsMarkNS(
