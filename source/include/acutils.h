@@ -121,6 +121,10 @@
 #include "acpiosd.h"
 
 
+#define REF_INCREMENT       1
+#define REF_DECREMENT       -1
+#define REF_FORCE_DELETE    0x80000000
+
 /* Global initialization interfaces */
 
 void 
@@ -132,18 +136,18 @@ CmInitGlobals (
 
 ACPI_STATUS
 CmInstallTable (
-    char                    **TablePtr,
-    ACPI_TABLE_INFO         *TableInfo);
+    char                    *TablePtr,
+    ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 CmGetTableRsdt (
     UINT32                  *NumberOfTables, 
-    char                    **BufferPtr);
+    char                    *BufferPtr);
 
 ACPI_STATUS
 CmGetAllTables (
     UINT32                  NumberOfTables, 
-    char                    **BufferPtr);
+    char                    *BufferPtr);
 
 ACPI_STATUS
 CmHardwareInitialize (
@@ -158,6 +162,13 @@ CmTerminate (
 
 
 /* Object construction and conversion interfaces - cmobject */
+
+ACPI_OBJECT_INTERNAL *
+_CmCreateInternalObject (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId,
+    ACPI_OBJECT_TYPE        Type);
 
 ACPI_STATUS
 CmGetSimpleObjectSize (
@@ -198,13 +209,28 @@ CmBuildInternalSimpleObject(
     ACPI_OBJECT_INTERNAL    *Obj);
 
 ACPI_STATUS
-CmDeleteInternalObjectList (
-    ACPI_OBJECT_INTERNAL    **ObjList);
-
-ACPI_STATUS
 CmBuildInternalObject (
     ACPI_OBJECT             *Obj, 
     ACPI_OBJECT_INTERNAL    *InternalObj);
+
+
+
+/*
+ * CmDelete - Object deletion and copy 
+ */
+
+ACPI_STATUS
+CmUpdateObjectReference (
+    ACPI_OBJECT_INTERNAL    *Object,
+    INT32                   Action);
+
+ACPI_STATUS
+CmCopyInternalObject (
+    ACPI_OBJECT_INTERNAL    *SrcDesc, 
+    ACPI_OBJECT_INTERNAL    *DestDesc);
+
+
+/* Object deletion - cmdelete */
 
 void
 CmDeleteInternalPackageObject (
@@ -212,6 +238,18 @@ CmDeleteInternalPackageObject (
 
 void
 CmDeleteInternalSimpleObject (
+    ACPI_OBJECT_INTERNAL    *Object);
+
+void
+CmDeleteInternalObject (
+    ACPI_OBJECT_INTERNAL    *Object);
+
+ACPI_STATUS
+CmDeleteInternalObjectList (
+    ACPI_OBJECT_INTERNAL    **ObjList);
+
+void
+CmDeleteInternalObjDispatch (
     ACPI_OBJECT_INTERNAL    *Object);
 
 
@@ -375,22 +413,18 @@ _CmFree (
 	INT32                   Line);
 
 
-#define CmAllocate(a)		_CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
-#define CmCallocate(a)		_CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
-#define CmFree(a)			_CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define CmAllocate(a)		        _CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define CmCallocate(a)		        _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define CmFree(a)			        _CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
 
-#define AllocateObjectDesc() _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
+#define CmCreateInternalObject(t)   _CmCreateInternalObject(_THIS_MODULE,__LINE__,_COMPONENT,t)
+#define CmAllocateObjectDesc()      _CmAllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
 
 void *
-_AllocateObjectDesc (
+_CmAllocateObjectDesc (
     char                    *ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId); 
-
-void
-LocalDeleteObject (
-    ACPI_OBJECT_INTERNAL    **ObjDesc);
-
 
 void
 CmDumpCurrentAllocations (
