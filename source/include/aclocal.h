@@ -174,6 +174,13 @@ typedef struct AcpiMutexInfo
 
 
 
+typedef UINT16                  ACPI_OWNER_ID;       
+#define OWNER_TYPE_TABLE        0x0
+#define OWNER_TYPE_METHOD       0x1  
+#define FIRST_METHOD_ID         0x0000
+#define FIRST_TABLE_ID          0x8000
+
+/* TBD: get rid of the need for this! */
 
 #define TABLE_ID_DSDT           0xD1D1
 
@@ -229,7 +236,7 @@ typedef struct NameTableEntry
     struct NameTableEntry   *NextEntry;     /* Next NTE within this scope */
     struct NameTableEntry   *PrevEntry;     /* Previous NTE within this scope */
 
-    UINT16                  TableId;        /* Owning ACPI Table */
+    ACPI_OWNER_ID           OwnerId;        /* ID of owner - either an ACPI table or a method */
     UINT16                  ReferenceCount; /* Current count of references and children */
 
     /* Align on 16-byte boundary for memory dump readability */
@@ -293,7 +300,7 @@ typedef struct AcpiTableDesc
     UINT32                  AmlLength;
     UINT32                  Length;
     UINT32                  Count;
-    UINT16                  TableId;
+    ACPI_OWNER_ID           TableId;
     UINT8                   Type;
     UINT8                   Allocation;
     BOOLEAN                 LoadedIntoNamespace;
@@ -600,9 +607,9 @@ typedef struct acpi_walk_state
     union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
     union AcpiObjInternal   *MethodDesc;                        /* Method descriptor if running a method */
     ACPI_GENERIC_OP         *MethodCallOp;                      /* MethodCall Op if running a method */
-    ACPI_TABLE_DESC         *TableDesc;                         /* The ACPI table whose parse tree is being walked */
     struct acpi_walk_state  *Next;                              /* Next WalkState in list */
 
+    ACPI_OWNER_ID           OwnerId;                            /* Owner of objects created during the walk */
     BOOLEAN                 LastPredicate;                      /* Result of last predicate */
     UINT8                   NextOpInfo;                         /* Info about NextOp */
     UINT8                   NumOperands;                        /* Stack pointer for Operands[] array */
