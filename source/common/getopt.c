@@ -29,11 +29,10 @@ char *strchr (char *, char);
 #endif
 
 #include <stdio.h>
+#include <string.h>
 
 #define ERR(szz,czz) if(opterr){fprintf(stderr,"%s%s%c\n",argv[0],szz,czz);}
 
-extern int strcmp();
-extern char *strchr();
 
 int   opterr = 1;
 int   optind = 1;
