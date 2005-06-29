@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -130,9 +130,6 @@
 #include <string.h>
 #include "acpi.h"
 
-extern int      AslCompilererror(char* s);
-extern int      AslCompilerlex();
-extern char     *AslCompilertext;
 
 /*
  * Next statement is important - this makes everything public so that 
@@ -246,6 +243,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> ELSE
 %token <i> ELSEIF
 %token <i> ENDDEPENDENTFN
+%token <i> ERRORNODE
 %token <i> EVENT
 %token <i> EXTERNAL
 %token <i> FATAL
@@ -767,6 +765,7 @@ Term
     | Type2StringOpcode             {}
     | Type2BufferOpcode             {}
     | Type2BufferOrStringOpcode     {}
+    | error                         {$$ = AslDoError(); yyclearin; yyerrok;}
     ;
 
 CompilerDirective
@@ -1022,7 +1021,7 @@ ExternalTerm
         ',' ObjectTypeKeyword
         ')'                         {$$ = TrCreateNode (EXTERNAL,2,$3,$5)}
     | EXTERNAL '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 
@@ -1041,7 +1040,7 @@ BankFieldTerm
         ')' '{' 
             FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,7,$4,$5,$6,$8,$10,$12,$15)}
     | BANKFIELD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 FieldUnitList
@@ -1074,7 +1073,7 @@ OffsetTerm
         AmlPackageLengthTerm
         ')'                         {$$ = TrCreateNode (OFFSET,1,$3)}
     | OFFSET '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 AccessAsTerm
@@ -1083,7 +1082,7 @@ AccessAsTerm
         OptionalAccessAttribTerm
         ')'                         {$$ = TrCreateNode (ACCESSAS,2,$3,$4)}
     | ACCESSAS '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 CreateBitFieldTerm
@@ -1093,7 +1092,7 @@ CreateBitFieldTerm
         NameStringItem
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CREATEBITFIELD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 CreateByteFieldTerm
@@ -1103,7 +1102,7 @@ CreateByteFieldTerm
         NameStringItem 
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CREATEBYTEFIELD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 CreateDWordFieldTerm
@@ -1113,7 +1112,7 @@ CreateDWordFieldTerm
         NameStringItem 
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CREATEDWORDFIELD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 CreateFieldTerm
@@ -1124,7 +1123,7 @@ CreateFieldTerm
         NameStringItem 
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$5,$6,$7)}
     | CREATEFIELD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 CreateQWordFieldTerm
@@ -1134,7 +1133,7 @@ CreateQWordFieldTerm
         NameStringItem 
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CREATEQWORDFIELD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 CreateWordFieldTerm
@@ -1144,7 +1143,7 @@ CreateWordFieldTerm
         NameStringItem 
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CREATEWORDFIELD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 DataRegionTerm
@@ -1155,7 +1154,7 @@ DataRegionTerm
         TermArgItem 
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$5,$6,$7)}
     | DATATABLEREGION '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 DeviceTerm
@@ -1164,7 +1163,7 @@ DeviceTerm
         ')' '{' 
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | DEVICE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 EventTerm
@@ -1172,7 +1171,7 @@ EventTerm
         NameString
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | EVENT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 FieldTerm
@@ -1184,7 +1183,7 @@ FieldTerm
         ')' '{' 
             FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,5,$4,$6,$8,$10,$13)}
     | FIELD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 IndexFieldTerm
@@ -1197,7 +1196,7 @@ IndexFieldTerm
         ')' '{' 
             FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,6,$4,$5,$7,$9,$11,$14)}
     | INDEXFIELD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 MethodTerm
@@ -1209,7 +1208,7 @@ MethodTerm
         ')' '{' 
             TermList '}'            {$$ = TrLinkChildren ($<n>3,5,$4,$5,$6,$7,$10)}
     | METHOD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 MutexTerm
@@ -1218,7 +1217,7 @@ MutexTerm
         ',' ByteConstExpr
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | MUTEX '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 OpRegionTerm
@@ -1229,7 +1228,7 @@ OpRegionTerm
         TermArgItem 
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$7,$8)}
     | OPERATIONREGION '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 OpRegionSpaceIdTerm
@@ -1245,7 +1244,7 @@ PowerResTerm
         ')' '{' 
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,4,$4,$6,$8,$11)}
     | POWERRESOURCE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ProcessorTerm
@@ -1257,7 +1256,7 @@ ProcessorTerm
         ')' '{' 
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,5,$4,$6,$7,$8,$11)}
     | PROCESSOR '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ThermalZoneTerm
@@ -1266,7 +1265,7 @@ ThermalZoneTerm
         ')' '{' 
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | THERMALZONE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 
@@ -1280,7 +1279,7 @@ AliasTerm
         NameStringItem 
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | ALIAS '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 NameTerm
@@ -1289,7 +1288,7 @@ NameTerm
         ',' DataObject 
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | NAME '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ScopeTerm
@@ -1298,7 +1297,7 @@ ScopeTerm
         ')' '{' 
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | SCOPE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 
@@ -1325,7 +1324,7 @@ FatalTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$6,$7)}
     | FATAL '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 IfElseTerm
@@ -1339,7 +1338,7 @@ IfTerm
             TermList '}' 
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | IF '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ElseTerm
@@ -1360,7 +1359,7 @@ LoadTerm
         ',' SuperName 
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | LOAD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 NoOpTerm
@@ -1373,7 +1372,7 @@ NotifyTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | NOTIFY '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ReleaseTerm
@@ -1381,7 +1380,7 @@ ReleaseTerm
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | RELEASE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ResetTerm
@@ -1389,7 +1388,7 @@ ResetTerm
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | RESET '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ReturnTerm
@@ -1397,7 +1396,7 @@ ReturnTerm
         OptionalTermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | RETURN '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 SignalTerm
@@ -1405,7 +1404,7 @@ SignalTerm
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | SIGNAL '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 SleepTerm
@@ -1413,7 +1412,7 @@ SleepTerm
         TermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | SLEEP '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 StallTerm
@@ -1421,7 +1420,7 @@ StallTerm
         TermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | STALL '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 SwitchTerm
@@ -1431,7 +1430,7 @@ SwitchTerm
             CaseTermList '}' 
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | SWITCH '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 CaseTermList
@@ -1457,7 +1456,7 @@ CaseTerm
             TermList '}' 
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | CASE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 DefaultTerm
@@ -1471,7 +1470,7 @@ UnloadTerm
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | UNLOAD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 WhileTerm
@@ -1480,7 +1479,7 @@ WhileTerm
         ')' '{' TermList '}' 
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | WHILE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 
@@ -1492,7 +1491,7 @@ AcquireTerm
         ',' WordConstExpr
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | ACQUIRE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
     
 AddTerm
@@ -1502,7 +1501,7 @@ AddTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | ADD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 AndTerm
@@ -1512,7 +1511,7 @@ AndTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | AND '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ConcatTerm
@@ -1522,7 +1521,7 @@ ConcatTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CONCATENATE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ConcatResTerm
@@ -1532,7 +1531,7 @@ ConcatResTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CONCATENATERESTEMPLATE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 CondRefOfTerm
@@ -1541,7 +1540,7 @@ CondRefOfTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | CONDREFOF '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 CopyTerm
@@ -1550,7 +1549,7 @@ CopyTerm
         ',' CopyTarget
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | COPY '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 CopyTarget
@@ -1564,7 +1563,7 @@ DecTerm
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | DECREMENT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
     
 DerefOfTerm
@@ -1572,7 +1571,7 @@ DerefOfTerm
         TermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | DEREFOF '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 DivideTerm
@@ -1583,7 +1582,7 @@ DivideTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$5,$6,$7)}
     | DIVIDE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 FindSetLeftBitTerm
@@ -1592,7 +1591,7 @@ FindSetLeftBitTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | FINDSETLEFTBIT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 FindSetRightBitTerm
@@ -1601,7 +1600,7 @@ FindSetRightBitTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | FINDSETRIGHTBIT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 FromBCDTerm
@@ -1610,7 +1609,7 @@ FromBCDTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | FROMBCD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 IncTerm
@@ -1618,7 +1617,7 @@ IncTerm
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | INCREMENT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 IndexTerm
@@ -1628,7 +1627,7 @@ IndexTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | INDEX '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LAndTerm
@@ -1637,7 +1636,7 @@ LAndTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LAND '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LEqualTerm
@@ -1646,7 +1645,7 @@ LEqualTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LEQUAL '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LGreaterTerm
@@ -1655,7 +1654,7 @@ LGreaterTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LGREATER '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LGreaterEqualTerm
@@ -1664,7 +1663,7 @@ LGreaterEqualTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LGREATEREQUAL '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LLessTerm
@@ -1673,7 +1672,7 @@ LLessTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LLESS '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LLessEqualTerm
@@ -1682,7 +1681,7 @@ LLessEqualTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LLESSEQUAL '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LNotTerm
@@ -1690,7 +1689,7 @@ LNotTerm
         TermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | LNOT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LNotEqualTerm
@@ -1699,7 +1698,7 @@ LNotEqualTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LNOTEQUAL '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LoadTableTerm
@@ -1712,7 +1711,7 @@ LoadTableTerm
         OptionalListTermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$5,$6,$7,$8,$9)}
     | LOADTABLE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LOrTerm
@@ -1721,7 +1720,7 @@ LOrTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LOR '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 MatchTerm
@@ -1734,7 +1733,7 @@ MatchTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$7,$9,$10,$11)}
     | MATCH '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 MidTerm
@@ -1745,7 +1744,7 @@ MidTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$5,$6,$7)}
     | MID '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ModTerm
@@ -1755,7 +1754,7 @@ ModTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | MOD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 MultiplyTerm
@@ -1765,7 +1764,7 @@ MultiplyTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | MULTIPLY '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 NAndTerm
@@ -1775,7 +1774,7 @@ NAndTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | NAND '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 NOrTerm
@@ -1785,7 +1784,7 @@ NOrTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | NOR '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 NotTerm
@@ -1794,7 +1793,7 @@ NotTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | NOT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ObjectTypeTerm
@@ -1802,7 +1801,7 @@ ObjectTypeTerm
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | OBJECTTYPE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 OrTerm
@@ -1812,7 +1811,7 @@ OrTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | OR '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 /*
@@ -1824,7 +1823,7 @@ RefOfTerm
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,TrSetNodeFlags ($4, NODE_IS_TARGET))}
     | REFOF '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ShiftLeftTerm
@@ -1834,7 +1833,7 @@ ShiftLeftTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | SHIFTLEFT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ShiftRightTerm
@@ -1844,7 +1843,7 @@ ShiftRightTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | SHIFTRIGHT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 SizeOfTerm
@@ -1852,7 +1851,7 @@ SizeOfTerm
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | SIZEOF '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 StoreTerm
@@ -1861,7 +1860,7 @@ StoreTerm
         ',' SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,TrSetNodeFlags ($6, NODE_IS_TARGET))}
     | STORE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 SubtractTerm
@@ -1871,7 +1870,7 @@ SubtractTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | SUBTRACT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ToBCDTerm
@@ -1880,7 +1879,7 @@ ToBCDTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | TOBCD '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ToBufferTerm
@@ -1889,7 +1888,7 @@ ToBufferTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | TOBUFFER '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ToDecimalStringTerm
@@ -1898,7 +1897,7 @@ ToDecimalStringTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | TODECIMALSTRING '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ToHexStringTerm
@@ -1907,7 +1906,7 @@ ToHexStringTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | TOHEXSTRING '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ToIntegerTerm
@@ -1916,7 +1915,7 @@ ToIntegerTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | TOINTEGER '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ToStringTerm
@@ -1926,7 +1925,7 @@ ToStringTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | TOSTRING '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 WaitTerm
@@ -1935,7 +1934,7 @@ WaitTerm
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | WAIT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 XOrTerm
@@ -1945,7 +1944,7 @@ XOrTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | XOR '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 
@@ -2237,7 +2236,7 @@ BufferTerm
         ')' '{' 
             BufferData '}'          {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | BUFFER '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 BufferData
@@ -2277,7 +2276,7 @@ PackageTerm
         ')' '{' 
             PackageList '}'         {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | PACKAGE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 PackageLengthTerm
@@ -2308,7 +2307,7 @@ EISAIDTerm
     : EISAID '(' 
         StringData ')'              {$$ = TrUpdateNode (EISAID, $3)}
     | EISAID '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 
@@ -2329,7 +2328,7 @@ UnicodeTerm
         StringData
         ')'                         {$$ = TrLinkChildren ($<n>3,2,0,$4)}
     | UNICODE '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 ResourceMacroList
@@ -2371,7 +2370,7 @@ DMATerm
         ')' '{'
             ByteList '}'            {$$ = TrLinkChildren ($<n>3,5,$4,$6,$8,$9,$12)}
     | DMA '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 DWordIOTerm
@@ -2393,7 +2392,7 @@ DWordIOTerm
         OptionalTranslationType_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,15,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$19,$20,$21,$22,$23)}
     | DWORDIO '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 DWordMemoryTerm
@@ -2416,14 +2415,14 @@ DWordMemoryTerm
         OptionalType_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,16,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$20,$21,$22,$23,$24,$25)}
     | DWORDMEMORY '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 EndDependentFnTerm
     : ENDDEPENDENTFN '(' 
         ')'                         {$$ = TrCreateLeafNode (ENDDEPENDENTFN)}
     | ENDDEPENDENTFN '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 FixedIOTerm
@@ -2433,7 +2432,7 @@ FixedIOTerm
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$6,$7)}
     | FIXEDIO '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 InterruptTerm
@@ -2448,7 +2447,7 @@ InterruptTerm
         ')' '{'
             DWordList '}'           {$$ = TrLinkChildren ($<n>3,8,$4,$5,$7,$8,$9,$10,$11,$14)}
     | INTERRUPT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 IOTerm
@@ -2461,7 +2460,7 @@ IOTerm
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$13)}
     | IO '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 IRQNoFlagsTerm
@@ -2470,7 +2469,7 @@ IRQNoFlagsTerm
         ')' '{' 
             ByteList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | IRQNOFLAGS '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 IRQTerm
@@ -2482,7 +2481,7 @@ IRQTerm
         ')' '{' 
             ByteList '}'            {$$ = TrLinkChildren ($<n>3,5,$4,$6,$7,$8,$11)}
     | IRQ '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 Memory24Term
@@ -2495,7 +2494,7 @@ Memory24Term
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$13)}
     | MEMORY24 '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 Memory32FixedTerm
@@ -2506,7 +2505,7 @@ Memory32FixedTerm
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$8,$9)}
     | MEMORY32FIXED '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 Memory32Term
@@ -2519,7 +2518,7 @@ Memory32Term
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$13)}
     | MEMORY32 '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 QWordIOTerm
@@ -2541,7 +2540,7 @@ QWordIOTerm
         OptionalTranslationType_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,15,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$19,$20,$21,$22,$23)}
     | QWORDIO '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 QWordMemoryTerm
@@ -2564,7 +2563,7 @@ QWordMemoryTerm
         OptionalType_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,16,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$20,$21,$22,$23,$24,$25)}
     | QWORDMEMORY '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 RegisterTerm
@@ -2575,7 +2574,7 @@ RegisterTerm
         ',' QWordConstExpr
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$8,$10)}
     | REGISTER '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 StartDependentFnTerm
@@ -2585,7 +2584,7 @@ StartDependentFnTerm
         ')' '{' 
         ResourceMacroList '}'       {$$ = TrLinkChildren ($<n>3,3,$4,$6,$9)}
     | STARTDEPENDENTFN '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
                 
 StartDependentFnNoPriTerm
@@ -2593,7 +2592,7 @@ StartDependentFnNoPriTerm
         ')' '{' 
         ResourceMacroList '}'       {$$ = TrLinkChildren ($<n>3,1,$6)}
     | STARTDEPENDENTFN_NOPRI '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
                
 VendorLongTerm
@@ -2602,7 +2601,7 @@ VendorLongTerm
         ')' '{' 
             ByteList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | VENDORLONG '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
         
 VendorShortTerm
@@ -2611,7 +2610,7 @@ VendorShortTerm
         ')' '{' 
             ByteList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | VENDORSHORT '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
         
 WordBusNumberTerm
@@ -2630,7 +2629,7 @@ WordBusNumberTerm
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,12,$4,$5,$6,$7,$9,$11,$13,$15,$17,$18,$19,$20)}
     | WORDBUSNUMBER '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 WordIOTerm
@@ -2652,7 +2651,7 @@ WordIOTerm
         OptionalTranslationType_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,15,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$19,$20,$21,$22,$23)}
     | WORDIO '('
-        error ')'                   {$$ = NULL; yyerrok}
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 
@@ -2801,12 +2800,12 @@ OptionalTranslationType_Last
 
 TermArgItem
     : ',' TermArg                   {$$ = $2}
-    | ',' error                     {$$ = NULL}
+    | ',' error                     {$$ = AslDoError (); yyerrok;}
     ;
 
 NameStringItem
     : ',' NameString                {$$ = $2}
-    | ',' error                     {$$ = NULL;}
+    | ',' error                     {$$ = AslDoError (); yyerrok;}
     ;
 
 
@@ -2839,6 +2838,11 @@ AslLocalAllocate (unsigned int Size)
     return (Mem);
 }
 
+ASL_PARSE_NODE *
+AslDoError (void)
+{
 
 
+    return (TrCreateLeafNode (ERRORNODE));
 
+}

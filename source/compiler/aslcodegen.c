@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -125,13 +125,14 @@
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    CgGenerateAmlOutput
  *
- * PARAMETERS:
+ * PARAMETERS:  None.
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Generate AML code.  Currently generates the listing file
+ *              simultaneously.
  *
  ******************************************************************************/
 
@@ -166,13 +167,13 @@ CgGenerateAmlOutput (void)
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    CgAmlWriteWalk
  *
- * PARAMETERS:
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Parse tree walk to generate the AML code.
  *
  ******************************************************************************/
 
@@ -187,7 +188,7 @@ CgAmlWriteWalk (
     DbgPrint ("%5.5d [%d]", Node->LogicalLineNumber, Level);
     UtPrintFormattedName (Node->ParseOpcode, Level);
 
-	if (Node->ParseOpcode == NAMESEG ||
+	if (Node->ParseOpcode == NAMESEG    ||
 		Node->ParseOpcode == NAMESTRING ||
         Node->ParseOpcode == METHODCALL)
 	{
@@ -223,13 +224,14 @@ CgAmlWriteWalk (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    CgLocalWriteAmlData
  *
- * PARAMETERS:
+ * PARAMETERS:  Buffer          - Buffer to write
+ *              Length          - Size of data in buffer
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Write a buffer of AML data to the AML output file.
  *
  ******************************************************************************/
 
@@ -251,13 +253,13 @@ CgLocalWriteAmlData (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    CgWriteAmlOpcode
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Parse node with an AML opcode
  *
- * RETURN:
+ * RETURN:      None.
  *
- * DESCRIPTION:
+ * DESCRIPTION: Write the AML opcode corresponding to a parse node.
  *
  ******************************************************************************/
 
@@ -406,13 +408,13 @@ CgWriteAmlOpcode (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    CgWriteTableHeader
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The DEFINITIONBLOCK node
  *
- * RETURN:
+ * RETURN:      None.
  *
- * DESCRIPTION:
+ * DESCRIPTION: Write a table header corresponding to the DEFINITIONBLOCK
  *
  ******************************************************************************/
 
@@ -473,13 +475,14 @@ CgWriteTableHeader (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    CgCloseTable
  *
- * PARAMETERS:
+ * PARAMETERS:  None.
  *
- * RETURN:
+ * RETURN:      None.
  *
- * DESCRIPTION:
+ * DESCRIPTION: Complete the ACPI table by calculating the checksum and
+ *              re-writing the header.
  *
  ******************************************************************************/
 
@@ -511,13 +514,13 @@ CgCloseTable (void)
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    CgWriteNode
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Parse node to write.
  *
- * RETURN:
+ * RETURN:      None.
  *
- * DESCRIPTION:
+ * DESCRIPTION: Write the AML that corresponds to a parse node.
  *
  ******************************************************************************/
 
@@ -528,7 +531,8 @@ CgWriteNode (
     ASL_RESOURCE_NODE       *Rnode;
 
 
-    /* TEMP FIX: always check for DEFAULT_ARG */
+    /* Always check for DEFAULT_ARG and other "Noop" nodes */
+    /* TBD: this may not be the best place for this check */
 
     if ((Node->ParseOpcode == DEFAULT_ARG)  ||
         (Node->ParseOpcode == EXTERNAL)     ||

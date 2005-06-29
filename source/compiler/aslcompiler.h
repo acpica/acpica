@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -146,8 +146,8 @@
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X205"
-#define CompilerCreatorRevision     0x00020205  /* Acpi 2.0, Version# */
+#define CompilerVersion             "X206"
+#define CompilerCreatorRevision     0x00020206  /* Acpi 2.0, Version# */
 
 #define CompilerId                  "ACPI Component Architecture ASL Compiler"
 #define CompilerName                "iasl"
@@ -202,11 +202,24 @@ void
 end_stmt (void);
 
 
+
+
 /* parser */
 
 int                      
 AslCompilerparse( void);
 
+ASL_PARSE_NODE *
+AslDoError (void);
+
+int      
+AslCompilererror(char* s);
+
+int      
+AslCompilerlex();
+
+char     
+*AslCompilertext;
 
 /* aslmain */
 

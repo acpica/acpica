@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -122,6 +122,7 @@
 #include <ctype.h>
 
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AnCheckForReservedMethod
@@ -231,11 +232,14 @@ AnCheckForReservedMethod (
  *
  * FUNCTION:    AnSemanticAnalysisWalkBegin
  *
- * PARAMETERS:
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:
+ * RETURN:      none
  *
- * DESCRIPTION:
+ * DESCRIPTION: Descending callback for the analysis walk.  Check methods for :
+ *              1) Initialized local variables
+ *              2) Valid arguments
+ *              3) Return types
  *
  ******************************************************************************/
 
@@ -256,6 +260,10 @@ AnSemanticAnalysisWalkBegin (
     switch (Node->ParseOpcode)
     {
     case METHOD:
+
+        /*
+         * Create and init method info 
+         */
 
         MethodInfo = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
         MethodInfo->Next = WalkInfo->MethodStack;
@@ -286,11 +294,21 @@ AnSemanticAnalysisWalkBegin (
 
         RegisterNumber = (Node->AmlOpcode & 0x000F);
 
+        /*
+         * If the local is being used as a target, mark the local 
+         * initialized
+         */
+
         if (Node->Flags & NODE_IS_TARGET)
         {
             MethodInfo->LocalInitialized[RegisterNumber] = TRUE;
 
         }
+
+        /* 
+         * Otherwise, this is a reference, check if the local
+         * has been previously initialized.
+         */
         else if (!MethodInfo->LocalInitialized[RegisterNumber])
         {
             LocalName[strlen (LocalName) -1] = RegisterNumber + 0x30;
@@ -315,6 +333,8 @@ AnSemanticAnalysisWalkBegin (
         
         RegisterNumber = (Node->AmlOpcode & 0x000F) - 8;
 
+        /* Simply check the arg number against the method num args */
+
         if (RegisterNumber >= MethodInfo->NumArguments)
         {
             ArgName[strlen (ArgName) -1] = RegisterNumber + 0x30;
@@ -330,6 +350,8 @@ AnSemanticAnalysisWalkBegin (
             AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
             return;
         }
+
+        /* Child indicates a return value */
 
         if ((Node->Child) &&
             (Node->Child->ParseOpcode != DEFAULT_ARG))
@@ -357,11 +379,13 @@ AnSemanticAnalysisWalkBegin (
  *
  * FUNCTION:    AnLastStatementIsReturn 
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - A method node
  *
- * RETURN:
+ * RETURN:      TRUE if last statement is an ASL RETURN.  False otherwise
  *
- * DESCRIPTION:
+ * DESCRIPTION: Walk down the list of top level statements within a method
+ *              to find the last one.  Check if that last statement is in
+ *              fact a RETURN statement.
  *
  ******************************************************************************/
 
@@ -395,11 +419,12 @@ AnLastStatementIsReturn (
  *
  * FUNCTION:    AnSemanticAnalysisWalkEnd
  *
- * PARAMETERS:
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:
+ * RETURN:      None.
  *
- * DESCRIPTION:
+ * DESCRIPTION: Ascending callback for analysis walk.  Complete method
+ *              return analysis.
  *
  ******************************************************************************/
 

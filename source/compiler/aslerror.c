@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -159,13 +159,15 @@ char                        *AslErrorLevel [] = {
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AeAddToErrorLog
  *
- * PARAMETERS:
+ * PARAMETERS:  Enode       - An error node to add to the log
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Add a new error node to the error log.  The error log is
+ *              ordered by the "logical" line number (cumulative line number
+ *              including all include files.)
  *
  ******************************************************************************/
 
@@ -221,13 +223,14 @@ AeAddToErrorLog (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AePrintException
  *
- * PARAMETERS:
+ * PARAMETERS:  Where       - Where to send the message
+ *              Enode       - Error node to print
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Print the contents of an error node.
  *
  ******************************************************************************/
 
@@ -274,13 +277,13 @@ AePrintException (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AePrintErrorLog
  *
- * PARAMETERS:
+ * PARAMETERS:  Where           - Where to print the error log
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Print the entire contents of the error log
  *
  ******************************************************************************/
 
@@ -301,13 +304,18 @@ AePrintErrorLog (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AslCommonError
  *
- * PARAMETERS:
+ * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
+ *              MessageId           - Index into global message buffer
+ *              CurrentLineNumber   - Actual file line number
+ *              LogicalLineNumber   - Cumulative line number
+ *              Filename            - source filename
+ *              ExtraMessage        - additional error message
  *
- * RETURN:
+ * RETURN:      New error node for this error
  *
- * DESCRIPTION:
+ * DESCRIPTION: Create a new error node and add it to the error log
  *
  ******************************************************************************/
 
@@ -362,13 +370,17 @@ AslCommonError (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AslError
  *
- * PARAMETERS:
+ * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
+ *              MessageId           - Index into global message buffer
+ *              Node                - Parse node where error happened
+ *              ExtraMessage        - additional error message
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Main error reporting routine for the ASL compiler (all code
+ *              except the parser.)
  *
  ******************************************************************************/
 
@@ -380,19 +392,27 @@ AslError (
     char                    *ExtraMessage)
 {
 
-    AslCommonError (Level, MessageId,
-                    Node->LineNumber, Node->LogicalLineNumber,
-                    Node->Filename, ExtraMessage);
+    if (Node)
+    {
+        AslCommonError (Level, MessageId, Node->LineNumber, 
+                        Node->LogicalLineNumber, Node->Filename, ExtraMessage);
+    }
+
+    else
+    {
+        AslCommonError (Level, MessageId, 0, 
+                        0, NULL, ExtraMessage);
+    }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AslCompilererror
  *
- * PARAMETERS:
+ * PARAMETERS:  CompilerMessage
  *
- * RETURN:
+ * RETURN:      Status?
  *
  * DESCRIPTION: Report an error situation discovered in a production
  *               NOTE: don't change the name of this function.
@@ -413,7 +433,7 @@ AslCompilererror (
          strlen (CompilerMessage) + 
          Length + Gbl_CurrentColumn + 9) >= ASL_MSG_BUFFER_SIZE)
     {
-        strcpy (MsgBuffer, "iASL Message Buffer Overflow");
+        strcpy (MsgBuffer, "Message Buffer Overflow");
     }
 
     else

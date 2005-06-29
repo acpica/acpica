@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -145,22 +145,22 @@ copy (void);
 
 
 
-LeadNameChar        [A-Za-z_]
-DigitChar           [0-9]
-HexDigitChar        [A-Fa-f0-9]
-RootChar            [\\]
-Nothing             []
+LeadNameChar                [A-Za-z_]
+DigitChar                   [0-9]
+HexDigitChar                [A-Fa-f0-9]
+RootChar                    [\\]
+Nothing                     []
 
-NameChar            [A-Za-z_0-9]
-NameSeg1            {LeadNameChar}{NameChar}
-NameSeg2            {LeadNameChar}{NameChar}{NameChar}
-NameSeg3            {LeadNameChar}{NameChar}{NameChar}{NameChar}
-NameSeg             {LeadNameChar}|{NameSeg1}|{NameSeg2}|{NameSeg3}
+NameChar                    [A-Za-z_0-9]
+NameSeg1                    {LeadNameChar}{NameChar}
+NameSeg2                    {LeadNameChar}{NameChar}{NameChar}
+NameSeg3                    {LeadNameChar}{NameChar}{NameChar}{NameChar}
+NameSeg                     {LeadNameChar}|{NameSeg1}|{NameSeg2}|{NameSeg3}
 
-NameString          {RootChar}|{RootChar}{NamePath}|[\^]+{NamePath}|{NonEmptyNamePath}
-NamePath            {NonEmptyNamePath}?
-NonEmptyNamePath    {NameSeg}{NamePathTail}*
-NamePathTail        [.]{NameSeg}  
+NameString                  {RootChar}|{RootChar}{NamePath}|[\^]+{NamePath}|{NonEmptyNamePath}
+NamePath                    {NonEmptyNamePath}?
+NonEmptyNamePath            {NameSeg}{NamePathTail}*
+NamePathTail                [.]{NameSeg}  
 
 %%
 
