@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.37 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -147,6 +147,8 @@
 #define NODE_RESULT_NOT_USED        0x0400
 #define NODE_METHOD_TYPED           0x0800
 #define NODE_IS_BIT_OFFSET          0x1000
+#define NODE_COMPILE_TIME_CONST     0x2000
+#define NODE_IS_TERM_ARG            0x4000
 
 /* Keeps information about individual control methods */
 
@@ -188,6 +190,8 @@ typedef struct asl_mapping_entry
 /* An entry in the Reserved Name information table */
 
 #define ASL_RSVD_RETURN_VALUE   0x01
+#define ASL_RSVD_RESOURCE_NAME  0x02
+#define ASL_RSVD_SCOPE          0x04
 
 typedef struct
 {
@@ -356,7 +360,11 @@ typedef enum
     ASL_MSG_INVALID_ESCAPE,
     ASL_MSG_INVALID_STRING,
     ASL_MSG_TABLE_SIGNATURE,
-    ASL_MSG_RESOURCE_LIST
+    ASL_MSG_RESOURCE_LIST,
+    ASL_MSG_INVALID_TARGET,
+    ASL_MSG_INVALID_CONSTANT_OP,
+    ASL_MSG_CONSTANT_EVALUATION,
+    ASL_MSG_CONSTANT_FOLDED
 
 } ASL_MESSAGE_IDS;
 
