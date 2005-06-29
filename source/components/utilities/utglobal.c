@@ -295,7 +295,7 @@ char *NsTypeNames[] = { /* printable names of types */
  * per level, 0-7 are Local# and 8-14 are Arg#
  */
 
-OBJECT_DESCRIPTOR       *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
+ACPI_OBJECT             *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
 INT32                   MethodStackTop = -1;
 
 
