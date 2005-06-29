@@ -119,8 +119,8 @@
 
 #include <acpi.h>
 #include <events.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include <namesp.h>
+#include <interp.h>
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -384,6 +384,7 @@ ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES] =
     /* BOOT */ {BOOT_SIG, BOOT_SIG, sizeof (BOOT_SIG)-1, ACPI_TABLE_SINGLE,   AE_SUPPORT, NULL}
 };
 
+ACPI_INIT_DATA Gbl_AcpiInitData;
 
 
 /****************************************************************************
@@ -398,7 +399,7 @@ ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES] =
  ***************************************************************************/
 
 void 
-CmInitGlobals (void)
+CmInitGlobals (ACPI_INIT_DATA *InitData)
 {
     UINT32                  i;
 
@@ -413,6 +414,12 @@ CmInitGlobals (void)
     Gbl_MethodStackTop          = -1;
 #endif
 
+    if (InitData)
+    {
+        MEMCPY(&Gbl_AcpiInitData, InitData, sizeof (ACPI_INIT_DATA));
+    } else {
+        MEMSET(&Gbl_AcpiInitData, 0, sizeof (ACPI_INIT_DATA));
+    }
 
     /* ACPI table structure */
 
