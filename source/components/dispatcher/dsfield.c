@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -186,7 +186,7 @@ AcpiDsCreateBufferField (
      */
     Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
                             INTERNAL_TYPE_DEF_ANY, IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE | NS_ERROR_IF_FOUND,
                             WalkState, &(Node));
     if (ACPI_FAILURE (Status))
     {
@@ -325,7 +325,7 @@ AcpiDsGetFieldNames (
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
                             Info->FieldType, IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE | NS_ERROR_IF_FOUND,
                             NULL, &Info->FieldNode);
             if (ACPI_FAILURE (Status))
             {
