@@ -438,7 +438,6 @@ AcpiCmDumpBuffer (
     INT32                   componentId);
 
 
-
 /*
  * AcpiCmDelete - Object deletion
  */
@@ -475,26 +474,25 @@ AcpiCmDeleteInternalObjectList (
 #define METHOD_NAME__BBN        "_BBN"
 
 
-
 ACPI_STATUS
 AcpiCmEvaluateNumericObject (
     char                    *MethodName,
-    NAME_TABLE_ENTRY        *AcpiDevice,
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     UINT32                  *Address);
 
 ACPI_STATUS
 AcpiCmExecute_HID (
-    NAME_TABLE_ENTRY        *AcpiDevice,
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     DEVICE_ID               *Hid);
 
 ACPI_STATUS
 AcpiCmExecute_STA (
-    NAME_TABLE_ENTRY        *AcpiDevice,
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     UINT32                  *StatusFlags);
 
 ACPI_STATUS
 AcpiCmExecute_UID (
-    NAME_TABLE_ENTRY        *AcpiDevice,
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     DEVICE_ID               *Uid);
 
 
@@ -648,7 +646,6 @@ AcpiCmValidAcpiCharacter (
     char                    Character);
 
 
-
 /*
  * Memory allocation functions and related macros.
  * Macros that expand to include filename and line number
@@ -739,7 +736,6 @@ AcpiCmDumpCurrentAllocations (
     ACPI_STRING             Module);
 
 #endif
-
 
 
 #endif /* _COMMON_H */
