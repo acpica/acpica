@@ -127,8 +127,8 @@
  * 2) ACPI_USE_STANDARD_HEADERS - Define this if linking to a C library and
  *      the standard header files may be used.
  *
- * The ACPI subsystem only uses low level C library functions that do not call OS
- * system services and may therefore be inlined in the code.
+ * The ACPI subsystem only uses low level C library functions that do not call 
+ * operating system services and may therefore be inlined in the code.
  *
  * It may be necessary to tailor these include files to the target
  * generation environment.
@@ -265,9 +265,11 @@ typedef char *va_list;
  */
 
 #define _Bnd(X, bnd)            (((sizeof(X)) + (bnd)) & (~(bnd)))
-#define va_arg(ap, T)           (*(T *)(((ap) += ((_Bnd(T, _AUPBND))) - (_Bnd(T, _ADNBND)))))
+#define va_arg(ap, T)           (*(T *)(((ap) += ((_Bnd(T, _AUPBND))) \
+                                    - (_Bnd(T, _ADNBND)))))
 #define va_end(ap)              (void)0
-#define va_start(ap, A)         (void) ((ap) = (((char *)&(A)) + (_Bnd(A, _AUPBND))))
+#define va_start(ap, A)         (void) ((ap) = (((char *)&(A)) \
+                                    + (_Bnd(A, _AUPBND))))
 
 #endif /* va_arg */
 
@@ -446,8 +448,8 @@ typedef char *va_list;
  *
  *****************************************************************************/
 
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#pragma warning(disable:4127)   /* warning C4127: conditional expression is constant */
+#pragma warning(disable:4100) /* warn C4100: unreferenced formal parameter */
+#pragma warning(disable:4127) /* warn C4127: conditional expression is constant */
 #endif
 
 
