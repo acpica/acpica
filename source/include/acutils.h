@@ -453,6 +453,9 @@ _CmFree (
 	ACPI_STRING             Module,
 	INT32                   Line);
 
+void
+CmInitStaticObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 #define CmAllocate(a)		        _CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
 #define CmCallocate(a)		        _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
