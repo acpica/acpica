@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmath - Integer math support routines
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  ******************************************************************************/
 
@@ -161,6 +161,7 @@ AcpiUtShortDivide (
 
     FUNCTION_TRACE ("UtShortDivide");
 
+    Dividend.Full = *InDividend;
 
     /* Always check for a zero divisor */
 
