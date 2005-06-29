@@ -179,12 +179,20 @@ typedef void*               ACPI_HANDLE;    /* Actually a ptr to an NTE */
 
 
 /*
+ * Constants with special meanings
+ */
+
+#define ACPI_ROOT_OBJECT    (ACPI_HANDLE)(-1)
+#define ACPI_ROOT_SCOPE     (ACPI_HANDLE)(-2)
+
+
+/*
  *  Table types.  These values are passed to the table related APIs
  */
 
 typedef UINT32              ACPI_TABLE_TYPE;
 
-#define TABLE_RSDPTR        (ACPI_TABLE_TYPE) 0
+#define TABLE_RSDP          (ACPI_TABLE_TYPE) 0
 #define TABLE_APIC          (ACPI_TABLE_TYPE) 1
 #define TABLE_DSDT          (ACPI_TABLE_TYPE) 2
 #define TABLE_FACP          (ACPI_TABLE_TYPE) 3
