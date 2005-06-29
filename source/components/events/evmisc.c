@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -426,7 +426,7 @@ AcpiEvAcquireGlobalLock(void)
 
     Status = AcpiAmlSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
                                             ACPI_UINT32_MAX);
-    
+
     return_ACPI_STATUS (Status);
 }
 

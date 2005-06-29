@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
- *              $Revision: 1.82 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -289,7 +289,7 @@ ACPI_STATUS
 AcpiEvAddressSpaceDispatch (
     ACPI_OPERAND_OBJECT     *RegionObj,
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_INTEGER            Address,
     UINT32                  BitWidth,
     UINT32                  *Value)
 {
@@ -312,7 +312,7 @@ AcpiEvAddressSpaceDispatch (
     {
         DEBUG_PRINT (TRACE_OPREGION,
             ("Dispatch address access region 0x%p, no handler\n", RegionObj));
-        return_ACPI_STATUS(AE_EXIST);
+        return_ACPI_STATUS(AE_NOT_EXIST);
     }
 
     /*
