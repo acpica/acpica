@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.133 $
+ *              $Revision: 1.134 $
  *
  ******************************************************************************/
 
@@ -287,6 +287,10 @@ AcpiNsRootInitialize (void)
             /* Store pointer to value descriptor in the Node */
 
             AcpiNsAttachObject (NewNode, ObjDesc, ObjDesc->Common.Type);
+
+            /* Remove local reference to the object */
+
+            AcpiUtRemoveReference (ObjDesc);
         }
     }
 
