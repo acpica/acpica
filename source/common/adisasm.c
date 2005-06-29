@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "acdisasm.h"
 #include "acdispat.h"
 #include "acnamesp.h"
-#include "adisasm.h"
+#include "acapps.h"
 
 #include <stdio.h>
 #include <time.h>
