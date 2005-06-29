@@ -492,6 +492,7 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_RsdpOriginalLocation    = 0;
     Gbl_WhenToParseMethods      = METHOD_PARSE_AT_INIT;
     Gbl_CmSingleStep            = FALSE;
+    Gbl_DbTerminateThreads      = FALSE;
 
     /* Stack pointers */
 
