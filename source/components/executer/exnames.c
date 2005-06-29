@@ -121,8 +121,8 @@
 #include <amlcode.h>
 #include <namespace.h>
 
-#define _THIS_MODULE        "isnames.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("isnames");
 
 
 #define PKG_Type1   64              /*  or 0x40 Max encoding size = 0x3F    */
@@ -406,7 +406,7 @@ AmlDoSeg (
 
             if (NameString)
             {
-                strcat (NameString, CharBuf);
+                STRCAT (NameString, CharBuf);
                 DEBUG_PRINT (TRACE_NAMES, ("AmlDoSeg: Appended to - %s \n", NameString));
             }
 
@@ -485,6 +485,7 @@ AmlDoName (
     ACPI_OBJECT_INTERNAL    *MthDesc;
     ACPI_HANDLE             MethodScope;
     char                    *NameString = NULL;
+    UINT32                  i;
 
 
     FUNCTION_TRACE ("AmlDoName");
@@ -726,7 +727,8 @@ BREAKPOINT3;
                         {   
                             /* Get all arguments */
 
-                            while (ArgCount-- && (AE_OK == Status))
+                            i = ArgCount;
+                            while (i-- && (AE_OK == Status))
                             {   
                                 /* Get each argument */
                                 
@@ -771,11 +773,13 @@ BREAKPOINT3;
                             CurrentStackTop = AmlObjStackLevel ();
                             StackOffset = CurrentStackTop - PreviousStackTop;
 
-                            DEBUG_PRINT (TRACE_LOAD, ("Calling %4.4s, PreviousTOS=%d  CurrentTOS=%d\n",
-                                            &(((NAME_TABLE_ENTRY *) MethodScope)->Name), 
-                                            PreviousStackTop, CurrentStackTop));
-
-                            AmlDumpObjStack (InterpreterMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
+                            DEBUG_PRINT (TRACE_LOAD, ("Execute method [%4.4s] Args=%d PreviousTOS=%d CurrentTOS=%d\n",
+                                                        &(((NAME_TABLE_ENTRY *) MethodScope)->Name), ArgCount,
+                                                        PreviousStackTop, CurrentStackTop));
+                            if (ArgCount > 0)
+                            {
+                                AmlDumpObjStack (InterpreterMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
+                            }
 
                             /* Execute the Method, passing the stacked args */
                             
@@ -814,7 +818,7 @@ BREAKPOINT3;
                         } /* Execution mode  */
 
 
-                        /* Clean up object stack */
+                        /* Remove method arguments from object stack */
                         
                         DEBUG_PRINT (TRACE_LOAD, ("AmlDoName: Cleaning up object stack (%d elements)\n",
                                         CurrentStackTop - PreviousStackTop));
@@ -823,12 +827,12 @@ BREAKPOINT3;
                              CurrentStackTop > PreviousStackTop;
                              CurrentStackTop--)
                         {
+                            /* Delete the object at the stack top and pop the stack */
+
                             AmlObjStackDeleteValue (STACK_TOP);
-
-                            /* Zero out the slot and move on */
-
                             AmlObjStackPop (1);
                         }
+
 
                     } /* Else - valid method ptr */
 

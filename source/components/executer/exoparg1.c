@@ -122,8 +122,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "iemonad.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("iemonad");
 
 
 
@@ -180,7 +180,7 @@ AmlExecMonadic1 (
 
     /* ObjDesc can be an NTE - extract the object from the NTE */
 
-    if (IS_NS_HANDLE (ObjDesc))
+    if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
         if (((NAME_TABLE_ENTRY *) ObjDesc)->Object)
         {
@@ -311,24 +311,46 @@ AmlExecMonadic2R (
 
     FUNCTION_TRACE ("AmlExecMonadic2R");
 
+    /*
+     * We will try several different combinations of operands
+     *
+     * 1) Try Lvalue returning a Number
+     */
 
     Status = AmlPrepObjStack ("ln");
+    if (Status == AE_TYPE)
+    {
+        /* Try Lvalue, returning a string or buffer */
+
+        Status = AmlPrepObjStack ("ls");
+    }
+
+    if (Status == AE_TYPE)
+    {
+        /* Try Lvalue, returning an Lvalue (caused by storing into a DebugOp */
+
+        Status = AmlPrepObjStack ("ll");
+    }
+
+    if (Status == AE_TYPE)
+    {
+        /* Try Package, returning a Number (Local0 = _PRT package) */
+
+        Status = AmlPrepObjStack ("pn");
+    }
+
+    /* If everything failed above, exit */
 
     if (Status != AE_OK)
     {
-        /* Invalid parameters on object stack   */
-        /* This was added since it is allowable to return a buffer so */
-        /* ln is a local and a number and that will fail.  lb is a local */
-        /* and a buffer which will pass.  */
-        
-        Status = AmlPrepObjStack ("lb");
-
-        if (Status != AE_OK)
-        {
-            AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
-            return_ACPI_STATUS (Status);
-        }
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
+        return_ACPI_STATUS (Status);
     }
+
+
+    /*
+     * Stack was prepped successfully
+     */
 
     AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], 2, "after AmlPrepObjStack");
 
@@ -469,6 +491,7 @@ AmlExecMonadic2 (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *ResDesc;
     ACPI_STATUS             Status;
+    UINT32                  Type;
 
 
     FUNCTION_TRACE ("AmlExecMonadic2");
@@ -519,7 +542,7 @@ AmlExecMonadic2 (
 
         /* Duplicate the Lvalue on the top of the object stack */
         
-        ResDesc = CmAllocateObjectDesc ();
+        ResDesc = CmCreateInternalObject (ObjDesc->Common.Type);
         if (!ResDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -544,12 +567,12 @@ AmlExecMonadic2 (
             return_ACPI_STATUS (Status);
         }
 
-        /* get the Number in ObjDesc and the Lvalue in ResDesc */
+        /* Get the Number in ObjDesc and the Lvalue in ResDesc */
         
         ObjDesc = AmlObjStackGetValue (STACK_TOP);
         ResDesc = AmlObjStackGetValue (1);
 
-        /* do the ++ or -- */
+        /* Do the actual increment or decrement */
         
         if (AML_IncrementOp == opcode)
         {
@@ -560,14 +583,12 @@ AmlExecMonadic2 (
             ObjDesc->Number.Value--;
         }
 
-        /* Store result (Result must be placed at the stack top -1) */
-        
-        AmlObjStackDeleteValue (1);
-        AmlObjStackSetValue (1, ObjDesc);
+        /* Store the result */
 
         Status = AmlExecStore (ObjDesc, ResDesc);
 
-        AmlObjStackPop (1);     /* Remove top entry */
+        AmlObjStackDeleteValue (1);          
+        AmlObjStackPop (1);                 /* Remove top entry */
 
         return_ACPI_STATUS (Status);
 
@@ -576,8 +597,6 @@ AmlExecMonadic2 (
     /*  DefObjectType   :=  ObjectTypeOp    SourceObject    */
 
     case AML_TypeOp:
-        
-        /* This case uses Status to hold the type encoding */
         
         if (INTERNAL_TYPE_Lvalue == ObjDesc->Common.Type)
         {
@@ -591,7 +610,7 @@ AmlExecMonadic2 (
                 
                 /* Constants are of type Number */
                 
-                Status = (INT32) ACPI_TYPE_Number;
+                Type = ACPI_TYPE_Number;
                 break;
 
 
@@ -599,7 +618,7 @@ AmlExecMonadic2 (
                 
                 /* Per spec, Debug object is of type Region */
                 
-                Status = (INT32) ACPI_TYPE_Region;
+                Type = ACPI_TYPE_Region;
                 break;
 
 
@@ -612,14 +631,14 @@ AmlExecMonadic2 (
             case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
             case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-                Status = AmlMthStackGetType (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.OpCode - AML_Local0));
+                Type = AmlMthStackGetType (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.OpCode - AML_Local0));
                 break;
 
 
             case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
             case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-                Status = AmlMthStackGetType (MTH_TYPE_ARG, (ObjDesc->Lvalue.OpCode - AML_Arg0));
+                Type = AmlMthStackGetType (MTH_TYPE_ARG, (ObjDesc->Lvalue.OpCode - AML_Arg0));
                 break;
 
 
@@ -639,7 +658,7 @@ AmlExecMonadic2 (
              * it must be a direct name pointer.  Allocate a descriptor
              * to hold the type.
              */
-            Status = (INT32) NsGetType ((ACPI_HANDLE) ObjDesc);
+            Type = NsGetType ((ACPI_HANDLE) ObjDesc);
 
             ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
             if (!ObjDesc)
@@ -656,7 +675,7 @@ AmlExecMonadic2 (
         }
         
         ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
-        ObjDesc->Number.Value = (UINT32) Status;
+        ObjDesc->Number.Value = Type;
         break;
 
 
@@ -690,7 +709,7 @@ AmlExecMonadic2 (
 
         default:
 
-           DEBUG_PRINT (ACPI_ERROR, (
+            DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->Common.Type));
             return_ACPI_STATUS (AE_AML_ERROR);
 
@@ -709,7 +728,7 @@ AmlExecMonadic2 (
 
         AmlObjStackPush ();  /*  dummy return value  */
 
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
 
 
     default:

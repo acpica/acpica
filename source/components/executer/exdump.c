@@ -123,8 +123,8 @@
 #include <tables.h>
 #include <acpiosd.h>
 
-#define _THIS_MODULE        "isdump.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("isdump");
 
 
 /* TBD: Move this routine to common code */

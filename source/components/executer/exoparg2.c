@@ -124,8 +124,8 @@
 #include <amlcode.h>
 
 
-#define _THIS_MODULE        "iedyad.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("iedyad");
 
 
 /*****************************************************************************
@@ -444,11 +444,11 @@ AmlExecDyadic2R (
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
             
-            strcpy (NewBuf, (char *) ObjDesc->String.Pointer);
-            strcpy (NewBuf + ObjDesc->String.Length,
+            STRCPY (NewBuf, (char *) ObjDesc->String.Pointer);
+            STRCPY (NewBuf + ObjDesc->String.Length,
                      (char *) ObjDesc2->String.Pointer);
             
-            /* Don't  old ObjDesc->String.Pointer; the operand still exists */
+            /* Don't free old ObjDesc->String.Pointer; the operand still exists */
             
             ObjDesc->String.Pointer = (UINT8 *) NewBuf;
             ObjDesc->String.Length += ObjDesc2->String.Length;
@@ -476,13 +476,15 @@ AmlExecDyadic2R (
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
 
-            memcpy (NewBuf, ObjDesc->Buffer.Pointer, 
+            MEMCPY (NewBuf, ObjDesc->Buffer.Pointer, 
                             (ACPI_SIZE) ObjDesc->Buffer.Length);
-            memcpy (NewBuf + ObjDesc->Buffer.Length, ObjDesc2->Buffer.Pointer,
+            MEMCPY (NewBuf + ObjDesc->Buffer.Length, ObjDesc2->Buffer.Pointer,
                             (ACPI_SIZE) ObjDesc2->Buffer.Length);
             
-            /* Don't free old ObjDesc->Buffer.Pointer; the operand still exists */
-            /* Buffer.PtrRefCount remains the same! */
+            /*
+             * Don't free old ObjDesc->Buffer.Pointer; the operand still exists 
+             * Buffer.PtrRefCount remains the same! 
+             */
             
             ObjDesc->Buffer.Pointer     = (UINT8 *) NewBuf;
             ObjDesc->Buffer.Length      += ObjDesc2->Buffer.Length;
@@ -496,6 +498,12 @@ AmlExecDyadic2R (
     }
 
     
+    /*
+     * Store the result of the operation (which is now in ObjDesc) into
+     * the result descriptor, or the location pointerd to by the result
+     * descriptor (ResDesc).
+     */
+
     if ((Status = AmlExecStore (ObjDesc, ResDesc)) != AE_OK)
     {
         AmlObjStackPop (NumOperands - 1);
@@ -507,9 +515,10 @@ AmlExecDyadic2R (
         Status = AmlExecStore(ObjDesc2, ResDesc2);
     }
 
-    /* Don't delete ObjDesc because it remains on the stack */
-    /* deleting ObjDesc2 is valid for DivideOp since we preserved
-     * remainder on stack
+    /*
+     * Don't delete ObjDesc because it will remain on the stack.
+     * Deleting ObjDesc2 is valid for DivideOp since we preserved
+     * the remainder on the stack
      */
     
     CmDeleteInternalObject (ObjDesc2);
@@ -571,7 +580,7 @@ AmlExecDyadic2S (
 
     /* ObjDesc can be an NTE */
 
-    if (IS_NS_HANDLE (ObjDesc))
+    if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
         ThisEntry = (NAME_TABLE_ENTRY *) ObjDesc;
         if (!ThisEntry->Object)

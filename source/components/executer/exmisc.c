@@ -123,8 +123,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "ieopexec.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("ieopexec");
 
 
  
@@ -228,9 +228,9 @@ AmlExecCreateField (
 
     /* If ResDesc is a Name, it will be a direct name pointer after AmlPrepObjStack() */
     
-    if (!IS_NS_HANDLE (ResDesc))
+    if (!VALID_DESCRIPTOR_TYPE (ResDesc, DESC_TYPE_NTE))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField (%s): destination must be a Name\n", OpName));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField (%s): destination must be a Name(NTE)\n", OpName));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 

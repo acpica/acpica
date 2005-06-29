@@ -124,8 +124,8 @@
 #include <events.h>
 
 
-#define _THIS_MODULE        "iefield.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("iefield");
 
 
 /*****************************************************************************
@@ -178,7 +178,7 @@ BREAKPOINT3;
 
     else if (ACPI_TYPE_Region != RgnDesc->Common.Type)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found %d %s\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found type %x %s\n",
                         RgnDesc->Common.Type, Gbl_NsTypeNames[RgnDesc->Common.Type]));
         Status = AE_AML_ERROR;
     }
@@ -509,7 +509,7 @@ AmlWriteField (
 
     else if (Status == AE_EXIST)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** Unknown OpRegion SpaceID %d\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** Unknown OpRegion SpaceID %x\n",
                         RgnDesc->Region.SpaceId));
     }
 
@@ -561,26 +561,25 @@ AmlAccessNamedField (
     if (INTERNAL_TYPE_DefField != NsGetType (NamedField))
     {
         DEBUG_PRINT (ACPI_ERROR, (
-                  "AmlAccessNamedField: Name %4.4s type %d is not a defined field\n",
+                  "AmlAccessNamedField: Name %4.4s type %x is not a defined field\n",
                   &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField)));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
     /* ObjDesc valid and NamedField is a defined field  */
 
-    DEBUG_PRINT (ACPI_INFO,
-                ("AmlAccessNamedField: DefField type and ValPtr OK in nte \n"));
+    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DefField type and ValPtr OK in nte \n"));
     DUMP_ENTRY (NamedField, ACPI_INFO);
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, ObjDesc->Common.Type=%d\n",
-                ObjDesc, ObjDesc->Common.Type));
+    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, Type=%x\n",
+                    ObjDesc, ObjDesc->Common.Type));
     DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DatLen=%d, BitOffset=%d\n",
-                ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
+                    ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
 
     if (INTERNAL_TYPE_DefField != ObjDesc->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, (
-                "AmlAccessNamedField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                "AmlAccessNamedField: Internal error - Name %4.4s type %x does not match value-type %x at %p\n",
                 &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
@@ -616,7 +615,7 @@ AmlAccessNamedField (
         /* Invalid field access type */
 
         DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlAccessNamedField: Unknown field access type %d\n",
+                    "AmlAccessNamedField: Unknown field access type %x\n",
                     ObjDesc->Field.Access));
         return_ACPI_STATUS (AE_AML_ERROR);
     }

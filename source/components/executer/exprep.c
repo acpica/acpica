@@ -122,8 +122,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "ieprep.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("ieprep");
 
 
 
