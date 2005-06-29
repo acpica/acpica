@@ -185,7 +185,7 @@ PREDEFINED_NAMES            Gbl_PreDefinedNames[] =
     {"_SI_",    INTERNAL_TYPE_DefAny},
     {"_TZ_",    INTERNAL_TYPE_DefAny},
     {"_REV",    ACPI_TYPE_Number, "2"},
-    {"_OS_",    ACPI_TYPE_String, "Intel AML interpreter"},
+    {"_OS_",    ACPI_TYPE_String, ACPI_OS_NAME},
     {"_GL_",    ACPI_TYPE_Mutex, "0"},
 
     /* Table terminator */
