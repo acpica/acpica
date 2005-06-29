@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  ******************************************************************************/
 
@@ -229,7 +229,7 @@ AcpiNsRootInitialize (void)
             case ACPI_TYPE_NUMBER:
 
                 ObjDesc->Number.Value =
-                        (UINT32) STRTOUL (InitVal->Val, NULL, 10);
+                        (ACPI_INTEGER) STRTOUL (InitVal->Val, NULL, 10);
                 break;
 
 
@@ -298,7 +298,7 @@ AcpiNsRootInitialize (void)
 
 
             default:
-                REPORT_ERROR (("Unsupported initial type value %X\n", 
+                REPORT_ERROR (("Unsupported initial type value %X\n",
                     InitVal->Type));
                 AcpiCmRemoveReference (ObjDesc);
                 ObjDesc = NULL;
