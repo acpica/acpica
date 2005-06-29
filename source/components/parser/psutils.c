@@ -249,6 +249,59 @@ PsIsPrefixChar (
 }
 
 
+BOOLEAN
+PsIsNamespaceObjectOp (
+    UINT16                  Opcode)
+{
+    return ((BOOLEAN) 
+           (Opcode == AML_ScopeOp           || 
+            Opcode == AML_DeviceOp          || 
+            Opcode == AML_ThermalZoneOp     || 
+            Opcode == AML_MethodOp          || 
+            Opcode == AML_PowerResOp        || 
+            Opcode == AML_ProcessorOp       || 
+            Opcode == AML_DefFieldOp        || 
+            Opcode == AML_IndexFieldOp      || 
+            Opcode == AML_BankFieldOp       || 
+            Opcode == AML_NAMEDFIELD_OP     || 
+            Opcode == AML_NameOp            || 
+            Opcode == AML_AliasOp           || 
+            Opcode == AML_MutexOp           || 
+            Opcode == AML_EventOp           || 
+            Opcode == AML_RegionOp          ||
+            Opcode == AML_CreateFieldOp     ||
+            Opcode == AML_BitFieldOp        ||
+            Opcode == AML_ByteFieldOp       ||
+            Opcode == AML_WordFieldOp       ||
+            Opcode == AML_DWordFieldOp      ||
+            Opcode == AML_METHODCALL_OP     ||
+            Opcode == AML_NAMEPATH_OP));
+}
+
+BOOLEAN
+PsIsNamespaceOp (
+    UINT16                  Opcode)
+{
+    return ((BOOLEAN) 
+           (Opcode == AML_ScopeOp           ||
+            Opcode == AML_DeviceOp          ||
+            Opcode == AML_ThermalZoneOp     ||
+            Opcode == AML_MethodOp          ||
+            Opcode == AML_PowerResOp        ||
+            Opcode == AML_ProcessorOp       ||
+            Opcode == AML_DefFieldOp        ||
+            Opcode == AML_IndexFieldOp      || 
+            Opcode == AML_BankFieldOp       ||
+            Opcode == AML_NameOp            ||
+            Opcode == AML_AliasOp           ||
+            Opcode == AML_MutexOp           ||
+            Opcode == AML_EventOp           ||
+            Opcode == AML_RegionOp          ||
+            Opcode == AML_NAMEDFIELD_OP)); 
+}
+
+
+
 
 /*
  * Is opcode for a named object Op?
@@ -267,9 +320,6 @@ PsIsNamedObjectOp (
             Opcode == AML_MethodOp          || 
             Opcode == AML_PowerResOp        || 
             Opcode == AML_ProcessorOp       || 
-            Opcode == AML_DefFieldOp        || 
-            Opcode == AML_IndexFieldOp      || 
-            Opcode == AML_BankFieldOp       || 
             Opcode == AML_NAMEDFIELD_OP     || 
             Opcode == AML_NameOp            || 
             Opcode == AML_AliasOp           || 
@@ -302,9 +352,6 @@ PsIsNamedOp (
             Opcode == AML_MethodOp          ||
             Opcode == AML_PowerResOp        ||
             Opcode == AML_ProcessorOp       ||
-            Opcode == AML_DefFieldOp        ||
-            Opcode == AML_IndexFieldOp      || 
-            Opcode == AML_BankFieldOp       ||
             Opcode == AML_NameOp            ||
             Opcode == AML_AliasOp           ||
             Opcode == AML_MutexOp           ||

@@ -358,6 +358,7 @@ PsParseLoop (
     UINT32                  ArgTypes = 0;
     ACPI_PTRDIFF            AmlOffset;
     UINT16                  Opcode;
+    ACPI_GENERIC_OP         PreOp;
  
 
     FUNCTION_TRACE_PTR ("PsParseLoop", ParserState);
@@ -436,34 +437,20 @@ PsParseLoop (
 
             if (PsIsNamedOp (Opcode))
             {
-                if (GET_CURRENT_ARG_TYPE (ArgTypes) == ARGP_PKGLENGTH)
-                {
-                    /* get package length (nothing is returned) */
+                PreOp.Value.Arg = NULL;
+                PreOp.Opcode = Opcode;
 
-                    PsGetNextArg (ParserState, GET_CURRENT_ARG_TYPE (ArgTypes), &ArgCount);
+                while (GET_CURRENT_ARG_TYPE (ArgTypes) != ARGP_NAME)
+                {
+                    Arg = PsGetNextArg (ParserState, GET_CURRENT_ARG_TYPE (ArgTypes), &ArgCount);
+                    PsAppendArg (&PreOp, Arg);
                     INCREMENT_ARG_LIST (ArgTypes);
                 }
 
       
-                if (Opcode == AML_AliasOp)
-                {
-                    Arg = PsGetNextArg (ParserState, GET_CURRENT_ARG_TYPE (ArgTypes), &ArgCount);
-                
-                    if (Arg)
-                    {
-                        Arg->AmlOffset = AmlOffset;
-                    }
+                /* We know that this arg is a name, move to next arg */
 
-                    AmlOffset   = ParserState->Aml - ParserState->AmlStart;
-                    ArgTypes = 0;
-                }
-
-                else
-                {
-                    /* We know that this arg is a name, move to next arg */
-
-                    INCREMENT_ARG_LIST (ArgTypes);
-                }
+                INCREMENT_ARG_LIST (ArgTypes);
 
 
                 /* Find the name in the parse tree */
@@ -478,12 +465,8 @@ PsParseLoop (
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
 
+                PsAppendArg (Op, PreOp.Value.Arg);
                 Gbl_Depth++;
-
-                if (Opcode == AML_AliasOp)
-                {
-                    PsAppendArg (Op, Arg);
-                }
 
 
                 if (Op->Opcode == AML_RegionOp)

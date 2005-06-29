@@ -202,6 +202,10 @@ PsAppendArg (
     ACPI_OP_INFO            *OpInfo;
 
 
+    if (!Op)
+    {
+        return;
+    }
 
     /* Get the info structure for this opcode */
 

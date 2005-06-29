@@ -522,6 +522,7 @@ PsGetNextSimpleArg (
         break;
 
 
+    case ARGP_NAME:
     case ARGP_NAMESTRING:
 
         PsInitOp (Arg, AML_NAMEPATH_OP);
@@ -668,6 +669,7 @@ PsGetNextArg (
     case ARGP_WORDDATA:
     case ARGP_DWORDDATA:
     case ARGP_CHARLIST:
+    case ARGP_NAME:
     case ARGP_NAMESTRING:
 
         /* constants, strings, and namestrings are all the same size */

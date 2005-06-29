@@ -264,16 +264,16 @@ PsGetOpcodeName (
 
 #define ARGP_ZeroOp                     ARG_NONE
 #define ARGP_OneOp                      ARG_NONE
-#define ARGP_AliasOp                    ARGP_LIST2 (ARGP_NAMESTRING, ARGP_NAMESTRING)    
-#define ARGP_NameOp                     ARGP_LIST2 (ARGP_NAMESTRING, ARGP_DATAOBJ)
+#define ARGP_AliasOp                    ARGP_LIST2 (ARGP_NAMESTRING, ARGP_NAME)    
+#define ARGP_NameOp                     ARGP_LIST2 (ARGP_NAME,       ARGP_DATAOBJ)
 #define ARGP_ByteOp                     ARGP_LIST1 (ARGP_BYTEDATA)
 #define ARGP_WordOp                     ARGP_LIST1 (ARGP_WORDDATA)
 #define ARGP_DWordOp                    ARGP_LIST1 (ARGP_DWORDDATA)
 #define ARGP_StringOp                   ARGP_LIST1 (ARGP_CHARLIST)
-#define ARGP_ScopeOp                    ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_TERMLIST)
+#define ARGP_ScopeOp                    ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_NAME,          ARGP_TERMLIST)
 #define ARGP_BufferOp                   ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_TERMARG,       ARGP_BYTELIST)
 #define ARGP_PackageOp                  ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_BYTEDATA,      ARGP_DATAOBJLIST)
-#define ARGP_MethodOp                   ARGP_LIST4 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_BYTEDATA,      ARGP_TERMLIST)
+#define ARGP_MethodOp                   ARGP_LIST4 (ARGP_PKGLENGTH,  ARGP_NAME,          ARGP_BYTEDATA,      ARGP_TERMLIST)
 #define ARGP_Local0                     ARG_NONE
 #define ARGP_Local1                     ARG_NONE
 #define ARGP_Local2                     ARG_NONE
@@ -313,10 +313,10 @@ PsGetOpcodeName (
 #define ARGP_SizeOfOp                   ARGP_LIST1 (ARGP_SUPERNAME)
 #define ARGP_IndexOp                    ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
 #define ARGP_MatchOp                    ARGP_LIST6 (ARGP_TERMARG,    ARGP_BYTEDATA,      ARGP_TERMARG,   ARGP_BYTEDATA,  ARGP_TERMARG,   ARGP_TERMARG)
-#define ARGP_DWordFieldOp               ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAMESTRING)
-#define ARGP_WordFieldOp                ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAMESTRING)
-#define ARGP_ByteFieldOp                ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAMESTRING)
-#define ARGP_BitFieldOp                 ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAMESTRING)
+#define ARGP_DWordFieldOp               ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAME)
+#define ARGP_WordFieldOp                ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAME)
+#define ARGP_ByteFieldOp                ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAME)
+#define ARGP_BitFieldOp                 ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAME)
 #define ARGP_TypeOp                     ARGP_LIST1 (ARGP_SUPERNAME)
 #define ARGP_LAndOp                     ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
 #define ARGP_LOrOp                      ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
@@ -332,10 +332,10 @@ PsGetOpcodeName (
 #define ARGP_BreakOp                    ARG_NONE
 #define ARGP_BreakPointOp               ARG_NONE
 #define ARGP_OnesOp                     ARG_NONE
-#define ARGP_MutexOp                    ARGP_LIST2 (ARGP_NAMESTRING, ARGP_BYTEDATA)
-#define ARGP_EventOp                    ARGP_LIST1 (ARGP_NAMESTRING)
+#define ARGP_MutexOp                    ARGP_LIST2 (ARGP_NAME,       ARGP_BYTEDATA)
+#define ARGP_EventOp                    ARGP_LIST1 (ARGP_NAME)
 #define ARGP_CondRefOfOp                ARGP_LIST2 (ARGP_SUPERNAME,  ARGP_SUPERNAME)
-#define ARGP_CreateFieldOp              ARGP_LIST4 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TERMARG,   ARGP_NAMESTRING)
+#define ARGP_CreateFieldOp              ARGP_LIST4 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TERMARG,   ARGP_NAME)
 #define ARGP_LoadOp                     ARGP_LIST2 (ARGP_NAMESTRING, ARGP_SUPERNAME)
 #define ARGP_StallOp                    ARGP_LIST1 (ARGP_TERMARG)
 #define ARGP_SleepOp                    ARGP_LIST1 (ARGP_TERMARG)
@@ -350,12 +350,12 @@ PsGetOpcodeName (
 #define ARGP_RevisionOp                 ARG_NONE
 #define ARGP_DebugOp                    ARG_NONE
 #define ARGP_FatalOp                    ARGP_LIST3 (ARGP_BYTEDATA,   ARGP_DWORDDATA,     ARGP_TERMARG)
-#define ARGP_RegionOp                   ARGP_LIST4 (ARGP_NAMESTRING, ARGP_BYTEDATA,      ARGP_TERMARG,   ARGP_TERMARG) 
+#define ARGP_RegionOp                   ARGP_LIST4 (ARGP_NAME,       ARGP_BYTEDATA,      ARGP_TERMARG,   ARGP_TERMARG) 
 #define ARGP_DefFieldOp                 ARGP_LIST4 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_BYTEDATA,  ARGP_FIELDLIST)  
-#define ARGP_DeviceOp                   ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_OBJLIST)  
-#define ARGP_ProcessorOp                ARGP_LIST6 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_BYTEDATA,  ARGP_DWORDDATA, ARGP_BYTEDATA,  ARGP_OBJLIST)  
-#define ARGP_PowerResOp                 ARGP_LIST5 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_BYTEDATA,  ARGP_WORDDATA,  ARGP_OBJLIST)  
-#define ARGP_ThermalZoneOp              ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_OBJLIST)
+#define ARGP_DeviceOp                   ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_NAME,          ARGP_OBJLIST)  
+#define ARGP_ProcessorOp                ARGP_LIST6 (ARGP_PKGLENGTH,  ARGP_NAME,          ARGP_BYTEDATA,  ARGP_DWORDDATA, ARGP_BYTEDATA,  ARGP_OBJLIST)  
+#define ARGP_PowerResOp                 ARGP_LIST5 (ARGP_PKGLENGTH,  ARGP_NAME,          ARGP_BYTEDATA,  ARGP_WORDDATA,  ARGP_OBJLIST)  
+#define ARGP_ThermalZoneOp              ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_NAME,          ARGP_OBJLIST)
 #define ARGP_IndexFieldOp               ARGP_LIST5 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_NAMESTRING,ARGP_BYTEDATA,  ARGP_FIELDLIST)  
 #define ARGP_BankFieldOp                ARGP_LIST6 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_NAMESTRING,ARGP_TERMARG,   ARGP_BYTEDATA,  ARGP_FIELDLIST)  
 #define ARGP_LNOTEQUAL_OP               ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
@@ -410,8 +410,8 @@ PsGetOpcodeName (
 #define ARGI_AddOp                      ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
 #define ARGI_ConcatOp                   ARGI_LIST3 (ARGI_STRING,     ARGI_STRING,        ARGI_TARGETREF)
 #define ARGI_SubtractOp                 ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
-#define ARGI_IncrementOp                ARGI_LIST1 (ARGI_NUMBER)
-#define ARGI_DecrementOp                ARGI_LIST1 (ARGI_NUMBER)
+#define ARGI_IncrementOp                ARGI_LIST1 (ARGI_LVALUE)
+#define ARGI_DecrementOp                ARGI_LIST1 (ARGI_LVALUE)
 #define ARGI_MultiplyOp                 ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
 #define ARGI_DivideOp                   ARGI_LIST4 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF,    ARGI_TARGETREF)
 #define ARGI_ShiftLeftOp                ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
