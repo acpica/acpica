@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  ******************************************************************************/
 
@@ -450,7 +450,7 @@ AcpiDmDisplayInternalObject (
                 break;
 
 
-           case AML_REF_OF_OP:
+            case AML_REF_OF_OP:
 
                 AcpiOsPrintf ("[RefOf]          ");
 
