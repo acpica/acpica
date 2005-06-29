@@ -270,8 +270,8 @@ AmlGetRvalueFromObject (
     ACPI_STATUS             Status = AE_OK;
     ACPI_HANDLE             TempHandle = NULL;
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    UINT32				    MvIndex = 0;
     UINT16                  Opcode;
-    UINT8				    MvIndex = 0;
 
 
     FUNCTION_TRACE ("AmlGetRvalueFromObject");
@@ -511,11 +511,11 @@ AmlGetRvalueFromEntry (
     ACPI_OBJECT_INTERNAL    *ValDesc = NULL;
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     NAME_TABLE_ENTRY        *StackEntry;
-    UINT8                   *AmlPointer;
+    UINT8                   *AmlPointer = NULL;
     ACPI_OBJECT_TYPE        EntryType;
     BOOLEAN                 Locked;
     BOOLEAN                 AttachedAmlPointer = FALSE;
-    UINT8                   AmlOpcode;
+    UINT8                   AmlOpcode = 0;
     UINT32                  TempVal;
 
 
@@ -735,7 +735,7 @@ AmlGetRvalueFromEntry (
 
             /* Init the internal object */
 
-            ObjDesc->String.Pointer = AmlPointer;
+            ObjDesc->String.Pointer = (char *) AmlPointer;
             ObjDesc->String.Length = STRLEN (AmlPointer);
         }
 
