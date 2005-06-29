@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.36 $
+ *       $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -121,12 +121,6 @@
 
 #define NAMEOF_LOCAL_NTE    "__L0"
 #define NAMEOF_ARG_NTE      "__A0"
-
-
-/* For AcpiDsMethodDataSetValue */
-
-#define MTH_TYPE_LOCAL              0
-#define MTH_TYPE_ARG                1
 
 
 /* Common interfaces */
@@ -264,8 +258,15 @@ AcpiDsLoad3EndOp (
 
 
 ACPI_STATUS
+AcpiDsStoreObjectToLocal (
+    UINT16                  Opcode,
+    UINT32                  Index,
+    ACPI_OPERAND_OBJECT     *SrcDesc,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
 AcpiDsMethodDataGetEntry (
-    UINT32                  Type,
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState,
     ACPI_OPERAND_OBJECT     ***Node);
@@ -280,27 +281,20 @@ AcpiDsIsMethodValue (
 
 OBJECT_TYPE_INTERNAL
 AcpiDsMethodDataGetType (
-    UINT32                  Type,
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsMethodDataGetValue (
-    UINT32                  Type,
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState,
     ACPI_OPERAND_OBJECT     **DestDesc);
 
 ACPI_STATUS
-AcpiDsMethodDataSetValue (
-    UINT32                  Type,
-    UINT32                  Index,
-    ACPI_OPERAND_OBJECT     *SrcDesc,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
 AcpiDsMethodDataDeleteValue (
-    UINT32                  Type,
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState);
 
@@ -311,8 +305,8 @@ AcpiDsMethodDataInitArgs (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_NAMESPACE_NODE *
-AcpiDsMethodDataGetNte (
-    UINT32                  Type,
+AcpiDsMethodDataGetNode (
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState);
 
@@ -322,7 +316,7 @@ AcpiDsMethodDataInit (
 
 ACPI_STATUS
 AcpiDsMethodDataSetEntry (
-    UINT32                  Type,
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_OPERAND_OBJECT     *Object,
     ACPI_WALK_STATE         *WalkState);
