@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  ******************************************************************************/
 
@@ -307,7 +307,7 @@ AcpiEvaluateObject (
                          */
                         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                             "Needed buffer size %X, %s\n",
-                            BufferSpaceNeeded, AcpiFormatException (Status)));
+                            (UINT32) BufferSpaceNeeded, AcpiFormatException (Status)));
                     }
                     else
                     {
