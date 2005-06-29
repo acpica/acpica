@@ -118,7 +118,7 @@
 
 typedef
 UINT32 (*OSD_HANDLER) (
-    void);
+    void                    *Context);
 
 typedef
 void (*OSD_EXECUTION_CALLBACK) (
@@ -156,8 +156,6 @@ OsdUnMapMemory (
  * Interrupt handlers 
  */
 
-/* TBD: These are the new interfaces!! 
-
 ACPI_STATUS
 OsdInstallInterruptHandler (
     UINT32                  InterruptNumber,
@@ -168,18 +166,6 @@ ACPI_STATUS
 OsdRemoveInterruptHandler (
     UINT32                  InterruptNumber,
     OSD_HANDLER             ServiceRoutine);
-*/
-
-UINT32
-OsdInstallInterruptHandler (
-    UINT32                  InterruptNumber,
-    OSD_HANDLER             ServiceRoutine,
-    UINT32                  *SciHandle);
-
-void
-OsdRemoveInterruptHandler (
-    UINT32                  Handle);
-
 
 
 /* 
