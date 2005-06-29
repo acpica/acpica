@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.34 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -128,26 +128,327 @@
         MODULE_NAME         ("dswstate")
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDsResultStackClear
+ * FUNCTION:    AcpiDsResultInsert
  *
- * PARAMETERS:  WalkState           - Current Walk state
+ * PARAMETERS:  Object              - Object to push
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Reset this walk's result stack pointers to zero, thus setting
- *              the stack to zero.
+ * DESCRIPTION: Push an object onto this walk's result stack
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiDsResultStackClear (
+AcpiDsResultInsert (
+    void                    *Object,
+    UINT32                  Index,
     ACPI_WALK_STATE         *WalkState)
 {
+    ACPI_GENERIC_STATE      *State;
 
-    WalkState->NumResults = 0;
-    WalkState->CurrentResult = 0;
+
+    State = WalkState->Results;
+    if (!State)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultInsert: No result object pushed! State=%p\n",
+            WalkState));
+        return (AE_NOT_EXIST);
+    }
+
+    if (Index >= OBJ_NUM_OPERANDS)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultInsert: Index out of range: %X Obj=%p State=%p Num=%X\n",
+            Index, Object, WalkState, State->Results.NumResults));
+        return (AE_BAD_PARAMETER);
+    }
+
+    if (!Object)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultInsert: Null Object! Index=%X Obj=%p State=%p Num=%X\n",
+            Index, Object, WalkState, State->Results.NumResults));
+        return (AE_BAD_PARAMETER);
+    }
+
+    State->Results.ObjDesc [Index] = Object;
+    State->Results.NumResults++;
+
+    DEBUG_PRINT (TRACE_EXEC,
+        ("DsResultStackPush: Obj=%p [%s] State=%p Num=%X Cur=%X\n",
+        Object, Object ? AcpiCmGetTypeName (((ACPI_OPERAND_OBJECT *) Object)->Common.Type) : "NULL",
+        WalkState, State->Results.NumResults, WalkState->CurrentResult));
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsResultRemove
+ *
+ * PARAMETERS:  Object              - Where to return the popped object
+ *              WalkState           - Current Walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Pop an object off the bottom of this walk's result stack.  In
+ *              other words, this is a FIFO.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsResultRemove (
+    ACPI_OPERAND_OBJECT     **Object,
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    State = WalkState->Results;
+    if (!State)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultRemove: No result object pushed! State=%p\n",
+            WalkState));
+        return (AE_NOT_EXIST);
+    }
+
+    if (Index >= OBJ_NUM_OPERANDS)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultRemove: Index out of range: %X State=%p Num=%X\n",
+            Index, WalkState, State->Results.NumResults));
+    }
+
+
+    /* Check for a valid result object */
+
+    if (!State->Results.ObjDesc [Index])
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultStackRemove: Null operand! State=%p #Ops=%X, Index=%X\n",
+            WalkState, State->Results.NumResults, Index));
+        return (AE_AML_NO_RETURN_VALUE);
+    }
+
+    /* Remove the object */
+
+    State->Results.NumResults--;
+
+    *Object = State->Results.ObjDesc [Index];
+    State->Results.ObjDesc [Index] = NULL;
+
+    DEBUG_PRINT (TRACE_EXEC,
+        ("DsResultStackRemove: Obj=%p [%s] Index=%X State=%p Num=%X\n",
+        *Object, (*Object) ? AcpiCmGetTypeName ((*Object)->Common.Type) : "NULL",
+        Index, WalkState, State->Results.NumResults));
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsResultPop
+ *
+ * PARAMETERS:  Object              - Where to return the popped object
+ *              WalkState           - Current Walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Pop an object off the bottom of this walk's result stack.  In
+ *              other words, this is a FIFO.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsResultPop (
+    ACPI_OPERAND_OBJECT     **Object,
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT32                  Index;
+    ACPI_GENERIC_STATE      *State;
+
+
+    State = WalkState->Results;
+    if (!State)
+    {
+        return (AE_OK);
+    }
+
+
+    if (!State->Results.NumResults)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultPop: Result stack is empty! State=%p\n",
+            WalkState));
+        return (AE_AML_NO_RETURN_VALUE);
+    }
+
+    /* Remove top element */
+
+    State->Results.NumResults--;
+
+    for (Index = OBJ_NUM_OPERANDS; Index; Index--)
+    {
+        /* Check for a valid result object */
+
+        if (State->Results.ObjDesc [Index -1])
+        {
+            *Object = State->Results.ObjDesc [Index -1];
+            State->Results.ObjDesc [Index -1] = NULL;
+
+            DEBUG_PRINT (TRACE_EXEC,
+                ("DsResultStackRemove: Obj=%p [%s] Index=%X State=%p Num=%X\n",
+                *Object, (*Object) ? AcpiCmGetTypeName ((*Object)->Common.Type) : "NULL",
+                Index -1, WalkState, State->Results.NumResults));
+
+            return (AE_OK);
+        }
+    }
+
+
+    DEBUG_PRINT (ACPI_ERROR,
+        ("DsResultPop: No result objects! State=%p\n",
+        WalkState));
+    return (AE_AML_NO_RETURN_VALUE);
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsResultPopFromBottom
+ *
+ * PARAMETERS:  Object              - Where to return the popped object
+ *              WalkState           - Current Walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Pop an object off the bottom of this walk's result stack.  In
+ *              other words, this is a FIFO.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsResultPopFromBottom (
+    ACPI_OPERAND_OBJECT     **Object,
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT32                  Index;
+    ACPI_GENERIC_STATE      *State;
+
+
+    State = WalkState->Results;
+    if (!State)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultPopFromBottom: Warning: No result object pushed! State=%p\n",
+            WalkState));
+        return (AE_NOT_EXIST);
+    }
+
+
+    if (!State->Results.NumResults)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultPopFromBottom: No result objects! State=%p\n",
+            WalkState));
+        return (AE_AML_NO_RETURN_VALUE);
+    }
+
+    /* Remove Bottom element */
+
+    *Object = State->Results.ObjDesc [0];
+
+
+    /* Push entire stack down one element */
+
+    for (Index = 0; Index < State->Results.NumResults; Index++)
+    {
+        State->Results.ObjDesc [Index] = State->Results.ObjDesc [Index + 1];
+    }
+
+    State->Results.NumResults--;
+
+    /* Check for a valid result object */
+
+    if (!*Object)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultPopFromBottom: Null operand! State=%p #Ops=%X, Index=%X\n",
+            WalkState, State->Results.NumResults, Index));
+        return (AE_AML_NO_RETURN_VALUE);
+    }
+
+    DEBUG_PRINT (TRACE_EXEC,
+        ("DsResultPopFromBottom: Obj=%p [%s], Results=%p State=%p\n",
+        *Object, (*Object) ? AcpiCmGetTypeName ((*Object)->Common.Type) : "NULL",
+        State, WalkState));
+
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsResultPush
+ *
+ * PARAMETERS:  Object              - Where to return the popped object
+ *              WalkState           - Current Walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Push an object onto the current result stack
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsResultPush (
+    ACPI_OPERAND_OBJECT     *Object,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    State = WalkState->Results;
+    if (!State)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultPush: No result stack frame\n"));
+        return (AE_AML_INTERNAL);
+    }
+
+    if (State->Results.NumResults == OBJ_NUM_OPERANDS)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultPush: Result stack overflow: Obj=%p State=%p Num=%X\n",
+            Object, WalkState, State->Results.NumResults));
+        return (AE_STACK_OVERFLOW);
+    }
+
+    if (!Object)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsResultPush: Null Object! Obj=%p State=%p Num=%X\n",
+            Object, WalkState, State->Results.NumResults));
+        return (AE_BAD_PARAMETER);
+    }
+
+
+    State->Results.ObjDesc [State->Results.NumResults] = Object;
+    State->Results.NumResults++;
+
+    DEBUG_PRINT (TRACE_EXEC,
+        ("DsResultPush: Obj=%p [%s] State=%p Num=%X Cur=%X\n",
+        Object, Object ? AcpiCmGetTypeName (((ACPI_OPERAND_OBJECT *) Object)->Common.Type) : "NULL",
+        WalkState, State->Results.NumResults, WalkState->CurrentResult));
 
     return (AE_OK);
 }
@@ -162,31 +463,28 @@ AcpiDsResultStackClear (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Push an object onto this walk's result stack
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsResultStackPush (
-    void                    *Object,
     ACPI_WALK_STATE         *WalkState)
 {
+    ACPI_GENERIC_STATE      *State;
 
 
-    if (WalkState->NumResults >= OBJ_NUM_OPERANDS)
+    State = AcpiCmCreateGenericState ();
+    if (!State)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("DsResultStackPush: overflow! Obj=%p State=%p Num=%X\n",
-            Object, WalkState, WalkState->NumResults));
-        return (AE_STACK_OVERFLOW);
+        return (AE_NO_MEMORY);
     }
 
-    WalkState->Results [WalkState->NumResults] = Object;
-    WalkState->NumResults++;
+    AcpiCmPushGenericState (&WalkState->Results, State);
 
     DEBUG_PRINT (TRACE_EXEC,
-        ("DsResultStackPush: Obj=%p State=%p Num=%X Cur=%X\n",
-        Object, WalkState, WalkState->NumResults, WalkState->CurrentResult));
+        ("DsResultStackPush: Results=%p State=%p\n",
+        State, WalkState));
 
     return (AE_OK);
 }
@@ -196,54 +494,39 @@ AcpiDsResultStackPush (
  *
  * FUNCTION:    AcpiDsResultStackPop
  *
- * PARAMETERS:  Object              - Where to return the popped object
- *              WalkState           - Current Walk state
+ * PARAMETERS:  WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Pop an object off the bottom of this walk's result stack.  In
- *              other words, this is a FIFO.
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsResultStackPop (
-    ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState)
 {
+    ACPI_GENERIC_STATE      *State;
 
 
     /* Check for stack underflow */
 
-    if (WalkState->NumResults == 0)
+    if (WalkState->Results == NULL)
     {
         DEBUG_PRINT (TRACE_EXEC,
-            ("DsResultStackPop: Underflow - State=%p Cur=%X Num=%X\n",
-            WalkState, WalkState->CurrentResult, WalkState->NumResults));
+            ("DsResultStackPop: Underflow - State=%p\n",
+            WalkState));
         return (AE_AML_NO_OPERAND);
     }
 
 
-    /* Pop the stack */
-
-    WalkState->NumResults--;
-
-    /* Check for a valid result object */
-
-    if (!WalkState->Results [WalkState->NumResults])
-    {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("DsResultStackPop: Null operand! State=%p #Ops=%X\n",
-            WalkState, WalkState->NumResults));
-        return (AE_AML_NO_OPERAND);
-    }
-
-    *Object = WalkState->Results [WalkState->NumResults];
-    WalkState->Results [WalkState->NumResults] = NULL;
+    State = AcpiCmPopGenericState (&WalkState->Results);
 
     DEBUG_PRINT (TRACE_EXEC,
-        ("DsResultStackPop: Obj=%p State=%p Num=%X Cur=%X\n",
-        *Object, WalkState, WalkState->NumResults, WalkState->CurrentResult));
+        ("DsResultStackPop: Result=%p RemainingResults=%X State=%p\n",
+        State, State->Results.NumResults, WalkState));
+
+    AcpiCmDeleteGenericState (State);
 
     return (AE_OK);
 }
@@ -322,8 +605,9 @@ AcpiDsObjStackPush (
     WalkState->Operands [WalkState->NumOperands] = Object;
     WalkState->NumOperands++;
 
-    DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPush: Obj=%p State=%p #Ops=%X\n",
-                    Object, WalkState, WalkState->NumOperands));
+    DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPush: Obj=%p [%s] State=%p #Ops=%X\n",
+                    Object, AcpiCmGetTypeName (((ACPI_OPERAND_OBJECT *) Object)->Common.Type),
+                    WalkState, WalkState->NumOperands));
 
     return (AE_OK);
 }
@@ -380,7 +664,8 @@ AcpiDsObjStackPopObject (
     *Object = WalkState->Operands [WalkState->NumOperands];
     WalkState->Operands [WalkState->NumOperands] = NULL;
 
-    DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPopObject: State=%p #Ops=%X\n",
+    DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPopObject: Obj=%p [%s] State=%p #Ops=%X\n",
+                    *Object, AcpiCmGetTypeName ((*Object)->Common.Type),
                     WalkState, WalkState->NumOperands));
 
     return (AE_OK);
@@ -656,6 +941,7 @@ AcpiDsCreateWalkState (
     ACPI_WALK_LIST          *WalkList)
 {
     ACPI_WALK_STATE         *WalkState;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("DsCreateWalkState");
@@ -679,7 +965,7 @@ AcpiDsCreateWalkState (
         DEBUG_PRINT (TRACE_EXEC, ("DsCreateWalkState: State %p from cache\n", WalkState));
 
         AcpiCmReleaseMutex (ACPI_MTX_CACHES);
-   }
+    }
 
     else
     {
@@ -700,12 +986,22 @@ AcpiDsCreateWalkState (
     WalkState->OwnerId          = OwnerId;
     WalkState->Origin           = Origin;
     WalkState->MethodDesc       = MthDesc;
+    WalkState->WalkList         = WalkList;
 
     /* Init the method args/local */
 
 #ifndef _ACPI_ASL_COMPILER
     AcpiDsMethodDataInit (WalkState);
 #endif
+
+    /* Create an initial result stack entry */
+
+    Status = AcpiDsResultStackPush (WalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        return_VALUE (NULL);
+    }
+
 
     /* Put the new state at the head of the walk list */
 
@@ -749,6 +1045,7 @@ AcpiDsDeleteWalkState (
         return;
     }
 
+
     /* Always must free any linked control states */
 
     while (WalkState->ControlState)
@@ -759,7 +1056,6 @@ AcpiDsDeleteWalkState (
         AcpiCmDeleteGenericState (State);
     }
 
-
     /* Always must free any linked parse states */
 
     while (WalkState->ScopeInfo)
@@ -769,6 +1065,17 @@ AcpiDsDeleteWalkState (
 
         AcpiCmDeleteGenericState (State);
     }
+
+    /* Always must free any stacked result states */
+
+    while (WalkState->Results)
+    {
+        State = WalkState->Results;
+        WalkState->Results = State->Common.Next;
+
+        AcpiCmDeleteGenericState (State);
+    }
+
 
     /* If walk cache is full, just free this wallkstate object */
 
