@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresnte - AML Interpreter object resolution
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -310,8 +311,8 @@ AcpiAmlResolveEntryToValue (
 
             /* Init the internal object */
 
-            ObjDesc->String.Pointer = (INT8 *) AmlPointer;
-            ObjDesc->String.Length = STRLEN (AmlPointer);
+            ObjDesc->String.Pointer = (NATIVE_CHAR *) AmlPointer;
+            ObjDesc->String.Length = STRLEN (ObjDesc->String.Pointer);
         }
 
         else
