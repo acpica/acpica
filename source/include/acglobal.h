@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.150 $
+ *       $Revision: 1.151 $
  *
  *****************************************************************************/
 
@@ -160,8 +160,13 @@ extern      UINT32                      AcpiGbl_NestingLevel;
  *
  ****************************************************************************/
 
+/* Create the predefined _OSI method in the namespace? */
 ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_CreateOsiMethod, TRUE);
+
+/* Automatically serialize ALL control methods? */
 ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_AllMethodsSerialized, FALSE);
+
+/* Disable wakeup GPEs during runtime? */
 ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_LeaveWakeGpesDisabled, TRUE);
 
 /*****************************************************************************
