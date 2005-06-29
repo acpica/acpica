@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -953,7 +953,7 @@ ACPI_STATUS
 AcpiOsWritePciConfiguration (
     ACPI_PCI_ID             *PciId,
     UINT32                  Register,
-    NATIVE_UINT             Value,
+    ACPI_INTEGER            Value,
     UINT32                  Width)
 {
 
@@ -995,6 +995,10 @@ AcpiOsReadPort (
     case 32:
         *((UINT32 *) Value) = 0;
         break;
+
+    case 64:
+        *((UINT64 *) Value) = 0;
+        break;
     }
 
     return (AE_OK);
@@ -1018,7 +1022,7 @@ AcpiOsReadPort (
 ACPI_STATUS
 AcpiOsWritePort (
     ACPI_IO_ADDRESS         Address,
-    NATIVE_UINT             Value,
+    ACPI_INTEGER            Value,
     UINT32                  Width)
 {
 
@@ -1060,7 +1064,12 @@ AcpiOsReadMemory (
     case 32:
         *((UINT32 *) Value) = 0;
         break;
+
+    case 64:
+        *((UINT64 *) Value) = 0;
+        break;
     }
+
     return (AE_OK);
 }
 
@@ -1082,7 +1091,7 @@ AcpiOsReadMemory (
 ACPI_STATUS
 AcpiOsWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    NATIVE_UINT             Value,
+    ACPI_INTEGER            Value,
     UINT32                  Width)
 {
 
