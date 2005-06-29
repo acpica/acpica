@@ -188,11 +188,11 @@ BREAKPOINT3;
 /* TBD: Temp only */
 
     PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
-                        TableDesc, DsLoad1BeginOp, DsLoad1EndOp);
+                        TableDesc->TableId, DsLoad1BeginOp, DsLoad1EndOp);
 
 
     PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
-                        TableDesc, DsLoad2BeginOp, DsLoad2EndOp);
+                        TableDesc->TableId, DsLoad2BeginOp, DsLoad2EndOp);
 
 
     /*
