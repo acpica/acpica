@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.158 $
+ *       $Revision: 1.165 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,14 +125,12 @@ ACPI_STATUS (*ACPI_PKG_CALLBACK) (
     ACPI_GENERIC_STATE      *State,
     void                    *Context);
 
-
 ACPI_STATUS
 AcpiUtWalkPackageTree (
     ACPI_OPERAND_OBJECT     *SourceObject,
     void                    *TargetObject,
     ACPI_PKG_CALLBACK       WalkCallback,
     void                    *Context);
-
 
 typedef struct acpi_pkg_info
 {
@@ -251,6 +249,12 @@ char *
 AcpiUtStrncpy (
     char                    *DstString,
     const char              *SrcString,
+    ACPI_SIZE               Count);
+
+int
+AcpiUtMemcmp (
+    const char              *Buffer1,
+    const char              *Buffer2,
     ACPI_SIZE               Count);
 
 int
@@ -547,7 +551,12 @@ AcpiUtDeleteInternalObjectList (
 #define METHOD_NAME__PRT        "_PRT"
 #define METHOD_NAME__CRS        "_CRS"
 #define METHOD_NAME__PRS        "_PRS"
+#define METHOD_NAME__PRW        "_PRW"
 
+
+ACPI_STATUS
+AcpiUtOsiImplementation (
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiUtEvaluateObject (
@@ -582,6 +591,10 @@ AcpiUtExecute_UID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
     ACPI_DEVICE_ID          *Uid);
 
+ACPI_STATUS
+AcpiUtExecute_Sxds (
+    ACPI_NAMESPACE_NODE     *DeviceNode,
+    UINT8                   *Highest);
 
 /*
  * UtMutex - mutual exclusion interfaces
@@ -643,6 +656,10 @@ AcpiUtValidInternalObject (
 ACPI_OPERAND_OBJECT *
 AcpiUtCreateBufferObject (
     ACPI_SIZE               BufferSize);
+
+ACPI_OPERAND_OBJECT *
+AcpiUtCreateStringObject (
+    ACPI_SIZE               StringSize);
 
 
 /*
@@ -757,14 +774,14 @@ AcpiUtPrintString (
 
 ACPI_STATUS
 AcpiUtDivide (
-    ACPI_INTEGER            *InDividend,
-    ACPI_INTEGER            *InDivisor,
+    ACPI_INTEGER            InDividend,
+    ACPI_INTEGER            InDivisor,
     ACPI_INTEGER            *OutQuotient,
     ACPI_INTEGER            *OutRemainder);
 
 ACPI_STATUS
 AcpiUtShortDivide (
-    ACPI_INTEGER            *InDividend,
+    ACPI_INTEGER            InDividend,
     UINT32                  Divisor,
     ACPI_INTEGER            *OutQuotient,
     UINT32                  *OutRemainder);
@@ -782,6 +799,10 @@ AcpiUtStrtoul64 (
     char                    *String,
     UINT32                  Base,
     ACPI_INTEGER            *RetInteger);
+
+/* Values for Base above (16=Hex, 10=Decimal) */
+
+#define ACPI_ANY_BASE        0
 
 char *
 AcpiUtStrupr (

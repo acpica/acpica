@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.106 $
+ *       $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -225,12 +225,8 @@
 #define COMPILER_DEPENDENT_INT64   long long
 #define COMPILER_DEPENDENT_UINT64  unsigned long long
 
-
-/* Name of host operating system (returned by the _OS_ namespace object) */
-
-#define ACPI_OS_NAME         "Intel ACPI/CA Core Subsystem"
-
-/* This macro is used to tag functions as "printf-like" because
+/*
+ * This macro is used to tag functions as "printf-like" because
  * some compilers can catch printf format string problems. MSVC
  * doesn't, so this is proprocessed away.
  */
@@ -309,6 +305,7 @@
 #define ACPI_STRCAT(d,s)        (void) strcat((d), (s))
 #define ACPI_STRNCAT(d,s,n)     strncat((d), (s), (ACPI_SIZE)(n))
 #define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMCMP(s1,s2,n)    memcmp((s1), (s2), (ACPI_SIZE)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (ACPI_SIZE)(n))
 
@@ -372,6 +369,7 @@ typedef char *va_list;
 #define ACPI_STRCAT(d,s)        (void) AcpiUtStrcat  ((d), (s))
 #define ACPI_STRNCAT(d,s,n)     AcpiUtStrncat ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMCMP(s1,s2,n)    AcpiUtMemcmp((s1), (s2), (ACPI_SIZE)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy  ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset  ((d), (v), (ACPI_SIZE)(n))
 #define ACPI_TOUPPER            AcpiUtToUpper

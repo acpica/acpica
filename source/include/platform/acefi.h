@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acefi.h - OS specific defines, etc.
- *       $Revision: 1.14 $
+ *       $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -116,8 +116,6 @@
 
 #ifndef __ACEFI_H__
 #define __ACEFI_H__
-
-#define ACPI_OS_NAME                "AED EFI"
 
 #include <efi.h>
 #include <efistdarg.h>

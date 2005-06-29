@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmsvc.h - VC specific defines, etc.
- *       $Revision: 1.18 $
+ *       $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -179,6 +179,9 @@
 
 /* warn C4706: assignment within conditional expression */
 #pragma warning(disable:4706)
+
+/* warn C4131: uses old-style declarator (iASL compiler only) */
+#pragma warning(disable:4131)
 
 /* This macro is used to tag functions as "printf-like" because
  * some compilers can catch printf format string problems. MSVC
