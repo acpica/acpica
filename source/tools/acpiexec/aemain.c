@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -172,7 +172,7 @@ usage (void)
     printf ("    Miscellaneous Options\n");
     printf ("        -?                  Display this message\n");
     printf ("        -i                  Do not run INI methods\n");
-    printf ("        -l DebugLevel       Specify debug output level\n");
+    printf ("        -x DebugLevel       Specify debug output level\n");
     printf ("        -v                  Verbose init output\n");
 }
 
@@ -220,14 +220,15 @@ main (
     printf ("\nIntel ACPI Component Architecture\nAML Execution/Debug Utility");
 
 #if ACPI_MACHINE_WIDTH == 16
-    printf ("(16-bit)");
+    printf (" (16-bit)");
 #endif
 
-    printf (" version %8.8X [%s]\n\n", (UINT32) ACPI_CA_VERSION, __DATE__);
+    printf (" version %8.8X", ((UINT32) ACPI_CA_VERSION));
+    printf (" [%s]\n\n",  __DATE__);
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?dgil:o:sv")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?dgio:svx:")) != EOF) switch(j)
     {
     case 'd':
         AcpiGbl_DbOpt_disasm = TRUE;
@@ -243,7 +244,7 @@ main (
         AcpiGbl_DbOpt_ini_methods = FALSE;
         break;
 
-    case 'l':
+    case 'x':
         AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
         AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         printf ("Debug Level: %lX\n", AcpiDbgLevel);
