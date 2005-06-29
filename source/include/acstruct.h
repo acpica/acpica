@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.8 $
+ *       $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -248,6 +248,41 @@ typedef struct acpi_get_devices_info
     NATIVE_CHAR             *Hid;
 
 } ACPI_GET_DEVICES_INFO;
+
+
+
+
+typedef union acpi_aml_operands
+{
+    ACPI_OPERAND_OBJECT         *Operands[7];
+
+    struct
+    {
+        ACPI_OBJECT_INTEGER     *Type;
+        ACPI_OBJECT_INTEGER     *Code;
+        ACPI_OBJECT_INTEGER     *Argument;
+
+    } Fatal;
+
+    struct
+    {
+        ACPI_OPERAND_OBJECT     *Source;
+        ACPI_OBJECT_INTEGER     *Index;
+        ACPI_OPERAND_OBJECT     *Target;
+
+    } Index;
+
+    struct
+    {
+        ACPI_OPERAND_OBJECT     *Source;
+        ACPI_OBJECT_INTEGER     *Index;
+        ACPI_OBJECT_INTEGER     *Length;
+        ACPI_OPERAND_OBJECT     *Target;
+
+    } Mid;
+
+} ACPI_AML_OPERANDS;
+
 
 
 #endif
