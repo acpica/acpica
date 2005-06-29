@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -779,7 +779,7 @@ AcpiPsGetOpcodeInfo (
 
         /* Simple (8-bit) opcode: 0-255, can't index beyond table  */
 
-        return_PTR (&AmlOpInfo [AmlShortOpInfoIndex [(UINT8) Opcode]]);
+        return (&AmlOpInfo [AmlShortOpInfoIndex [(UINT8) Opcode]]);
         break;
 
 
@@ -789,7 +789,7 @@ AcpiPsGetOpcodeInfo (
 
         if (((UINT8) Opcode) <= MAX_EXTENDED_OPCODE)
         {
-            return_PTR (&AmlOpInfo [AmlLongOpInfoIndex [(UINT8) Opcode]]);
+            return (&AmlOpInfo [AmlLongOpInfoIndex [(UINT8) Opcode]]);
             break;
         }
 
@@ -802,7 +802,7 @@ AcpiPsGetOpcodeInfo (
 
     /* Default is "unknown opcode" */
 
-    return_PTR (&AmlOpInfo [_UNK]);
+    return (&AmlOpInfo [_UNK]);
 }
 
 
