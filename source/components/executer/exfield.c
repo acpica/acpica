@@ -190,7 +190,7 @@ AmlSetupField (
 
     /* Init and validate Field width */
     
-    FieldByteWidth = FieldBitWidth / 8;     /*  possible values are 1, 2, 4 */
+    FieldByteWidth = DIV_8 (FieldBitWidth);     /*  possible values are 1, 2, 4 */
 
     if ((FieldBitWidth != 8) && 
         (FieldBitWidth != 16) && 
@@ -205,10 +205,10 @@ AmlSetupField (
      * If the address and length have not been previously evaluated,
      * evaluate them and save the results.
      */
-    if (0 == RgnDesc->Region.DataValid)
+    if (!(RgnDesc->Region.RegionFlags & REGION_AGRUMENT_DATA_VALID))
     {
 
-        Status = DsGetRegionData (RgnDesc);
+        Status = DsGetRegionArguments (RgnDesc);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -319,13 +319,13 @@ AmlAccessNamedField (
     /* Granularity was decoded from the field access type (AnyAcc will be the same as ByteAcc) */
 
     BitGranularity = ObjDesc->FieldUnit.Granularity;
-    ByteGranularity = BitGranularity / 8;
+    ByteGranularity = DIV_8 (BitGranularity);
 
     /* Check if request is too large for the field, and silently truncate if necessary */
 
     /* TBD: should an error be returned in this case? */
 
-    ByteFieldLength = (UINT32) (ObjDesc->FieldUnit.Length + 7) / 8;
+    ByteFieldLength = (UINT32) DIV_8 (ObjDesc->FieldUnit.Length + 7);
 
 
     ActualByteLength = BufferLength;

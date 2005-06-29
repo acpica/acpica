@@ -167,7 +167,7 @@ AmlReadFieldData (
     }
 
 
-    FieldByteWidth = FieldBitWidth / 8;
+    FieldByteWidth = DIV_8 (FieldBitWidth);
     Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
     if (AE_OK != Status)
     {
@@ -259,7 +259,9 @@ AmlReadField (
     UINT32                  PreviousRawDatum;
     UINT32                  ThisRawDatum;
     UINT32                  ValidFieldBits;
+    UINT32                  Mask;
     UINT32                  MergedDatum = 0;
+
 
 
     FUNCTION_TRACE ("AmlReadField");
@@ -288,6 +290,33 @@ AmlReadField (
     if ((DatumLength == 1) && ((ObjDesc->Field.BitOffset + ObjDesc->FieldUnit.Length) <= (UINT16) BitGranularity))
     {
         MergedDatum = PreviousRawDatum;
+
+        MergedDatum = (MergedDatum >> ObjDesc->Field.BitOffset);
+
+        ValidFieldBits = ObjDesc->FieldUnit.Length % BitGranularity;
+        if (ValidFieldBits)
+        {
+            Mask = (((UINT32) 1 << ValidFieldBits) - (UINT32) 1);
+            MergedDatum &= Mask;
+        }
+
+
+        /* Place the MergedDatum into the proper format and return buffer field */
+        switch (ByteGranularity)
+        {
+        case 1:
+            ((UINT8 *) Buffer) [ThisFieldDatumOffset] = (UINT8) MergedDatum;
+            break;
+
+        case 2:
+            STORE16TO16 (&(((UINT16 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
+            break;
+
+        case 4:
+            STORE32TO32 (&(((UINT32 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
+            break;
+        }
+
         ThisFieldByteOffset = 1;
         ThisFieldDatumOffset = 1;
     }
@@ -305,6 +334,21 @@ AmlReadField (
             if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
+            }
+
+            /* Before merging the data, make sure the unused bits are clear */
+
+            switch (ByteGranularity)
+            {
+            case 1:
+                ThisRawDatum &= 0x000000FF;
+                PreviousRawDatum &= 0x000000FF;
+                break;
+
+            case 2:
+                ThisRawDatum &= 0x0000FFFF;
+                PreviousRawDatum &= 0x0000FFFF;
+                break;
             }
 
             /* Put together bits of the two raw data to make a complete field datum */
@@ -329,11 +373,11 @@ AmlReadField (
                 break;
 
             case 2:
-                ((UINT16 *) Buffer) [ThisFieldDatumOffset] = (UINT16) MergedDatum;
+                STORE16TO16 (&(((UINT16 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
                 break;
 
             case 4:
-                ((UINT32 *) Buffer) [ThisFieldDatumOffset] = (UINT32) MergedDatum;
+                STORE32TO32 (&(((UINT32 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
                 break;
             }
 
@@ -347,36 +391,6 @@ AmlReadField (
 
         }  /* while */
     }
-
-
-    /* Cleanup the last datum if necessary by zeroing the bits that aren't part of the field */
-
-    ValidFieldBits = ((ObjDesc->FieldUnit.Length % BitGranularity) + ObjDesc->Field.BitOffset);
-    if (ValidFieldBits)
-    {
-        MergedDatum &= (((UINT32) 1 << ValidFieldBits) - (UINT32) 1);
-    }
-
-    ThisFieldDatumOffset--;
-
-
-    /* Store the last datum again (might actually be the first, or it might be fixed from above */
-
-    switch (ByteGranularity)
-    {
-    case 1:
-        ((UINT8 *) Buffer) [ThisFieldDatumOffset] = (UINT8) MergedDatum;
-        break;
-
-    case 2:
-        ((UINT16 *) Buffer) [ThisFieldDatumOffset] = (UINT16) MergedDatum;
-        break;
-
-    case 4:
-        ((UINT32 *) Buffer) [ThisFieldDatumOffset] = (UINT32) MergedDatum;
-        break;
-    }
-
 
 Cleanup:
 
