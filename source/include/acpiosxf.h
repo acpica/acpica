@@ -187,8 +187,8 @@ AcpiOsGetRootPointer (
 
 ACPI_STATUS
 AcpiOsPredefinedOverride (
-	const ACPI_PREDEFINED_NAMES *InitVal,
-	ACPI_STRING                 *NewVal);
+    const ACPI_PREDEFINED_NAMES *InitVal,
+    ACPI_STRING                 *NewVal);
 
 ACPI_STATUS
 AcpiOsTableOverride (
