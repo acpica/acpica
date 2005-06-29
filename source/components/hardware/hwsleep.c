@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -265,13 +265,13 @@ AcpiEnterSleepStatePrep (
     Arg.Integer.Value = SleepState;
 
     Status = AcpiEvaluateObject (NULL, "\\_PTS", &ArgList, NULL);
-    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND))
+    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND)
     {
         return_ACPI_STATUS (Status);
     }
 
     Status = AcpiEvaluateObject (NULL, "\\_GTS", &ArgList, NULL);
-    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND))
+    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND)
     {
         return_ACPI_STATUS (Status);
     }
