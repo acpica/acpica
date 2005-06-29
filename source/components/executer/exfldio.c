@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -261,7 +261,7 @@ AcpiExAccessRegion (
                 + ObjDesc->CommonField.BaseByteOffset 
                 + FieldDatumByteOffset;
 
-    if (ReadWrite == ACPI_READ_ADR_SPACE)
+    if (ReadWrite == ACPI_READ)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "[READ]"));
     }
@@ -375,7 +375,7 @@ AcpiExFieldDatumIo (
     FUNCTION_TRACE_U32 ("ExFieldDatumIo", FieldDatumByteOffset);
 
 
-    if (ReadWrite == ACPI_READ_ADR_SPACE)
+    if (ReadWrite == ACPI_READ)
     {
         if (!Value)
         {
@@ -412,7 +412,7 @@ AcpiExFieldDatumIo (
             }
         }
 
-        if (ReadWrite == ACPI_READ_ADR_SPACE)
+        if (ReadWrite == ACPI_READ)
         {
             /*
              * Copy the data from the source buffer.  
@@ -506,7 +506,7 @@ AcpiExFieldDatumIo (
             return_ACPI_STATUS (Status);
         }
 
-        if (ReadWrite == ACPI_READ_ADR_SPACE)
+        if (ReadWrite == ACPI_READ)
         {
             /* Read the datum from the DataRegister */
 
@@ -533,7 +533,7 @@ AcpiExFieldDatumIo (
 
     if (ACPI_SUCCESS (Status))
     {
-        if (ReadWrite == ACPI_READ_ADR_SPACE)
+        if (ReadWrite == ACPI_READ)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Value Read=%8.8X%8.8X\n",
                                 HIDWORD(*Value), LODWORD(*Value)));
@@ -602,7 +602,7 @@ AcpiExWriteWithUpdateRule (
                  * the field, and merge with the new field value.
                  */
                 Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset,
-                                &CurrentValue, ACPI_READ_ADR_SPACE);
+                                &CurrentValue, ACPI_READ);
                 MergedValue |= (CurrentValue & ~Mask);
             }
             break;
@@ -633,7 +633,7 @@ AcpiExWriteWithUpdateRule (
     /* Write the merged value */
 
     Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset,
-                    &MergedValue, ACPI_WRITE_ADR_SPACE);
+                    &MergedValue, ACPI_WRITE);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "Mask %8.8X%8.8X DatumOffset %X Value %8.8X%8.8X, MergedValue %8.8X%8.8X\n",
@@ -810,7 +810,7 @@ AcpiExExtractFromField (
     DatumOffset= 0;
 
     Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset, 
-                    &PreviousRawDatum, ACPI_READ_ADR_SPACE);
+                    &PreviousRawDatum, ACPI_READ);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -865,7 +865,7 @@ AcpiExExtractFromField (
              * of the current field datum
              */
             Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset, 
-                            &ThisRawDatum, ACPI_READ_ADR_SPACE);
+                            &ThisRawDatum, ACPI_READ);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -1128,7 +1128,7 @@ AcpiExInsertIntoField (
             /* Normal case -- write the completed datum */
 
             Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset, 
-                            &MergedDatum, ACPI_WRITE_ADR_SPACE);
+                            &MergedDatum, ACPI_WRITE);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
