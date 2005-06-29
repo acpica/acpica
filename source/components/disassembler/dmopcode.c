@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.72 $
+ *              $Revision: 1.75 $
  *
  ******************************************************************************/
 
@@ -114,13 +114,11 @@
  *
  *****************************************************************************/
 
-
 #include "acpi.h"
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdisasm.h"
 #include "acdebug.h"
-
 
 #ifdef ACPI_DISASSEMBLER
 
@@ -302,20 +300,49 @@ AcpiDmMatchOp (
     NextOp = AcpiPsGetDepthNext (NULL, Op);
     NextOp = NextOp->Common.Next;
 
-    // TBD: Children can be expressions */
-
     if (!NextOp)
     {
+        /* Handle partial tree during single-step */
+
         return;
     }
 
-    NextOp->Common.AmlOpcode = AML_INT_STATICSTRING_OP;
-    NextOp->Common.Value.String = (char *) AcpiGbl_MatchOps[NextOp->Common.Value.Integer32];
+    /* Mark the two nodes that contain the encoding for the match keywords */
+
+    NextOp->Common.DisasmOpcode = ACPI_DASM_MATCHOP;
 
     NextOp = NextOp->Common.Next;
     NextOp = NextOp->Common.Next;
-    NextOp->Common.AmlOpcode = AML_INT_STATICSTRING_OP;
-    NextOp->Common.Value.String = (char *) AcpiGbl_MatchOps[NextOp->Common.Value.Integer32];
+    NextOp->Common.DisasmOpcode = ACPI_DASM_MATCHOP;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmMatchKeyword
+ *
+ * PARAMETERS:  Op              - Match Object to be examined
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode Match opcode operands
+ *
+ ******************************************************************************/
+
+void
+AcpiDmMatchKeyword (
+    ACPI_PARSE_OBJECT       *Op)
+{
+
+
+    if (Op->Common.Value.Integer32 >= NUM_MATCH_OPS)
+    {
+        AcpiOsPrintf ("/* Unknown Match Keyword encoding */");
+    }
+    else
+    {
+        AcpiOsPrintf ("%s", (char *) AcpiGbl_MatchOps[Op->Common.Value.Integer32]);
+    }
 }
 
 
@@ -349,6 +376,18 @@ AcpiDmDisassembleOneOp (
         AcpiOsPrintf ("<NULL OP PTR>");
         return;
     }
+
+    switch (Op->Common.DisasmOpcode)
+    {
+    case ACPI_DASM_MATCHOP:
+
+        AcpiDmMatchKeyword (Op);
+        return;
+
+    default:
+        break;
+    }
+
 
     /* op and arguments */
 
@@ -386,7 +425,7 @@ AcpiDmDisassembleOneOp (
 
     case AML_WORD_OP:
 
-        if (Op->Common.DisasmFlags & ACPI_PARSEOP_SPECIAL)
+        if (Op->Common.DisasmOpcode == ACPI_DASM_EISAID)
         {
             AcpiDmEisaId (Op->Common.Value.Integer32);
         }
@@ -399,11 +438,11 @@ AcpiDmDisassembleOneOp (
 
     case AML_DWORD_OP:
 
-        if (Op->Common.DisasmFlags & ACPI_PARSEOP_SPECIAL)
+        if (Op->Common.DisasmOpcode == ACPI_DASM_EISAID)
         {
             AcpiDmEisaId (Op->Common.Value.Integer32);
         }
-        else if ((Op->Common.Value.Integer32 == 0xFFFFFFFF) &&
+        else if ((Op->Common.Value.Integer32 == ACPI_UINT32_MAX) &&
                 (AcpiGbl_DSDT->Revision < 2))
         {
             AcpiOsPrintf ("Ones");
@@ -496,7 +535,7 @@ AcpiDmDisassembleOneOp (
     case AML_INT_NAMEDFIELD_OP:
 
         Length = AcpiDmDumpName ((char *) &Op->Named.Name);
-        AcpiOsPrintf (",%*.s  %d", 5 - Length, " ", Op->Common.Value.Integer32);
+        AcpiOsPrintf (",%*.s  %d", (int) (5 - Length), " ", Op->Common.Value.Integer32);
         AcpiDmCommaIfFieldMember (Op);
 
         Info->BitOffset += Op->Common.Value.Integer32;
@@ -557,7 +596,8 @@ AcpiDmDisassembleOneOp (
         AcpiOsPrintf ("%s", OpInfo->Name);
 
 
-#ifndef ACPI_APPLICATION
+#ifdef ENABLE_DEBUGGER
+
         if ((Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP) &&
             (WalkState) &&
             (WalkState->Results) &&
