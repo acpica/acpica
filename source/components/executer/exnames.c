@@ -238,6 +238,42 @@ AmlAllocateNameString (
 
 /*****************************************************************************
  *
+ * FUNCTION:    AmlGoodName
+ *
+ * PARAMETERS:  Character           - The character to be examined
+ *
+ * RETURN:      1 if Character may appear in a name, else 0
+ *
+ * DESCRIPTION: Check for a printable character
+ *
+ ****************************************************************************/
+
+BOOLEAN 
+AmlGoodName (
+    UINT32                  Name)
+{
+    char                    *NamePtr = (char *) &Name;
+    UINT32                  i;
+
+    
+
+    for (i = 0; i < ACPI_NAME_SIZE; i++)
+    {
+        if (!((NamePtr[i] == '_') || 
+              (NamePtr[i] >= 'A' && NamePtr[i] <= 'Z') ||
+              (NamePtr[i] >= '0' && NamePtr[i] <= '9')))
+        {
+            return FALSE;
+        }
+    }
+
+
+    return TRUE;
+}
+
+
+/*****************************************************************************
+ *
  * FUNCTION:    AmlGoodChar
  *
  * PARAMETERS:  Character           - The character to be examined
@@ -253,8 +289,9 @@ AmlGoodChar (
     INT32                   Character)
 {
 
-    return ((Character == '_') || (Character >= 'A' && Character <= 'Z') ||
-                (Character >= '0' && Character <= '9'));
+    return ((Character == '_') || 
+            (Character >= 'A' && Character <= 'Z') ||
+            (Character >= '0' && Character <= '9'));
 }
 
 
@@ -410,7 +447,7 @@ AmlDoSeg (
         }   
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", ExceptionNames[Status]));
+    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", Gbl_ExceptionNames[Status]));
 
     return_ACPI_STATUS (Status);
 }
@@ -625,7 +662,7 @@ BREAKPOINT3;
 
         AmlObjStackDeleteValue (STACK_TOP);
 
-        Status = NsLookup (CurrentScope->Scope, NameString, DataType, InterpreterMode, 
+        Status = NsLookup (Gbl_CurrentScope->Scope, NameString, DataType, InterpreterMode, 
                                     NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) AmlObjStackGetTopPtr ());
 
         /* Get return value from the lookup */
@@ -637,7 +674,7 @@ BREAKPOINT3;
 
         if (IMODE_LoadPass1 == InterpreterMode)
         {
-            LastMethod = Handle;
+            Gbl_LastMethod = Handle;
         }
 
         if (IMODE_Execute == InterpreterMode && !Handle)
@@ -735,7 +772,8 @@ BREAKPOINT3;
                             StackOffset = CurrentStackTop - PreviousStackTop;
 
                             DEBUG_PRINT (TRACE_LOAD, ("Calling %4.4s, PreviousTOS=%d  CurrentTOS=%d\n",
-                                            MethodScope, PreviousStackTop, CurrentStackTop));
+                                            &(((NAME_TABLE_ENTRY *) MethodScope)->Name), 
+                                            PreviousStackTop, CurrentStackTop));
 
                             AmlDumpObjStack (InterpreterMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
 
