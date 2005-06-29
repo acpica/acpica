@@ -94,8 +94,8 @@ NamePathTail        [.]{NameSeg}
                                 count (0); 
                                 return (INTEGER); }
 
-"Ones"                      { count (0); return(ONES); }
-"One"                       { count (0); return(ONE); }
+"Ones"                      { count (0); return (ONES); }
+"One"                       { count (0); return (ONE); }
 "Zero"                      { count (0); return (ZERO); }
                                 
 "Offset"                    { count (0); return (OFFSET); }
@@ -305,8 +305,11 @@ NamePathTail        [.]{NameSeg}
 
 {NameSeg}                   { char *s;
 			                    s=malloc (ACPI_NAME_SIZE + 1);
-                                strcpy (s, "____");
-                                strupr (AslCompilertext);
+                                if (strcmp (AslCompilertext, "\\"))
+                                {
+                                    strcpy (s, "____");
+                                    strupr (AslCompilertext);
+                                }
 			                    memcpy (s, AslCompilertext, strlen (AslCompilertext));
 			                    AslCompilerlval.s = s;
                                 DbgPrint ("NameSeg: %s\n", s);

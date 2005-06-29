@@ -202,6 +202,7 @@ extern char     *AslCompilertext;
 %token <i> REGIONSPACE_SMBUS
 %token <i> REGISTER
 %token <i> RELEASE
+%token <i> RESERVED_BYTES
 %token <i> RESET
 %token <i> RESOURCETEMPLATE
 %token <i> RETURN
@@ -599,7 +600,7 @@ NameSpaceModifier
 
 UserTerm
     : NameString '(' 
-        ArgList ')' {}
+        ArgList ')' {$$ = TgLinkChildNode ($1,$3);}
     ;
 
 ArgList
@@ -799,7 +800,7 @@ FieldUnit
     ;
 
 FieldUnitEntry
-    : ',' AmlPackageLengthTerm {$$ = $2}
+    : ',' AmlPackageLengthTerm {$$ = TgCreateNode (RESERVED_BYTES,1,$2);}
     | NameSeg ',' 
         AmlPackageLengthTerm {$$ = TgLinkChildNode ($1,$3);}
     ;
@@ -994,8 +995,8 @@ PowerResTerm
     : POWERRESOURCE '('
         NameString ','
         ByteConstExpr ','
-        ByteConstExpr
-        ')' '{' ObjectList '}' {$$ = TgCreateNode (POWERRESOURCE,3,$3,$5,$7);}
+        WordConstExpr
+        ')' '{' ObjectList '}' {$$ = TgCreateNode (POWERRESOURCE,4,$3,$5,$7,$10);}
     ;
 
 ProcessorTerm
@@ -1068,7 +1069,7 @@ FatalTerm
     ;
 
 IfElseTerm
-    : IfTerm ElseTerm {}
+    : IfTerm ElseTerm {$$ = TgLinkPeerNode ($1,$2);}
     ;
 
 IfTerm 
@@ -1079,7 +1080,7 @@ IfTerm
     ;
 
 ElseTerm
-    : {}
+    : {$$ = NULL}
     | ELSE '{' TermList '}' 
         {$$ = TgCreateNode (ELSE,1,$3);}
     | ELSEIF '{' TermList '}' ElseTerm 
@@ -1696,21 +1697,21 @@ Integer
     ;
 
 ByteConst
-    : INTEGER {$$ = TgCreateLeafNode (BYTECONST, (void *) AslCompilerlval.i);}
+    : Integer {$$ = TgUpdateNode (BYTECONST, $1);}
     ;
 
 WordConst
-    : INTEGER {$$ = TgCreateLeafNode (WORDCONST, (void *) AslCompilerlval.i);}
+    : Integer {$$ = TgUpdateNode (WORDCONST, $1);}
     ;
 
 DwordConst
-    : INTEGER {$$ = TgCreateLeafNode (DWORDCONST, (void *) AslCompilerlval.i);}
+    : Integer {$$ = TgUpdateNode (DWORDCONST, $1);}
     ;
 
 /* TBD: should be QWORDCONST */
 
 QwordConst
-    : INTEGER {$$ = TgCreateLeafNode (DWORDCONST, (void *) AslCompilerlval.i);}
+    : Integer {$$ = TgUpdateNode (DWORDCONST, $1);}
     ;
 
 String
@@ -1727,9 +1728,9 @@ ConstTerm
     ;
 
 ByteConstExpr
-    : Type3Opcode {}
-    | ConstExprTerm {}
-    | Integer {}
+    : Type3Opcode {$$ = TgUpdateNode (BYTECONST, $1);}
+    | ConstExprTerm {$$ = TgUpdateNode (BYTECONST, $1);}
+    | Integer {$$ = TgUpdateNode (BYTECONST, $1);}
     ;
 
 OptionalByteConstExpr
@@ -1739,15 +1740,15 @@ OptionalByteConstExpr
     ;
 
 WordConstExpr
-    : Type3Opcode {}
-    | ConstExprTerm {}
-    | Integer {}
+    : Type3Opcode {$$ = TgUpdateNode (WORDCONST, $1);}
+    | ConstExprTerm {$$ = TgUpdateNode (WORDCONST, $1);}
+    | Integer {$$ = TgUpdateNode (WORDCONST, $1);}
     ;
 
 DWordConstExpr
-    : Type3Opcode {}
-    | ConstExprTerm {}
-    | Integer {}
+    : Type3Opcode {$$ = TgUpdateNode (DWORDCONST, $1);}
+    | ConstExprTerm {$$ = TgUpdateNode (DWORDCONST, $1);}
+    | Integer {$$ = TgUpdateNode (DWORDCONST, $1);}
     ;
 
 ConstExprTerm

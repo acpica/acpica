@@ -31,6 +31,8 @@
 
 #define AML_RAW_DATA_BYTE           (UINT16) 0xAA01
 #define AML_RAW_DATA_WORD           (UINT16) 0xAA02
+#define AML_RAW_DATA_DWORD          (UINT16) 0xAA04
+#define AML_RAW_DATA_QWORD          (UINT16) 0xAA08
 #define AML_PACKAGE_LENGTH          (UINT16) 0xAA10
 
 #define AML_UNASSIGNED_OPCODE       (UINT16) 0xEEEE
@@ -66,12 +68,24 @@ typedef struct asl_mapping_entry
 
 } ASL_MAPPING_ENTRY;
 
+typedef union asl_node_value
+{
+    UINT32                  Integer;
+    UINT32                  Integer32;
+    UINT16                  Integer16;
+    UINT8                   Integer8;
+    void                    *Pointer;
+    char                    *String;
+
+} ASL_NODE_VALUE;
+
 typedef struct asl_parse_node
 {
     struct asl_parse_node   *Parent;
     struct asl_parse_node   *Peer;
     struct asl_parse_node   *Child;
-    void                    *Value;
+    union asl_node_value    Value;
+    void                    *Valuex;
     UINT16                  AmlOpcode;
     UINT16                  ParseOpcode;
     UINT32                  AmlLength;
@@ -238,7 +252,7 @@ TgAddNode (
     void                    *Thing);
 
 char *
-TgUpdateNode (
+_TgUpdateNode (
     UINT32                  ParseOpcode,
     ASL_PARSE_NODE          *Node);
 
@@ -259,6 +273,7 @@ TgWalkTree (void);
 
 #define TgLinkPeerNode(a,b)      (char *)_TgLinkPeerNode ((ASL_PARSE_NODE *)(a),(ASL_PARSE_NODE *)(b))
 #define TgLinkChildNode(a,b)     (char *)_TgLinkChildNode ((ASL_PARSE_NODE *)(a),(ASL_PARSE_NODE *)(b))
+#define TgUpdateNode(a,b)        (char *)_TgUpdateNode (a,(ASL_PARSE_NODE *)(b))
 
 ASL_PARSE_NODE *
 _TgLinkPeerNode (

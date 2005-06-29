@@ -15,8 +15,6 @@ extern const char * const       yytname[];
 
 
 
-
-
 /*******************************************************************************
  *
  * FUNCTION:    
@@ -28,7 +26,6 @@ extern const char * const       yytname[];
  * DESCRIPTION: 
  *
  ******************************************************************************/
-
 
 ACPI_STATUS
 CgOpenOutputFile (
@@ -72,7 +69,6 @@ CgOpenOutputFile (
  *
  ******************************************************************************/
 
-
 void
 CgGenerateOutput(
     char                    *InputFilename)
@@ -103,7 +99,6 @@ CgGenerateOutput(
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    
@@ -115,7 +110,6 @@ CgGenerateOutput(
  * DESCRIPTION: 
  *
  ******************************************************************************/
-
 
 void
 CgWriteAmlOpcode (
@@ -161,6 +155,11 @@ CgWriteAmlOpcode (
         Aml.Opcode = 0x00;  
         break;
 
+    case AML_ACCESSFIELD_OP:
+
+        Aml.Opcode = 0x01;
+        break;
+
     default:
         Aml.Opcode = Node->AmlOpcode;
         break;
@@ -173,7 +172,7 @@ CgWriteAmlOpcode (
 
         /* Value is the length to be encoded (Used in field definitions) */
 
-        PkgLen.Len = (UINT32) Node->Value;
+        PkgLen.Len = Node->Value.Integer;
         break;
 
     default:
@@ -235,17 +234,19 @@ CgWriteAmlOpcode (
     switch (Aml.Opcode)
     {
     case AML_BYTE_OP:
-        fwrite (&Node->Value, 1, 1, AmlFile);
+        fwrite (&Node->Value.Integer8, 1, 1, AmlFile);
         break;
 
     case AML_WORD_OP:
-        fwrite (&Node->Value, 2, 1, AmlFile);
+        fwrite (&Node->Value.Integer16, 2, 1, AmlFile);
        break;
 
     case AML_DWORD_OP:
-        fwrite (&Node->Value, 4, 1, AmlFile);
+        fwrite (&Node->Value.Integer32, 4, 1, AmlFile);
         break;
 
+    case AML_STRING_OP:
+        fwrite (Node->Value.String, Node->AmlLength, 1, AmlFile);
     }
 }
 
@@ -262,7 +263,6 @@ CgWriteAmlOpcode (
  *
  ******************************************************************************/
 
-
 void
 CgWriteTableHeader (
     ASL_PARSE_NODE              *Node)
@@ -278,27 +278,27 @@ CgWriteTableHeader (
     /* Signature */
 
     Child = Child->Peer;
-    strncpy (TableHeader.Signature, Child->Value, 4);
+    strncpy (TableHeader.Signature, (char *) &Child->Value.Integer32, 4);
 
     /* Revision */
 
     Child = Child->Peer;
-    TableHeader.Revision = (UINT8) Child->Value;
+    TableHeader.Revision = Child->Value.Integer8;
 
     /* OEMID */
 
     Child = Child->Peer;
-    strncpy (TableHeader.OemId, Child->Value, 6);
+    strncpy (TableHeader.OemId, Child->Value.String, 6);
 
     /* OEM TableID */
 
     Child = Child->Peer;
-    strncpy (TableHeader.OemTableId, Child->Value, 8);
+    strncpy (TableHeader.OemTableId, Child->Value.String, 8);
 
     /* OEM Revision */
 
     Child = Child->Peer;
-    TableHeader.OemRevision = (UINT32) Child->Value;
+    TableHeader.OemRevision = Child->Value.Integer32;
 
     /* Compiler ID */
 
@@ -306,7 +306,7 @@ CgWriteTableHeader (
 
     /* Compiler version */
 
-    TableHeader.AslCompilerRevision = 0x00020001;
+    TableHeader.AslCompilerRevision = 0x22221111;
 
 
     fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, AmlFile);
@@ -328,11 +328,34 @@ CgWriteTableHeader (
 void
 CgCloseTable (void)
 {
+    signed char         Sum;
+    UINT8               FileByte;
+
+
     TableHeader.Length = TableLength;
+    TableHeader.Checksum = 0;
+
+    /* Write the header at the start of the file */
 
     fseek (AmlFile, 0, SEEK_SET);
     fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, AmlFile);
 
+    /* Calculate the checksum over the entire file */
+
+    fseek (AmlFile, 0, SEEK_SET);
+
+    Sum = 0;
+    while (fread (&FileByte, 1, 1, AmlFile))
+    {
+        Sum += FileByte;
+    }
+
+    /* Re-write the table header with the checksum */
+
+    TableHeader.Checksum = (0 - Sum);
+
+    fseek (AmlFile, 0, SEEK_SET);
+    fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, AmlFile);
 }
 
 
@@ -353,10 +376,19 @@ CgWriteNode (
     ASL_PARSE_NODE              *Node)
 {
 
+    /* TEMP FIX: always check for DEFAULT_ARG */
 
-    if (Node->AmlOpcode == AML_RAW_DATA_BYTE)
+    if (Node->ParseOpcode == DEFAULT_ARG)
     {
-        fwrite (&Node->Value, 1, 1, AmlFile);
+        return;
+    }
+
+    if ((Node->AmlOpcode == AML_RAW_DATA_BYTE) ||
+        (Node->AmlOpcode == AML_RAW_DATA_WORD) ||
+        (Node->AmlOpcode == AML_RAW_DATA_DWORD) ||
+        (Node->AmlOpcode == AML_RAW_DATA_QWORD))
+    {
+        fwrite (&Node->Value.Integer, Node->AmlLength, 1, AmlFile);
         return;
     }
 
@@ -372,8 +404,7 @@ CgWriteNode (
 
     case NAMESEG:
     case NAMESTRING:
-    case STRING_LITERAL:
-        fwrite (Node->Value, Node->AmlLength, 1, AmlFile);
+        fwrite (Node->Value.String, Node->AmlLength, 1, AmlFile);
         break;
 
     default:
@@ -396,9 +427,7 @@ CgWriteNode (
  *
  ******************************************************************************/
 
-
 #define TEXT_OFFSET 10
-
 
 void
 CgPrintFormattedName (
@@ -451,7 +480,6 @@ CgAmlOpcodeWalk (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    
@@ -490,8 +518,7 @@ CgAmlPackageLengthWalk (
     {
         Node->Parent->AmlSubtreeLength += (Node->AmlLength + 
                                             Node->AmlOpcodeLength +
-                                            Node->AmlPkgLenBytes +
-                                            Node->AmlSubtreeLength);
+                                            Node->AmlPkgLenBytes +                                            Node->AmlSubtreeLength);
     }
 }
 
@@ -519,21 +546,32 @@ CgAmlWriteWalk (
 
     CgPrintFormattedName (Node->ParseOpcode, Level);
 
-    DbgPrint ("Value %08X ParseOp 0x%04X AmlOp %04X OpLen %01X PByts %01X Len %04X SubLen %04X ParentSubLen %04X\n",
-                Node->Value,
+	if (Node->ParseOpcode == NAMESEG ||
+		Node->ParseOpcode == NAMESTRING)
+	{
+		DbgPrint ("%4.4s      ", Node->Value.String);
+	}
+
+	else
+	{
+		DbgPrint ("          ");
+	}
+
+    DbgPrint ("Value %08X ParseOp 0x%04X AmlOp %04X OpLen %01X PByts %01X Len %04X SubLen %04X ParentSubLen %04X Node %X Chld %X Paren %X\n",
+                Node->Value.Integer,
                 Node->ParseOpcode,
                 Node->AmlOpcode,
                 Node->AmlOpcodeLength,
                 Node->AmlPkgLenBytes,
                 Node->AmlLength,
                 Node->AmlSubtreeLength,
-                Node->Parent ? Node->Parent->AmlSubtreeLength : 0);
+                Node->Parent ? Node->Parent->AmlSubtreeLength : 0,
+				Node,
+				Node->Child,
+				Node->Parent);
 
     CgWriteNode (Node);
 }
-
-
-
 
 
 
