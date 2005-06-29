@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -191,6 +191,10 @@ OpnDoMethod (
     Next->AmlOpcode = AML_RAW_DATA_BYTE;
     Next->AmlLength = 1;
     Next->ParseOpcode = RAW_DATA;
+
+    /* Save the arg count in the first node */
+
+    Node->Extra = NumArgs;
 }
 
 
