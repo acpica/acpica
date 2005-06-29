@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.88 $
+ *       $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -207,6 +207,10 @@ AcpiEvCreateGpeBlock (
     UINT8                   GpeBlockBaseNumber,
     UINT32                  InterruptLevel,
     ACPI_GPE_BLOCK_INFO     **ReturnGpeBlock);
+
+ACPI_STATUS
+AcpiRemoveGpeBlock (
+    ACPI_HANDLE             GpeDevice);
 
 UINT32
 AcpiEvGpeDispatch (
