@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -478,11 +478,10 @@ LkNamespaceLocateBegin (
     UINT32                  MinimumLength;
     UINT32                  Temp;
     const ACPI_OPCODE_INFO  *OpInfo;
+    UINT32                  Flags;
 
 
-    ACPI_FUNCTION_NAME ("LkNamespaceLocateBegin");
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Op %p\n", Op));
-
+    ACPI_FUNCTION_TRACE_PTR ("LkNamespaceLocateBegin", Op);
 
     /*
      * If this node is the actual declaration of a name 
@@ -509,6 +508,22 @@ LkNamespaceLocateBegin (
         return (AE_OK);
     }
 
+    /*
+     * We must enable the "search-to-root" for single NameSegs, but
+     * we have to be very careful about opening up scopes
+     */
+    Flags = ACPI_NS_SEARCH_PARENT;
+    if ((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) ||
+        (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)    ||
+        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
+    {
+        /*
+         * These are name references, do not push the scope stack
+         * for them.
+         */
+        Flags |= ACPI_NS_DONT_OPEN_SCOPE;
+    }
+ 
     /* Get the NamePath from the appropriate place */
 
     if (OpInfo->Flags & AML_NAMED)
@@ -536,7 +551,7 @@ LkNamespaceLocateBegin (
     }
 
     ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%X\n", ObjectType));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Type=%s\n", AcpiUtGetTypeName (ObjectType)));
 
     /*
      * Lookup the name in the namespace.  Name must exist at this point, or it
@@ -547,9 +562,8 @@ LkNamespaceLocateBegin (
      */
     Gbl_NsLookupCount++;
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
-                            ObjectType, ACPI_IMODE_EXECUTE,
-                            ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
+    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, ObjectType, 
+                    ACPI_IMODE_EXECUTE, Flags, WalkState, &(Node));
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
@@ -916,7 +930,7 @@ LkNamespaceLocateEnd (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
-    ACPI_FUNCTION_NAME ("LkNamespaceLocateEnd");
+    ACPI_FUNCTION_TRACE ("LkNamespaceLocateEnd");
 
 
     /* We are only interested in opcodes that have an associated name */
@@ -927,13 +941,16 @@ LkNamespaceLocateEnd (
         return (AE_OK);
     }
 
-    /*
-     * TBD: do we ever need to check the argument of AML_NAME_OP
-     * to get the correct type?
-     *  if (Op->Asl.AmlOpcode == AML_NAME_OP)
-     */
+    /* Not interested in name references, we did not open a scope for them */
 
-    /* Pop the scope stack */
+    if ((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) ||
+        (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)    ||
+        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
+    {
+        return (AE_OK);
+    }
+
+    /* Pop the scope stack if necessary */
 
     if (AcpiNsOpensScope (AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode)))
     {

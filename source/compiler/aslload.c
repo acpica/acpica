@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -375,7 +375,8 @@ LdNamespace1Begin (
 
 
     ACPI_FUNCTION_NAME ("LdNamespace1Begin");
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Op %p\n", Op));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Op %p [%s]\n", 
+        Op, Op->Asl.ParseOpName));
 
 
     /*
@@ -450,7 +451,7 @@ LdNamespace1Begin (
         if(Op->Asl.CompileFlags == NODE_IS_RESOURCE_DESC)
         {
             Status = LdLoadResourceElements (Op, WalkState);
-            return (Status);
+            goto Exit;
         }
 
         ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
@@ -481,13 +482,13 @@ LdNamespace1Begin (
                  * interpreter can't handle a forward reference from the
                  * Scope() operator.
                  */
-                AslError (ASL_ERROR, ASL_MSG_NOT_FOUND, Op, Path);
-                AslError (ASL_ERROR, ASL_MSG_SCOPE_FWD_REF, Op, Path);
-                goto Exit;
+                AslError (ASL_ERROR, ASL_MSG_NOT_FOUND, Op, Op->Asl.ExternalName);
+                AslError (ASL_ERROR, ASL_MSG_SCOPE_FWD_REF, Op, Op->Asl.ExternalName);
+                goto FinishNode;
             }
 
-            AslCoreSubsystemError (Op, Status, "Failure from lookup %s\n", FALSE);
-            return (Status);
+            AslCoreSubsystemError (Op, Status, "Failure from lookup\n", FALSE);
+            goto Exit;
         }
 
         /* We found a node with this name, now check the type */
@@ -518,7 +519,7 @@ LdNamespace1Begin (
              * does not allow Scope() forward references.
              */
             sprintf (MsgBuffer, "%s, %s, Changing type to (Scope)", 
-                Path, AcpiUtGetTypeName (Node->Type));
+                Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
             AslError (ASL_REMARK, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
 
             /* 
@@ -532,7 +533,7 @@ LdNamespace1Begin (
             /* 
              * All other types are an error 
              */
-            sprintf (MsgBuffer, "%s, %s", Path, AcpiUtGetTypeName (Node->Type));
+            sprintf (MsgBuffer, "%s, %s", Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
             AslError (ASL_ERROR, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
 
             /* 
@@ -545,7 +546,7 @@ LdNamespace1Begin (
         }
 
         Status = AE_OK;
-        goto Exit;
+        goto FinishNode;
 
     
     default:
@@ -555,8 +556,8 @@ LdNamespace1Begin (
     }
 
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Load name: (%s)\n",
-            AcpiUtGetTypeName (ObjectType)));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Loading name: %s, (%s)\n",
+            Op->Asl.ExternalName, AcpiUtGetTypeName (ObjectType)));
 
     /* The name must not already exist */
 
@@ -582,19 +583,20 @@ LdNamespace1Begin (
             }
             else
             {
-                AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Op, Path);
-                return (AE_OK);
+                AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Op, Op->Asl.ExternalName);
+                Status = AE_OK;
+                goto Exit;
             }
         }
         else
         {
             AslCoreSubsystemError (Op, Status, "Failure from lookup %s\n", FALSE);
-            return (Status);
+            goto Exit;
         }
     }
 
 
-Exit:
+FinishNode:
     /*
      * Point the parse node to the new namespace node, and point
      * the Node back to the original Parse node
@@ -619,6 +621,7 @@ Exit:
         Node->OwnerId = (UINT16) Op->Asl.Extra;
     }
 
+Exit:
     return (Status);
 }
 
@@ -676,8 +679,8 @@ LdNamespace1End (
     {
 
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-            "LdNamespace1End/%s: Popping scope for Op %p\n",
-            AcpiUtGetTypeName (ObjectType), Op));
+            "(%s): Popping scope for Op [%s] %p\n",
+            AcpiUtGetTypeName (ObjectType), Op->Asl.ParseOpName, Op));
 
         AcpiDsScopeStackPop (WalkState);
     }
