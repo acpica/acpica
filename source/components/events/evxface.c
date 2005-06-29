@@ -714,7 +714,7 @@ AcpiRemoveNotifyHandler (
 ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
     ACPI_HANDLE             Device, 
-    UINT32                  SpaceId, 
+    ACPI_ADDRESS_SPACE_TYPE SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler, 
     void                    *Context)
 {
@@ -763,15 +763,15 @@ AcpiInstallAddressSpaceHandler (
     {
         switch (SpaceId)
         {
-        case REGION_SystemMemory:
+        case ADDRESS_SPACE_SYSTEM_MEMORY:
             Handler = AmlSystemMemorySpaceHandler;
             break;
 
-        case REGION_SystemIO:
+        case ADDRESS_SPACE_SYSTEM_IO:
             Handler = AmlSystemIoSpaceHandler;
             break;
 
-        case REGION_PCIConfig:
+        case ADDRESS_SPACE_PCI_CONFIG:
             Handler = AmlPciConfigSpaceHandler;
             break;
 
@@ -933,7 +933,7 @@ AcpiInstallAddressSpaceHandler (
 ACPI_STATUS
 AcpiRemoveAddressSpaceHandler (
     ACPI_HANDLE             Device, 
-    UINT32                  SpaceId, 
+    ACPI_ADDRESS_SPACE_TYPE SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler)
 {
     ACPI_OBJECT_INTERNAL   *ObjDesc;
