@@ -309,4 +309,43 @@ typedef struct  /* Smart Battery Description Table */
 
 
 
+
+/*
+ * ACPI Table information.  We save the table address, length,
+ * and type of memory allocation (mapped or allocated) for each
+ * table for 1) when we exit, and 2) if a new table is installed
+ */
+
+#define ACPI_MEM_NOT_ALLOCATED  0
+#define ACPI_MEM_ALLOCATED      1
+#define ACPI_MEM_MAPPED         2
+
+#define ACPI_TABLE_SINGLE       0
+#define ACPI_TABLE_MULTIPLE     1
+
+
+/*
+ * ACPI Table Descriptor.  One per ACPI table
+ */
+typedef struct AcpiTableDesc
+{
+    struct AcpiTableDesc    *Prev;
+    struct AcpiTableDesc    *Next;
+    ACPI_TABLE_HEADER       *Pointer;
+    UINT32                  Length;
+    UINT32                  Allocation;
+    UINT32                  Count;
+
+} ACPI_TABLE_DESC;
+
+
+/* 
+ * Macro to check if a pointer is within an ACPI table.
+ * Parameter (b) must be defined as a pointer to an
+ * ACPI_TABLE_HEADER.
+ */
+
+#define IS_IN_TABLE(a,b)        ((a >= (UINT8 *) (b + 1)) &&\
+                                 (a < (UINT8 *)(b + b->Length)))
+
 #endif /* __ACPITYPE_H__ */
