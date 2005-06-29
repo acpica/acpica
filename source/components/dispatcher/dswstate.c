@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.64 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -180,7 +180,7 @@ AcpiDsResultInsert (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
         "Obj=%p [%s] State=%p Num=%X Cur=%X\n",
-        Object, Object ? AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *) Object)->Common.Type) : "NULL",
+        Object, Object ? AcpiUtGetObjectTypeName ((ACPI_OPERAND_OBJECT *) Object) : "NULL",
         WalkState, State->Results.NumResults, WalkState->CurrentResult));
 
     return (AE_OK);
@@ -247,7 +247,7 @@ AcpiDsResultRemove (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
         "Obj=%p [%s] Index=%X State=%p Num=%X\n",
-        *Object, (*Object) ? AcpiUtGetTypeName ((*Object)->Common.Type) : "NULL",
+        *Object, (*Object) ? AcpiUtGetObjectTypeName (*Object) : "NULL",
         Index, WalkState, State->Results.NumResults));
 
     return (AE_OK);
@@ -307,7 +307,7 @@ AcpiDsResultPop (
             State->Results.ObjDesc [Index -1] = NULL;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s] Index=%X State=%p Num=%X\n",
-                *Object, (*Object) ? AcpiUtGetTypeName ((*Object)->Common.Type) : "NULL",
+                *Object, (*Object) ? AcpiUtGetObjectTypeName (*Object) : "NULL",
                 Index -1, WalkState, State->Results.NumResults));
 
             return (AE_OK);
@@ -381,7 +381,7 @@ AcpiDsResultPopFromBottom (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s], Results=%p State=%p\n",
-        *Object, (*Object) ? AcpiUtGetTypeName ((*Object)->Common.Type) : "NULL",
+        *Object, (*Object) ? AcpiUtGetObjectTypeName (*Object) : "NULL",
         State, WalkState));
 
 
@@ -439,7 +439,7 @@ AcpiDsResultPush (
     State->Results.NumResults++;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s] State=%p Num=%X Cur=%X\n",
-        Object, Object ? AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *) Object)->Common.Type) : "NULL",
+        Object, Object ? AcpiUtGetObjectTypeName ((ACPI_OPERAND_OBJECT *) Object) : "NULL",
         WalkState, State->Results.NumResults, WalkState->CurrentResult));
 
     return (AE_OK);
@@ -602,7 +602,7 @@ AcpiDsObjStackPush (
     WalkState->NumOperands++;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s] State=%p #Ops=%X\n",
-                    Object, AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *) Object)->Common.Type),
+                    Object, AcpiUtGetObjectTypeName ((ACPI_OPERAND_OBJECT *) Object),
                     WalkState, WalkState->NumOperands));
 
     return (AE_OK);
@@ -664,7 +664,7 @@ AcpiDsObjStackPopObject (
     WalkState->Operands [WalkState->NumOperands] = NULL;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s] State=%p #Ops=%X\n",
-                    *Object, AcpiUtGetTypeName ((*Object)->Common.Type),
+                    *Object, AcpiUtGetObjectTypeName (*Object),
                     WalkState, WalkState->NumOperands));
 
     return (AE_OK);
@@ -987,7 +987,6 @@ AcpiDsCreateWalkState (
 }
 
 
-#ifndef _ACPI_ASL_COMPILER
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsInitAmlWalk
@@ -1079,7 +1078,6 @@ AcpiDsInitAmlWalk (
     Status = AcpiDsInitCallbacks (WalkState, PassNumber);
     return_ACPI_STATUS (Status);
 }
-#endif
 
 
 /*******************************************************************************
