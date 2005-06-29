@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -317,7 +317,7 @@ AcpiEvAddressSpaceDispatch (
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "no handler for region(%p) [%s]\n",
             RegionObj, AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
-        return_ACPI_STATUS(AE_NOT_EXIST);
+        return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
     /*
@@ -361,7 +361,7 @@ AcpiEvAddressSpaceDispatch (
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Region Init: %s [%s]\n",
                 AcpiFormatException (Status),
                 AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
-            return_ACPI_STATUS(Status);
+            return_ACPI_STATUS (Status);
         }
 
         RegionObj->Region.Flags |= AOPOBJ_INITIALIZED;
