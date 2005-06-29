@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.100 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -150,13 +150,13 @@ AcpiInstallFixedEventHandler (
     FIXED_EVENT_HANDLER     Handler,
     void                    *Context)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AcpiInstallFixedEventHandler");
 
 
-    /* Sanity check the parameters. */
+    /* Parameter validation */
 
     if (Event >= NUM_FIXED_EVENTS)
     {
@@ -179,9 +179,8 @@ AcpiInstallFixedEventHandler (
     AcpiGbl_FixedEventHandlers[Event].Handler = Handler;
     AcpiGbl_FixedEventHandlers[Event].Context = Context;
 
-    Status = AcpiEnableEvent(Event, ACPI_EVENT_FIXED);
-
-    if (!ACPI_SUCCESS(Status))
+    Status = AcpiEnableEvent (Event, ACPI_EVENT_FIXED);
+    if (!ACPI_SUCCESS (Status))
     {
         DEBUG_PRINT (ACPI_WARN, ("Could not enable fixed event.\n"));
 
@@ -189,13 +188,13 @@ AcpiInstallFixedEventHandler (
 
         AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
         AcpiGbl_FixedEventHandlers[Event].Context = NULL;
-
-        Status = AE_ERROR;
-        goto Cleanup;
     }
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("Enabled fixed event %X, Handler=%p\n", Event, Handler));
+    else
+    {
+        DEBUG_PRINT (ACPI_INFO,
+            ("Enabled fixed event %X, Handler=%p\n", Event, Handler));
+    }
 
 
 Cleanup:
@@ -228,7 +227,7 @@ AcpiRemoveFixedEventHandler (
     FUNCTION_TRACE ("AcpiRemoveFixedEventHandler");
 
 
-    /* Sanity check the parameters. */
+    /* Parameter validation */
 
     if (Event >= NUM_FIXED_EVENTS)
     {
@@ -241,22 +240,22 @@ AcpiRemoveFixedEventHandler (
 
     Status = AcpiDisableEvent(Event, ACPI_EVENT_FIXED);
 
-    if (!ACPI_SUCCESS(Status))
-    {
-        DEBUG_PRINT (ACPI_WARN,
-            ("Could not write to fixed event enable register.\n"));
-
-        Status = AE_ERROR;
-        AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Remove the handler */
+    /* Always Remove the handler */
 
     AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
     AcpiGbl_FixedEventHandlers[Event].Context = NULL;
 
-    DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %X.\n", Event));
+    
+    if (!ACPI_SUCCESS(Status))
+    {
+        DEBUG_PRINT (ACPI_WARN,
+            ("Could not write to fixed event enable register.\n"));
+    }
+
+    else
+    {
+        DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %X.\n", Event));
+    }
 
     AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
@@ -306,7 +305,7 @@ AcpiInstallNotifyHandler (
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
-	/* Convert and validate the device handle */
+    /* Convert and validate the device handle */
 
     DeviceNode = AcpiNsConvertHandleToEntry (Device);
     if (!DeviceNode)
@@ -319,12 +318,12 @@ AcpiInstallNotifyHandler (
      * Root Object:
      * ------------
      * Registering a notify handler on the root object indicates that the
-     * caller wishes to receive notifications for all objects.  Note that 
+     * caller wishes to receive notifications for all objects.  Note that
      * only one <external> global handler can be regsitered (per notify type).
      */
     if (Device == ACPI_ROOT_OBJECT)
     {
- 		/* Make sure the handler is not already installed */
+        /* Make sure the handler is not already installed */
 
         if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
               AcpiGbl_SysNotify.Handler) ||
@@ -376,7 +375,7 @@ AcpiInstallNotifyHandler (
         if (ObjDesc)
         {
 
-		    /* Object exists - make sure there's no handler */
+            /* Object exists - make sure there's no handler */
 
             if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
                   ObjDesc->Device.SysHandler) ||
@@ -409,7 +408,7 @@ AcpiInstallNotifyHandler (
             }
         }
 
-		/* Install the handler */
+        /* Install the handler */
 
         NotifyObj = AcpiCmCreateInternalObject (INTERNAL_TYPE_NOTIFY);
         if (!NotifyObj)
@@ -494,25 +493,25 @@ AcpiRemoveNotifyHandler (
 
         DEBUG_PRINT(ACPI_INFO, ("Removing notify handler for ROOT object.\n"));
 
-		if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
-			  !AcpiGbl_SysNotify.Handler) ||
-			((HandlerType == ACPI_DEVICE_NOTIFY) &&
-			  !AcpiGbl_DrvNotify.Handler))
-		{
-			Status = AE_NOT_EXIST;
+        if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
+              !AcpiGbl_SysNotify.Handler) ||
+            ((HandlerType == ACPI_DEVICE_NOTIFY) &&
+              !AcpiGbl_DrvNotify.Handler))
+        {
+            Status = AE_NOT_EXIST;
             goto UnlockAndExit;
-		}
+        }
 
-		if (HandlerType == ACPI_SYSTEM_NOTIFY) {
-			AcpiGbl_SysNotify.Node = NULL;
-			AcpiGbl_SysNotify.Handler = NULL;
-			AcpiGbl_SysNotify.Context = NULL;
-		}
-		else {
-			AcpiGbl_DrvNotify.Node = NULL;
-			AcpiGbl_DrvNotify.Handler = NULL;
-			AcpiGbl_DrvNotify.Context = NULL;
-		}
+        if (HandlerType == ACPI_SYSTEM_NOTIFY) {
+            AcpiGbl_SysNotify.Node = NULL;
+            AcpiGbl_SysNotify.Handler = NULL;
+            AcpiGbl_SysNotify.Context = NULL;
+        }
+        else {
+            AcpiGbl_DrvNotify.Node = NULL;
+            AcpiGbl_DrvNotify.Handler = NULL;
+            AcpiGbl_DrvNotify.Context = NULL;
+        }
     }
 
     /*
@@ -541,7 +540,7 @@ AcpiRemoveNotifyHandler (
             goto UnlockAndExit;
         }
 
-		/* Object exists - make sure there's an existing handler */
+        /* Object exists - make sure there's an existing handler */
 
         if (HandlerType == ACPI_SYSTEM_NOTIFY)
         {
@@ -559,7 +558,7 @@ AcpiRemoveNotifyHandler (
             goto UnlockAndExit;
         }
 
-		/* Remove the handler */
+        /* Remove the handler */
 
         if (HandlerType == ACPI_SYSTEM_NOTIFY)
         {
