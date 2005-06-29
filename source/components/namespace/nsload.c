@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.53 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -125,15 +125,15 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          ACPI_NAMESPACE
-        ACPI_MODULE_NAME    ("nsload")
+#define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsload")
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiLoadNamespace
  *
- * PARAMETERS:  None
+ * PARAMETERS:  DisplayAmlDuringLoad
  *
  * RETURN:      Status
  *
@@ -149,21 +149,23 @@ AcpiNsLoadNamespace (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiLoadNameSpace");
+    FUNCTION_TRACE ("AcpiLoadNameSpace");
 
 
     /* There must be at least a DSDT installed */
 
     if (AcpiGbl_DSDT == NULL)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "DSDT is not in memory\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("DSDT is not in memory\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
+
 
     /*
      * Load the namespace.  The DSDT is required,
      * but the SSDT and PSDT tables are optional.
      */
+
     Status = AcpiNsLoadTableByType (ACPI_TABLE_DSDT);
     if (ACPI_FAILURE (Status))
     {
@@ -175,9 +177,11 @@ AcpiNsLoadNamespace (
     AcpiNsLoadTableByType (ACPI_TABLE_SSDT);
     AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
-        "ACPI Namespace successfully loaded at root %p\n",
+
+    DEBUG_PRINT_RAW (ACPI_OK,
+        ("ACPI Namespace successfully loaded at root 0x%p\n",
         AcpiGbl_RootNode));
+
 
     return_ACPI_STATUS (Status);
 }
@@ -187,12 +191,11 @@ AcpiNsLoadNamespace (
  *
  * FUNCTION:    AcpiNsOneParsePass
  *
- * PARAMETERS:  PassNumber              - 1 or 2
- *              TableDesc               - The table to be parsed.
+ * PARAMETERS:  
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Perform one complete parse of an ACPI/AML table.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -201,13 +204,35 @@ AcpiNsOneCompleteParse (
     UINT32                  PassNumber,
     ACPI_TABLE_DESC         *TableDesc)
 {
+    ACPI_PARSE_DOWNWARDS    DescendingCallback;
+    ACPI_PARSE_UPWARDS      AscendingCallback;
     ACPI_PARSE_OBJECT       *ParseRoot;
     ACPI_STATUS             Status;
-    ACPI_WALK_STATE         *WalkState;
+    
+
+    FUNCTION_TRACE ("NsOneCompleteParse");
 
 
-    ACPI_FUNCTION_TRACE ("NsOneCompleteParse");
+    switch (PassNumber)
+    {
+    case 1:
+        DescendingCallback = AcpiDsLoad1BeginOp;
+        AscendingCallback  = AcpiDsLoad1EndOp;
+        break;
 
+    case 2:
+        DescendingCallback = AcpiDsLoad2BeginOp;
+        AscendingCallback  = AcpiDsLoad2EndOp;
+        break;
+
+    case 3:
+        DescendingCallback = AcpiDsExecBeginOp;
+        AscendingCallback  = AcpiDsExecEndOp;
+        break;
+
+    default:
+        return (AE_BAD_PARAMETER);
+    }
 
     /* Create and init a Root Node */
 
@@ -219,30 +244,22 @@ AcpiNsOneCompleteParse (
 
     ((ACPI_PARSE2_OBJECT *) ParseRoot)->Name = ACPI_ROOT_NAME;
 
-    /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
-                                    NULL, NULL, NULL);
-    if (!WalkState)
-    {
-        AcpiPsFreeOp (ParseRoot);
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
+    /* Pass 1:  Parse everything except control method bodies */
 
-    Status = AcpiDsInitAmlWalk (WalkState, ParseRoot, NULL, TableDesc->AmlStart,
-                    TableDesc->AmlLength, NULL, NULL, PassNumber);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiDsDeleteWalkState (WalkState);
-        return_ACPI_STATUS (Status);
-    }
+    DEBUG_PRINT (TRACE_PARSE,
+        ("NsParseTable: *PARSE* pass %d parse\n", PassNumber));
 
-    /* Parse the AML */
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "*PARSE* pass %d parse\n", PassNumber));
-    Status = AcpiPsParseAml (WalkState);
+    Status = AcpiPsParseAml (ParseRoot,
+                            TableDesc->AmlPointer,
+                            TableDesc->AmlLength,
+                            ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
+                            NULL, NULL, NULL,
+                            DescendingCallback,
+                            AscendingCallback);
 
     AcpiPsDeleteParseTree (ParseRoot);
+
     return_ACPI_STATUS (Status);
 }
 
@@ -268,7 +285,7 @@ AcpiNsParseTable (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("NsParseTable");
+    FUNCTION_TRACE ("NsParseTable");
 
 
     /*
@@ -281,11 +298,15 @@ AcpiNsParseTable (
      * to service the entire parse.  The second pass of the parse then
      * performs another complete parse of the AML..
      */
+
     Status = AcpiNsOneCompleteParse (1, TableDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
+
+
+
 
     /*
      * AML Parse, pass 2
@@ -296,28 +317,37 @@ AcpiNsParseTable (
      * overhead of this is compensated for by the fact that the
      * parse objects are all cached.
      */
+
     Status = AcpiNsOneCompleteParse (2, TableDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
+
+
+
+    /* TBD: no longer needed, remove */
+
+    AcpiGbl_ParsedNamespaceRoot = NULL;
+
+
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/*****************************************************************************
  *
  * FUNCTION:    AcpiNsLoadTable
  *
- * PARAMETERS:  TableDesc       - Descriptor for table to be loaded
- *              Node            - Owning NS node
+ * PARAMETERS:  *PcodeAddr          - Address of pcode block
+ *              PcodeLength         - Length of pcode block
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Load one ACPI table into the namespace
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
 AcpiNsLoadTable (
@@ -327,33 +357,26 @@ AcpiNsLoadTable (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("NsLoadTable");
+    FUNCTION_TRACE ("NsLoadTable");
 
 
-    /* Check if table contains valid AML (must be DSDT, PSDT, SSDT, etc.) */
-
-    if (!(AcpiGbl_AcpiTableData[TableDesc->Type].Flags & ACPI_TABLE_EXECUTABLE))
+    if (!TableDesc->AmlPointer)
     {
-        /* Just ignore this table */
-
-        return_ACPI_STATUS (AE_OK);
-    }
-
-    /* Check validity of the AML start and length */
-
-    if (!TableDesc->AmlStart)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null AML pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("NsLoadTable: Null AML pointer\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "AML block at %p\n", TableDesc->AmlStart));
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsLoadTable: AML block at %p\n", TableDesc->AmlPointer));
+
 
     if (!TableDesc->AmlLength)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Zero-length AML block\n"));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("NsLoadTable: Zero-length AML block\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
+
 
     /*
      * Parse the table and load the namespace with all named
@@ -364,16 +387,13 @@ AcpiNsLoadTable (
      * to another control method, we can't continue parsing
      * because we don't know how many arguments to parse next!
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Loading table into namespace ****\n"));
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsLoadTable: **** Loading table into namespace ****\n"));
 
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
     Status = AcpiNsParseTable (TableDesc, Node->Child);
-    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
     {
@@ -386,19 +406,20 @@ AcpiNsLoadTable (
      * just-in-time parsing, we delete the control method
      * parse trees.
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "**** Begin Table Method Parsing and Object Initialization ****\n"));
+
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsLoadTable: **** Begin Table Method Parsing and Object Initialization ****\n"));
 
     Status = AcpiDsInitializeObjects (TableDesc, Node);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "**** Completed Table Method Parsing and Object Initialization ****\n"));
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsLoadTable: **** Completed Table Method Parsing and Object Initialization ****\n"));
 
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiNsLoadTableByType
  *
@@ -410,35 +431,35 @@ AcpiNsLoadTable (
  *              of the given type are loaded.  The mechanism allows this
  *              routine to be called repeatedly.
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 ACPI_STATUS
 AcpiNsLoadTableByType (
     ACPI_TABLE_TYPE         TableType)
 {
     UINT32                  i;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_TABLE_HEADER       *TablePtr;
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    ACPI_FUNCTION_TRACE ("NsLoadTableByType");
+    FUNCTION_TRACE ("NsLoadTableByType");
 
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_TABLES);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    AcpiCmAcquireMutex (ACPI_MTX_TABLES);
+
 
     /*
      * Table types supported are:
      * DSDT (one), SSDT/PSDT (multiple)
      */
+
     switch (TableType)
     {
+
     case ACPI_TABLE_DSDT:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Loading DSDT\n"));
+        DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading DSDT\n"));
 
         TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_DSDT];
 
@@ -464,22 +485,28 @@ AcpiNsLoadTableByType (
 
     case ACPI_TABLE_SSDT:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Loading %d SSDTs\n",
+        DEBUG_PRINT (ACPI_INFO,
+            ("NsLoadTableByType: Loading %d SSDTs\n",
             AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count));
 
         /*
          * Traverse list of SSDT tables
          */
+
         TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_SSDT];
         for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count; i++)
         {
+            TablePtr = TableDesc->Pointer;
+
             /*
              * Only attempt to load table if it is not
              * already loaded!
              */
+
             if (!TableDesc->LoadedIntoNamespace)
             {
-                Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootNode);
+                Status = AcpiNsLoadTable (TableDesc,
+                                            AcpiGbl_RootNode);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -490,26 +517,32 @@ AcpiNsLoadTableByType (
 
             TableDesc = TableDesc->Next;
         }
+
         break;
 
 
     case ACPI_TABLE_PSDT:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Loading %d PSDTs\n",
+        DEBUG_PRINT (ACPI_INFO,
+            ("NsLoadTableByType: Loading %d PSDTs\n",
             AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count));
 
         /*
          * Traverse list of PSDT tables
          */
+
         TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_PSDT];
 
         for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count; i++)
         {
+            TablePtr = TableDesc->Pointer;
+
             /* Only attempt to load table if it is not already loaded! */
 
             if (!TableDesc->LoadedIntoNamespace)
             {
-                Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootNode);
+                Status = AcpiNsLoadTable (TableDesc,
+                                            AcpiGbl_RootNode);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -526,17 +559,19 @@ AcpiNsLoadTableByType (
 
     default:
         Status = AE_SUPPORT;
-        break;
     }
 
 
 UnlockAndExit:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+
+    AcpiCmReleaseMutex (ACPI_MTX_TABLES);
+
     return_ACPI_STATUS (Status);
+
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiNsDeleteSubtree
  *
@@ -547,8 +582,8 @@ UnlockAndExit:
  * DESCRIPTION: Walks the namespace starting at the given handle and deletes
  *              all objects, entries, and scopes in the entire subtree.
  *
- *              Namespace/Interpreter should be locked or the subsystem should
- *              be in shutdown before this routine is called.
+ *              TBD: [Investigate] What if any part of this subtree is in use?
+ *              (i.e. on one of the object stacks?)
  *
  ******************************************************************************/
 
@@ -564,25 +599,28 @@ AcpiNsDeleteSubtree (
     UINT32                  Level;
 
 
-    ACPI_FUNCTION_TRACE ("NsDeleteSubtree");
+    FUNCTION_TRACE ("NsDeleteSubtree");
 
 
-    ParentHandle = StartHandle;
-    ChildHandle  = 0;
-    Level        = 1;
+    ParentHandle    = StartHandle;
+    ChildHandle     = 0;
+    Level           = 1;
 
     /*
      * Traverse the tree of objects until we bubble back up
      * to where we started.
      */
+
     while (Level > 0)
     {
         /* Attempt to get the next object in this scope */
 
         Status = AcpiGetNextObject (ACPI_TYPE_ANY, ParentHandle,
-                                    ChildHandle, &NextChildHandle);
+                                    ChildHandle,
+                                    &NextChildHandle);
 
         ChildHandle = NextChildHandle;
+
 
         /* Did we get a new object? */
 
@@ -590,18 +628,21 @@ AcpiNsDeleteSubtree (
         {
             /* Check if this object has any children */
 
-            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY, ChildHandle,
-                                    0, &Dummy)))
+            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY,
+                                                ChildHandle, 0,
+                                                &Dummy)))
             {
                 /*
                  * There is at least one child of this object,
                  * visit the object
                  */
+
                 Level++;
-                ParentHandle = ChildHandle;
-                ChildHandle  = 0;
+                ParentHandle    = ChildHandle;
+                ChildHandle     = 0;
             }
         }
+
         else
         {
             /*
@@ -623,11 +664,12 @@ AcpiNsDeleteSubtree (
 
     AcpiNsDeleteNode (ChildHandle);
 
+
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
+/****************************************************************************
  *
  *  FUNCTION:       AcpiNsUnloadNameSpace
  *
@@ -639,7 +681,7 @@ AcpiNsDeleteSubtree (
  *                  event.  Deletes an entire subtree starting from (and
  *                  including) the given handle.
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
 AcpiNsUnloadNamespace (
@@ -648,7 +690,7 @@ AcpiNsUnloadNamespace (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("NsUnloadNameSpace");
+    FUNCTION_TRACE ("NsUnloadNameSpace");
 
 
     /* Parameter validation */
@@ -662,6 +704,7 @@ AcpiNsUnloadNamespace (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
+
 
     /* This function does the real work */
 

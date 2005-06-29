@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: nsxfinit - namespace external interfaces - initialization
- *              $Revision: 1.1 $
+ * Module Name: nsinit - namespace initialization
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -122,13 +122,13 @@
 #include "acdispat.h"
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsxfinit")
+        MODULE_NAME         ("nsinit")
 
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiInitializeObjects
+ * FUNCTION:    AcpiNsInitializeObjects
  *
  * PARAMETERS:  None
  *
@@ -140,18 +140,18 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInitializeObjects (
+AcpiNsInitializeObjects (
     void)
 {
     ACPI_STATUS             Status;
     ACPI_INIT_WALK_INFO     Info;
 
 
-    FUNCTION_TRACE ("AcpiInitializeObjects");
+    FUNCTION_TRACE ("NsInitializeObjects");
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
-        ("DsInitializeObjects: **** Starting initialization of namespace objects ****\n"));
+        ("NsInitializeObjects: **** Starting initialization of namespace objects ****\n"));
     DEBUG_PRINT_RAW (ACPI_OK, ("Completing Region and Field initialization:"));
 
 
@@ -170,16 +170,16 @@ AcpiInitializeObjects (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AcpiInitializeObjects: WalkNamespace failed! %x\n", Status));
+            ("NsInitializeObjects: WalkNamespace failed! %x\n", Status));
     }
 
     DEBUG_PRINT_RAW (ACPI_OK,
         ("\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n", 
         Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit, Info.FieldCount, Info.ObjectCount));
     DEBUG_PRINT (TRACE_DISPATCH,
-        ("DsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
+        ("NsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
     DEBUG_PRINT (TRACE_DISPATCH,
-        ("DsInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
+        ("NsInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -187,7 +187,7 @@ AcpiInitializeObjects (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiInitializeDevices
+ * FUNCTION:    AcpiNsInitializeDevices
  *
  * PARAMETERS:  None
  *
@@ -203,16 +203,17 @@ AcpiInitializeObjects (
  *****************************************************************************/
 
 ACPI_STATUS
-AcpiInitializeDevices (
-    void)
+AcpiNsInitializeDevices (
+    UINT32                  Flags)
 {
     ACPI_STATUS             Status;
     ACPI_DEVICE_WALK_INFO   Info;
 
 
-    FUNCTION_TRACE ("AcpiInitializeDevices");
+    FUNCTION_TRACE ("NsInitializeDevices");
 
 
+    Info.Flags = Flags;
     Info.DeviceCount = 0;
     Info.Num_STA = 0;
     Info.Num_INI = 0;
@@ -228,7 +229,7 @@ AcpiInitializeDevices (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AcpiInitializeDevices: WalkNamespace failed! %x\n", Status));
+            ("NsInitializeDevices: WalkNamespace failed! %x\n", Status));
     }
 
 
@@ -497,10 +498,13 @@ AcpiNsInitOneDevice (
      */
 
     Info->Num_PCI++;
-    Status = AcpiInstallAddressSpaceHandler (ObjHandle,
-                                             ADDRESS_SPACE_PCI_CONFIG,
-                                             ACPI_DEFAULT_HANDLER, NULL, NULL);
 
+    if (!(Info->Flags & ACPI_NO_PCI_INIT))
+    {
+        Status = AcpiInstallAddressSpaceHandler (ObjHandle,
+                                                 ADDRESS_SPACE_PCI_CONFIG,
+                                                 ACPI_DEFAULT_HANDLER, NULL, NULL);
+    }
 
 Cleanup:
 
