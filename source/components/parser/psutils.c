@@ -137,7 +137,8 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on opcode
+ * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on
+ *              opcode
  *
  ******************************************************************************/
 
@@ -156,7 +157,8 @@ AcpiPsInitOp (
     AmlOp = AcpiPsGetOpcodeInfo (Opcode);
     if (AmlOp)
     {
-        DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, AmlOp->Name, sizeof (Op->OpName)));
+        DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, AmlOp->Name,
+                            sizeof (Op->OpName)));
     }
 }
 
@@ -169,9 +171,9 @@ AcpiPsInitOp (
  *
  * RETURN:      Pointer to the new Op.
  *
- * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on opcode
- *              A cache of opcodes is available for the pure GENERIC_OP, since this
- *              is by far the most commonly used.
+ * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on
+ *              opcode.  A cache of opcodes is available for the pure
+ *              GENERIC_OP, since this is by far the most commonly used.
  *
  ******************************************************************************/
 
@@ -210,8 +212,8 @@ AcpiPsAllocOp (
         Flags = PARSEOP_GENERIC;
 
         /*
-         * The generic op is by far the most common (16 to 1), and therefore the op cache is
-         * implemented with this type.
+         * The generic op is by far the most common (16 to 1), and therefore
+         * the op cache is implemented with this type.
          *
          * Check if there is an Op already available in the cache
          */
