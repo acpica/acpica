@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -411,6 +411,7 @@ CgWriteNode (
 
 void
 TrWalkParseTree (
+    ASL_PARSE_NODE          *Node,
     UINT32                  Visitation,
     ASL_WALK_CALLBACK       DescendingCallback,
     ASL_WALK_CALLBACK       AscendingCallback,
@@ -506,6 +507,19 @@ AnMethodAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
+
+void
+AnMethodTypingWalkBegin (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+void
+AnMethodTypingWalkEnd (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
 
 /*
  * aslfiles - File I/O support

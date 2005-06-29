@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -152,7 +152,7 @@ CgGenerateAmlOutput (void)
     LsPushNode (Gbl_InputFilename);
     Gbl_NextError = Gbl_ErrorLog;
 
-    TrWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
 
 
     if (Gbl_ListingFlag)

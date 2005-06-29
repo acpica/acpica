@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -349,8 +349,8 @@ AnMapBtypeToEtype (
 
 void
 AnFormatBtype (
-    UINT32              Btype,
-    char                *Buffer)
+    char                *Buffer,
+    UINT32              Btype)
 {
     UINT32              Type;
     BOOLEAN             First = TRUE;
@@ -358,6 +358,12 @@ AnFormatBtype (
 
 
     *Buffer = 0;
+
+    if (Btype == 0)
+    {
+        strcat (Buffer, "NoReturnValue");
+        return;
+    }
 
     for (Type = 1; Type < ACPI_TYPE_MAX; Type++)
     {
@@ -447,7 +453,15 @@ AnGetBtype (
                return ACPI_UINT32_MAX;
             }
 
-            AcpiBtype = ReferencedNode->AcpiBtype;
+            if (ReferencedNode->Flags & NODE_METHOD_TYPED)
+            {
+                AcpiBtype = ReferencedNode->AcpiBtype;
+            }
+
+            else
+            {
+                return (ACPI_UINT32_MAX -1);
+            }
         }
     }
 
@@ -861,15 +875,7 @@ AnMethodAnalysisWalkEnd (
     case RETURN:
 
         Node->Parent->Flags |= NODE_HAS_NO_EXIT;
-
-        if ((Node->Child) &&
-            (Node->Child->ParseOpcode != DEFAULT_ARG))
-        {
-            /* Returns a value, get it's type */
-
-            MethodInfo->Node->AcpiBtype |= AnGetBtype (Node->Child);
-        }
-            
+        Node->ParentMethod = MethodInfo->Node;      /* Used in the "typing" pass later */
         break;
 
 
@@ -906,6 +912,93 @@ AnMethodAnalysisWalkEnd (
 }
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnMethodTypingWalkBegin
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Descending callback for the typing walk.  Check methods for :
+ *              1) Initialized local variables
+ *              2) Valid arguments
+ *              3) Return types
+ *
+ ******************************************************************************/
+
+void
+AnMethodTypingWalkBegin (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context)
+{
+
+
+    switch (Node->ParseOpcode)
+    {
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnMethodTypingWalkEnd
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Ascending callback for typing walk.  Complete method
+ *              return analysis.
+ *
+ ******************************************************************************/
+
+void
+AnMethodTypingWalkEnd (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context)
+{
+    UINT32                  AcpiBtype;
+
+
+    switch (Node->ParseOpcode)
+    {
+    case METHOD:
+        Node->Flags |= NODE_METHOD_TYPED;
+        break;
+
+    case RETURN:
+        if ((Node->Child) &&
+            (Node->Child->ParseOpcode != DEFAULT_ARG))
+        {
+            AcpiBtype = AnGetBtype (Node->Child);            
+            
+            if ((Node->Child->ParseOpcode == METHODCALL) &&
+                (AcpiBtype == (ACPI_UINT32_MAX -1)))
+            {
+
+                /* 
+                 * The method is untyped at this time (typically a forward reference).  We must
+                 * recursively type the method here
+                 */
+
+                TrWalkParseTree (Node->Child->NsNode->Object, ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
+                                    AnMethodTypingWalkEnd, NULL);
+
+                AcpiBtype = AnGetBtype (Node->Child);            
+            }
+
+            /* Returns a value, get it's type */
+
+            Node->ParentMethod->AcpiBtype |= AcpiBtype;
+        }
+            
+        break;
+    }
+}
 
 
 /*******************************************************************************
@@ -968,6 +1061,7 @@ AnSemanticAnalysisWalkEnd (
     UINT32                  AcpiEtype;
     UINT32                  OpcodeClass;
     UINT32                  i;
+    UINT32                  CommonBtypes;
 
 
     switch (Node->AmlOpcode)
@@ -1102,26 +1196,60 @@ AnSemanticAnalysisWalkEnd (
             }
 
 
+            CommonBtypes = AcpiBtype & RequiredAcpiType;
+
+            if (ArgNode->ParseOpcode == METHODCALL)
+            {
+                if (!CommonBtypes)
+                {
+                    AnFormatBtype (StringBuffer, AcpiBtype);
+                    AnFormatBtype (StringBuffer2, RequiredAcpiType);
+
+                    /*
+                     * The case where the method does not return any value at all
+                     * was already handled in the namespace cross reference
+                     * -- Only issue an error if the method in fact returns a value,
+                     * but it is of the wrong type
+                     */
+                    if (AcpiBtype != 0)
+                    {
+                        sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]", 
+                                    StringBuffer, OpInfo->Name, StringBuffer2);
+
+                        AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgNode, MsgBuffer);
+                    }
+                }
+
+/* TBD: needs to handle the implicit conversion rules
+
+                else if (CommonBtypes ^ AcpiBtype)
+                {
+                    AnFormatBtype (StringBuffer, AcpiBtype);
+                    AnFormatBtype (StringBuffer2, RequiredAcpiType);
+
+                    sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]", 
+                                StringBuffer, OpInfo->Name, StringBuffer2);
+
+                    AslError (ASL_WARNING, ASL_MSG_MULTIPLE_TYPES, ArgNode, MsgBuffer);
+                }
+***********************************/
+
+            }
+
             /* 
              * Now check if the actual type(s) match at least one
              * bit to the required type
              */
-            if (!(AcpiBtype & RequiredAcpiType))
+            else if (!CommonBtypes)
             {
                 AcpiEtype = AnMapBtypeToEtype (AcpiBtype);
 
-                AnFormatBtype (RequiredAcpiType, StringBuffer);
+                AnFormatBtype (StringBuffer, AcpiBtype);
+                AnFormatBtype (StringBuffer2, RequiredAcpiType);
 
-                if (ArgNode->ParseOpcode == METHODCALL)
-                {
-                    sprintf (MsgBuffer, "Method returns %s, \"%s\" requires %s", 
-                                AcpiCmGetTypeName (AcpiEtype), OpInfo->Name, StringBuffer);
-                }
-                else
-                {
-                    sprintf (MsgBuffer, "Found %s, \"%s\" requires %s", 
-                                AcpiCmGetTypeName (AcpiEtype), OpInfo->Name, StringBuffer);
-                }
+                sprintf (MsgBuffer, "[%s] found, %s operator requires [%s]", 
+                            StringBuffer, OpInfo->Name, StringBuffer2);
+
 
                 AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgNode, MsgBuffer);
             }
@@ -1133,8 +1261,6 @@ AnSemanticAnalysisWalkEnd (
             i++;
         }
     }
-    
-
 }
 
 

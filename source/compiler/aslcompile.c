@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -262,12 +262,12 @@ CmDoCompile (void)
     /* Generate AML opcodes corresponding to the parse tokens */
 
     DbgPrint ("\nGenerating AML opcodes\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
 
     /* Calculate all AML package lengths */
 
     DbgPrint ("\nGenerating Package lengths\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
 
     if (Gbl_ParseOnlyFlag)
     {
@@ -290,29 +290,39 @@ CmDoCompile (void)
     LdLoadNamespace ();
 
 
+    /* 
+     * Semantic error checking part one - check control methods
+     */
+
+    AnalysisWalkInfo.MethodStack = NULL;
+
+    DbgPrint ("\nSemantic analysis - Method analysis\n\n");
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnMethodAnalysisWalkBegin,
+                        AnMethodAnalysisWalkEnd, &AnalysisWalkInfo);
+
     /* Namespace lookup */
 
     LkCrossReferenceNamespace ();
 
-    /* Semantic error checking part one - check control methods */
 
-    AnalysisWalkInfo.MethodStack = NULL;
+    /* Semantic error checking part two - typing of method returns */
 
-    DbgPrint ("\nSemantic analysis\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, AnMethodAnalysisWalkBegin,
-                        AnMethodAnalysisWalkEnd, &AnalysisWalkInfo);
+    DbgPrint ("\nSemantic analysis - Method typing \n\n");
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
+                        AnMethodTypingWalkEnd, NULL);
 
-    /* Semantic error checking part two - operand type checking */
+    /* Semantic error checking part three - operand type checking */
 
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
+    DbgPrint ("\nSemantic analysis - Operand type checking \n\n");
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
                         AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
 
 
     /* Calculate all AML package lengths */
 
     DbgPrint ("\nGenerating Package lengths\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
 
 
     /*
