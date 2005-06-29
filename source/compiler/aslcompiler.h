@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -248,7 +248,8 @@ AslCompilererror(
     char                    *s);
 
 int
-AslCompilerlex();
+AslCompilerlex(
+    void);
 
 char
 *AslCompilertext;
