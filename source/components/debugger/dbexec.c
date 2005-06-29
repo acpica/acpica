@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.23 $
+ *              $Revision: 1.27 $
  *
  ******************************************************************************/
 
@@ -130,18 +130,6 @@
 
 #define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbexec")
-
-
-typedef struct dbmethodinfo
-{
-    ACPI_HANDLE             ThreadGate;
-    NATIVE_CHAR             *Name;
-    NATIVE_CHAR             **Args;
-    UINT32                  Flags;
-    UINT32                  NumLoops;
-    NATIVE_CHAR             Pathname[128];
-
-} DB_METHOD_INFO;
 
 
 DB_METHOD_INFO              Info;
@@ -333,7 +321,8 @@ AcpiDbExecute (
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Execution of %s failed with status %s\n", Info.Pathname, AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Execution of %s failed with status %s\n", 
+            Info.Pathname, AcpiFormatException (Status));
     }
 
     else
@@ -342,7 +331,7 @@ AcpiDbExecute (
 
         if (ReturnObj.Length)
         {
-            AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n", 
+            AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n",
                 Info.Pathname, ReturnObj.Pointer, ReturnObj.Length);
             AcpiDbDumpObject (ReturnObj.Pointer, 1);
         }
@@ -382,7 +371,7 @@ AcpiDbMethodThread (
         {
             if (ReturnObj.Length)
             {
-                AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n", 
+                AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n",
                     Info->Pathname, ReturnObj.Pointer, ReturnObj.Length);
                 AcpiDbDumpObject (ReturnObj.Pointer, 1);
             }
@@ -440,7 +429,7 @@ AcpiDbCreateExecutionThreads (
     Status = AcpiOsCreateSemaphore (1, 0, &ThreadGate);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not create semaphore, %s\n", AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not create semaphore, %s\n", AcpiFormatException (Status));
         return;
     }
 
