@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.200 $
+ *       $Revision: 1.201 $
  *
  *****************************************************************************/
 
@@ -1016,6 +1016,12 @@ typedef struct
 
 typedef struct
 {
+    UINT8                       Checksum;
+
+} ACPI_RESOURCE_END_TAG;
+
+typedef struct
+{
     UINT32                      ReadWriteAttribute;
     UINT32                      MinBaseAddress;
     UINT32                      MaxBaseAddress;
@@ -1143,6 +1149,7 @@ typedef struct
 } ACPI_RESOURCE_EXT_IRQ;
 
 
+
 /* ACPI_RESOURCE_TYPEs */
 
 #define ACPI_RSTYPE_IRQ                 0
@@ -1171,6 +1178,7 @@ typedef union
     ACPI_RESOURCE_IO            Io;
     ACPI_RESOURCE_FIXED_IO      FixedIo;
     ACPI_RESOURCE_VENDOR        VendorSpecific;
+    ACPI_RESOURCE_END_TAG       EndTag;
     ACPI_RESOURCE_MEM24         Memory24;
     ACPI_RESOURCE_MEM32         Memory32;
     ACPI_RESOURCE_FIXED_MEM32   FixedMemory32;
