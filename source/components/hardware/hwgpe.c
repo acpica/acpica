@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.59 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -124,19 +124,20 @@
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiHwEnableGpe
+ * FUNCTION:    AcpiHwWriteGpeEnableReg
  *
  * PARAMETERS:  GpeEventInfo        - Info block for the GPE to be enabled
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Enable a single GPE.  Note: The bit for this GPE must already
- *              be set in the parent register EnableForRun mask.
+ * DESCRIPTION: Write a GPE enable register.  Note: The bit for this GPE must 
+ *              already be cleared or set in the parent register 
+ *              EnableForRun mask.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiHwEnableGpe (
+AcpiHwWriteGpeEnableReg (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo)
 {
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
@@ -154,53 +155,13 @@ AcpiHwEnableGpe (
         return (AE_NOT_EXIST);
     }
 
-    /* Write GPE enable register with the new GPE bit enabled */
+    /* Write the entire GPE (runtime) enable register */
 
     Status = AcpiHwLowLevelWrite (8, GpeRegisterInfo->EnableForRun,
                     &GpeRegisterInfo->EnableAddress);
 
     return (Status);
 }
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwDisableGpe
- *
- * PARAMETERS:  GpeEventInfo        - Info block for the GPE to be disabled
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Disable a single GPE.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiHwDisableGpe (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
-{
-    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Get the info block for the entire GPE register */
-
-    GpeRegisterInfo = GpeEventInfo->RegisterInfo;
-    if (!GpeRegisterInfo)
-    {
-        return (AE_NOT_EXIST);
-    }
-
-    /* Write the GPE enable register with this GPE bit cleared */
-
-    Status = AcpiHwLowLevelWrite (8, GpeRegisterInfo->EnableForRun,
-                    &GpeRegisterInfo->EnableAddress);
-    return (Status);
-}
-
 
 
 /******************************************************************************
@@ -403,7 +364,7 @@ AcpiHwClearGpeBlock (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Enable all "runtime" GPEs within a GPE block. (Includes 
+ * DESCRIPTION: Enable all "runtime" GPEs within a GPE block. (Includes
  *              combination wake/run GPEs.)
  *
  ******************************************************************************/
@@ -451,7 +412,7 @@ AcpiHwEnableRuntimeGpeBlock (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Enable all "wake" GPEs within a GPE block.  (Includes 
+ * DESCRIPTION: Enable all "wake" GPEs within a GPE block.  (Includes
  *              combination wake/run GPEs.)
  *
  ******************************************************************************/
@@ -469,6 +430,11 @@ AcpiHwEnableWakeupGpeBlock (
 
     for (i = 0; i < GpeBlock->RegisterCount; i++)
     {
+        if (!GpeBlock->RegisterInfo[i].EnableForWake)
+        {
+            continue;
+        }
+
         /* Enable all "wake" GPEs in this register */
 
         Status = AcpiHwLowLevelWrite (8, GpeBlock->RegisterInfo[i].EnableForWake,
@@ -502,12 +468,12 @@ AcpiHwDisableAllGpes (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    ACPI_FUNCTION_TRACE ("HwDisableAllGpes");
 
 
     Status = AcpiEvWalkGpeList (AcpiHwDisableGpeBlock);
     Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock);
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -530,12 +496,11 @@ AcpiHwEnableAllRuntimeGpes (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    ACPI_FUNCTION_TRACE ("HwEnableAllRuntimeGpes");
 
 
-    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock);
     Status = AcpiEvWalkGpeList (AcpiHwEnableRuntimeGpeBlock);
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -558,11 +523,10 @@ AcpiHwEnableAllWakeupGpes (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    ACPI_FUNCTION_TRACE ("HwEnableAllWakeupGpes");
 
 
-    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock);
     Status = AcpiEvWalkGpeList (AcpiHwEnableWakeupGpeBlock);
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
