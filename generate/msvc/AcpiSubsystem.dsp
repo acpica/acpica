@@ -259,6 +259,10 @@ SOURCE=..\..\Subsystem\Interpreter\iepstack.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\ieregion.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\iesystem.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
@@ -617,6 +621,10 @@ SOURCE=..\..\Subsystem\Include\acpitables.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Include\acpitypes.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Include\amlcode.h
 # End Source File
 # Begin Source File
@@ -626,10 +634,6 @@ SOURCE=..\..\Subsystem\Include\common.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\config.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\datatypes.h
 # End Source File
 # Begin Source File
 
