@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.137 $
+ *       $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -694,8 +694,7 @@ AcpiExExitInterpreter (
 
 void
 AcpiExTruncateFor32bitTable (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState);
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 BOOLEAN
 AcpiExValidateObjectType (
