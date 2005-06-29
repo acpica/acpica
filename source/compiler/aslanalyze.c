@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -192,13 +192,13 @@ AnMapArgTypeToBtype (
         return (ACPI_BTYPE_COMPUTE_DATA);
 
     case ARGI_DATAOBJECT:
-     
+
         /* Buffer, string, package or reference to a Op - Used only by SizeOf operator*/
 
         return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE);
 
     case ARGI_COMPLEXOBJ:
-    
+
         /* Buffer, String, or package */
 
         return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE);
@@ -875,7 +875,7 @@ AnMethodAnalysisWalkBegin (
     case PARSEOP_PROCESSOR:
     case PARSEOP_THERMALZONE:
 
-        /* 
+        /*
          * The first operand is a name to be created in the namespace.
          * Check against the reserved list.
          */
@@ -921,7 +921,7 @@ AnMethodAnalysisWalkBegin (
                 if (Next->Asl.ParseOpcode == PARSEOP_STRING_LITERAL)
                 {
                     /*
-                     * _HID is a string, all characters must be alphanumeric.  
+                     * _HID is a string, all characters must be alphanumeric.
                      * One of the things we want to catch here is the use of
                      * a leading asterisk in the string.
                      */

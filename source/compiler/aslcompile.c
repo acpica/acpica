@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.56 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,6 @@
         ACPI_MODULE_NAME    ("aslcompile")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AslCompilerSignon
@@ -179,10 +178,10 @@ AslCompilerSignon (
     /* Compiler signon with copyright */
 
     FlPrintFile (FileId,
-        "%s\n%s%s %s [%s]\n%sIncludes ACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0a\n%s\n",
+        "%s\n%s%s\n%s%s version %X [%s]\n%s%s\n%sSupports ACPI Specification Revision 2.0a\n%s\n",
         Prefix,
-        Prefix, CompilerId, CompilerVersion, __DATE__,
-        Prefix, ACPI_CA_VERSION,
+        Prefix, IntelAcpiCA,
+        Prefix, CompilerId, ACPI_CA_VERSION, __DATE__,
         Prefix, CompilerCopyright,
         Prefix,
         Prefix);
@@ -311,6 +310,8 @@ CmDoCompile (void)
     AslCompilerparse();
     UtEndEvent (i++);
 
+    OpcGetIntegerWidth (RootNode);
+
     /* Pre-process parse tree for any operator transforms */
 
     UtBeginEvent (i, "Generate AML opcodes");
@@ -358,7 +359,7 @@ CmDoCompile (void)
     /* Namespace loading */
 
     UtBeginEvent (i, "Create ACPI Namespace");
-    Status = LdLoadNamespace ();
+    Status = LdLoadNamespace (RootNode);
     UtEndEvent (i++);
     if (ACPI_FAILURE (Status))
     {

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.56 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -645,9 +645,7 @@ ResetCurrentLineBuffer (
             Gbl_LineBufPtr - Gbl_CurrentLineBuffer);
     }
 
-    Gbl_InputByteCount++; /* Account for the CR/linefeed */
-    Gbl_CurrentLineOffset += Gbl_CurrentColumn + 1;
-
+    Gbl_CurrentLineOffset += Gbl_CurrentColumn;
     Gbl_CurrentColumn = 0;
 
     Gbl_CurrentLineNumber++;
@@ -887,7 +885,7 @@ literal (void)
     char                *CleanString;
     char                StringChar;
     UINT32              State = ASL_NORMAL_CHAR;
-    UINT32              i;
+    UINT32              i = 0;
     UINT8               Digit;
     char                ConvertBuffer[4];
 
@@ -982,9 +980,13 @@ DoCharacter:
                     continue;
                 }
 
-                /* Unknown escape sequence -- just ignore it */
+                /* Unknown escape sequence issue warning, but use the character */
 
-                continue;
+                AslCommonError (ASL_WARNING, ASL_MSG_INVALID_ESCAPE,
+                                Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                                Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                                Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+				break;
             }
             break;
 
@@ -1097,6 +1099,5 @@ CompletedString:
     ACPI_STRCPY (CleanString, MsgBuffer);
     AslCompilerlval.s = CleanString;
 }
-
 
 
