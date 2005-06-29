@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  ******************************************************************************/
 
@@ -320,7 +320,7 @@ AcpiUtDisplayInitPathname (
     ACPI_BUFFER             Buffer;
 
 
-    ACPI_FUNCTION_NAME ("UtDisplayInitPathname");
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Only print the path if the appropriate debug level is enabled */
