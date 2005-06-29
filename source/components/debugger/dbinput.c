@@ -132,23 +132,27 @@
 
 
 
-#define COMMAND_PROMPT      '-'
-#define EXECUTE_PROMPT      '%'
-
-char                    *Version = "X003";
 char                    LineBuf[80];
+char                    ParsedBuf[80];
 char                    ScopeBuf[40];
 char                    DebugFilename[40];
 char                    *Args[DB_MAX_ARGS];
 char                    *Buffer;
 char                    *Filename = NULL;
+UINT32                  Gbl_DbDebugLevel = 0x0FFFFFFF;
+UINT32                  Gbl_DbConsoleDebugLevel = DEBUG_DEFAULT;
 UINT32                  Gbl_MethodBreakpoint = 0;
+BOOLEAN                 Gbl_MethodExecuting = FALSE;
+BOOLEAN                 OutputToFile = FALSE;
+UINT8                   Gbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
+UINT8                   Gbl_DbTerminateThreads = FALSE;
 
-int                     opt_tables      = FALSE;
-int                     opt_disasm      = FALSE;
-int                     opt_stats       = FALSE;
-int                     opt_parse_jit   = FALSE;
-int						opt_verbose     = TRUE;
+
+BOOLEAN                 opt_tables      = FALSE;
+BOOLEAN                 opt_disasm      = FALSE;
+BOOLEAN                 opt_stats       = FALSE;
+BOOLEAN                 opt_parse_jit   = FALSE;
+BOOLEAN					opt_verbose     = TRUE;
    
 
 /*
@@ -158,35 +162,44 @@ int						opt_verbose     = TRUE;
 #define CMD_NOT_FOUND       0
 #define CMD_NULL            1
 #define CMD_ALLOCATIONS     2
-#define CMD_ARGUMENTS       3
-#define CMD_BREAKPOINT      4
-#define CMD_CLOSE           5
-#define CMD_DEBUG           6
-#define CMD_DUMP            7
-#define CMD_EXECUTE         8
-#define CMD_EXIT            9
-#define CMD_GO              10
-#define CMD_HELP            11
-#define CMD_HELP2           12
-#define CMD_LEVEL           13
-#define CMD_LIST            14
-#define CMD_LOCALS          15
-#define CMD_METHODS         16
-#define CMD_NAMESPACE       17
-#define CMD_NOTIFY          18
-#define CMD_OBJECT          19
-#define CMD_OPEN            20
-#define CMD_PREFIX          21
-#define CMD_QUIT            22
-#define CMD_RESULTS         23
-#define CMD_SET             24
-#define CMD_STATS           25
-#define CMD_STOP            26
-#define CMD_TERMINATE       27
-#define CMD_TREE            28
+#define CMD_ARGS            3
+#define CMD_ARGUMENTS       4
+#define CMD_BREAKPOINT      5
+#define CMD_CALL            6
+#define CMD_CLOSE           7
+#define CMD_DEBUG           8
+#define CMD_DUMP            9
+#define CMD_EVENT           10
+#define CMD_EXECUTE         11
+#define CMD_EXIT            12
+#define CMD_GO              13
+#define CMD_HELP            14
+#define CMD_HELP2           15
+#define CMD_HISTORY         16
+#define CMD_HISTORY_EXE     17
+#define CMD_INFORMATION     18
+#define CMD_INTO            19
+#define CMD_LEVEL           20
+#define CMD_LIST            21
+#define CMD_LOAD            22
+#define CMD_LOCALS          23
+#define CMD_METHODS         24
+#define CMD_NAMESPACE       25
+#define CMD_NOTIFY          26
+#define CMD_OBJECT          27
+#define CMD_OPEN            28
+#define CMD_PREFIX          29
+#define CMD_QUIT            30
+#define CMD_RESULTS         31
+#define CMD_SET             32
+#define CMD_STATS           33
+#define CMD_STOP            34
+#define CMD_TERMINATE       35
+#define CMD_TREE            36
+#define CMD_UNLOAD          37
 
 #define CMD_FIRST_VALID     2
-#define CMD_NUM_COMMANDS    29
+#define CMD_NUM_COMMANDS    38
 
 
 typedef struct CommandInfo
@@ -200,34 +213,188 @@ COMMAND_INFO            Commands[CMD_NUM_COMMANDS] = {
                             "<NOT FOUND>",  0,
                             "<NULL>",       0,
                             "ALLOCATIONS",  0,
+                            "ARGS",         0,
                             "ARGUMENTS",    0,
                             "BREAKPOINT",   1,
+                            "CALL",         0,
                             "CLOSE",        0,
                             "DEBUG",        1,
                             "DUMP",         1,
+                            "EVENT",        1,
                             "EXECUTE",      1,
                             "EXIT",         0,
                             "GO",           0,
                             "HELP",         0,
                             "?",            0,
-                            "LEVEL",        1,
+                            "HISTORY",      0,
+                            "!",            1,
+                            "INFORMATION",  0,
+                            "INTO",         0,
+                            "LEVEL",        0,
                             "LIST",         0,
+                            "LOAD",         1,
                             "LOCALS",       0,
                             "METHODS",      0,
                             "NAMESPACE",    0,
                             "NOTIFY",       2,
                             "OBJECT",       1,
                             "OPEN",         1,
-                            "PREFIX",       1,
+                            "PREFIX",       0,
                             "QUIT",         0,
                             "RESULTS",      0,
                             "SET",          3,
                             "STATS",        0,
                             "STOP",         0,
                             "TERMINATE",    0,
-                            "TREE",         0};
+                            "TREE",         0,
+                            "UNLOAD",       0};
 
 
+
+typedef struct HistoryInfo
+{
+    char                    Command[80];
+    UINT32                  CmdNum;
+
+} HISTORY_INFO;
+
+
+#define HI_NO_HISTORY       0
+#define HI_RECORD_HISTORY   1
+
+#define HISTORY_SIZE        8
+HISTORY_INFO                HistoryBuffer[HISTORY_SIZE];
+UINT32                      LoHistory = 0;
+UINT32                      NumHistory = 0;
+UINT32                      NextHistoryIndex = 0;
+UINT32                      NextCmdNum = 1;
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbAddToHistory
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Add a command line to the history buffer.
+ *
+ *****************************************************************************/
+
+void
+DbAddToHistory (
+    char                *CommandLine)
+{
+
+
+    STRCPY (HistoryBuffer[NextHistoryIndex].Command, CommandLine);
+    HistoryBuffer[NextHistoryIndex].CmdNum = NextCmdNum;
+
+    if ((NumHistory == HISTORY_SIZE) &&
+        (NextHistoryIndex == LoHistory))
+    {
+        LoHistory++;
+        if (LoHistory >= HISTORY_SIZE)
+        {
+            LoHistory = 0;
+        }
+    }
+
+    NextHistoryIndex++;
+    if (NextHistoryIndex >= HISTORY_SIZE)
+    {
+        NextHistoryIndex = 0;
+    }
+
+
+    NextCmdNum++;
+    if (NumHistory < HISTORY_SIZE)
+    {
+        NumHistory++;
+    }
+
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisplayHistory
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display the contents of the history buffer
+ *
+ *****************************************************************************/
+
+void
+DbDisplayHistory (void)
+{
+    UINT32                  i;
+    UINT32                  HistoryIndex;
+
+
+    HistoryIndex = LoHistory;
+    for (i = 0; i < NumHistory; i++)
+    {
+        OsdPrintf ("%d  %s\n", HistoryBuffer[HistoryIndex].CmdNum, &HistoryBuffer[HistoryIndex].Command);
+
+        HistoryIndex++;
+        if (HistoryIndex >= HISTORY_SIZE)
+        {
+            HistoryIndex = 0;
+        }
+    }
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbGetFromHistory
+ *
+ * PARAMETERS:  CommandNumArg           - String containing the number of the
+ *                                        command to be retrieved
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Get a command from the history buffer
+ *
+ *****************************************************************************/
+
+char *
+DbGetFromHistory (
+    char                    *CommandNumArg)
+{
+    UINT32                  i;
+    UINT32                  HistoryIndex;
+    UINT32                  CmdNum;
+
+
+    CmdNum = STRTOUL (CommandNumArg, NULL, 0);
+
+    HistoryIndex = LoHistory;
+    for (i = 0; i < NumHistory; i++)
+    {
+        if (HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
+        {
+            return (HistoryBuffer[HistoryIndex].Command);
+        }
+
+
+        HistoryIndex++;
+        if (HistoryIndex >= HISTORY_SIZE)
+        {
+            HistoryIndex = 0;
+        }
+    }
+
+    OsdPrintf ("Invalid history number: %d\n", HistoryIndex);
+    return NULL;
+}
+    
 
 /******************************************************************************
  * 
@@ -244,34 +411,45 @@ COMMAND_INFO            Commands[CMD_NUM_COMMANDS] = {
 void
 DbDisplayHelp (void)
 {
-    OsdPrintf ("\nACPI/AML Debugger Commands\n\n");
+    OsdPrintf ("\nAML Debugger Commands\n\n");
     OsdPrintf ("Allocations                     Display memory allocation info\n");
-    OsdPrintf ("Close                           Close debug output file\n");
     OsdPrintf ("Debug <Method Path>             Single Step a control method\n");
-    OsdPrintf ("Dump <Address>|<NamePath>       Display ACPI objects or memory\n");
-    OsdPrintf ("Execute <Method Path>           Execute control method (full pathname)\n");
+    OsdPrintf ("Dump <Address>|<Namepath>\n");
+    OsdPrintf ("     [Byte|Word|Dword|Qword]    Display ACPI objects or memory\n");
+    OsdPrintf ("Event <F|G> <Value>             Generate Event (Fixed/GPE)\n");
+    OsdPrintf ("Execute <Method Namepath>       Execute control method (full pathname)\n");
     OsdPrintf ("Help                            This help screen\n");
-    OsdPrintf ("Level <DebugLevel>              Set level of debug output\n");
-    OsdPrintf ("Methods [<lines per screen>]    Display list of loaded control methods\n");
+    OsdPrintf ("History                         Display command history buffer\n");
+    OsdPrintf ("Level <DebugLevel>              Set debug level (file output only)\n");
+    OsdPrintf ("Method                          Display list of loaded control methods\n");
     OsdPrintf ("Notify <NamePath> <Value>       Send a notification\n");
-    OsdPrintf ("Object <Address>                Display formatted ACPI object\n");
-    OsdPrintf ("Open <Debug Filename>           Open a file for debug output\n");
+    OsdPrintf ("Object <Address>|<Namepath>     Synonym for Dump\n");
     OsdPrintf ("Prefix [<NamePath>]             Set or Get current execution prefix\n");
     OsdPrintf ("Quit or Exit                    Exit this command\n");
     OsdPrintf ("Stats                           Display namespace and memory statistics\n");
     OsdPrintf ("Terminate                       Delete namespace and all internal objects\n");
+    OsdPrintf ("Unload                          Unload an ACPI table\n");
+    OsdPrintf ("! <CommandNumber>               Execute command from history buffer\n");
 
-    OsdPrintf ("\nACPI/AML Control Method Execution Commands\n\n");
-    OsdPrintf ("Arguments                       Display method arguments\n");
+    OsdPrintf ("\nControl Method Execution Commands\n\n");
+    OsdPrintf ("Arguments (or Args)             Display method arguments\n");
     OsdPrintf ("Breakpoint <AmlOffset>          Set an AML execution breakpoint\n");
+    OsdPrintf ("Call                            Run to next control method invocation\n");
     OsdPrintf ("Go                              Allow method to run to completion\n");
+    OsdPrintf ("Information                     Display info about the current method\n");
+    OsdPrintf ("Into                            Step into (not over) a method call\n");
     OsdPrintf ("List [# of Aml Opcodes]         Display method ASL statements\n");
     OsdPrintf ("Locals                          Display method local variables\n");
     OsdPrintf ("Results                         Display method result stack\n");
-    OsdPrintf ("Set <A|L> <#> <Value>           Set method Arguments and Locals\n");
+    OsdPrintf ("Set <A|L> <#> <Value>           Set method data (Arguments/Locals)\n");
     OsdPrintf ("Stop                            Terminate control method\n");
     OsdPrintf ("Tree                            Display control method calling tree\n");
     OsdPrintf ("<Enter>                         Single step next AML opcode\n");
+
+    OsdPrintf ("\nFile I/O Commands\n\n");
+    OsdPrintf ("Close                           Close debug output file\n");
+    OsdPrintf ("Open <Output Filename>          Open a file for debug output\n");
+    OsdPrintf ("Load <Input Filename>           Load ACPI table from a file\n");
 }
 
 
@@ -332,8 +510,11 @@ DbGetNextToken (
         *Next = NULL;
     }
 
-    *String = 0;
-    *Next = String + 1;
+    else
+    {
+        *String = 0;
+        *Next = String + 1;
+    }
 
     return Start;
 }
@@ -353,7 +534,8 @@ DbGetNextToken (
  *****************************************************************************/
 
 INT32
-DbGetLine (void)
+DbGetLine (
+    char                    *InputBuffer)
 {
     UINT32                  i;
     INT32                   Count;
@@ -362,10 +544,10 @@ DbGetLine (void)
 
 
 
-    OsdGetLine (LineBuf);
-    STRUPR (LineBuf);
+    STRCPY (ParsedBuf, InputBuffer);
+    STRUPR (ParsedBuf);
 
-    This = LineBuf;
+    This = ParsedBuf;
     for (i = 0; i < DB_MAX_ARGS; i++)
     {
         Args[i] = DbGetNextToken (This, &Next);
@@ -424,10 +606,281 @@ DbMatchCommand (
 }
 
 
+/******************************************************************************
+ * 
+ * FUNCTION:    DbCommandDispatch
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Command dispatcher.  Called from two places:
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DbCommandDispatch (
+    char                    *InputBuffer,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op)
+{
+    UINT32                  Temp;
+    INT32                   CommandIndex;
+    INT32                   ParamCount;
+    char                    *CommandLine;
+    ACPI_STATUS             Status = AE_TRUE;
+
+
+   
+    ParamCount = DbGetLine (InputBuffer);
+    CommandIndex = DbMatchCommand (Args[0]);
+    Temp = 0;
+
+    /* Verify that we have the minimum number of params */
+
+    if (ParamCount < Commands[CommandIndex].MinArgs)
+    {
+        OsdPrintf ("%d parameters entered, [%s] requires %d parameters\n", 
+                        ParamCount, Commands[CommandIndex].Name, Commands[CommandIndex].MinArgs);
+        return (AE_TRUE);
+    }
+
+    /* Decode and dispatch the command */
+
+    switch (CommandIndex)
+    {
+    case CMD_NULL:
+        if (Op)
+        {
+            return (AE_OK);
+        }
+        break;
+
+    case CMD_ALLOCATIONS:
+        CmDumpAllocationInfo ();
+        break;
+
+    case CMD_ARGS:
+    case CMD_ARGUMENTS:
+        DbDisplayArguments ();
+        break;
+
+    case CMD_BREAKPOINT:
+        DbSetMethodBreakpoint (Args[1], WalkState, Op);
+        break;
+
+    case CMD_CALL:
+        DbSetMethodCallBreakpoint (Op);
+        Status = AE_OK;
+        break;
+
+    case CMD_CLOSE:
+        DbCloseDebugFile ();
+        break;
+
+    case CMD_DEBUG:
+        DbExecute (Args[1], EX_SINGLE_STEP);
+        break;
+
+    case CMD_DUMP:
+    case CMD_OBJECT:
+        DbDecodeAndDisplayObject (Args[1], Args[2]);
+        break;
+
+    case CMD_EVENT:
+        OsdPrintf ("Event command not implemented\n");
+        break;
+
+    case CMD_EXECUTE:
+        DbExecute (Args[1], EX_NO_SINGLE_STEP);
+        break;
+
+    case CMD_GO:
+        Gbl_CmSingleStep = FALSE;
+        return (AE_OK);
+
+    case CMD_HELP:
+    case CMD_HELP2:
+        DbDisplayHelp ();
+        break;
+
+    case CMD_HISTORY:
+        DbDisplayHistory ();
+        break;
+
+    case CMD_HISTORY_EXE:
+        CommandLine = DbGetFromHistory (Args[1]);
+        if (!CommandLine)
+        {
+            return AE_TRUE;
+        }
+
+        Status = DbCommandDispatch (CommandLine, WalkState, Op);
+        if (Status == AE_OK)
+            Status = AE_TRUE;
+        return Status;
+        break;
+
+    case CMD_INFORMATION:
+        DbDisplayMethodInfo (Op);
+        break;
+
+    case CMD_INTO:
+        if (Op)
+        {
+            Gbl_CmSingleStep = TRUE;             
+            Gbl_MethodBreakpoint = 0;
+            return AE_OK;
+        }
+        break;
+
+    case CMD_LEVEL:
+        if (ParamCount == 0)
+        {
+            OsdPrintf ("Current debug level for file output is:    %8.8lX\n", Gbl_DbDebugLevel);
+            OsdPrintf ("Current debug level for console output is: %8.8lX\n", Gbl_DbConsoleDebugLevel);
+        }
+        else if (ParamCount == 2)
+        {
+            Temp = Gbl_DbConsoleDebugLevel;
+            Gbl_DbConsoleDebugLevel = STRTOUL (Args[1], NULL, 0);
+            OsdPrintf ("Debug Level for console output was %8.8lX, now %8.8lX\n", Temp, Gbl_DbConsoleDebugLevel);
+        }
+        else
+        {
+            Temp = Gbl_DbDebugLevel;
+            Gbl_DbDebugLevel = STRTOUL (Args[1], NULL, 0);
+            OsdPrintf ("Debug Level for file output was %8.8lX, now %8.8lX\n", Temp, Gbl_DbDebugLevel);
+        }
+        break;
+
+    case CMD_LIST:
+        DbDisassembleAml (Args[1], Op);
+        break;
+
+    case CMD_LOAD:
+        DbLoadAcpiTable (Args[1]);
+        break;
+
+    case CMD_LOCALS:
+        DbDisplayLocals ();
+        break;
+    
+    case CMD_METHODS:
+        DbDisplayAllMethods (Args[1]);
+        break;
+
+    case CMD_NAMESPACE:
+        DbDumpNamespace ();
+        break;
+
+    case CMD_NOTIFY:
+        Temp = STRTOUL (Args[2], NULL, 0);
+        DbSendNotify (Args[1], Temp);
+        break;
+
+    case CMD_OPEN:
+        DbOpenDebugFile (Args[1]);
+        break;
+
+    case CMD_PREFIX:
+        DbSetScope (Args[1]);
+        break;
+
+    case CMD_RESULTS:
+        DbDisplayResults ();
+        break;
+ 
+    case CMD_SET:
+        DbSetMethodData (Args[1], Args[2], Args[3]);
+        break;
+
+    case CMD_STATS:
+        DbDisplayStatistics ();
+        break;
+
+    case CMD_STOP:
+        return (AE_AML_ERROR);
+        break;
+
+    case CMD_TERMINATE:
+        CmSubsystemShutdown ();
+        break;
+
+    case CMD_TREE:
+        DbDisplayCallingTree ();
+        break;
+
+    case CMD_EXIT:
+    case CMD_QUIT:
+        if (Op)
+        {
+            return (AE_AML_ERROR);
+        }
+
+        if (!OutputToFile)
+        {
+            DebugLevel = DEBUG_DEFAULT;
+        }
+
+        /* Shutdown */
+
+        CmSubsystemShutdown ();
+        DbCloseDebugFile ();
+
+        Gbl_DbTerminateThreads = TRUE;
+
+        return (AE_TERMINATE);
+
+    case CMD_NOT_FOUND:
+        OsdPrintf ("Unknown Command\n");
+        return (AE_TRUE);
+    }
+
+
+    /* Add all commands that come here to the history buffer */
+
+    DbAddToHistory (InputBuffer);
+    return Status;
+}
+
 
 /******************************************************************************
  * 
- * FUNCTION:    DbExecuter
+ * FUNCTION:    DbExecuteThread
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Debugger execute thread.  Waits for a command line, then
+ *              simply dispatches it.
+ *
+ *****************************************************************************/
+
+void
+DbExecuteThread (
+    void                    *Context)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    while (Status != AE_TERMINATE)
+    {
+        Gbl_MethodExecuting = FALSE;
+        Gbl_StepToNextCall = FALSE;
+
+        CmAcquireMutex (MTX_DEBUGGER);
+        Status = DbCommandDispatch (LineBuf, NULL, NULL);
+        CmReleaseMutex (MTX_DEBUG_COMMAND);
+    }
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbUserCommands
  *
  * PARAMETERS:  None
  *
@@ -439,326 +892,51 @@ DbMatchCommand (
  *****************************************************************************/
 
 ACPI_STATUS
-DbExecuter (
+DbUserCommands (
     char                    Prompt,
     ACPI_GENERIC_OP         *Op)
 {
-    UINT32                  Temp;
-    UINT32                  Temp2;
-    UINT32                  Temp3;
-    INT32                   CommandIndex;
-    INT32                   ParamCount;
-
+    ACPI_STATUS             Status = AE_OK;
 
     /* TBD: NEed a separate command line buffer for step mode */
 
-    while (1)
+    while (!Gbl_DbTerminateThreads)
     {
-        OsdPrintf ("%1c ", Prompt);
-        ParamCount = DbGetLine ();
-        CommandIndex = DbMatchCommand (Args[0]);
-        Temp = 0;
+        /* Force output to console until a command is entered */
 
-        /* Verify that we have the minimum number of params */
+        DbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
-        if (ParamCount < Commands[CommandIndex].MinArgs)
+        /* Different prompt if method is executing */
+
+        if (!Gbl_MethodExecuting)
         {
-            OsdPrintf ("%d parameters entered, [%s] requires %d parameters\n", 
-                            ParamCount, Commands[CommandIndex].Name, Commands[CommandIndex].MinArgs);
-            continue;
+            OsdPrintf ("%1c ", DB_COMMAND_PROMPT);
+        }
+        else
+        {
+            OsdPrintf ("%1c ", DB_EXECUTE_PROMPT);
         }
 
-        /* Decode and dispatch the command */
+        /* Get the user input line */
 
-        switch (CommandIndex)
-        {
-        case CMD_NULL:
-            if (Op)
-            {
-                return (AE_OK);
-            }
-            break;
+        OsdGetLine (LineBuf);
 
-        case CMD_ALLOCATIONS:
-            CmDumpAllocationInfo ();
-            break;
+        /* Signal the debug thread that we have a command to execute */
 
-        case CMD_ARGUMENTS:
-            DbDisplayArguments ();
-            break;
-
-        case CMD_BREAKPOINT:
-            DbSetMethodBreakpoint (Args[1], Op);
-            break;
-
-        case CMD_CLOSE:
-            DbCloseDebugFile ();
-            break;
-
-        case CMD_DEBUG:
-            if (OutputToFile && !DebugLevel)
-            {
-                OsdPrintf ("Debug output is not enabled!\n");
-            }
-            DbExecute (Args[1], EX_SINGLE_STEP);
-            break;
-
-        case CMD_DUMP:
-            DbDecodeAndDisplayObject (Args[1]);
-            break;
-
-        case CMD_EXECUTE:
-            if (OutputToFile && !DebugLevel)
-            {
-                OsdPrintf ("Debug output is not enabled!\n");
-            }
-            DbExecute (Args[1], EX_NO_SINGLE_STEP);
-            break;
-
-        case CMD_GO:
-            Gbl_CmSingleStep = FALSE;
-            return (AE_OK);
-
-        case CMD_HELP:
-        case CMD_HELP2:
-            DbDisplayHelp ();
-            break;
-
-        case CMD_LEVEL:
-            DebugLevel = STRTOUL (Args[1], NULL, 0);
-            OsdPrintf ("Debug Level: %0lX\n", DebugLevel);
-            break;
-
-        case CMD_LIST:
-            DbDisassembleAml (Args[1], Op);
-            break;
-
-        case CMD_LOCALS:
-            DbDisplayLocals ();
-            break;
-        
-        case CMD_METHODS:
-            if (ParamCount > 0)
-            {
-                Temp = STRTOUL (Args[1], NULL, 0);
-            }
-            DbDisplayAllMethods (Temp);
-            break;
-
-        case CMD_NAMESPACE:
-            DbDumpNamespace ();
-            break;
-
-        case CMD_NOTIFY:
-            if (ParamCount < 2)
-            {
-                OsdPrintf ("Requires 2 parameters\n");
-                break;
-            }
-            Temp = STRTOUL (Args[2], NULL, 0);
-            DbSendNotify (Args[1], Temp);
-            break;
-
-        case CMD_OBJECT:
-            Temp = STRTOUL (Args[1], NULL, 0);
-            DbDisplayInternalObject ((ACPI_OBJECT_INTERNAL *) Temp);
-            break;
-
-        case CMD_OPEN:
-            if (DebugLevel == DEBUG_DEFAULT)
-            {
-                DebugLevel = 0x0FFFFEFF;
-            }
-            
-            DbOpenDebugFile (Args[1]);
-            break;
-
-        case CMD_PREFIX:
-            DbSetScope (Args[1]);
-            break;
-
-        case CMD_RESULTS:
-            DbDisplayResults ();
-            break;
-     
-        case CMD_SET:
-            if ((Args[1][0] != 'L') &&
-                (Args[1][0] != 'A'))
-            {
-                OsdPrintf ("Invalid SET operand: %s\n", Args[1]);
-                break;
-            }
-
-            Temp2 = STRTOUL (Args[2], NULL, 0);
-            Temp3 = STRTOUL (Args[3], NULL, 0);
-
-            DbSetMethodData (Args[1][0], Temp2, Temp3);
-            break;
-
-        case CMD_STATS:
-            DbDisplayStatistics ();
-            break;
-
-        case CMD_STOP:
-            return (AE_AML_ERROR);
-            break;
-
-        case CMD_TERMINATE:
-            AcpiTerminate ();
-            break;
-
-        case CMD_TREE:
-            DbDisplayCallingTree ();
-            break;
-
-        case CMD_EXIT:
-        case CMD_QUIT:
-            if (Op)
-            {
-                return (AE_AML_ERROR);
-            }
-
-            if (!OutputToFile)
-            {
-                DebugLevel = DEBUG_DEFAULT;
-            }
-            AcpiTerminate ();
-//            DbCloseDebugFile ();
-            return (AE_OK);
-
-        case CMD_NOT_FOUND:
-            OsdPrintf ("Unknown Command\n");
-        }
-    }
-}
-
-
-
-/******************************************************************************
- * 
- * FUNCTION:    DbSingleStep  
- *
- * PARAMETERS:  
- *
- * RETURN:      None
- *
- * DESCRIPTION: Called just before execution of an AML opcode.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-DbSingleStep (
-    ACPI_GENERIC_OP         *Op,
-    UINT8                   OpType)
-{
-    ACPI_GENERIC_OP         *Next;
-    ACPI_STATUS             Status;
-
-
-    /* Is there a breakpoint set? */
-
-    if (Gbl_MethodBreakpoint)
-    {
-        /* Check if the breakpoint has been reached or passed */
-
-        if (Gbl_MethodBreakpoint <= Op->AmlOffset)
-        {
-            /* Hit the breakpoint, resume single step, reset breakpoint */
-
-            OsdPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
-            Gbl_CmSingleStep = TRUE;
-            Gbl_MethodBreakpoint = 0;
-        }
-    }
-
-    /* If we are not single stepping, just continue executing the method */
-
-    if (!Gbl_CmSingleStep)
-    {
-        return (AE_OK);
+        CmReleaseMutex (MTX_DEBUGGER);
+        CmAcquireMutex (MTX_DEBUG_COMMAND);
     }
 
 
     /* 
-     * Check if this is an opcode that we are interested in --
-     * namely, opcodes that have arguments
+     * Only this thread (the original thread) should actually terminate the subsystem,
+     * because all the semaphores are deleted during termination
      */
-    switch (OpType)
-    {
-    case OPTYPE_UNDEFINED:
-    case OPTYPE_CONSTANT:           /* argument type only */
-    case OPTYPE_LITERAL:            /* argument type only */
-    case OPTYPE_DATA_TERM:          /* argument type only */
-    case OPTYPE_LOCAL_VARIABLE:     /* argument type only */
-    case OPTYPE_METHOD_ARGUMENT:    /* argument type only */
-        return (AE_OK);
-        break;
-
-    case OPTYPE_NAMED_OBJECT:
-        switch (Op->Opcode)
-        {
-
-        case AML_MethodOp:
-            return (AE_OK);
-            break;
-        }
-    }
-
-    /* Display this op (and only this op) */
-
-    Next = Op->Next;
-    Op->Next = NULL;
-    DbDisplayOp (Op, ACPI_UINT32_MAX);
-    Op->Next = Next;
-
-
-    /* Go into the command loop and await next user command */
-
-    Status = DbExecuter (EXECUTE_PROMPT, Op);
-
-    /* User commands complete, continue execution of the interrupted method */
+    AcpiTerminate ();
 
     return Status;
 }
 
-/******************************************************************************
- * 
- * FUNCTION:    DbInitialize
- *
- * PARAMETERS:  
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Init and start debugger
- *
- *****************************************************************************/
-
-int
-DbInitialize (void)
-{      
-
-
-    /* Init globals */
-
-    Buffer = OsdAllocate (BUFFER_SIZE);
-
-//    setvbuf (stdin, NULL, _IONBF, 0);
-    ScopeBuf [0] = '\\';
-    ScopeBuf [1] =  0;
-
-
-
-	if (!opt_verbose)
-	{
-		INDENT_STRING = "    ";
-        opt_disasm = TRUE;
-        opt_stats = FALSE;
-	}
-
-    DbExecuter (COMMAND_PROMPT, NULL);
-
-    return 0;
-}
 
 
 #endif  /* ACPI_DEBUG */
