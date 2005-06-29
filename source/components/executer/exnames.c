@@ -117,12 +117,12 @@
 #define __ISNAMES_C__
 
 #include <acpi.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
-#define _THIS_MODULE        "isnames.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("isnames");
 
 
 #define PKG_Type1   64              /*  or 0x40 Max encoding size = 0x3F    */
@@ -166,18 +166,12 @@ AmlAllocateNameString (
 
     if (PrefixCount < 0)
     {
-        SizeNeeded = 1 /* root */ +  4 * NumNameSegs + 2;
+        SizeNeeded = 1 /* root */ +  (ACPI_NAME_SIZE * NumNameSegs) + 2 +1; /* zero terminate */
     }
     else
     {
-        SizeNeeded = PrefixCount + 4 * NumNameSegs + 2;
+        SizeNeeded = PrefixCount + (ACPI_NAME_SIZE * NumNameSegs) + 2 +1; /* zero terminate */
     }
-
-    if (SizeNeeded < INITIAL_NAME_BUF_SIZE)
-    {
-        SizeNeeded = INITIAL_NAME_BUF_SIZE;
-    }
-
 
     /* 
      * Allocate a buffer for the name.
@@ -228,11 +222,47 @@ AmlAllocateNameString (
         *TempPtr++ = AML_DualNamePrefix;
     }
 
-    /* Terminate string following prefixes. AmlDoSeg() will append the segment(s) */
+    /* Terminate string following prefixes. AmlExecNameSegment() will append the segment(s) */
 
     *TempPtr = 0;
 
     return_VALUE (NameString);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AmlGoodName
+ *
+ * PARAMETERS:  Character           - The character to be examined
+ *
+ * RETURN:      1 if Character may appear in a name, else 0
+ *
+ * DESCRIPTION: Check for a printable character
+ *
+ ****************************************************************************/
+
+BOOLEAN 
+AmlGoodName (
+    UINT32                  Name)
+{
+    char                    *NamePtr = (char *) &Name;
+    UINT32                  i;
+
+    
+
+    for (i = 0; i < ACPI_NAME_SIZE; i++)
+    {
+        if (!((NamePtr[i] == '_') || 
+              (NamePtr[i] >= 'A' && NamePtr[i] <= 'Z') ||
+              (NamePtr[i] >= '0' && NamePtr[i] <= '9')))
+        {
+            return FALSE;
+        }
+    }
+
+
+    return TRUE;
 }
 
 
@@ -253,8 +283,9 @@ AmlGoodChar (
     INT32                   Character)
 {
 
-    return ((Character == '_') || (Character >= 'A' && Character <= 'Z') ||
-                (Character >= '0' && Character <= '9'));
+    return ((Character == '_') || 
+            (Character >= 'A' && Character <= 'Z') ||
+            (Character >= '0' && Character <= '9'));
 }
 
 
@@ -312,7 +343,7 @@ AmlDecodePackageLength (
 
 /*****************************************************************************
  *
- * FUNCTION:    AmlDoSeg
+ * FUNCTION:    AmlExecNameSegment
  *
  * PARAMETERS:  InterpreterMode     - Current running mode (load1/Load2/Exec)
  *
@@ -323,141 +354,119 @@ AmlDecodePackageLength (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDoSeg (
-    char                    *NameString,
-    OPERATING_MODE          InterpreterMode)
+AmlExecNameSegment (
+    UINT8                   **InAmlAddress,
+    char                    *NameString)
 {
+    UINT8                   *AmlAddress = *InAmlAddress;
     ACPI_STATUS             Status = AE_OK;
     INT32                   Index;
     char                    CharBuf[5];
 
 
-    FUNCTION_TRACE ("AmlDoSeg");
+    FUNCTION_TRACE ("AmlExecNameSegment");
 
 
     /* If first character is a digit, we aren't looking at a valid name segment    */
 
-    CharBuf[0] = AmlPeek ();
+    CharBuf[0] = *AmlAddress;
 
     if ('0' <= CharBuf[0] && CharBuf[0] <= '9')
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlDoSeg: leading digit: %c\n", CharBuf[0]));
-        Status = AE_PENDING;
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecNameSegment: leading digit: %c\n", CharBuf[0]));
+        return_ACPI_STATUS (AE_PENDING);
     }
 
-    else 
-    {
-        DEBUG_PRINT (TRACE_LOAD, ("AmlDoSeg: Bytes from stream:\n"));
+    DEBUG_PRINT (TRACE_LOAD, ("AmlExecNameSegment: Bytes from stream:\n"));
 
-        for (Index = 4; Index > 0 && AmlGoodChar (AmlPeek ()); --Index)
-        {
-            AmlConsumeStreamBytes (1, (UINT8 *) &CharBuf[4 - Index]);
-            DEBUG_PRINT (TRACE_LOAD, ("%c\n", CharBuf[4 - Index]));
-        }
+    for (Index = 4; Index > 0 && AmlGoodChar (*AmlAddress); --Index)
+    {
+        CharBuf[4 - Index] = *AmlAddress++;
+        DEBUG_PRINT (TRACE_LOAD, ("%c\n", CharBuf[4 - Index]));
     }
 
 
-    if (AE_OK == Status)
+    /* Valid name segment  */
+
+    if (0 == Index)
     {
-        /* Valid name segment  */
+        /* Found 4 valid characters */
+    
+        CharBuf[4] = '\0';
 
-        if (0 == Index)
+        if (NameString)
         {
-            /* Found 4 valid characters */
-        
-            CharBuf[4] = '\0';
-
-            if (NameString)
-            {
-                strcat (NameString, CharBuf);
-                DEBUG_PRINT (TRACE_NAMES, ("AmlDoSeg: Appended to - %s \n", NameString));
-            }
-
-            else
-            {
-                DEBUG_PRINT (TRACE_NAMES, ("AmlDoSeg: No Name string - %s \n", CharBuf));
-            }
-        }
-
-        else if (4 == Index)
-        {
-            /* 
-             * First character was not a valid name character,
-             * so we are looking at something other than a name.
-             */
-            DEBUG_PRINT (ACPI_INFO, ("AmlDoSeg: Leading char not alpha: %02Xh (not a name)\n", CharBuf[0]));
-            Status = AE_PENDING;
+            STRCAT (NameString, CharBuf);
+            DEBUG_PRINT (TRACE_NAMES, ("AmlExecNameSegment: Appended to - %s \n", NameString));
         }
 
         else
         {
-            /* Segment started with one or more valid characters, but fewer than 4 */
-        
-            Status = AE_AML_ERROR;
-            DEBUG_PRINT (TRACE_LOAD, ("AmlDoSeg: Bad char %02x in name\n", AmlPeek ()));
-
-            if (IMODE_LoadPass2 == InterpreterMode)
-            {
-                /* Second pass load mode   */
-
-                REPORT_ERROR ("During LOAD this segment started with one or more valid characters, but fewer than 4");
-            }
-
-            else
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlDoSeg: Bad char %02x in name\n", AmlPeek ()));
-            }
-        }   
+            DEBUG_PRINT (TRACE_NAMES, ("AmlExecNameSegment: No Name string - %s \n", CharBuf));
+        }
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", ExceptionNames[Status]));
+    else if (4 == Index)
+    {
+        /* 
+         * First character was not a valid name character,
+         * so we are looking at something other than a name.
+         */
+        DEBUG_PRINT (ACPI_INFO, ("AmlExecNameSegment: Leading char not alpha: %02Xh (not a name)\n", CharBuf[0]));
+        Status = AE_PENDING;
+    }
+
+    else
+    {
+        /* Segment started with one or more valid characters, but fewer than 4 */
+    
+        Status = AE_AML_BAD_NAME;
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecNameSegment: Bad char %02x in name, at %p\n", *AmlAddress, AmlAddress));
+    }   
+
+    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlExecNameSegment %s \n", CmFormatException (Status)));
+
+    *InAmlAddress = AmlAddress;
 
     return_ACPI_STATUS (Status);
 }
 
 
+
 /*****************************************************************************
  *
- * FUNCTION:    AmlDoName
+ * FUNCTION:    AmlGetNameString
  *
  * PARAMETERS:  DataType            - Data type to be associated with this name
- *              InterpreterMode     - Current running mode (load1/Load2/Exec)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Print a name, including any prefixes, enter it in the
- *              name space, and put its handle on the stack.
+ * DESCRIPTION: Get a name, including any prefixes.
  *
  ****************************************************************************/
 
+
 ACPI_STATUS
-AmlDoName (
+AmlGetNameString (
     ACPI_OBJECT_TYPE        DataType, 
-    OPERATING_MODE          InterpreterMode)
+    UINT8                   *InAmlAddress,
+    char                    **OutNameString,
+    UINT32                  *OutNameLength)   
 {
     ACPI_STATUS             Status = AE_OK;
+    UINT8                   *AmlAddress = InAmlAddress;
+    char                    *NameString = NULL;
     INT32                   NumSegments;
     INT32                   PrefixCount = 0;
     UINT8                   Prefix = 0;
-    ACPI_HANDLE             Handle;
-    INT32                   MethodFlags;
-    INT32                   ArgCount;
-    INT32                   PreviousStackTop = 0;
-    INT32                   CurrentStackTop = 0;
-    UINT32                  StackOffset;
-    ACPI_OBJECT_INTERNAL    *MthDesc;
-    ACPI_HANDLE             MethodScope;
-    char                    *NameString = NULL;
 
 
-    FUNCTION_TRACE ("AmlDoName");
+    FUNCTION_TRACE_PTR ("AmlGetNameString", AmlAddress);
 
 
-BREAKPOINT3;
-
-    if (TYPE_DefField == DataType    || 
-        TYPE_BankField == DataType   || 
-        TYPE_IndexField == DataType)
+    if (INTERNAL_TYPE_DefField == DataType    || 
+        INTERNAL_TYPE_BankField == DataType   || 
+        INTERNAL_TYPE_IndexField == DataType)
     {   
         /* Disallow prefixes for types associated with field names */
 
@@ -468,7 +477,7 @@ BREAKPOINT3;
         }
         else
         {
-            Status = AmlDoSeg (NameString, InterpreterMode);
+            Status = AmlExecNameSegment (&AmlAddress, NameString);
         }
     }
 
@@ -476,13 +485,13 @@ BREAKPOINT3;
     {   
         /* DataType is not a field name   */
 
-        switch (AmlPeekOp ())
+        switch (*AmlAddress)
         {   
             /* Examine first character of name for root or parent prefix operators */
 
         case AML_RootPrefix:
 
-            AmlConsumeStreamBytes (1, &Prefix);
+            Prefix = *AmlAddress++;
             DEBUG_PRINT (TRACE_LOAD, ("RootPrefix: %x\n", Prefix));
 
             /* 
@@ -497,12 +506,12 @@ BREAKPOINT3;
 
             do
             {
-                AmlConsumeStreamBytes (1, &Prefix);
+                Prefix = *AmlAddress++;
                 DEBUG_PRINT (TRACE_LOAD, ("ParentPrefix: %x\n", Prefix));
 
                 ++PrefixCount;
 
-            } while (AmlPeekOp () == AML_ParentPrefix);
+            } while (*AmlAddress == AML_ParentPrefix);
             
             break;
 
@@ -514,13 +523,13 @@ BREAKPOINT3;
 
 
 
-        switch (AmlPeekOp ())
+        switch (*AmlAddress)
         {
             /* Examine first character of name for name segment prefix operator */
             
         case AML_DualNamePrefix:
 
-            AmlConsumeStreamBytes (1, &Prefix);
+            Prefix = *AmlAddress++;
             DEBUG_PRINT (TRACE_LOAD, ("DualNamePrefix: %x\n", Prefix));
 
             NameString = AmlAllocateNameString (PrefixCount, 2);
@@ -534,30 +543,19 @@ BREAKPOINT3;
             
             PrefixCount += 2;
 
-            if ((Status = AmlDoSeg (NameString, InterpreterMode)) == AE_OK)
+            if ((Status = AmlExecNameSegment (&AmlAddress, NameString)) == AE_OK)
             {
-                Status = AmlDoSeg (NameString, InterpreterMode);
+                Status = AmlExecNameSegment (&AmlAddress, NameString);
             }
-
             break;
 
 
         case AML_MultiNamePrefixOp:
 
-            AmlConsumeStreamBytes (1, &Prefix);
+            Prefix = *AmlAddress++;
             DEBUG_PRINT (TRACE_LOAD, ("MultiNamePrefix: %x\n", Prefix));
 
-            NumSegments = AmlPeek ();                      /* fetch count of segments */
-
-            if (AmlDoByteConst (IMODE_LoadPass2, 0) != AE_OK)
-            {
-                /* Unexpected end of AML */
-
-                REPORT_ERROR ("*UNEXPECTED END* [Name]");
-                
-                Status = AE_AML_ERROR;
-                break;
-            }
+            NumSegments = *AmlAddress++;                      /* fetch count of segments */
 
             NameString = AmlAllocateNameString (PrefixCount, NumSegments);
             if (!NameString)
@@ -570,7 +568,7 @@ BREAKPOINT3;
             
             PrefixCount += 2;
 
-            while (NumSegments && (Status = AmlDoSeg (NameString, InterpreterMode)) == AE_OK)
+            while (NumSegments && (Status = AmlExecNameSegment (&AmlAddress, NameString)) == AE_OK)
             {
                 --NumSegments;
             }
@@ -590,7 +588,7 @@ BREAKPOINT3;
                                 ("AmlDoName: NameSeg is \"\\\" followed by NULL\n"));
             }
 
-            AmlConsumeStreamBytes (1, NULL);    /*  consume NULL byte   */
+            AmlAddress++;    /*  consume NULL byte   */
             NameString = AmlAllocateNameString (PrefixCount, 0);
             if (!NameString)
             {
@@ -612,225 +610,30 @@ BREAKPOINT3;
                 break;
             }
 
-            Status = AmlDoSeg (NameString, InterpreterMode);
+            Status = AmlExecNameSegment (&AmlAddress, NameString);
             break;
 
         }   /* Switch (PeekOp ())    */
     }
 
 
-    if (AE_OK == Status)
-    {
-        /* All prefixes have been handled, and the name is in NameString */
-
-        AmlObjStackDeleteValue (STACK_TOP);
-
-        Status = NsLookup (CurrentScope->Scope, NameString, DataType, InterpreterMode, 
-                                    NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) AmlObjStackGetTopPtr ());
-
-        /* Get return value from the lookup */
-
-        Handle = AmlObjStackGetValue (STACK_TOP);
-
-        /* TBD: another global to remove!! */
-        /* Globally set this handle for use later */
-
-        if (IMODE_LoadPass1 == InterpreterMode)
-        {
-            LastMethod = Handle;
-        }
-
-        if (IMODE_Execute == InterpreterMode && !Handle)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Name Lookup Failure\n"));
-            Status = AE_AML_ERROR;
-        }
-
-        else if (IMODE_LoadPass1 != InterpreterMode)
-        {   
-            /* Not first pass load */
-
-            if (TYPE_Any == DataType && 
-                TYPE_Method == NsGetType (Handle))
-            {   
-                /* 
-                 * Method reference call 
-                 * The name just looked up is a Method that was already
-                 * defined, so this is a reference (call).  Scan the args.
-                 * The arg count is in the MethodFlags, which is the first
-                 * byte of the Method's AML.
-                 */
-
-                MthDesc = (ACPI_OBJECT_INTERNAL *) NsGetAttachedObject (Handle);
-                if (MthDesc)
-                {   
-                    /* MthDesc valid   */
-                    
-                    MethodFlags = AmlGetPCodeByte (MthDesc->Method.Offset);
-
-                    if (AML_END_OF_BLOCK == MethodFlags)
-                    {
-                        DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: invoked Method %s has no AML\n",
-                                        NameString));
-                        Status = AE_AML_ERROR;
-                    }
-
-                    else
-                    {   
-                        /* MthDesc points at valid method  */
-                        
-                        ArgCount = (MethodFlags & METHOD_ARG_COUNT_MASK) >> METHOD_ARG_COUNT_SHIFT;
-
-                        PreviousStackTop = AmlObjStackLevel ();
-                        MethodScope = AmlObjStackGetValue (STACK_TOP);
-
-                        if (((Status = AmlObjStackPush ()) == AE_OK) &&
-                             (ArgCount > 0))
-                        {   
-                            /* Get all arguments */
-
-                            while (ArgCount-- && (AE_OK == Status))
-                            {   
-                                /* Get each argument */
-                                
-                                if (AE_OK == (Status = AmlDoOpCode (InterpreterMode)))
-                                {   
-                                    /* Argument is now on the object stack */
-                                    
-                                    /*  
-                                     * Arguments (e.g., local variables and control
-                                     * method arguments) passed to control methods
-                                     * are values, not references.
-                                     */
-                                    
-                                    /*
-                                     * TBD: RefOf problem with AmlGetRvalue() conversion.
-                                     */
-                                    if (IMODE_Execute == InterpreterMode)
-                                    {
-                                        Status = AmlGetRvalue (AmlObjStackGetTopPtr ());
-                                    }
-
-                                    if (AE_OK == Status)
-                                    {
-                                        /* Make room for the next argument */
-
-                                        Status = AmlObjStackPushIfExec (InterpreterMode);
-                                    }
-                                } 
-                            }
-                        } 
-
-                        if ((AE_OK == Status) && (IMODE_Execute == InterpreterMode))
-                        {   
-                            /* Execution mode  */
-                            /* Mark end of arg list */
-
-                            AmlObjStackDeleteValue (STACK_TOP);
-
-                            /* Establish Method's scope as current */
-
-                            NsPushMethodScope (MethodScope);
-                            CurrentStackTop = AmlObjStackLevel ();
-                            StackOffset = CurrentStackTop - PreviousStackTop;
-
-                            DEBUG_PRINT (TRACE_LOAD, ("Calling %4.4s, PreviousTOS=%d  CurrentTOS=%d\n",
-                                            MethodScope, PreviousStackTop, CurrentStackTop));
-
-                            AmlDumpObjStack (InterpreterMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
-
-                            /* Execute the Method, passing the stacked args */
-                            
-                            Status = AmlExecuteMethod (MthDesc->Method.Offset + 1, MthDesc->Method.Length - 1,
-                                                        AmlObjStackGetPtr (StackOffset -1));
-
-                            CurrentStackTop = AmlObjStackLevel ();
-
-                            DEBUG_PRINT (TRACE_LOAD, ("After AmlExecuteMethod, PreviousTOS=%d  CurrentTOS=%d\n",
-                                            PreviousStackTop, CurrentStackTop));
-
-                            if (AE_RETURN_VALUE == Status)
-                            {
-                                /* 
-                                 * Move the returned value from the top of the stack to
-                                 * below the method args.
-                                 */
-
-                                if (PreviousStackTop < CurrentStackTop)
-                                {
-                                    StackOffset = CurrentStackTop - PreviousStackTop;
-
-                                    AmlObjStackDeleteValue (StackOffset);
-                                    AmlObjStackSetValue (StackOffset, AmlObjStackGetValue (STACK_TOP));
-                                    AmlObjStackPop (1);
-                                }
-
-                                Status = AE_OK;
-                            }
-
-                            /* Pop scope stack */
-                            
-                            NsPopCurrent (TYPE_Any);
-
-                        } /* Execution mode  */
-
-
-                        /* Clean up object stack */
-                        
-                        DEBUG_PRINT (TRACE_LOAD, ("AmlDoName: Cleaning up object stack (%d elements)\n",
-                                        CurrentStackTop - PreviousStackTop));
-
-                        for (CurrentStackTop = AmlObjStackLevel (); 
-                             CurrentStackTop > PreviousStackTop;
-                             CurrentStackTop--)
-                        {
-                            AmlObjStackDeleteValue (STACK_TOP);
-
-                            /* Zero out the slot and move on */
-
-                            AmlObjStackPop (1);
-                        }
-
-                    } /* Else - valid method ptr */
-
-                } /* Has a non-zero method ptr */
-
-            } /* Reference to a control method */
-
-        } /* Second pass load or execute mode */
-    
-    } /* Status AE_OK */
-
-
-    else if (AE_PENDING == Status && PrefixCount != 0)
+    if (AE_PENDING == Status && PrefixCount != 0)
     {
         /* Ran out of segments after processing a prefix */
 
-        if (IMODE_LoadPass1 == InterpreterMode || 
-            IMODE_LoadPass2 == InterpreterMode)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: ***Malformed Name***\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Malformed Name\n"));
+        REPORT_ERROR ("Ran out of segments after processing a prefix");
 
-            REPORT_ERROR ("Ran out of segments after processing a prefix");
-        }
-
-        else
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Malformed Name\n"));
-        }
-
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_NAME;
     }
 
 
-    /* Cleanup */
-
-    if (NameString)
-    {
-        CmFree (NameString);
-    }
+    *OutNameString = NameString;
+    *OutNameLength = (UINT32) (AmlAddress - InAmlAddress);
 
     return_ACPI_STATUS (Status);
 }
+
+
 
 

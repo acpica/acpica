@@ -177,14 +177,14 @@ AmlSetupField (
     if (!ObjDesc || !RgnDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - null handle\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     if (ACPI_TYPE_Region != RgnDesc->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found type %x %s\n",
                         RgnDesc->Common.Type, CmGetTypeName (RgnDesc->Common.Type)));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
 
@@ -197,7 +197,7 @@ AmlSetupField (
         (FieldBitWidth != 32))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - bad width %d\n", FieldBitWidth));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
 
 
@@ -236,7 +236,7 @@ AmlSetupField (
                 ("AmlSetupField: Operation at %08lX width %d bits exceeds len %08lX field=%p region=%p\n",
                 ObjDesc->Field.Offset, FieldBitWidth, RgnDesc->Region.Length, ObjDesc, RgnDesc));
 
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_REGION_LIMIT);
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -284,17 +284,16 @@ AmlAccessNamedField (
     if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Internal error - null value pointer\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
     /* Check the type */
 
     if (INTERNAL_TYPE_DefField != NsGetType (NamedField))
     {
-        DEBUG_PRINT (ACPI_ERROR, (
-                  "AmlAccessNamedField: Name %4.4s type %x is not a defined field\n",
-                  &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField)));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Name %4.4s type %x is not a defined field\n",
+                        &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField)));
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
     /* ObjDesc valid and NamedField is a defined field  */
@@ -313,7 +312,7 @@ AmlAccessNamedField (
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlAccessNamedField: Internal error - Name %4.4s type %x does not match value-type %x at %p\n",
                 &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
 
@@ -407,7 +406,7 @@ AmlSetNamedFieldValue (
     void                    *Buffer,
     UINT32                  BufferLength)
 {
-    ACPI_STATUS             Status = AE_AML_ERROR;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE_PTR ("AmlSetNamedFieldValue", NamedField);
@@ -416,13 +415,10 @@ AmlSetNamedFieldValue (
     if (!NamedField)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetNamedFieldValue: Internal error - null handle\n"));
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    else
-    {
-        Status = AmlAccessNamedField (ACPI_WRITE, NamedField, Buffer, BufferLength);
-    }
-
+    Status = AmlAccessNamedField (ACPI_WRITE, NamedField, Buffer, BufferLength);
     return_ACPI_STATUS (Status);
 }
 
@@ -447,27 +443,19 @@ AmlGetNamedFieldValue (
     void                    *Buffer,
     UINT32                  BufferLength)
 {
-    ACPI_STATUS             Status = AE_AML_ERROR;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE_PTR ("AmlGetNamedFieldValue", NamedField);
 
 
-    if (!NamedField)
+    if ((!NamedField) || (!Buffer))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: Internal error - null handle\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: Internal error - null parameter\n"));
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    else if (!Buffer)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: Internal error - null pointer\n"));
-    }
-
-    else
-    {
-        Status = AmlAccessNamedField (ACPI_READ, NamedField, Buffer, BufferLength);
-    }
-
+    Status = AmlAccessNamedField (ACPI_READ, NamedField, Buffer, BufferLength);
     return_ACPI_STATUS (Status);
 }
   
