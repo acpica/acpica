@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.112 $
+ *       $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -415,6 +415,40 @@ AcpiNsAttachObject (
     ACPI_OPERAND_OBJECT     *Object,
     ACPI_OBJECT_TYPE8       Type);
 
+ACPI_OPERAND_OBJECT *
+AcpiNsGetAttachedObject (
+    ACPI_NAMESPACE_NODE     *Node);
+
+ACPI_STATUS
+AcpiNsAttachData (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OBJECT_HANDLER     Handler,
+    void                    *Data);
+
+ACPI_STATUS
+AcpiNsDetachData (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OBJECT_HANDLER     Handler);
+
+ACPI_STATUS
+AcpiNsGetAttachedData (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OBJECT_HANDLER     Handler,
+    void                    **Data);
+
+ACPI_STATUS
+AcpiNsAttachSecondary (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OPERAND_OBJECT     *ObjDesc2);
+
+ACPI_OPERAND_OBJECT *
+AcpiNsGetSecondaryObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
+void
+AcpiNsDetachSecondary (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
 
 /*
  * Namespace searching and entry - nssearch
@@ -459,10 +493,6 @@ AcpiNsValidPathSeparator (
 
 ACPI_OBJECT_TYPE8
 AcpiNsGetType (
-    ACPI_NAMESPACE_NODE     *Node);
-
-ACPI_OPERAND_OBJECT *
-AcpiNsGetAttachedObject (
     ACPI_NAMESPACE_NODE     *Node);
 
 UINT32
