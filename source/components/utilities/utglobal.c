@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -182,22 +182,23 @@ UINT8                       AcpiGbl_DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
  *
  * Initial values are currently supported only for types String and Number.
  * To avoid type punning, both are specified as strings in this table.
+ *
+ * NOTES:
+ * 1) _SB_ is defined to be a device to allow _SB_/_INI to be run
+ *    during the initialization sequence.
  */
 
 PREDEFINED_NAMES            AcpiGbl_PreDefinedNames[] =
 {
     {"_GPE",    INTERNAL_TYPE_DEF_ANY},
     {"_PR_",    INTERNAL_TYPE_DEF_ANY},
-    {"_SB_",    INTERNAL_TYPE_DEF_ANY},
+    {"_SB_",    ACPI_TYPE_DEVICE},
     {"_SI_",    INTERNAL_TYPE_DEF_ANY},
     {"_TZ_",    INTERNAL_TYPE_DEF_ANY},
     {"_REV",    ACPI_TYPE_INTEGER, "2"},
     {"_OS_",    ACPI_TYPE_STRING, ACPI_OS_NAME},
     {"_GL_",    ACPI_TYPE_MUTEX, "0"},
-
-    /* Table terminator */
-
-    {NULL,      ACPI_TYPE_ANY}
+    {NULL,      ACPI_TYPE_ANY}           /* Table terminator */
 };
 
 
