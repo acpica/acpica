@@ -465,10 +465,21 @@ AmlResolveOperands (
 
         case ARGI_ANYTYPE:
 
-            /*
-             * TBD: how to handle this case:
-             *      Store (RefOf (NAME), Local0))
+
+            /* 
+             * We don't want to resolve IndexOp reference objects during
+             * a store because this would be an implicit DeRefOf operation.
+             * Instead, we just want to store the reference object.
              */
+
+            if ((Opcode == AML_StoreOp) &&
+                ((*StackPtr)->Common.Type == INTERNAL_TYPE_Reference) &&
+                ((*StackPtr)->Reference.OpCode == AML_IndexOp))
+            {
+                break;
+            }
+
+            /* All others must be resolved */
 
             if ((Status = AmlResolveToValue (StackPtr)) != AE_OK)
             {
