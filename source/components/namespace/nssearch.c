@@ -118,12 +118,12 @@
 
 #include <acpi.h>
 #include <amlcode.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
-#define _THIS_MODULE        "nssearch.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nssearch");
 
 
 
@@ -214,9 +214,10 @@ NsSearchOnly (
              * looking up the Region in which the field will be defined
              */
 
-            if (TYPE_DefFieldDefn == Type || TYPE_BankFieldDefn == Type)
+            if ((INTERNAL_TYPE_DefFieldDefn == Type) || 
+                (INTERNAL_TYPE_BankFieldDefn == Type))
             {
-                Type = TYPE_Region;
+                Type = ACPI_TYPE_Region;
             }
 
             /* 
@@ -226,12 +227,12 @@ NsSearchOnly (
              * stored in the entry is Any (i.e. unknown), save the actual type.
              */
 
-            if (Type != TYPE_Scope && 
-                Type != TYPE_DefAny &&
-                Type != TYPE_IndexFieldDefn && 
-                NameTable[Position].Type == TYPE_Any)
+            if (Type != INTERNAL_TYPE_Scope && 
+                Type != INTERNAL_TYPE_DefAny &&
+                Type != INTERNAL_TYPE_IndexFieldDefn && 
+                NameTable[Position].Type == ACPI_TYPE_Any)
             {
-                NameTable[Position].Type = Type;
+                NameTable[Position].Type = (UINT8) Type;
             }
 
             DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (actual type %d) found at %p\n", 
@@ -282,7 +283,7 @@ NsSearchOnly (
     {
         /* Save the final information (name was not found) */
 
-        RetInfo->TableFull  = !(Tries);      /* Table is full if no more tries available */
+        RetInfo->TableFull  = (BOOLEAN) (!(Tries));      /* Table is full if no more tries available */
         RetInfo->Position   = Position;
         RetInfo->NameTable  = NameTable;
     }
@@ -325,7 +326,7 @@ NsSearchParentTree (
     NAME_TABLE_ENTRY        **RetEntry)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ParentScope;
+    NAME_TABLE_ENTRY        *ParentEntry;
 
 
     FUNCTION_TRACE ("NsSearchParentTree");
@@ -333,26 +334,26 @@ NsSearchParentTree (
 
     /* 
      * NameTable[0] will be an unused entry if the table being searched is empty,
-     * However, its ParentScope member will have been filled in
+     * However, its ParentEntry member will have been filled in
      * when the table was allocated (unless it is the root name table).
      */
 
    
     if (!NsLocal (Type) && 
-        NameTable[0].ParentScope)
+        NameTable[0].ParentEntry)
     {
-        ParentScope = NameTable[0].ParentScope;
+        ParentEntry = NameTable[0].ParentEntry;
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %4.4s\n", 
                                     &EntryName));
 
         /* Search parents until found or we have backed up to the root */
 
-        while (ParentScope)
+        while (ParentEntry)
         {
             /* Search parent scope */
-            /* TBD: Why TYPE_Any? */
+            /* TBD: Why ACPI_TYPE_Any? */
 
-            Status = NsSearchOnly (EntryName, ParentScope, TYPE_Any, RetEntry, NULL);
+            Status = NsSearchOnly (EntryName, ParentEntry->Scope, ACPI_TYPE_Any, RetEntry, NULL);
             if (Status == AE_OK)
             {
                 return_ACPI_STATUS (Status);
@@ -360,7 +361,7 @@ NsSearchParentTree (
 
             /* Not found here, go up another level (until we reach the root) */
 
-            ParentScope = ParentScope->ParentScope;
+            ParentEntry = ParentEntry->ParentEntry;
         }
 
         /* Not found in parent tree */
@@ -372,7 +373,7 @@ NsSearchParentTree (
          * No parent, or type is "local".  We won't be searching the parent tree.
          */
 
-        if (!NameTable[0].ParentScope)
+        if (!NameTable[0].ParentEntry)
         {
             DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] has no parent\n", 
                                         &EntryName));
@@ -411,7 +412,6 @@ NsCreateAndLinkNewTable (
     NAME_TABLE_ENTRY        *NameTable)
 {
     NAME_TABLE_ENTRY        *NewTable;
-    NAME_TABLE_ENTRY        *ParentScope;
     NAME_TABLE_ENTRY        *ParentEntry;
     ACPI_STATUS             Status = AE_OK;
 
@@ -436,7 +436,6 @@ NsCreateAndLinkNewTable (
      * Since the parent information remains the same.
      */
 
-    ParentScope = NameTable[0].ParentScope;
     ParentEntry = NameTable[0].ParentEntry;
 
 
@@ -455,11 +454,11 @@ NsCreateAndLinkNewTable (
          * Allocation successful. Init the new table.
          */
         NEXTSEG (NameTable) = NewTable;
-        NsInitializeTable (NewTable, ParentScope, ParentEntry);
+        NsInitializeTable (NewTable, ParentEntry->Scope, ParentEntry);
 
         DEBUG_PRINT (TRACE_EXEC, 
-            ("NsCreateAndLinkNewTable: NewTable=%p, ParentScope=%p, Scope=%p\n",
-                NewTable, ParentScope, NameTable->Scope));
+            ("NsCreateAndLinkNewTable: NewTable=%p, ParentEntry=%p, Scope=%p\n",
+                NewTable, ParentEntry, NameTable->Scope));
     }
 
     return_ACPI_STATUS (Status);
@@ -489,7 +488,6 @@ NsInitializeTable (
 {
 
 
-    NewTable->ParentScope     = ParentScope;
     NewTable->ParentEntry     = ParentEntry;
 
 
@@ -534,7 +532,6 @@ NsInitializeEntry (
 
     NewEntry->DataType      = DESC_TYPE_NTE;
     NewEntry->Name          = EntryName;
-    NewEntry->ParentScope   = NameTable[0].ParentScope;
     NewEntry->ParentEntry   = NameTable[0].ParentEntry;
 
     /* 
@@ -556,9 +553,9 @@ NsInitializeEntry (
      * order to define fields in it, we have a forward reference.
      */
 
-    if ((TYPE_Any == Type) || 
-        (TYPE_DefFieldDefn == Type) || 
-        (TYPE_BankFieldDefn == Type))
+    if ((ACPI_TYPE_Any == Type) || 
+        (INTERNAL_TYPE_DefFieldDefn == Type) || 
+        (INTERNAL_TYPE_BankFieldDefn == Type))
     {
         /* 
          * We don't want to abort here, however!
@@ -576,9 +573,10 @@ NsInitializeEntry (
      * looking up the Region in which the field will be defined
      */
 
-    if ((TYPE_DefFieldDefn == Type) || (TYPE_BankFieldDefn == Type))
+    if ((INTERNAL_TYPE_DefFieldDefn == Type) || 
+        (INTERNAL_TYPE_BankFieldDefn == Type))
     {
-        Type = TYPE_Region;
+        Type = ACPI_TYPE_Region;
     }
 
     /* 
@@ -588,11 +586,11 @@ NsInitializeEntry (
      * the entry.
      */
 
-    if ((Type != TYPE_Scope) && 
-        (Type != TYPE_DefAny) && 
-        (Type != TYPE_IndexFieldDefn))
+    if ((Type != INTERNAL_TYPE_Scope) && 
+        (Type != INTERNAL_TYPE_DefAny) && 
+        (Type != INTERNAL_TYPE_IndexFieldDefn))
     {
-        NewEntry->Type = Type;
+        NewEntry->Type = (UINT8) Type;
     }
 
     DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %4.4s added to %p at %p\n", 
@@ -683,7 +681,7 @@ NsSearchAndEnter (
      */
 
     if ((InterpreterMode != IMODE_LoadPass1) &&
-        (Flags == NS_SEARCH_PARENT))
+        (Flags & NS_SEARCH_PARENT))
     {
         /* Not found in table - search parent tree according to ACPI specification */
 
