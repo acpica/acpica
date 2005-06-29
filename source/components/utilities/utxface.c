@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -152,21 +152,6 @@ AcpiInitializeSubsystem (
     ACPI_SYSTEM_INFO        SysInfo;
 
     FUNCTION_TRACE ("AcpiInitializeSubsystem");
-
-    Buffer.Length = sizeof(SysInfo);
-    Buffer.Pointer = &SysInfo;
-
-    Status = AcpiGetSystemInfo(&Buffer);
-    if (ACPI_FAILURE (Status))
-    {
-        REPORT_ERROR (("AcpiGetSystemInfo failed, %s\n",
-            AcpiCmFormatException (Status)));
-        return_ACPI_STATUS (Status);
-    }
-
-    DEBUG_PRINT_RAW (ACPI_OK,
-        ("ACPI: Core Subsystem version [%x]\n", SysInfo.AcpiCaVersion));
-    DEBUG_PRINT (ACPI_INFO, ("Initializing ACPI Subsystem...\n"));
 
 
     /* Initialize all globals used by the subsystem */
@@ -461,8 +446,11 @@ AcpiGetSystemInfo (
     InfoPtr->Flags              = AcpiGbl_SystemFlags;
 
     /* Timer resolution - 24 or 32 bits  */
-
-    if (0 == AcpiGbl_FADT->TmrValExt)
+    if (!AcpiGbl_FADT)
+    {
+        InfoPtr->TimerResolution = 0;
+    }
+    else if (AcpiGbl_FADT->TmrValExt == 0)
     {
         InfoPtr->TimerResolution = 24;
     }
