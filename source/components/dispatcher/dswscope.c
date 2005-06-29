@@ -216,7 +216,7 @@ NsPushMethodScope (
     {
         if (Gbl_CurrentScope < &Gbl_ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
         {
-            NsPushCurrentScope (((NAME_TABLE_ENTRY *) NewScope)->Scope, TYPE_Method);
+            NsPushCurrentScope (((NAME_TABLE_ENTRY *) NewScope)->Scope, ACPI_TYPE_Method);
         }
     
         else
@@ -274,7 +274,7 @@ NsPopCurrent (
 
         DEBUG_PRINT (TRACE_EXEC, ("Popped %d\n", (Gbl_CurrentScope+1)->Type));
 
-        if ((TYPE_Any == Type) || (Type == (Gbl_CurrentScope + 1)->Type))
+        if ((ACPI_TYPE_Any == Type) || (Type == (Gbl_CurrentScope + 1)->Type))
         {
             DEBUG_PRINT (TRACE_EXEC, ("Found %d\n", Type));
             return_VALUE (Count);
