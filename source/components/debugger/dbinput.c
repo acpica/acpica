@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.79 $
+ *              $Revision: 1.82 $
  *
  ******************************************************************************/
 
@@ -158,6 +158,7 @@ enum AcpiExDebuggerCommands
     CMD_HISTORY_EXE,
     CMD_HISTORY_LAST,
     CMD_INFORMATION,
+    CMD_INTEGRITY,
     CMD_INTO,
     CMD_LEVEL,
     CMD_LIST,
@@ -212,6 +213,7 @@ const COMMAND_INFO          AcpiGbl_DbCommands[] =
     {"!",            1},
     {"!!",           0},
     {"INFORMATION",  0},
+    {"INTEGRITY",    0},
     {"INTO",         0},
     {"LEVEL",        0},
     {"LIST",         0},
@@ -438,8 +440,8 @@ AcpiDbGetLine (
     NATIVE_CHAR             *This;
 
 
-    STRCPY (AcpiGbl_DbParsedBuf, InputBuffer);
-    STRUPR (AcpiGbl_DbParsedBuf);
+    ACPI_STRCPY (AcpiGbl_DbParsedBuf, InputBuffer);
+    ACPI_STRUPR (AcpiGbl_DbParsedBuf);
 
     This = AcpiGbl_DbParsedBuf;
     for (i = 0; i < ACPI_DEBUGGER_MAX_ARGS; i++)
@@ -457,7 +459,7 @@ AcpiDbGetLine (
 
     if (AcpiGbl_DbArgs[0])
     {
-        STRUPR (AcpiGbl_DbArgs[0]);
+        ACPI_STRUPR (AcpiGbl_DbArgs[0]);
     }
 
     Count = i;
@@ -496,7 +498,8 @@ AcpiDbMatchCommand (
 
     for (i = CMD_FIRST_VALID; AcpiGbl_DbCommands[i].Name; i++)
     {
-        if (STRSTR (AcpiGbl_DbCommands[i].Name, UserCommand) == AcpiGbl_DbCommands[i].Name)
+        if (ACPI_STRSTR (AcpiGbl_DbCommands[i].Name, UserCommand) ==
+                         AcpiGbl_DbCommands[i].Name)
         {
             return (i);
         }
@@ -665,6 +668,10 @@ AcpiDbCommandDispatch (
         AcpiDbDisplayMethodInfo (Op);
         break;
 
+    case CMD_INTEGRITY:
+        AcpiDbCheckIntegrity ();
+        break;
+
     case CMD_INTO:
         if (Op)
         {
@@ -682,13 +689,13 @@ AcpiDbCommandDispatch (
         else if (ParamCount == 2)
         {
             Temp = AcpiGbl_DbConsoleDebugLevel;
-            AcpiGbl_DbConsoleDebugLevel = STRTOUL (AcpiGbl_DbArgs[1], NULL, 16);
+            AcpiGbl_DbConsoleDebugLevel = ACPI_STRTOUL (AcpiGbl_DbArgs[1], NULL, 16);
             AcpiOsPrintf ("Debug Level for console output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbConsoleDebugLevel);
         }
         else
         {
             Temp = AcpiGbl_DbDebugLevel;
-            AcpiGbl_DbDebugLevel = STRTOUL (AcpiGbl_DbArgs[1], NULL, 16);
+            AcpiGbl_DbDebugLevel = ACPI_STRTOUL (AcpiGbl_DbArgs[1], NULL, 16);
             AcpiOsPrintf ("Debug Level for file output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbDebugLevel);
         }
         break;
@@ -722,12 +729,12 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_NOTIFY:
-        Temp = STRTOUL (AcpiGbl_DbArgs[2], NULL, 0);
+        Temp = ACPI_STRTOUL (AcpiGbl_DbArgs[2], NULL, 0);
         AcpiDbSendNotify (AcpiGbl_DbArgs[1], Temp);
         break;
 
     case CMD_OBJECT:
-        AcpiDbDisplayObjects (STRUPR (AcpiGbl_DbArgs[1]), AcpiGbl_DbArgs[2]);
+        AcpiDbDisplayObjects (ACPI_STRUPR (AcpiGbl_DbArgs[1]), AcpiGbl_DbArgs[2]);
         break;
 
     case CMD_OPEN:
@@ -838,7 +845,7 @@ AcpiDbCommandDispatch (
  *
  ******************************************************************************/
 
-void
+void ACPI_SYSTEM_XFACE
 AcpiDbExecuteThread (
     void                    *Context)
 {
