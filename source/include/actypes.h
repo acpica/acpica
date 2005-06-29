@@ -125,24 +125,38 @@
 
 /*  IA-32 type definitions */
 
-typedef unsigned char   BOOLEAN;
-typedef int             INT;
-typedef unsigned int    UINT;
-typedef signed char     INT8;
-typedef unsigned char   UINT8;
-typedef short           INT16;
-typedef unsigned short  UINT16;
-typedef int             INT32;
-typedef unsigned int    UINT32;
-typedef unsigned char   UCHAR;
+typedef unsigned char       BOOLEAN;
+typedef int                 INT;
+typedef unsigned int        UINT;
+typedef signed char         INT8;
+typedef unsigned char       UINT8;
+typedef short               INT16;
+typedef unsigned short      UINT16;
+typedef int                 INT32;
+typedef unsigned int        UINT32;
+typedef unsigned char       UCHAR;
 
-typedef unsigned char   UINT8_BIT;
-typedef unsigned short  UINT16_BIT;
-typedef unsigned long   UINT32_BIT;
+typedef unsigned char       UINT8_BIT;
+typedef unsigned short      UINT16_BIT;
+typedef unsigned long       UINT32_BIT;
 
-typedef int             BIT32;
-typedef short int       BIT16;
-typedef char            BIT8;
+typedef int                 BIT32;
+typedef short int           BIT16;
+typedef char                BIT8;
+
+typedef int                 ACPI_PTRDIFF;
+typedef unsigned int        ACPI_SIZE;
+
+
+/*
+ * data type ranges
+ */
+
+#define ACPI_UCHAR_MAX      0xFF
+#define ACPI_INT_MAX        0x7FFFFFFF
+#define ACPI_UINT_MAX       0xFFFFFFFF
+#define ACPI_LONG_MAX       0x7FFFFFFF
+#define ACPI_ULONG_MAX      0xFFFFFFFF
 
  
  /* 
@@ -364,8 +378,8 @@ typedef enum
 
 typedef struct 
 {
-    UINT32                  Length;         // Length in bytes of the buffer;
-    char                    *BufferPtr;     // pointer to buffer
+    UINT32                  Length;         /* Length in bytes of the buffer */
+    char                    *BufferPtr;     /* pointer to buffer */
 
 } ACPI_BUFFER;
 
@@ -392,7 +406,7 @@ typedef struct
 
 typedef struct
 {
-   ptrdiff_t            Offset;      /* offset to MethodFlags in AML pcode block */
+   ACPI_PTRDIFF         Offset;      /* offset to MethodFlags in AML pcode block */
    UINT32               Length;      /* length of method code including MethodFlags */
 
 } METHOD_INFO;
