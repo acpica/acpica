@@ -420,8 +420,6 @@ AmlDoName (
 
 BREAKPOINT3;
 
-    CheckTrash ("enter AmlDoName");
-
     if (TYPE_DefField == DataType || 
         TYPE_BankField == DataType || 
         TYPE_IndexField == DataType)
@@ -636,7 +634,7 @@ BREAKPOINT3;
                                                 >> METHOD_ARG_COUNT_SHIFT;
                         StackBeforeArgs = ObjStackTop;
 
-                        if (((Status = AmlPushIfExec (MODE_Exec)) == AE_OK) &&
+                        if (((Status = AmlObjPushIfExec (MODE_Exec)) == AE_OK) &&
                              (ArgCount > 0))
                         {   
                             /* Get all arguments */
@@ -668,7 +666,7 @@ BREAKPOINT3;
                                     {
                                         /* Make room for the next argument */
 
-                                        Status = AmlPushIfExec (LoadExecMode);
+                                        Status = AmlObjPushIfExec (LoadExecMode);
                                     }
                                 } 
                             }
@@ -691,7 +689,7 @@ BREAKPOINT3;
                                         ObjStack[StackBeforeArgs], StackBeforeArgs,
                                         ObjStackTop));
 
-                            AmlDumpStack (LoadExecMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
+                            AmlDumpObjStack (LoadExecMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
 
                             /* Execute the Method, passing the stacked args */
                             
@@ -763,8 +761,6 @@ BREAKPOINT3;
 
         Status = AE_AML_ERROR;
     }
-
-    CheckTrash ("leave AmlDoName");
 
     if (NameString)
     {
