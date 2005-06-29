@@ -1,7 +1,6 @@
 /******************************************************************************
  *
- * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.67 $
+ * Module Name: evapievt - External Interfaces, ACPI event disable/enable
  *
  *****************************************************************************/
 
@@ -9,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -115,16 +114,21 @@
  *****************************************************************************/
 
 
-#define __EVXFEVNT_C__
+#define __EVAPIEVT_C__
 
 #include "acpi.h"
-#include "acevents.h"
+#include "hardware.h"
+#include "namesp.h"
+#include "events.h"
+#include "amlcode.h"
+#include "interp.h"
 
-#define _COMPONENT          ACPI_EVENTS
-        ACPI_MODULE_NAME    ("evxfevnt")
+#define _COMPONENT          EVENT_HANDLING
+        MODULE_NAME         ("evapievt");
 
 
-/*******************************************************************************
+
+/**************************************************************************
  *
  * FUNCTION:    AcpiEnable
  *
@@ -132,50 +136,86 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Transfers the system into ACPI mode.
+ * DESCRIPTION: Ensures that the system control interrupt (SCI) is properly
+ *              configured, disables SCI event sources, installs the SCI
+ *              handler, and transfers the system into ACPI mode.
  *
- ******************************************************************************/
+ *************************************************************************/
 
 ACPI_STATUS
 AcpiEnable (void)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiEnable");
+    FUNCTION_TRACE ("AcpiEnable");
 
 
-    /* Make sure we have the FADT*/
+    /* Make sure we've got ACPI tables */
 
-    if (!AcpiGbl_FADT)
+    if (!Acpi_GblDSDT)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "No FADT information present!\n"));
+        DEBUG_PRINT (ACPI_WARN, ("No ACPI tables present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-    if (AcpiHwGetMode() == ACPI_SYS_MODE_ACPI)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "System is already in ACPI mode\n"));
-    }
-    else
-    {
-        /* Transition to ACPI mode */
+    /* Make sure the BIOS supports ACPI mode */
 
-        Status = AcpiHwSetMode (ACPI_SYS_MODE_ACPI);
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_REPORT_ERROR (("Could not transition to ACPI mode.\n"));
-            return_ACPI_STATUS (Status);
-        }
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "Transition to ACPI mode successful\n"));
+    if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
+    {
+        DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported!\n"));
+        return_ACPI_STATUS (AE_ERROR);
     }
+
+    Acpi_GblOriginalMode = AcpiHwGetMode();
+
+    /*
+     * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
+     * done prior to enabling SCIs to prevent interrupts from occuring
+     * before handers are installed.
+     */
+ 
+    if (ACPI_FAILURE (AcpiEvFixedEventInitialize ()))
+    {
+        DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize fixed events.\n"));
+        return_ACPI_STATUS (AE_ERROR);
+    }
+
+    if (ACPI_FAILURE (AcpiEvGpeInitialize()))
+    {
+        DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize general purpose events.\n"));
+        return_ACPI_STATUS (AE_ERROR);
+    }
+
+    /* Install the SCI handler */
+
+    if (ACPI_FAILURE (AcpiEvInstallSciHandler ()))
+    {
+        DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler\n"));
+        return_ACPI_STATUS (AE_ERROR);
+    }
+
+    /* Transition to ACPI mode */
+
+    if (AE_OK != AcpiHwSetMode (SYS_MODE_ACPI))
+    {
+        DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
+        return_ACPI_STATUS (AE_ERROR);
+    }
+
+    DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
+
+    /* Install handlers for control method GPE handlers (_Lxx, _Exx) */
+
+    AcpiEvInitGpeControlMethods ();
+
+    Status = AcpiEvInitGlobalLockHandler ();
 
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/**************************************************************************
  *
  * FUNCTION:    AcpiDisable
  *
@@ -183,415 +223,318 @@ AcpiEnable (void)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Transfers the system into LEGACY mode.
+ * DESCRIPTION: Returns the system to original ACPI/legacy mode, and
+ *              uninstalls the SCI interrupt handler.
  *
- ******************************************************************************/
+ *************************************************************************/
 
 ACPI_STATUS
 AcpiDisable (void)
 {
-    ACPI_STATUS             Status = AE_OK;
+
+    FUNCTION_TRACE ("AcpiDisable");
 
 
-    ACPI_FUNCTION_TRACE ("AcpiDisable");
+    /* Restore original mode  */
 
-    if (!AcpiGbl_FADT)
+    if (AE_OK != AcpiHwSetMode (Acpi_GblOriginalMode))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "No FADT information present!\n"));
-        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+        DEBUG_PRINT (ACPI_ERROR, ("Unable to transition to original mode"));
+        return_ACPI_STATUS (AE_ERROR);
     }
 
-    if (AcpiHwGetMode() == ACPI_SYS_MODE_LEGACY)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "System is already in legacy (non-ACPI) mode\n"));
-    }
-    else
-    {
-        /* Transition to LEGACY mode */
+    /* Unload the SCI interrupt handler  */
 
-        Status = AcpiHwSetMode (ACPI_SYS_MODE_LEGACY);
+    AcpiEvRemoveSciHandler ();
+    AcpiEvRestoreAcpiState ();
 
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not exit ACPI mode to legacy mode"));
-            return_ACPI_STATUS (Status);
-        }
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "ACPI mode disabled\n"));
-    }
-
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiEnableEvent
  *
- * PARAMETERS:  Event           - The fixed eventto be enabled
- *              Flags           - Reserved
+ * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ *              Type            - The type of event
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Enable an ACPI event (fixed)
+ * DESCRIPTION: Enable an ACPI event (fixed and general purpose)
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiEnableEvent (
     UINT32                  Event,
-    UINT32                  Flags)
+    UINT32                  Type)
 {
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  Value;
+    UINT32                  RegisterId;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiEnableEvent");
+    FUNCTION_TRACE ("AcpiEnableEvent");
 
 
-    /* Decode the Fixed Event */
+    /* The Type must be either Fixed AcpiEvent or GPE */
 
-    if (Event > ACPI_EVENT_MAX)
+    switch (Type)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
 
-    /*
-     * Enable the requested fixed event (by writing a one to the
-     * enable register bit)
-     */
-    Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-                1, ACPI_MTX_LOCK);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    case EVENT_FIXED:
 
-    /* Make sure that the hardware responded */
+        /* Decode the Fixed AcpiEvent */
 
-    Status = AcpiGetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-                    &Value, ACPI_MTX_LOCK);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    if (Value != 1)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Could not enable %s event\n", AcpiUtGetEventName (Event)));
-        return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
-    }
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiEnableGpe
- *
- * PARAMETERS:  GpeDevice       - Parent GPE Device
- *              GpeNumber       - GPE level within the GPE block
- *              Flags           - Just enable, or also wake enable?
- *                                Called from ISR or not
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Enable an ACPI event (general purpose)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiEnableGpe (
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT32                  Flags)
-{
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
-
-
-    ACPI_FUNCTION_TRACE ("AcpiEnableGpe");
-
-
-    /* Use semaphore lock if not executing at interrupt level */
-
-    if (Flags & ACPI_NOT_ISR)
-    {
-        Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-        if (ACPI_FAILURE (Status))
+        switch (Event)
         {
-            return_ACPI_STATUS (Status);
+        case EVENT_PMTIMER:
+            RegisterId = TMR_EN;
+            break;
+
+        case EVENT_GLOBAL:
+            RegisterId = GBL_EN;
+            break;
+
+        case EVENT_POWER_BUTTON:
+            RegisterId = PWRBTN_EN;
+            break;
+
+        case EVENT_SLEEP_BUTTON:
+            RegisterId = SLPBTN_EN;
+            break;
+
+        case EVENT_RTC:
+            RegisterId = RTC_EN;
+            break;
+
+        default:
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+            break;
         }
-    }
 
-    /* Ensure that we have a valid GPE number */
+        /* Enable the requested fixed event (by writing a one to the enable register bit) */
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
-    if (!GpeEventInfo)
-    {
+        AcpiHwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 1);
+        break;
+
+
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if ((Event >= NUM_GPE) ||
+            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+        {
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+        }
+
+
+        /* Enable the requested GPE number */
+
+        AcpiHwEnableGpe (Event);
+        break;
+
+
+    default:
+
         Status = AE_BAD_PARAMETER;
-        goto UnlockAndExit;
     }
 
-    /* Enable the requested GPE number */
 
-    Status = AcpiHwEnableGpe (GpeEventInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        goto UnlockAndExit;
-    }
-
-    if (Flags & ACPI_EVENT_WAKE_ENABLE)
-    {
-        AcpiHwEnableGpeForWakeup (GpeEventInfo);
-    }
-
-UnlockAndExit:
-    if (Flags & ACPI_NOT_ISR)
-    {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    }
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiDisableEvent
  *
- * PARAMETERS:  Event           - The fixed eventto be enabled
- *              Flags           - Reserved
+ * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ *              Type            - The type of event
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Disable an ACPI event (fixed)
+ * DESCRIPTION: Disable an ACPI event (fixed and general purpose)
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiDisableEvent (
     UINT32                  Event,
-    UINT32                  Flags)
+    UINT32                  Type)
 {
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  Value;
+    UINT32                  RegisterId;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiDisableEvent");
+    FUNCTION_TRACE ("AcpiDisableEvent");
 
 
-    /* Decode the Fixed Event */
+    /* The Type must be either Fixed AcpiEvent or GPE */
 
-    if (Event > ACPI_EVENT_MAX)
+    switch (Type)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
 
-    /*
-     * Disable the requested fixed event (by writing a zero to the
-     * enable register bit)
-     */
-    Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-                0, ACPI_MTX_LOCK);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    case EVENT_FIXED:
 
-    Status = AcpiGetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-                &Value, ACPI_MTX_LOCK);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+        /* Decode the Fixed AcpiEvent */
 
-    if (Value != 0)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Could not disable %s events\n", AcpiUtGetEventName (Event)));
-        return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
-    }
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDisableGpe
- *
- * PARAMETERS:  GpeDevice       - Parent GPE Device
- *              GpeNumber       - GPE level within the GPE block
- *              Flags           - Just enable, or also wake enable?
- *                                Called from ISR or not
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Disable an ACPI event (general purpose)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiDisableGpe (
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT32                  Flags)
-{
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
-
-
-    ACPI_FUNCTION_TRACE ("AcpiDisableGpe");
-
-
-    /* Use semaphore lock if not executing at interrupt level */
-
-    if (Flags & ACPI_NOT_ISR)
-    {
-        Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-        if (ACPI_FAILURE (Status))
+        switch (Event)
         {
-            return_ACPI_STATUS (Status);
+        case EVENT_PMTIMER:
+            RegisterId = TMR_EN;
+            break;
+
+        case EVENT_GLOBAL:
+            RegisterId = GBL_EN;
+            break;
+
+        case EVENT_POWER_BUTTON:
+            RegisterId = PWRBTN_EN;
+            break;
+
+        case EVENT_SLEEP_BUTTON:
+            RegisterId = SLPBTN_EN;
+            break;
+
+        case EVENT_RTC:
+            RegisterId = RTC_EN;
+            break;
+
+        default:
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+            break;
         }
-    }
 
-    /* Ensure that we have a valid GPE number */
+        /* Disable the requested fixed event (by writing a zero to the enable register bit) */
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
-    if (!GpeEventInfo)
-    {
+        AcpiHwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 0);
+        break;
+
+
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if ((Event >= NUM_GPE) ||
+            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+        {
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+        }
+
+        /* Disable the requested GPE number */
+
+        AcpiHwDisableGpe (Event);
+        break;
+
+
+    default:
         Status = AE_BAD_PARAMETER;
-        goto UnlockAndExit;
     }
 
-    /*
-     * Only disable the requested GPE number for wake if specified.
-     * Otherwise, turn it totally off
-     */
-    if (Flags & ACPI_EVENT_WAKE_DISABLE)
-    {
-        AcpiHwDisableGpeForWakeup (GpeEventInfo);
-    }
-    else
-    {
-        Status = AcpiHwDisableGpe (GpeEventInfo);
-    }
-
-UnlockAndExit:
-    if (Flags & ACPI_NOT_ISR)
-    {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    }
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiClearEvent
  *
- * PARAMETERS:  Event           - The fixed event to be cleared
+ * PARAMETERS:  Event           - The fixed event or GPE to be cleared
+ *              Type            - The type of event
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Clear an ACPI event (fixed)
+ * DESCRIPTION: Clear an ACPI event (fixed and general purpose)
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiClearEvent (
-    UINT32                  Event)
+    UINT32                  Event,
+    UINT32                  Type)
 {
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  RegisterId;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiClearEvent");
+    FUNCTION_TRACE ("AcpiClearEvent");
 
 
-    /* Decode the Fixed Event */
+    /* The Type must be either Fixed AcpiEvent or GPE */
 
-    if (Event > ACPI_EVENT_MAX)
+    switch (Type)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
 
-    /*
-     * Clear the requested fixed event (By writing a one to the
-     * status register bit)
-     */
-    Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
-            1, ACPI_MTX_LOCK);
+    case EVENT_FIXED:
 
-    return_ACPI_STATUS (Status);
-}
+        /* Decode the Fixed AcpiEvent */
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiClearGpe
- *
- * PARAMETERS:  GpeDevice       - Parent GPE Device
- *              GpeNumber       - GPE level within the GPE block
- *              Flags           - Called from an ISR or not
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Clear an ACPI event (general purpose)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiClearGpe (
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT32                  Flags)
-{
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
-
-
-    ACPI_FUNCTION_TRACE ("AcpiClearGpe");
-
-
-    /* Use semaphore lock if not executing at interrupt level */
-
-    if (Flags & ACPI_NOT_ISR)
-    {
-        Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-        if (ACPI_FAILURE (Status))
+        switch (Event)
         {
-            return_ACPI_STATUS (Status);
+        case EVENT_PMTIMER:
+            RegisterId = TMR_STS;
+            break;
+
+        case EVENT_GLOBAL:
+            RegisterId = GBL_STS;
+            break;
+
+        case EVENT_POWER_BUTTON:
+            RegisterId = PWRBTN_STS;
+            break;
+
+        case EVENT_SLEEP_BUTTON:
+            RegisterId = SLPBTN_STS;
+            break;
+
+        case EVENT_RTC:
+            RegisterId = RTC_STS;
+            break;
+
+        default:
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+            break;
         }
-    }
 
-    /* Ensure that we have a valid GPE number */
+        /* Clear the requested fixed event (By writing a one to the status register bit) */
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
-    if (!GpeEventInfo)
-    {
+        AcpiHwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 1);
+        break;
+
+
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if ((Event >= NUM_GPE) ||
+            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+        {
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+        }
+
+
+        AcpiHwClearGpe (Event);
+        break;
+
+
+    default:
+
         Status = AE_BAD_PARAMETER;
-        goto UnlockAndExit;
     }
 
-    Status = AcpiHwClearGpe (GpeEventInfo);
-
-UnlockAndExit:
-    if (Flags & ACPI_NOT_ISR)
-    {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    }
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiGetEventStatus
  *
- * PARAMETERS:  Event           - The fixed event
- *              Event Status    - Where the current status of the event will
+ * PARAMETERS:  Event           - The fixed event or GPE
+ *              Type            - The type of event
+ *              Status          - Where the current status of the event will
  *                                be returned
  *
  * RETURN:      Status
@@ -600,15 +543,18 @@ UnlockAndExit:
  *
  ******************************************************************************/
 
+
 ACPI_STATUS
 AcpiGetEventStatus (
     UINT32                  Event,
+    UINT32                  Type,
     ACPI_EVENT_STATUS       *EventStatus)
 {
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  RegisterId;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetEventStatus");
+    FUNCTION_TRACE ("AcpiGetEventStatus");
 
 
     if (!EventStatus)
@@ -616,82 +562,71 @@ AcpiGetEventStatus (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Decode the Fixed Event */
 
-    if (Event > ACPI_EVENT_MAX)
+    /* The Type must be either Fixed AcpiEvent or GPE */
+
+    switch (Type)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
 
-    /* Get the status of the requested fixed event */
+    case EVENT_FIXED:
 
-    Status = AcpiGetRegister (AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
-                    EventStatus, ACPI_MTX_LOCK);
+        /* Decode the Fixed AcpiEvent */
 
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiGetGpeStatus
- *
- * PARAMETERS:  GpeDevice       - Parent GPE Device
- *              GpeNumber       - GPE level within the GPE block
- *              Flags           - Called from an ISR or not
- *              Event Status    - Where the current status of the event will
- *                                be returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Get status of an event (general purpose)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetGpeStatus (
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT32                  Flags,
-    ACPI_EVENT_STATUS       *EventStatus)
-{
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
-
-
-    ACPI_FUNCTION_TRACE ("AcpiGetGpeStatus");
-
-
-    /* Use semaphore lock if not executing at interrupt level */
-
-    if (Flags & ACPI_NOT_ISR)
-    {
-        Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-        if (ACPI_FAILURE (Status))
+        switch (Event)
         {
-            return_ACPI_STATUS (Status);
+        case EVENT_PMTIMER:
+            RegisterId = TMR_STS;
+            break;
+
+        case EVENT_GLOBAL:
+            RegisterId = GBL_STS;
+            break;
+
+        case EVENT_POWER_BUTTON:
+            RegisterId = PWRBTN_STS;
+            break;
+
+        case EVENT_SLEEP_BUTTON:
+            RegisterId = SLPBTN_STS;
+            break;
+
+        case EVENT_RTC:
+            RegisterId = RTC_STS;
+            break;
+
+        default:
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+            break;
         }
-    }
 
-    /* Ensure that we have a valid GPE number */
+        /* Get the status of the requested fixed event */
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
-    if (!GpeEventInfo)
-    {
+        *EventStatus = AcpiHwRegisterIO (ACPI_READ, TRUE, RegisterId);
+        break;
+
+
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if ((Event >= NUM_GPE) ||
+            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+        {
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+        }
+
+
+        /* Obtain status on the requested GPE number */
+
+        AcpiHwGetGpeStatus (Event, EventStatus);
+        break;
+
+
+    default:
         Status = AE_BAD_PARAMETER;
-        goto UnlockAndExit;
     }
 
-    /* Obtain status on the requested GPE number */
 
-    Status = AcpiHwGetGpeStatus (GpeEventInfo, EventStatus);
-
-UnlockAndExit:
-    if (Flags & ACPI_NOT_ISR)
-    {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    }
     return_ACPI_STATUS (Status);
 }
-
 

@@ -190,7 +190,7 @@ AcpiInstallAddressSpaceHandler (
     if ((ObjEntry->Type != ACPI_TYPE_DEVICE)     &&
         (ObjEntry->Type != ACPI_TYPE_PROCESSOR)  &&
         (ObjEntry->Type != ACPI_TYPE_THERMAL)    &&
-        (ObjEntry != AcpiGbl_RootObject))
+        (ObjEntry != Acpi_GblRootObject))
     {
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
@@ -312,7 +312,7 @@ AcpiInstallAddressSpaceHandler (
     }
 
     DEBUG_PRINT (TRACE_OPREGION, ("Installing address handler for %s on Device 0x%p (0x%p)\n",
-                    AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
+                    Acpi_GblRegionTypes[SpaceId], ObjEntry, ObjDesc));
 
     /*
      *  Now we can install the handler
@@ -448,7 +448,7 @@ AcpiRemoveAddressSpaceHandler (
              *  Got it, first dereference this in the Regions
              */
             DEBUG_PRINT (TRACE_OPREGION, ("Removing address handler 0x%p (0x%p) for %s on Device 0x%p (0x%p)\n",
-                            HandlerObj, Handler, AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
+                            HandlerObj, Handler, Acpi_GblRegionTypes[SpaceId], ObjEntry, ObjDesc));
 
             RegionObj = HandlerObj->AddrHandler.RegionList;
 
@@ -501,7 +501,7 @@ AcpiRemoveAddressSpaceHandler (
      */
     DEBUG_PRINT (TRACE_OPREGION,
         ("Unable to remove address handler 0x%p for %s on Device nte 0x%p, obj 0x%p\n",
-        Handler, AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
+        Handler, Acpi_GblRegionTypes[SpaceId], ObjEntry, ObjDesc));
 
     Status = AE_NOT_EXIST;
 
