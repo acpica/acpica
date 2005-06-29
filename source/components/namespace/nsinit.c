@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: nsinit - namespace initialization
- *              $Revision: 1.40 $
+ * Module Name: nsxfinit - namespace external interfaces - initialization
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -120,15 +120,15 @@
 #include "acpi.h"
 #include "acnamesp.h"
 #include "acdispat.h"
-#include "acinterp.h"
 
-#define _COMPONENT          ACPI_NAMESPACE
-        ACPI_MODULE_NAME    ("nsinit")
+#define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsxfinit")
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsInitializeObjects
+ * FUNCTION:    AcpiInitializeObjects
  *
  * PARAMETERS:  None
  *
@@ -140,19 +140,19 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiNsInitializeObjects (
+AcpiInitializeObjects (
     void)
 {
     ACPI_STATUS             Status;
     ACPI_INIT_WALK_INFO     Info;
 
 
-    ACPI_FUNCTION_TRACE ("NsInitializeObjects");
+    FUNCTION_TRACE ("AcpiInitializeObjects");
 
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "**** Starting initialization of namespace objects ****\n"));
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "Completing Region and Field initialization:"));
+    DEBUG_PRINT (TRACE_DISPATCH,
+        ("DsInitializeObjects: **** Starting initialization of namespace objects ****\n"));
+    DEBUG_PRINT_RAW (ACPI_OK, ("Completing Region and Field initialization:"));
 
 
     Info.FieldCount = 0;
@@ -169,25 +169,25 @@ AcpiNsInitializeObjects (
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %x\n", Status));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AcpiInitializeObjects: WalkNamespace failed! %x\n", Status));
     }
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
-        "\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n",
-        Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit,
-        Info.FieldCount, Info.ObjectCount));
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%d Control Methods found\n", Info.MethodCount));
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%d Op Regions found\n", Info.OpRegionCount));
+    DEBUG_PRINT_RAW (ACPI_OK,
+        ("\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n", 
+        Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit, Info.FieldCount, Info.ObjectCount));
+    DEBUG_PRINT (TRACE_DISPATCH,
+        ("DsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
+    DEBUG_PRINT (TRACE_DISPATCH,
+        ("DsInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AcpiNsInitializeDevices
+ * FUNCTION:    AcpiInitializeDevices
  *
  * PARAMETERS:  None
  *
@@ -196,41 +196,46 @@ AcpiNsInitializeObjects (
  * DESCRIPTION: Walk the entire namespace and initialize all ACPI devices.
  *              This means running _INI on all present devices.
  *
- *              Note: We install PCI config space handler on region access,
- *              not here.
+ *              Also: Install PCI config space handler for all PCI root bridges.
+ *              A PCI root bridge is found by searching for devices containing 
+ *              a HID with the value EISAID("PNP0A03")
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 ACPI_STATUS
-AcpiNsInitializeDevices (
+AcpiInitializeDevices (
     void)
 {
     ACPI_STATUS             Status;
     ACPI_DEVICE_WALK_INFO   Info;
 
 
-    ACPI_FUNCTION_TRACE ("NsInitializeDevices");
+    FUNCTION_TRACE ("AcpiInitializeDevices");
 
 
     Info.DeviceCount = 0;
     Info.Num_STA = 0;
     Info.Num_INI = 0;
+    Info.Num_HID = 0;
+    Info.Num_PCI = 0;
 
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "Executing device _INI methods:"));
+    DEBUG_PRINT_RAW (ACPI_OK, ("Executing device _INI methods:"));
 
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
-                    ACPI_UINT32_MAX, FALSE, AcpiNsInitOneDevice, &Info, NULL);
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                        FALSE, AcpiNsInitOneDevice, &Info, NULL);
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %x\n", Status));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AcpiInitializeDevices: WalkNamespace failed! %x\n", Status));
     }
 
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
-        "\n%d Devices found: %d _STA, %d _INI\n",
-        Info.DeviceCount, Info.Num_STA, Info.Num_INI));
+    DEBUG_PRINT_RAW (ACPI_OK, 
+        ("\n%d Devices found: %d _STA, %d _INI, %d _HID, %d PCIRoot\n",
+        Info.DeviceCount, Info.Num_STA, Info.Num_INI, 
+        Info.Num_HID, Info.Num_PCI));
 
     return_ACPI_STATUS (Status);
 }
@@ -263,42 +268,24 @@ AcpiNsInitOneObject (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_OBJECT_TYPE        Type;
+    OBJECT_TYPE_INTERNAL    Type;
     ACPI_STATUS             Status;
     ACPI_INIT_WALK_INFO     *Info = (ACPI_INIT_WALK_INFO *) Context;
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ACPI_FUNCTION_NAME ("NsInitOneObject");
-
-
     Info->ObjectCount++;
+
 
 
     /* And even then, we are only interested in a few object types */
 
     Type = AcpiNsGetType (ObjHandle);
-    ObjDesc = AcpiNsGetAttachedObject (Node);
+    ObjDesc = Node->Object;
     if (!ObjDesc)
     {
         return (AE_OK);
-    }
-
-    if ((Type != ACPI_TYPE_REGION) &&
-        (Type != ACPI_TYPE_BUFFER_FIELD))
-    {
-        return (AE_OK);
-    }
-
-
-    /*
-     * Must lock the interpreter before executing AML code
-     */
-    Status = AcpiExEnterInterpreter ();
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
     }
 
     switch (Type)
@@ -314,23 +301,11 @@ AcpiNsInitOneObject (
 
         Info->OpRegionInit++;
         Status = AcpiDsGetRegionArguments (ObjDesc);
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ERROR, "\n"));
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "%s while getting region arguments [%4.4s]\n",
-                    AcpiFormatException (Status), (char*)&Node->Name));
-        }
-
-        if (!(AcpiDbgLevel & ACPI_LV_INIT))
-        {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
-        }
-
+        DEBUG_PRINT_RAW (ACPI_OK, ("."));
         break;
 
 
-    case ACPI_TYPE_BUFFER_FIELD:
+    case ACPI_TYPE_FIELD_UNIT:
 
         Info->FieldCount++;
         if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
@@ -339,19 +314,8 @@ AcpiNsInitOneObject (
         }
 
         Info->FieldInit++;
-        Status = AcpiDsGetBufferFieldArguments (ObjDesc);
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ERROR, "\n"));
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "%s while getting buffer field arguments [%4.4s]\n",
-                    AcpiFormatException (Status), (char*)&Node->Name));
-        }
-        if (!(AcpiDbgLevel & ACPI_LV_INIT))
-        {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
-        }
-
+        Status = AcpiDsGetFieldUnitArguments (ObjDesc);
+        DEBUG_PRINT_RAW (ACPI_OK, ("."));
 
         break;
 
@@ -359,21 +323,19 @@ AcpiNsInitOneObject (
         break;
     }
 
-
     /*
      * We ignore errors from above, and always return OK, since
      * we don't want to abort the walk on a single error.
      */
-    AcpiExExitInterpreter ();
     return (AE_OK);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiNsInitOneDevice
  *
- * PARAMETERS:  ACPI_WALK_CALLBACK
+ * PARAMETERS:  The usual "I'm a namespace callback" stuff
  *
  * RETURN:      ACPI_STATUS
  *
@@ -381,7 +343,7 @@ AcpiNsInitOneObject (
  *              to initialize each device. It determines if the device is
  *              present, and if so, calls _INI.
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 ACPI_STATUS
 AcpiNsInitOneDevice (
@@ -391,94 +353,165 @@ AcpiNsInitOneDevice (
     void                    **ReturnValue)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMESPACE_NODE    *Node;
-    UINT32                  Flags;
+    ACPI_OPERAND_OBJECT    *RetObj = NULL;
     ACPI_DEVICE_WALK_INFO  *Info = (ACPI_DEVICE_WALK_INFO *) Context;
 
 
-    ACPI_FUNCTION_TRACE ("NsInitOneDevice");
+    FUNCTION_TRACE ("AcpiNsInitOneDevice");
 
 
-    if (!(AcpiDbgLevel & ACPI_LV_INIT))
-    {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
-    }
-
+    DEBUG_PRINT_RAW (ACPI_OK, ("."));
     Info->DeviceCount++;
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    Node = AcpiNsMapHandleToNode (ObjHandle);
-    if (!Node)
-    {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /*
      * Run _STA to determine if we can run _INI on the device.
      */
-    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (Node, "_STA  [Method]"));
-    Status = AcpiUtExecute_STA (Node, &Flags);
-    if (ACPI_FAILURE (Status))
-    {
-        /* Ignore error and move on to next device */
 
-        return_ACPI_STATUS (AE_OK);
+    Status = AcpiNsEvaluateRelative (ObjHandle, "_STA", NULL, &RetObj);
+    if (AE_NOT_FOUND == Status)
+    {
+         /* No _STA means device is present */
     }
 
-    Info->Num_STA++;
-
-    if (!(Flags & 0x01))
+    else if (ACPI_FAILURE (Status))
     {
-        /* don't look at children of a not present device */
+        return_ACPI_STATUS (Status);
+    }
 
-        return_ACPI_STATUS(AE_CTRL_DEPTH);
+    else if (RetObj)
+    {
+        if (ACPI_TYPE_NUMBER != RetObj->Common.Type)
+        {
+            Status = AE_AML_OPERAND_TYPE;
+            goto Cleanup;
+        }
+
+        /*
+         * if _STA "present" bit not set, we're done.
+         */
+        Info->Num_STA++;
+        if (!(RetObj->Number.Value & 1))
+        {
+            goto Cleanup;
+        }
     }
 
 
     /*
      * The device is present. Run _INI.
      */
-    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ObjHandle, "_INI  [Method]"));
+
     Status = AcpiNsEvaluateRelative (ObjHandle, "_INI", NULL, NULL);
     if (AE_NOT_FOUND == Status)
     {
-        /* No _INI means device requires no initialization */
-
-        Status = AE_OK;
+         /* No _INI means device requires no initialization */
     }
 
     else if (ACPI_FAILURE (Status))
     {
-        /* Ignore error and move on to next device */
-
 #ifdef ACPI_DEBUG
-        NATIVE_CHAR *ScopeName = AcpiNsGetExternalPathname (ObjHandle);
+        NATIVE_CHAR *ScopeName = AcpiNsGetTablePathname (ObjHandle);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
-                ScopeName, AcpiFormatException (Status)));
+        DEBUG_PRINT (ACPI_ERROR, ("%s._INI failed: %s\n", 
+                ScopeName, AcpiCmFormatException (Status)));
 
-        ACPI_MEM_FREE (ScopeName);
+        AcpiCmFree (ScopeName);
 #endif
+        return_ACPI_STATUS (Status);
     }
 
     else
     {
-        /* Count of successful INIs */
-
         Info->Num_INI++;
+    }
+
+
+    /*
+     * Examine the HID of the device.  _HID can be an executable
+     * control method -- it simply has to return a string or number
+     * containing the HID.
+     */
+
+    if (RetObj)
+    {
+        AcpiCmRemoveReference (RetObj);
+    }
+
+    RetObj = NULL;
+    Status = AcpiNsEvaluateRelative (ObjHandle, "_HID", NULL, &RetObj);
+    if (AE_NOT_FOUND == Status)
+    {
+         /* No _HID --> Can't be a PCI root bridge */
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Info->Num_HID++;
+
+
+    /*
+     * Found an _HID object.
+     * Check for a PCI Root Bridge.  We need to install the PCI_CONFIG space
+     * handler on all PCI Root Bridges found within the namespace
+     *
+     * A PCI Root Bridge has an HID with the value EISAID("PNP0A03")
+     * The HID can be either a number or a string.
+     */
+
+    switch (RetObj->Common.Type)
+    {
+    case ACPI_TYPE_NUMBER:
+
+        if (RetObj->Number.Value != PCI_ROOT_HID_VALUE)
+        {
+            goto Cleanup;
+        }
+
+        break;
+
+    case ACPI_TYPE_STRING:
+
+        if (STRNCMP (RetObj->String.Pointer, PCI_ROOT_HID_STRING,
+                     sizeof (PCI_ROOT_HID_STRING)))
+        {
+            goto Cleanup;
+        }
+
+        break;
+
+    default:
+
+        goto Cleanup;
+    }
+
+
+    /*
+     * We found a valid PCI_ROOT_HID.
+     * The parent of the HID entry is the PCI device;  Install the default PCI
+     * handler for this PCI device.
+     */
+
+    Info->Num_PCI++;
+    Status = AcpiInstallAddressSpaceHandler (ObjHandle,
+                                             ADDRESS_SPACE_PCI_CONFIG,
+                                             ACPI_DEFAULT_HANDLER, NULL, NULL);
+
+
+Cleanup:
+
+    if (RetObj)
+    {
+        AcpiCmRemoveReference (RetObj);
     }
 
     return_ACPI_STATUS (AE_OK);
 }
+
+
+
+
