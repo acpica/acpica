@@ -164,7 +164,7 @@ NsSearchOnly (
         DEBUG_EXEC (char *ScopeName = NsNameOfScope (NameTable));
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Searching %s [%p]\n",
                             ScopeName, NameTable));
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type %d)\n",
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type 0x%X)\n",
                             &EntryName, Type));
         DEBUG_EXEC (CmFree (ScopeName));
     }
@@ -235,7 +235,7 @@ NsSearchOnly (
                 NameTable[Position].Type = (UINT8) Type;
             }
 
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (actual type %d) found at %p\n", 
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (actual type 0x%X) found at %p\n", 
                             &EntryName, NameTable[Position].Type, &NameTable[Position]));
             
             *RetEntry = &NameTable[Position];
@@ -275,7 +275,7 @@ NsSearchOnly (
 
     /* Searched entire table, not found */
 
-    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (type %d) not found at %p\n", 
+    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (type 0x%X) not found at %p\n", 
                                 &EntryName, Type, &NameTable[Position]));
 
 
@@ -381,7 +381,7 @@ NsSearchParentTree (
 
         else if (NsLocal (Type))
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] (type %d) is local (no search)\n", 
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] (type 0x%X) is local (no search)\n", 
                                         &EntryName, Type));
         }
     }
