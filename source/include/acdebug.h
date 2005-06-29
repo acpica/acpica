@@ -209,6 +209,19 @@ typedef struct ArgumentInfo
 #define EX_SINGLE_STEP          2
 
 
+
+
+void
+DbAddToHistory (
+    char                    *CommandLine);
+
+void
+DbDisplayHistory (void);
+
+char *
+DbGetFromHistory (
+    char                    *CommandNumArg);
+
 void
 DbDisplayArgumentObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc);
