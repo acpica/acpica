@@ -188,6 +188,8 @@ OsLocalWaitSemaphore (
         /* Reacquire the interpreter */
 
         AmlEnterInterpreter ();
+
+        DEBUG_PRINT (TRACE_EXEC, ("*** Thread awake and inside interpreter after blocking, %s\n", CmFormatException (Status)));
     }
 
     return_ACPI_STATUS (Status);
