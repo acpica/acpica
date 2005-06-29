@@ -171,7 +171,7 @@ extern      char                *AcpiTableNames[NUM_ACPI_TABLES];
  * actual OS mutex handles, indexed by the local ACPI_MUTEX_HANDLEs.
  * (The table maps local handles to the real OS handles)
  */
-extern      ACPI_MUTEX          AcpiMutexTable [NUM_MTX];
+ACPI_EXTERN ACPI_MUTEX          AcpiMutexTable [NUM_MTX];
 
 
 /*****************************************************************************
