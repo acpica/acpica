@@ -697,9 +697,47 @@ AmlDumpOperands (
 
 /*****************************************************************************
  * 
+ * FUNCTION:    AmlDumpNameTableEntry
+ *
+ * PARAMETERS:  *Entry              - Descriptor to dump
+ *              Flags               - Force display
+ *
+ * DESCRIPTION: Dumps the members of the NTE given.
+ *
+ ****************************************************************************/
+
+void
+AmlDumpNameTableEntry (
+    NAME_TABLE_ENTRY        *Entry,
+    UINT32                  Flags)
+{
+
+    if (!Flags)
+    {
+	    if (!((TRACE_OBJECTS & DebugLevel) && (_COMPONENT & DebugLayer)))
+        {
+            return;
+        }
+    }
+
+
+    OsdPrintf ("%20s : %4.4s\n",    "Name", &Entry->Name);
+    OsdPrintf ("%20s : %s\n",       "Type", Gbl_NsTypeNames [Entry->Type]);
+    OsdPrintf ("%20s : 0x%X\n",     "Flags", Entry->Flags);
+    OsdPrintf ("%20s : 0x%p\n",     "Attached Object", Entry->Object);
+    OsdPrintf ("%20s : 0x%p\n",     "Scope", Entry->Scope);
+    OsdPrintf ("%20s : 0x%p\n",     "Parent", Entry->ParentEntry);
+    OsdPrintf ("%20s : 0x%p\n",     "Next", Entry->NextEntry);
+    OsdPrintf ("%20s : 0x%p\n",     "Previous", Entry->PrevEntry);
+}
+
+
+/*****************************************************************************
+ * 
  * FUNCTION:    AmlDumpObjectDescriptor
  *
  * PARAMETERS:  *Object             - Descriptor to dump
+ *              Flags               - Force display
  *
  * DESCRIPTION: Dumps the members of the object descriptor given.
  *
@@ -707,14 +745,19 @@ AmlDumpOperands (
 
 void
 AmlDumpObjectDescriptor (
-    ACPI_OBJECT_INTERNAL    *Object)
+    ACPI_OBJECT_INTERNAL    *Object,
+    UINT32                  Flags)
 {
 	FUNCTION_TRACE ("AmlDumpObjectDescriptor");
-	
-	if (!((TRACE_OBJECTS & DebugLevel) && (_COMPONENT & DebugLayer)))
+
+    
+    if (!Flags)
     {
-        return;
-    }	
+	    if (!((TRACE_OBJECTS & DebugLevel) && (_COMPONENT & DebugLayer)))
+        {
+            return;
+        }
+    }
 	
 	switch (Object->Common.Type)
 	{
