@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource.h - ASL resource descriptors
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -553,6 +553,10 @@ RsDoVendorSmallDescriptor (
 /*
  * Large descriptors
  */
+
+UINT32
+RsGetStringDataLength (
+    ACPI_PARSE_OBJECT       *InitializerOp);
 
 ASL_RESOURCE_NODE *
 RsDoDwordIoDescriptor (
