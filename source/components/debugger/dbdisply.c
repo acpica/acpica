@@ -355,7 +355,7 @@ DbDecodeInternalObject (
         return;
     }
 
-    OsdPrintf (" %9.9s ", Gbl_NsTypeNames[ObjDesc->Common.Type]);
+    OsdPrintf (" %9.9s ", CmGetTypeName (ObjDesc->Common.Type));
 
     switch (ObjDesc->Common.Type)
     {
@@ -407,7 +407,8 @@ DbDisplayInternalObject (
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
-        OsdPrintf ("<NTE>             Name %4.4s Type %s", &((NAME_TABLE_ENTRY *)ObjDesc)->Name, Gbl_NsTypeNames[((NAME_TABLE_ENTRY *)ObjDesc)->Type]);
+        OsdPrintf ("<NTE>             Name %4.4s Type %s", &((NAME_TABLE_ENTRY *)ObjDesc)->Name, 
+                                                            CmGetTypeName (((NAME_TABLE_ENTRY *)ObjDesc)->Type));
     }
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
