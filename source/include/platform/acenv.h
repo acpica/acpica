@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.111 $
+ *       $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -299,6 +299,7 @@
  */
 
 #define ACPI_STRSTR(s1,s2)      strstr((s1), (s2))
+#define ACPI_STRCHR(s1,c)       strchr((s1), (c))
 #define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
 #define ACPI_STRLEN(s)          (ACPI_SIZE) strlen((s))
 #define ACPI_STRCPY(d,s)        (void) strcpy((d), (s))
@@ -362,19 +363,20 @@ typedef char *va_list;
 #endif /* va_arg */
 
 
-#define ACPI_STRSTR(s1,s2)      AcpiUtStrstr  ((s1), (s2))
+#define ACPI_STRSTR(s1,s2)      AcpiUtStrstr ((s1), (s2))
+#define ACPI_STRCHR(s1,c)       AcpiUtStrchr ((s1), (c))
 #define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
-#define ACPI_STRLEN(s)          (ACPI_SIZE) AcpiUtStrlen  ((s))
-#define ACPI_STRCPY(d,s)        (void) AcpiUtStrcpy  ((d), (s))
+#define ACPI_STRLEN(s)          (ACPI_SIZE) AcpiUtStrlen ((s))
+#define ACPI_STRCPY(d,s)        (void) AcpiUtStrcpy ((d), (s))
 #define ACPI_STRNCPY(d,s,n)     (void) AcpiUtStrncpy ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_STRNCMP(d,s,n)     AcpiUtStrncmp ((d), (s), (ACPI_SIZE)(n))
-#define ACPI_STRCMP(d,s)        AcpiUtStrcmp  ((d), (s))
-#define ACPI_STRCAT(d,s)        (void) AcpiUtStrcat  ((d), (s))
+#define ACPI_STRCMP(d,s)        AcpiUtStrcmp ((d), (s))
+#define ACPI_STRCAT(d,s)        (void) AcpiUtStrcat ((d), (s))
 #define ACPI_STRNCAT(d,s,n)     AcpiUtStrncat ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMCMP(s1,s2,n)    AcpiUtMemcmp((s1), (s2), (ACPI_SIZE)(n))
-#define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy  ((d), (s), (ACPI_SIZE)(n))
-#define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset  ((d), (v), (ACPI_SIZE)(n))
+#define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset ((d), (v), (ACPI_SIZE)(n))
 #define ACPI_TOUPPER            AcpiUtToUpper
 #define ACPI_TOLOWER            AcpiUtToLower
 
