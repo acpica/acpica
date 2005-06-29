@@ -109,11 +109,13 @@
 
 
 static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "DumpStackEntry: Unknown OPCODE", "DumpStackEntry: Unknown OPCODE"},
-    {"0001", '1', "DumpStackEntry: unknown ValType", "DumpStackEntry: unknown ValType"},
+    {"0000", '1', "AmlDumpStackEntry: Unknown OPCODE", "AmlDumpStackEntry: Unknown OPCODE"},
+    {"0001", '1', "AmlDumpStackEntry: unknown ValType", "AmlDumpStackEntry: unknown ValType"},
     {NULL, 'I', NULL, NULL}
 };
 
+
+/* TBD: Move this routine to common code */
 
 /*****************************************************************************
  * 
@@ -203,7 +205,7 @@ cleanup:
 
 /****************************************************************************
  * 
- * FUNCTION:    DumpAMLBuffer
+ * FUNCTION:    AmlDumpBuffer
  *
  * PARAMETERS:  size_t  NumBytes    number of AML stream bytes to dump
  *
@@ -212,20 +214,20 @@ cleanup:
  ***************************************************************************/
 
 void
-DumpAMLBuffer (size_t NumBytes)
+AmlDumpBuffer (size_t NumBytes)
 {
 
-    FUNCTION_TRACE ("DumpAMLBuffer");
+    FUNCTION_TRACE ("AmlDumpBuffer");
 
 
-    DEBUG_PRINT (TRACE_TABLES, ("AML from %p:\n", PCodeHandle ()));
-    DumpBuffer ((UINT8 *) PCodeHandle (), NumBytes, HEX, INTERPRETER);
+    DEBUG_PRINT (TRACE_TABLES, ("AML from %p:\n", AmlGetPCodeHandle ()));
+    DumpBuffer ((UINT8 *) AmlGetPCodeHandle (), NumBytes, HEX, INTERPRETER);
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    DumpStackEntry
+ * FUNCTION:    AmlDumpStackEntry
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *EntryDesc    ptr to SE to be dumped
  *
@@ -236,7 +238,7 @@ DumpAMLBuffer (size_t NumBytes)
  ****************************************************************************/
 
 INT32
-DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
+AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
 {
     char        *OutString = NULL;
     char        *FullyQualifiedName = NULL;
@@ -244,18 +246,18 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
     UINT16      Length;
 
 
-    FUNCTION_TRACE ("DumpStackEntry");
+    FUNCTION_TRACE ("AmlDumpStackEntry");
 
 
     if (!EntryDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("DumpStackEntry: ***NULL stack entry pointer***\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlDumpStackEntry: ***NULL stack entry pointer***\n"));
         return S_ERROR;
     }
 
-    else if (IsNsHandle (EntryDesc))
+    else if (IS_NS_HANDLE (EntryDesc))
     {
-        DEBUG_PRINT (ACPI_INFO, ("DumpStackEntry: Name \n"));
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpStackEntry: Name \n"));
         DUMP_ENTRY (EntryDesc);
     }
 
@@ -377,7 +379,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
                       ElementIndex < EntryDesc->Package.PkgCount;
                       ++ElementIndex, ++Element)
                 {
-                    DumpStackEntry (*Element);
+                    AmlDumpStackEntry (*Element);
                 }
            
                 DecIndent ();
@@ -506,7 +508,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
             if (AML_UNASSIGNED != Aml[(INT32) EntryDesc->ValType])
             {
                 DEBUG_PRINT (ACPI_ERROR,
-                              ("DumpStackEntry: Unhandled opcode (AML %s) \n", 
+                              ("AmlDumpStackEntry: Unhandled opcode (AML %s) \n", 
                               ShortOps[Aml[(INT32) EntryDesc->ValType]]));
             }
 
@@ -548,7 +550,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
 
 /*****************************************************************************
  * 
- * FUNCTION:    DumpStack
+ * FUNCTION:    AmlDumpStack
  *
  * PARAMETERS:  OpMode    LoadExecMode      Load or Exec
  *              char      *Ident            Identification
@@ -560,12 +562,12 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
  ****************************************************************************/
 
 void
-DumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
+AmlDumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
 {
     OBJECT_DESCRIPTOR   **EntryDesc;
 
     
-    FUNCTION_TRACE ("DumpStack");
+    FUNCTION_TRACE ("AmlDumpStack");
 
 
     if (!Ident)
@@ -579,7 +581,7 @@ DumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
     }
 
     DEBUG_PRINT (ACPI_INFO,
-                ("*******************DumpStack***********************\n"));
+                ("*******************AmlDumpStack***********************\n"));
     DEBUG_PRINT (ACPI_INFO, ("%s: %s\n", Ident, Note));
 
     for (EntryDesc = (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop] ;
@@ -599,10 +601,10 @@ DumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
 
         /* 
          * Stop dumping when
-         *  - DumpStackEntry fails on an entry other than the first, or
+         *  - AmlDumpStackEntry fails on an entry other than the first, or
          *  - the entire stack has been dumped.
          */
-        if ((S_SUCCESS != DumpStackEntry (*EntryDesc) &&
+        if ((S_SUCCESS != AmlDumpStackEntry (*EntryDesc) &&
             (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop] != EntryDesc) || 
             (OBJECT_DESCRIPTOR **) &ObjStack[0] == EntryDesc)
         {
@@ -614,17 +616,17 @@ DumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
 
 /*****************************************************************************
  * 
- * FUNCTION:    DumpObjectDescriptor
+ * FUNCTION:    AmlDumpObjectDescriptor
  *
  * DESCRIPTION: Dumps the members of the object descriptor given.
  *
  ****************************************************************************/
 
 void
-DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
+AmlDumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 {
 	
-	FUNCTION_TRACE ("DumpObjectDescriptor");
+	FUNCTION_TRACE ("AmlDumpObjectDescriptor");
 		
 	switch (Object->ValType)
 	{

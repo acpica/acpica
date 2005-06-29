@@ -109,7 +109,7 @@
 
 static ST_KEY_DESC_TABLE KDT[] = {
    {"0000", '1', "LastFQN: Allocation failure requesting", "LastFQN: Allocation failure requesting"},
-   {"0001", '1', "AllocateNameString: name allocation failure", "AllocateNameString: name allocation failure"},
+   {"0001", '1', "AmlAllocateNameString: name allocation failure", "AmlAllocateNameString: name allocation failure"},
    {"0002", '1', "NamedObject/NameSpaceModifier Failure with at least one more byte available in package", "NamedObject/NameSpaceModifier Failure with at least one more byte available in package"},
    {"0003", '1', "During LOAD this segment started with one or more valid characters, but fewer than 4", "During LOAD this segment started with one or more valid characters, but fewer than 4"},
    {"0004", '1', "*UNEXPECTED END* [Name]", "*UNEXPECTED END* [Name]"},
@@ -125,9 +125,11 @@ static ST_KEY_DESC_TABLE KDT[] = {
  * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
  */
 
+/* TBD: Remove this function.  it is bad. */
+
 /*****************************************************************************
  *
- * FUNCTION:    LastFullyQualifiedName
+ * FUNCTION:    AmlLastFullyQualifiedName
  *
  * PARAMETERS:  none
  *
@@ -142,17 +144,17 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 char *
-LastFullyQualifiedName (void)
+AmlLastFullyQualifiedName (void)
 {
     char                *CurrentScope;
     char                *TempPtr;
     size_t              MaxLength;
     size_t              Length;
-    static  char        *FQN_ptr = NULL;
-    static  size_t      FQN_Length = 0;
+    char                *FQN_ptr = NULL;
+    size_t              FQN_Length = 0;
 
 
-    FUNCTION_TRACE ("LastFullyQualifiedName");
+    FUNCTION_TRACE ("AmlLastFullyQualifiedName");
 
 
     /* If NameString is fully qualified, just return a pointer to it. */
@@ -237,7 +239,7 @@ LastFullyQualifiedName (void)
 
 /*****************************************************************************
  *
- * FUNCTION:    AllocateNameString
+ * FUNCTION:    AmlAllocateNameString
  *
  * PARAMETERS:  INT32 PrefixCount   -1  => root
  *                                  0   => none
@@ -254,13 +256,13 @@ LastFullyQualifiedName (void)
  ****************************************************************************/
 
 void 
-AllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
+AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
 {
     char            *TempPtr;
     INT32           SizeNeeded;
 
 
-    FUNCTION_TRACE ("AllocateNameString");
+    FUNCTION_TRACE ("AmlAllocateNameString");
 
     /* 
      * Room for all \ and ^ prefixes, all segments, and a MultiNamePrefix.
@@ -361,13 +363,13 @@ AllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
         *TempPtr++ = AML_DualNamePrefix;
     }
 
-    /*  Terminate string following prefixes. DoSeg() will append the segment(s) */
+    /*  Terminate string following prefixes. AmlDoSeg() will append the segment(s) */
 
     *TempPtr = 0;
 
     if (LstFileHandle != NO_LOG_HANDLE)
     {
-        DEBUG_PRINT (TRACE_NAMES, ("AllocateNameString: "));
+        DEBUG_PRINT (TRACE_NAMES, ("AmlAllocateNameString: "));
         
         for (TempPtr = NameString; *TempPtr; ++TempPtr)
         {
@@ -381,7 +383,7 @@ AllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
 
 /*****************************************************************************
  *
- * FUNCTION:    NcOK
+ * FUNCTION:    AmlGoodChar
  *
  * PARAMETERS:  INT32   Character       the character to be examined
  *
@@ -390,7 +392,7 @@ AllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
  ****************************************************************************/
 
 INT32 
-NcOK (INT32 Character)
+AmlGoodChar (INT32 Character)
 {
 
     return ((Character == '_') || (Character >= 'A' && Character <= 'Z') ||
@@ -400,7 +402,7 @@ NcOK (INT32 Character)
 
 /*****************************************************************************
  * 
- * FUNCTION:    GetEncodedPkgLen
+ * FUNCTION:    AmlDecodePackageLength
  *
  * PARAMETERS:  long    LastPkgLen  latest value decoded by DoPkgLength() for
  *                                  most recently examined package or field
@@ -424,11 +426,11 @@ NcOK (INT32 Character)
 
 
 INT32 
-GetEncodedPkgLen (INT32 LastPkgLen)
+AmlDecodePackageLength (INT32 LastPkgLen)
 {
     INT32           NumBytes = 0;
 
-    FUNCTION_TRACE ("GetEncodedPkgLen");
+    FUNCTION_TRACE ("AmlDecodePackageLength");
 
 
     if (LastPkgLen < Type1)
@@ -449,7 +451,7 @@ GetEncodedPkgLen (INT32 LastPkgLen)
 
 /*****************************************************************************
  *
- * FUNCTION:    DoSeg
+ * FUNCTION:    AmlDoSeg
  *
  * PARAMETERS:  OpMode      LoadExecMode      MODE_Load or MODE_Exec
  *
@@ -459,36 +461,36 @@ GetEncodedPkgLen (INT32 LastPkgLen)
  *
  ****************************************************************************/
 
-static INT32 
-DoSeg (OpMode LoadExecMode)
+INT32 
+AmlDoSeg (OpMode LoadExecMode)
 {
     INT32           Index;
     INT32           Excep = S_SUCCESS;
     char            CharBuf[5];
 
 
-    FUNCTION_TRACE ("DoSeg");
+    FUNCTION_TRACE ("AmlDoSeg");
 
 
     LINE_SET (4, LoadExecMode);
 
     /*  If first character is a digit, we aren't looking at a valid name segment    */
 
-    CharBuf[0] = Peek ();
+    CharBuf[0] = AmlPeek ();
 
     if ('0' <= CharBuf[0] && CharBuf[0] <= '9')
     {
-        DEBUG_PRINT (ACPI_ERROR, ("DoSeg: leading digit: %c\n", CharBuf[0]));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlDoSeg: leading digit: %c\n", CharBuf[0]));
         Excep = S_FAILURE;
     }
 
     else 
     {
-        DEBUG_PRINT (TRACE_LOAD, ("DoSeg: \n"));
+        DEBUG_PRINT (TRACE_LOAD, ("AmlDoSeg: \n"));
 
-        for (Index = 4; Index > 0 && NcOK (Peek ()); --Index)
+        for (Index = 4; Index > 0 && AmlGoodChar (AmlPeek ()); --Index)
         {
-            ConsumeAMLStreamBytes (1, (UINT8 *) &CharBuf[4 - Index]);
+            AmlConsumeStreamBytes (1, (UINT8 *) &CharBuf[4 - Index]);
             DEBUG_PRINT (TRACE_LOAD, ("%c\n", CharBuf[4 - Index]));
         }
     }
@@ -514,7 +516,7 @@ DoSeg (OpMode LoadExecMode)
                 OsdPrintf (fAsmFile, " \"%s\",", CharBuf);
             }
 
-            DEBUG_PRINT (TRACE_NAMES, ("DoSeg: %s \n", CharBuf));
+            DEBUG_PRINT (TRACE_NAMES, ("AmlDoSeg: %s \n", CharBuf));
         }
 
         else if (4 == Index)
@@ -533,7 +535,7 @@ DoSeg (OpMode LoadExecMode)
         
             Excep = S_ERROR;
             LINE_SET (22, LoadExecMode);
-            DEBUG_PRINT (TRACE_LOAD, (" *Bad char %02x in name*\n", Peek ()));
+            DEBUG_PRINT (TRACE_LOAD, (" *Bad char %02x in name*\n", AmlPeek ()));
 
             if (MODE_Load == LoadExecMode)
             {
@@ -546,13 +548,13 @@ DoSeg (OpMode LoadExecMode)
 
             else
             {
-                DEBUG_PRINT (ACPI_ERROR, ("DoSeg: Bad char %02x in name\n", Peek ()));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlDoSeg: Bad char %02x in name\n", AmlPeek ()));
             }
         }
     
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave DoSeg %s \n", RV[Excep]));
+    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", RV[Excep]));
 
     return Excep;
 }
@@ -560,7 +562,7 @@ DoSeg (OpMode LoadExecMode)
 
 /*****************************************************************************
  *
- * FUNCTION:    DoName
+ * FUNCTION:    AmlDoName
  *
  * PARAMETERS:  NsType  DataType        Data type to be associated with this name
  *              OpMode  LoadExecMode    MODE_Load or MODE_Exec
@@ -577,7 +579,7 @@ DoSeg (OpMode LoadExecMode)
  ****************************************************************************/
 
 INT32 
-DoName (NsType DataType, OpMode LoadExecMode)
+AmlDoName (NsType DataType, OpMode LoadExecMode)
 {
     INT32           NumSegments;
     INT32           PrefixCount = 0;
@@ -585,12 +587,12 @@ DoName (NsType DataType, OpMode LoadExecMode)
     UINT8           Prefix = 0;
 
 
-    FUNCTION_TRACE ("DoName");
+    FUNCTION_TRACE ("AmlDoName");
 
 
 BREAKPOINT3;
 
-    CheckTrash ("enter DoName");
+    CheckTrash ("enter AmlDoName");
     LINE_SET (1, LoadExecMode);
 /*     DEBUG_PRINT (TRACE_LOAD, (" ")); REMOVE !! */
 
@@ -600,26 +602,26 @@ BREAKPOINT3;
     {   
         /*  Disallow prefixes for types associated with field names */
 
-        AllocateNameString (0, 1);
-        Excep = DoSeg (LoadExecMode);
+        AmlAllocateNameString (0, 1);
+        Excep = AmlDoSeg (LoadExecMode);
     }
 
     else
     {   
         /*  DataType is not a field name   */
 
-        switch (PeekOp ())
+        switch (AmlPeekOp ())
         {   
             /*  examine first character of name for root or parent prefix operators */
 
         case AML_RootPrefix:
             LINE_SET (1, LoadExecMode);
-            ConsumeAMLStreamBytes (1, &Prefix);
+            AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("RootPrefix: %x\n", Prefix));
 
             /* 
              * Remember that we have a RootPrefix --
-             * see comment in AllocateNameString()
+             * see comment in AmlAllocateNameString()
              */
             PrefixCount = -1;
             if (fAsmFile && MODE_Load1 != LoadExecMode)
@@ -633,7 +635,7 @@ BREAKPOINT3;
             do
             {
                 LINE_SET (1, LoadExecMode);
-                ConsumeAMLStreamBytes (1, &Prefix);
+                AmlConsumeStreamBytes (1, &Prefix);
                 DEBUG_PRINT (TRACE_LOAD, ("ParentPrefix: %x\n", Prefix));
 
                 ++PrefixCount;
@@ -642,7 +644,7 @@ BREAKPOINT3;
                     OsdPrintf (fAsmFile, " \"%c\",", AML_ParentPrefix);
                 }
 
-            } while (PeekOp () == AML_ParentPrefix);
+            } while (AmlPeekOp () == AML_ParentPrefix);
             
             break;
 
@@ -650,13 +652,13 @@ BREAKPOINT3;
             break;
         }
 
-        switch (PeekOp ())
+        switch (AmlPeekOp ())
         {
             /* examine first character of name for name segment prefix operator */
             
         case AML_DualNamePrefix:
             LINE_SET (1, LoadExecMode);
-            ConsumeAMLStreamBytes (1, &Prefix);
+            AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("DualNamePrefix: %x\n", Prefix));
 
             if (fAsmFile && MODE_Load1 != LoadExecMode)
@@ -664,22 +666,22 @@ BREAKPOINT3;
                 OsdPrintf (fAsmFile, " \"%c\",", AML_DualNamePrefix);
             }
 
-            AllocateNameString (PrefixCount, 2);
+            AmlAllocateNameString (PrefixCount, 2);
 
             /* Ensure PrefixCount != 0 to remember processing a prefix */
             
             PrefixCount += 2;
 
-            if ((Excep = DoSeg (LoadExecMode)) == S_SUCCESS)
+            if ((Excep = AmlDoSeg (LoadExecMode)) == S_SUCCESS)
             {
-                Excep = DoSeg (LoadExecMode);
+                Excep = AmlDoSeg (LoadExecMode);
             }
 
             break;
 
         case AML_MultiNamePrefixOp:
             LINE_SET (1, LoadExecMode);
-            ConsumeAMLStreamBytes (1, &Prefix);
+            AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("MultiNamePrefix: %x\n", Prefix));
 
             if (fAsmFile && MODE_Load1 != LoadExecMode)
@@ -687,9 +689,9 @@ BREAKPOINT3;
                 OsdPrintf (fAsmFile, " \"%c\",", AML_MultiNamePrefixOp);
             }
 
-            NumSegments = Peek ();                      /* fetch count of segments */
+            NumSegments = AmlPeek ();                      /* fetch count of segments */
 
-            if (DoByteConst (MODE_Load, 0) != S_SUCCESS)
+            if (AmlDoByteConst (MODE_Load, 0) != S_SUCCESS)
             {
                 /* unexpected end of AML */
 
@@ -701,13 +703,13 @@ BREAKPOINT3;
                 break;
             }
 
-            AllocateNameString (PrefixCount, NumSegments);
+            AmlAllocateNameString (PrefixCount, NumSegments);
 
             /* Ensure PrefixCount != 0 to remember processing a prefix */
             
             PrefixCount += 2;
 
-            while (NumSegments && (Excep = DoSeg (LoadExecMode)) == S_SUCCESS)
+            while (NumSegments && (Excep = AmlDoSeg (LoadExecMode)) == S_SUCCESS)
             {
                 --NumSegments;
             }
@@ -723,10 +725,10 @@ BREAKPOINT3;
                 /*  RootPrefix followed by NULL */
             
                 DEBUG_PRINT (TRACE_EXEC,
-                                ("DoName: NameSeg is \"\\\" followed by NULL\n"));
+                                ("AmlDoName: NameSeg is \"\\\" followed by NULL\n"));
             }
 
-            ConsumeAMLStreamBytes (1, NULL);    /*  consume NULL byte   */
+            AmlConsumeStreamBytes (1, NULL);    /*  consume NULL byte   */
             
             if (fAsmFile && (MODE_Load1 != LoadExecMode))
             {
@@ -735,15 +737,15 @@ BREAKPOINT3;
                 OsdWrite (" \"00\",", 1, 4, fAsmFile);
             }
 
-            AllocateNameString (PrefixCount, 0);
+            AmlAllocateNameString (PrefixCount, 0);
             break;
 
         default:
 
             /*  name segment string */
 
-            AllocateNameString (PrefixCount, 1);
-            Excep = DoSeg (LoadExecMode);
+            AmlAllocateNameString (PrefixCount, 1);
+            Excep = AmlDoSeg (LoadExecMode);
             break;
 
         }   /*  switch (PeekOp ())    */
@@ -771,7 +773,7 @@ BREAKPOINT3;
 
         if (MODE_Exec == LoadExecMode && !ObjStack[ObjStackTop])
         {
-            DEBUG_PRINT (ACPI_ERROR, ("DoName: Name Lookup Failure\n"));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Name Lookup Failure\n"));
             Excep = S_ERROR;
         }
 
@@ -780,7 +782,7 @@ BREAKPOINT3;
             /*  not first pass load */
 
             if (TYPE_Any == DataType && 
-                TYPE_Method == NsValType (ObjStack[ObjStackTop]))
+                TYPE_Method == NsGetType (ObjStack[ObjStackTop]))
             {   
                 /* 
                  * Method reference call 
@@ -789,7 +791,7 @@ BREAKPOINT3;
                  * The arg count is in the MethodFlags, which is the first
                  * byte of the Method's AML.
                  */
-                meth        *MethodPtr = (meth *) NsValPtr (ObjStack[ObjStackTop]);
+                meth        *MethodPtr = (meth *) NsGetValue (ObjStack[ObjStackTop]);
 
                 if (MethodPtr)
                 {   
@@ -797,11 +799,11 @@ BREAKPOINT3;
                     
                     INT32       MethodFlags;
 
-                    MethodFlags = GetPCodeByte (MethodPtr->Offset);
+                    MethodFlags = AmlGetPCodeByte (MethodPtr->Offset);
 
                     if (AML_END_OF_BLOCK == MethodFlags)
                     {
-                        DEBUG_PRINT (ACPI_ERROR, ("DoName: invoked Method %s has no AML\n",
+                        DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: invoked Method %s has no AML\n",
                                         NameString));
                         Excep = S_ERROR;
                     }
@@ -815,18 +817,16 @@ BREAKPOINT3;
                         INT32       StackBeforeArgs = ObjStackTop;
 
 
-                        if (((Excep = PushIfExec (MODE_Exec)) == S_SUCCESS) &&
+                        if (((Excep = AmlPushIfExec (MODE_Exec)) == S_SUCCESS) &&
                              (ArgCount > 0))
                         {   
                             /*  get arguments   */
-                            
-                            Indent (3); /*  increment log display indentation level */
                             
                             while (ArgCount-- && (S_SUCCESS == Excep))
                             {   
                                 /*  get each argument   */
                                 
-                                if (S_SUCCESS == (Excep = DoOpCode (LoadExecMode)))    /*  get argument    */
+                                if (S_SUCCESS == (Excep = AmlDoOpCode (LoadExecMode)))    /*  get argument    */
                                 {   
                                     /*  argument on object stack    */
                                     
@@ -838,18 +838,16 @@ BREAKPOINT3;
                                      */
                                     if (MODE_Exec == LoadExecMode)
                                     {
-                                        Excep = GetRvalue ((OBJECT_DESCRIPTOR **)
+                                        Excep = AmlGetRvalue ((OBJECT_DESCRIPTOR **)
                                             &ObjStack[ObjStackTop]);
                                     }
 
                                     if (S_SUCCESS == Excep)
                                     {
-                                        Excep = PushIfExec (LoadExecMode);    /*  inc iObjStackTop    */
+                                        Excep = AmlPushIfExec (LoadExecMode);    /*  inc iObjStackTop    */
                                     }
                                 } 
                             }
-
-                            Indent (-3);    /*  decrement log display indentation level */
                         } 
 
                         if ((S_SUCCESS == Excep) && (MODE_Exec == LoadExecMode))
@@ -871,7 +869,7 @@ BREAKPOINT3;
 
                             /* Execute the Method, passing the stacked args */
                             
-                            Excep = AmlExec (
+                            Excep = AmlExecuteMethod (
                                         MethodPtr->Offset + 1, MethodPtr->Length - 1,
                                         (OBJECT_DESCRIPTOR **)&ObjStack[StackBeforeArgs + 1]);
 
@@ -930,15 +928,15 @@ BREAKPOINT3;
 
         else
         {
-            DEBUG_PRINT (ACPI_ERROR, ("DoName: Malformed Name\n"));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Malformed Name\n"));
         }
 
         Excep = S_ERROR;
     }
 
-    CheckTrash ("leave DoName");
+    CheckTrash ("leave AmlDoName");
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave DoName %s \n", RV[Excep]));
+    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoName %s \n", RV[Excep]));
 
     return Excep;
 }
@@ -946,7 +944,7 @@ BREAKPOINT3;
 
 /*****************************************************************************
  *
- * FUNCTION:    GenLabel
+ * FUNCTION:    AmlGenLabel
  *
  * PARAMETERS:  char    *Name     The name to be generated
  *
@@ -957,9 +955,9 @@ BREAKPOINT3;
  ****************************************************************************/
 
 void 
-GenLabel (char *Name)
+AmlGenLabel (char *Name)
 {
-    FUNCTION_TRACE ("GenLabel");
+    FUNCTION_TRACE ("AmlGenLabel");
 
 
     if (fAsmFile)
