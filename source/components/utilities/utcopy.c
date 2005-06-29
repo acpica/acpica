@@ -297,7 +297,7 @@ CmBuildExternalPackageObject (
     FreeSpace += ExternalObj->Package.Count * sizeof (ACPI_OBJECT);
 
 
-    for (; ;)
+    while (1)
     {
         ThisIndex       = LevelPtr->Index;
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) LevelPtr->InternalObj->Package.Elements[ThisIndex];
@@ -585,7 +585,7 @@ CmBuildInternalPackageObject (
     FreeSpace += ExternalObj->Package.Count * sizeof(ACPI_OBJECT);
 
 
-    for (; ;)
+    while (1)
     {
         ThisIndex       = LevelPtr->Index;
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) &LevelPtr->InternalObj->Package.Elements[ThisIndex];
