@@ -124,31 +124,26 @@ static ST_KEY_DESC_TABLE KDT[] = {
  * 
  * FUNCTION:    AmlExecStore
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *ValDesc  value to be stored
- *              OBJECT_DESCRIPTOR *DestDesc where to store it -- must be
- *                                          either an (NsHandle) or an
- *                                          OBJECT_DESCRIPTOR of type Lvalue;
- *                                          if the latter the descriptor will
- *                                          be either reused or deleted.
+ * PARAMETERS:  *ValDesc            - Value to be stored
+ *              *DestDesc           - Where to store it -- must be an (NsHandle)
+ *                                    or an OBJECT_DESCRIPTOR of type Lvalue;
+ *                                    if the latter the descriptor will be 
+ *                                    either reused or deleted.
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Store the value described by ValDesc into the location
  *              described by DestDesc.  Called by various interpreter
  *              functions to store the result of an operation into
  *              the destination operand.
  *
- * ALLOCATION:
- *  Reference      Size                    Pool    Owner       Description
- *  nte.ValDesc    s(OBJECT_DESCRIPTOR)    bu      amlexec     Name(Lvalue)
- *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 {
     NsHandle        TempHandle;
-    INT32           Excep = S_ERROR;
+    ACPI_STATUS     Status = AE_AML_ERROR;
     INT32           Stacked = FALSE;
     INT32           Locked = FALSE;
 
@@ -173,7 +168,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         {   
             /*  allocation failure  */
             
-            return S_ERROR;
+            return AE_NO_MEMORY;
         }
         else
         {
@@ -186,8 +181,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             /* Push the descriptor on TOS temporarily
              * to protect it from garbage collection
              */
-            Excep = AmlPushIfExec (MODE_Exec);
-            if (S_SUCCESS != Excep)
+            Status = AmlPushIfExec (MODE_Exec);
+            if (AE_OK != Status)
             {
                 DELETE (DestDesc);
             }
@@ -203,10 +198,10 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
     {
         /* DestDesc is not an NsHandle  */
 
-        Excep = S_SUCCESS;
+        Status = AE_OK;
     }
 
-    if ((S_SUCCESS == Excep) && 
+    if ((AE_OK == Status) && 
         (DestDesc->ValType != TYPE_Lvalue))
     {   
         /*  Store target is not an Lvalue   */
@@ -218,12 +213,12 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         DUMP_STACK_ENTRY (DestDesc);
         DUMP_STACK (MODE_Exec, "AmlExecStore", 2, "target not Lvalue");
 
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
 
-    if (S_SUCCESS != Excep)
+    if (AE_OK != Status)
     {
-        return Excep;   /*  temporary hack  */
+        return Status;   /*  temporary hack  */
     }
 
 
@@ -245,12 +240,12 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             DEBUG_PRINT (ACPI_ERROR, (
                       "AmlExecStore/NameOp: Store into %s not implemented\n",
                       NsTypeNames[NsGetType (TempHandle)]));
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
 #else
             DEBUG_PRINT (ACPI_WARN,
                         ("AmlExecStore/NameOp: Store into %s not implemented\n",
                         NsTypeNames[NsGetType(TempHandle)]));
-            Excep = S_SUCCESS;
+            Status = AE_OK;
 #endif
             DELETE (DestDesc);
             break;
@@ -262,7 +257,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
              * If value is not a Number, try to resolve it to one.
              */
             if ((ValDesc->ValType != TYPE_Number) &&
-               ((Excep = AmlGetRvalue (&ValDesc)) != S_SUCCESS))
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DELETE (DestDesc);
             }
@@ -273,7 +268,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                         "AmlExecStore: Value assigned to BankField must be Number, not %d\n",
                         ValDesc->ValType));
                 DELETE (DestDesc);
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
 
             else
@@ -288,22 +283,22 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/BankField: internal error: null old-value pointer\n"));
-                    Excep = S_ERROR;
+                    Status = AE_AML_ERROR;
                 }
             }
 
 
-            if ((S_SUCCESS == Excep) && 
+            if ((AE_OK == Status) && 
                 (TYPE_BankField != DestDesc->ValType))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /* Set Bank value to select proper Bank */
                 /* Check lock rule prior to modifing the field */
@@ -312,14 +307,14 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 {
                     /* Lock Rule is Lock */
 
-                    if (OsGetGlobalLock () == S_ERROR)
+                    if (OsGetGlobalLock () != AE_OK)
                     {
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
                         /* release the Global Lock! */
 
-                        Excep = S_ERROR;
+                        Status = AE_AML_ERROR;
                     }
 
                     else
@@ -330,27 +325,27 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             }
 
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
 
                 /* Perform the update (Set Bank Select) */
 
-                Excep = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
+                Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
                                             DestDesc->BankField.BankVal);
 
                 DEBUG_PRINT (ACPI_INFO,
-                            ("AmlExecStore: set bank select returned %s\n", RV[Excep]));
+                            ("AmlExecStore: set bank select returned %s\n", ExceptionNames[Status]));
             }
 
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /* Set bank select successful, next set data value  */
                 
-                Excep = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
+                Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
                                                ValDesc->BankField.BankVal);
                 DEBUG_PRINT (ACPI_INFO,
-                            ("AmlExecStore: set bank select returned %s\n", RV[Excep]));
+                            ("AmlExecStore: set bank select returned %s\n", ExceptionNames[Status]));
             }
             
             break;  /*  Global Lock released below  */
@@ -364,7 +359,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
              */
 
             if ((ValDesc->ValType != TYPE_Number) && 
-               ((Excep = AmlGetRvalue (&ValDesc)) != S_SUCCESS))
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DELETE (DestDesc);
             }
@@ -375,7 +370,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                         "AmlExecStore/DefField: Value assigned to Field must be Number, not %d\n",
                         ValDesc->ValType));
                 DELETE (DestDesc);
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
 
             else
@@ -391,21 +386,21 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/DefField: internal error: null old-value pointer\n"));
-                    Excep = S_ERROR;
+                    Status = AE_AML_ERROR;
                 }
             }
 
-            if ((S_SUCCESS == Excep) && 
+            if ((AE_OK == Status) && 
                 (TYPE_DefField != DestDesc->ValType))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /* Check lock rule prior to modifing the field */
             
@@ -413,14 +408,14 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 {
                     /* Lock Rule is Lock */
                 
-                    if (OsGetGlobalLock () == S_ERROR)
+                    if (OsGetGlobalLock () != AE_OK)
                     {
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
                         /* release the Global Lock!  */
                     
-                        Excep = S_ERROR;
+                        Status = AE_AML_ERROR;
                     }
                     else
                     {
@@ -429,11 +424,11 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 }
             }
                 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /* perform the update */
                 
-                Excep = AmlSetNamedFieldValue (TempHandle, ValDesc->Number.Number);
+                Status = AmlSetNamedFieldValue (TempHandle, ValDesc->Number.Number);
             }
                 
             break;      /* Global Lock released below   */
@@ -447,7 +442,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
              */
             
             if ((ValDesc->ValType != TYPE_Number) &&
-               ((Excep = AmlGetRvalue (&ValDesc)) != S_SUCCESS))
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DELETE (DestDesc);
             }
@@ -458,10 +453,10 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                         "AmlExecStore: Value assigned to IndexField must be Number, not %d\n",
                         ValDesc->ValType));
                 DELETE (DestDesc);
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /* 
                  * Delete descriptor that points to name,
@@ -474,21 +469,21 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/IndexField: internal error: null old-value pointer\n"));
-                    Excep = S_ERROR;
+                    Status = AE_AML_ERROR;
                 }
             }
 
-            if ((S_SUCCESS == Excep) &&
+            if ((AE_OK == Status) &&
                 (TYPE_IndexField != DestDesc->ValType))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /* Set Index value to select proper Data register */
                 /* Check lock rule prior to modifing the field */
@@ -497,14 +492,14 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 {
                     /* Lock Rule is Lock */
                
-                    if (OsGetGlobalLock () == S_ERROR)
+                    if (OsGetGlobalLock () != AE_OK)
                     {
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
                         /* release the Global Lock!  */
                     
-                        Excep = S_ERROR;
+                        Status = AE_AML_ERROR;
                     }
                     else
                     {
@@ -513,24 +508,24 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 }
             }
                 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /* perform the update (Set index) */
 
-                Excep = AmlSetNamedFieldValue (DestDesc->IndexField.Index,
+                Status = AmlSetNamedFieldValue (DestDesc->IndexField.Index,
                                                DestDesc->IndexField.IndexVal);
                 DEBUG_PRINT (ACPI_INFO,
-                            ("AmlExecStore: IndexField: set index returned %s\n", RV[Excep]));
+                            ("AmlExecStore: IndexField: set index returned %s\n", ExceptionNames[Status]));
             }
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /* set index successful, next set Data value */
                 
-                Excep = AmlSetNamedFieldValue (DestDesc->IndexField.Data,
+                Status = AmlSetNamedFieldValue (DestDesc->IndexField.Data,
                                                ValDesc->Number.Number);
                 DEBUG_PRINT (ACPI_INFO,
-                            ("AmlExecStore: IndexField: set data returned %s\n", RV[Excep]));
+                            ("AmlExecStore: IndexField: set data returned %s\n", ExceptionNames[Status]));
             }
 
             break;      /* Global Lock released below   */
@@ -543,7 +538,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
              * If value is not a Number, try to resolve it to one.
              */
             if ((ValDesc->ValType != TYPE_Number) &&
-               ((Excep = AmlGetRvalue (&ValDesc)) != S_SUCCESS))
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DELETE (DestDesc);
             }
@@ -554,11 +549,11 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                         "AmlExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
                           ValDesc->ValType));
                 DELETE (DestDesc);
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
 
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /* 
                  * Delete descriptor that points to name,
@@ -570,7 +565,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: internal error: null old-value pointer\n"));
-                    Excep = S_ERROR;
+                    Status = AE_AML_ERROR;
                 }
 
                 else
@@ -581,17 +576,17 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 }
             }
 
-            if ((S_SUCCESS == Excep) &&
+            if ((AE_OK == Status) &&
                 (DestDesc->ValType != (UINT8) NsGetType (TempHandle)))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                           TempHandle, NsGetType(TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
 
-            if ((S_SUCCESS == Excep) &&
+            if ((AE_OK == Status) &&
                (!DestDesc->FieldUnit.Container ||
                 TYPE_Buffer != DestDesc->FieldUnit.Container->ValType ||
                 DestDesc->FieldUnit.ConSeq
@@ -600,10 +595,10 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 NsDumpPathname (TempHandle, "AmlExecStore/FieldUnit: bad container in: ", 
                                 ACPI_ERROR, _COMPONENT);
                 DUMP_ENTRY (TempHandle);
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /* Check lock rule prior to modifing the field */
             
@@ -611,14 +606,14 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 {
                     /* Lock Rule is Lock */
                 
-                    if (OsGetGlobalLock () == S_ERROR)
+                    if (OsGetGlobalLock () != AE_OK)
                     {
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
                         /* release the Global Lock! */
                     
-                        Excep = S_ERROR;
+                        Status = AE_AML_ERROR;
                     }
                 
                     else
@@ -630,14 +625,14 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 }
             }
 
-            if ((S_SUCCESS == Excep) &&
+            if ((AE_OK == Status) &&
                 (DestDesc->FieldUnit.DatLen + DestDesc->FieldUnit.BitOffset > 32))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: implementation limitation: Field exceeds UINT32\n"));
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
             
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 UINT8           *Location=NULL;
                 UINT32          Mask;
@@ -726,14 +721,14 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
     case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
     case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-        Excep = AmlSetMethodValue (LCLBASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
+        Status = AmlSetMethodValue (LCLBASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
         break;
 
 
     case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
     case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-        Excep = AmlSetMethodValue (ARGBASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
+        Status = AmlSetMethodValue (ARGBASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
         break;
 
 
@@ -764,7 +759,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         DUMP_BUFFER (DestDesc, sizeof (OBJECT_DESCRIPTOR),0);
 
         DELETE (DestDesc);
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     
     }   /* switch(DestDesc->Lvalue.OpCode) */
 
@@ -781,7 +776,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         ObjStackTop--;
     }
 
-    return Excep;
+    return Status;
 }
 
 
@@ -789,22 +784,22 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
  * 
  * FUNCTION:    AmlExecMonadic1
  *
- * PARAMETERS:  UINT16  opcode      The opcode to be executed
+ * PARAMETERS:  opcode              - The opcode to be executed
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
- * DESCRIPTION: Execute Type 1 monadic operator
- *              with numeric operand on object stack
+ * DESCRIPTION: Execute Type 1 monadic operator with numeric operand on 
+ *              object stack
  *
  * ALLOCATION:  Deletes the operand
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlExecMonadic1 (UINT16 opcode)
 {
-    OBJECT_DESCRIPTOR *     ObjDesc;
-    INT32                   Excep;
+    OBJECT_DESCRIPTOR       *ObjDesc;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlExecMonadic1");
@@ -812,17 +807,17 @@ AmlExecMonadic1 (UINT16 opcode)
 
     if (AML_SleepOp == opcode || AML_StallOp == opcode)
     {
-        Excep = AmlPrepStack ("n");                 /* operand should be a Number */
+        Status = AmlPrepStack ("n");                 /* operand should be a Number */
     }
     else
     {
-        Excep = AmlPrepStack ("l");                 /* operand should be an Lvalue */
+        Status = AmlPrepStack ("l");                 /* operand should be an Lvalue */
     }
 
-    if (Excep != S_SUCCESS)
+    if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 1);
-        return Excep;
+        return Status;
     }
 
 
@@ -841,7 +836,7 @@ AmlExecMonadic1 (UINT16 opcode)
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
                     ObjDesc->ValType));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
 
         return (OsReleaseOpRqst (ObjDesc));
@@ -854,7 +849,7 @@ AmlExecMonadic1 (UINT16 opcode)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->ValType));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
 
         return (OsResetOpRqst (ObjDesc));
@@ -867,7 +862,7 @@ AmlExecMonadic1 (UINT16 opcode)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->ValType));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
         return (OsSignalOpRqst (ObjDesc));
 
@@ -890,13 +885,13 @@ AmlExecMonadic1 (UINT16 opcode)
     
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1: Unknown monadic opcode %02x\n", opcode));
-        return S_ERROR;
+        return AE_AML_ERROR;
     
     } /* switch */
 
 
     DELETE (ObjDesc);
-    return S_SUCCESS;
+    return AE_OK;
 }
 
 
@@ -904,42 +899,42 @@ AmlExecMonadic1 (UINT16 opcode)
  * 
  * FUNCTION:    AmlExecMonadic2R
  *
- * PARAMETERS:  UINT16  opcode      The opcode to be executed
+ * PARAMETERS:  opcode              - The opcode to be executed
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Execute Type 2 monadic operator with numeric operand and
  *              result operand on operand stack
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlExecMonadic2R (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
     OBJECT_DESCRIPTOR       *ResDesc;
     UINT32                  ResVal;
-    INT32                   Excep;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlExecMonadic2R");
 
 
-    Excep = AmlPrepStack ("ln");
+    Status = AmlPrepStack ("ln");
 
-    if (Excep != S_SUCCESS)
+    if (Status != AE_OK)
     {
         /* Invalid parameters on object stack   */
         /* This was added since it is allowable to return a buffer so */
         /* ln is a local and a number and that will fail.  lb is a local */
         /* and a buffer which will pass.  */
         
-        Excep = AmlPrepStack ("lb");
+        Status = AmlPrepStack ("lb");
 
-        if (Excep != S_SUCCESS)
+        if (Status != AE_OK)
         {
             AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
-            return Excep;
+            return Status;
         }
     }
 
@@ -997,7 +992,7 @@ AmlExecMonadic2R (UINT16 opcode)
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic2R/FromBCDOp: improper BCD digit %d %d %d %d\n",
                     d3, d2, d1, d0));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
         
         ObjDesc->Number.Number = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
@@ -1011,7 +1006,7 @@ AmlExecMonadic2R (UINT16 opcode)
         {
             DEBUG_PRINT (ACPI_ERROR, ("iExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
                     ObjDesc->Number.Number));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
         
         ObjDesc->Number.Number
@@ -1033,7 +1028,7 @@ AmlExecMonadic2R (UINT16 opcode)
         
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n",
                 (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
-        return S_ERROR;
+        return AE_AML_ERROR;
 
     case AML_StoreOp:
         break;
@@ -1041,15 +1036,15 @@ AmlExecMonadic2R (UINT16 opcode)
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: internal error: Unknown monadic opcode %02x\n",
                     opcode));
-        return S_ERROR;
+        return AE_AML_ERROR;
     }
     
-    Excep = AmlExecStore (ObjDesc, ResDesc);
+    Status = AmlExecStore (ObjDesc, ResDesc);
     ObjStackTop--;
 
-    DEBUG_PRINT (TRACE_EXEC, ("leave iExecMonadic2R: %s\n", RV[Excep]));
+    DEBUG_PRINT (TRACE_EXEC, ("leave iExecMonadic2R: %s\n", ExceptionNames[Status]));
     
-    return Excep;
+    return Status;
 }
 
 
@@ -1057,26 +1052,22 @@ AmlExecMonadic2R (UINT16 opcode)
  * 
  * FUNCTION:    AmlExecMonadic2
  *
- * PARAMETERS:  UINT16  opcode      The opcode to be executed
+ * PARAMETERS:  opcode              - The opcode to be executed
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Execute Type 2 monadic operator with numeric operand:
  *              DerefOfOp, RefOfOp, SizeOfOp, TypeOp, IncrementOp,
  *              DecrementOp, LNotOp,
  *
- * ALLOCATION:
- *  Reference   Size                    Pool    Owner       Description
- *  ObjStack    s(OBJECT_DESCRIPTOR)    bu      amlexec     Number
- *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlExecMonadic2 (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
     OBJECT_DESCRIPTOR       *ResDesc;
-    INT32                   Excep;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlExecMonadic2");
@@ -1084,17 +1075,17 @@ AmlExecMonadic2 (UINT16 opcode)
 
     if (AML_LNotOp == opcode)
     {
-        Excep = AmlPrepStack ("n");
+        Status = AmlPrepStack ("n");
     }
     else
     {
-        Excep = AmlPrepStack ("l");
+        Status = AmlPrepStack ("l");
     }
 
-    if (Excep != S_SUCCESS)
+    if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 1);
-        return Excep;
+        return Status;
     }
 
     AmlDumpStack (MODE_Exec, ShortOps[opcode], 1, "after AmlPrepStack");
@@ -1118,10 +1109,10 @@ AmlExecMonadic2 (UINT16 opcode)
     case AML_DecrementOp:
     case AML_IncrementOp:
 
-        if ((Excep = AmlPushIfExec (MODE_Exec)) != S_SUCCESS)
+        if ((Status = AmlPushIfExec (MODE_Exec)) != AE_OK)
         {
             REPORT_ERROR (&KDT[2]);
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
 
         /* duplicate the Lvalue on TOS */
@@ -1138,16 +1129,16 @@ AmlExecMonadic2 (UINT16 opcode)
         
         else
         {
-            return S_ERROR;
+            return AE_NO_MEMORY;
         }
 
         /* Convert the top copy to a Number */
         
-        Excep = AmlPrepStack ("n");
-        if (Excep != S_SUCCESS)
+        Status = AmlPrepStack ("n");
+        if (Status != AE_OK)
         {
             AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 1);
-            return Excep;
+            return Status;
         }
 
         /* get the Number in ObjDesc and the Lvalue in ResDesc */
@@ -1171,9 +1162,9 @@ AmlExecMonadic2 (UINT16 opcode)
         DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop - 1]);
         ObjStack[ObjStackTop - 1] = (void *) ObjDesc;
         
-        Excep = AmlExecStore (ObjDesc, ResDesc);
+        Status = AmlExecStore (ObjDesc, ResDesc);
         ObjStackTop--;
-        return Excep;
+        return Status;
 
 
 
@@ -1181,7 +1172,7 @@ AmlExecMonadic2 (UINT16 opcode)
 
     case AML_TypeOp:
         
-        /* This case uses Excep to hold the type encoding */
+        /* This case uses Status to hold the type encoding */
         
         if (TYPE_Lvalue == ObjDesc->ValType)
         {
@@ -1195,35 +1186,35 @@ AmlExecMonadic2 (UINT16 opcode)
                 
                 /* Constants are of type Number */
                 
-                Excep = (INT32) TYPE_Number;
+                Status = (INT32) TYPE_Number;
                 break;
 
             case Debug1:
                 
                 /* Per spec, Debug object is of type Region */
                 
-                Excep = (INT32) TYPE_Region;
+                Status = (INT32) TYPE_Region;
                 break;
 
             case AML_IndexOp:
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2/TypeOp: determining type of Index result is not implemented\n"));
-                return S_ERROR;
+                return AE_AML_ERROR;
 
             case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
             case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
-                Excep = (INT32) AmlGetMethodType (LCLBASE + ObjDesc->Lvalue.OpCode - AML_Local0);
+                Status = (INT32) AmlGetMethodType (LCLBASE + ObjDesc->Lvalue.OpCode - AML_Local0);
                 break;
 
             case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
             case AML_Arg4: case AML_Arg5: case AML_Arg6:
-                Excep = (INT32) AmlGetMethodType (ARGBASE + ObjDesc->Lvalue.OpCode - AML_Arg0);
+                Status = (INT32) AmlGetMethodType (ARGBASE + ObjDesc->Lvalue.OpCode - AML_Arg0);
                 break;
 
             default:
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x\n",
                         ObjDesc->Lvalue.OpCode));
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
         }
         
@@ -1234,12 +1225,12 @@ AmlExecMonadic2 (UINT16 opcode)
              * it must be a direct name pointer.  Allocate a descriptor
              * to hold the type.
              */
-            Excep = (INT32) NsGetType ((NsHandle) ObjDesc);
+            Status = (INT32) NsGetType ((NsHandle) ObjDesc);
 
             ObjDesc = AllocateObjectDesc (&KDT[4]);
             if (!ObjDesc)
             {
-                return S_ERROR;
+                return AE_NO_MEMORY;
             }
 
             /* 
@@ -1251,7 +1242,7 @@ AmlExecMonadic2 (UINT16 opcode)
         }
         
         ObjDesc->ValType = (UINT8) TYPE_Number;
-        ObjDesc->Number.Number = (UINT32) Excep;
+        ObjDesc->Number.Number = (UINT32) Status;
         break;
 
 
@@ -1278,7 +1269,7 @@ AmlExecMonadic2 (UINT16 opcode)
         default:
            DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->ValType));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
         break;
 
@@ -1291,16 +1282,16 @@ AmlExecMonadic2 (UINT16 opcode)
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: %s unimplemented\n",
                 (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
         ObjStackTop++;  /*  dummy return value  */
-        return S_ERROR;
+        return AE_AML_ERROR;
 
     default:
         DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic2:internal error: Unknown monadic opcode %02x\n",
                     opcode));
-        return S_ERROR;
+        return AE_AML_ERROR;
     }
 
-    return S_SUCCESS;
+    return AE_OK;
 }
 
 
@@ -1308,9 +1299,9 @@ AmlExecMonadic2 (UINT16 opcode)
  * 
  * FUNCTION:    AmlExecDyadic1
  *
- * PARAMETERS:  UINT16 opcode  The opcode to be executed
+ * PARAMETERS:  opcode              - The opcode to be executed
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Execute Type 1 dyadic operator with numeric operands:
  *              NotifyOp
@@ -1319,25 +1310,25 @@ AmlExecMonadic2 (UINT16 opcode)
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlExecDyadic1 (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc = NULL;
     OBJECT_DESCRIPTOR       *ValDesc = NULL;
-    INT32                   Excep;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlExecDyadic1");
 
 
-    Excep = AmlPrepStack ("nl");
+    Status = AmlPrepStack ("nl");
 
-    if (Excep != S_SUCCESS)
+    if (Status != AE_OK)
     {
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
-        return Excep;
+        return Status;
     }
 
     AmlDumpStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepStack");
@@ -1383,14 +1374,14 @@ AmlExecDyadic1 (UINT16 opcode)
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecDyadic1/NotifyOp: unexpected notify object type %d\n",
                         ObjDesc->ValType));
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
         }
         break;
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic1: Unknown dyadic opcode %02x\n", opcode));
-        return S_ERROR;
+        return AE_AML_ERROR;
     }
 
     if (ValDesc)
@@ -1405,7 +1396,7 @@ AmlExecDyadic1 (UINT16 opcode)
     
     ObjStack[--ObjStackTop] = NULL;
 
-    return S_SUCCESS;
+    return AE_OK;
 }
 
 
@@ -1413,29 +1404,26 @@ AmlExecDyadic1 (UINT16 opcode)
  * 
  * FUNCTION:    AmlExecDyadic2R
  *
- * PARAMETERS:  UINT16  opcode      The opcode to be executed
+ * PARAMETERS:  opcode              - The opcode to be executed
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Execute Type 2 dyadic operator with numeric operands and
  *              one or two result operands
  *
  * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
- *  Reference       Size        Pool    Owner   Description
- *  String.String varies     bu    amlexec   result of Concat
- *  Buffer.Buffer varies     bu    amlexec   result of Concat
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlExecDyadic2R (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc = NULL;
     OBJECT_DESCRIPTOR       *ObjDesc2 = NULL;
     OBJECT_DESCRIPTOR       *ResDesc = NULL;
     OBJECT_DESCRIPTOR       *ResDesc2 = NULL;
+    ACPI_STATUS             Status;
     UINT32                  remain;
-    INT32                   Excep;
     INT32                   NumOperands;
 
 
@@ -1449,7 +1437,7 @@ AmlExecDyadic2R (UINT16 opcode)
     /*  DefConcat   :=  ConcatOp    Data1   Data2   Result  */
 
     case AML_ConcatOp:
-        Excep = AmlPrepStack ("lss");
+        Status = AmlPrepStack ("lss");
         NumOperands = 3;
         break;
 
@@ -1457,7 +1445,7 @@ AmlExecDyadic2R (UINT16 opcode)
     /*  DefDivide   :=  DivideOp Dividend Divisor Remainder Quotient    */
 
     case AML_DivideOp:
-        Excep = AmlPrepStack ("llnn");
+        Status = AmlPrepStack ("llnn");
         NumOperands = 4;
         break;
 
@@ -1465,15 +1453,15 @@ AmlExecDyadic2R (UINT16 opcode)
     /*  DefX    :=  XOp Operand1    Operand2    Result  */
 
     default:
-        Excep = AmlPrepStack ("lnn");
+        Status = AmlPrepStack ("lnn");
         NumOperands = 3;
         break;
     }
 
-    if (Excep != S_SUCCESS)
+    if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
-        return Excep;
+        return Status;
     }
 
     AmlDumpStack (MODE_Exec, ShortOps[opcode], NumOperands, "after AmlPrepStack");
@@ -1540,7 +1528,7 @@ AmlExecDyadic2R (UINT16 opcode)
         if ((UINT32) 0 == ObjDesc2->Number.Number)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R/DivideOp: divide by zero\n"));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
 
         remain = ObjDesc->Number.Number % ObjDesc2->Number.Number;
@@ -1585,7 +1573,7 @@ AmlExecDyadic2R (UINT16 opcode)
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2R/ConcatOp: operand type mismatch %d %d\n",
                     ObjDesc->ValType, ObjDesc2->ValType));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
 
         /* Both operands are now known to be the same */
@@ -1599,7 +1587,7 @@ AmlExecDyadic2R (UINT16 opcode)
             if (!NewBuf)
             {
                 REPORT_ERROR (&KDT[5]);
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
             
             strcpy (NewBuf, (char *) ObjDesc->String.String);
@@ -1625,13 +1613,13 @@ AmlExecDyadic2R (UINT16 opcode)
                 if (ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen < 1024)
                 {
                     REPORT_ERROR (&KDT[0]);
-                    return S_ERROR;
+                    return AE_AML_ERROR;
                 }
 
                 DEBUG_PRINT (ACPI_ERROR, (
                             "AmlExecDyadic2R/ConcatOp: Buffer allocation failure %d\n",
                             ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen));
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
 
             memcpy (NewBuf, ObjDesc->Buffer.Buffer, (size_t) ObjDesc->Buffer.BufLen);
@@ -1647,18 +1635,18 @@ AmlExecDyadic2R (UINT16 opcode)
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R: Unknown dyadic opcode %02x\n", opcode));
-        return S_ERROR;
+        return AE_AML_ERROR;
     }
     
-    if ((Excep = AmlExecStore (ObjDesc, ResDesc)) != S_SUCCESS)
+    if ((Status = AmlExecStore (ObjDesc, ResDesc)) != AE_OK)
     {
         ObjStackTop -= NumOperands - 1;
-        return Excep;
+        return Status;
     }
     
     if (AML_DivideOp == opcode)
     {
-        Excep = AmlExecStore(ObjDesc2, ResDesc2);
+        Status = AmlExecStore(ObjDesc2, ResDesc2);
     }
 
     /* Don't delete ObjDesc because it remains on the stack */
@@ -1669,7 +1657,7 @@ AmlExecDyadic2R (UINT16 opcode)
     DELETE (ObjDesc2);
     ObjStackTop -= NumOperands - 1;
     
-    return Excep;
+    return Status;
 }
 
 
@@ -1677,9 +1665,9 @@ AmlExecDyadic2R (UINT16 opcode)
  * 
  * FUNCTION:    AmlExecDyadic2S
  *
- * PARAMETERS:  UINT16  opcode      The opcode to be executed
+ * PARAMETERS:  opcode              - The opcode to be executed
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Execute Type 2 dyadic synchronization operator
  *
@@ -1687,21 +1675,21 @@ AmlExecDyadic2R (UINT16 opcode)
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlExecDyadic2S (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
     OBJECT_DESCRIPTOR       *TimeDesc;
     OBJECT_DESCRIPTOR       *ResDesc;
-    INT32                   Excep;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlExecDyadic2S");
 
 
-    Excep = AmlPrepStack ("nl");
+    Status = AmlPrepStack ("nl");
 
-    if (Excep != S_SUCCESS)
+    if (Status != AE_OK)
     {   
         /*  invalid parameters on object stack  */
 
@@ -1727,11 +1715,11 @@ AmlExecDyadic2S (UINT16 opcode)
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecDyadic2S/AcquireOp: Needed Mutex, found %d\n",
                         ResDesc->ValType));
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
             else
             {
-                Excep = OsAcquireOpRqst (TimeDesc, ObjDesc);
+                Status = OsAcquireOpRqst (TimeDesc, ObjDesc);
             }
 
 
@@ -1744,11 +1732,11 @@ AmlExecDyadic2S (UINT16 opcode)
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecDyadic2S/WaitOp: Needed Event, found %d\n",
                         ResDesc->ValType));
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             }
             else
             {
-                Excep = OsWaitOpRqst (TimeDesc, ObjDesc);
+                Status = OsWaitOpRqst (TimeDesc, ObjDesc);
             }
 
 
@@ -1756,7 +1744,7 @@ AmlExecDyadic2S (UINT16 opcode)
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2S: Unknown dyadic synchronization opcode %02x\n",
                     opcode));
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
         }
 
         /*  delete TimeOut object descriptor before removing it from object stack   */
@@ -1768,7 +1756,7 @@ AmlExecDyadic2S (UINT16 opcode)
         ObjStackTop--;
     
     }
-    return Excep;
+    return Status;
 }
 
 
@@ -1776,9 +1764,9 @@ AmlExecDyadic2S (UINT16 opcode)
  * 
  * FUNCTION:    AmlExecDyadic2
  *
- * PARAMETERS:  UINT16  opcode      The opcode to be executed
+ * PARAMETERS:  opcode              - The opcode to be executed
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Execute Type 2 dyadic operator with numeric operands and
  *              no result operands
@@ -1788,25 +1776,25 @@ AmlExecDyadic2S (UINT16 opcode)
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlExecDyadic2 (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
     OBJECT_DESCRIPTOR       *ObjDesc2;
-    INT32                   Excep;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlExecDyadic2");
 
 
-    Excep = AmlPrepStack ("nn");
+    Status = AmlPrepStack ("nn");
 
-    if (Excep != S_SUCCESS)
+    if (Status != AE_OK)
     {
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
-        return Excep;
+        return Status;
     }
 
     AmlDumpStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepStack");
@@ -1814,6 +1802,7 @@ AmlExecDyadic2 (UINT16 opcode)
     ObjDesc2 = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
     ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
 
+    Status = AE_OK;      /* Make sure AE_OK */
     switch (opcode)
     {
 
@@ -1822,9 +1811,9 @@ AmlExecDyadic2 (UINT16 opcode)
 
     case AML_LAndOp:
         if (ObjDesc->Number.Number && ObjDesc2->Number.Number)
-            Excep = 1;
-        else
-            Excep = 0;
+        {
+            Status = AE_PENDING;
+        }
         break;
 
 
@@ -1832,9 +1821,9 @@ AmlExecDyadic2 (UINT16 opcode)
 
     case AML_LEqualOp:
         if (ObjDesc->Number.Number == ObjDesc2->Number.Number)
-            Excep = 1;
-        else
-            Excep = 0;
+        {
+            Status = AE_PENDING;
+        }
         break;
 
 
@@ -1842,9 +1831,9 @@ AmlExecDyadic2 (UINT16 opcode)
 
     case AML_LGreaterOp:
         if (ObjDesc->Number.Number > ObjDesc2->Number.Number)
-            Excep = 1;
-        else
-            Excep = 0;
+        {
+            Status = AE_PENDING;
+        }
         break;
 
 
@@ -1852,9 +1841,9 @@ AmlExecDyadic2 (UINT16 opcode)
 
     case AML_LLessOp:
         if (ObjDesc->Number.Number < ObjDesc2->Number.Number)
-            Excep = 1;
-        else
-            Excep = 0;
+        {
+            Status = AE_PENDING;
+        }
         break;
 
 
@@ -1862,19 +1851,19 @@ AmlExecDyadic2 (UINT16 opcode)
 
     case AML_LOrOp:
         if (ObjDesc->Number.Number || ObjDesc2->Number.Number)
-            Excep = 1;
-        else
-            Excep = 0;
+        {
+            Status = AE_PENDING;
+        }
         break;
     
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2: Unknown dyadic opcode %02x\n", opcode));
-        return S_ERROR;
+        return AE_AML_ERROR;
     }
 
     /* ObjDesc->ValType == Number was assured by AmlPrepStack("nn") call */
     
-    if (Excep)
+    if (Status == AE_PENDING)
     {
         ObjDesc->Number.Number = 0xffffffff;
     }
@@ -1886,7 +1875,7 @@ AmlExecDyadic2 (UINT16 opcode)
     DELETE (ObjDesc2);
     ObjStackTop--;
     
-    return S_SUCCESS;
+    return AE_OK;
 }
 
 
@@ -1894,23 +1883,22 @@ AmlExecDyadic2 (UINT16 opcode)
  * 
  * FUNCTION:    AmlExecuteMethod
  *
- * PARAMETERS:  INT32               Offset      Offset to method in code block
- *              INT32               Length      Length of method
- *              OBJECT_DESCRIPTOR   **Params    list of parameters to pass to
- *                                              method, terminated by NULL.
- *                                              Params itself may be NULL if
- *                                              no parameters are being passed.
+ * PARAMETERS:  Offset              - Offset to method in code block
+ *              Length              - Length of method
+ *              **Params            - List of parameters to pass to method, 
+ *                                    terminated by NULL. Params itself may be 
+ *                                    NULL if no parameters are being passed.
  *
- * RETURN:      S_SUCCESS, S_RETURN, or S_ERROR
+ * RETURN:      Status
  *
- * DESCRIPTION: Execute the method
+ * DESCRIPTION: Execute a control method
  *
  *****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
 {
-    INT32           Excep;
+    ACPI_STATUS     Status;
     INT32           i1;
     INT32           i2;
 
@@ -1918,7 +1906,7 @@ AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
     FUNCTION_TRACE ("AmlExecuteMethod");
 
 
-    if (Excep = AmlPrepExec (Offset, Length) != S_SUCCESS)               /* package stack */
+    if (Status = AmlPrepExec (Offset, Length) != AE_OK)               /* package stack */
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Exec Stack Overflow\n"));
     }
@@ -1929,63 +1917,60 @@ AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
     {
         MethodStackTop--;
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Method Stack Overflow\n"));
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
 
     else
     {
         /* Undefine all local variables */
     
-        for (i1 = 0; (i1 < NUMLCL) && (Excep == S_SUCCESS); ++i1)
+        for (i1 = 0; (i1 < NUMLCL) && (Status == AE_OK); ++i1)
         {
-            Excep = AmlSetMethodValue (i1 + LCLBASE, NULL, NULL);
+            Status = AmlSetMethodValue (i1 + LCLBASE, NULL, NULL);
         }
 
-        if (S_SUCCESS == Excep)
+        if (AE_OK == Status)
         {
             /*  Copy passed parameters into method stack frame  */
                 
-            for (i2 = i1 = 0; (i1 < NUMARG) && (S_SUCCESS == Excep); ++i1)
+            for (i2 = i1 = 0; (i1 < NUMARG) && (AE_OK == Status); ++i1)
             {   
                 if (Params && Params[i2])   
                 {
                     /*  parameter/argument specified    */
                     /*  define ppsParams[i2++] argument object descriptor   */
                     
-                    Excep = AmlSetMethodValue (i1 + ARGBASE, Params[i2++], NULL);
+                    Status = AmlSetMethodValue (i1 + ARGBASE, Params[i2++], NULL);
                 }
                 else    
                 {
                     /*  no parameter/argument object descriptor definition  */
                     
-                    Excep = AmlSetMethodValue (i1 + ARGBASE, NULL, NULL);
+                    Status = AmlSetMethodValue (i1 + ARGBASE, NULL, NULL);
                 }
             }
         }
 
 
-        LINE_SET (0, Exec);
-
-
         /* 
-         * Normal exit is with Excep == S_RETURN when a ReturnOp has been executed,
-         * or with Excep == S_FAILURE at end of AML block (end of Method code)
+         * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
+         * or with Status == AE_PENDING at end of AML block (end of Method code)
          */
 
-        if (S_SUCCESS == Excep)
+        if (AE_OK == Status)
         {
-            while ((Excep = AmlDoCode (MODE_Exec)) == S_SUCCESS)
+            while ((Status = AmlDoCode (MODE_Exec)) == AE_OK)
             {;}
         }
 
-        if (S_FAILURE == Excep)
+        if (AE_PENDING == Status)
         {
-            Excep = AmlPopExec ();            /* package stack -- inverse of AmlPrepExec() */
+            Status = AmlPopExec ();            /* package stack -- inverse of AmlPrepExec() */
         }
 
         else
         {
-            if (S_RETURN == Excep)
+            if (AE_RETURN_VALUE == Status)
             {
                 DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
                 DUMP_STACK_ENTRY ((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);
@@ -1999,7 +1984,7 @@ AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
 
     }
 
-    return Excep;
+    return Status;
 }
 
 
