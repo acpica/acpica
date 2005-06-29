@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -645,7 +645,6 @@ AdDisplayTables (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AdDeferredParse
@@ -848,7 +847,7 @@ AdParseDeferredOps (
  *
  * FUNCTION:    AdGetLocalTables
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -866,7 +865,6 @@ AdGetLocalTables (
     ACPI_TABLE_HEADER       *NewTable;
     UINT32                  NumTables;
     UINT32                  PointerSize;
-
 
 
     if (GetAllTables)
@@ -1007,7 +1005,7 @@ AdParseTable (
         return (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParsedNamespaceRoot, 
+    Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParsedNamespaceRoot,
                 NULL, AmlStart, AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
