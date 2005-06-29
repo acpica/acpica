@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresop - AML Interpreter operand/object resolution
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -488,7 +488,6 @@ AcpiAmlResolveOperands (
          */
 
         case ARGI_STRING:
-        case ARGI_COMPUTEDATA: /* TBD: Integer case  and perhaps buffer case is not handled yet */
 
             /* Need an operand of type ACPI_TYPE_STRING or ACPI_TYPE_BUFFER */
 
@@ -497,6 +496,24 @@ AcpiAmlResolveOperands (
             {
                 DEBUG_PRINT (ACPI_INFO,
                     ("AmlResolveOperands: Needed [String or Buffer], found [%s] %p\n",
+                    AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+            }
+            goto NextOperand;
+            break;
+
+
+        case ARGI_COMPUTEDATA:
+
+            /* Need an operand of type INTEGER, STRING or BUFFER */
+
+            if ((ACPI_TYPE_NUMBER != (*StackPtr)->Common.Type) &&
+                (ACPI_TYPE_STRING != (*StackPtr)->Common.Type) &&
+                (ACPI_TYPE_BUFFER != (*StackPtr)->Common.Type))
+            {
+                DEBUG_PRINT (ACPI_INFO,
+                    ("AmlResolveOperands: Needed [Integer/String/Buffer], found [%s] %p\n",
                     AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
