@@ -117,6 +117,20 @@
 #ifndef __ENVIRONMENT_H__
 #define __ENVIRONMENT_H__
 
+/* 
+ * Comment this line out if linking to an actual C library.
+ * Otherwise, local versions of the string and memory functions will be used.
+ */
+#define LOCAL_CLIB_FUNCTIONS       1
+
+
+/******************************************************************************
+ * 
+ * Using native C library functions
+ *
+ *****************************************************************************/
+
+#ifndef LOCAL_CLIB_FUNCTIONS
 /*
  * Standard C library headers.
  * We want to keep these to a minimum.
@@ -129,8 +143,6 @@
  *
  *
  * Functions and constants used from each header:
- *
- * stdio.h:     sprintf
  *
  * string.h:    memcpy
  *              memset
@@ -150,14 +162,84 @@
  *
  */
 
-#include <stdio.h>
-#include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
-
+#include <string.h>
 
 /*
+ * We will be using the standard Clib functions
+ */
+
+#define STRLEN                  strlen
+#define STRCPY                  strcpy
+#define STRNCPY                 strncpy
+#define STRNCMP                 strncmp
+#define STRCMP                  strcmp
+#define STRCAT                  strcat
+#define STRNCAT                 strncat
+#define STRTOUL                 strtoul
+#define MEMCPY                  memcpy
+#define MEMSET                  memset
+
+
+/******************************************************************************
+ * 
+ * Not using native C library, use local implementations
+ *
+ *****************************************************************************/
+#else
+
+/*
+ * Use local definitions of C library macros and functions
+ * NOTE: The function implementations may not be as efficient
+ * as an inline or assembly code implementation provided by a
+ * native C library.
+ */
+
+#ifndef _VALIST
+#define _VALIST
+typedef char *va_list;
+#endif
+
+/*
+ * Storage alignment properties
+ */
+
+#define  _AUPBND                (sizeof(int) - 1)
+#define  _ADNBND                (sizeof(int) - 1) 
+
+/*
+ * Variable argument list macro definitions
+ */
+
+#define _Bnd(X, bnd)            (sizeof(X) + (bnd) & ~(bnd))
+#define va_arg(ap, T)           (*(T *)(((ap) += _Bnd(T, _AUPBND)) - _Bnd(T, _ADNBND)))
+#define va_end(ap)              (void)0 
+#define va_start(ap, A)         (void) ((ap) = (char *)&(A) + _Bnd(A, _AUPBND))
+
+
+#define STRLEN                  _strlen
+#define STRCPY                  _strcpy
+#define STRNCPY                 _strncpy
+#define STRNCMP                 _strncmp
+#define STRCMP                  _strcmp
+#define STRCAT                  _strcat
+#define STRNCAT                 _strncat
+#define STRTOUL                 _strtoul
+#define MEMCPY                  _memcpy
+#define MEMSET                  _memset
+
+#endif /* LOCAL_CLIB_FUNCTIONS */
+
+
+
+/******************************************************************************
+ * 
  * Assembly code macros
+ *
+ *****************************************************************************/
+
+/*
  *
  * Notes:
  * 1) Interrupt 3 is used to break into a debugger
