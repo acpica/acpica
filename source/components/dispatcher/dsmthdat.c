@@ -131,37 +131,6 @@
 
 /*****************************************************************************
  * 
- * FUNCTION:    DsIsMethodValue
- *
- * PARAMETERS:  *ObjDesc 
- *
- * RETURN:      TRUE if the descriptor is the value of an Arg or
- *              Local in a currently-active Method, else FALSE
- *
- * DESCRIPTION: Test if object is the value of an Arg or Local in a currently
- *              active method.
- *
- ****************************************************************************/
-
-BOOLEAN
-DsIsMethodValue (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
-{
-    FUNCTION_TRACE ("DsIsMethodValue");
-
-
-    /* For each active Method */
-    
-    /* TBD: may no longer be necessary */
-    /* IF so, we must walk the list of active control methods */
-
-    return_VALUE (FALSE);
-}
-
-
-
-/*****************************************************************************
- * 
  * FUNCTION:    DsMethodDataInit
  *
  * PARAMETERS:  *ObjDesc 
