@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -218,8 +218,6 @@ AcpiDisable (void)
     /* Unload the SCI interrupt handler  */
 
     AcpiEvRemoveSciHandler ();
-    AcpiEvRestoreAcpiState ();
-
     return_ACPI_STATUS (Status);
 }
 
@@ -291,10 +289,12 @@ AcpiEnableEvent (
          */
         AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RegisterId, 1);
 
+        /* Make sure that the hardware responded */
+
         if (1 != AcpiHwRegisterBitAccess(ACPI_READ, ACPI_MTX_LOCK, RegisterId))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Fixed event bit clear when it should be set\n"));
+                "Could not enable %s event\n", AcpiUtGetEventName (Event)));
             return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
         }
         break;
@@ -401,7 +401,7 @@ AcpiDisableEvent (
         if (0 != AcpiHwRegisterBitAccess(ACPI_READ, ACPI_MTX_LOCK, RegisterId))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Fixed event bit set when it should be clear,\n"));
+                "Could not disable %s events\n", AcpiUtGetEventName (Event)));
             return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
         }
         break;

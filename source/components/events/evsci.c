@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -238,78 +238,4 @@ AcpiEvRemoveSciHandler (void)
     return_ACPI_STATUS (AE_OK);
 }
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiEvRestoreAcpiState
- *
- * PARAMETERS:  none
- *
- * RETURN:      none
- *
- * DESCRIPTION: Restore the original ACPI state of the machine
- *
- ******************************************************************************/
-
-void
-AcpiEvRestoreAcpiState (void)
-{
-    UINT32                  Index;
-
-
-    FUNCTION_TRACE ("EvRestoreAcpiState");
-
-
-    /* Restore the state of the chipset enable bits. */
-
-    if (AcpiGbl_RestoreAcpiChipset == TRUE)
-    {
-        /* Restore the fixed events */
-
-        if (AcpiHwRegisterRead (ACPI_MTX_LOCK, PM1_EN) !=
-                AcpiGbl_Pm1EnableRegisterSave)
-        {
-            AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1_EN,
-                AcpiGbl_Pm1EnableRegisterSave);
-        }
-
-        /* Ensure that all status bits are clear */
-
-        AcpiHwClearAcpiStatus ();
-
-        /* Now restore the GPEs */
-
-        for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe0BlkLen); Index++)
-        {
-            if (AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index) !=
-                    AcpiGbl_Gpe0EnableRegisterSave[Index])
-            {
-                AcpiHwRegisterWrite (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index,
-                    AcpiGbl_Gpe0EnableRegisterSave[Index]);
-            }
-        }
-
-        /* GPE Block 1 present? */
-
-        if (AcpiGbl_FADT->Gpe1BlkLen)
-        {
-            for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe1BlkLen); Index++)
-            {
-                if (AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index) !=
-                    AcpiGbl_Gpe1EnableRegisterSave[Index])
-                {
-                    AcpiHwRegisterWrite (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index,
-                        AcpiGbl_Gpe1EnableRegisterSave[Index]);
-                }
-            }
-        }
-
-        if (AcpiHwGetMode() != AcpiGbl_OriginalMode)
-        {
-            AcpiHwSetMode (AcpiGbl_OriginalMode);
-        }
-    }
-
-    return_VOID;
-}
 
