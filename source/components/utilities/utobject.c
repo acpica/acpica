@@ -230,7 +230,7 @@ AcpiCmValidInternalObject (
         if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
         {
             DEBUG_PRINT (ACPI_INFO,
-                ("CmValidInternalObject: **** Obj %p is NTE, not ACPI obj\n",
+                ("CmValidInternalObject: **** Obj %p is a named obj, not ACPI obj\n",
                 Object));
         }
 
@@ -558,7 +558,7 @@ AcpiCmGetSimpleObjectSize (
 
     if (VALID_DESCRIPTOR_TYPE (InternalObj, ACPI_DESC_TYPE_NAMED))
     {
-        /* Object is an NTE (reference), just return the length */
+        /* Object is a named object (reference), just return the length */
 
         *ObjLength = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
         return_ACPI_STATUS (Status);
