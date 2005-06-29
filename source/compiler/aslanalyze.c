@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -1078,7 +1078,7 @@ AnMethodTypingWalkEnd (
 
 /*******************************************************************************
  *
- * FUNCTION:    AnSemanticAnalysisWalkBegin
+ * FUNCTION:    AnOperandTypecheckWalkBegin
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
@@ -1092,7 +1092,7 @@ AnMethodTypingWalkEnd (
  ******************************************************************************/
 
 ACPI_STATUS
-AnSemanticAnalysisWalkBegin (
+AnOperandTypecheckWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context)
@@ -1104,7 +1104,7 @@ AnSemanticAnalysisWalkBegin (
 
 /*******************************************************************************
  *
- * FUNCTION:    AnSemanticAnalysisWalkEnd
+ * FUNCTION:    AnOperandTypecheckWalkEnd
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
@@ -1116,7 +1116,7 @@ AnSemanticAnalysisWalkBegin (
  ******************************************************************************/
 
 ACPI_STATUS
-AnSemanticAnalysisWalkEnd (
+AnOperandTypecheckWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context)
@@ -1349,3 +1349,53 @@ AnSemanticAnalysisWalkEnd (
 }
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnOtherSemanticAnalysisWalkBegin
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Descending callback for the analysis walk.  Check methods for :
+ *              1) Initialized local variables
+ *              2) Valid arguments
+ *              3) Return types
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AnOtherSemanticAnalysisWalkBegin (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context)
+{
+
+    return AE_OK;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnOtherSemanticAnalysisWalkEnd
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Ascending callback for analysis walk.  Complete method
+ *              return analysis.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AnOtherSemanticAnalysisWalkEnd (
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  Level,
+    void                    *Context)
+{
+
+    return AE_OK;
+
+}

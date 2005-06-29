@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.75 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2028"
-#define CompilerCreatorRevision     0x02002028  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2031"
+#define CompilerCreatorRevision     0x02002031  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
@@ -440,7 +440,6 @@ CgAmlWriteWalk (
     UINT32                  Level,
     void                    *Context);
 
-
 void
 CgGenerateOutput(
     void);
@@ -453,6 +452,13 @@ void
 CgWriteNode (
     ASL_PARSE_NODE          *Node);
 
+/*
+ * aslmap
+ */
+
+ACPI_OBJECT_TYPE8
+AslMapNamedOpcodeToDataType (
+    UINT16                  Opcode);
 
 /* 
  * asltransform - parse tree transformations
@@ -565,13 +571,25 @@ TrReleaseNode (
 /* Analyze */
 
 ACPI_STATUS
-AnSemanticAnalysisWalkBegin (
+AnOtherSemanticAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
 ACPI_STATUS
-AnSemanticAnalysisWalkEnd (
+AnOtherSemanticAnalysisWalkEnd (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+ACPI_STATUS
+AnOperandTypecheckWalkBegin (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+ACPI_STATUS
+AnOperandTypecheckWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);

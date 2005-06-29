@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.32 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -150,14 +150,6 @@ AcpiTbDeleteAcpiTables (void)
 }
 
 
-BOOLEAN
-AcpiTbSystemTablePointer (
-    void                    *Where)
-{
-    return FALSE;
-
-}
-
 void
 AcpiExDumpOperands (
     ACPI_OPERAND_OBJECT     **Operands,
@@ -196,8 +188,8 @@ AslCompilerSignon (
 {
 
     FlPrintFile (FileId,
-        "\n%s %s [%s]\n%s\nSupports ACPI Specification Revision 2.0\n\n",
-        CompilerId, CompilerVersion, __DATE__, CompilerCopyright);
+        "\n%s %s [%s]\nACPI CA Subsystem version %X\n%s\nSupports ACPI Specification Revision 2.0\n\n",
+        CompilerId, CompilerVersion, __DATE__, ACPI_CA_VERSION, CompilerCopyright);
 }
 
 
@@ -284,10 +276,14 @@ CmDoCompile (void)
     AslCompilerparse();
     UtEndEvent (i++);
 
+    /* Pre-process parse tree for any operator transforms */
+
+    UtBeginEvent (i, "Generate AML opcodes");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nParse tree transforms\n\n");
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, TrAmlTransformWalk, NULL, NULL);
 
     /* Generate AML opcodes corresponding to the parse tokens */
 
-    UtBeginEvent (i, "Generate AML opcodes");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating AML opcodes\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
     UtEndEvent (i++);
@@ -362,8 +358,16 @@ CmDoCompile (void)
 
     UtBeginEvent (i, "Analyze AML operand types");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Operand type checking \n\n");
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
-                        AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnOperandTypecheckWalkBegin,
+                        AnOperandTypecheckWalkEnd, &AnalysisWalkInfo);
+    UtEndEvent (i++);
+
+    /* Semantic error checking part four - other miscellaneous checks */
+
+    UtBeginEvent (i, "Miscellaneous analysis");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - miscellaneous \n\n");
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnOtherSemanticAnalysisWalkBegin,
+                        AnOtherSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
     UtEndEvent (i++);
 
 
@@ -408,7 +412,7 @@ CmDoCompile (void)
     UtEndEvent (i++);
 
 
-    UtEndEvent (12);
+    UtEndEvent (13);
     CmCleanupAndExit ();
 
     return 0;
