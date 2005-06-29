@@ -660,6 +660,10 @@ SOURCE=..\..\components\Include\acresrc.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\components\include\acstruct.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\components\Include\actables.h
 # End Source File
 # Begin Source File
