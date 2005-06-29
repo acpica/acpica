@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.86 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,24 +118,23 @@
 #define __EXCREATE_C__
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "acdispat.h"
+#include "actables.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("excreate")
+        ACPI_MODULE_NAME    ("excreate")
 
 
+#ifndef ACPI_NO_METHOD_EXECUTION
 /*****************************************************************************
  *
  * FUNCTION:    AcpiExCreateAlias
  *
- * PARAMETERS:  WalkState            - Current state, contains List of
- *                                      operands for the opcode
+ * PARAMETERS:  WalkState            - Current state, contains operands
  *
  * RETURN:      Status
  *
@@ -147,30 +146,69 @@ ACPI_STATUS
 AcpiExCreateAlias (
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_NAMESPACE_NODE     *SourceNode;
-    ACPI_STATUS             Status;
+    ACPI_NAMESPACE_NODE     *TargetNode;
+    ACPI_NAMESPACE_NODE     *AliasNode;
+    ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExCreateAlias");
+    ACPI_FUNCTION_TRACE ("ExCreateAlias");
 
 
     /* Get the source/alias operands (both namespace nodes) */
 
-    SourceNode = (ACPI_NAMESPACE_NODE *) WalkState->Operands[1];
+    AliasNode =  (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
+    TargetNode = (ACPI_NAMESPACE_NODE *) WalkState->Operands[1];
 
-
-    /* Attach the original source object to the new Alias Node */
-
-    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
-                                    AcpiNsGetAttachedObject (SourceNode),
-                                    SourceNode->Type);
+    if (TargetNode->Type == ACPI_TYPE_LOCAL_ALIAS)
+    {
+        /*
+         * Dereference an existing alias so that we don't create a chain
+         * of aliases.  With this code, we guarantee that an alias is
+         * always exactly one level of indirection away from the
+         * actual aliased name.
+         */
+        TargetNode = (ACPI_NAMESPACE_NODE *) TargetNode->Object;
+    }
 
     /*
-     * The new alias assumes the type of the source, but it points
-     * to the same object.  The reference count of the object has an
-     * additional reference to prevent deletion out from under either the
-     * source or the alias Node
+     * For objects that can never change (i.e., the NS node will
+     * permanently point to the same object), we can simply attach
+     * the object to the new NS node.  For other objects (such as
+     * Integers, buffers, etc.), we have to point the Alias node
+     * to the original Node.
      */
+    switch (TargetNode->Type)
+    {
+    case ACPI_TYPE_INTEGER:
+    case ACPI_TYPE_STRING:
+    case ACPI_TYPE_BUFFER:
+    case ACPI_TYPE_PACKAGE:
+    case ACPI_TYPE_BUFFER_FIELD:
+
+        /*
+         * The new alias has the type ALIAS and points to the original
+         * NS node, not the object itself.  This is because for these
+         * types, the object can change dynamically via a Store.
+         */
+        AliasNode->Type = ACPI_TYPE_LOCAL_ALIAS;
+        AliasNode->Object = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, TargetNode);
+        break;
+
+    default:
+
+        /* Attach the original source object to the new Alias Node */
+
+        /*
+         * The new alias assumes the type of the target, and it points
+         * to the same object.  The reference count of the object has an
+         * additional reference to prevent deletion out from under either the
+         * target node or the alias Node
+         */
+        Status = AcpiNsAttachObject (AliasNode,
+                                AcpiNsGetAttachedObject (TargetNode),
+                                TargetNode->Type);
+        break;
+    }
 
     /* Since both operands are Nodes, we don't need to delete them */
 
@@ -198,7 +236,7 @@ AcpiExCreateEvent (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("ExCreateEvent");
+    ACPI_FUNCTION_TRACE ("ExCreateEvent");
 
 
     ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_EVENT);
@@ -208,7 +246,7 @@ AcpiExCreateEvent (
         goto Cleanup;
     }
 
-    /* 
+    /*
      * Create the actual OS semaphore, with zero initial units -- meaning
      * that the event is created in an unsignalled state
      */
@@ -256,7 +294,7 @@ AcpiExCreateMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("ExCreateMutex", WALK_OPERANDS);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateMutex", ACPI_WALK_OPERANDS);
 
 
     /* Create the new mutex object */
@@ -268,7 +306,7 @@ AcpiExCreateMutex (
         goto Cleanup;
     }
 
-    /* 
+    /*
      * Create the actual OS semaphore.
      * One unit max to make it a mutex, with one initial unit to allow
      * the mutex to be acquired.
@@ -282,9 +320,10 @@ AcpiExCreateMutex (
     /* Init object and attach to NS node */
 
     ObjDesc->Mutex.SyncLevel = (UINT8) WalkState->Operands[1]->Integer.Value;
+    ObjDesc->Mutex.Node = (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
 
-    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
-                                ObjDesc, ACPI_TYPE_MUTEX);
+    Status = AcpiNsAttachObject (ObjDesc->Mutex.Node,
+                ObjDesc, ACPI_TYPE_MUTEX);
 
 
 Cleanup:
@@ -325,12 +364,12 @@ AcpiExCreateRegion (
     ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    FUNCTION_TRACE ("ExCreateRegion");
+    ACPI_FUNCTION_TRACE ("ExCreateRegion");
 
 
     /* Get the Node from the object stack  */
 
-    Node = WalkState->Op->Node;
+    Node = WalkState->Op->Common.Node;
 
     /*
      * If the region object is already attached to this node,
@@ -348,7 +387,7 @@ AcpiExCreateRegion (
     if ((RegionSpace >= ACPI_NUM_PREDEFINED_REGIONS) &&
         (RegionSpace < ACPI_USER_REGION_BEGIN))
     {
-        REPORT_ERROR (("Invalid AddressSpace type %X\n", RegionSpace));
+        ACPI_REPORT_ERROR (("Invalid AddressSpace type %X\n", RegionSpace));
         return_ACPI_STATUS (AE_AML_INVALID_SPACE_ID);
     }
 
@@ -418,11 +457,11 @@ AcpiExCreateTableRegion (
     ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    FUNCTION_TRACE ("ExCreateTableRegion");
+    ACPI_FUNCTION_TRACE ("ExCreateTableRegion");
 
     /* Get the Node from the object stack  */
 
-    Node = WalkState->Op->Node;
+    Node = WalkState->Op->Common.Node;
 
     /*
      * If the region object is already attached to this node,
@@ -433,36 +472,23 @@ AcpiExCreateTableRegion (
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Find the table */
+    /* Find the ACPI table */
 
-    if (!STRCMP (Operand[1]->String.Pointer, DSDT_SIG))
+    Status = AcpiTbFindTable (Operand[1]->String.Pointer,
+                              Operand[2]->String.Pointer,
+                              Operand[3]->String.Pointer, &Table);
+
+    if (ACPI_FAILURE (Status))
     {
-        Table = (ACPI_TABLE_HEADER *) AcpiGbl_DSDT;
+        return_ACPI_STATUS (Status);
     }
-    else
-    {
-#if 0
-        Status = AcpiGetFirmwareTable (Operand[1]->String.Pointer, 1, 
-                            ACPI_LOGICAL_ADDRESSING, &Table);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-#endif
-            return_ACPI_STATUS (AE_SUPPORT);
-    }
-
-    /* Check OemId and TableId */
-
-
 
     /* Create the region descriptor */
 
     ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_REGION);
     if (!ObjDesc)
     {
-        Status = AE_NO_MEMORY;
-        goto Cleanup;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     RegionObj2                      = ObjDesc->Common.NextObject;
@@ -499,6 +525,7 @@ AcpiExCreateTableRegion (
 
     ObjDesc->Region.Flags |= AOPOBJ_SETUP_COMPLETE;
 
+
 Cleanup:
 
     /* Remove local reference to the object */
@@ -512,9 +539,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiExCreateProcessor
  *
- * PARAMETERS:  Op              - Op containing the Processor definition and
- *                                args
- *              ProcessorNode   - Parent Node for the processor object
+ * PARAMETERS:  WalkState           - Current state
  *
  * RETURN:      Status
  *
@@ -533,7 +558,7 @@ AcpiExCreateProcessor (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("ExCreateProcessor", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateProcessor", WalkState);
 
 
     /* Create the processor object */
@@ -568,9 +593,7 @@ AcpiExCreateProcessor (
  *
  * FUNCTION:    AcpiExCreatePowerResource
  *
- * PARAMETERS:  Op              - Op containing the PowerResource definition
- *                                and args
- *              PowerNode       - Parent Node for the power object
+ * PARAMETERS:  WalkState           - Current state
  *
  * RETURN:      Status
  *
@@ -589,7 +612,7 @@ AcpiExCreatePowerResource (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("ExCreatePowerResource", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreatePowerResource", WalkState);
 
 
     /* Create the power resource object */
@@ -617,6 +640,7 @@ AcpiExCreatePowerResource (
     return_ACPI_STATUS (Status);
 }
 
+#endif
 
 /*****************************************************************************
  *
@@ -624,8 +648,7 @@ AcpiExCreatePowerResource (
  *
  * PARAMETERS:  AmlStart        - First byte of the method's AML
  *              AmlLength       - AML byte count for this method
- *              MethodFlags     - AML method flag byte
- *              Method          - Method Node
+ *              WalkState       - Current state
  *
  * RETURN:      Status
  *
@@ -645,7 +668,7 @@ AcpiExCreateMethod (
     UINT8                   MethodFlags;
 
 
-    FUNCTION_TRACE_PTR ("ExCreateMethod", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateMethod", WalkState);
 
 
     /* Create a new method object */
