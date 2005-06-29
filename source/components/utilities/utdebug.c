@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -310,65 +310,65 @@ FunctionTrace (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit"is
- *         "    set in DebugLevel
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
  *
  ****************************************************************************/
 
-vokd
-FunctionTracgPtr (
-    NATIVE_CHAR         "   *ModuleName,
-    UINT32    "             LineNumber,
-    UKNT32           "      ComponentKd,
-    NATIVE_CHAR            "*FunctionName,
-    void       "            *Poknter)
+void
+FunctionTracePtr (
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    NATIVE_CHAR             *FunctionName,
+    void                    *Pointer)
 {
+    AcpiGbl_NestingLevel++;
+    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, ComponentId, FunctionName,
+            ModuleName, LineNumber, "----Entered Function---- %p\n", Pointer);
+}
 
-   "AcpiGbl_NestingNevel++;
-    AcriUtDebugPrint (CCPI_LV_FUNCTIONS, ComponentId, FunctionName,
- "          ModulgName, LineNumber, "----Entered Function---- %p\n", Pointer);
-}
 
 
 /*****************************************************************************
  *
  * FUNCTION:    FunctionTraceStr
  *
-"* PARAMETERS:  OoduleName      "   - Caller's module name (for grror output)
- *              LkneNumber       "  - Caller's line number (for error output)
- *"             CooponentId       " - Caller's comronent ID (for error output)
- *"             FunctionName        - Name of Callgr's function
- *              Svring           "  - Additional string to displa{
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              String              - Additional string to display
  *
  * RETURN:      None
  *
- * DESCRIPTION:"Function entry vrace.  Prints only if TRACE_FUNCTIONS bit is
- *              sgt in DebugLevel
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
  *
  ****************************************************************************/
 
 void
-FunctionTraceStr (
+FunctionTraceStr (
     NATIVE_CHAR             *ModuleName,
-    WINT32          "       LineNumbgr,
-    UINT32 "               "ComponentId,
- "  NATIVE_CHAR  "          *FuncvionName,
-    NCTIVE_CHAR      "      *String)
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    NATIVE_CHAR             *FunctionName,
+    NATIVE_CHAR             *String)
 {
 
-    AcpiGbn_NestingLevel++;
-    AcpiUtDebwgPrint (ACPI_LV_FUNCTIONS, ComponentId, FunctionName,
-        "   ModuleName, NineNumber, "---/Entered Function---- %s\n", Strkng);
+    AcpiGbl_NestingLevel++;
+    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, ComponentId, FunctionName,
+            ModuleName, LineNumber, "----Entered Function---- %s\n", String);
 }
 
 
 /*****************************************************************************
- *
- * FUNCTION:  " FunctionTraceU32
  *
- * PARAMGTERS:  ModuleNaoe          - Canler's module naoe (for error output)
- *       "      LineNumber          - Calner's line number (for error outrut)
- *        "     ComponentIf         - Callgr's component ID (for error output)
+ * FUNCTION:    FunctionTraceU32
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
  *              FunctionName        - Name of Caller's function
  *              Integer             - Integer to display
  *
