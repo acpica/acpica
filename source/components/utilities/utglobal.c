@@ -239,7 +239,7 @@ UINT8                       Gbl_NsProperties[] =
     NSP_NORMAL,                 /* 33 While            */
     NSP_NEWSCOPE,               /* 34 Scope            */
     NSP_LOCAL,                  /* 35 DefAny           */
-    NSP_NORMAL,                 /* 36 Lvalue           */
+    NSP_NORMAL,                 /* 36 Reference           */
     NSP_NORMAL,                 /* 37 Alias            */
     NSP_NORMAL,                 /* 38 Notify           */
     NSP_NORMAL,                 /* 39 Address Handler  */
@@ -259,18 +259,18 @@ ACPI_TABLE_DESC             Gbl_AcpiTables[NUM_ACPI_TABLES];
 
 ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES] =
 {
-               /* Name,   Signature,  Signature size,    How many allowed?,   Supported?  Global typed pointer */
+                 /* Name,   Signature,  Signature size,    How many allowed?,   Supported?  Global typed pointer */
 
-    /* RSDP */ {"RSDP",   RSDP_SIG, sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
-    /* APIC */ {APIC_SIG, APIC_SIG, sizeof (APIC_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_APIC},
-    /* DSDT */ {DSDT_SIG, DSDT_SIG, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_DSDT},
-    /* FACP */ {FACP_SIG, FACP_SIG, sizeof (FACP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACP},
-    /* FACS */ {FACS_SIG, FACS_SIG, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACS},
-    /* PSDT */ {PSDT_SIG, PSDT_SIG, sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
-    /* RSDT */ {RSDT_SIG, RSDT_SIG, sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
-    /* SSDT */ {SSDT_SIG, SSDT_SIG, sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
-    /* SBST */ {SBST_SIG, SBST_SIG, sizeof (SBST_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_SBST},
-    /* BOOT */ {BOOT_SIG, BOOT_SIG, sizeof (BOOT_SIG)-1, ACPI_TABLE_SINGLE,   AE_SUPPORT, NULL}
+    /* RSDP 0 */ {"RSDP",   RSDP_SIG, sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
+    /* APIC 1 */ {APIC_SIG, APIC_SIG, sizeof (APIC_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_APIC},
+    /* DSDT 2 */ {DSDT_SIG, DSDT_SIG, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_DSDT},
+    /* FACP 3 */ {FACP_SIG, FACP_SIG, sizeof (FACP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACP},
+    /* FACS 4 */ {FACS_SIG, FACS_SIG, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACS},
+    /* PSDT 5 */ {PSDT_SIG, PSDT_SIG, sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
+    /* RSDT 6 */ {RSDT_SIG, RSDT_SIG, sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
+    /* SSDT 7 */ {SSDT_SIG, SSDT_SIG, sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
+    /* SBST 8 */ {SBST_SIG, SBST_SIG, sizeof (SBST_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_SBST},
+    /* BOOT 9 */ {BOOT_SIG, BOOT_SIG, sizeof (BOOT_SIG)-1, ACPI_TABLE_SINGLE,   AE_SUPPORT, NULL}
 };
 
 ACPI_INIT_DATA Gbl_AcpiInitData;
@@ -294,12 +294,12 @@ static char                 *Gbl_MutexNames[] =
 {
     "MTX_Execute",
     "MTX_Interpreter",
+    "MTX_Tables"
     "MTX_Namespace",
     "MTX_Memory",
-    "MTX_Gp_Event",
-    "MTX_Fixed_Event",
-    "MTX_Op_Regions",
-    "MTX_Debug_Command",
+    "MTX_Events",
+    "MTX_OpRegions",
+    "MTX_DebugCommand",
     "MTX_Debugger"
 };
 
@@ -380,7 +380,7 @@ static char                 *Gbl_NsTypeNames[] =    /* printable names of ACPI t
     "While",
     "Scope",
     "DefAny",
-    "Lvalue",
+    "Reference",
     "Alias",
     "Notify", 
     "AddrHndlr", 
@@ -568,6 +568,8 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_Shutdown                = FALSE;
     Gbl_NsLookupCount           = 0;
     Gbl_PsFindCount             = 0;
+    Gbl_AcpiHardwarePresent     = TRUE;
+    Gbl_TbNextTableId           = 1;
 
     /* Interpreter */
 
