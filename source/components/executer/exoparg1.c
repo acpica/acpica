@@ -507,12 +507,6 @@ AmlExecMonadic2R (
         }
 
         Status = AmlExecStore (RetDesc2, ResDesc);
-        if (RetDesc2->Common.ReferenceCount > 1)
-        {
-            DEBUG_PRINT (TRACE_EXEC, ("AmlExecMonadic2R: Return Obj %p has other refs, incrementing\n",
-                            RetDesc2));
-            CmUpdateObjectReference (RetDesc2, REF_INCREMENT);
-        }
 
         /* The object exists in the namespace, return TRUE */
 
@@ -538,25 +532,10 @@ AmlExecMonadic2R (
 
 
         /*
-        if (ObjDesc->Common.ReferenceCount > ReferenceCount)
-        {
-            DEBUG_PRINT (TRACE_EXEC, ("AmlExecMonadic2R: Operand %p was physically stored, not deleting\n",
-                            ObjDesc));
-            CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
-        }
-        */
-
-
-        /*
          * Normally, we would remove a reference on the ObjDesc parameter;  But since it
          * is being used as the internal return object (meaning we would normally increment it),
          * the two cancel out, and we simply don't do anything.
          */
-
-
-        /* Since we are returning a reference to the object, increment the reference count! */
-
-//        CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
 
 
         *ReturnDesc = ObjDesc;
@@ -974,7 +953,7 @@ AmlExecMonadic2 (
 
             /* Returning a pointer to the object, add another reference! */
 
-            CmUpdateObjectReference (RetDesc, REF_INCREMENT);
+            CmAddReference (RetDesc);
         }
 
         else
@@ -1030,7 +1009,7 @@ AmlExecMonadic2 (
                      */
 
                     RetDesc = *(ObjDesc->Reference.Where);
-                    CmUpdateObjectReference (RetDesc, REF_INCREMENT);
+                    CmAddReference (RetDesc);
                 }
                 
                 else
@@ -1050,7 +1029,7 @@ AmlExecMonadic2 (
 
                 /* Add another reference to the object! */
 
-                CmUpdateObjectReference (RetDesc, REF_INCREMENT);
+                CmAddReference (RetDesc);
                 break;
             }
         }
