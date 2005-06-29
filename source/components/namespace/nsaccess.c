@@ -216,7 +216,7 @@ NsSetup (void)
                      * XXX - This "should not happen" during initialization.
                      */
 
-                    ObjDesc->String.String = OsdAllocate ((size_t) (ObjDesc->String.StrLen + 1));
+                    ObjDesc->String.String = OsdAllocate ((ACPI_SIZE) (ObjDesc->String.StrLen + 1));
                     if (!ObjDesc->String.String)
                     {
                         REPORT_ERROR ("Initial value string allocation failure");
@@ -329,8 +329,8 @@ NsEnter (
     }
 
     DEBUG_PRINT (TRACE_NAMES,
-                    ("NsEnter: Name[0-5] - %02x %02x %02x %02x %02x %02x \n",
-                    Name[0], Name[1], Name[2], Name[3], Name[4], Name[5]));
+                    ("NsEnter: Name: [%4.4s] - %02x %02x %02x %02x %02x %02x \n",
+                    Name, Name[0], Name[1], Name[2], Name[3], Name[4], Name[5]));
 
     CheckTrash ("enter NsEnter");
 
