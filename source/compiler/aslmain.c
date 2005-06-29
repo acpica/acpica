@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.72 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -706,8 +706,8 @@ main (
     {
         /* ACPI CA subsystem initialization */
 
-        AcpiUtInitGlobals ();
         Status = AcpiOsInitialize ();
+        AcpiUtInitGlobals ();
         Status = AcpiUtMutexInitialize ();
         if (ACPI_FAILURE (Status))
         {
@@ -763,8 +763,8 @@ main (
 
         /* ACPI CA subsystem initialization (Must be re-initialized) */
 
-        AcpiUtInitGlobals ();
         Status = AcpiOsInitialize ();
+        AcpiUtInitGlobals ();
         Status = AcpiUtMutexInitialize ();
         if (ACPI_FAILURE (Status))
         {
