@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  ******************************************************************************/
 
@@ -156,9 +156,9 @@ AcpiNsCreateNode (
 
     ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].TotalAllocated++);
 
-    Node->DataType       = ACPI_DESC_TYPE_NAMED;
     Node->Name           = Name;
     Node->ReferenceCount = 1;
+    ACPI_SET_DESCRIPTOR_TYPE (Node, ACPI_DESC_TYPE_NAMED);
 
     return_PTR (Node);
 }

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.114 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,46 @@
         MODULE_NAME         ("nsdump")
 
 #if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsPrintPathname
+ *
+ * PARAMETERS:  NumSegment          - Number of ACPI name segments
+ *              Pathname            - The compressed (internal) path
+ *
+ * DESCRIPTION: Print an object's full namespace pathname
+ *
+ ******************************************************************************/
+
+void
+AcpiNsPrintPathname (
+    UINT32                  NumSegments,
+    char                    *Pathname)
+{
+    UINT32                  i;
+
+    PROC_NAME ("AcpiNsPrintPathname");
+
+
+    if (!(AcpiDbgLevel & ACPI_LV_NAMES) || !(AcpiDbgLayer & ACPI_NAMESPACE))
+    {
+        return;
+    }
+
+        /* Print the entire name */
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "["));
+
+    for (i = 0; i < NumSegments; i++)
+    {
+        AcpiOsPrintf ("%4.4s.", (char *) &Pathname[i * 4]);
+    }
+
+    AcpiOsPrintf ("]\n");
+}
+
 
 /*******************************************************************************
  *
@@ -408,7 +448,8 @@ AcpiNsDumpOneObject (
             break;
 
         case ACPI_TYPE_BUFFER_FIELD:
-            if (ObjDesc->BufferField.BufferObj)
+            if (ObjDesc->BufferField.BufferObj &&
+                ObjDesc->BufferField.BufferObj->Buffer.Node)
             {
                 AcpiOsPrintf (" Buf [%4.4s]",
                         (char *) &ObjDesc->BufferField.BufferObj->Buffer.Node->Name);
@@ -530,19 +571,21 @@ AcpiNsDumpOneObject (
     while (ObjDesc)
     {
         ObjType = INTERNAL_TYPE_INVALID;
+        AcpiOsPrintf ("        Attached Object %p: ", ObjDesc);
 
         /* Decode the type of attached object and dump the contents */
 
-        AcpiOsPrintf ("        Attached Object %p: ", ObjDesc);
-
-        if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
+        switch (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc))
         {
+        case ACPI_DESC_TYPE_NAMED:
+
             AcpiOsPrintf ("(Ptr to Node)\n");
             BytesToDump = sizeof (ACPI_NAMESPACE_NODE);
-        }
+            break;
 
-        else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
-        {
+
+        case ACPI_DESC_TYPE_INTERNAL:
+
             ObjType = ObjDesc->Common.Type;
 
             if (ObjType > INTERNAL_TYPE_MAX)
@@ -556,18 +599,21 @@ AcpiNsDumpOneObject (
                                     ObjType, AcpiUtGetTypeName (ObjType));
                 BytesToDump = sizeof (ACPI_OPERAND_OBJECT);
             }
-        }
-        else
-        {
+            break;
+
+
+        default:
+
             AcpiOsPrintf ("(String or Buffer - not descriptor)\n");
             BytesToDump = 16;
+            break;
         }
 
         DUMP_BUFFER (ObjDesc, BytesToDump);
 
         /* If value is NOT an internal object, we are done */
 
-        if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
+        if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_INTERNAL)
         {
             goto Cleanup;
         }
