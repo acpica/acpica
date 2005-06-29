@@ -169,6 +169,7 @@
 #define MAX_STATE_CACHE_DEPTH       24          /* State objects for stacks */
 #define MAX_PARSE_CACHE_DEPTH       512         /* Parse tree objects */
 #define MAX_OBJECT_CACHE_DEPTH      32          /* Interpreter operand objects */
+#define MAX_WALK_CACHE_DEPTH        2           /* Objects for parse tree walks (method execution) */
 
 /* 
  * NameSpace Table size
