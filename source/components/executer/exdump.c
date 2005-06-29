@@ -264,7 +264,6 @@ ACPI_STATUS
 AmlDumpObjStackEntry (
     ACPI_OBJECT_INTERNAL    *EntryDesc)
 {
-    char                    *OutString = NULL;
     UINT8                   *Buf = NULL;
     UINT16                  Length;
 
@@ -274,370 +273,378 @@ AmlDumpObjStackEntry (
 
     if (!EntryDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlDumpObjStackEntry: ***NULL stack entry pointer***\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        DEBUG_PRINT (ACPI_ERROR, ("AmlDumpObjStackEntry: *** Null stack entry pointer\n"));
+        return_ACPI_STATUS (AE_OK);
     }
 
-    else if (IS_NS_HANDLE (EntryDesc))
+    if (IS_NS_HANDLE (EntryDesc))
     {
-        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Name \n"));
-        DUMP_ENTRY (EntryDesc);
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Namespace handle to NTE: \n"));
+        DUMP_ENTRY (EntryDesc, ACPI_INFO);
+        return_ACPI_STATUS (AE_OK);
     }
 
-    else
+    if (NsIsInSystemTable (EntryDesc))
     {
-        /*  EntryDesc is valid  */
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: %p is a Pcode pointer\n",
+                        EntryDesc));
+        return_ACPI_STATUS (AE_OK);
+    }
 
-        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Entry %p - ", EntryDesc));
 
-        switch (EntryDesc->Type)
+    /*  EntryDesc is a valid object  */
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: %p ", EntryDesc));
+
+    switch (EntryDesc->Type)
+    {
+    case TYPE_Lvalue:
+
+        switch (EntryDesc->Lvalue.OpCode)
         {
-        case TYPE_Lvalue:
+        case AML_ZeroOp:
 
-            switch (EntryDesc->Lvalue.OpCode)
-            {
-            case AML_ZeroOp:
-
-                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Zero\n"));
-                break;
-
-
-            case AML_OneOp:
-
-                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: One\n"));
-                break;
-
-
-            case AML_OnesOp:
-
-                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Ones\n"));
-                break;
-
-
-            case Debug1:
-
-                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Debug\n"));
-                break;
-
-
-            case AML_NameOp:
-
-                NsDumpPathname (EntryDesc->Lvalue.Object, "Lvalue: Name: ", 
-                                ACPI_INFO, _COMPONENT);
-                DUMP_ENTRY (EntryDesc->Lvalue.Object);
-                break;
- 
-
-            case AML_IndexOp:
-
-                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Index %p\n",
-                            EntryDesc->Lvalue.Object));
-                break;
- 
-
-            case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
-            case AML_Arg4: case AML_Arg5: case AML_Arg6:
-
-                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Arg%d",
-                            EntryDesc->Lvalue.OpCode - AML_Arg0));
-
-                if (TYPE_Number == EntryDesc->Type)
-                {
-                    /* Value is a Number */
-                
-                    DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]", 
-                                                EntryDesc->Number.Value));
-                }
-
-                DEBUG_PRINT_RAW (ACPI_INFO, ("\n")); 
-                break;
-
-
-            case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
-            case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
-
-                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Local%d",
-                            EntryDesc->Lvalue.OpCode - AML_Local0));
-
-                if (TYPE_Number == EntryDesc->Type)
-                {
-
-                    /* Value is a Number */
-                
-                    DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]", 
-                                                EntryDesc->Number.Value));
-                }
-
-                DEBUG_PRINT_RAW (ACPI_INFO, ("\n")); 
-                break;
-
-
-            default:
-
-                /*  unknown opcode  */
-
-                REPORT_ERROR ("AmlDumpObjStackEntry: Unknown AML Opcode");
-                break;
-
-            }
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Zero\n"));
             break;
 
 
-        case TYPE_Buffer:
+        case AML_OneOp:
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Buffer[%d] seq %lx @ %p \n",
-                        EntryDesc->Buffer.Length, EntryDesc->Buffer.Sequence,
-                        EntryDesc->Buffer.Pointer));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: One\n"));
+            break;
 
-            Length = EntryDesc->Buffer.Length;
 
-            if (Length > 64)
+        case AML_OnesOp:
+
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Ones\n"));
+            break;
+
+
+        case Debug1:
+
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Debug\n"));
+            break;
+
+
+        case AML_NameOp:
+
+            NsDumpPathname (EntryDesc->Lvalue.Object, "Lvalue: Name: ", 
+                            ACPI_INFO, _COMPONENT);
+            DUMP_ENTRY (EntryDesc->Lvalue.Object, ACPI_INFO);
+            break;
+
+
+        case AML_IndexOp:
+
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Index %p\n",
+                        EntryDesc->Lvalue.Object));
+            break;
+
+
+        case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
+        case AML_Arg4: case AML_Arg5: case AML_Arg6:
+
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Arg%d",
+                        EntryDesc->Lvalue.OpCode - AML_Arg0));
+
+            if (TYPE_Number == EntryDesc->Type)
             {
-                Length = 64;
+                /* Value is a Number */
+            
+                DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]", 
+                                            EntryDesc->Number.Value));
             }
 
-            /* Debug only -- dump the buffer contents */
+            DEBUG_PRINT_RAW (ACPI_INFO, ("\n")); 
+            break;
 
-            if (EntryDesc->Buffer.Pointer)
+
+        case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
+        case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
+
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Local%d",
+                        EntryDesc->Lvalue.OpCode - AML_Local0));
+
+            if (TYPE_Number == EntryDesc->Type)
             {
-                DEBUG_PRINT_RAW (ACPI_INFO, ("Buffer Contents: "));
-                               
-                for (Buf = EntryDesc->Buffer.Pointer; Length--; ++Buf)
-                {
-                    DEBUG_PRINT_RAW (ACPI_INFO,(Length ? " %02x" : " %02x", *Buf));
-                }
-                DEBUG_PRINT_RAW (ACPI_INFO,("\n"));
+
+                /* Value is a Number */
+            
+                DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]", 
+                                            EntryDesc->Number.Value));
             }
 
-            break;
-
-
-        case TYPE_Number:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Number 0x%lx\n",
-                        EntryDesc->Number.Value));
-            break;
-
-
-        case TYPE_If:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("If [Number] 0x%lx\n",
-                        EntryDesc->Number.Value));
-            break;
-
-
-        case TYPE_While:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("While [Number] 0x%lx\n",
-                        EntryDesc->Number.Value));
-            break;
-
-
-        case TYPE_Package:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Package[%d] @ %p\n",
-                        EntryDesc->Package.Count, EntryDesc->Package.Elements));
-
-
-            /* 
-             * If elements exist, package vector pointer is valid,
-             * and debug_level exceeds 1, dump package's elements.
-             */
-            if (EntryDesc->Package.Count &&
-                EntryDesc->Package.Elements &&
-                GetDebugLevel () > 1)
-            {
-                ACPI_OBJECT_INTERNAL**Element;
-                UINT16              ElementIndex;
-
-                for (ElementIndex = 0, Element = EntryDesc->Package.Elements;
-                      ElementIndex < EntryDesc->Package.Count;
-                      ++ElementIndex, ++Element)
-                {
-                    AmlDumpObjStackEntry (*Element);
-                }
-            }
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("\n"));
-
-            break;
-
-
-        case TYPE_Region:
-
-            if (EntryDesc->Region.SpaceId >= NUM_REGION_TYPES)
-            {
-                OutString = "**UNRECOGNIZED**";
-            }
-            else
-            {
-                OutString = RegionTypes[EntryDesc->Region.SpaceId];
-            }
-
-            /* 
-             * If the address and length have not been evaluated,
-             * don't print them.
-             */
-            if (0 == EntryDesc->Region.DataValid)
-            {
-                DEBUG_PRINT_RAW (ACPI_INFO, ("Region %s\n", OutString));
-            }
-            else
-            {
-                DEBUG_PRINT_RAW (ACPI_INFO,
-                            ("Region %s base %08lx Length %08lx\n", OutString,
-                            EntryDesc->Region.Address, EntryDesc->Region.Length));
-            }
-            break;
-
-
-        case TYPE_String:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("String[%d] @ %p\n",
-                        EntryDesc->String.Length, EntryDesc->String.Pointer));
-            break;
-
-
-        case TYPE_BankField:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("BankField\n"));
-            break;
-
-
-        case TYPE_DefField:
-
-            DEBUG_PRINT_RAW (ACPI_INFO,
-                        ("DefField: %d bits acc %d lock %d update %d at byte %lx bit %d of \n",
-                        EntryDesc->Field.Length,   EntryDesc->Field.Access,
-                        EntryDesc->Field.LockRule, EntryDesc->Field.UpdateRule,
-                        EntryDesc->Field.Offset,   EntryDesc->Field.BitOffset));
-            DUMP_STACK_ENTRY (EntryDesc->Field.Container);
-            break;
-
-
-        case TYPE_IndexField:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("IndexField\n"));
-            break;
-
-
-        case TYPE_FieldUnit:
-
-            DEBUG_PRINT_RAW (ACPI_INFO,
-                        ("FieldUnit: %d bits acc %d lock %d update %d at byte %lx bit %d of \n",
-                        EntryDesc->FieldUnit.Length,   EntryDesc->FieldUnit.Access,
-                        EntryDesc->FieldUnit.LockRule, EntryDesc->FieldUnit.UpdateRule,
-                        EntryDesc->FieldUnit.Offset,   EntryDesc->FieldUnit.BitOffset));
-
-            if (!EntryDesc->FieldUnit.Container)
-            {
-                DEBUG_PRINT (ACPI_INFO, ("*NULL* \n"));
-            }
-            else if (TYPE_Buffer != EntryDesc->FieldUnit.Container->Type)
-            {
-                DEBUG_PRINT_RAW (ACPI_INFO, ("*not a Buffer* \n"));
-            }
-            else
-            {
-                if (EntryDesc->FieldUnit.Sequence
-                        != EntryDesc->FieldUnit.Container->Buffer.Sequence)
-                {
-                    DEBUG_PRINT_RAW (ACPI_INFO,
-                                  ("[stale] %lx \n", EntryDesc->FieldUnit.Sequence));
-                }
-
-                DUMP_STACK_ENTRY (EntryDesc->FieldUnit.Container);
-            }
-            break;
-
-
-        case TYPE_Event:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Event\n"));
-            break;
-
-
-        case TYPE_Method:
-
-            DEBUG_PRINT_RAW (ACPI_INFO,
-                        ("Method(%d) @ %p:%lx:%lx\n",
-                        EntryDesc->Method.ParamCount, EntryDesc->Method.AcpiTable,
-                        EntryDesc->Method.Pcode, EntryDesc->Method.PcodeLength));
-            break;
-
-
-        case TYPE_Mutex:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Mutex\n"));
-            break;
-
-
-        case TYPE_Device:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Device\n"));
-            break;
-
-
-        case TYPE_Power:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Power\n"));
-            break;
-
-
-        case TYPE_Processor:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Processor\n"));
-            break;
-
-
-        case TYPE_Thermal:
-
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Thermal\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("\n")); 
             break;
 
 
         default:
-            /*  unknown EntryDesc->Type value    */
 
-            REPORT_ERROR ("AmlDumpObjStackEntry: Unknown Type");
-            
-            if (AML_UNASSIGNED != Aml[(INT32) EntryDesc->Type])
-            {
-                DEBUG_PRINT_RAW (ACPI_ERROR,
-                              ("AmlDumpObjStackEntry: Unhandled opcode (AML %s) \n", 
-                              ShortOps[Aml[(INT32) EntryDesc->Type]]));
-            }
+            /*  unknown opcode  */
 
-
-            /* !!!! POINTER STUFF COMMENTED OUT !!!! */
-
-/*
- *           if (PtrOffset (EntryDesc) > sizeof (ACPI_OBJECT_INTERNAL))
- *           {
- *               --EntryDesc;
- *           }
- *           else
- *           {
- *               EntryDesc = (ACPI_OBJECT_INTERNAL *) (((char *) EntryDesc) - PtrOffset (EntryDesc));
- *           }
- */
-
-            
-            /* !!! FLAT MODEL EQUIVALENT !!! */
-
-            /* Back up to previous entry ?? */
-
-            EntryDesc--;
-
-
-            /* TBD:  Change to use dump object routine !! */
-
-            DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
-            DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
-            DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
+            REPORT_ERROR ("AmlDumpObjStackEntry: Unknown AML Opcode");
             break;
 
         }
+        break;
+
+
+    case TYPE_Buffer:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Buffer[%d] seq %lx @ %p \n",
+                    EntryDesc->Buffer.Length, EntryDesc->Buffer.Sequence,
+                    EntryDesc->Buffer.Pointer));
+
+        Length = EntryDesc->Buffer.Length;
+
+        if (Length > 64)
+        {
+            Length = 64;
+        }
+
+        /* Debug only -- dump the buffer contents */
+
+        if (EntryDesc->Buffer.Pointer)
+        {
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Buffer Contents: "));
+                           
+            for (Buf = EntryDesc->Buffer.Pointer; Length--; ++Buf)
+            {
+                DEBUG_PRINT_RAW (ACPI_INFO,(Length ? " %02x" : " %02x", *Buf));
+            }
+            DEBUG_PRINT_RAW (ACPI_INFO,("\n"));
+        }
+
+        break;
+
+
+    case TYPE_Number:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Number 0x%lx\n",
+                    EntryDesc->Number.Value));
+        break;
+
+
+    case TYPE_If:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("If [Number] 0x%lx\n",
+                    EntryDesc->Number.Value));
+        break;
+
+
+    case TYPE_While:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("While [Number] 0x%lx\n",
+                    EntryDesc->Number.Value));
+        break;
+
+
+    case TYPE_Package:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Package[%d] @ %p\n",
+                    EntryDesc->Package.Count, EntryDesc->Package.Elements));
+
+
+        /* 
+         * If elements exist, package vector pointer is valid,
+         * and debug_level exceeds 1, dump package's elements.
+         */
+        if (EntryDesc->Package.Count &&
+            EntryDesc->Package.Elements &&
+            GetDebugLevel () > 1)
+        {
+            ACPI_OBJECT_INTERNAL**Element;
+            UINT16              ElementIndex;
+
+            for (ElementIndex = 0, Element = EntryDesc->Package.Elements;
+                  ElementIndex < EntryDesc->Package.Count;
+                  ++ElementIndex, ++Element)
+            {
+                AmlDumpObjStackEntry (*Element);
+            }
+        }
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("\n"));
+
+        break;
+
+
+    case TYPE_Region:
+
+        if (EntryDesc->Region.SpaceId >= NUM_REGION_TYPES)
+        {
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Region **** Unknown ID=0x%X",
+                                EntryDesc->Region.SpaceId));
+        }
+        else
+        {
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Region %s",
+                                RegionTypes[EntryDesc->Region.SpaceId]));
+        }
+
+        /* 
+         * If the address and length have not been evaluated,
+         * don't print them.
+         */
+        if (0 == EntryDesc->Region.DataValid)
+        {
+            DEBUG_PRINT_RAW (ACPI_INFO, ("\n"));
+        }
+        else
+        {
+            DEBUG_PRINT_RAW (ACPI_INFO,
+                        (" base %p Length 0x%X\n",
+                        EntryDesc->Region.Address, EntryDesc->Region.Length));
+        }
+        break;
+
+
+    case TYPE_String:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("String[%d] @ %p\n",
+                    EntryDesc->String.Length, EntryDesc->String.Pointer));
+        break;
+
+
+    case TYPE_BankField:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("BankField\n"));
+        break;
+
+
+    case TYPE_DefField:
+
+        DEBUG_PRINT_RAW (ACPI_INFO,
+                    ("DefField: bits=%d  acc=%d lock=%d update=%d at byte=%lx bit=%d of below:\n",
+                    EntryDesc->Field.Length,   EntryDesc->Field.Access,
+                    EntryDesc->Field.LockRule, EntryDesc->Field.UpdateRule,
+                    EntryDesc->Field.Offset,   EntryDesc->Field.BitOffset));
+        DUMP_STACK_ENTRY (EntryDesc->Field.Container);
+        break;
+
+
+    case TYPE_IndexField:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("IndexField\n"));
+        break;
+
+
+    case TYPE_FieldUnit:
+
+        DEBUG_PRINT_RAW (ACPI_INFO,
+                    ("FieldUnit: %d bits acc %d lock %d update %d at byte %lx bit %d of \n",
+                    EntryDesc->FieldUnit.Length,   EntryDesc->FieldUnit.Access,
+                    EntryDesc->FieldUnit.LockRule, EntryDesc->FieldUnit.UpdateRule,
+                    EntryDesc->FieldUnit.Offset,   EntryDesc->FieldUnit.BitOffset));
+
+        if (!EntryDesc->FieldUnit.Container)
+        {
+            DEBUG_PRINT (ACPI_INFO, ("*NULL* \n"));
+        }
+        else if (TYPE_Buffer != EntryDesc->FieldUnit.Container->Type)
+        {
+            DEBUG_PRINT_RAW (ACPI_INFO, ("*not a Buffer* \n"));
+        }
+        else
+        {
+            if (EntryDesc->FieldUnit.Sequence
+                    != EntryDesc->FieldUnit.Container->Buffer.Sequence)
+            {
+                DEBUG_PRINT_RAW (ACPI_INFO,
+                              ("[stale] %lx \n", EntryDesc->FieldUnit.Sequence));
+            }
+
+            DUMP_STACK_ENTRY (EntryDesc->FieldUnit.Container);
+        }
+        break;
+
+
+    case TYPE_Event:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Event\n"));
+        break;
+
+
+    case TYPE_Method:
+
+        DEBUG_PRINT_RAW (ACPI_INFO,
+                    ("Method(%d) @ %p:%lx:%lx\n",
+                    EntryDesc->Method.ParamCount, EntryDesc->Method.AcpiTable,
+                    EntryDesc->Method.Pcode, EntryDesc->Method.PcodeLength));
+        break;
+
+
+    case TYPE_Mutex:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Mutex\n"));
+        break;
+
+
+    case TYPE_Device:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Device\n"));
+        break;
+
+
+    case TYPE_Power:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Power\n"));
+        break;
+
+
+    case TYPE_Processor:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Processor\n"));
+        break;
+
+
+    case TYPE_Thermal:
+
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Thermal\n"));
+        break;
+
+
+    default:
+        /*  unknown EntryDesc->Type value    */
+
+        REPORT_ERROR ("AmlDumpObjStackEntry: Unknown Type");
+        
+        if (AML_UNASSIGNED != Aml[(INT32) EntryDesc->Type])
+        {
+            DEBUG_PRINT_RAW (ACPI_ERROR,
+                          ("AmlDumpObjStackEntry: Unhandled opcode (AML %s) \n", 
+                          ShortOps[Aml[(INT32) EntryDesc->Type]]));
+        }
+
+
+        /* !!!! POINTER STUFF COMMENTED OUT !!!! */
+
+/*
+*           if (PtrOffset (EntryDesc) > sizeof (ACPI_OBJECT_INTERNAL))
+*           {
+*               --EntryDesc;
+*           }
+*           else
+*           {
+*               EntryDesc = (ACPI_OBJECT_INTERNAL *) (((char *) EntryDesc) - PtrOffset (EntryDesc));
+*           }
+*/
+
+        
+        /* !!! FLAT MODEL EQUIVALENT !!! */
+
+        /* Back up to previous entry ?? */
+
+        EntryDesc--;
+
+
+        /* TBD:  Change to use dump object routine !! */
+
+        DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
+        DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
+        DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
+        break;
+
     }
  
     return_ACPI_STATUS (AE_OK);

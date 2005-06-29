@@ -570,7 +570,7 @@ AmlAccessNamedField (
 
         DEBUG_PRINT (ACPI_INFO,
                     ("AmlAccessNamedField: DefField type and ValPtr OK in nte \n"));
-        DUMP_ENTRY (NamedField);
+        DUMP_ENTRY (NamedField, ACPI_INFO);
 
         DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, ObjDesc->Type=%d\n",
                     ObjDesc, ObjDesc->Type));
