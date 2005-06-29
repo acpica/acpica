@@ -170,6 +170,7 @@ CmBuildExternalSimpleObject (
 
     FUNCTION_TRACE ("CmBuildExternalSimpleObject");
 
+    MEMSET(ExternalObj , 0 , sizeof(ACPI_OBJECT));
 
     /* In general, the external object will be the same type as the internal object */
 
@@ -216,7 +217,20 @@ CmBuildExternalSimpleObject (
         ExternalObj->Reference.Handle = InternalObj->Lvalue.Nte;
         break;
 
-        
+
+    case ACPI_TYPE_Processor:
+
+        ExternalObj->Processor.ProcId = InternalObj->Processor.ProcId;
+        ExternalObj->Processor.PBLKAddress = InternalObj->Processor.PBLKAddress;
+        ExternalObj->Processor.PBLKLength = InternalObj->Processor.PBLKLength;
+        break;
+
+    case ACPI_TYPE_Power:
+
+        ExternalObj->PowerResource.SystemLevel = InternalObj->PowerResource.SystemLevel;
+        ExternalObj->PowerResource.ResourceOrder = InternalObj->PowerResource.ResourceOrder;
+        break;
+
     default:
         return_ACPI_STATUS (AE_RETURN_VALUE);
         break;
