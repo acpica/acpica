@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -1015,7 +1015,7 @@ AnMethodAnalysisWalkEnd (
  *
  * RETURN:      none
  *
- * DESCRIPTION: Descending callback for the typing walk.  
+ * DESCRIPTION: Descending callback for the typing walk.
  *
  ******************************************************************************/
 
@@ -1074,7 +1074,7 @@ AnMethodTypingWalkEnd (
                  * The method is untyped at this time (typically a forward reference).
                  * We must recursively type the method here
                  */
-                TrWalkParseTree ((ASL_PARSE_NODE *) Node->Child->NsNode->Object, 
+                TrWalkParseTree ((ASL_PARSE_NODE *) Node->Child->NsNode->Object,
                         ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
                         AnMethodTypingWalkEnd, NULL);
 
@@ -1362,7 +1362,6 @@ AnOperandTypecheckWalkEnd (
 
     return (AE_OK);
 }
-
 
 
 /*******************************************************************************

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.37 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -116,7 +116,6 @@
  *****************************************************************************/
 
 #include <stdio.h>
-#include <io.h>
 #include "aslcompiler.h"
 #include "acnamesp.h"
 #include "acdebug.h"
@@ -132,11 +131,10 @@
 */
 
 
-
 /*
  * Stubs to simplify linkage to the
  * ACPI Namespace Manager (Unused functions).
- * TBD: These functions should be split out so 
+ * TBD: These functions should be split out so
  * that these stubs are no longer needed.
  */
 void
@@ -150,6 +148,13 @@ AcpiTbDeleteAcpiTables (void)
 {
 }
 
+ACPI_STATUS
+AeLocalGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+{
+    return AE_ERROR;
+}
 
 void
 AcpiExDumpOperands (

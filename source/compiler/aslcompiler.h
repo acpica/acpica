@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.84 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -164,11 +164,11 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2034"
-#define CompilerCreatorRevision     0x02002034  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2035"
+#define CompilerCreatorRevision     0x02002035  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
-#define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
+#define CompilerCopyright           "Copyright (C) 2000 - 2002 Intel Corporation"
 #define CompilerCompliance          "ACPI 2.0"
 #define CompilerName                "iasl"
 #define CompilerCreatorId           "INTL"
@@ -455,7 +455,7 @@ ACPI_OBJECT_TYPE
 AslMapNamedOpcodeToDataType (
     UINT16                  Opcode);
 
-/* 
+/*
  * asltransform - parse tree transformations
  */
 
