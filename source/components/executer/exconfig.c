@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -169,7 +169,8 @@ AcpiAmlExecLoadTable (
     for (i = 0; i < sizeof (ACPI_TABLE_HEADER); i++)
     {
         Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ,
-                        i, 8, (UINT32 *) ((UINT8 *) &TableHeader + i));
+                            (ACPI_PHYSICAL_ADDRESS) i, 8, 
+                            (UINT32 *) ((UINT8 *) &TableHeader + i));
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -195,7 +196,8 @@ AcpiAmlExecLoadTable (
     for (i = 0; i < TableHeader.Length; i++)
     {
         Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ,
-                        i, 8, (UINT32 *) (TableDataPtr + i));
+                            (ACPI_PHYSICAL_ADDRESS)i, 8, 
+                            (UINT32 *) (TableDataPtr + i));
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
