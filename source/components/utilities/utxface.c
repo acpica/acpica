@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -330,6 +330,7 @@ AcpiEnableSubsystem (
         }
     }
 
+    AcpiGbl_StartupFlags |= ACPI_INITIALIZED_OK;
 
     return_ACPI_STATUS (Status);
 }
@@ -387,6 +388,34 @@ AcpiTerminate (void)
     AcpiOsTerminate ();
 
     return_ACPI_STATUS (AE_OK);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiSubsystemStatus
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status of the ACPI subsystem
+ *
+ * DESCRIPTION: Other drivers that use the ACPI subsystem should call this
+ *              before making any other calls, to ensure the subsystem initial-
+ *              ized successfully.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiSubsystemStatus (void)
+{
+    if (AcpiGbl_StartupFlags & ACPI_INITIALIZED_OK)
+    {
+        return (AE_OK);
+    }
+    else
+    {
+        return (AE_ERROR);
+    }
 }
 
 
