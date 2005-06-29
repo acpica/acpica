@@ -145,27 +145,62 @@ EvInstallDefaultAddressSpaceHandlers (
 
     FUNCTION_TRACE ("EvInstallDefaultAddressSpaceHandlers");
 
+    /*
+     * NOTE:    All address spaces (PCI Config, EC, SMBus) are scope dependent
+     *          and registration must occur for a specific device.  In the case
+     *          system memory and IO address spaces there is currently no device
+     *          associated with the address space.  For these we use the root.
+     */
 
-    Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, ADDRESS_SPACE_SYSTEM_MEMORY, ACPI_DEFAULT_HANDLER, NULL);
+    Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject,
+                ADDRESS_SPACE_SYSTEM_MEMORY, ACPI_DEFAULT_HANDLER, NULL, NULL);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, ADDRESS_SPACE_SYSTEM_IO, ACPI_DEFAULT_HANDLER, NULL);
+    Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject,
+                ADDRESS_SPACE_SYSTEM_IO, ACPI_DEFAULT_HANDLER, NULL, NULL);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
     /*
-     * NOTE: All other address spaces (PCI Config, EC, SMBus) are scope-
-     *       dependent and registration must occur when the OS loads 
-     *       a driver for the specific device.  This is due to the fact
-     *       that different handlers can be installed for a single 
-     *       address space (e.g. two PCI-to-PCI bridges will have different
-     *       bus numbers).
+     *  Install PCI config space handler for all PCI root bridge.  A PCI root
+     *  bridge is found by searching for devices containing a HID with the value
+     *  EISAID("PNP0A03")
+     *
+     *  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG
+     *
+     *  For now, I am hardcoding the installation of the PCI buses in.  This 
+     *  needs to be fixed ASAP.
+     *
+     *  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG
      */
+
+    {
+        char *PCIBus_devices[] = {
+            "\\_SB_.PCI0", "\\_SB_.PCI1", "\\_SB_.PCI2", "\\_SB_.CBN", NULL };
+        NATIVE_UINT i = 0;
+
+        ACPI_HANDLE PCIBusHandle;
+
+        while (PCIBus_devices[i]) {
+            Status = AcpiGetHandle (NULL, PCIBus_devices[i], &PCIBusHandle);
+            if (ACPI_SUCCESS(Status))
+            {
+                Status = AcpiInstallAddressSpaceHandler (PCIBusHandle,
+                            ADDRESS_SPACE_PCI_CONFIG, ACPI_DEFAULT_HANDLER, NULL, NULL);
+                if (ACPI_FAILURE (Status))
+                {
+                    return_ACPI_STATUS (Status);
+                }
+
+            }
+            i++;
+        }
+    } /* PCI Address space handler install */
 
     return_ACPI_STATUS (Status);
 }
@@ -246,7 +281,8 @@ EvExecuteRegMethod (
  *
  * FUNCTION:    EvAddressSpaceDispatch
  *
- * PARAMETERS:  SpaceId             - ID of the address space (0-255)
+ * PARAMETERS:  RegionObj           - internal region object
+ *              SpaceId             - ID of the address space (0-255)
  *              Function            - Read or Write operation
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, or 32)
@@ -261,7 +297,7 @@ EvExecuteRegMethod (
 
 ACPI_STATUS
 EvAddressSpaceDispatch (
-    ACPI_OBJECT_INTERNAL   *Obj,
+    ACPI_OBJECT_INTERNAL   *RegionObj,
     UINT32                  Function,
     UINT32                  Address,
     UINT32                  BitWidth,
@@ -269,84 +305,94 @@ EvAddressSpaceDispatch (
 {
     ACPI_STATUS             Status;
     ADDRESS_SPACE_HANDLER   Handler;
+    REGION_SETUP_FUNCTION   RegionSetup;
     ACPI_OBJECT_INTERNAL    *HandlerDesc;
-    PCI_HANDLER_CONTEXT     PCIContext;
-    void                   *Context;
-    UINT16                  Flags;
-
+    void                   *RegionContext;
 
     FUNCTION_TRACE ("EvAddressSpaceDispatch");
 
+    /*
+     *  Check for an installed handler
+     */
+    HandlerDesc = RegionObj->Region.AddrHandler;
 
-    /* Check for an installed handler */
-
-    if (!Obj->Region.AddrHandler)
+    if (!HandlerDesc)
     {
-        DEBUG_PRINT (TRACE_OPREGION, ("Dispatch address access region 0x%X, no handler\n", Obj));
+        DEBUG_PRINT (TRACE_OPREGION,
+            ("Dispatch address access region 0x%X, no handler\n", RegionObj));
         return_ACPI_STATUS(AE_EXIST);
     }
 
+    /*
+     *  It may be the case that the region has never been initialized
+     *  Some types of regions require special init code
+     */
+    if (!(RegionObj->Region.RegionFlags & REGION_INITIALIZED)) {
+        /*
+         *  This region has not been initialized yet, do it
+         */
+        RegionSetup = HandlerDesc->AddrHandler.RegionSetupFunction;
+        if (!RegionSetup) {
+            /*
+             *  Bad news, no init routine and not init'd
+             */
+		    DEBUG_PRINT (ACPI_ERROR,
+                ("EvAddressSpaceDispatch: No init routine for region %X\n", 
+                  RegionObj));
+            return_ACPI_STATUS(AE_UNKNOWN_STATUS);
+        }
+        Status = RegionSetup (  RegionObj,
+                                ACPI_REGION_ACTIVATE,
+                                HandlerDesc->AddrHandler.InstallTimeContext,
+                                &RegionContext);
+        /*
+         *  Init routine may fail
+         */
+	    if (ACPI_FAILURE (Status))
+	    {
+		    DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from region init, SpaceID %d\n", 
+						    CmFormatException (Status), RegionObj->Region.SpaceId));
+            return_ACPI_STATUS(Status);
+	    }
+
+        /*
+         *  Save the returned context for use in all accesses to the region
+         */
+        HandlerDesc->AddrHandler.Context = RegionContext;
+    }
+
+    /*
+     *  We have everything we need, begin the process
+     */
+    Handler = HandlerDesc->AddrHandler.Handler;
+
+    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
+            ("Addrhandler 0x%X (0x%X), Address 0x%X\n", 
+             RegionObj->Region.AddrHandler->AddrHandler, Handler, Address));
+
+    if (!(HandlerDesc->AddrHandler.Flags & ADDR_HANDLER_DEFAULT_INSTALLED))
+    {
+        /*
+         *  For handlers other than the default (supplied) handlers, we must
+         *  exit the interpreter because the handler *might* block -- we don't
+         *  know what it will do, so we can't hold the lock on the intepreter.
+         */
+        AmlExitInterpreter();
+    }
+
     /* 
-     * Invoke the handler.  
-     * Value of "Value" is used in case this is a write operation 
+     *  Invoke the handler.
      */
 
-    HandlerDesc = Obj->Region.AddrHandler;
-
-    Handler = HandlerDesc->AddrHandler.Handler;
-	/*
-	 * MCW 3/23/00 Modified Context to point to the internal object associated
-	 *				with this invocation.
-     *
-     * TBD: This needs to be done differently. We should add an ACPI_OBJECT_INTERNAL
-     *      to the handler calls.
-	 */
-    // Context = Obj;
-	Context = HandlerDesc->AddrHandler.Context;
-    
-	Flags   = HandlerDesc->AddrHandler.Hflags;
-
-    if (Obj->Region.SpaceId == ADDRESS_SPACE_PCI_CONFIG)
-    {
-        /*
-         *  TBD: This is pretty bogus.  There's got to be a better way
-         *
-         *  For PCI Config space access, we have to pass the device and function
-         *  number too.  The region object has this since it will vary from
-         *  region to region.
-         */
-        Context = &PCIContext;
-        PCIContext.SegNum     = HIWORD(HandlerDesc->AddrHandler.Context);
-        PCIContext.BusNum     = LOWORD(HandlerDesc->AddrHandler.Context);
-        PCIContext.DevNum     = HIWORD(Obj->Region.RegionData);
-        PCIContext.FuncNum    = LOWORD(Obj->Region.RegionData);
-    }
-
-    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO), ("Addrhandler 0x%X (0x%X), Address 0x%X\n", 
-                    Obj->Region.AddrHandler->AddrHandler, Handler, Address));
-
-    if (!(Flags & AH_DEFAULT_HANDLER))
-    {
-        /*
-         * For handlers other than the default (supplied) handlers, we must exit the interpreter
-         * because the handler *might* block -- we don't know what it will do, so we can't
-         * hold the lock on the intepreter.
-         */
-
-        AmlExitInterpreter ();
-    }
-
-	/* Invoke the handler */
-
-    Status = Handler (Function, Address, BitWidth, Value, Context);
+    Status = Handler (Function, Address, BitWidth, Value, HandlerDesc->AddrHandler.Context);
 
 	if (ACPI_FAILURE (Status))
 	{
 		DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from handler, SpaceID %d\n", 
-						CmFormatException (Status), Obj->Region.SpaceId));
+						CmFormatException (Status), RegionObj->Region.SpaceId));
 	}
 
-    if (!(Flags & AH_DEFAULT_HANDLER))
+    if (!(HandlerDesc->AddrHandler.Flags & ADDR_HANDLER_DEFAULT_INSTALLED))
     {
         /* We just returned from a non-default handler, we must re-enter the interpreter */
 
@@ -355,7 +401,6 @@ EvAddressSpaceDispatch (
 
     return_ACPI_STATUS (Status);
 }
-
 
 /******************************************************************************
  *
@@ -378,21 +423,24 @@ EvDisassociateRegionFromHandler(
     ACPI_OBJECT_INTERNAL   *HandlerObj;
     ACPI_OBJECT_INTERNAL   *ObjDesc;
     ACPI_OBJECT_INTERNAL  **LastObjPtr;
-
+    REGION_SETUP_FUNCTION   RegionSetup;
+    void                   *RegionContext;
+    ACPI_STATUS             Status;
 
     FUNCTION_TRACE ("EvDisassociateRegionAndHandler");
 
-
-    /* Get the address handler from the region object */
+    /*
+     *  Get the address handler from the region object
+     */
 
     HandlerObj = RegionObj->Region.AddrHandler;
     if (!HandlerObj)
     {
-        /*  This guy has no handler, we're done */
-
+        /*
+         *  This guy has no handler, we're done
+         */
         return_VOID;
     }
-
 
     /*
      *  Find this region in the handler's list
@@ -422,6 +470,27 @@ EvDisassociateRegionFromHandler(
             EvExecuteRegMethod (RegionObj, 0);
 
             /*
+             *  Tell undo region prep work
+             */
+            RegionSetup = HandlerObj->AddrHandler.RegionSetupFunction;
+            Status = RegionSetup (  RegionObj,
+                                    ACPI_REGION_DEACTIVATE,
+                                    HandlerObj->AddrHandler.InstallTimeContext,
+                                    &RegionContext);
+            /*
+             *  Init routine may fail
+             */
+	        if (ACPI_FAILURE (Status))
+	        {
+		        DEBUG_PRINT (ACPI_ERROR,
+                    ("EvDisassociateRegionFromHandler: %s from region init, SpaceID %d\n", 
+					 CmFormatException (Status), RegionObj->Region.SpaceId));
+                /*
+                 *  Just ignore failures for now
+                 */
+	        }
+
+            /*
              *  Remove handler reference in the region
              *
              *  NOTE: this doesn't mean that the region goes away
@@ -431,7 +500,6 @@ EvDisassociateRegionFromHandler(
              *  If the region is on the handler's list
              *  this better be the region's handler
              */
-
             ACPI_ASSERT (RegionObj->Region.AddrHandler == HandlerObj);
 
             RegionObj->Region.AddrHandler = NULL;
@@ -454,9 +522,232 @@ EvDisassociateRegionFromHandler(
                     RegionObj, HandlerObj));
 
     return_VOID;
-    
 }
 
+/*****************************************************************************
+ * 
+ * FUNCTION:    EvSystemMemoryRegionSetup
+ *
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
+ *              HandlerContext      - Address space handler context
+ *              Returned context    - context to be used with each call to the
+ *                                    handler for this region
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Do any prep work for region handling, a nop for now
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+EvSystemMemoryRegionSetup (
+    ACPI_OBJECT_INTERNAL        *RegionObj,
+    UINT32                      Function,
+    void                        *HandlerContext,
+    void                        **ReturnContext)
+{
+    FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
+
+    if (Function == ACPI_REGION_DEACTIVATE) {
+        RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
+        *ReturnContext = NULL;
+    } else {
+        RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
+        *ReturnContext = HandlerContext;
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    EvIoSpaceRegionSetup
+ *
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
+ *              HandlerContext      - Address space handler context
+ *              Returned context    - context to be used with each call to the
+ *                                    handler for this region
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Do any prep work for region handling
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+EvIoSpaceRegionSetup (
+    ACPI_OBJECT_INTERNAL        *RegionObj,
+    UINT32                      Function,
+    void                        *HandlerContext,
+    void                        **ReturnContext)
+{
+    FUNCTION_TRACE ("EvIoSpaceRegionSetup");
+
+    if (Function == ACPI_REGION_DEACTIVATE) {
+        RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
+        *ReturnContext = NULL;
+    } else {
+        RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
+        *ReturnContext = HandlerContext;
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    EvPciConfigRegionSetup
+ *
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
+ *              HandlerContext      - Address space handler context
+ *              Returned context    - context to be used with each call to the
+ *                                    handler for this region
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Do any prep work for region handling
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+EvPciConfigRegionSetup (
+    ACPI_OBJECT_INTERNAL        *RegionObj,
+    UINT32                      Function,
+    void                        *HandlerContext,
+    void                        **ReturnContext)
+{
+    ACPI_STATUS             Status = AE_OK;
+    NATIVE_UINT             Temp;
+    PCI_HANDLER_CONTEXT    *PCIContext;
+    ACPI_OBJECT_INTERNAL   *HandlerObj;
+    NAME_TABLE_ENTRY       *SearchScope;
+
+    FUNCTION_TRACE ("EvPciConfigRegionSetup");
+
+    HandlerObj = RegionObj->Region.AddrHandler;
+
+    if(!HandlerObj) {
+        /*
+         *  No Handler ... bummer....
+         *
+         *  This cannot happen because the dispatch routine checks before
+         *  we get here, but just in case.
+         */
+        DEBUG_PRINT (TRACE_OPREGION,
+            ("Attempting to init a region 0x%X, with no handler\n", RegionObj));
+        return_ACPI_STATUS(AE_EXIST);
+    }
+
+    if (Function == ACPI_REGION_DEACTIVATE) {
+        /*
+         *  For right now we just free the allocated space
+         */
+        RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
+//        CmFree(HandlerObj->AddrHandler.Context)
+        *ReturnContext = NULL;
+        return_ACPI_STATUS (Status);
+    }
+
+    PCIContext = CmAllocate (sizeof(PCI_HANDLER_CONTEXT));
+
+    if (!PCIContext)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /*
+     *  For PCI Config space access, we have to pass the segment, bus,
+     *  device and function numbers.  This routine must acquire those.
+     */
+
+    /*
+     *  First get device and function numbers from the _ADR object
+     *  in the parent's scope.
+     */
+    ACPI_ASSERT(RegionObj->Region.Nte);
+
+    SearchScope = RegionObj->Region.Nte->ParentEntry;
+
+    Status = EvaluateNumeric (METHOD_NAME__ADR, SearchScope, &Temp);
+    /*
+     *  The default is zero, since the allocation above zeroed the data, just
+     *  do nothing on failures.
+     */
+    if (ACPI_SUCCESS (Status))
+    {
+        /*
+         *  Got it..
+         */
+        PCIContext->DevFunc = Temp;
+    }
+
+    /*
+     *  Get the _SEG and _BBN values from the device the handler is installed on
+     *
+     *  We need to get the _SEG and _BBN objects relative to the PCI BUS device.
+     *  This is the device the handler has been registered to handle.
+     */
+
+    SearchScope = HandlerObj->AddrHandler.Nte;
+
+    Status = EvaluateNumeric (METHOD_NAME__SEG, SearchScope, &Temp);
+    if (ACPI_SUCCESS (Status))
+    {
+        /*
+         *  Got it..
+         */
+        PCIContext->Seg = Temp;
+    }
+
+    Status = EvaluateNumeric (METHOD_NAME__BBN, SearchScope, &Temp);
+    if (ACPI_SUCCESS (Status))
+    {
+        /*
+         *  Got it..
+         */
+        PCIContext->Bus = Temp;
+    }
+
+    *ReturnContext = PCIContext;
+
+    RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
+    return_ACPI_STATUS (AE_OK);
+}
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    EvDefaultRegionSetup
+ *
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
+ *              HandlerContext      - Address space handler context
+ *              Returned context    - context to be used with each call to the
+ *                                    handler for this region
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Do any prep work for region handling
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+EvDefaultRegionSetup (
+    ACPI_OBJECT_INTERNAL        *RegionObj,
+    UINT32                      Function,
+    void                        *HandlerContext,
+    void                        **ReturnContext)
+{
+    FUNCTION_TRACE ("EvDefaultRegionSetup");
+
+    if (Function == ACPI_REGION_DEACTIVATE) {
+        RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
+        *ReturnContext = NULL;
+    } else {
+        RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
+        *ReturnContext = HandlerContext;
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
 
 /******************************************************************************
  *
@@ -695,9 +986,7 @@ EvInitializeRegion (
     NAME_TABLE_ENTRY       *RegEntry;
     ACPI_NAME              *RegNamePtr = (ACPI_NAME *) METHOD_NAME__REG;
 
-
     FUNCTION_TRACE ("EvInitializeRegion");
-
 
     if (!RegionObj)
     {
@@ -711,61 +1000,7 @@ EvInitializeRegion (
 
     RegionObj->Region.AddrHandler = NULL;
     RegionObj->Region.REGMethod = NULL;
-    RegionObj->Region.RegionData = 0;
-
-    /*
-     *  First, do address space specific initialization
-     */
-    switch (SpaceId)
-    {
-
-    case ADDRESS_SPACE_PCI_CONFIG:
-
-        /*
-         *  For PCI we have to get the value from the _ADR object
-         *  in the parent's scope.  In otherwords we want to find the
-         *  _ADR that is a peer to the region definition
-         */
-
-        /*
-         * TBD: release the namespace because Execute_ADR uses NS primitives
-         * that will lock it.  However, we need a better solution than this!
-         */
-
-        if (NsLocked)
-        {
-            CmReleaseMutex (MTX_NAMESPACE);
-        }
-
-        Status = Execute_ADR (Nte, &RegionObj->Region.RegionData);
-        if (ACPI_FAILURE (Status))
-        {
-            /*
-             *  We ignore the return code.  We need some value for the _ADR
-             *  field.  Some systems do not have _ADR fields in the root bridge
-             *
-             *  However, it will allow weird results if the BIOS writer
-             *  creates an opregion within the scope of a device that doesn't
-             *  have a _ADR method.
-             */
-            RegionObj->Region.RegionData = 0;
-        }
-
-        if (NsLocked)
-        {
-            CmAcquireMutex (MTX_NAMESPACE);
-        }
-
-        break;
-
-
-    default:
-
-        /*
-         *  No init required
-         */
-        break;
-    }
+    RegionObj->Region.RegionFlags = INITIAL_REGION_FLAGS;
 
     /*
      *  Find any "_REG" associated with this region definition
