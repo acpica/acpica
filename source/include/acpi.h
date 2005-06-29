@@ -14,34 +14,6 @@
  | FILENAME: acpi.h - Master include file, Publics and external data for ACPI.LIB
  |__________________________________________________________________________
  |
- | $Revision: 1.7 $
- | $Date: 2005/06/29 19:58:23 $
- | $Log: acpi.h,v $
- | Revision 1.7  2005/06/29 19:58:23  aystarik
- | Integrated with 03/99 OPSD code
- |
- | 
- | date	99.03.31.22.34.00;	author rmoore1;	state Exp;
- |
- * 
- * 7     3/31/99 2:34p Rmoore1
- * Integrated with 03/99 OPSD code
- * 
- * 6     3/11/99 4:17p Rmoore1
- * Moved major table-size constants to here
- * 
- * 5     2/12/99 10:26a Rmosgrov
- * Anti-Polish clean up
- * 
- * 4     2/02/99 4:01p Rmoore1
- * Cleanup.  Support for tables up to 48K.
- * 
- * 3     1/13/99 10:50a Grsmith1
- * First BeOS compatible check-in.
- * 
- * 2     1/11/99 4:15p Grsmith1
- * 
- * 1     1/11/99 2:10p Rmoore1
 //
 //    Rev 1.0   Feb 28 1997 08:59:22   KBRANNOC
 // Initial revision.
@@ -69,7 +41,7 @@
 #include <config.h>         /* Configuration constants */
 #include <output.h>         /* Error output and Debug macros */
 #include <acpiasm.h>        /* Assembly macros */
-#include <acpitype.h>       /* Common ACPI types */
+#include <acpitables.h>     /* ACPI table definitions */
 #include <acpiosd.h>        /* Interfaces to OS-dependent part (OSD) */
 
 
@@ -80,6 +52,14 @@
 #else
 #define ACPI_EXTERN extern
 #endif
+
+
+/* Version string */
+
+#define ACPI_LIB_VER "032"
+#define OS_ACPI_LIB_VER "F" ## ACPI_LIB_VER
+#define ACPILIB_VERSION " ACPILIB-" ## OS_ACPI_LIB_VER
+
 
 
 /* 
@@ -105,17 +85,45 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * PSDT;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * SSDT;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
 
+
+
 /*  
  * OutOfMemory is initialized to FALSE and is set to TRUE whenever
  * an ACPI.LIB allocation failure is encountered.
  */
-ACPI_EXTERN INT32                               OutOfMemory;
+ACPI_EXTERN INT32       OutOfMemory;
+
+
+
+/* Misc Globals */
+
+ACPI_EXTERN INT32       Capabilities;
+ACPI_EXTERN OSD_FILE    *fAsmFile;      /* If not null, /A output gets written here */
+ACPI_EXTERN LogHandle   LstFileHandle;  /* /L output gets written here */
+ACPI_EXTERN INT32       NameStringSize;
+ACPI_EXTERN char        *NameString;    /* Runtime AML error message communication */
+
+
+/* These must not be ACPI_EXTERN since they need explicit initialization */
+
+extern char             *AsmFile;           /* defined in acpipriv.c */
+extern char             *DsdtFile;          /* defined in acpipriv.c */
+extern char             *OutputFile;        /* defined in acpipriv.c */
+extern char             *InputFile;         /* defined in acpipriv.c */
+extern                  HardwareOverride;   /* defined in AcpiTbls.c */
+extern INT32            AcpiHook;           /* strong link that lives in acpilibv.c */
+
+
+
 
 /* Runtime error message communication */
 
-extern char WhyBuf[WHYBUF_SIZE];
-extern char *Why;
+extern char             WhyBuf[WHYBUF_SIZE];
+extern char             *Why;
 
+
+extern INT32            DebugLevel;
+extern INT32            DebugLayer;
 
 
 
