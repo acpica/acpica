@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  ******************************************************************************/
 
@@ -150,7 +150,7 @@ AcpiUtDisplayInitPathname (
     char                    *Path)
 {
     ACPI_STATUS             Status;
-    UINT32                  Length = 128;
+    ACPI_SIZE               Length = 128;
     char                    Buffer[128];
 
 

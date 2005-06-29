@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.62 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -244,7 +244,6 @@ AcpiUtValidInternalObject (
         /* The object appears to be a valid ACPI_OPERAND_OBJECT  */
 
         return (TRUE);
-        break;
 
     case ACPI_DESC_TYPE_NAMED:
 
@@ -397,9 +396,9 @@ AcpiUtDeleteObjectCache (
 ACPI_STATUS
 AcpiUtGetSimpleObjectSize (
     ACPI_OPERAND_OBJECT     *InternalObject,
-    UINT32                  *ObjLength)
+    ACPI_SIZE               *ObjLength)
 {
-    UINT32                  Length;
+    ACPI_SIZE               Length;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -423,7 +422,7 @@ AcpiUtGetSimpleObjectSize (
     {
         /* Object is a named object (reference), just return the length */
 
-        *ObjLength = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
+        *ObjLength = ROUND_UP_TO_NATIVE_WORD (Length);
         return_ACPI_STATUS (Status);
     }
 
@@ -462,25 +461,38 @@ AcpiUtGetSimpleObjectSize (
 
     case INTERNAL_TYPE_REFERENCE:
 
-        /*
-         * The only type that should be here is internal opcode NAMEPATH_OP -- since
-         * this means an object reference
-         */
-        if (InternalObject->Reference.Opcode != AML_INT_NAMEPATH_OP)
+        switch (InternalObject->Reference.Opcode)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Unsupported Reference opcode=%X in object %p\n",
-                InternalObject->Reference.Opcode, InternalObject));
-            Status = AE_TYPE;
-        }
+        case AML_ZERO_OP:
+        case AML_ONE_OP:
+        case AML_ONES_OP:
+        case AML_REVISION_OP:
 
-        else
-        {
+            /* These Constant opcodes will be resolved to Integers */
+
+            break;
+
+        case AML_INT_NAMEPATH_OP:
+
             /*
              * Get the actual length of the full pathname to this object.
              * The reference will be converted to the pathname to the object
              */
             Length += ROUND_UP_TO_NATIVE_WORD (AcpiNsGetPathnameLength (InternalObject->Reference.Node));
+            break;
+
+        default:
+
+            /*
+             * No other reference opcodes are supported.  
+             * Notably, Locals and Args are not supported, by this may be
+             * required eventually.
+             */
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Unsupported Reference opcode=%X in object %p\n",
+                InternalObject->Reference.Opcode, InternalObject));
+            Status = AE_TYPE;
+            break;
         }
         break;
 
@@ -500,8 +512,7 @@ AcpiUtGetSimpleObjectSize (
      * on a machine word boundary. (preventing alignment faults on some
      * machines.)
      */
-    *ObjLength = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
-
+    *ObjLength = ROUND_UP_TO_NATIVE_WORD (Length);
     return_ACPI_STATUS (Status);
 }
 
@@ -527,12 +538,12 @@ AcpiUtGetElementLength (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_PKG_INFO           *Info = (ACPI_PKG_INFO *) Context;
-    UINT32                  ObjectSpace;
+    ACPI_SIZE               ObjectSpace;
 
 
     switch (ObjectType)
     {
-    case 0:
+    case ACPI_COPY_TYPE_SIMPLE:
 
         /*
          * Simple object - just get the size (Null object/entry is handled
@@ -548,17 +559,14 @@ AcpiUtGetElementLength (
         break;
 
 
-    case 1:
-        /* Package - nothing much to do here, let the walk handle it */
+    case ACPI_COPY_TYPE_PACKAGE:
+
+        /* Package object - nothing much to do here, let the walk handle it */
 
         Info->NumPackages++;
         State->Pkg.ThisTargetObj = NULL;
         break;
-
-    default:
-        return (AE_BAD_PARAMETER);
     }
-
 
     return (Status);
 }
@@ -584,7 +592,7 @@ AcpiUtGetElementLength (
 ACPI_STATUS
 AcpiUtGetPackageObjectSize (
     ACPI_OPERAND_OBJECT     *InternalObject,
-    UINT32                  *ObjLength)
+    ACPI_SIZE               *ObjLength)
 {
     ACPI_STATUS             Status;
     ACPI_PKG_INFO           Info;
@@ -636,7 +644,7 @@ AcpiUtGetPackageObjectSize (
 ACPI_STATUS
 AcpiUtGetObjectSize(
     ACPI_OPERAND_OBJECT     *InternalObject,
-    UINT32                  *ObjLength)
+    ACPI_SIZE               *ObjLength)
 {
     ACPI_STATUS             Status;
 
