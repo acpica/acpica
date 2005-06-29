@@ -470,9 +470,12 @@ AdGetTables (
 
         Status = AfFindDsdt (&DsdtPtr, &DsdtLength);
 
-        printf ("About to dump DSDT\n");
-        AfDumpTables ();
-        printf ("Dumped DSDT\n");
+        if (ACPI_SUCCESS (Status))
+        {
+            printf ("About to dump DSDT\n");
+            AfDumpTables ();
+            printf ("Dumped DSDT\n");
+        }
 #else
         printf ("Must supply filename for ACPI tables, cannot scan memory\n");
         Status = AE_NO_ACPI_TABLES;
