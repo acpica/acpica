@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.86 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -178,7 +178,7 @@ AfInstallGpeBlock (void)
     }
 
     BlockAddress.AddressSpaceId = 0;
-    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x76543210);
+    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x8000000076540000);
 
 //    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
 
@@ -188,6 +188,10 @@ AfInstallGpeBlock (void)
     if (ACPI_SUCCESS (Status))
     {
         Status = AcpiInstallGpeBlock (Handle2, &BlockAddress, 8, 8);
+
+        AcpiInstallGpeHandler (Handle2, 8, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (Handle2, 8, ACPI_GPE_TYPE_WAKE);
+        AcpiEnableGpe (Handle2, 8, 0);
     }
 
     Status = AcpiGetHandle (NULL, "\\GPE3", &Handle3);
@@ -378,13 +382,42 @@ main (
             goto enterloop;
         }
 
-        AcpiInstallGpeHandler (NULL, 0, 0, AeGpeHandler, NULL);
 
         ReturnBuf.Length = 32;
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
         AcpiEnableEvent (ACPI_EVENT_GLOBAL, 0);
-        AcpiEnableGpe (NULL, 0, ACPI_EVENT_WAKE_ENABLE);
+
+        AcpiInstallGpeHandler (NULL, 0, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 0, ACPI_GPE_TYPE_WAKE_RUN);
+        AcpiEnableGpe (NULL, 0, ACPI_NOT_ISR);
+        AcpiRemoveGpeHandler (NULL, 0, AeGpeHandler);
+
+        AcpiInstallGpeHandler (NULL, 0, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 0, ACPI_GPE_TYPE_WAKE_RUN);
+        AcpiEnableGpe (NULL, 0, ACPI_NOT_ISR);
+
+        AcpiInstallGpeHandler (NULL, 1, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 1, ACPI_GPE_TYPE_RUNTIME);
+        AcpiEnableGpe (NULL, 1, ACPI_NOT_ISR);
+
+        AcpiInstallGpeHandler (NULL, 2, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 2, ACPI_GPE_TYPE_WAKE);
+        AcpiEnableGpe (NULL, 2, ACPI_NOT_ISR);
+
+        AcpiInstallGpeHandler (NULL, 3, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 3, ACPI_GPE_TYPE_WAKE_RUN);
+
+        AcpiInstallGpeHandler (NULL, 4, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 4, ACPI_GPE_TYPE_RUNTIME);
+
+        AcpiInstallGpeHandler (NULL, 5, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 5, ACPI_GPE_TYPE_WAKE);
+
+        AcpiInstallGpeHandler (NULL, 0x19, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 0x19, ACPI_GPE_TYPE_WAKE_RUN);
+        AcpiEnableGpe (NULL, 0x19, ACPI_NOT_ISR);
+
 
         AfInstallGpeBlock ();
     }
