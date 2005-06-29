@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.69 $
+ *              $Revision: 1.71 $
  *
  ******************************************************************************/
 
@@ -242,7 +242,7 @@ AcpiNsAttachObject (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Installing %p into Node %p [%4.4s]\n",
-        ObjDesc, Node, (char*)&Node->Name));
+        ObjDesc, Node, (char *) &Node->Name));
 
     /*
      * Must increment the new value's reference count
@@ -252,9 +252,15 @@ AcpiNsAttachObject (
 
     /* Detach an existing attached object if present */
 
-    AcpiUtRemoveReference (Node->Object);
+    if (Node->Object)
+    {
+        AcpiNsDetachObject (Node);
+    }
 
     /* Install the object and set the type, flags */
+
+    ObjDesc->Common.NextObject = Node->Object;
+
 
     Node->Object   = ObjDesc;
     Node->Type     = (UINT8) ObjectType;
@@ -288,7 +294,8 @@ AcpiNsDetachObject (
 
 
     ObjDesc = Node->Object;
-    if (!ObjDesc)
+    if (!ObjDesc    ||
+        (ObjDesc->Common.Type == INTERNAL_TYPE_DATA))
     {
         return_VOID;
     }
@@ -296,6 +303,17 @@ AcpiNsDetachObject (
     /* Clear the entry in all cases */
 
     Node->Object = NULL;
+    if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
+    {
+        Node->Object = ObjDesc->Common.NextObject;
+        if (Node->Object &&
+           (Node->Object->Common.Type != INTERNAL_TYPE_DATA))
+        {
+            Node->Object = Node->Object->Common.NextObject;
+        }
+    }
+
+
     Node->Type   = ACPI_TYPE_ANY;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object=%p Value=%p Name %4.4s\n",
@@ -319,7 +337,7 @@ AcpiNsDetachObject (
  *
  ******************************************************************************/
 
-void *
+ACPI_OPERAND_OBJECT *
 AcpiNsGetAttachedObject (
     ACPI_NAMESPACE_NODE     *Node)
 {
@@ -336,5 +354,262 @@ AcpiNsGetAttachedObject (
 
     return_PTR (Node->Object);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsAttachSecondary
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsAttachSecondary (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OPERAND_OBJECT     *ObjDesc2)
+{
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+
+
+    FUNCTION_TRACE_PTR ("AcpiNsAttachSecondary", Node);
+
+
+    ObjDesc = Node->Object;
+    if (!ObjDesc ||
+        (ObjDesc->Common.Type == INTERNAL_TYPE_DATA))
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
+
+    AcpiUtAddReference (ObjDesc2);
+    ObjDesc2->Common.NextObject = ObjDesc->Common.NextObject;
+    ObjDesc->Common.NextObject = ObjDesc2;
+
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetSecondaryObject
+ *
+ * PARAMETERS:  Node             - Parent Node to be examined
+ *
+ * RETURN:      Current value of the object field from the Node whose
+ *              handle is passed
+ *
+ ******************************************************************************/
+
+ACPI_OPERAND_OBJECT *
+AcpiNsGetSecondaryObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+    FUNCTION_TRACE_PTR ("AcpiNsGetSecondaryObject", ObjDesc);
+
+
+    if ((!ObjDesc)                                   ||
+        (ObjDesc->Common.Type == INTERNAL_TYPE_DATA) ||
+        (!ObjDesc->Common.NextObject)                ||
+        (ObjDesc->Common.NextObject->Common.Type == INTERNAL_TYPE_DATA))
+    {
+        return_PTR (NULL);
+    }
+
+    return_PTR (ObjDesc->Common.NextObject);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsDetachSecondary
+ *
+ * PARAMETERS:  Node             - Parent Node to be examined
+ *
+ * RETURN:      Current value of the object field from the Node whose
+ *              handle is passed
+ *
+ ******************************************************************************/
+
+void
+AcpiNsDetachSecondary (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+    ACPI_OPERAND_OBJECT     *SecondDesc;
+
+
+    FUNCTION_TRACE_PTR ("AcpiNsDetachSecondary", ObjDesc);
+
+
+    if ((!ObjDesc)                                   ||
+        (ObjDesc->Common.Type == INTERNAL_TYPE_DATA) ||
+        (!ObjDesc->Common.NextObject)                ||
+        (ObjDesc->Common.NextObject->Common.Type == INTERNAL_TYPE_DATA))
+    {
+        return_VOID;
+    }
+
+    SecondDesc = ObjDesc->Common.NextObject;
+    ObjDesc->Common.NextObject = SecondDesc->Common.NextObject;
+
+    AcpiUtRemoveReference (SecondDesc);
+    return_VOID;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsAttachData
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsAttachData (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OBJECT_HANDLER     Handler,
+    void                    *Data)
+{
+    ACPI_OPERAND_OBJECT     *PrevObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *DataDesc;
+
+
+
+    DataDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_DATA);
+    if (!DataDesc)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    DataDesc->Data.Handler = Handler;
+    DataDesc->Data.Pointer = Data;
+
+
+    PrevObjDesc = NULL;
+    ObjDesc = Node->Object;
+    while (ObjDesc)
+    {
+        if ((ObjDesc->Common.Type == INTERNAL_TYPE_DATA) &&
+            (ObjDesc->Data.Handler == Handler))
+        {
+            return (AE_ALREADY_EXISTS);
+        }
+
+        PrevObjDesc = ObjDesc;
+        ObjDesc = ObjDesc->Common.NextObject;
+    }
+
+    if (PrevObjDesc)
+    {
+        PrevObjDesc->Common.NextObject = DataDesc;
+    }
+    else
+    {
+        Node->Object = DataDesc;
+    }
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsDetachData
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsDetachData (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OBJECT_HANDLER     Handler)
+{
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *PrevObjDesc;
+
+
+    PrevObjDesc = NULL;
+    ObjDesc = Node->Object;
+    while (ObjDesc)
+    {
+        if ((ObjDesc->Common.Type == INTERNAL_TYPE_DATA) &&
+            (ObjDesc->Data.Handler == Handler))
+        {
+            if (PrevObjDesc)
+            {
+                PrevObjDesc->Common.NextObject = ObjDesc->Common.NextObject;
+            }
+            else
+            {
+                Node->Object = ObjDesc->Common.NextObject;
+            }
+
+            AcpiUtRemoveReference (ObjDesc);
+            return (AE_OK);
+        }
+
+        PrevObjDesc = ObjDesc;
+        ObjDesc = ObjDesc->Common.NextObject;
+    }
+
+    return (AE_NOT_FOUND);
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetAttachedData
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsGetAttachedData (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OBJECT_HANDLER     Handler,
+    void                    **Data)
+{
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+
+
+    ObjDesc = Node->Object;
+    while (ObjDesc)
+    {
+        if ((ObjDesc->Common.Type == INTERNAL_TYPE_DATA) &&
+            (ObjDesc->Data.Handler == Handler))
+        {
+            *Data = ObjDesc->Data.Pointer;
+            return (AE_OK);
+        }
+
+        ObjDesc = ObjDesc->Common.NextObject;
+    }
+
+    return (AE_NOT_FOUND);
+
+}
+
 
 
