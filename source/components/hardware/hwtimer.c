@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -138,9 +138,6 @@ ACPI_STATUS
 AcpiGetTimerResolution (
     UINT32                  *Resolution)
 {
-    ACPI_STATUS             Status;
-
-
     FUNCTION_TRACE ("AcpiGetTimerResolution");
 
 
@@ -179,9 +176,6 @@ ACPI_STATUS
 AcpiGetTimer (
     UINT32                  *Ticks)
 {
-    ACPI_STATUS             Status;
-
-
     FUNCTION_TRACE ("AcpiGetTimer");
 
 
