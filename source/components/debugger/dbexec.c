@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.46 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -117,6 +117,7 @@
 
 #include "acpi.h"
 #include "acdebug.h"
+#include "acnamesp.h"
 
 #ifdef ACPI_DEBUGGER
 
@@ -147,7 +148,7 @@ AcpiDbExecuteMethod (
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_LIST        ParamObjects;
-    ACPI_OBJECT             Params[MTH_NUM_ARGS];
+    ACPI_OBJECT             Params[ACPI_METHOD_NUM_ARGS];
     UINT32                  i;
 
 
@@ -160,7 +161,7 @@ AcpiDbExecuteMethod (
 
     if (Info->Args && Info->Args[0])
     {
-        for (i = 0; Info->Args[i] && i < MTH_NUM_ARGS; i++)
+        for (i = 0; Info->Args[i] && i < ACPI_METHOD_NUM_ARGS; i++)
         {
             Params[i].Type              = ACPI_TYPE_INTEGER;
             Params[i].Integer.Value     = ACPI_STRTOUL (Info->Args[i], NULL, 16);
@@ -283,6 +284,43 @@ AcpiDbGetOutstandingAllocations (
 }
 
 
+
+ACPI_STATUS
+AcpiDbExecutionWalk (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ACPI_BUFFER             ReturnObj;
+    ACPI_STATUS             Status;
+
+
+    ObjDesc = AcpiNsGetAttachedObject (Node);
+    if (ObjDesc->Method.ParamCount)
+    {
+        return (AE_OK);
+    }
+
+    ReturnObj.Pointer = NULL;
+    ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
+
+    AcpiNsPrintNodePathname (Node, "Execute");
+    /* Do the actual method execution */
+
+    AcpiOsPrintf ("\n");
+
+    Status = AcpiEvaluateObject (Node, NULL, NULL, &ReturnObj);
+
+    AcpiOsPrintf ("[%4.4s] returned %s\n", Node->Name.Ascii, 
+        AcpiFormatException (Status));
+
+    return (AE_OK);
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbExecute
@@ -318,15 +356,24 @@ AcpiDbExecute (
     PreviousAllocations = AcpiDbGetOutstandingAllocations ();
 #endif
 
-    AcpiGbl_DbMethodInfo.Name = Name;
-    AcpiGbl_DbMethodInfo.Args = Args;
-    AcpiGbl_DbMethodInfo.Flags = Flags;
+    if (*Name == '*')
+    {
+        (void) AcpiWalkNamespace (ACPI_TYPE_METHOD, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                    AcpiDbExecutionWalk, NULL, NULL);
+        return;
+    }
+    else
+    {
+        AcpiGbl_DbMethodInfo.Name = Name;
+        AcpiGbl_DbMethodInfo.Args = Args;
+        AcpiGbl_DbMethodInfo.Flags = Flags;
 
-    ReturnObj.Pointer = NULL;
-    ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
+        ReturnObj.Pointer = NULL;
+        ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
 
-    AcpiDbExecuteSetup (&AcpiGbl_DbMethodInfo);
-    Status = AcpiDbExecuteMethod (&AcpiGbl_DbMethodInfo, &ReturnObj);
+        AcpiDbExecuteSetup (&AcpiGbl_DbMethodInfo);
+        Status = AcpiDbExecuteMethod (&AcpiGbl_DbMethodInfo, &ReturnObj);
+    }
 
     /*
      * Allow any handlers in separate threads to complete.
