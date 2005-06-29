@@ -1,16 +1,16 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
- * Module Name: rsxface - Public interfaces to the ACPI subsystem
+ * Module Name: rsxface - Public interfaces to the resource manager
+ *              $Revision: 1.13 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -118,35 +118,34 @@
 #define __RSXFACE_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
-#include "resource.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "acresrc.h"
 
-#define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rsxface");
+#define _COMPONENT          ACPI_RESOURCES
+        MODULE_NAME         ("rsxface")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetIrqRoutingTable
  *
  * PARAMETERS:  DeviceHandle    - a handle to the Bus device we are querying
- *              OutBuffer       - a pointer to a buffer to receive the
+ *              RetBuffer       - a pointer to a buffer to receive the
  *                                current resources for the device
- *              BufferLength    - the number of bytes available in the buffer
  *
- * RETURN:      Status          - the status of the call
+ * RETURN:      Status
  *
- * DESCRIPTION: This function is called to get the IRQ routing table for a specific
- *              bus.  The caller must first acquire a handle for the desired bus.
- *              The routine table is placed in the buffer pointed to by the OutBuffer
- *              variable parameter.
+ * DESCRIPTION: This function is called to get the IRQ routing table for a
+ *              specific bus.  The caller must first acquire a handle for the
+ *              desired bus.  The routine table is placed in the buffer pointed
+ *              to by the RetBuffer variable parameter.
  *
- *              If the function fails an appropriate status will be returned and the
- *              value of OutBuffer is undefined.
+ *              If the function fails an appropriate status will be returned
+ *              and the value of RetBuffer is undefined.
  *
- *              This function attempts to execute the _PRT method contained in the
- *              object indicated by the passed DeviceHandle.
+ *              This function attempts to execute the _PRT method contained in
+ *              the object indicated by the passed DeviceHandle.
  *
  ******************************************************************************/
 
@@ -160,34 +159,54 @@ AcpiGetIrqRoutingTable  (
 
     FUNCTION_TRACE ("AcpiGetIrqRoutingTable ");
 
-    Status = AcpiRsGetPrtMethodData (DeviceHandle, RetBuffer);
 
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /*
+     * Must have a valid handle and buffer, So we have to have a handle
+     * and a return buffer structure, and if there is a non-zero buffer length
+     * we also need a valid pointer in the buffer. If it's a zero buffer length,
+     * we'll be returning the needed buffer size, so keep going.
+     */
+    if ((!DeviceHandle)         ||
+        (!RetBuffer)            ||
+        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiRsGetPrtMethodData (DeviceHandle, RetBuffer);
     return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetCurrentResources
  *
  * PARAMETERS:  DeviceHandle    - a handle to the device object for the
  *                                device we are querying
- *              OutBuffer       - a pointer to a buffer to receive the
+ *              RetBuffer       - a pointer to a buffer to receive the
  *                                current resources for the device
- *              BufferLength    - the number of bytes available in the buffer
  *
- * RETURN:      Status          - the status of the call
+ * RETURN:      Status
  *
  * DESCRIPTION: This function is called to get the current resources for a
- *              specific device.  The caller must first acquire a handle for the
- *              desired device.  The resource data is placed in the buffer pointed
- *              to by the OutBuffer variable parameter.
+ *              specific device.  The caller must first acquire a handle for
+ *              the desired device.  The resource data is placed in the buffer
+ *              pointed to by the RetBuffer variable parameter.
  *
- *              If the function fails an appropriate status will be returned and the
- *              value of OutBuffer is undefined.
+ *              If the function fails an appropriate status will be returned
+ *              and the value of RetBuffer is undefined.
  *
- *              This function attempts to execute the _CRS method contained in the
- *              object indicated by the passed DeviceHandle.
+ *              This function attempts to execute the _CRS method contained in
+ *              the object indicated by the passed DeviceHandle.
  *
  ******************************************************************************/
 
@@ -201,31 +220,51 @@ AcpiGetCurrentResources (
 
     FUNCTION_TRACE ("AcpiGetCurrentResources");
 
-    Status = AcpiRsGetCrsMethodData (DeviceHandle, RetBuffer);
+    
+    /* Ensure that ACPI has been initialized */
 
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /*
+     * Must have a valid handle and buffer, So we have to have a handle
+     * and a return buffer structure, and if there is a non-zero buffer length
+     * we also need a valid pointer in the buffer. If it's a zero buffer length,
+     * we'll be returning the needed buffer size, so keep going.
+     */
+    if ((!DeviceHandle)         ||
+        (!RetBuffer)            ||
+        ((RetBuffer->Length) && (!RetBuffer->Pointer)))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiRsGetCrsMethodData (DeviceHandle, RetBuffer);
     return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetPossibleResources
  *
  * PARAMETERS:  DeviceHandle    - a handle to the device object for the
  *                                device we are querying
- *              OutBuffer       - a pointer to a buffer to receive the
+ *              RetBuffer       - a pointer to a buffer to receive the
  *                                resources for the device
- *              BufferLength    - the number of bytes available in the buffer
  *
- * RETURN:      Status          - the status of the call
+ * RETURN:      Status
  *
  * DESCRIPTION: This function is called to get a list of the possible resources
- *              for a specific device.  The caller must first acquire a handle for the
- *              desired device.  The resource data is placed in the buffer pointed
- *              to by the OutBuffer variable.
+ *              for a specific device.  The caller must first acquire a handle
+ *              for the desired device.  The resource data is placed in the
+ *              buffer pointed to by the RetBuffer variable.
  *
- *              If the function fails an appropriate status will be returned and the
- *              value of OutBuffer is undefined.
+ *              If the function fails an appropriate status will be returned
+ *              and the value of RetBuffer is undefined.
  *
  ******************************************************************************/
 
@@ -239,27 +278,48 @@ AcpiGetPossibleResources (
 
     FUNCTION_TRACE ("AcpiGetPossibleResources");
 
-    Status = AcpiRsGetPrsMethodData (DeviceHandle, RetBuffer);
 
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /*
+     * Must have a valid handle and buffer, So we have to have a handle
+     * and a return buffer structure, and if there is a non-zero buffer length
+     * we also need a valid pointer in the buffer. If it's a zero buffer length,
+     * we'll be returning the needed buffer size, so keep going.
+     */
+    if ((!DeviceHandle)         ||
+        (!RetBuffer)            ||
+        ((RetBuffer->Length) && (!RetBuffer->Pointer)))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiRsGetPrsMethodData (DeviceHandle, RetBuffer);
     return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiSetCurrentResources
  *
  * PARAMETERS:  DeviceHandle    - a handle to the device object for the
  *                                device we are changing the resources of
- *              OutBuffer       - a pointer to a buffer containing the
+ *              InBuffer        - a pointer to a buffer containing the
  *                                resources to be set for the device
  *
- * RETURN:      Status          - the status of the call
+ * RETURN:      Status
  *
  * DESCRIPTION: This function is called to set the current resources for a
- *              specific device.  The caller must first acquire a handle for the
- *              desired device.  The resource data is passed to the routine the
- *              buffer pointed to by the InBuffer variable.
+ *              specific device.  The caller must first acquire a handle for
+ *              the desired device.  The resource data is passed to the routine
+ *              the buffer pointed to by the InBuffer variable.
  *
  ******************************************************************************/
 
@@ -273,7 +333,26 @@ AcpiSetCurrentResources (
 
     FUNCTION_TRACE ("AcpiSetCurrentResources");
 
-    Status = AcpiRsSetSrsMethodData (DeviceHandle, InBuffer);
 
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /*
+     * Must have a valid handle and buffer
+     */
+    if ((!DeviceHandle)       ||
+        (!InBuffer)           ||
+        (!InBuffer->Pointer)  ||
+        (!InBuffer->Length))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiRsSetSrsMethodData (DeviceHandle, InBuffer);
     return_ACPI_STATUS (Status);
 }
