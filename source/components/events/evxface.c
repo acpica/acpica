@@ -643,8 +643,9 @@ AcpiInstallNotifyHandler (
     /*
      *  Have a new reference for the device
      */
+/* TBRM
     CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
-
+*/
     if (Type == 0)
     {
         ObjDesc->Device.SysHandler = NotifyObj;
@@ -766,7 +767,9 @@ AcpiRemoveNotifyHandler (
     /*
      *  Remove handler reference in the device
      */
+/* TBRM
     CmUpdateObjectReference (ObjDesc, REF_DECREMENT);
+*/
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -800,8 +803,11 @@ AcpiInstallAddressSpaceHandler (
     ACPI_OBJECT_INTERNAL   *HandlerObj;
     NAME_TABLE_ENTRY       *ObjEntry;
     ACPI_STATUS             Status;
+    ACPI_OBJECT_TYPE        Type;
+
 
     FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
+
 
     /* Parameter validation */
 
@@ -839,24 +845,19 @@ AcpiInstallAddressSpaceHandler (
         switch (SpaceId)
         {
         case REGION_SystemMemory:
-            {
-                Handler = AmlSystemMemorySpaceHandler;
-                break;
-            }
+            Handler = AmlSystemMemorySpaceHandler;
+            break;
+
         case REGION_SystemIO:
-            {
-                Handler = AmlSystemIoSpaceHandler;
-                break;
-            }
+            Handler = AmlSystemIoSpaceHandler;
+            break;
+
         case REGION_PCIConfig:
-            {
-                Handler = AmlPciConfigSpaceHandler;
-                break;
-            }
+            Handler = AmlPciConfigSpaceHandler;
+            break;
+
         default:
-            {
             return_ACPI_STATUS (AE_NOT_EXIST);
-            }
         }
     }
 
@@ -878,7 +879,7 @@ AcpiInstallAddressSpaceHandler (
         while (HandlerObj)
         {
             /*
-             *  We have an Address handler, see if user request this
+             *  We have an Address handler, see if user requested this
              *  address space.
              */
             if(HandlerObj->AddrHandler.SpaceId == SpaceId)
@@ -895,22 +896,22 @@ AcpiInstallAddressSpaceHandler (
     else
     {
         DEBUG_PRINT (TRACE_OPREGION,
-            ("Creating object on device Device 0x%X while installing handler\n", 
+            ("Creating object on Device 0x%X while installing handler\n", 
                 ObjEntry));
 
-        /* ObjDesc DNE: We must create one */
+        /* ObjDesc does not exist, create one */
 
         if (ObjEntry->Type == ACPI_TYPE_Any)
         {
-            ObjDesc = CmCreateInternalObject (ACPI_TYPE_Device);
-            ObjDesc->Common.Type = ACPI_TYPE_Device;
-        }
-        else
-        {
-            ObjDesc = CmCreateInternalObject (ObjEntry->Type);
-            ObjDesc->Common.Type = ObjEntry->Type;
+            Type = ACPI_TYPE_Device;
         }
 
+        else
+        {
+            Type = ObjEntry->Type;
+        }
+
+        ObjDesc = CmCreateInternalObject (Type);
         if (!ObjDesc)
         {
             /* Descriptor allocation failure   */
@@ -918,12 +919,24 @@ AcpiInstallAddressSpaceHandler (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
+        /* Init new descriptor */
+
+        ObjDesc->Common.Type = Type;
+
         /* Attach the new object to the NTE */
 
-        Status = NsAttachObject (Device, ObjDesc, ObjDesc->Common.Type);
+        Status = NsAttachObject (Device, ObjDesc, (UINT8) Type);
         if (ACPI_FAILURE (Status))
         {
+            CmDeleteInternalObject (ObjDesc);
             return_ACPI_STATUS (Status);
+        }
+
+        /* TBD: Will this always be of type DEVICE? */
+
+        if (Type == ACPI_TYPE_Device)
+        {
+            ObjDesc->Device.Handle = Device;
         }
     }
 
@@ -966,13 +979,19 @@ AcpiInstallAddressSpaceHandler (
      *  In either case we back up and search down the remainder
      *  of the branch
      */
-    Status = EvWalkNamespace (ACPI_TYPE_Any, Device, 100, EvAddrHandlerHelper, 
+    Status = EvWalkNamespace (ACPI_TYPE_Any, Device, ACPI_INT_MAX, EvAddrHandlerHelper, 
                                 HandlerObj, NULL);
 
     /*
      *  Place this handler 1st on the list
      */
-    CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+/* TBRM
+    HandlerObj->Common.ReferenceCount = ObjDesc->Common.ReferenceCount;
+    
+    CmUpdateObjectReference (HandlerObj, REF_INCREMENT);
+
+*/
+
     ObjDesc->Device.AddrHandler = HandlerObj;
 
     return_ACPI_STATUS (AE_OK);
@@ -1090,14 +1109,16 @@ AcpiRemoveAddressSpaceHandler (
             /*
              *  Now we can actually delete the object
              */
-            CmDeleteInternalObject(HandlerObj);
+            CmDeleteInternalObject (HandlerObj);
 
             /*
              *  Remove handler reference in the device
              */
+/* TBRM
             CmUpdateObjectReference (ObjDesc, REF_DECREMENT);
-
+*/
             return_ACPI_STATUS (AE_OK);
+
         } /* found the right handler */
 
         /*
