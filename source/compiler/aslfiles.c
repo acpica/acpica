@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -441,8 +441,8 @@ FlSetLineNumber (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-    Gbl_CurrentLineNumber = Op->Asl.Value.Integer32;
-    Gbl_LogicalLineNumber = Op->Asl.Value.Integer32;
+    Gbl_CurrentLineNumber = (UINT32) Op->Asl.Value.Integer;
+    Gbl_LogicalLineNumber = (UINT32) Op->Asl.Value.Integer;
 }
 
 
