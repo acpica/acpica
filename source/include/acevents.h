@@ -117,6 +117,13 @@
 #ifndef __EVENTS_H__
 #define __EVENTS_H__
 
+typedef struct
+{
+    NATIVE_UINT      Seg;
+    NATIVE_UINT      Bus;
+    NATIVE_UINT      DevFunc;
+} PCI_HANDLER_CONTEXT;
+
 
 /* Status bits. */
 
@@ -136,21 +143,147 @@
 
 
 
-typedef struct
-{
-    UINT16      SegNum;
-    UINT16      BusNum;
-    UINT16      DevNum;
-    UINT16      FuncNum;
+/* 
+ * Evfixed - Fixed event handling
+ */
 
-} PCI_HANDLER_CONTEXT;
+ACPI_STATUS
+EvFixedEventInitialize (
+    void);
+
+UINT32
+EvFixedEventDetect (
+    void);
+
+UINT32
+EvFixedEventDispatch (
+    UINT32                  Event);
 
 
+/*
+ * Evglock - Global Lock support
+ */
+
+ACPI_STATUS
+EvAcquireGlobalLock(
+    void);
+
+void
+EvReleaseGlobalLock(
+    void);
+
+ACPI_STATUS
+EvInitGlobalLockHandler (
+    void);
 
 
+/*
+ * Evgpe - GPE handling and dispatch
+ */
+
+ACPI_STATUS
+EvGpeInitialize (
+    void);
+
+ACPI_STATUS
+EvInitGpeControlMethods (
+    void);
+
+UINT32
+EvGpeDispatch (
+    UINT32                  GpeNumber);
+
+UINT32
+EvGpeDetect (
+    void);
 
 
-/* SCI handling - evsci */
+/*
+ * Evnotify - Device Notify handling and dispatch
+ */
+
+void
+EvNotifyDispatch (
+    ACPI_HANDLE             Device, 
+    UINT32                  NotifyValue);
+
+
+/* 
+ * Evregion - Address Space handling
+ */
+
+ACPI_STATUS
+EvInstallDefaultAddressSpaceHandlers (
+    void);
+
+ACPI_STATUS
+EvAddressSpaceDispatch (
+    ACPI_OBJECT_INTERNAL   *RegionObj,
+    UINT32                  Function,
+    UINT32                  Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value);
+
+
+ACPI_STATUS
+EvAddrHandlerHelper (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context,
+    void                    **ReturnValue);
+
+void
+EvDisassociateRegionFromHandler(
+    ACPI_OBJECT_INTERNAL   *RegionObj);
+
+
+ACPI_STATUS
+EvAssociateRegionAndHandler(
+    ACPI_OBJECT_INTERNAL    *HandlerObj,
+    ACPI_OBJECT_INTERNAL    *RegionObj);
+
+
+/*
+ * Evregini - Region initialization and setup
+ */
+
+ACPI_STATUS
+EvSystemMemoryRegionSetup (
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **ReturnContext);
+
+ACPI_STATUS
+EvIoSpaceRegionSetup (
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **ReturnContext);
+
+ACPI_STATUS
+EvPciConfigRegionSetup (
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **ReturnContext);
+
+ACPI_STATUS
+EvDefaultRegionSetup (
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **ReturnContext);
+
+ACPI_STATUS
+EvInitializeRegion (
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    BOOLEAN                 NsLocked);
+
+
+/*
+ * Evsci - SCI (System Control Interrupt) handling/dispatch
+ */
     
 UINT32 
 EvInstallSciHandler (
@@ -173,97 +306,12 @@ EvTerminate (
     void);
 
 
-/* Fixed event handling - evfixed */
-
-ACPI_STATUS
-EvFixedEventInitialize (
-    void);
-
-UINT32
-EvFixedEventDetect (
-    void);
-
-UINT32
-EvFixedEventDispatch (
-    UINT32                  Event);
-
-
-/* GPE handling - evgpe */
-
-ACPI_STATUS
-EvGpeInitialize (
-    void);
-
-ACPI_STATUS
-EvInitGpeControlMethods (
-    void);
-
-UINT32
-EvGpeDispatch (
-    UINT32                  GpeNumber);
-
-UINT32
-EvGpeDetect (
-    void);
-
-
-/* Device Notify handling - evnotify */
-
-void
-EvNotifyDispatch (
-    ACPI_HANDLE             Device, 
-    UINT32                  NotifyValue);
-
-
-/* Address Space handling - evregion */
-
-ACPI_STATUS
-EvInstallDefaultAddressSpaceHandlers (
-    void);
-
-ACPI_STATUS
-EvAddressSpaceDispatch (
-    ACPI_OBJECT_INTERNAL   *RegionObj,
-    UINT32                  Function,
-    UINT32                  Address,
-    UINT32                  BitWidth,
-    UINT32                  *Value);
-
-
-ACPI_STATUS
-EvInitializeRegion (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
-    BOOLEAN                 NsLocked);
-
-ACPI_STATUS
-EvAddrHandlerHelper (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
-    void                    *Context,
-    void                    **ReturnValue);
-
-void
-EvDisassociateRegionFromHandler(
-    ACPI_OBJECT_INTERNAL   *RegionObj);
-
-
-/* Global Lock support - evglock */
-
-ACPI_STATUS
-EvAcquireGlobalLock(
-    void);
-
-void
-EvReleaseGlobalLock(
-    void);
-
-ACPI_STATUS
-EvInitGlobalLockHandler (
-    void);
 
 
 
-/* Debug stuff */
+
+
+/* Debug support */
 
 #ifdef ACPI_DEBUG
 
