@@ -326,6 +326,7 @@ NsExistDownstreamSibling (
     INT32                   Size, 
     NAME_TABLE_ENTRY        *Appendage);
 
+
 /*
  * Scope manipulation - nsscope
  */
@@ -347,18 +348,6 @@ NsHandleToPathname (
     ACPI_HANDLE             ObjHandle,
     UINT32                  *BufSize,
     char                    *UserBuffer);
-
-ACPI_STATUS
-NsAttachMethod (
-    ACPI_HANDLE             ObjHandle, 
-    ACPI_PTRDIFF            Offset, 
-    INT32                   Length);
-
-void
-NsAttachObject (
-    ACPI_HANDLE             ObjHandle, 
-    ACPI_HANDLE             Value, 
-    UINT8                   ValTyp);
 
 BOOLEAN
 NsPatternMatch (
@@ -390,6 +379,24 @@ NsGetHandle (
     char                    *Name, 
     ACPI_HANDLE             Scope,
     ACPI_HANDLE             *OutHandle);
+
+
+/*
+ * Object management for NTEs - nsobject
+ */
+
+ACPI_STATUS
+NsAttachMethod (
+    ACPI_HANDLE             ObjHandle, 
+    UINT8                   *PcodeAddr, 
+    UINT32                  PcodeLength);
+
+void
+NsAttachObject (
+    ACPI_HANDLE             ObjHandle, 
+    ACPI_HANDLE             Value, 
+    UINT8                   ValTyp);
+
 
 void *
 NsCompareValue (
