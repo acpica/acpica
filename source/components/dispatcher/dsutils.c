@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.69 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -147,7 +147,7 @@ AcpiDsIsResultUsed (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OPCODE_INFO        *ParentInfo;
+    const ACPI_OPCODE_INFO  *ParentInfo;
 
 
     FUNCTION_TRACE_PTR ("DsIsResultUsed", Op);
@@ -192,7 +192,6 @@ AcpiDsIsResultUsed (
      * Otherwise leave it as is, it will be deleted when it is used
      * as an operand later.
      */
-
     switch (ACPI_GET_OP_CLASS (ParentInfo))
     {
     /*
@@ -206,7 +205,7 @@ AcpiDsIsResultUsed (
 
             /* Never delete the return value associated with a return opcode */
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
                 "Result used, [RETURN] opcode=%X Op=%X\n", Op->Opcode, Op));
             return_VALUE (TRUE);
             break;
@@ -218,7 +217,6 @@ AcpiDsIsResultUsed (
              * If we are executing the predicate AND this is the predicate op,
              * we will use the return value!
              */
-
             if ((WalkState->ControlState->Common.State == CONTROL_PREDICATE_EXECUTING) &&
                 (WalkState->ControlState->Control.PredicateOp == Op))
             {
@@ -255,7 +253,7 @@ AcpiDsIsResultUsed (
             return_VALUE (TRUE);
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
             "Result not used, Parent opcode=%X Op=%X\n", Op->Opcode, Op));
 
         return_VALUE (FALSE);
@@ -362,7 +360,7 @@ AcpiDsCreateOperand (
     UINT16                  Opcode;
     UINT32                  Flags;
     OPERATING_MODE          InterpreterMode;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     FUNCTION_TRACE_PTR ("DsCreateOperand", Arg);
@@ -429,7 +427,6 @@ AcpiDsCreateOperand (
          * The only case where we pass through (ignore) a NOT_FOUND
          * error is for the CondRefOf opcode.
          */
-
         if (Status == AE_NOT_FOUND)
         {
             if (ParentOp->Opcode == AML_COND_REF_OF_OP)
@@ -526,7 +523,7 @@ AcpiDsCreateOperand (
                  * Only error is underflow, and this indicates
                  * a missing or null operand!
                  */
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Missing or null operand, %s\n", 
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Missing or null operand, %s\n",
                     AcpiFormatException (Status)));
                 return_ACPI_STATUS (Status);
             }
@@ -595,6 +592,7 @@ AcpiDsCreateOperands (
 
     FUNCTION_TRACE_PTR ("DsCreateOperands", FirstArg);
 
+
     /* For all arguments in the list... */
 
     Arg = FirstArg;
@@ -624,7 +622,6 @@ Cleanup:
      * pop everything off of the operand stack and delete those
      * objects
      */
-
     AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "While creating Arg %d - %s\n",
@@ -667,7 +664,6 @@ AcpiDsResolveOperands (
      * TBD: [Investigate] Note from previous parser:
      *   RefOf problem with AcpiExResolveToValue() conversion.
      */
-
     for (i = 0; i < WalkState->NumOperands; i++)
     {
         Status = AcpiExResolveToValue (&WalkState->Operands[i], WalkState);
@@ -702,7 +698,7 @@ AcpiDsMapOpcodeToDataType (
     UINT32                  *OutFlags)
 {
     ACPI_OBJECT_TYPE8       DataType = INTERNAL_TYPE_INVALID;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
     UINT32                  Flags = 0;
 
 
@@ -744,7 +740,7 @@ AcpiDsMapOpcodeToDataType (
             break;
 
         default:
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Unknown (type LITERAL) AML opcode: %x\n", Opcode));
             break;
         }
@@ -856,6 +852,9 @@ AcpiDsMapNamedOpcodeToDataType (
     ACPI_OBJECT_TYPE8       DataType;
 
 
+    FUNCTION_ENTRY ();
+
+
     /* Decode Opcode */
 
     switch (Opcode)
@@ -917,6 +916,7 @@ AcpiDsMapNamedOpcodeToDataType (
         DataType = ACPI_TYPE_EVENT;
         break;
 
+    case AML_DATA_REGION_OP:
     case AML_REGION_OP:
         DataType = ACPI_TYPE_REGION;
         break;
