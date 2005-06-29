@@ -140,7 +140,7 @@
 #define OS_APP_INTERFACE            0x00000100
 
 
-#define ALL_COMPONENTS              0x000000FF
+#define ALL_COMPONENTS              0x000001FF
 
 
 /* Exception level or Trace level -- used in the global "DebugLevel" */
@@ -239,6 +239,8 @@
 #define DUMP_STACK(a,b,c,d)             AmlDumpObjStack(a,b,c,d)
 #define DUMP_ENTRY(a)                   NsDumpEntry (a)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
+#define DEBUG_MEMSTAT                   DEBUG_PRINT (ACPI_INFO, ("Memory: %d/%d Mp/Unmp  %d/%d Al/Fr %d/%d Al/Cal\n",\
+                                        Maps, Unmaps, Allocations, Deallocations, Allocs, Callocs))
 
 /* 
  * Master debug print macros 
@@ -275,6 +277,7 @@
 #define DUMP_STACK(a,b,c,d)
 #define DUMP_ENTRY(a)
 #define DUMP_TABLES(a,b)
+#define DEBUG_MEMSTAT
 #define DEBUG_PRINT(l,f)
 #define DEBUG_PRINT_RAW(l,f) 
 
