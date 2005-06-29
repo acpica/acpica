@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  ******************************************************************************/
 
@@ -702,7 +702,7 @@ AcpiUtMutexTerminate (
         (void) AcpiUtDeleteMutex (i);
     }
 
-    (void) AcpiOsDeleteLock (AcpiGbl_GpeLock);
+    AcpiOsDeleteLock (AcpiGbl_GpeLock);
     return_VOID;
 }
 
