@@ -120,8 +120,9 @@
 #include <hardware.h>
 
 
-#define _THIS_MODULE        "hwmode.c"
 #define _COMPONENT          DEVICE_MANAGER
+        MODULE_NAME         ("hwmode");
+
 
 /******************************************************************************
  *
@@ -150,7 +151,7 @@ HwSetMode (
     {
         /* BIOS should have disabled ALL fixed and GP events */
         
-        OsdOut8 ((UINT16) Gbl_FACP->SmiCmd, Gbl_FACP->AcpiEnable);
+        OsdOut8 (Gbl_FACP->SmiCmd, Gbl_FACP->AcpiEnable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable ACPI mode\n"));
     }
 
@@ -161,7 +162,7 @@ HwSetMode (
          * enable bits to default
          */
 
-        OsdOut8 ((UINT16) Gbl_FACP->SmiCmd, Gbl_FACP->AcpiDisable);
+        OsdOut8 (Gbl_FACP->SmiCmd, Gbl_FACP->AcpiDisable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable Legacy (non-ACPI) mode\n"));
     }
 

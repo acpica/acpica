@@ -121,8 +121,8 @@
 #include <hardware.h>
 #include <namespace.h>
 
-#define _THIS_MODULE        "hwregs.c"
 #define _COMPONENT          DEVICE_MANAGER
+        MODULE_NAME         ("hwregs");
 
 
 /******************************************************************************
@@ -180,7 +180,7 @@ HwClearAcpiStatus (void)
     DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", 
                     ALL_FIXED_STS_BITS, (UINT16) Gbl_FACP->Pm1aEvtBlk));
 
-    OsdOut16 ((UINT16) Gbl_FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
+    OsdOut16 (Gbl_FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     
     if (Gbl_FACP->Pm1bEvtBlk)
     {
@@ -195,7 +195,7 @@ HwClearAcpiStatus (void)
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            OsdOut8 ((UINT16) (Gbl_FACP->Gpe0Blk + Index), (UINT8) 0xff);
+            OsdOut8 ((Gbl_FACP->Gpe0Blk + Index), (UINT8) 0xff);
         }
     }
 
@@ -205,7 +205,7 @@ HwClearAcpiStatus (void)
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            OsdOut8 ((UINT16) (Gbl_FACP->Gpe1Blk + Index), (UINT8) 0xff);
+            OsdOut8 ((Gbl_FACP->Gpe1Blk + Index), (UINT8) 0xff);
         }
     }
 
@@ -244,7 +244,7 @@ HwObtainSleepTypeRegisterData (
     FUNCTION_TRACE ("HwObtainSleepTypeRegisterData");
 
 
-    ObjDesc = CmCreateInternalObject (TYPE_Any);
+    ObjDesc = CmCreateInternalObject (ACPI_TYPE_Any);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -262,7 +262,7 @@ HwObtainSleepTypeRegisterData (
     {   
         /* Sleep state value specified in ACPI namespace tables */
         
-        strncat (SleepState, SleepStateReq, 4);
+        STRNCAT (SleepState, SleepStateReq, 4);
         Status = NsEvaluateByName (SleepState, NULL, ObjDesc);
 
         if (AE_OK == Status)
@@ -289,9 +289,9 @@ HwObtainSleepTypeRegisterData (
                 }
             }
 
-            if (ObjDesc->Type != TYPE_Package ||
-                 (ObjDesc->Package.Elements[0])->Type != TYPE_Number ||
-                 (ObjDesc->Package.Elements[1])->Type != TYPE_Number)
+            if (ObjDesc->Common.Type != ACPI_TYPE_Package ||
+                 (ObjDesc->Package.Elements[0])->Common.Type != ACPI_TYPE_Number ||
+                 (ObjDesc->Package.Elements[1])->Common.Type != ACPI_TYPE_Number)
             {   
                 /* Invalid _Sx_ package type or value  */
                 
@@ -299,19 +299,19 @@ HwObtainSleepTypeRegisterData (
 
                 DEBUG_PRINT (ACPI_INFO,  ("Expected Values:"));
                 DEBUG_PRINT (ACPI_INFO,
-                            ("  Package == %02x", TYPE_Package));
+                            ("  Package == %02x", ACPI_TYPE_Package));
                 DEBUG_PRINT (ACPI_INFO,
-                            ("  Number  == %02x", TYPE_Number));
+                            ("  Number  == %02x", ACPI_TYPE_Number));
 
                 DEBUG_PRINT (ACPI_INFO, ("Actual Values:"));
                 DEBUG_PRINT (ACPI_INFO,
-                            ("  ObjDesc->ValTyp == %02x", ObjDesc->Type));
+                            ("  ObjDesc->ValTyp == %02x", ObjDesc->Common.Type));
                 DEBUG_PRINT (ACPI_INFO,
-                            ("  (ObjDesc->Package.Elements[0])->Type == %02x",
-                            (ObjDesc->Package.Elements[0])->Type));
+                            ("  (ObjDesc->Package.Elements[0])->Common.Type == %02x",
+                            (ObjDesc->Package.Elements[0])->Common.Type));
                 DEBUG_PRINT (ACPI_INFO,
-                            ("  (ObjDesc->Package.Elements[1])->Type == %02x",
-                            (ObjDesc->Package.Elements[1])->Type));
+                            ("  (ObjDesc->Package.Elements[1])->Common.Type == %02x",
+                            (ObjDesc->Package.Elements[1])->Common.Type));
 
                 Status = AE_ERROR;
             }
@@ -387,13 +387,13 @@ HwRegisterIO (
         {   
             /* status register */
             
-            RegisterValue = (UINT32) OsdIn16 ((UINT16) Gbl_FACP->Pm1aEvtBlk);
+            RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm1aEvtBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1a status: Read 0x%X from 0x%X\n", 
                             RegisterValue, Gbl_FACP->Pm1aEvtBlk));
             
             if (Gbl_FACP->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) OsdIn16 ((UINT16) Gbl_FACP->Pm1bEvtBlk);
+                RegisterValue |= (UINT32) OsdIn16 (Gbl_FACP->Pm1bEvtBlk);
                 DEBUG_PRINT (TRACE_IO, ("PM1b status: Read 0x%X from 0x%X\n", 
                                 RegisterValue, Gbl_FACP->Pm1bEvtBlk));
             }
@@ -447,13 +447,13 @@ HwRegisterIO (
                 
                 if (Value)
                 {
-                    DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) Value, 
-                                (UINT16) Gbl_FACP->Pm1aEvtBlk));
-                    OsdOut16 ((UINT16) Gbl_FACP->Pm1aEvtBlk, (UINT16) Value);
+                    DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", Value, Gbl_FACP->Pm1aEvtBlk));
+
+                    OsdOut16 (Gbl_FACP->Pm1aEvtBlk, (UINT16) Value);
                     
                     if (Gbl_FACP->Pm1bEvtBlk)
                     {
-                        OsdOut16 ((UINT16) Gbl_FACP->Pm1bEvtBlk, (UINT16) Value);
+                        OsdOut16 (Gbl_FACP->Pm1bEvtBlk, (UINT16) Value);
                     }
                     
                     RegisterValue = 0;
@@ -465,13 +465,15 @@ HwRegisterIO (
         {   
             /* enable register */
             
-            RegisterValue = (UINT32) OsdIn16 ((UINT16) (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2));
+            RegisterValue = (UINT32) OsdIn16 ((Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2));
+
             DEBUG_PRINT (TRACE_IO, ("PM1a enable: Read 0x%X from 0x%X\n", 
                             RegisterValue, (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2)));
             
             if (Gbl_FACP->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) OsdIn16 ((UINT16) (Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2));
+                RegisterValue |= (UINT32) OsdIn16 ((Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2));
+
                 DEBUG_PRINT (TRACE_IO, ("PM1b enable: Read 0x%X from 0x%X\n", 
                                 RegisterValue, (Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2)));
             }
@@ -510,15 +512,15 @@ HwRegisterIO (
                 Value          &= Mask;
                 RegisterValue  |= Value;
 
-                DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                            (UINT16) (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2)));
+                DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, 
+                            (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2)));
 
-                OsdOut16 ((UINT16) (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2), 
+                OsdOut16 ((Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2), 
                             (UINT16) RegisterValue);
                 
                 if (Gbl_FACP->Pm1bEvtBlk)
                 {
-                    OsdOut16 ((UINT16) (Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2), 
+                    OsdOut16 ((Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2), 
                                 (UINT16) RegisterValue);
                 }
             }
@@ -537,14 +539,14 @@ HwRegisterIO (
              * for A may be different than the value for B 
              */
 
-            RegisterValue = (UINT32) OsdIn16 ((UINT16)  Gbl_FACP->Pm1aCntBlk);
+            RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm1aCntBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1a control: Read 0x%X from 0x%X\n", 
                             RegisterValue, Gbl_FACP->Pm1aCntBlk));
         }
 
         if (Gbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
         {
-            RegisterValue |= (UINT32) OsdIn16 ((UINT16) Gbl_FACP->Pm1bCntBlk);
+            RegisterValue |= (UINT32) OsdIn16 (Gbl_FACP->Pm1bCntBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1b control: Read 0x%X from 0x%X\n", 
                             RegisterValue, Gbl_FACP->Pm1bCntBlk));
         }
@@ -598,7 +600,7 @@ HwRegisterIO (
                     disable();  /* disable interrupts */
                 }
 
-                OsdOut16 ((UINT16) Gbl_FACP->Pm1aCntBlk, (UINT16) RegisterValue);
+                OsdOut16 (Gbl_FACP->Pm1aCntBlk, (UINT16) RegisterValue);
                 
                 if (Mask == SLP_EN_MASK)
                 {
@@ -613,13 +615,13 @@ HwRegisterIO (
                 
             if (Gbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
             {
-                OsdOut16 ((UINT16) Gbl_FACP->Pm1bCntBlk, (UINT16) RegisterValue);
+                OsdOut16 (Gbl_FACP->Pm1bCntBlk, (UINT16) RegisterValue);
             }
         }
         break;
     
     case PM2_CONTROL:
-        RegisterValue = (UINT32) OsdIn16 ((UINT16) Gbl_FACP->Pm2CntBlk);
+        RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm2CntBlk);
         DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n", 
                         RegisterValue, Gbl_FACP->Pm2CntBlk));
         
@@ -641,15 +643,14 @@ HwRegisterIO (
             Value          &= Mask;
             RegisterValue  |= Value;
 
-            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                        (UINT16) Gbl_FACP->Pm2CntBlk));
+            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, Gbl_FACP->Pm2CntBlk));
 
-            OsdOut16 ((UINT16) Gbl_FACP->Pm2CntBlk, (UINT16) RegisterValue);
+            OsdOut16 (Gbl_FACP->Pm2CntBlk, (UINT16) RegisterValue);
         }
         break;
     
     case PM_TIMER:
-        RegisterValue = OsdIn32 ((UINT16) Gbl_FACP->PmTmrBlk);
+        RegisterValue = OsdIn32 (Gbl_FACP->PmTmrBlk);
         DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read 0x%X from 0x%X\n", 
                         RegisterValue, Gbl_FACP->PmTmrBlk));
 
@@ -701,7 +702,7 @@ HwRegisterIO (
         
         /* Now get the current Enable Bits in the selected Reg */
         
-        RegisterValue = (UINT32) OsdIn8 ((UINT16) GpeReg);
+        RegisterValue = (UINT32) OsdIn8 (GpeReg);
         DEBUG_PRINT (TRACE_IO, ("GPE Enable bits: Read 0x%X from 0x%X\n", RegisterValue, GpeReg));
         
         if (ReadWrite == ACPI_WRITE)
@@ -715,11 +716,10 @@ HwRegisterIO (
 
             /* Enable Register indexed by the value in Mask */
 
-            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                        (UINT16) GpeReg));
+            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, GpeReg));
 
-            OsdOut8 ((UINT16) GpeReg, (UINT8) RegisterValue);
-            RegisterValue = (UINT32) OsdIn8 ((UINT16) GpeReg);          
+            OsdOut8 (GpeReg, (UINT8) RegisterValue);
+            RegisterValue = (UINT32) OsdIn8 (GpeReg);          
         }
         break;
     
@@ -733,5 +733,5 @@ HwRegisterIO (
     RegisterValue >>= HwGetBitShift (Mask);
 
     DEBUG_PRINT (TRACE_IO, ("Register I/O: returning 0x%X\n", RegisterValue));
-    return_ACPI_STATUS (RegisterValue);
+    return_VALUE (RegisterValue);
 }
