@@ -543,7 +543,6 @@ AcpiCmUpdateObjectReference (
 
         case ACPI_TYPE_DEVICE:
 
-            //CmUpdateRefCount (Object->Device.AddrHandler, Action);
             Status = AcpiCmCreateUpdateStateAndPush (Object->Device.AddrHandler, Action, &StateList);
             if (ACPI_FAILURE (Status))
             {
