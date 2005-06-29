@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -578,8 +578,7 @@ AcpiDsLoad2BeginOp (
 
     if (Op)
     {
-        if ((AcpiGbl_EnableInterpreterSlack) &&
-            (WalkState->ControlState) &&
+        if ((WalkState->ControlState) &&
             (WalkState->ControlState->Common.State ==
                 ACPI_CONTROL_CONDITIONAL_EXECUTING))
         {
@@ -598,23 +597,14 @@ AcpiDsLoad2BeginOp (
             if ((WalkState->OpInfo->Class == AML_CLASS_EXECUTE) ||
                 (WalkState->OpInfo->Class == AML_CLASS_CONTROL))
             {
-                if (!AcpiGbl_EnableInterpreterSlack)
-                {
-                    ACPI_REPORT_WARNING ((
-                        "Encountered executable code at module level, [%s]\n",
-                        AcpiPsGetOpcodeName (WalkState->Opcode)));
-                }
-                else
-                {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-                        "Begin/EXEC: %s (fl %8.8X)\n", WalkState->OpInfo->Name,
-                        WalkState->OpInfo->Flags));
+                ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+                    "Begin/EXEC: %s (fl %8.8X)\n", WalkState->OpInfo->Name,
+                    WalkState->OpInfo->Flags));
 
-                    /* Executing a type1 or type2 opcode outside of a method */
+                /* Executing a type1 or type2 opcode outside of a method */
 
-                    Status = AcpiDsExecBeginOp (WalkState, OutOp);
-                    return_ACPI_STATUS (Status);
-                }
+                Status = AcpiDsExecBeginOp (WalkState, OutOp);
+                return_ACPI_STATUS (Status);
             }
             return_ACPI_STATUS (AE_OK);
         }
@@ -876,17 +866,14 @@ AcpiDsLoad2EndOp (
         if ((WalkState->OpInfo->Class == AML_CLASS_EXECUTE) ||
             (WalkState->OpInfo->Class == AML_CLASS_CONTROL))
         {
-            if (AcpiGbl_EnableInterpreterSlack)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-                    "End/EXEC:   %s (fl %8.8X)\n", WalkState->OpInfo->Name,
-                    WalkState->OpInfo->Flags));
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+                "End/EXEC:   %s (fl %8.8X)\n", WalkState->OpInfo->Name,
+                WalkState->OpInfo->Flags));
 
-                /* Executing a type1 or type2 opcode outside of a method */
+            /* Executing a type1 or type2 opcode outside of a method */
 
-                Status = AcpiDsExecEndOp (WalkState);
-                return_ACPI_STATUS (Status);
-            }
+            Status = AcpiDsExecEndOp (WalkState);
+            return_ACPI_STATUS (Status);
         }
 #endif
         return_ACPI_STATUS (AE_OK);
