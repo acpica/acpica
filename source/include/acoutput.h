@@ -147,7 +147,8 @@
 #define EMBEDDED_CONTROLLER         0x00010000
 #define BATTERY                     0x00020000
 
-#define ALL_COMPONENTS              0x000FFFFF
+#define DEBUGGER                    0x00100000
+#define ALL_COMPONENTS              0x001FFFFF
 
 
 /* Exception level -- used in the global "DebugLevel" */
@@ -157,8 +158,8 @@
 #define ACPI_WARN                   0x00000004
 #define ACPI_ERROR                  0x00000008
 #define ACPI_FATAL                  0x00000010
-
-#define ACPI_ALL                    0x0000001F
+#define ACPI_DEBUG_OBJECT           0x00000020
+#define ACPI_ALL                    0x0000003F
 
 
 /* Trace level -- also used in the global "DebugLevel" */
@@ -197,8 +198,8 @@
 
 /* Defaults for DebugLevel, debug and normal */
 
-#define DEBUG_DEFAULT               (ACPI_OK | ACPI_WARN | ACPI_ERROR | TRACE_TABLES | TRACE_IO)
-#define NORMAL_DEFAULT              (ACPI_OK | ACPI_WARN | ACPI_ERROR)
+#define DEBUG_DEFAULT               (ACPI_OK | ACPI_WARN | ACPI_ERROR | ACPI_DEBUG_OBJECT | TRACE_TABLES | TRACE_IO)
+#define NORMAL_DEFAULT              (ACPI_OK | ACPI_WARN | ACPI_ERROR | ACPI_DEBUG_OBJECT)
 
 
 /* Misc defines */
