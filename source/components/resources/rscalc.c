@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.53 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -148,6 +148,7 @@ AcpiRsGetByteStreamLength (
 {
     ACPI_SIZE               ByteStreamSizeNeeded = 0;
     ACPI_SIZE               SegmentSize;
+    ACPI_RESOURCE_EXT_IRQ   *ExIrq = NULL;
     BOOLEAN                 Done = FALSE;
 
 
@@ -166,8 +167,8 @@ AcpiRsGetByteStreamLength (
         case ACPI_RSTYPE_IRQ:
             /*
              * IRQ Resource
-             * For an IRQ Resource, Byte 3, although optional, will always be
-             * created - it holds IRQ information.
+             * For an IRQ Resource, Byte 3, although optional, will
+             * always be created - it holds IRQ information.
              */
             SegmentSize = 4;
             break;
@@ -183,8 +184,8 @@ AcpiRsGetByteStreamLength (
         case ACPI_RSTYPE_START_DPF:
             /*
              * Start Dependent Functions Resource
-             * For a StartDependentFunctions Resource, Byte 1, although
-             * optional, will always be created.
+             * For a StartDependentFunctions Resource, Byte 1,
+             * although optional, will always be created.
              */
             SegmentSize = 2;
             break;
@@ -216,9 +217,10 @@ AcpiRsGetByteStreamLength (
         case ACPI_RSTYPE_VENDOR:
             /*
              * Vendor Defined Resource
-             * For a Vendor Specific resource, if the Length is between 1 and 7
-             * it will be created as a Small Resource data type, otherwise it
-             * is a Large Resource data type.
+             * For a Vendor Specific resource, if the Length is
+             * between 1 and 7 it will be created as a Small
+             * Resource data type, otherwise it is a Large
+             * Resource data type.
              */
             if (LinkedList->Data.VendorSpecific.Length > 7)
             {
@@ -267,9 +269,10 @@ AcpiRsGetByteStreamLength (
         case ACPI_RSTYPE_ADDRESS16:
             /*
              * 16-Bit Address Resource
-             * The base size of this byte stream is 16. If a Resource Source
-             * string is not NULL, add 1 for the Index + the length of the null
-             * terminated string Resource Source + 1 for the null.
+             * The base size of this byte stream is 16. If a
+             * Resource Source string is not NULL, add 1 for
+             * the Index + the length of the null terminated
+             * string Resource Source + 1 for the null.
              */
             SegmentSize = 16;
 
@@ -300,9 +303,10 @@ AcpiRsGetByteStreamLength (
         case ACPI_RSTYPE_ADDRESS64:
             /*
              * 64-Bit Address Resource
-             * The base size of this byte stream is 46. If a ResourceSource
-             * string is not NULL, add 1 for the Index + the length of the null
-             * terminated string Resource Source + 1 for the null.
+             * The base size of this byte stream is 46. If a Resource
+             * Source string is not NULL, add 1 for the Index + the
+             * length of the null terminated string Resource Source +
+             * 1 for the null.
              */
             SegmentSize = 46;
 
@@ -316,8 +320,9 @@ AcpiRsGetByteStreamLength (
         case ACPI_RSTYPE_EXT_IRQ:
             /*
              * Extended IRQ Resource
-             * The base size of this byte stream is 9. This is for an Interrupt
-             * table length of 1.  For each additional interrupt, add 4.
+             * The base size of this byte stream is 9. This is for an
+             * Interrupt table length of 1.  For each additional
+             * interrupt, add 4.
              * If a Resource Source string is not NULL, add 1 for the
              * Index + the length of the null terminated string
              * Resource Source + 1 for the null.
@@ -325,7 +330,7 @@ AcpiRsGetByteStreamLength (
             SegmentSize = 9 +
                 (((ACPI_SIZE) LinkedList->Data.ExtendedIrq.NumberOfInterrupts - 1) * 4);
 
-            if (LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr)
+            if (ExIrq && ExIrq->ResourceSource.StringPtr)
             {
                 SegmentSize += LinkedList->Data.ExtendedIrq.ResourceSource.StringLength;
                 SegmentSize++;
@@ -334,7 +339,8 @@ AcpiRsGetByteStreamLength (
 
         default:
             /*
-             * If we get here, everything is out of sync, exit with error
+             * If we get here, everything is out of sync,
+             * so exit with an error
              */
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
 
@@ -427,7 +433,7 @@ AcpiRsGetListLength (
             Buffer = ByteStreamBuffer;
             ++Buffer;
 
-            ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
+            ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
             BytesConsumed = Temp16 + 3;
 
             /*
@@ -444,6 +450,7 @@ AcpiRsGetListLength (
             /*
              * 32-Bit Memory Range Resource
              */
+
             BytesConsumed = 20;
 
             StructureSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_MEM32);
@@ -467,17 +474,19 @@ AcpiRsGetListLength (
             Buffer = ByteStreamBuffer;
 
             ++Buffer;
-            ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
+            ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
             BytesConsumed = Temp16 + 3;
 
             /*
-             * Resource Source Index and Resource Source are optional elements.
-             * Check the length of the Bytestream.  If it is greater than 43,
-             * that means that an Index exists and is followed by a null
-             * terminated string.  Therefore, set the temp variable to the
-             * length minus the minimum byte stream length plus the byte for
-             * the Index to determine the size of the NULL terminated string.
+             * Resource Source Index and Resource Source are
+             * optional elements.  Check the length of the
+             * Bytestream.  If it is greater than 43, that
+             * means that an Index exists and is followed by
+             * a null termininated string.  Therefore, set
+             * the temp variable to the length minus the minimum
+             * byte stream length plus the byte for the Index to
+             * determine the size of the NULL terminiated string.
              */
             if (43 < Temp16)
             {
@@ -505,17 +514,19 @@ AcpiRsGetListLength (
             Buffer = ByteStreamBuffer;
 
             ++Buffer;
-            ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
+            ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
             BytesConsumed = Temp16 + 3;
 
             /*
-             * Resource Source Index and Resource Source are optional elements.
-             * Check the length of the Bytestream.  If it is greater than 23,
-             * that means that an Index exists and is followed by a null
-             * terminated string.  Therefore, set the temp variable to the
-             * length minus the minimum byte stream length plus the byte for
-             * the Index to determine the size of the NULL terminated string.
+             * Resource Source Index and Resource Source are
+             * optional elements.  Check the length of the
+             * Bytestream.  If it is greater than 23, that
+             * means that an Index exists and is followed by
+             * a null termininated string.  Therefore, set
+             * the temp variable to the length minus the minimum
+             * byte stream length plus the byte for the Index to
+             * determine the size of the NULL terminiated string.
              */
             if (23 < Temp16)
             {
@@ -543,17 +554,19 @@ AcpiRsGetListLength (
             Buffer = ByteStreamBuffer;
 
             ++Buffer;
-            ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
+            ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
             BytesConsumed = Temp16 + 3;
 
             /*
-             * Resource Source Index and Resource Source are optional elements.
-             * Check the length of the Bytestream.  If it is greater than 13,
-             * that means that an Index exists and is followed by a null
-             * terminated string.  Therefore, set the temp variable to the
-             * length minus the minimum byte stream length plus the byte for
-             * the Index to determine the size of the NULL terminated string.
+             * Resource Source Index and Resource Source are
+             * optional elements.  Check the length of the
+             * Bytestream.  If it is greater than 13, that
+             * means that an Index exists and is followed by
+             * a null termininated string.  Therefore, set
+             * the temp variable to the length minus the minimum
+             * byte stream length plus the byte for the Index to
+             * determine the size of the NULL terminiated string.
              */
             if (13 < Temp16)
             {
@@ -581,13 +594,14 @@ AcpiRsGetListLength (
             Buffer = ByteStreamBuffer;
 
             ++Buffer;
-            ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
+            ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
             BytesConsumed = Temp16 + 3;
 
             /*
-             * Point past the length field and the Interrupt vector flags to
-             * save off the Interrupt table length to the Temp8 variable.
+             * Point past the length field and the
+             * Interrupt vector flags to save off the
+             * Interrupt table length to the Temp8 variable.
              */
             Buffer += 3;
             Temp8 = *Buffer;
@@ -599,12 +613,14 @@ AcpiRsGetListLength (
             AdditionalBytes = (UINT8) ((Temp8 - 1) * 4);
 
             /*
-             * Resource Source Index and Resource Source are optional elements.
-             * Check the length of the Bytestream.  If it is greater than 9,
-             * that means that an Index exists and is followed by a null
-             * terminated string.  Therefore, set the temp variable to the
-             * length minus the minimum byte stream length plus the byte for
-             * the Index to determine the size of the NULL terminated string.
+             * Resource Source Index and Resource Source are
+             * optional elements.  Check the length of the
+             * Bytestream.  If it is greater than 9, that
+             * means that an Index exists and is followed by
+             * a null termininated string.  Therefore, set
+             * the temp variable to the length minus the minimum
+             * byte stream length plus the byte for the Index to
+             * determine the size of the NULL terminiated string.
              */
             if (9 + AdditionalBytes < Temp16)
             {
@@ -643,14 +659,15 @@ AcpiRsGetListLength (
                 BytesConsumed = 3;
             }
 
-            /* Point past the descriptor */
-
+            /*
+             * Point past the descriptor
+             */
             ++Buffer;
 
             /*
              * Look at the number of bits set
              */
-            ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
+            ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
             for (Index = 0; Index < 16; Index++)
             {
@@ -674,8 +691,9 @@ AcpiRsGetListLength (
             Buffer = ByteStreamBuffer;
             BytesConsumed = 3;
 
-            /* Point past the descriptor */
-
+            /*
+             * Point past the descriptor
+             */
             ++Buffer;
 
             /*
@@ -778,7 +796,7 @@ AcpiRsGetListLength (
         default:
             /*
              * If we get here, everything is out of sync,
-             * exit with an error
+             *  so exit with an error
              */
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
         }
@@ -786,7 +804,7 @@ AcpiRsGetListLength (
         /*
          * Update the return value and counter
          */
-        BufferSize += (UINT32) ACPI_ALIGN_RESOURCE_SIZE (StructureSize);
+        BufferSize += ACPI_ALIGN_RESOURCE_SIZE(StructureSize);
         BytesParsed += BytesConsumed;
 
         /*
@@ -897,10 +915,10 @@ AcpiRsGetPciRoutingTableLength (
             if (ACPI_GET_OBJECT_TYPE (*SubObjectList) == ACPI_TYPE_STRING)
             {
                 /*
-                 * The length String.Length field does not include the
-                 * terminating NULL, add 1
+                 * The length String.Length field includes the
+                 * terminating NULL
                  */
-                TempSizeNeeded += ((ACPI_SIZE) (*SubObjectList)->String.Length + 1);
+                TempSizeNeeded += (*SubObjectList)->String.Length;
             }
             else
             {

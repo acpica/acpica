@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  ******************************************************************************/
 
@@ -227,16 +227,9 @@ AcpiNsAttachObject (
     {
         ObjDesc = (ACPI_OPERAND_OBJECT  *) Object;
 
-        /* If a valid type (non-ANY) was given, just use it */
+        /* Use the given type */
 
-        if (ACPI_TYPE_ANY != Type)
-        {
-            ObjectType = Type;
-        }
-        else
-        {
-            ObjectType = INTERNAL_TYPE_DEF_ANY;
-        }
+        ObjectType = Type;
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Installing %p into Node %p [%4.4s]\n",
@@ -306,7 +299,7 @@ AcpiNsDetachObject (
     ObjDesc = Node->Object;
 
     if (!ObjDesc ||
-        (ACPI_GET_OBJECT_TYPE (ObjDesc) == INTERNAL_TYPE_DATA))
+        (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA))
     {
         return_VOID;
     }
@@ -318,7 +311,7 @@ AcpiNsDetachObject (
     {
         Node->Object = ObjDesc->Common.NextObject;
         if (Node->Object &&
-           (ACPI_GET_OBJECT_TYPE (Node->Object) != INTERNAL_TYPE_DATA))
+           (ACPI_GET_OBJECT_TYPE (Node->Object) != ACPI_TYPE_LOCAL_DATA))
         {
             Node->Object = Node->Object->Common.NextObject;
         }
@@ -365,7 +358,7 @@ AcpiNsGetAttachedObject (
     if (!Node->Object ||
             ((ACPI_GET_DESCRIPTOR_TYPE (Node->Object) != ACPI_DESC_TYPE_OPERAND) &&
              (ACPI_GET_DESCRIPTOR_TYPE (Node->Object) != ACPI_DESC_TYPE_NAMED))  ||
-        (ACPI_GET_OBJECT_TYPE (Node->Object) == INTERNAL_TYPE_DATA))
+        (ACPI_GET_OBJECT_TYPE (Node->Object) == ACPI_TYPE_LOCAL_DATA))
     {
         return_PTR (NULL);
     }
@@ -392,10 +385,10 @@ AcpiNsGetSecondaryObject (
     ACPI_FUNCTION_TRACE_PTR ("NsGetSecondaryObject", ObjDesc);
 
 
-    if ((!ObjDesc)                                              ||
-        (ACPI_GET_OBJECT_TYPE (ObjDesc) == INTERNAL_TYPE_DATA)  ||
-        (!ObjDesc->Common.NextObject)                           ||
-        (ACPI_GET_OBJECT_TYPE (ObjDesc->Common.NextObject) == INTERNAL_TYPE_DATA))
+    if ((!ObjDesc)                                                ||
+        (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA)  ||
+        (!ObjDesc->Common.NextObject)                             ||
+        (ACPI_GET_OBJECT_TYPE (ObjDesc->Common.NextObject) == ACPI_TYPE_LOCAL_DATA))
     {
         return_PTR (NULL);
     }
@@ -432,7 +425,7 @@ AcpiNsAttachData (
     ObjDesc = Node->Object;
     while (ObjDesc)
     {
-        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == INTERNAL_TYPE_DATA) &&
+        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA) &&
             (ObjDesc->Data.Handler == Handler))
         {
             return (AE_ALREADY_EXISTS);
@@ -445,7 +438,7 @@ AcpiNsAttachData (
 
     /* Create an internal object for the data */
 
-    DataDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_DATA);
+    DataDesc = AcpiUtCreateInternalObject (ACPI_TYPE_LOCAL_DATA);
     if (!DataDesc)
     {
         return (AE_NO_MEMORY);
@@ -495,7 +488,7 @@ AcpiNsDetachData (
     ObjDesc = Node->Object;
     while (ObjDesc)
     {
-        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == INTERNAL_TYPE_DATA) &&
+        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA) &&
             (ObjDesc->Data.Handler == Handler))
         {
             if (PrevObjDesc)
@@ -543,7 +536,7 @@ AcpiNsGetAttachedData (
     ObjDesc = Node->Object;
     while (ObjDesc)
     {
-        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == INTERNAL_TYPE_DATA) &&
+        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA) &&
             (ObjDesc->Data.Handler == Handler))
         {
             *Data = ObjDesc->Data.Pointer;

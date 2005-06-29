@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.6 $
+ *              $Revision: 1.3 $
  *
  ******************************************************************************/
 
@@ -653,7 +653,7 @@ AcpiNsGetDeviceCallback (
 
 ACPI_STATUS
 AcpiGetDevices (
-    char                    *HID,
+    NATIVE_CHAR             *HID,
     ACPI_WALK_CALLBACK      UserFunction,
     void                    *Context,
     void                    **ReturnValue)
@@ -707,13 +707,11 @@ AcpiGetDevices (
  *
  * FUNCTION:    AcpiAttachData
  *
- * PARAMETERS:  ObjHandle           - Namespace node
- *              Handler             - Handler for this attachment
- *              Data                - Pointer to data to be attached
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Attach arbitrary data and handler to a namespace node.
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -763,12 +761,11 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiDetachData
  *
- * PARAMETERS:  ObjHandle           - Namespace node handle
- *              Handler             - Handler used in call to AcpiAttachData
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Remove data that was previously attached to a node.
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -816,13 +813,11 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiGetData
  *
- * PARAMETERS:  ObjHandle           - Namespace node
- *              Handler             - Handler used in call to AttachData
- *              Data                - Where the data is returned
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Retrieve data that was previously attached to a namespace node.
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
