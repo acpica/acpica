@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  ******************************************************************************/
 
@@ -286,7 +286,7 @@ AcpiHwObtainSleepTypeRegisterData (
      */
 
     /* Even though AcpiEvaluateObject resolves package references,
-     * NsEvaluate dpesn't. So, we do it here.
+     * NsEvaluate doesn't. So, we do it here.
      */
     Status = AcpiUtResolvePackageReferences(ObjDesc);
 
@@ -297,7 +297,6 @@ AcpiHwObtainSleepTypeRegisterData (
         REPORT_ERROR (("Sleep State package does not have at least two elements\n"));
         Status = AE_ERROR;
     }
-
     else if (((ObjDesc->Package.Elements[0])->Common.Type !=
                 ACPI_TYPE_INTEGER) ||
              ((ObjDesc->Package.Elements[1])->Common.Type !=
@@ -308,7 +307,6 @@ AcpiHwObtainSleepTypeRegisterData (
         REPORT_ERROR (("Sleep State package elements are not both of type Number\n"));
         Status = AE_ERROR;
     }
-
     else
     {
         /*
@@ -319,7 +317,6 @@ AcpiHwObtainSleepTypeRegisterData (
         *Slp_TypB = (UINT8) (ObjDesc->Package.Elements[1])->Integer.Value;
     }
 
-
     if (ACPI_FAILURE (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad Sleep object %p type %X\n",
@@ -327,7 +324,6 @@ AcpiHwObtainSleepTypeRegisterData (
     }
 
     AcpiUtRemoveReference (ObjDesc);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -444,7 +440,6 @@ AcpiHwRegisterBitAccess (
                 RegisterValue = 0;
             }
         }
-
         break;
 
 
@@ -488,7 +483,6 @@ AcpiHwRegisterBitAccess (
 
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, PM1_EN, (UINT16) RegisterValue);
         }
-
         break;
 
 
@@ -678,7 +672,6 @@ AcpiHwRegisterBitAccess (
         AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     }
 
-
     RegisterValue &= Mask;
     RegisterValue >>= AcpiHwGetBitShift (Mask);
 
@@ -718,7 +711,6 @@ AcpiHwRegisterRead (
         AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
     }
 
-
     switch (REGISTER_BLOCK_ID(RegisterId))
     {
     case PM1_STS: /* 16-bit access */
@@ -753,7 +745,6 @@ AcpiHwRegisterRead (
 
         Value =  AcpiHwLowLevelRead (32, &AcpiGbl_FADT->XPmTmrBlk, 0);
         break;
-
 
     /*
      * For the GPE? Blocks, the lower word of RegisterId contains the
@@ -793,7 +784,6 @@ AcpiHwRegisterRead (
         /* Value will be returned as 0 */
         break;
     }
-
 
     if (ACPI_MTX_LOCK == UseLock)
     {
@@ -926,7 +916,6 @@ AcpiHwRegisterWrite (
         break;
     }
 
-
     if (ACPI_MTX_LOCK == UseLock)
     {
         AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
@@ -975,7 +964,6 @@ AcpiHwLowLevelRead (
     {
         return 0;
     }
-
 
     /*
      * Three address spaces supported:
@@ -1056,7 +1044,6 @@ AcpiHwLowLevelWrite (
     {
         return;
     }
-
 
     /*
      * Three address spaces supported:
