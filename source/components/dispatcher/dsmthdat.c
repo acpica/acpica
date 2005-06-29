@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.54 $
+ *              $Revision: 1.56 $
  *
  ******************************************************************************/
 
@@ -362,7 +362,6 @@ AcpiDsMethodDataGetNode (
     default:
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Opcode %d is invalid\n", Opcode));
         return_ACPI_STATUS (AE_AML_BAD_OPCODE);
-        break;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -430,7 +429,7 @@ AcpiDsMethodDataSetValue (
  *
  ******************************************************************************/
 
-ACPI_OBJECT_TYPE8
+ACPI_OBJECT_TYPE
 AcpiDsMethodDataGetType (
     UINT16                  Opcode,
     UINT32                  Index,
@@ -540,7 +539,6 @@ AcpiDsMethodDataGetValue (
                 Index, Node));
 
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_ARG);
-            break;
 
         case AML_LOCAL_OP:
 
@@ -548,7 +546,6 @@ AcpiDsMethodDataGetValue (
                 Index, Node));
 
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_LOCAL);
-            break;
         }
     }
 
