@@ -333,8 +333,6 @@ PsGetNextNamepath (
     BOOLEAN                 MethodCall)
 {
     char                    *Path;
-    ACPI_GENERIC_OP         *MethodOp;
-    ACPI_GENERIC_OP         *Count;
     ACPI_GENERIC_OP         *Name;
 
 
@@ -343,7 +341,6 @@ PsGetNextNamepath (
 
 
     Path = PsGetNextNamestring (ParserState);
-/*    if (!Path)*/
     if (!Path || !MethodCall)
     {
         /* Null name case, create a null namepath object */
@@ -354,8 +351,12 @@ PsGetNextNamepath (
     }
 
 
+#ifdef PARSER_ONLY
     if (Gbl_ParsedNamespaceRoot)
     {
+        ACPI_GENERIC_OP         *MethodOp;
+        ACPI_GENERIC_OP         *Count;
+
         /*
          * Lookup the name in the parsed namespace 
          */
@@ -387,8 +388,7 @@ PsGetNextNamepath (
         }
     }
 
-#ifndef PARSER_ONLY
-    else
+#else
     {
         /*
          * The full parse tree has already been deleted -- therefore, we are parsing
@@ -405,7 +405,7 @@ PsGetNextNamepath (
         /* 
          * Lookup the name in the internal namespace
          */
-
+        ScopeInfo.Scope.Entry = NULL;
         Nte = ParserState->StartOp->NameTableEntry;
         if (Nte)
         {
