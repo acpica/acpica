@@ -359,6 +359,7 @@ PsxCreateOperand (
         }
 
         PsxObjStackPush (ObjDesc, WalkState);
+        DEBUG_EXEC (DbDisplayArgumentObject (ObjDesc));
     }
 
 
@@ -441,6 +442,7 @@ PsxCreateOperand (
         /* Put the operand object on the object stack */
 
         PsxObjStackPush (ObjDesc, WalkState);
+        DEBUG_EXEC (DbDisplayArgumentObject (ObjDesc));
     }
 
 
