@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.53 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -128,7 +128,6 @@
 
 #define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("utmisc")
-
 
 
 /*******************************************************************************
@@ -744,6 +743,46 @@ AcpiUtCreateGenericState (void)
     }
 
     return (State);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtCreateThreadState
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Thread State
+ *
+ * DESCRIPTION: Create a "Thread State" - a flavor of the generic state used
+ *              to track per-thread info during method execution
+ *
+ ******************************************************************************/
+
+ACPI_THREAD_STATE *
+AcpiUtCreateThreadState (
+    void)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    FUNCTION_TRACE ("UtCreateThreadState");
+
+
+    /* Create the generic state object */
+
+    State = AcpiUtCreateGenericState ();
+    if (!State)
+    {
+        return_PTR (NULL);
+    }
+
+    /* Init fields specific to the update struct */
+
+    State->Common.DataType = ACPI_DESC_TYPE_STATE_THREAD;
+    State->Thread.ThreadId = AcpiOsGetThreadId ();
+
+    return_PTR ((ACPI_THREAD_STATE *) State);
 }
 
 
