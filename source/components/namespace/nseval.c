@@ -396,12 +396,9 @@ BREAKPOINT3;
         {
             /* Valid return object, copy the pointer to the returned object */
 
-            LocalReturnObject->Common.ReferenceCount++;
             *ReturnObject = LocalReturnObject;
         }
 
-
-        CmDeleteInternalObject (LocalReturnObject);
 
 #if defined _RPARSER
         /* 
