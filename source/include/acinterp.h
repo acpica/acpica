@@ -140,6 +140,21 @@
 
 
 /*
+ * iapi - External interpreter interfaces
+ */
+
+ACPI_STATUS
+AmlLoadTable (
+    ACPI_TABLE_TYPE         TableId);
+
+ACPI_STATUS
+AmlExecuteMethod (
+    UINT8                   *Pcode, 
+    UINT32                  Length, 
+    ACPI_OBJECT_INTERNAL    **Params);
+
+
+/*
  * iefield - ACPI AML (p-code) execution - field manipulation
  */
 
@@ -338,17 +353,17 @@ AmlClearPkgStack (
 
 ACPI_STATUS
 AmlPkgPushLength (
-    INT32                   Length, 
+    UINT32                  Length, 
     OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlPkgPushExecLength (
-    INT32                   Length);
+    UINT32                  Length);
 
 ACPI_STATUS
 AmlPkgPushExec (
     UINT8                   *Code, 
-    INT32                   Len);
+    UINT32                  Len);
 
 ACPI_STATUS
 AmlPkgPopLength (
@@ -415,12 +430,6 @@ OsReleaseGlobalLock(
 /*
  * iexecute - ACPI AML (p-code) execution
  */
-
-ACPI_STATUS
-AmlExecuteMethod (
-    INT32                   Offset, 
-    INT32                   Len, 
-    ACPI_OBJECT_INTERNAL    **Params);
 
 ACPI_STATUS
 AmlExecStore (
@@ -493,7 +502,7 @@ AmlPeek (
 
 INT32
 AmlGetPCodeByte (
-    ACPI_PTRDIFF            Offset);
+    UINT8                   *Pcode);
 
 UINT16
 AmlPeekOp (
@@ -515,7 +524,7 @@ AmlConsumePackage (
 void
 AmlSetPCodeInput (
     UINT8                   *Base, 
-    INT32                   Len);
+    UINT32                  Length);
 
 ACPI_STATUS
 AmlSetMethod (
@@ -523,8 +532,8 @@ AmlSetMethod (
 
 ACPI_STATUS
 AmlPrepExec (
-    ACPI_PTRDIFF            Offset, 
-    INT32                   Len);
+    UINT8                   *Pcode, 
+    UINT32                  PcodeLength);
 
 ACPI_HANDLE
 AmlGetPCodeHandle (
@@ -578,7 +587,6 @@ AmlDoCode (
 
 ACPI_STATUS
 AmlDoDefinitionBlock (
-    char                    *name, 
     UINT8                   *addr, 
     INT32                   Length);
     
