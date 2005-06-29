@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.89 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -139,6 +139,9 @@
         ACPI_MODULE_NAME    ("aemain")
 
 
+UINT8 AcpiGbl_BatchMode = FALSE;
+char  *AcpiGbl_BatchMethodName;
+
 #if ACPI_MACHINE_WIDTH == 16
 
 ACPI_STATUS
@@ -225,14 +228,15 @@ AfInstallGpeBlock (void)
 void
 usage (void)
 {
-    printf ("Usage: acpiexec [-?dgis] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
+    printf ("Usage: acpiexec [-?dgis] [-x DebugLevel] [-o OutputFile] [-b Method] [AcpiTableFile]\n");
     printf ("Where:\n");
     printf ("    Input Options\n");
     printf ("        AcpiTableFile       Get ACPI tables from this file\n");
     printf ("    Output Options\n");
     printf ("    Miscellaneous Options\n");
     printf ("        -?                  Display this message\n");
-    printf ("        -i                  Do not run INI methods\n");
+    printf ("        -b Method           Batch mode method execution\n");
+    printf ("        -i                  Do not run STA/INI methods\n");
     printf ("        -x DebugLevel       Specify debug output level\n");
     printf ("        -v                  Verbose init output\n");
 }
@@ -293,8 +297,13 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?dgio:svx:")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?b:dgio:svx:")) != EOF) switch(j)
     {
+    case 'b':
+        AcpiGbl_BatchMode = TRUE;
+        AcpiGbl_BatchMethodName = AcpiGbl_Optarg;
+        break;
+
     case 'd':
         AcpiGbl_DbOpt_disasm = TRUE;
         AcpiGbl_DbOpt_stats = TRUE;
@@ -480,9 +489,16 @@ main (
 
 enterloop:
 
-    /* Enter the debugger command loop */
+    if (AcpiGbl_BatchMode)
+    {
+        AcpiDbExecute (AcpiGbl_BatchMethodName, NULL, EX_NO_SINGLE_STEP);
+    }
+    else
+    {
+        /* Enter the debugger command loop */
 
-    AcpiDbUserCommands (ACPI_DEBUGGER_COMMAND_PROMPT, NULL);
+        AcpiDbUserCommands (ACPI_DEBUGGER_COMMAND_PROMPT, NULL);
+    }
 
     return 0;
 }
