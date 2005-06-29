@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -174,8 +174,9 @@ AcpiExGetObjectReference (
         case AML_LOCAL_OP:
         case AML_ARG_OP:
 
-            *ReturnDesc = (void *) AcpiDsMethodDataGetNode (ObjDesc->Reference.Opcode,
-                                        ObjDesc->Reference.Offset, WalkState);
+            Status = AcpiDsMethodDataGetNode (ObjDesc->Reference.Opcode,
+                            ObjDesc->Reference.Offset, WalkState, 
+                            (ACPI_NAMESPACE_NODE **) ReturnDesc);
             break;
 
         default:
