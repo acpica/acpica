@@ -170,8 +170,7 @@ NsAllocateNameTable (
 
     DEBUG_PRINT (TRACE_EXEC, ("NsAllocateNameTable: NameTable=%p\n", NameTable));
 
-    FUNCTION_EXIT;
-    return NameTable;
+    return_VALUE (NameTable);
 }
 
 
@@ -219,7 +218,7 @@ NsDeleteNamespace (void)
         {
             /* Found an object - delete the object within the Value field */
 
-            NsDeleteValue (ChildHandle);
+            NsDetachObject (ChildHandle);
 
             /* Check if this object has any children */
 
@@ -267,82 +266,7 @@ NsDeleteNamespace (void)
     REPORT_SUCCESS ("Entire namespace and objects deleted");
     RootObject->Scope = NULL;
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK; 
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    NsDeleteValue
- *
- * PARAMETERS:  Object           - An object whose Value will be deleted
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Delete the Value associated with a namespace object.  If the
- *              Value is an allocated object, it is freed.  Otherwise, the
- *              field is simply cleared.
- *
- ***************************************************************************/
-
-void
-NsDeleteValue (
-    ACPI_HANDLE             Object)
-{
-    NAME_TABLE_ENTRY        *Entry = Object;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-
-    
-    FUNCTION_TRACE ("NsDeleteValue");
-
-    ObjDesc = Entry->Value;
-    if (!ObjDesc)
-    {
-    	FUNCTION_EXIT;
-        return;
-    }
-
-    /* Found a valid value */
-
-    DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: Object=%p Value=%p Name %4.4s\n", 
-                            Entry, ObjDesc, &Entry->Name));
-
-    /* Not every value is an object allocated via CmCallocate, must check */
-
-    if (!AmlIsInPCodeBlock ((UINT8 *)    ObjDesc)) /*&&
-        !IS_NS_HANDLE                   (ObjDesc))*/
-    {
-
-        switch (Entry->Type)
-        {
-        case TYPE_Lvalue:
-        case TYPE_String:
-        case TYPE_Buffer:
-            /* 
-             * Object was allocated, and there may be some sub objects that must be deleted.
-             * We don't expect a package object to be in a value field, just delete
-             * the simple object.
-             */
-
-            CmDeleteInternalSimpleObject (ObjDesc);
-            break;
-
-        default:
-
-            /*
-             * Everything else, just delete the thing.
-             */
-            CmFree (ObjDesc);
-            break;
-        }
-    }
-
-    /* Clear the entry in all cases */
-
-    Entry->Value = NULL;
-    
-    FUNCTION_EXIT;
+    return_ACPI_STATUS (AE_OK); 
 }
 
 
@@ -372,8 +296,7 @@ NsDeleteScope (
 
     if (!Scope)
     {
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
 
     ThisTable = (NAME_TABLE_ENTRY *) Scope;
@@ -400,7 +323,7 @@ NsDeleteScope (
 
     } while (ThisTable);
     
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -456,8 +379,7 @@ NsDeleteAcpiTable (
 
     if (Type > ACPI_TABLE_MAX)
     {
-    	FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
 
 
@@ -491,7 +413,6 @@ NsDeleteAcpiTable (
         break;
 
     case TABLE_PSDT:
-        PSDT = NULL;
         break;
 
     case TABLE_RSDT:
@@ -499,7 +420,6 @@ NsDeleteAcpiTable (
         break;
 
     case TABLE_SSDT:
-        SSDT = NULL;
         break;
 
     case TABLE_SBDT:
@@ -509,7 +429,7 @@ NsDeleteAcpiTable (
         break;
     }
 
-	FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -527,44 +447,154 @@ NsDeleteAcpiTable (
 
 void
 NsFreeAcpiTable (
-    ACPI_TABLE_INFO         *TableInfo)
+    ACPI_TABLE_DESC         *ListHead)
 {
+    ACPI_TABLE_DESC         *TableDesc;
+    UINT32                  Count;
+    UINT32                  i;
+
+
 	FUNCTION_TRACE ("NsFreeAcpiTable");
 
 
-    if (TableInfo->Pointer)
+    /* Get the head of the list */
+
+    TableDesc   = ListHead;
+    Count       = ListHead->Count;
+
+    /*
+     * Walk the entire list, deleting both the allocated tables
+     * and the table descriptors
+     */
+
+    for (i = 0; i < Count; i++)
     {
-        /* Valid table, determine type of memory */
-
-        switch (TableInfo->Allocation)
+        if (TableDesc->Pointer)
         {
+            /* Valid table, determine type of memory */
 
-        case ACPI_MEM_NOT_ALLOCATED:
+            switch (TableDesc->Allocation)
+            {
 
-            break;
+            case ACPI_MEM_NOT_ALLOCATED:
 
-
-        case ACPI_MEM_ALLOCATED:
-
-            CmFree (TableInfo->Pointer);
-            break;
+                break;
 
 
-        case ACPI_MEM_MAPPED:
+            case ACPI_MEM_ALLOCATED:
 
-            OsdUnMapMemory (TableInfo->Pointer, TableInfo->Length);
-            break;
+                CmFree (TableDesc->Pointer);
+                break;
+
+
+            case ACPI_MEM_MAPPED:
+
+                OsdUnMapMemory (TableDesc->Pointer, TableDesc->Length);
+                break;
+            }
+        }
+
+        /* Move to the next, delete the current descriptor */
+
+        TableDesc = TableDesc->Next;
+        if (i > 0)
+        {
+            CmFree (TableDesc->Prev);
         }
     }
 
-    /* Clear the table entry */
 
-    TableInfo->Pointer    = NULL;
-    TableInfo->Allocation = ACPI_MEM_NOT_ALLOCATED;
-    TableInfo->Length     = 0;
 
-    FUNCTION_EXIT;
+    /* Clear the list head */
+
+    ListHead->Prev      = ListHead;
+    ListHead->Next      = ListHead;
+    ListHead->Pointer   = NULL;
+    ListHead->Length    = 0;
+    ListHead->Count     = 0;
+
+    return_VOID;
 }
 
 
+/****************************************************************************
+ *
+ * FUNCTION:    NsInstallAcpiTable
+ *
+ * PARAMETERS:  TableType           - The type of the table
+ *              TableInfo           - A table info struct
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Install a table into the global data structs.
+ *
+ ***************************************************************************/
 
+ACPI_STATUS
+NsInstallAcpiTable (
+    ACPI_TABLE_TYPE         TableType,
+    ACPI_TABLE_DESC         *TableInfo)
+{
+    ACPI_TABLE_DESC         *ListHead;
+    ACPI_TABLE_DESC         *TableDesc;
+
+
+    FUNCTION_TRACE ("NsInstallAcpiTable");
+
+
+    ListHead    = &AcpiTables[TableType];
+    TableDesc   = ListHead;
+   
+    if (AcpiTableFlags[TableType] == ACPI_TABLE_SINGLE)
+    {
+        if (ListHead->Pointer)
+        {
+            NsFreeAcpiTable (ListHead);
+        }
+
+        TableDesc->Count = 1;
+    }
+
+
+    else 
+    {
+        if (ListHead->Pointer)
+        {
+            TableDesc = CmCallocate (sizeof (ACPI_TABLE_DESC));
+            if (!TableDesc)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            ListHead->Count++;
+
+            /* Update original previous */
+
+            ListHead->Prev->Next = TableDesc;
+
+            /* Update new entry */
+
+            TableDesc->Prev = ListHead->Prev;
+            TableDesc->Next = (ACPI_TABLE_DESC *) ListHead;
+
+            /* Update list head */
+
+            ListHead->Prev = TableDesc;
+        }
+
+        else
+        {
+            TableDesc->Count = 1;
+        }
+    }
+
+
+    /* Common initialization of the table descriptor */
+
+    TableDesc->Pointer      = TableInfo->Pointer;
+    TableDesc->Length       = TableInfo->Length;
+    TableDesc->Allocation   = TableInfo->Allocation;
+
+
+    return_ACPI_STATUS (AE_OK);
+}
