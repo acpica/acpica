@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.159 $
+ *              $Revision: 1.160 $
  *
  ******************************************************************************/
 
@@ -351,7 +351,8 @@ AcpiNsLookup (
     ACPI_NAME               SimpleName;
     ACPI_OBJECT_TYPE        TypeToCheckFor;
     ACPI_OBJECT_TYPE        ThisSearchType;
-    UINT32                  LocalFlags = Flags & ~ACPI_NS_ERROR_IF_FOUND;
+    UINT32                  LocalFlags = Flags & ~(ACPI_NS_ERROR_IF_FOUND | ACPI_NS_SEARCH_PARENT);
+    UINT32                  SearchParentFlag = ACPI_NS_SEARCH_PARENT;
     NATIVE_CHAR             *Path = Pathname;
 
 
@@ -447,12 +448,13 @@ AcpiNsLookup (
             /* Pathname is fully qualified, start from the root */
 
             ThisNode = AcpiGbl_RootNode;
+            SearchParentFlag = ACPI_NS_NO_UPSEARCH;
 
             /* Point to name segment part */
 
             Path++;
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching from root [%p]\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Path is absolute from root [%p]\n",
                 ThisNode));
         }
         else
@@ -460,7 +462,7 @@ AcpiNsLookup (
             /* Pathname is relative to current scope, start there */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "Searching relative to pfx scope [%p]\n",
+                "Searching relative to prefix scope [%p]\n",
                 PrefixNode));
 
             /*
@@ -470,6 +472,9 @@ AcpiNsLookup (
             ThisNode = PrefixNode;
             while (*Path == (UINT8) AML_PARENT_PREFIX)
             {
+                /* Name is fully qualified, no search rules apply */
+
+                SearchParentFlag = ACPI_NS_NO_UPSEARCH;
                 /*
                  * Point past this prefix to the name segment
                  * part or the next Parent Prefix
@@ -487,6 +492,12 @@ AcpiNsLookup (
                         ("ACPI path has too many parent prefixes (^) - reached beyond root node\n"));
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
+            }
+
+            if (SearchParentFlag == ACPI_NS_NO_UPSEARCH)
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                    "Path is absolute with one or more carats\n"));
             }
         }
 
@@ -518,6 +529,10 @@ AcpiNsLookup (
 
         case AML_DUAL_NAME_PREFIX:
 
+            /* More than one NameSeg, search rules do not apply */
+
+            SearchParentFlag = ACPI_NS_NO_UPSEARCH;
+
             /* Two segments, point to first name segment */
 
             NumSegments = 2;
@@ -528,6 +543,10 @@ AcpiNsLookup (
             break;
 
         case AML_MULTI_NAME_PREFIX_OP:
+
+            /* More than one NameSeg, search rules do not apply */
+
+            SearchParentFlag = ACPI_NS_NO_UPSEARCH;
 
             /* Extract segment count, point to first name segment */
 
@@ -555,32 +574,50 @@ AcpiNsLookup (
         ACPI_DEBUG_EXEC (AcpiNsPrintPathname (NumSegments, Path));
     }
 
+
     /*
      * Search namespace for each segment of the name.  Loop through and
-     * verify/add each name segment.
+     * verify (or add to the namespace) each name segment.
+     *
+     * The object type is significant only at the last name
+     * segment.  (We don't care about the types along the path, only
+     * the type of the final target object.)
      */
+    ThisSearchType = ACPI_TYPE_ANY;
     CurrentNode = ThisNode;
     while (NumSegments && CurrentNode)
     {
-        /*
-         * Search for the current name segment under the current
-         * named object.  The Type is significant only at the last name
-         * segment.  (We don't care about the types along the path, only
-         * the type of the final target object.)
-         */
-        ThisSearchType = ACPI_TYPE_ANY;
         NumSegments--;
         if (!NumSegments)
         {
+            /*
+             * This is the last segment, enable typechecking
+             */
             ThisSearchType = Type;
-            LocalFlags = Flags;
+
+            /*
+             * Only allow automatic parent search (search rules) if the caller
+             * requested it AND we have a single, non-fully-qualified NameSeg
+             */
+            if ((SearchParentFlag != ACPI_NS_NO_UPSEARCH) &&
+                (Flags & ACPI_NS_SEARCH_PARENT))
+            {
+                LocalFlags |= ACPI_NS_SEARCH_PARENT;
+            }
+
+            /* Set error flag according to caller */
+
+            if (Flags & ACPI_NS_ERROR_IF_FOUND)
+            {
+                LocalFlags |= ACPI_NS_ERROR_IF_FOUND;
+            }
         }
 
         /* Extract one ACPI name from the front of the pathname */
 
         ACPI_MOVE_UNALIGNED32_TO_32 (&SimpleName, Path);
 
-        /* Try to find the ACPI name */
+        /* Try to find the single (4 character) ACPI name */
 
         Status = AcpiNsSearchAndEnter (SimpleName, WalkState, CurrentNode,
                         InterpreterMode, ThisSearchType, LocalFlags, &ThisNode);
