@@ -489,31 +489,6 @@ typedef struct /* INDEX FIELD */
 } ACPI_OBJECT_IndexField;
 
 
-typedef struct /* Lvalue - Local object type */
-{
-    ACPI_OBJECT_COMMON
-
-    UINT16                  OpCode;             /* Arg#, Local#, IndexOp, NameOp,
-                                                 * ZeroOp, OneOp, OnesOp, Debug1 => DebugOp
-                                                 */
-    UINT16                  Fill1;
-    UINT32                  Reserved2;
-    UINT32                  Reserved3;
-    UINT32                  Reserved4;
-
-    void                    *Object;            /* OpCode   Use of Object field
-                                                 * -------  ----------------------------
-                                                 * NameOp   ACPI_HANDLE for referenced name
-                                                 * IndexOp  ACPI_OBJECT_INTERNAL **
-                                                 */
-    void                    *Reserved_p2;
-    void                    *Reserved_p3;
-    void                    *Reserved_p4;
-    void                    *Reserved_p5;
-
-} ACPI_OBJECT_Lvalue;
-
-
 typedef struct /* NOTIFY HANDLER */
 {
     ACPI_OBJECT_COMMON
@@ -532,12 +507,16 @@ typedef struct /* NOTIFY HANDLER */
 } ACPI_OBJECT_NotifyHandler;
 
 
+/* Flags for address handler */
+
+#define AH_DEFAULT_HANDLER  0x1
+
 typedef struct /* ADDRESS HANDLER */
 {
     ACPI_OBJECT_COMMON
 
     UINT16                  SpaceId;
-    UINT16                  Fill1;
+    UINT16                  Hflags;
     UINT32                  Reserved2;
     UINT32                  Reserved3;
     UINT32                  Reserved4;
@@ -550,6 +529,30 @@ typedef struct /* ADDRESS HANDLER */
 
 } ACPI_OBJECT_AddrHandler;
 
+
+/*
+ * Local object type is used for these opcodes:
+ * Arg[0-6], Local[0-7], IndexOp, NameOp, ZeroOp, OneOp, OnesOp, DebugOp
+ */
+
+typedef struct /* Lvalue - Local object type */
+{
+    ACPI_OBJECT_COMMON
+
+    UINT16                  OpCode;  
+    UINT8                   Fill1;
+    UINT8                   TargetType;         /* Used for IndexOp */
+    UINT32                  Offset;             /* Used for ArgOp, LocalOp, and IndexOp */
+    UINT32                  Reserved3;
+    UINT32                  Reserved4;
+
+    void                    *Object;            /* NameOp=>HANDLE to obj, IndexOp=>ACPI_OBJECT_INTERNAL */
+    NAME_TABLE_ENTRY        *Nte;
+    void                    *Reserved_p3;
+    void                    *Reserved_p4;
+    void                    *Reserved_p5;
+
+} ACPI_OBJECT_Lvalue;
 
 
 
@@ -585,14 +588,6 @@ typedef union AcpiObjInternal
 
 } ACPI_OBJECT_INTERNAL;
 
-
-/* 
- * The Lvalue case of ACPI_OBJECT_INTERNAL includes a one-byte field which
- * contains an AML opcode identifying the type of lvalue.  Debug1 is used
- * in this field as a stand-in for the (two-byte) AML encoding of DebugOp (0x5B31)
- */
-
-#define Debug1          0x31
 
 
 
