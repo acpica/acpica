@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.170 $
+ *              $Revision: 1.171 $
  *
  ******************************************************************************/
 
@@ -206,7 +206,8 @@ AcpiNsRootInitialize (void)
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not override predefined %s\n",
                     InitVal->Name));
             }
-            if (Val == NULL)
+
+            if (!Val)
             {
                 Val = InitVal->Val;
             }
