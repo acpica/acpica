@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -883,7 +883,7 @@ AcpiOsBreakpoint (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsSleepUsec
+ * FUNCTION:    AcpiOsStall
  *
  * PARAMETERS:  microseconds        To sleep
  *
@@ -894,7 +894,7 @@ AcpiOsBreakpoint (
  *****************************************************************************/
 
 void
-AcpiOsSleepUsec (
+AcpiOsStall (
     UINT32                  microseconds)
 {
 
