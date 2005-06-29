@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
- *              $Revision: 1.63 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "actables.h"
 #include "acparser.h"
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmdelete")
 
 
@@ -641,7 +641,7 @@ AcpiCmUpdateObjectReference (
         case ACPI_TYPE_FIELD_UNIT:
 
             Status = AcpiCmCreateUpdateStateAndPush (
-                        Object->FieldUnit.Container, Action, &StateList);
+                        Object->FieldUnit.ContainerObj, Action, &StateList);
 
             if (ACPI_FAILURE (Status))
             {
@@ -653,7 +653,7 @@ AcpiCmUpdateObjectReference (
         case INTERNAL_TYPE_DEF_FIELD:
 
             Status = AcpiCmCreateUpdateStateAndPush (
-                        Object->Field.Container, Action, &StateList);
+                        Object->Field.RegionObj, Action, &StateList);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -664,14 +664,14 @@ AcpiCmUpdateObjectReference (
         case INTERNAL_TYPE_BANK_FIELD:
 
             Status = AcpiCmCreateUpdateStateAndPush (
-                        Object->BankField.BankSelect, Action, &StateList);
+                        Object->BankField.BankRegisterObj, Action, &StateList);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
             Status = AcpiCmCreateUpdateStateAndPush (
-                        Object->BankField.Container, Action, &StateList);
+                        Object->BankField.RegionObj, Action, &StateList);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
