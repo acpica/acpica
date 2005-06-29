@@ -137,9 +137,14 @@ getopt (
     char                    *opts);
 
 
+char *
+FlGenerateFilename (
+    char                    *InputFilename,
+    char                    *Suffix);
+
 ACPI_STATUS
 AdAmlDisassemble (
-    char                *Filename);
+    char                    *Filename);
 
 void
 AdPrintStatistics (void);
@@ -162,7 +167,8 @@ ACPI_STATUS
 AdParseTables (void);
 
 ACPI_STATUS
-AdDisplayTables (void);
+AdDisplayTables (
+    char                    *Filename);
 
 ACPI_STATUS
 AdDisplayStatistics (void);

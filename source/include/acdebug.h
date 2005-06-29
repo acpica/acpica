@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.43 $
+ *       $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,66 +118,7 @@
 #define __ACDEBUG_H__
 
 
-#define DB_MAX_ARGS             8  /* Must be max method args + 1 */
-
-#define DB_COMMAND_PROMPT      '-'
-#define DB_EXECUTE_PROMPT      '%'
-
-
-extern int                      optind;
-extern NATIVE_CHAR              *optarg;
-extern UINT8                    *AmlPtr;
-extern UINT32                   AcpiAmlLength;
-
-extern BOOLEAN                  opt_tables;
-extern BOOLEAN                  opt_disasm;
-extern BOOLEAN                  opt_stats;
-extern BOOLEAN                  opt_parse_jit;
-extern BOOLEAN                  opt_verbose;
-extern BOOLEAN                  opt_ini_methods;
-
-
-extern NATIVE_CHAR              *Args[DB_MAX_ARGS];
-extern NATIVE_CHAR              LineBuf[80];
-extern NATIVE_CHAR              ScopeBuf[40];
-extern NATIVE_CHAR              DebugFilename[40];
-extern BOOLEAN                  OutputToFile;
-extern NATIVE_CHAR              *Buffer;
-extern NATIVE_CHAR              *Filename;
-extern NATIVE_CHAR              *INDENT_STRING;
-extern UINT8                    AcpiGbl_DbOutputFlags;
-extern UINT32                   AcpiGbl_DbDebugLevel;
-extern UINT32                   AcpiGbl_DbConsoleDebugLevel;
-
-extern UINT32                   NumNames;
-extern UINT32                   NumMethods;
-extern UINT32                   NumRegions;
-extern UINT32                   NumPackages;
-extern UINT32                   NumAliases;
-extern UINT32                   NumDevices;
-extern UINT32                   NumFieldDefs;
-extern UINT32                   NumThermalZones;
-extern UINT32                   NumNodes;
-extern UINT32                   NumGrammarElements;
-extern UINT32                   NumMethodElements ;
-extern UINT32                   NumMutexes;
-extern UINT32                   NumPowerResources;
-extern UINT32                   NumBankFields ;
-extern UINT32                   NumIndexFields;
-extern UINT32                   NumEvents;
-
-extern UINT32                   SizeOfParseTree;
-extern UINT32                   SizeOfMethodTrees;
-extern UINT32                   SizeOfNTEs;
-extern UINT32                   SizeOfAcpiObjects;
-
-
-#define BUFFER_SIZE             4196
-
-#define DB_REDIRECTABLE_OUTPUT  0x01
-#define DB_CONSOLE_OUTPUT       0x02
-#define DB_DUPLICATE_OUTPUT     0x03
-
+#define ACPI_DEBUG_BUFFER_SIZE  4196
 
 typedef struct CommandInfo
 {
@@ -196,7 +137,7 @@ typedef struct ArgumentInfo
 
 #define PARAM_LIST(pl)                  pl
 
-#define DBTEST_OUTPUT_LEVEL(lvl)        if (opt_verbose)
+#define DBTEST_OUTPUT_LEVEL(lvl)        if (AcpiGbl_DbOpt_verbose)
 
 #define VERBOSE_PRINT(fp)               DBTEST_OUTPUT_LEVEL(lvl) {\
                                             AcpiOsPrintf PARAM_LIST(fp);}
@@ -212,21 +153,24 @@ typedef struct ArgumentInfo
  * dbapi - external debugger interfaces
  */
 
-int
+ACPI_STATUS
 AcpiDbInitialize (
+    void);
+
+void
+AcpiDbTerminate (
     void);
 
 ACPI_STATUS
 AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op,
-    UINT8                   OpType);
+    UINT32                  OpType);
 
 
 /*
  * dbcmds - debug commands and output routines
  */
-
 
 void
 AcpiDbDisplayTableInfo (
@@ -298,39 +242,42 @@ void
 AcpiDbDisplayResources (
     NATIVE_CHAR             *ObjectArg);
 
-
-/*
- * dbdisasm - AML disassembler
- */
-
 void
-AcpiDbDisplayOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Origin,
-    UINT32                  NumOpcodes);
+AcpiDbCheckIntegrity (
+    void);
 
-void
-AcpiDbDisplayNamestring (
-    NATIVE_CHAR             *Name);
+ACPI_STATUS
+AcpiDbIntegrityWalk (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
 
-void
-AcpiDbDisplayPath (
-    ACPI_PARSE_OBJECT       *Op);
+ACPI_STATUS
+AcpiDbWalkAndMatchName (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
 
-void
-AcpiDbDisplayOpcode (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
+ACPI_STATUS
+AcpiDbWalkForReferences (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
 
-void
-AcpiDbDecodeInternalObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
+ACPI_STATUS
+AcpiDbWalkForSpecificObjects (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
 
 
 /*
  * dbdisply - debug display commands
  */
-
 
 void
 AcpiDbDisplayMethodInfo (
@@ -376,6 +323,18 @@ AcpiDbDisplayArgumentObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
+void
+AcpiDbDumpParserDescriptor (
+    ACPI_PARSE_OBJECT       *Op);
+
+void *
+AcpiDbGetPointer (
+    void                    *Target);
+
+void
+AcpiDbDecodeInternalObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
 
 /*
  * dbexec - debugger control method execution
@@ -393,16 +352,36 @@ AcpiDbCreateExecutionThreads (
     NATIVE_CHAR             *NumLoopsArg,
     NATIVE_CHAR             *MethodNameArg);
 
+ACPI_STATUS
+AcpiDbExecuteMethod (
+    ACPI_DB_METHOD_INFO     *Info,
+    ACPI_BUFFER             *ReturnObj);
+
+void
+AcpiDbExecuteSetup (
+    ACPI_DB_METHOD_INFO     *Info);
+
+UINT32
+AcpiDbGetOutstandingAllocations (
+    void);
+
+void ACPI_SYSTEM_XFACE
+AcpiDbMethodThread (
+    void                    *Context);
+
 
 /*
  * dbfileio - Debugger file I/O commands
  */
 
-ACPI_OBJECT_TYPE8
+ACPI_OBJECT_TYPE
 AcpiDbMatchArgument (
     NATIVE_CHAR             *UserArgument,
     ARGUMENT_INFO           *Arguments);
 
+ACPI_STATUS
+AeLocalLoadTable (
+    ACPI_TABLE_HEADER       *TablePtr);
 
 void
 AcpiDbCloseDebugFile (
@@ -416,6 +395,9 @@ ACPI_STATUS
 AcpiDbLoadAcpiTable (
     NATIVE_CHAR             *Filename);
 
+ACPI_STATUS
+AcpiDbGetAcpiTable (
+    NATIVE_CHAR             *Filename);
 
 /*
  * dbhistry - debugger HISTORY command
@@ -443,7 +425,7 @@ AcpiDbCommandDispatch (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
 
-void
+void ACPI_SYSTEM_XFACE
 AcpiDbExecuteThread (
     void                    *Context);
 
@@ -451,6 +433,27 @@ ACPI_STATUS
 AcpiDbUserCommands (
     NATIVE_CHAR             Prompt,
     ACPI_PARSE_OBJECT       *Op);
+
+void
+AcpiDbDisplayHelp (
+    NATIVE_CHAR             *HelpType);
+
+NATIVE_CHAR *
+AcpiDbGetNextToken (
+    NATIVE_CHAR             *String,
+    NATIVE_CHAR             **Next);
+
+UINT32
+AcpiDbGetLine (
+    NATIVE_CHAR             *InputBuffer);
+
+UINT32
+AcpiDbMatchCommand (
+    NATIVE_CHAR             *UserCommand);
+
+void
+AcpiDbSingleThread (
+    void);
 
 
 /*
@@ -466,6 +469,21 @@ AcpiDbGenerateStatistics (
 ACPI_STATUS
 AcpiDbDisplayStatistics (
     NATIVE_CHAR             *TypeArg);
+
+ACPI_STATUS
+AcpiDbClassifyOneObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+void
+AcpiDbCountNamespaceObjects (
+    void);
+
+void
+AcpiDbEnumerateObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
 /*
