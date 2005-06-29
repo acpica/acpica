@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -487,7 +487,7 @@ AcpiEvGpeDispatch (
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
 
-        /* 
+        /*
          * Execute the method associated with the GPE
          * NOTE: Level-triggered GPEs are cleared after the method completes.
          */
