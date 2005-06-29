@@ -188,8 +188,6 @@
 
 typedef union AcpiObjInternal           
 {
-    UINT8                   Type;           /* See definition of NsType for values */
-
 
     /* 
      * Fields that are common across all objects 
