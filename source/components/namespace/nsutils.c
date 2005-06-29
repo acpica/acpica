@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -735,7 +735,7 @@ AcpiNsExternalizeName (
             /* <count> 4-byte names */
 
             NamesIndex = PrefixLength + 2;
-            NumSegments = (UINT32) (UINT8) InternalName[(ACPI_NATIVE_UINT) (PrefixLength + 1)];
+            NumSegments = (ACPI_NATIVE_UINT) (UINT8) InternalName[(ACPI_NATIVE_UINT) (PrefixLength + 1)];
             break;
 
         case AML_DUAL_NAME_PREFIX:
