@@ -244,10 +244,11 @@ BOOLEAN
 TbSystemTablePointer (
     void                    *Where);
 
-void *
+ACPI_STATUS
 TbMapAcpiTable (
     void                    *PhysicalAddress,
-    UINT32                  *Size);
+    UINT32                  *Size,
+	void					**LogicalAddress);
 
 ACPI_STATUS
 TbVerifyTableChecksum (
