@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.15 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -151,10 +151,11 @@ typedef struct asl_parse_node
     struct asl_parse_node       *Child;
     struct asl_parse_node       *ParentMethod;
     ACPI_NAMESPACE_NODE         *NsNode;
-    union asl_node_value        Value;
     char                        *Filename;
     char                        *ExternalName;
     char                        *Namepath;
+    union asl_node_value        Value;
+    UINT32                      ExtraValue;
     UINT32                      Column;
     UINT32                      LineNumber;
     UINT32                      LogicalLineNumber;
@@ -263,7 +264,7 @@ typedef struct asl_file_info
 
 /* File types */
 
-typedef enum 
+typedef enum
 {
     ASL_FILE_STDOUT             = 0,
     ASL_FILE_STDERR,
@@ -374,6 +375,8 @@ typedef enum
     ASL_MSG_WRITE,
     ASL_MSG_SEEK,
     ASL_MSG_CLOSE,
+    ASL_MSG_FIELD_ACCESS_WIDTH,
+    ASL_MSG_FIELD_UNIT_OFFSET,
 
 } ASL_MESSAGE_IDS;
 
