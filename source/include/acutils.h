@@ -153,6 +153,14 @@ FunctionExit (
     char                *FunctionName);
 
 void
+FunctionStatusExit (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    char                *FunctionName,
+    ACPI_STATUS         Status);
+
+void
 DebugPrintPrefix (
     char                *ModuleName, 
     INT32               LineNumber, 
