@@ -388,7 +388,6 @@ UINT32                  EventCount[NUM_FIXED_EVENTS];
 
 
 
-
 /******************************************************************************
  *
  * Table globals
@@ -414,15 +413,15 @@ UINT8   AcpiTableFlags[NUM_ACPI_TABLES] =
 
 char *AcpiTableNames[] = 
 {
-        "RSDP",
-        APIC_SIG,
-        DSDT_SIG,
-        FACP_SIG,
-        FACS_SIG,
-        PSDT_SIG,
-        RSDT_SIG,
-        SSDT_SIG,
-        SBST_SIG
+    "RSDP",
+    APIC_SIG,
+    DSDT_SIG,
+    FACP_SIG,
+    FACS_SIG,
+    PSDT_SIG,
+    RSDT_SIG,
+    SSDT_SIG,
+    SBST_SIG
 };
 
 
