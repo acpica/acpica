@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
- * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.83 $
+ * 
+ * Module Name: ieconfig - Namespace reconfiguration (Load/Unload opcodes)
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
 
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,438 +115,149 @@
  *
  *****************************************************************************/
 
-#define __EXCONFIG_C__
+#define __IECONFIG_C__
 
-#include "acpi.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "acevents.h"
-#include "actables.h"
-#include "acdispat.h"
-
-
-#define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exconfig")
-
-/* Local prototypes */
-
-static ACPI_STATUS
-AcpiExAddTable (
-    ACPI_TABLE_HEADER       *Table,
-    ACPI_NAMESPACE_NODE     *ParentNode,
-    ACPI_OPERAND_OBJECT     **DdbHandle);
+#include <acpi.h>
+#include <parser.h>
+#include <interp.h>
+#include <amlcode.h>
+#include <namesp.h>
+#include <events.h>
+#include <dispatch.h>
 
 
-/*******************************************************************************
+#define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("ieconfig");
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlExecLoadTable
  *
- * FUNCTION:    AcpiExAddTable
- *
- * PARAMETERS:  Table               - Pointer to raw table
- *              ParentNode          - Where to load the table (scope)
- *              DdbHandle           - Where to return the table handle.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Common function to Install and Load an ACPI table with a
- *              returned table handle.
- *
- ******************************************************************************/
-
-static ACPI_STATUS
-AcpiExAddTable (
-    ACPI_TABLE_HEADER       *Table,
-    ACPI_NAMESPACE_NODE     *ParentNode,
-    ACPI_OPERAND_OBJECT     **DdbHandle)
-{
-    ACPI_STATUS             Status;
-    ACPI_TABLE_DESC         TableInfo;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-
-
-    ACPI_FUNCTION_TRACE ("ExAddTable");
-
-
-    /* Create an object to be the table handle */
-
-    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_LOCAL_REFERENCE);
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    /* Install the new table into the local data structures */
-
-    ACPI_MEMSET (&TableInfo, 0, sizeof (ACPI_TABLE_DESC));
-
-    TableInfo.Type       = ACPI_TABLE_SSDT;
-    TableInfo.Pointer    = Table;
-    TableInfo.Length     = (ACPI_SIZE) Table->Length;
-    TableInfo.Allocation = ACPI_MEM_ALLOCATED;
-
-    Status = AcpiTbInstallTable (&TableInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
-
-    /* Add the table to the namespace */
-
-    Status = AcpiNsLoadTable (TableInfo.InstalledDesc, ParentNode);
-    if (ACPI_FAILURE (Status))
-    {
-        /* Uninstall table on error */
-
-        (void) AcpiTbUninstallTable (TableInfo.InstalledDesc);
-        goto Cleanup;
-    }
-
-    /* Init the table handle */
-
-    ObjDesc->Reference.Opcode = AML_LOAD_OP;
-    ObjDesc->Reference.Object = TableInfo.InstalledDesc;
-    *DdbHandle = ObjDesc;
-    return_ACPI_STATUS (AE_OK);
-
-
-Cleanup:
-    AcpiUtRemoveReference (ObjDesc);
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExLoadTableOp
- *
- * PARAMETERS:  WalkState           - Current state with operands
- *              ReturnDesc          - Where to store the return object
+ * PARAMETERS:  RgnDesc         - Op region where the table will be obtained
+ *              DdbHandle       - Where a handle to the table will be returned
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Load an ACPI table
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiExLoadTableOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
+AmlExecLoadTable (
+    ACPI_OBJECT_INTERNAL    *RgnDesc,
+    ACPI_HANDLE             *DdbHandle)
 {
     ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_TABLE_HEADER       *Table;
-    ACPI_NAMESPACE_NODE     *ParentNode;
-    ACPI_NAMESPACE_NODE     *StartNode;
-    ACPI_NAMESPACE_NODE     *ParameterNode = NULL;
-    ACPI_OPERAND_OBJECT     *DdbHandle;
-
-
-    ACPI_FUNCTION_TRACE ("ExLoadTableOp");
-
-
-#if 0
-    /*
-     * Make sure that the signature does not match one of the tables that
-     * is already loaded.
-     */
-    Status = AcpiTbMatchSignature (Operand[0]->String.Pointer, NULL);
-    if (Status == AE_OK)
-    {
-        /* Signature matched -- don't allow override */
-
-        return_ACPI_STATUS (AE_ALREADY_EXISTS);
-    }
-#endif
-
-    /* Find the ACPI table */
-
-    Status = AcpiTbFindTable (Operand[0]->String.Pointer,
-                              Operand[1]->String.Pointer,
-                              Operand[2]->String.Pointer, &Table);
-    if (ACPI_FAILURE (Status))
-    {
-        if (Status != AE_NOT_FOUND)
-        {
-            return_ACPI_STATUS (Status);
-        }
-
-        /* Table not found, return an Integer=0 and AE_OK */
-
-        DdbHandle = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!DdbHandle)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        DdbHandle->Integer.Value = 0;
-        *ReturnDesc = DdbHandle;
-
-        return_ACPI_STATUS (AE_OK);
-    }
-
-    /* Default nodes */
-
-    StartNode = WalkState->ScopeInfo->Scope.Node;
-    ParentNode = AcpiGbl_RootNode;
-
-    /* RootPath (optional parameter) */
-
-    if (Operand[3]->String.Length > 0)
-    {
-        /*
-         * Find the node referenced by the RootPathString.  This is the
-         * location within the namespace where the table will be loaded.
-         */
-        Status = AcpiNsGetNodeByPath (Operand[3]->String.Pointer, StartNode,
-                                        ACPI_NS_SEARCH_PARENT, &ParentNode);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
-
-    /* ParameterPath (optional parameter) */
-
-    if (Operand[4]->String.Length > 0)
-    {
-        if ((Operand[4]->String.Pointer[0] != '\\') &&
-            (Operand[4]->String.Pointer[0] != '^'))
-        {
-            /*
-             * Path is not absolute, so it will be relative to the node
-             * referenced by the RootPathString (or the NS root if omitted)
-             */
-            StartNode = ParentNode;
-        }
-
-        /* Find the node referenced by the ParameterPathString */
-
-        Status = AcpiNsGetNodeByPath (Operand[4]->String.Pointer, StartNode,
-                    ACPI_NS_SEARCH_PARENT, &ParameterNode);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
-
-    /* Load the table into the namespace */
-
-    Status = AcpiExAddTable (Table, ParentNode, &DdbHandle);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Parameter Data (optional) */
-
-    if (ParameterNode)
-    {
-        /* Store the parameter data into the optional parameter object */
-
-        Status = AcpiExStore (Operand[5],
-                    ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, ParameterNode),
-                    WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            (void) AcpiExUnloadTable (DdbHandle);
-            return_ACPI_STATUS (Status);
-        }
-    }
-
-    *ReturnDesc = DdbHandle;
-    return_ACPI_STATUS  (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExLoadOp
- *
- * PARAMETERS:  ObjDesc         - Region or Field where the table will be
- *                                obtained
- *              Target          - Where a handle to the table will be stored
- *              WalkState       - Current state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Load an ACPI table from a field or operation region
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExLoadOp (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     *Target,
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     *DdbHandle;
-    ACPI_OPERAND_OBJECT     *BufferDesc = NULL;
-    ACPI_TABLE_HEADER       *TablePtr = NULL;
-    ACPI_PHYSICAL_ADDRESS   Address;
+    ACPI_OBJECT_INTERNAL    *TableDesc = NULL;
     ACPI_TABLE_HEADER       TableHeader;
     UINT32                  i;
+    char                    *TablePtr;
+    char                    *TableDataPtr;
 
-    ACPI_FUNCTION_TRACE ("ExLoadOp");
+
+    FUNCTION_TRACE ("AmlExecLoadTable");
+
+    /* TBD: Object can be either a field or an opregion */
 
 
-    /* Object can be either an OpRegion or a Field */
+    /* Get the table header */
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    TableHeader.Length = 0;
+    for (i = 0; i < sizeof (ACPI_TABLE_HEADER); i++)
     {
-    case ACPI_TYPE_REGION:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Region %p %s\n",
-            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
-
-        /*
-         * If the Region Address and Length have not been previously evaluated,
-         * evaluate them now and save the results.
-         */
-        if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
+        Status = EvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ, i, 8, 
+                                            (UINT32 *) ((char *) &TableHeader + i));
+        if (ACPI_FAILURE (Status))
         {
-            Status = AcpiDsGetRegionArguments (ObjDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
+            return_ACPI_STATUS (Status)
         }
+    }
 
-        /* Get the base physical address of the region */
+    /* Allocate a buffer for the entire table */
 
-        Address = ObjDesc->Region.Address;
+    TablePtr = CmAllocate (TableHeader.Length);
+    if (!TablePtr)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
 
-        /* Get the table length from the table header */
+    /* Copy the header to the buffer */
 
-        TableHeader.Length = 0;
-        for (i = 0; i < 8; i++)
-        {
-            Status = AcpiEvAddressSpaceDispatch (ObjDesc, ACPI_READ,
-                                (ACPI_PHYSICAL_ADDRESS) (i + Address), 8,
-                                ((UINT8 *) &TableHeader) + i);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-        }
-
-        /* Sanity check the table length */
-
-        if (TableHeader.Length < sizeof (ACPI_TABLE_HEADER))
-        {
-            return_ACPI_STATUS (AE_BAD_HEADER);
-        }
-
-        /* Allocate a buffer for the entire table */
-
-        TablePtr = ACPI_MEM_ALLOCATE (TableHeader.Length);
-        if (!TablePtr)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        /* Get the entire table from the op region */
-
-        for (i = 0; i < TableHeader.Length; i++)
-        {
-            Status = AcpiEvAddressSpaceDispatch (ObjDesc, ACPI_READ,
-                                (ACPI_PHYSICAL_ADDRESS) (i + Address), 8,
-                                ((UINT8 *) TablePtr + i));
-            if (ACPI_FAILURE (Status))
-            {
-                goto Cleanup;
-            }
-        }
-        break;
+    MEMCPY (TablePtr, &TableHeader, sizeof (ACPI_TABLE_HEADER));
+    TableDataPtr = TablePtr + sizeof (ACPI_TABLE_HEADER);
 
 
-    case ACPI_TYPE_LOCAL_REGION_FIELD:
-    case ACPI_TYPE_LOCAL_BANK_FIELD:
-    case ACPI_TYPE_LOCAL_INDEX_FIELD:
+    /* Get the table from the op region */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Field %p %s\n",
-            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
-
-        /*
-         * The length of the field must be at least as large as the table.
-         * Read the entire field and thus the entire table.  Buffer is
-         * allocated during the read.
-         */
-        Status = AcpiExReadDataFromField (WalkState, ObjDesc, &BufferDesc);
+    for (i = 0; i < TableHeader.Length; i++)
+    {
+        Status = EvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ, i, 8, 
+                                            (UINT32 *) (TableDataPtr + i));
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
         }
-
-        TablePtr = ACPI_CAST_PTR (ACPI_TABLE_HEADER,
-                        BufferDesc->Buffer.Pointer);
-
-         /* Sanity check the table length */
-
-        if (TablePtr->Length < sizeof (ACPI_TABLE_HEADER))
-        {
-            return_ACPI_STATUS (AE_BAD_HEADER);
-        }
-        break;
-
-
-    default:
-        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
-    /* The table must be either an SSDT or a PSDT */
 
-    if ((!ACPI_STRNCMP (TablePtr->Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_PSDT].Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_PSDT].SigLength)) &&
-        (!ACPI_STRNCMP (TablePtr->Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_SSDT].Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_SSDT].SigLength)))
+    /* Table must be either an SSDT or a PSDT */
+
+    if ((!STRNCMP (TableHeader.Signature, Gbl_AcpiTableData[TABLE_PSDT].Signature, Gbl_AcpiTableData[TABLE_PSDT].SigLength)) &&
+        (!STRNCMP (TableHeader.Signature, Gbl_AcpiTableData[TABLE_SSDT].Signature, Gbl_AcpiTableData[TABLE_SSDT].SigLength)))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
-            TablePtr->Signature));
+        DEBUG_PRINT (ACPI_ERROR, ("Table has invalid signature [%4.4s], must be SSDT or PSDT\n", TableHeader.Signature));
         Status = AE_BAD_SIGNATURE;
         goto Cleanup;
     }
 
-    /* Install the new table into the local data structures */
+    /* Create an object to be the table handle */
 
-    Status = AcpiExAddTable (TablePtr, AcpiGbl_RootNode, &DdbHandle);
+    TableDesc = CmCreateInternalObject (INTERNAL_TYPE_Reference);
+    if (!TableDesc)
+    {
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+    }
+
+
+    /* Install the table */
+
+    Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) TablePtr);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
     }
 
-    /* Store the DdbHandle into the Target operand */
 
-    Status = AcpiExStore (DdbHandle, Target, WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        (void) AcpiExUnloadTable (DdbHandle);
-    }
+    /* Add the table to the namespace */
+
+    /* TBD: we need a pointer to the table desc */
+
+    /* Init the table handle */
+
+    TableDesc->Reference.OpCode = AML_LoadOp;
+    TableDesc->Reference.Object = TablePtr;
+
+    *DdbHandle = TableDesc;
 
     return_ACPI_STATUS (Status);
 
 
 Cleanup:
 
-    if (BufferDesc)
-    {
-        AcpiUtRemoveReference (BufferDesc);
-    }
-    else
-    {
-        ACPI_MEM_FREE (TablePtr);
-    }
+    CmFree (TableDesc);
+    CmFree (TablePtr);
     return_ACPI_STATUS (Status);
+
 }
+                
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExUnloadTable
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlExecUnloadTable 
  *
  * PARAMETERS:  DdbHandle           - Handle to a previously loaded table
  *
@@ -554,50 +265,115 @@ Cleanup:
  *
  * DESCRIPTION: Unload an ACPI table
  *
- ******************************************************************************/
+ ****************************************************************************/
+
 
 ACPI_STATUS
-AcpiExUnloadTable (
-    ACPI_OPERAND_OBJECT     *DdbHandle)
+AmlExecUnloadTable (
+    ACPI_HANDLE             DdbHandle)
 {
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_OPERAND_OBJECT     *TableDesc = DdbHandle;
-    ACPI_TABLE_DESC         *TableInfo;
+    ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("ExUnloadTable");
+    FUNCTION_TRACE ("AmlExecUnloadTable");
 
 
-    /*
-     * Validate the handle
-     * Although the handle is partially validated in AcpiExReconfiguration(),
-     * when it calls AcpiExResolveOperands(), the handle is more completely
-     * validated here.
-     */
+    /* Validate the handle */
+
     if ((!DdbHandle) ||
-        (ACPI_GET_DESCRIPTOR_TYPE (DdbHandle) != ACPI_DESC_TYPE_OPERAND) ||
-        (ACPI_GET_OBJECT_TYPE (DdbHandle) != ACPI_TYPE_LOCAL_REFERENCE))
+        (!VALID_DESCRIPTOR_TYPE (DdbHandle, DESC_TYPE_ACPI_OBJ)) ||
+        (((ACPI_OBJECT_INTERNAL *)DdbHandle)->Common.Type != INTERNAL_TYPE_Reference))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Get the actual table descriptor from the DdbHandle */
 
-    TableInfo = (ACPI_TABLE_DESC *) TableDesc->Reference.Object;
+    CmRemoveReference ((ACPI_OBJECT_INTERNAL *) DdbHandle);
 
-    /*
-     * Delete the entire namespace under this table Node
-     * (Offset contains the TableId)
-     */
-    AcpiNsDeleteNamespaceByOwner (TableInfo->TableId);
+    return_ACPI_STATUS (Status);
+}
+ 
 
-    /* Delete the table itself */
 
-    (void) AcpiTbUninstallTable (TableInfo->InstalledDesc);
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlExecReconfiguration
+ *
+ * PARAMETERS:  Opcode              - The opcode to be executed
+ *              WalkState           - Current state of the parse tree walk
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Reconfiguration opcodes such as LOAD and UNLOAD
+ *
+ ****************************************************************************/
 
-    /* Delete the table descriptor (DdbHandle) */
+ACPI_STATUS
+AmlExecReconfiguration (
+    UINT16                  Opcode,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status;
+    ACPI_OBJECT_INTERNAL    *RegionDesc = NULL;
+    ACPI_HANDLE             *DdbHandle;
 
-    AcpiUtRemoveReference (TableDesc);
+
+    FUNCTION_TRACE ("AmlExecReconfiguration");
+
+
+    /* Resolve the operands */
+
+    Status = AmlResolveOperands (Opcode, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
+
+    /* Get the table handle, common for both opcodes */
+
+    Status |= DsObjStackPopObject ((ACPI_OBJECT_INTERNAL **) &DdbHandle, WalkState);
+
+    switch (Opcode)
+    {
+
+    case AML_LoadOp:
+
+        /* Get the region or field descriptor */
+
+        Status |= DsObjStackPopObject (&RegionDesc, WalkState);
+        if (Status != AE_OK)
+        {
+            AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 2);
+            goto Cleanup2;
+        }
+
+        Status = AmlExecLoadTable (RegionDesc, DdbHandle);
+        break;
+
+
+    case AML_UnLoadOp:
+
+        if (Status != AE_OK)
+        {
+            AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 1);
+            goto Cleanup1;
+        }
+
+        Status = AmlExecUnloadTable (DdbHandle);
+        break;
+
+
+    default:
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecReconfiguration: bad opcode=%X\n", Opcode));
+
+        Status = AE_AML_BAD_OPCODE;
+        break;
+    }
+
+Cleanup2:
+    CmRemoveReference (RegionDesc);
+
+Cleanup1:
+//    CmRemoveReference (DdbHandle);
+
+
     return_ACPI_STATUS (Status);
 }
 
