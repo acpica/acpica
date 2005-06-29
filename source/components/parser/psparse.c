@@ -160,7 +160,7 @@ PsDeleteCompletedOp (
     ACPI_GENERIC_OP         *Op)
 {
 
-    CmFree (Op);
+    PsFreeOp (Op);
     return AE_OK;
 }
 
@@ -438,8 +438,65 @@ PsParseLoop (
                 /* TBD: what if a control method references outside its scope? */
                 /* ie - should we be using nslookup here? */
 
-                Op = PsFind (PsGetParentScope (ParserState),
-                             PsGetNextNamestring (ParserState), Opcode, 1);
+                if (Gbl_ParsedNamespaceRoot)
+                {
+                    Op = PsFind (PsGetParentScope (ParserState),
+                                 PsGetNextNamestring (ParserState), Opcode, 1);
+                }
+
+#ifndef PARSER_ONLY
+                else
+                {
+                    /*
+                     * The full parse tree has already been deleted -- therefore, we are parsing
+                     * a control method.  We can lookup the name in the namespace instead of
+                     * the parse tree!
+                     */
+
+                    NAME_TABLE_ENTRY        *Nte = NULL;
+                    ACPI_GENERIC_STATE      ScopeInfo;
+                    char                    *Path;
+
+                    Path = PsGetNextNamestring (ParserState);
+                    /* 
+                     * Lookup the name in the internal namespace
+                     */
+
+                    ScopeInfo.Scope.Entry = NULL;
+                    Nte = ParserState->StartOp->NameTableEntry;
+                    if (Nte)
+                    {
+                        ScopeInfo.Scope.Entry = Nte->Scope;
+                    }
+
+                    /* 
+                     * Enter the object into the namespace
+                     */
+
+                    Status = NsLookup (&ScopeInfo, Path, ACPI_TYPE_Any, IMODE_LoadPass2,    /* Create if not found */
+                                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Nte);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return_ACPI_STATUS (Status);
+                    }
+
+                    /* Create a new op */
+
+                    Op = PsAllocOp (Opcode);
+                    if (!Op)
+                    {
+                        return_ACPI_STATUS (AE_NO_MEMORY);
+                    }
+
+                    /* Initialize */
+
+                    ((ACPI_NAMED_OP *)Op)->Name = Nte->Name;
+                    Op->NameTableEntry = Nte;
+
+
+                    PsAppendArg (PsGetParentScope (ParserState), Op);
+                }
+#endif
 
                 if (!Op)
                 {

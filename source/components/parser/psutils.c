@@ -122,6 +122,11 @@
         MODULE_NAME         ("psutils");
 
 
+#define PARSEOP_GENERIC     1
+#define PARSEOP_NAMED       2
+#define PARSEOP_DEFERRED    3
+#define PARSEOP_BYTELIST    4
+        
 
 /*******************************************************************************
  *
@@ -144,6 +149,7 @@ PsInitOp (
     ACPI_OP_INFO             *AmlOp;
 
 
+    Op->DataType = DESC_TYPE_PARSER;
     Op->Opcode = Opcode;
 
 
@@ -166,6 +172,8 @@ PsInitOp (
  * RETURN:      Pointer to the new Op.
  *
  * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on opcode
+ *              A cache of opcodes is available for the pure GENERIC_OP, since this
+ *              is by far the most commonly used.
  *
  ******************************************************************************/
 
@@ -175,6 +183,7 @@ PsAllocOp (
 {
     ACPI_GENERIC_OP         *Op = NULL;
     UINT32                  Size;
+    UINT8                   Flags;
 
 
     /* Allocate the minimum required size object */
@@ -182,29 +191,63 @@ PsAllocOp (
     if (PsIsDeferredOp (Opcode))
     {
         Size = sizeof (ACPI_DEFERRED_OP);
+        Flags = PARSEOP_DEFERRED;
     }
 
     else if (PsIsNamedOp (Opcode))
     {
         Size = sizeof (ACPI_NAMED_OP);
+        Flags = PARSEOP_NAMED;
     }
     
     else if (PsIsBytelistOp (Opcode))
     {
         Size = sizeof (ACPI_BYTELIST_OP);
+        Flags = PARSEOP_BYTELIST;
     }
 
     else
     {
         Size = sizeof (ACPI_GENERIC_OP);
+        Flags = PARSEOP_GENERIC;
+
+        /*
+         * The generic op is by far the most common (16 to 1), and therefore the op cache is 
+         * implemented with this type.
+         *
+         * Check if there is an Op already available in the cache
+         */
+
+        CmAcquireMutex (MTX_MEMORY);
+        if (Gbl_ParseCache)
+        {
+            /* Extract an op from the front of the cache list */
+
+            Gbl_ParseCacheRequests++;
+            Gbl_ParseCacheDepth--;
+            
+            Op = Gbl_ParseCache;
+            Gbl_ParseCache = Op->Next;
+
+            /* Clear the previously used Op */
+
+            MEMSET (Op, 0, sizeof (ACPI_GENERIC_OP));
+        }
+        CmReleaseMutex (MTX_MEMORY);
     }
 
-    /* Allocate and init the object */
+    /* Allocate a new Op if necessary */
     
-    Op = CmCallocate (Size);
+    if (!Op)
+    {
+        Op = CmCallocate (Size);
+    }
+
+    /* Initialize the Op */
     if (Op)
     {
         PsInitOp (Op, Opcode);
+        Op->Flags = Flags;
     }
 
     return Op;
@@ -212,16 +255,105 @@ PsAllocOp (
 
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    PsFreeOp
+ *
+ * PARAMETERS:  Op              - Op to be freed
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Free an Op object.  Either put it on the GENERIC_OP cache list
+ *              or actually free it.
+ *
+ ******************************************************************************/
+
+void
+PsFreeOp (
+    ACPI_GENERIC_OP         *Op)
+{
+
+
+    if (Op->Flags == PARSEOP_GENERIC)
+    {
+        /* Is the cache full? */
+
+        if (Gbl_ParseCacheDepth < MAX_PARSE_CACHE_DEPTH)
+        {
+            /* Put a GENERIC_OP back into the cache */
+
+            CmAcquireMutex (MTX_MEMORY);
+            Gbl_ParseCacheDepth++;
+
+            Op->Next = Gbl_ParseCache;
+            Gbl_ParseCache = Op;
+
+            CmReleaseMutex (MTX_MEMORY);
+            return;
+        }
+    }
+
+    /*
+     * Not a GENERIC OP, or the cache is full, just free the Op 
+     */
+
+    CmFree (Op);
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PsDeleteParseCache
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Free all objects that are on the parse cache list.
+ *
+ ******************************************************************************/
+
+void
+PsDeleteParseCache (
+    void)
+{
+    ACPI_GENERIC_OP         *Next;
+
+
+    FUNCTION_TRACE ("PsDeleteParseCache");
+
+
+    /* Traverse the global cache list */
+
+    while (Gbl_ParseCache)
+    {
+        /* Delete one cached state object */
+
+        Next = Gbl_ParseCache->Next;
+        CmFree (Gbl_ParseCache);
+        Gbl_ParseCache = Next;
+    }
+
+    return_VOID;
+}
 
 
 
 
 
-/*
+/*******************************************************************************
+ *
+ * FUNCTION:    Utility functions
+ *
+ * DESCRIPTION: Low level functions
+ *
  * TBD:
  * 1) Some of these functions should be macros
  * 2) Some can be simplified
- */
+ *
+ ******************************************************************************/
+
 
 
 /*
@@ -248,6 +380,59 @@ PsIsPrefixChar (
 }
 
 
+BOOLEAN
+PsIsNamespaceObjectOp (
+    UINT16                  Opcode)
+{
+    return ((BOOLEAN) 
+           (Opcode == AML_ScopeOp           || 
+            Opcode == AML_DeviceOp          || 
+            Opcode == AML_ThermalZoneOp     || 
+            Opcode == AML_MethodOp          || 
+            Opcode == AML_PowerResOp        || 
+            Opcode == AML_ProcessorOp       || 
+            Opcode == AML_DefFieldOp        || 
+            Opcode == AML_IndexFieldOp      || 
+            Opcode == AML_BankFieldOp       || 
+            Opcode == AML_NAMEDFIELD_OP     || 
+            Opcode == AML_NameOp            || 
+            Opcode == AML_AliasOp           || 
+            Opcode == AML_MutexOp           || 
+            Opcode == AML_EventOp           || 
+            Opcode == AML_RegionOp          ||
+            Opcode == AML_CreateFieldOp     ||
+            Opcode == AML_BitFieldOp        ||
+            Opcode == AML_ByteFieldOp       ||
+            Opcode == AML_WordFieldOp       ||
+            Opcode == AML_DWordFieldOp      ||
+            Opcode == AML_METHODCALL_OP     ||
+            Opcode == AML_NAMEPATH_OP));
+}
+
+BOOLEAN
+PsIsNamespaceOp (
+    UINT16                  Opcode)
+{
+    return ((BOOLEAN) 
+           (Opcode == AML_ScopeOp           ||
+            Opcode == AML_DeviceOp          ||
+            Opcode == AML_ThermalZoneOp     ||
+            Opcode == AML_MethodOp          ||
+            Opcode == AML_PowerResOp        ||
+            Opcode == AML_ProcessorOp       ||
+            Opcode == AML_DefFieldOp        ||
+            Opcode == AML_IndexFieldOp      || 
+            Opcode == AML_BankFieldOp       ||
+            Opcode == AML_NameOp            ||
+            Opcode == AML_AliasOp           ||
+            Opcode == AML_MutexOp           ||
+            Opcode == AML_EventOp           ||
+            Opcode == AML_RegionOp          ||
+            Opcode == AML_NAMEDFIELD_OP)); 
+}
+
+
+
 
 /*
  * Is opcode for a named object Op?
@@ -266,10 +451,7 @@ PsIsNamedObjectOp (
             Opcode == AML_MethodOp          || 
             Opcode == AML_PowerResOp        || 
             Opcode == AML_ProcessorOp       || 
-            Opcode == AML_DefFieldOp        || 
-            Opcode == AML_IndexFieldOp      || 
-            Opcode == AML_BankFieldOp       || 
-            Opcode == AML_NAMEDFIELD        || 
+            Opcode == AML_NAMEDFIELD_OP     || 
             Opcode == AML_NameOp            || 
             Opcode == AML_AliasOp           || 
             Opcode == AML_MutexOp           || 
@@ -282,8 +464,8 @@ PsIsNamedObjectOp (
             Opcode == AML_ByteFieldOp       ||
             Opcode == AML_WordFieldOp       ||
             Opcode == AML_DWordFieldOp      ||
-            Opcode == AML_METHODCALL        ||
-            Opcode == AML_NAMEPATH));
+            Opcode == AML_METHODCALL_OP     ||
+            Opcode == AML_NAMEPATH_OP));
 }
 
 
@@ -301,15 +483,12 @@ PsIsNamedOp (
             Opcode == AML_MethodOp          ||
             Opcode == AML_PowerResOp        ||
             Opcode == AML_ProcessorOp       ||
-            Opcode == AML_DefFieldOp        ||
-            Opcode == AML_IndexFieldOp      || 
-            Opcode == AML_BankFieldOp       ||
             Opcode == AML_NameOp            ||
             Opcode == AML_AliasOp           ||
             Opcode == AML_MutexOp           ||
             Opcode == AML_EventOp           ||
             Opcode == AML_RegionOp          ||
-            Opcode == AML_NAMEDFIELD)); 
+            Opcode == AML_NAMEDFIELD_OP)); 
 }
 
 
@@ -330,7 +509,7 @@ BOOLEAN
 PsIsBytelistOp (
     UINT16                  Opcode)
 {
-    return ((BOOLEAN) (Opcode == AML_BYTELIST));
+    return ((BOOLEAN) (Opcode == AML_BYTELIST_OP));
 }
 
 

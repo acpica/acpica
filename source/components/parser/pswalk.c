@@ -118,6 +118,7 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
+#include <dispatch.h>
 #include <namesp.h>
 #include <interp.h>
 
@@ -181,13 +182,15 @@ PsGetNextWalkOp (
          * in case the Op object gets deleted by the callback routine
          */
 
-        Next = Op->Next;
-        Parent = Op->Parent;
+        Next    = Op->Next;
+        Parent  = Op->Parent;
 
         Status = AscendingCallback (WalkState, Op);
 
-        if (Status == AE_TERMINATE)
+        switch (Status)
         {
+        case AE_CTRL_TERMINATE:
+
             /* 
              * A control method was terminated via a RETURN statement.
              * The walk of this method is complete.
@@ -196,50 +199,83 @@ PsGetNextWalkOp (
             WalkState->NextOp       = NULL;
 
             return_ACPI_STATUS (AE_OK);
-        }
-    
-        if (Status == AE_FALSE)
-        {
+            break;
+
+
+        case AE_CTRL_FALSE:
+
             /*
-             * Predicate was false, so instead of moving on to the
-             * body (TermList), we close out the IF/WHILE
+             * Either an IF/WHILE Predicate was false or we encountered a BREAK opcode
+             *,In both cases, we do not execute the rest of the package;  We simply
+             * close out the parent (finishing the walk of this branch of the tree)
+             * and continue execution at the parent level.
              */
 
             Next        = Parent->Next;
+            Status      = AE_OK;
 
-            Status = AscendingCallback (WalkState, Parent);
+            /*
+             * If there is a sibling to the parent, we must close out the parent now,
+             * because we are going to continue to go downward (to the sibling)
+             * in the parse tree.
+             */
+            if (Next)
+            {
+                Status = AscendingCallback (WalkState, Parent);
 
-            /* Now continue to the next node in the tree */
-        }
+                /* The parent sibling will be next */
 
-        /* Look for a sibling to the current op */
+                WalkState->PrevOp       = Op;
+                WalkState->NextOp       = Next;
+                WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;
 
-        if (Next)
-        {
-            /* There is a sibling, it will be next */
+                /* Continue downward */
 
-            WalkState->PrevOp       = Op;
-            WalkState->NextOp       = Next;
-            WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;
+                return_ACPI_STATUS (AE_OK);
+            }
 
-            return_ACPI_STATUS (Status);
-        }
+            /* Drop into the loop below because we are moving upwards in the tree */
+
+            break;
 
 
-        /* 
-         * No sibling, but check status.
-         * Abort on error from callback routine 
-         */
+        default:
+            /* 
+             * Check for a sibling to the current op.  A sibling means
+             * we are still going "downward" in the tree.
+             */
 
-        if (Status != AE_OK)
-        {
-            /* Next op will be the parent */
+            if (Next)
+            {
+                /* There is a sibling, it will be next */
 
-            WalkState->PrevOp       = Op;
-            WalkState->NextOp       = Parent;
-            WalkState->NextOpInfo   = NEXT_OP_UPWARD;
+                WalkState->PrevOp       = Op;
+                WalkState->NextOp       = Next;
+                WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;
 
-            return_ACPI_STATUS (Status);
+                /* Continue downward */
+
+                return_ACPI_STATUS (Status);
+            }
+
+            /* 
+             * No sibling, but check status.
+             * Abort on error from callback routine 
+             */
+            if (Status != AE_OK)
+            {
+                /* Next op will be the parent */
+
+                WalkState->PrevOp       = Op;
+                WalkState->NextOp       = Parent;
+                WalkState->NextOpInfo   = NEXT_OP_UPWARD;
+
+                return_ACPI_STATUS (Status);
+            }
+
+            /* Drop into the loop below because we are moving upwards in the tree */
+
+            break;
         }
     }
 
@@ -268,13 +304,16 @@ PsGetNextWalkOp (
 
         Status = AscendingCallback (WalkState, Parent);
 
-        /* All evaluated predicates come through here */
 
-        if (Status == AE_FALSE)
+        switch (Status)
         {
+        case AE_CTRL_FALSE:
+
             /*
-             * Predicate was false, so instead of moving on to the
-             * body (TermList), we close out the IF/WHILE
+             * Either an IF/WHILE Predicate was false or we encountered a BREAK opcode
+             *,In both cases, we do not execute the rest of the package;  We simply
+             * close out the parent (finishing the walk of this branch of the tree)
+             * and continue execution at the parent level.
              */
 
             Parent      = GrandParent;
@@ -284,27 +323,31 @@ PsGetNextWalkOp (
             Status = AscendingCallback (WalkState, Parent);
 
             /* Now continue to the next node in the tree */
-        }
 
-        else if (Status == AE_TRUE)
-        {
+            break;
+
+
+        case AE_CTRL_TRUE:
+
             /* 
              * Predicate of a WHILE was true and the loop just completed an execution.
              * Go back to the start of the loop and reevaluate the predicate.
              */
 
-            Op = WalkState->ControlState->PredicateOp;      /* Points to the predicate */
+            Op = WalkState->ControlState->Control.PredicateOp;      /* Points to the predicate */
 
-            WalkState->ControlState->Exec           = CONTROL_PREDICATE_EXECUTING;
+            WalkState->ControlState->Common.State = CONTROL_PREDICATE_EXECUTING;
+
             WalkState->PrevOp       = Op->Parent;
             WalkState->NextOp       = Op;                   /* Evaluate the predicate again (next) */
             WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;     /* Because we will traverse WHILE tree again */
 
             return_ACPI_STATUS (AE_OK);
-        }
+            break;
 
-        else if (Status == AE_TERMINATE)
-        {
+
+        case AE_CTRL_TERMINATE:
+
             /* 
              * A control method was terminated via a RETURN statement.
              * The walk of this method is complete.
@@ -313,7 +356,9 @@ PsGetNextWalkOp (
             WalkState->NextOp       = NULL;
 
             return_ACPI_STATUS (AE_OK);
+            break;
         }
+
 
         /*
          * If we are back to the starting point, the walk is complete.
@@ -405,7 +450,7 @@ PsWalkLoop (
     FUNCTION_TRACE_PTR ("PsWalkLoop", StartOp);
 
 
-    WalkState = PsGetCurrentWalkState (WalkList);
+    WalkState = DsGetCurrentWalkState (WalkList);
 
 
     /* Walk entire subtree, visiting all nodes depth-first */
@@ -420,7 +465,7 @@ PsWalkLoop (
         /* 
          * A TRUE exception means that an ELSE was detected, but the IF predicate evaluated TRUE.
          */
-        if (Status == AE_TRUE)
+        if (Status == AE_CTRL_TRUE)
         {
             /*
              * Ignore the entire ELSE block by moving on to the the next opcode.
@@ -437,15 +482,15 @@ PsWalkLoop (
 
         /* A PENDING exception means that a control method invocation has been detected */
 
-        if (Status == AE_PENDING)
+        if (Status == AE_CTRL_PENDING)
         {
             /* Transfer control to the called control method */
 
-            Status = PsxCallControlMethod (WalkList, WalkState, Op);
+            Status = DsCallControlMethod (WalkList, WalkState, Op);
 
             /* If the method call worked, a new walk state was created -- get it */
 
-            WalkState = PsGetCurrentWalkState (WalkList);
+            WalkState = DsGetCurrentWalkState (WalkList);
         }
 
         /* Abort the walk on any exception */
@@ -486,9 +531,10 @@ PsWalkParsedAml (
     ACPI_GENERIC_OP         *StartOp,
     ACPI_GENERIC_OP         *EndOp,
     ACPI_OBJECT_INTERNAL    *MthDesc,
-	NAME_TABLE_ENTRY		*StartScope,
+    NAME_TABLE_ENTRY        *StartScope,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
+    ACPI_OWNER_ID           OwnerId,
     INTERPRETER_CALLBACK    DescendingCallback,
     INTERPRETER_CALLBACK    AscendingCallback)
 {
@@ -514,11 +560,15 @@ PsWalkParsedAml (
 
     WalkList.WalkState = NULL;
 
-    WalkState = PsCreateWalkState (EndOp, MthDesc, &WalkList);
+    WalkState = DsCreateWalkState (EndOp, MthDesc, &WalkList);
     if (!WalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
+
+    /* TBD: move to createWalkSTate */
+
+    WalkState->OwnerId = OwnerId;
 
     /* TBD:
      * TEMP until we pass WalkState to the interpreter
@@ -526,21 +576,25 @@ PsWalkParsedAml (
     PrevWalkList = Gbl_CurrentWalkList;
     Gbl_CurrentWalkList = &WalkList;
 
-	if (MthDesc)
-	{
-		/* Push start scope on scope stack and make it current  */
+    if (StartScope)
+    {
+        /* Push start scope on scope stack and make it current  */
 
-		Status = NsScopeStackPush (StartScope, ACPI_TYPE_Method, WalkState);
-		if (ACPI_FAILURE (Status))
-		{
-			return_ACPI_STATUS (Status);
-		}
+        Status = DsScopeStackPush (StartScope, ACPI_TYPE_Method, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
 
-		/* Init arguments if this is a control method */
-		/* TBD: add walkstate as a param */
+    }
 
-		PsxMthStackInitArgs (Params, MTH_NUM_ARGS);
-	}
+    if (MthDesc)
+    {
+        /* Init arguments if this is a control method */
+        /* TBD: add walkstate as a param */
+
+        DsMethodDataInitArgs (Params, MTH_NUM_ARGS);
+    }
 
     Op = StartOp;
     Status = AE_OK;
@@ -566,11 +620,15 @@ PsWalkParsedAml (
 
         BREAKPOINT3;
 
-        WalkState = PsPopWalkState (&WalkList);
+        WalkState = DsPopWalkState (&WalkList);
         ReturnDesc = WalkState->ReturnDesc;     /* Extract return value before we delete WalkState */
 
         DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: ReturnValue=%p, State=%p\n", WalkState->ReturnDesc, WalkState));
  
+        /* Reset the current scope to the beginning of scope stack */
+
+        DsScopeStackClear (WalkState);
+
         /* If we just returned from the execution of a control method, there's lots of cleanup to do */
 
         if (WalkState->MethodDesc)
@@ -582,30 +640,18 @@ PsWalkParsedAml (
                 Status = OsdSignalSemaphore (WalkState->MethodDesc->Method.Semaphore, 1);
             }
 
-			/* Reset the current scope to the beginning of scope stack */
-
-			NsScopeStackClear (WalkState);
-
             /* Delete all arguments and locals */
 
-            PsxMthStackDeleteArgs (WalkState);      
-
-            /* Delete the parse tree if asked to */
-
-            if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
-            {
-                PsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
-                WalkState->MethodDesc->Method.ParserOp = NULL;
-            }
+            DsMethodDataDeleteAll (WalkState);      
         }
 
          /* Delete this walk state and all linked control states */
 
-        PsDeleteWalkState (WalkState);
+        DsDeleteWalkState (WalkState);
 
        /* Check if we have restarted a preempted walk */
 
-        WalkState = PsGetCurrentWalkState (&WalkList);
+        WalkState = DsGetCurrentWalkState (&WalkList);
         if (WalkState &&
             Status == AE_OK)
         {
@@ -616,7 +662,7 @@ PsWalkParsedAml (
              * The object is deleted 
              */
 
-            PsxRestartControlMethod (WalkState, ReturnDesc);
+            DsRestartControlMethod (WalkState, ReturnDesc);
 
             /* Get the next Op to process */
 
@@ -632,7 +678,7 @@ PsWalkParsedAml (
 
         else if (ReturnDesc)
         {
-            CmDeleteInternalObject (ReturnDesc);    /* Caller doesn't want it, must delete it */
+            CmRemoveReference (ReturnDesc);    /* Caller doesn't want it, must delete it */
         }
     }
 
