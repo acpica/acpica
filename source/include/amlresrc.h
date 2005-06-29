@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: amlresrc.h - AML resource descriptors
- *              $Revision: 1.22 $
+ * Module Name: aslresource.h - ASL resource descriptors
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -116,85 +116,56 @@
  *****************************************************************************/
 
 
-#ifndef __AMLRESRC_H
-#define __AMLRESRC_H
+#ifndef __ASLRESOURCE_H
+#define __ASLRESOURCE_H
 
 
-#define ASL_RESNAME_ADDRESS                     "_ADR"
-#define ASL_RESNAME_ALIGNMENT                   "_ALN"
-#define ASL_RESNAME_ADDRESSSPACE                "_ASI"
-#define ASL_RESNAME_BASEADDRESS                 "_BAS"
-#define ASL_RESNAME_BUSMASTER                   "_BM_"  /* Master(1), Slave(0) */
-#define ASL_RESNAME_DECODE                      "_DEC"
-#define ASL_RESNAME_DMA                         "_DMA"
-#define ASL_RESNAME_DMATYPE                     "_TYP"  /* Compatible(0), A(1), B(2), F(3) */
-#define ASL_RESNAME_GRANULARITY                 "_GRA"
-#define ASL_RESNAME_INTERRUPT                   "_INT"
-#define ASL_RESNAME_INTERRUPTLEVEL              "_LL_"  /* ActiveLo(1), ActiveHi(0) */
-#define ASL_RESNAME_INTERRUPTSHARE              "_SHR"  /* Shareable(1), NoShare(0) */
-#define ASL_RESNAME_INTERRUPTTYPE               "_HE_"  /* Edge(1), Level(0) */
-#define ASL_RESNAME_LENGTH                      "_LEN"
-#define ASL_RESNAME_MEMATTRIBUTES               "_MTP"  /* Memory(0), Reserved(1), ACPI(2), NVS(3) */
-#define ASL_RESNAME_MEMTYPE                     "_MEM"  /* NonCache(0), Cacheable(1) Cache+combine(2), Cache+prefetch(3) */
-#define ASL_RESNAME_MAXADDR                     "_MAX"
-#define ASL_RESNAME_MINADDR                     "_MIN"
-#define ASL_RESNAME_MAXTYPE                     "_MAF"
-#define ASL_RESNAME_MINTYPE                     "_MIF"
-#define ASL_RESNAME_REGISTERBITOFFSET           "_RBO"
-#define ASL_RESNAME_REGISTERBITWIDTH            "_RBW"
-#define ASL_RESNAME_RANGETYPE                   "_RNG"
-#define ASL_RESNAME_READWRITETYPE               "_RW_"  /* ReadOnly(0), Writeable (1) */
-#define ASL_RESNAME_TRANSLATION                 "_TRA"
-#define ASL_RESNAME_TRANSTYPE                   "_TRS"  /* Sparse(1), Dense(0) */
-#define ASL_RESNAME_TYPE                        "_TTP"  /* Translation(1), Static (0) */
-#define ASL_RESNAME_XFERTYPE                    "_SIZ"  /* 8(0), 8And16(1), 16(2) */
 
+/* ResourceType values */
 
-/* Default sizes for "small" resource descriptors */
-
-#define ASL_RDESC_IRQ_SIZE                      0x02
-#define ASL_RDESC_DMA_SIZE                      0x02
-#define ASL_RDESC_ST_DEPEND_SIZE                0x00
-#define ASL_RDESC_END_DEPEND_SIZE               0x00
-#define ASL_RDESC_IO_SIZE                       0x07
-#define ASL_RDESC_FIXED_IO_SIZE                 0x03
-#define ASL_RDESC_END_TAG_SIZE                  0x01
-
-
-typedef struct asl_resource_node
-{
-    UINT32                      BufferLength;
-    void                        *Buffer;
-    struct asl_resource_node    *Next;
-
-} ASL_RESOURCE_NODE;
+#define RESOURCE_TYPE_MEMORY_RANGE              0
+#define RESOURCE_TYPE_IO_RANGE                  1
+#define RESOURCE_TYPE_BUS_NUMBER_RANGE          2
 
 
 /*
- * Resource descriptors defined in the ACPI specification.
- *
- * Alignment must be BYTE because these descriptors
- * are used to overlay the AML byte stream.
+ * Small resource descriptors
  */
-#pragma pack(1)
+#define RESOURCE_DESC_IRQ_FORMAT                0x22
+#define RESOURCE_DESC_DMA_FORMAT                0x2A
+#define RESOURCE_DESC_START_DEPENDENT           0x30
+#define RESOURCE_DESC_END_DEPENDENT             0x38
+#define RESOURCE_DESC_IO_PORT                   0x47
+#define RESOURCE_DESC_FIXED_IO_PORT             0x4B
+#define RESOURCE_DESC_SMALL_VENDOR              0x70
+#define RESOURCE_DESC_END_TAG                   0x79
 
+/*
+ * Large resource descriptors
+ */
+#define RESOURCE_DESC_MEMORY_24                 0x81
+#define RESOURCE_DESC_GENERAL_REGISTER          0x82
+#define RESOURCE_DESC_LARGE_VENDOR              0x84
+#define RESOURCE_DESC_MEMORY_32                 0x85
+#define RESOURCE_DESC_FIXED_MEMORY_32           0x86
+#define RESOURCE_DESC_DWORD_ADDRESS_SPACE       0x87
+#define RESOURCE_DESC_WORD_ADDRESS_SPACE        0x88
+#define RESOURCE_DESC_EXTENDED_XRUPT            0x89
+#define RESOURCE_DESC_QWORD_ADDRESS_SPACE       0x8A
+
+
+
+#pragma pack(1)
 typedef struct asl_irq_format_desc
 {
     UINT8                       DescriptorType;
     UINT16                      IrqMask;
-    UINT8                       Flags;
+    UINT8                       Information;
 
 } ASL_IRQ_FORMAT_DESC;
 
 
-typedef struct asl_irq_noflags_desc
-{
-    UINT8                       DescriptorType;
-    UINT16                      IrqMask;
-
-} ASL_IRQ_NOFLAGS_DESC;
-
-
+#pragma pack(1)
 typedef struct asl_dma_format_desc
 {
     UINT8                       DescriptorType;
@@ -204,21 +175,16 @@ typedef struct asl_dma_format_desc
 } ASL_DMA_FORMAT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_start_dependent_desc
 {
     UINT8                       DescriptorType;
-    UINT8                       Flags;
+    UINT8                       Priority;
 
 } ASL_START_DEPENDENT_DESC;
 
 
-typedef struct asl_start_dependent_noprio_desc
-{
-    UINT8                       DescriptorType;
-
-} ASL_START_DEPENDENT_NOPRIO_DESC;
-
-
+#pragma pack(1)
 typedef struct asl_end_dependent_desc
 {
     UINT8                       DescriptorType;
@@ -226,6 +192,7 @@ typedef struct asl_end_dependent_desc
 } ASL_END_DEPENDENT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_io_port_desc
 {
     UINT8                       DescriptorType;
@@ -238,6 +205,7 @@ typedef struct asl_io_port_desc
 } ASL_IO_PORT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_fixed_io_port_desc
 {
     UINT8                       DescriptorType;
@@ -247,14 +215,14 @@ typedef struct asl_fixed_io_port_desc
 } ASL_FIXED_IO_PORT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_small_vendor_desc
 {
     UINT8                       DescriptorType;
-    UINT8                       VendorDefined[7];
 
 } ASL_SMALL_VENDOR_DESC;
 
-
+#pragma pack(1)
 typedef struct asl_end_tag_desc
 {
     UINT8                       DescriptorType;
@@ -263,8 +231,11 @@ typedef struct asl_end_tag_desc
 } ASL_END_TAG_DESC;
 
 
+
+
 /* LARGE descriptors */
 
+#pragma pack(1)
 typedef struct asl_memory_24_desc
 {
     UINT8                       DescriptorType;
@@ -278,15 +249,16 @@ typedef struct asl_memory_24_desc
 } ASL_MEMORY_24_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_large_vendor_desc
 {
     UINT8                       DescriptorType;
     UINT16                      Length;
-    UINT8                       VendorDefined[1];
 
 } ASL_LARGE_VENDOR_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_memory_32_desc
 {
     UINT8                       DescriptorType;
@@ -300,6 +272,7 @@ typedef struct asl_memory_32_desc
 } ASL_MEMORY_32_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_fixed_memory_32_desc
 {
     UINT8                       DescriptorType;
@@ -311,6 +284,7 @@ typedef struct asl_fixed_memory_32_desc
 } ASL_FIXED_MEMORY_32_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_qword_address_desc
 {
     UINT8                       DescriptorType;
@@ -328,6 +302,7 @@ typedef struct asl_qword_address_desc
 } ASL_QWORD_ADDRESS_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_dword_address_desc
 {
     UINT8                       DescriptorType;
@@ -345,6 +320,7 @@ typedef struct asl_dword_address_desc
 } ASL_DWORD_ADDRESS_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_word_address_desc
 {
     UINT8                       DescriptorType;
@@ -362,6 +338,8 @@ typedef struct asl_word_address_desc
 } ASL_WORD_ADDRESS_DESC;
 
 
+
+#pragma pack(1)
 typedef struct asl_extended_xrupt_desc
 {
     UINT8                       DescriptorType;
@@ -374,6 +352,7 @@ typedef struct asl_extended_xrupt_desc
 } ASL_EXTENDED_XRUPT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_general_register_desc
 {
     UINT8                       DescriptorType;
@@ -386,9 +365,6 @@ typedef struct asl_general_register_desc
 
 } ASL_GENERAL_REGISTER_DESC;
 
-/* restore default alignment */
-
-#pragma pack()
 
 /* Union of all resource descriptors, sow we can allocate the worst case */
 
@@ -412,11 +388,15 @@ typedef union asl_resource_desc
     ASL_WORD_ADDRESS_DESC       Was;
     ASL_EXTENDED_XRUPT_DESC     Exx;
     ASL_GENERAL_REGISTER_DESC   Grg;
-    UINT32                      U32Item;
-    UINT16                      U16Item;
-    UINT8                       U8Item;
 
 } ASL_RESOURCE_DESC;
+
+
+
+#define DEFAULT_RESOURCE_DESC_SIZE  (sizeof (ASL_RESOURCE_DESC) + sizeof (ASL_END_TAG_DESC))
+
+
+
 
 
 #endif
