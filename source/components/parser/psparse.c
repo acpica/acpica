@@ -532,6 +532,8 @@ PsParseLoop (
                 }
 
 
+                /* For a method, save the length and address of the body */
+
                 if (Op->Opcode == AML_MethodOp)
                 {
                     DeferredOp = PsToDeferredOp (Op);
@@ -711,8 +713,8 @@ PsParseTable (
 
     /* Initialize the root object */
 
-    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Name = * (UINT32 *) NS_ROOT;
-    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Entry = Gbl_RootObject;
+    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Name       = * (UINT32 *) NS_ROOT;
+/* TBD: REMOVE:    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->ResultObj  = Gbl_RootObject; */
 
 
     /* Pass 1:  Parse everything except control method bodies */
@@ -727,7 +729,7 @@ PsParseTable (
     DEBUG_PRINT (TRACE_PARSE, ("PsParseTable: Building Internal Namespace\n"));
 BREAKPOINT3;
 
-    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, 
+    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL,
                         DescendingCallback, AscendingCallback);
 
 
