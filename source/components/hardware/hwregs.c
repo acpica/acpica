@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.132 $
+ *              $Revision: 1.133 $
  *
  ******************************************************************************/
 
@@ -276,8 +276,8 @@ AcpiGetSleepTypeData (
              (ACPI_GET_OBJECT_TYPE (ObjDesc->Package.Elements[1]) != ACPI_TYPE_INTEGER))
     {
         ACPI_REPORT_ERROR (("Sleep State package elements are not both Integers (%s, %s)\n",
-            AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (ObjDesc->Package.Elements[0])),
-            AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (ObjDesc->Package.Elements[1]))));
+            AcpiUtGetObjectTypeName (ObjDesc->Package.Elements[0]),
+            AcpiUtGetObjectTypeName (ObjDesc->Package.Elements[1])));
         Status = AE_AML_OPERAND_TYPE;
     }
     else
@@ -292,7 +292,7 @@ AcpiGetSleepTypeData (
     if (ACPI_FAILURE (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad Sleep object %p type %s\n",
-            ObjDesc, AcpiUtGetTypeName (ObjDesc->Common.Type)));
+            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
     }
 
     AcpiUtRemoveReference (ObjDesc);
