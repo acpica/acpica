@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.193 $
+ *       $Revision: 1.194 $
  *
  *****************************************************************************/
 
@@ -160,8 +160,8 @@ typedef UINT32                          ACPI_MUTEX_HANDLE;
 #define ACPI_MTX_DEBUG_CMD_COMPLETE     11
 #define ACPI_MTX_DEBUG_CMD_READY        12
 
-#define MAX_MTX                         12
-#define NUM_MTX                         MAX_MTX+1
+#define MAX_MUTEX                       12
+#define NUM_MUTEX                       MAX_MUTEX+1
 
 
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
@@ -308,13 +308,19 @@ typedef struct acpi_table_desc
     UINT64                  PhysicalAddress;
     UINT32                  AmlLength;
     ACPI_SIZE               Length;
-    UINT32                  Count;
     ACPI_OWNER_ID           TableId;
     UINT8                   Type;
     UINT8                   Allocation;
     BOOLEAN                 LoadedIntoNamespace;
 
 } ACPI_TABLE_DESC;
+
+typedef struct acpi_table_list
+{
+    struct acpi_table_desc  *Next;
+    UINT32                  Count;
+
+} ACPI_TABLE_LIST;
 
 
 typedef struct acpi_find_context
