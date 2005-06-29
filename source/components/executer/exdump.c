@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.120 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -308,6 +308,12 @@ AcpiExDumpOperand (
             break;
 
 
+        case AML_REVISION_OP:
+
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INFO, "Reference: Revision\n"));
+            break;
+
+
         case AML_DEBUG_OP:
 
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INFO, "Reference: Debug\n"));
@@ -440,7 +446,6 @@ AcpiExDumpOperand (
 
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INFO, "Package count %X @ %p\n",
                     EntryDesc->Package.Count, EntryDesc->Package.Elements));
-
 
         /*
          * If elements exist, package vector pointer is valid,
@@ -651,6 +656,7 @@ AcpiExDumpOperands (
 
     PROC_NAME ("ExDumpOperands");
 
+
     if (!Ident)
     {
         Ident = "?";
@@ -684,7 +690,7 @@ AcpiExDumpOperands (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "************* Stack dump from %s(%d), %s\n", 
+        "************* Stack dump from %s(%d), %s\n",
         ModuleName, LineNumber, Note));
     return;
 }
@@ -706,6 +712,9 @@ AcpiExDumpNode (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  Flags)
 {
+
+    FUNCTION_ENTRY ();
+
 
     if (!Flags)
     {
