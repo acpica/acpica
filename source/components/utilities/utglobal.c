@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.165 $
+ *              $Revision: 1.166 $
  *
  *****************************************************************************/
 
@@ -225,7 +225,7 @@ Unknown:
 
 /* Debug switch - level and trace mask */
 
-#ifdef ACPI_DEBUG
+#ifdef ACPI_DEBUG_OUTPUT
 UINT32                      AcpiDbgLevel = DEBUG_DEFAULT;
 #else
 UINT32                      AcpiDbgLevel = NORMAL_DEFAULT;
@@ -622,7 +622,7 @@ AcpiUtGetObjectTypeName (
 }
 
 
-#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
+#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
 /*
  * Strings and procedures used for debug only
@@ -873,7 +873,7 @@ AcpiUtInitGlobals (
     AcpiGbl_RootNodeStruct.Flags        = ANOBJ_END_OF_PEER_LIST;
 
 
-#ifdef ACPI_DEBUG
+#ifdef ACPI_DEBUG_OUTPUT
     AcpiGbl_LowestStackPointer          = ACPI_SIZE_MAX;
 #endif
 
