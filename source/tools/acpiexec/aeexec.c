@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -329,14 +329,14 @@ RegionHandler (
      */
     switch (Function)
     {
-    case ADDRESS_SPACE_READ:
+    case ACPI_READ_ADR_SPACE:
         /*
          * Set the pointer Value to whatever is in the buffer
          */
         MEMCPY (Value, BufferValue, ByteWidth);
         break;
 
-    case ADDRESS_SPACE_WRITE:
+    case ACPI_WRITE_ADR_SPACE:
         /*
          * Write the contents of Value to the buffer
          */
@@ -471,13 +471,13 @@ AeInstallHandlers (void)
     for (i = 0; i < 3; i++)
     {
         Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode,
-                        (ACPI_ADDRESS_SPACE_TYPE) i, RegionHandler);
+                        (ACPI_ADR_SPACE_TYPE) i, RegionHandler);
 
         /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
         Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
-                        (ACPI_ADDRESS_SPACE_TYPE) i, RegionHandler, RegionInit, NULL);
+                        (ACPI_ADR_SPACE_TYPE) i, RegionHandler, RegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");
