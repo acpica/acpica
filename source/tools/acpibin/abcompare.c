@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -636,7 +636,7 @@ AbExtractAmlFile (
 
     /* Force input table sig to uppercase */
 
-    strupr (TableSig);
+    AcpiUtStrupr (TableSig);
 
     /* We have an ascii file, grab one line at a time */
 
