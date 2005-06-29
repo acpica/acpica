@@ -510,10 +510,13 @@ NsExecuteControlMethod (
      * the execution of this method.
      */
 
+    /* TBD: what about called methods? */
+
     if (MethodEntry->Scope)
     {
         CmReleaseMutex (MTX_NAMESPACE);
-        NsDeleteNamespace (MethodEntry);
+        NsDeleteNamespaceSubtree (MethodEntry);
+        NsDeleteNamespaceByOwner (ObjDesc->Method.OwningId);
         CmAcquireMutex (MTX_NAMESPACE);
     }
 
@@ -555,7 +558,7 @@ NsGetObjectValue (
         (ObjectEntry->Type == ACPI_TYPE_Power)) {
 
         /*
-         *  Create an Lvalue object to contain the object
+         *  Create an Reference object to contain the object
          */
         ObjDesc = CmCreateInternalObject (ObjectEntry->Type);
         if (!ObjDesc)
@@ -582,9 +585,9 @@ NsGetObjectValue (
                 (sizeof(ACPI_OBJECT_Common) - sizeof(ObjDesc->Common.FirstNonCommonByte)));
     } else {
         
-        /* Create an Lvalue object to contain the object */
+        /* Create an Reference object to contain the object */
 
-        ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
+        ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_Reference);
         if (!ObjDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -592,18 +595,18 @@ NsGetObjectValue (
 
         /* Construct a descriptor pointing to the name */
 
-        ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
-        ObjDesc->Lvalue.Object  = (void *) ObjectEntry;
+        ObjDesc->Reference.OpCode  = (UINT8) AML_NameOp;
+        ObjDesc->Reference.Object  = (void *) ObjectEntry;
 
         /* 
-         * Use AmlGetRvalue() to get the associated value.  The call to AmlGetRvalue causes 
+         * Use AmlResolveToValue() to get the associated value.  The call to AmlResolveToValue causes 
          * ObjDesc (allocated above) to always be deleted.
          */
 
-        Status = AmlGetRvalue (&ObjDesc);
+        Status = AmlResolveToValue (&ObjDesc);
     }
     /* 
-     * If AmlGetRvalue() succeeded, the return value was placed in ObjDesc.
+     * If AmlResolveToValue() succeeded, the return value was placed in ObjDesc.
      */
 
     if (Status == AE_OK)
