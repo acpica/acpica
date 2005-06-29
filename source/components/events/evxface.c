@@ -94,7 +94,7 @@
  *****************************************************************************/
 
 #include <acpi.h>
-#include <devices.h>
+#include <hardware.h>
 #include <events.h>
 #include <string.h>
 #include <stdarg.h>

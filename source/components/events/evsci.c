@@ -97,7 +97,7 @@
 
 #include <acpi.h>
 #include <namespace.h>
-#include <devices.h>
+#include <hardware.h>
 #include <events.h>
 
 
