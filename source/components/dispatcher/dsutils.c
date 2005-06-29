@@ -504,7 +504,7 @@ PsxResolveOperands (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  i;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
     
     FUNCTION_TRACE_PTR ("PsxResolveOperands", WalkState);
