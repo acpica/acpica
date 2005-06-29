@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.32 $
+ *              $Revision: 1.34 $
  *
  ******************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmutils")
 
 
@@ -391,7 +391,7 @@ AcpiCmAcquireMutex (
 
             DEBUG_PRINT (ACPI_ERROR,
                     ("Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
-                    ThisThreadId, AcpiCmGetMutexName (i), 
+                    ThisThreadId, AcpiCmGetMutexName (i),
                     AcpiCmGetMutexName (MutexId)));
 
             return (AE_ACQUIRE_DEADLOCK);
@@ -400,14 +400,14 @@ AcpiCmAcquireMutex (
 
 
     DEBUG_PRINT (TRACE_MUTEX,
-                ("Thread %X acquiring Mutex [%s]\n", 
+                ("Thread %X acquiring Mutex [%s]\n",
                 ThisThreadId, AcpiCmGetMutexName (MutexId)));
 
     Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
                                     1, WAIT_FOREVER);
 
     DEBUG_PRINT (TRACE_MUTEX, ("Thread %X acquired Mutex [%s] Status %s\n",
-                ThisThreadId, AcpiCmGetMutexName (MutexId), 
+                ThisThreadId, AcpiCmGetMutexName (MutexId),
                 AcpiCmFormatException (Status)));
 
     if (ACPI_SUCCESS (Status))
@@ -1085,7 +1085,7 @@ AcpiCmWalkPackageTree (
          * 1) An uninitialized package element.  It is completely
          *      legal to declare a package and leave it uninitialized
          * 2) Not an internal object - can be a namespace node instead
-         * 3) Any type other than a package.  Packages are handled in else 
+         * 3) Any type other than a package.  Packages are handled in else
          *      case below.
          */
         if ((!ThisSourceObj) ||
@@ -1095,7 +1095,7 @@ AcpiCmWalkPackageTree (
                     ThisSourceObj, ACPI_TYPE_PACKAGE)))
         {
 
-            Status = WalkCallback (ACPI_COPY_TYPE_SIMPLE, ThisSourceObj, 
+            Status = WalkCallback (ACPI_COPY_TYPE_SIMPLE, ThisSourceObj,
                                     State, Context);
             if (ACPI_FAILURE (Status))
             {
@@ -1142,7 +1142,7 @@ AcpiCmWalkPackageTree (
         {
             /* This is a sub-object of type package */
 
-            Status = WalkCallback (ACPI_COPY_TYPE_PACKAGE, ThisSourceObj, 
+            Status = WalkCallback (ACPI_COPY_TYPE_PACKAGE, ThisSourceObj,
                                         State, Context);
             if (ACPI_FAILURE (Status))
             {
@@ -1160,7 +1160,7 @@ AcpiCmWalkPackageTree (
              * Push the current state and create a new one
              */
             AcpiCmPushGenericState (&StateList, State);
-            State = AcpiCmCreatePkgState (ThisSourceObj, 
+            State = AcpiCmCreatePkgState (ThisSourceObj,
                                             State->Pkg.ThisTargetObj, 0);
             if (!State)
             {

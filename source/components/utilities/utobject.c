@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.38 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "amlcode.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmobject")
 
 
@@ -169,7 +169,7 @@ _CmCreateInternalObject (
     {
         /* Allocation failure */
 
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     /* Save the object type in the object descriptor */
@@ -566,9 +566,8 @@ AcpiCmGetSimpleObjectSize (
     /*
      * The final length depends on the object type
      * Strings and Buffers are packed right up against the parent object and
-     * must be accessed bytewise or there may be alignment problems.
-     *
-     * TBD:[Investigate] do strings and buffers require alignment also?
+     * must be accessed bytewise or there may be alignment problems on
+     * certain processors
      */
 
     switch (InternalObject->Common.Type)
@@ -609,6 +608,15 @@ AcpiCmGetSimpleObjectSize (
                 InternalObject->Reference.Opcode, InternalObject));
             Status = AE_TYPE;
         }
+
+        else
+        {
+            /*
+             * Get the actual length of the full pathname to this object.
+             * The reference will be converted to the pathname to the object
+             */
+            Length += ROUND_UP_TO_NATIVE_WORD (AcpiNsGetPathnameLength (InternalObject->Reference.Node));
+        }
         break;
 
 
@@ -636,13 +644,13 @@ AcpiCmGetSimpleObjectSize (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmCopyPackageToInternal
+ * FUNCTION:    AcpiCmGetElementLength
  *
  * PARAMETERS:  ACPI_PKG_CALLBACK
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION:
+ * DESCRIPTION: Get the length of one package element.
  *
  ******************************************************************************/
 
