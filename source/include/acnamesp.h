@@ -307,21 +307,15 @@ NsGetObjectValue (
  * Parent/Child/Peer utility functions - nsfamily
  */
 
-char *
+ACPI_NAME
 NsFindParentName (
-    NAME_TABLE_ENTRY        *EntryToSearch, 
-    INT32                   Trace);
+    NAME_TABLE_ENTRY        *EntryToSearch);
 
 INT32
 NsExistDownstreamSibling (
     NAME_TABLE_ENTRY        *ThisEntry, 
     INT32                   Size, 
     NAME_TABLE_ENTRY        *Appendage);
-
-ACPI_HANDLE 
-NsGetParentHandle (
-    ACPI_HANDLE             Look);
-
 
 /*
  * Scope manipulation - nsscope
@@ -342,7 +336,7 @@ NsNameOfCurrentScope (
 ACPI_STATUS
 NsHandleToPathname (
     ACPI_HANDLE             ObjHandle,
-    UINT32                  BufSize,
+    UINT32                  *BufSize,
     char                    *UserBuffer);
 
 ACPI_STATUS
