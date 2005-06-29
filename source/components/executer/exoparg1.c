@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.143 $
+ *              $Revision: 1.145 $
  *
  *****************************************************************************/
 
@@ -499,14 +499,17 @@ AcpiExOpcode_1A_1T_1R (
             return_ACPI_STATUS (Status);
         }
 
-        /*
-         * Normally, we would remove a reference on the Operand[0] parameter;
-         * But since it is being used as the internal return object
-         * (meaning we would normally increment it), the two cancel out,
-         * and we simply don't do anything.
-         */
-        WalkState->ResultObj = Operand[0];
-        WalkState->Operands[0] = NULL;  /* Prevent deletion */
+        if (!WalkState->ResultObj)
+        {
+            /*
+             * Normally, we would remove a reference on the Operand[0] parameter;
+             * But since it is being used as the internal return object
+             * (meaning we would normally increment it), the two cancel out,
+             * and we simply don't do anything.
+             */
+            WalkState->ResultObj = Operand[0];
+            WalkState->Operands[0] = NULL;  /* Prevent deletion */
+        }
         return_ACPI_STATUS (Status);
 
 
@@ -571,7 +574,10 @@ AcpiExOpcode_1A_1T_1R (
 
 Cleanup:
 
-    WalkState->ResultObj = ReturnDesc;
+    if (!WalkState->ResultObj)
+    {
+        WalkState->ResultObj = ReturnDesc;
+    }
 
     /* Delete return object on error */
 
@@ -767,7 +773,7 @@ AcpiExOpcode_1A_0T_1R (
         {
             switch (ACPI_GET_OBJECT_TYPE (Operand[0]))
             {
-            case INTERNAL_TYPE_REFERENCE:
+            case ACPI_TYPE_LOCAL_REFERENCE:
                 /*
                  * This is a DerefOf (LocalX | ArgX)
                  *
