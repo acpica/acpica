@@ -205,8 +205,8 @@ AcpiOsGetRootPointer (
 
 ACPI_STATUS
 AcpiOsPredefinedOverride (
-	const ACPI_PREDEFINED_NAMES *InitVal,
-	ACPI_STRING                 *NewVal)
+    const ACPI_PREDEFINED_NAMES *InitVal,
+    ACPI_STRING                 *NewVal)
 {
 
     if (!InitVal || !NewVal)
@@ -243,8 +243,9 @@ AcpiOsTableOverride (
         return (AE_BAD_PARAMETER);
     }
 
+    /* TODO: Add table-getting code here */
     *NewTable = NULL;
-    return (AE_OK);
+    return (AE_NO_ACPI_TABLES);
 }
 
 
@@ -834,7 +835,7 @@ AcpiOsSleep (
 UINT32
 AcpiOsGetTimer (void)
 {
-    struct timeval	time;
+    struct timeval  time;
 
     gettimeofday(&time, NULL);
 
@@ -898,9 +899,9 @@ AcpiOsWritePciConfiguration (
 /* TEMPORARY STUB FUNCTION */
 void
 AcpiOsDerivePciId(
-    ACPI_HANDLE	            rhandle,
+    ACPI_HANDLE             rhandle,
     ACPI_HANDLE             chandle,
-    ACPI_PCI_ID	            **PciId)
+    ACPI_PCI_ID             **PciId)
 {
 
 }
@@ -1036,7 +1037,7 @@ AcpiOsWriteMemory (
 UINT32
 AcpiOsGetThreadId(void)
 {
-	return getpid();
+    return getpid();
 }
 
 
