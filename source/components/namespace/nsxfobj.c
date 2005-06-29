@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  ******************************************************************************/
 
@@ -820,3 +820,158 @@ AcpiGetDevices (
 
     return_ACPI_STATUS (Status);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAttachData
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiAttachData (
+    ACPI_HANDLE             ObjHandle,
+    ACPI_OBJECT_HANDLER     Handler,
+    void                    *Data)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_STATUS             Status;
+
+
+    /* Parameter validation */
+
+    if (!ObjHandle  ||
+        !Handler    ||
+        !Data)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+
+    /* Convert and validate the handle */
+
+    Node = AcpiNsMapHandleToNode (ObjHandle);
+    if (!Node)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+    Status = AcpiNsAttachData (Node, Handler, Data);
+
+UnlockAndExit:
+
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDetachData
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDetachData (
+    ACPI_HANDLE             ObjHandle,
+    ACPI_OBJECT_HANDLER     Handler)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_STATUS             Status;
+
+
+    /* Parameter validation */
+
+    if (!ObjHandle  ||
+        !Handler)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+
+    /* Convert and validate the handle */
+
+    Node = AcpiNsMapHandleToNode (ObjHandle);
+    if (!Node)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+    Status = AcpiNsDetachData (Node, Handler);
+
+UnlockAndExit:
+
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGetData
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetData (
+    ACPI_HANDLE             ObjHandle,
+    ACPI_OBJECT_HANDLER     Handler,
+    void                    **Data)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_STATUS             Status;
+
+
+    /* Parameter validation */
+
+    if (!ObjHandle  ||
+        !Handler    ||
+        !Data)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+
+    /* Convert and validate the handle */
+
+    Node = AcpiNsMapHandleToNode (ObjHandle);
+    if (!Node)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+    Status = AcpiNsGetAttachedData (Node, Handler, Data);
+
+UnlockAndExit:
+
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    return (Status);
+}
+
+
+
