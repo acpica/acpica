@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.18 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -358,6 +358,7 @@ AsConvertFile (
     ACPI_IDENTIFIER_TABLE   *ConditionalTable;
     ACPI_IDENTIFIER_TABLE   *LineTable;
     ACPI_IDENTIFIER_TABLE   *MacroTable;
+    ACPI_TYPED_IDENTIFIER_TABLE *StructTable;
 
 
     switch (FileType)
@@ -368,6 +369,7 @@ AsConvertFile (
         LineTable           = ConversionTable->SourceLineTable;
         ConditionalTable    = ConversionTable->SourceConditionalTable;
         MacroTable          = ConversionTable->SourceMacroTable;
+        StructTable         = ConversionTable->SourceStructTable;
        break;
 
     case FILE_TYPE_HEADER:
@@ -376,6 +378,7 @@ AsConvertFile (
         LineTable           = ConversionTable->HeaderLineTable;
         ConditionalTable    = ConversionTable->HeaderConditionalTable;
         MacroTable          = ConversionTable->HeaderMacroTable;
+        StructTable         = ConversionTable->HeaderStructTable;
         break;
 
     default:
@@ -432,6 +435,14 @@ AsConvertFile (
         for (i = 0; MacroTable[i].Identifier; i++)
         {
             AsRemoveMacro (FileBuffer, MacroTable[i].Identifier);
+        }
+    }
+
+    if (StructTable)
+    {
+        for (i = 0; StructTable[i].Identifier; i++)
+        {
+            AsInsertStruct (FileBuffer, StructTable[i].Identifier, StructTable[i].Type);
         }
     }
 
@@ -565,6 +576,7 @@ AsProcessOneFile (
     ACPI_NATIVE_INT         FileType)
 {
     char                    *Pathname;
+    char                    *OutPathname = NULL;
 
 
     /* Allocate a file pathname buffer for both source and target */
@@ -602,19 +614,30 @@ AsProcessOneFile (
         {
             /* Generate the target pathname and write the file */
 
-            strcpy (Pathname, TargetPath);
-            if (SourcePath)
+            OutPathname = calloc (MaxPathLength + strlen (Filename) + 2 + strlen (TargetPath), 1);
+            if (!OutPathname)
             {
-                strcat (Pathname, "/");
-                strcat (Pathname, Filename);
+                printf ("Could not allocate buffer for file pathnames\n");
+                return -1;
             }
 
-            AsPutFile (Pathname, Gbl_FileBuffer, ConversionTable->Flags);
+            strcpy (OutPathname, TargetPath);
+            if (SourcePath)
+            {
+                strcat (OutPathname, "/");
+                strcat (OutPathname, Filename);
+            }
+
+            AsPutFile (OutPathname, Gbl_FileBuffer, ConversionTable->Flags);
         }
     }
 
     free (Gbl_FileBuffer);
     free (Pathname);
+    if (OutPathname)
+    {
+        free (OutPathname);
+    }
 
     return 0;
 }
@@ -723,7 +746,7 @@ AsGetFile (
      * Add 10% extra to accomodate string replacements
      */
     Size = Gbl_StatBuf.st_size;
-    Buffer = calloc (Size + (Size / 10), 1);
+    Buffer = calloc (Size * 2, 1);
     if (!Buffer)
     {
         printf ("Could not allocate buffer of size %d\n", Size + (Size / 10));

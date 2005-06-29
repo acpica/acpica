@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.6 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,6 +118,7 @@
 #include "acpisrc.h"
 
 
+
 /******************************************************************************
  *
  * FUNCTION:    AsLowerCaseString
@@ -200,7 +201,8 @@ AsLowerCaseString (
             {
                 if ((SubBuffer[0] == ' ') && (SubBuffer[1] == ' '))
                 {
-                    AsInsertData (SubBuffer, "        ", 8);
+                    memmove (SubBuffer + 8, SubBuffer, strlen (SubBuffer) + 1);
+                    memmove (SubBuffer, "        ", 8);
                 }
             }
 
