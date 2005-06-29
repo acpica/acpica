@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -510,6 +510,41 @@ AcpiGetSystemInfo (
     }
 
     return_ACPI_STATUS (AE_OK);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiInstallInitializationHandler
+ *
+ * PARAMETERS:  Handler             - Callback procedure
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install an initialization handler
+ *
+ * TBD: When a second function is added, must save the Function also.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiInstallInitializationHandler (
+    ACPI_INIT_HANDLER       Handler,
+    UINT32                  Function)
+{
+
+    if (!Handler)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    if (AcpiGbl_InitHandler)
+    {
+        return (AE_ALREADY_EXISTS);
+    }
+
+    AcpiGbl_InitHandler = Handler;
+    return AE_OK;
 }
 
 
