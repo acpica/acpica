@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.278 $
+ *       $Revision: 1.279 $
  *
  *****************************************************************************/
 
@@ -319,6 +319,11 @@ typedef struct acpi_pointer
 #define ACPI_LOGMODE_PHYSPTR            ACPI_LOGICAL_ADDRESSING  | ACPI_PHYSICAL_POINTER
 #define ACPI_LOGMODE_LOGPTR             ACPI_LOGICAL_ADDRESSING  | ACPI_LOGICAL_POINTER
 
+/* Types for the OS interface layer (OSL) */
+
+#ifdef ACPI_USE_LOCAL_CACHE
+#define ACPI_CACHE_T        ACPI_MEMORY_LIST
+#endif
 
 /*
  * Useful defines
