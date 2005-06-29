@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.20 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -135,12 +135,12 @@
  * PARAMETERS:  Device          - Handle for the device
  *              SpaceId         - The address space ID
  *              Handler         - Address of the handler
+ *              Setup           - Address of the setup function
  *              Context         - Value passed to the handler on each access
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Install a handler for accesses on an address space controlled
- *              a specific device.
+ * DESCRIPTION: Install a handler for all OpRegions of a given SpaceId.
  *
  ******************************************************************************/
 
@@ -298,7 +298,7 @@ AcpiInstallAddressSpaceHandler (
 
         /* Attach the new object to the Node */
 
-        Status = AcpiNsAttachObject (Device, ObjDesc, (UINT8) Type);
+        Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) Type);
         if (ACPI_FAILURE (Status))
         {
             AcpiCmRemoveReference (ObjDesc);
