@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.104 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,6 +121,8 @@
 #include "achware.h"
 #include "acnamesp.h"
 #include "acevents.h"
+#include "acparser.h"
+#include "acdispat.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("utinit")
@@ -128,7 +130,6 @@
 
 #define ACPI_OFFSET(d,o)    ((UINT32) &(((d *)0)->o))
 #define ACPI_FADT_OFFSET(o) ACPI_OFFSET (FADT_DESCRIPTOR, o)
-
 
 /*******************************************************************************
  *
@@ -184,6 +185,7 @@ AcpiUtValidateFadt (
      * Verify Fixed ACPI Description Table fields,
      * but don't abort on any problems, just display error
      */
+
     if (AcpiGbl_FADT->Pm1EvtLen < 4)
     {
         Status = AcpiUtFadtRegisterError ("PM1_EVT_LEN",
@@ -232,6 +234,7 @@ AcpiUtValidateFadt (
 
     /* length of GPE blocks must be a multiple of 2 */
 
+
     if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address) &&
         (AcpiGbl_FADT->Gpe0BlkLen & 1))
     {
@@ -275,12 +278,12 @@ AcpiUtTerminate (void)
 
     if (AcpiGbl_Gpe0EnableRegisterSave)
     {
-        ACPI_MEM_FREE (AcpiGbl_Gpe0EnableRegisterSave);
+        AcpiUtFree (AcpiGbl_Gpe0EnableRegisterSave);
     }
 
     if (AcpiGbl_Gpe1EnableRegisterSave)
     {
-        ACPI_MEM_FREE (AcpiGbl_Gpe1EnableRegisterSave);
+        AcpiUtFree (AcpiGbl_Gpe1EnableRegisterSave);
     }
 
 
@@ -288,7 +291,7 @@ AcpiUtTerminate (void)
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiUtSubsystemShutdown
  *
@@ -311,14 +314,15 @@ AcpiUtSubsystemShutdown (void)
 
     if (AcpiGbl_Shutdown)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "ACPI Subsystem is already terminated\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("ACPI Subsystem is already terminated\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
     /* Subsystem appears active, go ahead and shut it down */
 
     AcpiGbl_Shutdown = TRUE;
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Shutting down ACPI Subsystem...\n"));
+    DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
+
 
     /* Close the Namespace */
 
@@ -332,14 +336,21 @@ AcpiUtSubsystemShutdown (void)
 
     AcpiUtTerminate ();
 
-    /* Purge the local caches */
+    /* Flush the local cache(s) */
 
-    AcpiPurgeCachedObjects ();
+    AcpiUtDeleteGenericStateCache ();
+    AcpiUtDeleteObjectCache ();
+    AcpiDsDeleteWalkStateCache ();
+
+    /* Close the Parser */
+
+    /* TBD: [Restructure] AcpiPsTerminate () */
+
+    AcpiPsDeleteParseCache ();
 
     /* Debug only - display leftover memory allocation, if any */
-
-#ifdef ACPI_DBG_TRACK_ALLOCATIONS
-    AcpiUtDumpAllocations (ACPI_UINT32_MAX, NULL);
+#ifdef ENABLE_DEBUGGER
+    AcpiUtDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
 #endif
 
     return_ACPI_STATUS (AE_OK);
