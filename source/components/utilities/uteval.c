@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmeval - Object evaluation
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -293,16 +293,14 @@ AcpiCmExecute_HID (
         {
             /* Convert the Numeric HID to string */
 
-            AcpiAmlEisaIdToString (ObjDesc->Number.Value, Hid->Data.Buffer);
-            Hid->Type = STRING_DEVICE_ID;
+            AcpiAmlEisaIdToString (ObjDesc->Number.Value, Hid->Buffer);
         }
 
         else
         {
             /* Copy the String HID from the returned object */
 
-            Hid->Data.StringPtr = ObjDesc->String.Pointer;
-            Hid->Type = STRING_PTR_DEVICE_ID;
+            STRNCPY(Hid->Buffer, ObjDesc->String.Pointer, sizeof(Hid->Buffer));
         }
     }
 
@@ -390,17 +388,16 @@ AcpiCmExecute_UID (
     {
         if (ObjDesc->Common.Type == ACPI_TYPE_NUMBER)
         {
-            /* Convert the Numeric HID to string */
+            /* Convert the Numeric UID to string */
 
-            Uid->Data.Number = ObjDesc->Number.Value;
+            AcpiUnsignedIntegerToString(ObjDesc->Number.Value, Uid->Buffer);
         }
 
         else
         {
-            /* Copy the String HID from the returned object */
+            /* Copy the String UID from the returned object */
 
-            Uid->Data.StringPtr = ObjDesc->String.Pointer;
-            Uid->Type = STRING_PTR_DEVICE_ID;
+            STRNCPY(Uid->Buffer, ObjDesc->String.Pointer, sizeof(Uid->Buffer));
         }
     }
 
