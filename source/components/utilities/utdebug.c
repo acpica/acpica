@@ -1,5 +1,4 @@
-/*
-  __________________________________________________________________________
+/*__________________________________________________________________________
  |
  |
  |           Copyright (C) Intel Corporation 1994-1998
@@ -13,7 +12,6 @@
  |
  | excommon.c - Debug and error reporting routines
  |__________________________________________________________________________
-
 */
 
 #define __EXCOMMON_C__
@@ -27,28 +25,7 @@
 #define _THIS_MODULE        "excommon.c"
 #define _COMPONENT          MISCELLANEOUS
 
-#define WIN_DS_REGISTER     0x0030
 
-/* Globals */
-
-char        * Why;
-char        WhyBuf [WHYBUF_SIZE];
-INT32       AcpiHook = 0;
-INT32       AcpiLibInitStatus = 0;
-
-
-/* Debug switch - level mask */
-
-#ifdef _DEBUG
-INT32 DebugLevel = DEBUG_DEFAULT;
-#else
-INT32 DebugLevel = NORMAL_DEFAULT;
-#endif
-
-
-/* Debug switch - layer mask */
-
-INT32 DebugLayer = ALL_COMPONENTS;
 
 /*****************************************************************************
  * 
@@ -67,22 +44,12 @@ GetDebugLevel (void)
 }
 
 void
-SetDebugLevel (INT32 dl)
+SetDebugLevel (INT32 NewDebugLevel)
 {
 
-    DebugLevel = dl;
+    DebugLevel = NewDebugLevel;
 }
 
-
-/*
-void 
-DisplayTable (void *Header, INT32 DisplayBitFlags)
-{
-    OsdPrintf (NULL, "DisplayTable called, not supported **********\n");
-    return;
-}
-
-*/
 
 /*****************************************************************************
  * 
@@ -186,7 +153,6 @@ _ReportError (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC
 
     _Kinc_error (KdtEntry->Key, 
                     PACRLF, LineNumber, ModuleName, 0, 0);
-    Why = KdtEntry->Description;
 }
 
 
@@ -207,7 +173,6 @@ _ReportWarning (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DE
 
     _Kinc_warning (KdtEntry->Key, 
                     PACRLF, LineNumber, ModuleName, 0, 0);
-    Why = KdtEntry->Description;
 }
 
 
@@ -225,8 +190,6 @@ _ReportSuccess (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DE
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_SUCCESS, 
                 "*** Success [%s] %s\n", KdtEntry->Key, KdtEntry->Description);
-
-    Why = KdtEntry->Description;
 }
 
 
@@ -247,7 +210,6 @@ _ReportInfo (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_
 
     _Kinc_info (KdtEntry->Key, 
                     PACRLF, LineNumber, ModuleName, 0, 0);
-    Why = KdtEntry->Description;
 }
 
 
