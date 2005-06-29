@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: namespace.h - Namespace subcomponent prototypes and defines
+ * Name: namesp.h - Namespace subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -117,9 +117,9 @@
 #ifndef __NAMESPACE_H__
 #define __NAMESPACE_H__
 
-#include <acpitypes.h>
-#include <acpitables.h>
-#include <acpiobj.h>
+#include <actypes.h>
+#include <actables.h>
+#include <acobject.h>
 #include <pnp.h>
 
 
@@ -236,30 +236,31 @@ ACPI_STATUS
 NsEvaluateByHandle (
     NAME_TABLE_ENTRY        *ObjectNte, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    *ReturnObject);
+    ACPI_OBJECT_INTERNAL    **ReturnObject);
 
 ACPI_STATUS
 NsEvaluateByName (
     char                    *Pathname, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    *ReturnObject);
+    ACPI_OBJECT_INTERNAL    **ReturnObject);
 
 ACPI_STATUS
 NsEvaluateRelative (
     NAME_TABLE_ENTRY        *ObjectNte, 
     char                    *Pathname, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    *ReturnObject);
-
+    ACPI_OBJECT_INTERNAL    **ReturnObject);
 
 ACPI_STATUS
 NsExecuteControlMethod (
-    NAME_TABLE_ENTRY        *MethodNte, 
-    ACPI_OBJECT_INTERNAL    **Params);
+    NAME_TABLE_ENTRY        *MethodEntry, 
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
 
 ACPI_STATUS
 NsGetObjectValue (
-    NAME_TABLE_ENTRY        *ObjectNte);
+    NAME_TABLE_ENTRY        *ObjectEntry,
+    ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
 
 
 /*
