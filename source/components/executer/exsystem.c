@@ -120,12 +120,10 @@
 #include <interp.h>
 #include <namesp.h>
 #include <hardware.h>
-
+#include <events.h>
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("iesystem");
-
-
 
 /******************************************************************************
  * 
