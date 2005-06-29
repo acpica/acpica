@@ -673,13 +673,24 @@ NsSearchAndEnter (
     }
 
 
-    /* Not found in table - search parent tree according to ACPI specification */
+    /*
+     * Not found in the table.  If we are NOT loading the namespace, search the 
+     * parent tree (all the way to the root if necessary.)  We don't want to perform
+     * the parent search when the namespace is actually being loaded.
+     */
 
-    Status = NsSearchParentTree (EntryName, NameTable, Type, RetEntry);
-    if (Status == AE_OK)
+    /* TBD: should this be (LoadMode == MODE_Exec) to exclude MODE_Load1 from search? */
+
+    if (LoadMode != MODE_Load)
     {
-        FUNCTION_EXIT;
-        return Status;
+        /* Not found in table - search parent tree according to ACPI specification */
+
+        Status = NsSearchParentTree (EntryName, NameTable, Type, RetEntry);
+        if (Status == AE_OK)
+        {
+            FUNCTION_EXIT;
+            return Status;
+        }
     }
 
 
