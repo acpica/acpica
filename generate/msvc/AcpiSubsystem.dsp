@@ -163,6 +163,10 @@ SOURCE=..\..\Subsystem\Common\cminit.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Common\cmmutex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Common\cmobject.c
 # End Source File
 # Begin Source File
