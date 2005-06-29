@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -495,7 +495,7 @@ AnGetBtype (
  *
  * FUNCTION:    AnCheckForReservedMethod
  *
- * PARAMETERS:  Op            - A parse node of type "METHOD".
+ * PARAMETERS:  Op              - A parse node of type "METHOD".
  *              MethodInfo      - Saved info about this method
  *
  * RETURN:      None
@@ -526,33 +526,44 @@ AnCheckForReservedMethod (
     {
         if (!ACPI_STRCMP (Op->Asl.ExternalName, ReservedMethods[i].Name))
         {
-            Gbl_ReservedMethods++;
-
-            /* Matched a reserved method name */
-
-            if (MethodInfo->NumArguments != ReservedMethods[i].NumArguments)
+            if (ReservedMethods[i].Flags & ASL_RSVD_SCOPE)
             {
-                sprintf (MsgBuffer, " %s requires %d",
-                            ReservedMethods[i].Name,
-                            ReservedMethods[i].NumArguments);
-
-                if (MethodInfo->NumArguments > ReservedMethods[i].NumArguments)
-                {
-                    AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op, MsgBuffer);
-                }
-                else
-                {
-                    AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_LO, Op, MsgBuffer);
-                }
+                AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
             }
-
-            if (MethodInfo->NumReturnNoValue &&
-                ReservedMethods[i].Flags & ASL_RSVD_RETURN_VALUE)
+            else if (ReservedMethods[i].Flags & ASL_RSVD_RESOURCE_NAME)
             {
-                sprintf (MsgBuffer, "%s",
-                            ReservedMethods[i].Name);
+                AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
+            }
+            else
+            {
+                Gbl_ReservedMethods++;
 
-                AslError (ASL_WARNING, ASL_MSG_RESERVED_RETURN_VALUE, Op, MsgBuffer);
+                /* Matched a reserved method name */
+
+                if (MethodInfo->NumArguments != ReservedMethods[i].NumArguments)
+                {
+                    sprintf (MsgBuffer, " %s requires %d",
+                                ReservedMethods[i].Name,
+                                ReservedMethods[i].NumArguments);
+
+                    if (MethodInfo->NumArguments > ReservedMethods[i].NumArguments)
+                    {
+                        AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op, MsgBuffer);
+                    }
+                    else
+                    {
+                        AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_LO, Op, MsgBuffer);
+                    }
+                }
+
+                if (MethodInfo->NumReturnNoValue &&
+                    ReservedMethods[i].Flags & ASL_RSVD_RETURN_VALUE)
+                {
+                    sprintf (MsgBuffer, "%s",
+                                ReservedMethods[i].Name);
+
+                    AslError (ASL_WARNING, ASL_MSG_RESERVED_RETURN_VALUE, Op, MsgBuffer);
+                }
             }
 
             return;

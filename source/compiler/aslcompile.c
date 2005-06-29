@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.51 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -123,50 +123,6 @@
         ACPI_MODULE_NAME    ("aslcompile")
 
 
-/*
- * Stubs to simplify linkage to the
- * ACPI Namespace Manager (Unused functions).
- * TBD: These functions should be split out so
- * that these stubs are no longer needed.
- */
-void
-AcpiExUnlinkMutex (
-    ACPI_OPERAND_OBJECT     *ObjDesc)
-{
-}
-
-void
-AcpiTbDeleteAcpiTables (void)
-{
-}
-
-ACPI_STATUS
-AeLocalGetRootPointer (
-    UINT32                  Flags,
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
-{
-    return AE_ERROR;
-}
-
-void
-AcpiExDumpOperands (
-    ACPI_OPERAND_OBJECT     **Operands,
-    ACPI_INTERPRETER_MODE   InterpreterMode,
-    NATIVE_CHAR             *Ident,
-    UINT32                  NumLevels,
-    NATIVE_CHAR             *Note,
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber)
-{
-}
-
-ACPI_STATUS
-AcpiExDumpOperand (
-    ACPI_OPERAND_OBJECT     *EntryDesc)
-{
-    return AE_OK;
-}
-
 
 /*******************************************************************************
  *
@@ -223,7 +179,7 @@ AslCompilerSignon (
     /* Compiler signon with copyright */
 
     FlPrintFile (FileId,
-        "%s\n%s%s %s [%s]\n%sIncludes ACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0\n%s\n",
+        "%s\n%s%s %s [%s]\n%sIncludes ACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0a\n%s\n",
         Prefix,
         Prefix, CompilerId, CompilerVersion, __DATE__,
         Prefix, ACPI_CA_VERSION,
@@ -379,6 +335,13 @@ CmDoCompile (void)
 
     DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating AML opcodes\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
+    UtEndEvent (i++);
+
+    /* Interpret and generate all compile-time constants */
+
+    UtBeginEvent (i, "Constant folding via AML interpreter");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nInterpreting compile-time constant expressions\n\n");
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, OpcAmlConstantWalk, NULL, NULL);
     UtEndEvent (i++);
 
     /* Calculate all AML package lengths */
@@ -567,6 +530,7 @@ CmCleanupAndExit (void)
         printf ("%11u : %s\n", TotalMethods, "Control methods");
         printf ("%11u : %s\n", TotalAllocations, "Memory Allocations");
         printf ("%11u : %s\n", TotalAllocated, "Total allocated memory");
+        printf ("%11u : %s\n", TotalFolds, "Constant subtrees folded");
         printf ("\n");
     }
 
@@ -575,7 +539,7 @@ CmCleanupAndExit (void)
         DbgPrint (ASL_DEBUG_OUTPUT, "\n\nMiscellaneous compile statistics\n\n");
         DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Total Namespace searches", Gbl_NsLookupCount);
         DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Time per search",
-                        ((AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) * 1000) /
+                        ((UINT32) (AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) * 1000) /
                         Gbl_NsLookupCount);
     }
 
