@@ -371,6 +371,7 @@ CmDeleteElementFromAllocList (
             }
         }       
         
+
         /* Mark the segment as deleted */
 
         if (Element->Size >= 4)
@@ -734,38 +735,171 @@ _CmAllocateObjectDesc (
     INT32                   LineNumber, 
     INT32                   ComponentId)
 {
-    ACPI_OBJECT_INTERNAL    *NewDesc;
+    ACPI_OBJECT_INTERNAL    *Object;
     
 
     FUNCTION_TRACE ("_AllocateObjectDesc");
 
 
-    /* Attempt to allocate new descriptor */
+    CmAcquireMutex (MTX_MEMORY);
 
-    NewDesc = _CmCallocate (sizeof (ACPI_OBJECT_INTERNAL), ComponentId,
-                                ModuleName, LineNumber);
-        
-    if (!NewDesc)
+    Gbl_ObjectCacheRequests++;
+
+    /* Check the cache first */
+
+    if (Gbl_ObjectCache)
     {
-        /* Allocation failed */
-        
-        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, 
-                        "Could not allocate Object Descriptor");
+        /* There is an object available, use it */
+
+        Object = Gbl_ObjectCache;
+        Gbl_ObjectCache = Object->Common.Next;
+
+        Gbl_ObjectCacheHits++;
+        Gbl_ObjectCacheDepth--;
+
+        /* Clear the entire object.  This is important! */
+
+        MEMSET (Object, 0, sizeof (ACPI_OBJECT_INTERNAL));
+
+        CmReleaseMutex (MTX_MEMORY);
     }
 
     else
     {
-        /* Mark the descriptor type */
+        /* The cache is empty, create a new object */
 
-        NewDesc->Common.DataType = DESC_TYPE_ACPI_OBJ;
+        CmReleaseMutex (MTX_MEMORY);                        /* Avoid deadlock with CmCallocate */
 
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size 0x%x\n",
-                        NewDesc, sizeof (ACPI_OBJECT_INTERNAL)));
+        /* Attempt to allocate new descriptor */
+
+        Object = _CmCallocate (sizeof (ACPI_OBJECT_INTERNAL), ComponentId,
+                                    ModuleName, LineNumber);
+        
+        if (!Object)
+        {
+            /* Allocation failed */
+        
+            _REPORT_ERROR (ModuleName, LineNumber, ComponentId, 
+                            "Could not allocate Object Descriptor");
+
+            return_VALUE (NULL);
+        }
     }
 
-    return_VALUE (NewDesc);
+    /* Mark the descriptor type */
+
+    Object->Common.DataType = DESC_TYPE_ACPI_OBJ;
+
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size 0x%x\n",
+                    Object, sizeof (ACPI_OBJECT_INTERNAL)));
+
+    return_VALUE (Object);
 }
 
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmDeleteObjectDesc
+ *
+ * PARAMETERS:  Object          - Acpi internal object to be deleted
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Free an ACPI object descriptor or add it to the object cache
+ *
+ ****************************************************************************/
+
+void
+CmDeleteObjectDesc (
+    ACPI_OBJECT_INTERNAL    *Object)
+{
+
+
+    /* Object must be an ACPI_OBJECT_INTERNAL */
+
+    if (Object->Common.DataType != DESC_TYPE_ACPI_OBJ)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("CmDeleteObjectDesc: Obj %p is not an ACPI object\n", Object));
+        return;
+    }
+
+    /* Make sure that the object isn't already in the cache */
+
+    if (Object->Common.Next)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("CmDeleteObjectDesc: Obj %p is already in the object cache\n", Object));
+        return;
+    }
+
+
+    /* If cache is full, just free this object */
+
+    if (Gbl_ObjectCacheDepth >= MAX_OBJECT_CACHE_DEPTH)
+    {
+        CmFree (Object);
+        return;
+    }
+
+    CmAcquireMutex (MTX_MEMORY);
+
+    /* Put the object at the head of the global cache list */
+
+    Object->Common.Next = Gbl_ObjectCache;
+    Gbl_ObjectCache = Object;
+    Gbl_ObjectCacheDepth++;
+
+
+    CmReleaseMutex (MTX_MEMORY);
+}
+
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    CmDeleteObjectCache
+ *
+ * PARAMETERS:  None
+ * 
+ * RETURN:      Status
+ * 
+ * DESCRIPTION: Purge the global state object cache.  Used during subsystem
+ *              termination.
+ *
+ ******************************************************************************/
+
+void
+CmDeleteObjectCache (
+    void)
+{
+    ACPI_OBJECT_INTERNAL    *Next;
+
+
+    FUNCTION_TRACE ("CmDeleteObjectCache");
+
+
+    /* Traverse the global cache list */
+
+    while (Gbl_ObjectCache)
+    {
+        /* Delete one cached state object */
+
+        Next = Gbl_ObjectCache->Common.Next;
+        Gbl_ObjectCache->Common.Next = NULL;
+
+        /* 
+         * Memory allocation metrics.  Call the macro here since we only
+         * care about dynamically allocated objects.
+         */
+        DECREMENT_OBJECT_METRICS (Gbl_ObjectCache->Common.Size);
+        
+        CmFree (Gbl_ObjectCache);
+        Gbl_ObjectCache = Next;
+    }
+
+    return_VOID;
+}
+ 
 
 /*****************************************************************************
  * 
