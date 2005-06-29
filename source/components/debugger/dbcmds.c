@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  ******************************************************************************/
 
@@ -1039,7 +1039,7 @@ AcpiDbDisplayResources (
     ReturnObj.Length            = BUFFER_SIZE;
 
     /* _PRT */
-    
+
     AcpiOsPrintf ("Evaluating _PRT\n");
 
     Status = AcpiEvaluateObject (ObjDesc, "_PRT", NULL, &ReturnObj);
