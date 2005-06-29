@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amconvrt - Object conversion routines
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -559,7 +559,7 @@ AcpiAmlConvertToTargetType (
 
         switch (DestinationType)
         {
-        case INTERNAL_TYPE_DEF_FIELD:
+        case INTERNAL_TYPE_FIELD:
             /*
              * Named field can always handle conversions
              */
