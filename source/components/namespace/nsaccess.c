@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  ******************************************************************************/
 
@@ -352,7 +352,7 @@ AcpiNsLookup (
     ACPI_NAMESPACE_NODE     **ReturnNode)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMESPACE_NODE      *PrefixNode;
+    ACPI_NAMESPACE_NODE     *PrefixNode;
     ACPI_NAMESPACE_NODE     *CurrentNode = NULL;
     ACPI_NAMESPACE_NODE     *ScopeToPush = NULL;
     ACPI_NAMESPACE_NODE     *ThisNode = NULL;
@@ -361,8 +361,9 @@ AcpiNsLookup (
     BOOLEAN                 NullNamePath = FALSE;
     OBJECT_TYPE_INTERNAL    TypeToCheckFor;
     OBJECT_TYPE_INTERNAL    ThisSearchType;
+    UINT32                  LocalFlags = Flags & ~NS_ERROR_IF_FOUND;
 
-    DEBUG_ONLY_MEMBERS      (UINT32 i)
+    DEBUG_EXEC              (UINT32 i;)
 
 
     FUNCTION_TRACE ("NsLookup");
@@ -605,6 +606,7 @@ AcpiNsLookup (
         if (!NumSegments)
         {
             ThisSearchType = Type;
+            LocalFlags = Flags;
         }
 
         /* Pluck one ACPI name from the front of the pathname */
@@ -615,7 +617,7 @@ AcpiNsLookup (
 
         Status = AcpiNsSearchAndEnter (SimpleName, WalkState,
                                         CurrentNode, InterpreterMode,
-                                        ThisSearchType, Flags,
+                                        ThisSearchType, LocalFlags,
                                         &ThisNode);
 
         if (ACPI_FAILURE (Status))
