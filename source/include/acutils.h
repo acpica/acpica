@@ -206,6 +206,11 @@ CmBuildInternalObject (
     ACPI_OBJECT             *Obj, 
     ACPI_OBJECT_INTERNAL    *InternalObj);
 
+void
+CmDeleteInternalPackageObject (
+    ACPI_OBJECT_INTERNAL    *Object);
+
+
 /* Debug interfaces */
 
 INT32
