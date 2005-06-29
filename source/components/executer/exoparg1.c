@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -437,7 +437,7 @@ AcpiExOpcode_1A_1T_1R (
 
             if (Digit > 0)
             {
-                ReturnDesc->Integer.Value += (Temp32 << (i * 4));
+                ReturnDesc->Integer.Value += ((ACPI_INTEGER) Temp32 << (i * 4));
             }
         }
         break;
