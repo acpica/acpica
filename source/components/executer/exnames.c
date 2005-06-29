@@ -149,13 +149,13 @@
  *
  ******************************************************************************/
 
-INT8 *
+NATIVE_CHAR *
 AcpiAmlAllocateNameString (
     UINT32                  PrefixCount,
     UINT32                  NumNameSegs)
 {
-    INT8                    *TempPtr;
-    INT8                    *NameString;
+    NATIVE_CHAR             *TempPtr;
+    NATIVE_CHAR             *NameString;
     UINT32                   SizeNeeded;
 
     FUNCTION_TRACE ("AmlAllocateNameString");
@@ -250,12 +250,12 @@ AcpiAmlAllocateNameString (
 ACPI_STATUS
 AcpiAmlExecNameSegment (
     UINT8                   **InAmlAddress,
-    INT8                    *NameString)
+    NATIVE_CHAR             *NameString)
 {
     UINT8                   *AmlAddress = *InAmlAddress;
     ACPI_STATUS             Status = AE_OK;
-    INT32                   Index;
-    INT8                    CharBuf[5];
+    UINT32                  Index;
+    NATIVE_CHAR             CharBuf[5];
 
 
     FUNCTION_TRACE ("AmlExecNameSegment");
@@ -356,14 +356,14 @@ ACPI_STATUS
 AcpiAmlGetNameString (
     OBJECT_TYPE_INTERNAL    DataType,
     UINT8                   *InAmlAddress,
-    INT8                    **OutNameString,
+    NATIVE_CHAR             **OutNameString,
     UINT32                  *OutNameLength)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT8                   *AmlAddress = InAmlAddress;
-    INT8                    *NameString = NULL;
-    INT32                   NumSegments;
-    INT32                   PrefixCount = 0;
+    NATIVE_CHAR             *NameString = NULL;
+    UINT32                  NumSegments;
+    UINT32                  PrefixCount = 0;
     UINT8                   Prefix = 0;
     BOOLEAN                 HasPrefix = FALSE;
 
@@ -407,7 +407,7 @@ AcpiAmlGetNameString (
              * Remember that we have a RootPrefix --
              * see comment in AcpiAmlAllocateNameString()
              */
-            PrefixCount = -1;
+            PrefixCount = (UINT32) -1;
             HasPrefix = TRUE;
             break;
 
