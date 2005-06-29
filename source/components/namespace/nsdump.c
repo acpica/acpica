@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.120 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -195,8 +195,8 @@ AcpiNsDumpPathname (
     UINT32                  Level,
     UINT32                  Component)
 {
-    NATIVE_CHAR             *Buffer;
-    ACPI_SIZE               Length;
+    ACPI_BUFFER             Buffer;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("NsDumpPathname");
@@ -209,23 +209,18 @@ AcpiNsDumpPathname (
         return_ACPI_STATUS (AE_OK);
     }
 
-    Buffer = ACPI_MEM_ALLOCATE (PATHNAME_MAX);
-    if (!Buffer)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
     /* Convert handle to a full pathname and print it (with supplied message) */
 
-    Length = PATHNAME_MAX;
-    if (ACPI_SUCCESS (AcpiNsHandleToPathname (Handle, &Length, Buffer)))
+    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
+
+    Status = AcpiNsHandleToPathname (Handle, &Buffer);
+    if (ACPI_SUCCESS (Status))
     {
-        AcpiOsPrintf ("%s %s (Node %p)\n", Msg, Buffer, Handle);
+        AcpiOsPrintf ("%s %s (Node %p)\n", Msg, Buffer.Pointer, Handle);
+        AcpiOsFree (Buffer.Pointer);
     }
 
-    ACPI_MEM_FREE (Buffer);
-
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -252,8 +247,8 @@ AcpiNsDumpOneObject (
     ACPI_WALK_INFO          *Info = (ACPI_WALK_INFO *) Context;
     ACPI_NAMESPACE_NODE     *ThisNode;
     ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
-    ACPI_OBJECT_TYPE8       ObjType;
-    ACPI_OBJECT_TYPE8       Type;
+    ACPI_OBJECT_TYPE        ObjType;
+    ACPI_OBJECT_TYPE        Type;
     UINT32                  BytesToDump;
     UINT32                  DownstreamSiblingMask = 0;
     UINT32                  LevelTmp;
@@ -698,7 +693,7 @@ Cleanup:
 
 void
 AcpiNsDumpObjects (
-    ACPI_OBJECT_TYPE8       Type,
+    ACPI_OBJECT_TYPE        Type,
     UINT8                   DisplayType,
     UINT32                  MaxDepth,
     UINT32                  OwnerId,
