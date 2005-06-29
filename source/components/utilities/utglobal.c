@@ -161,6 +161,7 @@ char            *ExceptionNames[] =
     "AE_BAD_SIGNATURE",
     "AE_SUPPORT",
     "AE_SHARE",
+    "AE_LIMIT",
     "AE_UNKNOWN_STATUS"
 };
 
