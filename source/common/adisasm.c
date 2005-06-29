@@ -124,7 +124,7 @@
 #include <stdio.h>
 
 
-#define _COMPONENT          PARSER
+#define _COMPONENT          ACPI_TOOLS
         MODULE_NAME         ("adexec")
 
 
