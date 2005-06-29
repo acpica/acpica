@@ -184,7 +184,7 @@ AcpiDsMethodDataInitArgs (
 
 void *
 AcpiNsGetAttachedObject (
-    ACPI_HANDLE             Handle)
+    ACPI_NAMESPACE_NODE     *Node)
 {
     return NULL;
 }
