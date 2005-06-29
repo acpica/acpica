@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.2 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -137,8 +137,8 @@
 ACPI_STATUS
 AcpiEvGpeInitialize (void)
 {
-    NATIVE_UINT_MAX32       i;
-    NATIVE_UINT_MAX32       j;
+    ACPI_NATIVE_UINT        i;
+    ACPI_NATIVE_UINT        j;
     UINT32                  GpeBlock;
     UINT32                  GpeRegister;
     UINT32                  GpeNumberIndex;
@@ -277,7 +277,7 @@ AcpiEvGpeInitialize (void)
      * per register.  Initialization to zeros is sufficient.
      */
     AcpiGbl_GpeNumberInfo = ACPI_MEM_CALLOCATE (
-                                (ACPI_SIZE) (AcpiGbl_GpeRegisterCount * ACPI_GPE_REGISTER_WIDTH) *
+                                ((ACPI_SIZE) AcpiGbl_GpeRegisterCount * ACPI_GPE_REGISTER_WIDTH) *
                                 sizeof (ACPI_GPE_NUMBER_INFO));
     if (!AcpiGbl_GpeNumberInfo)
     {
@@ -326,7 +326,7 @@ AcpiEvGpeInitialize (void)
 
             for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++)
             {
-                GpeNumber = GpeRegisterInfo->BaseGpeNumber + j;
+                GpeNumber = GpeRegisterInfo->BaseGpeNumber + (UINT32) j;
                 AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex = (UINT8) GpeNumberIndex;
 
                 AcpiGbl_GpeNumberInfo[GpeNumberIndex].BitMask = AcpiGbl_DecodeTo8bit[j];
@@ -414,8 +414,8 @@ AcpiEvSaveMethodInfo (
     void                    **ReturnValue)
 {
     UINT32                  GpeNumber;
-    UINT32                  GpeNumberIndex;
-    NATIVE_CHAR             Name[ACPI_NAME_SIZE + 1];
+    ACPI_GPE_NUMBER_INFO    *GpeNumberInfo;
+    char                    Name[ACPI_NAME_SIZE + 1];
     UINT8                   Type;
     ACPI_STATUS             Status;
 
@@ -466,20 +466,23 @@ AcpiEvSaveMethodInfo (
 
     /* Get GPE index and ensure that we have a valid GPE number */
 
-    GpeNumberIndex = AcpiEvGetGpeNumberIndex (GpeNumber);
-    if (GpeNumberIndex == ACPI_GPE_INVALID)
+    GpeNumberInfo = AcpiEvGetGpeNumberInfo (GpeNumber);
+    if (!GpeNumberInfo)
     {
         /* Not valid, all we can do here is ignore it */
 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "GPE number associated with method is not valid %s\n",
+            Name));
         return (AE_OK);
     }
 
     /*
-     * Now we can add this information to the GpeInfo block
+     * Now we can add this information to the GpeNumberInfo block
      * for use during dispatch of this GPE.
      */
-    AcpiGbl_GpeNumberInfo [GpeNumberIndex].Type       = Type;
-    AcpiGbl_GpeNumberInfo [GpeNumberIndex].MethodNode = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    GpeNumberInfo->Type       = Type;
+    GpeNumberInfo->MethodNode = (ACPI_NAMESPACE_NODE *) ObjHandle;
 
     /*
      * Enable the GPE (SCIs should be disabled at this point)
@@ -650,7 +653,7 @@ AcpiEvAsynchExecuteGpeMethod (
 {
     UINT32                  GpeNumber = (UINT32) ACPI_TO_INTEGER (Context);
     UINT32                  GpeNumberIndex;
-    ACPI_GPE_NUMBER_INFO    GpeInfo;
+    ACPI_GPE_NUMBER_INFO    GpeNumberInfo;
     ACPI_STATUS             Status;
 
 
@@ -673,29 +676,29 @@ AcpiEvAsynchExecuteGpeMethod (
         return_VOID;
     }
 
-    GpeInfo = AcpiGbl_GpeNumberInfo [GpeNumberIndex];
+    GpeNumberInfo = AcpiGbl_GpeNumberInfo [GpeNumberIndex];
     Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     if (ACPI_FAILURE (Status))
     {
         return_VOID;
     }
 
-    if (GpeInfo.MethodNode)
+    if (GpeNumberInfo.MethodNode)
     {
         /*
          * Invoke the GPE Method (_Lxx, _Exx):
          * (Evaluate the _Lxx/_Exx control method that corresponds to this GPE.)
          */
-        Status = AcpiNsEvaluateByHandle (GpeInfo.MethodNode, NULL, NULL);
+        Status = AcpiNsEvaluateByHandle (GpeNumberInfo.MethodNode, NULL, NULL);
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR (("%s while evaluating method [%4.4s] for GPE[%2.2X]\n",
                 AcpiFormatException (Status),
-                GpeInfo.MethodNode->Name.Ascii, GpeNumber));
+                GpeNumberInfo.MethodNode->Name.Ascii, GpeNumber));
         }
     }
 
-    if (GpeInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED)
+    if (GpeNumberInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED)
     {
         /*
          * GPE is level-triggered, we clear the GPE status bit after handling
@@ -734,32 +737,29 @@ UINT32
 AcpiEvGpeDispatch (
     UINT32                  GpeNumber)
 {
-    UINT32                  GpeNumberIndex;
-    ACPI_GPE_NUMBER_INFO    *GpeInfo;
+    ACPI_GPE_NUMBER_INFO    *GpeNumberInfo;
     ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE ("EvGpeDispatch");
 
 
-    GpeNumberIndex = AcpiEvGetGpeNumberIndex (GpeNumber);
-    if (GpeNumberIndex == ACPI_GPE_INVALID)
+    /*
+     * We don't have to worry about mutex on GpeNumberInfo because we are
+     * executing at interrupt level.
+     */
+    GpeNumberInfo = AcpiEvGetGpeNumberInfo (GpeNumber);
+    if (!GpeNumberInfo)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "GPE[%X] is not a valid event\n", GpeNumber));
         return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
     }
 
     /*
-     * We don't have to worry about mutex on GpeInfo because we are
-     * executing at interrupt level.
-     */
-    GpeInfo = &AcpiGbl_GpeNumberInfo [GpeNumberIndex];
-
-    /*
      * If edge-triggered, clear the GPE status bit now.  Note that
      * level-triggered events are cleared after the GPE is serviced.
      */
-    if (GpeInfo->Type & ACPI_EVENT_EDGE_TRIGGERED)
+    if (GpeNumberInfo->Type & ACPI_EVENT_EDGE_TRIGGERED)
     {
         Status = AcpiHwClearGpe (GpeNumber);
         if (ACPI_FAILURE (Status))
@@ -776,13 +776,13 @@ AcpiEvGpeDispatch (
      * If there is neither a handler nor a method, we disable the level to
      * prevent further events from coming in here.
      */
-    if (GpeInfo->Handler)
+    if (GpeNumberInfo->Handler)
     {
         /* Invoke the installed handler (at interrupt level) */
 
-        GpeInfo->Handler (GpeInfo->Context);
+        GpeNumberInfo->Handler (GpeNumberInfo->Context);
     }
-    else if (GpeInfo->MethodNode)
+    else if (GpeNumberInfo->MethodNode)
     {
         /*
          * Disable GPE, so it doesn't keep firing before the method has a
@@ -826,7 +826,7 @@ AcpiEvGpeDispatch (
     /*
      * It is now safe to clear level-triggered evnets.
      */
-    if (GpeInfo->Type & ACPI_EVENT_LEVEL_TRIGGERED)
+    if (GpeNumberInfo->Type & ACPI_EVENT_LEVEL_TRIGGERED)
     {
         Status = AcpiHwClearGpe (GpeNumber);
         if (ACPI_FAILURE (Status))

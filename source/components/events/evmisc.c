@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.60 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -160,28 +160,55 @@ AcpiEvIsNotifyObject (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvGetGpeRegisterIndex
+ * FUNCTION:    AcpiEvGetGpeRegisterInfo
  *
  * PARAMETERS:  GpeNumber       - Raw GPE number
  *
- * RETURN:      None.
+ * RETURN:      Pointer to the info struct for this GPE register.
  *
  * DESCRIPTION: Returns the register index (index into the GPE register info
  *              table) associated with this GPE.
  *
  ******************************************************************************/
 
-UINT32
-AcpiEvGetGpeRegisterIndex (
+ACPI_GPE_REGISTER_INFO *
+AcpiEvGetGpeRegisterInfo (
     UINT32                  GpeNumber)
 {
 
     if (GpeNumber > AcpiGbl_GpeNumberMax)
     {
-        return (ACPI_GPE_INVALID);
+        return (NULL);
     }
 
-    return (ACPI_DIV_8 (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex));
+    return (&AcpiGbl_GpeRegisterInfo [ACPI_DIV_8 (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex)]);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvGetGpeNumberInfo
+ *
+ * PARAMETERS:  GpeNumber       - Raw GPE number
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Returns the number index (index into the GPE number info table)
+ *              associated with this GPE.
+ *
+ ******************************************************************************/
+
+ACPI_GPE_NUMBER_INFO *
+AcpiEvGetGpeNumberInfo (
+    UINT32                  GpeNumber)
+{
+
+    if (GpeNumber > AcpiGbl_GpeNumberMax)
+    {
+        return (NULL);
+    }
+
+    return (&AcpiGbl_GpeNumberInfo [AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex]);
 }
 
 
@@ -675,7 +702,7 @@ AcpiEvReleaseGlobalLock (void)
 void
 AcpiEvTerminate (void)
 {
-    NATIVE_UINT_MAX32       i;
+    ACPI_NATIVE_UINT        i;
     ACPI_STATUS             Status;
 
 
@@ -694,10 +721,10 @@ AcpiEvTerminate (void)
          */
         for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
         {
-            Status = AcpiDisableEvent(i, ACPI_EVENT_FIXED, 0);
+            Status = AcpiDisableEvent ((UINT32) i, ACPI_EVENT_FIXED, 0);
             if (ACPI_FAILURE (Status))
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not disable fixed event %d\n", i));
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not disable fixed event %d\n", (UINT32) i));
             }
         }
 
@@ -706,12 +733,12 @@ AcpiEvTerminate (void)
          */
         for (i = 0; i < AcpiGbl_GpeNumberMax; i++)
         {
-            if (AcpiEvGetGpeNumberIndex(i) != ACPI_GPE_INVALID)
+            if (AcpiEvGetGpeNumberIndex ((UINT32)i) != ACPI_GPE_INVALID)
             {
-                Status = AcpiHwDisableGpe(i);
+                Status = AcpiHwDisableGpe((UINT32) i);
                 if (ACPI_FAILURE (Status))
                 {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not disable GPE %d\n", i));
+                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not disable GPE %d\n", (UINT32) i));
                 }
             }
         }
@@ -719,7 +746,7 @@ AcpiEvTerminate (void)
         /*
          * Remove SCI handler
          */
-        Status = AcpiEvRemoveSciHandler();
+        Status = AcpiEvRemoveSciHandler ();
         if (ACPI_FAILURE(Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not remove SCI handler\n"));
