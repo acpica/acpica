@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.52 $
+ *              $Revision: 1.54 $
  *
  ******************************************************************************/
 
@@ -128,7 +128,6 @@
 
 #define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("utmisc")
-
 
 
 /*******************************************************************************
@@ -779,7 +778,7 @@ AcpiUtCreateUpdateState (
     State = AcpiUtCreateGenericState ();
     if (!State)
     {
-        return (NULL);
+        return_PTR (NULL);
     }
 
     /* Init fields specific to the update struct */
@@ -823,7 +822,7 @@ AcpiUtCreatePkgState (
     State = AcpiUtCreateGenericState ();
     if (!State)
     {
-        return (NULL);
+        return_PTR (NULL);
     }
 
     /* Init fields specific to the update struct */
@@ -866,7 +865,7 @@ AcpiUtCreateControlState (
     State = AcpiUtCreateGenericState ();
     if (!State)
     {
-        return (NULL);
+        return_PTR (NULL);
     }
 
 
@@ -1169,7 +1168,7 @@ AcpiUtWalkPackageTree (
 
     /* We should never get here */
 
-    return (AE_AML_INTERNAL);
+    return_ACPI_STATUS (AE_AML_INTERNAL);
 }
 
 
