@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -155,7 +155,7 @@ AcpiEnable (void)
 
     if (AcpiHwGetMode() == ACPI_SYS_MODE_ACPI)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Already in ACPI mode.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "System is already in ACPI mode\n"));
     }
     else
     {
@@ -168,7 +168,7 @@ AcpiEnable (void)
             return_ACPI_STATUS (Status);
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Transition to ACPI mode successful\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "Transition to ACPI mode successful\n"));
     }
 
     return_ACPI_STATUS (Status);
@@ -203,20 +203,21 @@ AcpiDisable (void)
 
     if (AcpiHwGetMode() == ACPI_SYS_MODE_LEGACY)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Already in LEGACY mode.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "System is already in legacy (non-ACPI) mode\n"));
     }
     else
     {
         /* Transition to LEGACY mode */
+
         Status = AcpiHwSetMode (ACPI_SYS_MODE_LEGACY);
 
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not transition to LEGACY mode."));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not exit ACPI mode to legacy mode"));
             return_ACPI_STATUS (Status);
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Transition to LEGACY mode successful\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "ACPI mode disabled\n"));
     }
 
     return_ACPI_STATUS (Status);
