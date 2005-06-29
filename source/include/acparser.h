@@ -153,6 +153,9 @@ ACPI_STATUS
 PsxGetRegionData (
     ACPI_OBJECT_INTERNAL    *RgnDesc);
 
+char *
+PsGetOpcodeName (
+    INT32                   Opcode);
 
 
 #ifndef _RPARSER
@@ -419,17 +422,17 @@ PsAppendArg(
     ACPI_GENERIC_OP         *op, 
     ACPI_GENERIC_OP         *arg);
 
-ACPI_GENERIC_OP *
+ACPI_GENERIC_OP*
 PsFind (
-    ACPI_GENERIC_OP         *scope, 
-    UINT8                   *path,
-    INT32                   opcode,
-    INT32                   create);
+    ACPI_GENERIC_OP         *Scope, 
+    UINT8                   *Path,
+    UINT32                  Opcode,
+    UINT32                  Create);
 
 ACPI_GENERIC_OP *
 PsGetArg(
     ACPI_GENERIC_OP         *op, 
-    INT32                   argn);
+    UINT32                   argn);
 
 ACPI_GENERIC_OP *
 PsGetChild (
@@ -447,9 +450,18 @@ PsGetDepthNext (
 
 ACPI_STATUS
 PsWalkParsedAml (
-    ACPI_GENERIC_OP         *TreeRootOp,
+    ACPI_GENERIC_OP         *StartOp,
+    ACPI_GENERIC_OP         *EndOp,
     INTERPRETER_CALLBACK    DescendingCallback,
     INTERPRETER_CALLBACK    AscendingCallback);
+
+ACPI_STATUS
+PsGetNextWalkOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op,
+    INTERPRETER_CALLBACK    AscendingCallback,
+    ACPI_GENERIC_OP         **PrevOp,
+    ACPI_GENERIC_OP         **NextOp);
 
 
 /* psutils - parser utilities */
@@ -457,39 +469,39 @@ PsWalkParsedAml (
 void
 PsInitOp (
     ACPI_GENERIC_OP         *op,
-    INT32                   opcode);
+    UINT32                  opcode);
 
 ACPI_GENERIC_OP * 
 PsAllocOp (
-    INT32                   opcode);
+    UINT32                  opcode);
 
-INT32
+BOOLEAN
 PsIsLeadingChar (
     INT32                   c);
 
-INT32
+BOOLEAN
 PsIsPrefixChar (
     INT32                   c);
 
-INT32
+BOOLEAN
 PsIsNamedOp (
-    INT32                   opcode);
+    UINT32                  opcode);
 
-INT32
+BOOLEAN
 PsIsNamedObjectOp (
-    INT32                   opcode);
+    UINT32                  opcode);
 
-INT32
+BOOLEAN
 PsIsDeferredOp (
-    INT32                   opcode);
+    UINT32                  opcode);
 
-INT32
+BOOLEAN
 PsIsBytelistOp(
-    INT32                   opcode);
+    UINT32                  opcode);
 
-INT32
+BOOLEAN
 PsIsFieldOp(
-    INT32                   opcode);
+    UINT32                  opcode);
 
 ACPI_NAMED_OP*
 PsToNamedOp(
