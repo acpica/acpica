@@ -348,7 +348,7 @@ PsGetNextNamepath (
     {
         /* Null name case, create a null namepath object */
 
-        PsInitOp (Arg, AML_NAMEPATH);        
+        PsInitOp (Arg, AML_NAMEPATH_OP);        
         Arg->Value.Name = Path;
         return_VOID;
     }
@@ -368,12 +368,12 @@ PsGetNextNamepath (
             Count = PsGetArg (MethodOp, 0);
             if (Count && Count->Opcode == AML_ByteOp)
             {
-                Name = PsAllocOp (AML_NAMEPATH);
+                Name = PsAllocOp (AML_NAMEPATH_OP);
                 if (Name)
                 {
                     /* Change arg into a METHOD CALL and attach the name to it */
 
-                    PsInitOp (Arg, AML_METHODCALL);
+                    PsInitOp (Arg, AML_METHODCALL_OP);
 
                     Name->Value.Name        = Path;
                     Name->NameTableEntry    = MethodOp;          /* Point METHODCALL/NAME to the METHOD NTE */
@@ -426,12 +426,12 @@ PsGetNextNamepath (
                 Method = Nte;
                 DEBUG_PRINT (TRACE_PARSE, ("PsGetNextNamepath: method - %p Path=%p\n", Method, Path));
 
-                Name = PsAllocOp (AML_NAMEPATH);
+                Name = PsAllocOp (AML_NAMEPATH_OP);
                 if (Name)
                 {
                     /* Change arg into a METHOD CALL and attach the name to it */
 
-                    PsInitOp (Arg, AML_METHODCALL);
+                    PsInitOp (Arg, AML_METHODCALL_OP);
 
                     Name->Value.Name        = Path;
                     Name->NameTableEntry    = Method;           /* Point METHODCALL/NAME to the METHOD NTE */
@@ -449,7 +449,7 @@ PsGetNextNamepath (
     /* Everything else has failed */
     /* variable dereference */
 
-    PsInitOp (Arg, AML_NAMEPATH);        
+    PsInitOp (Arg, AML_NAMEPATH_OP);        
     Arg->Value.Name = Path;
 
 
@@ -485,7 +485,7 @@ PsGetNextSimpleArg (
     switch (ArgType)
     {
 
-    case AML_BYTEDATA_ARG:
+    case ARGP_BYTEDATA:
 
         PsInitOp (Arg, AML_ByteOp);
         Arg->Value.Integer = (UINT32) GET8 (ParserState->Aml);
@@ -493,7 +493,7 @@ PsGetNextSimpleArg (
         break;
 
 
-    case AML_WORDDATA_ARG:
+    case ARGP_WORDDATA:
 
         PsInitOp (Arg, AML_WordOp);
         Arg->Value.Integer = (UINT32) GET16 (ParserState->Aml);
@@ -501,7 +501,7 @@ PsGetNextSimpleArg (
         break;
 
 
-    case AML_DWORDDATA_ARG:
+    case ARGP_DWORDDATA:
 
         PsInitOp (Arg, AML_DWordOp);
         Arg->Value.Integer = (UINT32) GET32 (ParserState->Aml);
@@ -509,7 +509,7 @@ PsGetNextSimpleArg (
         break;
 
 
-    case AML_ASCIICHARLIST_ARG:
+    case ARGP_CHARLIST:
 
         PsInitOp (Arg, AML_StringOp);
         Arg->Value.String = (char*) ParserState->Aml;
@@ -522,9 +522,9 @@ PsGetNextSimpleArg (
         break;
 
 
-    case AML_NAMESTRING_ARG:
+    case ARGP_NAMESTRING:
 
-        PsInitOp (Arg, AML_NAMEPATH);
+        PsInitOp (Arg, AML_NAMEPATH_OP);
         Arg->Value.Name = PsGetNextNamestring (ParserState);
         break;
     }
@@ -564,20 +564,20 @@ PsGetNextField (
 
     default:
 
-        Opcode = AML_NAMEDFIELD;
+        Opcode = AML_NAMEDFIELD_OP;
         break;
 
 
     case 0x00:
 
-        Opcode = AML_RESERVEDFIELD;
+        Opcode = AML_RESERVEDFIELD_OP;
         ParserState->Aml++;
         break;
 
 
     case 0x01:
 
-        Opcode = AML_ACCESSFIELD;
+        Opcode = AML_ACCESSFIELD_OP;
         ParserState->Aml++;
         break;
     }
@@ -594,7 +594,7 @@ PsGetNextField (
 
         switch (Opcode)
         {
-        case AML_NAMEDFIELD:
+        case AML_NAMEDFIELD_OP:
 
             /* Get the name */
 
@@ -607,7 +607,7 @@ PsGetNextField (
             break;
 
 
-        case AML_RESERVEDFIELD:
+        case AML_RESERVEDFIELD_OP:
 
             /* Get the length which is encoded as a package length */
 
@@ -615,7 +615,7 @@ PsGetNextField (
             break;
 
 
-        case AML_ACCESSFIELD:
+        case AML_ACCESSFIELD_OP:
 
             /* Get the AccessType and AccessAtrib and merge them into the field Op */
 
@@ -664,11 +664,11 @@ PsGetNextArg (
 
     switch (ArgType)
     {
-    case AML_BYTEDATA_ARG:
-    case AML_WORDDATA_ARG:
-    case AML_DWORDDATA_ARG:
-    case AML_ASCIICHARLIST_ARG:
-    case AML_NAMESTRING_ARG:
+    case ARGP_BYTEDATA:
+    case ARGP_WORDDATA:
+    case ARGP_DWORDDATA:
+    case ARGP_CHARLIST:
+    case ARGP_NAMESTRING:
 
         /* constants, strings, and namestrings are all the same size */
 
@@ -680,7 +680,7 @@ PsGetNextArg (
         break;
 
 
-    case AML_PKGLENGTH_ARG:
+    case ARGP_PKGLENGTH:
 
         /* package length, nothing returned */
 
@@ -688,7 +688,7 @@ PsGetNextArg (
         break;
 
 
-    case AML_FIELDLIST_ARG:
+    case ARGP_FIELDLIST:
 
         if (ParserState->Aml < ParserState->PkgEnd)
         {
@@ -722,13 +722,13 @@ PsGetNextArg (
         break;
 
 
-    case AML_BYTELIST_ARG:
+    case ARGP_BYTELIST:
 
         if (ParserState->Aml < ParserState->PkgEnd)
         {
             /* non-empty list */
 
-            Arg = PsAllocOp (AML_BYTELIST);
+            Arg = PsAllocOp (AML_BYTELIST_OP);
             if (Arg)
             {
                 /* fill in bytelist data */
@@ -744,8 +744,8 @@ PsGetNextArg (
         break;
 
 
-    case AML_TARGET_ARG:
-    case AML_SUPERNAME_ARG:
+    case ARGP_TARGET:
+    case ARGP_SUPERNAME:
         {
             Subop = PsPeekOpcode (ParserState);
             if (Subop == 0              || 
@@ -754,7 +754,7 @@ PsGetNextArg (
             {
                 /* NullName or NameString */
 
-                Arg = PsAllocOp (AML_NAMEPATH);
+                Arg = PsAllocOp (AML_NAMEPATH_OP);
                 if (Arg)
                 {
                     PsGetNextNamepath (ParserState, Arg, ArgCount, 0);
@@ -771,8 +771,8 @@ PsGetNextArg (
         break;
             
 
-    case AML_DATAOBJECT_ARG:
-    case AML_TERMARG_ARG:
+    case ARGP_DATAOBJ:
+    case ARGP_TERMARG:
 
         /* single complex argument, nothing returned */
 
@@ -780,9 +780,9 @@ PsGetNextArg (
         break;
 
 
-    case AML_DATAOBJECTLIST_ARG:
-    case AML_TERMLIST_ARG:
-    case AML_OBJECTLIST_ARG:
+    case ARGP_DATAOBJLIST:
+    case ARGP_TERMLIST:
+    case ARGP_OBJLIST:
 
         if (ParserState->Aml < ParserState->PkgEnd)
         {

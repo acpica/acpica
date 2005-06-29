@@ -117,7 +117,6 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include "psopcode.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psscope");
@@ -162,8 +161,8 @@ BOOLEAN
 PsHasCompletedScope (
     ACPI_PARSE_STATE        *ParserState)
 {
-    return (ParserState->Aml >= ParserState->Scope->ArgEnd ||
-            !ParserState->Scope->ArgCount);
+    return (BOOLEAN) ((ParserState->Aml >= ParserState->Scope->ArgEnd ||
+                        !ParserState->Scope->ArgCount));
 }
 
 
@@ -194,11 +193,12 @@ PsInitScope (
         return AE_NO_MEMORY;
     }
 
-    Scope->Op           = Root;
-    Scope->ArgCount     = ACPI_VAR_ARGS;
-    Scope->ArgEnd       = ParserState->AmlEnd;
-    Scope->PkgEnd       = ParserState->AmlEnd;
-    ParserState->Scope  = Scope;
+    Scope->Op               = Root;
+    Scope->ArgCount         = ACPI_VAR_ARGS;
+    Scope->ArgEnd           = ParserState->AmlEnd;
+    Scope->PkgEnd           = ParserState->AmlEnd;
+    ParserState->Scope      = Scope;
+    ParserState->StartOp    = Root;
 
     return AE_OK;
 }
@@ -223,7 +223,7 @@ ACPI_STATUS
 PsPushScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_GENERIC_OP         *Op, 
-    char                    *NextArg,
+    UINT32                  RemainingArgs,
     UINT32                  ArgCount)
 {
     ACPI_PARSE_SCOPE        *Scope = ParserState->ScopeAvail;
@@ -255,7 +255,7 @@ PsPushScope (
     MEMSET (Scope, 0, sizeof (*Scope));
 
     Scope->Op           = Op;
-    Scope->NextArg      = NextArg;
+    Scope->ArgList      = RemainingArgs;
     Scope->ArgCount     = ArgCount;
     Scope->PkgEnd       = ParserState->PkgEnd;
     Scope->Parent       = ParserState->Scope;
@@ -297,7 +297,7 @@ void
 PsPopScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_GENERIC_OP         **Op,
-    char                    **NextArg)
+    UINT32                  *ArgList)
 {
     ACPI_PARSE_SCOPE        *Scope = ParserState->Scope;
 
@@ -309,14 +309,14 @@ PsPopScope (
     {
         /* return to parsing previous op */
         
-        *Op = Scope->Op;
-        *NextArg = Scope->NextArg;
-        ParserState->PkgEnd = Scope->PkgEnd;
-        ParserState->Scope = Scope->Parent;
+        *Op                     = Scope->Op;
+        *ArgList                = Scope->ArgList;
+        ParserState->PkgEnd     = Scope->PkgEnd;
+        ParserState->Scope      = Scope->Parent;
 
         /* add scope to available list */
 
-        Scope->Parent = ParserState->ScopeAvail;
+        Scope->Parent           = ParserState->ScopeAvail;
         ParserState->ScopeAvail = Scope;
     }
 
@@ -324,8 +324,8 @@ PsPopScope (
     {
         /* empty parse stack, prepare to fetch next opcode */
 
-        *Op = NULL;
-        *NextArg = NULL;
+        *Op                     = NULL;
+        *ArgList                = 0;
     }
 
     return_VOID;

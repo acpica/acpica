@@ -118,7 +118,7 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include "psopcode.h"
+#include "amlcode.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("pstree");
@@ -141,67 +141,39 @@
 ACPI_GENERIC_OP *
 PsGetArg (
     ACPI_GENERIC_OP         *Op, 
-    INT32                   Argn)
+    UINT32                  Argn)
 {
     ACPI_GENERIC_OP         *Arg = NULL;
+    ACPI_OP_INFO            *OpInfo;
 
 
-    switch (Op->Opcode)
+
+    /* Get the info structure for this opcode */
+
+    OpInfo = PsGetOpcodeInfo (Op->Opcode);
+    if (!OpInfo)
     {
-    case AML_ZEROOP:
-    case AML_ONEOP:
-    case AML_ONESOP:
-    case AML_BYTECONST:
-    case AML_WORDCONST:
-    case AML_DWORDCONST:
-    case AML_STRING:
-    case AML_STATICSTRING:
+        /* Invalid opcode */
 
-    case AML_NAMEPATH:
-    case AML_NAMEDFIELD:
-    case AML_RESERVEDFIELD:
-    case AML_ACCESSFIELD:
-    case AML_BYTELIST:
+        return NULL;
+    }
 
-    case AML_LOCAL0:
-    case AML_LOCAL1:
-    case AML_LOCAL2:
-    case AML_LOCAL3:
-    case AML_LOCAL4:
-    case AML_LOCAL5:
-    case AML_LOCAL6:
-    case AML_LOCAL7:
+    /* Check if this opcode requires argument sub-objects */
 
-    case AML_ARG0:
-    case AML_ARG1:
-    case AML_ARG2:
-    case AML_ARG3:
-    case AML_ARG4:
-    case AML_ARG5:
-    case AML_ARG6:
+    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
+    {
+        /* Has no linked argument objects */
 
-    case AML_NOOP:
-    case AML_BREAK:
-    case AML_BREAKPOINT:
-    case AML_EVENT:
-    case AML_REVISION:
-    case AML_DEBUG:
+        return NULL;
+    }
 
-        /* no arguments for these ops */
-        Arg = NULL;
-        break;
+    /* Get the requested argument object */
 
-
-    default:
-
-        Arg = Op->Value.Arg;
-        while (Arg && Argn)
-        {
-            Argn--;
-            Arg = Arg->Next;
-        }
-        break;
-
+    Arg = Op->Value.Arg;
+    while (Arg && Argn)
+    {
+        Argn--;
+        Arg = Arg->Next;
     }
 
     return Arg;
@@ -227,79 +199,59 @@ PsAppendArg (
     ACPI_GENERIC_OP         *Arg)
 {
     ACPI_GENERIC_OP         *PrevArg;
+    ACPI_OP_INFO            *OpInfo;
 
 
-    switch (Op->Opcode)
+
+    /* Get the info structure for this opcode */
+
+    OpInfo = PsGetOpcodeInfo (Op->Opcode);
+    if (!OpInfo)
     {
-    case AML_ZEROOP:
-    case AML_ONEOP:
-    case AML_ONESOP:
-    case AML_BYTECONST:
-    case AML_WORDCONST:
-    case AML_DWORDCONST:
-    case AML_STRING:
-    case AML_STATICSTRING:
-        
-    case AML_NAMEPATH:
-    case AML_NAMEDFIELD:
-    case AML_RESERVEDFIELD:
-    case AML_ACCESSFIELD:
-    case AML_BYTELIST:
-        
-    case AML_LOCAL0:
-    case AML_LOCAL1:
-    case AML_LOCAL2:
-    case AML_LOCAL3:
-    case AML_LOCAL4:
-    case AML_LOCAL5:
-    case AML_LOCAL6:
-    case AML_LOCAL7:
-        
-    case AML_ARG0:
-    case AML_ARG1:
-    case AML_ARG2:
-    case AML_ARG3:
-    case AML_ARG4:
-    case AML_ARG5:
-    case AML_ARG6:
-        
-    case AML_NOOP:
-    case AML_BREAK:
-    case AML_BREAKPOINT:
-    case AML_EVENT:
-    case AML_REVISION:
-    case AML_DEBUG:
+        /* Invalid opcode */
 
-        /* no arguments for these ops */
-        break;
+        return;
+    }
+
+    /* Check if this opcode requires argument sub-objects */
+
+    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
+    {
+        /* Has no linked argument objects */
+
+        return;
+    }
+
             
 
-    default:
+    /* Append the argument to the linked argument list */
 
-        if (Op->Value.Arg)
+    if (Op->Value.Arg)
+    {
+        /* Append to existing argument list */
+
+        PrevArg = Op->Value.Arg;
+        while (PrevArg->Next)
         {
-            /* append to argument list */
-
-            PrevArg = Op->Value.Arg;
-            while (PrevArg->Next)
-            {
-                PrevArg = PrevArg->Next;
-            }
-            PrevArg->Next = Arg;
+            PrevArg = PrevArg->Next;
         }
+        PrevArg->Next = Arg;
+    }
 
-        else
-        {
-            /* first argument */
-            Op->Value.Arg = Arg;
-        }
+    else
+    {
+        /* No argument list, this will be the first argument */
 
-        while (Arg)
-        {
-            Arg->Parent = Op;
-            Arg = Arg->Next;
-        }
-        break;
+        Op->Value.Arg = Arg;
+    }
+
+
+    /* Set the parent in this arg and any args linked after it */
+
+    while (Arg)
+    {
+        Arg->Parent = Op;
+        Arg = Arg->Next;
     }
 }
 
@@ -325,36 +277,36 @@ PsGetChild (
 
     switch (Op->Opcode)
     {
-    case AML_SCOPE:
-    case AML_ELSE:
-    case AML_DEVICE:
-    case AML_THERMALZONE:
-    case AML_METHODCALL:
+    case AML_ScopeOp:
+    case AML_ElseOp:
+    case AML_DeviceOp:
+    case AML_ThermalZoneOp:
+    case AML_METHODCALL_OP:
 
         Child = PsGetArg (Op, 0);
         break;
 
 
-    case AML_BUFFER:
-    case AML_PACKAGE:
-    case AML_METHOD:
-    case AML_IF:
-    case AML_WHILE:
-    case AML_FIELD:
+    case AML_BufferOp:
+    case AML_PackageOp:
+    case AML_MethodOp:
+    case AML_IfOp:
+    case AML_WhileOp:
+    case AML_DefFieldOp:
 
         Child = PsGetArg (Op, 1);
         break;
 
 
-    case AML_POWERRES:
-    case AML_INDEXFIELD:
+    case AML_PowerResOp:
+    case AML_IndexFieldOp:
 
         Child = PsGetArg (Op, 2);
         break;
 
 
-    case AML_PROCESSOR:
-    case AML_BANKFIELD:
+    case AML_ProcessorOp:
+    case AML_BankFieldOp:
 
         Child = PsGetArg (Op, 3);
         break;
@@ -390,12 +342,12 @@ PsGetParent (
     {
         switch (Parent->Opcode)
         {
-        case AML_SCOPE:
-        case AML_PACKAGE:
-        case AML_METHOD:
-        case AML_DEVICE:
-        case AML_POWERRES:
-        case AML_THERMALZONE:
+        case AML_ScopeOp:
+        case AML_PackageOp:
+        case AML_MethodOp:
+        case AML_DeviceOp:
+        case AML_PowerResOp:
+        case AML_ThermalZoneOp:
 
             return Parent->Parent;
         }
@@ -503,9 +455,9 @@ ACPI_GENERIC_OP *
 PsFetchPrefix (
     ACPI_GENERIC_OP         *Scope, 
     char                    **Path, 
-    INT32                   io)
+    UINT32                  io)
 {
-    INT32                   prefix = io ? GET8 (*Path):**Path;
+    UINT32                  prefix = io ? GET8 (*Path):**Path;
 
 
     switch (prefix)
@@ -559,12 +511,12 @@ PsFetchPrefix (
 UINT32
 PsFetchName (
     char                    **Path, 
-    int                     io)
+    UINT32                  io)
 {
     UINT32                  Name = 0;
     char                    *nm;
-    INT32                   i;
-    INT32                   ch;
+    UINT32                  i;
+    char                    ch;
 
 
     if (io)
@@ -621,7 +573,7 @@ ACPI_GENERIC_OP *
 PsFindName (
     ACPI_GENERIC_OP         *Scope, 
     UINT32                  Name,
-    INT32                   Opcode)
+    UINT32                  Opcode)
 {
     ACPI_GENERIC_OP         *Op;
     ACPI_GENERIC_OP         *Field;
@@ -646,6 +598,7 @@ PsFindName (
                 {
                     return Field;
                 }
+
                 Field = Field->Next;
             }
         }
@@ -682,25 +635,30 @@ PsFindName (
 ACPI_GENERIC_OP*
 PsFind (
     ACPI_GENERIC_OP         *Scope, 
-    UINT8                   *Path,
-    INT32                   Opcode,
-    INT32                   Create)
+    char                    *Path,
+    UINT16                  Opcode,
+    UINT32                  Create)
 {
-    INT32                   segCount;
-    INT32                   unprefixed = 1;
+    UINT32                  segCount;
+    UINT32                  unprefixed = 1;
     UINT32                  Name;
-    ACPI_GENERIC_OP         *Op;
-    INT32                   NameOp;
+    UINT32                  NameOp;
+    ACPI_GENERIC_OP         *Op = NULL;
 
 
-    FUNCTION_TRACE ("PsFind");
+    FUNCTION_TRACE_PTR ("PsFind", Scope);
 
 
 
     if (!Scope || !Path)
     {
+        DEBUG_PRINT (TRACE_PARSE, ("PsFind: Null path (%p) or scope (%p)!\n", Path, Scope));
         return_VALUE (NULL);
     }
+
+
+    Gbl_PsFindCount++;
+
 
     /* Handle all prefixes in the name path */
 
@@ -727,10 +685,14 @@ PsFind (
 
 
         case '^':
+
+            /* Go up to the next valid scoping Op (method, scope, etc.) */
+
             if (PsGetParent (Scope))
             {
                 Scope = PsGetParent (Scope);
             }
+
             break;
         }
 
@@ -744,15 +706,29 @@ PsFind (
     {
     case '\0':
         segCount = 0;
-        Op = NULL;
+
+        /* Null name case */
+
+        if (unprefixed)
+        {
+            Op = NULL;
+        }
+        else
+        {
+            Op = Scope;
+        }
+
+
+        DEBUG_PRINT (TRACE_PARSE, ("PsFind: Null path, returning current root scope Op=%p\n", Op));
+        return_PTR (Op);
         break;
 
-    case AML_DUALNAMEPATH:
+    case AML_DualNamePrefix:
         segCount = 2;
         Path++;
         break;
 
-    case AML_MULTINAMEPATH:
+    case AML_MultiNamePrefixOp:
         segCount = GET8 (Path + 1);
         Path += 2;
         break;
@@ -762,6 +738,8 @@ PsFind (
         break;
     }
         
+    DEBUG_PRINT (TRACE_PARSE, ("PsFind: Search scope %p Segs=%d Opcode=%4.4X Create=%d\n", Scope, segCount, Opcode, Create));
+
     /* match each name segment */
 
     while (Scope && segCount)
@@ -771,11 +749,19 @@ PsFind (
         segCount --;
 
         if (segCount)
+        {
             NameOp = 0;
+        }
         else
+        {
             NameOp = Opcode;
+        }
 
         Op = PsFindName (Scope, Name, NameOp);
+        if (Op)
+        {
+            DEBUG_PRINT (TRACE_PARSE, ("PsFind: [%4.4s] Found! Op=%X Opcode=%4.4X\n", &Name, Op, Op->Opcode));
+        }
 
         if (!Op)
         {
@@ -783,11 +769,21 @@ PsFind (
             {
                 /* Create a new Scope level */
 
-                Op = PsAllocOp (segCount ? AML_SCOPE:Opcode);
+                if (segCount)
+                {
+                    Op = PsAllocOp (AML_ScopeOp);
+                }
+                else
+                {
+                    Op = PsAllocOp (Opcode);
+                }
+
                 if (Op)
                 {
                     PsSetName (Op, Name);
                     PsAppendArg (Scope, Op);
+
+                    DEBUG_PRINT (TRACE_PARSE, ("PsFind: [%4.4s] Not found, created Op=%X Opcode=%4.4X\n", &Name, Op, Opcode));
                 }
             }
 
@@ -799,7 +795,16 @@ PsFind (
                 {
                     Scope = Scope->Parent;
                     Op = PsFindName (Scope, Name, Opcode);
+                    if (Op)
+                    {
+                        DEBUG_PRINT (TRACE_PARSE, ("PsFind: [%4.4s] Found in parent tree! Op=%X Opcode=%4.4X\n", &Name, Op, Op->Opcode));
+                    }
                 }
+            }
+
+            else
+            {
+                DEBUG_PRINT (TRACE_PARSE, ("PsFind: Segment [%4.4s] Not Found in scope %p!\n", &Name, Scope));
             }
         }
 
@@ -807,6 +812,6 @@ PsFind (
         Scope = Op;
     }
 
-    return_VALUE (Op);
+    return_PTR (Op);
 }
 

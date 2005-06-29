@@ -124,6 +124,10 @@
         MODULE_NAME         ("psopcode");
 
 
+
+
+
+
 /*******************************************************************************
  *
  * FUNCTION:    PsGetOpcodeInfo
@@ -253,125 +257,362 @@ PsGetOpcodeName (
 #define AML_NO_ARGS         0
 #define AML_HAS_ARGS        OP_INFO_HAS_ARGS
 
+/*
+ * All AML opcodes and the parse-time arguments for each.  Used by the AML parser  Each list is compressed
+ * into a 32-bit number and stored in the master opcode table at the end of this file.
+ */
+
+#define ARGP_ZeroOp                     ARG_NONE
+#define ARGP_OneOp                      ARG_NONE
+#define ARGP_AliasOp                    ARGP_LIST2 (ARGP_NAMESTRING, ARGP_NAMESTRING)    
+#define ARGP_NameOp                     ARGP_LIST2 (ARGP_NAMESTRING, ARGP_DATAOBJ)
+#define ARGP_ByteOp                     ARGP_LIST1 (ARGP_BYTEDATA)
+#define ARGP_WordOp                     ARGP_LIST1 (ARGP_WORDDATA)
+#define ARGP_DWordOp                    ARGP_LIST1 (ARGP_DWORDDATA)
+#define ARGP_StringOp                   ARGP_LIST1 (ARGP_CHARLIST)
+#define ARGP_ScopeOp                    ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_TERMLIST)
+#define ARGP_BufferOp                   ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_TERMARG,       ARGP_BYTELIST)
+#define ARGP_PackageOp                  ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_BYTEDATA,      ARGP_DATAOBJLIST)
+#define ARGP_MethodOp                   ARGP_LIST4 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_BYTEDATA,      ARGP_TERMLIST)
+#define ARGP_Local0                     ARG_NONE
+#define ARGP_Local1                     ARG_NONE
+#define ARGP_Local2                     ARG_NONE
+#define ARGP_Local3                     ARG_NONE
+#define ARGP_Local4                     ARG_NONE
+#define ARGP_Local5                     ARG_NONE
+#define ARGP_Local6                     ARG_NONE
+#define ARGP_Local7                     ARG_NONE
+#define ARGP_Arg0                       ARG_NONE
+#define ARGP_Arg1                       ARG_NONE
+#define ARGP_Arg2                       ARG_NONE
+#define ARGP_Arg3                       ARG_NONE
+#define ARGP_Arg4                       ARG_NONE
+#define ARGP_Arg5                       ARG_NONE
+#define ARGP_Arg6                       ARG_NONE
+#define ARGP_StoreOp                    ARGP_LIST2 (ARGP_TERMARG,    ARGP_SUPERNAME)
+#define ARGP_RefOfOp                    ARGP_LIST1 (ARGP_SUPERNAME)
+#define ARGP_AddOp                      ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_ConcatOp                   ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_SubtractOp                 ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_IncrementOp                ARGP_LIST1 (ARGP_SUPERNAME)
+#define ARGP_DecrementOp                ARGP_LIST1 (ARGP_SUPERNAME)
+#define ARGP_MultiplyOp                 ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_DivideOp                   ARGP_LIST4 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET,    ARGP_TARGET)
+#define ARGP_ShiftLeftOp                ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_ShiftRightOp               ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_BitAndOp                   ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_BitNandOp                  ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_BitOrOp                    ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_BitNorOp                   ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_BitXorOp                   ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_BitNotOp                   ARGP_LIST2 (ARGP_TERMARG,    ARGP_TARGET)
+#define ARGP_FindSetLeftBitOp           ARGP_LIST2 (ARGP_TERMARG,    ARGP_TARGET)
+#define ARGP_FindSetRightBitOp          ARGP_LIST2 (ARGP_TERMARG,    ARGP_TARGET)
+#define ARGP_DerefOfOp                  ARGP_LIST1 (ARGP_TERMARG)
+#define ARGP_NotifyOp                   ARGP_LIST2 (ARGP_SUPERNAME,  ARGP_TERMARG)
+#define ARGP_SizeOfOp                   ARGP_LIST1 (ARGP_SUPERNAME)
+#define ARGP_IndexOp                    ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
+#define ARGP_MatchOp                    ARGP_LIST6 (ARGP_TERMARG,    ARGP_BYTEDATA,      ARGP_TERMARG,   ARGP_BYTEDATA,  ARGP_TERMARG,   ARGP_TERMARG)
+#define ARGP_DWordFieldOp               ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAMESTRING)
+#define ARGP_WordFieldOp                ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAMESTRING)
+#define ARGP_ByteFieldOp                ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAMESTRING)
+#define ARGP_BitFieldOp                 ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_NAMESTRING)
+#define ARGP_TypeOp                     ARGP_LIST1 (ARGP_SUPERNAME)
+#define ARGP_LAndOp                     ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
+#define ARGP_LOrOp                      ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
+#define ARGP_LNotOp                     ARGP_LIST1 (ARGP_TERMARG)
+#define ARGP_LEqualOp                   ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
+#define ARGP_LGreaterOp                 ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
+#define ARGP_LLessOp                    ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
+#define ARGP_IfOp                       ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_TERMARG, ARGP_TERMLIST)
+#define ARGP_ElseOp                     ARGP_LIST2 (ARGP_PKGLENGTH,  ARGP_TERMLIST)
+#define ARGP_WhileOp                    ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_TERMARG, ARGP_TERMLIST)
+#define ARGP_NoopCode                   ARG_NONE
+#define ARGP_ReturnOp                   ARGP_LIST1 (ARGP_TERMARG)
+#define ARGP_BreakOp                    ARG_NONE
+#define ARGP_BreakPointOp               ARG_NONE
+#define ARGP_OnesOp                     ARG_NONE
+#define ARGP_MutexOp                    ARGP_LIST2 (ARGP_NAMESTRING, ARGP_BYTEDATA)
+#define ARGP_EventOp                    ARGP_LIST1 (ARGP_NAMESTRING)
+#define ARGP_CondRefOfOp                ARGP_LIST2 (ARGP_SUPERNAME,  ARGP_SUPERNAME)
+#define ARGP_CreateFieldOp              ARGP_LIST4 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TERMARG,   ARGP_NAMESTRING)
+#define ARGP_LoadOp                     ARGP_LIST2 (ARGP_NAMESTRING, ARGP_SUPERNAME)
+#define ARGP_StallOp                    ARGP_LIST1 (ARGP_TERMARG)
+#define ARGP_SleepOp                    ARGP_LIST1 (ARGP_TERMARG)
+#define ARGP_AcquireOp                  ARGP_LIST2 (ARGP_SUPERNAME,  ARGP_WORDDATA)
+#define ARGP_SignalOp                   ARGP_LIST1 (ARGP_SUPERNAME)
+#define ARGP_WaitOp                     ARGP_LIST2 (ARGP_SUPERNAME,  ARGP_TERMARG)
+#define ARGP_ResetOp                    ARGP_LIST1 (ARGP_SUPERNAME)
+#define ARGP_ReleaseOp                  ARGP_LIST1 (ARGP_SUPERNAME)
+#define ARGP_FromBCDOp                  ARGP_LIST2 (ARGP_TERMARG,    ARGP_TARGET)
+#define ARGP_ToBCDOp                    ARGP_LIST2 (ARGP_TERMARG,    ARGP_TARGET)
+#define ARGP_UnLoadOp                   ARGP_LIST1 (ARGP_SUPERNAME)
+#define ARGP_RevisionOp                 ARG_NONE
+#define ARGP_DebugOp                    ARG_NONE
+#define ARGP_FatalOp                    ARGP_LIST3 (ARGP_BYTEDATA,   ARGP_DWORDDATA,     ARGP_TERMARG)
+#define ARGP_RegionOp                   ARGP_LIST4 (ARGP_NAMESTRING, ARGP_BYTEDATA,      ARGP_TERMARG,   ARGP_TERMARG) 
+#define ARGP_DefFieldOp                 ARGP_LIST4 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_BYTEDATA,  ARGP_FIELDLIST)  
+#define ARGP_DeviceOp                   ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_OBJLIST)  
+#define ARGP_ProcessorOp                ARGP_LIST6 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_BYTEDATA,  ARGP_DWORDDATA, ARGP_BYTEDATA,  ARGP_OBJLIST)  
+#define ARGP_PowerResOp                 ARGP_LIST5 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_BYTEDATA,  ARGP_WORDDATA,  ARGP_OBJLIST)  
+#define ARGP_ThermalZoneOp              ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_OBJLIST)
+#define ARGP_IndexFieldOp               ARGP_LIST5 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_NAMESTRING,ARGP_BYTEDATA,  ARGP_FIELDLIST)  
+#define ARGP_BankFieldOp                ARGP_LIST6 (ARGP_PKGLENGTH,  ARGP_NAMESTRING,    ARGP_NAMESTRING,ARGP_TERMARG,   ARGP_BYTEDATA,  ARGP_FIELDLIST)  
+#define ARGP_LNOTEQUAL_OP               ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
+#define ARGP_LLESSEQUAL_OP              ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
+#define ARGP_LGREATEREQUAL_OP           ARGP_LIST2 (ARGP_TERMARG,    ARGP_TERMARG)
+#define ARGP_NAMEPATH_OP                ARGP_LIST1 (ARGP_NAMESTRING)
+#define ARGP_METHODCALL_OP              ARGP_LIST1 (ARGP_NAMESTRING)
+#define ARGP_BYTELIST_OP                ARGP_LIST1 (ARGP_NAMESTRING)
+#define ARGP_RESERVEDFIELD_OP           ARGP_LIST1 (ARGP_NAMESTRING)
+#define ARGP_NAMEDFIELD_OP              ARGP_LIST1 (ARGP_NAMESTRING)
+#define ARGP_ACCESSFIELD_OP             ARGP_LIST1 (ARGP_NAMESTRING)
+#define ARGP_STATICSTRING_OP            ARGP_LIST1 (ARGP_NAMESTRING)
+
+
+
+/*
+ * All AML opcodes and the runtime arguments for each.  Used by the AML interpreter  Each list is compressed
+ * into a 32-bit number and stored in the master opcode table at the end of this file.
+ *
+ * TBD: These lists will be used to develop a better AmlPrepOperands procedure
+ */
+
+#define ARGI_ZeroOp                     ARG_NONE
+#define ARGI_OneOp                      ARG_NONE
+#define ARGI_AliasOp                    ARGI_INVALID_OPCODE 
+#define ARGI_NameOp                     ARGI_INVALID_OPCODE 
+#define ARGI_ByteOp                     ARGI_INVALID_OPCODE 
+#define ARGI_WordOp                     ARGI_INVALID_OPCODE 
+#define ARGI_DWordOp                    ARGI_INVALID_OPCODE 
+#define ARGI_StringOp                   ARGI_INVALID_OPCODE 
+#define ARGI_ScopeOp                    ARGI_INVALID_OPCODE 
+#define ARGI_BufferOp                   ARGI_INVALID_OPCODE 
+#define ARGI_PackageOp                  ARGI_INVALID_OPCODE 
+#define ARGI_MethodOp                   ARGI_INVALID_OPCODE 
+#define ARGI_Local0                     ARG_NONE
+#define ARGI_Local1                     ARG_NONE
+#define ARGI_Local2                     ARG_NONE
+#define ARGI_Local3                     ARG_NONE
+#define ARGI_Local4                     ARG_NONE
+#define ARGI_Local5                     ARG_NONE
+#define ARGI_Local6                     ARG_NONE
+#define ARGI_Local7                     ARG_NONE
+#define ARGI_Arg0                       ARG_NONE
+#define ARGI_Arg1                       ARG_NONE
+#define ARGI_Arg2                       ARG_NONE
+#define ARGI_Arg3                       ARG_NONE
+#define ARGI_Arg4                       ARG_NONE
+#define ARGI_Arg5                       ARG_NONE
+#define ARGI_Arg6                       ARG_NONE
+#define ARGI_StoreOp                    ARGI_LIST2 (ARGI_ANYTYPE,    ARGI_TARGETREF)
+#define ARGI_RefOfOp                    ARGI_LIST1 (ARGI_LVALUE)
+#define ARGI_AddOp                      ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_ConcatOp                   ARGI_LIST3 (ARGI_STRING,     ARGI_STRING,        ARGI_TARGETREF)
+#define ARGI_SubtractOp                 ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_IncrementOp                ARGI_LIST1 (ARGI_NUMBER)
+#define ARGI_DecrementOp                ARGI_LIST1 (ARGI_NUMBER)
+#define ARGI_MultiplyOp                 ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_DivideOp                   ARGI_LIST4 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF,    ARGI_TARGETREF)
+#define ARGI_ShiftLeftOp                ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_ShiftRightOp               ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_BitAndOp                   ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_BitNandOp                  ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_BitOrOp                    ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_BitNorOp                   ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_BitXorOp                   ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_BitNotOp                   ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
+#define ARGI_FindSetLeftBitOp           ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
+#define ARGI_FindSetRightBitOp          ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
+#define ARGI_DerefOfOp                  ARGI_LIST1 (ARGI_LVALUE)
+#define ARGI_NotifyOp                   ARGI_LIST2 (ARGI_LVALUE,     ARGI_NUMBER)
+#define ARGI_SizeOfOp                   ARGI_LIST1 (ARGI_DATAOBJECT)
+#define ARGI_IndexOp                    ARGI_LIST3 (ARGI_COMPLEXOBJ, ARGI_NUMBER,        ARGI_TARGETREF)
+#define ARGI_MatchOp                    ARGI_LIST6 (ARGI_PACKAGE,    ARGI_NUMBER,        ARGI_NUMBER,       ARGI_NUMBER,    ARGI_NUMBER,    ARGI_NUMBER)
+#define ARGI_DWordFieldOp               ARGI_LIST3 (ARGI_BUFFER,     ARGI_NUMBER,        ARGI_LVALUE)
+#define ARGI_WordFieldOp                ARGI_LIST3 (ARGI_BUFFER,     ARGI_NUMBER,        ARGI_LVALUE)
+#define ARGI_ByteFieldOp                ARGI_LIST3 (ARGI_BUFFER,     ARGI_NUMBER,        ARGI_LVALUE)
+#define ARGI_BitFieldOp                 ARGI_LIST3 (ARGI_BUFFER,     ARGI_NUMBER,        ARGI_LVALUE)
+#define ARGI_TypeOp                     ARGI_LIST1 (ARGI_ANYTYPE)
+#define ARGI_LAndOp                     ARGI_LIST2 (ARGI_NUMBER,     ARGI_NUMBER)
+#define ARGI_LOrOp                      ARGI_LIST2 (ARGI_NUMBER,     ARGI_NUMBER)
+#define ARGI_LNotOp                     ARGI_LIST1 (ARGI_NUMBER)
+#define ARGI_LEqualOp                   ARGI_LIST2 (ARGI_NUMBER,     ARGI_NUMBER)
+#define ARGI_LGreaterOp                 ARGI_LIST2 (ARGI_NUMBER,     ARGI_NUMBER)
+#define ARGI_LLessOp                    ARGI_LIST2 (ARGI_NUMBER,     ARGI_NUMBER)
+#define ARGI_IfOp                       ARGI_INVALID_OPCODE 
+#define ARGI_ElseOp                     ARGI_INVALID_OPCODE 
+#define ARGI_WhileOp                    ARGI_INVALID_OPCODE 
+#define ARGI_NoopCode                   ARG_NONE
+#define ARGI_ReturnOp                   ARGI_INVALID_OPCODE
+#define ARGI_BreakOp                    ARG_NONE
+#define ARGI_BreakPointOp               ARG_NONE
+#define ARGI_OnesOp                     ARG_NONE
+#define ARGI_MutexOp                    ARGI_INVALID_OPCODE
+#define ARGI_EventOp                    ARGI_INVALID_OPCODE
+#define ARGI_CondRefOfOp                ARGI_LIST2 (ARGI_LVALUE,     ARGI_TARGETREF)
+#define ARGI_CreateFieldOp              ARGI_LIST4 (ARGI_BUFFER,     ARGI_NUMBER,        ARGI_NUMBER,       ARGI_LVALUE)
+#define ARGI_LoadOp                     ARGI_LIST2 (ARGP_NAMESTRING, ARGP_SUPERNAME)
+#define ARGI_StallOp                    ARGI_LIST1 (ARGI_NUMBER)
+#define ARGI_SleepOp                    ARGI_LIST1 (ARGI_NUMBER)
+#define ARGI_AcquireOp                  ARGI_LIST2 (ARGI_MUTEX,      ARGI_NUMBER)
+#define ARGI_SignalOp                   ARGI_LIST1 (ARGI_EVENT)
+#define ARGI_WaitOp                     ARGI_LIST2 (ARGI_EVENT,      ARGI_NUMBER)
+#define ARGI_ResetOp                    ARGI_LIST1 (ARGI_EVENT)
+#define ARGI_ReleaseOp                  ARGI_LIST1 (ARGI_MUTEX)
+#define ARGI_FromBCDOp                  ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
+#define ARGI_ToBCDOp                    ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
+#define ARGI_UnLoadOp                   ARGI_LIST1 (ARGP_SUPERNAME)
+#define ARGI_RevisionOp                 ARG_NONE
+#define ARGI_DebugOp                    ARG_NONE
+#define ARGI_FatalOp                    ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_NUMBER)
+#define ARGI_RegionOp                   ARGI_INVALID_OPCODE
+#define ARGI_DefFieldOp                 ARGI_INVALID_OPCODE
+#define ARGI_DeviceOp                   ARGI_INVALID_OPCODE
+#define ARGI_ProcessorOp                ARGI_INVALID_OPCODE
+#define ARGI_PowerResOp                 ARGI_INVALID_OPCODE
+#define ARGI_ThermalZoneOp              ARGI_INVALID_OPCODE
+#define ARGI_IndexFieldOp               ARGI_INVALID_OPCODE
+#define ARGI_BankFieldOp                ARGI_INVALID_OPCODE
+#define ARGI_LNOTEQUAL_OP               ARGI_INVALID_OPCODE
+#define ARGI_LLESSEQUAL_OP              ARGI_INVALID_OPCODE
+#define ARGI_LGREATEREQUAL_OP           ARGI_INVALID_OPCODE
+#define ARGI_NAMEPATH_OP                ARGI_INVALID_OPCODE
+#define ARGI_METHODCALL_OP              ARGI_INVALID_OPCODE
+#define ARGI_BYTELIST_OP                ARGI_INVALID_OPCODE
+#define ARGI_RESERVEDFIELD_OP           ARGI_INVALID_OPCODE
+#define ARGI_NAMEDFIELD_OP              ARGI_INVALID_OPCODE
+#define ARGI_ACCESSFIELD_OP             ARGI_INVALID_OPCODE
+#define ARGI_STATICSTRING_OP            ARGI_INVALID_OPCODE
+
+
+
+
+
+
+/*
+ * Master Opcode information table.  A summary of everything we know about each opcode, all in one place.
+ */
+
 
 ACPI_OP_INFO        Gbl_AmlOpInfo[] =
 {
-/*                          Opcode                 Opcode Type           Has Arguments? Child  Name               Args */
+/*                          Opcode                 Opcode Type           Has Arguments? Child  Name                 Parser Args             Interpreter Args */
  
-/*  00 */   OP_INFO_ENTRY (AML_ZeroOp,            OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "ZeroOp",           NULL),
-/*  01 */   OP_INFO_ENTRY (AML_OneOp,             OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "OneOp",            NULL),
-/*  02 */   OP_INFO_ENTRY (AML_AliasOp,           OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Alias",            "nn"),
-/*  03 */   OP_INFO_ENTRY (AML_NameOp,            OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Name",             "no"),
-/*  04 */   OP_INFO_ENTRY (AML_ByteOp,            OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "ByteConst",        "b"),
-/*  05 */   OP_INFO_ENTRY (AML_WordOp,            OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "WordConst",        "w"),
-/*  06 */   OP_INFO_ENTRY (AML_DWordOp,           OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "DwordConst",       "d"),
-/*  07 */   OP_INFO_ENTRY (AML_StringOp,          OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "String",           "A"),
-/*  08 */   OP_INFO_ENTRY (AML_ScopeOp,           OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Scope",            "pnT"),
-/*  09 */   OP_INFO_ENTRY (AML_BufferOp,          OPTYPE_DATA_TERM|       AML_HAS_ARGS|   0,  "Buffer",           "ptB"),
-/*  0A */   OP_INFO_ENTRY (AML_PackageOp,         OPTYPE_DATA_TERM|       AML_HAS_ARGS|   0,  "Package",          "pbO"),
-/*  0B */   OP_INFO_ENTRY (AML_MethodOp,          OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Method",           "pnbT"),
-/*  0C */   OP_INFO_ENTRY (AML_Local0,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local0",           NULL),
-/*  0D */   OP_INFO_ENTRY (AML_Local1,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local1",           NULL),
-/*  0E */   OP_INFO_ENTRY (AML_Local2,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local2",           NULL),
-/*  0F */   OP_INFO_ENTRY (AML_Local3,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local3",           NULL),
-/*  10 */   OP_INFO_ENTRY (AML_Local4,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local4",           NULL),
-/*  11 */   OP_INFO_ENTRY (AML_Local5,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local5",           NULL),
-/*  12 */   OP_INFO_ENTRY (AML_Local6,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local6",           NULL),
-/*  13 */   OP_INFO_ENTRY (AML_Local7,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local7",           NULL),
-/*  14 */   OP_INFO_ENTRY (AML_Arg0,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg0",             NULL),
-/*  15 */   OP_INFO_ENTRY (AML_Arg1,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg1",             NULL),
-/*  16 */   OP_INFO_ENTRY (AML_Arg2,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg2",             NULL),
-/*  17 */   OP_INFO_ENTRY (AML_Arg3,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg3",             NULL),
-/*  18 */   OP_INFO_ENTRY (AML_Arg4,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg4",             NULL),
-/*  19 */   OP_INFO_ENTRY (AML_Arg5,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg5",             NULL),
-/*  1A */   OP_INFO_ENTRY (AML_Arg6,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg6",             NULL),
-/*  1B */   OP_INFO_ENTRY (AML_StoreOp,           OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "Store",            "ts"),
-/*  1C */   OP_INFO_ENTRY (AML_RefOfOp,           OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "RefOf",            "s"),
-/*  1D */   OP_INFO_ENTRY (AML_AddOp,             OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Add",              "ttl"),
-/*  1E */   OP_INFO_ENTRY (AML_ConcatOp,          OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Concat",           "ttl"),
-/*  1F */   OP_INFO_ENTRY (AML_SubtractOp,        OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Subtract",         "ttl"),
-/*  20 */   OP_INFO_ENTRY (AML_IncrementOp,       OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "Increment",        "s"),
-/*  21 */   OP_INFO_ENTRY (AML_DecrementOp,       OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "Decrement",        "s"),
-/*  22 */   OP_INFO_ENTRY (AML_MultiplyOp,        OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Multiply",         "ttl"),
-/*  23 */   OP_INFO_ENTRY (AML_DivideOp,          OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Divide",           "ttll"),
-/*  24 */   OP_INFO_ENTRY (AML_ShiftLeftOp,       OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "ShiftLeft",        "ttl"),
-/*  25 */   OP_INFO_ENTRY (AML_ShiftRightOp,      OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "ShiftRight",       "ttl"),
-/*  26 */   OP_INFO_ENTRY (AML_BitAndOp,          OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "And",              "ttl"),
-/*  27 */   OP_INFO_ENTRY (AML_BitNandOp,         OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "NAnd",             "ttl"),
-/*  28 */   OP_INFO_ENTRY (AML_BitOrOp,           OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Or",               "ttl"),
-/*  29 */   OP_INFO_ENTRY (AML_BitNorOp,          OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "NOr",              "ttl"),
-/*  2A */   OP_INFO_ENTRY (AML_BitXorOp,          OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "XOr",              "ttl"),
-/*  2B */   OP_INFO_ENTRY (AML_BitNotOp,          OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "Not",              "tl"),
-/*  2C */   OP_INFO_ENTRY (AML_FindSetLeftBitOp,  OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "FindSetLeftBit",   "tl"),
-/*  2D */   OP_INFO_ENTRY (AML_FindSetRightBitOp, OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "FindSetRightBit",  "tl"),
-/*  2E */   OP_INFO_ENTRY (AML_DerefOfOp,         OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "DerefOf",          "t"),
-/*  2F */   OP_INFO_ENTRY (AML_NotifyOp,          OPTYPE_DYADIC1|         AML_HAS_ARGS|   0,  "Notify",           "st"),
-/*  30 */   OP_INFO_ENTRY (AML_SizeOfOp,          OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "SizeOf",           "s"),
-/*  31 */   OP_INFO_ENTRY (AML_IndexOp,           OPTYPE_INDEX|           AML_HAS_ARGS|   0,  "Index",            "ttl"),
-/*  32 */   OP_INFO_ENTRY (AML_MatchOp,           OPTYPE_MATCH|           AML_HAS_ARGS|   0,  "Match",            "tbtbtt"),
-/*  33 */   OP_INFO_ENTRY (AML_DWordFieldOp,      OPTYPE_CREATE_FIELD|    AML_HAS_ARGS|   0,  "CreateDWordField", "ttn"),
-/*  34 */   OP_INFO_ENTRY (AML_WordFieldOp,       OPTYPE_CREATE_FIELD|    AML_HAS_ARGS|   0,  "CreateWordField",  "ttn"),
-/*  35 */   OP_INFO_ENTRY (AML_ByteFieldOp,       OPTYPE_CREATE_FIELD|    AML_HAS_ARGS|   0,  "CreateByteField",  "ttn"),
-/*  36 */   OP_INFO_ENTRY (AML_BitFieldOp,        OPTYPE_CREATE_FIELD|    AML_HAS_ARGS|   0,  "CreateBitField",   "ttn"),
-/*  37 */   OP_INFO_ENTRY (AML_TypeOp,            OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "ObjectType",       "s"),
-/*  38 */   OP_INFO_ENTRY (AML_LAndOp,            OPTYPE_DYADIC2|         AML_HAS_ARGS|   0,  "LAnd",             "tt"),
-/*  39 */   OP_INFO_ENTRY (AML_LOrOp,             OPTYPE_DYADIC2|         AML_HAS_ARGS|   0,  "LOr",              "tt"),
-/*  3A */   OP_INFO_ENTRY (AML_LNotOp,            OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "LNot",             "t"),
-/*  3B */   OP_INFO_ENTRY (AML_LEqualOp,          OPTYPE_DYADIC2|         AML_HAS_ARGS|   0,  "LEqual",           "tt"),
-/*  3C */   OP_INFO_ENTRY (AML_LGreaterOp,        OPTYPE_DYADIC2|         AML_HAS_ARGS|   0,  "LGreater",         "tt"),
-/*  3D */   OP_INFO_ENTRY (AML_LLessOp,           OPTYPE_DYADIC2|         AML_HAS_ARGS|   0,  "LLess",            "tt"),
-/*  3E */   OP_INFO_ENTRY (AML_IfOp,              OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "If",               "ptT"),
-/*  3F */   OP_INFO_ENTRY (AML_ElseOp,            OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "Else",             "pT"),
-/*  40 */   OP_INFO_ENTRY (AML_WhileOp,           OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "While",            "ptT"),
-/*  41 */   OP_INFO_ENTRY (AML_NoopCode,          OPTYPE_CONTROL|         AML_NO_ARGS|    0,  "Noop",             NULL),
-/*  42 */   OP_INFO_ENTRY (AML_ReturnOp,          OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "Return",           "t"),
-/*  43 */   OP_INFO_ENTRY (AML_BreakOp,           OPTYPE_CONTROL|         AML_NO_ARGS|    0,  "Break",            NULL),
-/*  44 */   OP_INFO_ENTRY (AML_BreakPointOp,      OPTYPE_CONTROL|         AML_NO_ARGS|    0,  "BreakPoint",       NULL),
-/*  45 */   OP_INFO_ENTRY (AML_OnesOp,            OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "OnesOp",           NULL),
+/*  00 */   OP_INFO_ENTRY (AML_ZeroOp,            OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "ZeroOp",             ARGP_ZeroOp,            ARGI_ZeroOp),
+/*  01 */   OP_INFO_ENTRY (AML_OneOp,             OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "OneOp",              ARGP_OneOp,             ARGI_OneOp),
+/*  02 */   OP_INFO_ENTRY (AML_AliasOp,           OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Alias",              ARGP_AliasOp,           ARGI_AliasOp),
+/*  03 */   OP_INFO_ENTRY (AML_NameOp,            OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Name",               ARGP_NameOp,            ARGI_NameOp),
+/*  04 */   OP_INFO_ENTRY (AML_ByteOp,            OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "ByteConst",          ARGP_ByteOp,            ARGI_ByteOp),
+/*  05 */   OP_INFO_ENTRY (AML_WordOp,            OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "WordConst",          ARGP_WordOp,            ARGI_WordOp),
+/*  06 */   OP_INFO_ENTRY (AML_DWordOp,           OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "DwordConst",         ARGP_DWordOp,           ARGI_DWordOp),
+/*  07 */   OP_INFO_ENTRY (AML_StringOp,          OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "String",             ARGP_StringOp,          ARGI_StringOp),
+/*  08 */   OP_INFO_ENTRY (AML_ScopeOp,           OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Scope",              ARGP_ScopeOp,           ARGI_ScopeOp),
+/*  09 */   OP_INFO_ENTRY (AML_BufferOp,          OPTYPE_DATA_TERM|       AML_HAS_ARGS|   0,  "Buffer",             ARGP_BufferOp,          ARGI_BufferOp),
+/*  0A */   OP_INFO_ENTRY (AML_PackageOp,         OPTYPE_DATA_TERM|       AML_HAS_ARGS|   0,  "Package",            ARGP_PackageOp,         ARGI_PackageOp),
+/*  0B */   OP_INFO_ENTRY (AML_MethodOp,          OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Method",             ARGP_MethodOp,          ARGI_MethodOp),
+/*  0C */   OP_INFO_ENTRY (AML_Local0,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local0",             ARGP_Local0,            ARGI_Local0),
+/*  0D */   OP_INFO_ENTRY (AML_Local1,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local1",             ARGP_Local1,            ARGI_Local1),
+/*  0E */   OP_INFO_ENTRY (AML_Local2,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local2",             ARGP_Local2,            ARGI_Local2),
+/*  0F */   OP_INFO_ENTRY (AML_Local3,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local3",             ARGP_Local3,            ARGI_Local3),
+/*  10 */   OP_INFO_ENTRY (AML_Local4,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local4",             ARGP_Local4,            ARGI_Local4),
+/*  11 */   OP_INFO_ENTRY (AML_Local5,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local5",             ARGP_Local5,            ARGI_Local5),
+/*  12 */   OP_INFO_ENTRY (AML_Local6,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local6",             ARGP_Local6,            ARGI_Local6),
+/*  13 */   OP_INFO_ENTRY (AML_Local7,            OPTYPE_LOCAL_VARIABLE|  AML_NO_ARGS|    0,  "Local7",             ARGP_Local7,            ARGI_Local7),
+/*  14 */   OP_INFO_ENTRY (AML_Arg0,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg0",               ARGP_Arg0,              ARGI_Arg0),
+/*  15 */   OP_INFO_ENTRY (AML_Arg1,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg1",               ARGP_Arg1,              ARGI_Arg1),
+/*  16 */   OP_INFO_ENTRY (AML_Arg2,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg2",               ARGP_Arg2,              ARGI_Arg2),
+/*  17 */   OP_INFO_ENTRY (AML_Arg3,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg3",               ARGP_Arg3,              ARGI_Arg3),
+/*  18 */   OP_INFO_ENTRY (AML_Arg4,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg4",               ARGP_Arg4,              ARGI_Arg4),
+/*  19 */   OP_INFO_ENTRY (AML_Arg5,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg5",               ARGP_Arg5,              ARGI_Arg5),
+/*  1A */   OP_INFO_ENTRY (AML_Arg6,              OPTYPE_METHOD_ARGUMENT| AML_NO_ARGS|    0,  "Arg6",               ARGP_Arg6,              ARGI_Arg6),
+/*  1B */   OP_INFO_ENTRY (AML_StoreOp,           OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "Store",              ARGP_StoreOp,           ARGI_StoreOp),
+/*  1C */   OP_INFO_ENTRY (AML_RefOfOp,           OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "RefOf",              ARGP_RefOfOp,           ARGI_RefOfOp),
+/*  1D */   OP_INFO_ENTRY (AML_AddOp,             OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Add",                ARGP_AddOp,             ARGI_AddOp),
+/*  1E */   OP_INFO_ENTRY (AML_ConcatOp,          OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Concat",             ARGP_ConcatOp,          ARGI_ConcatOp),
+/*  1F */   OP_INFO_ENTRY (AML_SubtractOp,        OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Subtract",           ARGP_SubtractOp,        ARGI_SubtractOp),
+/*  20 */   OP_INFO_ENTRY (AML_IncrementOp,       OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "Increment",          ARGP_IncrementOp,       ARGI_IncrementOp),
+/*  21 */   OP_INFO_ENTRY (AML_DecrementOp,       OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "Decrement",          ARGP_DecrementOp,       ARGI_DecrementOp),
+/*  22 */   OP_INFO_ENTRY (AML_MultiplyOp,        OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Multiply",           ARGP_MultiplyOp,        ARGI_MultiplyOp),
+/*  23 */   OP_INFO_ENTRY (AML_DivideOp,          OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Divide",             ARGP_DivideOp,          ARGI_DivideOp),
+/*  24 */   OP_INFO_ENTRY (AML_ShiftLeftOp,       OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "ShiftLeft",          ARGP_ShiftLeftOp,       ARGI_ShiftLeftOp),
+/*  25 */   OP_INFO_ENTRY (AML_ShiftRightOp,      OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "ShiftRight",         ARGP_ShiftRightOp,      ARGI_ShiftRightOp),
+/*  26 */   OP_INFO_ENTRY (AML_BitAndOp,          OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "And",                ARGP_BitAndOp,          ARGI_BitAndOp),
+/*  27 */   OP_INFO_ENTRY (AML_BitNandOp,         OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "NAnd",               ARGP_BitNandOp,         ARGI_BitNandOp),
+/*  28 */   OP_INFO_ENTRY (AML_BitOrOp,           OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "Or",                 ARGP_BitOrOp,           ARGI_BitOrOp),
+/*  29 */   OP_INFO_ENTRY (AML_BitNorOp,          OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "NOr",                ARGP_BitNorOp,          ARGI_BitNorOp),
+/*  2A */   OP_INFO_ENTRY (AML_BitXorOp,          OPTYPE_DYADIC2R|        AML_HAS_ARGS|   0,  "XOr",                ARGP_BitXorOp,          ARGI_BitXorOp),
+/*  2B */   OP_INFO_ENTRY (AML_BitNotOp,          OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "Not",                ARGP_BitNotOp,          ARGI_BitNotOp),
+/*  2C */   OP_INFO_ENTRY (AML_FindSetLeftBitOp,  OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "FindSetLeftBit",     ARGP_FindSetLeftBitOp,  ARGI_FindSetLeftBitOp),
+/*  2D */   OP_INFO_ENTRY (AML_FindSetRightBitOp, OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "FindSetRightBit",    ARGP_FindSetRightBitOp, ARGI_FindSetRightBitOp),
+/*  2E */   OP_INFO_ENTRY (AML_DerefOfOp,         OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "DerefOf",            ARGP_DerefOfOp,         ARGI_DerefOfOp),
+/*  2F */   OP_INFO_ENTRY (AML_NotifyOp,          OPTYPE_DYADIC1|         AML_HAS_ARGS|   0,  "Notify",             ARGP_NotifyOp,          ARGI_NotifyOp),
+/*  30 */   OP_INFO_ENTRY (AML_SizeOfOp,          OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "SizeOf",             ARGP_SizeOfOp,          ARGI_SizeOfOp),
+/*  31 */   OP_INFO_ENTRY (AML_IndexOp,           OPTYPE_INDEX|           AML_HAS_ARGS|   0,  "Index",              ARGP_IndexOp,           ARGI_IndexOp),
+/*  32 */   OP_INFO_ENTRY (AML_MatchOp,           OPTYPE_MATCH|           AML_HAS_ARGS|   0,  "Match",              ARGP_MatchOp,           ARGI_MatchOp),
+/*  33 */   OP_INFO_ENTRY (AML_DWordFieldOp,      OPTYPE_CREATE_FIELD|    AML_HAS_ARGS|   0,  "CreateDWordField",   ARGP_DWordFieldOp,      ARGI_DWordFieldOp),
+/*  34 */   OP_INFO_ENTRY (AML_WordFieldOp,       OPTYPE_CREATE_FIELD|    AML_HAS_ARGS|   0,  "CreateWordField",    ARGP_WordFieldOp,       ARGI_WordFieldOp),
+/*  35 */   OP_INFO_ENTRY (AML_ByteFieldOp,       OPTYPE_CREATE_FIELD|    AML_HAS_ARGS|   0,  "CreateByteField",    ARGP_ByteFieldOp,       ARGI_ByteFieldOp),
+/*  36 */   OP_INFO_ENTRY (AML_BitFieldOp,        OPTYPE_CREATE_FIELD|    AML_HAS_ARGS|   0,  "CreateBitField",     ARGP_BitFieldOp,        ARGI_BitFieldOp),
+/*  37 */   OP_INFO_ENTRY (AML_TypeOp,            OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "ObjectType",         ARGP_TypeOp,            ARGI_TypeOp),
+/*  38 */   OP_INFO_ENTRY (AML_LAndOp,            OPTYPE_DYADIC2|         AML_HAS_ARGS|   0,  "LAnd",               ARGP_LAndOp,            ARGI_LAndOp),
+/*  39 */   OP_INFO_ENTRY (AML_LOrOp,             OPTYPE_DYADIC2|         AML_HAS_ARGS|   0,  "LOr",                ARGP_LOrOp,             ARGI_LOrOp),
+/*  3A */   OP_INFO_ENTRY (AML_LNotOp,            OPTYPE_MONADIC2|        AML_HAS_ARGS|   0,  "LNot",               ARGP_LNotOp,            ARGI_LNotOp),
+/*  3B */   OP_INFO_ENTRY (AML_LEqualOp,          OPTYPE_DYADIC2|         AML_HAS_ARGS|   0,  "LEqual",             ARGP_LEqualOp,          ARGI_LEqualOp),
+/*  3C */   OP_INFO_ENTRY (AML_LGreaterOp,        OPTYPE_DYADIC2|         AML_HAS_ARGS|   0,  "LGreater",           ARGP_LGreaterOp,        ARGI_LGreaterOp),
+/*  3D */   OP_INFO_ENTRY (AML_LLessOp,           OPTYPE_DYADIC2|         AML_HAS_ARGS|   0,  "LLess",              ARGP_LLessOp,           ARGI_LLessOp),
+/*  3E */   OP_INFO_ENTRY (AML_IfOp,              OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "If",                 ARGP_IfOp,              ARGI_IfOp),
+/*  3F */   OP_INFO_ENTRY (AML_ElseOp,            OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "Else",               ARGP_ElseOp,            ARGI_ElseOp),
+/*  40 */   OP_INFO_ENTRY (AML_WhileOp,           OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "While",              ARGP_WhileOp,           ARGI_WhileOp),
+/*  41 */   OP_INFO_ENTRY (AML_NoopCode,          OPTYPE_CONTROL|         AML_NO_ARGS|    0,  "Noop",               ARGP_NoopCode,          ARGI_NoopCode),
+/*  42 */   OP_INFO_ENTRY (AML_ReturnOp,          OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "Return",             ARGP_ReturnOp,          ARGI_ReturnOp),
+/*  43 */   OP_INFO_ENTRY (AML_BreakOp,           OPTYPE_CONTROL|         AML_NO_ARGS|    0,  "Break",              ARGP_BreakOp,           ARGI_BreakOp),
+/*  44 */   OP_INFO_ENTRY (AML_BreakPointOp,      OPTYPE_CONTROL|         AML_NO_ARGS|    0,  "BreakPoint",         ARGP_BreakPointOp,      ARGI_BreakPointOp),
+/*  45 */   OP_INFO_ENTRY (AML_OnesOp,            OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "OnesOp",             ARGP_OnesOp,            ARGI_OnesOp),
 
 /* Prefixed opcodes (Two-byte opcodes with a prefix op) */
     
-/*  46 */   OP_INFO_ENTRY (AML_MutexOp,           OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Mutex",            "nb"),
-/*  47 */   OP_INFO_ENTRY (AML_EventOp,           OPTYPE_NAMED_OBJECT|    AML_NO_ARGS|    0,  "Event",            "n"),
-/*  48 */   OP_INFO_ENTRY (AML_CondRefOfOp,       OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "CondRefOf",        "ss"),
-/*  49 */   OP_INFO_ENTRY (AML_CreateFieldOp,     OPTYPE_CREATE_FIELD|    AML_HAS_ARGS|   0,  "CreateField",      "tttn"),
-/*  4A */   OP_INFO_ENTRY (AML_LoadOp,            OPTYPE_RECONFIGURATION| AML_HAS_ARGS|   0,  "Load",             "ns"),
-/*  4B */   OP_INFO_ENTRY (AML_StallOp,           OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Stall",            "t"),
-/*  4C */   OP_INFO_ENTRY (AML_SleepOp,           OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Sleep",            "t"),
-/*  4D */   OP_INFO_ENTRY (AML_AcquireOp,         OPTYPE_DYADIC2S|        AML_HAS_ARGS|   0,  "Acquire",          "sw"),
-/*  4E */   OP_INFO_ENTRY (AML_SignalOp,          OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Signal",           "s"),
-/*  4F */   OP_INFO_ENTRY (AML_WaitOp,            OPTYPE_DYADIC2S|        AML_HAS_ARGS|   0,  "Wait",             "st"),
-/*  50 */   OP_INFO_ENTRY (AML_ResetOp,           OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Reset",            "s"),
-/*  51 */   OP_INFO_ENTRY (AML_ReleaseOp,         OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Release",          "s"),
-/*  52 */   OP_INFO_ENTRY (AML_FromBCDOp,         OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "FromBCD",          "tl"),
-/*  53 */   OP_INFO_ENTRY (AML_ToBCDOp,           OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "ToBCD",            "tl"),
-/*  54 */   OP_INFO_ENTRY (AML_UnLoadOp,          OPTYPE_RECONFIGURATION| AML_HAS_ARGS|   0,  "Unload",           "s"),
-/*  55 */   OP_INFO_ENTRY (AML_RevisionOp,        OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "Revision",         NULL),
-/*  56 */   OP_INFO_ENTRY (AML_DebugOp,           OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "Debug",            NULL),
-/*  57 */   OP_INFO_ENTRY (AML_FatalOp,           OPTYPE_FATAL|           AML_HAS_ARGS|   0,  "Fatal",            "bdt"),
-/*  58 */   OP_INFO_ENTRY (AML_RegionOp,          OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "OpRegion",         "nbtt"),
-/*  59 */   OP_INFO_ENTRY (AML_DefFieldOp,        OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Field",            "pnbF"),
-/*  5A */   OP_INFO_ENTRY (AML_DeviceOp,          OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Device",           "pnP"),
-/*  5B */   OP_INFO_ENTRY (AML_ProcessorOp,       OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Processor",        "pnbdbP"),
-/*  5C */   OP_INFO_ENTRY (AML_PowerResOp,        OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "PowerRes",         "pnbwP"),
-/*  5D */   OP_INFO_ENTRY (AML_ThermalZoneOp,     OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "ThermalZone",      "pnP"),
-/*  5E */   OP_INFO_ENTRY (AML_IndexFieldOp,      OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "IndexField",       "pnnbF"),
-/*  5F */   OP_INFO_ENTRY (AML_BankFieldOp,       OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "BankField",        "pnntbF"),
+/*  46 */   OP_INFO_ENTRY (AML_MutexOp,           OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Mutex",              ARGP_MutexOp,           ARGI_MutexOp),
+/*  47 */   OP_INFO_ENTRY (AML_EventOp,           OPTYPE_NAMED_OBJECT|    AML_NO_ARGS|    0,  "Event",              ARGP_EventOp,           ARGI_EventOp),
+/*  48 */   OP_INFO_ENTRY (AML_CondRefOfOp,       OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "CondRefOf",          ARGP_CondRefOfOp,       ARGI_CondRefOfOp),
+/*  49 */   OP_INFO_ENTRY (AML_CreateFieldOp,     OPTYPE_CREATE_FIELD|    AML_HAS_ARGS|   0,  "CreateField",        ARGP_CreateFieldOp,     ARGI_CreateFieldOp),
+/*  4A */   OP_INFO_ENTRY (AML_LoadOp,            OPTYPE_RECONFIGURATION| AML_HAS_ARGS|   0,  "Load",               ARGP_LoadOp,            ARGI_LoadOp),
+/*  4B */   OP_INFO_ENTRY (AML_StallOp,           OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Stall",              ARGP_StallOp,           ARGI_StallOp),
+/*  4C */   OP_INFO_ENTRY (AML_SleepOp,           OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Sleep",              ARGP_SleepOp,           ARGI_SleepOp),
+/*  4D */   OP_INFO_ENTRY (AML_AcquireOp,         OPTYPE_DYADIC2S|        AML_HAS_ARGS|   0,  "Acquire",            ARGP_AcquireOp,         ARGI_AcquireOp),
+/*  4E */   OP_INFO_ENTRY (AML_SignalOp,          OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Signal",             ARGP_SignalOp,          ARGI_SignalOp),
+/*  4F */   OP_INFO_ENTRY (AML_WaitOp,            OPTYPE_DYADIC2S|        AML_HAS_ARGS|   0,  "Wait",               ARGP_WaitOp,            ARGI_WaitOp),
+/*  50 */   OP_INFO_ENTRY (AML_ResetOp,           OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Reset",              ARGP_ResetOp,           ARGI_ResetOp),
+/*  51 */   OP_INFO_ENTRY (AML_ReleaseOp,         OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Release",            ARGP_ReleaseOp,         ARGI_ReleaseOp),
+/*  52 */   OP_INFO_ENTRY (AML_FromBCDOp,         OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "FromBCD",            ARGP_FromBCDOp,         ARGI_FromBCDOp),
+/*  53 */   OP_INFO_ENTRY (AML_ToBCDOp,           OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "ToBCD",              ARGP_ToBCDOp,           ARGI_ToBCDOp),
+/*  54 */   OP_INFO_ENTRY (AML_UnLoadOp,          OPTYPE_RECONFIGURATION| AML_HAS_ARGS|   0,  "Unload",             ARGP_UnLoadOp,          ARGI_UnLoadOp),
+/*  55 */   OP_INFO_ENTRY (AML_RevisionOp,        OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "Revision",           ARGP_RevisionOp,        ARGI_RevisionOp),
+/*  56 */   OP_INFO_ENTRY (AML_DebugOp,           OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "Debug",              ARGP_DebugOp,           ARGI_DebugOp),
+/*  57 */   OP_INFO_ENTRY (AML_FatalOp,           OPTYPE_FATAL|           AML_HAS_ARGS|   0,  "Fatal",              ARGP_FatalOp,           ARGI_FatalOp),
+/*  58 */   OP_INFO_ENTRY (AML_RegionOp,          OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "OpRegion",           ARGP_RegionOp,          ARGI_RegionOp),
+/*  59 */   OP_INFO_ENTRY (AML_DefFieldOp,        OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Field",              ARGP_DefFieldOp,        ARGI_DefFieldOp),
+/*  5A */   OP_INFO_ENTRY (AML_DeviceOp,          OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Device",             ARGP_DeviceOp,          ARGI_DeviceOp),
+/*  5B */   OP_INFO_ENTRY (AML_ProcessorOp,       OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "Processor",          ARGP_ProcessorOp,       ARGI_ProcessorOp),
+/*  5C */   OP_INFO_ENTRY (AML_PowerResOp,        OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "PowerRes",           ARGP_PowerResOp,        ARGI_PowerResOp),
+/*  5D */   OP_INFO_ENTRY (AML_ThermalZoneOp,     OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "ThermalZone",        ARGP_ThermalZoneOp,     ARGI_ThermalZoneOp),
+/*  5E */   OP_INFO_ENTRY (AML_IndexFieldOp,      OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "IndexField",         ARGP_IndexFieldOp,      ARGI_IndexFieldOp),
+/*  5F */   OP_INFO_ENTRY (AML_BankFieldOp,       OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS|   0,  "BankField",          ARGP_BankFieldOp,       ARGI_BankFieldOp),
 
 /* Internal opcodes that map to invalid AML opcodes */
 
-/*  60 */   OP_INFO_ENTRY (AML_LNOTEQUAL,         OPTYPE_BOGUS|           AML_HAS_ARGS|   0,  "LNotEqual",        "tt"),
-/*  61 */   OP_INFO_ENTRY (AML_LLESSEQUAL,        OPTYPE_BOGUS|           AML_HAS_ARGS|   0,  "LLessEqual",       "tt"),
-/*  62 */   OP_INFO_ENTRY (AML_LGREATEREQUAL,     OPTYPE_BOGUS|           AML_HAS_ARGS|   0,  "LGreaterEqual",    "tt"),
-/*  63 */   OP_INFO_ENTRY (AML_NAMEPATH,          OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "NamePath",         "n"),
-/*  64 */   OP_INFO_ENTRY (AML_METHODCALL,        OPTYPE_METHOD_CALL|     AML_HAS_ARGS|   0,  "MethodCall",       "n"),
-/*  65 */   OP_INFO_ENTRY (AML_BYTELIST,          OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "ByteList",         "n"),
-/*  66 */   OP_INFO_ENTRY (AML_RESERVEDFIELD,     OPTYPE_BOGUS|           AML_NO_ARGS|    0,  "ReservedField",    "n"),
-/*  67 */   OP_INFO_ENTRY (AML_NAMEDFIELD,        OPTYPE_BOGUS|           AML_NO_ARGS|    0,  "NamedField",       "n"),
-/*  68 */   OP_INFO_ENTRY (AML_ACCESSFIELD,       OPTYPE_BOGUS|           AML_NO_ARGS|    0,  "AccessField",      "n"),
-/*  69 */   OP_INFO_ENTRY (AML_STATICSTRING,      OPTYPE_BOGUS|           AML_NO_ARGS|    0,  "StaticString",     "n"),
-/*  6A */   OP_INFO_ENTRY (0,                     OPTYPE_BOGUS|           AML_HAS_ARGS|   0,  "UNKNOWN_OP!",      "n"),
-            OP_INFO_ENTRY (0,                     0|                      AML_HAS_ARGS|   0,  NULL,               NULL)
+/*  60 */   OP_INFO_ENTRY (AML_LNOTEQUAL_OP,      OPTYPE_BOGUS|           AML_HAS_ARGS|   0,  "LNotEqual",          ARGP_LNOTEQUAL_OP,      ARGI_LNOTEQUAL_OP),
+/*  61 */   OP_INFO_ENTRY (AML_LLESSEQUAL_OP,     OPTYPE_BOGUS|           AML_HAS_ARGS|   0,  "LLessEqual",         ARGP_LLESSEQUAL_OP,     ARGI_LLESSEQUAL_OP),
+/*  62 */   OP_INFO_ENTRY (AML_LGREATEREQUAL_OP,  OPTYPE_BOGUS|           AML_HAS_ARGS|   0,  "LGreaterEqual",      ARGP_LGREATEREQUAL_OP,  ARGI_LGREATEREQUAL_OP),
+/*  63 */   OP_INFO_ENTRY (AML_NAMEPATH_OP,       OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "NamePath",           ARGP_NAMEPATH_OP,       ARGI_NAMEPATH_OP),
+/*  64 */   OP_INFO_ENTRY (AML_METHODCALL_OP,     OPTYPE_METHOD_CALL|     AML_HAS_ARGS|   0,  "MethodCall",         ARGP_METHODCALL_OP,     ARGI_METHODCALL_OP),
+/*  65 */   OP_INFO_ENTRY (AML_BYTELIST_OP,       OPTYPE_LITERAL|         AML_NO_ARGS|    0,  "ByteList",           ARGP_BYTELIST_OP,       ARGI_BYTELIST_OP),
+/*  66 */   OP_INFO_ENTRY (AML_RESERVEDFIELD_OP,  OPTYPE_BOGUS|           AML_NO_ARGS|    0,  "ReservedField",      ARGP_RESERVEDFIELD_OP,  ARGI_RESERVEDFIELD_OP),
+/*  67 */   OP_INFO_ENTRY (AML_NAMEDFIELD_OP,     OPTYPE_BOGUS|           AML_NO_ARGS|    0,  "NamedField",         ARGP_NAMEDFIELD_OP,     ARGI_NAMEDFIELD_OP),
+/*  68 */   OP_INFO_ENTRY (AML_ACCESSFIELD_OP,    OPTYPE_BOGUS|           AML_NO_ARGS|    0,  "AccessField",        ARGP_ACCESSFIELD_OP,    ARGI_ACCESSFIELD_OP),
+/*  69 */   OP_INFO_ENTRY (AML_STATICSTRING_OP,   OPTYPE_BOGUS|           AML_NO_ARGS|    0,  "StaticString",       ARGP_STATICSTRING_OP,   ARGI_STATICSTRING_OP),
+/*  6A */   OP_INFO_ENTRY (0,                     OPTYPE_BOGUS|           AML_HAS_ARGS|   0,  "UNKNOWN_OP!",        ARG_NONE,               ARG_NONE),
+            OP_INFO_ENTRY (0,                     0|                      AML_HAS_ARGS|   0,  NULL,                 ARG_NONE,               ARG_NONE)
 };
 
 #define _UNK                0x6A
