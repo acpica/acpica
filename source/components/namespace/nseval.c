@@ -118,16 +118,84 @@ static ST_KEY_DESC_TABLE KDT[] = {
 };
 
 
-ACPI_STATUS
-AcpiExecuteMethodByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
-                            OBJECT_DESCRIPTOR **Params);
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiExecuteRelativeMethod
+ * FUNCTION:    AcpiEvaluateObject
+ *
+ * PARAMETERS:  Handle              - Object handle (optional)
+ *              *Pathname           - Object pathname (optional)
+ *              *ReturnObject       - Where to put method's return value (if 
+ *                                    any).  If NULL, no value is returned.
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Find and evaluate the given object, passing the given
+ *              parameters if necessary.  One of "Handle" or "Pathname" must
+ *              be valid (non-null)
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiEvaluateObject (NsHandle Handle, char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
+                    OBJECT_DESCRIPTOR **Params)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AcpiEvaluateObject");
+
+
+    /* Parameter validation */
+
+    if (!Handle && !Pathname)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Both Handle and Pathname are NULL\n"));
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    /* The null pathname case means the handle is for the object */
+
+    if (!Pathname)
+    {
+        Status = NsEvaluateByHandle (Handle, ReturnObject, Params);
+    }
+
+
+    /* The null handle case means that the pathname is fully qualified */
+
+    else if (!Handle)
+    {
+        Status = NsEvaluateByName (Pathname, ReturnObject, Params);
+    }
+
+
+    /* Both Handle and Pathname means we have a path relative to the handle */
+
+    else
+    {
+        Status = NsEvaluateRelative (Handle, Pathname, ReturnObject, Params);
+    }
+
+    FUNCTION_EXIT;
+    return Status;
+}
+
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsEvaluateRelative
  *
  * PARAMETERS:  Handle              - Handle of containing object
- *              *MethodName         - Name of method to execute, If NULL, the
+ *              *Pathname         - Name of method to execute, If NULL, the
  *                                    handle is the object to execute
  *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
@@ -145,17 +213,15 @@ AcpiExecuteMethodByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiExecuteRelativeMethod (NsHandle Handle,
-                           char * MethodName,
-                           OBJECT_DESCRIPTOR *ReturnObject,
-                           OBJECT_DESCRIPTOR **Params)
+NsEvaluateRelative (NsHandle Handle, char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
+                        OBJECT_DESCRIPTOR **Params)
 {
     char                NameBuffer[PATHNAME_MAX];
     ACPI_STATUS         Status;
     UINT32              MaxObjectPathLength = PATHNAME_MAX - 1;
 
 
-    FUNCTION_TRACE ("AcpiExecuteRelativeMethod");
+    FUNCTION_TRACE ("NsEvaluateRelative");
 
     /*
      *  Must have a valid handle
@@ -171,12 +237,12 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
      *  the object indicated by the handle we need to reserve space in the
      *  buffer to append the CM name later
      */
-    if (MethodName) 
+    if (Pathname) 
     {
         /*
          *  We will append the method name to the device pathname
          */
-        MaxObjectPathLength -= (strlen (MethodName) + 1);
+        MaxObjectPathLength -= (strlen (Pathname) + 1);
     }
 
     /*
@@ -196,20 +262,20 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
      *  If the caller specified a method then it must be a path relative to
      *  the object indicated by the handle
      */
-    if (MethodName) 
+    if (Pathname) 
     {
         /*
          * Append the method name to the device pathname
          * (Path separator is a period) 
          */
         strcat (NameBuffer, ".");
-        strcat (NameBuffer, MethodName);
+        strcat (NameBuffer, Pathname);
     }
 
     /*
      *  Execute the method
      */
-    Status = AcpiExecuteMethod (NameBuffer, ReturnObject, Params);
+    Status = NsEvaluateByName (NameBuffer, ReturnObject, Params);
 
     FUNCTION_EXIT;
     return Status;
@@ -218,9 +284,9 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiExecuteMethod
+ * FUNCTION:    NsEvaluateByName
  *
- * PARAMETERS:  *MethodName         - Name of method to execute
+ * PARAMETERS:  Pathname            - Fully qualified pathname to the object
  *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
  *              **Params            - List of parameters to pass to
@@ -236,71 +302,49 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
  *
  ****************************************************************************/
 
-ACPI_STATUS
-AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
+ACPI_STATUS;
+NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
                     OBJECT_DESCRIPTOR **Params)
 {
     ACPI_STATUS         Status = AE_ERROR;
     nte                 *MethodNte = NULL;
 
+    
+    FUNCTION_TRACE ("NsEvaluateByName");
 
-
-    FUNCTION_TRACE ("AcpiExecuteMethod");
-
-
-    /* Parameter validation */
-
-    if (!RootObject->Scope)
-    {
-        /* 
-         * If the name space has not been initialized, the Method has surely
-         * not been defined and there is nothing to execute.
-         */
-
-        DEBUG_PRINT (ACPI_ERROR, ("Name space not initialized ==> method not defined\n"));
-        FUNCTION_EXIT;
-        return AE_NO_NAMESPACE;
-    }
-
-    if (!MethodName)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AcpiExecuteMethod: MethodName is NULL\n"));
-        FUNCTION_EXIT;
-        return AE_BAD_PARAMETER;
-    }
 
     /* Build an internal name string for the method */
 
-    if (MethodName[0] != '\\' || MethodName[1] != '/')
+    if (Pathname[0] != '\\' || Pathname[1] != '/')
     {
-        MethodName = NsInternalizeName (MethodName);
+        Pathname = NsInternalizeName (Pathname);
     }
 
 
     /* Lookup the name in the namespace */
 
-    Status = NsEnter (MethodName, TYPE_Any, MODE_Exec, (NsHandle *) &MethodNte);
+    Status = NsEnter (Pathname, TYPE_Any, MODE_Exec, (NsHandle *) &MethodNte);
 
     if (Status != AE_OK)
     {
         DEBUG_PRINT (ACPI_INFO, ("Method [%s] was not found, status=%.4X\n",
-                        MethodName, Status));
+                        Pathname, Status));
         return Status;
     }
 
 
     /*
      * Now that we have a handle to the object, we can attempt
-     * to execute it.
+     * to evaluate it.
      */
 
     DEBUG_PRINT (ACPI_INFO, ("[%s Method %p Value %p\n",
-                                MethodName, MethodNte, MethodNte->Value));
+                                Pathname, MethodNte, MethodNte->Value));
 
-    Status = AcpiExecuteMethodByHandle ((NsHandle *) MethodNte, ReturnObject, Params);
+    Status = NsEvaluateByHandle ((NsHandle *) MethodNte, ReturnObject, Params);
 
     DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
-                                MethodName));
+                                Pathname));
 
     FUNCTION_EXIT;
     return Status;
@@ -310,7 +354,7 @@ AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiExecuteMethodByHandle
+ * FUNCTION:    NsEvaluateByHandle
  *
  * PARAMETERS:  Handle              - Handle of method to execute
  *              *ReturnObject       - Where to put method's return value (if 
@@ -329,21 +373,33 @@ AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiExecuteMethodByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
+NsEvaluateByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
                             OBJECT_DESCRIPTOR **Params)
 {
     nte                 *MethodNte;
     ACPI_STATUS         Status = AE_ERROR;
-    OBJECT_DESCRIPTOR   *ObjDesc;
 
 
-    FUNCTION_TRACE ("AcpiExecuteMethodByHandle");
+    FUNCTION_TRACE ("NsEvaluateByHandle");
 
 
     /* Parameter Validation */
 
+    if (!RootObject->Scope)
+    {
+        /* 
+         * If the name space has not been initialized, the Method has surely
+         * not been defined and there is nothing to execute.
+         */
+
+        DEBUG_PRINT (ACPI_ERROR, ("Name space not initialized ==> method not defined\n"));
+        FUNCTION_EXIT;
+        return AE_NO_NAMESPACE;
+    }
+
     if (!Handle)
     {
+        FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
@@ -364,131 +420,16 @@ AcpiExecuteMethodByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
     MethodNte = (nte *) Handle;
     if (NsGetType (MethodNte) == TYPE_Method)
     {
+        /* Case 1) We have an actual control method to execute */
 
-/* TBD: 
-        NsExecuteControlMethod (MethodNte, Params);
-
-    else
-        NsGetObjectValue (MethodNte);
-*/
-        /* 
-         * Case 1) We have an actual control method to execute
-         */
-
-        if (!MethodNte->Value)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("Method is undefined\n"));
-        }
-
-        else
-        {
-            /* 
-             * Valid method, Set the current scope to that of the Method, and execute it.
-             */
-
-            DEBUG_PRINT (ACPI_INFO,
-                        ("Control method at Offset %x Length %lx]\n",
-                        ((meth *) MethodNte->Value)->Offset + 1,
-                        ((meth *) MethodNte->Value)->Length - 1));
-
-            NsDumpPathname (MethodNte->Scope, "AcpiExecuteMethodByHandle: Setting scope to", 
-                            TRACE_NAMES, _COMPONENT);
-
-            /* Reset the current scope to the beginning of scope stack */
-
-            CurrentScope = &ScopeStack[0];
-
-            /* Push current scope on scope stack and make Method->Scope current  */
-
-            NsPushCurrentScope (MethodNte->Scope, TYPE_Method);
-
-            NsDumpPathname (MethodNte, "AcpiExecuteMethodByHandle: Executing", 
-                            TRACE_NAMES, _COMPONENT);
-
-            DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
-                              ((meth *) MethodNte->Value)->Offset + 1));
-    
-            AmlClearPkgStack ();
-            ObjStackTop = 0;    /* Clear object stack */
-            
-
-            /* 
-             * Excecute the method via the interpreter
-             */
-            Status = AmlExecuteMethod (
-                             ((meth *) MethodNte->Value)->Offset + 1,
-                             ((meth *) MethodNte->Value)->Length - 1,
-                             Params);
-
-            if (AmlPackageNested ())
-            {
-                /*  Package stack not empty at method exit and should be  */
-
-                REPORT_INFO (&KDT[0]);
-            }
-
-            if (AmlGetMethodDepth () > -1)
-            {
-                /*  Method stack not empty at method exit and should be */
-
-                REPORT_ERROR (&KDT[1]);
-            }
-
-            if (ObjStackTop)
-            {
-                /* Object stack is not empty at method exit and should be */
-
-                REPORT_INFO (&KDT[2]);
-                AmlDumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
-            }
-        }
+        Status = NsExecuteControlMethod (MethodNte, Params);
     }
 
     else
     {
-        /* 
-         * Case 2) Object is NOT a method, just return its current value
-         */
+        /* Case 2) Object is NOT a method, just return its current value */
     
-        ObjDesc = AllocateObjectDesc (&KDT[3]);
-        if (ObjDesc)
-        {
-            /* Construct a descriptor pointing to the name */
-        
-            ObjDesc->Lvalue.ValType = (UINT8) TYPE_Lvalue;
-            ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
-            ObjDesc->Lvalue.Ref     = (void *) MethodNte;
-
-            /* 
-             * Put it on the stack, and use AmlGetRvalue() to get the value.
-             * Note that ObjStackTop points to the top valid entry, not to
-             * the first unused position.
-             */
-
-            LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
-            ObjStack[ObjStackTop] = (void *) ObjDesc;
-
-            /* This causes ObjDesc (allocated above) to always be deleted */
-
-            Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
-
-            /* 
-             * If AmlGetRvalue() succeeded, treat the top stack entry as
-             * a return value.
-             */
-
-            if (AE_OK == Status)
-            {
-                Status = AE_RETURN_VALUE;
-            }
-        }
-
-        else
-        {
-            /* Descriptor allocation failure */
-
-            Status = AE_NO_MEMORY;
-        }
+        Status = NsGetObjectValue (MethodNte);
     }
 
 
@@ -498,6 +439,11 @@ AcpiExecuteMethodByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
     {
         Status = AE_ERROR;
     }
+
+
+    /*
+     * Check if there is a return value on the stack that must be dealt with 
+     */
 
     if (AE_RETURN_VALUE == Status)
     {
@@ -528,5 +474,174 @@ AcpiExecuteMethodByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
 
 
 
+/****************************************************************************
+ *
+ * FUNCTION:    NsExecuteControlMethod
+ *
+ * PARAMETERS:  MethodNte           - The Nte of the object/method
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: execute the requested method passing the given parameters
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+NsExecuteControlMethod (nte *MethodNte, OBJECT_DESCRIPTOR **Params)
+{
+    ACPI_STATUS         Status;
 
 
+    FUNCTION_TRACE ("NsExecuteControlMethod");
+
+
+    /* Verify that there is a method associated with this object */
+
+    if (!MethodNte->Value)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("Method is undefined\n"));
+        FUNCTION_EXIT;
+        return AE_ERROR;
+    }
+
+    /* 
+     * Valid method, Set the current scope to that of the Method, and execute it.
+     */
+
+    DEBUG_PRINT (ACPI_INFO,
+                ("Control method at Offset %x Length %lx]\n",
+                ((meth *) MethodNte->Value)->Offset + 1,
+                ((meth *) MethodNte->Value)->Length - 1));
+
+    NsDumpPathname (MethodNte->Scope, "NsEvaluateByHandle: Setting scope to", 
+                    TRACE_NAMES, _COMPONENT);
+
+    /* Reset the current scope to the beginning of scope stack */
+
+    CurrentScope = &ScopeStack[0];
+
+    /* Push current scope on scope stack and make Method->Scope current  */
+
+    NsPushCurrentScope (MethodNte->Scope, TYPE_Method);
+
+    NsDumpPathname (MethodNte, "NsEvaluateByHandle: Executing", 
+                    TRACE_NAMES, _COMPONENT);
+
+    DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
+                      ((meth *) MethodNte->Value)->Offset + 1));
+
+    AmlClearPkgStack ();
+    ObjStackTop = 0;    /* Clear object stack */
+    
+
+    /* 
+     * Excecute the method via the interpreter
+     */
+    Status = AmlExecuteMethod (
+                     ((meth *) MethodNte->Value)->Offset + 1,
+                     ((meth *) MethodNte->Value)->Length - 1,
+                     Params);
+
+    if (AmlPackageNested ())
+    {
+        /*  Package stack not empty at method exit and should be  */
+
+        REPORT_INFO (&KDT[0]);
+    }
+
+    if (AmlGetMethodDepth () > -1)
+    {
+        /*  Method stack not empty at method exit and should be */
+
+        REPORT_ERROR (&KDT[1]);
+    }
+
+    if (ObjStackTop)
+    {
+        /* Object stack is not empty at method exit and should be */
+
+        REPORT_INFO (&KDT[2]);
+        AmlDumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
+    }
+
+    FUNCTION_EXIT;
+    return Status;
+}
+
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsGetObjectValue
+ *
+ * PARAMETERS:  ObjectNte           - The Nte of the object
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: return the current value of the object
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+NsGetObjectValue (nte *ObjectNte)
+{
+    ACPI_STATUS             Status;
+    OBJECT_DESCRIPTOR       *ObjDesc;
+
+
+    FUNCTION_TRACE ("NsGetObjectValue");
+
+
+    ObjDesc = AllocateObjectDesc (&KDT[3]);
+    if (!ObjDesc)
+    {
+        /* Descriptor allocation failure */
+
+        FUNCTION_EXIT;
+        return AE_NO_MEMORY;
+    }
+
+    /* Construct a descriptor pointing to the name */
+
+    ObjDesc->Lvalue.ValType = (UINT8) TYPE_Lvalue;
+    ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
+    ObjDesc->Lvalue.Ref     = (void *) ObjectNte;
+
+
+    /* 
+     * Put the ObjDesc on the stack, and use AmlGetRvalue() to get 
+     * the associated value.  Note that ObjStackTop points to the 
+     * top valid entry, not to the first unused position.
+     */
+
+    LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+    ObjStack[ObjStackTop] = (void *) ObjDesc;
+
+    /* This causes ObjDesc (allocated above) to always be deleted */
+
+    Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+
+    /* 
+     * If AmlGetRvalue() succeeded, treat the top stack entry as
+     * a return value.
+     */
+
+    if (Status == AE_OK)
+    {
+        Status = AE_RETURN_VALUE;
+    }
+
+
+    FUNCTION_EXIT;
+    return Status;
+}
