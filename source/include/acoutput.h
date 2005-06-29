@@ -243,7 +243,6 @@ _LocalCallocate (
 #define DUMP_STACK_ENTRY(a)             DumpStackEntry(a)
 #define DUMP_STACK(a,b,c,d)             DumpStack(a,b,c,d)
 #define DUMP_ENTRY(a)                   NsDumpEntry (a)
-#define DUMP_CODE(a)                    DumpCode(a)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
 
 /* 
@@ -274,7 +273,6 @@ _LocalCallocate (
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_STACK(a,b,c,d)
 #define DUMP_ENTRY(a)
-#define DUMP_CODE(a)
 #define DUMP_TABLES(a,b)
 
 #define DEBUG_PRINT(l,f)
@@ -347,19 +345,21 @@ GetIndent (void);
 char *
 pIndent (void);
 
-void
-CloseOFT (void);
-
-void
-RestoreOFT (void);
-
-
 /* 
  * fflush_bu and fflushall_bu have been changed to be identical and are implemented
  *  as macros.  They both always return E_OK and flush all open logfiles 
  */
-#define flushall_bu() (CloseOFT(),RestoreOFT(),OsdFlushall())
-#define fflush_bu(x) flushall_bu()
+
+/* OLD:  these called file primitives 
+ *
+ * #define flushall_bu() (CloseOFT(),RestoreOFT(),OsdFlushall())
+ * #define fflush_bu(x) flushall_bu()
+ *
+ * NEW: do nothing
+ */
+
+#define flushall_bu()
+#define fflush_bu(x)
 
 /* Log file open mode... */
 
@@ -374,12 +374,6 @@ open_log (
 
 INT32
 close_log (LogHandle handle);                             /* LogHandle to close */
-
-/*
-LogHandle
-GetMasterLogHandle (void);
-*/
-
 
 
 /* Orphaned prototypes TBD:  move to appropriate header !!!*/
