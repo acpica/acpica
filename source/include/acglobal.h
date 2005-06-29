@@ -236,7 +236,7 @@ ACPI_EXTERN UINT32                      Gbl_RsdpOriginalLocation;
 extern      UINT32                      Gbl_SystemFlags;
 extern      UINT32                      Gbl_StartupFlags;
 extern      char                       *Gbl_ExceptionNames[];
-
+extern      char                       *Gbl_AcpiCaVersion;
 
 ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_DrvNotify;
 ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_SysNotify;
@@ -325,6 +325,18 @@ ACPI_EXTERN ACPI_HANDLE                 Gbl_LastMethod;
 
 ACPI_EXTERN ADDRESS_SPACE_INFO          Gbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
 
+
+/*****************************************************************************
+ * 
+ * Parser globals 
+ *
+ ****************************************************************************/
+
+ACPI_EXTERN ACPI_GENERIC_OP             *Gbl_ParsedNamespaceRoot;
+
+extern ACPI_OP_INFO                     Gbl_AmlOpInfo[];
+extern UINT8                            Gbl_AmlOpInfoIndex[256];
+extern char                             *Gbl_ParserId;
 
 
 /*****************************************************************************
