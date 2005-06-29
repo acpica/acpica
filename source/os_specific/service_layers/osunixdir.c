@@ -121,11 +121,17 @@
 #include <dirent.h>
 #include <fnmatch.h>
 #include <ctype.h>
+#include <sys/stat.h>
+
+#include "acpisrc.h"
 
 typedef struct ExternalFindInfo
 {
-    DIR				*dir_ptr;
+    char                        *DirPathname;
+    DIR				*DirPtr;
+    char                        temp_buffer[128];
     char                        *WildcardSpec;
+    char                        RequestedFileType;
 
 } EXTERNAL_FIND_INFO;
 
@@ -147,9 +153,9 @@ typedef struct ExternalFindInfo
 void *
 AcpiOsOpenDirectory (
     char                    *DirPathname,
-    char                    *WildcardSpec)
+    char                    *WildcardSpec,
+    char                    RequestedFileType)
 {
-    char                    *WildcardSpecBuf;
     EXTERNAL_FIND_INFO      *ExternalInfo;
     DIR			    *dir;
 
@@ -162,34 +168,21 @@ AcpiOsOpenDirectory (
         return NULL;
     }
 
-    /* Allocate space for the full wildcard path */
-
-    WildcardSpecBuf = calloc (strlen (WildcardSpec) + 2, 1);
-    if (!WildcardSpecBuf)
-    {
-        printf ("Could not allocate buffer for wildcard pathname\n");
-	free (ExternalInfo);
-        return NULL;
-    }
-
-    /* Create the full wildcard path */
-
-    strcpy (WildcardSpecBuf, WildcardSpec);
-
     /* Get the directory stream */
 
     dir = opendir(DirPathname);
     if (!dir)
     {
-	free(WildcardSpecBuf);
 	free(ExternalInfo);
         return NULL;
     }
 
     /* Save the info in the return structure */
 
-    ExternalInfo->WildcardSpec = WildcardSpecBuf;
-    ExternalInfo->dir_ptr = dir;
+    ExternalInfo->WildcardSpec = WildcardSpec;
+    ExternalInfo->RequestedFileType = RequestedFileType;
+    ExternalInfo->DirPathname = DirPathname;
+    ExternalInfo->DirPtr = dir;
     return (ExternalInfo);
 }
 
@@ -214,10 +207,50 @@ AcpiOsGetNextFilename (
     EXTERNAL_FIND_INFO      *ExternalInfo = DirHandle;
     struct dirent           *dir_entry;
 
-    while((dir_entry = readdir(ExternalInfo->dir_ptr)))
+    while((dir_entry = readdir(ExternalInfo->DirPtr)))
     {
         if (!fnmatch(ExternalInfo->WildcardSpec, dir_entry->d_name, 0))
-		return dir_entry->d_name;
+        {
+            char *temp_str;
+            int str_len;
+            struct stat temp_stat;
+            int err;
+
+            if (dir_entry->d_name[0] == '.')
+                continue;
+
+            str_len = strlen(dir_entry->d_name) + strlen (ExternalInfo->DirPathname) + 2;
+
+            temp_str = calloc(str_len, 1);
+            if (!temp_str)
+            {
+                printf ("Could not allocate buffer for temporary string\n");
+                return NULL;
+            }
+
+            strcpy(temp_str, ExternalInfo->DirPathname);
+            strcat(temp_str, "/");
+            strcat(temp_str, dir_entry->d_name);
+
+            err = stat(temp_str, &temp_stat);
+            free (temp_str);
+            if (err == -1)
+            {
+                printf ("stat() error - should not happen\n");
+                return NULL;
+            }
+
+            if ((S_ISDIR(temp_stat.st_mode)
+                && (ExternalInfo->RequestedFileType == REQUEST_DIR_ONLY))
+               ||
+               ((!S_ISDIR(temp_stat.st_mode)
+                && ExternalInfo->RequestedFileType == REQUEST_FILE_ONLY)))
+            {
+                /* copy to a temp buffer because dir_entry struct is on the stack */
+                strcpy(ExternalInfo->temp_buffer, dir_entry->d_name);
+                return (ExternalInfo->temp_buffer);
+            }
+        }
     }
 
     return NULL;
@@ -245,8 +278,7 @@ AcpiOsCloseDirectory (
 
     /* Close the directory and free allocations */
 
-    closedir(ExternalInfo->dir_ptr);
-    free (ExternalInfo->WildcardSpec);
+    closedir(ExternalInfo->DirPtr);
     free (DirHandle);
 }
 
