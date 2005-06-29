@@ -167,7 +167,18 @@ CmBuildExternalSimpleObject (
 
     FUNCTION_TRACE ("CmBuildExternalSimpleObject");
 
-    MEMSET(ExternalObj , 0 , sizeof(ACPI_OBJECT));
+
+    /* Check for NULL object case (could be an uninitialized package element */
+
+    if (!InternalObj)
+    {
+        *BufferSpaceUsed = 0;
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Always clear the external object */
+
+    MEMSET (ExternalObj, 0, sizeof (ACPI_OBJECT));
 
     /* In general, the external object will be the same type as the internal object */
 
@@ -245,7 +256,7 @@ CmBuildExternalSimpleObject (
     }
 
 
-    *BufferSpaceUsed = Length;
+    *BufferSpaceUsed = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
     
     return_ACPI_STATUS (AE_OK);
 }
@@ -299,7 +310,7 @@ CmBuildExternalPackageObject (
     /*
      * Free space begins right after the first package
      */
-    FreeSpace = Buffer + sizeof (ACPI_OBJECT);
+    FreeSpace = Buffer + ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
 
 
     /*
@@ -324,7 +335,7 @@ CmBuildExternalPackageObject (
      * and move the free space past it
      */
 
-    FreeSpace += ExternalObj->Package.Count * sizeof (ACPI_OBJECT);
+    FreeSpace += ExternalObj->Package.Count * ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
 
 
     while (1)
@@ -333,53 +344,27 @@ CmBuildExternalPackageObject (
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
-        if ((VALID_DESCRIPTOR_TYPE (ThisInternalObj, DESC_TYPE_ACPI_OBJ)) &&
-            (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package)))
+
+
+        /* 
+         * Check for 1) Null object -- OK, this can happen if package element never initialized
+         *           2) Not an internal object - can be an NTE instead
+         *           3) Any internal object other than a package.
+         *
+         * The more complex package case is handled later
+         */
+
+        if ((!ThisInternalObj) ||
+            (!VALID_DESCRIPTOR_TYPE (ThisInternalObj, DESC_TYPE_ACPI_OBJ)) ||
+            (!IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package)))
         {
             /*
-             * If this object is a package then we go one deeper
+             * This is a simple or null object -- get the size 
              */
-            if (CurrentDepth >= MAX_PACKAGE_DEPTH-1)
-            {
-                /*
-                 * Too many nested levels of packages for us to handle
-                 */
-                DEBUG_PRINT (ACPI_ERROR, ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
-                                            MAX_PACKAGE_DEPTH));
-                return_ACPI_STATUS (AE_LIMIT);
-            }
 
-            /*
-             * Build the package object
-             */
-            ThisExternalObj->Type              = ACPI_TYPE_Package;
-            ThisExternalObj->Package.Count     = ThisInternalObj->Package.Count;
-            ThisExternalObj->Package.Elements  = (ACPI_OBJECT *) FreeSpace;
-
-            /*
-             * Save space for the array of objects (Package elements)
-             * update the buffer length counter
-             */
-            ObjectSpace             = ThisExternalObj->Package.Count * sizeof(ACPI_OBJECT);
-            FreeSpace               += ObjectSpace;
-            Length                  += ObjectSpace;
-
-            CurrentDepth++;
-            LevelPtr                = &Level[CurrentDepth];
-            LevelPtr->InternalObj   = ThisInternalObj;
-            LevelPtr->ExternalObj   = ThisExternalObj;
-            LevelPtr->Index         = 0;
-
-        }   /* if object is a package */
-        
-        else
-        {
             Status = CmBuildExternalSimpleObject (ThisInternalObj, ThisExternalObj, FreeSpace, &ObjectSpace);
-            if (Status != AE_OK) 
+            if (ACPI_FAILURE (Status)) 
             {
-                /*
-                 * Failure get out
-                 */
                 return_ACPI_STATUS (Status);
             }
 
@@ -412,13 +397,47 @@ CmBuildExternalPackageObject (
                 LevelPtr = &Level[CurrentDepth];
                 LevelPtr->Index++;
             }
-        }   /* else object is NOT a package */
-    }   /* while (1)  */
+        }
 
 
-    /*
-     * We'll never get here, but the compiler whines about return value
-     */
+        else
+        {
+            /*
+             * This object is a package -- we must go one level deeper
+             */
+            if (CurrentDepth >= MAX_PACKAGE_DEPTH-1)
+            {
+                /*
+                 * Too many nested levels of packages for us to handle
+                 */
+                DEBUG_PRINT (ACPI_ERROR, ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
+                                            MAX_PACKAGE_DEPTH));
+                return_ACPI_STATUS (AE_LIMIT);
+            }
+
+            /*
+             * Build the package object
+             */
+            ThisExternalObj->Type              = ACPI_TYPE_Package;
+            ThisExternalObj->Package.Count     = ThisInternalObj->Package.Count;
+            ThisExternalObj->Package.Elements  = (ACPI_OBJECT *) FreeSpace;
+
+            /*
+             * Save space for the array of objects (Package elements)
+             * update the buffer length counter
+             */
+            ObjectSpace             = (UINT32) ROUND_UP_TO_NATIVE_WORD (ThisExternalObj->Package.Count * sizeof (ACPI_OBJECT));
+            FreeSpace               += ObjectSpace;
+            Length                  += ObjectSpace;
+
+            CurrentDepth++;
+            LevelPtr                = &Level[CurrentDepth];
+            LevelPtr->InternalObj   = ThisInternalObj;
+            LevelPtr->ExternalObj   = ThisExternalObj;
+            LevelPtr->Index         = 0;
+        }
+    }
+
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -454,8 +473,7 @@ CmBuildExternalObject (
          * Package objects contain other objects (which can be objects)
          * buildpackage does it all
          */
-        Status = CmBuildExternalPackageObject(InternalObj, RetBuffer->Pointer,
-                        &RetBuffer->Length);
+        Status = CmBuildExternalPackageObject (InternalObj, RetBuffer->Pointer, &RetBuffer->Length);
     }
 
     else
@@ -463,10 +481,8 @@ CmBuildExternalObject (
         /*
          * Build a simple object (no nested objects)
          */
-        Status = CmBuildExternalSimpleObject(InternalObj,
-                        (ACPI_OBJECT *) RetBuffer->Pointer,
-                        ((UINT8 *) RetBuffer->Pointer + sizeof (ACPI_OBJECT)),
-                        &RetBuffer->Length);
+        Status = CmBuildExternalSimpleObject (InternalObj, (ACPI_OBJECT *) RetBuffer->Pointer,
+                    ((UINT8 *) RetBuffer->Pointer + ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT))), &RetBuffer->Length);
         /*
          * build simple does not include the object size in the length
          * so we add it in here
