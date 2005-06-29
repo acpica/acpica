@@ -129,6 +129,71 @@
         MODULE_NAME         ("dbcmds");
 
 
+
+/* These object types map directly to the ACPI_TYPES */
+
+
+ARGUMENT_INFO               DbObjectTypes [] = 
+{
+    "ANY",
+    "NUMBER",
+    "STRING",
+    "BUFFER",
+    "PACKAGE",
+    "FIELD",
+    "DEVICE",
+    "EVENT",
+    "METHOD",
+    "MUTEX",
+    "REGION",
+    "POWERRESOURCE",
+    "PROCESSOR",
+    "THERMALZONE",
+    "BUFFERFIELD",
+    "DDBHANDLE",
+    NULL            /* Must be null terminated */
+};
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbMatchArgument
+ *
+ * PARAMETERS:  UserArgument             - User command line
+ *
+ * RETURN:      Index into command array, -1 if not found
+ *
+ * DESCRIPTION: Search command array for a command match
+ *
+ *****************************************************************************/
+
+INT32
+DbMatchArgument (
+    char                    *UserArgument,
+    ARGUMENT_INFO           *Arguments)
+{
+    UINT32                  i;
+
+
+    if (!UserArgument || UserArgument[0] == 0)
+    {
+        return -1;
+    }
+
+    for (i = 0; Arguments[i].Name; i++)
+    {
+        if (STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
+        {
+            return i;
+        }
+    }
+
+    /* Argument not recognized */
+
+    return -1;
+}
+
+
 /******************************************************************************
  * 
  * FUNCTION:    DbSetMethodBreakpoint
@@ -203,7 +268,6 @@ DbSetMethodCallBreakpoint (
 
     Gbl_StepToNextCall = TRUE;
 }
-
 
 
 
@@ -480,6 +544,7 @@ DbWalkForSpecificObjects (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
     UINT32                  BufSize;
+    UINT32                  Type = (UINT32) Context;
     char                    buffer[64];
 
 
@@ -492,16 +557,33 @@ DbWalkForSpecificObjects (
     if (ACPI_FAILURE (Status))
     {
         OsdPrintf ("Could Not get pathname for object %p\n", ObjHandle);
+        return AE_OK;
     }
 
-    else
+    OsdPrintf ("%32s", buffer);
+
+    if (ObjDesc)
     {
-        OsdPrintf ("%32s\n", buffer);
+        switch (Type)
+        {
+        case ACPI_TYPE_Method:
 
+            OsdPrintf ("  #args = %d", ObjDesc->Method.ParamCount);
+            break;
 
-//        OsdPrintf ("  #args = %d\n", NumArgs);
+        case ACPI_TYPE_Number:
+
+            OsdPrintf ("  Value = 0x%X", ObjDesc->Number.Value);
+            break;
+    
+        case ACPI_TYPE_String:
+
+            OsdPrintf ("  \"%s\"", ObjDesc->String.Pointer);
+            break;
+        }
     }
 
+    OsdPrintf ("\n");
     return AE_OK;
 }
 
@@ -527,35 +609,11 @@ DbDisplayObjects (
     UINT32                  Type;
 
     
-    switch (ObjTypeArg[0])
+    Type = DbMatchArgument (ObjTypeArg, DbObjectTypes);
+    if (Type == (UINT32) -1)
     {
-    case 'B':
-        Type = ACPI_TYPE_Buffer;
-        break;
-
-    case 'D':
-        Type = ACPI_TYPE_Device;
-        break;
-
-    case 'M':
-        Type = ACPI_TYPE_Method;
-        break;
-
-    case 'O':
-        Type = ACPI_TYPE_Region;
-        break;
-
-    case 'N':
-        Type = ACPI_TYPE_Number;
-        break;
-
-    case 'S':
-        Type = ACPI_TYPE_String;
-        break;
-
-    default:
-        Type = ACPI_TYPE_Any;
-        break;
+        OsdPrintf ("Invalid or unsupported argument\n");
+        return AE_OK;
     }
 
 
@@ -570,17 +628,30 @@ DbDisplayObjects (
     }
 
     DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    OsdPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n", Gbl_NsTypeNames[Type]);
+    OsdPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n", CmGetTypeName (Type));
 
     DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+
     AcpiWalkNamespace (Type, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-        DbWalkForSpecificObjects, NULL, NULL);
+                        DbWalkForSpecificObjects, (void *) Type, NULL);
 
     DbSetOutputDestination (DB_CONSOLE_OUTPUT);
     return AE_OK;
 }
 
 
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbWalkAndMatchName
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: 
+ *
+ *****************************************************************************/
 
 ACPI_STATUS
 DbWalkAndMatchName (
@@ -611,15 +682,25 @@ DbWalkAndMatchName (
 
         else
         {
-/* TBD: Make typename lookup a function */
-
-            OsdPrintf ("%32s (0x%p) - %s\n", buffer, ObjHandle, Gbl_NsTypeNames[((NAME_TABLE_ENTRY *)ObjHandle)->Type]);
+            OsdPrintf ("%32s (0x%p) - %s\n", buffer, ObjHandle, CmGetTypeName (((NAME_TABLE_ENTRY *)ObjHandle)->Type));
         }
     }
 
     return AE_OK;
 }
 
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbWalkAndMatchName
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: 
+ *
+ *****************************************************************************/
 
 ACPI_STATUS
 DbFindNameInNamespace (
@@ -638,6 +719,7 @@ DbFindNameInNamespace (
     DbSetOutputDestination (DB_CONSOLE_OUTPUT);
     return AE_OK;
 }
+
 
 /******************************************************************************
  * 
@@ -799,12 +881,13 @@ DbSetScope (
     char                    *Name)
 {
 
-    DbPrepNamestring (Name);
-    if (Name[0] == 0)
+    if (!Name || Name[0] == 0)
     {
         OsdPrintf ("Current scope: %s\n", ScopeBuf);
         return;
     }
+
+    DbPrepNamestring (Name);
 
     /* TBD: Validate scope here */
 
