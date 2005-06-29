@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.41 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -161,7 +161,8 @@ AcpiRsGetPrtMethodData (
     /*
      * Execute the method, no parameters
      */
-    Status = AcpiUtEvaluateObject (Handle, "_PRT", ACPI_BTYPE_PACKAGE, &ObjDesc);
+    Status = AcpiUtEvaluateObject (Handle, METHOD_NAME__PRT, ACPI_BTYPE_PACKAGE,
+                &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -215,7 +216,7 @@ AcpiRsGetCrsMethodData (
     /*
      * Execute the method, no parameters
      */
-    Status = AcpiUtEvaluateObject (Handle, "_CRS", ACPI_BTYPE_BUFFER, &ObjDesc);
+    Status = AcpiUtEvaluateObject (Handle, METHOD_NAME__CRS, ACPI_BTYPE_BUFFER, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -270,7 +271,7 @@ AcpiRsGetPrsMethodData (
     /*
      * Execute the method, no parameters
      */
-    Status = AcpiUtEvaluateObject (Handle, "_PRS", ACPI_BTYPE_BUFFER, &ObjDesc);
+    Status = AcpiUtEvaluateObject (Handle, METHOD_NAME__PRS, ACPI_BTYPE_BUFFER, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -417,7 +418,7 @@ AcpiRsSetSrsMethodData (
     /*
      * Execute the method, no return value
      */
-    Status = AcpiNsEvaluateRelative ("_SRS", &Info);
+    Status = AcpiNsEvaluateRelative (METHOD_NAME__SRS, &Info);
     if (ACPI_SUCCESS (Status))
     {
         /* Delete any return object (especially if ImplicitReturn is enabled) */
