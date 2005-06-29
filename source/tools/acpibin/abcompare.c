@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -432,7 +432,7 @@ AbCompareAmlFiles (
 
     /* Table signatures must match */
 
-    if ((UINT32) Header1.Signature != (UINT32) Header1.Signature)
+    if (*((UINT32 *) Header1.Signature) != *((UINT32 *) Header2.Signature))
     {
         printf ("Table signatures do not match\n");
         return -1;
