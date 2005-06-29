@@ -134,12 +134,12 @@ void *
 _AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId, 
                      ST_KEY_DESC_TABLE *KdtEntry)
 {
-    OBJECT_DESCRIPTOR       *NewDesc;
+    ACPI_OBJECT             *NewDesc;
 
 
     /* Attempt to allocate new descriptor */
 
-    NewDesc = OsdCallocate (sizeof (OBJECT_DESCRIPTOR));
+    NewDesc = OsdCallocate (sizeof (ACPI_OBJECT      ));
     if (!NewDesc)
     {
         /* Allocation failed */
@@ -150,7 +150,7 @@ _AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId,
     else
     {
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %x Size 0x%x\n",
-                        NewDesc, sizeof (OBJECT_DESCRIPTOR)));
+                        NewDesc, sizeof (ACPI_OBJECT      )));
     }
 
     return NewDesc;
@@ -254,7 +254,7 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
  ****************************************************************************/
 
 void
-LocalDeleteObject (OBJECT_DESCRIPTOR **ObjDesc)
+LocalDeleteObject (ACPI_OBJECT **ObjDesc)
 {
 
     FUNCTION_TRACE ("LocalDeleteObject");
@@ -271,8 +271,8 @@ LocalDeleteObject (OBJECT_DESCRIPTOR **ObjDesc)
      */
 
 
-    if ((OBJECT_DESCRIPTOR **) 0 !=       ObjDesc  &&
-        (OBJECT_DESCRIPTOR *) 0 !=       *ObjDesc  &&
+    if ((ACPI_OBJECT **) 0 !=             ObjDesc  &&
+        (ACPI_OBJECT *) 0 !=             *ObjDesc  &&
         !AmlIsInPCodeBlock ((UINT8 *)    *ObjDesc) &&
         !IS_NS_HANDLE                   (*ObjDesc) &&
         !AmlIsMethodValue               (*ObjDesc) &&
