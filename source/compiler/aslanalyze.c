@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -1175,7 +1175,7 @@ AnSemanticAnalysisWalkEnd (
     case OPTYPE_MATCH:
 
         RuntimeArgTypes2 = 0;
-        while (ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes))
+        while ((ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes)))
         {
             RuntimeArgTypes2 <<= ARG_TYPE_WIDTH;
             RuntimeArgTypes2 |= ArgType;
@@ -1183,7 +1183,7 @@ AnSemanticAnalysisWalkEnd (
         }
 
         i = 1;
-        while (ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes2))
+        while ((ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes2)))
         {
 
             RequiredBtypes = AnMapArgTypeToBtype (ArgType);

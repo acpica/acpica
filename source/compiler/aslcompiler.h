@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -355,7 +355,7 @@ LsPopNode (void);
  */
 
 
-void
+ACPI_STATUS
 OpcAmlOpcodeWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -401,20 +401,20 @@ CgOpenOutputFile (
 
 /* asllength */
 
-void
+ACPI_STATUS
 LnPackageLengthWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 LnInitLengthsWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
 
-void
+ACPI_STATUS
 CgAmlWriteWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,

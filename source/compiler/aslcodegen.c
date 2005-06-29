@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.32 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -148,7 +148,7 @@ CgGenerateAmlOutput (void)
 
     FlSeekFile (ASL_FILE_SOURCE_OUTPUT, 0);
     Gbl_SourceLine = 0;
-    LsPushNode (Gbl_InputFilename);
+    LsPushNode (Gbl_Files[ASL_FILE_INPUT].Filename);
     Gbl_NextError = Gbl_ErrorLog;
 
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
@@ -175,7 +175,7 @@ CgGenerateAmlOutput (void)
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 CgAmlWriteWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -223,6 +223,7 @@ CgAmlWriteWalk (
 
     CgWriteNode (Node);
 
+    return (AE_OK);
 }
 
 
