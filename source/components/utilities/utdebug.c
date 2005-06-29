@@ -124,11 +124,13 @@ DebugPrint (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 PrintLe
 
 
 
-    if (PrintLevel & DebugLevel)
+    /* Both the level and the component must be enabled */
+
+    if ((PrintLevel & DebugLevel) && (ComponentId & DebugLayer))
     {
         va_start (args, Format);
 
-        OsdPrintf (NULL, "%10s(%04d)[%02x]: ", ModuleName, LineNumber, ComponentId);
+        OsdPrintf (NULL, "%10s(%04d-%02x): ", ModuleName, LineNumber, ComponentId);
         OsdVprintf (NULL, Format, args);
 
         va_end (args);
@@ -149,7 +151,7 @@ DebugPrintPrefix (char *ModuleName, INT32 LineNumber, INT32 ComponentId)
 {
 
 
-    OsdPrintf (NULL, "%10s(%04d)[%02x]: ", ModuleName, LineNumber, ComponentId);
+    OsdPrintf (NULL, "%10s(%04d-%02x): ", ModuleName, LineNumber, ComponentId);
 }
 
 
@@ -475,47 +477,6 @@ SetNotSupported (void)
 }
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    Interrupt functions
- *
- * RETURN:      none
- *
- * DESCRIPTION: Install/deinstall
- *
- ****************************************************************************/
-
-/* Interrupt handlers */
-
-UINT32
-InstallInterruptHandler (
-    UINT8               InterruptNumber,
-    INT32               (* Isr)(void),
-    UINT8               InterruptTaskFlag,
-    UINT32 *            ExceptPtr)
-{
-
-    UINT32 RetVal;
-
-
-    OsdPrintf (NULL, "InstallInterruptHandler called, not supported **********\n");
-
-    RetVal = (UINT32) OsdInstallInterruptHandler ((UINT32) InterruptNumber, 
-                                                    Isr, ExceptPtr);
-
-    
-    return(RetVal);
-
-}
-
-INT32
-RemoveInterruptHandler (UINT32 Key)
-{
-
-    OsdPrintf (NULL, "RemoveInterruptHandler called, not supported **********\n");
-    return 0;
-}
-
 
 /*****************************************************************************
  * 
@@ -528,8 +489,7 @@ RemoveInterruptHandler (UINT32 Key)
  ****************************************************************************/
 
 void
-DumpBuf (UINT8 *Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
-            INT32 iLogFlags)
+DumpBuf (char *Buffer, UINT32 Count, INT32 Flags, INT32 ComponentId)
 {
     UINT32      i = 0;
     UINT32      j;
@@ -538,7 +498,7 @@ DumpBuf (UINT8 *Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
 
     /* Only dump the buffer if tracing is enabled */
 
-    if (!(TRACE_TABLES & DebugLevel))
+    if (!((TRACE_TABLES & DebugLevel) && (ComponentId & DebugLayer)))
     {
         return;
     }
@@ -598,5 +558,37 @@ cleanup:
     return;
 
 }
+
+
+/* Misc stuff */
+
+/* TBD: Need a real checksum routine here !! */
+
+
+UINT8
+checksum (void *pvBuf,size_t stBufSize)
+{
+    return 0;
+}
+
+
+
+/* TBD: Potentially obsolete stuff!! */
+
+
+INT32
+DecIndent (void)
+{
+    return 0;
+}
+
+
+INT32
+IncIndent (void)
+{
+    return 0;
+}
+
+
 
 
