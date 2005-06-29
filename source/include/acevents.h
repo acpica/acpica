@@ -15,15 +15,18 @@
  |                                  legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.4 $
- | $Date: 2005/06/29 19:31:10 $
+ | $Revision: 1.5 $
+ | $Date: 2005/06/29 19:31:11 $
  | $Log: acevents.h,v $
- | Revision 1.4  2005/06/29 19:31:10  aystarik
- | 16/32/64-bit common data types
+ | Revision 1.5  2005/06/29 19:31:11  aystarik
+ | Integrated with 03/99 OPSD code
  |
  | 
- | date	99.03.10.00.04.00;	author rmoore1;	state Exp;
+ | date	99.03.31.22.30.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 5     3/31/99 2:30p Rmoore1
+ * Integrated with 03/99 OPSD code
  * 
  * 4     3/09/99 4:04p Rmoore1
  * 16/32/64-bit common data types
@@ -65,19 +68,22 @@
 
 /*  InstallSCIHandlerXferToACPI() Flags bitmask options   */
 
-#define ACPI_TABLES_REQUIRED            1
-#define HW_OVERRIDE_SUPPORTED           2
-#define PROGRAM_SCI_LEVEL_SENSITIVITY   4
-#define DISABLE_KNOWN_EVENTS            8
+#define ACPI_TABLES_REQUIRED            0x01
+#define HW_OVERRIDE_SUPPORTED           0x02
+#define PROGRAM_SCI_LEVEL_SENSITIVITY   0x04
+#define DISABLE_KNOWN_EVENTS            0x08
+#define	LOAD_ACPI_NAMESPACE             0x10
 
 
 /*  iErrorMask mask bits    */
 
-#define NO_ACPI_TABLES_MASK             1
-#define NO_ACPI_TRANSITION_MASK         2
-#define SCI_LEVEL_INT_MASK              4
-#define NO_SCI_HANDLER_MASK             8
+#define NO_ACPI_TABLES_MASK             0x01
+#define NO_ACPI_TRANSITION_MASK         0x02
+#define SCI_LEVEL_INT_MASK              0x04
+#define NO_SCI_HANDLER_MASK             0x08
 #define NO_LEGACY_TRANSITION_MASK       0x10
+#define	UNABLE_TO_LOAD_NAMESPACE        0x20
+#define	SCI_DISABLED                    0x40
 
 #define SAVE_NOT_VALID                  -1
 
