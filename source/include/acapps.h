@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acapps - common include for ACPI applications/tools
+ * Module Name: adisasm - AML disassembler
  *
  *****************************************************************************/
 
@@ -113,54 +113,37 @@
  *
  *****************************************************************************/
 
-#ifndef _ACAPPS
-#define _ACAPPS
+#ifndef _ADISASM
+#define _ADISASM
 
 
 #ifdef _MSC_VER                 /* disable some level-4 warnings */
 #pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
 #endif
 
+
 extern UINT8                    *DsdtPtr;
 extern UINT32                   AcpiDsdtLength;
+extern int                      optind;
+extern char                     *optarg;
 extern UINT8                    *AmlStart;
 extern UINT32                   AmlLength;
 
 
-extern int                      AcpiGbl_Optind;
-extern NATIVE_CHAR              *AcpiGbl_Optarg;
-
 int
-AcpiGetopt(
+getopt (
     int                     argc,
     char                    **argv,
     char                    *opts);
 
-ACPI_STATUS
-AdInitialize (
-    void);
-
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix);
-
-ACPI_STATUS
-FlSplitInputPathname (
-    char                    *InputPath,
-    char                    **OutDirectoryPath,
-    char                    **OutFilename);
 
 ACPI_STATUS
 AdAmlDisassemble (
-    BOOLEAN                 OutToFile,
-    char                    *Filename,
-    char                    *Prefix,
-    char                    **OutFilename,
-    BOOLEAN                 GetAllTables);
+    char                *Filename);
 
 void
 AdPrintStatistics (void);
+
 
 ACPI_STATUS
 AdFindDsdt(
@@ -170,21 +153,20 @@ AdFindDsdt(
 void
 AdDumpTables (void);
 
+
 ACPI_STATUS
 AdGetTables (
-    char                    *Filename,
-    BOOLEAN                 GetAllTables);
+    char                    *Filename);
 
 ACPI_STATUS
 AdParseTables (void);
 
 ACPI_STATUS
-AdDisplayTables (
-    char                    *Filename);
+AdDisplayTables (void);
 
 ACPI_STATUS
 AdDisplayStatistics (void);
 
 
-#endif /* _ACAPPS */
+#endif
 
