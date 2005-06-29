@@ -83,38 +83,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "OsDependent"=.\projects\OsDependent.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-    begin source code control
-    "$/Acpi Components/OsDependent", LQBAAAAA
-    .\projects
-    end source code control
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "Subsystem"=.\SubsystemRon.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-    begin source code control
-    "$/Acpi Components/Subsystem", CQBAAAAA
-    .
-    end source code control
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "app"=..\..\App\WDM\app.dsp - Package Owner=<4>
 
 Package=<5>
