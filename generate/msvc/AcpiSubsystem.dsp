@@ -312,10 +312,6 @@ SOURCE=..\..\Subsystem\Interpreter\iresop.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\isdebug.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Interpreter\isdump.c
 # End Source File
 # Begin Source File
