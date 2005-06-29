@@ -179,7 +179,7 @@ AcpiEnable (void)
     {   
         /* Unable to install SCI handler */
 
-        DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler"));
+        DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
     
