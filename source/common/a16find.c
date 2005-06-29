@@ -136,7 +136,7 @@
 #define ACPI_TABLE_FILE_SUFFIX      ".dat"
 
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
 
 
 char                        FilenameBuf[20];
@@ -382,7 +382,7 @@ AfRecognizeTable (
     /* Return the table type via the info struct */
 
     TableInfo->Type     = (UINT8) TableType;
-    TableInfo->Length   = TableHeader->Length;
+    TableInfo->Length   = (ACPI_SIZE) TableHeader->Length;
 
     /*
      * An AE_SUPPORT means that the table was not recognized.
@@ -484,7 +484,7 @@ AfGetAllTables (
         CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_XSDT->TableOffsetEntry[Index]),
                             sizeof (ACPI_TABLE_HEADER));
         TableInfo.Pointer       = &AcpiTblHeader;
-        TableInfo.Length        = AcpiTblHeader.Length;
+        TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
         TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
 
         AcpiOsPrintf ("Table pointer: %p\n", TableInfo.Pointer);
@@ -532,7 +532,7 @@ AfGetAllTables (
     TableInfo.Type          = ACPI_TABLE_FADT;
     TableInfo.Pointer       = (void *) AcpiGbl_FADT;
     TableInfo.BasePointer   = (void *) AcpiGbl_FADT;
-    TableInfo.Length        = AcpiTblHeader.Length;
+    TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
     TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
 
     /* There is no checksum for the FACS, nothing to verify */
@@ -561,7 +561,7 @@ AfGetAllTables (
     TableInfo.Type          =  ACPI_TABLE_DSDT;
     TableInfo.Pointer       = (void *) AcpiGbl_DSDT;
     TableInfo.BasePointer   = (void *) AcpiGbl_DSDT;
-    TableInfo.Length        = AcpiTblHeader.Length;
+    TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
     TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
 
     AcpiTbInitTableDescriptor (TableInfo.Type, &TableInfo);
@@ -666,7 +666,7 @@ AfFindDsdt(
     /* Convert to common format XSDT */
 
     TableInfo.Pointer       = (ACPI_TABLE_HEADER *) AcpiGbl_XSDT;
-    TableInfo.Length        = AcpiTblHeader.Length;
+    TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
     TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
     TableInfo.BasePointer   = AcpiGbl_XSDT;
 

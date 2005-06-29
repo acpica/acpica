@@ -531,7 +531,7 @@ AdGetTables (
 
     else
     {
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
 #include "16bit.h"
         printf ("Scanning for DSDT\n");
 
