@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -310,13 +310,13 @@ AcpiDsCreateBankField (
     /* Third arg is the BankValue */
 
     Arg = Arg->Next;
-    BankValue = Arg->Value.Integer;
+    BankValue = Arg->Value.Integer32;
 
 
     /* Next arg is the field flags */
 
     Arg = Arg->Next;
-    FieldFlags = (UINT8) Arg->Value.Integer;
+    FieldFlags = Arg->Value.Integer8;
 
     /* Each remaining arg is a Named Field */
 
