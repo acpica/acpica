@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -900,6 +900,7 @@ AcpiPsParseLoop (
             case AML_BYTE_OP:       /* AML_BYTEDATA_ARG */
             case AML_WORD_OP:       /* AML_WORDDATA_ARG */
             case AML_DWORD_OP:      /* AML_DWORDATA_ARG */
+            case AML_QWORD_OP:      /* AML_QWORDATA_ARG */
             case AML_STRING_OP:     /* AML_ASCIICHARLIST_ARG */
 
                 /* fill in constant or string argument directly */
