@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammisc - ACPI AML (p-code) execution - specific opcodes
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -125,7 +126,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ammisc");
+        MODULE_NAME         ("ammisc")
 
 
 /*******************************************************************************
@@ -151,9 +152,9 @@ ACPI_STATUS
 AcpiAmlExecFatal (
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OBJECT_INTERNAL    *TypeDesc;
-    ACPI_OBJECT_INTERNAL    *CodeDesc;
-    ACPI_OBJECT_INTERNAL    *ArgDesc;
+    ACPI_OPERAND_OBJECT     *TypeDesc;
+    ACPI_OPERAND_OBJECT     *CodeDesc;
+    ACPI_OPERAND_OBJECT     *ArgDesc;
     ACPI_STATUS             Status;
 
 
@@ -176,7 +177,7 @@ AcpiAmlExecFatal (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("AcpiAmlExecFatal/AML_FATAL_OP: bad operand(s) (0x%X)\n",
             Status));
 
@@ -209,7 +210,7 @@ Cleanup:
 
     /* If we get back from the OS call, we might as well keep going. */
 
-    DEBUG_PRINT (ACPI_ERROR, ("AmlExecFatal: FatalOp executed\n"));
+    REPORT_WARNING (("An AML \"Fatal\" Opcode (FatalOp) was executed\n"));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -239,13 +240,13 @@ Cleanup:
 ACPI_STATUS
 AcpiAmlExecIndex (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **ReturnDesc)
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *IdxDesc;
-    ACPI_OBJECT_INTERNAL    *ResDesc;
-    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *TmpDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *IdxDesc;
+    ACPI_OPERAND_OBJECT     *ResDesc;
+    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
+    ACPI_OPERAND_OBJECT     *TmpDesc;
     ACPI_STATUS             Status;
 
 
@@ -269,7 +270,7 @@ AcpiAmlExecIndex (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("AcpiAmlExecIndex/AML_INDEX_OP: bad operand(s) (0x%X)\n",
             Status));
 
@@ -413,15 +414,15 @@ Cleanup:
 ACPI_STATUS
 AcpiAmlExecMatch (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **ReturnDesc)
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *PkgDesc;
-    ACPI_OBJECT_INTERNAL    *Op1Desc;
-    ACPI_OBJECT_INTERNAL    *V1Desc;
-    ACPI_OBJECT_INTERNAL    *Op2Desc;
-    ACPI_OBJECT_INTERNAL    *V2Desc;
-    ACPI_OBJECT_INTERNAL    *StartDesc;
-    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
+    ACPI_OPERAND_OBJECT     *PkgDesc;
+    ACPI_OPERAND_OBJECT     *Op1Desc;
+    ACPI_OPERAND_OBJECT     *V1Desc;
+    ACPI_OPERAND_OBJECT     *Op2Desc;
+    ACPI_OPERAND_OBJECT     *V2Desc;
+    ACPI_OPERAND_OBJECT     *StartDesc;
+    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
     ACPI_STATUS             Status;
     UINT32                  Index;
     UINT32                  MatchValue = (UINT32) -1;
@@ -450,7 +451,7 @@ AcpiAmlExecMatch (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("ExecMatch/AML_MATCH_OP: bad operand(s) (0x%X)\n",
             Status));
 
