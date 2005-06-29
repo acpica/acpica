@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.85 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -232,9 +232,8 @@ AcpiUtCreateBufferObject (
     ACPI_FUNCTION_TRACE_U32 ("UtCreateBufferObject", BufferSize);
 
 
-    /*
-     * Create a new Buffer object
-     */
+    /* Create a new Buffer object */
+
     BufferDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
     if (!BufferDesc)
     {
@@ -266,6 +265,66 @@ AcpiUtCreateBufferObject (
     /* Return the new buffer descriptor */
 
     return_PTR (BufferDesc);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtCreateStringObject
+ *
+ * PARAMETERS:  StringSize             - Size of string to be created, plus one
+ *                                       for the NULL terminater.  Actual sting
+ *                                       length will be this size minus one.
+ *
+ * RETURN:      Pointer to a new String object
+ *
+ * DESCRIPTION: Create a fully initialized string object
+ *
+ ******************************************************************************/
+
+ACPI_OPERAND_OBJECT *
+AcpiUtCreateStringObject (
+    ACPI_SIZE               StringSize)
+{
+    ACPI_OPERAND_OBJECT     *StringDesc;
+    char                    *String = NULL;
+
+
+    ACPI_FUNCTION_TRACE_U32 ("UtCreateStringObject", StringSize);
+
+
+    /* Create a new String object */
+
+    StringDesc = AcpiUtCreateInternalObject (ACPI_TYPE_STRING);
+    if (!StringDesc)
+    {
+        return_PTR (NULL);
+    }
+
+    /* Create an actual string only if size > 0 */
+
+    if (StringSize > 0)
+    {
+        /* Allocate the actual string */
+
+        String = ACPI_MEM_CALLOCATE (StringSize);
+        if (!String)
+        {
+            ACPI_REPORT_ERROR (("CreateString: could not allocate size %X\n",
+                (UINT32) StringSize));
+            AcpiUtRemoveReference (StringDesc);
+            return_PTR (NULL);
+        }
+    }
+
+    /* Complete string object initialization */
+
+    StringDesc->String.Pointer = String;
+    StringDesc->String.Length = (UINT32) StringSize - 1;
+
+    /* Return the new string descriptor */
+
+    return_PTR (StringDesc);
 }
 
 
