@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -535,11 +535,13 @@ AcpiExFieldDatumIo (
     {
         if (ReadWrite == ACPI_READ_ADR_SPACE)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Value Read=%08X\n", *Value));
+            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Value Read=%8.8X%8.8X\n",
+                                HIDWORD(*Value), LODWORD(*Value)));
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Value Written=%08X\n", *Value));
+            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Value Written=%8.8X%8.8X\n",
+                                HIDWORD(*Value), LODWORD(*Value)));
         }
     }
 
@@ -633,8 +635,12 @@ AcpiExWriteWithUpdateRule (
     Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset,
                     &MergedValue, ACPI_WRITE_ADR_SPACE);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Mask %X DatumOffset %X Value %X, MergedValue %X\n",
-        Mask, FieldDatumByteOffset, FieldValue, MergedValue));
+    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
+        "Mask %8.8X%8.8X DatumOffset %X Value %8.8X%8.8X, MergedValue %8.8X%8.8X\n",
+        HIDWORD(Mask), LODWORD(Mask),
+        FieldDatumByteOffset,
+        HIDWORD(FieldValue), LODWORD(FieldValue),
+        HIDWORD(MergedValue),LODWORD(MergedValue)));
 
     return_ACPI_STATUS (Status);
 }
