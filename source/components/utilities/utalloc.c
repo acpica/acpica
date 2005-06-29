@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.115 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -335,7 +335,7 @@ AcpiUtValidateBuffer (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtValidateBufferSize
+ * FUNCTION:    AcpiUtInitializeBuffer
  *
  * PARAMETERS:  RequiredLength      - Length needed
  *              Buffer              - Buffer to be validated
@@ -348,7 +348,7 @@ AcpiUtValidateBuffer (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiUtValidateBufferSize (
+AcpiUtInitializeBuffer (
     ACPI_BUFFER             *Buffer,
     ACPI_SIZE               RequiredLength)
 {
@@ -359,31 +359,63 @@ AcpiUtValidateBufferSize (
     {
     case ACPI_NO_BUFFER:
 
+        /* Set the exception and returned the required length */
+
         Status = AE_BUFFER_OVERFLOW;
         break;
 
+
     case ACPI_ALLOCATE_BUFFER:
-    case ACPI_ALLOCATE_LOCAL_BUFFER:
+
+        /* Allocate a new buffer */
 
         Buffer->Pointer = AcpiOsAllocate (RequiredLength);
         if (!Buffer->Pointer)
         {
             return (AE_NO_MEMORY);
         }
+
+        /* Clear the buffer */
+
+        MEMSET (Buffer->Pointer, 0, RequiredLength);
         break;
 
+
+    case ACPI_ALLOCATE_LOCAL_BUFFER:
+
+        /* Allocate a new buffer with local interface to allow tracking */
+
+        Buffer->Pointer = ACPI_MEM_ALLOCATE (RequiredLength);
+        if (!Buffer->Pointer)
+        {
+            return (AE_NO_MEMORY);
+        }
+
+        /* Clear the buffer */
+
+        MEMSET (Buffer->Pointer, 0, RequiredLength);
+        break;
+
+
     default:
+
+        /* Validate the size of the buffer */
 
         if (Buffer->Length < RequiredLength)
         {
             Status = AE_BUFFER_OVERFLOW;
         }
+
+        /* Clear the buffer */
+
+        MEMSET (Buffer->Pointer, 0, RequiredLength);
         break;
     }
 
     Buffer->Length = RequiredLength;
     return (Status);
 }
+
 
 /*******************************************************************************
  *
