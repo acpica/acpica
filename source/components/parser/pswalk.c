@@ -490,6 +490,7 @@ PsWalkParsedAml (
 	NAME_TABLE_ENTRY		*StartScope,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
+    ACPI_TABLE_DESC         *TableDesc,
     INTERPRETER_CALLBACK    DescendingCallback,
     INTERPRETER_CALLBACK    AscendingCallback)
 {
@@ -521,26 +522,32 @@ PsWalkParsedAml (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    WalkState->TableDesc = TableDesc;
+
     /* TBD:
      * TEMP until we pass WalkState to the interpreter
      */
     PrevWalkList = Gbl_CurrentWalkList;
     Gbl_CurrentWalkList = &WalkList;
 
-	if (MthDesc)
-	{
+    if (StartScope)
+    {
 		/* Push start scope on scope stack and make it current  */
 
-		Status = NsScopeStackPush (StartScope, ACPI_TYPE_Method, WalkState);
+		Status = DsScopeStackPush (StartScope, ACPI_TYPE_Method, WalkState);
 		if (ACPI_FAILURE (Status))
 		{
 			return_ACPI_STATUS (Status);
 		}
 
+    }
+
+	if (MthDesc)
+	{
 		/* Init arguments if this is a control method */
 		/* TBD: add walkstate as a param */
 
-		DsMthStackInitArgs (Params, MTH_NUM_ARGS);
+		DsMethodDataInitArgs (Params, MTH_NUM_ARGS);
 	}
 
     Op = StartOp;
@@ -572,6 +579,10 @@ PsWalkParsedAml (
 
         DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: ReturnValue=%p, State=%p\n", WalkState->ReturnDesc, WalkState));
  
+		/* Reset the current scope to the beginning of scope stack */
+
+		DsScopeStackClear (WalkState);
+
         /* If we just returned from the execution of a control method, there's lots of cleanup to do */
 
         if (WalkState->MethodDesc)
@@ -583,13 +594,9 @@ PsWalkParsedAml (
                 Status = OsdSignalSemaphore (WalkState->MethodDesc->Method.Semaphore, 1);
             }
 
-			/* Reset the current scope to the beginning of scope stack */
-
-			NsScopeStackClear (WalkState);
-
             /* Delete all arguments and locals */
 
-            DsMthStackDeleteArgs (WalkState);      
+            DsMethodDataDeleteArgs (WalkState);      
 
             /* Delete the parse tree if asked to */
 
@@ -633,7 +640,7 @@ PsWalkParsedAml (
 
         else if (ReturnDesc)
         {
-            CmDeleteInternalObject (ReturnDesc);    /* Caller doesn't want it, must delete it */
+            CmRemoveReference (ReturnDesc);    /* Caller doesn't want it, must delete it */
         }
     }
 
