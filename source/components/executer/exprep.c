@@ -285,6 +285,9 @@ OBSOLETE!
                 default:
                     DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Unknown [%02x]\n", ObjDesc->Lvalue.OpCode));
                     DEBUG_EXEC (ObjectTypeName = "Lvalue [Unknown]");
+
+                    Status = AE_TYPE;
+                    goto Cleanup;
                     break;
                 }
             }
@@ -324,7 +327,7 @@ OBSOLETE!
 
             if (INTERNAL_TYPE_Lvalue != ObjectType)
             {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed Lvalue, found %s Obj=%p\n",
+                DEBUG_PRINT (ACPI_INFO, ("AmlPrepOperands: Needed Lvalue, found %s Obj=%p\n",
                             ObjectTypeName, *StackPtr));
                 Status = AE_TYPE;
                 goto Cleanup;
@@ -352,7 +355,7 @@ OBSOLETE!
 
             if (ACPI_TYPE_Number != (*StackPtr)->Common.Type)
             {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed Number, found %s Obj=%p\n",
+                DEBUG_PRINT (ACPI_INFO, ("AmlPrepOperands: Needed Number, found %s Obj=%p\n",
                             ObjectTypeName, *StackPtr));
                 Status = AE_TYPE;
                 goto Cleanup;
@@ -372,7 +375,7 @@ OBSOLETE!
             if ((ACPI_TYPE_String != (*StackPtr)->Common.Type) &&
                 (ACPI_TYPE_Buffer != (*StackPtr)->Common.Type))
             {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed String or Buffer, found %s Obj=%p\n",
+                DEBUG_PRINT (ACPI_INFO, ("AmlPrepOperands: Needed String or Buffer, found %s Obj=%p\n",
                             ObjectTypeName, *StackPtr));
                 Status = AE_TYPE;
                 goto Cleanup;
@@ -391,7 +394,7 @@ OBSOLETE!
 
             if (ACPI_TYPE_Buffer != (*StackPtr)->Common.Type)
             {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed Buffer, found %s Obj=%p\n",
+                DEBUG_PRINT (ACPI_INFO, ("AmlPrepOperands: Needed Buffer, found %s Obj=%p\n",
                             ObjectTypeName, *StackPtr));
                 Status = AE_TYPE;
                 goto Cleanup;
@@ -405,7 +408,7 @@ OBSOLETE!
 
             if (INTERNAL_TYPE_If != (*StackPtr)->Common.Type)
             {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed If, found %s Obj=%p\n",
+                DEBUG_PRINT (ACPI_INFO, ("AmlPrepOperands: Needed If, found %s Obj=%p\n",
                             ObjectTypeName, *StackPtr));
                 Status = AE_TYPE;
                 goto Cleanup;
@@ -424,7 +427,7 @@ OBSOLETE!
 
             if (ACPI_TYPE_Package != (*StackPtr)->Common.Type)
             {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed Package, found %s Obj=%p\n",
+                DEBUG_PRINT (ACPI_INFO, ("AmlPrepOperands: Needed Package, found %s Obj=%p\n",
                             ObjectTypeName, *StackPtr));
                 Status = AE_TYPE;
                 goto Cleanup;
@@ -693,7 +696,8 @@ AmlPrepBankFieldValue (
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    if (Region != (ACPI_HANDLE) (Type = NsGetType (Region)))
+    Type = NsGetType (Region);
+    if (Type != ACPI_TYPE_Region)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: Needed Region, found %d %s\n",
                         Type, Gbl_NsTypeNames[Type]));
@@ -712,8 +716,8 @@ AmlPrepBankFieldValue (
 
     /*  ObjDesc and Region valid    */
 
-    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &ThisEntry, IMODE_Execute, "AmlPrepBankFieldValue", 2, "case BankField");
-    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &Region, IMODE_Execute, "AmlPrepBankFieldValue", 2, "case BankField");
+    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &ThisEntry, IMODE_Execute, "AmlPrepBankFieldValue", 1, "case BankField");
+    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &Region, IMODE_Execute, "AmlPrepBankFieldValue", 1, "case BankField");
 
     if (INTERNAL_TYPE_BankField != ObjDesc->BankField.Type)
     {
