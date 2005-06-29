@@ -16,15 +16,18 @@
  | library initialization and some types of table access
  |__________________________________________________________________________
  |
- | $Revision: 1.1 $
- | $Date: 2005/06/29 19:14:57 $
+ | $Revision: 1.2 $
+ | $Date: 2005/06/29 19:14:58 $
  | $Log: utinit.c,v $
- | Revision 1.1  2005/06/29 19:14:57  aystarik
- | Module contains the AcpiInit fucntion only
+ | Revision 1.2  2005/06/29 19:14:58  aystarik
+ | 16/32/64-bit common data types
  |
  | 
- | date	99.02.16.22.15.00;	author rmosgrov;	state Exp;
+ | date	99.03.10.00.06.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 2     3/09/99 4:06p Rmoore1
+ * 16/32/64-bit common data types
  * 
  * 1     2/16/99 2:15p Rmosgrov
  * Module contains the AcpiInit fucntion only
@@ -55,13 +58,13 @@
 #include <stdlib.h>
 
 
-static int      RestoreAcpiChipset = TRUE;
-static WORD     Pm1EnableRegisterSave = 0;
-static BYTE *   Gpe0EnableRegisterSave = NULL;
-static BYTE *   Gpe1EnableRegisterSave = NULL;
+static INT32        RestoreAcpiChipset = TRUE;
+static UINT16       Pm1EnableRegisterSave = 0;
+static UINT8 *      Gpe0EnableRegisterSave = NULL;
+static UINT8 *      Gpe1EnableRegisterSave = NULL;
 
-int             OriginalMode;
-int             HardwareOverride = FALSE;
+INT32               OriginalMode;
+INT32               HardwareOverride = FALSE;
 
 
 /******************************************************************************
@@ -79,15 +82,15 @@ int             HardwareOverride = FALSE;
  *
  ******************************************************************************/
 
-int
+INT32
 AcpiInit (char *FileName)
 {
-    int                     ErrorCheck;
-    int                     NumberOfTables; 
-    int                     Index;
+    INT32                   ErrorCheck;
+    INT32                   NumberOfTables; 
+    INT32                   Index;
     ACPI_TABLE_HEADER       *TableHeader;
     OSD_FILE                *FilePtr;
-    DWORD                   RsdpOriginalLocation;
+    UINT32                   RsdpOriginalLocation;
 
 
     FUNCTION_TRACE ("AcpiInit");
@@ -225,7 +228,7 @@ AcpiInit (char *FileName)
 
             /* next enumerate all table pointers found in the RSDT */
 
-            NumberOfTables = (int) (RSDT->header.Length - sizeof (ACPI_TABLE_HEADER)) / 4;
+            NumberOfTables = (INT32) (RSDT->header.Length - sizeof (ACPI_TABLE_HEADER)) / 4;
 
             for (Index = 0; Index < NumberOfTables; Index++)
             {
@@ -291,7 +294,7 @@ BREAKPOINT3;
                                 fprintf_bu (GetMasterLogHandle (), OUTPUT_DATA,
                                             "Hex dump of DSDT (not including header), size %d (0x%x)\n",
                                             (size_t)DSDT->Length, (size_t)DSDT->Length);
-                                DumpBuffer ((BYTE *) (DSDT + 1),
+                                DumpBuffer ((UINT8 *) (DSDT + 1),
                                                 (size_t)DSDT->Length, HEX | ASCII);
                             }
 #endif
@@ -371,9 +374,9 @@ BREAKPOINT3;
             OsdWrite (ACPILIB_DATA_FILE_VERSION, strlen (ACPILIB_DATA_FILE_VERSION),
                         (size_t) 1, FilePtr);
             
-            RsdpOriginalLocation = (DWORD) PtrOffset (RSDP);
+            RsdpOriginalLocation = (UINT32) PtrOffset (RSDP);
 
-            OsdWrite (&RsdpOriginalLocation, sizeof (DWORD), (size_t) 1, FilePtr);
+            OsdWrite (&RsdpOriginalLocation, sizeof (UINT32), (size_t) 1, FilePtr);
             OsdWrite (RSDP, sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER), (size_t) 1, FilePtr);
             
             if (RSDT)
@@ -450,7 +453,7 @@ BREAKPOINT3;
 
         if (Capabilities != LEGACY_MODE)
         {
-            int         Index;
+            INT32         Index;
 
             /* This block of code is only executed if the tables were loaded from
                 memory or HardwareOverride is set.  It is skipped if the tables
@@ -469,10 +472,10 @@ BREAKPOINT3;
                 coded here.  If this changes in the spec, this code will need to
                 be modified.  The PM1bEvtBlk behaves as expected. */
 
-            Pm1EnableRegisterSave = In16 ((WORD) (FACP->Pm1aEvtBlk + 2));
+            Pm1EnableRegisterSave = OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + 2));
             if (FACP->Pm1bEvtBlk)
             {
-                Pm1EnableRegisterSave |= In16 ((WORD) (FACP->Pm1bEvtBlk + 2));
+                Pm1EnableRegisterSave |= OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + 2));
             }
 
             /* 
@@ -492,7 +495,7 @@ BREAKPOINT3;
                 for (Index = 0; Index < FACP->Gpe0BlkLen / 2; Index++)
                 {
                     Gpe0EnableRegisterSave[Index] =
-                        In8 ((WORD) (FACP->Gpe0Blk + FACP->Gpe0BlkLen / 2));
+                        OsdIn8 ((UINT16) (FACP->Gpe0Blk + FACP->Gpe0BlkLen / 2));
                 }
             }
             
@@ -512,7 +515,7 @@ BREAKPOINT3;
                 for (Index = 0; Index < FACP->Gpe1BlkLen / 2; Index++)
                 {
                     Gpe1EnableRegisterSave[Index] =
-                        In8 ((WORD) (FACP->Gpe1Blk + FACP->Gpe1BlkLen / 2));
+                        OsdIn8 ((UINT16) (FACP->Gpe1Blk + FACP->Gpe1BlkLen / 2));
                 }
             }
             
