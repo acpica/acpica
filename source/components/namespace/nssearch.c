@@ -127,9 +127,12 @@
 
 
 
+
+
+
 /****************************************************************************
  *
- * FUNCTION:    NsSearchOnly
+ * FUNCTION:    NsSearchOneScope
  *
  * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
  *              *NameTable          - Starting table where search will begin
@@ -145,7 +148,7 @@
  ***************************************************************************/
 
 ACPI_STATUS
-NsSearchOnly (
+NsSearchOneScope (
     UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
     ACPI_OBJECT_TYPE        Type, 
@@ -156,18 +159,19 @@ NsSearchOnly (
     UINT32                  Tries;
 
 
-    FUNCTION_TRACE ("NsSearchOnly");
+    FUNCTION_TRACE ("NsSearchOneScope");
 
     /* Debug only */
 
     {
         DEBUG_EXEC (char *ScopeName = NsNameOfScope (NameTable));
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Searching %s [%p]\n",
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOneScope: Searching %s [%p]\n",
                             ScopeName, NameTable));
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type 0x%X)\n",
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOneScope: For %4.4s (type 0x%X)\n",
                             &EntryName, Type));
         DEBUG_EXEC (CmFree (ScopeName));
     }
+
 
 
     /* 
@@ -235,7 +239,7 @@ NsSearchOnly (
                 NameTable[Position].Type = (UINT8) Type;
             }
 
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (actual type 0x%X) found at %p\n", 
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchOneScope: Name %4.4s (actual type 0x%X) found at %p\n", 
                             &EntryName, NameTable[Position].Type, &NameTable[Position]));
             
             *RetEntry = &NameTable[Position];
@@ -261,7 +265,7 @@ NsSearchOnly (
              */
 
             NameTable = NEXTSEG (NameTable);
-            DEBUG_PRINT (TRACE_EXEC, ("NsSearchOnly: Search appendage NameTable=%p\n", NameTable));
+            DEBUG_PRINT (TRACE_EXEC, ("NsSearchOneScope: Search appendage NameTable=%p\n", NameTable));
             Position = 0;
             Tries += NS_TABLE_SIZE;
         }
@@ -275,7 +279,7 @@ NsSearchOnly (
 
     /* Searched entire table, not found */
 
-    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (type 0x%X) not found at %p\n", 
+    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOneScope: Name %4.4s (type 0x%X) not found at %p\n", 
                                 &EntryName, Type, &NameTable[Position]));
 
 
@@ -353,7 +357,7 @@ NsSearchParentTree (
             /* Search parent scope */
             /* TBD: Why ACPI_TYPE_Any? */
 
-            Status = NsSearchOnly (EntryName, ParentEntry->Scope, ACPI_TYPE_Any, RetEntry, NULL);
+            Status = NsSearchOneScope (EntryName, ParentEntry->Scope, ACPI_TYPE_Any, RetEntry, NULL);
             if (Status == AE_OK)
             {
                 return_ACPI_STATUS (Status);
@@ -514,6 +518,7 @@ NsInitializeTable (
 
 void
 NsInitializeEntry (
+    ACPI_WALK_STATE			*WalkState,
     NAME_TABLE_ENTRY        *NameTable, 
     UINT32                  Position, 
     UINT32                  EntryName, 
@@ -521,18 +526,32 @@ NsInitializeEntry (
     NAME_TABLE_ENTRY        *PreviousEntry)
 {
     NAME_TABLE_ENTRY        *NewEntry;
+    UINT16                  OwnerId = TABLE_ID_DSDT;
 
 
     FUNCTION_TRACE ("NsInitializeEntry");
 
 
-    NewEntry = &NameTable[Position];
-    
-    /*  first or second pass load mode, NameTable valid   */
+    /* 
+     * Get the owner ID from the Walk state 
+     * The owner ID is used to track table deletion and deletion of objects created by methods 
+     */
+    if (WalkState)
+    {
+        OwnerId = WalkState->OwnerId;
+    }
 
-    NewEntry->DataType      = DESC_TYPE_NTE;
-    NewEntry->Name          = EntryName;
-    NewEntry->ParentEntry   = NameTable[0].ParentEntry;
+    /* The new entry is given by two parameters */
+
+    NewEntry = &NameTable[Position];
+
+    /* Init the new entry */
+
+    NewEntry->DataType       = DESC_TYPE_NTE;
+    NewEntry->Name           = EntryName;
+    NewEntry->ParentEntry    = NameTable[0].ParentEntry;
+    NewEntry->OwnerId        = OwnerId;
+    NewEntry->ReferenceCount = 1;
 
     /* 
      * Set forward and back links.
@@ -626,6 +645,7 @@ NsInitializeEntry (
 ACPI_STATUS
 NsSearchAndEnter (
     UINT32                  EntryName, 
+    ACPI_WALK_STATE			*WalkState,
     NAME_TABLE_ENTRY        *NameTable,
     OPERATING_MODE          InterpreterMode, 
     ACPI_OBJECT_TYPE        Type, 
@@ -635,6 +655,7 @@ NsSearchAndEnter (
     UINT32                  Position;       /* position in table */
     ACPI_STATUS             Status;
     NS_SEARCH_DATA          SearchInfo;
+    NAME_TABLE_ENTRY        *Entry;
 
 
     FUNCTION_TRACE ("NsSearchAndEnter");
@@ -663,7 +684,7 @@ NsSearchAndEnter (
     /* Try to find the name in the table specified by the caller */
 
     *RetEntry = ENTRY_NOT_FOUND;
-    Status = NsSearchOnly (EntryName, NameTable, Type, RetEntry, &SearchInfo);
+    Status = NsSearchOneScope (EntryName, NameTable, Type, RetEntry, &SearchInfo);
     if (Status != AE_NOT_FOUND)
     {
         /* Either found it or there was an error -- finished either way */
@@ -739,9 +760,21 @@ NsSearchAndEnter (
      * Initialize the new entry
      */
 
-    NsInitializeEntry (NameTable, Position, EntryName, Type, 
+    NsInitializeEntry (WalkState, NameTable, Position, EntryName, Type, 
                         SearchInfo.PreviousEntry);
-    *RetEntry = &NameTable[Position];
+
+
+    *RetEntry   = &NameTable[Position];
+    Entry       = &NameTable[Position];
+
+    /* Increment the reference count(s) of all parents up to the root! */
+
+    while (Entry->ParentEntry)
+    {
+        Entry = Entry->ParentEntry;
+        Entry->ReferenceCount++;
+    }
+
 
     return_ACPI_STATUS (AE_OK);
 }
