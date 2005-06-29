@@ -153,7 +153,7 @@ _CmCreateInternalObject (
     char                    *ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId,
-    ACPI_OBJECT_TYPE        Type)
+    OBJECT_TYPE_INTERNAL    Type)
 {
     ACPI_OBJECT_INTERNAL    *Object;
 
@@ -173,7 +173,7 @@ _CmCreateInternalObject (
 
     /* Save the object type in the object descriptor */
 
-    Object->Common.Type = (UINT8) Type;
+    Object->Common.Type = Type;
     Object->Common.Size = (UINT8) sizeof (ACPI_OBJECT_INTERNAL);
 
     /* Init the reference count */
