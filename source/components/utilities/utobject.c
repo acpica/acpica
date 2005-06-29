@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -287,7 +287,7 @@ AcpiUtCreateStringObject (
     ACPI_SIZE               StringSize)
 {
     ACPI_OPERAND_OBJECT     *StringDesc;
-    char                    *String = NULL;
+    char                    *String;
 
 
     ACPI_FUNCTION_TRACE_U32 ("UtCreateStringObject", StringSize);
@@ -301,8 +301,10 @@ AcpiUtCreateStringObject (
         return_PTR (NULL);
     }
 
-    /* Allocate the actual string buffer -- (Size + 1) for NULL terminator */
-
+    /* 
+     * Allocate the actual string buffer -- (Size + 1) for NULL terminator.
+     * NOTE: Zero-length strings are NULL terminated
+     */
     String = ACPI_MEM_CALLOCATE (StringSize + 1);
     if (!String)
     {
