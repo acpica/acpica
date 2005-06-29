@@ -215,6 +215,10 @@ SOURCE=..\..\Subsystem\Hardware\hwtimer.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\idoatoms.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\idoexpr.c
 # End Source File
 # Begin Source File
@@ -332,19 +336,6 @@ SOURCE=..\..\Subsystem\Interpreter\ievalue.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\iexecute.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\isatoms.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
 
