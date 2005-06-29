@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  ******************************************************************************/
 
@@ -441,8 +441,10 @@ AcpiCmReleaseMutex (
     UINT32                  ThisThreadId;
 
 
+    ThisThreadId = AcpiOsGetThreadId ();
     DEBUG_PRINT (TRACE_MUTEX,
-        ("Releasing Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
+        ("Thread %X releasing Mutex [%s]\n", ThisThreadId, 
+        AcpiCmGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
     {
@@ -469,7 +471,6 @@ AcpiCmReleaseMutex (
      * ordering rule.  This indicates a coding error somewhere in
      * the ACPI subsystem code.
      */
-    ThisThreadId = AcpiOsGetThreadId ();
     for (i = MutexId; i < MAX_MTX; i++)
     {
         if (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId)
@@ -488,6 +489,10 @@ AcpiCmReleaseMutex (
     }
 
 
+    /* Mark unlocked FIRST */
+
+    AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ACPI_MUTEX_NOT_ACQUIRED;
+
     Status = AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
 
     if (ACPI_FAILURE (Status))
@@ -500,10 +505,6 @@ AcpiCmReleaseMutex (
         DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex [%s], %s\n",
                     AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
     }
-
-    /* Mark unlocked  */
-
-    AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ACPI_MUTEX_NOT_ACQUIRED;
 
     return (Status);
 }
