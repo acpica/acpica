@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.35 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -146,7 +146,8 @@ Usage (
     void)
 {
     printf ("Usage:    %s <Options> <InputFile>\n\n", CompilerName);
-    printf ("Options:  -h               Create ascii hex file (*.hex)\n");
+    printf ("Options:  -a               Create hex assembly source file (*.asm)\n");
+    printf ("          -c               Create hex C source file (*.c)\n");
     printf ("          -i               Ignore errors, always create AML file\n");
     printf ("          -l               Create listing (mixed source/AML) file (*.lst)\n");
     printf ("          -n               Create namespace file (*.nsp)\n");
@@ -154,11 +155,11 @@ Usage (
     printf ("                             (including the .aml file)\n");
     printf ("          -s               Create combined (w/includes) ASL file (*.src)\n");
     printf ("\nCompiler Debug Options:\n");
-    printf ("          -a <trace level> Set debug level for trace output\n");
     printf ("          -d <p|t|b>       Create compiler debug/trace file (*.txt)\n");
     printf ("                             Types: Parse/Tree/Both\n");
     printf ("          -p               Parse only, no output generation\n");
     printf ("          -t               Display compile times\n");
+    printf ("          -v <trace level> Set debug level for trace output\n");
 }
 
 
@@ -214,7 +215,7 @@ main (
     int                 argc,
     char                **argv)
 {
-    UINT32              j;
+    int                 j;
     BOOLEAN             BadCommandLine = FALSE;
     int                 Status;
 
@@ -230,13 +231,20 @@ main (
         return 0;
     }
 
-
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "a:d:hilno:pst")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "acd:ilno:pstv:")) != EOF) switch (j)
     {
     case 'a':
-        AcpiDbgLevel = strtoul (optarg, NULL, 16);
+        /* Produce assembly code output file */
+
+        Gbl_AsmOutputFlag = TRUE;
+        break;
+
+    case 'c':
+        /* Produce C hex output file */
+
+        Gbl_HexOutputFlag = TRUE;
         break;
 
     case 'd':
@@ -257,12 +265,6 @@ main (
         /* Produce debug output file */
 
         Gbl_DebugFlag = TRUE;
-        break;
-
-    case 'h':
-        /* Produce hex output file */
-
-        Gbl_HexOutputFlag = TRUE;
         break;
 
     case 'i':
@@ -308,11 +310,14 @@ main (
         Gbl_CompileTimesFlag = TRUE;
         break;
 
+    case 'v':
+        AcpiDbgLevel = strtoul (optarg, NULL, 16);
+        break;
+
     default:
         BadCommandLine = TRUE;
         break;
     }
-
 
     /* Next parameter must be the input filename */
 
@@ -346,9 +351,7 @@ main (
         Gbl_OutputFilenamePrefix = Gbl_Files[ASL_FILE_INPUT].Filename;
     }
 
-
     Status = CmDoCompile ();
-
     return (Status);
 }
 

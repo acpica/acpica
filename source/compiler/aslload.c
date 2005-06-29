@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.21 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -150,32 +150,26 @@ ACPI_STATUS
 LdLoadNamespace (void)
 {
     ACPI_WALK_STATE         *WalkState;
-    ACPI_WALK_LIST          WalkList;
 
 
     DbgPrint (ASL_DEBUG_OUTPUT, "\nCreating namespace\n\n");
 
-
     /* Create a new walk state */
 
-    WalkList.WalkState = NULL;
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, NULL);
     if (!WalkState)
     {
         return AE_NO_MEMORY;
     }
-
 
     /* Perform the walk of the parse tree */
 
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
                         LdNamespace1End, WalkState);
 
-
     /* Dump the namespace if debug is enabled */
 
     AcpiNsDumpTables (NS_ALL, ACPI_UINT32_MAX);
-
     return AE_OK;
 }
 
@@ -194,7 +188,7 @@ LdLoadNamespace (void)
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 LdLoadFieldElements (
     ASL_PARSE_NODE          *PsNode,
     ACPI_WALK_STATE         *WalkState)
@@ -216,11 +210,10 @@ LdLoadFieldElements (
         Child = UtGetArg (PsNode, 5);
         break;
 
-    case AML_DEF_FIELD_OP:
+    case AML_FIELD_OP:
         Child = UtGetArg (PsNode, 4);
         break;
     }
-
 
     /* Enter all elements into the namespace */
 
@@ -228,31 +221,39 @@ LdLoadFieldElements (
     {
         switch (Child->AmlOpcode)
         {
-        case AML_RESERVEDFIELD_OP:
-        case AML_ACCESSFIELD_OP:
+        case AML_INT_RESERVEDFIELD_OP:
+        case AML_INT_ACCESSFIELD_OP:
             break;
 
         default:
 
-            Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            Child->Value.String,
-                            INTERNAL_TYPE_DEF_FIELD,
-                            IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+            Status = AcpiNsLookup (WalkState->ScopeInfo, Child->Value.String,
+                            INTERNAL_TYPE_REGION_FIELD, IMODE_LOAD_PASS1,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE | NS_ERROR_IF_FOUND,
                             NULL, &NsNode);
             if (ACPI_FAILURE (Status))
             {
-                /* TBD - emit error */
-                return;
-            }
+                if (Status != AE_ALREADY_EXISTS)
+                {
+                     return (Status);
+                }
 
-            Child->NsNode = NsNode;
-            NsNode->Object = Child;
+                /*
+                 * The name already exists in this scope
+                 * But continue processing the elements
+                 */
+                AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Child, Child->Value.String);
+            }
+            else
+            {
+                Child->NsNode = NsNode;
+                NsNode->Object = (ACPI_OPERAND_OBJECT *) Child;
+            }
             break;
         }
-
         Child = Child->Peer;
     }
+    return (AE_OK);
 }
 
 
@@ -274,7 +275,7 @@ LdLoadFieldElements (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 LdLoadResourceElements (
     ASL_PARSE_NODE          *PsNode,
     ACPI_WALK_STATE         *WalkState)
@@ -288,13 +289,13 @@ LdLoadResourceElements (
      * Enter the resouce name into the namespace
      * This opens a scope
      */
-    Status = AcpiNsLookup (WalkState->ScopeInfo,
-                    PsNode->Namepath,
-                    INTERNAL_TYPE_RESOURCE,
-                    IMODE_LOAD_PASS1,
-                    NS_NO_UPSEARCH,
+    Status = AcpiNsLookup (WalkState->ScopeInfo, PsNode->Namepath,
+                    INTERNAL_TYPE_RESOURCE, IMODE_LOAD_PASS1, NS_NO_UPSEARCH,
                     WalkState, &NsNode);
-
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /*
      * Now enter the predefined fields, for easy lookup when referenced
@@ -308,27 +309,32 @@ LdLoadResourceElements (
         {
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             InitializerNode->ExternalName,
-                            INTERNAL_TYPE_RESOURCE,
-                            IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            INTERNAL_TYPE_RESOURCE_FIELD,
+                            IMODE_LOAD_PASS1, NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                             NULL, &NsNode);
-
             if (ACPI_FAILURE (Status))
             {
-                return;
+                return (Status);
             }
 
             /*
              * Store the field offset in the namespace node so it
              * can be used when the field is referenced
              */
-            (UINT16) NsNode->OwnerId = InitializerNode->Value.Integer16;
+            NsNode->OwnerId = InitializerNode->Value.Integer16;
             InitializerNode->NsNode = NsNode;
-            NsNode->Object = InitializerNode;
-        }
+            NsNode->Object = (ACPI_OPERAND_OBJECT *) InitializerNode;
 
+            /* Pass thru the field type (Bitfield or Bytefield) */
+
+            if (InitializerNode->Flags & NODE_IS_BIT_OFFSET)
+            {
+                NsNode->Flags |= ANOBJ_IS_BIT_OFFSET;
+            }
+        }
         InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
     }
+    return (AE_OK);
 }
 
 
@@ -345,7 +351,6 @@ LdLoadResourceElements (
  *
  ******************************************************************************/
 
-
 ACPI_STATUS
 LdNamespace1Begin (
     ASL_PARSE_NODE          *PsNode,
@@ -355,29 +360,31 @@ LdNamespace1Begin (
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
     ACPI_STATUS             Status;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE        ObjectType;
+    ACPI_OBJECT_TYPE        ActualObjectType = ACPI_TYPE_ANY;
     NATIVE_CHAR             *Path;
     UINT32                  Flags = NS_NO_UPSEARCH;
     ASL_PARSE_NODE          *Arg;
     UINT32                  i;
 
 
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("Load1BeginOp: PsNode %p\n", PsNode));
+    PROC_NAME ("LdNamespace1Begin");
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "PsNode %p\n", PsNode));
 
 
-    /* We are only interested in opcodes that have an associated name (or multiple names) */
-
+    /*
+     * We are only interested in opcodes that have an associated name
+     * (or multiple names)
+     */
     switch (PsNode->AmlOpcode)
     {
     case AML_BANK_FIELD_OP:
     case AML_INDEX_FIELD_OP:
-    case AML_DEF_FIELD_OP:
+    case AML_FIELD_OP:
 
-        LdLoadFieldElements (PsNode, WalkState);
-        return (AE_OK);
+        Status = LdLoadFieldElements (PsNode, WalkState);
+        return (Status);
     }
-
 
     /* Check if this object has already been installed in the namespace */
 
@@ -386,58 +393,54 @@ LdNamespace1Begin (
         return (AE_OK);
     }
 
-
     Path = PsNode->Namepath;
     if (!Path)
     {
         return (AE_OK);
     }
 
-
     /* Map the raw opcode into an internal object type */
 
     if (PsNode->ParseOpcode == NAME)
     {
-        Arg = PsNode->Child;        /* Get the NameSeg/NameString node */
-        Arg = Arg->Peer;            /* First peer is the object to be associated with the name */
+        Arg = PsNode->Child;    /* Get the NameSeg/NameString node */
+        Arg = Arg->Peer;        /* First peer is the object to be associated with the name */
 
         /* Get the data type associated with the named object, not the name itself */
 
         /* Log2 loop to convert from Btype (binary) to Etype (encoded) */
 
-        DataType = 1;
+        ObjectType = 1;
         for (i = 1; i < Arg->AcpiBtype; i *= 2)
         {
-            DataType++;
+            ObjectType++;
         }
     }
-
     else if (PsNode->ParseOpcode == EXTERNAL)
     {
-        /* "External" simply enters a name and type into the namespace */
-        /* first child is name, next child is ObjectType */
-
-        DataType = PsNode->Child->Peer->Value.Integer8;
+        /*
+         * "External" simply enters a name and type into the namespace.
+         * We must be careful to not open a new scope, however, no matter
+         * what type the external name refers to (e.g., a method)
+         *
+         * first child is name, next child is ObjectType
+         */
+        ActualObjectType = PsNode->Child->Peer->Value.Integer8;
+        ObjectType = ACPI_TYPE_ANY;
     }
-
     else if ((PsNode->ParseOpcode == DEFAULT_ARG) &&
              (PsNode->Flags == NODE_IS_RESOURCE_DESC))
     {
-        /* TBD: Merge into AcpiDsMapNamedOpcodeToDataType */
-
-        DataType = INTERNAL_TYPE_RESOURCE;
-        LdLoadResourceElements (PsNode, WalkState);
-        return AE_OK;
+        Status = LdLoadResourceElements (PsNode, WalkState);
+        return (Status);
     }
-
     else
     {
-        DataType = AcpiDsMapNamedOpcodeToDataType (PsNode->AmlOpcode);
+        ObjectType = AslMapNamedOpcodeToDataType (PsNode->AmlOpcode);
+
     }
 
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("Load1BeginOp: Type=%x\n", DataType));
-
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "LdNamespace1Begin: Type=%x\n", ObjectType));
 
     if (PsNode->ParseOpcode != SCOPE)
     {
@@ -449,12 +452,11 @@ LdNamespace1Begin (
      * as we go downward in the parse tree.  Any necessary subobjects that involve
      * arguments to the opcode must be created as we go back up the parse tree later.
      */
-    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, DataType,
+    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, ObjectType,
                     IMODE_LOAD_PASS1, Flags, WalkState, &(NsNode));
-
     if (ACPI_FAILURE (Status))
     {
-        if (Status == AE_EXIST)
+        if (Status == AE_ALREADY_EXISTS)
         {
             /* The name already exists in this scope */
 
@@ -462,7 +464,7 @@ LdNamespace1Begin (
             return (Status);
         }
 
-        printf ("Failure from lookup %s\n", AcpiCmFormatException (Status));
+        printf ("Failure from lookup %s\n", AcpiFormatException (Status));
         return (Status);
     }
 
@@ -471,14 +473,23 @@ LdNamespace1Begin (
      * the NsNode back to the original Parse node
      */
     PsNode->NsNode = NsNode;
-    NsNode->Object = PsNode;
+    NsNode->Object = (ACPI_OPERAND_OBJECT *) PsNode;
+    /* Set the actual data type if appropriate (EXTERNAL term only) */
 
+    if (ActualObjectType != ACPI_TYPE_ANY)
+    {
+        NsNode->Type = (UINT8) ActualObjectType;
+        NsNode->OwnerId = ASL_EXTERNAL_METHOD;
+    }
 
     if (PsNode->ParseOpcode == METHOD)
     {
-        NsNode->OwnerId = PsNode->Extra;
+        /*
+         * Get the method argument count from "Extra" and store
+         * it in the OwnerId field of the namespace node
+         */
+        NsNode->OwnerId = (UINT16) PsNode->Extra;
     }
-
 
     return (Status);
 }
@@ -504,7 +515,10 @@ LdNamespace1End (
     void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE        ObjectType;
+
+
+    PROC_NAME ("LdNamespace1End");
 
 
     /* We are only interested in opcodes that have an associated name */
@@ -514,7 +528,6 @@ LdNamespace1End (
         return (AE_OK);
     }
 
-
     /* Get the type to determine if we should pop the scope */
 
     if ((PsNode->ParseOpcode == DEFAULT_ARG) &&
@@ -522,24 +535,21 @@ LdNamespace1End (
     {
         /* TBD: Merge into AcpiDsMapNamedOpcodeToDataType */
 
-        DataType = INTERNAL_TYPE_RESOURCE;
+        ObjectType = INTERNAL_TYPE_RESOURCE;
     }
-
     else
     {
-        DataType = AcpiDsMapNamedOpcodeToDataType (PsNode->AmlOpcode);
+        ObjectType = AslMapNamedOpcodeToDataType (PsNode->AmlOpcode);
     }
-
 
     /* Pop the scope stack */
 
-    if (AcpiNsOpensScope (DataType))
+    if (AcpiNsOpensScope (ObjectType))
     {
 
-        DEBUG_PRINT (TRACE_DISPATCH,
-            ("Load1EndOp/%s: Popping scope for Op %p\n",
-            AcpiCmGetTypeName (DataType), PsNode));
-
+        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+            "LdNamespace1End/%s: Popping scope for Op %p\n",
+            AcpiUtGetTypeName (ObjectType), PsNode));
 
         AcpiDsScopeStackPop (WalkState);
 

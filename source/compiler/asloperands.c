@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.15 $
+ * Module Name: asloperands - AML operand processing
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -184,8 +184,8 @@ OpnDoMethod (
 
     /* Put the bits in their proper places */
 
-    MethodFlags = (UINT8) ((NumArgs & 0x7) | 
-                          ((Serialized & 0x1) << 3) | 
+    MethodFlags = (UINT8) ((NumArgs & 0x7) |
+                          ((Serialized & 0x1) << 3) |
                           ((Concurrency & 0xF) << 4));
 
     /* Use the last node for the combined flags byte */
@@ -216,6 +216,7 @@ OpnDoMethod (
 
 void
 OpnDoFieldCommon (
+    ASL_PARSE_NODE              *FieldNode,
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *Next;
@@ -233,6 +234,10 @@ OpnDoFieldCommon (
     AccessType = Node->Value.Integer8;
     Node->ParseOpcode = DEFAULT_ARG;
 
+    /* Set the access type in the parent (field) node for use later */
+
+    FieldNode->Value.Integer8 = AccessType;
+
     /* LockRule -- not optional, so no need to check for DEFAULT_ARG */
 
     Next = Node->Peer;
@@ -244,20 +249,21 @@ OpnDoFieldCommon (
     Next = Next->Peer;
     UpdateRule = Next->Value.Integer8;
 
-    /* Generate the flags byte */
-
-    FieldFlags = (UINT8) ((AccessType & 0x0F) | 
-                         ((LockRule & 0x01) << 4) | 
-                         ((UpdateRule & 0x03) << 5));
+    /*
+     * Generate the flags byte.  The various fields are already
+     * in the right bit position via translation from the
+     * keywords by the parser.
+     */
+    FieldFlags = (UINT8) (AccessType | LockRule | UpdateRule);
 
     /* Use the previous node to be the FieldFlags node */
 
     /* Set the node to RAW_DATA */
 
     Next->Value.Integer = FieldFlags;
-    Next->AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->AmlLength = 1;
-    Next->ParseOpcode = RAW_DATA;
+    Next->AmlOpcode     = AML_RAW_DATA_BYTE;
+    Next->AmlLength     = 1;
+    Next->ParseOpcode   = RAW_DATA;
 
     /* Process the FieldUnitList */
 
@@ -266,6 +272,10 @@ OpnDoFieldCommon (
 
     while (Next)
     {
+        /* Save the offset of this field unit */
+
+        Next->ExtraValue = CurrentBitOffset;
+
         switch (Next->ParseOpcode)
         {
         case ACCESSAS:
@@ -285,7 +295,6 @@ OpnDoFieldCommon (
              * Examine the specified offset in relation to the
              * current offset counter.
              */
-
             if (NewBitOffset < CurrentBitOffset)
             {
                 /*
@@ -296,7 +305,6 @@ OpnDoFieldCommon (
                 Next->ParseOpcode = DEFAULT_ARG;
                 PkgLengthNode->ParseOpcode = DEFAULT_ARG;
             }
-
             else if (NewBitOffset == CurrentBitOffset)
             {
                 /*
@@ -306,7 +314,6 @@ OpnDoFieldCommon (
                 Next->ParseOpcode = DEFAULT_ARG;
                 PkgLengthNode->ParseOpcode = DEFAULT_ARG;
             }
-
             else
             {
                 /*
@@ -364,7 +371,7 @@ OpnDoField (
 
     /* Second child is the AccessType */
 
-    OpnDoFieldCommon (Next->Peer);
+    OpnDoFieldCommon (Node, Next->Peer);
 }
 
 
@@ -398,8 +405,7 @@ OpnDoIndexField (
 
     /* Third child is the AccessType */
 
-    OpnDoFieldCommon (Next->Peer);
-
+    OpnDoFieldCommon (Node, Next->Peer);
 }
 
 
@@ -437,8 +443,54 @@ OpnDoBankField (
 
     /* Fourth child is the AccessType */
 
-    OpnDoFieldCommon (Next->Peer);
+    OpnDoFieldCommon (Node, Next->Peer);
+}
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    OpnDoRegion
+ *
+ * PARAMETERS:  Node        - The parent parse node
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Tries to get the length of the region.  Can only do this at
+ *              compile time if the length is a constant.
+ *
+ ******************************************************************************/
+
+void
+OpnDoRegion (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+    /* Opcode is parent node */
+    /* First child is the region name */
+
+    Next = Node->Child;
+
+    /* Second child is the space ID*/
+
+    Next = Next->Peer;
+
+    /* Third child is the region offset */
+
+    Next = Next->Peer;
+
+    /* Fourth child is the region length */
+
+    Next = Next->Peer;
+    if (Next->ParseOpcode == INTEGER)
+    {
+        Node->Value.Integer = Next->Value.Integer;
+    }
+    else
+    {
+        Node->Value.Integer = ACPI_INTEGER_MAX;
+    }
 }
 
 
@@ -492,7 +544,6 @@ OpnDoBuffer (
      */
     switch (InitializerNode->ParseOpcode)
     {
-
     case INTEGER:
     case BYTECONST:
     case WORDCONST:
@@ -520,7 +571,6 @@ OpnDoBuffer (
          * Only one initializer, the string.  Buffer must be big enough to hold
          * the string plus the null termination byte
          */
-
         BufferLength = strlen (InitializerNode->Value.String) + 1;
 
         InitializerNode->AmlOpcode      = AML_RAW_DATA_BUFFER;
@@ -539,7 +589,6 @@ OpnDoBuffer (
         return;
     }
 
-
     /* Check if initializer list is longer than the buffer length */
 
     if (BufferLengthNode->Value.Integer > BufferLength)
@@ -556,12 +605,10 @@ OpnDoBuffer (
         /* But go ahead and put the buffer length of zero into the AML */
     }
 
-
     /*
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-
     BufferLengthNode->ParseOpcode   = INTEGER;
     BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
     BufferLengthNode->Value.Integer = BufferLength;
@@ -618,10 +665,10 @@ OpnDoPackage (
         }
     }
 
-
     /* Check if initializer list is longer than the buffer length */
 
-    if (PackageLengthNode->ParseOpcode == INTEGER)
+    if ((PackageLengthNode->ParseOpcode == INTEGER)      ||
+        (PackageLengthNode->ParseOpcode == BYTECONST))
     {
         if (PackageLengthNode->Value.Integer > PackageLength)
         {
@@ -629,28 +676,102 @@ OpnDoPackage (
         }
     }
 
-
-    if (!PackageLength)
+    /*
+     * If not a variable-length package, check for a zero
+     * package length
+     */
+    if ((PackageLengthNode->ParseOpcode == INTEGER)      ||
+        (PackageLengthNode->ParseOpcode == BYTECONST)    ||
+        (PackageLengthNode->ParseOpcode == DEFAULT_ARG))
     {
-        /* No length AND no items -- issue a warning */
+        if (!PackageLength)
+        {
+            /* No length AND no items -- issue a warning */
 
-        AslError (ASL_WARNING, ASL_MSG_PACKAGE_LENGTH, PackageLengthNode, NULL);
+            AslError (ASL_WARNING, ASL_MSG_PACKAGE_LENGTH, PackageLengthNode, NULL);
 
-        /* But go ahead and put the buffer length of zero into the AML */
+            /* But go ahead and put the buffer length of zero into the AML */
+        }
     }
-
 
     /*
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-
     PackageLengthNode->AmlOpcode = AML_RAW_DATA_BYTE;
     PackageLengthNode->AmlLength = 1;
     PackageLengthNode->ParseOpcode = RAW_DATA;
     PackageLengthNode->Value.Integer = PackageLength;
 
     /* Remaining nodes are handled via the tree walk */
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    OpnDoLoadTable
+ *
+ * PARAMETERS:  Node        - The parent parse node
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION:
+ *
+ ******************************************************************************/
+
+void
+OpnDoLoadTable (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+    /* Opcode is parent node */
+    /* First child is the table signature */
+
+    Next = Node->Child;
+
+    /* Second child is the OEM ID*/
+
+    Next = Next->Peer;
+
+    /* Third child is the OEM table ID */
+
+    Next = Next->Peer;
+
+    /* Fourth child is the RootPath string */
+
+    Next = Next->Peer;
+    if (Next->ParseOpcode == ZERO)
+    {
+        Next->ParseOpcode    = STRING_LITERAL;
+        Next->Value.String   = "\\";
+        Next->AmlLength      = 2;
+        OpcGenerateAmlOpcode (Next);
+    }
+
+    /* Fifth child is the [optional] ParameterPathString */
+    /* Sixth child is the [optional] ParameterData */
+
+/*
+    Next = Next->Peer;
+    if (Next->ParseOpcode == DEFAULT_ARG)
+    {
+        Next->AmlLength = 1;
+        Next->ParseOpcode = ZERO;
+        OpcGenerateAmlOpcode (Next);
+    }
+
+
+    Next = Next->Peer;
+    if (Next->ParseOpcode == DEFAULT_ARG)
+    {
+        Next->AmlLength = 1;
+        Next->ParseOpcode = ZERO;
+        OpcGenerateAmlOpcode (Next);
+    }
+ */
+
 }
 
 
@@ -680,7 +801,6 @@ OpnDoDefinitionBlock (
      * Mark all of these nodes as non-usable so they won't get output
      * as AML opcodes!
      */
-
 
     /* AML filename */
 
@@ -778,10 +898,8 @@ OpnAttachNameToNode (
     {
         Child = UtGetArg (PsNode, 0);
     }
-
     else switch (PsNode->AmlOpcode)
     {
-
     case AML_DATA_REGION_OP:
     case AML_DEVICE_OP:
     case AML_EVENT_OP:
@@ -797,12 +915,10 @@ OpnAttachNameToNode (
         Child = UtGetArg (PsNode, 0);
         break;
 
-
     case AML_ALIAS_OP:
 
         Child = UtGetArg (PsNode, 1);
         break;
-
 
     case AML_CREATE_BIT_FIELD_OP:
     case AML_CREATE_BYTE_FIELD_OP:
@@ -813,31 +929,25 @@ OpnAttachNameToNode (
         Child = UtGetArg (PsNode, 2);
         break;
 
-
     case AML_CREATE_FIELD_OP:
 
         Child = UtGetArg (PsNode, 3);
         break;
-
 
     case AML_BANK_FIELD_OP:
     case AML_INDEX_FIELD_OP:
     case AML_FIELD_OP:
 
         return;
-        break;
-
 
     default:
         return;
-        break;
     }
-
 
     if (Child)
     {
         PsNode->ExternalName = Child->Value.String;
-        Status = AcpiNsInternalizeName (Child->Value.String, &PsNode->Namepath);
+        Status = UtInternalizeName (Child->Value.String, &PsNode->Namepath);
         if (ACPI_FAILURE (Status))
         {
         }
@@ -870,7 +980,6 @@ OpnGenerateAmlOperands (
         return;
     }
 
-
     switch (Node->ParseOpcode)
     {
     case DEFINITIONBLOCK:
@@ -897,8 +1006,16 @@ OpnGenerateAmlOperands (
         OpnDoBuffer (Node);
         break;
 
+    case LOADTABLE:
+        OpnDoLoadTable (Node);
+        break;
+
     case PACKAGE:
         OpnDoPackage (Node);
+        break;
+
+    case OPERATIONREGION:
+        OpnDoRegion (Node);
         break;
 
     case RESOURCETEMPLATE:
@@ -914,7 +1031,6 @@ OpnGenerateAmlOperands (
     default:
         break;
     }
-
 
     /* TBD: move */
 

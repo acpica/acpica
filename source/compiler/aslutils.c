@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.28 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -130,7 +130,6 @@ extern const char * const       yytname[];
 #endif
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    UtLocalCalloc
@@ -152,17 +151,65 @@ UtLocalCalloc (
     void                    *Allocated;
 
 
-    Allocated = AcpiCmCallocate (Size);
+    Allocated = ACPI_MEM_CALLOCATE (Size);
     if (!Allocated)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
             Gbl_InputByteCount, Gbl_CurrentColumn,
-            Gbl_InputFilename, NULL);
+            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
         exit (1);
     }
 
+    TotalAllocations++;
+    TotalAllocated += Size;
     return Allocated;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtBeginEvent
+ *
+ * PARAMETERS:  Event       - Event number (integer index)
+ *              Name        - Ascii name of this event
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Saves the current time with this event
+ *
+ ******************************************************************************/
+
+void
+UtBeginEvent (
+    UINT32                  Event,
+    char                    *Name)
+{
+
+    AslGbl_Events[Event].StartTime = AcpiOsGetTimer();
+    AslGbl_Events[Event].EventName = Name;
+    AslGbl_Events[Event].Valid = TRUE;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtEndEvent
+ *
+ * PARAMETERS:  Event       - Event number (integer index)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Saves the current time (end time) with this event
+ *
+ ******************************************************************************/
+
+void
+UtEndEvent (
+    UINT32                  Event)
+{
+
+    AslGbl_Events[Event].EndTime = AcpiOsGetTimer();
 }
 
 
@@ -182,6 +229,7 @@ UINT8
 UtHexCharToValue (
     int                     hc)
 {
+
     if (hc <= 0x39)
     {
         return ((UINT8) (hc - 0x30));
@@ -226,6 +274,34 @@ UtConvertByteToHex (
 
 /*******************************************************************************
  *
+ * FUNCTION:    UtConvertByteToAsmHex
+ *
+ * PARAMETERS:  RawByte         - Binary data
+ *              *Buffer         - Pointer to where the hex bytes will be stored
+ *
+ * RETURN:      Ascii hex byte is stored in Buffer.
+ *
+ * DESCRIPTION: Perform hex-to-ascii translation.  The return data is prefixed
+ *              with "0x"
+ *
+ ******************************************************************************/
+
+void
+UtConvertByteToAsmHex (
+    UINT8                   RawByte,
+    UINT8                   *Buffer)
+{
+
+    Buffer[0] = '0';
+
+    Buffer[1] = hex[(RawByte >> 4) & 0xF];
+    Buffer[2] = hex[RawByte & 0xF];
+    Buffer[3] = 'h';
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    DbgPrint
  *
  * PARAMETERS:  Fmt             - Printf format string
@@ -254,7 +330,6 @@ DbgPrint (
         return 0;
     }
 
-
     if ((Type == ASL_PARSE_OUTPUT) &&
         (!(AslCompilerdebug)))
     {
@@ -262,7 +337,6 @@ DbgPrint (
     }
 
     vfprintf (stderr, Fmt, Args);
-
     va_end (Args);
     return 0;
 }
@@ -293,7 +367,6 @@ UtPrintFormattedName (
         "%*s %-16.16s", (3 * Level), " ",
         yytname[ParseOpcode-255]);
 
-
     if (Level < TEXT_OFFSET)
     {
         DbgPrint (ASL_TREE_OUTPUT,
@@ -318,6 +391,7 @@ char *
 UtGetOpName (
     UINT32                  ParseOpcode)
 {
+
     return (char *) yytname [ParseOpcode - 255];
 }
 
@@ -339,18 +413,21 @@ UtDisplaySummary (
     UINT32                  FileId)
 {
 
+    FlPrintFile (FileId,
+        "Compilation complete. %d Errors %d Warnings\n",
+         Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
 
-    FlPrintFile (FileId, "Compilation complete. %d Errors %d Warnings\n",
-                Gbl_ExceptionCount[ASL_ERROR],
-                Gbl_ExceptionCount[ASL_WARNING]);
-
-    FlPrintFile (FileId, "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
-                Gbl_InputFilename, Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
+    FlPrintFile (FileId,
+        "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
+        Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber,
+        Gbl_InputByteCount, TotalKeywords);
 
     if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
-        FlPrintFile (FileId, "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
-                    Gbl_OutputFilename, Gbl_TableLength, TotalNamedObjects, TotalExecutableOpcodes);
+        FlPrintFile (FileId,
+            "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
+            Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength,
+            TotalNamedObjects, TotalExecutableOpcodes);
     }
 }
 
@@ -398,11 +475,98 @@ UtCheckIntegerRange (
     {
         sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
         AslCompilererror (Buffer);
-        AcpiCmFree (Node);
+        TrReleaseNode (Node);
+
         return NULL;
     }
 
     return Node;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtGetStringBuffer
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Pointer to the buffer.  Aborts on allocation failure
+ *
+ * DESCRIPTION: Allocate a string buffer.  Bypass the local
+ *              dynamic memory manager for performance reasons (This has a
+ *              major impact on the speed of the compiler.)
+ *
+ ******************************************************************************/
+
+NATIVE_CHAR *
+UtGetStringBuffer (
+    UINT32                  Length)
+{
+    NATIVE_CHAR             *Buffer;
+
+
+    if ((Gbl_StringCacheNext + Length) >= Gbl_StringCacheLast)
+    {
+        Gbl_StringCacheNext = UtLocalCalloc (ASL_STRING_CACHE_SIZE + Length);
+        Gbl_StringCacheLast = Gbl_StringCacheNext + ASL_STRING_CACHE_SIZE + Length;
+    }
+
+    Buffer = Gbl_StringCacheNext;
+    Gbl_StringCacheNext += Length;
+
+    return (Buffer);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtInternalizeName
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Convert an external (ASL) name to an internal (AML) name
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+UtInternalizeName (
+    NATIVE_CHAR             *ExternalName,
+    NATIVE_CHAR             **ConvertedName)
+{
+    ACPI_NAMESTRING_INFO    Info;
+    ACPI_STATUS             Status;
+
+
+    if (!ExternalName)
+    {
+        return (AE_OK);
+    }
+
+    /* Get the length of the new internal name */
+
+    Info.ExternalName = ExternalName;
+    AcpiNsGetInternalNameLength (&Info);
+
+    /* We need a segment to store the internal  name */
+
+    Info.InternalName = UtGetStringBuffer (Info.Length);
+    if (!Info.InternalName)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    /* Build the name */
+
+    Status = AcpiNsBuildInternalName (&Info);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    *ConvertedName = Info.InternalName;
+    return (AE_OK);
 }
 
 
@@ -431,12 +595,11 @@ UtAttachNamepathToOwner (
 
     Node->ExternalName = NameNode->Value.String;
 
-    Status = AcpiNsInternalizeName (NameNode->Value.String, &Node->Namepath);
+    Status = UtInternalizeName (NameNode->Value.String, &Node->Namepath);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: abort on no memory */
     }
-
 }
 
 
@@ -490,13 +653,11 @@ UtStrtoul64 (
         sign = NEGATIVE;
         ++String;
     }
-
     else if (*String == '+')
     {
         ++String;
         sign = POSITIVE;
     }
-
     else
     {
         sign = POSITIVE;
@@ -515,19 +676,16 @@ UtStrtoul64 (
                 Base = 16;
                 ++String;
             }
-
             else
             {
                 Base = 8;
             }
         }
-
         else
         {
             Base = 10;
         }
     }
-
     else if (Base < 2 || Base > 36)
     {
         /*
@@ -553,7 +711,6 @@ UtStrtoul64 (
         String++;
     }
 
-
     /*
      * Main loop: convert the string to an unsigned long:
      */
@@ -563,7 +720,6 @@ UtStrtoul64 (
         {
             index = *String - '0';
         }
-
         else
         {
             index = toupper (*String);
@@ -571,7 +727,6 @@ UtStrtoul64 (
             {
                 index = index - 'A' + 10;
             }
-
             else
             {
                 goto done;
@@ -586,14 +741,12 @@ UtStrtoul64 (
         /*
          * Check to see if value is out of range:
          */
-
         if (ReturnValue > ((ACPI_INTEGER_MAX - (ACPI_INTEGER) index) /
                             (ACPI_INTEGER) Base))
         {
             Status = AE_ERROR;
             ReturnValue = 0L;           /* reset */
         }
-
         else
         {
             ReturnValue *= Base;
@@ -615,7 +768,6 @@ done:
         {
             *Terminator = (NATIVE_CHAR *) StringStart;
         }
-
         else
         {
             *Terminator = (NATIVE_CHAR *) String;

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.19 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -140,7 +140,7 @@
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 LnInitLengthsWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -148,6 +148,7 @@ LnInitLengthsWalk (
 {
 
     Node->AmlSubtreeLength = 0;
+    return (AE_OK);
 }
 
 
@@ -172,7 +173,7 @@ LnInitLengthsWalk (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 LnPackageLengthWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -193,6 +194,7 @@ LnPackageLengthWalk (
                                             Node->AmlPkgLenBytes +
                                             Node->AmlSubtreeLength);
     }
+    return (AE_OK);
 }
 
 
@@ -264,22 +266,18 @@ CgGetPackageLenByteCount (
     {
         return (1);
     }
-
     else if (PackageLength <= (0x00000FFF - 2))
     {
         return (2);
     }
-
     else if (PackageLength <= (0x000FFFFF - 3))
     {
         return (3);
     }
-
     else if (PackageLength <= (0x0FFFFFFF - 4))
     {
         return (4);
     }
-
     else
     {
         /* Fatal error - the package length is too large to encode */
@@ -310,14 +308,12 @@ CgGenerateAmlOpcodeLength (
     ASL_PARSE_NODE          *Node)
 {
 
-
     /* Check for two-byte opcode */
 
     if (Node->AmlOpcode > 0x00FF)
     {
         Node->AmlOpcodeLength = 2;
     }
-
     else
     {
         Node->AmlOpcodeLength = 1;
@@ -330,7 +326,6 @@ CgGenerateAmlOpcodeLength (
     {
         Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node, Node->AmlSubtreeLength);
     }
-
 
     /* Data opcode lengths are easy */
 
@@ -409,7 +404,6 @@ CgGenerateAmlLengths (
         return;
     }
 
-
     switch (Node->ParseOpcode)
     {
     case DEFINITIONBLOCK:
@@ -430,7 +424,7 @@ CgGenerateAmlLengths (
         }
 
         Node->AmlOpcodeLength = 0;
-        Status = AcpiNsInternalizeName (Node->Value.String, &Buffer);
+        Status = UtInternalizeName (Node->Value.String, &Buffer);
         if (ACPI_FAILURE (Status))
         {
             DbgPrint (ASL_DEBUG_OUTPUT,

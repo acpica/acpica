@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.56 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -220,7 +220,6 @@ AeAddToErrorLog (
         return;
     }
 
-
     /* List is sorted according to line number */
 
     if (!Gbl_ErrorLog)
@@ -328,11 +327,10 @@ AePrintException (
     {
         fprintf (OutputFile, "%s\n", Enode->Message);
     }
-
-    /* Decode the message ID */
-
     else
     {
+        /* Decode the message ID */
+
         fprintf (OutputFile, "%s %4.4d -",
                     AslErrorLevel[Enode->Level],
                     Enode->MessageId + ((Enode->Level+1) * 1000));
@@ -363,7 +361,6 @@ AePrintException (
                         (int) ((SourceColumn - 1) - ErrorColumn),
                         MainMessage, " ^ ");
                 }
-
                 else
                 {
                     fprintf (OutputFile, "%*s %s",
@@ -384,10 +381,8 @@ AePrintException (
             {
                 fprintf (OutputFile, " (%s)", ExtraMessage);
             }
-
             fprintf (OutputFile, "\n\n");
         }
-
         else
         {
             fprintf (OutputFile, " %s %s\n\n",
@@ -458,15 +453,15 @@ AslCommonError (
     ASL_ERROR_MSG           *Enode;
 
 
-    Enode           = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
+    Enode = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
 
     if (ExtraMessage)
     {
         /*
          * Allocate a buffer for the message and a new error node
          */
-        MessageSize     = strlen (ExtraMessage) + 1;
-        MessageBuffer   = UtLocalCalloc (MessageSize);
+        MessageSize   = strlen (ExtraMessage) + 1;
+        MessageBuffer = UtLocalCalloc (MessageSize);
 
         /*
          * Keep a copy of the extra message
@@ -474,14 +469,13 @@ AslCommonError (
         STRCPY (MessageBuffer, ExtraMessage);
     }
 
-
     /*
      * Initialize the error node
      */
     if (Filename)
     {
-        Enode->Filename             = Filename;
-        Enode->FilenameLength       = strlen (Filename);
+        Enode->Filename       = Filename;
+        Enode->FilenameLength = strlen (Filename);
         if (Enode->FilenameLength < 6)
         {
             Enode->FilenameLength = 6;
@@ -526,7 +520,6 @@ AslCommonError (
         CmCleanupAndExit ();
     }
 
-
     return Enode;
 }
 
@@ -563,7 +556,6 @@ AslError (
                         Node->Column,
                         Node->Filename, ExtraMessage);
     }
-
     else
     {
         AslCommonError (Level, MessageId, 0,

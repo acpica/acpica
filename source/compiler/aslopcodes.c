@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.24 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -139,15 +139,19 @@
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 OpcAmlOpcodeWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context)
 {
 
+    TotalParseNodes++;
+
     OpcGenerateAmlOpcode (Node);
     OpnGenerateAmlOperands (Node);
+
+    return (AE_OK);
 }
 
 
@@ -177,19 +181,16 @@ OpcSetOptimalIntegerSize (
         Node->AmlOpcode = AML_BYTE_OP;
         return 1;
     }
-
     else if (Node->Value.Integer <= ACPI_UINT16_MAX)
     {
         Node->AmlOpcode = AML_WORD_OP;
         return 2;
     }
-
     else if (Node->Value.Integer <= ACPI_UINT32_MAX)
     {
         Node->AmlOpcode = AML_DWORD_OP;
         return 4;
     }
-
     else
     {
         Node->AmlOpcode = AML_QWORD_OP;
@@ -269,9 +270,7 @@ OpcDoUnicode (
     BufferLengthNode = Node->Child;
     InitializerNode = BufferLengthNode->Peer;
 
-
     AsciiString = InitializerNode->Value.String;
-
 
     Count = strlen (AsciiString);
     Length = (Count * 2)  + sizeof (UINT16);
@@ -282,19 +281,17 @@ OpcDoUnicode (
         UnicodeString[i] = AsciiString[i];
     }
 
-    AcpiCmFree (AsciiString);
+    ACPI_MEM_FREE (AsciiString);
 
     /*
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-
     BufferLengthNode->ParseOpcode   = INTEGER;
     BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
     BufferLengthNode->Value.Integer = Length;
 
     OpcSetOptimalIntegerSize (BufferLengthNode);
-
 
     InitializerNode->Value.Pointer  = UnicodeString;
     InitializerNode->AmlOpcode      = AML_RAW_DATA_BUFFER;
@@ -374,11 +371,10 @@ OpcGenerateAmlOpcode (
     ASL_PARSE_NODE          *Node)
 {
 
-    UINT16                  Index = Node->ParseOpcode;
+    UINT16                  Index;
 
 
     Index = (UINT16) (Node->ParseOpcode - ASL_PARSE_OPCODE_BASE);
-
 
     Node->AmlOpcode  = AslKeywordMapping[Index].AmlOpcode;
     Node->AcpiBtype  = AslKeywordMapping[Index].AcpiBtype;
@@ -388,7 +384,6 @@ OpcGenerateAmlOpcode (
     {
         Node->Value.Integer = AslKeywordMapping[Index].Value;
     }
-
 
     /* Special handling for some opcodes */
 
@@ -426,6 +421,17 @@ OpcGenerateAmlOpcode (
         Node->Child->ParseOpcode = DEFAULT_ARG;
         Node->Child->Peer->ParseOpcode = DEFAULT_ARG;
         break;
+
+    case PACKAGE:
+        /*
+         * The variable-length package has a different opcode
+         */
+        if ((Node->Child->ParseOpcode != DEFAULT_ARG) &&
+            (Node->Child->ParseOpcode != INTEGER)     &&
+            (Node->Child->ParseOpcode != BYTECONST))
+        {
+            Node->AmlOpcode = AML_VAR_PACKAGE_OP;
+        }
     }
 
     return;

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.28 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,6 +122,35 @@
 #define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("asltree")
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrGetNextNode
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      New parse node.  Aborts on allocation failure
+ *
+ * DESCRIPTION: Allocate a new parse node for the parse tree.  Bypass the local
+ *              dynamic memory manager for performance reasons (This has a
+ *              major impact on the speed of the compiler.)
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE *
+TrGetNextNode (void)
+{
+
+    if (Gbl_NodeCacheNext >= Gbl_NodeCacheLast)
+    {
+        Gbl_NodeCacheNext = UtLocalCalloc (sizeof (ASL_PARSE_NODE) * ASL_NODE_CACHE_SIZE);
+        Gbl_NodeCacheLast = Gbl_NodeCacheNext + ASL_NODE_CACHE_SIZE;
+    }
+
+    return (Gbl_NodeCacheNext++);
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    TrAllocateNode
@@ -141,10 +170,10 @@ TrAllocateNode (
     ASL_PARSE_NODE          *Node;
 
 
-    Node = UtLocalCalloc (sizeof (ASL_PARSE_NODE));
+    Node = TrGetNextNode ();
 
     Node->ParseOpcode       = (UINT16) ParseOpcode;
-    Node->Filename          = Gbl_InputFilename;
+    Node->Filename          = Gbl_Files[ASL_FILE_INPUT].Filename;
     Node->LineNumber        = Gbl_CurrentLineNumber;
     Node->LogicalLineNumber = Gbl_LogicalLineNumber;
     Node->LogicalByteOffset = Gbl_CurrentLineOffset;
@@ -153,6 +182,26 @@ TrAllocateNode (
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
 
     return Node;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrReleaseNode
+ *
+ * PARAMETERS:  Node            - Node to be released
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: "release" a node.  In truth, nothing is done since the node
+ *              is part of a larger buffer
+ *
+ ******************************************************************************/
+
+void
+TrReleaseNode (
+    ASL_PARSE_NODE          *Node)
+{
 }
 
 
@@ -194,12 +243,10 @@ TrUpdateNode (
     Node->ParseOpcode = (UINT16) ParseOpcode;
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
 
-
     /*
      * For the BYTE, WORD, and DWORD constants, make sure that the integer
      * that was passed in will actually fit into the data type
      */
-
     switch (ParseOpcode)
     {
     case BYTECONST:
@@ -214,7 +261,6 @@ TrUpdateNode (
         Node = UtCheckIntegerRange (Node, 0x00, ACPI_UINT32_MAX);
         break;
     }
-
 
     return Node;
 }
@@ -239,7 +285,6 @@ TrSetNodeFlags (
     UINT32                  Flags)
 {
 
-
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nSetNodeFlags: Node %p, %d\n\n", Node, Flags);
 
@@ -249,7 +294,6 @@ TrSetNodeFlags (
     }
 
     Node->Flags |= Flags;
-
     return Node;
 }
 
@@ -281,7 +325,6 @@ TrSetEndLineNumber (
 
     Node->EndLine        = Gbl_CurrentLineNumber;
     Node->EndLogicalLine = Gbl_LogicalLineNumber;
-
 }
 
 
@@ -375,7 +418,6 @@ TrCreateValuedLeafNode (
     }
 
     DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
-
     return Node;
 }
 
@@ -450,14 +492,12 @@ TrCreateNode (
         Child = va_arg (ap, ASL_PARSE_NODE *);
         DbgPrint (ASL_PARSE_OUTPUT, "%p, ", Child);
 
-
         /*
          * If child is NULL, this means that an optional argument
          * was omitted.  We must create a placeholder with a special
          * opcode (DEFAULT_ARG) so that the code generator will know
          * that it must emit the correct default for this argument
          */
-
         if (!Child)
         {
             Child = TrAllocateNode (DEFAULT_ARG);
@@ -470,7 +510,6 @@ TrCreateNode (
             FirstChild = FALSE;
             Node->Child = Child;
         }
-
 
         /* Point all children to parent */
 
@@ -487,7 +526,6 @@ TrCreateNode (
          * This child might be a list, point all nodes in the list
          * to the same parent
          */
-
         while (Child->Peer)
         {
             Child = Child->Peer;
@@ -499,8 +537,6 @@ TrCreateNode (
     va_end(ap);
 
     DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
-
-
     return Node;
 }
 
@@ -539,8 +575,8 @@ TrLinkChildren (
     TrSetEndLineNumber (Node);
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nLinkChildren  Line %d NewParent %p Child %d Op %s  ",
-        Node->LineNumber,
+        "\nLinkChildren  Line [%d to %d] NewParent %p Child %d Op %s  ",
+        Node->LineNumber, Node->EndLine,
         Node, NumChildren, UtGetOpName(Node->ParseOpcode));
     RootNode = Node;
 
@@ -559,7 +595,6 @@ TrLinkChildren (
         break;
     }
 
-
     /* Link the new node to it's children */
 
     PrevChild = NULL;
@@ -567,8 +602,14 @@ TrLinkChildren (
     for (i = 0; i < NumChildren; i++)
     {
         Child = va_arg (ap, ASL_PARSE_NODE *);
-        DbgPrint (ASL_PARSE_OUTPUT, "%p, ", Child);
 
+        if ((Child == PrevChild) && (Child != NULL))
+        {
+            AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Child, "Child node list invalid");
+            return Node;
+        }
+
+        DbgPrint (ASL_PARSE_OUTPUT, "%p, ", Child);
 
         /*
          * If child is NULL, this means that an optional argument
@@ -576,7 +617,6 @@ TrLinkChildren (
          * opcode (DEFAULT_ARG) so that the code generator will know
          * that it must emit the correct default for this argument
          */
-
         if (!Child)
         {
             Child = TrAllocateNode (DEFAULT_ARG);
@@ -589,7 +629,6 @@ TrLinkChildren (
             FirstChild = FALSE;
             Node->Child = Child;
         }
-
 
         /* Point all children to parent */
 
@@ -606,20 +645,16 @@ TrLinkChildren (
          * This child might be a list, point all nodes in the list
          * to the same parent
          */
-
         while (Child->Peer)
         {
             Child = Child->Peer;
             Child->Parent = Node;
         }
-
         PrevChild = Child;
     }
     va_end(ap);
 
     DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
-
-
     return Node;
 }
 
@@ -669,12 +704,11 @@ TrLinkPeerNode (
         return Node2;
     }
 
-
     if (Node1 == Node2)
     {
         DbgPrint (ASL_DEBUG_OUTPUT,
             "\n\n************* Internal error, linking node to itself %p\n\n\n", Node1);
-        printf ("Internal error, linking node to itself\n");
+        AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Node1, "Linking node to itself");
         return Node1;
     }
 
@@ -685,7 +719,6 @@ TrLinkPeerNode (
      * so we must walk to the end of the list and attach the new
      * peer at the end
      */
-
     Next = Node1;
     while (Next->Peer)
     {
@@ -693,7 +726,6 @@ TrLinkPeerNode (
     }
 
     Next->Peer = Node2;
-
     return Node1;
 }
 
@@ -726,7 +758,6 @@ TrLinkPeerNodes (
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nLinkPeerNodes: (%d) ", NumPeers);
 
-
     va_start (ap, NumPeers);
     This = va_arg (ap, ASL_PARSE_NODE *);
     Start = This;
@@ -756,7 +787,6 @@ TrLinkPeerNodes (
         This->Peer = Next;
         This = Next;
     }
-
 
     DbgPrint (ASL_PARSE_OUTPUT,"\n\n");
     return (Start);
@@ -806,7 +836,6 @@ TrLinkChildNode (
     }
 
     return Node1;
-
 }
 
 
@@ -842,7 +871,6 @@ TrWalkParseTree (
         return;
     }
 
-
     Level = 0;
     NodePreviouslyVisited = FALSE;
 
@@ -852,7 +880,6 @@ TrWalkParseTree (
 
         while (Node)
         {
-
             if (!NodePreviouslyVisited)
             {
                 /*
@@ -877,11 +904,10 @@ TrWalkParseTree (
                 Node = Node->Peer;
                 NodePreviouslyVisited = FALSE;
             }
-
-            /* No children or peers, re-visit parent */
-
             else
             {
+                /* No children or peers, re-visit parent */
+
                 if (Level != 0 )
                 {
                     Level--;
@@ -898,7 +924,6 @@ TrWalkParseTree (
 
         while (Node)
         {
-
             /* Visit leaf node (no children) or parent node on return trip */
 
             if ((!Node->Child) ||
@@ -910,11 +935,10 @@ TrWalkParseTree (
                  */
                 AscendingCallback (Node, Level, Context);
             }
-
-            /* Visit children first, once */
-
             else
             {
+                /* Visit children first, once */
+
                 Level++;
                 Node = Node->Child;
                 continue;
@@ -927,11 +951,10 @@ TrWalkParseTree (
                 Node = Node->Peer;
                 NodePreviouslyVisited = FALSE;
             }
-
-            /* No children or peers, re-visit parent */
-
             else
             {
+                /* No children or peers, re-visit parent */
+
                 if (Level != 0 )
                 {
                     Level--;
@@ -940,19 +963,17 @@ TrWalkParseTree (
                 NodePreviouslyVisited = TRUE;
             }
         }
-
         break;
+
 
      case ASL_WALK_VISIT_TWICE:
 
         while (Node)
         {
-
             if (NodePreviouslyVisited)
             {
                 AscendingCallback (Node, Level, Context);
             }
-
             else
             {
                 /*
@@ -977,11 +998,10 @@ TrWalkParseTree (
                 Node = Node->Peer;
                 NodePreviouslyVisited = FALSE;
             }
-
-            /* No children or peers, re-visit parent */
-
             else
             {
+                /* No children or peers, re-visit parent */
+
                 if (Level != 0 )
                 {
                     Level--;
@@ -990,7 +1010,6 @@ TrWalkParseTree (
                 NodePreviouslyVisited = TRUE;
             }
         }
-
         break;
     }
 }
