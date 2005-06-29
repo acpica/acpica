@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -142,6 +142,15 @@
 FADT_DESCRIPTOR             LocalFADT;
 ACPI_COMMON_FACS            LocalFACS;
 
+#ifdef _IA16
+ACPI_STATUS
+AcpiGetIrqRoutingTable  (
+    ACPI_HANDLE             DeviceHandle,
+    ACPI_BUFFER             *RetBuffer)
+{
+    return AE_NOT_IMPLEMENTED;
+}
+#endif
 
 /******************************************************************************
  *
