@@ -106,17 +106,6 @@
 #define _COMPONENT          NAMESPACE
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "NsPushCurrentScope: null scope passed", "NsPushCurrentScope: null scope passed"},
-    {"0001", 'W', "NsPushCurrentScope: type code out of range", "NsPushCurrentScope: type code out of range"},
-    {"0002", '1', "Scope stack overflow", "Scope stack overflow"},
-    {"0003", '1', "NsPushMethodScope: null scope passed", "NsPushMethodScope: null scope passed"},
-    {"0004", '1', "Scope stack overflow", "Scope stack overflow"},
-    {"0005", 'W', "NsPopCurrent: type code out of range", "NsPopCurrent: type code out of range"},
-    {NULL, 'I', NULL, NULL}
-};
-
-
 
 /****************************************************************************
  *
@@ -143,7 +132,7 @@ NsPushCurrentScope (
     {
         /*  invalid scope   */
 
-        REPORT_ERROR (&KDT[0]);
+        REPORT_ERROR ("NsPushCurrentScope: null scope passed");
     }
 
     else
@@ -153,7 +142,7 @@ NsPushCurrentScope (
         {
             /*  type code out of range  */
 
-            REPORT_WARNING (&KDT[1]);
+            REPORT_WARNING ("NsPushCurrentScope: type code out of range");
         }
 
         if (CurrentScope < &ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
@@ -169,7 +158,7 @@ NsPushCurrentScope (
         {
             /*  Scope stack overflow    */
 
-            REPORT_ERROR (&KDT[2]);
+            REPORT_ERROR ("Scope stack overflow");
         }
     }
 
@@ -201,7 +190,7 @@ NsPushMethodScope (
     {
         /*  NewScope or NewScope->Scope invalid    */
 
-        REPORT_ERROR (&KDT[3]);
+        REPORT_ERROR ("NsPushMethodScope: null scope passed");
     }
 
     else
@@ -215,7 +204,7 @@ NsPushMethodScope (
         {
             /*  scope stack overflow    */
 
-            REPORT_ERROR (&KDT[4]);
+            REPORT_ERROR ("Scope stack overflow");
         }
     }
 
@@ -253,7 +242,7 @@ NsPopCurrent (
     {
         /*  type code out of range  */
 
-        REPORT_WARNING (&KDT[5]);
+        REPORT_WARNING ("NsPopCurrent: type code out of range");
     }
 
     DEBUG_PRINT (TRACE_EXEC, ("Popping Scope till type (%d) is found\n", Type));
