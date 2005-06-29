@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -155,6 +155,7 @@ AcpiExSetupField (
 
     FUNCTION_TRACE_U32 ("ExSetupField", FieldDatumByteOffset);
 
+    RgnDesc = ObjDesc->CommonField.RegionObj;
 
     if (ACPI_TYPE_REGION != RgnDesc->Common.Type)
     {
