@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.64 $
+ *       $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -182,11 +182,14 @@ AcpiEvGpeDetect (
  * AcpiEvnotify - Device Notify handling and dispatch
  */
 
-void
-AcpiEvNotifyDispatch (
-    ACPI_HANDLE             Device,
+ACPI_STATUS
+AcpiEvQueueNotifyRequest (
+    ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue);
 
+void
+AcpiEvNotifyDispatch (
+    void                    *Context);
 
 /*
  * AcpiEvregion - Address Space handling
