@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.168 $
+ *              $Revision: 1.169 $
  *
  ******************************************************************************/
 
@@ -198,6 +198,17 @@ AcpiNsRootInitialize (void)
          */
         if (InitVal->Val)
         {
+            ACPI_STRING Val;
+
+            Status = AcpiOsPredefinedOverride(InitVal, &Val);
+            if (ACPI_FAILURE (Status))
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not override predefined %s\n",
+                    InitVal->Name));
+            }
+            if (Val == NULL)
+            Val = InitVal->Val;
+
             /*
              * Entry requests an initial value, allocate a
              * descriptor for it.
@@ -218,7 +229,7 @@ AcpiNsRootInitialize (void)
             {
             case ACPI_TYPE_METHOD:
                 ObjDesc->Method.ParamCount =
-                        (UINT8) ACPI_STRTOUL (InitVal->Val, NULL, 10);
+                        (UINT8) ACPI_STRTOUL (Val, NULL, 10);
                 ObjDesc->Common.Flags |= AOPOBJ_DATA_VALID;
 
 #if defined (ACPI_NO_METHOD_EXECUTION) || defined (ACPI_CONSTANT_EVAL_ONLY)
@@ -232,7 +243,7 @@ AcpiNsRootInitialize (void)
             case ACPI_TYPE_INTEGER:
 
                 ObjDesc->Integer.Value =
-                        (ACPI_INTEGER) ACPI_STRTOUL (InitVal->Val, NULL, 10);
+                        (ACPI_INTEGER) ACPI_STRTOUL (Val, NULL, 10);
                 break;
 
 
@@ -241,8 +252,8 @@ AcpiNsRootInitialize (void)
                 /*
                  * Build an object around the static string
                  */
-                ObjDesc->String.Length = (UINT32) ACPI_STRLEN (InitVal->Val);
-                ObjDesc->String.Pointer = InitVal->Val;
+                ObjDesc->String.Length = (UINT32) ACPI_STRLEN (Val);
+                ObjDesc->String.Pointer = Val;
                 ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
                 break;
 
@@ -251,7 +262,7 @@ AcpiNsRootInitialize (void)
 
                 ObjDesc->Mutex.Node = NewNode;
                 ObjDesc->Mutex.SyncLevel =
-                            (UINT16) ACPI_STRTOUL (InitVal->Val, NULL, 10);
+                            (UINT16) ACPI_STRTOUL (Val, NULL, 10);
 
                 if (ACPI_STRCMP (InitVal->Name, "_GL_") == 0)
                 {
