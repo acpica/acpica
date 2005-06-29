@@ -110,7 +110,12 @@
 #endif
 
 
-/* Acpi table pointers */
+
+/*****************************************************************************
+ * 
+ * ACPI Table globals 
+ *
+ ****************************************************************************/
 
 ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      * RSDP;
 ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       * RSDT;
@@ -129,90 +134,55 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * SSDT;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
 
 
-/* Misc Globals */
 
+/*****************************************************************************
+ * 
+ * Miscellaneous globals 
+ *
+ ****************************************************************************/
 
-ACPI_EXTERN BOOLEAN     GlobalLockSet;
-ACPI_EXTERN INT32       Capabilities;
-ACPI_EXTERN INT32       NameStringSize;
-ACPI_EXTERN char        *NameString;    /* Runtime AML error message communication */
+ACPI_EXTERN BOOLEAN             GlobalLockSet;
+ACPI_EXTERN INT32               Capabilities;
+ACPI_EXTERN INT32               NameStringSize;
+ACPI_EXTERN char                *NameString;        /* Runtime AML error message communication */
 
-ACPI_EXTERN INT32       RestoreAcpiChipset;
-ACPI_EXTERN UINT16      Pm1EnableRegisterSave;
-ACPI_EXTERN UINT8       *Gpe0EnableRegisterSave;
-ACPI_EXTERN UINT8       *Gpe1EnableRegisterSave;
-ACPI_EXTERN INT32       OriginalMode;
-ACPI_EXTERN INT32       EdgeLevelSave;
-ACPI_EXTERN INT32       IrqEnableSave;
-ACPI_EXTERN INT32       OriginalMode;
-extern char             *ExceptionNames[];
+ACPI_EXTERN INT32               RestoreAcpiChipset;
+ACPI_EXTERN UINT16              Pm1EnableRegisterSave;
+ACPI_EXTERN UINT8               *Gpe0EnableRegisterSave;
+ACPI_EXTERN UINT8               *Gpe1EnableRegisterSave;
+ACPI_EXTERN INT32               OriginalMode;
+ACPI_EXTERN INT32               EdgeLevelSave;
+ACPI_EXTERN INT32               IrqEnableSave;
+ACPI_EXTERN INT32               OriginalMode;
+extern char                     *ExceptionNames[];
 
 /* File I/O globals */
 
-ACPI_EXTERN char        *DsdtFile;
-ACPI_EXTERN char        *OutputFile;
-ACPI_EXTERN char        *InputFile;
+ACPI_EXTERN char                *DsdtFile;
+ACPI_EXTERN char                *OutputFile;
+ACPI_EXTERN char                *InputFile;
 
-ACPI_EXTERN INT32       AcpiLibInitStatus;
-ACPI_EXTERN INT32       AcpiHook;           /* strong link that lives in acpilibv.c */
-
-/* 
- * Namespace globals 
- */
-
-ACPI_EXTERN INT32       NamedObjectErr;     /* Use to indicate if inc_error should be called */
-ACPI_EXTERN nte         RootObjStruct;
-ACPI_EXTERN nte         *RootObject;
-
-/* Base of AML block, and pointer to current location in it */
-
-ACPI_EXTERN UINT8       *PCodeBase;
-ACPI_EXTERN UINT8       *PCode;
-
-/* 
- * Length of AML block, and remaining length of current package.
- * PCodeBlockLen is used in IsInPCodeBlock()
- */
-ACPI_EXTERN INT32       PCodeBlockLen;
-ACPI_EXTERN INT32       PCodeLen;
-
-/* 
- * Interpreter globals 
- */
-
-ACPI_EXTERN UINT32      BufSeq;         /* Counts allocated Buffer descriptors */
-ACPI_EXTERN INT32       SkipField;
-ACPI_EXTERN INT32       LastPkgLen;
-ACPI_EXTERN UINT8       LastFieldFlag;
-
-/* 
- * global handle to the last method found
- * used during pass1 of load 
- */
-
-ACPI_EXTERN NsHandle    LastMethod;
-
+ACPI_EXTERN INT32               AcpiLibInitStatus;
+ACPI_EXTERN INT32               AcpiHook; 
 
 /* Procedure nesting level for debug output */
 
-ACPI_EXTERN UINT32      NestingLevel;
-
-
-
-/* These must not be ACPI_EXTERN since they need explicit initialization */
+ACPI_EXTERN UINT32              NestingLevel;
 
 /* Runtime configuration of debug print levels */
 
-extern UINT32           DebugLevel;
-extern UINT32           DebugLayer;
+extern UINT32                   DebugLevel;
+extern UINT32                   DebugLayer;
+
+extern char                     *FENames[];
 
 
-/* Interpreter globals */
 
-extern char             *FENames[];
-
-
-/* Namespace globals */
+/*****************************************************************************
+ * 
+ * Namespace globals 
+ *
+ ****************************************************************************/
 
 #define NUM_NS_TYPES            37
 #define NUM_PREDEFINED_NAMES    9
@@ -225,7 +195,17 @@ extern INT32                    NsProperties[NUM_NS_TYPES];
 extern PREDEFINED_NAMES         PreDefinedNames [NUM_PREDEFINED_NAMES];
 
 
-/* Interpreter globals */
+ACPI_EXTERN INT32               NamedObjectErr;     /* indicate if inc_error should be called */
+ACPI_EXTERN nte                 RootObjStruct;
+ACPI_EXTERN nte                 *RootObject;
+
+
+
+/*****************************************************************************
+ * 
+ * Interpreter globals 
+ *
+ ****************************************************************************/
 
 extern INT32                    PkgStackLevel;
 extern INT32                    PkgStack_Len[AML_PKG_MAX_NEST];
@@ -237,7 +217,6 @@ extern INT32                    ObjStackTop;
  * Method Stack, containing locals and args
  * per level, 0-7 are Local# and 8-14 are Arg#
  */
-
 #define LCLBASE                 0
 #define NUMLCL                  8
 #define ARGBASE                 (LCLBASE+NUMLCL)
@@ -247,12 +226,46 @@ extern INT32                    ObjStackTop;
 extern OBJECT_DESCRIPTOR        *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
 extern INT32                    MethodStackTop;
 
+/* Base of AML block, and pointer to current location in it */
 
-/* Event globals */
+ACPI_EXTERN UINT8               *PCodeBase;
+ACPI_EXTERN UINT8               *PCode;
 
-extern UINT32                   SciHandle;
+/* 
+ * Length of AML block, and remaining length of current package.
+ * PCodeBlockLen is used in IsInPCodeBlock()
+ */
+ACPI_EXTERN INT32               PCodeBlockLen;
+ACPI_EXTERN INT32               PCodeLen;
+
+ACPI_EXTERN UINT32              BufSeq;             /* Counts allocated Buffer descriptors */
+ACPI_EXTERN INT32               SkipField;
+ACPI_EXTERN INT32               LastPkgLen;
+ACPI_EXTERN UINT8               LastFieldFlag;
+
+/* 
+ * Handle to the last method found
+ * used during pass1 of load 
+ */
+ACPI_EXTERN NsHandle            LastMethod;
+
+
+
+
+/*****************************************************************************
+ * 
+ * Event globals 
+ *
+ ****************************************************************************/
+
 extern UINT32         	        EventCount[NUM_FIXED_EVENTS];   
 extern FIXED_EVENT_HANDLER      FixedEventHandlers[NUM_FIXED_EVENTS];
+
+ACPI_EXTERN UINT32              SciHandle;
+ACPI_EXTERN UINT32              GpeRegisterCount;
+ACPI_EXTERN GPE_INFO            *GpeInfo;
+ACPI_EXTERN GPE_HANDLERS        *GpeDispatch;
+
 
 
 #endif /* __GLOBALS_H__ */
