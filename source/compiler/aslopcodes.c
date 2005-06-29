@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.25 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -146,6 +146,8 @@ OpcAmlOpcodeWalk (
     void                    *Context)
 {
 
+    TotalParseNodes++;
+
     OpcGenerateAmlOpcode (Node);
     OpnGenerateAmlOperands (Node);
 
@@ -284,7 +286,7 @@ OpcDoUnicode (
         UnicodeString[i] = AsciiString[i];
     }
 
-    AcpiCmFree (AsciiString);
+    AcpiUtFree (AsciiString);
 
     /*
      * Just set the buffer size node to be the buffer length, regardless
