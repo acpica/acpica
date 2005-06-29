@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: ieregion - ACPI default OpRegion (address space) handlers
+ * Module Name: amregion - ACPI default OpRegion (address space) handlers
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *****************************************************************************/
 
 
-#define __IEREGION_C__
+#define __AMREGION_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ieregion");
+        MODULE_NAME         ("amregion");
 
 
 /*****************************************************************************
@@ -184,7 +184,6 @@ AcpiAmlSystemMemorySpaceHandler (
     }
 
 
-
     /* Does the request fit into the cached memory mapping? */
 
     if (((char *) Address < MemInfo->MappedPhysicalAddress) ||                                       /* Address is below the current mapping */
@@ -238,11 +237,11 @@ AcpiAmlSystemMemorySpaceHandler (
             break;
 
         case 16:
-            STORE16TO32 (Value, LogicalAddrPtr);
+            MOVE_UNALIGNED16_TO_32 (Value, LogicalAddrPtr);
             break;
 
         case 32:
-            STORE32TO32 (Value, LogicalAddrPtr);
+            MOVE_UNALIGNED32_TO_32 (Value, LogicalAddrPtr);
             break;
         }
 
@@ -261,11 +260,11 @@ AcpiAmlSystemMemorySpaceHandler (
             break;
 
         case 16:
-            STORE16TO16 (LogicalAddrPtr, Value);
+            MOVE_UNALIGNED16_TO_16 (LogicalAddrPtr, Value);
             break;
 
         case 32:
-            STORE32TO32 (LogicalAddrPtr, Value);
+            MOVE_UNALIGNED32_TO_32 (LogicalAddrPtr, Value);
             break;
         }
 
