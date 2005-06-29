@@ -277,7 +277,7 @@ NsDeleteNamespace (void)
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (TYPE_Any, ParentHandle, ChildHandle, &ChildHandle)))
+        if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle, &ChildHandle)))
         {
             /* Found an object - delete the object within the Value field */
 
@@ -285,7 +285,7 @@ NsDeleteNamespace (void)
 
             /* Check if this object has any children */
 
-            if (ACPI_SUCCESS (AcpiGetNextObject (TYPE_Any, ChildHandle, 0, &Dummy)))
+            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ChildHandle, 0, &Dummy)))
             {
                 /* There is at least one child of this object, visit the object */
 
@@ -325,9 +325,12 @@ NsDeleteNamespace (void)
         }
     }
 
+    /* Detach any object(s) attached to the root */
+    
+    NsDetachObject (Gbl_RootObject);
+    Gbl_RootObject->Scope = NULL;
 
     REPORT_SUCCESS ("Entire namespace and objects deleted");
-    Gbl_RootObject->Scope = NULL;
 
     return_ACPI_STATUS (AE_OK); 
 }
@@ -498,6 +501,57 @@ NsDeleteAcpiTable (
 
 /****************************************************************************
  *
+ * FUNCTION:    NsDeleteSingleTable
+ *
+ * PARAMETERS:  TableInfo           - A table info struct
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Free the memory associated with an internal ACPI table that
+ *              is either installed or has never been installed.
+ *
+ ***************************************************************************/
+
+void
+NsDeleteSingleTable (
+    ACPI_TABLE_DESC         *TableDesc)
+{
+
+    if (!TableDesc)
+    {
+        return;
+    }
+
+
+    if (TableDesc->Pointer)
+    {
+        /* Valid table, determine type of memory allocation */
+
+        switch (TableDesc->Allocation)
+        {
+
+        case ACPI_MEM_NOT_ALLOCATED:
+
+            break;
+
+
+        case ACPI_MEM_ALLOCATED:
+
+            CmFree (TableDesc->Pointer);
+            break;
+
+
+        case ACPI_MEM_MAPPED:
+
+            OsdUnMapMemory (TableDesc->Pointer, TableDesc->Length);
+            break;
+        }
+    }
+}
+
+
+/****************************************************************************
+ *
  * FUNCTION:    NsFreeAcpiTable
  *
  * PARAMETERS:  TableInfo           - A table info struct
@@ -532,34 +586,15 @@ NsFreeAcpiTable (
 
     for (i = 0; i < Count; i++)
     {
-        if (TableDesc->Pointer)
-        {
-            /* Valid table, determine type of memory */
+        NsDeleteSingleTable (TableDesc);
 
-            switch (TableDesc->Allocation)
-            {
-
-            case ACPI_MEM_NOT_ALLOCATED:
-
-                break;
-
-
-            case ACPI_MEM_ALLOCATED:
-
-                CmFree (TableDesc->Pointer);
-                break;
-
-
-            case ACPI_MEM_MAPPED:
-
-                OsdUnMapMemory (TableDesc->Pointer, TableDesc->Length);
-                break;
-            }
-        }
 
         /* Move to the next, delete the current descriptor */
 
         TableDesc = TableDesc->Next;
+
+        /* Don't delete the list head, but delete all linked descriptors */
+
         if (i > 0)
         {
             CmFree (TableDesc->Prev);
