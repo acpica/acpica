@@ -99,7 +99,8 @@
 #define _OUTPUT_H
 
 #include "acpiobj.h"
-
+#include "globals.h"
+#include "common.h"
 
 /*
  * Debug levels and component IDs.  These are used to control the
@@ -154,6 +155,7 @@
 
 #define VERBOSE_INFO                0x01000000
 #define VERBOSE_TABLES              0x02000000
+#define VERBOSE_EVENTS              0x08000000
 
 /* Defaults for DebugLevel, debug and normal */
 
