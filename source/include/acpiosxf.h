@@ -186,6 +186,11 @@ AcpiOsGetRootPointer (
     ACPI_POINTER            *Address);
 
 ACPI_STATUS
+AcpiOsPredefinedOverride (
+	const ACPI_PREDEFINED_NAMES *InitVal,
+	ACPI_STRING                 *NewVal);
+
+ACPI_STATUS
 AcpiOsTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
     ACPI_TABLE_HEADER       **NewTable);
