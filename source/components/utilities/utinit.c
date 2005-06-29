@@ -665,7 +665,7 @@ CmHardwareInitialize (void)
 
     case (SYS_MODE_ACPI | SYS_MODE_LEGACY):
 
-        if (AcpiGetMode () == SYS_MODE_ACPI)
+        if (HwGetMode () == SYS_MODE_ACPI)
         {
             OriginalMode = SYS_MODE_ACPI;
         }
