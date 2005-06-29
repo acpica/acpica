@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -516,7 +516,6 @@ AcpiExConvertToString (
 {
     ACPI_OPERAND_OBJECT     *RetDesc;
     UINT32                  i;
-    UINT32                  Index;
     UINT32                  StringLength;
     UINT8                   *NewBuf;
     UINT8                   *Pointer;
@@ -593,10 +592,17 @@ AcpiExConvertToString (
 
     case ACPI_TYPE_BUFFER:
 
-        StringLength = ObjDesc->Buffer.Length * 3;
-        if (Base == 10)
+        /* Find the string length */
+
+        Pointer = ObjDesc->Buffer.Pointer;
+        for (StringLength = 0; StringLength < ObjDesc->Buffer.Length; StringLength++)
         {
-            StringLength = ObjDesc->Buffer.Length * 4;
+            /* Exit on null terminator */
+
+            if (!Pointer[StringLength])
+            {
+                break;
+            }
         }
 
         if (MaxLength > ACPI_MAX_STRING_CONVERSION)
@@ -632,24 +638,15 @@ AcpiExConvertToString (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        /*
-         * Convert each byte of the buffer to two ASCII characters plus a space.
-         */
-        Pointer = ObjDesc->Buffer.Pointer;
-        Index = 0;
-        for (i = 0, Index = 0; i < ObjDesc->Buffer.Length; i++)
-        {
-            Index += AcpiExConvertToAscii ((ACPI_INTEGER) Pointer[i], Base, &NewBuf[Index], 1);
+        /* Copy the appropriate number of buffer characters */
 
-            NewBuf[Index] = ' ';
-            Index++;
-        }
+        ACPI_MEMCPY (NewBuf, Pointer, StringLength);
 
         /* Null terminate */
 
-        NewBuf [Index-1] = 0;
+        NewBuf [StringLength] = 0;
         RetDesc->Buffer.Pointer = NewBuf;
-        RetDesc->String.Length = (UINT32) ACPI_STRLEN ((char *) NewBuf);
+        RetDesc->String.Length = StringLength;
         break;
 
 
