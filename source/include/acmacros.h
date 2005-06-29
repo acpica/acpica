@@ -351,7 +351,7 @@
 
 #ifdef ACPI_DEBUG
 
-#define MODULE_NAME(name)               static INT8 *_THIS_MODULE = name
+#define MODULE_NAME(name)               static char *_THIS_MODULE = name
 
 /*
  * Function entry tracing.
@@ -359,13 +359,13 @@
  * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
  */
 
-#define FUNCTION_TRACE(a)               INT8 * _ProcName = a;\
+#define FUNCTION_TRACE(a)               char * _ProcName = a;\
                                         FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define FUNCTION_TRACE_PTR(a,b)         INT8 * _ProcName = a;\
+#define FUNCTION_TRACE_PTR(a,b)         char * _ProcName = a;\
                                         FunctionTracePtr(_THIS_MODULE,__LINE__,_COMPONENT,a,(void *)b)
-#define FUNCTION_TRACE_U32(a,b)         INT8 * _ProcName = a;\
+#define FUNCTION_TRACE_U32(a,b)         char * _ProcName = a;\
                                         FunctionTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
-#define FUNCTION_TRACE_STR(a,b)         INT8 * _ProcName = a;\
+#define FUNCTION_TRACE_STR(a,b)         char * _ProcName = a;\
                                         FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(INT8 *)b)
 /*
  * Function exit tracing.
