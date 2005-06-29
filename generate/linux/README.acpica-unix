@@ -6,8 +6,9 @@ This source release includes:
 1) a cross-OS AML interpreter
 
 This is intended to allow commercial and open source operating systems
-for ACPI. OS specific code is still needed, but the AML interpreter
-should greatly ease ACPI implementation resource requirements.
+to be enabled for ACPI. OS specific code is still needed, but the
+AML interpreter should greatly improve the development speed of ACPI
+support.
 
 The AML interpreter source should be integrated into the kernel's
 build process. We recommend establishing an automated method for
