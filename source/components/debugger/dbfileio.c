@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  ******************************************************************************/
 
@@ -322,6 +322,71 @@ AcpiDbLoadTable(
 #endif
 
 
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AeLocalLoadTable
+ *
+ * PARAMETERS:  TablePtr        - pointer to a buffer containing the entire
+ *                                table to be loaded
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This function is called to load a table from the caller's
+ *              buffer.  The buffer must contain an entire ACPI Table including
+ *              a valid header.  The header fields will be verified, and if it
+ *              is determined that the table is invalid, the call will fail.
+ *
+ *              If the call fails an appropriate status will be returned.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AeLocalLoadTable (
+    ACPI_TABLE_HEADER       *TablePtr)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_DESC         TableInfo;
+
+
+    FUNCTION_TRACE ("AeLocalLoadTable");
+
+    if (!TablePtr)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Install the new table into the local data structures */
+
+    TableInfo.Pointer = TablePtr;
+
+    Status = AcpiTbInstallTable (NULL, &TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Free table allocated by AcpiTbGetTable */
+
+        AcpiTbDeleteSingleTable (&TableInfo);
+        return_ACPI_STATUS (Status);
+    }
+
+
+#ifndef PARSER_ONLY
+    Status = AcpiNsLoadTable (TableInfo.InstalledDesc, AcpiGbl_RootNode);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Uninstall table and free the buffer */
+
+        AcpiTbUninstallTable (TableInfo.InstalledDesc);
+        return_ACPI_STATUS (Status);
+    }
+#endif
+
+    return_ACPI_STATUS (Status);
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbLoadAcpiTable
@@ -369,8 +434,8 @@ AcpiDbLoadAcpiTable (
 
 
     /* Attempt to recognize and install the table */
+    Status = AeLocalLoadTable (TablePtr);
 
-    Status = AcpiLoadTable (TablePtr);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_EXIST)
