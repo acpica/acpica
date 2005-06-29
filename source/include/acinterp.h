@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.102 $
+ *       $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -265,6 +265,18 @@ AcpiExWriteDataToField (
  */
 
 ACPI_STATUS
+AcpiExTriadic (
+    UINT16                  Opcode,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OPERAND_OBJECT     **ReturnDesc);
+
+ACPI_STATUS
+AcpiExHexadic (
+    UINT16                  Opcode,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OPERAND_OBJECT     **ReturnDesc);
+
+ACPI_STATUS
 AcpiExCreateBufferField (
     UINT8                   *AmlPtr,
     UINT32                  AmlLength,
@@ -275,20 +287,6 @@ ACPI_STATUS
 AcpiExReconfiguration (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiExFatal (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiExIndex (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-ACPI_STATUS
-AcpiExMatch (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
 
 ACPI_STATUS
 AcpiExCreateMutex (
