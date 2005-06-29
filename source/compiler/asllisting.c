@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -621,7 +621,7 @@ LsWriteNodeToListing (
      */
 
     OpInfo  = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
-    OpClass = ACPI_GET_OP_CLASS (OpInfo);
+    OpClass = OpInfo->Class;
 
     switch (OpClass)
     {
