@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.66 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -215,7 +215,7 @@ AcpiPsGetNextPackageEnd (
     ACPI_PARSE_STATE        *ParserState)
 {
     UINT8                   *Start = ParserState->Aml;
-    NATIVE_UINT             Length;
+    ACPI_NATIVE_UINT        Length;
 
 
     ACPI_FUNCTION_TRACE ("PsGetNextPackageEnd");
@@ -223,7 +223,7 @@ AcpiPsGetNextPackageEnd (
 
     /* Function below changes ParserState->Aml */
 
-    Length = (NATIVE_UINT) AcpiPsGetNextPackageLength (ParserState);
+    Length = (ACPI_NATIVE_UINT) AcpiPsGetNextPackageLength (ParserState);
 
     return_PTR (Start + Length); /* end of package */
 }
@@ -244,7 +244,7 @@ AcpiPsGetNextPackageEnd (
  *
  ******************************************************************************/
 
-NATIVE_CHAR *
+char *
 AcpiPsGetNextNamestring (
     ACPI_PARSE_STATE        *ParserState)
 {
@@ -302,7 +302,7 @@ AcpiPsGetNextNamestring (
     }
 
     ParserState->Aml = (UINT8*) End;
-    return_PTR ((NATIVE_CHAR *) Start);
+    return_PTR ((char *) Start);
 }
 
 
@@ -334,7 +334,7 @@ AcpiPsGetNextNamepath (
     ACPI_PARSE_OBJECT       *Arg,
     BOOLEAN                 MethodCall)
 {
-    NATIVE_CHAR             *Path;
+    char                    *Path;
     ACPI_PARSE_OBJECT       *NameOp;
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *MethodDesc;
