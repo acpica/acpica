@@ -577,32 +577,6 @@ NsGetAttachedObject (
 }
 
 
-/*****************************************************************************
- *
- * FUNCTION:    IsNsObject
- *
- * PARAMETERS:  *ObjDesc            - An object descriptor
- *
- * RETURN:      TRUE if the passed descriptor is the value of a Name in
- *              the name space, else FALSE
- *
- ****************************************************************************/
-
-INT32
-IsNsObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
-{
-    ACPI_HANDLE             RetHandle;
-
-
-    FUNCTION_TRACE ("IsNsObject");
-
-    RetHandle = NsFindAttachedObject (ObjDesc, NS_ALL, ACPI_INT32_MAX);
-
-    return_VALUE ((RetHandle != (ACPI_HANDLE) 0));
-}
-
-
 /****************************************************************************
  * 
  * FUNCTION:    NsCompareObject
