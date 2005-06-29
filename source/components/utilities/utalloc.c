@@ -503,36 +503,31 @@ CmDumpCurrentAllocations (
         if ((Element->Component & Component) &&
             ((Module == NULL) || (0 == STRCMP (Module, Element->Module))))
         {
-            DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                ("%p Len %04X %9.9s-%d",
-                Element->Address, Element->Size, Element->Module, Element->Line));
+            DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("%p Len %04X %9.9s-%d",
+                            Element->Address, Element->Size, Element->Module, Element->Line));
 
             /* Most of the elements will be internal objects. */
 
-            if (Element->Size >= sizeof (ACPI_OBJECT_Common))
+            switch (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType)
             {
-                if (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType == DESC_TYPE_ACPI_OBJ)
-                {
-                    DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ObjType %s", 
-                        CmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
-                }
+            case DESC_TYPE_ACPI_OBJ:
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ObjType %s", 
+                                    CmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
+                break;
 
-                else if (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType == DESC_TYPE_PARSER)
-                {
-                    DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ParseObj Opcode %04X", 
-                        ((ACPI_GENERIC_OP *)(Element->Address))->Opcode));
-                }
+            case DESC_TYPE_PARSER:
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ParseObj Opcode %04X", 
+                                    ((ACPI_GENERIC_OP *)(Element->Address))->Opcode));
+                break;
 
-                else if (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType == DESC_TYPE_NTE)
-                {
-                    DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" NTE Name %4.4s", 
-                        &((NAME_TABLE_ENTRY *)(Element->Address))->Name));
-                }
+            case DESC_TYPE_NTE:
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" NTE Name %4.4s", 
+                                    &((NAME_TABLE_ENTRY *)(Element->Address))->Name));
+                break;
 
-                else if (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType == DESC_TYPE_STATE)
-                {
-                    DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" StateObj"));
-                }
+            case DESC_TYPE_STATE:
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" StateObj"));
+                break;
             }
 
             DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, ("\n")); 
@@ -548,8 +543,7 @@ CmDumpCurrentAllocations (
 
     CmReleaseMutex (MTX_MEMORY);
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-        ("Total number of unfreed allocations = %d\n", i));
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("Total number of unfreed allocations = %d\n", i));
    
     return_VOID;
 }   
