@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  ******************************************************************************/
 
@@ -128,8 +128,8 @@
 
 /* This matches the #defines in actypes.h. */
 
-NATIVE_CHAR *SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
-                                 "\\_S4_","\\_S4B","\\_S5_"};
+NATIVE_CHAR                 *SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
+                                                  "\\_S4_","\\_S4B","\\_S5_"};
 
 
 /*******************************************************************************
@@ -710,115 +710,6 @@ AcpiHwRegisterBitAccess (
 
 
 
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwLowLevelRead
- *
- * PARAMETERS:  Register            - GAS register structure
- *              Offset              - Offset from the base address in the GAS
- *              Width               - 8, 16, or 32
- *
- * RETURN:      Value read
- *
- * DESCRIPTION: Read from either memory, IO, or PCI config space.
- *
- ******************************************************************************/
-
-UINT32
-AcpiHwLowLevelRead (
-    UINT32                  Width,
-    ACPI_GAS                *Register,
-    UINT32                  Offset)
-{
-    UINT32                  Value = 0;
-    UINT64                  MemAddress;
-    ACPI_IO_ADDRESS         IoAddress;
-    UINT32                  PciRegister;
-    UINT32                  PciDevFunc;
-
-
-    /*
-     * Must have a valid pointer to a GAS structure, and
-     * a non-zero address within
-     */
-    if ((!Register) ||
-        (!Register->Address))
-    {
-        return 0;
-    }
-
-
-    /*
-     * Three address spaces supported:
-     * Memory, Io, or PCI config.
-     */
-
-    switch (Register->AddressSpaceId)
-    {
-    case ADDRESS_SPACE_SYSTEM_MEMORY:
-
-        MemAddress = Register->Address + Offset;
-
-        switch (Width)
-        {
-        case 8:
-            Value = AcpiOsMemIn8  (MemAddress);
-            break;
-        case 16:
-            Value = AcpiOsMemIn16 (MemAddress);
-            break;
-        case 32:
-            Value = AcpiOsMemIn32 (MemAddress);
-            break;
-        }
-        break;
-
-
-    case ADDRESS_SPACE_SYSTEM_IO:
-
-        IoAddress = (ACPI_IO_ADDRESS) Register->Address + Offset;
-
-        switch (Width)
-        {
-        case 8:
-            Value = AcpiOsIn8  (IoAddress);
-            break;
-        case 16:
-            Value = AcpiOsIn16 (IoAddress);
-            break;
-        case 32:
-            Value = AcpiOsIn32 (IoAddress);
-            break;
-        }
-        break;
-
-
-    case ADDRESS_SPACE_PCI_CONFIG:
-
-        PciDevFunc  = ACPI_PCI_DEVFUN   (Register->Address);
-        PciRegister = ACPI_PCI_REGISTER (Register->Address) + Offset;
-
-        switch (Width)
-        {
-        case 8:
-            AcpiOsReadPciCfgByte  (0, PciDevFunc, PciRegister, (UINT8 *) &Value);
-            break;
-        case 16:
-            AcpiOsReadPciCfgWord  (0, PciDevFunc, PciRegister, (UINT16 *) &Value);
-            break;
-        case 32:
-            AcpiOsReadPciCfgDword (0, PciDevFunc, PciRegister, (UINT32 *) &Value);
-            break;
-        }
-        break;
-    }
-
-    return Value;
-}
-
-
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiHwRegisterRead
@@ -939,112 +830,6 @@ AcpiHwRegisterRead (
 }
 
 
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwLowLevelWrite
- *
- * PARAMETERS:  Width               - 8, 16, or 32
- *              Value               - To be written
- *              Register            - GAS register structure
- *              Offset              - Offset from the base address in the GAS
- *              
- *
- * RETURN:      Value read
- *
- * DESCRIPTION: Read from either memory, IO, or PCI config space.
- *
- ******************************************************************************/
-
-void
-AcpiHwLowLevelWrite (
-    UINT32                  Width,
-    UINT32                  Value,
-    ACPI_GAS                *Register,
-    UINT32                  Offset)
-{
-    UINT64                  MemAddress;
-    ACPI_IO_ADDRESS         IoAddress;
-    UINT32                  PciRegister;
-    UINT32                  PciDevFunc;
-
-
-    /*
-     * Must have a valid pointer to a GAS structure, and
-     * a non-zero address within
-     */
-    if ((!Register) ||
-        (!Register->Address))
-    {
-        return;
-    }
-
-
-    /*
-     * Three address spaces supported:
-     * Memory, Io, or PCI config.
-     */
-
-    switch (Register->AddressSpaceId)
-    {
-    case ADDRESS_SPACE_SYSTEM_MEMORY:
-
-        MemAddress = Register->Address + Offset;
-
-        switch (Width)
-        {
-        case 8:
-            AcpiOsMemOut8  (MemAddress, (UINT8) Value);
-            break;
-        case 16:
-            AcpiOsMemOut16 (MemAddress, (UINT16) Value);
-            break;
-        case 32:
-            AcpiOsMemOut32 (MemAddress, (UINT32) Value);
-            break;
-        }
-        break;
-
-
-    case ADDRESS_SPACE_SYSTEM_IO:
-
-        IoAddress = (ACPI_IO_ADDRESS) Register->Address + Offset;
-
-        switch (Width)
-        {
-        case 8:
-            AcpiOsOut8  (IoAddress, (UINT8) Value);
-            break;
-        case 16:
-            AcpiOsOut16 (IoAddress, (UINT16) Value);
-            break;
-        case 32:
-            AcpiOsOut32 (IoAddress, (UINT32) Value);
-            break;
-        }
-        break;
-
-
-    case ADDRESS_SPACE_PCI_CONFIG:
-
-        PciDevFunc  = ACPI_PCI_DEVFUN   (Register->Address);
-        PciRegister = ACPI_PCI_REGISTER (Register->Address) + Offset;
-
-        switch (Width)
-        {
-        case 8:
-            AcpiOsWritePciCfgByte  (0, PciDevFunc, PciRegister, (UINT8) Value);
-            break;
-        case 16:
-            AcpiOsWritePciCfgWord  (0, PciDevFunc, PciRegister, (UINT16) Value);
-            break;
-        case 32:
-            AcpiOsWritePciCfgDword (0, PciDevFunc, PciRegister, (UINT32) Value);
-            break;
-        }
-        break;
-    }
-}
 
 /******************************************************************************
  *
@@ -1182,67 +967,215 @@ AcpiHwRegisterWrite (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiHwRegisterAccess
+ * FUNCTION:    AcpiHwLowLevelRead
  *
- * PARAMETERS:    ReadWrite              - Access mode.
- *                UseLock                - Mutex hw access.
- *                RegisterId             - RegisterID + Offset.
- *                Value                  - Value to be written (only used on write).
+ * PARAMETERS:  Register            - GAS register structure
+ *              Offset              - Offset from the base address in the GAS
+ *              Width               - 8, 16, or 32
  *
- * RETURN:      Value read or written.
+ * RETURN:      Value read
  *
- * DESCRIPTION: Generic ACPI Register I/O function ( PM timer Register uses 32-bit 
- *              access, PM1 event Registers use 16-bit access, and the rest use 
- *              8-bit access.).  Note that if 2.0 is supported, this function
- *              will call the AcpiHwGasRegisterAccess function.
+ * DESCRIPTION: Read from either memory, IO, or PCI config space.
  *
  ******************************************************************************/
+
 UINT32
-AcpiHwRegisterAccess (
-    NATIVE_UINT         ReadWrite,
-    BOOLEAN             UseLock,
-    UINT32              RegisterId,
-    ...)                    /* Value (only used on write) */
+AcpiHwLowLevelRead (
+    UINT32                  Width,
+    ACPI_GAS                *Register,
+    UINT32                  Offset)
 {
-    UINT32              Value = 0;
+    UINT32                  Value = 0;
+    UINT64                  MemAddress;
+    ACPI_IO_ADDRESS         IoAddress;
+    UINT32                  PciRegister;
+    UINT32                  PciDevFunc;
 
 
-
-    if (ACPI_MTX_LOCK == UseLock)
+    /*
+     * Must have a valid pointer to a GAS structure, and
+     * a non-zero address within
+     */
+    if ((!Register) ||
+        (!Register->Address))
     {
-        AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
+        return 0;
     }
 
-    if (ReadWrite == ACPI_WRITE)
-    {
-        va_list    marker;
 
-        va_start (marker, RegisterId);
-        Value = va_arg (marker, UINT32);
-        va_end (marker);
+    /*
+     * Three address spaces supported:
+     * Memory, Io, or PCI config.
+     */
+
+    switch (Register->AddressSpaceId)
+    {
+    case ADDRESS_SPACE_SYSTEM_MEMORY:
+
+        MemAddress = Register->Address + Offset;
+
+        switch (Width)
+        {
+        case 8:
+            Value = AcpiOsMemIn8  (MemAddress);
+            break;
+        case 16:
+            Value = AcpiOsMemIn16 (MemAddress);
+            break;
+        case 32:
+            Value = AcpiOsMemIn32 (MemAddress);
+            break;
+        }
+        break;
+
+
+    case ADDRESS_SPACE_SYSTEM_IO:
+
+        IoAddress = (ACPI_IO_ADDRESS) Register->Address + Offset;
+
+        switch (Width)
+        {
+        case 8:
+            Value = AcpiOsIn8  (IoAddress);
+            break;
+        case 16:
+            Value = AcpiOsIn16 (IoAddress);
+            break;
+        case 32:
+            Value = AcpiOsIn32 (IoAddress);
+            break;
+        }
+        break;
+
+
+    case ADDRESS_SPACE_PCI_CONFIG:
+
+        PciDevFunc  = ACPI_PCI_DEVFUN   (Register->Address);
+        PciRegister = ACPI_PCI_REGISTER (Register->Address) + Offset;
+
+        switch (Width)
+        {
+        case 8:
+            AcpiOsReadPciCfgByte  (0, PciDevFunc, PciRegister, (UINT8 *) &Value);
+            break;
+        case 16:
+            AcpiOsReadPciCfgWord  (0, PciDevFunc, PciRegister, (UINT16 *) &Value);
+            break;
+        case 32:
+            AcpiOsReadPciCfgDword (0, PciDevFunc, PciRegister, (UINT32 *) &Value);
+            break;
+        }
+        break;
     }
 
-
-
-    /* If 2.0 support, use GAS addressing */
-
-    if (AcpiGbl_XSDT && (ReadWrite == ACPI_WRITE))
-    {
-        AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId, Value);
-    }
-
-    else if (AcpiGbl_XSDT && (ReadWrite == ACPI_READ))
-    {
-        Value = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, RegisterId);
-    }
-
-    if (ACPI_MTX_LOCK == UseLock)
-    {
-        AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
-    }
-    
     return Value;
 }
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwLowLevelWrite
+ *
+ * PARAMETERS:  Width               - 8, 16, or 32
+ *              Value               - To be written
+ *              Register            - GAS register structure
+ *              Offset              - Offset from the base address in the GAS
+ *              
+ *
+ * RETURN:      Value read
+ *
+ * DESCRIPTION: Read from either memory, IO, or PCI config space.
+ *
+ ******************************************************************************/
+
+void
+AcpiHwLowLevelWrite (
+    UINT32                  Width,
+    UINT32                  Value,
+    ACPI_GAS                *Register,
+    UINT32                  Offset)
+{
+    UINT64                  MemAddress;
+    ACPI_IO_ADDRESS         IoAddress;
+    UINT32                  PciRegister;
+    UINT32                  PciDevFunc;
+
+
+    /*
+     * Must have a valid pointer to a GAS structure, and
+     * a non-zero address within
+     */
+    if ((!Register) ||
+        (!Register->Address))
+    {
+        return;
+    }
+
+
+    /*
+     * Three address spaces supported:
+     * Memory, Io, or PCI config.
+     */
+
+    switch (Register->AddressSpaceId)
+    {
+    case ADDRESS_SPACE_SYSTEM_MEMORY:
+
+        MemAddress = Register->Address + Offset;
+
+        switch (Width)
+        {
+        case 8:
+            AcpiOsMemOut8  (MemAddress, (UINT8) Value);
+            break;
+        case 16:
+            AcpiOsMemOut16 (MemAddress, (UINT16) Value);
+            break;
+        case 32:
+            AcpiOsMemOut32 (MemAddress, (UINT32) Value);
+            break;
+        }
+        break;
+
+
+    case ADDRESS_SPACE_SYSTEM_IO:
+
+        IoAddress = (ACPI_IO_ADDRESS) Register->Address + Offset;
+
+        switch (Width)
+        {
+        case 8:
+            AcpiOsOut8  (IoAddress, (UINT8) Value);
+            break;
+        case 16:
+            AcpiOsOut16 (IoAddress, (UINT16) Value);
+            break;
+        case 32:
+            AcpiOsOut32 (IoAddress, (UINT32) Value);
+            break;
+        }
+        break;
+
+
+    case ADDRESS_SPACE_PCI_CONFIG:
+
+        PciDevFunc  = ACPI_PCI_DEVFUN   (Register->Address);
+        PciRegister = ACPI_PCI_REGISTER (Register->Address) + Offset;
+
+        switch (Width)
+        {
+        case 8:
+            AcpiOsWritePciCfgByte  (0, PciDevFunc, PciRegister, (UINT8) Value);
+            break;
+        case 16:
+            AcpiOsWritePciCfgWord  (0, PciDevFunc, PciRegister, (UINT16) Value);
+            break;
+        case 32:
+            AcpiOsWritePciCfgDword (0, PciDevFunc, PciRegister, (UINT32) Value);
+            break;
+        }
+        break;
+    }
+}
 
 

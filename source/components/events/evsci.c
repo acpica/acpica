@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -163,7 +163,7 @@ AcpiEvSciHandler (void *Context)
      * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
      * required to treat the SCI interrupt as sharable, level, active low.
      */
-    if (!AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, SCI_EN))
+    if (!AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_DO_NOT_LOCK, SCI_EN))
     {
         /* ACPI is not enabled;  this interrupt cannot be for us */
 
