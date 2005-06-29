@@ -526,7 +526,7 @@ typedef struct /* ADDRESS HANDLER */
     UINT32                  Reserved4;
 
     NAME_TABLE_ENTRY        *Nte;               /* Parent device */
-    void                    *RunTimeContext;
+    void                    *Context;
     void                    *InstallTimeContext;
     union AcpiObjInternal   *Link;              /* Link to next handler on device */
     union AcpiObjInternal   *RegionList;        /* regions using this handler */
