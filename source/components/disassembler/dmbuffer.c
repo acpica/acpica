@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  ******************************************************************************/
 
@@ -137,7 +137,7 @@
  *
  * RETURN:      None
  *
- * DESCRIPTION: Dump a list of bytes in Hex format
+ * DESCRIPTION: Dump an AML "ByteList" in Hex format
  *
  ******************************************************************************/
 
@@ -321,7 +321,7 @@ AcpiDmIsUnicodeBuffer (
  *
  * PARAMETERS:  Op              - Buffer Object to be examined
  *
- * RETURN:      TRUE if buffer contains a ASCII string
+ * RETURN:      TRUE if buffer contains a ASCII string, FALSE otherwise
  *
  * DESCRIPTION: Determine if a buffer Op contains a ASCII string
  *

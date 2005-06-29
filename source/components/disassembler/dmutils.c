@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmutils - AML disassembler utilities
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  ******************************************************************************/
 
@@ -536,6 +536,5 @@ AcpiDmCommaIfFieldMember (
         AcpiOsPrintf (", ");
     }
 }
-
 
 #endif

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  ******************************************************************************/
 
@@ -214,7 +214,8 @@ AcpiDmResourceDescriptor (
         if (CurrentByte & ACPI_RDESC_TYPE_LARGE)
         {
             DescriptorId = CurrentByte;
-            Length = (* (ACPI_CAST_PTR (UINT16, &ByteData[CurrentByteOffset + 1])));
+            Length = (* (ACPI_CAST_PTR (UINT16,
+                            &ByteData[CurrentByteOffset + 1])));
             CurrentByteOffset += 3;
         }
         else
@@ -466,7 +467,8 @@ AcpiDmIsResourceDescriptor (
         if (CurrentByte & ACPI_RDESC_TYPE_LARGE)
         {
             DescriptorId = CurrentByte;
-            Length = (* (ACPI_CAST_PTR (UINT16, (&ByteData[CurrentByteOffset + 1]))));
+            Length = (* (ACPI_CAST_PTR (UINT16,
+                            (&ByteData[CurrentByteOffset + 1]))));
             CurrentByteOffset += 3;
         }
         else
@@ -538,6 +540,5 @@ AcpiDmIsResourceDescriptor (
 
     return (FALSE);
 }
-
 
 #endif

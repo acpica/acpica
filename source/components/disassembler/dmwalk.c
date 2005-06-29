@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  ******************************************************************************/
 
@@ -135,7 +135,8 @@
  *
  * FUNCTION:    AcpiDmDisassemble
  *
- * PARAMETERS:  Origin          - Starting object
+ * PARAMETERS:  WalkState       - Current state
+ *              Origin          - Starting object
  *              NumOpcodes      - Max number of opcodes to be displayed
  *
  * RETURN:      None
@@ -171,7 +172,8 @@ AcpiDmDisassemble (
  *
  * FUNCTION:    AcpiDmWalkParseTree
  *
- * PARAMETERS:  DescendingCallback      - Called during tree descent
+ * PARAMETERS:  Op                      - Root Op object
+ *              DescendingCallback      - Called during tree descent
  *              AscendingCallback       - Called during tree ascent
  *              Context                 - To be passed to the callbacks
  *
@@ -281,7 +283,7 @@ AcpiDmWalkParseTree (
  *
  * PARAMETERS:  Op              - Object to be examined
  *
- * RETURN:      Status
+ * RETURN:      BlockType - not a block, parens, braces, or even both.
  *
  * DESCRIPTION: Type of block for this op (parens or braces)
  *
@@ -356,7 +358,7 @@ AcpiDmBlockType (
  *
  * PARAMETERS:  Op              - Object to be examined
  *
- * RETURN:      Status
+ * RETURN:      ListType - has commas or not.
  *
  * DESCRIPTION: Type of block for this op (parens or braces)
  *
@@ -390,7 +392,7 @@ AcpiDmListType (
     case AML_INDEX_FIELD_OP:
     case AML_BANK_FIELD_OP:
 
-        return (0);
+        return (BLOCK_NONE);
 
     case AML_BUFFER_OP:
     case AML_PACKAGE_OP:
@@ -463,10 +465,13 @@ AcpiDmDescendingOp (
 
             if (AcpiGbl_ExternalList)
             {
-                AcpiOsPrintf ("    /*\n     * These objects were referenced but not defined in this table\n     */\n");
+                AcpiOsPrintf (
+                    "    /*\n     * These objects were referenced but not defined in this table\n     */\n");
 
-                /* Walk the list of externals (unresolved references) found during parsing */
-
+                /*
+                 * Walk the list of externals (unresolved references)
+                 * found during parsing
+                 */
                 while (AcpiGbl_ExternalList)
                 {
                     AcpiOsPrintf ("    External (%s, DeviceObj)\n",
@@ -487,8 +492,10 @@ AcpiDmDescendingOp (
              (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)) &&
              (Op->Common.AmlOpcode != AML_INT_BYTELIST_OP))
     {
-            /* This is a first-level element of a term list, indent a new line */
-
+            /*
+             * This is a first-level element of a term list,
+             * indent a new line
+             */
             AcpiDmIndent (Level);
     }
 
@@ -543,10 +550,8 @@ AcpiDmDescendingOp (
                     AcpiDmDumpName ((char *) &Name);
                 }
 
-
                 if (Op->Common.AmlOpcode != AML_INT_NAMEDFIELD_OP)
                 {
-                    AcpiDmValidateName ((char *) &Name, Op);
                     if (AcpiGbl_DbOpt_verbose)
                     {
                         (void) AcpiPsDisplayObjectPathname (NULL, Op);
@@ -930,7 +935,8 @@ AcpiDmAscendingOp (
         }
         else
         {
-            Op->Common.Parent->Common.DisasmFlags |= ACPI_PARSEOP_EMPTY_TERMLIST;
+            Op->Common.Parent->Common.DisasmFlags |=
+                                    ACPI_PARSEOP_EMPTY_TERMLIST;
             AcpiOsPrintf (") {");
         }
     }

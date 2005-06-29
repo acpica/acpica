@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  ******************************************************************************/
 
@@ -528,7 +528,8 @@ AcpiDmExtendedDescriptor (
     if (Resource->ResourceType == ACPI_IO_RANGE)
     {
         AcpiOsPrintf ("0x%8.8X%8.8X, // Type Specific Attributes\n",
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
+            ACPI_FORMAT_UINT64 (
+                ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
         AcpiDmIndent (Level + 1);
         AcpiDmIoFlags2 (Resource->SpecificFlags);
         AcpiOsPrintf (")\n");
@@ -536,7 +537,8 @@ AcpiDmExtendedDescriptor (
     else if (Resource->ResourceType == ACPI_MEMORY_RANGE)
     {
         AcpiOsPrintf ("0x%8.8X%8.8X, // Type Specific Attributes\n",
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
+            ACPI_FORMAT_UINT64 (
+                ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
         AcpiDmIndent (Level + 1);
         AcpiDmMemoryFlags2 (Resource->SpecificFlags);
         AcpiOsPrintf (")\n");
@@ -544,7 +546,8 @@ AcpiDmExtendedDescriptor (
     else
     {
         AcpiOsPrintf ("0x%8.8X%8.8X) // Type Specific Attributes\n",
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
+            ACPI_FORMAT_UINT64 (
+                ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
     }
 
 }
@@ -871,7 +874,6 @@ AcpiDmVendorLargeDescriptor (
     AcpiDmIndent (Level);
     AcpiOsPrintf ("}\n");
 }
-
 
 #endif
 
