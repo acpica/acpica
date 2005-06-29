@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -331,6 +331,10 @@ TrTransformSubtree (
         TrDoDefinitionBlock (Node);
         break;
 
+    case ELSEIF:
+        TrDoElseif (Node);
+        break;
+
     case SWITCH:
         TrDoSwitch (Node);
         break;
@@ -369,6 +373,48 @@ TrDoDefinitionBlock (
     
 
     Gbl_FirstLevelInsertionNode = Next;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrDoElseif
+ *
+ * PARAMETERS:  Node        - Parse node
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Transform an Elseif into an Else and If AML opcode
+ *
+ ******************************************************************************/
+
+void
+TrDoElseif (
+    ASL_PARSE_NODE          *Node)
+{
+    ASL_PARSE_NODE          *IfNode;
+
+
+    printf ("Found an ELSEIF  \n");
+
+
+    /* Change the ELSEIF into an ELSE */
+
+    TrAmlInitNode (Node, ELSE);
+
+    /* Create a new IF node */
+
+    IfNode              = TrCreateLeafNode (IF);
+    IfNode->Parent      = Node;
+    TrAmlInitLineNumbers (IfNode, Node);
+
+
+    /* Insert the the IF node first in the ELSE child list */
+
+    IfNode->Child       = Node->Child;
+    Node->Child         = IfNode;
+
+    TrAmlSetSubtreeParent (IfNode->Child, IfNode);
 }
 
 
@@ -431,8 +477,7 @@ TrDoSwitch (
                 /* Link ELSE node as a peer to the previous IF */
 
                 TrAmlInsertPeer (Conditional, NewNode);
-
-                CurrentParentNode          = NewNode;
+                CurrentParentNode   = NewNode;
             }
 
             Case = Next;
