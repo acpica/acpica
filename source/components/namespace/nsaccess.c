@@ -118,8 +118,8 @@
 
 #include <acpi.h>
 #include <amlcode.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          NAMESPACE

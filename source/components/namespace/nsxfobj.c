@@ -119,15 +119,15 @@
 #define __NSAPIOBJ_C__
 
 #include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 #include <methods.h>
-#include <acpiobj.h>
+#include <acobject.h>
 #include <pnp.h>
 
 
-#define _THIS_MODULE        "nsapiobj.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsapiobj");
 
 
 /****************************************************************************
@@ -208,7 +208,7 @@ AcpiEvaluateObject (
         for (i = 0; i < Count; i++)
         {
             ParamPtr[i] = &ObjectPtr[i];
-            ObjectPtr[i].Common.Flags = AO_STATIC_ALLOCATION;
+            CmInitStaticObject (&ObjectPtr[i]);
         }
         ParamPtr[Count] = NULL;                 
 
@@ -229,6 +229,7 @@ AcpiEvaluateObject (
     if (ReturnBuffer && ReturnBuffer->Pointer)
     {
         ReturnPtr = &InternalRetObj;
+        CmInitStaticObject (&InternalRetObj);
     }
 
     /*
@@ -365,7 +366,6 @@ Cleanup:
              * any subobjects that are contained therein.
              */
 
-            ReturnPtr->Common.Flags = AO_STATIC_ALLOCATION;
             CmDeleteInternalObject (ReturnPtr);
 
         }
@@ -409,12 +409,6 @@ AcpiGetNextObject (
     NAME_TABLE_ENTRY        *ThisEntry;
 
 
-    if (!RetHandle)
-    {
-        return AE_BAD_PARAMETER;
-    }
-    *RetHandle = NULL;
-
 
     if (Type > ACPI_TYPE_MAX)
     {
@@ -426,14 +420,9 @@ AcpiGetNextObject (
 
     if (!Child)
     {
-        if (!Parent)
-        {
-            return AE_NOT_FOUND;
-        }
-
         /* Start search at the beginning of the specified scope */
 
-        else if (!(ThisEntry = NsConvertHandleToEntry (Parent)))
+        if (!(ThisEntry = NsConvertHandleToEntry (Parent)))
         {
             return AE_BAD_PARAMETER;
         }
@@ -477,7 +466,11 @@ AcpiGetNextObject (
             return AE_NOT_FOUND;
         }
 
-        *RetHandle = NsConvertEntryToHandle(ThisEntry);
+        if (RetHandle)
+        {
+            *RetHandle = NsConvertEntryToHandle (ThisEntry);
+        }
+
         return AE_OK;
     }
 
@@ -490,7 +483,11 @@ AcpiGetNextObject (
 
         if (ThisEntry->Type == Type)
         {
-            *RetHandle = NsConvertEntryToHandle(ThisEntry);
+            if (RetHandle)
+            {
+                *RetHandle = NsConvertEntryToHandle (ThisEntry);
+            }
+
             return AE_OK;
         }
 
@@ -647,11 +644,11 @@ AcpiWalkNamespace (
     void                    *Context, 
     void                    **ReturnValue)
 {
+    ACPI_STATUS             Status;
     ACPI_HANDLE             ChildHandle;
     ACPI_HANDLE             ParentHandle;
-    ACPI_HANDLE             Dummy;
+    ACPI_OBJECT_TYPE        ChildType;
     UINT32                  Level;
-    void                    *UserReturnVal;
 
 
     FUNCTION_TRACE ("AcpiWalkNamespace");
@@ -673,18 +670,12 @@ AcpiWalkNamespace (
         StartObject = Gbl_RootObject;
     }
 
-    /* Init return value, if any */
-
-    if (ReturnValue)
-    {
-        *ReturnValue = NULL;
-    }
-
 
     /* Null child means "get first object" */
 
     ParentHandle    = StartObject;
     ChildHandle     = 0;
+    ChildType       = ACPI_TYPE_Any;
     Level           = 1;
 
     /* 
@@ -697,40 +688,67 @@ AcpiWalkNamespace (
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (Type, ParentHandle, ChildHandle, &ChildHandle)) &&
-        	0 != (UserReturnVal = UserFunction (ChildHandle, Level, Context)))
+        Status = AE_OK;
+        if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle, &ChildHandle)))
         {
-            /* Non-zero from user function means "exit now" */
+            /* Found an object, Get the type if we are not searching for ANY */
 
-            if (ReturnValue)
+            if (Type != ACPI_TYPE_Any)
             {
-                /* Pass return value back to the caller */
-
-                *ReturnValue = UserReturnVal;
+                AcpiGetType (ChildHandle, &ChildType);
             }
 
-            return_ACPI_STATUS (AE_OK);
+            if (ChildType == Type)
+            {
+                /* Found a matching object, invoke the user callback function */
+
+                Status = UserFunction (ChildHandle, Level, Context, ReturnValue);
+                switch (Status)
+                {
+                case AE_OK:
+                case AE_DEPTH:
+                    break;                          /* Just keep going */
+
+                case AE_TERMINATE:
+                    return_ACPI_STATUS (AE_OK);     /* Exit now, with OK status */
+                    break;
+
+                default:
+                    return_ACPI_STATUS (Status);    /* All others are valid exceptions */
+                    break;
+                }
+            }
+
+            /* 
+             * Depth first search:
+             * Attempt to go down another level in the namespace if we are allowed to.
+             * Don't go any further if we have reached the caller specified maximum depth
+             * or if the user function has specified that the maximum depth has been reached.
+             */
+
+            if ((Level < MaxDepth) && (Status != AE_DEPTH))
+            {
+                if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ChildHandle, 0, NULL)))
+                {
+                    /* There is at least one child of this object, visit the object */
+
+                    Level++;
+                    ParentHandle    = ChildHandle;
+                    ChildHandle     = 0;
+                }
+            }
         }
 
-        /* Go down another level in the namespace if we are allowed to */
-
-        if (Level < MaxDepth &&
-        	ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ChildHandle, 0, &Dummy)))
+        else
         {
-            /* There is at least one child of this object, visit the object */
-
-            Level++;
-            ParentHandle    = ChildHandle;
-            ChildHandle     = 0;
-   			continue;
+            /* 
+             * No more children in this object (AcpiGetNextObject failed), 
+             * go back upwards in the namespace tree to the object's parent.
+             */
+            Level--;
+            ChildHandle = ParentHandle;
+            AcpiGetParent (ParentHandle, &ParentHandle);
         }
-        
-        /* 
-         * No more children in this object, go back up to the object's parent
-         */
-        Level--;
-        ChildHandle = ParentHandle;
-        AcpiGetParent (ParentHandle, &ParentHandle);
     }
 
 

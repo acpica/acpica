@@ -118,12 +118,12 @@
 
 #include <acpi.h>
 #include <amlcode.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
-#define _THIS_MODULE        "nssearch.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nssearch");
 
 
 
@@ -326,7 +326,7 @@ NsSearchParentTree (
     NAME_TABLE_ENTRY        **RetEntry)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ParentScope;
+    NAME_TABLE_ENTRY        *ParentEntry;
 
 
     FUNCTION_TRACE ("NsSearchParentTree");
@@ -334,26 +334,26 @@ NsSearchParentTree (
 
     /* 
      * NameTable[0] will be an unused entry if the table being searched is empty,
-     * However, its ParentScope member will have been filled in
+     * However, its ParentEntry member will have been filled in
      * when the table was allocated (unless it is the root name table).
      */
 
    
     if (!NsLocal (Type) && 
-        NameTable[0].ParentScope)
+        NameTable[0].ParentEntry)
     {
-        ParentScope = NameTable[0].ParentScope;
+        ParentEntry = NameTable[0].ParentEntry;
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %4.4s\n", 
                                     &EntryName));
 
         /* Search parents until found or we have backed up to the root */
 
-        while (ParentScope)
+        while (ParentEntry)
         {
             /* Search parent scope */
             /* TBD: Why ACPI_TYPE_Any? */
 
-            Status = NsSearchOnly (EntryName, ParentScope, ACPI_TYPE_Any, RetEntry, NULL);
+            Status = NsSearchOnly (EntryName, ParentEntry->Scope, ACPI_TYPE_Any, RetEntry, NULL);
             if (Status == AE_OK)
             {
                 return_ACPI_STATUS (Status);
@@ -361,7 +361,7 @@ NsSearchParentTree (
 
             /* Not found here, go up another level (until we reach the root) */
 
-            ParentScope = ParentScope->ParentScope;
+            ParentEntry = ParentEntry->ParentEntry;
         }
 
         /* Not found in parent tree */
@@ -373,7 +373,7 @@ NsSearchParentTree (
          * No parent, or type is "local".  We won't be searching the parent tree.
          */
 
-        if (!NameTable[0].ParentScope)
+        if (!NameTable[0].ParentEntry)
         {
             DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] has no parent\n", 
                                         &EntryName));
@@ -412,7 +412,6 @@ NsCreateAndLinkNewTable (
     NAME_TABLE_ENTRY        *NameTable)
 {
     NAME_TABLE_ENTRY        *NewTable;
-    NAME_TABLE_ENTRY        *ParentScope;
     NAME_TABLE_ENTRY        *ParentEntry;
     ACPI_STATUS             Status = AE_OK;
 
@@ -437,7 +436,6 @@ NsCreateAndLinkNewTable (
      * Since the parent information remains the same.
      */
 
-    ParentScope = NameTable[0].ParentScope;
     ParentEntry = NameTable[0].ParentEntry;
 
 
@@ -456,11 +454,11 @@ NsCreateAndLinkNewTable (
          * Allocation successful. Init the new table.
          */
         NEXTSEG (NameTable) = NewTable;
-        NsInitializeTable (NewTable, ParentScope, ParentEntry);
+        NsInitializeTable (NewTable, ParentEntry->Scope, ParentEntry);
 
         DEBUG_PRINT (TRACE_EXEC, 
-            ("NsCreateAndLinkNewTable: NewTable=%p, ParentScope=%p, Scope=%p\n",
-                NewTable, ParentScope, NameTable->Scope));
+            ("NsCreateAndLinkNewTable: NewTable=%p, ParentEntry=%p, Scope=%p\n",
+                NewTable, ParentEntry, NameTable->Scope));
     }
 
     return_ACPI_STATUS (Status);
@@ -490,7 +488,6 @@ NsInitializeTable (
 {
 
 
-    NewTable->ParentScope     = ParentScope;
     NewTable->ParentEntry     = ParentEntry;
 
 
@@ -535,7 +532,6 @@ NsInitializeEntry (
 
     NewEntry->DataType      = DESC_TYPE_NTE;
     NewEntry->Name          = EntryName;
-    NewEntry->ParentScope   = NameTable[0].ParentScope;
     NewEntry->ParentEntry   = NameTable[0].ParentEntry;
 
     /* 

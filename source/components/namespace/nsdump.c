@@ -118,8 +118,8 @@
 #define __NSDUMP_C__
 
 #include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 #include <tables.h>
 
 
@@ -127,6 +127,8 @@
         MODULE_NAME         ("nsdump");
 
 
+
+#ifdef ACPI_DEBUG
 
 /****************************************************************************
  *
@@ -204,15 +206,16 @@ NsDumpOneObject (
 {
     UINT32                  DownstreamSiblingMask = 0;
     INT32                   LevelTmp;
-    ACPI_OBJECT_TYPE        Type;
     UINT32                  WhichBit;
     NAME_TABLE_ENTRY        *Appendage = NULL;
     NAME_TABLE_ENTRY        *ThisEntry;
-    ACPI_SIZE               Size = 0;
+    UINT32                  Size = 0;
     UINT8                   *Value;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_OBJECT_TYPE        ObjType;
+    ACPI_OBJECT_TYPE        Type;
     UINT32                  DbLevel = (UINT32) Context;
+    UINT32                  BytesToDump;
 
 
     ThisEntry = NsConvertHandleToEntry(ObjHandle);
@@ -321,46 +324,117 @@ NsDumpOneObject (
         return AE_OK;
     }
 
-    if (ACPI_TYPE_Method == Type)
+    switch (Type)
     {
+
+    case ACPI_TYPE_Method:
+
         /* Name is a Method and its AML offset/length are set */
         
         DEBUG_PRINT_RAW (TRACE_TABLES, (" M:%p-%X\n",
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Pcode,
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.PcodeLength));                
 
-        return AE_OK;
+        break;
+    
+
+    case ACPI_TYPE_Number:
+ 
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" N:%X\n",
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Number.Value));
+        break;
+
+
+    case ACPI_TYPE_String:
+
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" S:%p-%X\n",
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->String.Pointer,
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->String.Length));
+        break;
+
+
+    case ACPI_TYPE_Buffer:
+
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" B:%p-%X\n",
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Buffer.Pointer,
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Buffer.Length));
+        break;
+
+
+    default:
+
+        DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
+        break;
     }
   
-    /* There is an attached object, display it */
+    /* If debug turned off, done */
+
+    if (!(DebugLevel & TRACE_VALUES))
+    {
+        return AE_OK;
+    }
+
+
+    /* If there is an attached object, display it */
 
     Value = ThisEntry->Object;
-    ObjDesc = ThisEntry->Object;
-    ObjType = ObjDesc->Common.Type;
 
-    /* Name is not a Method, or the AML offset/length are not set */
-    
-    DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
+    /* Dump attached objects */
 
-    /* If debug turned on, display values */
-
-    while (Value && (DebugLevel & TRACE_VALUES))
+    while (Value)
     {
-        DEBUG_PRINT_RAW (TRACE_TABLES,
-                    ("       Object %p  %02x %02x %02x %02x %02x %02x",
-                    Value, Value[0], Value[1], Value[2], Value[3], Value[4],
-                    Value[5]));
-        DEBUG_PRINT_RAW (TRACE_TABLES,
-                    (" %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-                    Value[6], Value[7], Value[8], Value[9], Value[10],
-                    Value[11], Value[12], Value[13], Value[14], Value[15]));
+        ObjType = INTERNAL_TYPE_Invalid;
+
+        /* Decode the type of attached object and dump the contents */
+
+        DEBUG_PRINT_RAW (TRACE_TABLES, ("        Attached Object %p: ", Value));
+
+        if (TbSystemTablePointer (Value))
+        {
+            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to AML Code)\n"));
+            BytesToDump = 16;
+        }
+
+        else if (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_NTE))
+        {
+            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to Name Table Entry)\n"));
+            BytesToDump = sizeof (NAME_TABLE_ENTRY);
+        }
+
+
+        else if (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_ACPI_OBJ))
+        {
+            ObjDesc = (ACPI_OBJECT_INTERNAL *) Value;
+            ObjType = ObjDesc->Common.Type;
+
+            if (ObjType > INTERNAL_TYPE_MAX)
+            {
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [UNKNOWN])\n", ObjType));
+                BytesToDump = 32;
+            }
+
+            else
+            {
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [%s])\n", 
+                                    ObjType, Gbl_NsTypeNames[ObjType]));
+                BytesToDump = ObjDesc->Common.Size;
+            }
+        }
+
+        else
+        {
+            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Unknown Descriptor Type)\n", Value));
+            BytesToDump = 16;
+        }
+
+        DUMP_BUFFER (Value, BytesToDump, 0);
 
         /* If value is NOT an internal object, we are done */
 
         if ((TbSystemTablePointer (Value)) ||
             (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_NTE)))
         {
-            return AE_OK;
+            goto Cleanup;
         }
 
         /* 
@@ -380,6 +454,10 @@ NsDumpOneObject (
             Value = (UINT8 *) ObjDesc->Package.Elements;
             break;
 
+        case ACPI_TYPE_Method:
+            Value = (UINT8 *) ObjDesc->Method.Pcode;
+            break;
+
         case ACPI_TYPE_FieldUnit:
             Value = (UINT8 *) ObjDesc->FieldUnit.Container;
             break;
@@ -397,12 +475,14 @@ NsDumpOneObject (
             break;
 
        default:
-            return AE_OK;
+            goto Cleanup;
         }
 
         ObjType = INTERNAL_TYPE_Invalid;     /* Terminate loop after next pass */
     }
 
+Cleanup:
+    DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
     return AE_OK;
 }
 
@@ -500,10 +580,10 @@ NsDumpRootDevices (void)
         return;
     }
 
-    AcpiNameToHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
+    AcpiGetHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
-    AcpiWalkNamespace (ACPI_TYPE_Device, SysBusHandle, ACPI_INT_MAX, NsDumpOneDevice, NULL, NULL);
+    AcpiWalkNamespace (ACPI_TYPE_Device, SysBusHandle, ACPI_INT32_MAX, NsDumpOneDevice, NULL, NULL);
 }
 
 
@@ -581,5 +661,5 @@ NsDumpEntry (
     return_VOID;
 }
 
-
+#endif
  
