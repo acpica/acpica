@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -954,7 +954,9 @@ AcpiOsWaitSemaphore (
         OsTimeout = INFINITE;
     }
 
-    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout);
+    /* Add 10ms to account for clock tick granularity */
+
+    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout+10);
     if (WaitStatus == WAIT_TIMEOUT)
     {
 /* Make optional -- wait of 0 is used to detect if unit is available
@@ -1209,7 +1211,9 @@ AcpiOsSleep (
     ACPI_INTEGER            milliseconds)
 {
 
-    Sleep ((unsigned long) milliseconds);
+    /* Add 10ms to account for clock tick granularity */
+
+    Sleep (((unsigned long) milliseconds) + 10);
     return;
 }
 
