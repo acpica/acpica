@@ -206,12 +206,13 @@ AmlExecute (
          * the execution of an numeric operator.  It is not clear who should delete the result
          * object if it is not to be returned.  Needs more investigation.
          */
-
+/*
         if (StackTopEntry != AmlObjStackGetValue (STACK_TOP))
         {
             DEBUG_PRINT (ACPI_INFO, ("AmlExecute: *** Deleting internal return value %p\n"));
             AmlObjStackDeleteValue (STACK_TOP);
         }
+*/
 
         /* Map PENDING (normal exit, no return value) to OK */
 
