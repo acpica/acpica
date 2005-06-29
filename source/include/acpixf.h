@@ -276,14 +276,14 @@ AcpiRemoveNotifyHandler (
 ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
     ACPI_HANDLE             Device, 
-    UINT32                  SpaceId, 
+    ACPI_ADDRESS_SPACE_TYPE SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler, 
     void                    *Context);
 
 ACPI_STATUS
 AcpiRemoveAddressSpaceHandler (
     ACPI_HANDLE             Device, 
-    UINT32                  SpaceId, 
+    ACPI_ADDRESS_SPACE_TYPE SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler);
 
 ACPI_STATUS
