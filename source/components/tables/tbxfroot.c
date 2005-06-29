@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: tbtable - ACPI tables: FACP, FACS, and RSDP utilities
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -205,10 +206,6 @@ AcpiTbGetTableRsdt (
     /* Always delete the RSDP mapping */
 
     AcpiTbDeleteAcpiTable (ACPI_TABLE_RSDP);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /* Save the table pointers and allocation info */
 
