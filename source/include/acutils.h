@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.84 $
+ *       $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,6 +118,32 @@
 #define _ACCOMMON_H
 
 
+
+typedef
+ACPI_STATUS (*ACPI_PKG_CALLBACK) (
+    UINT8                   ObjectType,
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    ACPI_GENERIC_STATE      *State,
+    void                    *Context);
+
+
+
+ACPI_STATUS
+AcpiCmWalkPackageTree (
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    void                    *TargetObject,
+    ACPI_PKG_CALLBACK       WalkCallback,
+    void                    *Context);
+
+
+typedef struct acpi_pkg_info
+{
+    UINT8                   *FreeSpace;
+    UINT32                  Length;
+    UINT32                  ObjectSpace;
+    UINT32                  NumPackages;
+} ACPI_PKG_INFO;
+
 #define REF_INCREMENT       (UINT16) 0
 #define REF_DECREMENT       (UINT16) 1
 #define REF_FORCE_DELETE    (UINT16) 2
@@ -191,6 +217,8 @@ AcpiCmAllocateOwnerId (
  * CmClib - Local implementations of C library functions
  */
 
+#ifndef ACPI_USE_SYSTEM_CLIBRARY
+
 NATIVE_UINT
 AcpiCmStrlen (
     const NATIVE_CHAR       *String);
@@ -263,6 +291,7 @@ UINT32
 AcpiCmToLower (
     UINT32                  c);
 
+#endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
 /*
  * CmCopy - Object construction and conversion interfaces
@@ -282,29 +311,30 @@ AcpiCmBuildPackageObject (
     UINT32                  *SpaceUsed);
 
 ACPI_STATUS
-AcpiCmBuildExternalObject (
+AcpiCmCopyIobjectToEobject (
     ACPI_OPERAND_OBJECT     *Obj,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
-AcpiCmBuildInternalSimpleObject(
+AcpiCmCopyEsimpleToIsimple(
     ACPI_OBJECT             *UserObj,
     ACPI_OPERAND_OBJECT     *Obj);
 
 ACPI_STATUS
-AcpiCmBuildInternalObject (
+AcpiCmCopyEobjectToIobject (
     ACPI_OBJECT             *Obj,
     ACPI_OPERAND_OBJECT     *InternalObj);
 
 ACPI_STATUS
-AcpiCmCopyInternalSimpleObject (
+AcpiCmCopyISimpleToIsimple (
     ACPI_OPERAND_OBJECT     *SourceObj,
     ACPI_OPERAND_OBJECT     *DestObj);
 
 ACPI_STATUS
-AcpiCmBuildCopyInternalPackageObject (
+AcpiCmCopyIpackageToIpackage (
     ACPI_OPERAND_OBJECT     *SourceObj,
-    ACPI_OPERAND_OBJECT     *DestObj);
+    ACPI_OPERAND_OBJECT     *DestObj,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -614,10 +644,23 @@ AcpiCmCreateUpdateState (
     ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action);
 
+ACPI_GENERIC_STATE *
+AcpiCmCreatePkgState (
+    void                    *InternalObject,
+    void                    *ExternalObject,
+    UINT16                  Index);
+
 ACPI_STATUS
 AcpiCmCreateUpdateStateAndPush (
     ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action,
+    ACPI_GENERIC_STATE      **StateList);
+
+ACPI_STATUS
+AcpiCmCreatePkgStateAndPush (
+    void                    *InternalObject,
+    void                    *ExternalObject,
+    UINT16                  Index,
     ACPI_GENERIC_STATE      **StateList);
 
 ACPI_GENERIC_STATE *
@@ -651,6 +694,11 @@ AcpiCmValidAcpiCharacter (
 ACPI_STATUS
 AcpiCmResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc);
+
+void
+AcpiCmDisplayInitPathname (
+    ACPI_HANDLE             ObjHandle,
+    char                    *Path);
 
 
 /*
@@ -687,7 +735,7 @@ AcpiCmInitStaticObject (
 #define AcpiCmCallocate(a)              _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
 #define AcpiCmFree(a)                   _CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
 
-#ifndef ACPI_DEBUG
+#ifndef ACPI_DEBUG_TRACK_ALLOCATIONS
 
 #define AcpiCmAddElementToAllocList(a,b,c,d,e,f)
 #define AcpiCmDeleteElementFromAllocList(a,b,c,d)
