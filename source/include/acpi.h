@@ -137,13 +137,4 @@
 #include <common.h>         /* Common (global) interfaces */
 
 
-/* Version string */
-
-#define ACPI_CA_VERSION                     0x0080
-
-
-#define	ACPI_CHAPTER						3
-#define	ACPI_TABLE_NAMESPACE_SECTION	    23
-
-
 #endif /* __ACPI_H__ */
