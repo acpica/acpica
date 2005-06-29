@@ -405,7 +405,15 @@ AcpiOsGetLine (
 void *
 AcpiOsOpenDirectory (
     char                    *Pathname,
-    char                    *WildcardSpec);
+    char                    *WildcardSpec,
+    char                    RequestedFileType);
+
+/* RequesteFileType values */
+
+#define REQUEST_FILE_ONLY                   0
+#define REQUEST_DIR_ONLY                    1
+
+
 
 char *
 AcpiOsGetNextFilename (
