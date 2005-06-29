@@ -162,24 +162,25 @@
 #define AE_BAD_CHARACTER                (ACPI_STATUS) 0x0022
 #define AE_BAD_PATHNAME                 (ACPI_STATUS) 0x0023
 #define AE_BAD_DATA                     (ACPI_STATUS) 0x0024
-#define AE_NOT_FOUND                    (ACPI_STATUS) 0x0025
-#define AE_NOT_EXIST                    (ACPI_STATUS) 0x0026
-#define AE_EXIST                        (ACPI_STATUS) 0x0027
-#define AE_TYPE                         (ACPI_STATUS) 0x0028
-#define AE_NULL_OBJECT                  (ACPI_STATUS) 0x0029
-#define AE_NULL_ENTRY                   (ACPI_STATUS) 0x002A
-#define AE_BUFFER_OVERFLOW              (ACPI_STATUS) 0x002B
-#define AE_STACK_OVERFLOW               (ACPI_STATUS) 0x002C
-#define AE_STACK_UNDERFLOW              (ACPI_STATUS) 0x002D
-#define AE_NOT_IMPLEMENTED              (ACPI_STATUS) 0x002E
-#define AE_VERSION_MISMATCH             (ACPI_STATUS) 0x002F
-#define AE_SUPPORT                      (ACPI_STATUS) 0x0030
-#define AE_SHARE                        (ACPI_STATUS) 0x0031
-#define AE_LIMIT                        (ACPI_STATUS) 0x0032
-#define AE_TIME                         (ACPI_STATUS) 0x0033
-#define AE_UNKNOWN_STATUS               (ACPI_STATUS) 0x0034
-#define ACPI_MAX_STATUS                 (ACPI_STATUS) 0x0034
-#define ACPI_NUM_STATUS                 (ACPI_STATUS) 0x0035
+#define AE_BAD_ADDRESS                  (ACPI_STATUS) 0x0025
+#define AE_NOT_FOUND                    (ACPI_STATUS) 0x0026
+#define AE_NOT_EXIST                    (ACPI_STATUS) 0x0027
+#define AE_EXIST                        (ACPI_STATUS) 0x0028
+#define AE_TYPE                         (ACPI_STATUS) 0x0029
+#define AE_NULL_OBJECT                  (ACPI_STATUS) 0x002A
+#define AE_NULL_ENTRY                   (ACPI_STATUS) 0x002B
+#define AE_BUFFER_OVERFLOW              (ACPI_STATUS) 0x002C
+#define AE_STACK_OVERFLOW               (ACPI_STATUS) 0x002D
+#define AE_STACK_UNDERFLOW              (ACPI_STATUS) 0x002E
+#define AE_NOT_IMPLEMENTED              (ACPI_STATUS) 0x002F
+#define AE_VERSION_MISMATCH             (ACPI_STATUS) 0x0030
+#define AE_SUPPORT                      (ACPI_STATUS) 0x0031
+#define AE_SHARE                        (ACPI_STATUS) 0x0032
+#define AE_LIMIT                        (ACPI_STATUS) 0x0033
+#define AE_TIME                         (ACPI_STATUS) 0x0034
+#define AE_UNKNOWN_STATUS               (ACPI_STATUS) 0x0035
+#define ACPI_MAX_STATUS                 (ACPI_STATUS) 0x0035
+#define ACPI_NUM_STATUS                 (ACPI_STATUS) 0x0036
 
 
 #ifdef DEFINE_ACPI_GLOBALS
@@ -227,6 +228,7 @@ static char                 *Gbl_ExceptionNames[] =
     "AE_BAD_CHARACTER",
     "AE_BAD_PATHNAME",
     "AE_BAD_DATA",
+    "AE_BAD_ADDRESS",
     "AE_NOT_FOUND",
     "AE_NOT_EXIST",
     "AE_EXIST",
