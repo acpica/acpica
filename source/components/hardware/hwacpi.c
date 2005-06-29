@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI hardware functions - mode and timer
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -217,7 +217,7 @@ AcpiHwInitialize (
         /* Target system supports ACPI mode */
 
         /*
-         * The purpose of this block of code is to save the initial state
+         * The purpose of this code is to save the initial state
          * of the ACPI event enable registers. An exit function will be
          * registered which will restore this state when the application
          * exits. The exit function will also clear all of the ACPI event
@@ -231,13 +231,7 @@ AcpiHwInitialize (
          * be modified. The PM1bEvtBlk behaves as expected.
          */
 
-        AcpiGbl_Pm1EnableRegisterSave =
-            AcpiOsIn16 ((AcpiGbl_FADT->Pm1aEvtBlk + 2));
-        if (AcpiGbl_FADT->Pm1bEvtBlk)
-        {
-            AcpiGbl_Pm1EnableRegisterSave |=
-                AcpiOsIn16 ((AcpiGbl_FADT->Pm1bEvtBlk + 2));
-        }
+        AcpiGbl_Pm1EnableRegisterSave = (UINT16) AcpiHwRegisterRead (ACPI_MTX_LOCK, PM1_EN);
 
 
         /*
@@ -245,11 +239,11 @@ AcpiHwInitialize (
          * block is not fixed, so the buffer must be allocated with malloc
          */
 
-        if (AcpiGbl_FADT->Gpe0Blk && AcpiGbl_FADT->Gpe0BlkLen)
+        if (AcpiGbl_FADT->XGpe0Blk.Address && AcpiGbl_FADT->Gpe0BlkLen)
         {
             /* GPE0 specified in FADT  */
 
-            AcpiGbl_Gpe0EnableRegisterSave =
+            AcpiGbl_Gpe0EnableRegisterSave = 
                 AcpiCmAllocate (DIV_2 (AcpiGbl_FADT->Gpe0BlkLen));
             if (!AcpiGbl_Gpe0EnableRegisterSave)
             {
@@ -261,8 +255,7 @@ AcpiHwInitialize (
             for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe0BlkLen); Index++)
             {
                 AcpiGbl_Gpe0EnableRegisterSave[Index] =
-                    AcpiOsIn8 (AcpiGbl_FADT->Gpe0Blk +
-                    DIV_2 (AcpiGbl_FADT->Gpe0BlkLen));
+                    (UINT8) AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index);
             }
         }
 
@@ -271,7 +264,7 @@ AcpiHwInitialize (
             AcpiGbl_Gpe0EnableRegisterSave = NULL;
         }
 
-        if (AcpiGbl_FADT->Gpe1Blk && AcpiGbl_FADT->Gpe1BlkLen)
+        if (AcpiGbl_FADT->XGpe1Blk.Address && AcpiGbl_FADT->Gpe1BlkLen)
         {
             /* GPE1 defined */
 
@@ -287,8 +280,7 @@ AcpiHwInitialize (
             for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe1BlkLen); Index++)
             {
                 AcpiGbl_Gpe1EnableRegisterSave[Index] =
-                    AcpiOsIn8 (AcpiGbl_FADT->Gpe1Blk +
-                    DIV_2 (AcpiGbl_FADT->Gpe1BlkLen));
+                    (UINT8) AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index);
             }
         }
 
@@ -468,7 +460,7 @@ AcpiHwPmtTicks (void)
 
     FUNCTION_TRACE ("AcpiPmtTicks");
 
-    Ticks = AcpiOsIn32 (AcpiGbl_FADT->PmTmrBlk);
+    Ticks = AcpiOsIn32 ((ACPI_IO_ADDRESS) AcpiGbl_FADT->XPmTmrBlk.Address);
 
     return_VALUE (Ticks);
 }
