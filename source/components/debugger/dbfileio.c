@@ -120,6 +120,7 @@
 #include <debugger.h>
 #include <namesp.h>
 #include <parser.h>
+#include <events.h>
 
 #ifdef ACPI_DEBUG
 
@@ -184,11 +185,6 @@ DbOpenDebugFile (
 
 #ifdef ACPI_APPLICATION
 
-    if (DebugLevel == DEBUG_DEFAULT)
-    {
-        DebugLevel = 0x0FFFFEFF;
-    }
-            
     DbCloseDebugFile ();
     DebugFile = fopen (Name, "w+");
     if (DebugFile)
@@ -279,9 +275,6 @@ DbLoadAcpiTable (
     ACPI_STATUS             Status;
 
 
-    AcpiInitialize (NULL);
-
-
     fp = fopen (Filename, "rb");
     if (!fp)
     {
@@ -298,9 +291,16 @@ DbLoadAcpiTable (
     Gbl_DSDT = (ACPI_TABLE_HEADER *) DsdtPtr;
 
 
+    DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
 
     AmlPtr = DsdtPtr + sizeof (ACPI_TABLE_HEADER);
     AmlLength = DsdtLength - sizeof (ACPI_TABLE_HEADER);
+
+
+    /* 
+     * This code is very similar to AcpiLoadNamespace,
+     * except that we don't initialize the hardware.
+     */
 
     Status = NsSetup ();
     if (ACPI_FAILURE (Status))
@@ -314,6 +314,25 @@ DbLoadAcpiTable (
     {
         Status = DbSecondPassParse (root);
     }
+
+
+    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+
+    if (ACPI_SUCCESS (Status))
+    {
+        OsdPrintf ("ACPI Table successfully loaded\n");
+    }
+
+    else
+    {
+        OsdPrintf ("Failure while loading ACPI Table - %s\n", CmFormatException (Status));
+    }
+
+    /* Install the default OpRegion handlers, ignore the return code right now. */
+
+    EvInstallDefaultAddressSpaceHandlers ();
+
+    DbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
 #endif  /* ACPI_APPLICATION */  
     return AE_OK;
