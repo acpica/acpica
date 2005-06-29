@@ -1,114 +1,119 @@
 
 /*
-/ Common stuff that may move later
-/*
+ *  Common stuff that may move later
+ */
 
-#include <stdio.h>
-#include <stdarg.h>
-/*include <varargs.h>*/
 
 #pragma pack(1)
 #include <bu.h>
-#include "acpiosd.h"
 #include <acpi.h>
+#include "acpiosd.h"
 
 
 #define WIN_DS_REGISTER     0x0030
 
-char * pcWhy;
-char acWhyBuf [ACWHYBUF_SIZE];
+char        * Why;
+char        WhyBuf [WhyBuf_SIZE];
+int         AcpiHook = 0;
+int         __AcpiLibInitStatus = 0;
+selector    FlatSeg;
 
-int         iAcpiHook = 0;
-int         __iAcpiLibInitStatus = 0;
-selector    sFlatSeg;
 
-
-/* Debug switchi */
+/* Debug switch */
 
 int DebugLevel = 0x7FFFFFFF;
 
-int debug_level (void)
+int
+debug_level (void)
 {
     return DebugLevel;
 }
 
-void set_debug_level (int dl)
+void
+set_debug_level (int dl)
 {
     DebugLevel = dl;
 }
 
 
-
-void _dKinc_error (char *a, int b, int c, char * d, int e, int f)
+void
+_Kinc_error (char *a, int b, int c, char * d, int e, int f)
 {
     OsdPrintf (NULL, "*** Error %s at line %d, file %s\n", a, c, d); 
     return;
 }
 
 
-void dKinc_error (char *a, int b)
+void
+Kinc_error (char *a, int b)
 {
     OsdPrintf (NULL, "*** Error %s\n", a); 
     return;
 }
 
 
-void _dKinc_info (char *a, int b, int c, char * d, int e, int f)
+void
+_Kinc_info (char *a, int b, int c, char * d, int e, int f)
 {
     OsdPrintf (NULL, "*** Info %s at line %d, file %s\n", a, c, d); 
     return;
 }
 
-void dKinc_info (char *a, int b, int c, char * d, int e, int f)
+void
+Kinc_info (char *a, int b, int c, char * d, int e, int f)
 {
     OsdPrintf (NULL, "*** Info %s at line %d, file %s\n", a, c, d); 
     return;
 }
 
-void _dKinc_warning (char *a, int b, int c, char * d, int e, int f)
+void
+_Kinc_warning (char *a, int b, int c, char * d, int e, int f)
 {
     OsdPrintf (NULL, "*** Warning %s at line %d, file %s\n", a, c, d); 
     return;
 }
 
-void dKinc_warning (char *a, int b)
+void
+Kinc_warning (char *a, int b)
 {
     OsdPrintf (NULL, "*** Warning %s\n", a); 
     return;
 }
 
-void vKFatalError (char * a, char * b)
+void
+KFatalError (char * a, char * b)
 {
     OsdPrintf (NULL, "*** Fatal Error %s: %s\n", a, b);
     return;
 }
 
 void
-vCloseOFT (void)
+CloseOFT (void)
 {
-    OsdPrintf (NULL, "vCloseOFT called, not supported **********\n");
+    OsdPrintf (NULL, "CloseOFT called, not supported **********\n");
     return;
 }
 
 void
-vRestoreOFT (void)
+RestoreOFT (void)
 {
-    OsdPrintf (NULL, "vRestoreOFT called, not supported **********\n");
+    OsdPrintf (NULL, "RestoreOFT called, not supported **********\n");
     return;
 }
 
-void vDumpBuf(BYTE *pbBuffer, size_t sCount, int iFlags, LogHandle hLogFile,
+void
+DumpBuf (BYTE *Buffer, size_t Count, int Flags, LogHandle LogFile,
     int iLogFlags)
 {
-    unsigned int            i = 0;
-    unsigned int            j;
-    unsigned char           BufChar;
+    unsigned int    i = 0;
+    unsigned int    j;
+    unsigned char   BufChar;
 
 
     /*
      Nasty little dump buffer routine!
     */
-    while (i <= sCount)
+    while (i <= Count)
     {
         /* Print current offset */
 
@@ -119,10 +124,10 @@ void vDumpBuf(BYTE *pbBuffer, size_t sCount, int iFlags, LogHandle hLogFile,
 
         for (j = 0; j < 16; j++)
         {
-            if (i + j >= sCount)
+            if (i + j >= Count)
                 goto cleanup;
 
-            OsdPrintf (NULL, "%02X ", pbBuffer[i + j]);
+            OsdPrintf (NULL, "%02X ", Buffer[i + j]);
         }
 
         /* Print the ASCII equivalent characters
@@ -131,10 +136,10 @@ void vDumpBuf(BYTE *pbBuffer, size_t sCount, int iFlags, LogHandle hLogFile,
 
         for (j = 0; j < 16; j++)
         {
-            if (i + j >= sCount)
+            if (i + j >= Count)
                 goto cleanup;
 
-            BufChar = pbBuffer[i + j];
+            BufChar = Buffer[i + j];
             if ((BufChar > 0x1F && BufChar < 0x2E) ||
                 (BufChar > 0x2F && BufChar < 0x61) ||
                 (BufChar > 0x60 && BufChar < 0x7F))
@@ -160,21 +165,21 @@ cleanup:
 }
 
 void
-vSetNotSupported (void)
+SetNotSupported (void)
 {
-    OsdPrintf (NULL, "vSetNotSupported called, not supported **********\n");
+    OsdPrintf (NULL, "SetNotSupported called, not supported **********\n");
     return;
 }
 
 void 
-vDisplayTable (void *pHeader, int iDisplayBitFlags)
+DisplayTable (void *Header, int DisplayBitFlags)
 {
-    OsdPrintf (NULL, "vDisplayTable called, not supported **********\n");
+    OsdPrintf (NULL, "DisplayTable called, not supported **********\n");
     return;
 }
 
 void
-vFunctionTrace (char * FileName, char * FunctionName)
+FunctionTrace (char * FileName, char * FunctionName)
 {
 
     OsdPrintf (NULL, "Enter Module: %10s, Function: %s\n", FileName, FunctionName);
@@ -223,22 +228,25 @@ GetMasterLogHandle (void)
 
 /* Pointer stuff, must get rid of this eventually */
 
-size_t sPtrOffset (void *pvPtr)
+size_t
+PtrOffset (void *Ptr)
 {
-    OsdPrintf (NULL, "sPtrOffset called, not supported **********\n");
-    return (size_t) pvPtr;
+    OsdPrintf (NULL, "PtrOffset called, not supported **********\n");
+    return (size_t) Ptr;
 }
 
-selector sPtrSelector (void *pvPtr)
+selector
+PtrSelector (void *Ptr)
 {
-    OsdPrintf (NULL, "sPtrSelector called, not supported **********\n");
+    OsdPrintf (NULL, "PtrSelector called, not supported **********\n");
     return (selector) WIN_DS_REGISTER;
 }
 
-void * pvBuildPtr (selector sSeg, size_t sOffset)
+void *
+BuildPtr (selector Seg, size_t Offset)
 {
-    OsdPrintf (NULL, "pvBuildPtr called, not supported **********\n");
-    return (void *) sOffset;
+    OsdPrintf (NULL, "BuildPtr called, not supported **********\n");
+    return (void *) Offset;
 }
 
 void *
@@ -264,7 +272,7 @@ ebds (void)
 /* Interrupt handlers */
 
 DWORD
-wInstallInterruptHandler (
+InstallInterruptHandler (
     BYTE                InterruptNumber,
     int                 (* Isr)(void),
     BYTE                InterruptTaskFlag,
@@ -272,16 +280,16 @@ wInstallInterruptHandler (
     WORD *              ExceptPtr)
 {
 
-    OsdPrintf (NULL, "wInstallInterruptHandler called, not supported **********\n");
+    OsdPrintf (NULL, "InstallInterruptHandler called, not supported **********\n");
 
     return (DWORD) OsdInstallInterruptHandler (InterruptNumber, Isr, ExceptPtr);
 
 }
 
 int
-iRemoveInterruptHandler (DWORD wKey)
+RemoveInterruptHandler (DWORD wKey)
 {
-    OsdPrintf (NULL, "iRemoveInterruptHandler called, not supported **********\n");
+    OsdPrintf (NULL, "RemoveInterruptHandler called, not supported **********\n");
     return 0;
 }
 
