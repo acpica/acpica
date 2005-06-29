@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -194,7 +194,7 @@ LdLoadNamespace (void)
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 LdLoadFieldElements (
     ASL_PARSE_NODE          *PsNode,
     ACPI_WALK_STATE         *WalkState)
@@ -236,21 +236,32 @@ LdLoadFieldElements (
 
             Status = AcpiNsLookup (WalkState->ScopeInfo, Child->Value.String,
                             INTERNAL_TYPE_REGION_FIELD, IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE | NS_ERROR_IF_FOUND, 
                             NULL, &NsNode);
             if (ACPI_FAILURE (Status))
             {
-                /* TBD - emit error */
-                return;
+                if (Status != AE_ALREADY_EXISTS)
+                {
+                     return (Status);
+                }
+                /* 
+                 * The name already exists in this scope
+                 * But continue processing the elements
+                 */
+                AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Child, Child->Value.String);
             }
-
-            Child->NsNode = NsNode;
-            NsNode->Object = (ACPI_OPERAND_OBJECT *) Child;
+            else
+            {
+                Child->NsNode = NsNode;
+                NsNode->Object = (ACPI_OPERAND_OBJECT *) Child;
+            }
             break;
         }
 
         Child = Child->Peer;
     }
+
+    return (AE_OK);
 }
 
 
@@ -272,7 +283,7 @@ LdLoadFieldElements (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 LdLoadResourceElements (
     ASL_PARSE_NODE          *PsNode,
     ACPI_WALK_STATE         *WalkState)
@@ -286,12 +297,13 @@ LdLoadResourceElements (
      * Enter the resouce name into the namespace
      * This opens a scope
      */
-    Status = AcpiNsLookup (WalkState->ScopeInfo,
-                    PsNode->Namepath,
-                    INTERNAL_TYPE_RESOURCE,
-                    IMODE_LOAD_PASS1,
-                    NS_NO_UPSEARCH,
+    Status = AcpiNsLookup (WalkState->ScopeInfo, PsNode->Namepath,
+                    INTERNAL_TYPE_RESOURCE, IMODE_LOAD_PASS1, NS_NO_UPSEARCH,
                     WalkState, &NsNode);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
 
     /*
@@ -307,13 +319,12 @@ LdLoadResourceElements (
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             InitializerNode->ExternalName,
                             INTERNAL_TYPE_RESOURCE_FIELD,
-                            IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            IMODE_LOAD_PASS1, NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                             NULL, &NsNode);
 
             if (ACPI_FAILURE (Status))
             {
-                return;
+                return (Status);
             }
 
             /*
@@ -334,6 +345,8 @@ LdLoadResourceElements (
 
         InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
     }
+
+    return (AE_OK);
 }
 
 
@@ -382,8 +395,8 @@ LdNamespace1Begin (
     case AML_INDEX_FIELD_OP:
     case AML_FIELD_OP:
 
-        LdLoadFieldElements (PsNode, WalkState);
-        return (AE_OK);
+        Status = LdLoadFieldElements (PsNode, WalkState);
+        return (Status);
     }
 
 
@@ -439,8 +452,8 @@ LdNamespace1Begin (
         /* TBD: Merge into AcpiDsMapNamedOpcodeToDataType */
 
         DataType = INTERNAL_TYPE_RESOURCE;
-        LdLoadResourceElements (PsNode, WalkState);
-        return AE_OK;
+        Status = LdLoadResourceElements (PsNode, WalkState);
+        return (Status);
     }
 
     else
@@ -466,7 +479,7 @@ LdNamespace1Begin (
 
     if (ACPI_FAILURE (Status))
     {
-        if (Status == AE_EXIST)
+        if (Status == AE_ALREADY_EXISTS)
         {
             /* The name already exists in this scope */
 
