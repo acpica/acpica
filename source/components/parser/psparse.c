@@ -194,7 +194,6 @@ PsDeleteParseTree (
 
     if (Op == Gbl_ParsedNamespaceRoot)
     {
-        DEBUG_EXEC (DbGenerateStatistics ());
         Op = PsGetChild (Op);
     }
 
@@ -350,35 +349,18 @@ PsParseLoop (
     ACPI_PARSE_STATE        *ParserState)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_GENERIC_OP         *Op;            /* current op */
-    char                    *Args = NULL;   /* current op next argument */
-    ACPI_OP_INFO            *Opc;
+    ACPI_GENERIC_OP         *Op = NULL;            /* current op */
+    ACPI_OP_INFO            *OpInfo;
     ACPI_GENERIC_OP         *Arg = NULL;
     ACPI_DEFERRED_OP        *DeferredOp;
     UINT32                  ArgCount;       /* push for fixed or variable arguments */
+    UINT32                  ArgTypes = 0;
     ACPI_PTRDIFF            AmlOffset;
     UINT16                  Opcode;
+    ACPI_GENERIC_OP         PreOp;
  
 
     FUNCTION_TRACE_PTR ("PsParseLoop", ParserState);
-
-
-    /*
-     * Handle the case where we are restarting a control method that has
-     * just completed a scope
-     *
-     * TBD: Obsolete now that we don't execute and parse at the same time?
-     */
-
-    if (PsHasCompletedScope (ParserState))
-    {
-        PsPopScope (ParserState, &Op, &Args);
-    }
-
-    else
-    {
-        Op = NULL;
-    }
 
 
 
@@ -393,7 +375,7 @@ PsParseLoop (
 
             AmlOffset   = ParserState->Aml - ParserState->AmlStart;
             Opcode      = PsPeekOpcode (ParserState);
-            Opc         = PsGetOpcodeInfo (Opcode);
+            OpInfo      = PsGetOpcodeInfo (Opcode);
 
             /*
              * First cut to determine what we have found:
@@ -402,12 +384,12 @@ PsParseLoop (
              * 3) An unknown/invalid opcode
              */
 
-            if (Opc)
+            if (OpInfo)
             {
                 /* Found opcode info, this is a normal opcode */
 
                 ParserState->Aml += PsGetOpcodeSize (Opcode);
-                Args = Opc->Args;
+                ArgTypes = OpInfo->ParseArgs;
             }
 
             else if (PsIsPrefixChar (Opcode) || PsIsLeadingChar (Opcode))
@@ -417,8 +399,8 @@ PsParseLoop (
                  * Convert the bare name string to a namepath. 
                  */
 
-                Opcode = AML_NAMEPATH;
-                Args = "n";
+                Opcode = AML_NAMEPATH_OP;
+                ArgTypes = ARGP_NAMESTRING;
             }
 
             else
@@ -436,30 +418,20 @@ PsParseLoop (
 
             if (PsIsNamedOp (Opcode))
             {
-                if (*Args == AML_PKGLENGTH_ARG)
-                {
-                    /* get package length (nothing is returned) */
+                PreOp.Value.Arg = NULL;
+                PreOp.Opcode = Opcode;
 
-                    PsGetNextArg (ParserState, *Args, &ArgCount);
-                    Args++;
+                while (GET_CURRENT_ARG_TYPE (ArgTypes) != ARGP_NAME)
+                {
+                    Arg = PsGetNextArg (ParserState, GET_CURRENT_ARG_TYPE (ArgTypes), &ArgCount);
+                    PsAppendArg (&PreOp, Arg);
+                    INCREMENT_ARG_LIST (ArgTypes);
                 }
 
       
-                if (Opcode == AML_AliasOp)
-                {
-                    Arg = PsGetNextArg (ParserState, *Args, &ArgCount);
-                
-                    if (Arg)
-                    {
-                        Arg->AmlOffset = AmlOffset;
-                    }
+                /* We know that this arg is a name, move to next arg */
 
-                    AmlOffset   = ParserState->Aml - ParserState->AmlStart;
-                    Args = NULL;
-                }
-
-                else
-                    Args++;
+                INCREMENT_ARG_LIST (ArgTypes);
 
 
                 /* Find the name in the parse tree */
@@ -474,12 +446,8 @@ PsParseLoop (
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
 
+                PsAppendArg (Op, PreOp.Value.Arg);
                 Gbl_Depth++;
-
-                if (Opcode == AML_AliasOp)
-                {
-                    PsAppendArg (Op, Arg);
-                }
 
 
                 if (Op->Opcode == AML_RegionOp)
@@ -515,16 +483,16 @@ PsParseLoop (
         
             Op->AmlOffset = AmlOffset;
 
-            if (Opc)
+            if (OpInfo)
             {
                 DEBUG_PRINT (TRACE_PARSE, ("ParseLoop:  Op=%p (%s) Opcode=%4.4lX Offset=%5.5lX\n",
-                                Op, Opc->Name, Op->Opcode, Op->AmlOffset));
+                                Op, OpInfo->Name, Op->Opcode, Op->AmlOffset));
             }
         }
 
 
         ArgCount = 0;
-        if (Args)
+        if (ArgTypes)   /* Are there any arguments that must be processed? */
         {
             /* get arguments */
 
@@ -537,13 +505,13 @@ PsParseLoop (
 
                 /* fill in constant or string argument directly */
 
-                PsGetNextSimpleArg (ParserState, *Args, Op);
+                PsGetNextSimpleArg (ParserState, GET_CURRENT_ARG_TYPE (ArgTypes), Op);
                 break;
 
-            case AML_NAMEPATH:      /* AML_NAMESTRING_ARG */
+            case AML_NAMEPATH_OP:   /* AML_NAMESTRING_ARG */
 
                 PsGetNextNamepath (ParserState, Op, &ArgCount, 1);
-                Args = NULL;
+                ArgTypes = 0;
                 break;
 
 
@@ -551,10 +519,10 @@ PsParseLoop (
 
                 /* Op is not a constant or string, append each argument */
 
-                while (*Args && !ArgCount)
+                while (GET_CURRENT_ARG_TYPE (ArgTypes) && !ArgCount)
                 {
                     AmlOffset = ParserState->Aml - ParserState->AmlStart;
-                    Arg = PsGetNextArg (ParserState, *Args, &ArgCount);
+                    Arg = PsGetNextArg (ParserState, GET_CURRENT_ARG_TYPE (ArgTypes), &ArgCount);
                 
                     if (Arg)
                     {
@@ -562,7 +530,7 @@ PsParseLoop (
                     }
 
                     PsAppendArg (Op, Arg);
-                    Args++;
+                    INCREMENT_ARG_LIST (ArgTypes);
                 }
 
 
@@ -626,7 +594,7 @@ PsParseLoop (
 
             if (PsHasCompletedScope (ParserState))
             {
-                PsPopScope (ParserState, &Op, &Args);
+                PsPopScope (ParserState, &Op, &ArgTypes);
             }
 
             else
@@ -639,7 +607,7 @@ PsParseLoop (
         {
             /* complex argument, push Op and prepare for argument */
 
-            PsPushScope (ParserState, Op, Args, ArgCount);
+            PsPushScope (ParserState, Op, ArgTypes, ArgCount);
             Op = NULL;
         }
 
@@ -668,7 +636,7 @@ ACPI_STATUS
 PsParseAml (
     ACPI_GENERIC_OP         *StartScope,
     UINT8                   *Aml, 
-    INT32                   AmlSize)
+    UINT32                  AmlSize)
 {
     ACPI_STATUS             Status;
     ACPI_PARSE_STATE        *ParserState;
@@ -702,94 +670,6 @@ PsParseAml (
 
 
     return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    PsParseTable
- *
- * PARAMETERS:  Aml                 - Pointer to the raw AML code to parse
- *              AmlSize             - Length of the AML to parse
- *              DescendingCallback  - Called as each opcode is encountered during
- *                                    descent of the parse tree
- *              AscendingCallback   - Called as each opcode is completed, during
- *                                    ascent of the parse tree
- *              RootObject          - TBD: REMOVE??
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Parse AML within an ACPI table and return a tree of ops
- *
- ******************************************************************************/
-
-ACPI_STATUS
-PsParseTable (
-    UINT8                   *Aml, 
-    INT32                   AmlSize,
-    INTERPRETER_CALLBACK    DescendingCallback,
-    INTERPRETER_CALLBACK    AscendingCallback,
-    ACPI_GENERIC_OP         **RootObject)
-{
-    ACPI_STATUS             Status;
-
-
-
-    FUNCTION_TRACE ("PsParseTable");
-
-
-    /* Create the root object */
-
-    Gbl_ParsedNamespaceRoot = PsAllocOp (AML_ScopeOp);
-    if (!Gbl_ParsedNamespaceRoot)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    /* Initialize the root object */
-
-    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Name = * (UINT32 *) NS_ROOT;
-
-    /* Pass 1:  Parse everything except control method bodies */
-
-    Status = PsParseAml (Gbl_ParsedNamespaceRoot, Aml, AmlSize); 
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-#ifndef PARSER_ONLY
-
-    DEBUG_PRINT (TRACE_PARSE, ("PsParseTable: Building Internal Namespace\n"));
-BREAKPOINT3;
-
-/* TBD: Temp only */
-
-    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL, NULL,
-                        DsLoad1BeginOp, DsLoad1EndOp);
-
-
-    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL, NULL,
-                        DescendingCallback, AscendingCallback);
-
-
-    /*
-     * Now that the internal namespace has been constructed, we can delete the
-     * parsed namespace, since it is no longer needed
-     */
-
-    DEBUG_PRINT (TRACE_PARSE, ("PsParseTable: Deleting Parsed Namespace\n"));
-BREAKPOINT3;
-
-
-    PsDeleteParseTree (Gbl_ParsedNamespaceRoot);
-    Gbl_ParsedNamespaceRoot = NULL;
-#endif
-
-    if (RootObject)
-        *RootObject = Gbl_ParsedNamespaceRoot;
-
-    return_ACPI_STATUS (AE_OK);
 }
 
 
