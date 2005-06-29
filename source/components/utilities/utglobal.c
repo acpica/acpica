@@ -115,7 +115,7 @@
 
     /* Debug switch - level and trace mask */
 
-#ifdef _DEBUG
+#ifdef ACPI_DEBUG
 UINT32                      DebugLevel = DEBUG_DEFAULT;
 #else
 UINT32                      DebugLevel = NORMAL_DEFAULT;
@@ -347,7 +347,7 @@ UINT32                  SciHandle;
 FIXED_EVENT_HANDLER     FixedEventHandlers[NUM_FIXED_EVENTS];
 
 
-#ifdef _DEBUG
+#ifdef ACPI_DEBUG
 UINT32                  EventCount[NUM_FIXED_EVENTS];   
 #endif
 
@@ -392,6 +392,7 @@ InitAcpiLibGlobals (void)
     /* File handles and names */
     
     DsdtFile                = NULL;
+
     OutputFile              = NULL;
     InputFile               = NULL;
     
