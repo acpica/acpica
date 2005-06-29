@@ -701,20 +701,19 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
          */
 
         Status = Execute_ADR (Nte, &RegionObj->Region.RegionData);
-        if (Status != AE_OK)
+        if (ACPI_FAILURE (Status))
         {
             /*
-             *  We stop the initialization here, we don't want to
-             *  touch an address space if we don't know the address
-             *  Since the handler is set to NULL, the dispatch routine
-             *  not access anything
+             *  We ignore the return code.  We need some value for the _ADR
+             *  field.  Some systems do not have _ADR fields in the root bridge
+             *
+             *  However, it will allow weird results if the BIOS writer
+             *  creates an opregion within the scope of a device that doesn't
+             *  have a _ADR method.
              */
-            DEBUG_PRINT (TRACE_OPREGION,
-                ("Unable to execute PCI _ADR for region 0x%X in device 0x%X\n",
-                    RegionObj, Nte));
-
-            return_ACPI_STATUS (Status);
+            RegionObj->Region.RegionData = 0;
         }
+
         break;
 
 
