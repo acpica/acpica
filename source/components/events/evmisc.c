@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -661,6 +661,10 @@ AcpiEvTerminate (void)
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not remove SCI handler\n"));
         }
     }
+
+    /* Deallocate all handler objects installed within GPE info structs */
+
+    Status = AcpiEvWalkGpeList (AcpiEvDeleteGpeHandlers);
 
     /* Return to original mode if necessary */
 
