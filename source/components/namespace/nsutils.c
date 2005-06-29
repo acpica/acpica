@@ -125,7 +125,8 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *              UserFunction -      Called when an object of "Type" is found
  *              Context -           Passed to user function
  *
- * RETURNS      Return value from the UserFunction
+ * RETURNS      Return value from the UserFunction if terminated early.
+ *              Otherwise, returns NULL.
  *
  * DESCRIPTION: Performs a modified depth-first walk of the namespace tree,
  *              starting (and ending) at the object specified by StartHandle.
@@ -161,14 +162,16 @@ NsWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
 
     if (OUTRANGE (Type, NsTypeNames))
     {
-        return FALSE;
+        return NULL;
     }
 
+BREAKPOINT3;
     /* Begin search in the scope owned by the starting object */
+    /* Failure could be bad scope or simply *no* scope */
 
-    if (!(Scope = AcpiGetScope (StartHandle)))
+    if (ACPI_FAILURE (AcpiGetScope (StartHandle, &Scope)))
     {
-        return FALSE;
+        return NULL;
     }
 
     /* 
@@ -180,7 +183,7 @@ NsWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ObjHandle = AcpiGetNextObject (Type, Scope, ObjHandle))
+        if (ACPI_SUCCESS (AcpiGetNextObject (Type, Scope, ObjHandle, &ObjHandle)))
         {
             /* Found an object - process by calling the user function */
 
@@ -197,7 +200,7 @@ NsWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
             {
                 /* Check for a valid scope for this object */
 
-                if (NewScope = AcpiGetScope (ObjHandle))
+                if (ACPI_SUCCESS (AcpiGetScope (ObjHandle, &NewScope)))
                 {
                     /* There is a valid scope, we will check for child objects */
 
@@ -215,8 +218,8 @@ NsWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
              * parent's scope (But only back up to where we started the search)
              */
             Level--;
-            ObjHandle = AcpiGetParent (Scope);
-            Scope = AcpiGetContainingScope (ObjHandle);
+            AcpiGetParent (Scope, &ObjHandle);
+            AcpiGetContainingScope (ObjHandle, &Scope);
         }
     }
 
@@ -264,7 +267,7 @@ NsChecksum (void *Buffer, UINT32 Length)
  *
  * FUNCTION:    NsAllocateNteDesc
  *
- * PARAMETERS:  INT32 Size       # of nte in table
+ * PARAMETERS:  NteCount            Count of NTEs to allocate
  *
  * DESCRIPTION: Allocate an array of nte, including prepended link space
  *              Array is set to all zeros via OsdCallcate().
@@ -274,7 +277,7 @@ NsChecksum (void *Buffer, UINT32 Length)
  ***************************************************************************/
 
 nte *
-NsAllocateNteDesc (INT32 Size)
+NsAllocateNteDesc (INT32 NteCount)
 {
     nte             *NewNteDesc = NULL;
     size_t          AllocSize;
@@ -283,19 +286,15 @@ NsAllocateNteDesc (INT32 Size)
     FUNCTION_TRACE ("AllocateNteDesc");
 
 
-    AllocSize = (size_t) Size * sizeof (nte);
+    AllocSize = (size_t) NteCount * sizeof (nte);
 
     
     /* Allow room for link to appendage */
     
-#ifndef USE_HASHING
     AllocSize += sizeof (nte *);
-#endif
 
   
     NewNteDesc = LocalCallocate (AllocSize);
-
-#ifndef USE_HASHING
     if (NewNteDesc)
     {
         /* Move past the appendage pointer */
@@ -304,7 +303,6 @@ NsAllocateNteDesc (INT32 Size)
     }
 
     DEBUG_PRINT (TRACE_EXEC, ("AllocateNteDesc: NewNteDesc=%p\n", NewNteDesc));
-#endif
 
     return NewNteDesc;
 }
