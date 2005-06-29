@@ -193,6 +193,66 @@ TbSystemTablePointer (
 
 /******************************************************************************
  *
+ * FUNCTION:    TbMapAcpiTable
+ *
+ * PARAMETERS:  PhysicalAddress         - Physical address of table to map
+ *              *Size                   - Size of the table.  If zero, the size
+ *                                        from the table header is used.  Actual
+ *                                        size is returned here.
+ *
+ * RETURN:      Logical address of the mapped table.
+ *
+ * DESCRIPTION: Maps the physical address of table into a logical address
+ *
+ ******************************************************************************/
+
+void *
+TbMapAcpiTable (
+    void                    *PhysicalAddress,
+    UINT32                  *Size)
+{
+    ACPI_TABLE_HEADER       *Table;
+    UINT32                  TableSize = *Size;
+
+
+
+    /* If size is zero, look at the table header to get the actual size */
+
+    if (!*Size)
+    {
+        /* Get the table header so we can extract the table length */
+
+        Table = OsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER));
+        if (!Table)
+        {
+            return NULL;
+        }
+
+        /* Now we know how large to make the mapping (table + header) */
+
+        TableSize = Table->Length;
+        OsdUnMapMemory (Table, sizeof (ACPI_TABLE_HEADER));
+    }
+
+
+    /* Map the physical memory for the correct length */
+
+    Table = OsdMapMemory (PhysicalAddress, TableSize);
+    if (!Table)
+    {
+        return NULL;
+    }
+
+    DEBUG_PRINT (ACPI_INFO, ("Mapped memory for ACPI table, length=%d(0x%X) at %p\n",
+                    TableSize, TableSize, Table));
+
+    *Size = TableSize;
+    return Table;
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    TbVerifyTableChecksum
  *
  * PARAMETERS:  *TableHeader            - ACPI table to verify
@@ -209,7 +269,7 @@ TbVerifyTableChecksum (
     void                    *TableHeader)
 {
     UINT8                   CheckSum;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("TbVerifyTableChecksum");
@@ -228,13 +288,6 @@ TbVerifyTableChecksum (
         DEBUG_PRINT (ACPI_INFO, ("TbVerifyTableChecksum: Invalid checksum (%X)\n", CheckSum));
 
         Status = AE_BAD_CHECKSUM;
-    }
-
-    else
-    {
-        DEBUG_PRINT (ACPI_INFO, (" - Checksum is OK\n"));
-
-        Status = AE_OK;
     }
 
 

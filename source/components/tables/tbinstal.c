@@ -127,65 +127,6 @@
 
 
 
-/******************************************************************************
- *
- * FUNCTION:    TbMapAcpiTable
- *
- * PARAMETERS:  PhysicalAddress         - Physical address of table to map
- *              *Size                   - Size of the table.  If zero, the size
- *                                        from the table header is used.  Actual
- *                                        size is returned here.
- *
- * RETURN:      Logical address of the mapped table.
- *
- * DESCRIPTION: Maps the physical address of table into a logical address
- *
- ******************************************************************************/
-
-void *
-TbMapAcpiTable (
-    void                    *PhysicalAddress,
-    UINT32                  *Size)
-{
-    ACPI_TABLE_HEADER       *Table;
-    UINT32                  TableSize = *Size;
-
-
-
-    /* If size is zero, look at the table header to get the actual size */
-
-    if (!*Size)
-    {
-        /* Get the table header so we can extract the table length */
-
-        Table = OsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER));
-        if (!Table)
-        {
-            return NULL;
-        }
-
-        /* Now we know how large to make the mapping (table + header) */
-
-        TableSize = Table->Length;
-        OsdUnMapMemory (Table, sizeof (ACPI_TABLE_HEADER));
-    }
-
-
-    /* Map the physical memory for the correct length */
-
-    Table = OsdMapMemory (PhysicalAddress, TableSize);
-    if (!Table)
-    {
-        return NULL;
-    }
-
-    DEBUG_PRINT (ACPI_INFO, ("Mapped memory for ACPI table, length=%d(0x%X) at %p\n",
-                    TableSize, TableSize, Table));
-
-    *Size = TableSize;
-    return Table;
-}
-
 
 
 /******************************************************************************
@@ -198,7 +139,8 @@ TbMapAcpiTable (
  * RETURN:      Status
  *
  * DESCRIPTION: Load and validate all tables other than the RSDT.  The RSDT must
- *              already be loaded and validated.
+ *              already be loaded and validated. 
+ *              Install the table into the global data structs.
  *
  ******************************************************************************/
 
@@ -207,13 +149,83 @@ TbInstallTable (
     char                    *TablePtr,
     ACPI_TABLE_DESC         *TableInfo)
 {
-    ACPI_TABLE_HEADER       *TableHeader = NULL;
-    ACPI_STATUS             Status = AE_OK;
     ACPI_TABLE_TYPE         TableType;
-    void                    **TableGlobalPtr;
+    ACPI_TABLE_HEADER       *TableHeader;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("TbInstallTable");
+
+
+    /* Check the table signature and make sure it is recognized */
+
+    Status = TbRecognizeTable (TablePtr, TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Table type is returned by RecognizeTable */
+
+    TableType   = TableInfo->Type;
+    TableHeader = TableInfo->Pointer;
+
+    /* Install the table into the global data structure */
+
+    Status = TbInitTableDescriptor (TableInfo->Type, TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Initialize the typed global pointer for this table */
+
+    if (Gbl_AcpiTableData[TableType].GlobalPtr)
+    {
+        *(Gbl_AcpiTableData[TableType].GlobalPtr) = TableHeader;
+    }
+
+    DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n", 
+                                Gbl_AcpiTableData[TableType].Name, TableHeader));
+
+    /* Validate checksum for _most_ tables */
+
+    if (TableType != TABLE_FACS)
+    {
+        TbVerifyTableChecksum (TableHeader);
+    }
+
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    TbRecognizeTable
+ *
+ * PARAMETERS:  TablePtr            - Input buffer pointer, optional
+ *              TableInfo           - Return value from TbGetTable
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Check a table signature for a match against known table types
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+TbRecognizeTable (
+    char                    *TablePtr,
+    ACPI_TABLE_DESC         *TableInfo)
+{
+    ACPI_TABLE_HEADER       *TableHeader;
+    ACPI_STATUS             Status;
+    ACPI_TABLE_TYPE         TableType;
+    void                    **TableGlobalPtr;
+    UINT32                  i;
+
+    
+    FUNCTION_TRACE ("TbRecognizeTable");
 
 
     /* Ensure that we have a valid table pointer */
@@ -225,72 +237,30 @@ TbInstallTable (
     }
 
 
-    /* 
-     * Determine the table type from the 4-character signature 
+    /* Search for a signature match among the known table types */
+
+    Status = AE_BAD_SIGNATURE;
+    for (i = 1; i < NUM_ACPI_TABLES; i++)       /* Start at one -> Skip RSDP */
+    {
+        if (!STRNCMP (TableHeader->Signature, Gbl_AcpiTableData[i].Signature, Gbl_AcpiTableData[i].SigLength))
+        {
+            TableType       = i;
+            TableGlobalPtr  = Gbl_AcpiTableData[i].GlobalPtr;
+            Status          = Gbl_AcpiTableData[i].Status;
+            break;
+        }
+    }
+
+    /* Return the table type via the info struct */
+
+    TableInfo->Type = TableType;
+
+
+    /*
+     * Bad signature means that the table is bad or not one of the recognized tables
      */
 
-    if (!STRNCMP (TableHeader->Signature, FACP_SIG, 4))
-    {
-        TableType       = TABLE_FACP;
-        TableGlobalPtr  = (void **) &Gbl_FACP;
-    }
-
-    else if (!STRNCMP (TableHeader->Signature, FACS_SIG, 4))
-    {
-        TableType       = TABLE_FACS;
-        TableGlobalPtr  = (void **) &Gbl_FACS;
-    }
-
-    else if (!STRNCMP (TableHeader->Signature, DSDT_SIG, 4))
-    {
-        TableType       = TABLE_DSDT;
-        TableGlobalPtr  = (void **) &Gbl_DSDT;
-    }
-    
-    else if (!STRNCMP (TableHeader->Signature, APIC_SIG, 4))
-    {
-        /* APIC table */
-
-        TableType       = TABLE_APIC;
-        TableGlobalPtr  = (void **) &Gbl_APIC;
-    }
-
-    else if (!STRNCMP (TableHeader->Signature, PSDT_SIG, 4))
-    {
-        /* PSDT table [Supports multiple tables] */
-
-        TableType       = TABLE_PSDT;
-        TableGlobalPtr  = NULL;
-    }
-
-    else if (!STRNCMP (TableHeader->Signature, SSDT_SIG, 4))
-    {
-        /* SSDT table [Supports multiple tables] */
-
-        TableType       = TABLE_SSDT;
-        TableGlobalPtr  = NULL;
-    }
-
-
-    else if (!STRNCMP (TableHeader->Signature, SBST_SIG, 4))
-    {
-        /* SBST table */
-
-        TableType       = TABLE_SBST;
-        TableGlobalPtr  = (void **) &Gbl_SBST;
-    }
-
-    else if (!STRNCMP (TableHeader->Signature, BOOT_SIG, 4))
-    {
-        /* 
-         * BOOT table
-         * Although this is a known table, there is nothing we need to do with it
-         */
-
-        return_ACPI_STATUS (AE_BAD_SIGNATURE);
-    }
-
-    else
+    if (Status == AE_BAD_SIGNATURE)
     {
         /* Unknown table */
 
@@ -306,37 +276,17 @@ TbInstallTable (
          */
     
         DUMP_BUFFER (TableHeader, 32, 0);
-
-        return_ACPI_STATUS (AE_BAD_SIGNATURE);
     }
 
 
     /* 
-     * Common table installation code 
+     * An AE_SUPPORT means that the table was recognized, but is not supported
      */
 
-
-    /* Save the table pointers and allocation info */
-
-    Status = TbInstallAcpiTable (TableType, TableInfo);
-    if (ACPI_FAILURE (Status))
+    else if (Status == AE_SUPPORT)
     {
-        return_ACPI_STATUS (Status);
-    }
-
-    if (TableGlobalPtr)
-    {
-        *TableGlobalPtr = TableHeader;
-    }
-
-    DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n", 
-                                Gbl_AcpiTableNames[TableType], TableHeader));
-
-    /* Validate checksum for _most_ tables */
-
-    if (TableType != TABLE_FACS)
-    {
-        TbVerifyTableChecksum (TableHeader);
+        DEBUG_PRINT (ACPI_INFO, ("Unsupported table %s (Type %d) was found and discarded\n",
+                            Gbl_AcpiTableData[TableType].Name, TableType));
     }
 
 
@@ -346,7 +296,7 @@ TbInstallTable (
 
 /****************************************************************************
  *
- * FUNCTION:    TbInstallAcpiTable
+ * FUNCTION:    TbInitTableDescriptor
  *
  * PARAMETERS:  TableType           - The type of the table
  *              TableInfo           - A table info struct
@@ -358,7 +308,7 @@ TbInstallTable (
  ***************************************************************************/
 
 ACPI_STATUS
-TbInstallAcpiTable (
+TbInitTableDescriptor (
     ACPI_TABLE_TYPE         TableType,
     ACPI_TABLE_DESC         *TableInfo)
 {
@@ -366,14 +316,29 @@ TbInstallAcpiTable (
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    FUNCTION_TRACE ("TbInstallAcpiTable");
+    FUNCTION_TRACE_U32 ("TbInitTableDescriptor", TableType);
 
-
+    /*
+     * Install the table into the global data structure 
+     */
+    
     ListHead    = &Gbl_AcpiTables[TableType];
     TableDesc   = ListHead;
    
-    if (Gbl_AcpiTableFlags[TableType] == ACPI_TABLE_SINGLE)
+
+
+    /*
+     * Two major types of tables:  1) Only one instance is allowed.  This includes most
+     * ACPI tables such as the DSDT.  2) Multiple instances of the table are allowed.  This
+     * includes SSDT and PSDTs.
+     */
+
+    if (Gbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE)
     {
+        /*
+         * Only one table allowed, just update the list head
+         */
+
         if (ListHead->Pointer)
         {
             TbFreeAcpiTable (ListHead);
@@ -385,6 +350,11 @@ TbInstallAcpiTable (
 
     else 
     {
+        /*
+         * Multiple tables allowed for this table type, we must link
+         * the new table in to the list of tables of this type.
+         */
+
         if (ListHead->Pointer)
         {
             TableDesc = CmCallocate (sizeof (ACPI_TABLE_DESC));
@@ -395,7 +365,7 @@ TbInstallAcpiTable (
 
             ListHead->Count++;
 
-            /* Update original previous */
+            /* Update the original previous */
 
             ListHead->Prev->Next = TableDesc;
 

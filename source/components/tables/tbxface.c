@@ -315,7 +315,7 @@ AcpiGetTableHeader (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (Gbl_AcpiTableFlags[TableType] == ACPI_TABLE_SINGLE &&
+        (Gbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -402,7 +402,7 @@ AcpiGetTable (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (Gbl_AcpiTableFlags[TableType] == ACPI_TABLE_SINGLE &&
+        (Gbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
