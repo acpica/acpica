@@ -169,7 +169,8 @@
 #define TRACE_RESOURCES				0x00400000
 #define TRACE_INTERRUPTS            0x00800000
 #define TRACE_USER_REQUESTS         0x01000000
-#define TRACE_ALL                   0x00FFFF00
+#define TRACE_PACKAGE               0x02000000
+#define TRACE_ALL                   0x0FFFFF00
 
 /* Exceptionally verbose output -- used in the global "DebugLevel"  */
 
