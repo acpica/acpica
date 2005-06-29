@@ -213,13 +213,13 @@ DbDisplayStatistics (void)
     OsdPrintf ("Control Method Parse Trees:.% 7ld\n", SizeOfMethodTrees);
     OsdPrintf ("Named Object NTEs:..........% 7ld\n", SizeOfNTEs);
     OsdPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
-    OsdPrintf ("Global State Cache.requests.% 7ld\n", Gbl_StateCacheRequests);
-    OsdPrintf ("Global State Cache depth....% 7ld\n", Gbl_GenericStateCacheDepth);
-    OsdPrintf ("Global State Cache..........% 7ld\n", Gbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
+    OsdPrintf ("Global State Cache.size.....% 7ld\n", Gbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
 
     OsdPrintf ("\n");
 
-    OsdPrintf ("Search Statistics:\n\n");
+    OsdPrintf ("Miscellaneous Statistics:\n\n");
+    OsdPrintf ("Global State Cache.requests.% 7ld\n", Gbl_StateCacheRequests);
+    OsdPrintf ("Global State Cache depth....% 7ld\n", Gbl_GenericStateCacheDepth);
     OsdPrintf ("Calls to PsFind:..  ........% 7ld\n", Gbl_PsFindCount);
     OsdPrintf ("Calls to NsLookup:..........% 7ld\n", Gbl_NsLookupCount);
 
