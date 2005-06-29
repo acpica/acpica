@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
- *              $Revision: 1.96 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -782,7 +782,6 @@ AcpiAmlDumpObjectDescriptor (
 
         AcpiOsPrintf ("%20s : %s\n", "Type", "Buffer");
         AcpiOsPrintf ("%20s : %X\n", "Length", ObjDesc->Buffer.Length);
-        AcpiOsPrintf ("%20s : %X\n", "Sequence", ObjDesc->Buffer.Sequence);
         AcpiOsPrintf ("%20s : %p\n", "Pointer", ObjDesc->Buffer.Pointer);
         break;
 
