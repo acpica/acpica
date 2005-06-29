@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.105 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -119,11 +119,9 @@
 
 #include "acpi.h"
 #include "acparser.h"
-#include "acnamesp.h"
 #include "acinterp.h"
 #include "acevents.h"
 #include "amlcode.h"
-#include "acdispat.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -477,11 +475,11 @@ AcpiExOpcode_2A_1T_1R (
                 goto Cleanup;
             }
 
-            if ((Operand[2]->Common.Type == INTERNAL_TYPE_REFERENCE) &&
-                (Operand[2]->Reference.Opcode == AML_ZERO_OP))
+            if ((Operand[2]->Common.Type == ACPI_TYPE_INTEGER) &&
+                (Operand[2]->Common.Flags & AOPOBJ_AML_CONSTANT))
             {
                 /*
-                 * There is no actual result descriptor (the ZeroOp Result
+                 * There is no actual result descriptor (the ZeroOp/Constant Result
                  * descriptor is a placeholder), so just delete the placeholder and
                  * return a reference to the package element
                  */
