@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.203 $
+ *              $Revision: 1.205 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -300,6 +300,8 @@ const char                  *AcpiGbl_ValidOsiStrings[ACPI_NUM_OSI_STRINGS] =
  * NOTES:
  * 1) _SB_ is defined to be a device to allow \_SB_._INI to be run
  *    during the initialization sequence.
+ * 2) _TZ_ is defined to be a thermal zone in order to allow ASL code to
+ *    perform a Notify() operation on it.
  */
 const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
 {
