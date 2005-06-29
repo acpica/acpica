@@ -131,6 +131,10 @@
 #define ACPI_MAX_AML                ((UINT8 *)(~0UL))
 
 
+
+#define PARSE_DELETE_TREE           1
+
+
 /* psapi - Parser external interfaces */
 
 ACPI_STATUS
@@ -217,14 +221,16 @@ PsDeleteParseTree (
 ACPI_STATUS
 PsParseLoop (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_WALK_STATE         *WalkState);
+    ACPI_WALK_STATE         *WalkState,
+    UINT32                  ParseFlags);
 
 
 ACPI_STATUS
 PsParseAml (
     ACPI_GENERIC_OP         *StartScope,
     UINT8                   *Aml, 
-    UINT32                  AmlSize);
+    UINT32                  AmlSize,
+    UINT32                  ParseFlags);
 
 ACPI_STATUS
 PsParseTable (
