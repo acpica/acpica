@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.40 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -274,6 +274,8 @@ main (
     int                     j;
     ACPI_STATUS             Status;
     UINT32                  InitFlags;
+    ACPI_BUFFER             ReturnBuf;
+    char                    Buffer[32];
 
 
     /* Init globals */
@@ -287,12 +289,12 @@ main (
     printf ("ACPI AML Execution/Debug Utility ");
 
 #ifdef _IA16
-    printf ("16-bit ");
+    printf ("(16-bit) ");
 #else
-    printf ("32-bit ");
+    printf ("(32-bit) ");
 #endif
 
-    printf ("version [%s]\n", __DATE__);
+    printf ("CA version %4.4X [%s]\n", ACPI_CA_VERSION, __DATE__);
 
     /* Get the command line options */
 
@@ -386,10 +388,15 @@ main (
         AcpiGbl_FACS = &LocalFACS;
 
 
+
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
-        AeInstallHandlers ();
+        Status = AeInstallHandlers ();
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
 
         Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
@@ -398,6 +405,9 @@ main (
             goto enterloop;
         }
 
+        ReturnBuf.Length = 32;
+        ReturnBuf.Pointer = Buffer;
+        AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
     }
 
 #ifdef _IA16
@@ -429,7 +439,11 @@ main (
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
-        AeInstallHandlers ();
+        Status = AeInstallHandlers ();
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
 
         Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
