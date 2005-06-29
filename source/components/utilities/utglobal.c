@@ -277,13 +277,13 @@ ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
 ACPI_INIT_DATA AcpiGbl_AcpiInitData;
 
 
+#ifdef ACPI_DEBUG
+
 /******************************************************************************
  *
  * Strings and procedures used for debug only
  *
  ******************************************************************************/
-
-#ifdef ACPI_DEBUG
 
 char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
 
@@ -476,7 +476,7 @@ AcpiCmAllocateOwnerId (
     FUNCTION_TRACE ("CmAllocateOwnerId");
 
 
-    AcpiCmAcquireMutex (MTX_CACHES);
+    AcpiCmAcquireMutex (ACPI_MTX_CACHES);
 
     switch (IdType)
     {
@@ -505,7 +505,7 @@ AcpiCmAllocateOwnerId (
     }
 
 
-    AcpiCmReleaseMutex (MTX_CACHES);
+    AcpiCmReleaseMutex (ACPI_MTX_CACHES);
 
     return_VALUE (OwnerId);
 }
@@ -572,94 +572,95 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
 
     /* Global notify handlers */
 
-    AcpiGbl_SysNotify.Handler       = NULL;
-    AcpiGbl_DrvNotify.Handler       = NULL;
+    AcpiGbl_SysNotify.Handler           = NULL;
+    AcpiGbl_DrvNotify.Handler           = NULL;
 
     /* Global "typed" ACPI table pointers */
 
-    AcpiGbl_RSDP                    = NULL;
-    AcpiGbl_RSDT                    = NULL;
-    AcpiGbl_FACS                    = NULL;
-    AcpiGbl_FACP                    = NULL;
-    AcpiGbl_APIC                    = NULL;
-    AcpiGbl_DSDT                    = NULL;
-    AcpiGbl_SBST                    = NULL;
+    AcpiGbl_RSDP                        = NULL;
+    AcpiGbl_RSDT                        = NULL;
+    AcpiGbl_FACS                        = NULL;
+    AcpiGbl_FACP                        = NULL;
+    AcpiGbl_APIC                        = NULL;
+    AcpiGbl_DSDT                        = NULL;
+    AcpiGbl_SBST                        = NULL;
 
 
     /* Global Lock support */
 
-    AcpiGbl_GlobalLockAcquired      = FALSE;
-    AcpiGbl_GlobalLockThreadCount   = 0;
+    AcpiGbl_GlobalLockAcquired          = FALSE;
+    AcpiGbl_GlobalLockThreadCount       = 0;
 
     /* Miscellaneous variables */
 
-    AcpiGbl_SystemFlags             = 0;
-    AcpiGbl_StartupFlags            = 0;
-    AcpiGbl_GlobalLockSet           = FALSE;
-    AcpiGbl_RsdpOriginalLocation    = 0;
-    AcpiGbl_WhenToParseMethods      = METHOD_PARSE_CONFIGURATION;
-    AcpiGbl_CmSingleStep            = FALSE;
-    AcpiGbl_DbTerminateThreads      = FALSE;
-    AcpiGbl_Shutdown                = FALSE;
-    AcpiGbl_NsLookupCount           = 0;
-    AcpiGbl_PsFindCount             = 0;
-    AcpiGbl_AcpiHardwarePresent     = TRUE;
-    AcpiGbl_NextTableOwnerId        = FIRST_TABLE_ID;
-    AcpiGbl_NextMethodOwnerId       = FIRST_METHOD_ID;
-    AcpiGbl_DebuggerConfiguration   = DEBUGGER_THREADING;
+    AcpiGbl_SystemFlags                 = 0;
+    AcpiGbl_StartupFlags                = 0;
+    AcpiGbl_GlobalLockSet               = FALSE;
+    AcpiGbl_RsdpOriginalLocation        = 0;
+    AcpiGbl_WhenToParseMethods          = METHOD_PARSE_CONFIGURATION;
+    AcpiGbl_CmSingleStep                = FALSE;
+    AcpiGbl_DbTerminateThreads          = FALSE;
+    AcpiGbl_Shutdown                    = FALSE;
+    AcpiGbl_NsLookupCount               = 0;
+    AcpiGbl_PsFindCount                 = 0;
+    AcpiGbl_AcpiHardwarePresent         = TRUE;
+    AcpiGbl_NextTableOwnerId            = FIRST_TABLE_ID;
+    AcpiGbl_NextMethodOwnerId           = FIRST_METHOD_ID;
+    AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
 
     /* Cache of small "state" objects */
 
-    AcpiGbl_GenericStateCache       = NULL;
-    AcpiGbl_GenericStateCacheDepth  = 0;
-    AcpiGbl_StateCacheRequests      = 0;
-    AcpiGbl_StateCacheHits          = 0;
+    AcpiGbl_GenericStateCache           = NULL;
+    AcpiGbl_GenericStateCacheDepth      = 0;
+    AcpiGbl_StateCacheRequests          = 0;
+    AcpiGbl_StateCacheHits              = 0;
 
-    AcpiGbl_ParseCache              = NULL;
-    AcpiGbl_ParseCacheDepth         = 0;
-    AcpiGbl_ParseCacheRequests      = 0;
-    AcpiGbl_ParseCacheHits          = 0;
+    AcpiGbl_ParseCache                  = NULL;
+    AcpiGbl_ParseCacheDepth             = 0;
+    AcpiGbl_ParseCacheRequests          = 0;
+    AcpiGbl_ParseCacheHits              = 0;
 
-    AcpiGbl_ObjectCache             = NULL;
-    AcpiGbl_ObjectCacheDepth        = 0;
-    AcpiGbl_ObjectCacheRequests     = 0;
-    AcpiGbl_ObjectCacheHits         = 0;
+    AcpiGbl_ObjectCache                 = NULL;
+    AcpiGbl_ObjectCacheDepth            = 0;
+    AcpiGbl_ObjectCacheRequests         = 0;
+    AcpiGbl_ObjectCacheHits             = 0;
 
-    AcpiGbl_WalkStateCache          = NULL;
-    AcpiGbl_WalkStateCacheDepth     = 0;
-    AcpiGbl_WalkStateCacheRequests  = 0;
-    AcpiGbl_WalkStateCacheHits      = 0;
+    AcpiGbl_WalkStateCache              = NULL;
+    AcpiGbl_WalkStateCacheDepth         = 0;
+    AcpiGbl_WalkStateCacheRequests      = 0;
+    AcpiGbl_WalkStateCacheHits          = 0;
 
     /* Interpreter */
 
-    AcpiGbl_BufSeq                  = 0;
-    AcpiGbl_NamedObjectErr          = FALSE;
+    AcpiGbl_BufSeq                      = 0;
+    AcpiGbl_NamedObjectErr              = FALSE;
 
     /* Parser */
 
-    AcpiGbl_ParsedNamespaceRoot     = NULL;
+    AcpiGbl_ParsedNamespaceRoot         = NULL;
 
     /* Hardware oriented */
 
-    AcpiGbl_Gpe0EnableRegisterSave  = NULL;
-    AcpiGbl_Gpe1EnableRegisterSave  = NULL;
-    AcpiGbl_OriginalMode            = SYS_MODE_UNKNOWN;   /*  original ACPI/legacy mode   */
-    AcpiGbl_GpeRegisters            = NULL;
-    AcpiGbl_GpeInfo                 = NULL;
+    AcpiGbl_Gpe0EnableRegisterSave      = NULL;
+    AcpiGbl_Gpe1EnableRegisterSave      = NULL;
+    AcpiGbl_OriginalMode                = SYS_MODE_UNKNOWN;   /*  original ACPI/legacy mode   */
+    AcpiGbl_GpeRegisters                = NULL;
+    AcpiGbl_GpeInfo                     = NULL;
 
     /* Namespace */
 
-    AcpiGbl_RootObject              = &AcpiGbl_RootObjStruct;
+    AcpiGbl_RootNameTable.NextTable     = NULL;
+    AcpiGbl_RootNameTable.ParentEntry   = NULL;
+    AcpiGbl_RootNameTable.ParentTable   = NULL;
 
-    AcpiGbl_RootObject->Name        = ACPI_ROOT_NAME;
-    AcpiGbl_RootObject->DataType    = DESC_TYPE_NTE;
-    AcpiGbl_RootObject->Type        = ACPI_TYPE_ANY;
-    AcpiGbl_RootObject->Fill1       = 0;
-    AcpiGbl_RootObject->Scope       = NULL;
-    AcpiGbl_RootObject->ParentEntry = NULL;
-    AcpiGbl_RootObject->NextEntry   = NULL;
-    AcpiGbl_RootObject->PrevEntry   = NULL;
-    AcpiGbl_RootObject->Object      = NULL;
+    AcpiGbl_RootObject                  = AcpiGbl_RootNameTable.Entries;
+
+    AcpiGbl_RootObject->Name            = ACPI_ROOT_NAME;
+    AcpiGbl_RootObject->DataType        = ACPI_DESC_TYPE_NAMED;
+    AcpiGbl_RootObject->Type            = ACPI_TYPE_ANY;
+    AcpiGbl_RootObject->ThisIndex       = 0;
+    AcpiGbl_RootObject->ChildTable      = NULL;
+    AcpiGbl_RootObject->Object          = NULL;
 
     /* Memory allocation metrics - compiled out in non-debug mode. */
 

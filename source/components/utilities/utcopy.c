@@ -354,7 +354,7 @@ AcpiCmBuildExternalPackageObject (
          */
 
         if ((!ThisInternalObj) ||
-            (!VALID_DESCRIPTOR_TYPE (ThisInternalObj, DESC_TYPE_ACPI_OBJ)) ||
+            (!VALID_DESCRIPTOR_TYPE (ThisInternalObj, ACPI_DESC_TYPE_INTERNAL)) ||
             (!IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_PACKAGE)))
         {
             /*

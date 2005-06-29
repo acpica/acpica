@@ -144,7 +144,7 @@
 ACPI_STATUS
 AcpiCmEvaluateNumericObject (
     char                    *ObjectName,
-    NAME_TABLE_ENTRY        *AcpiDevice,
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     UINT32                  *Address)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -162,12 +162,12 @@ AcpiCmEvaluateNumericObject (
         if (Status == AE_NOT_FOUND)
         {
             DEBUG_PRINT (ACPI_INFO, ("%s on %4.4s was not found\n", ObjectName,
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name));
+                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
         else
         {
             DEBUG_PRINT (ACPI_ERROR, ("%s on %4.4s failed with status %4.4x\n", ObjectName,
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name, Status));
+                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
         }
 
         return_ACPI_STATUS (Status);
@@ -225,7 +225,7 @@ AcpiCmEvaluateNumericObject (
 
 ACPI_STATUS
 AcpiCmExecute_HID (
-    NAME_TABLE_ENTRY        *AcpiDevice,
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     DEVICE_ID               *Hid)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -243,13 +243,13 @@ AcpiCmExecute_HID (
         if (Status == AE_NOT_FOUND)
         {
             DEBUG_PRINT (ACPI_INFO, ("_HID on %4.4s was not found\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name));
+                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
 
         else
         {
             DEBUG_PRINT (ACPI_ERROR, ("_HID on %4.4s failed with status %4.4x\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name, Status));
+                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
         }
 
         return_ACPI_STATUS (Status);
@@ -321,7 +321,7 @@ AcpiCmExecute_HID (
 
 ACPI_STATUS
 AcpiCmExecute_UID (
-    NAME_TABLE_ENTRY        *AcpiDevice,
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     DEVICE_ID               *Uid)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -336,13 +336,13 @@ AcpiCmExecute_UID (
         if (Status == AE_NOT_FOUND)
         {
             DEBUG_PRINT (ACPI_INFO, ("_UID on %4.4s was not found\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name));
+                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
 
         else
         {
             DEBUG_PRINT (ACPI_ERROR, ("_UID on %4.4s failed with status %4.4x\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name, Status));
+                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
         }
 
         return (Status);
@@ -412,7 +412,7 @@ AcpiCmExecute_UID (
 
 ACPI_STATUS
 AcpiCmExecute_STA (
-    NAME_TABLE_ENTRY        *AcpiDevice,
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     UINT32                  *Flags)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -430,13 +430,13 @@ AcpiCmExecute_STA (
         if (Status == AE_NOT_FOUND)
         {
             DEBUG_PRINT (ACPI_INFO, ("_STA on %4.4s was not found\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name));
+                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
 
         else
         {
             DEBUG_PRINT (ACPI_ERROR, ("_STA on %4.4s failed with status %4.4x\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name, Status));
+                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
         }
 
         return_ACPI_STATUS (Status);

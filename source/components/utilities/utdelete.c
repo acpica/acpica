@@ -202,7 +202,7 @@ AcpiCmDeleteInternalObj (
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Mutex %p, Semaphore %p\n",
                                 Object, Object->Mutex.Semaphore));
 
-        AcpiOsdDeleteSemaphore (Object->Mutex.Semaphore);
+        AcpiOsDeleteSemaphore (Object->Mutex.Semaphore);
         break;
 
 
@@ -211,7 +211,7 @@ AcpiCmDeleteInternalObj (
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** AcpiEvent %p, Semaphore %p\n",
                                 Object, Object->Event.Semaphore));
 
-        AcpiOsdDeleteSemaphore (Object->Event.Semaphore);
+        AcpiOsDeleteSemaphore (Object->Event.Semaphore);
         Object->Event.Semaphore = NULL;
         break;
 
@@ -233,7 +233,7 @@ AcpiCmDeleteInternalObj (
 
         if (Object->Method.Semaphore)
         {
-            AcpiOsdDeleteSemaphore (Object->Method.Semaphore);
+            AcpiOsDeleteSemaphore (Object->Method.Semaphore);
             Object->Method.Semaphore = NULL;
         }
 
@@ -269,7 +269,7 @@ AcpiCmDeleteInternalObj (
                                 Object, AcpiCmGetTypeName (Object->Common.Type)));
     }
 
-    else
+    if (!(Object->Common.Flags & AO_STATIC_ALLOCATION))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting object %p [%s]\n",
                                 Object, AcpiCmGetTypeName (Object->Common.Type)));
@@ -505,7 +505,7 @@ AcpiCmUpdateObjectReference (
      * Make sure that this isn't a namespace handle or an AML pointer
      */
 
-    if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
+    if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmUpdateObjectReference: Object %p is NS handle\n",
                         Object));

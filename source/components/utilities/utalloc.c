@@ -208,7 +208,7 @@ AcpiCmAddElementToAllocList (
     FUNCTION_TRACE_PTR ("CmAddElementToAllocList", Address);
 
 
-    AcpiCmAcquireMutex (MTX_MEMORY);
+    AcpiCmAcquireMutex (ACPI_MTX_MEMORY);
 
     /* Keep track of the running total of all allocations. */
 
@@ -285,7 +285,7 @@ AcpiCmAddElementToAllocList (
 
 
 UnlockAndExit:
-    AcpiCmReleaseMutex (MTX_MEMORY);
+    AcpiCmReleaseMutex (ACPI_MTX_MEMORY);
     return_ACPI_STATUS (Status);
 }
 
@@ -333,7 +333,7 @@ AcpiCmDeleteElementFromAllocList (
     }
 
 
-    AcpiCmAcquireMutex (MTX_MEMORY);
+    AcpiCmAcquireMutex (ACPI_MTX_MEMORY);
 
     /* Keep track of the amount of memory allocated. */
 
@@ -427,7 +427,7 @@ AcpiCmDeleteElementFromAllocList (
 Cleanup:
 
     AcpiGbl_CurrentAllocSize -= Size;
-    AcpiCmReleaseMutex (MTX_MEMORY);
+    AcpiCmReleaseMutex (ACPI_MTX_MEMORY);
 
     return_VOID;
 }
@@ -516,7 +516,7 @@ AcpiCmDumpCurrentAllocations (
      * Walk the allocation list.
      */
 
-    AcpiCmAcquireMutex (MTX_MEMORY);
+    AcpiCmAcquireMutex (ACPI_MTX_MEMORY);
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("Outstanding allocations:\n"));
 
@@ -532,22 +532,22 @@ AcpiCmDumpCurrentAllocations (
 
             switch (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType)
             {
-            case DESC_TYPE_ACPI_OBJ:
+            case ACPI_DESC_TYPE_INTERNAL:
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ObjType %s",
                                     AcpiCmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
                 break;
 
-            case DESC_TYPE_PARSER:
+            case ACPI_DESC_TYPE_PARSER:
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ParseObj Opcode %04X",
                                     ((ACPI_GENERIC_OP *)(Element->Address))->Opcode));
                 break;
 
-            case DESC_TYPE_NTE:
+            case ACPI_DESC_TYPE_NAMED:
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" NTE Name %4.4s",
-                                    &((NAME_TABLE_ENTRY *)(Element->Address))->Name));
+                                    &((ACPI_NAMED_OBJECT*)(Element->Address))->Name));
                 break;
 
-            case DESC_TYPE_STATE:
+            case ACPI_DESC_TYPE_STATE:
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" StateObj"));
                 break;
             }
@@ -563,7 +563,7 @@ AcpiCmDumpCurrentAllocations (
         Element = Element->Next;
     }
 
-    AcpiCmReleaseMutex (MTX_MEMORY);
+    AcpiCmReleaseMutex (ACPI_MTX_MEMORY);
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("Total number of unfreed allocations = %d\n", i));
 
