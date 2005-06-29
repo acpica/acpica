@@ -1072,10 +1072,7 @@ AmlGetRvalueFromEntry (
 
 
     /* 
-     * Cases which just return the name as the rvalue
-     * 
-     * TBD: The first group used to be in the unimplemented list, but
-     * perhaps it makes more sense to just return the name in these cases
+     * For these objects, just return the object attached to the NTE
      */
     
     case ACPI_TYPE_Mutex:
@@ -1086,7 +1083,28 @@ AmlGetRvalueFromEntry (
     case ACPI_TYPE_Event:
     case ACPI_TYPE_Region: 
 
+
+        /* There must be an object attached to this NTE */
+
+        if (!ValDesc)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: NTE %p has no attached object\n",
+                            StackEntry));
+        
+            return_ACPI_STATUS (AE_AML_INTERNAL);
+        }
+
+        /* Return an additional reference to the object */
+
+        ObjDesc = ValDesc;
+        CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+        break;
+
+
+    /* Devices rarely have an attached object, return the NTE */
+
     case ACPI_TYPE_Device:
+
 
     /* Method locals and arguments have a pseudo-NTE, just return it */
 
