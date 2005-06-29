@@ -381,7 +381,7 @@ EvAddrHandlerHelper (
         return (void *) AE_AML_ERROR;
     }
 
-    if (ObjDesc->Type == TYPE_Device)
+    if (ObjDesc->Common.Type == TYPE_Device)
     {
         TmpObj = ObjDesc->Device.AddrHandler;
         while (TmpObj)
