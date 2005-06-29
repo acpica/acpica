@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -444,7 +444,7 @@ AcpiNsDeleteSubtree (
 
 
     ParentHandle = StartHandle;
-    ChildHandle  = 0;
+    ChildHandle  = NULL;
     Level        = 1;
 
     /*
@@ -467,7 +467,7 @@ AcpiNsDeleteSubtree (
             /* Check if this object has any children */
 
             if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY, ChildHandle,
-                                    0, &Dummy)))
+                                    NULL, &Dummy)))
             {
                 /*
                  * There is at least one child of this object,
@@ -475,7 +475,7 @@ AcpiNsDeleteSubtree (
                  */
                 Level++;
                 ParentHandle = ChildHandle;
-                ChildHandle  = 0;
+                ChildHandle  = NULL;
             }
         }
         else
