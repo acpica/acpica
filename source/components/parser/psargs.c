@@ -400,7 +400,7 @@ PsGetNextNamepath (
          */
 
         Status = NsLookup (Gbl_CurrentScope->Scope, Path, ACPI_TYPE_Any, IMODE_LoadPass2, /* MUST BE PASS2 to perform upsearch */ 
-                                NS_SEARCH_PARENT, &Nte);
+                                NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, &Nte);
         if (ACPI_SUCCESS (Status))
         {
             if (Nte->Type == ACPI_TYPE_Method)
