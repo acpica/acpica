@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.16 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -121,56 +121,52 @@
 
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    TrAllocateNode
+ * FUNCTION:    
  *
- * PARAMETERS:  ParseOpcode         - Opcode to be assigned to the node
+ * PARAMETERS:  
  *
- * RETURN:      New parse node.  Aborts on allocation failure
+ * RETURN:      
  *
- * DESCRIPTION: Allocate and initialize a new parse node for the parse tree
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
+
 ASL_PARSE_NODE *
-TrAllocateNode (
+TgAllocateNode (
     UINT32                  ParseOpcode)
 {
     ASL_PARSE_NODE          *Node;
 
 
     Node = UtLocalCalloc (sizeof (ASL_PARSE_NODE));
-
-    Node->ParseOpcode       = ParseOpcode;
-    Node->Filename          = Gbl_InputFilename;
-    Node->LineNumber        = Gbl_CurrentLineNumber;
+    Node->ParseOpcode = ParseOpcode;
+    Node->LineNumber = Gbl_CurrentLineNumber;
     Node->LogicalLineNumber = Gbl_LogicalLineNumber;
 
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
-
+    
     return Node;
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    TrUpdateNode
+ * FUNCTION:    
  *
- * PARAMETERS:  ParseOpcode         - New opcode to be assigned to the node
- *              Node                - An existing parse node
+ * PARAMETERS:  
  *
- * RETURN:      The updated node
+ * RETURN:      
  *
- * DESCRIPTION: Change the parse opcode assigned to a node.  Usually used to
- *              change an opcode to DEFAULT_ARG so that the node is ignored
- *              during the code generation.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TrUpdateNode (
+_TgUpdateNode (
     UINT32                  ParseOpcode,
     ASL_PARSE_NODE          *Node)
 {
@@ -192,19 +188,18 @@ TrUpdateNode (
 
 /*******************************************************************************
  *
- * FUNCTION:    TrSetNodeFlags
+ * FUNCTION:    
  *
- * PARAMETERS:  Node                - An existing parse node
- *              Flags               - New flags word
+ * PARAMETERS:  
  *
- * RETURN:      The updated node
+ * RETURN:      
  *
- * DESCRIPTION: Set bits in the node flags word.  Will not clear bits, only set
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TrSetNodeFlags (
+_TgSetNodeFlags (
     ASL_PARSE_NODE          *Node,
     UINT32                  Flags)
 {
@@ -225,90 +220,144 @@ TrSetNodeFlags (
 
 /*******************************************************************************
  *
- * FUNCTION:    TrSetEndLineNumber
+ * FUNCTION:    
  *
- * PARAMETERS:  Node                - An existing parse node
+ * PARAMETERS:  
  *
- * RETURN:      None.
+ * RETURN:      
  *
- * DESCRIPTION: Set the ending line numbers (file line and logical line) of a
- *              parse node to the current line numbers.
- *
- ******************************************************************************/
-
-void
-TrSetEndLineNumber (
-    ASL_PARSE_NODE          *Node)
-{
-
-    /* If the end line # is already set, just return */
-
-    if (Node->EndLine)
-    {
-        return;
-    }
-
-    Node->EndLine        = Gbl_CurrentLineNumber;
-    Node->EndLogicalLine = Gbl_LogicalLineNumber;
-
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    TrCreateLeafNode
- *
- * PARAMETERS:  ParseOpcode         - New opcode to be assigned to the node
- *
- * RETURN:      Pointer to the new node.  Aborts on allocation failure
- *
- * DESCRIPTION: Create a simple leaf node (no children or peers, and no value
- *              assigned to the node)
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
-ASL_PARSE_NODE *
-TrCreateLeafNode (
-    UINT32                  ParseOpcode)
+char *
+TgCreateNode (
+    UINT32                  ParseOpcode,
+    UINT32                  NumChildren,
+    ...)
 {
     ASL_PARSE_NODE          *Node;
+    ASL_PARSE_NODE          *Child;
+    ASL_PARSE_NODE          *PrevChild;
+    va_list                 ap;
+    UINT32                  i;
+    BOOLEAN                 FirstChild;
 
 
-    Node = TrAllocateNode (ParseOpcode);
 
-    DbgPrint ("\nCreateLeafNode  Line %d NewNode %p  Op %s\n\n",
-                Node->LineNumber, Node, UtGetOpName(ParseOpcode));
+    va_start (ap, NumChildren);
 
-    return Node;
+    Node = TgAllocateNode (ParseOpcode);
+
+    DbgPrint ("\nCreateNode  Line %d NewParent %p Child %d Op %s  ", 
+                Node->LineNumber, Node, NumChildren, UtGetOpName(ParseOpcode));
+    RootNode = Node;
+
+
+    switch (ParseOpcode)
+    {
+    case DEFINITIONBLOCK:
+        DbgPrint ("DEFINITION_BLOCK (Tree Completed)->");
+        break;
+
+    case OPERATIONREGION:
+        DbgPrint ("OPREGION->"); 
+        break;
+
+    case OR:
+        DbgPrint ("OR->");
+        break;
+    }
+
+
+    /* Link the new node to it's children */
+
+    PrevChild = NULL;
+    FirstChild = TRUE;
+    for (i = 0; i < NumChildren; i++)
+    {
+        Child = va_arg (ap, ASL_PARSE_NODE *);
+        DbgPrint ("%p, ", Child);
+
+
+        /* 
+         * If child is NULL, this means that an optional argument
+         * was omitted.  We must create a placeholder with a special
+         * opcode (DEFAULT_ARG) so that the code generator will know
+         * that it must emit the correct default for this argument
+         */
+
+        if (!Child)
+        {
+            Child = TgAllocateNode (DEFAULT_ARG);
+        }
+
+        /* Link first child to parent */
+
+        if (FirstChild)
+        {
+            FirstChild = FALSE;
+            Node->Child = Child;
+        }
+
+
+        /* Point all children to parent */
+
+        Child->Parent = Node;
+
+        /* Link children in a peer list */
+
+        if (PrevChild)
+        {
+            PrevChild->Peer = Child;
+        };
+
+        /* 
+         * This child might be a list, point all nodes in the list
+         * to the same parent
+         */
+
+        while (Child->Peer)
+        {
+            Child = Child->Peer;
+            Child->Parent = Node;
+        }
+
+        PrevChild = Child;
+    }
+    va_end(ap);
+
+    DbgPrint ("\n\n");
+
+
+    return (char *) Node;
 }
 
 
 
 /*******************************************************************************
  *
- * FUNCTION:    TrCreateValuedLeafNode
+ * FUNCTION:    
  *
- * PARAMETERS:  ParseOpcode         - New opcode to be assigned to the node
- *              Value               - Value to be assigned to the node
+ * PARAMETERS:  
  *
- * RETURN:      Pointer to the new node.  Aborts on allocation failure
+ * RETURN:      
  *
- * DESCRIPTION: Create a leaf node (no children or peers) with a value 
- *              assigned to it
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
-ASL_PARSE_NODE *
-TrCreateValuedLeafNode (
+char *
+TgCreateLeafNode (
     UINT32                  ParseOpcode,
     void                    *Value)
 {
     ASL_PARSE_NODE          *Node;
 
 
-    Node = TrAllocateNode (ParseOpcode);
+    Node = TgAllocateNode (ParseOpcode);
 
-    DbgPrint ("\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %X  ",
+    DbgPrint ("\nCreateLeafNode  Line %d NewNode %p  Op %s  Value %X  ", 
                 Node->LineNumber, Node, UtGetOpName(ParseOpcode), Value);
     Node->Value.Pointer = Value;
 
@@ -330,319 +379,48 @@ TrCreateValuedLeafNode (
         DbgPrint ("EISAID->%s", Value);
         break;
 
-    case METHOD:
-        DbgPrint ("METHOD");
-        break;
-
-    default:
+    default: 
         break;
     }
 
     DbgPrint ("\n\n");
 
-    return Node;
+    return (char *) Node;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    TrCreateNode
+ * FUNCTION:    
  *
- * PARAMETERS:  ParseOpcode         - Opcode to be assigned to the node
- *              NumChildren         - Number of children to follow
- *              ...                 - A list of child nodes to link to the new
- *                                    node.  NumChildren long.
+ * PARAMETERS:  
  *
- * RETURN:      Pointer to the new node.  Aborts on allocation failure
+ * RETURN:      
  *
- * DESCRIPTION: Create a new parse node and link together a list of child
- *              nodes underneath the new node.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TrCreateNode (
-    UINT32                  ParseOpcode,
-    UINT32                  NumChildren,
-    ...)
-{
-    ASL_PARSE_NODE          *Node;
-    ASL_PARSE_NODE          *Child;
-    ASL_PARSE_NODE          *PrevChild;
-    va_list                 ap;
-    UINT32                  i;
-    BOOLEAN                 FirstChild;
-
-
-    va_start (ap, NumChildren);
-
-    /* Allocate one new node */
-
-    Node = TrAllocateNode (ParseOpcode);
-
-    DbgPrint ("\nCreateNode  Line %d NewParent %p Child %d Op %s  ",
-                Node->LineNumber, Node, NumChildren, UtGetOpName(ParseOpcode));
-    RootNode = Node;
-
-
-    /* Some extra debug output based on the parse opcode */
-
-    switch (ParseOpcode)
-    {
-    case DEFINITIONBLOCK:
-        DbgPrint ("DEFINITION_BLOCK (Tree Completed)->");
-        break;
-
-    case OPERATIONREGION:
-        DbgPrint ("OPREGION->");
-        break;
-
-    case OR:
-        DbgPrint ("OR->");
-        break;
-    }
-
-
-    /* Link the new node to its children */
-
-    PrevChild = NULL;
-    FirstChild = TRUE;
-    for (i = 0; i < NumChildren; i++)
-    {
-        /* Get the next child */
-
-        Child = va_arg (ap, ASL_PARSE_NODE *);
-        DbgPrint ("%p, ", Child);
-
-
-        /*
-         * If child is NULL, this means that an optional argument
-         * was omitted.  We must create a placeholder with a special
-         * opcode (DEFAULT_ARG) so that the code generator will know
-         * that it must emit the correct default for this argument
-         */
-
-        if (!Child)
-        {
-            Child = TrAllocateNode (DEFAULT_ARG);
-        }
-
-        /* Link first child to parent */
-
-        if (FirstChild)
-        {
-            FirstChild = FALSE;
-            Node->Child = Child;
-        }
-
-
-        /* Point all children to parent */
-
-        Child->Parent = Node;
-
-        /* Link children in a peer list */
-
-        if (PrevChild)
-        {
-            PrevChild->Peer = Child;
-        };
-
-        /*
-         * This child might be a list, point all nodes in the list
-         * to the same parent
-         */
-
-        while (Child->Peer)
-        {
-            Child = Child->Peer;
-            Child->Parent = Node;
-        }
-
-        PrevChild = Child;
-    }
-    va_end(ap);
-
-    DbgPrint ("\n\n");
-
-
-    return Node;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    TrLinkChildren
- *
- * PARAMETERS:  Node                - An existing parse node
- *              NumChildren         - Number of children to follow
- *              ...                 - A list of child nodes to link to the new
- *                                    node.  NumChildren long.
- *
- * RETURN:      The updated (linked) node
- *
- * DESCRIPTION: Link a group of nodes to an existing parse node 
- *
- ******************************************************************************/
-
-ASL_PARSE_NODE *
-TrLinkChildren (
-    ASL_PARSE_NODE          *Node,
-    UINT32                  NumChildren,
-    ...)
-{
-    ASL_PARSE_NODE          *Child;
-    ASL_PARSE_NODE          *PrevChild;
-    va_list                 ap;
-    UINT32                  i;
-    BOOLEAN                 FirstChild;
-
-
-    va_start (ap, NumChildren);
-
-
-    TrSetEndLineNumber (Node);
-
-    DbgPrint ("\nLinkChildren  Line %d NewParent %p Child %d Op %s  ",
-                Node->LineNumber,
-                Node, NumChildren, UtGetOpName(Node->ParseOpcode));
-    RootNode = Node;
-
-
-    switch (Node->ParseOpcode)
-    {
-    case DEFINITIONBLOCK:
-        DbgPrint ("DEFINITION_BLOCK (Tree Completed)->");
-        break;
-
-    case OPERATIONREGION:
-        DbgPrint ("OPREGION->");
-        break;
-
-    case OR:
-        DbgPrint ("OR->");
-        break;
-    }
-
-
-    /* Link the new node to it's children */
-
-    PrevChild = NULL;
-    FirstChild = TRUE;
-    for (i = 0; i < NumChildren; i++)
-    {
-        Child = va_arg (ap, ASL_PARSE_NODE *);
-        DbgPrint ("%p, ", Child);
-
-
-        /*
-         * If child is NULL, this means that an optional argument
-         * was omitted.  We must create a placeholder with a special
-         * opcode (DEFAULT_ARG) so that the code generator will know
-         * that it must emit the correct default for this argument
-         */
-
-        if (!Child)
-        {
-            Child = TrAllocateNode (DEFAULT_ARG);
-        }
-
-        /* Link first child to parent */
-
-        if (FirstChild)
-        {
-            FirstChild = FALSE;
-            Node->Child = Child;
-        }
-
-
-        /* Point all children to parent */
-
-        Child->Parent = Node;
-
-        /* Link children in a peer list */
-
-        if (PrevChild)
-        {
-            PrevChild->Peer = Child;
-        };
-
-        /*
-         * This child might be a list, point all nodes in the list
-         * to the same parent
-         */
-
-        while (Child->Peer)
-        {
-            Child = Child->Peer;
-            Child->Parent = Node;
-        }
-
-        PrevChild = Child;
-    }
-    va_end(ap);
-
-    DbgPrint ("\n\n");
-
-
-    return Node;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    TrLinkPeerNode
- *
- * PARAMETERS:  Node1           - First peer
- *              Node2           - Second peer
- *
- * RETURN:      Node1 or the non-null node.
- *
- * DESCRIPTION: Link two nodes as peers.  Handles cases where one peer is null.
- *
- ******************************************************************************/
-
-ASL_PARSE_NODE *
-TrLinkPeerNode (
+_TgLinkPeerNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2)
 {
     ASL_PARSE_NODE          *Next;
 
-
-    DbgPrint ("\nLinkPeerNode: 1=%p (%s), 2=%p (%s)\n\n",
-        Node1, Node1 ? UtGetOpName(Node1->ParseOpcode) : NULL,
+    DbgPrint ("\nLinkPeerNode: 1=%p (%s), 2=%p (%s)\n\n", 
+        Node1, Node1 ? UtGetOpName(Node1->ParseOpcode) : NULL, 
         Node2, Node2 ? UtGetOpName(Node2->ParseOpcode) : NULL);
 
-
-    if ((!Node1) && (!Node2))
+    if (!Node1 || !Node2)
     {
-        DbgPrint ("\nTwo Null nodes!\n");
-        return Node1;
-    }
-
-    /* If one of the nodes is null, just return the non-null node */
-
-    if (!Node2)
-    {
-        return Node1;
-    }
-
-    if (!Node1)
-    {
-        return Node2;
-    }
-
-
-    if (Node1 == Node2)
-    {
-        DbgPrint ("\n\n************* Internal error, linking node to itself %p\n\n\n", Node1);
-        printf ("Internal error, linking node to itself\n");
         return Node1;
     }
 
     Node1->Parent = Node2->Parent;
 
-    /*
+    
+    /* 
      * Node 1 may already have a peer list (such as an IF/ELSE pair),
      * so we must walk to the end of the list and attach the new
      * peer at the end
@@ -653,7 +431,7 @@ TrLinkPeerNode (
     {
         Next = Next->Peer;
     }
-
+     
     Next->Peer = Node2;
 
     return Node1;
@@ -662,90 +440,25 @@ TrLinkPeerNode (
 
 /*******************************************************************************
  *
- * FUNCTION:    TrLinkPeerNodes
+ * FUNCTION:    
  *
- * PARAMETERS:  NumPeers            - The number of nodes in the list to follow
- *              ...                 - A list of nodes to link together as peers
+ * PARAMETERS:  
  *
- * RETURN:      The first node in the list (head of the peer list)
+ * RETURN:      
  *
- * DESCRIPTION: Link together an arbitrary number of peer nodes.
- *
- ******************************************************************************/
-
-ASL_PARSE_NODE *
-TrLinkPeerNodes (
-    UINT32                  NumPeers,
-    ...)
-{
-    ASL_PARSE_NODE          *This;
-    ASL_PARSE_NODE          *Next;
-    va_list                 ap;
-    UINT32                  i;
-    ASL_PARSE_NODE          *Start;
-
-
-    DbgPrint ("\nLinkPeerNodes: (%d) ", NumPeers);
-
-
-    va_start (ap, NumPeers);
-    This = va_arg (ap, ASL_PARSE_NODE *);
-    Start = This;
-
-    /*
-     * Link all peers
-     */
-    for (i = 0; i < (NumPeers -1); i++)
-    {
-        DbgPrint ("%d=%p ", (i+1), This);
-
-        while (This->Peer)
-        {
-            This = This->Peer;
-        }
-
-        /* Get another peer node */
-
-        Next = va_arg (ap, ASL_PARSE_NODE *);
-        if (!Next)
-        {
-            Next = TrAllocateNode (DEFAULT_ARG);
-        }
-
-        /* link new node to the current node */
-
-        This->Peer = Next;
-        This = Next;
-    }
-
-
-    DbgPrint ("\n\n");
-    return (Start);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    TrLinkChildNode
- *
- * PARAMETERS:  Node1           - Parent node
- *              Node2           - Node to become a child
- *
- * RETURN:      The parent node
- *
- * DESCRIPTION: Link two nodes together as a parent and child
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TrLinkChildNode (
+_TgLinkChildNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2)
 {
     ASL_PARSE_NODE          *Next;
 
 
-    DbgPrint ("\nLinkChildNode: Parent=%p (%s), Child=%p (%s)\n\n",
+    DbgPrint ("\nLinkChildNode: Parent=%p (%s), Child=%p (%s)\n\n", 
         Node1, Node1 ? UtGetOpName(Node1->ParseOpcode): NULL,
         Node2, Node2 ? UtGetOpName(Node2->ParseOpcode): NULL);
 
@@ -770,23 +483,21 @@ TrLinkChildNode (
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    TrWalkParseTree
+ * FUNCTION:    
  *
- * PARAMETERS:  Visitation              - Type of walk
- *              DescendingCallback      - Called during tree descent
- *              AscendingCallback       - Called during tree ascent
- *              Context                 - To be passed to the callbacks
+ * PARAMETERS:  
  *
- * RETURN:      None
+ * RETURN:      
  *
- * DESCRIPTION: Walk the entire parse tree.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 void
-TrWalkParseTree (
+TgWalkParseTree (
     UINT32                  Visitation,
     ASL_WALK_CALLBACK       DescendingCallback,
     ASL_WALK_CALLBACK       AscendingCallback,
@@ -796,7 +507,7 @@ TrWalkParseTree (
     UINT32                  Level;
     BOOLEAN                 NodePreviouslyVisited;
 
-
+    
     if (!RootNode)
     {
         return;
@@ -817,7 +528,7 @@ TrWalkParseTree (
             if (!NodePreviouslyVisited)
             {
                 /*
-                 * Let the callback process the node.
+                 * Let the callback process the node.  
                  */
                 DescendingCallback (Node, Level, Context);
 
@@ -866,7 +577,7 @@ TrWalkParseTree (
                 (NodePreviouslyVisited))
             {
                 /*
-                 * Let the callback process the node.
+                 * Let the callback process the node.  
                  *
                  */
                 AscendingCallback (Node, Level, Context);
@@ -917,7 +628,7 @@ TrWalkParseTree (
             else
             {
                 /*
-                 * Let the callback process the node.
+                 * Let the callback process the node.  
                  */
                 DescendingCallback (Node, Level, Context);
 
@@ -955,5 +666,7 @@ TrWalkParseTree (
         break;
     }
 }
+
+
 
 

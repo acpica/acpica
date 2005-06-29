@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.1 $
+ * Module Name: asllookup- Namespace lookup
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -129,6 +129,80 @@
         MODULE_NAME         ("dswload")
 
 
+UINT32      NsItemCount = 0;
+
+/*****************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+LsDoOneNamespaceObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+
+
+    NsItemCount++;
+
+    fprintf (Gbl_NsFile, "%5d  [%d]  %*s %4.4s - %s\n", 
+                        NsItemCount, Level, (Level * 3), " ", 
+                        &Node->Name, 
+                        AcpiCmGetTypeName (Node->Type));
+
+    return (AE_OK);
+}
+
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+LsDisplayNamespace (void)
+{
+    ACPI_STATUS             Status;
+
+
+
+    if (!Gbl_NsOutputFlag)
+    {
+        return (AE_OK);
+    }
+
+    fprintf (Gbl_NsFile, "Contents of ACPI Namespace\n\n");
+
+    fprintf (Gbl_NsFile, "Count  Depth    Name - Type\n\n");
+
+    /* Walk entire namespace from the supplied root */
+
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+                                ACPI_UINT32_MAX, FALSE, LsDoOneNamespaceObject,
+                                NULL, NULL);
+ 
+
+    return (AE_OK);
+}
+
 
 /*****************************************************************************
  *
@@ -183,15 +257,16 @@ LkCrossReferenceNamespace (void)
 
 ACPI_STATUS
 LkNamespaceLocateBegin (
-    ASL_PARSE_NODE              *PsNode,
-    UINT32                      Level,
-    void                        *Context)
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  Level,
+    void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
     ACPI_STATUS             Status;
     OBJECT_TYPE_INTERNAL    DataType;
     NATIVE_CHAR             *Path;
+    UINT32                  LengthDelta;
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -243,10 +318,7 @@ LkNamespaceLocateBegin (
     {
         if (Status == AE_NOT_FOUND)
         {
-            printf ("%s (%d)  Warning - Object %s does not exist or is not accessible\n", 
-                            Gbl_InputFilename, PsNode->LineNumber, PsNode->ExternalName);
-            DbgPrint ("%s (%d)  Warning - Object %s does not exist or is not accessible\n", 
-                            Gbl_InputFilename, PsNode->LineNumber, PsNode->ExternalName);
+            AslWarningMsg (ASL_WARNING_NOT_FOUND, PsNode->LineNumber, PsNode->ExternalName);
         }
         return (Status);
     }
@@ -263,11 +335,23 @@ LkNamespaceLocateBegin (
 
         free (PsNode->Value.String);
 
+
+        LengthDelta = PsNode->AmlLength;
+
         PsNode->ParseOpcode     = INTEGER;
         PsNode->AmlOpcode       = AML_DWORD_OP;
-        PsNode->Value.Integer   = (UINT64) NsNode->Object;
+        PsNode->Value.Integer   = (UINT64) NsNode->OwnerId;
 
-        CgSetOptimalIntegerSize (PsNode);
+        PsNode->AmlLength = CgSetOptimalIntegerSize (PsNode);
+
+        LengthDelta = LengthDelta - PsNode->AmlLength;
+        LengthDelta--; /* Minus one more for opcode length (now 1, was 0) */
+        
+
+        /*
+         * Must adjust all package lengths to the root
+         */
+//        LnAdjustLengthToRoot (PsNode, LengthDelta);
     }
 
     PsNode->NsNode = NsNode;
@@ -291,9 +375,9 @@ LkNamespaceLocateBegin (
 
 ACPI_STATUS
 LkNamespaceLocateEnd (
-    ASL_PARSE_NODE              *PsNode,
-    UINT32                      Level,
-    void                        *Context)
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  Level,
+    void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     OBJECT_TYPE_INTERNAL    DataType;

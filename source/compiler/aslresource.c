@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.10 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -122,15 +122,17 @@
 #include "amlcode.h"
 
 
+
+
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    
  *
- * PARAMETERS:
+ * PARAMETERS:  
  *
- * RETURN:
+ * RETURN:      
  *
- * DESCRIPTION:
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -155,15 +157,16 @@ RsAllocateResourceNode (
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    
  *
- * PARAMETERS:
+ * PARAMETERS:  
  *
- * RETURN:
+ * RETURN:      
  *
- * DESCRIPTION:
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -182,15 +185,16 @@ RsCreateBitField (
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    
  *
- * PARAMETERS:
+ * PARAMETERS:  
  *
- * RETURN:
+ * RETURN:      
  *
- * DESCRIPTION:
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -208,15 +212,16 @@ RsCreateByteField (
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    
  *
- * PARAMETERS:
+ * PARAMETERS:  
  *
- * RETURN:
+ * RETURN:      
  *
- * DESCRIPTION:
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -247,13 +252,13 @@ RsSetFlagBits (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    
  *
- * PARAMETERS:
+ * PARAMETERS:  
  *
- * RETURN:
+ * RETURN:      
  *
- * DESCRIPTION:
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -273,15 +278,16 @@ RsCompleteNodeAndGetNext (
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    
  *
- * PARAMETERS:
+ * PARAMETERS:  
  *
- * RETURN:
+ * RETURN:      
  *
- * DESCRIPTION:
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -291,6 +297,7 @@ RsDoOneResourceDescriptor (
     UINT32                  CurrentByteOffset)
 {
     ASL_RESOURCE_NODE       *Rnode = NULL;
+
 
 
     /* Determine type of resource */
@@ -386,13 +393,14 @@ RsDoOneResourceDescriptor (
         break;
 
     default:
-        printf ("Unknown resource descriptor type [%s]\n",
+        printf ("Unknown resource descriptor type [%s]\n", 
                     DescriptorTypeNode->ParseOpName);
         break;
     }
 
 
-    /*
+
+    /* 
      * Mark original node as unused, but head of a resource descriptor.
      * This allows the resource to be installed in the namespace so that
      * references to the descriptor can be resolved.
@@ -407,13 +415,13 @@ RsDoOneResourceDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    
  *
- * PARAMETERS:
+ * PARAMETERS:  
  *
- * RETURN:
+ * RETURN:      
  *
- * DESCRIPTION:
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -446,20 +454,21 @@ RsLinkDescriptorChain (
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    
  *
- * PARAMETERS:
+ * PARAMETERS:  
  *
- * RETURN:
+ * RETURN:      
  *
- * DESCRIPTION:
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 void
-RsDoResourceTemplate (
+CgDoResourceTemplate (
     ASL_PARSE_NODE          *Node)
 {
     ASL_PARSE_NODE          *BufferLengthNode;
@@ -470,6 +479,7 @@ RsDoResourceTemplate (
     ASL_RESOURCE_NODE       HeadRnode;
     ASL_RESOURCE_NODE       *PreviousRnode;
     ASL_RESOURCE_NODE       *Rnode;
+
 
 
     /* ResourceTemplate Opcode is first (Node) */
@@ -508,7 +518,7 @@ RsDoResourceTemplate (
 
 
     /*
-     * Insert the EndTag descriptor after all other descriptors have been processed
+     * Insert the EndTag descriptor after all other descriptors have been processed 
      */
     Rnode = RsAllocateResourceNode (sizeof (ASL_END_TAG_DESC));
 
@@ -533,7 +543,7 @@ RsDoResourceTemplate (
     BufferLengthNode->ParseOpcode   = INTEGER;
     BufferLengthNode->Value.Integer = CurrentByteOffset;
 
-    OpcSetOptimalIntegerSize (BufferLengthNode);
+    CgSetOptimalIntegerSize (BufferLengthNode);
 
     BufferNode->ParseOpcode         = RAW_DATA;
     BufferNode->AmlOpcode           = AML_RAW_DATA_CHAIN;
