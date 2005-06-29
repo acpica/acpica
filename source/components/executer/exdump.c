@@ -268,18 +268,22 @@ AmlDumpObjStackEntry (
     UINT16                  Length;
 
 
-    FUNCTION_TRACE ("AmlDumpObjStackEntry");
+    FUNCTION_TRACE_PTR ("AmlDumpObjStackEntry", EntryDesc);
 
 
     if (!EntryDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlDumpObjStackEntry: *** Null stack entry pointer\n"));
+        /* 
+         * This usually indicates that something serious is wrong -- since most (if not all) 
+         * code that dumps the stack expects something to be there! 
+         */
+        DEBUG_PRINT (ACPI_ERROR, ("AmlDumpObjStackEntry: *** Error: Null stack entry ptr\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
     if (VALID_DESCRIPTOR_TYPE (EntryDesc, DESC_TYPE_NTE))
     {
-        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Namespace handle to NTE: \n"));
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Name Table Entry (NTE): \n"));
         DUMP_ENTRY (EntryDesc, ACPI_INFO);
         return_ACPI_STATUS (AE_OK);
     }
@@ -655,7 +659,7 @@ AmlDumpObjStackEntry (
 
 /*****************************************************************************
  * 
- * FUNCTION:    AmlDumpObjStack
+ * FUNCTION:    _AmlDumpObjStack
  *
  * PARAMETERS:  LoadExecMode        - Load or Exec
  *              *Ident              - Identification
@@ -667,11 +671,13 @@ AmlDumpObjStackEntry (
  ****************************************************************************/
 
 void
-AmlDumpObjStack (
+_AmlDumpObjStack (
     OPERATING_MODE          LoadExecMode, 
     char                    *Ident, 
     INT32                   NumLevels, 
-    char                    *Note)
+    char                    *Note,
+    char                    *ModuleName, 
+    INT32                   LineNumber)
 {
     UINT32                  CurrentStackTop;
     ACPI_OBJECT_INTERNAL    **EntryDesc;
@@ -694,7 +700,7 @@ AmlDumpObjStack (
 
     DEBUG_PRINT (ACPI_INFO, ("*************AmlDumpObjStack, TOS=%d******************\n", 
                                 CurrentStackTop));
-    DEBUG_PRINT (ACPI_INFO, ("%s: %s\n", Ident, Note));
+    DEBUG_PRINT (ACPI_INFO, ("From %12s(%d)  %s: %s\n", ModuleName, LineNumber, Ident, Note));
 
     for (EntryDesc = AmlObjStackGetPtr (STACK_TOP);
           /* exit condition at bottom of loop */ ;
