@@ -117,6 +117,9 @@
 #ifndef _ACOBJECT_H
 #define _ACOBJECT_H
 
+#include "actypes.h"
+#include "macros.h"
+#include "internal.h"
 
 /*
  * The ACPI_OBJECT_INTERNAL is used to pass AML operands from the dispatcher
@@ -218,7 +221,7 @@ typedef struct /* STRING - has length and pointer */
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    INT8                    *Pointer;       /* String value in AML stream or in allocated space */
+    char                    *Pointer;       /* String value in AML stream or in allocated space */
     void                    *Reserved_p2;
     void                    *Reserved_p3;
     void                    *Reserved_p4;

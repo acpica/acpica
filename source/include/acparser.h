@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
+ * Module Name: parser.h - AML Parser subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *****************************************************************************/
 
 
-#ifndef __ACPARSER_H__
-#define __ACPARSER_H__
+#ifndef _PARSER_H_
+#define _PARSER_H_
 
 
 #define OP_HAS_RETURN_VALUE         1
@@ -130,7 +130,6 @@
 
 
 #define PARSE_DELETE_TREE           1
-#define PARSE_NO_TREE_DELETE        0
 
 
 /* psapi - Parser external interfaces */
@@ -168,7 +167,7 @@ UINT8 *
 AcpiPsGetNextPackageEnd (
     ACPI_PARSE_STATE        *ParserState);
 
-INT8 *
+char *
 AcpiPsGetNextNamestring (
     ACPI_PARSE_STATE        *ParserState);
 
@@ -202,19 +201,12 @@ ACPI_OP_INFO *
 AcpiPsGetOpcodeInfo (
     UINT16                  Opcode);
 
-INT8 *
+char *
 AcpiPsGetOpcodeName (
     UINT16                  Opcode);
 
 
 /* psparse - top level parsing routines */
-
-ACPI_STATUS
-AcpiPsFindObject (
-    UINT16                  Opcode,
-    ACPI_GENERIC_OP         *Op,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         **OutOp);
 
 void
 AcpiPsDeleteParseTree (
@@ -222,23 +214,24 @@ AcpiPsDeleteParseTree (
 
 ACPI_STATUS
 AcpiPsParseLoop (
-    ACPI_WALK_STATE         *WalkState);
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_WALK_STATE         *WalkState,
+    UINT32                  ParseFlags);
+
 
 ACPI_STATUS
 AcpiPsParseAml (
     ACPI_GENERIC_OP         *StartScope,
     UINT8                   *Aml,
-    UINT32                  AmlSize,
-    UINT32                  ParseFlags,
-    ACPI_PARSE_DOWNWARDS    DescendingCallback,
-    ACPI_PARSE_UPWARDS      AscendingCallback);
+    UINT32                  AcpiAmlSize,
+    UINT32                  ParseFlags);
 
 ACPI_STATUS
 AcpiPsParseTable (
     UINT8                   *aml,
     INT32                   amlSize,
-    ACPI_PARSE_DOWNWARDS    DescendingCallback,
-    ACPI_PARSE_UPWARDS      AscendingCallback,
+    INTERPRETER_CALLBACK    DescendingCallback,
+    INTERPRETER_CALLBACK    AscendingCallback,
     ACPI_GENERIC_OP         **RootObject);
 
 UINT16
@@ -290,7 +283,7 @@ AcpiPsAppendArg(
 ACPI_GENERIC_OP*
 AcpiPsFind (
     ACPI_GENERIC_OP         *Scope,
-    INT8                    *Path,
+    char                    *Path,
     UINT16                  Opcode,
     UINT32                  Create);
 
@@ -320,14 +313,14 @@ AcpiPsWalkParsedAml (
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     ACPI_OWNER_ID           OwnerId,
-    ACPI_PARSE_DOWNWARDS    DescendingCallback,
-    ACPI_PARSE_UPWARDS      AscendingCallback);
+    INTERPRETER_CALLBACK    DescendingCallback,
+    INTERPRETER_CALLBACK    AscendingCallback);
 
 ACPI_STATUS
 AcpiPsGetNextWalkOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
-    ACPI_PARSE_UPWARDS      AscendingCallback);
+    INTERPRETER_CALLBACK    AscendingCallback);
 
 
 /* psutils - parser utilities */
@@ -407,13 +400,13 @@ AcpiPsSetName(
 
 INT32
 AcpiPsSprintPath (
-    INT8                    *BufferStart,
+    char                    *BufferStart,
     UINT32                  BufferSize,
     ACPI_GENERIC_OP         *Op);
 
 INT32
 AcpiPsSprintOp (
-    INT8                    *BufferStart,
+    char                    *BufferStart,
     UINT32                  BufferSize,
     ACPI_GENERIC_OP         *Op);
 
@@ -422,4 +415,4 @@ AcpiPsShow (
     ACPI_GENERIC_OP         *op);
 
 
-#endif /* __ACPARSER_H__ */
+#endif /* _PARSER_H_ */

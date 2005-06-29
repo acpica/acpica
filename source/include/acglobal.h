@@ -260,8 +260,8 @@ extern      UINT32                      AcpiGbl_StartupFlags;
 #define NUM_PREDEFINED_NAMES            9
 
 
-ACPI_EXTERN NAME_TABLE_ENTRY            AcpiGbl_RootObjStruct;
-ACPI_EXTERN NAME_TABLE_ENTRY           *AcpiGbl_RootObject;
+ACPI_EXTERN ACPI_NAME_TABLE             AcpiGbl_RootNameTable;
+ACPI_EXTERN ACPI_NAMED_OBJECT          *AcpiGbl_RootObject;
 
 extern      UINT8                       AcpiGbl_NsProperties[NUM_NS_TYPES];
 extern      PREDEFINED_NAMES            AcpiGbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
