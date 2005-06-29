@@ -28,7 +28,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -151,8 +151,7 @@ HwGetBitShift (
     for (Shift = 0; ((Mask >> Shift) & 1) == 0; Shift++)
     { ; }
 
-	FUNCTION_EXIT;
-    return (Shift);
+    return_VALUE (Shift);
 }
 
 
@@ -210,7 +209,7 @@ HwClearAcpiStatus (void)
         }
     }
 
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -245,11 +244,10 @@ HwObtainSleepTypeRegisterData (
     FUNCTION_TRACE ("HwObtainSleepTypeRegisterData");
 
 
-    ObjDesc = AllocateObjectDesc ();
+    ObjDesc = CmCreateInternalObject (TYPE_Any);
     if (!ObjDesc)
     {
-        FUNCTION_EXIT;
-        return AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     if (!SleepStateReq || !Slp_TypA || !Slp_TypB)
@@ -337,9 +335,8 @@ HwObtainSleepTypeRegisterData (
         }
     }
 
-    CmFree (ObjDesc);
-    FUNCTION_EXIT;
-    return (Status);
+    CmDeleteInternalObject (ObjDesc);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -728,6 +725,5 @@ HwRegisterIO (
     RegisterValue >>= HwGetBitShift (Mask);
 
     DEBUG_PRINT (TRACE_IO, ("Register I/O: returning 0x%X\n", RegisterValue));
-    FUNCTION_EXIT;
-    return (RegisterValue);
+    return_ACPI_STATUS (RegisterValue);
 }
