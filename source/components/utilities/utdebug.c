@@ -183,7 +183,7 @@ _ReportError (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
     DebugPrint (ModuleName, LineNumber, GLOBAL_ERROR, 
-                "*** %s\n", KdtEntry->Description);
+                "*** Error [%s]: %s\n", KdtEntry->Key, KdtEntry->Description);
 
     _Kinc_error (KdtEntry->Key, 
                     PACRLF, LineNumber, ModuleName, 0, 0);
@@ -204,7 +204,7 @@ _ReportWarning (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
     DebugPrint (ModuleName, LineNumber, GLOBAL_WARN, 
-                "*** %s\n", KdtEntry->Description);
+                "*** Warning [%s]: %s\n", KdtEntry->Key, KdtEntry->Description);
 
     _Kinc_warning (KdtEntry->Key, 
                     PACRLF, LineNumber, ModuleName, 0, 0);
@@ -225,10 +225,8 @@ _ReportSuccess (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
     DebugPrint (ModuleName, LineNumber, GLOBAL_SUCCESS, 
-                "*** %s\n", KdtEntry->Description);
+                "*** Success [%s] %s\n", KdtEntry->Key, KdtEntry->Description);
 
-    _Kinc_warning (KdtEntry->Key, 
-                    PACRLF, LineNumber, ModuleName, 0, 0);
     Why = KdtEntry->Description;
 }
 
@@ -246,7 +244,7 @@ _ReportInfo (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
     DebugPrint (ModuleName, LineNumber, GLOBAL_INFO, 
-                "*** %s\n", KdtEntry->Description);
+                "*** Info [%s], %s\n", KdtEntry->Key, KdtEntry->Description);
 
     _Kinc_info (KdtEntry->Key, 
                     PACRLF, LineNumber, ModuleName, 0, 0);
@@ -356,7 +354,8 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize)
  *
  * RETURN:      none
  *
- * DESCRIPTION: Print error messages, perhaps increment global counters ?? TBD
+ * DESCRIPTION: Increment global counters ?? TBD
+ *              No error message printed here, done by the REPORT* functions
  *
  ****************************************************************************/
 
@@ -365,33 +364,19 @@ void
 _Kinc_error (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
 
-    OsdPrintf (NULL, "%10s(%04d): *** Error %s\n", d, c, a); 
+/*    OsdPrintf (NULL, "%10s(%04d): *** Error %s\n", d, c, a);  */
+
     return;
 }
 
-
-void
-Kinc_error (char *a, INT32 b)
-{
-
-    OsdPrintf (NULL, "*** Error %s\n", a); 
-    return;
-}
 
 
 void
 _Kinc_info (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
 
-    OsdPrintf (NULL, "%10s(%04d): *** Info %s\n", d, c, a); 
-    return;
-}
+/*    OsdPrintf (NULL, "%10s(%04d): *** Info %s\n", d, c, a); */
 
-void
-Kinc_info (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
-{
-
-    OsdPrintf (NULL, "%10s(%04d): *** Info %s\n", d, c, a); 
     return;
 }
 
@@ -399,28 +384,56 @@ void
 _Kinc_warning (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
 
-    OsdPrintf (NULL, "%10s(%04d): *** Warning %s\n", d, c, a); 
+/*    OsdPrintf (NULL, "%10s(%04d): *** Warning %s\n", d, c, a); */
+
     return;
 }
 
+
+/* Obsolete interfaces?? (but the simpler interface is what we want.*/
+
+/*
+void
+Kinc_error (char *a, INT32 b)
+{
+
+    OsdPrintf (NULL, "*** Error %s\n", a);  
+
+    return;
+}
+*/
+/*
+void
+Kinc_info (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
+{
+
+    OsdPrintf (NULL, "%10s(%04d): *** Info %s\n", d, c, a);
+
+    return;
+}
+*/
+
+/*
 void
 Kinc_warning (char *a, INT32 b)
 {
 
-    OsdPrintf (NULL, "*** Warning %s\n", a); 
+     OsdPrintf (NULL, "*** Warning %s\n", a); 
     return;
 }
+*/
 
+/*
 void
 KFatalError (char * a, char * b, ...)
 {
-    /* Optional parameters (...) not implemented */
+    /* Optional parameters (...) not implemented
 
 
     OsdPrintf (NULL, "*** Fatal Error %s: %s\n", a, b);
     return;
 }
-
+*/
 
 
 /*****************************************************************************
@@ -437,7 +450,7 @@ void
 CloseOFT (void)
 {
 
-    OsdPrintf (NULL, "CloseOFT called, not supported **********\n");
+    DEBUG_PRINT (TRACE_EXEC, ("CloseOFT called, not supported **********\n"));
     return;
 }
 
@@ -445,14 +458,14 @@ void
 RestoreOFT (void)
 {
 
-    OsdPrintf (NULL, "RestoreOFT called, not supported **********\n");
+    DEBUG_PRINT (TRACE_EXEC, ("RestoreOFT called, not supported **********\n"));
     return;
 }
 
 void
 SetNotSupported (void)
 {
-    OsdPrintf (NULL, "SetNotSupported called, not supported **********\n");
+    DEBUG_PRINT (TRACE_EXEC, ("SetNotSupported called, not supported **********\n"));
     return;
 }
 
@@ -516,6 +529,14 @@ DumpBuf (UINT8 *Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
     UINT32      i = 0;
     UINT32      j;
     UINT8       BufChar;
+
+
+    /* Only dump the buffer if tracing is enabled */
+
+    if (!(TRACE_TABLES & DebugLevel))
+    {
+        return;
+    }
 
 
     /*
