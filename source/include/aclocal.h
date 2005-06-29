@@ -644,17 +644,19 @@ typedef union acpi_gen_state
 
 } ACPI_GENERIC_STATE;
 
+/* Forward declaration */
+struct acpi_walk_state;
 
 typedef
 ACPI_STATUS (*ACPI_PARSE_DOWNWARDS) (
     UINT16                  Opcode,
     ACPI_GENERIC_OP         *Op,
-    void                    *WalkState,
+    struct acpi_walk_state  *WalkState,
     ACPI_GENERIC_OP         **OutOp);
 
 typedef
 ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
-    void                    *State,
+    struct acpi_walk_state  *WalkState,
     ACPI_GENERIC_OP         *Op);
 
 
