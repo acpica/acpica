@@ -34,55 +34,12 @@ static ST_KEY_DESC_TABLE KDT[] = {
 
 
 /*****************************************************************************
- *  
- *  FUNCTION:       SetWhy
- *
- *  PARAMETERS:
- *
- *  DESCRIPTION:
- *          
- ****************************************************************************/
-
-
-void SetWhy (char *Function, char *Case, char *Description)
-{
-
-    if (Function)
-    {
-        sprintf (WhyBuf, "%s: ", Function);
-    }
-
-    if (Case)
-    {
-        strcat (WhyBuf, Case);
-        strcat (WhyBuf, ": ");
-    }
-
-    if (Description)
-    {
-        strcat (WhyBuf, Description);
-    }
-    
-    if (WhyFail)
-    {   /*  WhyFail specifies failure, append it to WhyBuf  */
-
-        strcat (WhyBuf, " [");
-        strcat (WhyBuf, WhyFail);
-        strcat (WhyBuf, "]");
-        WhyFail = NULL;
-    }
-
-    Why = WhyBuf;
-}
-
-
-/*****************************************************************************
  * 
  * FUNCTION:    AmlAppendBlockOwner
  *
  * PARAMETERS:  void *Owner
  *
- * DESCRIPTION: Append block-owner data from bu_plumr to WhyBuf.
+ * DESCRIPTION: Print block-owner data
  *
  ****************************************************************************/
 
@@ -91,19 +48,12 @@ AmlAppendBlockOwner (void *Owner)
 {
 
 #ifdef PLUMBER
-    if (Why != WhyBuf)
-    {
-        /* Copy message to WhyBuf */
-        
-        strcpy (WhyBuf, Why);
-        Why = WhyBuf;
-    }
 
 #if 1
     vPlumber ("internal type mismatch", 3);
 #endif
 
-    sprintf (&WhyBuf[strlen (WhyBuf)], " %s", pcIdentifyOwner(Owner));
+    DEBUG_PRINT (ACPI_ERROR, ("Block Owner: %s\n", pcIdentifyOwner (Owner)));
 
 #endif  /* PLUMBER */
 }
@@ -119,7 +69,7 @@ AmlAppendBlockOwner (void *Owner)
  *              UINT16  OpCode      OpCode being executed
  *              INT32   NumOperands Number of operands PrepStack tried to check
  *
- * DESCRIPTION: Append diagnostic information about operands to WhyBuf
+ * DESCRIPTION: Print diagnostic information about operands.
  *              This function is intended to be called after PrepStack
  *              has returned S_ERROR.
  *
@@ -131,41 +81,23 @@ AmlAppendOperandDiag(char *FileName, INT32 LineNum, UINT16 OpCode, INT32 NumOper
     meth            Method;
 
 
-    if (Why != WhyBuf)
-    {
-        /* Copy message to WhyBuf */
-        
-        strcpy (WhyBuf, Why);
-        Why = WhyBuf;
-    }
-
     GetCurrentLoc (&Method);
 
-    sprintf (&WhyBuf[strlen (WhyBuf)], " [%s:%d, opcode = %s AML offset %04x]",
-            FileName, LineNum,
-            (OpCode > UCHAR_MAX)
-                ? LongOps[OpCode & 0x00ff]
-                : ShortOps[OpCode],
-            Method.Offset);
+    DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
+                    FileName, LineNum,
+                    (OpCode > UCHAR_MAX)
+                        ? LongOps[OpCode & 0x00ff]
+                        : ShortOps[OpCode],
+                    Method.Offset));
 
     if (GetDebugLevel () > 0)
     {
-/* !!!!!!!!!Clean this stuff up !!! */
-
-/*        INT32       iTraceWas = Trace; */
-
-        /* Turn on TraceExec to enable output from DumpStack() */
-        
-/*        Trace |= TraceExec; OBSOLETE !! */
-
         DUMP_STACK (Exec,
                       (OpCode > UCHAR_MAX)
                       ? LongOps[OpCode & 0x00ff]
                       : ShortOps[OpCode],
                       NumOperands,
                       "after PrepStack failed");
-
-/*        Trace = iTraceWas;  */
     }
 }
 
