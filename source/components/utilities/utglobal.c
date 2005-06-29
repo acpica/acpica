@@ -400,11 +400,21 @@ void
 CmInitGlobals (void)
 {
     UINT32                  i;
-
+    char * TblNames[] = {
+        "RSDP",
+        APIC_SIG,
+        DSDT_SIG,
+        FACP_SIG,
+        FACS_SIG,
+        PSDT_SIG,
+        RSDT_SIG,
+        SSDT_SIG,
+        SBDT_SIG
+    };
 
     FUNCTION_TRACE ("CmInitGlobals");
 
-
+    
     /* ACPI table structure */
 
     for (i = 0; i < ACPI_TABLE_MAX; i++)
@@ -412,8 +422,8 @@ CmInitGlobals (void)
         AcpiTables[i].Pointer    = NULL;
         AcpiTables[i].Allocation = ACPI_MEM_NOT_ALLOCATED;
         AcpiTables[i].Length     = 0;
+        strncpy(&AcpiTables[i].Name[0], TblNames[i], sizeof(AcpiTables[0].Name));
     }
-
 
     /* Address Space handler array */
 
