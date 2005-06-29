@@ -702,7 +702,7 @@ CmDeleteInternalObjectList (
          * need to be deleted separately.
          */
 
-        if (VALID_OBJECT_TYPE ((*InternalObj), ACPI_TYPE_Package))
+        if (IS_THIS_OBJECT_TYPE ((*InternalObj), ACPI_TYPE_Package))
         {
             /* Delete the package */
             
