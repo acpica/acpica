@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.56 $
+ *       $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -151,50 +151,60 @@ AcpiHwGetModeCapabilities (
 
 /* Register I/O Prototypes */
 
-
-UINT32
-AcpiHwRegisterBitAccess (
-    NATIVE_UINT             ReadWrite,
-    BOOLEAN                 UseLock,
-    UINT32                  RegisterId,
-    ... /* DWORD Write Value */);
-
-UINT32
-AcpiHwRegisterRead (
-    BOOLEAN                 UseLock,
+ACPI_BIT_REGISTER_INFO *
+AcpiHwGetBitRegisterInfo (
     UINT32                  RegisterId);
 
-void
+ACPI_STATUS
+AcpiHwBitRegisterRead (
+    UINT32                  RegisterId,
+    UINT32                  *ReturnValue,
+    UINT32                  Flags);
+
+ACPI_STATUS
+AcpiHwBitRegisterWrite (
+    UINT32                  RegisterId,
+    UINT32                  Value,
+    UINT32                  Flags);
+
+ACPI_STATUS
+AcpiHwRegisterRead (
+    BOOLEAN                 UseLock,
+    UINT32                  RegisterId,
+    UINT32                  *ReturnValue);
+
+ACPI_STATUS
 AcpiHwRegisterWrite (
     BOOLEAN                 UseLock,
     UINT32                  RegisterId,
     UINT32                  Value);
 
-UINT32
+ACPI_STATUS
 AcpiHwLowLevelRead (
     UINT32                  Width,
+    UINT32                  *Value,
     ACPI_GENERIC_ADDRESS    *Reg,
     UINT32                  Offset);
 
-void
+ACPI_STATUS
 AcpiHwLowLevelWrite (
     UINT32                  Width,
     UINT32                  Value,
     ACPI_GENERIC_ADDRESS    *Reg,
     UINT32                  Offset);
 
-void
+ACPI_STATUS
 AcpiHwClearAcpiStatus (
    void);
-
-UINT32
-AcpiHwGetBitShift (
-    UINT32                  Mask);
 
 
 /* GPE support */
 
-void
+UINT8
+AcpiHwGetGpeBitMask (
+    UINT32                  GpeNumber);
+
+ACPI_STATUS
 AcpiHwEnableGpe (
     UINT32                  GpeNumber);
 
@@ -202,7 +212,7 @@ void
 AcpiHwEnableGpeForWakeup (
     UINT32                  GpeNumber);
 
-void
+ACPI_STATUS
 AcpiHwDisableGpe (
     UINT32                  GpeNumber);
 
@@ -210,20 +220,20 @@ void
 AcpiHwDisableGpeForWakeup (
     UINT32                  GpeNumber);
 
-void
+ACPI_STATUS
 AcpiHwClearGpe (
     UINT32                  GpeNumber);
 
-void
+ACPI_STATUS
 AcpiHwGetGpeStatus (
     UINT32                  GpeNumber,
     ACPI_EVENT_STATUS       *EventStatus);
 
-void
+ACPI_STATUS
 AcpiHwDisableNonWakeupGpes (
     void);
 
-void
+ACPI_STATUS
 AcpiHwEnableNonWakeupGpes (
     void);
 
@@ -231,7 +241,7 @@ AcpiHwEnableNonWakeupGpes (
 /* Sleep Prototypes */
 
 ACPI_STATUS
-AcpiHwObtainSleepTypeRegisterData (
+AcpiHwGetSleepTypeData (
     UINT8                   SleepState,
     UINT8                   *Slp_TypA,
     UINT8                   *Slp_TypB);
