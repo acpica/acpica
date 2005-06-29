@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: tbfac - ACPI FAC* (FACP, FACS) utilities
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -136,7 +136,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Returns a pointer to the FACS as defined in FACP.  This 
+ * DESCRIPTION: Returns a pointer to the FACS as defined in FACP.  This
  *              function assumes the global variable FACP has been
  *              correctly initialized.  The value of FACP->FirmwareCtrl
  *              into a far pointer which is returned.
@@ -145,7 +145,7 @@
 
 ACPI_STATUS
 AcpiTbGetTableFacs (
-    char                    *BufferPtr, 
+    char                    *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo)
 {
     void                    *TablePtr = NULL;
@@ -163,7 +163,7 @@ AcpiTbGetTableFacs (
     {
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
-    
+
     Size = sizeof (FIRMWARE_ACPI_CONTROL_STRUCTURE);
     if (BufferPtr)
     {
@@ -178,22 +178,22 @@ AcpiTbGetTableFacs (
         }
 
         MEMCPY (TablePtr, BufferPtr, Size);
-        
+
         /* Save allocation type */
 
         Allocation = ACPI_MEM_ALLOCATED;
     }
-    
+
     else
     {
         /* Just map the physical memory to our address space */
 
-        Status = AcpiTbMapAcpiTable ((void *) Acpi_GblFACP->FirmwareCtrl, &Size, &TablePtr);     
+        Status = AcpiTbMapAcpiTable ((void *) Acpi_GblFACP->FirmwareCtrl, &Size, &TablePtr);
         if (ACPI_FAILURE(Status))
         {
             return_ACPI_STATUS (Status);
         }
-        
+
         /* Save allocation type */
 
         Allocation = ACPI_MEM_MAPPED;
@@ -206,7 +206,7 @@ AcpiTbGetTableFacs (
     TableInfo->Length       = Size;
     TableInfo->Allocation   = Allocation;
     TableInfo->BasePointer  = TablePtr;
-    
+
     return_ACPI_STATUS (Status);
 }
 

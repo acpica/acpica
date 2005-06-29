@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: tbinstal - ACPI table installation
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -137,7 +137,7 @@
  * RETURN:      Status
  *
  * DESCRIPTION: Load and validate all tables other than the RSDT.  The RSDT must
- *              already be loaded and validated. 
+ *              already be loaded and validated.
  *              Install the table into the global data structs.
  *
  ******************************************************************************/
@@ -155,7 +155,7 @@ AcpiTbInstallTable (
     FUNCTION_TRACE ("TbInstallTable");
 
 
-    /* 
+    /*
      * Check the table signature and make sure it is recognized
      * Also checks the header checksum
      */
@@ -183,7 +183,7 @@ AcpiTbInstallTable (
         return_ACPI_STATUS (Status);
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n", 
+    DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n",
                                 Acpi_GblAcpiTableData[TableType].Name, TableHeader));
 
     AcpiCmReleaseMutex (MTX_TABLES);
@@ -203,10 +203,10 @@ AcpiTbInstallTable (
  * DESCRIPTION: Check a table signature for a match against known table types
  *
  * NOTE:  All table pointers are validated as follows:
- *          1) Table pointer must point to valid physical memory 
+ *          1) Table pointer must point to valid physical memory
  *          2) Signature must be 4 ASCII chars, even if we don't recognize the name
  *          3) Table must be readable for length specified in the header
- *          4) Table checksum must be valid (with the exception of the FACS which 
+ *          4) Table checksum must be valid (with the exception of the FACS which
  *              has no checksum for some odd reason…)
  *
  ******************************************************************************/
@@ -221,7 +221,7 @@ AcpiTbRecognizeTable (
     ACPI_TABLE_TYPE         TableType = 0;
     UINT32                  i;
 
-    
+
     FUNCTION_TRACE ("TbRecognizeTable");
 
 
@@ -229,7 +229,7 @@ AcpiTbRecognizeTable (
 
     TableHeader = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
     if (!TableHeader)
-    {   
+    {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -256,7 +256,7 @@ AcpiTbRecognizeTable (
     TableInfo->Length   = TableHeader->Length;
 
 
-    /* 
+    /*
      * Validate checksum for _most_ tables,
      * even the ones whose signature we don't recognize
      */
@@ -269,7 +269,7 @@ AcpiTbRecognizeTable (
         AcpiTbVerifyTableChecksum (TableHeader);
     }
 
-    /* 
+    /*
      * An AE_SUPPORT means that the table was not recognized.
      * We basically ignore this;  just print a debug message
      */
@@ -309,12 +309,12 @@ AcpiTbInitTableDescriptor (
     FUNCTION_TRACE_U32 ("TbInitTableDescriptor", TableType);
 
     /*
-     * Install the table into the global data structure 
+     * Install the table into the global data structure
      */
-    
+
     ListHead    = &Acpi_GblAcpiTables[TableType];
     TableDesc   = ListHead;
-   
+
 
 
     /*
@@ -338,7 +338,7 @@ AcpiTbInitTableDescriptor (
     }
 
 
-    else 
+    else
     {
         /*
          * Multiple tables allowed for this table type, we must link
@@ -379,7 +379,7 @@ AcpiTbInitTableDescriptor (
     /* Common initialization of the table descriptor */
 
     TableDesc->Pointer              = TableInfo->Pointer;
-    TableDesc->BasePointer          = TableInfo->BasePointer;  
+    TableDesc->BasePointer          = TableInfo->BasePointer;
     TableDesc->Length               = TableInfo->Length;
     TableDesc->Allocation           = TableInfo->Allocation;
     TableDesc->AmlPointer           = (UINT8 *) (TableDesc->Pointer + 1),

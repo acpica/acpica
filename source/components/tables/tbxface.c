@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: tbapi - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
  *
@@ -39,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -143,7 +143,7 @@ ACPI_STATUS
 AcpiLoadFirmwareTables (void)
 {
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  NumberOfTables = 0; 
+    UINT32                  NumberOfTables = 0;
 
 
     FUNCTION_TRACE ("AcpiLoadFirmwareTables");
@@ -173,9 +173,9 @@ AcpiLoadFirmwareTables (void)
     return_ACPI_STATUS (AE_OK);
 
 
-ErrorExit:    
+ErrorExit:
     DEBUG_PRINT (ACPI_ERROR, ("Failure during ACPI Table Init: %s\n", AcpiCmFormatException (Status)));
-    
+
     return_ACPI_STATUS (Status);
 }
 
@@ -220,7 +220,7 @@ AcpiLoadTable (
     {
         return_ACPI_STATUS (Status);
     }
-    
+
     /* Install the new table into the local data structures */
 
     Status = AcpiTbInstallTable (NULL, &TableInfo);
@@ -262,19 +262,19 @@ AcpiUnloadTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    
+
     /* Find all tables of the requested type */
 
     ListHead = &Acpi_GblAcpiTables[TableType];
     do
-    {            
+    {
         /* Delete the entire namespace under this table NTE */
 
         AcpiNsDeleteNamespaceByOwner (ListHead->TableId);
 
         /* Delete (or unmap) the actual table */
 
-        AcpiTbDeleteAcpiTable (TableType);  
+        AcpiTbDeleteAcpiTable (TableType);
 
     } while (ListHead != &Acpi_GblAcpiTables[TableType]);
 
@@ -308,7 +308,7 @@ AcpiUnloadTable (
 
 ACPI_STATUS
 AcpiGetTableHeader (
-    ACPI_TABLE_TYPE         TableType, 
+    ACPI_TABLE_TYPE         TableType,
     UINT32                  Instance,
     ACPI_TABLE_HEADER       *OutTableHeader)
 {
@@ -335,7 +335,7 @@ AcpiGetTableHeader (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
 
     /* Get a pointer to the entire table */
 
@@ -409,11 +409,11 @@ AcpiGetTable (
     if ((Instance == 0)                 ||
         (!RetBuffer)                    ||
         (!RetBuffer->Pointer)           ||
-        (!RetBuffer->Length)) 
+        (!RetBuffer->Length))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
@@ -422,7 +422,7 @@ AcpiGetTable (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
     
     /* Get a pointer to the entire table */
 
