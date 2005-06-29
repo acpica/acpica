@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Name: macros.h - C macros for the entire subsystem.
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,8 +117,8 @@
 #ifndef __MACROS_H__
 #define __MACROS_H__
 
-/* 
- * Data manipulation macros 
+/*
+ * Data manipulation macros
  */
 
 #ifndef LOWORD
@@ -127,7 +127,7 @@
 
 #ifndef HIWORD
 #define HIWORD(l)                       ((UINT16)((((NATIVE_UINT)(l)) >> 16) & 0xFFFF))
-#endif  
+#endif
 
 #ifndef LOBYTE
 #define LOBYTE(l)                       ((UINT8)(UINT16)(l))
@@ -154,7 +154,7 @@
 #define HI_LIMIT(b)                     ((UINT8) (((b) & 0x00FF0000) >> 16))
 
 
- /* 
+ /*
   * Extract a byte of data using a pointer.  Any more than a byte and we
   * get into potential aligment issues -- see the STORE macros below
   */
@@ -244,7 +244,7 @@
 #endif
 
 
-/* 
+/*
  * An ACPI_HANDLE (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
  * such as on apObjStack, where a pointer to an ACPI_OBJECT_INTERNAL can also
  * appear.  This macro is used to distinguish them.
@@ -260,8 +260,8 @@
 #define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OBJECT_INTERNAL *)d)->Common.Type == (UINT8)t)
 
 
-/* 
- * There is an (nte *) prefix to each name table, containing either a NULL 
+/*
+ * There is an (nte *) prefix to each name table, containing either a NULL
  * pointer or the address of the next array of nte's in the scope.
  *
  * This macro extracts a pointer to the NEXT table in the chain.
@@ -270,9 +270,9 @@
 
 
 
-/* 
+/*
  * Macro to check if a pointer is within an ACPI table.
- * Parameter (a) is the pointer to check.  Parameter (b) must be defined 
+ * Parameter (a) is the pointer to check.  Parameter (b) must be defined
  * as a pointer to an ACPI_TABLE_HEADER.  (b+1) then points past the header,
  * and ((UINT8 *)b+b->Length) points one byte past the end of the table.
  */
@@ -361,7 +361,7 @@
 
 /* Buffer dump macros */
 
-#define DUMP_BUFFER(a,b)                CmDumpBuffer((char *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
+#define DUMP_BUFFER(a,b)                AcpiCmDumpBuffer((char *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
 
 /*
  * Debug macros that are conditionally compiled
@@ -371,8 +371,8 @@
 
 #define MODULE_NAME(name)               static char *_THIS_MODULE = name
 
-/* 
- * Function entry tracing. 
+/*
+ * Function entry tracing.
  * The first parameter should be the procedure name as a quoted string.  This is declared
  * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
  */
@@ -385,9 +385,9 @@
                                         FunctionTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
 #define FUNCTION_TRACE_STR(a,b)         char * _ProcName = a;\
                                         FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(char *)b)
-/* 
- * Function exit tracing. 
- * WARNING: These macros include a return statement.  This is usually considered 
+/*
+ * Function exit tracing.
+ * WARNING: These macros include a return statement.  This is usually considered
  * bad form, but having a separate exit macro is very ugly and difficult to maintain.
  * One of the FUNCTION_TRACE macros above must be used in conjunction with these macros
  * so that "_ProcName" is defined.
@@ -409,14 +409,14 @@
 
 /* Stack and buffer dumping */
 
-#define DUMP_STACK_ENTRY(a)             AmlDumpOperand(a)
-#define DUMP_OPERANDS(a,b,c,d,e)        AmlDumpOperands(a,b,c,d,e,_THIS_MODULE,__LINE__)
+#define DUMP_STACK_ENTRY(a)             AcpiAmlDumpOperand(a)
+#define DUMP_OPERANDS(a,b,c,d,e)        AcpiAmlDumpOperands(a,b,c,d,e,_THIS_MODULE,__LINE__)
 
 
-#define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
-#define DUMP_TABLES(a,b)                NsDumpTables(a,b)
-#define DUMP_PATHNAME(a,b,c,d)          NsDumpPathname(a,b,c,d)
-#define BREAK_MSG(a)                    OsdBreakpoint (a)
+#define DUMP_ENTRY(a,b)                 AcpiNsDumpEntry (a,b)
+#define DUMP_TABLES(a,b)                AcpiNsDumpTables(a,b)
+#define DUMP_PATHNAME(a,b,c,d)          AcpiNsDumpPathname(a,b,c,d)
+#define BREAK_MSG(a)                    AcpiOsdBreakpoint (a)
 
 /*
  * Generate INT3 on ACPI_ERROR (Debug only!)
@@ -424,13 +424,13 @@
 
 #define ERROR_BREAK
 #ifdef  ERROR_BREAK
-#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) OsdBreakpoint("Fatal error encountered\n")
+#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) AcpiOsdBreakpoint("Fatal error encountered\n")
 #else
-#define BREAK_ON_ERROR(lvl) 
+#define BREAK_ON_ERROR(lvl)
 #endif
 
-/* 
- * Master debug print macros 
+/*
+ * Master debug print macros
  * Print iff:
  *    1) Debug print for the current component is enabled
  *    2) Debug error level or trace level for the print statement is enabled
@@ -439,7 +439,7 @@
 
 #define PARAM_LIST(pl)                  pl
 
-#define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & DebugLevel) && (_COMPONENT & DebugLayer))
+#define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer))
 
 #define DEBUG_PRINT(lvl,fp)             TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintPrefix (_THIS_MODULE,__LINE__);\
@@ -453,14 +453,14 @@
 /* Assert macros */
 
 #define ACPI_ASSERT(exp)                if(!(exp)) \
-                                            OsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
+                                            AcpiOsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
 
 #define DEBUG_ASSERT(msg, exp)          if(!(exp)) \
-                                            OsdDbgAssert(#exp, __FILE__, __LINE__, msg)
+                                            AcpiOsdDbgAssert(#exp, __FILE__, __LINE__, msg)
 
 
 #else
-/* 
+/*
  * This is the non-debug case -- make everything go away,
  * leaving no executable debug code!
  */
@@ -468,10 +468,10 @@
 #define MODULE_NAME(name)
 #define _THIS_MODULE ""
 
-#define DEBUG_EXEC(a)  
+#define DEBUG_EXEC(a)
 #define NORMAL_EXEC(a)                  a;
 
-#define DEBUG_DEFINE(a)                     
+#define DEBUG_DEFINE(a)
 #define DEBUG_ONLY_MEMBERS(a)
 #define FUNCTION_TRACE(a)
 #define FUNCTION_TRACE_PTR(a,b)
@@ -486,7 +486,7 @@
 #define DUMP_TABLES(a,b)
 #define DUMP_PATHNAME(a,b,c,d)
 #define DEBUG_PRINT(l,f)
-#define DEBUG_PRINT_RAW(l,f) 
+#define DEBUG_PRINT_RAW(l,f)
 #define BREAK_MSG(a)
 
 #define return_VOID                     return
@@ -525,8 +525,8 @@
  */
 
 #define ADD_OBJECT_NAME(a,b)            MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
-                                        STRNCPY (a->Common.Name, Gbl_NsTypeNames[b], sizeof (a->Common.Name))
-    
+                                        STRNCPY (a->Common.Name, AcpiGbl_NsTypeNames[b], sizeof (a->Common.Name))
+
 #endif
 
 
