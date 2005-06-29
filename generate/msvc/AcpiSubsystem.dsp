@@ -180,11 +180,15 @@ SOURCE=..\..\Subsystem\Events\evsci.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Hardware\hwapi.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Hardware\hwgpe.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Hardware\hwlegacy.c
+SOURCE=..\..\Subsystem\Hardware\hwmode.c
 # End Source File
 # Begin Source File
 
