@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.42 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -381,7 +381,7 @@ Exit:
     if (SpaceCount)
     {
         Gbl_MadeChanges = TRUE;
-        AsPrint ("Extraneous spaces Removed", SpaceCount, Filename);
+        AsPrint ("Extraneous spaces removed", SpaceCount, Filename);
     }
 }
 
@@ -514,7 +514,7 @@ AsReplaceString (
 
         else
         {
-            if (Type == REPLACE_WHOLE_WORD)
+            if ((Type & REPLACE_MASK) == REPLACE_WHOLE_WORD)
             {
                 if (!AsMatchExactWord (SubString1, TargetLength))
                 {
@@ -524,12 +524,92 @@ AsReplaceString (
             }
 
             SubBuffer = AsReplaceData (SubString1, TargetLength, Replacement, ReplacementLength);
+/*
+            if (((Type & INDENT_MASK) == EXTRA_INDENT_C) &&
+                (Gbl_FileType == FILE_TYPE_SOURCE))
+            {
+                SubBuffer = AsReplaceData (SubBuffer, 0, "    ", 4);
+            }
+*/
+
             ReplaceCount++;
         }
     }
 
     return ReplaceCount;
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsConvertToLineFeeds
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+AsConvertToLineFeeds (
+    char                    *Buffer)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+    while (SubString)
+    {
+        /* Find the target string */
+
+        SubString = strstr (SubBuffer, "\r\n");
+        if (!SubString)
+        {
+            return;
+        }
+
+        SubBuffer = AsReplaceData (SubString, 1, NULL, 0);
+    }
+    return;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsInsertCarriageReturns
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+AsInsertCarriageReturns (
+    char                    *Buffer)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+    while (SubString)
+    {
+        /* Find the target string */
+
+        SubString = strstr (SubBuffer, "\n");
+        if (!SubString)
+        {
+            return;
+        }
+
+        SubBuffer = AsInsertData (SubString, "\r", 1);
+        SubBuffer += 1;
+    }
+    return;
+}
+
 
 /******************************************************************************
  *
