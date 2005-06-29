@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.36 $
+ *       $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -297,10 +297,12 @@ typedef struct _AcpiTableSupport
  * Get the architecture-specific tables
  */
 
+#include "actbl2.h"         /* Acpi 2.0 tables */
+
 #ifdef IA64
-#include "actbl64.h"
+#include "actbl71.h"
 #else
-#include "actbl32.h"
+#include "actbl1.h"         /* Acpi 1.0 tables */
 #endif
 
 
