@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -290,7 +290,7 @@ AcpiDsBuildInternalBufferObj (
     if (ObjDesc->Buffer.Length == 0)
     {
         ObjDesc->Buffer.Pointer = NULL;
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
             "Buffer defined with zero length in AML, creating\n"));
     }
     else
