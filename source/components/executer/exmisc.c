@@ -137,7 +137,8 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecCreateField (UINT16 opcode)
+AmlExecCreateField (
+    UINT16                  opcode)
 {
     ACPI_OBJECT             *ResDesc = NULL;
     ACPI_OBJECT             *CntDesc = NULL;

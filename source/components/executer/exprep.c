@@ -148,7 +148,8 @@ AmlGetMethodDepth (void)
  ****************************************************************************/
 
 ACPI_OBJECT_TYPE
-AmlGetMethodType (INT32 Index)
+AmlGetMethodType (
+    INT32                   Index)
 {
     FUNCTION_TRACE ("AmlGetMethodType");
 
@@ -190,9 +191,11 @@ AmlGetMethodType (INT32 Index)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetMethodValue (INT32 Index, ACPI_OBJECT *ObjDesc)
+AmlGetMethodValue (
+    INT32                   Index, 
+    ACPI_OBJECT             *ObjDesc)
 {
-    ACPI_STATUS         Status = AE_AML_ERROR;
+    ACPI_STATUS             Status = AE_AML_ERROR;
 
 
     FUNCTION_TRACE ("AmlGetMethodValue");
@@ -292,7 +295,10 @@ AmlGetMethodValue (INT32 Index, ACPI_OBJECT *ObjDesc)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSetMethodValue (INT32 Index, ACPI_OBJECT *ObjDesc, ACPI_OBJECT *ObjDesc2)
+AmlSetMethodValue (
+    INT32                   Index, 
+    ACPI_OBJECT             *ObjDesc, 
+    ACPI_OBJECT             *ObjDesc2)
 {
     FUNCTION_TRACE ("AmlSetMethodValue");
 
@@ -442,11 +448,15 @@ AmlSetMethodValue (INT32 Index, ACPI_OBJECT *ObjDesc, ACPI_OBJECT *ObjDesc2)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlPrepDefFieldValue (ACPI_HANDLE Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
+AmlPrepDefFieldValue (
+    ACPI_HANDLE             Region, 
+    UINT8                   FldFlg, 
+    INT32                   FldPos, 
+    INT32                   FldLen)
 {
-    ACPI_OBJECT   *ObjDesc = NULL;
-    ACPI_STATUS         Status = AE_OK;
-    INT32               Type;
+    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_STATUS             Status = AE_OK;
+    INT32                   Type;
 
 
     FUNCTION_TRACE ("AmlPrepDefFieldValue");
@@ -568,12 +578,17 @@ AmlPrepDefFieldValue (ACPI_HANDLE Region, UINT8 FldFlg, INT32 FldPos, INT32 FldL
  ****************************************************************************/
 
 ACPI_STATUS
-AmlPrepBankFieldValue (ACPI_HANDLE Region, ACPI_HANDLE BankReg, UINT32 BankVal,
-                        UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
+AmlPrepBankFieldValue (
+    ACPI_HANDLE             Region, 
+    ACPI_HANDLE             BankReg, 
+    UINT32                  BankVal,
+    UINT8                   FldFlg, 
+    INT32                   FldPos, 
+    INT32                   FldLen)
 {
-    ACPI_OBJECT         *ObjDesc = NULL;
-    ACPI_STATUS         Status = AE_OK;
-    INT32               Type;
+    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_STATUS             Status = AE_OK;
+    INT32                   Type;
 
 
     FUNCTION_TRACE ("AmlPrepBankFieldValue");
@@ -683,11 +698,15 @@ AmlPrepBankFieldValue (ACPI_HANDLE Region, ACPI_HANDLE BankReg, UINT32 BankVal,
  ****************************************************************************/
 
 ACPI_STATUS
-AmlPrepIndexFieldValue (ACPI_HANDLE IndexReg, ACPI_HANDLE DataReg,
-                        UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
+AmlPrepIndexFieldValue (
+    ACPI_HANDLE             IndexReg, 
+    ACPI_HANDLE             DataReg,
+    UINT8                   FldFlg, 
+    INT32                   FldPos, 
+    INT32                   FldLen)
 {
-    ACPI_OBJECT         *ObjDesc = NULL;
-    ACPI_STATUS         Status = AE_OK;
+    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("AmlPrepIndexFieldValue");
@@ -792,7 +811,8 @@ AmlPrepIndexFieldValue (ACPI_HANDLE IndexReg, ACPI_HANDLE DataReg,
  ****************************************************************************/
 
 ACPI_STATUS
-AmlPrepStack (char *Types)
+AmlPrepStack (
+    char                    *Types)
 {
     ACPI_OBJECT             **StackPtr = (ACPI_OBJECT **) &ObjStack[ObjStackTop];
     ACPI_STATUS             Status;

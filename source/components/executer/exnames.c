@@ -140,10 +140,12 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 void 
-AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
+AmlAllocateNameString (
+    INT32                   PrefixCount, 
+    INT32                   NumNameSegs)
 {
-    char            *TempPtr;
-    INT32           SizeNeeded;
+    char                    *TempPtr;
+    INT32                   SizeNeeded;
 
 
     FUNCTION_TRACE ("AmlAllocateNameString");
@@ -277,7 +279,8 @@ AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
  ****************************************************************************/
 
 INT32 
-AmlGoodChar (INT32 Character)
+AmlGoodChar (
+    INT32                   Character)
 {
 
     return ((Character == '_') || (Character >= 'A' && Character <= 'Z') ||
@@ -311,9 +314,10 @@ AmlGoodChar (INT32 Character)
 
 
 INT32 
-AmlDecodePackageLength (INT32 LastPkgLen)
+AmlDecodePackageLength (
+    INT32                   LastPkgLen)
 {
-    INT32           NumBytes = 0;
+    INT32                   NumBytes = 0;
 
     FUNCTION_TRACE ("AmlDecodePackageLength");
 
@@ -348,11 +352,12 @@ AmlDecodePackageLength (INT32 LastPkgLen)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDoSeg (OPERATING_MODE LoadExecMode)
+AmlDoSeg (
+    OPERATING_MODE          LoadExecMode)
 {
-    ACPI_STATUS     Status = AE_OK;
-    INT32           Index;
-    char            CharBuf[5];
+    ACPI_STATUS             Status = AE_OK;
+    INT32                   Index;
+    char                    CharBuf[5];
 
 
     FUNCTION_TRACE ("AmlDoSeg");
@@ -452,13 +457,15 @@ AmlDoSeg (OPERATING_MODE LoadExecMode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDoName (ACPI_OBJECT_TYPE DataType, OPERATING_MODE LoadExecMode)
+AmlDoName (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode)
 {
-    ACPI_STATUS     Status = AE_OK;
-    INT32           NumSegments;
-    INT32           PrefixCount = 0;
-    UINT8           Prefix = 0;
-    ACPI_HANDLE     handle;
+    ACPI_STATUS             Status = AE_OK;
+    INT32                   NumSegments;
+    INT32                   PrefixCount = 0;
+    UINT8                   Prefix = 0;
+    ACPI_HANDLE             handle;
 
 
     FUNCTION_TRACE ("AmlDoName");

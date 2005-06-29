@@ -133,7 +133,8 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecMonadic1 (UINT16 opcode)
+AmlExecMonadic1 (
+    UINT16                  opcode)
 {
     ACPI_OBJECT             *ObjDesc;
     ACPI_STATUS             Status;
@@ -255,7 +256,8 @@ AmlExecMonadic1 (UINT16 opcode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecMonadic2R (UINT16 opcode)
+AmlExecMonadic2R (
+    UINT16                  opcode)
 {
     ACPI_OBJECT             *ObjDesc;
     ACPI_OBJECT             *ResDesc;
@@ -415,7 +417,8 @@ AmlExecMonadic2R (UINT16 opcode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecMonadic2 (UINT16 opcode)
+AmlExecMonadic2 (
+    UINT16                  opcode)
 {
     ACPI_OBJECT             *ObjDesc;
     ACPI_OBJECT             *ResDesc;

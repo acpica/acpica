@@ -132,11 +132,15 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 void
-DumpBuffer (char *Buffer, UINT32 Count, INT32 Flags, INT32 ComponentId)
+DumpBuffer (
+    char                    *Buffer, 
+    UINT32                  Count, 
+    INT32                   Flags, 
+    INT32                   ComponentId)
 {
-    UINT32      i = 0;
-    UINT32      j;
-    UINT8       BufChar;
+    UINT32                  i = 0;
+    UINT32                  j;
+    UINT8                   BufChar;
 
 
     /* Only dump the buffer if tracing is enabled */
@@ -218,7 +222,8 @@ cleanup:
  ***************************************************************************/
 
 void
-AmlDumpBuffer (size_t NumBytes)
+AmlDumpBuffer (
+    size_t                  NumBytes)
 {
 
     FUNCTION_TRACE ("AmlDumpBuffer");
@@ -244,11 +249,12 @@ AmlDumpBuffer (size_t NumBytes)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDumpStackEntry (ACPI_OBJECT *EntryDesc)
+AmlDumpStackEntry (
+    ACPI_OBJECT             *EntryDesc)
 {
-    char        *OutString = NULL;
-    UINT8       *Buf = NULL;
-    UINT16      Length;
+    char                    *OutString = NULL;
+    UINT8                   *Buf = NULL;
+    UINT16                  Length;
 
 
     FUNCTION_TRACE ("AmlDumpStackEntry");
@@ -565,9 +571,13 @@ AmlDumpStackEntry (ACPI_OBJECT *EntryDesc)
  ****************************************************************************/
 
 void
-AmlDumpStack (OPERATING_MODE LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
+AmlDumpStack (
+    OPERATING_MODE          LoadExecMode, 
+    char                    *Ident, 
+    INT32                   NumLevels, 
+    char                    *Note)
 {
-    ACPI_OBJECT         **EntryDesc;
+    ACPI_OBJECT             **EntryDesc;
 
     
     FUNCTION_TRACE ("AmlDumpStack");
@@ -630,7 +640,8 @@ AmlDumpStack (OPERATING_MODE LoadExecMode, char *Ident, INT32 NumLevels, char *N
  ****************************************************************************/
 
 void
-AmlDumpObjectDescriptor (ACPI_OBJECT *Object)
+AmlDumpObjectDescriptor (
+    ACPI_OBJECT             *Object)
 {
 	
 	FUNCTION_TRACE ("AmlDumpObjectDescriptor");

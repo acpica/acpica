@@ -132,7 +132,8 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecDyadic1 (UINT16 opcode)
+AmlExecDyadic1 (
+    UINT16                  opcode)
 {
     ACPI_OBJECT             *ObjDesc = NULL;
     ACPI_OBJECT             *ValDesc = NULL;
@@ -231,7 +232,8 @@ AmlExecDyadic1 (UINT16 opcode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecDyadic2R (UINT16 opcode)
+AmlExecDyadic2R (
+    UINT16                  opcode)
 {
     ACPI_OBJECT             *ObjDesc = NULL;
     ACPI_OBJECT             *ObjDesc2 = NULL;
@@ -500,7 +502,8 @@ AmlExecDyadic2R (UINT16 opcode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecDyadic2S (UINT16 opcode)
+AmlExecDyadic2S (
+    UINT16                  opcode)
 {
     ACPI_OBJECT             *ObjDesc = NULL;
     ACPI_OBJECT             *TimeDesc = NULL;
@@ -603,7 +606,8 @@ AmlExecDyadic2S (UINT16 opcode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecDyadic2 (UINT16 opcode)
+AmlExecDyadic2 (
+    UINT16                  opcode)
 {
     ACPI_OBJECT             *ObjDesc;
     ACPI_OBJECT             *ObjDesc2;

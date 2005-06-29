@@ -136,7 +136,10 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSetupField (ACPI_OBJECT *ObjDesc, ACPI_OBJECT *RgnDesc, INT32 FieldBitWidth)
+AmlSetupField (
+    ACPI_OBJECT         *ObjDesc, 
+    ACPI_OBJECT         *RgnDesc, 
+    INT32               FieldBitWidth)
 {
     ACPI_OBJECT         *ObjValDesc = NULL;
     ACPI_STATUS         Status = AE_OK;
@@ -317,7 +320,10 @@ AmlSetupField (ACPI_OBJECT *ObjDesc, ACPI_OBJECT *RgnDesc, INT32 FieldBitWidth)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlReadField (ACPI_OBJECT *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
+AmlReadField (
+    ACPI_OBJECT         *ObjDesc, 
+    UINT32              *Value, 
+    INT32               FieldBitWidth)
 {
     /* ObjDesc is validated by callers */
 
@@ -326,11 +332,11 @@ AmlReadField (ACPI_OBJECT *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
     UINT32              Address;
     UINT32              LocalValue = 0;
     INT32               FieldByteWidth;
-	void *      		PhysicalAddrPtr = NULL;
-    UINT8       		PciBus = 0;
-    UINT8       		DevFunc = 0;
-    UINT8       		PciReg = 0;
-    UINT8       		PciExcep = 0;
+    void *              PhysicalAddrPtr = NULL;
+    UINT8               PciBus = 0;
+    UINT8               DevFunc = 0;
+    UINT8               PciReg = 0;
+    UINT8               PciExcep = 0;
 
     FUNCTION_TRACE ("AmlReadField");
 
@@ -529,19 +535,22 @@ AmlReadField (ACPI_OBJECT *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlWriteField (ACPI_OBJECT *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
+AmlWriteField (
+    ACPI_OBJECT             *ObjDesc, 
+    UINT32                  Value, 
+    INT32                   FieldBitWidth)
 {
     /* ObjDesc is validated by callers */
 
-    ACPI_OBJECT       *     RgnDesc = NULL;
+    ACPI_OBJECT             *RgnDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Address;
     INT32                   FieldByteWidth;
-    void        			*PhysicalAddrPtr = NULL;
-    UINT8       			PciBus = 0;
-    UINT8       			DevFunc = 0;
-    UINT8       			PciReg = 0;
-    UINT8       			PciExcep = 0;
+    void                    *PhysicalAddrPtr = NULL;
+    UINT8                   PciBus = 0;
+    UINT8                   DevFunc = 0;
+    UINT8                   PciReg = 0;
+    UINT8                   PciExcep = 0;
 
 
     FUNCTION_TRACE ("AmlWriteField");
@@ -713,7 +722,10 @@ AmlWriteField (ACPI_OBJECT *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlAccessNamedField (INT32 Mode, ACPI_HANDLE NamedField, UINT32 *Value)
+AmlAccessNamedField (
+    INT32                   Mode, 
+    ACPI_HANDLE             NamedField, 
+    UINT32                  *Value)
 {
     ACPI_OBJECT             *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_AML_ERROR;
@@ -948,9 +960,11 @@ AmlAccessNamedField (INT32 Mode, ACPI_HANDLE NamedField, UINT32 *Value)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSetNamedFieldValue (ACPI_HANDLE NamedField, UINT32 Value)
+AmlSetNamedFieldValue (
+    ACPI_HANDLE             NamedField, 
+    UINT32                  Value)
 {
-    ACPI_STATUS         Status = AE_AML_ERROR;
+    ACPI_STATUS             Status = AE_AML_ERROR;
 
 
     FUNCTION_TRACE ("AmlSetNamedFieldValue");
@@ -984,9 +998,11 @@ AmlSetNamedFieldValue (ACPI_HANDLE NamedField, UINT32 Value)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetNamedFieldValue (ACPI_HANDLE NamedField, UINT32 *Value)
+AmlGetNamedFieldValue (
+    ACPI_HANDLE             NamedField, 
+    UINT32                  *Value)
 {
-    ACPI_STATUS         Status = AE_AML_ERROR;
+    ACPI_STATUS             Status = AE_AML_ERROR;
 
 
     FUNCTION_TRACE ("AmlGetNamedFieldValue");
