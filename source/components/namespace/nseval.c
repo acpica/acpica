@@ -490,7 +490,7 @@ NsExecuteControlMethod (
 
         REPORT_ERROR ("Object stack not empty at method exit");
 
-        DEBUG_PRINT (ACPI_ERROR, ("%d Remaining: ", ObjStackTop));
+        DEBUG_PRINT (ACPI_ERROR, ("%d Remaining: \n", ObjStackTop));
         for (i = 0; i < (UINT32) ObjStackTop; i++)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Object Stack [%d]: %p\n", i, ObjStack[ObjStackTop]));
