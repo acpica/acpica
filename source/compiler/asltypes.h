@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -190,6 +190,7 @@ typedef struct asl_parse_node
 #define NODE_RESULT_NOT_USED        0x0400
 #define NODE_METHOD_TYPED           0x0800
 
+
 /* Keeps information about individual control methods */
 
 typedef struct asl_method_info
@@ -250,6 +251,37 @@ typedef struct asl_walk_info
 } ASL_WALK_INFO;
 
 
+/* File info */
+
+typedef struct asl_file_info
+{
+    FILE                        *Handle;
+    char                        *Filename;
+
+} ASL_FILE_INFO;
+
+
+/* File types */
+
+typedef enum 
+{
+    ASL_FILE_STDOUT             = 0,
+    ASL_FILE_STDERR,
+    ASL_FILE_INPUT,
+    ASL_FILE_AML_OUTPUT,
+    ASL_FILE_SOURCE_OUTPUT,
+    ASL_FILE_LISTING_OUTPUT,
+    ASL_FILE_HEX_OUTPUT,
+    ASL_FILE_NAMESPACE_OUTPUT,
+    ASL_FILE_DEBUG_OUTPUT,
+
+} ASL_FILE_TYPES;
+
+
+#define ASL_MAX_FILE            8
+#define ASL_NUM_FILES           (ASL_MAX_FILE + 1)
+
+
 /* An entry in the exception list, one for each error/warning */
 
 typedef struct asl_error_msg
@@ -295,7 +327,7 @@ void (*ASL_WALK_CALLBACK) (
 
 typedef enum
 {
-    ASL_MSG_NULL = 0,
+    ASL_MSG_NULL                = 0,
     ASL_MSG_MEMORY_ALLOCATION,
     ASL_MSG_INPUT_FILE_OPEN,
     ASL_MSG_OUTPUT_FILENAME,
@@ -337,6 +369,11 @@ typedef enum
     ASL_MSG_LONG_LINE,
     ASL_MSG_RECURSION,
     ASL_MSG_NOT_PARAMETER,
+    ASL_MSG_OPEN,
+    ASL_MSG_READ,
+    ASL_MSG_WRITE,
+    ASL_MSG_SEEK,
+    ASL_MSG_CLOSE,
 
 } ASL_MESSAGE_IDS;
 
