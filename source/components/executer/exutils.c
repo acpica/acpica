@@ -101,7 +101,6 @@
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
-#include <string.h>
 
 #define _THIS_MODULE        "isutils.c"
 #define _COMPONENT          INTERPRETER
