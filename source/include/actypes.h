@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.227 $
+ *       $Revision: 1.228 $
  *
  *****************************************************************************/
 
@@ -266,7 +266,7 @@ typedef UINT64                          u64;
  * Pointer overlays to avoid lots of typecasting for
  * code that accepts both physical and logical pointers.
  */
-typedef union AcpiPointers
+typedef union acpi_ptrs
 {
     ACPI_PHYSICAL_ADDRESS       Physical;
     void                        *Logical;
@@ -277,7 +277,7 @@ typedef union AcpiPointers
 typedef struct AcpiPointer
 {
     UINT32                      PointerType;
-    ACPI_POINTERS               Pointer;
+    union acpi_ptrs             Pointer;
 
 } ACPI_POINTER;
 
@@ -372,7 +372,7 @@ typedef UINT64                          ACPI_INTEGER;
  * Constants with special meanings
  */
 
-#define ACPI_ROOT_OBJECT                (ACPI_HANDLE) ACPI_PTR_ADD (char, NULL, ACPI_UINT32_MAX)
+#define ACPI_ROOT_OBJECT                (ACPI_HANDLE)(void *) 1 /*(ACPI_HANDLE) ACPI_PTR_ADD (char, NULL, ACPI_UINT32_MAX)*/
 
 
 /*
@@ -823,7 +823,7 @@ ACPI_STATUS (*ACPI_ADR_SPACE_HANDLER) (
     void                        *HandlerContext,
     void                        *RegionContext);
 
-#define ACPI_DEFAULT_HANDLER        ((ACPI_ADR_SPACE_HANDLER) NULL)
+#define ACPI_DEFAULT_HANDLER        NULL
 
 
 typedef
