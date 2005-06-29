@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.13 $
+ *       $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -178,11 +178,8 @@ typedef struct acpi_walk_state
     union acpi_operand_obj  *ReturnDesc;                        /* Return object, if any */
     ACPI_GENERIC_STATE      *ScopeInfo;                         /* Stack of nested scopes */
 
-/* TBD: Obsolete with removal of WALK procedure ? */
     ACPI_PARSE_OBJECT       *PrevOp;                            /* Last op that was processed */
     ACPI_PARSE_OBJECT       *NextOp;                            /* next op to be processed */
-
-
     ACPI_PARSE_DOWNWARDS    DescendingCallback;
     ACPI_PARSE_UPWARDS      AscendingCallback;
     ACPI_THREAD_STATE       *Thread;
@@ -208,7 +205,7 @@ typedef struct acpi_init_walk_info
 } ACPI_INIT_WALK_INFO;
 
 
-/* Info used by TBD */
+/* Info used by AcpiNsInitializeDevices */
 
 typedef struct acpi_device_walk_info
 {
