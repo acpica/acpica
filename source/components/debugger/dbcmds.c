@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  ******************************************************************************/
 
@@ -836,7 +836,6 @@ AcpiDbDisplayObjects (
     NATIVE_CHAR             *ObjTypeArg,
     NATIVE_CHAR             *DisplayCountArg)
 {
-    UINT32                  DisplayCount;
     OBJECT_TYPE_INTERNAL    Type;
 
 
@@ -848,18 +847,6 @@ AcpiDbDisplayObjects (
     {
         AcpiOsPrintf ("Invalid or unsupported argument\n");
         return (AE_OK);
-    }
-
-    /* Get the display depth */
-
-    if (DisplayCountArg)
-    {
-        DisplayCount = STRTOUL (DisplayCountArg, NULL, 0);
-    }
-
-    else
-    {
-        DisplayCount = ACPI_UINT32_MAX;
     }
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
@@ -897,15 +884,11 @@ AcpiDbWalkAndMatchName (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
     NATIVE_CHAR             *RequestedName = (NATIVE_CHAR *) Context;
     UINT32                  i;
     UINT32                  BufSize;
     NATIVE_CHAR             Buffer[96];
-
-
-    ObjDesc = ((ACPI_NAMESPACE_NODE *)ObjHandle)->Object;
 
 
     /* Check for a name match */

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -835,7 +835,6 @@ AcpiDbDisplayCallingTree (void)
 {
     UINT32                  i;
     ACPI_WALK_STATE         *WalkState;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *Node;
 
 
@@ -846,14 +845,12 @@ AcpiDbDisplayCallingTree (void)
         return;
     }
 
-    ObjDesc = WalkState->MethodDesc;
     Node = WalkState->MethodNode;
 
     AcpiOsPrintf ("Current Control Method Call Tree\n");
 
     for (i = 0; WalkState; i++)
     {
-        ObjDesc = WalkState->MethodDesc;
         Node = WalkState->MethodNode;
 
         AcpiOsPrintf ("    [%4.4s]\n", &Node->Name);
