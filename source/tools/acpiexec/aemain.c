@@ -129,10 +129,17 @@
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("aemain");
+        MODULE_NAME         ("aemain")
 
 
-char                    *Version = "X004";
+/*
+ * We need a local FADT so that the hardware subcomponent will function,
+ * even though the underlying OSD HW access functions don't do
+ * anything.
+ */
+
+FIXED_ACPI_DESCRIPTION_TABLE    LocalFADT;
+
 
 
 /******************************************************************************
@@ -185,7 +192,7 @@ main (
     /* Init globals */
 
     Buffer = malloc (BUFFER_SIZE);
-    AcpiDbgLevel = DEBUG_DEFAULT & (~TRACE_TABLES);
+    AcpiDbgLevel = NORMAL_DEFAULT | TRACE_TABLES;
     AcpiDbgLayer = 0xFFFFFFFF;
 
 
@@ -238,7 +245,7 @@ main (
 
     /* Init ACPI and start debugger thread */
 
-    AcpiInitialize (NULL);
+    AcpiInitializeSubsystem (NULL);
 
 
     /* Standalone filename is the only argument */
@@ -263,10 +270,19 @@ main (
             goto enterloop;
         }
 
+        LocalFADT.Gpe0BlkLen = 19;
+        AcpiGbl_FACP = &LocalFADT;
+        AcpiInitializeHardware ();
+        AcpiEnable ();
+
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
+
+
+        AcpiInitializeDevices ();
+        AcpiInitializeObjects ();
     }
 
 #ifdef _IA16
@@ -289,10 +305,18 @@ main (
         }
 
 
+        LocalFADT.Gpe0BlkLen = 19;
+        AcpiGbl_FACP = &LocalFADT;
+        AcpiEnable ();
+       
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
+
+
+        AcpiInitializeDevices ();
+        AcpiInitializeObjects ();
     }
 #endif
 
