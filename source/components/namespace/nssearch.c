@@ -144,8 +144,8 @@ NsSearchOnly (
 
     ScopeName = NsNameOfScope (NameTable);
     DEBUG_PRINT (TRACE_NAMES,
-                    ("NsSearchOnly: search %s [%p] for %4.4s\n",
-                    ScopeName, NameTable, EntryName));
+                    ("NsSearchOnly: search %s [%p] for %4.4s (type %d)\n",
+                    ScopeName, NameTable, EntryName, Type));
 
     OsdFree (ScopeName);
 
@@ -215,8 +215,8 @@ NsSearchOnly (
                 NameTable[Position].Type = Type;
             }
 
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s found at %p\n", 
-                            EntryName, &NameTable[Position]));
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (actual type %d) found at %p\n", 
+                            EntryName, NameTable[Position].Type, &NameTable[Position]));
             
             CheckTrash ("leave NsSearchTable FOUND");
             *RetEntry = &NameTable[Position];
@@ -257,8 +257,8 @@ NsSearchOnly (
 
     /* Searched entire table, not found */
 
-    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s not found at %p\n", 
-                                EntryName, &NameTable[Position]));
+    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (type %d) not found at %p\n", 
+                                EntryName, Type, &NameTable[Position]));
 
 
     if (RetInfo)
@@ -364,8 +364,8 @@ NsSearchParentTree (
 
         else if (NsLocal (Type))
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] type [%s] is local (no search)\n", 
-                                        EntryName, NsTypeNames[Type]));
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] (type %d) is local (no search)\n", 
+                                        EntryName, Type));
         }
     }
 
@@ -542,22 +542,22 @@ NsInitializeEntry (
 
     /* 
      * If adding a name with unknown type, or having to add the region in
-     * order to define fields in it, we have an improper forward reference
+     * order to define fields in it, we have a forward reference.
      */
 
     if ((TYPE_Any == Type) || 
         (TYPE_DefFieldDefn == Type) || 
         (TYPE_BankFieldDefn == Type))
     {
-        /* Unknown reference in name space */
-
-        REPORT_WARNING ("Forward (unknown) reference in name space");
-
         /* 
          * We don't want to abort here, however!
          * We will fill in the actual type when the real definition
          * is found later.
          */
+
+        DEBUG_PRINT (ACPI_INFO, ("[%4.4s] is a forward reference into the namespace",
+                        EntryName));
+
     }
 
     /* 
