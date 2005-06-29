@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -799,6 +799,28 @@ AnMethodAnalysisWalkBegin (
             MethodInfo->NumReturnNoValue++;
         }
         break;
+
+
+    case BREAK:
+    case CONTINUE:
+
+        Next = Node->Parent;
+        while (Next)
+        {
+            if (Next->ParseOpcode == WHILE)
+            {
+                break;
+            }
+
+            Next = Next->Parent;
+        }
+
+        if (!Next)
+        {
+            AslError (ASL_ERROR, ASL_MSG_NO_WHILE, Node, NULL);
+        }
+        break;
+
     }
 
     return AE_OK;
