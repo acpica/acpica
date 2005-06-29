@@ -135,7 +135,7 @@
  * RETURN:      The address of the first nte in the array, or NULL
  *
  * DESCRIPTION: Allocate an array of nte, including prepended link space
- *              Array is set to all zeros via AcpiOsdCallcate().
+ *              Array is set to all zeros via AcpiOsCallcate().
  *
  ***************************************************************************/
 

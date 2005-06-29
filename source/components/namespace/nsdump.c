@@ -174,7 +174,7 @@ AcpiNsDumpPathname (
     Length = PATHNAME_MAX;
     if (ACPI_SUCCESS (AcpiNsHandleToPathname (Handle, &Length, Buffer)))
     {
-        AcpiOsdPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
+        AcpiOsPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
     }
 
     AcpiCmFree (Buffer);

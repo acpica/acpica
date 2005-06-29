@@ -286,17 +286,31 @@ AcpiNsRootInitialize (void)
             case ACPI_TYPE_MUTEX:
 
                 ObjDesc->Mutex.SyncLevel = (UINT16) STRTOUL (InitVal->Val, NULL, 10);
-                Status = AcpiOsdCreateSemaphore (1, &ObjDesc->Mutex.Semaphore);
-                if (ACPI_FAILURE (Status))
-                {
-                    goto UnlockAndExit;
-                }
 
                 if (STRCMP (InitVal->Name, "_GL_") == 0)
                 {
+                    /*
+                     * Create a counting semaphore for the global lock
+                     */
+                    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 1, &ObjDesc->Mutex.Semaphore);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        goto UnlockAndExit;
+                    }
                     /* We just created the mutex for the global lock, save it */
 
                     AcpiGbl_GlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
+                }
+
+                else
+                {
+                    /* Create a mutex */
+
+                    Status = AcpiOsCreateSemaphore (1, 1, &ObjDesc->Mutex.Semaphore);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        goto UnlockAndExit;
+                    }
                 }
 
                 /* TBD: [Restructure] These fields may be obsolete */
@@ -563,15 +577,20 @@ AcpiNsLookup (
             DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Simple Pathname (1 segment, Flags=%X)\n", Flags));
         }
 
+#ifdef ACPI_DEBUG
+
+        /* TBD: [Restructure] Make this a procedure */
 
         /* Debug only: print the entire name that we are about to lookup */
 
         DEBUG_PRINT (TRACE_NAMES, ("NsLookup: ["));
+
         for (i = 0; i < NumSegments; i++)
         {
             DEBUG_PRINT_RAW (TRACE_NAMES, ("%4.4s/", &Pathname[i * 4]));
         }
         DEBUG_PRINT_RAW (TRACE_NAMES, ("]\n"));
+#endif
     }
 
 
@@ -627,7 +646,7 @@ AcpiNsLookup (
          *    6) and type of entry is known (not TYPE_ANY)
          *    7) and entry does not match request
          *
-         * Then we have a type mismatch.  Just warn and ignore it. 
+         * Then we have a type mismatch.  Just warn and ignore it.
          */
         if ((NumSegments         == 0)                                &&
             (TypeToCheckFor      != ACPI_TYPE_ANY)                    &&
@@ -635,7 +654,7 @@ AcpiNsLookup (
             (TypeToCheckFor      != INTERNAL_TYPE_SCOPE)              &&
             (TypeToCheckFor      != INTERNAL_TYPE_INDEX_FIELD_DEFN)   &&
             (ThisEntry->Type     != ACPI_TYPE_ANY)                    &&
-            (ThisEntry->Type     != TypeToCheckFor)) 
+            (ThisEntry->Type     != TypeToCheckFor))
         {
             /* Complain about type mismatch */
 
