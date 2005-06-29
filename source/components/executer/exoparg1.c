@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.161 $
+ *              $Revision: 1.162 $
  *
  *****************************************************************************/
 
@@ -408,7 +408,7 @@ AcpiExOpcode_1A_1T_1R (
              * Acpi specification describes Integer type as a little
              * endian unsigned value, so this boundary condition is valid.
              */
-            for (Temp32 = 0; ReturnDesc->Integer.Value && 
+            for (Temp32 = 0; ReturnDesc->Integer.Value &&
                              Temp32 < ACPI_INTEGER_BIT_SIZE; ++Temp32)
             {
                 ReturnDesc->Integer.Value >>= 1;
@@ -426,7 +426,7 @@ AcpiExOpcode_1A_1T_1R (
              * The Acpi specification describes Integer type as a little
              * endian unsigned value, so this boundary condition is valid.
              */
-            for (Temp32 = 0; ReturnDesc->Integer.Value && 
+            for (Temp32 = 0; ReturnDesc->Integer.Value &&
                              Temp32 < ACPI_INTEGER_BIT_SIZE; ++Temp32)
             {
                 ReturnDesc->Integer.Value <<= 1;
@@ -434,7 +434,7 @@ AcpiExOpcode_1A_1T_1R (
 
             /* Since the bit position is one-based, subtract from 33 (65) */
 
-            ReturnDesc->Integer.Value = Temp32 == 0 ? 0 : 
+            ReturnDesc->Integer.Value = Temp32 == 0 ? 0 :
                                         (ACPI_INTEGER_BIT_SIZE + 1) - Temp32;
             break;
 
@@ -472,7 +472,7 @@ AcpiExOpcode_1A_1T_1R (
 
                 /* Sum the digit into the result with the current power of 10 */
 
-                ReturnDesc->Integer.Value += (((ACPI_INTEGER) Temp32) * 
+                ReturnDesc->Integer.Value += (((ACPI_INTEGER) Temp32) *
                                               PowerOfTen);
 
                 /* Shift to next BCD digit */
@@ -499,7 +499,7 @@ AcpiExOpcode_1A_1T_1R (
 
                 /* Insert the BCD digit that resides in the remainder from above */
 
-                ReturnDesc->Integer.Value |= (((ACPI_INTEGER) Temp32) << 
+                ReturnDesc->Integer.Value |= (((ACPI_INTEGER) Temp32) <<
                                                 ACPI_MUL_4 (i));
             }
 
@@ -779,8 +779,8 @@ AcpiExOpcode_1A_0T_1R (
 
         AcpiUtRemoveReference (TempDesc);
 
-        /* 
-         * Store the result back (indirectly) through the original 
+        /*
+         * Store the result back (indirectly) through the original
          * Reference object
          */
         Status = AcpiExStore (ReturnDesc, Operand[0], WalkState);
