@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -566,7 +566,7 @@ AcpiUtAllocateAndTrack (
     ACPI_STATUS             Status;
 
 
-    Allocation = AcpiUtAllocate (Size + sizeof (ACPI_DEBUG_MEM_BLOCK), Component,
+    Allocation = AcpiUtAllocate (Size + sizeof (ACPI_DEBUG_MEM_HEADER), Component,
                                 Module, Line);
     if (!Allocation)
     {
@@ -614,7 +614,7 @@ AcpiUtCallocateAndTrack (
     ACPI_STATUS             Status;
 
 
-    Allocation = AcpiUtCallocate (Size + sizeof (ACPI_DEBUG_MEM_BLOCK), Component,
+    Allocation = AcpiUtCallocate (Size + sizeof (ACPI_DEBUG_MEM_HEADER), Component,
                                 Module, Line);
     if (!Allocation)
     {
@@ -818,6 +818,7 @@ AcpiUtTrackAllocation (
     Allocation->Line      = Line;
 
     ACPI_STRNCPY (Allocation->Module, Module, ACPI_MAX_MODULE_NAME);
+    Allocation->Module[ACPI_MAX_MODULE_NAME-1] = 0;
 
     /* Insert at list head */
 
