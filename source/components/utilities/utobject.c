@@ -664,7 +664,7 @@ AcpiCmGetPackageObjectSize (
     UINT32                  Index[MAX_PACKAGE_DEPTH] = { 0,0,0,0,0 };
     UINT32                  Length = 0;
     UINT32                  ObjectSpace;
-    UINT32                  CurrentDepth = 0;
+    INT32                   CurrentDepth = 0;
     UINT32                  PackageCount = 1;
     ACPI_STATUS             Status;
 
