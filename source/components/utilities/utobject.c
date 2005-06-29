@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.60 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -237,35 +237,35 @@ AcpiUtValidInternalObject (
 
     /* Check the descriptor type field */
 
-    if (!VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_INTERNAL))
+    switch (ACPI_GET_DESCRIPTOR_TYPE (Object))
     {
-        /* Not an ACPI internal object, do some further checking */
+    case ACPI_DESC_TYPE_INTERNAL:
 
-        if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                "**** Obj %p is a named obj, not ACPI obj\n", Object));
-        }
+        /* The object appears to be a valid ACPI_OPERAND_OBJECT  */
 
-        else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_PARSER))
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                "**** Obj %p is a parser obj, not ACPI obj\n", Object));
-        }
+        return (TRUE);
+        break;
 
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                "**** Obj %p is of unknown type\n", Object));
-        }
+    case ACPI_DESC_TYPE_NAMED:
 
-        return (FALSE);
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "**** Obj %p is a named obj, not ACPI obj\n", Object));
+        break;
+
+    case ACPI_DESC_TYPE_PARSER:
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "**** Obj %p is a parser obj, not ACPI obj\n", Object));
+        break;
+
+    default:
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "**** Obj %p is of unknown type\n", Object));
+        break;
     }
 
-
-    /* The object appears to be a valid ACPI_OPERAND_OBJECT  */
-
-    return (TRUE);
+    return (FALSE);
 }
 
 
@@ -309,7 +309,7 @@ AcpiUtAllocateObjectDescDbg (
 
     /* Mark the descriptor type */
 
-    Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL;
+    ACPI_SET_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_INTERNAL);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "%p Size %X\n",
             Object, sizeof (ACPI_OPERAND_OBJECT)));
@@ -339,7 +339,7 @@ AcpiUtDeleteObjectDesc (
 
     /* Object must be an ACPI_OPERAND_OBJECT  */
 
-    if (Object->Common.DataType != ACPI_DESC_TYPE_INTERNAL)
+    if (ACPI_GET_DESCRIPTOR_TYPE (Object) != ACPI_DESC_TYPE_INTERNAL)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Obj %p is not an ACPI object\n", Object));
@@ -419,7 +419,7 @@ AcpiUtGetSimpleObjectSize (
 
     Length = sizeof (ACPI_OBJECT);
 
-    if (VALID_DESCRIPTOR_TYPE (InternalObject, ACPI_DESC_TYPE_NAMED))
+    if (ACPI_GET_DESCRIPTOR_TYPE (InternalObject) == ACPI_DESC_TYPE_NAMED)
     {
         /* Object is a named object (reference), just return the length */
 
@@ -532,7 +532,7 @@ AcpiUtGetElementLength (
 
     switch (ObjectType)
     {
-    case 0:
+    case ACPI_COPY_TYPE_SIMPLE:
 
         /*
          * Simple object - just get the size (Null object/entry is handled
@@ -548,17 +548,14 @@ AcpiUtGetElementLength (
         break;
 
 
-    case 1:
-        /* Package - nothing much to do here, let the walk handle it */
+    case ACPI_COPY_TYPE_PACKAGE:
+
+        /* Package object - nothing much to do here, let the walk handle it */
 
         Info->NumPackages++;
         State->Pkg.ThisTargetObj = NULL;
         break;
-
-    default:
-        return (AE_BAD_PARAMETER);
     }
-
 
     return (Status);
 }
@@ -599,6 +596,10 @@ AcpiUtGetPackageObjectSize (
 
     Status = AcpiUtWalkPackageTree (InternalObject, NULL,
                             AcpiUtGetElementLength, &Info);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /*
      * We have handled all of the objects in all levels of the package.
@@ -640,12 +641,11 @@ AcpiUtGetObjectSize(
     FUNCTION_ENTRY ();
 
 
-    if ((VALID_DESCRIPTOR_TYPE (InternalObject, ACPI_DESC_TYPE_INTERNAL)) &&
-        (IS_THIS_OBJECT_TYPE (InternalObject, ACPI_TYPE_PACKAGE)))
+    if ((ACPI_GET_DESCRIPTOR_TYPE (InternalObject) == ACPI_DESC_TYPE_INTERNAL) &&
+        (InternalObject->Common.Type == ACPI_TYPE_PACKAGE))
     {
         Status = AcpiUtGetPackageObjectSize (InternalObject, ObjLength);
     }
-
     else
     {
         Status = AcpiUtGetSimpleObjectSize (InternalObject, ObjLength);
