@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -357,11 +357,11 @@ AcpiPsCompleteThisOp (
     /* Delete this op and the subtree below it if asked to */
 
     if (((WalkState->ParseFlags & ACPI_PARSE_TREE_MASK) == ACPI_PARSE_DELETE_TREE) &&
-        (OpcodeClass != OPTYPE_CONSTANT) &&
-        (OpcodeClass != OPTYPE_LITERAL) &&
-        (OpcodeClass != OPTYPE_LOCAL_VARIABLE) &&
+        (OpcodeClass != OPTYPE_CONSTANT)        &&
+        (OpcodeClass != OPTYPE_LITERAL)         &&
+        (OpcodeClass != OPTYPE_LOCAL_VARIABLE)  &&
         (OpcodeClass != OPTYPE_METHOD_ARGUMENT) &&
-        (OpcodeClass != OPTYPE_DATA_TERM) &&
+        (OpcodeClass != OPTYPE_DATA_TERM)       &&
         (Op->Opcode  != AML_NAMEPATH_OP))
     {
         /* Make sure that we only delete this subtree */
@@ -370,7 +370,7 @@ AcpiPsCompleteThisOp (
         {
             /*
              * Check if we need to replace the operator and its subtree
-             * with a return value op
+             * with a return value op (placeholder op)
              */
 
             ParentInfo  = AcpiPsGetOpcodeInfo (Op->Parent->Opcode);
@@ -378,7 +378,30 @@ AcpiPsCompleteThisOp (
             switch (ACPI_GET_OP_CLASS (ParentInfo))
             {
             case OPTYPE_CONTROL:        /* IF, ELSE, WHILE only */
+                break;
+
             case OPTYPE_NAMED_OBJECT:   /* Scope, method, etc. */
+                
+                /* 
+                 * These opcodes contain TermArg operands.  The current          
+                 * op must be replace by a placeholder return op
+                 */
+
+                if ((Op->Parent->Opcode == AML_REGION_OP)       ||
+                    (Op->Parent->Opcode == AML_CREATE_FIELD_OP) ||
+                    (Op->Parent->Opcode == AML_BIT_FIELD_OP)    ||
+                    (Op->Parent->Opcode == AML_BYTE_FIELD_OP)   ||
+                    (Op->Parent->Opcode == AML_WORD_FIELD_OP)   ||
+                    (Op->Parent->Opcode == AML_DWORD_FIELD_OP)  ||
+                    (Op->Parent->Opcode == AML_QWORD_FIELD_OP))
+                {
+                    ReplacementOp = AcpiPsAllocOp (AML_RETURN_VALUE_OP);
+                    if (!ReplacementOp)
+                    {
+                        return_VALUE (FALSE);
+                    }
+                }
+
                 break;
 
             default:
@@ -398,14 +421,14 @@ AcpiPsCompleteThisOp (
 
                 if (ReplacementOp)
                 {
-                    ReplacementOp->Parent = Op->Parent;
+                    ReplacementOp->Parent    = Op->Parent;
                     ReplacementOp->Value.Arg = NULL;
-                    Op->Parent->Value.Arg = ReplacementOp;
-                    ReplacementOp->Next = Op->Next;
+                    Op->Parent->Value.Arg    = ReplacementOp;
+                    ReplacementOp->Next      = Op->Next;
                 }
                 else
                 {
-                    Op->Parent->Value.Arg = Op->Next;
+                    Op->Parent->Value.Arg    = Op->Next;
                 }
             }
 
@@ -773,11 +796,16 @@ AcpiPsParseLoop (
                     if (DeferredOp)
                     {
                         /*
-                         * Skip parsing of control method or opregion body,
+                         * Defer final parsing of an OperationRegion body,
                          * because we don't have enough info in the first pass
-                         * to parse them correctly.
+                         * to parse it correctly (i.e., there may be method
+                         * calls within the TermArg elements of the body.
+                         * 
+                         * However, we must continue parsing because 
+                         * the opregion is not a standalone package --
+                         * we don't know where the end is at this point.
                          *
-                         * BodyLength is unknown until we parse the body
+                         * (Length is unknown until parse of the body complete)
                          */
 
                         DeferredOp->Data    = AmlOpStart;
@@ -967,18 +995,16 @@ AcpiPsParseLoop (
                 (Op->Opcode == AML_BIT_FIELD_OP)    ||
                 (Op->Opcode == AML_BYTE_FIELD_OP)   ||
                 (Op->Opcode == AML_WORD_FIELD_OP)   ||
-                (Op->Opcode == AML_DWORD_FIELD_OP))
+                (Op->Opcode == AML_DWORD_FIELD_OP)  ||
+                (Op->Opcode == AML_QWORD_FIELD_OP))
             {
                 /*
                  * Backup to beginning of CreateXXXfield declaration (1 for
                  * Opcode)
                  *
                  * BodyLength is unknown until we parse the body
-                 * -4 for the name (last) -- TBD: namestring: may be longer
-                 * than 4?
                  */
                 DeferredOp = (ACPI_PARSE2_OBJECT *) Op;
-
                 DeferredOp->Length = ParserState->Aml - DeferredOp->Data;
             }
 
