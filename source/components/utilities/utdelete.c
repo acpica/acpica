@@ -117,7 +117,6 @@
 #define __CMDELETE_C__
 
 #include <acpi.h>
-#include <acobject.h>
 #include <interp.h>
 #include <namesp.h>
 #include <tables.h>
