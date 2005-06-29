@@ -414,6 +414,14 @@ CmInitGlobals (void)
     }
 
 
+    /* Address Space handler array */
+
+    for (i = 0; i < ACPI_MAX_ADDRESS_SPACE; i++)
+    {
+        AddressSpaces[i].Handler = NULL;
+        AddressSpaces[i].Context = NULL;
+    }
+
     /* Global "typed" ACPI table pointers */
 
     RSDP                    = NULL;
