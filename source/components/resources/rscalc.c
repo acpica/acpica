@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  ******************************************************************************/
 
@@ -907,7 +907,7 @@ AcpiRsCalculatePciRoutingTableLength (
             }
         }
 
-        TempSizeNeeded += (sizeof (PCI_ROUTING_TABLE) - 4);
+        TempSizeNeeded += (sizeof (ACPI_PCI_ROUTING_TABLE) - 4);
 
         /*
          * Was a String type found?
@@ -950,6 +950,6 @@ AcpiRsCalculatePciRoutingTableLength (
     /*
      * Adding an extra element to the end of the list, essentially a NULL terminator
      */
-    *BufferSizeNeeded = TempSizeNeeded + sizeof (PCI_ROUTING_TABLE);
+    *BufferSizeNeeded = TempSizeNeeded + sizeof (ACPI_PCI_ROUTING_TABLE);
     return_ACPI_STATUS (AE_OK);
 }
