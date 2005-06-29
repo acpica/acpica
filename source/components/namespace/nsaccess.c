@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.139 $
+ *              $Revision: 1.140 $
  *
  ******************************************************************************/
 
@@ -330,7 +330,6 @@ AcpiNsLookup (
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *PrefixNode;
     ACPI_NAMESPACE_NODE     *CurrentNode = NULL;
-    ACPI_NAMESPACE_NODE     *ScopeToPush = NULL;
     ACPI_NAMESPACE_NODE     *ThisNode = NULL;
     UINT32                  NumSegments;
     ACPI_NAME               SimpleName;
@@ -348,11 +347,8 @@ AcpiNsLookup (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     AcpiGbl_NsLookupCount++;
-
     *ReturnNode = ENTRY_NOT_FOUND;
-
 
     if (!AcpiGbl_RootNode)
     {
@@ -390,14 +386,12 @@ AcpiNsLookup (
 
         TypeToCheckFor = ACPI_TYPE_REGION;
     }
-
     else if (INTERNAL_TYPE_BANK_FIELD_DEFN == Type)
     {
         /* BankFieldDefn defines data fields in a Field Object */
 
         TypeToCheckFor = ACPI_TYPE_ANY;
     }
-
     else
     {
         TypeToCheckFor = Type;
