@@ -167,14 +167,6 @@ AcpiLoadNamespace (
      */
 
 
-    /* Initialize the GPE handling */
-
-    Status = EvGpeInitialize ();
-    if (Status != AE_OK)
-    {
-        goto ErrorExit;
-    }
-
     /* Everything OK, now init the hardware */
 
     Status = CmHardwareInitialize ();
