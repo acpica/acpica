@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.63 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,105 +121,27 @@
 #include "acpi.h"
 #include "amlcode.h"
 #include "acparser.h"
+#include "actables.h"
 #include "acnamesp.h"
 #include "acinterp.h"
 #include "acdebug.h"
 
 #include "aecommon.h"
 
-#ifdef _DEBUG  
-#ifndef _IA16
-#include <crtdbg.h>
-#endif     
-#endif
 
 #define _COMPONENT          PARSER
-        ACPI_MODULE_NAME    ("aemain")
+        MODULE_NAME         ("aemain")
+
 
 /*
- * TBD: Debug only, remove!
+ * We need a local FADT so that the hardware subcomponent will function,
+ * even though the underlying OSD HW access functions don't do
+ * anything.
  */
-#ifdef _IA32
-void
-AcpiCompare (
-    UINT64_OVERLAY          Dividend,
-    UINT64_OVERLAY          Divisor,
-    UINT64_OVERLAY          LibDiv,
-    UINT64_OVERLAY          Div,
-    UINT64_OVERLAY          LibMod,
-    UINT64_OVERLAY          Mod)
-{
 
-    if (LibDiv.Full != Div.Full)
-    {
-        AcpiOsPrintf ("Mismatch-DIV: n=%8.8X%8.8X d=%8.8X%8.8X, lr=%8.8X%8.8X ar=%8.8X%8.8X\n",
-                Dividend.Part.Hi,       Dividend.Part.Lo,
-                Divisor.Part.Hi,        Divisor.Part.Lo,
-                LibDiv.Part.Hi,         LibDiv.Part.Lo,
-                Div.Part.Hi,            Div.Part.Lo);
-    }
+FADT_DESCRIPTOR             LocalFADT;
+ACPI_COMMON_FACS            LocalFACS;
 
-    if (LibMod.Full != Mod.Full)
-    {
-        AcpiOsPrintf ("Mismatch-MOD: n=%8.8X%8.8X d=%8.8X%8.8X, lr=%8.8X%8.8X ar=%8.8X%8.8X\n",
-                Dividend.Part.Hi,       Dividend.Part.Lo,
-                Divisor.Part.Hi,        Divisor.Part.Lo,
-                LibMod.Part.Hi,         LibMod.Part.Lo,
-                Mod.Part.Hi,            Mod.Part.Lo);
-    }
-}
-
-    /* Check answer against the library (DEBUG ONLY) */
-/*
-    CompareDiv.Full = Dividend.Full / Divisor.Full;
-    CompareMod.Full = Dividend.Full % Divisor.Full;
-    AcpiCompare (Dividend, Divisor, CompareDiv, Quotient, CompareMod, Remainder);
-*/
-void
-AeDoDivideCheck (void)
-{
-    UINT32                  i;
-    UINT64_OVERLAY          CompareDiv;
-    UINT64_OVERLAY          CompareMod;
-    UINT64_OVERLAY          Dividend;
-    UINT64_OVERLAY          Divisor;
-    UINT64_OVERLAY          Quotient;
-    UINT64_OVERLAY          Remainder;
-
-
-    for (i = 1; i < 0xFFFFFF; i++)
-    {
-        Dividend.Part.Hi = rand ();
-        Dividend.Part.Lo = rand ();
-        Divisor.Part.Hi  = rand ();
-        Divisor.Part.Lo  = rand ();
-
-        CompareDiv.Full = Dividend.Full / Divisor.Full;
-        CompareMod.Full = Dividend.Full % Divisor.Full;
-
-        AcpiUtDivide (&Dividend.Full, &Divisor.Full, &Quotient.Full, &Remainder.Full);
-
-        AcpiCompare (Dividend, Divisor, CompareDiv, Quotient, CompareMod, Remainder);
-    }
-
-}
-#else
-void
-AeDoDivideCheck (void)
-{
-}
-#endif
-
-
-#ifdef _IA16
-ACPI_STATUS
-AcpiGetIrqRoutingTable  (
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer)
-{
-    return AE_NOT_IMPLEMENTED;
-}
-#endif
 
 /******************************************************************************
  *
@@ -236,16 +158,14 @@ AcpiGetIrqRoutingTable  (
 void
 usage (void)
 {
-    printf ("Usage: acpiexec [-?dgis] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
+    printf ("Usage: acpiexec [-dgjs] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
     printf ("Where:\n");
     printf ("    Input Options\n");
     printf ("        AcpiTableFile       Get ACPI tables from this file\n");
     printf ("    Output Options\n");
     printf ("    Miscellaneous Options\n");
-    printf ("        -?                  Display this message\n");
-    printf ("        -i                  Do not run INI methods\n");
+    printf ("        -j                  Just-in-time method parsing\n");
     printf ("        -l DebugLevel       Specify debug output level\n");
-    printf ("        -v                  Verbose init output\n");
 }
 
 
@@ -261,63 +181,52 @@ usage (void)
  *
  *****************************************************************************/
 
-int ACPI_SYSTEM_XFACE
+int
 main (
     int                     argc,
     char                    **argv)
 {
     int                     j;
     ACPI_STATUS             Status;
-    UINT32                  InitFlags;
-    ACPI_BUFFER             ReturnBuf;
-    char                    Buffer[32];
 
-
-#ifdef _DEBUG 
-#ifndef _IA16
-    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CrtSetDbgFlag(0));
-#endif    
-#endif
 
     /* Init globals */
 
-    AcpiDbgLevel = NORMAL_DEFAULT;
+    Buffer = malloc (BUFFER_SIZE);
+    AcpiDbgLevel = NORMAL_DEFAULT | TRACE_TABLES;
     AcpiDbgLayer = 0xFFFFFFFF;
 
-
-    AeDoDivideCheck ();
 
     printf ("ACPI AML Execution/Debug Utility ");
 
 #ifdef _IA16
-    printf ("(16-bit) ");
+    printf ("16-bit ");
 #else
-    printf ("(32-bit) ");
+    printf ("32-bit ");
 #endif
 
-    printf ("CA version %8.8lX [%s]\n", ACPI_CA_VERSION, __DATE__);
+    printf ("version [%s]\n", __DATE__);
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "?dgil:o:sv")) != EOF) switch(j)
+    while ((j = getopt (argc, argv, "dgjl:o:s")) != EOF) switch(j)
     {
     case 'd':
-        AcpiGbl_DbOpt_disasm = TRUE;
-        AcpiGbl_DbOpt_stats = TRUE;
+        opt_disasm = TRUE;
+        opt_stats = TRUE;
         break;
 
     case 'g':
-        AcpiGbl_DbOpt_tables = TRUE;
-        AcpiGbl_DbFilename = NULL;
+        opt_tables = TRUE;
+        Filename = NULL;
         break;
 
-    case 'i':
-        AcpiGbl_DbOpt_ini_methods = FALSE;
+    case 'j':
+        opt_parse_jit = TRUE;
         break;
 
     case 'l':
         AcpiDbgLevel = strtoul (optarg, NULL, 0);
-        AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         printf ("Debug Level: %lX\n", AcpiDbgLevel);
         break;
 
@@ -326,82 +235,66 @@ main (
         break;
 
     case 's':
-        AcpiGbl_DbOpt_stats = TRUE;
+        opt_stats = TRUE;
         break;
 
-    case 'v':
-        AcpiDbgLevel |= ACPI_LV_INIT;
-        break;
-
-    case '?':
     default:
         usage();
         return -1;
     }
 
+
     /* Init ACPI and start debugger thread */
 
     AcpiInitializeSubsystem ();
 
-    InitFlags = (ACPI_NO_HANDLER_INIT | ACPI_NO_ACPI_ENABLE);
-    if (!AcpiGbl_DbOpt_ini_methods)
-    {
-        InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
-    }
 
     /* Standalone filename is the only argument */
 
     if (argv[optind])
     {
-        AcpiGbl_DbOpt_tables = TRUE;
-        AcpiGbl_DbFilename = argv[optind];
+        opt_tables = TRUE;
+        Filename = argv[optind];
 
-        Status = AcpiDbGetAcpiTable (AcpiGbl_DbFilename);
+
+        Status = AcpiDbLoadAcpiTable (Filename);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not get input table, %s\n", AcpiFormatException (Status));
+            printf ("**** Could not load input table, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
 
-        AeBuildLocalTables ();
-        Status = AeInstallTables ();
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not load ACPI tables, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
+        /* Need a fake FADT so that the hardware component is happy */
 
-        /*
-         * TBD:
+        LocalFADT.XGpe0Blk.Address       = 0x70;
+        LocalFADT.XPm1aEvtBlk.Address    = 0x80;
+        LocalFADT.XPm1aCntBlk.Address    = 0x90;
+        LocalFADT.XPmTmrBlk.Address      = 0xA0;
+
+        LocalFADT.Gpe0BlkLen    = 8;
+        LocalFADT.Pm1EvtLen     = 4;
+        LocalFADT.Pm1CntLen     = 4;
+        LocalFADT.PmTmLen       = 8;
+
+        AcpiGbl_FADT = &LocalFADT;
+        AcpiGbl_FACS = &LocalFACS;
+
+
+        /* TBD:
          * Need a way to call this after the "LOAD" command
          */
-        Status = AeInstallHandlers ();
-        if (ACPI_FAILURE (Status))
-        {
-            goto enterloop;
-        }
+        AeInstallHandlers ();
 
-        Status = AcpiEnableSubsystem (InitFlags);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not EnableSubsystem, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-        ReturnBuf.Length = 32;
-        ReturnBuf.Pointer = Buffer;
-        AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
-        AcpiEnableEvent (ACPI_EVENT_GLOBAL, ACPI_EVENT_FIXED, 0);
-        AcpiEnableEvent (0, ACPI_EVENT_GPE, 0);
+        AcpiEnableSubsystem (ACPI_NO_HARDWARE_INIT |
+                             ACPI_NO_ACPI_ENABLE   |
+                             ACPI_NO_EVENT_INIT);
     }
 
 #ifdef _IA16
     else
     {
-#include "16bit.h"
-
-        Status = AfFindDsdt (NULL, NULL);
+        Status = AdFindDsdt (NULL, NULL);
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
@@ -410,41 +303,25 @@ main (
 
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load ACPI tables, %s\n", AcpiFormatException (Status));
+            printf ("**** Could not load namespace, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
-
-        Status = AcpiNsLoadNamespace ();
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not load ACPI namespace, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
 
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
-        Status = AeInstallHandlers ();
-        if (ACPI_FAILURE (Status))
-        {
-            goto enterloop;
-        }
+        AeInstallHandlers ();
 
-        Status = AcpiEnableSubsystem (InitFlags);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not EnableSubsystem, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-     }
+        AcpiEnableSubsystem (0);
+    }
 #endif
 
 enterloop:
 
     /* Enter the debugger command loop */
 
-    AcpiDbUserCommands (ACPI_DEBUGGER_COMMAND_PROMPT, NULL);
+    AcpiDbUserCommands (DB_COMMAND_PROMPT, NULL);
 
     return 0;
 }

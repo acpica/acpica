@@ -1,8 +1,8 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: abmain - Main module for the acpi binary utility
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -39,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -122,11 +122,9 @@
 /* Globals */
 
 
-
-
 /******************************************************************************
  *
- * FUNCTION:    AbDisplayUsage  
+ * FUNCTION:    AbDisplayUsage
  *
  * DESCRIPTION: Usage message
  *
@@ -152,14 +150,14 @@ AbDisplayUsage (void)
  *
  ******************************************************************************/
 
-int 
+int
 main (
-    NATIVE_UINT             argc, 
+    NATIVE_UINT             argc,
     char                    *argv[])
 {
     int                     j;
 
-    
+
     printf ("\nACPI Binary (AML) Utility");
     printf (" version [%s]\n\n", __DATE__);
 
@@ -171,7 +169,7 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "cd")) != EOF) switch(j) 
+    while ((j = getopt (argc, argv, "cd")) != EOF) switch(j)
     {
     case 'c':
         /* Compare Files */
@@ -184,13 +182,11 @@ main (
         AbDumpAmlFile (argv[optind]);
         break;
 
-    default:    
+    default:
         AbDisplayUsage ();
         return -1;
     }
 
 
-
-
-	return 0;
+    return 0;
 }

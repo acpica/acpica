@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.23 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,7 +127,7 @@
  *
  ******************************************************************************/
 
-ACPI_NATIVE_INT
+NATIVE_INT
 AsProcessTree (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
@@ -185,10 +185,11 @@ AsProcessTree (
         {
             VERBOSE_PRINT (("File: %s\n", FindInfo.name));
             AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
-        }
+       }
 
         _findclose (FindHandle);
     }
+
 
     /* Do the C header files */
 
@@ -256,6 +257,7 @@ AsProcessTree (
         _findclose (FindHandle);
     }
 
+
     /* Do the subdirectories */
 
     strcpy (FileSpec, SourcePath);
@@ -286,18 +288,11 @@ AsProcessTree (
         _findclose (FindHandle);
     }
 
+
     free (FileSpec);
     return 0;
 }
 
-
-/******************************************************************************
- *
- * FUNCTION:    AsDetectLoneLineFeeds
- *
- * DESCRIPTION: Find LF without CR.
- *
- ******************************************************************************/
 
 BOOLEAN
 AsDetectLoneLineFeeds (
@@ -350,15 +345,13 @@ AsConvertFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *FileBuffer,
     char                    *Filename,
-    ACPI_NATIVE_INT         FileType)
+    NATIVE_INT              FileType)
 {
     UINT32                  i;
     UINT32                  Functions;
     ACPI_STRING_TABLE       *StringTable;
     ACPI_IDENTIFIER_TABLE   *ConditionalTable;
     ACPI_IDENTIFIER_TABLE   *LineTable;
-    ACPI_IDENTIFIER_TABLE   *MacroTable;
-    ACPI_TYPED_IDENTIFIER_TABLE *StructTable;
 
 
     switch (FileType)
@@ -368,17 +361,13 @@ AsConvertFile (
         StringTable         = ConversionTable->SourceStringTable;
         LineTable           = ConversionTable->SourceLineTable;
         ConditionalTable    = ConversionTable->SourceConditionalTable;
-        MacroTable          = ConversionTable->SourceMacroTable;
-        StructTable         = ConversionTable->SourceStructTable;
-       break;
+        break;
 
     case FILE_TYPE_HEADER:
         Functions           = ConversionTable->HeaderFunctions;
         StringTable         = ConversionTable->HeaderStringTable;
         LineTable           = ConversionTable->HeaderLineTable;
         ConditionalTable    = ConversionTable->HeaderConditionalTable;
-        MacroTable          = ConversionTable->HeaderMacroTable;
-        StructTable         = ConversionTable->HeaderStructTable;
         break;
 
     default:
@@ -392,15 +381,6 @@ AsConvertFile (
 //    TERSE_PRINT (("."));
 
 
-    if (ConversionTable->LowerCaseTable)
-    {
-        for (i = 0; ConversionTable->LowerCaseTable[i].Identifier; i++)
-        {
-            AsLowerCaseString (ConversionTable->LowerCaseTable[i].Identifier,
-                                FileBuffer);
-        }
-    }
-
     /* Process all the string replacements */
 
     if (StringTable)
@@ -409,7 +389,6 @@ AsConvertFile (
         {
             AsReplaceString (StringTable[i].Target,
                                 StringTable[i].Replacement,
-                                StringTable[i].Type,
                                 FileBuffer);
         }
     }
@@ -422,6 +401,7 @@ AsConvertFile (
         }
     }
 
+
     if (ConditionalTable)
     {
         for (i = 0; ConditionalTable[i].Identifier; i++)
@@ -430,21 +410,6 @@ AsConvertFile (
         }
     }
 
-    if (MacroTable)
-    {
-        for (i = 0; MacroTable[i].Identifier; i++)
-        {
-            AsRemoveMacro (FileBuffer, MacroTable[i].Identifier);
-        }
-    }
-
-    if (StructTable)
-    {
-        for (i = 0; StructTable[i].Identifier; i++)
-        {
-            AsInsertPrefix (FileBuffer, StructTable[i].Identifier, StructTable[i].Type);
-        }
-    }
 
     /* Process the function table */
 
@@ -468,12 +433,6 @@ AsConvertFile (
         case CVT_COUNT_NON_ANSI_COMMENTS:
 
             AsCountNonAnsiComments (FileBuffer, Filename);
-            break;
-
-
-        case CVT_CHECK_BRACES:
-
-            AsCheckForBraces (FileBuffer, Filename);
             break;
 
 
@@ -566,17 +525,16 @@ AsConvertFile (
  *
  ******************************************************************************/
 
-ACPI_NATIVE_INT
+NATIVE_INT
 AsProcessOneFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
     char                    *TargetPath,
     int                     MaxPathLength,
     char                    *Filename,
-    ACPI_NATIVE_INT         FileType)
+    NATIVE_INT              FileType)
 {
     char                    *Pathname;
-    char                    *OutPathname = NULL;
 
 
     /* Allocate a file pathname buffer for both source and target */
@@ -605,39 +563,24 @@ AsProcessOneFile (
 
     /* Process the file in the buffer */
 
-    Gbl_MadeChanges = FALSE;
     AsConvertFile (ConversionTable, Gbl_FileBuffer, Pathname, FileType);
 
     if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
     {
-        if (!(Gbl_Overwrite && !Gbl_MadeChanges))
+        /* Generate the target pathname and write the file */
+
+        strcpy (Pathname, TargetPath);
+        if (SourcePath)
         {
-            /* Generate the target pathname and write the file */
-
-            OutPathname = calloc (MaxPathLength + strlen (Filename) + 2 + strlen (TargetPath), 1);
-            if (!OutPathname)
-            {
-                printf ("Could not allocate buffer for file pathnames\n");
-                return -1;
-            }
-
-            strcpy (OutPathname, TargetPath);
-            if (SourcePath)
-            {
-                strcat (OutPathname, "/");
-                strcat (OutPathname, Filename);
-            }
-
-            AsPutFile (OutPathname, Gbl_FileBuffer, ConversionTable->Flags);
+            strcat (Pathname, "/");
+            strcat (Pathname, Filename);
         }
+
+        AsPutFile (Pathname, Gbl_FileBuffer, ConversionTable->Flags);
     }
 
     free (Gbl_FileBuffer);
     free (Pathname);
-    if (OutPathname)
-    {
-        free (OutPathname);
-    }
 
     return 0;
 }
@@ -653,7 +596,7 @@ AsProcessOneFile (
  *
  ******************************************************************************/
 
-ACPI_NATIVE_INT
+NATIVE_INT
 AsCheckForDirectory (
     char                    *SourceDirPath,
     char                    *TargetDirPath,
@@ -675,6 +618,7 @@ AsCheckForDirectory (
     {
         return -1;
     }
+
 
     SrcPath = calloc (strlen (SourceDirPath) + strlen (FindInfo->name) + 2, 1);
     if (!SrcPath)
@@ -745,8 +689,9 @@ AsGetFile (
      * Create a buffer for the entire file
      * Add 10% extra to accomodate string replacements
      */
+
     Size = Gbl_StatBuf.st_size;
-    Buffer = calloc (Size * 2, 1);
+    Buffer = calloc (Size + (Size / 10), 1);
     if (!Buffer)
     {
         printf ("Could not allocate buffer of size %d\n", Size + (Size / 10));
@@ -788,6 +733,7 @@ AsGetFile (
         goto ErrorExit;
     }
     Size = Gbl_StatBuf.st_size;
+
 
     /* Read the entire file */
 

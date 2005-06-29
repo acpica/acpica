@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,13 +124,24 @@
 
 extern UINT8                    *DsdtPtr;
 extern UINT32                   AcpiDsdtLength;
-extern UINT8                    *AmlStart;
-extern UINT32                   AmlLength;
-extern FILE                     *AcpiGbl_DebugFile;
+extern int                      optind;
+extern char                     *optarg;
+extern UINT8                    *AmlPtr;
+extern UINT32                   AcpiAmlLength;
 
+extern char                     LineBuf[80];
+extern char                     CommandBuf[40];
+extern char                     ArgBuf[40];
+extern char                     ScopeBuf[40];
+extern char                     DebugFilename[40];
+extern FILE                     *DebugFile;
+extern char                     *Buffer;
+extern char                     *Filename;
+
+#define BUFFER_SIZE             4196
 
 /*
- * Debug Regions
+ * MCW 3/23/00 Debug Regions
  */
 typedef struct Region
 {
@@ -148,10 +159,10 @@ typedef struct DebugRegions
 
 } DEBUG_REGIONS;
 
-
 /*
- * Pointer overlay for 16-bit code
+ * MCW 3/23/00 End Debug regions
  */
+
 typedef union ptr_ovl
 {
     void                *ptr;
@@ -184,13 +195,6 @@ getopt (
     char                    **argv,
     char                    *opts);
 
-ACPI_STATUS
-AeBuildLocalTables (
-    void);
-
-ACPI_STATUS
-AeInstallTables (
-    void);
 
 void
 AeDumpNamespace (
@@ -238,6 +242,12 @@ AdDumpTables (void);
 
 ACPI_STATUS
 AeInstallHandlers (void);
+
+int
+FlatMove (
+    UINT32                  Dest,
+    UINT32                  Src,
+    UINT32                  Size);
 
 ACPI_STATUS
 AdGetTables (
