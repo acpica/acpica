@@ -617,7 +617,7 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_StartupFlags            = 0;
     Gbl_GlobalLockSet           = FALSE;
     Gbl_RsdpOriginalLocation    = 0;
-    Gbl_WhenToParseMethods      = METHOD_PARSE_AT_INIT;
+    Gbl_WhenToParseMethods      = METHOD_PARSE_AT_INIT | METHOD_DELETE_AT_COMPLETION | METHOD_PARSE_JUST_IN_TIME;
     Gbl_CmSingleStep            = FALSE;
     Gbl_DbTerminateThreads      = FALSE;
     Gbl_Shutdown                = FALSE;
@@ -633,6 +633,9 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_GenericStateCacheDepth  = 0;
     Gbl_StateCacheRequests      = 0;
 
+    Gbl_ParseCache              = NULL;
+    Gbl_ParseCacheDepth         = 0;
+    Gbl_ParseCacheRequests      = 0;
 
     /* Interpreter */
 
