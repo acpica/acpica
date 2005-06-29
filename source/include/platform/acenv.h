@@ -170,6 +170,8 @@
  * We will be using the standard Clib functions
  */
 
+#define STRSTR(s1,s2)           strstr((char *) (s1), (char *) (s2))
+#define STRUPR(s)               strupr((char *) (s))
 #define STRLEN(s)               strlen((char *) (s))
 #define STRCPY(d,s)             strcpy((char *) (d), (char *) (s))
 #define STRNCPY(d,s,n)          strncpy((char *) (d), (char *) (s), (n))
@@ -222,6 +224,8 @@ typedef char *va_list;
 #endif /* va_arg */
 
 
+#define STRSTR(s1,s2)           _strstr((char *) (s1), (char *) (s2))
+#define STRUPR(s)               _strupr((char *) (s))
 #define STRLEN(s)               _strlen((char *) (s))
 #define STRCPY(d,s)             _strcpy((char *) (d), (char *) (s))
 #define STRNCPY(d,s,n)          _strncpy((char *) (d), (char *) (s), (n))
@@ -294,6 +298,7 @@ typedef char *va_list;
 
 #ifdef _MSC_VER                 /* disable some level-4 warnings */
 #pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
+#pragma warning(disable:4127)   /* warning C4127: conditional expression is constant */
 #endif
 
 
