@@ -25,7 +25,7 @@ CFG=AcpiExec - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi/Generate/msvc", SVBAAAAA"
 # PROP Scc_LocalPath "."
-CPP=xicl6.exe
+CPP=cl.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiExec - Win32 Release"
@@ -49,7 +49,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=xilink6.exe
+LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /map /machine:I386 /out:"bin/AcpiExec.exe"
 # Begin Special Build Tool
@@ -81,7 +81,7 @@ PostBuild_Cmds=copy bin\acpiexec.exe ..\..\libraries\acpiexec.exe	dir ..\..\libr
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo /o"\Acpi\generate\msvc\AcpiExec\Debug/AcpiExecDebug.bsc"
-LINK32=xilink6.exe
+LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 libcmtd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /out:"bin/AcpiExecDebug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /verbose
@@ -297,6 +297,10 @@ SOURCE=..\..\source\components\namespace\nsobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\namespace\nssearch.c
 # End Source File
 # Begin Source File
@@ -378,6 +382,10 @@ SOURCE=..\..\source\components\hardware\hwregs.c
 # Begin Source File
 
 SOURCE=..\..\source\components\events\evevent.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\EVENTS\evgpe.c
 # End Source File
 # Begin Source File
 
@@ -478,6 +486,10 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbxface.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\dispatcher\dsfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsinit.c
 # End Source File
 # Begin Source File
 
