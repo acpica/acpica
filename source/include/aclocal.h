@@ -188,14 +188,16 @@ typedef struct NameTableEntry
 
     void                    *Object;        /* Pointer to attached ACPI object (optional) */
     struct NameTableEntry   *Scope;         /* Scope owned by this name (optional) */
-
     struct NameTableEntry   *NextEntry;     /* Next NTE within this scope */
     struct NameTableEntry   *PrevEntry;     /* Previous NTE within this scope */
+    struct NameTableEntry   *ParentEntry;   /* Parent NTE */
 
-    struct NameTableEntry   *ParentEntry;   /* Actual parent NTE */
-    struct NameTableEntry   *ParentScope;   /* Previous level of names */
+    DEBUG_ONLY_MEMBERS (
+    char                    *FillDebug)     /* Align on 16-byte boundary for memory dump readability */
+
 
 } NAME_TABLE_ENTRY;
+
 
 #define ENTRY_NOT_FOUND     NULL
 #define INVALID_HANDLE      0
@@ -337,6 +339,13 @@ typedef struct
 
 
 
+/*****************************************************************************
+ * 
+ * Parser typedefs and structs
+ *
+ ****************************************************************************/
+
+
 
 /*
  * AML opcode, name, and argument layout
@@ -469,6 +478,10 @@ typedef struct acpi_parse_scope
 
 
 
+/*
+ * Control state - one per if/else and while constructs.
+ * Allows nesting of these constructs 
+ */
 typedef struct acpi_ctrl_state
 {
     UINT8                   Exec;           /* Execution state */
@@ -480,6 +493,11 @@ typedef struct acpi_ctrl_state
 
 
 
+/*
+ * Walk state - current state of a parse tree walk.  Used for both a leisurely stroll through
+ * the tree (for whatever reason), and for control method execution.
+ */
+
 #define NEXT_OP_DOWNWARD    1
 #define NEXT_OP_UPWARD      2
 
@@ -489,18 +507,26 @@ typedef struct acpi_walk_state
     ACPI_GENERIC_OP         *PrevOp;                            /* Last op that was processed */
     ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
     ACPI_CTRL_STATE         *ControlState;                      /* List of control states (nested IFs) */
-    union AcpiObjInternal   *Arguments[MTH_NUM_ARGS];           /* Control method arguments */
-    union AcpiObjInternal   *LocalVariables[MTH_NUM_LOCALS];    /* Control method locals */
+    struct NameTableEntry   Arguments[MTH_NUM_ARGS];            /* Control method arguments */
+    struct NameTableEntry   LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
+    union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
+    union AcpiObjInternal   *Results[OBJ_NUM_OPERANDS];         /* Accumulated results */
     union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
-    union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter TBD: make max configurable */
     struct acpi_walk_state  *Next;                              /* Next WalkState in list */
 
     BOOLEAN                 LastPredicate;                      /* Result of last predicate */
     UINT8                   NextOpInfo;                         /* Info about NextOp */
-    UINT8                   NumOperands;                        /* Count of objects in the Operands[] array */
+    UINT8                   NumOperands;                        /* Stack pointer for Operands[] array */
+    UINT8                   NumResults;                         /* Stack pointer for Results[] array */
+    UINT8                   CurrentResult;                      /* */
 
 } ACPI_WALK_STATE;
 
+
+/*
+ * Walk list - head of a tree of walk states.  Multiple walk states are created when there
+ * are nested control methods executing.
+ */
 typedef struct acpi_walk_list
 {
 
@@ -516,6 +542,13 @@ ACPI_STATUS (*INTERPRETER_CALLBACK) (
     ACPI_GENERIC_OP         *Op);
 
 
+
+
+/*****************************************************************************
+ * 
+ * Debug
+ *
+ ****************************************************************************/
 
 
 /* Entry for a memory allocation (debug only) */
