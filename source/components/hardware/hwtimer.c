@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -226,10 +226,9 @@ AcpiGetTimerDuration (
     UINT32                  EndTicks,
     UINT32                  *TimeElapsed)
 {
-    UINT32                  DeltaTicks = 0;
-    UINT64_OVERLAY          NormalizedTicks;
     ACPI_STATUS             Status;
-    ACPI_INTEGER            OutQuotient;
+    UINT32                  DeltaTicks;
+    ACPI_INTEGER            Quotient;
 
 
     ACPI_FUNCTION_TRACE ("AcpiGetTimerDuration");
@@ -242,7 +241,7 @@ AcpiGetTimerDuration (
 
     /*
      * Compute Tick Delta:
-     * Handle (max one) timer rollovers on 24- versus 32-bit timers.
+     * Handle (max one) timer rollovers on 24-bit versus 32-bit timers.
      */
     if (StartTicks < EndTicks)
     {
@@ -263,23 +262,21 @@ AcpiGetTimerDuration (
             DeltaTicks = (0xFFFFFFFF - StartTicks) + EndTicks;
         }
     }
-    else
+    else /* StartTicks == EndTicks */
     {
         *TimeElapsed = 0;
         return_ACPI_STATUS (AE_OK);
     }
 
     /*
-     * Compute Duration (Requires a 64-bit divide):
+     * Compute Duration (Requires a 64-bit multiply and divide):
      *
      * TimeElapsed = (DeltaTicks * 1000000) / PM_TIMER_FREQUENCY;
      */
-    NormalizedTicks.Full = ((UINT64) DeltaTicks) * 1000000;
+    Status = AcpiUtShortDivide (((UINT64) DeltaTicks) * 1000000,
+                PM_TIMER_FREQUENCY, &Quotient, NULL);
 
-    Status = AcpiUtShortDivide (&NormalizedTicks.Full, PM_TIMER_FREQUENCY,
-                                    &OutQuotient, NULL);
-
-    *TimeElapsed = (UINT32) OutQuotient;
+    *TimeElapsed = (UINT32) Quotient;
     return_ACPI_STATUS (Status);
 }
 
