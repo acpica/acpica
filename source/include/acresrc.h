@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.23 $
+ *       $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -405,5 +405,8 @@ AcpiRsVendorStream (
     UINT8                   **OutputBuffer,
     UINT32                  *BytesConsumed);
 
+UINT8
+AcpiRsGetResourceType (
+    UINT8                   ResourceStartByte);
 
 #endif  /* __ACRESRC_H__ */
