@@ -190,7 +190,7 @@ PsDeleteParseTree (
     WalkState.Origin = Root;
     Op = Root;
 
-    /* TBD: hack for root case */
+    /* TBD: [Restructure] hack for root case */
 
     if (Op == Gbl_ParsedNamespaceRoot)
     {

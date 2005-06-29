@@ -158,7 +158,7 @@ PsInitOp (
     {
         /* Debug only! */
 
-        DEBUG_EXEC (STRNCPY (Op->OpName, AmlOp->Name, sizeof (Op->OpName)));
+        DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, AmlOp->Name, sizeof (Op->OpName)));
     }
 }
 
@@ -218,13 +218,14 @@ PsAllocOp (
          * Check if there is an Op already available in the cache
          */
 
-        CmAcquireMutex (MTX_MEMORY);
+        CmAcquireMutex (MTX_CACHES);
+        Gbl_ParseCacheRequests++;
         if (Gbl_ParseCache)
         {
             /* Extract an op from the front of the cache list */
 
-            Gbl_ParseCacheRequests++;
             Gbl_ParseCacheDepth--;
+            Gbl_ParseCacheHits++;
             
             Op = Gbl_ParseCache;
             Gbl_ParseCache = Op->Next;
@@ -233,7 +234,7 @@ PsAllocOp (
 
             MEMSET (Op, 0, sizeof (ACPI_GENERIC_OP));
         }
-        CmReleaseMutex (MTX_MEMORY);
+        CmReleaseMutex (MTX_CACHES);
     }
 
     /* Allocate a new Op if necessary */
@@ -282,13 +283,13 @@ PsFreeOp (
         {
             /* Put a GENERIC_OP back into the cache */
 
-            CmAcquireMutex (MTX_MEMORY);
+            CmAcquireMutex (MTX_CACHES);
             Gbl_ParseCacheDepth++;
 
             Op->Next = Gbl_ParseCache;
             Gbl_ParseCache = Op;
 
-            CmReleaseMutex (MTX_MEMORY);
+            CmReleaseMutex (MTX_CACHES);
             return;
         }
     }
@@ -348,7 +349,7 @@ PsDeleteParseCache (
  *
  * DESCRIPTION: Low level functions
  *
- * TBD:
+ * TBD: [Restructure]
  * 1) Some of these functions should be macros
  * 2) Some can be simplified
  *
@@ -438,7 +439,7 @@ PsIsNamespaceOp (
  * Is opcode for a named object Op?
  * (Includes all named object opcodes)
  *
- * TBD: Need a better way than this brute force approach!
+ * TBD: [Restructure] Need a better way than this brute force approach!
  */
 BOOLEAN
 PsIsNamedObjectOp (
