@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.112 $
+ *       $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -270,12 +270,20 @@ AcpiExWriteDataToField (
  */
 
 ACPI_STATUS
-AcpiExOpcode_3A_1T_0R (
+AcpiExOpcode_3A_0T_0R (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiExOpcode_3A_1T_1R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExOpcode_6A_0T_1R (
     ACPI_WALK_STATE         *WalkState);
+
+
+
+
 
 ACPI_STATUS
 AcpiExCreateBufferField (
@@ -285,8 +293,13 @@ AcpiExCreateBufferField (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiExReconfiguration (
-    ACPI_WALK_STATE         *WalkState);
+AcpiExLoadOp (
+    ACPI_OPERAND_OBJECT     *RgnDesc,
+    ACPI_OPERAND_OBJECT     *DdbHandle);
+
+ACPI_STATUS
+AcpiExUnloadTable (
+    ACPI_OPERAND_OBJECT     *DdbHandle);
 
 ACPI_STATUS
 AcpiExCreateMutex (
@@ -453,6 +466,9 @@ ACPI_STATUS
 AcpiExOpcode_1A_1T_1R (
     ACPI_WALK_STATE         *WalkState);
 
+ACPI_STATUS
+AcpiExOpcode_1A_1T_0R (
+    ACPI_WALK_STATE         *WalkState);
 
 /*
  * amdyadic - ACPI AML (p-code) execution, dyadic operators
