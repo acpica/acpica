@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.45 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -118,17 +118,9 @@
 #include <stdio.h>
 #include "aslcompiler.h"
 #include "acnamesp.h"
-#include "acdebug.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslcompile")
-
-/*
-#undef HIWORD
-#undef LOWORD
-#undef HIBYTE
-#undef LOBYTE
-*/
+        ACPI_MODULE_NAME    ("aslcompile")
 
 
 /*
@@ -159,7 +151,7 @@ AeLocalGetRootPointer (
 void
 AcpiExDumpOperands (
     ACPI_OPERAND_OBJECT     **Operands,
-    OPERATING_MODE          InterpreterMode,
+    ACPI_INTERPRETER_MODE   InterpreterMode,
     NATIVE_CHAR             *Ident,
     UINT32                  NumLevels,
     NATIVE_CHAR             *Note,
@@ -295,6 +287,12 @@ AslCompilerFileHeader (
         "%sCompilation of \"%s\" - %s%s\n",
         Prefix, Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime),
         Prefix);
+
+    switch (FileId)
+    {
+    case ASL_FILE_C_SOURCE_OUTPUT:
+        FlPrintFile (FileId, " */\n");
+    }
 }
 
 
@@ -511,7 +509,7 @@ CmCleanupAndExit (void)
     {
         if (AslGbl_Events[i].Valid)
         {
-            DbgPrint (ASL_DEBUG_OUTPUT, "%8d ms - %s\n",
+            DbgPrint (ASL_DEBUG_OUTPUT, "%8lu ms - %s\n",
                 AslGbl_Events[i].EndTime -
                 AslGbl_Events[i].StartTime,
                 AslGbl_Events[i].EventName);
@@ -552,7 +550,7 @@ CmCleanupAndExit (void)
 
     /* Close all open files */
 
-    for (i = 2; i < ASL_MAX_FILE; i++)
+    for (i = 2; i < ASL_MAX_FILE_TYPE; i++)
     {
         FlCloseFile (i);
     }

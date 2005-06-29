@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -193,7 +193,7 @@ AnMapArgTypeToBtype (
 
     case ARGI_DATAOBJECT:
      
-        /* Buffer, string, package or reference to a Node - Used only by SizeOf operator*/
+        /* Buffer, string, package or reference to a Op - Used only by SizeOf operator*/
 
         return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE);
 
@@ -214,6 +214,9 @@ AnMapArgTypeToBtype (
 
     case ARGI_DDBHANDLE:
         return (ACPI_BTYPE_DDB_HANDLE);
+
+    default:
+        break;
     }
 
     return (ACPI_BTYPE_OBJECTS_AND_REFS);
@@ -420,9 +423,9 @@ AnFormatBtype (
  *
  * FUNCTION:    AnGetBtype
  *
- * PARAMETERS:  PsNode          - Parse node whose type will be returned.
+ * PARAMETERS:  Op          - Parse node whose type will be returned.
  *
- * RETURN:      The Btype associated with the PsNode.
+ * RETURN:      The Btype associated with the Op.
  *
  * DESCRIPTION: Get the (bitfield) ACPI type associated with the parse node.
  *              Handles the case where the node is a name or method call and
@@ -432,27 +435,27 @@ AnFormatBtype (
 
 UINT32
 AnGetBtype (
-    ASL_PARSE_NODE          *PsNode)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_NAMESPACE_NODE     *NsNode;
-    ASL_PARSE_NODE          *ReferencedNode;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_PARSE_OBJECT       *ReferencedNode;
     UINT32                  ThisNodeBtype = 0;
 
 
-    if ((PsNode->ParseOpcode == PARSEOP_NAMESEG)     ||
-        (PsNode->ParseOpcode == PARSEOP_NAMESTRING)  ||
-        (PsNode->ParseOpcode == PARSEOP_METHODCALL))
+    if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)     ||
+        (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING)  ||
+        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
     {
-        NsNode = PsNode->NsNode;
-        if (!NsNode)
+        Node = Op->Asl.Node;
+        if (!Node)
         {
             DbgPrint (ASL_DEBUG_OUTPUT,
                 "Null attached Nsnode: [%s] at line %d\n",
-                PsNode->ParseOpName, PsNode->LineNumber);
+                Op->Asl.ParseOpName, Op->Asl.LineNumber);
             return ACPI_UINT32_MAX;
         }
 
-        ThisNodeBtype = AnMapEtypeToBtype (NsNode->Type);
+        ThisNodeBtype = AnMapEtypeToBtype (Node->Type);
 
         /*
          * Since it was a named reference, enable the
@@ -460,18 +463,18 @@ AnGetBtype (
          */
         ThisNodeBtype |= ACPI_BTYPE_REFERENCE;
 
-        if (PsNode->ParseOpcode == PARSEOP_METHODCALL)
+        if (Op->Asl.ParseOpcode == PARSEOP_METHODCALL)
         {
-            ReferencedNode = (ASL_PARSE_NODE *) NsNode->Object;
+            ReferencedNode = (ACPI_PARSE_OBJECT *) Node->Object;
             if (!ReferencedNode)
             {
-               printf ("No back ptr to PsNode: type %X\n", NsNode->Type);
+               printf ("No back ptr to Op: type %X\n", Node->Type);
                return ACPI_UINT32_MAX;
             }
 
-            if (ReferencedNode->Flags & NODE_METHOD_TYPED)
+            if (ReferencedNode->Asl.CompileFlags & NODE_METHOD_TYPED)
             {
-                ThisNodeBtype = ReferencedNode->AcpiBtype;
+                ThisNodeBtype = ReferencedNode->Asl.AcpiBtype;
             }
             else
             {
@@ -481,7 +484,7 @@ AnGetBtype (
     }
     else
     {
-        ThisNodeBtype = PsNode->AcpiBtype;
+        ThisNodeBtype = Op->Asl.AcpiBtype;
     }
 
     return (ThisNodeBtype);
@@ -492,7 +495,7 @@ AnGetBtype (
  *
  * FUNCTION:    AnCheckForReservedMethod
  *
- * PARAMETERS:  Node            - A parse node of type "METHOD".
+ * PARAMETERS:  Op            - A parse node of type "METHOD".
  *              MethodInfo      - Saved info about this method
  *
  * RETURN:      None
@@ -504,7 +507,7 @@ AnGetBtype (
 
 void
 AnCheckForReservedMethod (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     ASL_METHOD_INFO         *MethodInfo)
 {
     UINT32                  i;
@@ -512,7 +515,7 @@ AnCheckForReservedMethod (
 
     /* All reserved names are prefixed with a single underscore */
 
-    if (Node->ExternalName[0] != '_')
+    if (Op->Asl.ExternalName[0] != '_')
     {
         return;
     }
@@ -521,7 +524,7 @@ AnCheckForReservedMethod (
 
     for (i = 0; ReservedMethods[i].Name; i++)
     {
-        if (!ACPI_STRCMP (Node->ExternalName, ReservedMethods[i].Name))
+        if (!ACPI_STRCMP (Op->Asl.ExternalName, ReservedMethods[i].Name))
         {
             Gbl_ReservedMethods++;
 
@@ -535,11 +538,11 @@ AnCheckForReservedMethod (
 
                 if (MethodInfo->NumArguments > ReservedMethods[i].NumArguments)
                 {
-                    AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Node, MsgBuffer);
+                    AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op, MsgBuffer);
                 }
                 else
                 {
-                    AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_LO, Node, MsgBuffer);
+                    AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_LO, Op, MsgBuffer);
                 }
             }
 
@@ -549,7 +552,7 @@ AnCheckForReservedMethod (
                 sprintf (MsgBuffer, "%s",
                             ReservedMethods[i].Name);
 
-                AslError (ASL_WARNING, ASL_MSG_RESERVED_RETURN_VALUE, Node, MsgBuffer);
+                AslError (ASL_WARNING, ASL_MSG_RESERVED_RETURN_VALUE, Op, MsgBuffer);
             }
 
             return;
@@ -562,23 +565,23 @@ AnCheckForReservedMethod (
      * GPE:  _Exx
      * EC:   _Qxx
      */
-    if ((Node->ExternalName[1] == 'L') ||
-        (Node->ExternalName[1] == 'E') ||
-        (Node->ExternalName[1] == 'Q'))
+    if ((Op->Asl.ExternalName[1] == 'L') ||
+        (Op->Asl.ExternalName[1] == 'E') ||
+        (Op->Asl.ExternalName[1] == 'Q'))
     {
 
         Gbl_ReservedMethods++;
 
         /* The next two characters must be hex digits */
 
-        if ((isxdigit (Node->ExternalName[2])) &&
-            (isxdigit (Node->ExternalName[3])) &&
+        if ((isxdigit (Op->Asl.ExternalName[2])) &&
+            (isxdigit (Op->Asl.ExternalName[3])) &&
             (MethodInfo->NumArguments != 0))
         {
             sprintf (MsgBuffer, " %s requires %d",
-                        Node->ExternalName, 0);
+                        Op->Asl.ExternalName, 0);
 
-            AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Node, MsgBuffer);
+            AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op, MsgBuffer);
         }
 
         return;
@@ -587,10 +590,10 @@ AnCheckForReservedMethod (
 
     /* Check for the names reserved for the compiler itself: _T_x */
 
-    if ((Node->ExternalName[1] == 'T') &&
-        (Node->ExternalName[2] == '_'))
+    if ((Op->Asl.ExternalName[1] == 'T') &&
+        (Op->Asl.ExternalName[2] == '_'))
     {
-        AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Node, Node->ExternalName);
+        AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
         return;
     }
 
@@ -600,7 +603,7 @@ AnCheckForReservedMethod (
      * warning, since the entire namespace starting with an underscore is
      * reserved by the ACPI spec.
      */
-    AslError (ASL_WARNING, ASL_MSG_UNKNOWN_RESERVED_NAME, Node, Node->ExternalName);
+    AslError (ASL_WARNING, ASL_MSG_UNKNOWN_RESERVED_NAME, Op, Op->Asl.ExternalName);
     return;
 }
 
@@ -622,13 +625,13 @@ AnCheckForReservedMethod (
 
 ACPI_STATUS
 AnMethodAnalysisWalkBegin (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
     ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
     ASL_METHOD_INFO         *MethodInfo = WalkInfo->MethodStack;
-    ASL_PARSE_NODE          *Next;
+    ACPI_PARSE_OBJECT       *Next;
     UINT32                  RegisterNumber;
     UINT32                  i;
     char                    LocalName[] = "Local0";
@@ -638,7 +641,7 @@ AnMethodAnalysisWalkBegin (
     ACPI_FUNCTION_NAME ("AnMethodAnalysisWalkBegin");
 
 
-    switch (Node->ParseOpcode)
+    switch (Op->Asl.ParseOpcode)
     {
     case PARSEOP_METHOD:
 
@@ -649,15 +652,15 @@ AnMethodAnalysisWalkBegin (
          */
         MethodInfo       = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
         MethodInfo->Next = WalkInfo->MethodStack;
-        MethodInfo->Node = Node;
+        MethodInfo->Op = Op;
 
         WalkInfo->MethodStack = MethodInfo;
 
         /* Get the NumArguments node */
 
-        Next = Node->Child;
-        Next = Next->Peer;
-        MethodInfo->NumArguments = (UINT8) (Next->Value.Integer8 & 0x07);
+        Next = Op->Asl.Child;
+        Next = Next->Asl.Next;
+        MethodInfo->NumArguments = (UINT8) (Next->Asl.Value.Integer8 & 0x07);
 
         /*
          * Actual arguments are initialized at method entry.
@@ -675,9 +678,9 @@ AnMethodAnalysisWalkBegin (
     case PARSEOP_METHODCALL:
 
         if (MethodInfo &&
-           (Node->NsNode == MethodInfo->Node->NsNode))
+           (Op->Asl.Node == MethodInfo->Op->Asl.Node))
         {
-            AslError (ASL_REMARK, ASL_MSG_RECURSION, Node, Node->ExternalName);
+            AslError (ASL_REMARK, ASL_MSG_RECURSION, Op, Op->Asl.ExternalName);
         }
         break;
 
@@ -695,17 +698,17 @@ AnMethodAnalysisWalkBegin (
         {
             /* Probably was an error in the method declaration, no additional error here */
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%p, No parent method\n", Node));
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%p, No parent method\n", Op));
             return (AE_ERROR);
         }
 
-        RegisterNumber = (Node->AmlOpcode & 0x000F);
+        RegisterNumber = (Op->Asl.AmlOpcode & 0x000F);
 
         /*
          * If the local is being used as a target, mark the local
          * initialized
          */
-        if (Node->Flags & NODE_IS_TARGET)
+        if (Op->Asl.CompileFlags & NODE_IS_TARGET)
         {
             MethodInfo->LocalInitialized[RegisterNumber] = TRUE;
         }
@@ -716,8 +719,8 @@ AnMethodAnalysisWalkBegin (
          */
         else if (!MethodInfo->LocalInitialized[RegisterNumber])
         {
-            LocalName[strlen (LocalName) -1] = (UINT8) (RegisterNumber + 0x30);
-            AslError (ASL_ERROR, ASL_MSG_LOCAL_INIT, Node, LocalName);
+            LocalName[strlen (LocalName) -1] = (char) (RegisterNumber + 0x30);
+            AslError (ASL_ERROR, ASL_MSG_LOCAL_INIT, Op, LocalName);
         }
         break;
 
@@ -734,18 +737,18 @@ AnMethodAnalysisWalkBegin (
         {
             /* Probably was an error in the method declaration, no additional error here */
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%p, No parent method\n", Node));
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%p, No parent method\n", Op));
             return (AE_ERROR);
         }
 
-        RegisterNumber = (Node->AmlOpcode & 0x000F) - 8;
-        ArgName[strlen (ArgName) -1] = (UINT8) (RegisterNumber + 0x30);
+        RegisterNumber = (Op->Asl.AmlOpcode & 0x000F) - 8;
+        ArgName[strlen (ArgName) -1] = (char) (RegisterNumber + 0x30);
 
         /*
          * If the Arg is being used as a target, mark the local
          * initialized
          */
-        if (Node->Flags & NODE_IS_TARGET)
+        if (Op->Asl.CompileFlags & NODE_IS_TARGET)
         {
             MethodInfo->ArgInitialized[RegisterNumber] = TRUE;
         }
@@ -756,14 +759,14 @@ AnMethodAnalysisWalkBegin (
          */
         else if (!MethodInfo->ArgInitialized[RegisterNumber])
         {
-            AslError (ASL_ERROR, ASL_MSG_ARG_INIT, Node, ArgName);
+            AslError (ASL_ERROR, ASL_MSG_ARG_INIT, Op, ArgName);
         }
 
         /* Flag this arg if it is not a "real" argument to the method */
 
         if (RegisterNumber >= MethodInfo->NumArguments)
         {
-            AslError (ASL_REMARK, ASL_MSG_NOT_PARAMETER, Node, ArgName);
+            AslError (ASL_REMARK, ASL_MSG_NOT_PARAMETER, Op, ArgName);
         }
         break;
 
@@ -774,14 +777,14 @@ AnMethodAnalysisWalkBegin (
         {
             /* Probably was an error in the method declaration, no additional error here */
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%p, No parent method\n", Node));
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%p, No parent method\n", Op));
             return (AE_ERROR);
         }
 
         /* Child indicates a return value */
 
-        if ((Node->Child) &&
-            (Node->Child->ParseOpcode != PARSEOP_DEFAULT_ARG))
+        if ((Op->Asl.Child) &&
+            (Op->Asl.Child->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
         {
             MethodInfo->NumReturnWithValue++;
         }
@@ -795,20 +798,24 @@ AnMethodAnalysisWalkBegin (
     case PARSEOP_BREAK:
     case PARSEOP_CONTINUE:
 
-        Next = Node->Parent;
+        Next = Op->Asl.Parent;
         while (Next)
         {
-            if (Next->ParseOpcode == PARSEOP_WHILE)
+            if (Next->Asl.ParseOpcode == PARSEOP_WHILE)
             {
                 break;
             }
-            Next = Next->Parent;
+            Next = Next->Asl.Parent;
         }
 
         if (!Next)
         {
-            AslError (ASL_ERROR, ASL_MSG_NO_WHILE, Node, NULL);
+            AslError (ASL_ERROR, ASL_MSG_NO_WHILE, Op, NULL);
         }
+        break;
+
+
+    default:
         break;
     }
 
@@ -820,7 +827,7 @@ AnMethodAnalysisWalkBegin (
  *
  * FUNCTION:    AnLastStatementIsReturn
  *
- * PARAMETERS:  Node            - A method parse node
+ * PARAMETERS:  Op            - A method parse node
  *
  * RETURN:      TRUE if last statement is an ASL RETURN.  False otherwise
  *
@@ -832,19 +839,19 @@ AnMethodAnalysisWalkBegin (
 
 BOOLEAN
 AnLastStatementIsReturn (
-    ASL_PARSE_NODE          *Node)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ASL_PARSE_NODE          *Next;
+    ACPI_PARSE_OBJECT       *Next;
 
 
     /*
      * Check if last statement is a return
      */
-    Next = ASL_GET_CHILD_NODE (Node);
+    Next = ASL_GET_CHILD_NODE (Op);
     while (Next)
     {
-        if ((!Next->Peer) &&
-            (Next->ParseOpcode == PARSEOP_RETURN))
+        if ((!Next->Asl.Next) &&
+            (Next->Asl.ParseOpcode == PARSEOP_RETURN))
         {
             return TRUE;
         }
@@ -871,7 +878,7 @@ AnLastStatementIsReturn (
 
 ACPI_STATUS
 AnMethodAnalysisWalkEnd (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
@@ -879,20 +886,24 @@ AnMethodAnalysisWalkEnd (
     ASL_METHOD_INFO         *MethodInfo = WalkInfo->MethodStack;
 
 
-    switch (Node->ParseOpcode)
+    switch (Op->Asl.ParseOpcode)
     {
     case PARSEOP_METHOD:
     case PARSEOP_RETURN:
         if (!MethodInfo)
         {
-            printf ("No method info for method! [%s]\n", Node->Namepath);
-            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Node, "No method info for this method");
+            printf ("No method info for method! [%s]\n", Op->Asl.Namepath);
+            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op, "No method info for this method");
             CmCleanupAndExit ();
+            return (AE_AML_INTERNAL);
         }
+        break;
+
+    default:
         break;
     }
 
-    switch (Node->ParseOpcode)
+    switch (Op->Asl.ParseOpcode)
     {
     case PARSEOP_METHOD:
 
@@ -903,8 +914,8 @@ AnMethodAnalysisWalkEnd (
          * method AND we can actually get there -- i.e., the execution
          * of the method can possibly terminate without a return statement.
          */
-        if ((!AnLastStatementIsReturn (Node)) &&
-            (!(Node->Flags & NODE_HAS_NO_EXIT)))
+        if ((!AnLastStatementIsReturn (Op)) &&
+            (!(Op->Asl.CompileFlags & NODE_HAS_NO_EXIT)))
         {
             /*
              * No return statement, and execution can possibly exit
@@ -921,7 +932,7 @@ AnMethodAnalysisWalkEnd (
         if (MethodInfo->NumReturnNoValue &&
             MethodInfo->NumReturnWithValue)
         {
-            AslError (ASL_WARNING, ASL_MSG_RETURN_TYPES, Node, Node->ExternalName);
+            AslError (ASL_WARNING, ASL_MSG_RETURN_TYPES, Op, Op->Asl.ExternalName);
         }
 
         /*
@@ -935,11 +946,11 @@ AnMethodAnalysisWalkEnd (
         {
             if (MethodInfo->NumReturnWithValue)
             {
-                Node->Flags |= NODE_METHOD_SOME_NO_RETVAL;
+                Op->Asl.CompileFlags |= NODE_METHOD_SOME_NO_RETVAL;
             }
             else
             {
-                Node->Flags |= NODE_METHOD_NO_RETVAL;
+                Op->Asl.CompileFlags |= NODE_METHOD_NO_RETVAL;
             }
         }
 
@@ -947,45 +958,45 @@ AnMethodAnalysisWalkEnd (
          * Check predefined method names for correct return behavior
          * and correct number of arguments
          */
-        AnCheckForReservedMethod (Node, MethodInfo);
+        AnCheckForReservedMethod (Op, MethodInfo);
         ACPI_MEM_FREE (MethodInfo);
         break;
 
 
     case PARSEOP_RETURN:
 
-        Node->Parent->Flags |= NODE_HAS_NO_EXIT;
-        Node->ParentMethod = MethodInfo->Node;      /* Used in the "typing" pass later */
+        Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
+        Op->Asl.ParentMethod = MethodInfo->Op;      /* Used in the "typing" pass later */
         break;
 
 
     case PARSEOP_IF:
 
-        if ((Node->Flags & NODE_HAS_NO_EXIT) &&
-            (Node->Peer) &&
-            (Node->Peer->ParseOpcode == PARSEOP_ELSE))
+        if ((Op->Asl.CompileFlags & NODE_HAS_NO_EXIT) &&
+            (Op->Asl.Next) &&
+            (Op->Asl.Next->Asl.ParseOpcode == PARSEOP_ELSE))
         {
-            Node->Peer->Flags |= NODE_IF_HAS_NO_EXIT;
+            Op->Asl.Next->Asl.CompileFlags |= NODE_IF_HAS_NO_EXIT;
         }
         break;
 
 
     case PARSEOP_ELSE:
 
-        if ((Node->Flags & NODE_HAS_NO_EXIT) &&
-            (Node->Flags & NODE_IF_HAS_NO_EXIT))
+        if ((Op->Asl.CompileFlags & NODE_HAS_NO_EXIT) &&
+            (Op->Asl.CompileFlags & NODE_IF_HAS_NO_EXIT))
         {
-            Node->Parent->Flags |= NODE_HAS_NO_EXIT;
+            Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
         }
         break;
 
 
     default:
 
-        if ((Node->Flags & NODE_HAS_NO_EXIT) &&
-            (Node->Parent))
+        if ((Op->Asl.CompileFlags & NODE_HAS_NO_EXIT) &&
+            (Op->Asl.Parent))
         {
-            Node->Parent->Flags |= NODE_HAS_NO_EXIT;
+            Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
         }
         break;
     }
@@ -1008,7 +1019,7 @@ AnMethodAnalysisWalkEnd (
 
 ACPI_STATUS
 AnMethodTypingWalkBegin (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
@@ -1035,45 +1046,48 @@ AnMethodTypingWalkBegin (
 
 ACPI_STATUS
 AnMethodTypingWalkEnd (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
     UINT32                  ThisNodeBtype;
 
 
-    switch (Node->ParseOpcode)
+    switch (Op->Asl.ParseOpcode)
     {
     case PARSEOP_METHOD:
 
-        Node->Flags |= NODE_METHOD_TYPED;
+        Op->Asl.CompileFlags |= NODE_METHOD_TYPED;
         break;
 
     case PARSEOP_RETURN:
 
-        if ((Node->Child) &&
-            (Node->Child->ParseOpcode != PARSEOP_DEFAULT_ARG))
+        if ((Op->Asl.Child) &&
+            (Op->Asl.Child->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
         {
-            ThisNodeBtype = AnGetBtype (Node->Child);
+            ThisNodeBtype = AnGetBtype (Op->Asl.Child);
 
-            if ((Node->Child->ParseOpcode == PARSEOP_METHODCALL) &&
+            if ((Op->Asl.Child->Asl.ParseOpcode == PARSEOP_METHODCALL) &&
                 (ThisNodeBtype == (ACPI_UINT32_MAX -1)))
             {
                 /*
                  * The method is untyped at this time (typically a forward reference).
                  * We must recursively type the method here
                  */
-                TrWalkParseTree ((ASL_PARSE_NODE *) Node->Child->NsNode->Object,
+                TrWalkParseTree ((ACPI_PARSE_OBJECT *) Op->Asl.Child->Asl.Node->Object,
                         ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
                         AnMethodTypingWalkEnd, NULL);
 
-                ThisNodeBtype = AnGetBtype (Node->Child);
+                ThisNodeBtype = AnGetBtype (Op->Asl.Child);
             }
 
             /* Returns a value, get it's type */
 
-            Node->ParentMethod->AcpiBtype |= ThisNodeBtype;
+            Op->Asl.ParentMethod->Asl.AcpiBtype |= ThisNodeBtype;
         }
+        break;
+
+    default:
         break;
     }
 
@@ -1098,7 +1112,7 @@ AnMethodTypingWalkEnd (
 
 ACPI_STATUS
 AnOperandTypecheckWalkBegin (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
@@ -1122,7 +1136,7 @@ AnOperandTypecheckWalkBegin (
 
 ACPI_STATUS
 AnOperandTypecheckWalkEnd (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
@@ -1130,15 +1144,14 @@ AnOperandTypecheckWalkEnd (
     UINT32                  RuntimeArgTypes;
     UINT32                  RuntimeArgTypes2;
     UINT32                  RequiredBtypes;
-    ASL_PARSE_NODE          *ArgNode;
+    ACPI_PARSE_OBJECT       *ArgOp;
     UINT32                  ArgType;
     UINT32                  ThisNodeBtype;
     UINT32                  OpcodeClass;
-    UINT32                  i;
     UINT32                  CommonBtypes;
 
 
-    switch (Node->AmlOpcode)
+    switch (Op->Asl.AmlOpcode)
     {
     case AML_RAW_DATA_BYTE:
     case AML_RAW_DATA_WORD:
@@ -1154,15 +1167,17 @@ AnOperandTypecheckWalkEnd (
 
         return (AE_OK);
 
+    default:
+        break;
     }
 
-    OpInfo = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Asl.AmlOpcode);
     if (!OpInfo)
     {
         return (AE_OK);
     }
 
-    ArgNode         = Node->Child;
+    ArgOp         = Op->Asl.Child;
     RuntimeArgTypes = OpInfo->RuntimeArgs;
     OpcodeClass     = OpInfo->Class;
 
@@ -1182,9 +1197,9 @@ AnOperandTypecheckWalkEnd (
 
         /* TBD: Change class or fix typechecking for these */
 
-        if ((Node->AmlOpcode == AML_BUFFER_OP) ||
-            (Node->AmlOpcode == AML_PACKAGE_OP) ||
-            (Node->AmlOpcode == AML_VAR_PACKAGE_OP))
+        if ((Op->Asl.AmlOpcode == AML_BUFFER_OP) ||
+            (Op->Asl.AmlOpcode == AML_PACKAGE_OP) ||
+            (Op->Asl.AmlOpcode == AML_VAR_PACKAGE_OP))
         {
             break;
         }
@@ -1197,12 +1212,11 @@ AnOperandTypecheckWalkEnd (
             INCREMENT_ARG_LIST (RuntimeArgTypes);
         }
 
-        i = 1;
         while ((ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes2)))
         {
             RequiredBtypes = AnMapArgTypeToBtype (ArgType);
 
-            ThisNodeBtype = AnGetBtype (ArgNode);
+            ThisNodeBtype = AnGetBtype (ArgOp);
             if (ThisNodeBtype == ACPI_UINT32_MAX)
             {
                 goto NextArgument;
@@ -1214,7 +1228,7 @@ AnOperandTypecheckWalkEnd (
             {
             case ARGI_TARGETREF:
 
-                if (ArgNode->ParseOpcode == PARSEOP_ZERO)
+                if (ArgOp->Asl.ParseOpcode == PARSEOP_ZERO)
                 {
                     /* ZERO is the placeholder for "don't store result" */
 
@@ -1222,7 +1236,7 @@ AnOperandTypecheckWalkEnd (
                     break;
                 }
 
-                if (ArgNode->ParseOpcode == PARSEOP_INTEGER)
+                if (ArgOp->Asl.ParseOpcode == PARSEOP_INTEGER)
                 {
                     /*
                      * This is the case where an original reference to a resource
@@ -1230,20 +1244,20 @@ AnOperandTypecheckWalkEnd (
                      * These named fields are supported at compile-time only;
                      * the names are not passed to the interpreter (via the AML).
                      */
-                    if ((ArgNode->NsNode->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
-                        (ArgNode->NsNode->Type == INTERNAL_TYPE_RESOURCE))
+                    if ((ArgOp->Asl.Node->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
+                        (ArgOp->Asl.Node->Type == INTERNAL_TYPE_RESOURCE))
                     {
-                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_FIELD, ArgNode, NULL);
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_FIELD, ArgOp, NULL);
                     }
                     else
                     {
-                        AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgNode, NULL);
+                        AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgOp, NULL);
                     }
                     break;
                 }
 
-                if ((ArgNode->ParseOpcode == PARSEOP_METHODCALL) ||
-                    (ArgNode->ParseOpcode == PARSEOP_DEREFOF))
+                if ((ArgOp->Asl.ParseOpcode == PARSEOP_METHODCALL) ||
+                    (ArgOp->Asl.ParseOpcode == PARSEOP_DEREFOF))
                 {
                     break;
                 }
@@ -1257,7 +1271,7 @@ AnOperandTypecheckWalkEnd (
             case ARGI_OBJECT_REF:
             case ARGI_DEVICE_REF:
 
-                switch (ArgNode->ParseOpcode)
+                switch (ArgOp->Asl.ParseOpcode)
                 {
                 case PARSEOP_LOCAL0:
                 case PARSEOP_LOCAL1:
@@ -1293,19 +1307,21 @@ AnOperandTypecheckWalkEnd (
 
                 case PARSEOP_REFOF:
                 case PARSEOP_INDEX:
+                default:
                     break;
 
                 }
                 break;
 
             case ARGI_INTEGER:
+            default:
                 break;
             }
 
 
             CommonBtypes = ThisNodeBtype & RequiredBtypes;
 
-            if (ArgNode->ParseOpcode == PARSEOP_METHODCALL)
+            if (ArgOp->Asl.ParseOpcode == PARSEOP_METHODCALL)
             {
                 if (!CommonBtypes)
                 {
@@ -1323,7 +1339,7 @@ AnOperandTypecheckWalkEnd (
                         sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]",
                                     StringBuffer, OpInfo->Name, StringBuffer2);
 
-                        AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgNode, MsgBuffer);
+                        AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgOp, MsgBuffer);
                     }
                 }
             }
@@ -1342,14 +1358,16 @@ AnOperandTypecheckWalkEnd (
                 sprintf (MsgBuffer, "[%s] found, %s operator requires [%s]",
                             StringBuffer, OpInfo->Name, StringBuffer2);
 
-                AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgNode, MsgBuffer);
+                AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgOp, MsgBuffer);
             }
 
         NextArgument:
-            ArgNode = ArgNode->Peer;
+            ArgOp = ArgOp->Asl.Next;
             INCREMENT_ARG_LIST (RuntimeArgTypes2);
-            i++;
         }
+
+    default:
+        break;
     }
 
     return (AE_OK);
@@ -1373,7 +1391,7 @@ AnOperandTypecheckWalkEnd (
 
 ACPI_STATUS
 AnOtherSemanticAnalysisWalkBegin (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
@@ -1397,7 +1415,7 @@ AnOtherSemanticAnalysisWalkBegin (
 
 ACPI_STATUS
 AnOtherSemanticAnalysisWalkEnd (
-    ASL_PARSE_NODE          *PsNode,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
