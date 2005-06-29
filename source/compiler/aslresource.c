@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.5 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,40 @@
 #include "aslresource.h"
 #include "amlcode.h"
 
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ASL_RESOURCE_NODE *
+RsAllocateResourceNode (
+    UINT32                  Size)
+{
+    ASL_RESOURCE_NODE       *Rnode;
+
+
+    /* Allocate the node */
+
+    Rnode = UtLocalCalloc (sizeof (ASL_RESOURCE_NODE));
+
+    /* Allocate the resource descriptor itself */
+
+    Rnode->Buffer = UtLocalCalloc (Size);
+    Rnode->BufferLength = Size;
+
+
+    return (Rnode);
+}
 
 
 
@@ -257,12 +291,12 @@ RsCompleteNodeAndGetNext (
  *
  ******************************************************************************/
 
-void
+ASL_RESOURCE_NODE *
 RsDoOneResourceDescriptor (
     ASL_PARSE_NODE          *DescriptorTypeNode,
-    ASL_RESOURCE_DESC       **DescriptorPtr,
     UINT32                  CurrentByteOffset)
 {
+    ASL_RESOURCE_NODE       *Rnode = NULL;
 
 
 
@@ -271,84 +305,97 @@ RsDoOneResourceDescriptor (
     switch (DescriptorTypeNode->ParseOpcode)
     {
     case DMA:
-        RsDoDmaDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoDmaDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case DWORDIO:
-        RsDoDwordIoDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoDwordIoDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case DWORDMEMORY:
-        RsDoDwordMemoryDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoDwordMemoryDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case ENDDEPENDENTFN:
-        RsDoEndDependentDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoEndDependentDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case FIXEDIO:
-        RsDoFixedIoDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoFixedIoDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case INTERRUPT:
-        RsDoInterruptDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoInterruptDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case IO:
-        RsDoIoDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoIoDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case IRQ:
-        RsDoIrqDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoIrqDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case IRQNOFLAGS:
-        RsDoIrqNoFlagsDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoIrqNoFlagsDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case MEMORY24:
-        RsDoMemory24Descriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoMemory24Descriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case MEMORY32:
-        RsDoMemory32Descriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoMemory32Descriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case MEMORY32FIXED:
-        RsDoMemory32FixedDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoMemory32FixedDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case QWORDIO:
-        RsDoQwordIoDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoQwordIoDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case QWORDMEMORY:
-        RsDoQwordMemoryDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoQwordMemoryDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
+/* TBD: register */
+
     case REGISTER:
+        AslErrorMsg (ASL_ERROR_UNSUPPORTED, DescriptorTypeNode->LineNumber, "Register resource descriptor");
         break;
 
     case STARTDEPENDENTFN:
-        RsDoStartDependentDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoStartDependentDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case STARTDEPENDENTFN_NOPRI:
-        RsDoStartDependentNoPriDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoStartDependentNoPriDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
+
+/* TBD: vendor */
 
     case VENDORLONG:
+        AslErrorMsg (ASL_ERROR_UNSUPPORTED, DescriptorTypeNode->LineNumber, "Vendor long descriptor");
         break;
 
+/* TBD: vendor */
+
     case VENDORSHORT:
+        AslErrorMsg (ASL_ERROR_UNSUPPORTED, DescriptorTypeNode->LineNumber, "Vendor short descriptor");
         break;
 
     case WORDBUSNUMBER:
-        RsDoWordBusNumberDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoWordBusNumberDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
     case WORDIO:
-        RsDoWordIoDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        Rnode = RsDoWordIoDescriptor (DescriptorTypeNode, CurrentByteOffset);
+        break;
+
+    case DEFAULT_ARG:
+        /* Just ignore any of these, they are used as fillers/placeholders */
         break;
 
     default:
@@ -368,7 +415,50 @@ RsDoOneResourceDescriptor (
     DescriptorTypeNode->Flags = NODE_IS_RESOURCE_DESC;
 
 
+    return (Rnode);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+UINT32
+RsLinkDescriptorChain (
+    ASL_RESOURCE_NODE       **PreviousRnode,
+    ASL_RESOURCE_NODE       *Rnode)
+{
+    ASL_RESOURCE_NODE       *LastRnode;
+    UINT32                  CurrentByteOffset;
+
+
+    if (!Rnode)
+    {
+        return 0;
+    }
+
+    (*PreviousRnode)->Next = Rnode;
+    CurrentByteOffset = Rnode->BufferLength;
+
+    LastRnode = Rnode;
+    while (LastRnode->Next)
+    {
+        LastRnode = LastRnode->Next;
+        CurrentByteOffset += LastRnode->BufferLength;
+    }
+
+    *PreviousRnode = LastRnode;
+    return CurrentByteOffset;
+}
+
 
 
 /*******************************************************************************
@@ -390,16 +480,13 @@ CgDoResourceTemplate (
     ASL_PARSE_NODE          *BufferLengthNode;
     ASL_PARSE_NODE          *BufferNode;
     ASL_PARSE_NODE          *DescriptorTypeNode;
-    ASL_RESOURCE_DESC       *StartOfDescriptor;
     ASL_RESOURCE_DESC       *Descriptor;
-    UINT32                  ValidDataLength;
-    UINT32                  CurrentByteOffset;
+    UINT32                  CurrentByteOffset = 0;
+    ASL_RESOURCE_NODE       HeadRnode;
+    ASL_RESOURCE_NODE       *PreviousRnode;
+    ASL_RESOURCE_NODE       *Rnode;
 
 
-    /* Allocate a worst-case descriptor */
-
-    Descriptor = UtLocalCalloc (DEFAULT_RESOURCE_DESC_SIZE);
-    StartOfDescriptor = Descriptor;
 
     /* ResourceTemplate Opcode is first (Node) */
     /* Buffer Length node is first child */
@@ -417,45 +504,35 @@ CgDoResourceTemplate (
 
     /* Process all resource descriptors in the list */
 
+    PreviousRnode = &HeadRnode;
     while (DescriptorTypeNode)
     {
+        Rnode = RsDoOneResourceDescriptor (DescriptorTypeNode, CurrentByteOffset);
+
         /*
          * Update current byte offset to indicate the number of bytes from the
          * start of the buffer.  Buffer can include multiple descriptors, we
          * must keep track of the offset of not only each descriptor, but each
          * element (field) within each descriptor as well.
          */
-        CurrentByteOffset = ASL_PTR_DIFF (StartOfDescriptor, Descriptor);
-
-        RsDoOneResourceDescriptor (DescriptorTypeNode, &Descriptor, CurrentByteOffset);
-
+        CurrentByteOffset += RsLinkDescriptorChain (&PreviousRnode, Rnode);
 
         /* Get the next descriptor in the list */
 
         DescriptorTypeNode = ASL_GET_PEER_NODE (DescriptorTypeNode);
-        if (DescriptorTypeNode)
-        {
-            ValidDataLength = (((char *) Descriptor) - ((char *) StartOfDescriptor));
-
-            StartOfDescriptor = UtLocalRealloc (StartOfDescriptor, 
-                                    ValidDataLength, DEFAULT_RESOURCE_DESC_SIZE);
-
-            Descriptor = (ASL_RESOURCE_DESC *) (((char *) StartOfDescriptor) + ValidDataLength);
-        }
     }
-
 
 
     /*
      * Insert the EndTag descriptor after all other descriptors have been processed 
      */
+    Rnode = RsAllocateResourceNode (sizeof (ASL_END_TAG_DESC));
 
+    Descriptor = Rnode->Buffer;
     Descriptor->Et.DescriptorType = RESOURCE_DESC_END_TAG;
     Descriptor->Et.Checksum = 0;
 
-    /* Length of the entire buffer is the end of the EndTag minus the start pointer */
-
-    ValidDataLength = ((char *) &Descriptor->Et.Checksum - (char *) StartOfDescriptor + 1);
+    CurrentByteOffset += RsLinkDescriptorChain (&PreviousRnode, Rnode);
 
 
     /*
@@ -470,14 +547,15 @@ CgDoResourceTemplate (
     Node->Flags                     = NODE_AML_PACKAGE;
 
     BufferLengthNode->ParseOpcode   = INTEGER;
-    BufferLengthNode->Value.Integer = ValidDataLength;
+    BufferLengthNode->Value.Integer = CurrentByteOffset;
+
     CgSetOptimalIntegerSize (BufferLengthNode);
 
     BufferNode->ParseOpcode         = RAW_DATA;
-    BufferNode->AmlOpcode           = AML_RAW_DATA_BUFFER;
+    BufferNode->AmlOpcode           = AML_RAW_DATA_CHAIN;
     BufferNode->AmlOpcodeLength     = 0;
-    BufferNode->AmlLength           = ValidDataLength;
-    BufferNode->Value.Pointer       = StartOfDescriptor;
+    BufferNode->AmlLength           = CurrentByteOffset;
+    BufferNode->Value.Pointer       = HeadRnode.Next;
 
     return;
 }
