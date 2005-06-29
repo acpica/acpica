@@ -183,15 +183,17 @@
 #define TRACE_INTERRUPTS            0x01000000
 #define TRACE_USER_REQUESTS         0x02000000
 #define TRACE_PACKAGE               0x04000000
+#define TRACE_MUTEX                 0x08000000
 
-#define TRACE_ALL                   0x07FFFF00
+#define TRACE_ALL                   0x0FFFFF00
 
 
 /* Exceptionally verbose output -- also used in the global "DebugLevel"  */
 
-#define VERBOSE_INFO                0x10000000
-#define VERBOSE_TABLES              0x20000000
-#define VERBOSE_EVENTS              0x40000000
+#define VERBOSE_AML_DISASSEMBLE     0x10000000
+#define VERBOSE_INFO                0x20000000
+#define VERBOSE_TABLES              0x40000000
+#define VERBOSE_EVENTS              0x80000000
 
 #define VERBOSE_ALL                 0x70000000
 
@@ -200,7 +202,7 @@
 
 #define DEBUG_DEFAULT               (ACPI_OK | ACPI_WARN | ACPI_ERROR | ACPI_DEBUG_OBJECT | TRACE_TABLES | TRACE_IO)
 #define NORMAL_DEFAULT              (ACPI_OK | ACPI_WARN | ACPI_ERROR | ACPI_DEBUG_OBJECT)
-
+#define DEBUG_ALL                   (VERBOSE_AML_DISASSEMBLE | TRACE_ALL | ACPI_ALL)
 
 /* Misc defines */
 
