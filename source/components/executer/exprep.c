@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -130,74 +130,86 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExDecodeFieldAccessType
+ * FUNCTION:    AcpiExDecodeFieldAccess
  *
  * PARAMETERS:  Access          - Encoded field access bits
  *              Length          - Field length.
  *
- * RETURN:      Field granularity (8, 16, 32 or 64)
+ * RETURN:      Field granularity (8, 16, 32 or 64) and
+ *              ByteAlignment (1, 2, 3, or 4)
  *
  * DESCRIPTION: Decode the AccessType bits of a field definition.
  *
  ******************************************************************************/
 
 static UINT32
-AcpiExDecodeFieldAccessType (
-    UINT32                  Access,
-    UINT16                  Length,
-    UINT32                  *Alignment)
+AcpiExDecodeFieldAccess (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT8                   FieldFlags,
+    UINT32                  *ReturnByteAlignment)
 {
-    PROC_NAME ("ExDecodeFieldAccessType");
+    UINT32                  Access;
+    UINT16                  Length;
+    UINT8                   ByteAlignment;
+    UINT8                   BitLength;
 
+
+    PROC_NAME ("ExDecodeFieldAccess");
+
+
+    Access = ((FieldFlags & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT);
+    Length = ObjDesc->CommonField.BitLength;
 
     switch (Access)
     {
     case ACCESS_ANY_ACC:
 
-        *Alignment = 8;
+        ByteAlignment = 1;
 
         /* Use the length to set the access type */
 
         if (Length <= 8)
         {
-            return (8);
+            BitLength = 8;
         }
         else if (Length <= 16)
         {
-            return (16);
+            BitLength = 16;
         }
         else if (Length <= 32)
         {
-            return (32);
+            BitLength = 32;
         }
         else if (Length <= 64)
         {
-            return (64);
+            BitLength = 64;
         }
+        else
+        {
+            /* Larger than Qword - just use byte-size chunks */
 
-        /* Default is 8 (byte) */
-
-        return (8);
+            BitLength = 8;        
+        }
         break;
 
     case ACCESS_BYTE_ACC:
-        *Alignment = 8;
-        return (8);
+        ByteAlignment = 1;
+        BitLength = 8;
         break;
 
     case ACCESS_WORD_ACC:
-        *Alignment = 16;
-        return (16);
+        ByteAlignment = 2;
+        BitLength = 16;
         break;
 
     case ACCESS_DWORD_ACC:
-        *Alignment = 32;
-        return (32);
+        ByteAlignment = 3;
+        BitLength = 32;
         break;
 
     case ACCESS_QWORD_ACC:  /* ACPI 2.0 */
-        *Alignment = 64;
-        return (64);
+        ByteAlignment = 4;
+        BitLength = 64;
         break;
 
     default:
@@ -208,6 +220,19 @@ AcpiExDecodeFieldAccessType (
             Access));
         return (0);
     }
+
+    if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
+    {
+        /*
+         * BufferField access can be on any byte boundary, so the
+         * ByteAlignment is always 1 byte -- regardless of any ByteAlignment
+         * implied by the field access type.
+         */
+        ByteAlignment = 1;
+    }
+
+    *ReturnByteAlignment = ByteAlignment;
+    return (BitLength);
 }
 
 
@@ -237,7 +262,7 @@ AcpiExPrepCommonFieldObject (
     UINT32                  FieldBitLength)
 {
     UINT32                  AccessBitWidth;
-    UINT32                  Alignment;
+    UINT32                  ByteAlignment;
     UINT32                  NearestByteAddress;
 
 
@@ -263,18 +288,18 @@ AcpiExPrepCommonFieldObject (
     /*
      * Decode the access type so we can compute offsets.  The access type gives
      * two pieces of information - the width of each field access and the
-     * necessary alignment (address granularity) of the access.  
+     * necessary ByteAlignment (address granularity) of the access.  
      * 
      * For AnyAcc, the AccessBitWidth is the largest width that is both necessary
      * and possible in an attempt to access the whole field in one
-     * I/O operation.  However, for AnyAcc, the alignment is 8.  
+     * I/O operation.  However, for AnyAcc, the ByteAlignment is always one byte.  
      * 
-     * For all other access types (Byte, Word, Dword, Qword), the width is the 
-     * same as the alignment.
+     * For all Buffer Fields, the ByteAlignment is always one byte.
+     *
+     * For all other access types (Byte, Word, Dword, Qword), the Bitwidth is the 
+     * same (equivalent) as the ByteAlignment.
      */
-    AccessBitWidth = AcpiExDecodeFieldAccessType (
-                        ((FieldFlags & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT),
-                        ObjDesc->Field.BitLength, &Alignment);
+    AccessBitWidth = AcpiExDecodeFieldAccess (ObjDesc, FieldFlags, &ByteAlignment);
     if (!AccessBitWidth)
     {
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
@@ -282,48 +307,38 @@ AcpiExPrepCommonFieldObject (
 
     /* Setup width (access granularity) fields */
 
-    ObjDesc->CommonField.AccessBitWidth    = (UINT8) AccessBitWidth;            /* 8, 16, 32, 64 */
-    ObjDesc->CommonField.AccessByteWidth   = (UINT8) DIV_8 (AccessBitWidth);    /* 1,  2,  4,  8 */
-
-    if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
-    {
-        /*
-         * BufferField access can be on any byte boundary, so the
-         * alignment is always 8 (regardless of any alignment implied by the
-         * field access type.)
-         */
-        Alignment = 8;
-    }
+    ObjDesc->CommonField.AccessBitWidth      = (UINT8) AccessBitWidth;         /* 8, 16, 32, 64 */
+    ObjDesc->CommonField.AccessByteWidth     = (UINT8) DIV_8 (AccessBitWidth); /* 1,  2,  4,  8 */
 
     /*
      * BaseByteOffset is the address of the start of the field within the region.  It is
      * the byte address of the first *datum* (field-width data unit) of the field.
      * (i.e., the first datum that contains at least the first *bit* of the field.)
-     * Note: Alignment is always either equal to the AccessBitWidth or 8 (Byte access),
+     * Note: ByteAlignment is always either equal to the AccessBitWidth or 8 (Byte access),
      * and it defines the addressing granularity of the parent region or buffer.
      */
-    NearestByteAddress                        = ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
-    ObjDesc->CommonField.BaseByteOffset       = ROUND_DOWN (NearestByteAddress,
-                                                            DIV_8 (Alignment));
+    NearestByteAddress                       = ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
+    ObjDesc->CommonField.BaseByteOffset      = ROUND_DOWN (NearestByteAddress, ByteAlignment);
 
     /*
      * StartFieldBitOffset is the offset of the first bit of the field within a field datum.
      */
-    ObjDesc->CommonField.StartFieldBitOffset  = (UINT8) (FieldBitPosition % Alignment);
+    ObjDesc->CommonField.StartFieldBitOffset = (UINT8) (FieldBitPosition - 
+                                                            MUL_8 (ObjDesc->CommonField.BaseByteOffset));
 
     /*
      * Valid bits -- the number of bits that compose a partial datum,
      * 1) At the end of the field within the region (arbitrary starting bit offset)
      * 2) At the end of a buffer used to contain the field (starting offset always zero)
      */
-    ObjDesc->CommonField.EndFieldValidBits    = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) %
+    ObjDesc->CommonField.EndFieldValidBits   = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) %
                                                             AccessBitWidth);
-    ObjDesc->CommonField.EndBufferValidBits   = (UINT8) (FieldBitLength % AccessBitWidth); /* StartBufferBitOffset always = 0 */
+    ObjDesc->CommonField.EndBufferValidBits  = (UINT8) (FieldBitLength % AccessBitWidth); /* StartBufferBitOffset always = 0 */
 
     /*
      * DatumValidBits is the number of valid field bits in the first field datum.
      */
-    ObjDesc->CommonField.DatumValidBits       = (UINT8) (AccessBitWidth -
+    ObjDesc->CommonField.DatumValidBits      = (UINT8) (AccessBitWidth -
                                                          ObjDesc->CommonField.StartFieldBitOffset);
 
     /*
