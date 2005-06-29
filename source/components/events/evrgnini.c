@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.44 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -256,8 +256,8 @@ AcpiEvPciConfigRegionSetup (
          *  No installed handler. This shouldn't happen because the dispatch
          *  routine checks before we get here, but we check again just in case.
          */
-        DEBUG_PRINTP (TRACE_OPREGION,
-            ("Attempting to init a region %X, with no handler\n", RegionObj));
+        ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+            "Attempting to init a region %X, with no handler\n", RegionObj));
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
@@ -358,7 +358,7 @@ AcpiEvPciConfigRegionSetup (
     }
 
     /*
-     * The PCI bus number comes from the _BBN method 
+     * The PCI bus number comes from the _BBN method
      */
     Status = AcpiUtEvaluateNumericObject (METHOD_NAME__BBN, Node, &Temp);
     if (ACPI_SUCCESS (Status))
@@ -367,6 +367,71 @@ AcpiEvPciConfigRegionSetup (
     }
 
     *RegionContext = PciId;
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvPciBarRegionSetup
+ *
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
+ *              HandlerContext      - Address space handler context
+ *              RegionContext       - Region specific context
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Do any prep work for region handling
+ *
+ * MUTEX:       Assumes namespace is not locked
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvPciBarRegionSetup (
+    ACPI_HANDLE             Handle,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **RegionContext)
+{
+
+    FUNCTION_TRACE ("EvPciBarRegionSetup");
+
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvCmosRegionSetup
+ *
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
+ *              HandlerContext      - Address space handler context
+ *              RegionContext       - Region specific context
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Do any prep work for region handling
+ *
+ * MUTEX:       Assumes namespace is not locked
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvCmosRegionSetup (
+    ACPI_HANDLE             Handle,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **RegionContext)
+{
+
+    FUNCTION_TRACE ("EvCmosRegionSetup");
+
+
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -516,14 +581,14 @@ AcpiEvInitializeRegion (
                  */
                 if (HandlerObj->AddrHandler.SpaceId == SpaceId)
                 {
-                    DEBUG_PRINTP (TRACE_OPREGION,
-                        ("Found handler %p for region %p in obj %p\n",
+                    ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+                        "Found handler %p for region %p in obj %p\n",
                         HandlerObj, RegionObj, ObjDesc));
 
                     /*
                      *  Found it! Now update the region and the handler
                      */
-                    AcpiEvAssociateRegionAndHandler (HandlerObj, RegionObj, 
+                    AcpiEvAssociateRegionAndHandler (HandlerObj, RegionObj,
                             AcpiNsLocked);
                     return_ACPI_STATUS (AE_OK);
                 }
@@ -544,8 +609,8 @@ AcpiEvInitializeRegion (
     /*
      *  If we get here, there is no handler for this region
      */
-    DEBUG_PRINTP (TRACE_OPREGION,
-        ("No handler for RegionType %s(%X) (RegionObj %p)\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+        "No handler for RegionType %s(%X) (RegionObj %p)\n",
         AcpiUtGetRegionName (SpaceId), SpaceId, RegionObj));
 
     return_ACPI_STATUS (AE_NOT_EXIST);
