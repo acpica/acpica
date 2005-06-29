@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "acnamesp.h"
 #include "acevents.h"
 
-#ifdef _ACPI_ASL_COMPILER
+#ifdef ACPI_ASL_COMPILER
 #include "acdisasm.h"
 #endif
 
@@ -255,7 +255,7 @@ AcpiDsLoad1BeginOp (
          */
         Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ObjectType,
                         ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
-#ifdef _ACPI_ASL_COMPILER
+#ifdef ACPI_ASL_COMPILER
         if (Status == AE_NOT_FOUND)
         {
             /*
@@ -679,7 +679,7 @@ AcpiDsLoad2BeginOp (
                         WalkState, &(Node));
         if (ACPI_FAILURE (Status))
         {
-#ifdef _ACPI_ASL_COMPILER
+#ifdef ACPI_ASL_COMPILER
             if (Status == AE_NOT_FOUND)
             {
                 Status = AE_OK;
