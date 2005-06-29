@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.127 $
+ *       $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -298,6 +298,11 @@ ACPI_STATUS
 AcpiExLoadOp (
     ACPI_OPERAND_OBJECT     *RgnDesc,
     ACPI_OPERAND_OBJECT     *DdbHandle);
+
+ACPI_STATUS
+AcpiExLoadTableOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OPERAND_OBJECT     **ReturnDesc);
 
 ACPI_STATUS
 AcpiExUnloadTable (
