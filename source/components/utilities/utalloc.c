@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.125 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -468,7 +468,7 @@ AcpiUtAllocate (
         /* Report allocation error */
 
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtAllocate: Could not allocate size %X\n", Size));
+                ("UtAllocate: Could not allocate size %X\n", (UINT32) Size));
 
         return_PTR (NULL);
     }
@@ -520,7 +520,7 @@ AcpiUtCallocate (
         /* Report allocation error */
 
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtCallocate: Could not allocate size %X\n", Size));
+                ("UtCallocate: Could not allocate size %X\n", (UINT32) Size));
         return_PTR (NULL);
     }
 
@@ -625,7 +625,7 @@ AcpiUtCallocateAndTrack (
         /* Report allocation error */
 
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtCallocate: Could not allocate size %X\n", Size));
+                ("UtCallocate: Could not allocate size %X\n", (UINT32) Size));
         return (NULL);
     }
 
@@ -1032,13 +1032,13 @@ AcpiUtDumpAllocations (
                 switch (ACPI_GET_DESCRIPTOR_TYPE (Descriptor))
                 {
                 case ACPI_DESC_TYPE_OPERAND:
-                    AcpiOsPrintf ("ObjType %12.12s R%d",
+                    AcpiOsPrintf ("ObjType %12.12s R%hd",
                             AcpiUtGetTypeName (Descriptor->Object.Common.Type),
                             Descriptor->Object.Common.ReferenceCount);
                     break;
 
                 case ACPI_DESC_TYPE_PARSER:
-                    AcpiOsPrintf ("ParseObj AmlOpcode %04X",
+                    AcpiOsPrintf ("ParseObj AmlOpcode %04hX",
                             Descriptor->Op.Asl.AmlOpcode);
                     break;
 
