@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.177 $
+ *              $Revision: 1.179 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -203,7 +203,7 @@ AcpiExStore (
 
     default:
 
-        /* Destination is not an Reference */
+        /* Destination is not a Reference object */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Destination is not a Reference or Constant object [%p]\n", DestDesc));
@@ -269,35 +269,38 @@ AcpiExStore (
         {
         case ACPI_TYPE_INTEGER:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%8.8X%8.8X\n",
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "0x%8.8X%8.8X\n",
                     ACPI_FORMAT_UINT64 (SourceDesc->Integer.Value)));
             break;
 
 
         case ACPI_TYPE_BUFFER:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Length %.2X\n",
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Length 0x%.2X",
                     (UINT32) SourceDesc->Buffer.Length));
+            ACPI_DUMP_BUFFER (SourceDesc->Buffer.Pointer, 
+                (SourceDesc->Buffer.Length < 32) ? SourceDesc->Buffer.Length : 32);
             break;
 
 
         case ACPI_TYPE_STRING:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%s\n", SourceDesc->String.Pointer));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Length 0x%.2X, \"%s\"\n", 
+                    SourceDesc->String.Length, SourceDesc->String.Pointer));
             break;
 
 
         case ACPI_TYPE_PACKAGE:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Elements Ptr - %p\n",
-                    SourceDesc->Package.Elements));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Size 0x%.2X Elements Ptr - %p\n",
+                    SourceDesc->Package.Count, SourceDesc->Package.Elements));
             break;
 
 
         default:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Type %s %p\n",
-                    AcpiUtGetObjectTypeName (SourceDesc), SourceDesc));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%p\n",
+                    SourceDesc));
             break;
         }
 
