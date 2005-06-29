@@ -2,7 +2,7 @@
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.22 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 
-#define _COMPONENT          RESOURCE_MANAGER
+#define _COMPONENT          ACPI_RESOURCES
         MODULE_NAME         ("rscalc")
 
 
@@ -908,9 +908,6 @@ AcpiRsCalculatePciRoutingTableLength (
      * structures.  Additional space for the strings is added below.
      * The minus one is to subtract the size of the UINT8 Source[1]
      * member because it is added below.
-     *
-     * NOTE: The NumberOfElements is incremented by one to add an end
-     * table structure that is essentially a structure of zeros.
      */
 
     /*
@@ -997,7 +994,10 @@ AcpiRsCalculatePciRoutingTableLength (
     }
 
 
-    *BufferSizeNeeded = TempSizeNeeded;
+    /*
+     * Adding an extra element to the end of the list, essentially a NULL terminator
+     */
+    *BufferSizeNeeded = TempSizeNeeded + sizeof (PCI_ROUTING_TABLE);
 
     return_ACPI_STATUS (AE_OK);
 }
