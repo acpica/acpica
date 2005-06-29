@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -171,10 +171,10 @@ AcpiExAddTable (
 
     ACPI_MEMSET (&TableInfo, 0, sizeof (ACPI_TABLE_DESC));
 
-    TableInfo.Type         = ACPI_TABLE_SSDT;
-    TableInfo.Pointer      = Table;
-    TableInfo.Length       = (ACPI_SIZE) Table->Length;
-    TableInfo.Allocation   = ACPI_MEM_ALLOCATED;
+    TableInfo.Type       = ACPI_TABLE_SSDT;
+    TableInfo.Pointer    = Table;
+    TableInfo.Length     = (ACPI_SIZE) Table->Length;
+    TableInfo.Allocation = ACPI_MEM_ALLOCATED;
 
     Status = AcpiTbInstallTable (&TableInfo);
     if (ACPI_FAILURE (Status))
@@ -312,9 +312,8 @@ AcpiExLoadTableOp (
             StartNode = ParentNode;
         }
 
-        /*
-         * Find the node referenced by the ParameterPathString
-         */
+        /* Find the node referenced by the ParameterPathString */
+
         Status = AcpiNsGetNodeByPath (Operand[4]->String.Pointer, StartNode,
                     ACPI_NS_SEARCH_PARENT, &ParameterNode);
         if (ACPI_FAILURE (Status))

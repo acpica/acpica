@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -190,7 +190,6 @@ AcpiExSystemMemorySpaceHandler (
             BitWidth));
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
-
 
 #ifndef ACPI_MISALIGNED_TRANSFERS
     /*
@@ -601,8 +600,7 @@ AcpiExDataTableSpaceHandler (
 
     LogicalAddrPtr = ACPI_PHYSADDR_TO_PTR (Address);
 
-
-   /* Perform the memory read or write */
+    /* Perform the memory read or write */
 
     switch (Function)
     {

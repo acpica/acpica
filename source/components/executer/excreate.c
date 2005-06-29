@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -353,7 +353,7 @@ Cleanup:
  *
  * PARAMETERS:  AmlStart            - Pointer to the region declaration AML
  *              AmlLength           - Max length of the declaration AML
- *              Operands            - List of operands for the opcode
+ *              RegionSpace         - SpaceID for the region
  *              WalkState           - Current state
  *
  * RETURN:      Status
@@ -579,9 +579,8 @@ AcpiExCreateProcessor (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /*
-     * Initialize the processor object from the operands
-     */
+    /* Initialize the processor object from the operands */
+
     ObjDesc->Processor.ProcId  = (UINT8)           Operand[1]->Integer.Value;
     ObjDesc->Processor.Address = (ACPI_IO_ADDRESS) Operand[2]->Integer.Value;
     ObjDesc->Processor.Length  = (UINT8)           Operand[3]->Integer.Value;

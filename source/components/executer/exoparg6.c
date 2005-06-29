@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -409,7 +409,6 @@ AcpiExOpcode_6A_0T_1R (
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
-
 
     WalkState->ResultObj = ReturnDesc;
 

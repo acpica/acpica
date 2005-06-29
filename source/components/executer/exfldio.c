@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
  *
  * FUNCTION:    AcpiExSetupRegion
  *
- * PARAMETERS:  *ObjDesc                - Field to be read or written
+ * PARAMETERS:  ObjDesc                 - Field to be read or written
  *              FieldDatumByteOffset    - Byte offset of this datum within the
  *                                        parent field
  *
@@ -208,9 +208,9 @@ AcpiExSetupRegion (
      * length of one field datum (access width) must fit within the region.
      * (Region length is specified in bytes)
      */
-    if (RgnDesc->Region.Length < (ObjDesc->CommonField.BaseByteOffset
-                                    + FieldDatumByteOffset
-                                    + ObjDesc->CommonField.AccessByteWidth))
+    if (RgnDesc->Region.Length < (ObjDesc->CommonField.BaseByteOffset +
+                                    FieldDatumByteOffset +
+                                    ObjDesc->CommonField.AccessByteWidth))
     {
         if (AcpiGbl_EnableInterpreterSlack)
         {
@@ -267,10 +267,10 @@ AcpiExSetupRegion (
  *
  * FUNCTION:    AcpiExAccessRegion
  *
- * PARAMETERS:  *ObjDesc                - Field to be read
+ * PARAMETERS:  ObjDesc                 - Field to be read
  *              FieldDatumByteOffset    - Byte offset of this datum within the
  *                                        parent field
- *              *Value                  - Where to store value (must at least
+ *              Value                   - Where to store value (must at least
  *                                        the size of ACPI_INTEGER)
  *              Function                - Read or Write flag plus other region-
  *                                        dependent flags
@@ -314,9 +314,9 @@ AcpiExAccessRegion (
      * 3) The current offset into the field
      */
     RgnDesc = ObjDesc->CommonField.RegionObj;
-    Address = RgnDesc->Region.Address
-                + ObjDesc->CommonField.BaseByteOffset
-                + FieldDatumByteOffset;
+    Address = RgnDesc->Region.Address +
+                ObjDesc->CommonField.BaseByteOffset +
+                FieldDatumByteOffset;
 
     if ((Function & ACPI_IO_MASK) == ACPI_READ)
     {
@@ -368,7 +368,7 @@ AcpiExAccessRegion (
  *
  * FUNCTION:    AcpiExRegisterOverflow
  *
- * PARAMETERS:  *ObjDesc                - Register(Field) to be written
+ * PARAMETERS:  ObjDesc                 - Register(Field) to be written
  *              Value                   - Value to be stored
  *
  * RETURN:      TRUE if value overflows the field, FALSE otherwise
@@ -415,10 +415,10 @@ AcpiExRegisterOverflow (
  *
  * FUNCTION:    AcpiExFieldDatumIo
  *
- * PARAMETERS:  *ObjDesc                - Field to be read
+ * PARAMETERS:  ObjDesc                 - Field to be read
  *              FieldDatumByteOffset    - Byte offset of this datum within the
  *                                        parent field
- *              *Value                  - Where to store value (must be 64 bits)
+ *              Value                   - Where to store value (must be 64 bits)
  *              ReadWrite               - Read or Write flag
  *
  * RETURN:      Status
@@ -638,8 +638,10 @@ AcpiExFieldDatumIo (
  *
  * FUNCTION:    AcpiExWriteWithUpdateRule
  *
- * PARAMETERS:  *ObjDesc            - Field to be set
- *              Value               - Value to store
+ * PARAMETERS:  ObjDesc                 - Field to be written
+ *              Mask                    - bitmask within field datum
+ *              FieldValue              - Value to write
+ *              FieldDatumByteOffset    - Offset of datum within field
  *
  * RETURN:      Status
  *

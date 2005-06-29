@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.132 $
+ *              $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -194,7 +194,7 @@ AcpiExOpcode_2A_0T_0R (
 
         Value = (UINT32) Operand[1]->Integer.Value;
 
-        /* Notifies allowed on this object? */
+        /* Are notifies allowed on this object? */
 
         if (!AcpiEvIsNotifyObject (Node))
         {
@@ -282,9 +282,8 @@ AcpiExOpcode_2A_2T_1R (
         AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
-    /*
-     * Execute the opcode
-     */
+    /* Execute the opcode */
+
     switch (WalkState->Opcode)
     {
     case AML_DIVIDE_OP:
@@ -325,7 +324,6 @@ AcpiExOpcode_2A_2T_1R (
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
-
 
     /* Store the results to the target reference operands */
 
@@ -392,9 +390,8 @@ AcpiExOpcode_2A_1T_1R (
         AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
-    /*
-     * Execute the opcode
-     */
+    /* Execute the opcode */
+
     if (WalkState->OpInfo->Flags & AML_MATH)
     {
         /* All simple math opcodes (add, etc.) */
@@ -411,7 +408,6 @@ AcpiExOpcode_2A_1T_1R (
                                                 Operand[1]->Integer.Value);
         goto StoreResultToTarget;
     }
-
 
     switch (WalkState->Opcode)
     {
@@ -508,9 +504,8 @@ AcpiExOpcode_2A_1T_1R (
 
         Index = (UINT32) Operand[1]->Integer.Value;
 
-        /*
-         * At this point, the Source operand is a Package, Buffer, or String
-         */
+        /* At this point, the Source operand is a Package, Buffer, or String */
+
         if (ACPI_GET_OBJECT_TYPE (Operand[0]) == ACPI_TYPE_PACKAGE)
         {
             /* Object to be indexed is a Package */
@@ -526,7 +521,8 @@ AcpiExOpcode_2A_1T_1R (
 
             ReturnDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
             ReturnDesc->Reference.Object     = Operand[0];
-            ReturnDesc->Reference.Where      = &Operand[0]->Package.Elements [Index];
+            ReturnDesc->Reference.Where      = &Operand[0]->Package.Elements [
+                                                    Index];
         }
         else
         {
@@ -644,9 +640,8 @@ AcpiExOpcode_2A_0T_1R (
         goto Cleanup;
     }
 
-    /*
-     * Execute the Opcode
-     */
+    /* Execute the Opcode */
+
     if (WalkState->OpInfo->Flags & AML_LOGICAL_NUMERIC)
     {
         /* LogicalOp  (Operand0, Operand1) */
@@ -664,7 +659,6 @@ AcpiExOpcode_2A_0T_1R (
                     Operand[1], &LogicalResult);
         goto StoreLogicalResult;
     }
-
 
     switch (WalkState->Opcode)
     {

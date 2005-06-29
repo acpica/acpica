@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.180 $
+ *              $Revision: 1.181 $
  *
  *****************************************************************************/
 
@@ -135,7 +135,8 @@
  *
  * FUNCTION:    AcpiExDumpOperand
  *
- * PARAMETERS:  *ObjDesc          - Pointer to entry to be dumped
+ * PARAMETERS:  *ObjDesc        - Pointer to entry to be dumped
+ *              Depth           - Current nesting depth
  *
  * RETURN:      None
  *
@@ -162,9 +163,8 @@ AcpiExDumpOperand (
 
     if (!ObjDesc)
     {
-        /*
-         * This could be a null element of a package
-         */
+        /* This could be a null element of a package */
+
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Null Object Descriptor\n"));
         return;
     }
@@ -197,6 +197,7 @@ AcpiExDumpOperand (
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%p ", ObjDesc));
     }
 
+    /* Decode object type */
 
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
@@ -366,7 +367,9 @@ AcpiExDumpOperand (
     case ACPI_TYPE_STRING:
 
         AcpiOsPrintf ("String length %X @ %p ",
-            ObjDesc->String.Length, ObjDesc->String.Pointer);
+            ObjDesc->String.Length,
+            ObjDesc->String.Pointer);
+
         AcpiUtPrintString (ObjDesc->String.Pointer, ACPI_UINT8_MAX);
         AcpiOsPrintf ("\n");
         break;
@@ -382,10 +385,13 @@ AcpiExDumpOperand (
 
         AcpiOsPrintf (
             "RegionField: Bits=%X AccWidth=%X Lock=%X Update=%X at byte=%X bit=%X of below:\n",
-            ObjDesc->Field.BitLength, ObjDesc->Field.AccessByteWidth,
+            ObjDesc->Field.BitLength,
+            ObjDesc->Field.AccessByteWidth,
             ObjDesc->Field.FieldFlags & AML_FIELD_LOCK_RULE_MASK,
             ObjDesc->Field.FieldFlags & AML_FIELD_UPDATE_RULE_MASK,
-            ObjDesc->Field.BaseByteOffset, ObjDesc->Field.StartFieldBitOffset);
+            ObjDesc->Field.BaseByteOffset,
+            ObjDesc->Field.StartFieldBitOffset);
+
         AcpiExDumpOperand (ObjDesc->Field.RegionObj, Depth+1);
         break;
 
@@ -400,7 +406,8 @@ AcpiExDumpOperand (
 
         AcpiOsPrintf (
             "BufferField: %X bits at byte %X bit %X of \n",
-            ObjDesc->BufferField.BitLength, ObjDesc->BufferField.BaseByteOffset,
+            ObjDesc->BufferField.BitLength,
+            ObjDesc->BufferField.BaseByteOffset,
             ObjDesc->BufferField.StartFieldBitOffset);
 
         if (!ObjDesc->BufferField.BufferObj)
@@ -427,10 +434,10 @@ AcpiExDumpOperand (
 
     case ACPI_TYPE_METHOD:
 
-        AcpiOsPrintf (
-            "Method(%X) @ %p:%X\n",
+        AcpiOsPrintf ("Method(%X) @ %p:%X\n",
             ObjDesc->Method.ParamCount,
-            ObjDesc->Method.AmlStart, ObjDesc->Method.AmlLength);
+            ObjDesc->Method.AmlStart,
+            ObjDesc->Method.AmlLength);
         break;
 
 
@@ -542,7 +549,7 @@ AcpiExDumpOperands (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExOut*
+ * FUNCTION:    AcpiExOut* functions
  *
  * PARAMETERS:  Title               - Descriptive text
  *              Value               - Value to be displayed
@@ -596,7 +603,7 @@ AcpiExOutAddress (
  * FUNCTION:    AcpiExDumpNode
  *
  * PARAMETERS:  *Node               - Descriptor to dump
- *              Flags               - Force display
+ *              Flags               - Force display if TRUE
  *
  * DESCRIPTION: Dumps the members of the given.Node
  *
@@ -636,7 +643,7 @@ AcpiExDumpNode (
  * FUNCTION:    AcpiExDumpObjectDescriptor
  *
  * PARAMETERS:  *Object             - Descriptor to dump
- *              Flags               - Force display
+ *              Flags               - Force display if TRUE
  *
  * DESCRIPTION: Dumps the members of the object descriptor given.
  *
@@ -861,7 +868,8 @@ AcpiExDumpObjectDescriptor (
     case ACPI_TYPE_LOCAL_REFERENCE:
 
         AcpiExOutInteger ("TargetType",     ObjDesc->Reference.TargetType);
-        AcpiExOutString  ("Opcode",         (AcpiPsGetOpcodeInfo (ObjDesc->Reference.Opcode))->Name);
+        AcpiExOutString  ("Opcode",         (AcpiPsGetOpcodeInfo (
+                                             ObjDesc->Reference.Opcode))->Name);
         AcpiExOutInteger ("Offset",         ObjDesc->Reference.Offset);
         AcpiExOutPointer ("ObjDesc",        ObjDesc->Reference.Object);
         AcpiExOutPointer ("Node",           ObjDesc->Reference.Node);

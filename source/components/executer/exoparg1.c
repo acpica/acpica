@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.166 $
+ *              $Revision: 1.167 $
  *
  *****************************************************************************/
 
@@ -422,7 +422,7 @@ AcpiExOpcode_1A_1T_1R (
             break;
 
 
-        case AML_FIND_SET_RIGHT_BIT_OP: /* FindSetRightBit (Operand, Result)  */
+        case AML_FIND_SET_RIGHT_BIT_OP: /* FindSetRightBit (Operand, Result) */
 
             ReturnDesc->Integer.Value = Operand[0]->Integer.Value;
 
@@ -653,9 +653,8 @@ AcpiExOpcode_1A_1T_1R (
     case AML_SHIFT_LEFT_BIT_OP:     /* ShiftLeftBit (Source, BitNum)  */
     case AML_SHIFT_RIGHT_BIT_OP:    /* ShiftRightBit (Source, BitNum) */
 
-        /*
-         * These are two obsolete opcodes
-         */
+        /* These are two obsolete opcodes */
+
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "%s is obsolete and not implemented\n",
             AcpiPsGetOpcodeName (WalkState->Opcode)));
@@ -673,9 +672,8 @@ AcpiExOpcode_1A_1T_1R (
 
     if (ACPI_SUCCESS (Status))
     {
-        /*
-         * Store the return value computed above into the target object
-         */
+        /* Store the return value computed above into the target object */
+
         Status = AcpiExStore (ReturnDesc, Operand[1], WalkState);
     }
 
@@ -981,11 +979,12 @@ AcpiExOpcode_1A_0T_1R (
             case ACPI_TYPE_STRING:
 
                 /*
-                 * This is a DerefOf (String).  The string is a reference to a named ACPI object.
+                 * This is a DerefOf (String).  The string is a reference
+                 * to a named ACPI object.
                  *
                  * 1) Find the owning Node
-                 * 2) Dereference the node to an actual object.  Could be a Field, so we nee
-                 *    to resolve the node to a value.
+                 * 2) Dereference the node to an actual object.  Could be a
+                 *    Field, so we need to resolve the node to a value.
                  */
                 Status = AcpiNsGetNodeByPath (Operand[0]->String.Pointer,
                             WalkState->ScopeInfo->Scope.Node,
@@ -1109,7 +1108,8 @@ AcpiExOpcode_1A_0T_1R (
 
                 ReturnDesc = Operand[0]->Reference.Object;
 
-                if (ACPI_GET_DESCRIPTOR_TYPE (ReturnDesc) == ACPI_DESC_TYPE_NAMED)
+                if (ACPI_GET_DESCRIPTOR_TYPE (ReturnDesc) ==
+                        ACPI_DESC_TYPE_NAMED)
                 {
 
                     ReturnDesc = AcpiNsGetAttachedObject (

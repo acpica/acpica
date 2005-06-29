@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -150,6 +150,8 @@
  *
  * PARAMETERS:  None
  *
+ * RETURN:      Status
+ *
  * DESCRIPTION: Enter the interpreter execution region.  Failure to enter
  *              the interpreter region is a fatal system error
  *
@@ -179,6 +181,8 @@ AcpiExEnterInterpreter (
  * FUNCTION:    AcpiExExitInterpreter
  *
  * PARAMETERS:  None
+ *
+ * RETURN:      None
  *
  * DESCRIPTION: Exit the interpreter execution region
  *
@@ -312,7 +316,7 @@ AcpiExAcquireGlobalLock (
  * PARAMETERS:  LockedByMe      - Return value from corresponding call to
  *                                AcquireGlobalLock.
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Release the global lock if it is locked.
  *
@@ -355,7 +359,10 @@ AcpiExReleaseGlobalLock (
  * PARAMETERS:  Value           - Value to be represented
  *              Base            - Base of representation
  *
- * RETURN:      the number of digits needed to represent Value in Base
+ * RETURN:      The number of digits.
+ *
+ * DESCRIPTION: Calculate the number of digits needed to represent the Value
+ *              in the given Base (Radix)
  *
  ******************************************************************************/
 
@@ -400,6 +407,8 @@ AcpiExDigitsNeeded (
  * PARAMETERS:  NumericId       - EISA ID to be converted
  *              OutString       - Where to put the converted string (8 bytes)
  *
+ * RETURN:      None
+ *
  * DESCRIPTION: Convert a numeric EISA ID to string representation
  *
  ******************************************************************************/
@@ -437,7 +446,10 @@ AcpiExEisaIdToString (
  * PARAMETERS:  Value           - Value to be converted
  *              OutString       - Where to put the converted string (8 bytes)
  *
- * RETURN:      Convert a number to string representation
+ * RETURN:      None, string
+ *
+ * DESCRIPTOIN: Convert a number to string representation. Assumes string
+ *              buffer is large enough to hold the string.
  *
  ******************************************************************************/
 

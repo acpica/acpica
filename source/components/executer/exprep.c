@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.131 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -279,8 +279,9 @@ AcpiExGenerateAccess (
  *
  * FUNCTION:    AcpiExDecodeFieldAccess
  *
- * PARAMETERS:  Access          - Encoded field access bits
- *              Length          - Field length.
+ * PARAMETERS:  ObjDesc             - Field object
+ *              FieldFlags          - Encoded fieldflags (contains access bits)
+ *              ReturnByteAlignment - Where the byte alignment is returned
  *
  * RETURN:      Field granularity (8, 16, 32 or 64) and
  *              ByteAlignment (1, 2, 3, or 4)
@@ -374,6 +375,7 @@ AcpiExDecodeFieldAccess (
  *              FieldFlags          - Access, LockRule, and UpdateRule.
  *                                    The format of a FieldFlag is described
  *                                    in the ACPI specification
+ *              FieldAttribute      - Special attributes (not used)
  *              FieldBitPosition    - Field start position
  *              FieldBitLength      - Field length in number of bits
  *
@@ -480,11 +482,7 @@ AcpiExPrepCommonFieldObject (
  *
  * FUNCTION:    AcpiExPrepFieldValue
  *
- * PARAMETERS:  Node                - Owning Node
- *              RegionNode          - Region in which field is being defined
- *              FieldFlags          - Access, LockRule, and UpdateRule.
- *              FieldBitPosition    - Field start position
- *              FieldBitLength      - Field length in number of bits
+ * PARAMETERS:  Info    - Contains all field creation info
  *
  * RETURN:      Status
  *
@@ -567,8 +565,10 @@ AcpiExPrepFieldValue (
     case ACPI_TYPE_LOCAL_BANK_FIELD:
 
         ObjDesc->BankField.Value     = Info->BankValue;
-        ObjDesc->BankField.RegionObj = AcpiNsGetAttachedObject (Info->RegionNode);
-        ObjDesc->BankField.BankObj   = AcpiNsGetAttachedObject (Info->RegisterNode);
+        ObjDesc->BankField.RegionObj = AcpiNsGetAttachedObject (
+                                            Info->RegionNode);
+        ObjDesc->BankField.BankObj   = AcpiNsGetAttachedObject (
+                                            Info->RegisterNode);
 
         /* An additional reference for the attached objects */
 
@@ -587,10 +587,13 @@ AcpiExPrepFieldValue (
 
     case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
-        ObjDesc->IndexField.IndexObj = AcpiNsGetAttachedObject (Info->RegisterNode);
-        ObjDesc->IndexField.DataObj  = AcpiNsGetAttachedObject (Info->DataRegisterNode);
+        ObjDesc->IndexField.IndexObj = AcpiNsGetAttachedObject (
+                                            Info->RegisterNode);
+        ObjDesc->IndexField.DataObj  = AcpiNsGetAttachedObject (
+                                            Info->DataRegisterNode);
         ObjDesc->IndexField.Value    = (UINT32)
-            (Info->FieldBitPosition / ACPI_MUL_8 (ObjDesc->Field.AccessByteWidth));
+            (Info->FieldBitPosition / ACPI_MUL_8 (
+                                        ObjDesc->Field.AccessByteWidth));
 
         if (!ObjDesc->IndexField.DataObj || !ObjDesc->IndexField.IndexObj)
         {

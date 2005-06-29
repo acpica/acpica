@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -283,6 +283,7 @@ Exit:
  *
  * PARAMETERS:  SourceDesc          - Contains data to write
  *              ObjDesc             - The named field
+ *              ResultDesc          - Where the return value is returned, if any
  *
  * RETURN:      Status
  *
@@ -343,6 +344,7 @@ AcpiExWriteDataToField (
         {
             ACPI_REPORT_ERROR (("SMBus write requires Buffer, found type %s\n",
                 AcpiUtGetObjectTypeName (SourceDesc)));
+
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
@@ -351,6 +353,7 @@ AcpiExWriteDataToField (
             ACPI_REPORT_ERROR ((
                 "SMBus write requires Buffer of length %X, found length %X\n",
                 ACPI_SMBUS_BUFFER_SIZE, SourceDesc->Buffer.Length));
+
             return_ACPI_STATUS (AE_AML_BUFFER_LIMIT);
         }
 
@@ -382,9 +385,8 @@ AcpiExWriteDataToField (
         return_ACPI_STATUS (Status);
     }
 
-    /*
-     * Get a pointer to the data to be written
-     */
+    /* Get a pointer to the data to be written */
+
     switch (ACPI_GET_OBJECT_TYPE (SourceDesc))
     {
     case ACPI_TYPE_INTEGER:
@@ -440,6 +442,7 @@ AcpiExWriteDataToField (
         "FieldWrite [FROM]: Obj %p (%s:%X), Buf %p, ByteLen %X\n",
         SourceDesc, AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (SourceDesc)),
         ACPI_GET_OBJECT_TYPE (SourceDesc), Buffer, Length));
+
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "FieldWrite [TO]:   Obj %p (%s:%X), BitLen %X, BitOff %X, ByteOff %X\n",
         ObjDesc, AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (ObjDesc)),

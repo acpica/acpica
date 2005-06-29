@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -282,7 +282,8 @@ AcpiExStoreStringToString (
             ACPI_MEM_FREE (TargetDesc->String.Pointer);
         }
 
-        TargetDesc->String.Pointer = ACPI_MEM_CALLOCATE ((ACPI_SIZE) Length + 1);
+        TargetDesc->String.Pointer = ACPI_MEM_CALLOCATE (
+                                        (ACPI_SIZE) Length + 1);
         if (!TargetDesc->String.Pointer)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);

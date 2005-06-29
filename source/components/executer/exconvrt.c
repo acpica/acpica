@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -191,9 +191,8 @@ AcpiExConvertToInteger (
      */
     Result = 0;
 
-    /*
-     * String conversion is different than Buffer conversion
-     */
+    /* String conversion is different than Buffer conversion */
+
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_STRING:
@@ -249,9 +248,8 @@ AcpiExConvertToInteger (
         break;
     }
 
-    /*
-     * Create a new integer
-     */
+    /* Create a new integer */
+
     ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
     if (!ReturnDesc)
     {
@@ -634,9 +632,8 @@ AcpiExConvertToString (
             return_ACPI_STATUS (AE_AML_STRING_LIMIT);
         }
 
-        /*
-         * Create a new string object and string buffer
-         */
+        /* Create a new string object and string buffer */
+
         ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) StringLength);
         if (!ReturnDesc)
         {
@@ -757,7 +754,6 @@ AcpiExConvertToTargetType (
 
 
         case ACPI_TYPE_STRING:
-
             /*
              * The operand must be a String.  We can convert an
              * Integer or Buffer if necessary
@@ -768,7 +764,6 @@ AcpiExConvertToTargetType (
 
 
         case ACPI_TYPE_BUFFER:
-
             /*
              * The operand must be a Buffer.  We can convert an
              * Integer or String if necessary

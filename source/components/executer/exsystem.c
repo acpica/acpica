@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -129,8 +129,8 @@
  *
  * FUNCTION:    AcpiExSystemWaitSemaphore
  *
- * PARAMETERS:  Semaphore           - OSD semaphore to wait on
- *              Timeout             - Max time to wait
+ * PARAMETERS:  Semaphore       - Semaphore to wait on
+ *              Timeout         - Max time to wait
  *
  * RETURN:      Status
  *
@@ -166,7 +166,8 @@ AcpiExSystemWaitSemaphore (
 
         Status = AcpiOsWaitSemaphore (Semaphore, 1, Timeout);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "*** Thread awake after blocking, %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+            "*** Thread awake after blocking, %s\n",
             AcpiFormatException (Status)));
 
         /* Reacquire the interpreter */
@@ -188,8 +189,8 @@ AcpiExSystemWaitSemaphore (
  *
  * FUNCTION:    AcpiExSystemDoStall
  *
- * PARAMETERS:  HowLong             - The amount of time to stall,
- *                                    in microseconds
+ * PARAMETERS:  HowLong         - The amount of time to stall,
+ *                                in microseconds
  *
  * RETURN:      Status
  *
@@ -236,8 +237,8 @@ AcpiExSystemDoStall (
  *
  * FUNCTION:    AcpiExSystemDoSuspend
  *
- * PARAMETERS:  HowLong             - The amount of time to suspend,
- *                                    in milliseconds
+ * PARAMETERS:  HowLong         - The amount of time to suspend,
+ *                                in milliseconds
  *
  * RETURN:      None
  *
@@ -272,8 +273,8 @@ AcpiExSystemDoSuspend (
  *
  * FUNCTION:    AcpiExSystemAcquireMutex
  *
- * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
- *              *ObjDesc            - The object descriptor for this op
+ * PARAMETERS:  TimeDesc        - The 'time to delay' object descriptor
+ *              ObjDesc         - The object descriptor for this op
  *
  * RETURN:      Status
  *
@@ -299,9 +300,8 @@ AcpiExSystemAcquireMutex (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /*
-     * Support for the _GL_ Mutex object -- go get the global lock
-     */
+    /* Support for the _GL_ Mutex object -- go get the global lock */
+
     if (ObjDesc->Mutex.Semaphore == AcpiGbl_GlobalLockSemaphore)
     {
         Status = AcpiEvAcquireGlobalLock ((UINT16) TimeDesc->Integer.Value);
@@ -318,7 +318,7 @@ AcpiExSystemAcquireMutex (
  *
  * FUNCTION:    AcpiExSystemReleaseMutex
  *
- * PARAMETERS:  *ObjDesc            - The object descriptor for this op
+ * PARAMETERS:  ObjDesc         - The object descriptor for this op
  *
  * RETURN:      Status
  *
@@ -344,9 +344,8 @@ AcpiExSystemReleaseMutex (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /*
-     * Support for the _GL_ Mutex object -- release the global lock
-     */
+    /* Support for the _GL_ Mutex object -- release the global lock */
+
     if (ObjDesc->Mutex.Semaphore == AcpiGbl_GlobalLockSemaphore)
     {
         Status = AcpiEvReleaseGlobalLock ();
@@ -362,9 +361,9 @@ AcpiExSystemReleaseMutex (
  *
  * FUNCTION:    AcpiExSystemSignalEvent
  *
- * PARAMETERS:  *ObjDesc            - The object descriptor for this op
+ * PARAMETERS:  ObjDesc         - The object descriptor for this op
  *
- * RETURN:      AE_OK
+ * RETURN:      Status
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
  *              within the AML.
@@ -394,8 +393,8 @@ AcpiExSystemSignalEvent (
  *
  * FUNCTION:    AcpiExSystemWaitEvent
  *
- * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
- *              *ObjDesc            - The object descriptor for this op
+ * PARAMETERS:  TimeDesc        - The 'time to delay' object descriptor
+ *              ObjDesc         - The object descriptor for this op
  *
  * RETURN:      Status
  *
@@ -430,7 +429,7 @@ AcpiExSystemWaitEvent (
  *
  * FUNCTION:    AcpiExSystemResetEvent
  *
- * PARAMETERS:  *ObjDesc            - The object descriptor for this op
+ * PARAMETERS:  ObjDesc         - The object descriptor for this op
  *
  * RETURN:      Status
  *

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -125,20 +125,12 @@
         ACPI_MODULE_NAME    ("exnames")
 
 
-/* AML Package Length encodings */
-
-#define ACPI_AML_PACKAGE_TYPE1   0x40
-#define ACPI_AML_PACKAGE_TYPE2   0x4000
-#define ACPI_AML_PACKAGE_TYPE3   0x400000
-#define ACPI_AML_PACKAGE_TYPE4   0x40000000
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiExAllocateNameString
  *
  * PARAMETERS:  PrefixCount         - Count of parent levels. Special cases:
- *                                    (-1) = root,  0 = none
+ *                                    (-1)==root,  0==none
  *              NumNameSegs         - count of 4-character name segments
  *
  * RETURN:      A pointer to the allocated string segment.  This segment must
@@ -162,7 +154,7 @@ AcpiExAllocateNameString (
 
 
     /*
-     * Allow room for all \ and ^ prefixes, all segments, and a MultiNamePrefix.
+     * Allow room for all \ and ^ prefixes, all segments and a MultiNamePrefix.
      * Also, one byte for the null terminator.
      * This may actually be somewhat longer than needed.
      */
@@ -235,11 +227,13 @@ AcpiExAllocateNameString (
  *
  * FUNCTION:    AcpiExNameSegment
  *
- * PARAMETERS:  InterpreterMode     - Current running mode (load1/Load2/Exec)
+ * PARAMETERS:  InAmlAddress    - Pointer to the name in the AML code
+ *              NameString      - Where to return the name. The name is appended
+ *                                to any existing string to form a namepath
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute a name segment (4 bytes)
+ * DESCRIPTION: Extract an ACPI name (4 bytes) from the AML byte stream
  *
  ******************************************************************************/
 
@@ -313,10 +307,13 @@ AcpiExNameSegment (
     }
     else
     {
-        /* Segment started with one or more valid characters, but fewer than 4*/
-
+        /*
+         * Segment started with one or more valid characters, but fewer than
+         * the required 4
+         */
         Status = AE_AML_BAD_NAME;
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad character %02x in name, at %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Bad character %02x in name, at %p\n",
             *AmlAddress, AmlAddress));
     }
 
@@ -329,11 +326,16 @@ AcpiExNameSegment (
  *
  * FUNCTION:    AcpiExGetNameString
  *
- * PARAMETERS:  DataType            - Data type to be associated with this name
+ * PARAMETERS:  DataType            - Object type to be associated with this
+ *                                    name
+ *              InAmlAddress        - Pointer to the namestring in the AML code
+ *              OutNameString       - Where the namestring is returned
+ *              OutNameLength       - Length of the returned string
  *
- * RETURN:      Status
+ * RETURN:      Status, namestring and length
  *
- * DESCRIPTION: Get a name, including any prefixes.
+ * DESCRIPTION: Extract a full namepath from the AML byte stream,
+ *              including any prefixes.
  *
  ******************************************************************************/
 
@@ -419,7 +421,6 @@ AcpiExGetNameString (
             break;
         }
 
-
         /* Examine first character of name for name segment prefix operator */
 
         switch (*AmlAddress)
@@ -472,7 +473,8 @@ AcpiExGetNameString (
             HasPrefix = TRUE;
 
             while (NumSegments &&
-                    (Status = AcpiExNameSegment (&AmlAddress, NameString)) == AE_OK)
+                    (Status = AcpiExNameSegment (&AmlAddress, NameString)) ==
+                        AE_OK)
             {
                 NumSegments--;
             }

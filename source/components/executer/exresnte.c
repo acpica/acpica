@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -301,9 +301,8 @@ AcpiExResolveNodeToValue (
         Status = AcpiExReadDataFromField (WalkState, SourceDesc, &ObjDesc);
         break;
 
-    /*
-     * For these objects, just return the object attached to the Node
-     */
+    /* For these objects, just return the object attached to the Node */
+
     case ACPI_TYPE_MUTEX:
     case ACPI_TYPE_METHOD:
     case ACPI_TYPE_POWER:
@@ -317,7 +316,6 @@ AcpiExResolveNodeToValue (
         ObjDesc = SourceDesc;
         AcpiUtAddReference (ObjDesc);
         break;
-
 
     /* TYPE_ANY is untyped, and thus there is no object associated with it */
 
@@ -356,9 +354,9 @@ AcpiExResolveNodeToValue (
         break;
 
 
-    /* Default case is for unknown types */
-
     default:
+
+        /* Default case is for unknown types */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Node %p - Unknown object type %X\n",
@@ -369,7 +367,7 @@ AcpiExResolveNodeToValue (
     } /* switch (EntryType) */
 
 
-    /* Put the object descriptor on the stack */
+    /* Return the object descriptor */
 
     *ObjectPtr = (void *) ObjDesc;
     return_ACPI_STATUS (Status);
