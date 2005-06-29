@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExTriadic
+ * FUNCTION:    AcpiExOpcode_3A_1T_0R
  *
  * PARAMETERS:  WalkState           - Current walk state
  *
@@ -145,7 +145,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExTriadic (
+AcpiExOpcode_3A_1T_0R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_AML_OPERANDS       *Op = (ACPI_AML_OPERANDS *) &WalkState->Operands[0];
@@ -158,7 +158,7 @@ AcpiExTriadic (
     UINT32                  Length;
 
 
-    FUNCTION_TRACE ("ExTriadic");
+    FUNCTION_TRACE ("ExOpcode_3A_1T_0R");
 
 
 
@@ -436,18 +436,18 @@ AcpiExDoMatch (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExHexadic
+ * FUNCTION:    AcpiExOpcode_6A_0T_1R
  *
  * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute Match operator
+ * DESCRIPTION: Execute opcode with 6 arguments, no target, and a return value
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExHexadic (
+AcpiExOpcode_6A_0T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
@@ -457,7 +457,7 @@ AcpiExHexadic (
     ACPI_OPERAND_OBJECT     *ThisElement;
 
 
-    FUNCTION_TRACE ("ExHexadic");
+    FUNCTION_TRACE ("ExOpcode_6A_0T_1R");
 
 #define PkgDesc             Operand[0]
 #define Op1Desc             Operand[1]
