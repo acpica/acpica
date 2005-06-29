@@ -18,14 +18,15 @@
 */
 
 #define __EXCOMMON_C__
-#define _THIS_MODULE        "excommon.c"
 
 #include <acpi.h>
 #include <acpiobj.h>
 #include <amlexec.h>
-
 #include <stdarg.h>
 
+
+#define _THIS_MODULE        "excommon.c"
+#define _COMPONENT          MISCELLANEOUS
 
 #define WIN_DS_REGISTER     0x0030
 
@@ -37,14 +38,18 @@ INT32       AcpiHook = 0;
 INT32       __AcpiLibInitStatus = 0;
 
 
-/* Debug switch */
+/* Debug switch - level mask */
 
 #ifdef _DEBUG
-INT32 DebugLevel = 0xFFFFFFFF;
+INT32 DebugLevel = TRACE_ALL | ACPI_ALL;
 #else
-INT32 DebugLevel = GLOBAL_ALL;
+INT32 DebugLevel = ACPI_ALL;
 #endif
 
+
+/* Debug switch - layer mask */
+
+INT32 DebugLayer = ALL_COMPONENTS;
 
 /*****************************************************************************
  * 
@@ -96,10 +101,10 @@ GetMasterLogHandle (void)
  ****************************************************************************/
 
 void
-FunctionTrace (char *ModuleName, INT32 LineNumber, char * FunctionName)
+FunctionTrace (char *ModuleName, INT32 LineNumber, INT32 ComponentId, char * FunctionName)
 {
 
-    DebugPrint (ModuleName, LineNumber, TRACE_FUNCTIONS,
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 "Entered Function: %s\n", FunctionName);
 }
 
@@ -113,7 +118,7 @@ FunctionTrace (char *ModuleName, INT32 LineNumber, char * FunctionName)
  ****************************************************************************/
 
 void
-DebugPrint (char *ModuleName, INT32 LineNumber, INT32 PrintLevel, char *Format, ...)
+DebugPrint (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 PrintLevel, char *Format, ...)
 {
     va_list         args;
 
@@ -123,7 +128,7 @@ DebugPrint (char *ModuleName, INT32 LineNumber, INT32 PrintLevel, char *Format, 
     {
         va_start (args, Format);
 
-        OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
+        OsdPrintf (NULL, "%10s(%04d)[%02x]: ", ModuleName, LineNumber, ComponentId);
         OsdVprintf (NULL, Format, args);
 
         va_end (args);
@@ -140,11 +145,11 @@ DebugPrint (char *ModuleName, INT32 LineNumber, INT32 PrintLevel, char *Format, 
  ****************************************************************************/
 
 void
-DebugPrintPrefix (char *ModuleName, INT32 LineNumber)
+DebugPrintPrefix (char *ModuleName, INT32 LineNumber, INT32 ComponentId)
 {
 
 
-    OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
+    OsdPrintf (NULL, "%10s(%04d)[%02x]: ", ModuleName, LineNumber, ComponentId);
 }
 
 
@@ -179,10 +184,10 @@ DebugPrintRaw (char *Format, ...)
  ****************************************************************************/
 
 void
-_ReportError (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
+_ReportError (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
-    DebugPrint (ModuleName, LineNumber, GLOBAL_ERROR, 
+    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_ERROR, 
                 "*** Error [%s]: %s\n", KdtEntry->Key, KdtEntry->Description);
 
     _Kinc_error (KdtEntry->Key, 
@@ -200,10 +205,10 @@ _ReportError (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
  ****************************************************************************/
 
 void
-_ReportWarning (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
+_ReportWarning (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
-    DebugPrint (ModuleName, LineNumber, GLOBAL_WARN, 
+    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_WARN, 
                 "*** Warning [%s]: %s\n", KdtEntry->Key, KdtEntry->Description);
 
     _Kinc_warning (KdtEntry->Key, 
@@ -221,10 +226,10 @@ _ReportWarning (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
  ****************************************************************************/
 
 void
-_ReportSuccess (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
+_ReportSuccess (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
-    DebugPrint (ModuleName, LineNumber, GLOBAL_SUCCESS, 
+    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_SUCCESS, 
                 "*** Success [%s] %s\n", KdtEntry->Key, KdtEntry->Description);
 
     Why = KdtEntry->Description;
@@ -240,10 +245,10 @@ _ReportSuccess (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
  ****************************************************************************/
 
 void
-_ReportInfo (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
+_ReportInfo (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
-    DebugPrint (ModuleName, LineNumber, GLOBAL_INFO, 
+    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_INFO, 
                 "*** Info [%s], %s\n", KdtEntry->Key, KdtEntry->Description);
 
     _Kinc_info (KdtEntry->Key, 
@@ -264,7 +269,7 @@ _ReportInfo (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
  ****************************************************************************/
 
 void *
-_AllocateObjectDesc (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
+_AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry)
 {
     OBJECT_DESCRIPTOR       *NewDesc;
 
@@ -276,7 +281,7 @@ _AllocateObjectDesc (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtE
     {
         /* Allocation failed */
         
-        _REPORT_ERROR (ModuleName, LineNumber, KdtEntry);
+        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, KdtEntry);
         OutOfMemory = TRUE;
     }
 
@@ -296,7 +301,7 @@ _AllocateObjectDesc (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtE
  ****************************************************************************/
 
 void *
-_LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize)
+_LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 AllocSize)
 {
     ST_KEY_DESC_TABLE   AKDT = {"0000", '1', "LocalAllocate: Memory allocation failure", 
                                               "LocalAllocate: Memory allocation failure"};
@@ -308,7 +313,7 @@ _LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize)
     {
         /* Report allocation error */
 
-        _REPORT_ERROR (ModuleName, LineNumber, &AKDT);
+        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, &AKDT);
         OutOfMemory = TRUE;
     }
 
@@ -328,7 +333,7 @@ _LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize)
  ****************************************************************************/
 
 void *
-_LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize)
+_LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 AllocSize)
 {
     ST_KEY_DESC_TABLE   AKDT = {"0000", '1', "LocalCallocate: Memory allocation failure", 
                                               "LocalCallocate: Memory allocation failure"};
@@ -340,7 +345,7 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize)
     {
         /* Report allocation error */
 
-        _REPORT_ERROR (ModuleName, LineNumber, &AKDT);
+        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, &AKDT);
         OutOfMemory = TRUE;
     }
 
