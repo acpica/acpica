@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.87 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -213,11 +213,12 @@ getopt (
 
 #define FILE_SUFFIX_AML_CODE        "aml"
 #define FILE_SUFFIX_LISTING         "lst"
-#define FILE_SUFFIX_HEX_DUMP        "c"
+#define FILE_SUFFIX_HEX_DUMP        "hex"
 #define FILE_SUFFIX_DEBUG           "txt"
 #define FILE_SUFFIX_SOURCE          "src"
 #define FILE_SUFFIX_NAMESPACE       "nsp"
 #define FILE_SUFFIX_ASM_SOURCE      "asm"
+#define FILE_SUFFIX_C_SOURCE        "c"
 
 
 /* Misc */
@@ -343,23 +344,39 @@ AePrintErrorLog (
 void
 LsWriteListingHexBytes (
     char                    *Buffer,
-    UINT32                  Length);
+    UINT32                  Length,
+    UINT32                  FileId);
 
 void
 LsWriteNodeToListing (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  FileId);
+
+void
+LsWriteNodeToAsmListing (
     ASL_PARSE_NODE          *Node);
 
 void
-LsFlushListingBuffer (void);
+LsWriteNode (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  FileId);
 
 void
-LsFinishSourceListing (void);
+LsFinishSourceListing (
+    UINT32                  FileId);
+
+void
+LsFlushListingBuffer (
+    UINT32                  FileId);
 
 void
 LsDoHexOutput (void);
 
 void
-LsDoAsmOutput (void);
+LsDoHexOutputC (void);
+
+void
+LsDoHexOutputAsm (void);
 
 void
 LsPushNode (
@@ -409,6 +426,14 @@ RsDoResourceTemplate (
 
 void
 CgGenerateAmlOutput (void);
+
+void
+CgGenerateListing (
+    UINT32                  FileId);
+
+void
+LsDoListings (void);
+
 void
 CgGenerateAmlLengths (
     ASL_PARSE_NODE          *Node);
