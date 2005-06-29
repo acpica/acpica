@@ -151,15 +151,20 @@
 
 /*
  * Common area for all objects.
- * NOTE: The first byte must NEVER be an ASCII character;  This is what 
- * is used to differentiate an internal object from an NTE.
+ *
+ * DataType is used to differentiate between internal descriptors, and MUST
+ * be the first byte in this structure.
  */
 
 
 #define ACPI_OBJECT_COMMON \
+    UINT8                   DataType;       /* To differentiate various internal objs */\
     UINT8                   Type;           /* See definition of NsType for values */ \
     UINT8                   Flags;\
-    UINT16                  ReferenceCount; /* For object deletion management */
+    UINT8                   CmFill1; \
+    UINT16                  ReferenceCount; /* For object deletion management */\
+    UINT16                  CmFill2;\
+    char                    Name[8];        /* TBD: Temporary only, for debug */
 
 /* Defines for flag byte above */
 
@@ -374,7 +379,7 @@ typedef union AcpiObjInternal
         union AcpiObjInternal  *Link;               /* Link in list of regions */
                                                     /* list is owned by AddrHandler */
         union AcpiObjInternal  *REGList;            /* List of _REG methods for this region */
-        NAME_TABLE_ENTRY       *Parent;             /* containing object */
+        NAME_TABLE_ENTRY       *Nte;                /* containing object */
 
     } Region;
 
