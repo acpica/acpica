@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -303,20 +303,6 @@ CmDoCompile (void)
         return -1;
     }
 
-    /* ACPI CA subsystem initialization */
-
-    AcpiUtInitGlobals ();
-    Status = AcpiUtMutexInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        return -1;
-    }
-
-    Status = AcpiNsRootInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        return -1;
-    }
     UtEndEvent (i++);
 
     /* Build the parse tree */

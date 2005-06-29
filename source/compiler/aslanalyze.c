@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -1208,7 +1208,10 @@ AnMethodTypingWalkEnd (
 
             /* Returns a value, get it's type */
 
-            Op->Asl.ParentMethod->Asl.AcpiBtype |= ThisNodeBtype;
+            if (Op->Asl.ParentMethod)
+            {
+                Op->Asl.ParentMethod->Asl.AcpiBtype |= ThisNodeBtype;
+            }
         }
         break;
 

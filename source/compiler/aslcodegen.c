@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,7 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
-#include "aslresource.h"
+#include "amlresrc.h"
 #include "amlcode.h"
 
 #define _COMPONENT          ACPI_COMPILER
