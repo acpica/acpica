@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  ******************************************************************************/
 
@@ -199,7 +199,6 @@ AcpiDsIsResultUsed (
             /* Never delete the return value associated with a return opcode */
 
             goto ResultUsed;
-            break;
 
         case AML_IF_OP:
         case AML_WHILE_OP:
@@ -218,7 +217,6 @@ AcpiDsIsResultUsed (
         /* The general control opcode returns no result */
 
         goto ResultNotUsed;
-        break;
 
 
     case AML_CLASS_CREATE:
@@ -228,7 +226,6 @@ AcpiDsIsResultUsed (
          * the operands can be method calls.  The result is used.
          */
         goto ResultUsed;
-        break;
 
 
     case AML_CLASS_NAMED_OBJECT:
@@ -244,7 +241,6 @@ AcpiDsIsResultUsed (
         }
 
         goto ResultNotUsed;
-        break;
 
 
     /*
@@ -253,7 +249,6 @@ AcpiDsIsResultUsed (
      */
     default:
         goto ResultUsed;
-        break;
     }
 
 
