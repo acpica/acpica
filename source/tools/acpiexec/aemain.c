@@ -1,4 +1,4 @@
-/******************************************************************************
+    /******************************************************************************
  * 
  * Module Name: aemain - Main routine for the AcpiExec utility
  *
@@ -117,12 +117,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <acpi.h>
-#include <acapi.h>
-#include <amlcode.h>
-#include <parser.h>
-#include <tables.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "acapi.h"
+#include "amlcode.h"
+#include "parser.h"
+#include "tables.h"
+#include "namesp.h"
+#include "interp.h"
+#include "debugger.h"
 
 #include "aecommon.h"
 
@@ -131,59 +133,8 @@
         MODULE_NAME         ("aemain");
 
 
-char                    *Version = "X002";
-char                    LineBuf[80];
-char                    CommandBuf[40];
-char                    ArgBuf[40];
-char                    ScopeBuf[40];
-char                    DebugFilename[40];
-FILE                    *DebugFile = NULL;
-char                    *Buffer;
-char                    *Filename = NULL;
-
-
-int                     opt_tables = FALSE;
-int                     opt_disasm = FALSE;
-int                     opt_stats = FALSE;
+char                    *Version = "X004";
    
-
-/*
- * AcpiExec commands
- */
-
-#define CMD_NULL        0
-#define CMD_ALLOCATIONS 1
-#define CMD_CLOSE       2
-#define CMD_DEBUG       3
-#define CMD_DUMP        4
-#define CMD_EXECUTE     5
-#define CMD_EXIT        6
-#define CMD_HELP        7
-#define CMD_HELP2       8
-#define CMD_METHODS     9
-#define CMD_NAMESPACE   10
-#define CMD_OPEN        11
-#define CMD_QUIT        12
-#define CMD_SCOPE       13
-#define CMD_NOT_FOUND   (-1)
-
-#define NUM_COMMANDS    13
-
-char                    *Commands[NUM_COMMANDS] = {
-                            "ALLOCATIONS",
-                            "CLOSE",
-                            "DEBUG",
-                            "DUMP",
-                            "EXECUTE",
-                            "EXIT",
-                            "HELP",
-                            "?",
-                            "METHODS",
-                            "NAMESPACE",
-                            "OPEN",
-                            "QUIT",
-                            "SCOPE"};
-
 
 /******************************************************************************
  * 
@@ -200,260 +151,16 @@ char                    *Commands[NUM_COMMANDS] = {
 void
 usage (void)
 {
-    printf ("Usage: acpiexec [-dgs] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
+    printf ("Usage: acpiexec [-dgjs] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
     printf ("Where:\n");
     printf ("    Input Options\n");
     printf ("        AcpiTableFile       Get ACPI tables from this file\n");
     printf ("    Output Options\n");
     printf ("    Miscellaneous Options\n");
+    printf ("        -j                  Just-in-time method parsing\n");
     printf ("        -l DebugLevel       Specify debug output level\n");
 }
 
-
-/******************************************************************************
- * 
- * FUNCTION:    AeDisplayHelp
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print a usage message
- *
- *****************************************************************************/
-
-void
-AeDisplayHelp (void)
-{
-    printf ("AcpiExec command line interpreter\n\n");
-    printf ("Allocations                     Display memory allocation info\n");
-    printf ("Close                           Close debug output file\n");
-    printf ("Debug <DebugLevel>              Set level of debug output\n");
-    printf ("Execute <Method Path>           Execute control method (full pathname)\n");
-    printf ("Help                            This help screen\n");
-    printf ("Methods [<lines per screen>]    Display list of loaded control methods\n");
-    printf ("Open <Debug Filename>           Open a file for debug output\n");
-    printf ("Quit                            Exit this command\n");
-    printf ("Scope <Scope Path>              Set or Get current scope\n");
-}
-
-
-/******************************************************************************
- * 
- * FUNCTION:    GetLine
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Get the next command line from the user.  Gets entire line
- *              up to the next newline
- *
- *****************************************************************************/
-
-void
-GetLine (void)
-{
-    UINT32                  Temp;
-    UINT32                  i;
-
-
-    CommandBuf[0] = 0;
-    ArgBuf[0] = 0;
-
-    for (i = 0; ; i++)
-    {
-        Temp = getchar ();
-        if (!Temp || Temp == '\n')
-        {
-            break;
-        }
-
-        LineBuf [i] = (char) Temp;
-    }
-
-    LineBuf [i] = 0;
-    strupr (LineBuf);
-
-    sscanf (LineBuf, "%s %s", CommandBuf, ArgBuf);
-}
-
-
-/******************************************************************************
- * 
- * FUNCTION:    AeMatchCommand
- *
- * PARAMETERS:  UserCommand             - User command line
- *
- * RETURN:      Index into command array, -1 if not found
- *
- * DESCRIPTION: Search command array for a command match
- *
- *****************************************************************************/
-
-INT32
-AeMatchCommand (
-    char                    *UserCommand)
-{
-    UINT32                  i;
-
-
-    if (UserCommand[0] == 0)
-    {
-        return 0;
-    }
-
-    for (i = 0; i < NUM_COMMANDS; i++)
-    {
-        if (strstr (Commands[i], UserCommand) == Commands[i])
-        {
-            return i + 1;
-        }
-    }
-
-    /* Command not recognized */
-
-    return -1;
-}
-
-
-/******************************************************************************
- * 
- * FUNCTION:    AeExecuter
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Command line execution for AcpiExec utility.  Commands are
- *              matched and dispatched here.
- *
- *****************************************************************************/
-
-void
-AeExecuter (void)
-{
-    UINT32                  Temp;
-    INT32                   CommandIndex;
-    ACPI_STATUS             Status;
-
-
-    AcpiInitialize (NULL);
-
-    /* Always have to get the tables! */
-
-    Status = AdGetTables (Filename);   
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("Could not get ACPI tables (Exception %s)\n", Gbl_ExceptionNames[Status]);
-        goto Cleanup;
-    }
-
-    /* Always parse the tables, only option is what to display */
-
-    Status = AdParseTables ();
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("Could not parse ACPI tables (Exception %s)\n", Gbl_ExceptionNames[Status]);
-        goto Cleanup;
-    }
-
-    Status = AeInstallHandlers ();
-
-/*
-    Status = AcpiLoadNamespace ();
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("Could not load the namespace (Exception %s)\n", Gbl_ExceptionNames[Status]);
-        goto Cleanup;
-    }
-
-*/
-    setvbuf (stdin, NULL, _IONBF, 0);
-    ScopeBuf [0] = '\\';
-    ScopeBuf [1] =  0;
-
-    for (; ;)
-    {
-        printf ("- ");
-        GetLine ();
-        CommandIndex = AeMatchCommand (CommandBuf);
-
-        switch (CommandIndex)
-        {
-        case CMD_NULL:
-            break;
-
-        case CMD_ALLOCATIONS:
-            CmDumpAllocationInfo ();
-            break;
-
-        case CMD_OPEN:
-            DebugLevel = 0x0FFFFFFF;
-            AeOpenDebugFile (ArgBuf);
-            break;
-
-        case CMD_CLOSE:
-            AeCloseDebugFile ();
-            break;
-
-        case CMD_DEBUG:
-            DebugLevel = strtoul (ArgBuf, NULL, 0);
-            printf ("Debug Level: %0lX\n", DebugLevel);
-            break;
-
-        case CMD_DUMP:
-            AeDumpBuffer (strtoul (ArgBuf, NULL, 0));
-            break;
-
-        case CMD_EXECUTE:
-            if (DebugFile && !DebugLevel)
-            {
-                printf ("Debug output is not enabled!\n");
-            }
-            AeExecute (ArgBuf);
-            break;
-
-        case CMD_HELP:
-        case CMD_HELP2:
-            AeDisplayHelp ();
-            break;
-
-        case CMD_METHODS:
-            Temp = strtoul (ArgBuf, NULL, 0);
-            AeDisplayAllMethods (Temp);
-            break;
-
-        case CMD_NAMESPACE:
-            AeDumpNamespace ();
-            break;
-
-        case CMD_SCOPE:
-            AeSetScope (ArgBuf);
-            break;
-
-        case CMD_EXIT:
-        case CMD_QUIT:
-            if (!DebugFile)
-            {
-                DebugLevel = DEBUG_DEFAULT;
-            }
-            AcpiTerminate ();
-            AeCloseDebugFile ();
-            return;
-
-        case CMD_NOT_FOUND:
-            printf ("Unknown Command\n");
-        }
-    }
-
-
-Cleanup:
-    if (DsdtPtr)
-        free (DsdtPtr);
-
-
-}
 
 
 /******************************************************************************
@@ -474,25 +181,29 @@ main (
     char                    **argv)
 {      
     int                     j;
+    ACPI_STATUS             Status;
 
 
     /* Init globals */
 
     Buffer = malloc (BUFFER_SIZE);
-    DebugLevel = DEBUG_DEFAULT;    
+    DebugLevel = DEBUG_DEFAULT & (~TRACE_TABLES);    
     DebugLayer = 0xFFFFFFFF;
 
 
-    printf ("ACPI AML Execution Utility version %s\n", Version);
-    if (argc < 2)
-    {
-        usage ();
-        return 0;
-    }
+    printf ("ACPI AML Execution/Debug Utility ");
+
+#ifdef _IA16
+    printf ("16-bit ");
+#else
+    printf ("32-bit ");
+#endif
+
+    printf ("version [%s]\n", __DATE__);
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "dgl:o:s")) != EOF) switch(j) 
+    while ((j = getopt (argc, argv, "dgjl:o:s")) != EOF) switch(j) 
     {
     case 'd':
         opt_disasm = TRUE;
@@ -504,6 +215,10 @@ main (
         Filename = NULL;
         break;
     
+    case 'j':
+        opt_parse_jit = TRUE;
+        break;
+
     case 'l':
         DebugLevel = strtoul (optarg, NULL, 0);
         printf ("Debug Level: %lX\n", DebugLevel);
@@ -522,16 +237,70 @@ main (
         return -1;
     }                      
     
+
+    /* Init ACPI and start debugger thread */
+
+    AcpiInitialize (NULL);
+
+
     /* Standalone filename is the only argument */
 
     if (argv[optind])
     {
         opt_tables = TRUE;
         Filename = argv[optind];
+        Status = AcpiDbLoadAcpiTable (Filename);
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
+
+        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        Status = AcpiLoadNamespace ();
+        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
+
+        /* TBD:
+         * Need a way to call this after the "LOAD" command
+         */
+        AeInstallHandlers ();
     }
+ 
+#ifdef _IA16 
+    else
+    {
+        Status = AdFindDsdt (NULL, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
+
+        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        Status = AcpiLoadNamespace ();
+        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
 
 
-    AeExecuter ();
+        /* TBD:
+         * Need a way to call this after the "LOAD" command
+         */
+        AeInstallHandlers ();
+    }
+#endif
+
+enterloop:
+                
+    /* Enter the debugger command loop */
+
+    AcpiDbUserCommands (DB_COMMAND_PROMPT, NULL);
 
     return 0;
 }

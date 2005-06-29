@@ -123,11 +123,11 @@
 #include <stdio.h>
 
 extern UINT8                    *DsdtPtr;
-extern UINT32                   DsdtLength;
+extern UINT32                   AcpiDsdtLength;
 extern int                      optind;
 extern char                     *optarg;
 extern UINT8                    *AmlPtr;
-extern UINT32                   AmlLength;
+extern UINT32                   AcpiAmlLength;
 
 extern char                     LineBuf[80];
 extern char                     CommandBuf[40];
@@ -188,7 +188,7 @@ typedef union ptr_ovl
 #define TEST_OUTPUT_LEVEL(lvl)          if ((lvl) & OutputLevel)
 
 #define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
-                                            OsdPrintf PARAM_LIST(fp);}
+                                            AcpiOsdPrintf PARAM_LIST(fp);}
 
 int 
 getopt (

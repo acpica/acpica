@@ -114,11 +114,11 @@
  *****************************************************************************/
 
 
-#include <acpi.h>
-#include <parser.h>
-#include <amlcode.h>
-#include <namesp.h>
-#include <debugger.h>
+#include "acpi.h"
+#include "parser.h"
+#include "amlcode.h"
+#include "namesp.h"
+#include "debugger.h"
 #include "aecommon.h"
 
 #include <stdio.h>
@@ -130,12 +130,12 @@
 
 
 
-ACPI_GENERIC_OP             *Gbl_ParsedNamespaceRoot;
+ACPI_GENERIC_OP             *Acpi_GblParsedNamespaceRoot;
 ACPI_GENERIC_OP             *root;
 UINT8                       *AmlPtr;
-UINT32                      AmlLength;
+UINT32                      AcpiAmlLength;
 UINT8                       *DsdtPtr;
-UINT32                      DsdtLength;
+UINT32                      AcpiDsdtLength;
 
 DEBUG_REGIONS	            Regions;
 
@@ -175,7 +175,7 @@ RegionHandler (
 	/*
 	 * If the object is not a region, simply return
 	 */
-	if (RegionObject->Region.Type != ACPI_TYPE_Region)
+	if (RegionObject->Region.Type != ACPI_TYPE_REGION)
 	{
 		return AE_OK;
 	}
@@ -218,16 +218,16 @@ RegionHandler (
 		/*
 		 * Do the memory allocations first
 		 */
-		RegionElement = malloc (sizeof(REGION));
+		RegionElement = AcpiOsdAllocate (sizeof(REGION));
 		if (!RegionElement)
 		{
 			return AE_NO_MEMORY;
 		}
 
-		RegionElement->Buffer = malloc (Length);
+		RegionElement->Buffer = AcpiOsdAllocate (Length);
 		if (!RegionElement->Buffer)
 		{
-			free(RegionElement);
+			AcpiOsdFree (RegionElement);
 			return AE_NO_MEMORY;
 		}
 
@@ -257,8 +257,11 @@ RegionHandler (
 	/*
 	 * The buffer exists and is pointed to by RegionElement.
      *	We now need to verify the request is valid and perform the operation.
+     *
+     * NOTE: RegionElement->Length is in bytes, therefore it is multiplied by
+     *  the bitwidth of a byte.
 	 */ 
-    if (RegionElement->Address + RegionElement->Length < Address + BitWidth)
+    if ((Address + BitWidth) > (RegionElement->Address + (RegionElement->Length * 8)))
     {
         return AE_BUFFER_OVERFLOW;
     }
@@ -307,6 +310,34 @@ RegionHandler (
 
 /******************************************************************************
  * 
+ * FUNCTION:    RegionInit
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Opregion init function.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+RegionInit (
+    ACPI_HANDLE                 RegionHandle,
+    UINT32                      Function,
+    void                        *HandlerContext,
+    void                        **ReturnContext)
+{
+    /*
+     * Real simple, set the ReturnContext to the RegionHandle
+     */
+    *ReturnContext = RegionHandle;
+    
+    return AE_OK;
+}
+
+
+/******************************************************************************
+ * 
  * FUNCTION:    NotifyHandler 
  *
  * PARAMETERS:  Standard notify handler parameters
@@ -329,10 +360,10 @@ NotifyHandler (
     switch (Value)
     {
     case 0:
-        printf ("**** Method Error: Results not equal\n");
+        printf ("**** Method Error 0x%X: Results not equal\n", Value);
         if (DebugFile)
         {
-            OsdPrintf ("**** Method Error: Results not equal\n");
+            AcpiOsdPrintf ("**** Method Error: Results not equal\n");
         }
         break;
 
@@ -341,7 +372,7 @@ NotifyHandler (
         printf ("**** Method Error: Incorrect numeric result\n");
         if (DebugFile)
         {
-            OsdPrintf ("**** Method Error: Incorrect numeric result\n");
+            AcpiOsdPrintf ("**** Method Error: Incorrect numeric result\n");
         }
         break;
 
@@ -350,16 +381,16 @@ NotifyHandler (
         printf ("**** Method Error: An operand was overwritten\n");
         if (DebugFile)
         {
-            OsdPrintf ("**** Method Error: An operand was overwritten\n");
+            AcpiOsdPrintf ("**** Method Error: An operand was overwritten\n");
         }
         break;
     
 
     default:
-        printf ("**** Unknown notify value=%d\n", Value);
+        printf ("**** Received a notify, value 0x%X\n", Value);
         if (DebugFile)
         {
-            OsdPrintf ("**** Unknown notify value=%d\n", Value);
+            AcpiOsdPrintf ("**** Received a notify, value 0x%X\n", Value);
         }
         break;
     }
@@ -396,12 +427,12 @@ AeInstallHandlers (void)
 
     for (i = 0; i < 3; i++)
     {
-        Status = AcpiRemoveAddressSpaceHandler (Gbl_RootObject, i, RegionHandler);
+        Status = AcpiRemoveAddressSpaceHandler (Acpi_GblRootObject, i, RegionHandler);
 
         /* Install handler at the root object. 
          * TBD: all default handlers should be installed here!
          */
-        Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, i, RegionHandler, NULL);
+        Status = AcpiInstallAddressSpaceHandler (Acpi_GblRootObject, i, RegionHandler, RegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");
@@ -417,70 +448,6 @@ AeInstallHandlers (void)
 
     return Status;
 }
-
-
-/****************************************************************************
- *
- * FUNCTION:    TbDeleteAcpiTables
- *
- * PARAMETERS:  None.
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Placeholder, required for linking
- *
- ***************************************************************************/
-
-void
-TbDeleteAcpiTables (void)
-{
-
-}
-
-
-/*****************************************************************************
- * 
- * FUNCTION:    TbSystemTablePointer
- *
- * PARAMETERS:  *Where              - Pointer to be examined
- *
- * RETURN:      TRUE if Where is within the AML stream (in one of the ACPI
- *              system tables such as the DSDT or an SSDT.)
- *              FALSE otherwise
- *
- ****************************************************************************/
-
-BOOLEAN
-TbSystemTablePointer (
-    void                    *Where)
-{
-
-
-    /* No function trace, called too often! */
-
-
-    /* Ignore null pointer */
-
-    if (!Where)
-    {
-        return (FALSE);
-    }
-
-
-    /* Check for a pointer within the DSDT */
-
-    if (IS_IN_ACPI_TABLE (Where, Gbl_DSDT))
-    {
-        return (TRUE);
-    }
-
-
-
-
-    return (FALSE);
-}
-
-
 
 
 /******************************************************************************
@@ -507,14 +474,16 @@ AdSecondPassParse (
     UINT32                  BaseAmlOffset;
 
 
-    printf ("Pass two parse ....\n");
+    /* Walk entire tree */
 
     while (Op)
     {
-        if (Op->Opcode == AML_MethodOp)
+        /* We are looking for control methods */
+
+        if (Op->Opcode == AML_METHOD_OP)
         {
             Method = (ACPI_DEFERRED_OP *) Op;
-            Status = PsParseAml (Op, Method->Body, Method->BodyLength);
+            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0);
 
           
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
@@ -524,17 +493,17 @@ AdSecondPassParse (
             while (SearchOp)
             {
                 SearchOp->AmlOffset += BaseAmlOffset;
-                SearchOp = PsGetDepthNext (StartOp, SearchOp);
+                SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
             }
 
         }
 
-        if (Op->Opcode == AML_RegionOp)
+        if (Op->Opcode == AML_REGION_OP)
         {
             /* TBD: this isn't quite the right thing to do! */
 
             // Method = (ACPI_DEFERRED_OP *) Op;
-            // Status = PsParseAml (Op, Method->Body, Method->BodyLength);
+            // Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength);
         }
 
         if (ACPI_FAILURE (Status))
@@ -542,7 +511,7 @@ AdSecondPassParse (
             return Status;
         }
 
-        Op = PsGetDepthNext (Root, Op);
+        Op = AcpiPsGetDepthNext (Root, Op);
     }
 
     return Status;
@@ -563,66 +532,17 @@ AdSecondPassParse (
  *****************************************************************************/
 
 ACPI_STATUS
-AdGetTables (
+xxxAdGetTables (
     char                    *Filename)
 {
     ACPI_STATUS             Status;
 
 
-    Status = DbLoadAcpiTable (Filename);
+    Status = AcpiDbLoadAcpiTable (Filename);
 
     return Status;
 }
 
-
-/******************************************************************************
- * 
- * FUNCTION:    AdParseTable
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Parse all supported tables
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AdParseTables (void)
-{
-    ACPI_STATUS             Status;
-
-
-    if (!DsdtPtr)
-    {
-        return AE_NOT_EXIST;
-    }
-
-
-    AmlPtr = DsdtPtr + sizeof (ACPI_TABLE_HEADER);
-    AmlLength = DsdtLength - sizeof (ACPI_TABLE_HEADER);
-
-
-//    Status = PsParseTable (PcodeAddr, PcodeLength, PsxLoadBeginOp, PsxLoadEndOp, NULL);
-
-//    Status = PsParseTable (AmlPtr, AmlLength, PsxLoadBeginOp, PsxLoadEndOp, &root);
-
-
-    Status = NsSetup ();
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-
-    Status = PsxLoadTable (AmlPtr, AmlLength);
-    if (ACPI_SUCCESS (Status))
-    {
-        Status = AdSecondPassParse (root);
-    }
-
-    return Status;
-}
 
 
 
