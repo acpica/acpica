@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.47 $
+ *       $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -118,6 +118,10 @@
 #define __ACHWARE_H__
 
 
+/* PM Timer ticks per second (HZ) */
+#define PM_TIMER_FREQUENCY  3579545     
+
+
 /* Prototypes */
 
 
@@ -212,75 +216,21 @@ AcpiHwObtainSleepTypeRegisterData (
     UINT8                   *Slp_TypB);
 
 
-/* Cx State Prototypes */
-
-ACPI_STATUS
-AcpiHwEnterC1(
-    ACPI_IO_ADDRESS         PblkAddress,
-    UINT32                  *PmTimerTicks);
-
-ACPI_STATUS
-AcpiHwEnterC2(
-    ACPI_IO_ADDRESS         PblkAddress,
-    UINT32                  *PmTimerTicks);
-
-ACPI_STATUS
-AcpiHwEnterC3(
-    ACPI_IO_ADDRESS         PblkAddress,
-    UINT32                  *PmTimerTicks);
-
-ACPI_STATUS
-AcpiHwEnterCx (
-    ACPI_IO_ADDRESS         PblkAddress,
-    UINT32                  *PmTimerTicks);
-
-ACPI_STATUS
-AcpiHwSetCx (
-    UINT32                  CxState);
-
-ACPI_STATUS
-AcpiHwGetCxInfo (
-    UINT32                  CxStates[]);
-
-
-/* Throttling Prototypes */
-
-void
-AcpiHwEnableThrottling (
-    ACPI_IO_ADDRESS         PblkAddress);
-
-void
-AcpiHwDisableThrottling (
-    ACPI_IO_ADDRESS         PblkAddress);
-
-UINT32
-AcpiHwGetDutyCycle (
-    UINT8                   DutyOffset,
-    ACPI_IO_ADDRESS         PblkAddress,
-    UINT32                  NumThrottleStates);
-
-void
-AcpiHwProgramDutyCycle (
-    UINT8                   DutyOffset,
-    UINT32                  DutyCycle,
-    ACPI_IO_ADDRESS         PblkAddress,
-    UINT32                  NumThrottleStates);
-
-NATIVE_UINT
-AcpiHwLocalPow (
-    NATIVE_UINT             x,
-    NATIVE_UINT             y);
-
-
 /* ACPI Timer prototypes */
 
-UINT32
-AcpiHwPmtTicks (
-    void);
+ACPI_STATUS
+AcpiGetTimerResolution (
+    UINT32                  *Resolution);
 
-UINT32
-AcpiHwPmtResolution (
-    void);
+ACPI_STATUS
+AcpiGetTimer (
+    UINT32                  *Ticks);
+
+ACPI_STATUS
+AcpiGetTimerDuration (
+    UINT32                  StartTicks,
+	UINT32                  EndTicks,
+    UINT32                  *TimeElapsed);
 
 
 #endif /* __ACHWARE_H__ */
