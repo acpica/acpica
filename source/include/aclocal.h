@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.103 $
+ *       $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -461,30 +461,8 @@ typedef struct acpi_update_state
 
 
 /*
- * Copy state - used to copy Internal<-->External objects (and packages)
+ * Pkg state - used to traverse nested package structures
  */
-typedef struct acpi_ecopy_state
-{
-    ACPI_STATE_COMMON
-    union acpi_operand_obj  *InternalObject;
-    union AcpiObj           *ExternalObject;
-    UINT16                  Index;
-
-} ACPI_EXT_COPY_STATE;
-
-/*
- * Copy state - used to copy Internal<-->External objects (and packages)
- */
-typedef struct acpi_icopy_state
-{
-    ACPI_STATE_COMMON
-    union acpi_operand_obj  *SourceObject;
-    union acpi_operand_obj  *DestObject;
-    UINT16                  Index;
-
-} ACPI_INT_COPY_STATE;
-
-
 typedef struct acpi_pkg_state
 {
     ACPI_STATE_COMMON
@@ -492,6 +470,7 @@ typedef struct acpi_pkg_state
     union acpi_operand_obj  *DestObject;
     struct acpi_walk_state  *WalkState;
     void                    *ThisTargetObj;
+    UINT32                  NumPackages;
     UINT16                  Index;
 
 } ACPI_PKG_STATE;
@@ -554,8 +533,6 @@ typedef union acpi_gen_state
 {
     ACPI_COMMON_STATE       Common;
     ACPI_CONTROL_STATE      Control;
-    ACPI_EXT_COPY_STATE     Copy;
-    ACPI_INT_COPY_STATE     Icopy;
     ACPI_UPDATE_STATE       Update;
     ACPI_SCOPE_STATE        Scope;
     ACPI_PSCOPE_STATE       ParseScope;
@@ -618,7 +595,7 @@ typedef struct acpi_opcode_info
 typedef union acpi_parse_val
 {
     UINT32                  Integer;        /* integer constant */
-    UINT32                  Size;           /* bytelist or field size */
+    NATIVE_UINT             Size;           /* bytelist or field size */
     NATIVE_CHAR             *String;        /* NULL terminated string */
     UINT8                   *Buffer;        /* buffer or string */
     NATIVE_CHAR             *Name;          /* NULL terminated string */
@@ -631,7 +608,7 @@ typedef union acpi_parse_val
     UINT8                   DataType;       /* To differentiate various internal objs */\
     UINT8                   Flags;          /* Type of Op */\
     UINT16                  Opcode;         /* AML opcode */\
-    UINT32                  AmlOffset;      /* offset of declaration in AML */\
+    ACPI_PTRDIFF            AmlOffset;      /* offset of declaration in AML */\
     struct acpi_parse_obj   *Parent;        /* parent op */\
     struct acpi_parse_obj   *Next;          /* next op */\
     DEBUG_ONLY_MEMBERS (\
@@ -658,7 +635,7 @@ typedef struct acpi_parse2_obj
 {
     ACPI_PARSE_COMMON
     UINT8                   *Data;          /* AML body or bytelist data */
-    UINT32                  Length;         /* AML length */
+    NATIVE_UINT             Length;         /* AML length */
     UINT32                  Name;           /* 4-byte name or zero if no name */
 
 } ACPI_PARSE2_OBJECT;
