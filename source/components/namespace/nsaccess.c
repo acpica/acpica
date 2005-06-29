@@ -376,6 +376,8 @@ UnlockAndExit:
  *                                (as represented in the AML stream)
  *              Type            - Type associated with name
  *              InterpreterMode - IMODE_LOAD_PASS2 => add name if not found
+ *              Flags           - Flags describing the search restrictions
+ *              WalkState       - Current state of the walk
  *              RetEntry        - Where the new entry (NTE) is placed
  *
  * RETURN:      Status
