@@ -118,9 +118,9 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -326,7 +326,7 @@ PsxMthStackInitArgs (
              * A valid parameter.
              * define Params[Pindex++] argument object descriptor   
              */
-            Status = PsxMthStackSetValue (MTH_TYPE_ARG, Mindex, Params[Pindex], NULL);
+            Status = PsxMthStackSetValue (MTH_TYPE_ARG, Mindex, Params[Pindex]);
             if (ACPI_FAILURE (Status))
             {
                 break;
@@ -600,7 +600,7 @@ ACPI_STATUS
 PsxMthStackGetValue (
     UINT32                  Type,
     UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *DestDesc)
+    ACPI_OBJECT_INTERNAL    **DestDesc)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    **Entry;
@@ -662,21 +662,11 @@ PsxMthStackGetValue (
 
     /* 
      * Index points to initialized and valid object stack value.
-     * Copy the object to the descriptor supplied by the caller.
+     * Return an additional reference to the object
      */
 
-    Status = CmCopyInternalObject (Object, DestDesc);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    if (ACPI_TYPE_Buffer == DestDesc->Common.Type)
-    {
-        /* Assign a new sequence number to track buffer usage */
-    
-        DestDesc->Buffer.Sequence = AmlBufSeq ();
-    }
+    *DestDesc = Object;
+    Object->Common.ReferenceCount++;
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -771,9 +761,9 @@ PsxMthStackDeleteValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Store a value in an Arg or Local.  The SrcDesc is _copied_
- *              into the supplied dest descriptor, or a new one is allocated.
- *              The SrcDesc is _not_ directly entered onto the stack.
+ * DESCRIPTION: Store a value in an Arg or Local.  The SrcDesc is installed
+ *              as the new value for the Arg or Local and the reference count
+ *              is incremented.
  *
  ****************************************************************************/
 
@@ -781,8 +771,7 @@ ACPI_STATUS
 PsxMthStackSetValue (
     UINT32                  Type,
     UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *SrcDesc, 
-    ACPI_OBJECT_INTERNAL    *DestDesc)
+    ACPI_OBJECT_INTERNAL    *SrcDesc) 
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    **Entry;
@@ -790,8 +779,8 @@ PsxMthStackSetValue (
 
 
     FUNCTION_TRACE ("PsxMthStackSetValue");
-    DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Type=%d Idx=%d Src=%p Dst=%p\n",
-                    Type, Index, SrcDesc, DestDesc));
+    DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Type=%d Idx=%d Obj=%p\n",
+                    Type, Index, SrcDesc));
 
 
     /* Parameter validation */
@@ -799,21 +788,6 @@ PsxMthStackSetValue (
     if (!SrcDesc)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    /* If no destination provided, allocate one */
-
-    if (!DestDesc)
-    {
-        DestDesc = CmCreateInternalObject (SrcDesc->Common.Type);
-        if (!DestDesc)
-        {
-            /* Allocation failure  */
-
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        NewDesc = DestDesc;
     }
 
 
@@ -834,28 +808,17 @@ PsxMthStackSetValue (
 
 
     /* 
-     * Copy the ObjStack descriptor (*SrcDesc) into the descriptor for the
+     * Install the ObjStack descriptor (*SrcDesc) into the descriptor for the
      * Arg or Local.
      */
 
-    Status = CmCopyInternalObject (SrcDesc, DestDesc);
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
+    /* Return an additional reference to the object */
 
-    if (ACPI_TYPE_Buffer == DestDesc->Common.Type)
-    {
-
-        /* Assign a new sequence number to track buffers */
-
-        DestDesc->Buffer.Sequence = AmlBufSeq ();
-    }
-
+    SrcDesc->Common.ReferenceCount++;
 
     /* Install the new object in the stack entry */
 
-    Status = PsxMthStackSetEntry (Type, Index, DestDesc);
+    Status = PsxMthStackSetEntry (Type, Index, SrcDesc);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -869,10 +832,6 @@ PsxMthStackSetValue (
     /* Error exit */
 
 Cleanup:
-    if (NewDesc)
-    {
-        CmDeleteInternalObject (NewDesc);   /* Allocated because DestDesc was null */
-    }
 
     return_ACPI_STATUS (Status);
 }
