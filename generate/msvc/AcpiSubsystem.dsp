@@ -389,11 +389,23 @@ SOURCE=..\..\Subsystem\Interpreter\isutils.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Methods\mtadr.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Methods\mtexist.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Methods\mthid.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Methods\mtpts.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Methods\mtsta.c
 # End Source File
 # Begin Source File
 
@@ -450,6 +462,10 @@ SOURCE=..\..\Subsystem\NameSpace\nsfamily.c
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Namespace\nsmodify.c
 # End Source File
 # Begin Source File
 
@@ -547,6 +563,10 @@ SOURCE=..\..\Subsystem\Include\acpitables.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\amlcode.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\common.h
 # End Source File
 # Begin Source File
 
