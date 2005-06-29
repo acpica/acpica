@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -271,8 +271,6 @@ AcpiNsLoadTableByType (
         {
             goto UnlockAndExit;
         }
-
-        TableDesc->TableId = TABLE_ID_DSDT;
 
         /* Now load the single DSDT */
 
