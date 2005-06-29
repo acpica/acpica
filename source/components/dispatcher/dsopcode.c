@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -169,7 +169,7 @@ AcpiDsExecuteArguments (
 
     /* Save the Node for use in AcpiPsParseAml */
 
-    Op->Node = AcpiNsGetParentObject (Node);
+    Op->Node = AcpiNsGetParentNode (Node);
 
     /* Create and initialize a new parser state */
 
@@ -213,7 +213,7 @@ AcpiDsExecuteArguments (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Op->Node = AcpiNsGetParentObject (Node);
+    Op->Node = AcpiNsGetParentNode (Node);
 
     /* Create and initialize a new parser state */
 
