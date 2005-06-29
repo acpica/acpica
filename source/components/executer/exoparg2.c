@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -682,9 +682,18 @@ AcpiExOpcode_2A_0T_1R (
      */
     if (WalkState->OpInfo->Flags & AML_LOGICAL) /* LogicalOp  (Operand0, Operand1) */
     {
+        /* Both operands must be of the same type */
+
+        if (ACPI_GET_OBJECT_TYPE (Operand[0]) !=
+            ACPI_GET_OBJECT_TYPE (Operand[1]))
+        {
+            Status = AE_AML_OPERAND_TYPE;
+            goto Cleanup;
+        }
+
         LogicalResult = AcpiExDoLogicalOp (WalkState->Opcode,
-                                            Operand[0]->Integer.Value,
-                                            Operand[1]->Integer.Value);
+                                            Operand[0],
+                                            Operand[1]);
         goto StoreLogicalResult;
     }
 
