@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -201,6 +201,7 @@ LdLoadFieldElements (
 {
     ASL_PARSE_NODE          *Child = NULL;
     ACPI_NAMESPACE_NODE     *NsNode;
+    ACPI_STATUS             Status;
 
 
     /* Get the first named field element */
@@ -233,12 +234,20 @@ LdLoadFieldElements (
 
         default:
 
-            AcpiNsLookup (WalkState->ScopeInfo,
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
                             Child->Value.String,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                             NULL, &NsNode);
+            if (ACPI_FAILURE (Status))
+            {
+                /* TBD - emit error */
+                return;
+            }
+
+            Child->NsNode = NsNode;
+            NsNode->Object = Child;
             break;
         }
 
@@ -286,11 +295,6 @@ LdLoadResourceElements (
                     NS_NO_UPSEARCH,
                     WalkState, &NsNode);
 
-    /*
-     * Store offset of zero for the base name of the resource
-     */
-    (UINT32) NsNode->Object = 0;
-
 
     /*
      * Now enter the predefined fields, for easy lookup when referenced
@@ -319,7 +323,10 @@ LdLoadResourceElements (
              * can be used when the field is referenced
              */
             (UINT16) NsNode->OwnerId = InitializerNode->Value.Integer16;
+            InitializerNode->NsNode = NsNode;
+            NsNode->Object = InitializerNode;
         }
+
         InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
     }
 }
@@ -351,6 +358,9 @@ LdNamespace1Begin (
     OBJECT_TYPE_INTERNAL    DataType;
     NATIVE_CHAR             *Path;
     UINT32                  Flags = NS_NO_UPSEARCH;
+    ASL_PARSE_NODE          *Arg;
+    UINT32                  i;
+
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -387,7 +397,23 @@ LdNamespace1Begin (
 
     /* Map the raw opcode into an internal object type */
 
-    if (PsNode->ParseOpcode == EXTERNAL)
+    if (PsNode->ParseOpcode == NAME)
+    {
+        Arg = PsNode->Child;        /* Get the NameSeg/NameString node */
+        Arg = Arg->Peer;            /* First peer is the object to be associated with the name */
+
+        /* Get the data type associated with the named object, not the name itself */
+
+        /* Log2 loop to convert from Btype (binary) to Etype (encoded) */
+
+        DataType = 1;
+        for (i = 1; i < Arg->AcpiBtype; i *= 2)
+        {
+            DataType++;
+        }
+    }
+
+    else if (PsNode->ParseOpcode == EXTERNAL)
     {
         /* "External" simply enters a name and type into the namespace */
         /* first child is name, next child is ObjectType */
@@ -441,7 +467,12 @@ LdNamespace1Begin (
         return (Status);
     }
 
+    /*
+     * Point the parse node to the new namespace node, and point
+     * the NsNode back to the original Parse node
+     */
     PsNode->NsNode = NsNode;
+    NsNode->Object = PsNode;
 
 
     if (PsNode->ParseOpcode == METHOD)

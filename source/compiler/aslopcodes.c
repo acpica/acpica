@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.17 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -123,7 +123,6 @@
 #include "acnamesp.h"
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    OpcAmlOpcodeWalk
@@ -159,7 +158,7 @@ OpcAmlOpcodeWalk (
  *              optimal integer AML prefix opcode.
  *
  * DESCRIPTION: Determine the optimal AML encoding of an integer.  All leading
- *              zeros can be truncated to squeeze the integer into the 
+ *              zeros can be truncated to squeeze the integer into the
  *              minimal number of AML bytes.
  *
  ******************************************************************************/
@@ -378,8 +377,9 @@ OpcGenerateAmlOpcode (
     Index = Node->ParseOpcode - ASL_PARSE_OPCODE_BASE;
 
 
-    Node->AmlOpcode = AslKeywordMapping[Index].AmlOpcode;
-    Node->Flags |= AslKeywordMapping[Index].Flags;
+    Node->AmlOpcode  = AslKeywordMapping[Index].AmlOpcode;
+    Node->AcpiBtype  = AslKeywordMapping[Index].AcpiBtype;
+    Node->Flags     |= AslKeywordMapping[Index].Flags;
 
     if (!Node->Value.Integer)
     {
