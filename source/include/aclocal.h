@@ -491,6 +491,7 @@ typedef struct acpi_walk_state
     ACPI_CTRL_STATE         *ControlState;                      /* List of control states (nested IFs) */
     union AcpiObjInternal   *Arguments[MTH_NUM_ARGS];           /* Control method arguments */
     union AcpiObjInternal   *LocalVariables[MTH_NUM_LOCALS];    /* Control method locals */
+    union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
     union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter TBD: make max configurable */
     struct acpi_walk_state  *Next;                              /* Next WalkState in list */
 
