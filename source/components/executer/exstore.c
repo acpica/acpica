@@ -768,6 +768,8 @@ AmlExecStore (
 
     case AML_IndexOp:
 
+        DeleteDestDesc = DestDesc;
+        
         /*
          * TBD: Type conversion support required.
          * BUGBUG:  This is broken.  Storing into a package element the value
@@ -851,8 +853,6 @@ AmlExecStore (
                      *  (ValDesc) and copy into the destination (TmpDesc)
                      */
                     Status = CmCopyInternalSimpleObject(ValDesc, TmpDesc);
-                    DeleteDestDesc = DestDesc;
-
                     if (AE_OK != Status)
                     {
                         /* 
@@ -860,7 +860,6 @@ AmlExecStore (
                          *  so delete the reference.
                          */
                         DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Unable to copy the internal object\n"));
-                        DeleteDestDesc = DestDesc;
                         Status = AE_AML_OPERAND_TYPE;
                     }
 
@@ -872,7 +871,6 @@ AmlExecStore (
                  * There is no destination storage
                  */
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Reference Destination is NULL\n"));
-                DeleteDestDesc = DestDesc;
                 Status = AE_NO_MEMORY;
             }
 
@@ -884,7 +882,6 @@ AmlExecStore (
          */
         if (DestDesc->Reference.TargetType != ACPI_TYPE_BufferField)
         {
-            DeleteDestDesc = DestDesc;
             Status = AE_AML_OPERAND_TYPE;
             break;
         }
