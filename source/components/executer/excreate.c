@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -322,6 +322,7 @@ AcpiExCreateRegion (
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *RegionObj2 = NULL;
 
 
     FUNCTION_TRACE ("ExCreateRegion");
@@ -366,9 +367,8 @@ AcpiExCreateRegion (
 
     /* Allocate a method object for this region */
 
-    ObjDesc->Region.Extra =  AcpiUtCreateInternalObject (
-                                        INTERNAL_TYPE_EXTRA);
-    if (!ObjDesc->Region.Extra)
+    RegionObj2 =  AcpiUtCreateInternalObject (INTERNAL_TYPE_EXTRA);
+    if (!RegionObj2)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
@@ -378,8 +378,8 @@ AcpiExCreateRegion (
      * Remember location in AML stream of address & length
      * operands since they need to be evaluated at run time.
      */
-    ObjDesc->Region.Extra->Extra.AmlStart  = AmlStart;
-    ObjDesc->Region.Extra->Extra.AmlLength = AmlLength;
+    RegionObj2->Extra.AmlStart  = AmlStart;
+    RegionObj2->Extra.AmlLength = AmlLength;
 
     /* Init the region from the operands */
 
@@ -390,8 +390,13 @@ AcpiExCreateRegion (
 
     /* Install the new region object in the parent Node */
 
-    Status = AcpiNsAttachObject (Node, ObjDesc,
-                                (UINT8) ACPI_TYPE_REGION);
+    Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) ACPI_TYPE_REGION);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+
+    Status = AcpiNsAttachSecondary (Node, RegionObj2);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -400,9 +405,10 @@ AcpiExCreateRegion (
 
 Cleanup:
 
-    /* Remove local reference to the object */
+    /* Remove local reference to the objects */
 
     AcpiUtRemoveReference (ObjDesc);
+    AcpiUtRemoveReference (RegionObj2);
 
     return_ACPI_STATUS (Status);
 }
