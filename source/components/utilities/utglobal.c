@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  *****************************************************************************/
 
@@ -423,6 +423,18 @@ AcpiUtGetMutexName (
 }
 
 
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetTypeName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a Type ID into a name string (Debug only)
+ *
+ ****************************************************************************/
+
 /*
  * Elements of AcpiGbl_NsTypeNames below must match
  * one-to-one with values of ACPI_OBJECT_TYPE
@@ -477,18 +489,6 @@ static const NATIVE_CHAR    *AcpiGbl_NsTypeNames[] =    /* printable names of AC
 };
 
 
-/*****************************************************************************
- *
- * FUNCTION:    AcpiUtGetTypeName
- *
- * PARAMETERS:  None.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Translate a Type ID into a name string (Debug only)
- *
- ****************************************************************************/
-
 NATIVE_CHAR *
 AcpiUtGetTypeName (
     ACPI_OBJECT_TYPE        Type)
@@ -502,6 +502,18 @@ AcpiUtGetTypeName (
     return ((NATIVE_CHAR *) AcpiGbl_NsTypeNames[Type]);
 }
 
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetRegionName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a Space ID into a name string (Debug only)
+ *
+ ****************************************************************************/
 
 /* Region type decoding */
 
@@ -517,18 +529,6 @@ const NATIVE_CHAR *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
     "DataTable",
 };
 
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiUtGetRegionName
- *
- * PARAMETERS:  None.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Translate a Space ID into a name string (Debug only)
- *
- ****************************************************************************/
 
 NATIVE_CHAR *
 AcpiUtGetRegionName (
@@ -546,6 +546,46 @@ AcpiUtGetRegionName (
     }
 
     return ((NATIVE_CHAR *) AcpiGbl_RegionTypes[SpaceId]);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetEventName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a Event ID into a name string (Debug only)
+ *
+ ****************************************************************************/
+
+/* Event type decoding */
+
+const NATIVE_CHAR *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
+{
+    "PM_Timer",
+    "InvalidEventID",
+    "GlobalLock",
+    "PowerButton",
+    "SleepButton",
+    "RealTimeClock",
+    "General"
+};
+
+
+NATIVE_CHAR *
+AcpiUtGetEventName (
+    UINT32                  EventId)
+{
+
+    if (EventId > ACPI_EVENT_MAX)
+    {
+        return ("InvalidEventID");
+    }
+
+    return ((NATIVE_CHAR *) AcpiGbl_EventTypes[EventId]);
 }
 
 
@@ -786,9 +826,6 @@ AcpiUtInitGlobals (
 
     /* Hardware oriented */
 
-    AcpiGbl_Gpe0EnableRegisterSave      = NULL;
-    AcpiGbl_Gpe1EnableRegisterSave      = NULL;
-    AcpiGbl_OriginalMode                = SYS_MODE_UNKNOWN;   /*  original ACPI/legacy mode   */
     AcpiGbl_GpeRegisterInfo             = NULL;
     AcpiGbl_GpeNumberInfo               = NULL;
 
