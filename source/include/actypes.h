@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.271 $
+ *       $Revision: 1.272 $
  *
  *****************************************************************************/
 
@@ -382,7 +382,7 @@ typedef struct uint32_struct
 typedef UINT32                          ACPI_INTEGER;
 #define ACPI_INTEGER_MAX                ACPI_UINT32_MAX
 #define ACPI_INTEGER_BIT_SIZE           32
-#define ACPI_MAX_DECIMAL_DIGITS         10
+#define ACPI_MAX_DECIMAL_DIGITS         10  /* 2^32 = 4,294,967,296 */
 
 #define ACPI_USE_NATIVE_DIVIDE          /* Use compiler native 32-bit divide */
 
@@ -394,13 +394,18 @@ typedef UINT32                          ACPI_INTEGER;
 typedef UINT64                          ACPI_INTEGER;
 #define ACPI_INTEGER_MAX                ACPI_UINT64_MAX
 #define ACPI_INTEGER_BIT_SIZE           64
-#define ACPI_MAX_DECIMAL_DIGITS         19
+#define ACPI_MAX_DECIMAL_DIGITS         20  /* 2^64 = 18,446,744,073,709,551,616 */
+
 
 #if ACPI_MACHINE_WIDTH == 64
 #define ACPI_USE_NATIVE_DIVIDE          /* Use compiler native 64-bit divide */
 #endif
 #endif
 
+#define ACPI_MAX64_DECIMAL_DIGITS       20
+#define ACPI_MAX32_DECIMAL_DIGITS       10
+#define ACPI_MAX16_DECIMAL_DIGITS        5
+#define ACPI_MAX8_DECIMAL_DIGITS         3
 
 /*
  * Constants with special meanings
