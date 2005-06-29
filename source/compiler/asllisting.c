@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.35 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -611,7 +611,7 @@ LsWriteOneSourceLine (
              * Check if an error occurred on this source line during the compile.
              * If so, we print the error message after the source line.
              */
-            LsCheckException (FileId, Gbl_SourceLine);
+            LsCheckException (Gbl_SourceLine, FileId);
             return (1);
         }
     }
@@ -768,8 +768,6 @@ LsWriteNodeToListing (
     char                    *Pathname;
     UINT32                  Length;
     UINT32                  i;
-    ASL_PARSE_NODE          *SignatureNode;
-    ASL_PARSE_NODE          *TableIdNode;
 
 
     OpInfo  = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
@@ -824,18 +822,15 @@ LsWriteNodeToListing (
 
         /* Use the table Signature and TableId to build a unique name */
 
-        SignatureNode = Node->Child->Peer;
-        TableIdNode = SignatureNode->Peer->Peer->Peer;
-
         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "AmlHeader_%s_%s  \\\n", 
-                SignatureNode->Value.String, TableIdNode->Value.String);
+            FlPrintFile (FileId, "%s_%s_Header \\\n", 
+                Gbl_TableSignature, Gbl_TableId);
         }
         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "    unsigned char    AmlHeader_%s_%s [] = \n    {\n",
-                SignatureNode->Value.String, TableIdNode->Value.String);
+            FlPrintFile (FileId, "    unsigned char    %s_%s_Header [] = \n    {\n",
+                Gbl_TableSignature, Gbl_TableId);
         }
         return;
 
@@ -938,11 +933,13 @@ LsWriteNodeToListing (
 
                         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "Aml_%s  \\\n", &Pathname[1]);
+                            FlPrintFile (FileId, "%s_%s_%s  \\\n", 
+                                Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "    unsigned char    Aml_%s [] = \n    {\n", &Pathname[1]);
+                            FlPrintFile (FileId, "    unsigned char    %s_%s_%s [] = \n    {\n", 
+                                Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                     }
                     ACPI_MEM_FREE (Pathname);
