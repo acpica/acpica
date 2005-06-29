@@ -583,6 +583,26 @@ SOURCE=..\..\Subsystem\Parser\psxregn.c
 SOURCE=..\..\Subsystem\Parser\psxutils.c
 # End Source File
 # End Group
+# Begin Group "Debugger"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbcmds.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbdisasm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbfileio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbinput.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
@@ -642,6 +662,10 @@ SOURCE=..\..\Subsystem\Include\common.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\config.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\debugger.h
 # End Source File
 # Begin Source File
 
