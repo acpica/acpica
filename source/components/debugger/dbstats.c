@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.52 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -124,7 +124,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          ACPI_DEBUGGER
-        MODULE_NAME         ("dbstats")
+        ACPI_MODULE_NAME    ("dbstats")
 
 /*
  * Statistics subcommands
@@ -368,8 +368,10 @@ AcpiDbDisplayStatistics (
 {
     UINT32                  i;
     UINT32                  Type;
-    UINT32                  Outstanding;
     UINT32                  Size;
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+    UINT32                  Outstanding;
+#endif
 
 
     if (!AcpiGbl_DSDT)
@@ -383,7 +385,7 @@ AcpiDbDisplayStatistics (
         return (AE_OK);
     }
 
-    STRUPR (TypeArg);
+    ACPI_STRUPR (TypeArg);
     Type = AcpiDbMatchArgument (TypeArg, AcpiDbStatTypes);
     if (Type == (UINT32) -1)
     {
@@ -465,11 +467,11 @@ AcpiDbDisplayStatistics (
 
             if (AcpiGbl_MemoryLists[i].ObjectSize)
             {
-                Size = ROUND_UP_TO_1K (Outstanding * AcpiGbl_MemoryLists[i].ObjectSize);
+                Size = ACPI_ROUND_UP_TO_1K (Outstanding * AcpiGbl_MemoryLists[i].ObjectSize);
             }
             else
             {
-                Size = ROUND_UP_TO_1K (AcpiGbl_MemoryLists[i].CurrentTotalSize);
+                Size = ACPI_ROUND_UP_TO_1K (AcpiGbl_MemoryLists[i].CurrentTotalSize);
             }
 
             AcpiOsPrintf ("    Mem:   [Alloc Free Outstanding Size]  % 7d % 7d % 7d % 7d Kb\n",

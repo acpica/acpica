@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.64 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -130,7 +130,7 @@
 
 
 #define _COMPONENT          ACPI_DEBUGGER
-        MODULE_NAME         ("dbdisply")
+        ACPI_MODULE_NAME    ("dbdisply")
 
 
 /******************************************************************************
@@ -167,7 +167,7 @@ AcpiDbGetPointer (
 
     /* Simple flat pointer */
 
-    ObjPtr = ACPI_TO_POINTER (STRTOUL (Target, NULL, 16));
+    ObjPtr = ACPI_TO_POINTER (ACPI_STRTOUL (Target, NULL, 16));
 #endif
 
     return (ObjPtr);
@@ -198,7 +198,7 @@ AcpiDbDumpParserDescriptor (
     AcpiOsPrintf ("Parser Op Descriptor:\n");
     AcpiOsPrintf ("%20.20s : %4.4X\n", "Opcode", Op->Opcode);
 
-    DEBUG_ONLY_MEMBERS (AcpiOsPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name));
+    ACPI_DEBUG_ONLY_MEMBERS (AcpiOsPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name));
 
     AcpiOsPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Value);
     AcpiOsPrintf ("%20.20s : %p\n", "Parent", Op->Parent);
@@ -244,7 +244,7 @@ AcpiDbDecodeAndDisplayObject (
 
     if (OutputType)
     {
-        STRUPR (OutputType);
+        ACPI_STRUPR (OutputType);
         if (OutputType[0] == 'W')
         {
             Display = DB_WORD_DISPLAY;
@@ -418,8 +418,8 @@ AcpiDbDecodeInternalObject (
     {
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf (" %.8X%.8X", HIDWORD (ObjDesc->Integer.Value),
-                                   LODWORD (ObjDesc->Integer.Value));
+        AcpiOsPrintf (" %.8X%.8X", ACPI_HIDWORD (ObjDesc->Integer.Value),
+                                   ACPI_LODWORD (ObjDesc->Integer.Value));
         break;
 
 

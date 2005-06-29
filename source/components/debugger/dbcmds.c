@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.77 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -130,7 +130,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          ACPI_DEBUGGER
-        MODULE_NAME         ("dbcmds")
+        ACPI_MODULE_NAME    ("dbcmds")
 
 
 /*
@@ -225,7 +225,7 @@ AcpiDbFindReferences (
 
     /* Convert string to object pointer */
 
-    ObjDesc = ACPI_TO_POINTER (STRTOUL (ObjectArg, NULL, 16));
+    ObjDesc = ACPI_TO_POINTER (ACPI_STRTOUL (ObjectArg, NULL, 16));
 
     /* Search all nodes in namespace */
 
@@ -320,7 +320,7 @@ AcpiDbUnloadAcpiTable (
 
     for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
-        if (!STRNCMP (TableArg, AcpiGbl_AcpiTableData[i].Signature,
+        if (!ACPI_STRNCMP (TableArg, AcpiGbl_AcpiTableData[i].Signature,
                 AcpiGbl_AcpiTableData[i].SigLength))
         {
             /* Found the table, unload it */
@@ -376,7 +376,7 @@ AcpiDbSetMethodBreakpoint (
 
     /* Get and verify the breakpoint address */
 
-    Address = STRTOUL (Location, NULL, 16);
+    Address = ACPI_STRTOUL (Location, NULL, 16);
     if (Address <= Op->AmlOffset)
     {
         AcpiOsPrintf ("Breakpoint %X is beyond current address %X\n", Address, Op->AmlOffset);
@@ -449,9 +449,8 @@ AcpiDbDisassembleAml (
 
     if (Statements)
     {
-        NumStatements = STRTOUL (Statements, NULL, 0);
+        NumStatements = ACPI_STRTOUL (Statements, NULL, 0);
     }
-
 
     AcpiDbDisplayOp (NULL, Op, NumStatements);
 }
@@ -488,7 +487,7 @@ AcpiDbDumpNamespace (
 
         if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
         {
-            SubtreeEntry = ACPI_TO_POINTER (STRTOUL (StartArg, NULL, 16));
+            SubtreeEntry = ACPI_TO_POINTER (ACPI_STRTOUL (StartArg, NULL, 16));
             if (!AcpiOsReadable (SubtreeEntry, sizeof (ACPI_NAMESPACE_NODE)))
             {
                 AcpiOsPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
@@ -519,19 +518,18 @@ AcpiDbDumpNamespace (
 
         if (DepthArg)
         {
-            MaxDepth = STRTOUL (DepthArg, NULL, 0);
+            MaxDepth = ACPI_STRTOUL (DepthArg, NULL, 0);
         }
     }
 
-
-    AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
     AcpiOsPrintf ("ACPI Namespace (from %p subtree):\n", SubtreeEntry);
 
     /* Display the subtree */
 
-    AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
     AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth, ACPI_UINT32_MAX, SubtreeEntry);
-    AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 }
 
 
@@ -558,25 +556,23 @@ AcpiDbDumpNamespaceByOwner (
     UINT16                  OwnerId;
 
 
-    OwnerId = (UINT16) STRTOUL (OwnerArg, NULL, 0);
-
+    OwnerId = (UINT16) ACPI_STRTOUL (OwnerArg, NULL, 0);
 
     /* Now we can check for the depth argument */
 
     if (DepthArg)
     {
-        MaxDepth = STRTOUL (DepthArg, NULL, 0);
+        MaxDepth = ACPI_STRTOUL (DepthArg, NULL, 0);
     }
 
-
-    AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
     AcpiOsPrintf ("ACPI Namespace by owner %X:\n", OwnerId);
 
     /* Display the subtree */
 
-    AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
     AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth, OwnerId, SubtreeEntry);
-    AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 }
 
 
@@ -660,7 +656,7 @@ AcpiDbSetMethodData (
 
     /* Validate TypeArg */
 
-    STRUPR (TypeArg);
+    ACPI_STRUPR (TypeArg);
     Type = TypeArg[0];
     if ((Type != 'L') &&
         (Type != 'A'))
@@ -671,8 +667,8 @@ AcpiDbSetMethodData (
 
     /* Get the index and value */
 
-    Index = STRTOUL (IndexArg, NULL, 16);
-    Value = STRTOUL (ValueArg, NULL, 16);
+    Index = ACPI_STRTOUL (IndexArg, NULL, 16);
+    Value = ACPI_STRTOUL (ValueArg, NULL, 16);
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
@@ -845,17 +841,17 @@ AcpiDbDisplayObjects (
         return (AE_OK);
     }
 
-    AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
     AcpiOsPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n", AcpiUtGetTypeName (Type));
 
-    AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
 
     /* Walk the namespace from the root */
 
     AcpiWalkNamespace (Type, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                         AcpiDbWalkForSpecificObjects, (void *) &Type, NULL);
 
-    AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
     return (AE_OK);
 }
 
@@ -939,7 +935,7 @@ AcpiDbFindNameInNamespace (
     NATIVE_CHAR             *NameArg)
 {
 
-    if (STRLEN (NameArg) > 4)
+    if (ACPI_STRLEN (NameArg) > 4)
     {
         AcpiOsPrintf ("Name must be no longer than 4 characters\n");
         return (AE_OK);
@@ -950,7 +946,7 @@ AcpiDbFindNameInNamespace (
     AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                         AcpiDbWalkAndMatchName, NameArg, NULL);
 
-    AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
     return (AE_OK);
 }
 
@@ -989,27 +985,27 @@ AcpiDbSetScope (
     {
         /* Validate new scope from the root */
 
-        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_RootNode, NS_NO_UPSEARCH, &Node);
+        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_RootNode, ACPI_NS_NO_UPSEARCH, &Node);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
         }
 
-        STRCPY (AcpiGbl_DbScopeBuf, Name);
-        STRCAT (AcpiGbl_DbScopeBuf, "\\");
+        ACPI_STRCPY (AcpiGbl_DbScopeBuf, Name);
+        ACPI_STRCAT (AcpiGbl_DbScopeBuf, "\\");
     }
     else
     {
         /* Validate new scope relative to old scope */
 
-        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_DbScopeNode, NS_NO_UPSEARCH, &Node);
+        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_DbScopeNode, ACPI_NS_NO_UPSEARCH, &Node);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
         }
 
-        STRCAT (AcpiGbl_DbScopeBuf, Name);
-        STRCAT (AcpiGbl_DbScopeBuf, "\\");
+        ACPI_STRCAT (AcpiGbl_DbScopeBuf, Name);
+        ACPI_STRCAT (AcpiGbl_DbScopeBuf, "\\");
     }
 
     AcpiGbl_DbScopeNode = Node;
@@ -1045,12 +1041,12 @@ AcpiDbDisplayResources (
     ACPI_BUFFER             ReturnObj;
 
 
-    AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
     AcpiDbgLevel |= ACPI_LV_RESOURCES;
 
     /* Convert string to object pointer */
 
-    ObjDesc = ACPI_TO_POINTER (STRTOUL (ObjectArg, NULL, 16));
+    ObjDesc = ACPI_TO_POINTER (ACPI_STRTOUL (ObjectArg, NULL, 16));
 
     /* Prepare for a return object of arbitrary size */
 
@@ -1153,7 +1149,7 @@ GetPrs:
 
 Cleanup:
 
-    AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
     return;
 #endif
 
