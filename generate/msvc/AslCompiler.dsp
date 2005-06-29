@@ -134,6 +134,10 @@ SOURCE=..\..\Tools\AslCompiler\aslopcodes.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Tools\AslCompiler\aslresource.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Tools\AslCompiler\asltree.c
 # End Source File
 # Begin Source File
