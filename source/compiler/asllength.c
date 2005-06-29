@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:      None.
+ * RETURN:      Status
  *
  * DESCRIPTION: Walk callback to initialize (and re-initialize) the node
  *              subtree length(s) to zero.  The Subtree lengths are bubbled
@@ -158,7 +158,7 @@ LnInitLengthsWalk (
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Walk callback to calculate the total AML length.
  *              1) Calculate the AML lengths (opcode, package length, etc.) for
@@ -190,9 +190,9 @@ LnPackageLengthWalk (
         (Node->ParseOpcode != DEFAULT_ARG))
     {
         Node->Parent->AmlSubtreeLength += (Node->AmlLength +
-                                            Node->AmlOpcodeLength +
-                                            Node->AmlPkgLenBytes +
-                                            Node->AmlSubtreeLength);
+                                           Node->AmlOpcodeLength +
+                                           Node->AmlPkgLenBytes +
+                                           Node->AmlSubtreeLength);
     }
     return (AE_OK);
 }
@@ -261,7 +261,6 @@ CgGetPackageLenByteCount (
      * Note: the package length includes the number of bytes used to encode
      * the package length, so we must account for this also.
      */
-
     if (PackageLength <= (0x0000003F - 1))
     {
         return (1);
@@ -332,18 +331,22 @@ CgGenerateAmlOpcodeLength (
     switch (Node->AmlOpcode)
     {
     case AML_BYTE_OP:
+
         Node->AmlLength = 1;
         break;
 
     case AML_WORD_OP:
+
         Node->AmlLength = 2;
         break;
 
     case AML_DWORD_OP:
+
         Node->AmlLength = 4;
         break;
 
     case AML_QWORD_OP:
+
         Node->AmlLength = 8;
         break;
     }
@@ -374,32 +377,40 @@ CgGenerateAmlLengths (
     switch (Node->AmlOpcode)
     {
     case AML_RAW_DATA_BYTE:
+
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 1;
         return;
 
     case AML_RAW_DATA_WORD:
+
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 2;
         return;
 
     case AML_RAW_DATA_DWORD:
+
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 4;
         return;
 
     case AML_RAW_DATA_QWORD:
+
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 8;
         return;
 
     case AML_RAW_DATA_BUFFER:
+
         /* Aml length is/was set by creator */
+
         Node->AmlOpcodeLength = 0;
         return;
 
     case AML_RAW_DATA_CHAIN:
+
         /* Aml length is/was set by creator */
+
         Node->AmlOpcodeLength = 0;
         return;
     }
@@ -407,10 +418,12 @@ CgGenerateAmlLengths (
     switch (Node->ParseOpcode)
     {
     case DEFINITIONBLOCK:
+
         Gbl_TableLength = sizeof (ACPI_TABLE_HEADER) + Node->AmlSubtreeLength;
         break;
 
     case NAMESEG:
+
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 4;
         Node->ExternalName = Node->Value.String;
@@ -418,6 +431,7 @@ CgGenerateAmlLengths (
 
     case NAMESTRING:
     case METHODCALL:
+
         if (Node->Flags & NODE_NAME_INTERNALIZED)
         {
             break;
@@ -449,28 +463,33 @@ CgGenerateAmlLengths (
         break;
 
     case STRING_LITERAL:
+
         Node->AmlOpcodeLength = 1;
         Node->AmlLength = strlen (Node->Value.String) + 1; /* Get null terminator */
         break;
 
     case PACKAGE_LENGTH:
+
         Node->AmlOpcodeLength = 0;
         Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node, Node->Value.Integer32);
         break;
 
     case RAW_DATA:
+
         Node->AmlOpcodeLength = 0;
         break;
-
-    /* Ignore the "default arg" nodes, they are extraneous at this point */
 
     case DEFAULT_ARG:
     case EXTERNAL:
     case INCLUDE:
     case INCLUDE_END:
+
+        /* Ignore the "default arg" nodes, they are extraneous at this point */
+
         break;
 
     default:
+
         CgGenerateAmlOpcodeLength (Node);
         break;
     }

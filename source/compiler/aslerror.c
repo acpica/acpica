@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -321,7 +321,6 @@ AePrintException (
         }
     }
 
-
     /* NULL message ID, just print the raw message */
 
     if (Enode->MessageId == 0)
@@ -335,7 +334,6 @@ AePrintException (
         fprintf (OutputFile, "%s %4.4d -",
                     AslErrorLevel[Enode->Level],
                     Enode->MessageId + ((Enode->Level+1) * 1000));
-
 
         MainMessage = AslMessages[Enode->MessageId];
         ExtraMessage = Enode->Message;
@@ -398,7 +396,7 @@ AePrintException (
  *
  * FUNCTION:    AePrintErrorLog
  *
- * PARAMETERS:  Where           - Where to print the error log
+ * PARAMETERS:  FileId           - Where to output the error log
  *
  * RETURN:      None
  *
@@ -429,6 +427,8 @@ AePrintErrorLog (
  *              MessageId           - Index into global message buffer
  *              CurrentLineNumber   - Actual file line number
  *              LogicalLineNumber   - Cumulative line number
+ *              LogicalByteOffset   - Byte offset in source file
+ *              Column              - Column in current line
  *              Filename            - source filename
  *              ExtraMessage        - additional error message
  *
@@ -458,15 +458,13 @@ AslCommonError (
 
     if (ExtraMessage)
     {
-        /*
-         * Allocate a buffer for the message and a new error node
-         */
+        /* Allocate a buffer for the message and a new error node */
+
         MessageSize   = strlen (ExtraMessage) + 1;
         MessageBuffer = UtLocalCalloc (MessageSize);
 
-        /*
-         * Keep a copy of the extra message
-         */
+        /* Keep a copy of the extra message */
+
         STRCPY (MessageBuffer, ExtraMessage);
     }
 
@@ -491,11 +489,9 @@ AslCommonError (
     Enode->Column               = Column;
     Enode->Message              = MessageBuffer;
 
-
     /* Add the new node to the error node list */
 
     AeAddToErrorLog (Enode);
-
 
     if (Gbl_DebugFlag)
     {
@@ -504,9 +500,7 @@ AslCommonError (
         AePrintException (ASL_FILE_STDERR, Enode);
     }
 
-
     Gbl_ExceptionCount[Level]++;
-
     if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
     {
 

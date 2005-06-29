@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.27 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -211,7 +211,7 @@ FlFileError (
  *              Filename            - file pathname to open
  *              Mode                - Open mode for fopen
  *
- * RETURN:      None
+ * RETURN:      File descriptor
  *
  * DESCRIPTION: Open a file.
  *              NOTE: Aborts compiler on any error.
@@ -250,7 +250,7 @@ FlOpenFile (
  *              Buffer              - Where to place the data
  *              Length              - Amount to read
  *
- * RETURN:      Status.  AE_ERROR indicated EOF.
+ * RETURN:      Status.  AE_ERROR indicates EOF.
  *
  * DESCRIPTION: Read data from an open file.
  *              NOTE: Aborts compiler on any error.
@@ -457,9 +457,9 @@ FlOpenIncludeFile (
             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
             Gbl_InputByteCount, Gbl_CurrentColumn,
             Gbl_Files[ASL_FILE_INPUT].Filename, " - Null parse node");
+
         return;
     }
-
 
     /*
      * Flush out the "include ()" statement on this line, start
@@ -479,7 +479,6 @@ FlOpenIncludeFile (
         AslError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN, Node, MsgBuffer);
         return;
     }
-
 
     /* Push the include file on the open input file stack */
 
@@ -702,6 +701,26 @@ FlOpenMiscOutputFiles (
         AslCompilerFileHeader (ASL_FILE_ASM_SOURCE_OUTPUT);
     }
 
+    /* Create/Open a C code source output file if asked */
+
+    if (Gbl_C_OutputFlag)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_C_SOURCE);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        /* Open the assembly code source file, text mode */
+
+        FlOpenFile (ASL_FILE_C_SOURCE_OUTPUT, Filename, "w+");
+
+        FlPrintFile (ASL_FILE_C_SOURCE_OUTPUT, "/*\n");
+        AslCompilerSignon (ASL_FILE_C_SOURCE_OUTPUT);
+        AslCompilerFileHeader (ASL_FILE_C_SOURCE_OUTPUT);
+    }
+
     /* Create/Open a hex output file if asked */
 
     if (Gbl_HexOutputFlag)
@@ -717,7 +736,6 @@ FlOpenMiscOutputFiles (
 
         FlOpenFile (ASL_FILE_HEX_OUTPUT, Filename, "w+");
 
-        FlPrintFile (ASL_FILE_HEX_OUTPUT, "/*\n");
         AslCompilerSignon (ASL_FILE_HEX_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_HEX_OUTPUT);
     }

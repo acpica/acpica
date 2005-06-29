@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -488,7 +488,7 @@ UtCheckIntegerRange (
  *
  * FUNCTION:    UtGetStringBuffer
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Length          - Size of buffer requested
  *
  * RETURN:      Pointer to the buffer.  Aborts on allocation failure
  *
@@ -522,7 +522,8 @@ UtGetStringBuffer (
  *
  * FUNCTION:    UtInternalizeName
  *
- * PARAMETERS:  None
+ * PARAMETERS:  ExternalName            - Name to convert
+ *              ConvertedName           - Where the converted name is returned
  *
  * RETURN:      Status
  *
@@ -711,9 +712,8 @@ UtStrtoul64 (
         String++;
     }
 
-    /*
-     * Main loop: convert the string to an unsigned long:
-     */
+    /* Main loop: convert the string to an unsigned long */
+
     while (*String)
     {
         if (isdigit (*String))
@@ -738,9 +738,8 @@ UtStrtoul64 (
             goto done;
         }
 
-        /*
-         * Check to see if value is out of range:
-         */
+        /* Check to see if value is out of range: */
+
         if (ReturnValue > ((ACPI_INTEGER_MAX - (ACPI_INTEGER) index) /
                             (ACPI_INTEGER) Base))
         {

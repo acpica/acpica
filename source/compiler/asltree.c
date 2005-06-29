@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -480,7 +480,6 @@ TrCreateNode (
         break;
     }
 
-
     /* Link the new node to its children */
 
     PrevChild = NULL;
@@ -916,7 +915,6 @@ TrWalkParseTree (
                 NodePreviouslyVisited = TRUE;
             }
         }
-
         break;
 
 

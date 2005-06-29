@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -1245,8 +1245,8 @@ RsDoInterruptDescriptor (
 
         OptionIndex += 4;
     }
-    InitializerNode = Node->Child;
 
+    InitializerNode = Node->Child;
     Rnode = RsAllocateResourceNode (sizeof (ASL_EXTENDED_XRUPT_DESC) +
                                     OptionIndex + StringLength);
     Descriptor = Rnode->Buffer;
@@ -1449,12 +1449,10 @@ RsDoGeneralRegisterDescriptor (
 
 
     InitializerNode = Node->Child;
-
     Rnode = RsAllocateResourceNode (sizeof (ASL_GENERAL_REGISTER_DESC));
 
     Descriptor = Rnode->Buffer;
     Descriptor->Grg.DescriptorType  = RESOURCE_DESC_GENERAL_REGISTER;
-
     Descriptor->Grg.Length          = 12;
 
     /*

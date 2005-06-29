@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -311,6 +311,7 @@ RsDoFixedIoDescriptor (
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
+
     return (Rnode);
 }
 
@@ -397,6 +398,7 @@ RsDoIoDescriptor (
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
+
     return (Rnode);
 }
 
@@ -650,6 +652,7 @@ RsDoMemory24Descriptor (
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
+
     return (Rnode);
 }
 
@@ -736,6 +739,7 @@ RsDoMemory32Descriptor (
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
+
     return (Rnode);
 }
 
@@ -808,6 +812,7 @@ RsDoMemory32FixedDescriptor (
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
+
     return (Rnode);
 }
 

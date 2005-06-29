@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Parse tree walk to generate both the AML opcodes and the AML
  *              operands.
@@ -397,27 +397,33 @@ OpcGenerateAmlOpcode (
         break;
 
     case OFFSET:
+
         Node->AmlOpcodeLength = 1;
         break;
 
     case ACCESSAS:
+
         OpcDoAccessAs (Node);
         break;
 
     case EISAID:
+
         OpcDoEisaId (Node);
         break;
 
     case UNICODE:
+
         OpcDoUnicode (Node);
         break;
 
     case INCLUDE:
+
         Node->Child->ParseOpcode = DEFAULT_ARG;
         Gbl_HasIncludeFiles = TRUE;
         break;
 
     case EXTERNAL:
+
         Node->Child->ParseOpcode = DEFAULT_ARG;
         Node->Child->Peer->ParseOpcode = DEFAULT_ARG;
         break;

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -181,7 +181,7 @@ LdLoadNamespace (void)
  * PARAMETERS:  PsNode          - Parent node (Field)
  *              WalkState       - Current walk state
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Enter the named elements of the field (children of the parent)
  *              into the namespace.
@@ -203,14 +203,17 @@ LdLoadFieldElements (
     switch (PsNode->AmlOpcode)
     {
     case AML_BANK_FIELD_OP:
+
         Child = UtGetArg (PsNode, 6);
         break;
 
     case AML_INDEX_FIELD_OP:
+
         Child = UtGetArg (PsNode, 5);
         break;
 
     case AML_FIELD_OP:
+
         Child = UtGetArg (PsNode, 4);
         break;
     }
@@ -223,6 +226,7 @@ LdLoadFieldElements (
         {
         case AML_INT_RESERVEDFIELD_OP:
         case AML_INT_ACCESSFIELD_OP:
+
             break;
 
         default:
@@ -264,7 +268,7 @@ LdLoadFieldElements (
  * PARAMETERS:  PsNode          - Parent node (Resource Descriptor)
  *              WalkState       - Current walk state
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Enter the named elements of the resource descriptor (children
  *              of the parent) into the namespace.
@@ -334,6 +338,7 @@ LdLoadResourceElements (
         }
         InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
     }
+
     return (AE_OK);
 }
 
@@ -437,7 +442,6 @@ LdNamespace1Begin (
     else
     {
         ObjectType = AslMapNamedOpcodeToDataType (PsNode->AmlOpcode);
-
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "LdNamespace1Begin: Type=%x\n", ObjectType));
@@ -474,6 +478,7 @@ LdNamespace1Begin (
      */
     PsNode->NsNode = NsNode;
     NsNode->Object = (ACPI_OPERAND_OBJECT *) PsNode;
+
     /* Set the actual data type if appropriate (EXTERNAL term only) */
 
     if (ActualObjectType != ACPI_TYPE_ANY)
@@ -552,7 +557,6 @@ LdNamespace1End (
             AcpiUtGetTypeName (ObjectType), PsNode));
 
         AcpiDsScopeStackPop (WalkState);
-
     }
 
     return (AE_OK);

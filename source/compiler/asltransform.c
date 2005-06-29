@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -127,11 +127,12 @@
  *
  * FUNCTION:    TrAmlGetNextTempName
  *
- * PARAMETERS:
+ * PARAMETERS:  NamePath        - Where a pointer to the temp name is returned
  *
- * RETURN:      None
+ * RETURN:      A pointer to the second character of the name
  *
- * DESCRIPTION: +
+ * DESCRIPTION: Generate an ACPI name of the form _Txx.  These names are
+ *              reserved for use by the ASL compiler.
  *
  ******************************************************************************/
 
@@ -169,11 +170,12 @@ TrAmlGetNextTempName (
  *
  * FUNCTION:    TrAmlInitLineNumbers
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Node to be initialized
+ *              Neighbor        - Node used for initialization values
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Initialized the various line numbers for a parse node.
  *
  ******************************************************************************/
 
@@ -195,11 +197,12 @@ TrAmlInitLineNumbers (
  *
  * FUNCTION:    TrAmlInitNode
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Node to be initialized
+ *              ParseOpcode     - Opcode for this node
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Initialize a node with the parse opcode and opcode name.
  *
  ******************************************************************************/
 
@@ -218,11 +221,12 @@ TrAmlInitNode (
  *
  * FUNCTION:    TrAmlSetSubtreeParent
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - First node in a list of peer nodes
+ *              Parent          - Parent of the subtree
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Set the parent for all peer nodes in a subtree
  *
  ******************************************************************************/
 
@@ -232,6 +236,7 @@ TrAmlSetSubtreeParent (
     ASL_PARSE_NODE          *Parent)
 {
     ASL_PARSE_NODE          *Next;
+
 
     Next = Node;
     while (Next)
@@ -246,11 +251,12 @@ TrAmlSetSubtreeParent (
  *
  * FUNCTION:    TrAmlInsertPeer
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - First node in a list of peer nodes
+ *              NewPeer         - Peer node to insert
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Insert a new peer node into a list of peers.
  *
  ******************************************************************************/
 
@@ -410,7 +416,8 @@ TrDoElseif (
  * RETURN:      None
  *
  *
- * DESCRIPTION: Translate switch to if/else pairs
+ * DESCRIPTION: Translate ASL SWITCH statement to if/else pairs.  There is
+ *              no actual AML opcode for SWITCH -- it must be simulated.
  *
  ******************************************************************************/
 
@@ -537,7 +544,6 @@ TrDoSwitch (
             printf ("Unknown switch opcode\n");
         }
     }
-
 
     /*
      * Add the default at the end of the if/else construct

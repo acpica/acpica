@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -205,7 +205,8 @@ OpnDoMethod (
  *
  * FUNCTION:    OpnDoFieldCommon
  *
- * PARAMETERS:  Node        - The parent parse node
+ * PARAMETERS:  FieldNode       - Node for an ASL field
+ *              Node            - The parent parse node
  *
  * RETURN:      None
  *
@@ -335,7 +336,6 @@ OpnDoFieldCommon (
             NewBitOffset      = PkgLengthNode->Value.Integer32;
             CurrentBitOffset += NewBitOffset;
             break;
-
         }
 
         /* Move on to next entry in the field list */
@@ -715,7 +715,7 @@ OpnDoPackage (
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct the AML operands for the LOADTABLE ASL keyword.
  *
  ******************************************************************************/
 
@@ -771,7 +771,6 @@ OpnDoLoadTable (
         OpcGenerateAmlOpcode (Next);
     }
  */
-
 }
 
 
@@ -876,7 +875,7 @@ UtGetArg (
  *
  * FUNCTION:    OpnAttachNameToNode
  *
- * PARAMETERS:  Node        - The parent parse node
+ * PARAMETERS:  PsNode        - The parent parse node
  *
  * RETURN:      None
  *
