@@ -326,21 +326,21 @@ CmInstallTable (
     {
         TableType       = TABLE_FACP;
         TableName       = FACP_SIG;
-        TableGlobalPtr  = &FACP;
+        TableGlobalPtr  = (void **) &FACP;
     }
 
     else if (!strncmp (TableHeader->Signature, FACS_SIG, 4))
     {
         TableType       = TABLE_FACS;
         TableName       = FACS_SIG;
-        TableGlobalPtr  = &FACS;
+        TableGlobalPtr  = (void **) &FACS;
     }
 
     else if (!strncmp (TableHeader->Signature, DSDT_SIG, 4))
     {
         TableType       = TABLE_DSDT;
         TableName       = DSDT_SIG;
-        TableGlobalPtr  = &DSDT;
+        TableGlobalPtr  = (void **) &DSDT;
     }
     
     else if (!strncmp (TableHeader->Signature, APIC_SIG, 4))
@@ -349,7 +349,7 @@ CmInstallTable (
 
         TableType       = TABLE_APIC;
         TableName       = APIC_SIG;
-        TableGlobalPtr  = &APIC;
+        TableGlobalPtr  = (void **) &APIC;
     }
 
     else if (!strncmp (TableHeader->Signature, PSDT_SIG, 4))
@@ -358,7 +358,7 @@ CmInstallTable (
 
         TableType       = TABLE_PSDT;
         TableName       = PSDT_SIG;
-        TableGlobalPtr  = &PSDT;
+        TableGlobalPtr  = (void **) &PSDT;
     }
 
     else if (!strncmp (TableHeader->Signature, SSDT_SIG, 4))
@@ -368,8 +368,9 @@ CmInstallTable (
 
         TableType       = TABLE_SSDT;
         TableName       = SSDT_SIG;
-        TableGlobalPtr  = &SSDT;
+        TableGlobalPtr  = (void **) &SSDT;
     }
+
 
     else if (!strncmp (TableHeader->Signature, SBDT_SIG, 4))
     {
@@ -377,7 +378,7 @@ CmInstallTable (
 
         TableType       = TABLE_SBDT;
         TableName       = SBDT_SIG;
-        TableGlobalPtr  = &SBDT;
+        TableGlobalPtr  = (void **) &SBDT;
     }
 
     else
@@ -632,6 +633,7 @@ CmHardwareInitialize (void)
         RestoreAcpiChipset = FALSE;
 
         DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: No FACP!\n"));
+
         FUNCTION_STATUS_EXIT (AE_NO_ACPI_TABLES);
         return AE_NO_ACPI_TABLES;
     }
