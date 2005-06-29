@@ -333,9 +333,6 @@ DumpBuffer (
     INT32               Flags, 
     INT32               componentId);
 
-void
-DumpObjectDescriptor (
-	OBJECT_DESCRIPTOR   *Obj);
 
 
 /* TBD: simplify or remove entirely */
