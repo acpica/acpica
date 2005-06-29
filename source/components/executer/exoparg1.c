@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmonad - ACPI AML execution for monadic (1 operand) operators
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -635,10 +635,7 @@ AcpiExMonadic2R (
     /*
      * ACPI 2.0 Opcodes
      */
-    case AML_TO_BUFFER_OP:
     case AML_TO_DECSTRING_OP:
-    case AML_TO_HEXSTRING_OP:
-    case AML_TO_INTEGER_OP:
 
         DEBUG_PRINTP (ACPI_ERROR, ("%s is not implemented\n",
                         AcpiPsGetOpcodeName (Opcode)));
@@ -646,6 +643,18 @@ AcpiExMonadic2R (
         goto Cleanup;
         break;
 
+
+    case AML_TO_HEXSTRING_OP:
+        Status = AcpiExConvertToString (ObjDesc, &RetDesc, WalkState);
+        break;
+
+    case AML_TO_BUFFER_OP:
+        Status = AcpiExConvertToBuffer (ObjDesc, &RetDesc, WalkState);
+        break;
+
+    case AML_TO_INTEGER_OP:
+        Status = AcpiExConvertToInteger (ObjDesc, &RetDesc, WalkState);
+        break;
 
 
     /*
