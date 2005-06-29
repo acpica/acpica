@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -471,7 +471,7 @@ AcpiNsDumpOneObject (
             break;
 
         case INTERNAL_TYPE_INDEX_FIELD:
-            Value = (UINT8 *) ObjDesc->IndexField.Index;
+            Value = (UINT8 *) ObjDesc->IndexField.IndexObj;
             break;
 
        default:
