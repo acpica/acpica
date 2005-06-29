@@ -529,7 +529,7 @@ DbDisplayMethodInfo (
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->ResultObj;
+    Entry = WalkState->Origin->NameTableEntry;
 
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
@@ -629,7 +629,7 @@ DbDisplayLocals (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->ResultObj;
+    Entry = WalkState->Origin->NameTableEntry;
 
 
     OsdPrintf ("Local Variables for method [%4.4s]:\n", &Entry->Name);
@@ -675,7 +675,7 @@ DbDisplayArguments (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->ResultObj;
+    Entry = WalkState->Origin->NameTableEntry;
 
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
@@ -722,7 +722,7 @@ DbDisplayResults (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->ResultObj;
+    Entry = WalkState->Origin->NameTableEntry;
     NumResults = WalkState->NumResults - WalkState->CurrentResult;
 
     OsdPrintf ("Method [%4.4s] has %d stacked result objects\n", &Entry->Name, NumResults);
@@ -766,14 +766,14 @@ DbDisplayCallingTree (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->ResultObj;
+    Entry = WalkState->Origin->NameTableEntry;
 
     OsdPrintf ("Current Control Method Call Tree\n");
 
     for (i = 0; WalkState; i++)
     {
         ObjDesc = WalkState->MethodDesc;
-        Entry = WalkState->Origin->ResultObj;
+        Entry = WalkState->Origin->NameTableEntry;
 
         OsdPrintf ("    [%4.4s]\n", &Entry->Name);
 
