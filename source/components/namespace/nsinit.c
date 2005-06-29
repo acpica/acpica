@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -216,7 +216,6 @@ AcpiNsInitializeDevices (
     Info.DeviceCount = 0;
     Info.Num_STA = 0;
     Info.Num_INI = 0;
-    Info.Num_HID = 0;
 
 
     DEBUG_PRINT_RAW (ACPI_OK, ("Executing device _INI methods:"));
@@ -232,9 +231,8 @@ AcpiNsInitializeDevices (
 
 
     DEBUG_PRINT_RAW (ACPI_OK,
-        ("\n%d Devices found: %d _STA, %d _INI, %d _HID\n",
-        Info.DeviceCount, Info.Num_STA, Info.Num_INI,
-        Info.Num_HID));
+        ("\n%d Devices found: %d _STA, %d _INI\n",
+        Info.DeviceCount, Info.Num_STA, Info.Num_INI));
 
     return_ACPI_STATUS (Status);
 }
