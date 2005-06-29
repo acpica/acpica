@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -455,8 +455,8 @@ AcpiEvGpeInitialize (void)
      * Allocate the Gpe information block
      */
 
-    AcpiGbl_GpeRegisters = AcpiUtCallocate (AcpiGbl_GpeRegisterCount *
-                            sizeof (ACPI_GPE_REGISTERS));
+    AcpiGbl_GpeRegisters = ACPI_MEM_CALLOCATE (AcpiGbl_GpeRegisterCount *
+                                sizeof (ACPI_GPE_REGISTERS));
     if (!AcpiGbl_GpeRegisters)
     {
         DEBUG_PRINTP (ACPI_ERROR,
@@ -470,11 +470,11 @@ AcpiEvGpeInitialize (void)
      * Initialization to zeros is sufficient
      */
 
-    AcpiGbl_GpeInfo = AcpiUtCallocate (MUL_8 (AcpiGbl_GpeRegisterCount) *
-                                        sizeof (ACPI_GPE_LEVEL_INFO));
+    AcpiGbl_GpeInfo = ACPI_MEM_CALLOCATE (MUL_8 (AcpiGbl_GpeRegisterCount) *
+                                            sizeof (ACPI_GPE_LEVEL_INFO));
     if (!AcpiGbl_GpeInfo)
     {
-        AcpiUtFree (AcpiGbl_GpeRegisters);
+        ACPI_MEM_FREE (AcpiGbl_GpeRegisters);
         DEBUG_PRINTP (ACPI_ERROR, ("Could not allocate the GpeInfo block\n"));
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
