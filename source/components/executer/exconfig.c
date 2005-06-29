@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -333,16 +333,25 @@ AcpiExLoadTableOp (
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* 
-     * Find the node referenced by the RootPathString.  This is the
-     * location within the namespace where the table will be loaded.
-     */
+    /* Default nodes */
+
     StartNode = WalkState->ScopeInfo->Scope.Node;
-    Status = AcpiNsGetNodeByPath (Operand[3]->String.Pointer, StartNode,
-                                    NS_SEARCH_PARENT, &ParentNode);
-    if (ACPI_FAILURE (Status))
+    ParentNode = AcpiGbl_RootNode;
+
+    /* RootPath (optional parameter) */
+
+    if (Operand[3]->String.Length > 0)
     {
-        return_ACPI_STATUS (Status);
+        /* 
+         * Find the node referenced by the RootPathString.  This is the
+         * location within the namespace where the table will be loaded.
+         */
+        Status = AcpiNsGetNodeByPath (Operand[3]->String.Pointer, StartNode,
+                                        NS_SEARCH_PARENT, &ParentNode);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* ParameterPath (optional parameter) */
@@ -354,7 +363,7 @@ AcpiExLoadTableOp (
         {
             /*
              * Path is not absolute, so it will be relative to the node
-             * referenced by the RootPathString
+             * referenced by the RootPathString (or the NS root if omitted)
              */
             StartNode = ParentNode;
         }
