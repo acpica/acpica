@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -277,7 +277,7 @@ AcpiEvQueueNotifyRequest (
 
     if (!HandlerObj)
     {
-        /* 
+        /*
          * There is no per-device notify handler for this device.
          * This may or may not be a problem.
          */
