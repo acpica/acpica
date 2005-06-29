@@ -377,15 +377,6 @@ INT32                   ObjStackTop = 0;
  *
  ******************************************************************************/
 
-UINT32                  SciHandle;
-FIXED_EVENT_HANDLER     FixedEventHandlers[NUM_FIXED_EVENTS];
-
-
-#ifdef ACPI_DEBUG
-UINT32                  EventCount[NUM_FIXED_EVENTS];   
-#endif
-
-
 
 
 /******************************************************************************
