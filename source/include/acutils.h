@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.89 $
+ *       $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -256,7 +256,7 @@ AcpiCmStrncat (
     const NATIVE_CHAR       *SrcString,
     NATIVE_UINT             Count);
 
-UINT32
+NATIVE_UINT
 AcpiCmStrtoul (
     const NATIVE_CHAR       *String,
     NATIVE_CHAR             **Terminator,
@@ -695,10 +695,14 @@ ACPI_STATUS
 AcpiCmResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
+#ifdef ACPI_DEBUG
+
 void
 AcpiCmDisplayInitPathname (
     ACPI_HANDLE             ObjHandle,
     char                    *Path);
+
+#endif
 
 
 /*

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.166 $
+ *       $Revision: 1.167 $
  *
  *****************************************************************************/
 
@@ -586,7 +586,7 @@ typedef union AcpiObj
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      ProcId;
-        UINT32                      PblkAddress;
+        ACPI_IO_ADDRESS             PblkAddress;
         UINT32                      PblkLength;
     } Processor;
 
@@ -618,7 +618,7 @@ typedef struct AcpiObjList
 
 typedef struct
 {
-    UINT32                      Length;         /* Length in bytes of the buffer */
+    NATIVE_UINT                 Length;         /* Length in bytes of the buffer */
     void                        *Pointer;       /* pointer to buffer */
 
 } ACPI_BUFFER;
