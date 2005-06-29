@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -385,7 +385,7 @@ AcpiAmlDigitsNeeded (
  *
  * PARAMETERS:  Value           - Value to be converted
  *
- * RETURN:      Convert a 32-bit value to big-endian (swap the bytes)
+ * DESCRIPTION: Convert a 32-bit value to big-endian (swap the bytes)
  *
  ******************************************************************************/
 
@@ -424,7 +424,7 @@ _ntohl (
  * PARAMETERS:  NumericId       - EISA ID to be converted
  *              OutString       - Where to put the converted string (8 bytes)
  *
- * RETURN:      Convert a numeric EISA ID to string representation
+ * DESCRIPTION: Convert a numeric EISA ID to string representation
  *
  ******************************************************************************/
 
@@ -451,6 +451,37 @@ AcpiAmlEisaIdToString (
     return (AE_OK);
 }
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUnsignedIntegerToString
+ *
+ * PARAMETERS:  Value           - Value to be converted
+ *              OutString       - Where to put the converted string (8 bytes)
+ *
+ * RETURN:      Convert a number to string representation
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUnsignedIntegerToString (
+    UINT32                  Value,
+    NATIVE_CHAR             *OutString)
+{
+    UINT32                  Count;
+    UINT32                  DigitsNeeded;
+
+    DigitsNeeded = AcpiAmlDigitsNeeded(Value, 10);
+
+    OutString[DigitsNeeded] = '\0';
+
+    for (Count = DigitsNeeded; Count > 0; Count--)
+    {
+        OutString[Count-1] = (NATIVE_CHAR) ('0' + (Value % 10));
+        Value /= 10;
+    }
+
+    return (AE_OK);
+}
 
 /*******************************************************************************
  *
