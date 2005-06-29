@@ -202,7 +202,7 @@ AcpiAmlReadFieldData (
     {
         DEBUG_PRINT (TRACE_OPREGION,
                     ("AmlReadFieldData: OpRegion %s at %08lx width %d\n",
-                    Acpi_GblRegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
+                    AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
 
@@ -214,7 +214,7 @@ AcpiAmlReadFieldData (
     if (Status == AE_NOT_IMPLEMENTED)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadFieldData: **** OpRegion type %s not implemented\n",
-                Acpi_GblRegionTypes[RgnDesc->Region.SpaceId]));
+                AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId]));
     }
 
     else if (Status == AE_EXIST)

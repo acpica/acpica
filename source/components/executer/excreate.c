@@ -684,7 +684,7 @@ AcpiAmlExecCreateRegion (
     }
 
     DEBUG_PRINT (TRACE_LOAD, ("AmlDoNamedObject: Region Type [%s]\n",
-                    Acpi_GblRegionTypes[RegionSpace]));
+                    AcpiGbl_RegionTypes[RegionSpace]));
 
 
     /* Get the NTE from the object stack  */

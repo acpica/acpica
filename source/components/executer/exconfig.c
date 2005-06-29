@@ -206,8 +206,8 @@ AcpiAmlExecLoadTable (
 
     /* Table must be either an SSDT or a PSDT */
 
-    if ((!STRNCMP (TableHeader.Signature, Acpi_GblAcpiTableData[TABLE_PSDT].Signature, Acpi_GblAcpiTableData[TABLE_PSDT].SigLength)) &&
-        (!STRNCMP (TableHeader.Signature, Acpi_GblAcpiTableData[TABLE_SSDT].Signature, Acpi_GblAcpiTableData[TABLE_SSDT].SigLength)))
+    if ((!STRNCMP (TableHeader.Signature, AcpiGbl_AcpiTableData[TABLE_PSDT].Signature, AcpiGbl_AcpiTableData[TABLE_PSDT].SigLength)) &&
+        (!STRNCMP (TableHeader.Signature, AcpiGbl_AcpiTableData[TABLE_SSDT].Signature, AcpiGbl_AcpiTableData[TABLE_SSDT].SigLength)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Table has invalid signature [%4.4s], must be SSDT or PSDT\n", TableHeader.Signature));
         Status = AE_BAD_SIGNATURE;

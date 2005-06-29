@@ -556,7 +556,7 @@ AcpiAmlExecMatch (
             continue;
         }
 
- 
+
         switch(Op2Desc->Number.Value)
         {
 

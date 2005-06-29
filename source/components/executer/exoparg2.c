@@ -337,7 +337,7 @@ AcpiAmlExecDyadic2R (
         RetDesc->Number.Value = ObjDesc->Number.Value + ObjDesc2->Number.Value;
         break;
 
- 
+
     /* DefAnd  :=  AndOp   Operand1    Operand2    Result  */
 
     case AML_BIT_AND_OP:
@@ -353,7 +353,7 @@ AcpiAmlExecDyadic2R (
         RetDesc->Number.Value = ~(ObjDesc->Number.Value & ObjDesc2->Number.Value);
         break;
 
-   
+
     /* DefOr   :=  OrOp    Operand1    Operand2    Result  */
 
     case AML_BIT_OR_OP:
@@ -833,7 +833,7 @@ AcpiAmlExecDyadic2 (
 
 
     /* Set return value to logical TRUE (all ones) or FALSE (zero) */
-  
+
     if (Lboolean)
     {
         RetDesc->Number.Value = 0xffffffff;

@@ -466,7 +466,7 @@ AcpiAmlDumpOperand (
         else
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("Region %s",
-                                Acpi_GblRegionTypes[EntryDesc->Region.SpaceId]));
+                                AcpiGbl_RegionTypes[EntryDesc->Region.SpaceId]));
         }
 
         /*
@@ -774,7 +774,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsdPrintf ("%20s : 0x%X\n", "Value", ObjDesc->Number.Value);
         break;
 
- 
+
     case ACPI_TYPE_STRING:
 
         AcpiOsdPrintf ("%20s : %s\n",   "Type", "String");
@@ -791,7 +791,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsdPrintf ("%20s : 0x%p\n", "Pointer", ObjDesc->Buffer.Pointer);
         break;
 
-        
+
     case ACPI_TYPE_PACKAGE:
 
         AcpiOsdPrintf ("%20s : %s\n",   "Type", "Package");

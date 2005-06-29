@@ -518,7 +518,7 @@ AcpiAmlGetNameString (
 
 
         case 0:
- 
+
             /* NullName valid as of 8-12-98 ASL/AML Grammar Update */
 
             if (-1 == PrefixCount)

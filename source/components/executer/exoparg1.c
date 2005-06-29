@@ -485,7 +485,7 @@ AcpiAmlExecMonadic2R (
          * two return values)
          */
 
-        if ((NAME_TABLE_ENTRY *) ObjDesc == Acpi_GblRootObject)
+        if ((NAME_TABLE_ENTRY *) ObjDesc == AcpiGbl_RootObject)
         {
             /* This means that the object does not exist in the namespace, return FALSE */
 
