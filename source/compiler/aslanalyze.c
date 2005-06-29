@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -1160,7 +1160,7 @@ AnSemanticAnalysisWalkEnd (
     ArgNode         = Node->Child;
     RuntimeArgTypes = OpInfo->RuntimeArgs;
     ParseArgTypes   = OpInfo->ParseArgs;
-    OpcodeClass     = ACPI_GET_OP_CLASS (OpInfo);
+    OpcodeClass     = OpInfo->Class;
 
     /* Ignore the non-executable opcodes */
 
