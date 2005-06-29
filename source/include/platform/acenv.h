@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.112 $
+ *       $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -271,6 +271,7 @@
 #endif
 #endif /* !DEBUGGER_THREADING */
 
+
 /******************************************************************************
  *
  * C library configuration
@@ -282,7 +283,6 @@
  * Use the standard C library headers.
  * We want to keep these to a minimum.
  */
-
 #ifdef ACPI_USE_STANDARD_HEADERS
 /*
  * Use the standard headers from the standard locations
@@ -297,10 +297,8 @@
 /*
  * We will be linking to the standard Clib functions
  */
-
 #define ACPI_STRSTR(s1,s2)      strstr((s1), (s2))
 #define ACPI_STRCHR(s1,c)       strchr((s1), (c))
-#define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
 #define ACPI_STRLEN(s)          (ACPI_SIZE) strlen((s))
 #define ACPI_STRCPY(d,s)        (void) strcpy((d), (s))
 #define ACPI_STRNCPY(d,s,n)     (void) strncpy((d), (s), (ACPI_SIZE)(n))
@@ -323,14 +321,15 @@
 #define ACPI_IS_ALPHA           isalpha
 #define ACPI_IS_ASCII           isascii
 
+#else
+
 /******************************************************************************
  *
  * Not using native C library, use local implementations
  *
  *****************************************************************************/
-#else
 
-/*
+ /*
  * Use local definitions of C library macros and functions
  * NOTE: The function implementations may not be as efficient
  * as an inline or assembly code implementation provided by a
@@ -347,14 +346,12 @@ typedef char *va_list;
 /*
  * Storage alignment properties
  */
-
 #define  _AUPBND                (sizeof (ACPI_NATIVE_INT) - 1)
 #define  _ADNBND                (sizeof (ACPI_NATIVE_INT) - 1)
 
 /*
  * Variable argument list macro definitions
  */
-
 #define _Bnd(X, bnd)            (((sizeof (X)) + (bnd)) & (~(bnd)))
 #define va_arg(ap, T)           (*(T *)(((ap) += (_Bnd (T, _AUPBND))) - (_Bnd (T,_ADNBND))))
 #define va_end(ap)              (void) 0
@@ -365,7 +362,6 @@ typedef char *va_list;
 
 #define ACPI_STRSTR(s1,s2)      AcpiUtStrstr ((s1), (s2))
 #define ACPI_STRCHR(s1,c)       AcpiUtStrchr ((s1), (c))
-#define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
 #define ACPI_STRLEN(s)          (ACPI_SIZE) AcpiUtStrlen ((s))
 #define ACPI_STRCPY(d,s)        (void) AcpiUtStrcpy ((d), (s))
 #define ACPI_STRNCPY(d,s,n)     (void) AcpiUtStrncpy ((d), (s), (ACPI_SIZE)(n))

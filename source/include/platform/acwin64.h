@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.7 $
+ *       $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,9 +122,8 @@
 #include "acintel.h"
 /*! [End] no source code translation !*/
 
-#define ACPI_OS_NAME                "Windows"
+#define ACPI_MACHINE_WIDTH          64
 
-#define strupr              _strupr
 #define ACPI_USE_STANDARD_HEADERS
 
 /*

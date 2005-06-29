@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acfreebsd.h - OS specific defines, etc.
- *       $Revision: 1.10 $
+ *       $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,16 +117,21 @@
 #ifndef __ACFREEBSD_H__
 #define __ACFREEBSD_H__
 
-/*
- * XXX this is technically correct, but will cause problems with some ASL
- *     which only works if the string names a Microsoft operating system.
- */
-#define ACPI_OS_NAME                "FreeBSD"
 
 /* FreeBSD uses GCC */
 
 #include "acgcc.h"
+#include <sys/types.h>
 #include <machine/acpica_machdep.h>
+
+#ifdef _KERNEL
+#include "opt_acpi.h"
+#endif
+
+#ifdef ACPI_DEBUG
+#define ACPI_DEBUG_OUTPUT   /* for backward compatibility */
+#define ACPI_DISASSEMBLER
+#endif
 
 #ifdef _KERNEL
 #include <sys/ctype.h>
@@ -135,15 +140,11 @@
 #include <sys/libkern.h>
 #include <machine/stdarg.h>
 
-#define asm         __asm
-#define __cli()     disable_intr()
-#define __sti()     enable_intr()
-
-#ifdef ACPI_DEBUG_OUTPUT
 #ifdef DEBUGGER_THREADING
 #undef DEBUGGER_THREADING
 #endif /* DEBUGGER_THREADING */
 #define DEBUGGER_THREADING 0    /* integrated with DDB */
+#ifdef ACPI_DEBUG_OUTPUT
 #include "opt_ddb.h"
 #ifdef DDB
 #define ACPI_DEBUGGER
@@ -154,6 +155,11 @@
 
 /* Not building kernel code, so use libc */
 #define ACPI_USE_STANDARD_HEADERS
+#define ACPI_FLUSH_CPU_CACHE()
+
+#if __STDC_HOSTED__
+#include <ctype.h>
+#endif
 
 #define __cli()
 #define __sti()
@@ -162,18 +168,6 @@
 
 /* Always use FreeBSD code over our local versions */
 #define ACPI_USE_SYSTEM_CLIBRARY
-
-/* FreeBSD doesn't have strupr, should be fixed. (move to libkern) */
-static __inline char *
-strupr(char *str)
-{
-    char *c = str;
-    while(*c) {
-    *c = toupper(*c);
-    c++;
-    }
-    return(str);
-}
 
 #ifdef _KERNEL
 /* Or strstr (used in debugging mode, also move to libkern) */
