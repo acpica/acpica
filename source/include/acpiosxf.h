@@ -360,12 +360,12 @@ AcpiOsSignal (
  * Debug print routines
  */
 
-INT32
+void
 AcpiOsPrintf (
     const NATIVE_CHAR       *Format,
     ...);
 
-INT32
+void
 AcpiOsVprintf (
     const NATIVE_CHAR       *Format,
     va_list                 Args);
