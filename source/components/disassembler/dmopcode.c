@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  ******************************************************************************/
 
@@ -152,7 +152,7 @@ AcpiDmMethodFlags (
 
     Op = AcpiPsGetDepthNext (NULL, Op);
     Flags = Op->Common.Value.Integer8;
-    Args = Flags & 0x7;
+    Args = Flags & 0x07;
 
     /* Mark the Op as completed */
 
@@ -164,7 +164,7 @@ AcpiDmMethodFlags (
 
     /* 2) Serialize rule */
 
-    if (!(Flags & 0x4))
+    if (!(Flags & 0x08))
     {
         AcpiOsPrintf ("Not");
     }
@@ -379,7 +379,14 @@ AcpiDmDisassembleOneOp (
 
     case AML_WORD_OP:
 
-        AcpiOsPrintf ("0x%.2X", (UINT32) Op->Common.Value.Integer16);
+        if (Op->Common.DisasmFlags & ACPI_PARSEOP_SPECIAL)
+        {
+            AcpiDmEisaId (Op->Common.Value.Integer32);
+        }
+        else
+        {
+            AcpiOsPrintf ("0x%.2X", (UINT32) Op->Common.Value.Integer16);
+        }
         break;
 
 
@@ -475,6 +482,7 @@ AcpiDmDisassembleOneOp (
     case AML_INT_NAMEPATH_OP:
 
         AcpiDmNamestring (Op->Common.Value.Name);
+        AcpiDmValidateName (Op->Common.Value.Name, Op);
         break;
 
 
@@ -545,7 +553,7 @@ AcpiDmDisassembleOneOp (
         AcpiOsPrintf ("%s", OpInfo->Name);
 
 
-#ifndef PARSER_ONLY
+#ifndef ACPI_APPLICATION
         if ((Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP) &&
             (WalkState) &&
             (WalkState->Results) &&

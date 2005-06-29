@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.6 $
+ *              $Revision: 1.2 $
  *
  ******************************************************************************/
 
@@ -123,7 +123,7 @@
 
 #ifdef ACPI_DISASSEMBLER
 
-#define _COMPONENT          ACPI_CA_DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         ACPI_MODULE_NAME    ("dmbuffer")
 
 
@@ -156,7 +156,7 @@ AcpiDmDisasmByteList (
 
     for (i = 0; i < ByteCount; i++)
     {
-        AcpiOsPrintf ("0x%2.2X", (UINT32) ByteData[i]);
+        AcpiOsPrintf ("0x%2.2X", ByteData[i]);
 
         /* Add comma if there are more bytes to display */
 
@@ -290,7 +290,6 @@ AcpiDmIsUnicodeBuffer (
      * word must be zero
      */
     if ((!ByteCount)     ||
-         (ByteCount < 4) ||
          (ByteCount & 1) ||
         ((UINT16 *) (void *) ByteData)[WordCount - 1] != 0)
     {
@@ -357,9 +356,7 @@ AcpiDmIsStringBuffer (
 
     /* Last byte must be the null terminator */
 
-    if ((!ByteCount)     ||
-         (ByteCount < 2) ||
-         (ByteData[ByteCount-1] != 0))
+    if (ByteData[ByteCount-1] != 0)
     {
         return (FALSE);
     }
@@ -444,7 +441,7 @@ AcpiDmString (
         case '\'':                      /* Single Quote */
         case '\"':                      /* Double Quote */
         case '\\':                      /* Backslash */
-            AcpiOsPrintf ("\\%c", (int) String[i]);
+            AcpiOsPrintf ("\\%c", String[i]);
             break;
 
         default:
@@ -455,13 +452,13 @@ AcpiDmString (
             {
                 /* This is a normal character */
 
-                AcpiOsPrintf ("%c", (int) String[i]);
+                AcpiOsPrintf ("%c", String[i]);
             }
             else
             {
                 /* All others will be Hex escapes */
 
-                AcpiOsPrintf ("\\x%2.2X", (INT32) String[i]);
+                AcpiOsPrintf ("\\x%2.2X", String[i]);
             }
             break;
         }
@@ -504,7 +501,7 @@ AcpiDmUnicode (
 
     for (i = 0; i < (WordCount - 1); i++)
     {
-        AcpiOsPrintf ("%c", (int) WordData[i]);
+        AcpiOsPrintf ("%c", WordData[i]);
     }
 
     AcpiOsPrintf ("\")");
@@ -581,7 +578,7 @@ AcpiIsEisaId (
 
     /* OK - mark this node as convertable to an EISA ID */
 
-    NextOp->Common.DisasmOpcode = ACPI_DASM_EISAID;
+    NextOp->Common.DisasmFlags |= ACPI_PARSEOP_SPECIAL;
 }
 
 
@@ -615,13 +612,13 @@ AcpiDmEisaId (
 
         /* Three Alpha characters (AAA), 5 bits each */
 
-        (int) ((BigEndianId >> 26) & 0x1F) + 0x40,
-        (int) ((BigEndianId >> 21) & 0x1F) + 0x40,
-        (int) ((BigEndianId >> 16) & 0x1F) + 0x40,
+        ((BigEndianId >> 26) & 0x1F) + 0x40,
+        ((BigEndianId >> 21) & 0x1F) + 0x40,
+        ((BigEndianId >> 16) & 0x1F) + 0x40,
 
         /* Numeric part (NNNN) is simply the lower 16 bits */
 
-        (UINT32) (BigEndianId & 0xFFFF));
+        (BigEndianId & 0xFFFF));
 }
 
 #endif

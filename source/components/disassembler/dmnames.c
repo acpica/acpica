@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmnames - AML disassembler, names, namestrings, pathnames
- *              $Revision: 1.4 $
+ *              $Revision: 1.2 $
  *
  ******************************************************************************/
 
@@ -124,7 +124,7 @@
 
 #ifdef ACPI_DISASSEMBLER
 
-#define _COMPONENT          ACPI_CA_DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         ACPI_MODULE_NAME    ("dmnames")
 
 
@@ -145,19 +145,7 @@ AcpiDmValidateName (
     char                    *Name,
     ACPI_PARSE_OBJECT       *Op)
 {
-
-#if 0
-    if ((!Name) ||
-        (!Op->Common.Parent))
-    {
-        return;
-    }
-
-    if (!Op->Common.Node)
-    {
-        AcpiOsPrintf (" /**** Name not found or not accessible from this scope ****/ ");
-    }
-
+#ifdef PARSER_ONLY
     ACPI_PARSE_OBJECT       *TargetOp;
 
 
@@ -238,6 +226,58 @@ AcpiDmDumpName (
  *
  ******************************************************************************/
 
+#ifdef PARSER_ONLY
+
+ACPI_STATUS
+AcpiPsDisplayObjectPathname (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *TargetOp;
+    char                    *Name;
+
+
+    if (Op->Common.Flags & ACPI_PARSEOP_GENERIC)
+    {
+        Name = Op->Common.Value.Name;
+        if (Name[0] == '\\')
+        {
+            AcpiOsPrintf ("  (Fully Qualified Pathname)");
+            return (AE_OK);
+        }
+    }
+    else
+    {
+        Name = (char *) &Op->Named.Name;
+    }
+
+    /* Search parent tree up to the root if necessary */
+
+    TargetOp = AcpiPsFind (Op, Name, 0, 0);
+    if (!TargetOp)
+    {
+        /*
+         * Didn't find the name in the parse tree.  This may be
+         * a problem, or it may simply be one of the predefined names
+         * (such as _OS_).  Rather than worry about looking up all
+         * the predefined names, just display the name as given
+         */
+        AcpiOsPrintf ("  **** Path not found in parse tree");
+    }
+    else
+    {
+        /* The target was found, print the name and complete path */
+
+        AcpiOsPrintf ("  (Path ");
+        AcpiDmDisplayPath (TargetOp);
+        AcpiOsPrintf (")");
+    }
+
+    return (AE_OK);
+}
+
+#else
+
 ACPI_STATUS
 AcpiPsDisplayObjectPathname (
     ACPI_WALK_STATE         *WalkState,
@@ -300,6 +340,8 @@ Exit:
     AcpiDbgLevel = DebugLevel;
     return (Status);
 }
+
+#endif
 
 
 /*******************************************************************************

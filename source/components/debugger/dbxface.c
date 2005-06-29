@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -477,7 +477,6 @@ AcpiDbInitialize (void)
 
     if (!AcpiGbl_DbOpt_verbose)
     {
-        AcpiGbl_DbDisasmIndent = "    ";
         AcpiGbl_DbOpt_disasm = TRUE;
         AcpiGbl_DbOpt_stats = FALSE;
     }

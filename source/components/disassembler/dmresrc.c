@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.4 $
+ *              $Revision: 1.2 $
  *
  ******************************************************************************/
 
@@ -121,7 +121,7 @@
 
 #ifdef ACPI_DISASSEMBLER
 
-#define _COMPONENT          ACPI_CA_DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         ACPI_MODULE_NAME    ("dbresrc")
 
 
@@ -195,7 +195,7 @@ AcpiDmResourceDescriptor (
     UINT8                   *ByteData,
     UINT32                  ByteCount)
 {
-    NATIVE_UINT             CurrentByteOffset;
+    UINT32                  CurrentByteOffset;
     UINT8                   CurrentByte;
     UINT8                   DescriptorId;
     UINT32                  Length;
@@ -224,7 +224,7 @@ AcpiDmResourceDescriptor (
             CurrentByteOffset += 1;
         }
 
-        CurrentByteOffset += (NATIVE_UINT) Length;
+        CurrentByteOffset += Length;
 
         /* Determine type of resource */
 
@@ -406,7 +406,7 @@ AcpiDmIsResourceDescriptor (
     UINT8                   *ByteData;
     UINT32                  ByteCount;
     ACPI_PARSE_OBJECT       *NextOp;
-    NATIVE_UINT             CurrentByteOffset;
+    UINT32                  CurrentByteOffset;
     UINT8                   CurrentByte;
     UINT8                   DescriptorId;
     UINT32                  Length;
@@ -463,7 +463,7 @@ AcpiDmIsResourceDescriptor (
             CurrentByteOffset += 1;
         }
 
-        CurrentByteOffset += (NATIVE_UINT) Length;
+        CurrentByteOffset += Length;
 
         /* Determine type of resource */
 
