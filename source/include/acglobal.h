@@ -241,6 +241,7 @@ ACPI_EXTERN ACPI_WALK_STATE            *Gbl_BreakpointWalk;
 ACPI_EXTERN BOOLEAN                     Gbl_DbTerminateThreads;
 ACPI_EXTERN ACPI_GENERIC_STATE         *Gbl_GenericStateCache;
 ACPI_EXTERN UINT16                      Gbl_GenericStateCacheDepth;
+ACPI_EXTERN UINT32                      Gbl_StateCacheRequests;
 
 extern		BOOLEAN                     Gbl_Shutdown;
 extern      UINT32                      Gbl_SystemFlags;
