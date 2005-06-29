@@ -197,7 +197,7 @@ typedef INT32                           NATIVE_INT;
 typedef NATIVE_UINT                     ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 
-#define ALIGNED_ADDRESS_BOUNDARY        0x00000004
+#define ALIGNED_ADDRESS_BOUNDARY        0x00000008
 
 #endif
 
@@ -300,25 +300,26 @@ typedef UINT32                          ACPI_TABLE_TYPE;
  * Types must be kept in sync with the NsProperties and NsTypeNames arrays
  */
 
-typedef UINT8                           ACPI_OBJECT_TYPE;
+typedef UINT32                          ACPI_OBJECT_TYPE;
+typedef UINT8                           OBJECT_TYPE_INTERNAL;
 
-#define ACPI_TYPE_Any                   (ACPI_OBJECT_TYPE) 0  /* 0x00  */
-#define ACPI_TYPE_Number                (ACPI_OBJECT_TYPE) 1  /* 0x01  Byte/Word/Dword/Zero/One/Ones */
-#define ACPI_TYPE_String                (ACPI_OBJECT_TYPE) 2  /* 0x02  */
-#define ACPI_TYPE_Buffer                (ACPI_OBJECT_TYPE) 3  /* 0x03  */
-#define ACPI_TYPE_Package               (ACPI_OBJECT_TYPE) 4  /* 0x04  ByteConst, multiple DataTerm/Constant/SuperName */
-#define ACPI_TYPE_FieldUnit             (ACPI_OBJECT_TYPE) 5  /* 0x05  */
-#define ACPI_TYPE_Device                (ACPI_OBJECT_TYPE) 6  /* 0x06  Name, multiple NamedObject */
-#define ACPI_TYPE_Event                 (ACPI_OBJECT_TYPE) 7  /* 0x07  */
-#define ACPI_TYPE_Method                (ACPI_OBJECT_TYPE) 8  /* 0x08  Name, ByteConst, multiple Code */
-#define ACPI_TYPE_Mutex                 (ACPI_OBJECT_TYPE) 9  /* 0x09  */
-#define ACPI_TYPE_Region                (ACPI_OBJECT_TYPE) 10 /* 0x0A  */
-#define ACPI_TYPE_Power                 (ACPI_OBJECT_TYPE) 11 /* 0x0B  Name,ByteConst,WordConst,multi NamedObject */
-#define ACPI_TYPE_Processor             (ACPI_OBJECT_TYPE) 12 /* 0x0C  Name,ByteConst,DWordConst,ByteConst,multi NmO */
-#define ACPI_TYPE_Thermal               (ACPI_OBJECT_TYPE) 13 /* 0x0D  Name, multiple NamedObject */
-#define ACPI_TYPE_BufferField           (ACPI_OBJECT_TYPE) 14 /* 0x0E  */
-#define ACPI_TYPE_DdbHandle             (ACPI_OBJECT_TYPE) 15 /* 0x0F  */
-#define ACPI_TYPE_DebugObject           (ACPI_OBJECT_TYPE) 16 /* 0x10  */
+#define ACPI_TYPE_Any                   0  /* 0x00  */
+#define ACPI_TYPE_Number                1  /* 0x01  Byte/Word/Dword/Zero/One/Ones */
+#define ACPI_TYPE_String                2  /* 0x02  */
+#define ACPI_TYPE_Buffer                3  /* 0x03  */
+#define ACPI_TYPE_Package               4  /* 0x04  ByteConst, multiple DataTerm/Constant/SuperName */
+#define ACPI_TYPE_FieldUnit             5  /* 0x05  */
+#define ACPI_TYPE_Device                6  /* 0x06  Name, multiple NamedObject */
+#define ACPI_TYPE_Event                 7  /* 0x07  */
+#define ACPI_TYPE_Method                8  /* 0x08  Name, ByteConst, multiple Code */
+#define ACPI_TYPE_Mutex                 9  /* 0x09  */
+#define ACPI_TYPE_Region                10 /* 0x0A  */
+#define ACPI_TYPE_Power                 11 /* 0x0B  Name,ByteConst,WordConst,multi NamedObject */
+#define ACPI_TYPE_Processor             12 /* 0x0C  Name,ByteConst,DWordConst,ByteConst,multi NmO */
+#define ACPI_TYPE_Thermal               13 /* 0x0D  Name, multiple NamedObject */
+#define ACPI_TYPE_BufferField           14 /* 0x0E  */
+#define ACPI_TYPE_DdbHandle             15 /* 0x0F  */
+#define ACPI_TYPE_DebugObject           16 /* 0x10  */
 
 #define ACPI_TYPE_MAX                   16
 
@@ -329,28 +330,28 @@ typedef UINT8                           ACPI_OBJECT_TYPE;
  * the largest official ACPI ObjectType must not overlap with defined AML opcodes.
  */
 #define INTERNAL_TYPE_BEGIN             25
-#define INTERNAL_TYPE_DefField          (ACPI_OBJECT_TYPE) 25 /* 0x19  */
-#define INTERNAL_TYPE_BankField         (ACPI_OBJECT_TYPE) 26 /* 0x1A  */
-#define INTERNAL_TYPE_IndexField        (ACPI_OBJECT_TYPE) 27 /* 0x1B  */
-#define INTERNAL_TYPE_DefFieldDefn      (ACPI_OBJECT_TYPE) 28 /* 0x1C  Name, ByteConst, multiple FieldElement */
-#define INTERNAL_TYPE_BankFieldDefn     (ACPI_OBJECT_TYPE) 29 /* 0x1D  2 Name,DWordConst,ByteConst,multi FieldElement */
-#define INTERNAL_TYPE_IndexFieldDefn    (ACPI_OBJECT_TYPE) 30 /* 0x1E  2 Name, ByteConst, multiple FieldElement */
-#define INTERNAL_TYPE_If                (ACPI_OBJECT_TYPE) 31 /* 0x1F  OpCode, multiple Code */
-#define INTERNAL_TYPE_Else              (ACPI_OBJECT_TYPE) 32 /* 0x20  multiple Code */
-#define INTERNAL_TYPE_While             (ACPI_OBJECT_TYPE) 33 /* 0x21  OpCode, multiple Code */
-#define INTERNAL_TYPE_Scope             (ACPI_OBJECT_TYPE) 34 /* 0x22  Name, multiple NamedObject */
-#define INTERNAL_TYPE_DefAny            (ACPI_OBJECT_TYPE) 35 /* 0x23  type is Any, suppress search of enclosing scopes */
-#define INTERNAL_TYPE_Reference         (ACPI_OBJECT_TYPE) 36 /* 0x24  Arg#, Local#, Name, Debug; used only in descriptors */
-#define INTERNAL_TYPE_Alias             (ACPI_OBJECT_TYPE) 37 /* 0x25  */
-#define INTERNAL_TYPE_Notify            (ACPI_OBJECT_TYPE) 38 /* 0x26  */
-#define INTERNAL_TYPE_AddressHandler    (ACPI_OBJECT_TYPE) 39 /* 0x27  */
-#define INTERNAL_TYPE_MethodArgument    (ACPI_OBJECT_TYPE) 40 /* 0x28  */
-#define INTERNAL_TYPE_MethodLocalVar    (ACPI_OBJECT_TYPE) 41 /* 0x29  */
+#define INTERNAL_TYPE_DefField          25 /* 0x19  */
+#define INTERNAL_TYPE_BankField         26 /* 0x1A  */
+#define INTERNAL_TYPE_IndexField        27 /* 0x1B  */
+#define INTERNAL_TYPE_DefFieldDefn      28 /* 0x1C  Name, ByteConst, multiple FieldElement */
+#define INTERNAL_TYPE_BankFieldDefn     29 /* 0x1D  2 Name,DWordConst,ByteConst,multi FieldElement */
+#define INTERNAL_TYPE_IndexFieldDefn    30 /* 0x1E  2 Name, ByteConst, multiple FieldElement */
+#define INTERNAL_TYPE_If                31 /* 0x1F  OpCode, multiple Code */
+#define INTERNAL_TYPE_Else              32 /* 0x20  multiple Code */
+#define INTERNAL_TYPE_While             33 /* 0x21  OpCode, multiple Code */
+#define INTERNAL_TYPE_Scope             34 /* 0x22  Name, multiple NamedObject */
+#define INTERNAL_TYPE_DefAny            35 /* 0x23  type is Any, suppress search of enclosing scopes */
+#define INTERNAL_TYPE_Reference         36 /* 0x24  Arg#, Local#, Name, Debug; used only in descriptors */
+#define INTERNAL_TYPE_Alias             37 /* 0x25  */
+#define INTERNAL_TYPE_Notify            38 /* 0x26  */
+#define INTERNAL_TYPE_AddressHandler    39 /* 0x27  */
+#define INTERNAL_TYPE_MethodArgument    40 /* 0x28  */
+#define INTERNAL_TYPE_MethodLocalVar    41 /* 0x29  */
 
 #define INTERNAL_TYPE_MAX               41
 
-#define INTERNAL_TYPE_Invalid           (ACPI_OBJECT_TYPE) 42
-#define ACPI_TYPE_NotFound              (ACPI_OBJECT_TYPE) 0xFF
+#define INTERNAL_TYPE_Invalid           42
+#define ACPI_TYPE_NotFound              0xFF
 
 /* 
  * Event Types:
@@ -458,6 +459,7 @@ typedef union AcpiObj
     struct
     {
         ACPI_OBJECT_TYPE            Type;
+        UINT32                      Fill1;
         ACPI_HANDLE                 Handle;     /* object reference */
     } Reference;
 
