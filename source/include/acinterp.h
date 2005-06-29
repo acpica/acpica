@@ -603,6 +603,15 @@ AmlPackageNested (
  * isutils - interpreter/scanner utilities
  */
 
+
+BOOLEAN
+AmlAcquireGlobalLock (
+    UINT16              Rule);
+
+ACPI_STATUS
+AmlReleaseGlobalLock (
+    BOOLEAN             Locked);
+
 void
 AmlAppendBlockOwner (
     void                *Owner);
@@ -617,10 +626,6 @@ AmlAppendOperandDiag(
 UINT32 
 AmlBufSeq (
     void);
-
-void
-DeleteObject (
-    OBJECT_DESCRIPTOR   **ppOD);
 
 INT32
 DigitsNeeded (
