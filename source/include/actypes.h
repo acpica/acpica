@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.144 $
+ *       $Revision: 1.145 $
  *
  *****************************************************************************/
 
@@ -187,9 +187,11 @@ typedef UINT32                          ACPI_MEM_ADDRESS;
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000002
 #define _HW_ALIGNMENT_SUPPORT
 
-/* (16-bit only) Force internal integers to be 32, not 64 bits */
-
-#define ACPI_VERSION_1
+/* 
+ * (16-bit only) internal integers must be 32-bits, so
+ * 64-bit integers cannot be supported
+ */
+#define ACPI_NO_INTEGER64_SUPPORT
 
 
 #else
@@ -213,7 +215,6 @@ typedef UINT32                          ACPI_MEM_ADDRESS;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000004
 #define _HW_ALIGNMENT_SUPPORT
-
 #endif
 
 
@@ -279,19 +280,14 @@ typedef char*                           ACPI_STRING;    /* Null terminated ASCII
 typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an Node */
 
 
-/* TBD: TEMP ONLY! */
-
-#define ACPI_VERSION_1
-
 /*
  * Acpi integer width. In ACPI version 1, integers are
- * 32 bits.  In ACPI version 2, integers are 64 bits.  Period.
+ * 32 bits.  In ACPI version 2, integers are 64 bits.
  * Note that this pertains to the ACPI integer type only, not
  * other integers used in the implementation of the ACPI CA
  * subsystem.
  */
-
-#ifdef ACPI_VERSION_1
+#ifdef ACPI_NO_INTEGER64_SUPPORT
 
 /* 32-bit Integers */
 
@@ -306,6 +302,7 @@ typedef UINT32                          ACPI_INTEGER;
 typedef UINT64                          ACPI_INTEGER;
 #define ACPI_INTEGER_MAX                ACPI_UINT64_MAX;
 #define ACPI_INTEGER_BIT_SIZE           64
+
 #endif
 
 
