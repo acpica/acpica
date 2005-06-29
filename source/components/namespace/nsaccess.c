@@ -372,23 +372,24 @@ BREAKPOINT3;
                 DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
                                   ((meth *) MethodPtr->Value)->Offset + 1));
         
-                ClearPkgStack ();
+                AmlClearPkgStack ();
                 ObjStackTop = 0;    /* Clear object stack */
                 
                 /* Excecute the method here */
 
-                Excep = AmlExec (((meth *) MethodPtr->Value)->Offset + 1,
+                Excep = AmlExecuteMethod (
+                                 ((meth *) MethodPtr->Value)->Offset + 1,
                                  ((meth *) MethodPtr->Value)->Length - 1,
                                  Params);
 
-                if (PkgNested ())
+                if (AmlPackageNested ())
                 {
                     /*  Package stack not empty at method exit and should be  */
 
                     REPORT_INFO (&KDT[0]);
                 }
 
-                if (GetMethodDepth () > -1)
+                if (AmlGetMethodDepth () > -1)
                 {
                     /*  Method stack not empty at method exit and should be */
 
@@ -400,7 +401,7 @@ BREAKPOINT3;
                     /* Object stack is not empty at method exit and should be */
 
                     REPORT_INFO (&KDT[2]);
-                    DumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
+                    AmlDumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
                 }
 
                 DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
@@ -433,7 +434,7 @@ BREAKPOINT3;
                 ObjDesc->Lvalue.Ref     = (void *) MethodPtr;
 
                 /* 
-                 * Put it on the stack, and use GetRvalue() to get the value.
+                 * Put it on the stack, and use AmlGetRvalue() to get the value.
                  * Note that ObjStackTop points to the top valid entry, not to
                  * the first unused position.
                  */
@@ -443,10 +444,10 @@ BREAKPOINT3;
 
                 /* This causes ObjDesc (allocated above) to always be deleted */
 
-                Excep = GetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+                Excep = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
 
                 /* 
-                 * If GetRvalue() succeeded, treat the top stack entry as
+                 * If AmlGetRvalue() succeeded, treat the top stack entry as
                  * a return value.
                  */
 
