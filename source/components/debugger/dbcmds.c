@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  ******************************************************************************/
 
@@ -236,6 +236,32 @@ AcpiDbFindReferences (
 
     AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                     AcpiDbWalkForReferences, (void *) ObjDesc, NULL);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbDisplayLocks
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display information about internal mutexes.
+ *
+ ******************************************************************************/
+
+void
+AcpiDbDisplayLocks (void)
+{
+    UINT32                  i;
+
+
+    for (i = 0; i < MAX_MTX; i++)
+    {
+        AcpiOsPrintf ("%26s : %s\n", AcpiCmGetMutexName (i), 
+                    AcpiGbl_AcpiMutexInfo[i].Locked ? "Locked" : "Unlocked");
+    }
 }
 
 
