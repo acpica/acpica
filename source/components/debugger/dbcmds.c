@@ -157,159 +157,6 @@ ARGUMENT_INFO               DbObjectTypes [] =
 };
 
 
-typedef struct HistoryInfo
-{
-    char                    Command[80];
-    UINT32                  CmdNum;
-
-} HISTORY_INFO;
-
-
-#define HI_NO_HISTORY       0
-#define HI_RECORD_HISTORY   1
-
-#define HISTORY_SIZE        20
-HISTORY_INFO                HistoryBuffer[HISTORY_SIZE];
-UINT32                      LoHistory = 0;
-UINT32                      NumHistory = 0;
-UINT32                      NextHistoryIndex = 0;
-UINT32                      NextCmdNum = 1;
-
-
-
-/******************************************************************************
- * 
- * FUNCTION:    DbAddToHistory
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Add a command line to the history buffer.
- *
- *****************************************************************************/
-
-void
-DbAddToHistory (
-    char                    *CommandLine)
-{
-
-
-    STRCPY (HistoryBuffer[NextHistoryIndex].Command, CommandLine);
-    HistoryBuffer[NextHistoryIndex].CmdNum = NextCmdNum;
-
-    if ((NumHistory == HISTORY_SIZE) &&
-        (NextHistoryIndex == LoHistory))
-    {
-        LoHistory++;
-        if (LoHistory >= HISTORY_SIZE)
-        {
-            LoHistory = 0;
-        }
-    }
-
-    NextHistoryIndex++;
-    if (NextHistoryIndex >= HISTORY_SIZE)
-    {
-        NextHistoryIndex = 0;
-    }
-
-
-    NextCmdNum++;
-    if (NumHistory < HISTORY_SIZE)
-    {
-        NumHistory++;
-    }
-
-}
-
-
-/******************************************************************************
- * 
- * FUNCTION:    DbDisplayHistory
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display the contents of the history buffer
- *
- *****************************************************************************/
-
-void
-DbDisplayHistory (void)
-{
-    UINT32                  i;
-    UINT32                  HistoryIndex;
-
-
-    HistoryIndex = LoHistory;
-    for (i = 0; i < NumHistory; i++)
-    {
-        OsdPrintf ("%d  %s\n", HistoryBuffer[HistoryIndex].CmdNum, &HistoryBuffer[HistoryIndex].Command);
-
-        HistoryIndex++;
-        if (HistoryIndex >= HISTORY_SIZE)
-        {
-            HistoryIndex = 0;
-        }
-    }
-}
-
-
-/******************************************************************************
- * 
- * FUNCTION:    DbGetFromHistory
- *
- * PARAMETERS:  CommandNumArg           - String containing the number of the
- *                                        command to be retrieved
- *
- * RETURN:      None
- *
- * DESCRIPTION: Get a command from the history buffer
- *
- *****************************************************************************/
-
-char *
-DbGetFromHistory (
-    char                    *CommandNumArg)
-{
-    UINT32                  i;
-    UINT32                  HistoryIndex;
-    UINT32                  CmdNum;
-
-
-    if (CommandNumArg == NULL)
-    {
-        CmdNum = NextCmdNum - 1;
-    }
-
-    else
-    {
-        CmdNum = STRTOUL (CommandNumArg, NULL, 0);
-    }
-
-    HistoryIndex = LoHistory;
-    for (i = 0; i < NumHistory; i++)
-    {
-        if (HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
-        {
-            return (HistoryBuffer[HistoryIndex].Command);
-        }
-
-
-        HistoryIndex++;
-        if (HistoryIndex >= HISTORY_SIZE)
-        {
-            HistoryIndex = 0;
-        }
-    }
-
-    OsdPrintf ("Invalid history number: %d\n", HistoryIndex);
-    return NULL;
-}
-    
-
 /******************************************************************************
  * 
  * FUNCTION:    DbDisplayTableInfo
@@ -497,6 +344,7 @@ DbDisassembleAml (
 
     DbDisplayOp (Op, NumStatements);
 }
+
 
 
 /******************************************************************************
@@ -767,7 +615,6 @@ DbSetMethodData (
 }
 
 
-
 /******************************************************************************
  * 
  * FUNCTION:    DbWalkMethods
@@ -895,7 +742,6 @@ DbDisplayObjects (
 }
 
 
-
 /******************************************************************************
  * 
  * FUNCTION:    DbWalkAndMatchName
@@ -989,148 +835,6 @@ DbFindNameInNamespace (
 
     DbSetOutputDestination (DB_CONSOLE_OUTPUT);
     return AE_OK;
-}
-
-
-/******************************************************************************
- * 
- * FUNCTION:    DbExecute
- *
- * PARAMETERS:  Name                - Name of method to execute
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute a control method.  Name is relative to the current
- *              scope.
- *
- *****************************************************************************/
-
-void
-DbExecute (
-    char                    *Name,
-    char                    **Args,
-    UINT32                  Flags)
-{
-    ACPI_STATUS             Status;
-    ACPI_BUFFER             ReturnObj;
-    ACPI_OBJECT_LIST        ParamObjects;
-    ACPI_OBJECT             Params[MTH_NUM_ARGS];
-    UINT32                  PreviousAllocations;
-    UINT32                  PreviousSize;
-    UINT32                  Allocations;
-    UINT32                  Size;
-    UINT32                  i;
-    char                    LocalBuf[64];
-
-
-    if (OutputToFile && !DebugLevel)
-    {
-        OsdPrintf ("Warning: debug output is not enabled!\n");
-    }
-
-    /* Memory allocation tracking */
-
-    PreviousAllocations = Gbl_CurrentAllocCount;
-    PreviousSize = Gbl_CurrentAllocSize;
-
-    if (Args[0])
-    {
-        for (i = 0; Args[i] && i < MTH_NUM_ARGS; i++)
-        {
-            Params[i].Type              = ACPI_TYPE_Number;
-            Params[i].Number.Value      = STRTOUL (Args[i], NULL, 16);
-        }
-
-        ParamObjects.Pointer        = Params;
-        ParamObjects.Count          = i;
-    }
-
-    else
-    {
-        /* Setup default parameters */
-
-        Params[0].Type              = ACPI_TYPE_Number;
-        Params[0].Number.Value      = 0x01020304;
-
-        Params[1].Type              = ACPI_TYPE_String;
-        Params[1].String.Length     = 12;
-        Params[1].String.Pointer    = "AML Debugger";
-
-        ParamObjects.Pointer        = Params;
-        ParamObjects.Count          = 2;
-    }
-
-    /* Prepare for a return object of arbitrary size */
-
-    ReturnObj.Pointer           = Buffer;
-    ReturnObj.Length            = BUFFER_SIZE;
-
-    /* Catenate the current scope to the supplied name */
-
-    LocalBuf[0] = 0;
-    if ((Name[0] != '\\') &&
-        (Name[0] != '/'))
-    {
-        STRCAT (LocalBuf, ScopeBuf);
-    }
-    STRCAT (LocalBuf, Name);
-    DbPrepNamestring (LocalBuf);
-
-    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    OsdPrintf ("Executing %s\n", LocalBuf);
-
-    if (Flags & EX_SINGLE_STEP)
-    {
-        Gbl_CmSingleStep = TRUE;
-        DbSetOutputDestination (DB_CONSOLE_OUTPUT);
-    }
-
-    else
-    {
-        /* No single step, allow redirection to a file */
-
-        DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-    }
-
-
-    /* Do the actual method execution */
-
-    Status = AcpiEvaluateObject (NULL, LocalBuf, &ParamObjects, &ReturnObj);
-
-    Gbl_CmSingleStep = FALSE;
-    Gbl_MethodExecuting = FALSE;
-
-    /* Memory allocation tracking */
-
-    Allocations = Gbl_CurrentAllocCount - PreviousAllocations;
-    Size = Gbl_CurrentAllocSize - PreviousSize;
-
-    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-
-    if (Allocations > 0)
-    {
-        OsdPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
-                        Allocations, Size);
-    }
-
-
-    if (ACPI_FAILURE (Status))
-    {
-        OsdPrintf ("Execution of %s failed with status %s\n", LocalBuf, CmFormatException (Status));
-    }
-
-    else
-    {
-        /* Display a return object, if any */
-
-        if (ReturnObj.Length)
-        {
-            OsdPrintf ("Execution of %s returned object %p\n", LocalBuf, ReturnObj.Pointer);
-            DbDumpObject (ReturnObj.Pointer, 1);
-        }
-    }
-
-    DbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
 
