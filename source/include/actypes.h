@@ -268,14 +268,14 @@ typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an 
 /*
  * Sleep state constants
  */
-#define S0                              (UINT8) 0
-#define S1                              (UINT8) 1
-#define S2                              (UINT8) 2
-#define S3                              (UINT8) 3
-#define S4                              (UINT8) 4
-#define S4BIOS                          (UINT8) 5
-#define S5                              (UINT8) 6
-#define ACPI_S_STATES_MAX               S5
+#define ACPI_STATE_S0                   (UINT8) 0
+#define ACPI_STATE_S1                   (UINT8) 1
+#define ACPI_STATE_S2                   (UINT8) 2
+#define ACPI_STATE_S3                   (UINT8) 3
+#define ACPI_STATE_S4                   (UINT8) 4
+#define ACPI_STATE_S4BIOS               (UINT8) 5
+#define ACPI_STATE_S5                   (UINT8) 6
+#define ACPI_S_STATES_MAX               ACPI_STATE_S5
 
 
 /*
@@ -284,16 +284,16 @@ typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an 
 
 typedef UINT32                          ACPI_TABLE_TYPE;
 
-#define TABLE_RSDP                      (ACPI_TABLE_TYPE) 0
-#define TABLE_APIC                      (ACPI_TABLE_TYPE) 1
-#define TABLE_DSDT                      (ACPI_TABLE_TYPE) 2
-#define TABLE_FACP                      (ACPI_TABLE_TYPE) 3
-#define TABLE_FACS                      (ACPI_TABLE_TYPE) 4
-#define TABLE_PSDT                      (ACPI_TABLE_TYPE) 5
-#define TABLE_RSDT                      (ACPI_TABLE_TYPE) 6
-#define TABLE_SSDT                      (ACPI_TABLE_TYPE) 7
-#define TABLE_SBST                      (ACPI_TABLE_TYPE) 8
-#define TABLE_BOOT                      (ACPI_TABLE_TYPE) 9
+#define ACPI_TABLE_RSDP                 (ACPI_TABLE_TYPE) 0
+#define ACPI_TABLE_APIC                 (ACPI_TABLE_TYPE) 1
+#define ACPI_TABLE_DSDT                 (ACPI_TABLE_TYPE) 2
+#define ACPI_TABLE_FACP                 (ACPI_TABLE_TYPE) 3
+#define ACPI_TABLE_FACS                 (ACPI_TABLE_TYPE) 4
+#define ACPI_TABLE_PSDT                 (ACPI_TABLE_TYPE) 5
+#define ACPI_TABLE_RSDT                 (ACPI_TABLE_TYPE) 6
+#define ACPI_TABLE_SSDT                 (ACPI_TABLE_TYPE) 7
+#define ACPI_TABLE_SBST                 (ACPI_TABLE_TYPE) 8
+#define ACPI_TABLE_BOOT                 (ACPI_TABLE_TYPE) 9
 #define ACPI_TABLE_MAX                  9
 #define NUM_ACPI_TABLES                 10
 
@@ -367,33 +367,33 @@ typedef UINT8                           OBJECT_TYPE_INTERNAL;
 
 typedef UINT32                          ACPI_EVENT_TYPE;
 
-#define EVENT_FIXED                     (ACPI_EVENT_TYPE) 0
-#define EVENT_GPE                       (ACPI_EVENT_TYPE) 1
+#define ACPI_EVENT_FIXED                (ACPI_EVENT_TYPE) 0
+#define ACPI_EVENT_GPE                  (ACPI_EVENT_TYPE) 1
 
 /*
  * Fixed events
  */
 
-#define EVENT_PMTIMER                   (ACPI_EVENT_TYPE) 0
+#define ACPI_EVENT_PMTIMER              (ACPI_EVENT_TYPE) 0
     /*
      * There's no bus master event so index 1 is used for IRQ's that are not
      * handled by the SCI handler
      */
-#define EVENT_NOT_USED                  (ACPI_EVENT_TYPE) 1
-#define EVENT_GLOBAL                    (ACPI_EVENT_TYPE) 2
-#define EVENT_POWER_BUTTON              (ACPI_EVENT_TYPE) 3
-#define EVENT_SLEEP_BUTTON              (ACPI_EVENT_TYPE) 4
-#define EVENT_RTC                       (ACPI_EVENT_TYPE) 5
-#define EVENT_GENERAL                   (ACPI_EVENT_TYPE) 6
+#define ACPI_EVENT_NOT_USED             (ACPI_EVENT_TYPE) 1
+#define ACPI_EVENT_GLOBAL               (ACPI_EVENT_TYPE) 2
+#define ACPI_EVENT_POWER_BUTTON         (ACPI_EVENT_TYPE) 3
+#define ACPI_EVENT_SLEEP_BUTTON         (ACPI_EVENT_TYPE) 4
+#define ACPI_EVENT_RTC                  (ACPI_EVENT_TYPE) 5
+#define ACPI_EVENT_GENERAL              (ACPI_EVENT_TYPE) 6
 #define ACPI_EVENT_MAX                  6
 #define NUM_FIXED_EVENTS                (ACPI_EVENT_TYPE) 7
 
-#define GPE_INVALID                     0xFF
-#define GPE_MAX                         0xFF
+#define ACPI_GPE_INVALID                0xFF
+#define ACPI_GPE_MAX                    0xFF
 #define NUM_GPE                         256
 
-#define EVENT_LEVEL_TRIGGERED           (ACPI_EVENT_TYPE) 1
-#define EVENT_EDGE_TRIGGERED            (ACPI_EVENT_TYPE) 2
+#define ACPI_EVENT_LEVEL_TRIGGERED      (ACPI_EVENT_TYPE) 1
+#define ACPI_EVENT_EDGE_TRIGGERED       (ACPI_EVENT_TYPE) 2
 
 /*
  * AcpiEvent Status:
@@ -411,8 +411,8 @@ typedef UINT32                          ACPI_EVENT_TYPE;
  */
 typedef UINT32                          ACPI_EVENT_STATUS;
 
-#define EVENT_FLAG_ENABLED              (ACPI_EVENT_STATUS) 0x01
-#define EVENT_FLAG_SET                  (ACPI_EVENT_STATUS) 0x02
+#define ACPI_EVENT_FLAG_ENABLED         (ACPI_EVENT_STATUS) 0x01
+#define ACPI_EVENT_FLAG_SET             (ACPI_EVENT_STATUS) 0x02
 
 
 /* Notify types */
@@ -494,7 +494,6 @@ typedef union AcpiObj
 } ACPI_OBJECT, *PACPI_OBJECT;
 
 
-
 /*
  * List of objects, used as a parameter list for control method evaluation
  */
@@ -505,7 +504,6 @@ typedef struct AcpiObjList
     ACPI_OBJECT                 *Pointer;
 
 } ACPI_OBJECT_LIST, *PACPI_OBJECT_LIST;
-
 
 
 /*
@@ -697,8 +695,6 @@ typedef struct
 } ACPI_DEVICE_INFO;
 
 
-
-
 /* Context structs for address space handlers */
 
 typedef struct
@@ -725,7 +721,6 @@ typedef struct
  */
 
 typedef ACPI_STATUS (*ACPI_C_STATE_HANDLER) (ACPI_IO_ADDRESS, UINT32*);
-
 
 
 /*
