@@ -143,6 +143,7 @@ ACPI_STATUS
 AcpiEnable (void)
 {
     UINT32                  i;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AcpiEnable");
@@ -220,7 +221,10 @@ AcpiEnable (void)
 
     }
 
-    return_ACPI_STATUS (AE_OK);
+
+    Status = EvInitGlobalLockHandler ();
+
+    return_ACPI_STATUS (Status);
 }
     
 
@@ -441,7 +445,9 @@ AcpiInstallNotifyHandler (
 
     /* Convert and validate the device handle */
 
-    if (!(ObjEntry = NsConvertHandleToEntry (Device)))
+
+    ObjEntry = NsConvertHandleToEntry (Device);
+    if (!ObjEntry)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -616,7 +622,8 @@ AcpiRemoveNotifyHandler (
 
     /* Convert and validate the device handle */
 
-    if (!(ObjEntry = NsConvertHandleToEntry (Device)))
+    ObjEntry = NsConvertHandleToEntry (Device);
+    if (!ObjEntry)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -635,7 +642,8 @@ AcpiRemoveNotifyHandler (
 
     /* Check for an existing internal object */
 
-    if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry)))
+    ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
+    if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
@@ -737,7 +745,8 @@ AcpiInstallAddressSpaceHandler (
 
     /* Convert and validate the device handle */
 
-    if (!(ObjEntry = NsConvertHandleToEntry (Device)))
+    ObjEntry = NsConvertHandleToEntry (Device);
+    if (!ObjEntry)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -839,7 +848,7 @@ AcpiInstallAddressSpaceHandler (
 
         /* Init new descriptor */
 
-        ObjDesc->Common.Type = Type;
+        ObjDesc->Common.Type = (UINT8) Type;
 
         /* Attach the new object to the NTE */
 
@@ -876,7 +885,7 @@ AcpiInstallAddressSpaceHandler (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    HandlerObj->AddrHandler.SpaceId     = SpaceId;
+    HandlerObj->AddrHandler.SpaceId     = (UINT16) SpaceId;
     HandlerObj->AddrHandler.Hflags      = Flags;
     HandlerObj->AddrHandler.Link        = ObjDesc->Device.AddrHandler;
     HandlerObj->AddrHandler.RegionList  = NULL;
@@ -957,7 +966,8 @@ AcpiRemoveAddressSpaceHandler (
 
     /* Convert and validate the device handle */
 
-    if (!(ObjEntry = NsConvertHandleToEntry (Device)))
+    ObjEntry = NsConvertHandleToEntry (Device);
+    if (!ObjEntry)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -1111,7 +1121,7 @@ AcpiInstallGpeHandler (
 
     Gbl_GpeInfo[GpeNumber].Handler = Handler;
     Gbl_GpeInfo[GpeNumber].Context = Context;
-    Gbl_GpeInfo[GpeNumber].Type = Type;
+    Gbl_GpeInfo[GpeNumber].Type = (UINT8) Type;
 
     /* Now we can enable the GPE */
 
