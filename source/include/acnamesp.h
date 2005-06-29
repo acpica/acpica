@@ -125,13 +125,6 @@
 
 #define ACPILIB_DATA_FILE_VERSION "ADF-001"
 
-/* 
- * There is an (nte *) prefix to each name table, containing either a NULL 
- * pointer or the address of the next array of nte's in the scope.
- *
- * This macro extracts a pointer to the NEXT table in the chain.
- */
-#define NEXTSEG(NameTbl)        ((NAME_TABLE_ENTRY **)NameTbl)[-1]
 
 /* To search the entire name space, pass this as SearchBase */
 
