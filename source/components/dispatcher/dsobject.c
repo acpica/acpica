@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -622,7 +622,7 @@ AcpiDsInitObjectFromOp (
 
             case AML_REVISION_OP:
 
-                ObjDesc->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
+                ObjDesc->Integer.Value = ACPI_CA_VERSION;
                 break;
 
             default:
