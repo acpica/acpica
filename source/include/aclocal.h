@@ -117,7 +117,7 @@
 #ifndef _ACPI_INTERNAL_H
 #define _ACPI_INTERNAL_H
 
-
+#include "config.h"
 
 /*
  * ACPI Table information.  We save the table address, length,
