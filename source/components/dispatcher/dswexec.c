@@ -281,7 +281,7 @@ PsxExecEndOp (
 
     /* Call debugger for single step support (DEBUG build only) */
 
-    DEBUG_EXEC (Status = DbSingleStep (Op, Optype));
+    DEBUG_EXEC (Status = DbSingleStep (WalkState, Op, Optype));
     DEBUG_EXEC (if (Status != AE_OK) {return_ACPI_STATUS (Status);});
 
 
