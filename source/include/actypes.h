@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.234 $
+ *       $Revision: 1.235 $
  *
  *****************************************************************************/
 
@@ -135,8 +135,11 @@
  * NATIVE_UINT  32-bit on IA-32, 64-bit on IA-64 unsigned value
  */
 
+#ifndef ACPI_BITS_PER_LONG
+#error ACPI_BITS_PER_LONG not defined
+#endif
 
-#ifdef _IA64
+#if ACPI_BITS_PER_LONG == 64
 /*
  * 64-bit type definitions
  */
@@ -164,7 +167,7 @@ typedef UINT64                          ACPI_SIZE;
 #define ACPI_MAX_PTR                    0xFFFFFFFFFFFFFFFF
 
 
-#elif _IA16
+#elif ACPI_BITS_PER_LONG == 16
 /*
  * 16-bit type definitions
  */
@@ -205,7 +208,7 @@ typedef UINT32                          ACPI_SIZE;
 #define ACPI_NO_INTEGER64_SUPPORT
 
 
-#else
+#elif ACPI_BITS_PER_LONG == 32
 /*
  * 32-bit type definitions (default)
  */
@@ -231,6 +234,9 @@ typedef UINT32                          ACPI_SIZE;
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000004
 #define _HW_ALIGNMENT_SUPPORT
 #define ACPI_MAX_PTR                    0xFFFFFFFF
+
+#else
+#error unknown ACPI_BITS_PER_LONG
 #endif
 
 
