@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.46 $
+ *              $Revision: 1.52 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -159,9 +159,8 @@ ARGUMENT_INFO               AcpiDbStatTypes [] =
  * RETURN:      None
  *
  * DESCRIPTION: Add this object to the global counts, by object type.
- *              Recursively handles subobjects and packages.
- *
- *              [TBD] Restructure - remove recursion.
+ *              Limited recursion handles subobjects and packages, and this
+ *              is probably acceptable within the AML debugger only.
  *
  ******************************************************************************/
 
@@ -169,7 +168,6 @@ void
 AcpiDbEnumerateObject (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    UINT32                  Type;
     UINT32                  i;
 
 
@@ -183,22 +181,21 @@ AcpiDbEnumerateObject (
 
     AcpiGbl_NumObjects++;
 
-    Type = ObjDesc->Common.Type;
-    if (Type > INTERNAL_TYPE_NODE_MAX)
+    if (ObjDesc->Common.Type > INTERNAL_TYPE_NODE_MAX)
     {
         AcpiGbl_ObjTypeCountMisc++;
     }
     else
     {
-        AcpiGbl_ObjTypeCount [Type]++;
+        AcpiGbl_ObjTypeCount [ObjDesc->Common.Type]++;
     }
 
     /* Count the sub-objects */
 
-    switch (Type)
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_PACKAGE:
-        for (i = 0; i< ObjDesc->Package.Count; i++)
+        for (i = 0; i < ObjDesc->Package.Count; i++)
         {
             AcpiDbEnumerateObject (ObjDesc->Package.Elements[i]);
         }
@@ -210,7 +207,15 @@ AcpiDbEnumerateObject (
         AcpiDbEnumerateObject (ObjDesc->Device.AddrHandler);
         break;
 
+    case ACPI_TYPE_BUFFER_FIELD:
+        if (AcpiNsGetSecondaryObject (ObjDesc))
+        {
+            AcpiGbl_ObjTypeCount [ACPI_TYPE_BUFFER_FIELD]++;
+        }
+        break;
+
     case ACPI_TYPE_REGION:
+        AcpiGbl_ObjTypeCount [INTERNAL_TYPE_REGION_FIELD ]++;
         AcpiDbEnumerateObject (ObjDesc->Region.AddrHandler);
         break;
 
@@ -264,12 +269,12 @@ AcpiDbClassifyOneObject (
     AcpiGbl_NumNodes++;
 
     Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
-    ObjDesc = ((ACPI_NAMESPACE_NODE *) ObjHandle)->Object;
+    ObjDesc = AcpiNsGetAttachedObject (Node);
 
     AcpiDbEnumerateObject (ObjDesc);
 
     Type = Node->Type;
-    if (Type > INTERNAL_TYPE_INVALID)
+    if (Type > INTERNAL_TYPE_NODE_MAX)
     {
         AcpiGbl_NodeTypeCountMisc++;
     }
@@ -330,7 +335,7 @@ AcpiDbCountNamespaceObjects (
     AcpiGbl_NumObjects = 0;
 
     AcpiGbl_ObjTypeCountMisc = 0;
-    for (i = 0; i < INTERNAL_TYPE_INVALID; i++)
+    for (i = 0; i < (INTERNAL_TYPE_NODE_MAX -1); i++)
     {
         AcpiGbl_ObjTypeCount [i] = 0;
         AcpiGbl_NodeTypeCount [i] = 0;
@@ -386,11 +391,6 @@ AcpiDbDisplayStatistics (
         return (AE_OK);
     }
 
-#ifndef PARSER_ONLY
-
-    AcpiDbCountNamespaceObjects ();
-#endif
-
 
     switch (Type)
     {
@@ -413,6 +413,10 @@ AcpiDbDisplayStatistics (
 
     case CMD_OBJECTS:
 
+#ifndef PARSER_ONLY
+
+        AcpiDbCountNamespaceObjects ();
+
         AcpiOsPrintf ("\nObjects defined in the current namespace:\n\n");
 
         AcpiOsPrintf ("%16.16s % 10.10s % 10.10s\n", "ACPI_TYPE", "NODES", "OBJECTS");
@@ -428,15 +432,7 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", "TOTALS:",
             AcpiGbl_NumNodes, AcpiGbl_NumObjects);
 
-
-/*
-        AcpiOsPrintf ("\n");
-
-        AcpiOsPrintf ("ASL/AML Grammar Usage:\n\n");
-        AcpiOsPrintf ("Elements Inside Methods:....% 7ld\n", NumMethodElements);
-        AcpiOsPrintf ("Elements Outside Methods:...% 7ld\n", NumGrammarElements - NumMethodElements);
-        AcpiOsPrintf ("Total Grammar Elements:.....% 7ld\n", NumGrammarElements);
-*/
+#endif
         break;
 
     case CMD_MEMORY:
@@ -526,6 +522,7 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("NotifyHandler    %3d\n", sizeof (ACPI_OBJECT_NOTIFY_HANDLER));
         AcpiOsPrintf ("AddrHandler      %3d\n", sizeof (ACPI_OBJECT_ADDR_HANDLER));
         AcpiOsPrintf ("Extra            %3d\n", sizeof (ACPI_OBJECT_EXTRA));
+        AcpiOsPrintf ("Data             %3d\n", sizeof (ACPI_OBJECT_DATA));
 
         AcpiOsPrintf ("\n");
 

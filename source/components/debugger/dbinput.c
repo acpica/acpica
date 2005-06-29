@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.66 $
+ *              $Revision: 1.75 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -138,15 +138,14 @@ NATIVE_CHAR                 AcpiGbl_DbParsedBuf[80];
 NATIVE_CHAR                 AcpiGbl_DbScopeBuf[40];
 NATIVE_CHAR                 AcpiGbl_DbDebugFilename[40];
 NATIVE_CHAR                 *AcpiGbl_DbArgs[DB_MAX_ARGS];
-NATIVE_CHAR                 *AcpiGbl_DbBuffer;
+NATIVE_CHAR                 *AcpiGbl_DbBuffer = NULL;
 NATIVE_CHAR                 *AcpiGbl_DbFilename = NULL;
 BOOLEAN                     AcpiGbl_DbOutputToFile = FALSE;
 
-
-UINT32                      AcpiGbl_DbDebugLevel = 0x0FFFFFFF;
+UINT32                      AcpiGbl_DbDebugLevel = ACPI_LV_VERBOSITY2;
 UINT32                      AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
 UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
-
+ACPI_NAMESPACE_NODE         *AcpiGbl_DbScopeNode;
 
 BOOLEAN                     AcpiGbl_DbOpt_tables      = FALSE;
 BOOLEAN                     AcpiGbl_DbOpt_disasm      = FALSE;
@@ -231,7 +230,7 @@ enum AcpiExDebuggerCommands
 #define CMD_FIRST_VALID     2
 
 
-const COMMAND_INFO          Commands[] =
+const COMMAND_INFO          AcpiGbl_DbCommands[] =
 {
     {"<NOT FOUND>",  0},
     {"<NULL>",       0},
@@ -542,9 +541,9 @@ AcpiDbMatchCommand (
         return (CMD_NULL);
     }
 
-    for (i = CMD_FIRST_VALID; Commands[i].Name; i++)
+    for (i = CMD_FIRST_VALID; AcpiGbl_DbCommands[i].Name; i++)
     {
-        if (STRSTR (Commands[i].Name, UserCommand) == Commands[i].Name)
+        if (STRSTR (AcpiGbl_DbCommands[i].Name, UserCommand) == AcpiGbl_DbCommands[i].Name)
         {
             return (i);
         }
@@ -596,10 +595,10 @@ AcpiDbCommandDispatch (
 
     /* Verify that we have the minimum number of params */
 
-    if (ParamCount < Commands[CommandIndex].MinArgs)
+    if (ParamCount < AcpiGbl_DbCommands[CommandIndex].MinArgs)
     {
         AcpiOsPrintf ("%d parameters entered, [%s] requires %d parameters\n",
-                        ParamCount, Commands[CommandIndex].Name, Commands[CommandIndex].MinArgs);
+                        ParamCount, AcpiGbl_DbCommands[CommandIndex].Name, AcpiGbl_DbCommands[CommandIndex].MinArgs);
         return (AE_CTRL_TRUE);
     }
 
@@ -617,7 +616,7 @@ AcpiDbCommandDispatch (
     case CMD_ALLOCATIONS:
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
-        AcpiUtDumpCurrentAllocations ((UINT32) -1, NULL);
+        AcpiUtDumpAllocations ((UINT32) -1, NULL);
 #endif
         break;
 
@@ -694,7 +693,6 @@ AcpiDbCommandDispatch (
             Status = AE_CTRL_TRUE;
         }
         return (Status);
-        break;
 
     case CMD_HISTORY_LAST:
         CommandLine = AcpiDbGetFromHistory (NULL);
@@ -718,9 +716,6 @@ AcpiDbCommandDispatch (
         if (Op)
         {
             AcpiGbl_CmSingleStep = TRUE;
-
-/* TBD: Must get current walk state */
-            /* AcpiGbl_MethodBreakpoint = 0; */
             return (AE_OK);
         }
         break;
@@ -816,7 +811,6 @@ AcpiDbCommandDispatch (
 
     case CMD_STOP:
         return (AE_AML_ERROR);
-        break;
 
     case CMD_TABLES:
         AcpiDbDisplayTableInfo (AcpiGbl_DbArgs[1]);
@@ -927,7 +921,7 @@ void
 AcpiDbSingleThread (
     void)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
 
 
     AcpiGbl_MethodExecuting = FALSE;
@@ -991,7 +985,6 @@ AcpiDbUserCommands (
              * Signal the debug thread that we have a command to execute,
              * and wait for the command to complete.
              */
-
             AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
             AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
         }
@@ -1010,7 +1003,6 @@ AcpiDbUserCommands (
      * because all the semaphores are deleted during termination
      */
     AcpiTerminate ();
-
     return (Status);
 }
 

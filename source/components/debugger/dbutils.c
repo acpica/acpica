@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.43 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -186,7 +186,7 @@ AcpiDbDumpBuffer (
     AcpiOsPrintf ("\nLocation %X:\n", Address);
 
     AcpiDbgLevel |= ACPI_LV_TABLES;
-    AcpiUtDumpBuffer ((UINT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer (ACPI_TO_POINTER (Address), 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 }
 
 
@@ -232,7 +232,7 @@ AcpiDbDumpObject (
 
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf ("[Integer] = %X%8.8X\n", HIDWORD (ObjDesc->Integer.Value),
+        AcpiOsPrintf ("[Integer] = %8.8X%8.8X\n", HIDWORD (ObjDesc->Integer.Value),
                                                LODWORD (ObjDesc->Integer.Value));
         break;
 
@@ -369,17 +369,40 @@ AcpiDbSecondPassParse (
     ACPI_PARSE_OBJECT       *StartOp;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  BaseAmlOffset;
+    ACPI_WALK_STATE         *WalkState;
+
+
+    FUNCTION_ENTRY ();
 
 
     AcpiOsPrintf ("Pass two parse ....\n");
+
 
     while (Op)
     {
         if (Op->Opcode == AML_METHOD_OP)
         {
             Method = (ACPI_PARSE2_OBJECT *) Op;
-            Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
-                        NULL, NULL, NULL, AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
+
+            WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
+                                            NULL, NULL, NULL);
+            if (!WalkState)
+            {
+                return (AE_NO_MEMORY);
+            }
+
+
+            WalkState->ParserState.Aml          =
+            WalkState->ParserState.AmlStart     = Method->Data;
+            WalkState->ParserState.AmlEnd       =
+            WalkState->ParserState.PkgEnd       = Method->Data + Method->Length;
+            WalkState->ParserState.StartScope   = Op;
+
+            WalkState->DescendingCallback       = AcpiDsLoad1BeginOp;
+            WalkState->AscendingCallback        = AcpiDsLoad1EndOp;
+
+
+            Status = AcpiPsParseAml (WalkState);
 
 
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
@@ -406,7 +429,7 @@ AcpiDbSecondPassParse (
 
         if (ACPI_FAILURE (Status))
         {
-            return (Status);
+            break;
         }
 
         Op = AcpiPsGetDepthNext (Root, Op);
@@ -425,6 +448,9 @@ AcpiDbSecondPassParse (
  * RETURN:      Pointer to a namespace node
  *
  * DESCRIPTION: Lookup a name in the ACPI namespace
+ *
+ * Note: Currently begins search from the root.  Could be enhanced to use
+ * the current prefix (scope) node as the search beginning point.
  *
  ******************************************************************************/
 
@@ -448,22 +474,18 @@ AcpiDbLocalNsLookup (
         return (NULL);
     }
 
-    /* Lookup the name */
-
-    /* TBD: [Investigate] what scope do we use? */
-    /* Use the root scope for the start of the search */
-
+    /*
+     * Lookup the name.
+     * (Uses root node as the search starting point)
+     */
     Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
                                     NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Node);
-
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiFormatException (Status));
     }
 
-
     ACPI_MEM_FREE (InternalPath);
-
     return (Node);
 }
 

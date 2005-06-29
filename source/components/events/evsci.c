@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.69 $
+ *              $Revision: 1.77 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,18 +122,8 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          EVENT_HANDLING
+#define _COMPONENT          ACPI_EVENTS
         MODULE_NAME         ("evsci")
-
-
-/*
- * Elements correspond to counts for TMR, NOT_USED, GBL, PWR_BTN, SLP_BTN, RTC,
- * and GENERAL respectively.  These counts are modified by the ACPI interrupt
- * handler.
- *
- * TBD: [Investigate] Note that GENERAL should probably be split out into
- * one element for each bit in the GPE registers
- */
 
 
 /*******************************************************************************
@@ -203,22 +193,19 @@ AcpiEvSciHandler (void *Context)
 UINT32
 AcpiEvInstallSciHandler (void)
 {
-    UINT32                  Except = AE_OK;
+    UINT32                  Status = AE_OK;
 
 
     FUNCTION_TRACE ("EvInstallSciHandler");
 
 
-    Except = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
-                                            AcpiEvSciHandler,
-                                            NULL);
-
-    return_ACPI_STATUS (Except);
+    Status = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
+                        AcpiEvSciHandler, NULL);
+    return_ACPI_STATUS (Status);
 }
 
 
 /******************************************************************************
-
  *
  * FUNCTION:    AcpiEvRemoveSciHandler
  *
@@ -227,8 +214,13 @@ AcpiEvInstallSciHandler (void)
  * RETURN:      E_OK if handler uninstalled OK, E_ERROR if handler was not
  *              installed to begin with
  *
- * DESCRIPTION: Restores original status of all fixed event enable bits and
- *              removes SCI handler.
+ * DESCRIPTION: Remove the SCI interrupt handler.  No further SCIs will be
+ *              taken.
+ *
+ * Note:  It doesn't seem important to disable all events or set the event
+ *        enable registers to their original values.  The OS should disable
+ *        the SCI interrupt level when the handler is removed, so no more
+ *        events will come in.
  *
  ******************************************************************************/
 
@@ -237,87 +229,14 @@ AcpiEvRemoveSciHandler (void)
 {
     FUNCTION_TRACE ("EvRemoveSciHandler");
 
-#if 0
-    /* TBD:[Investigate] Figure this out!!  Disable all events first ???  */
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (TMR_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (TMR_FIXED_EVENT);
-    }
-
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (GBL_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (GBL_FIXED_EVENT);
-    }
-
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (PWR_BTN_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
-    }
-
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (SLP_BTN_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
-    }
-
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (RTC_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (RTC_FIXED_EVENT);
-    }
-
-    OriginalFixedEnableBitStatus = 0;
-
-#endif
+    /* Just let the OS remove the handler and disable the level */
 
     AcpiOsRemoveInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
                                     AcpiEvSciHandler);
 
     return_ACPI_STATUS (AE_OK);
 }
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiEvSciCount
- *
- * PARAMETERS:  Event       Event that generated an SCI.
- *
- * RETURN:      Number of SCI's for requested event since last time
- *              SciOccured() was called for this event.
- *
- * DESCRIPTION: Checks to see if SCI has been generated from requested source
- *              since the last time this function was called.
- *
- ******************************************************************************/
-
-#ifdef ACPI_DEBUG
-
-UINT32
-AcpiEvSciCount (
-    UINT32                  Event)
-{
-    UINT32                  Count;
-
-    FUNCTION_TRACE ("EvSciCount");
-
-    /*
-     * Elements correspond to counts for TMR, NOT_USED, GBL,
-     * PWR_BTN, SLP_BTN, RTC, and GENERAL respectively.
-     */
-
-    if (Event >= NUM_FIXED_EVENTS)
-    {
-        Count = (UINT32) -1;
-    }
-    else
-    {
-        Count = AcpiGbl_EventCount[Event];
-    }
-
-    return_VALUE (Count);
-}
-
-#endif
 
 
 /*******************************************************************************
@@ -354,11 +273,9 @@ AcpiEvRestoreAcpiState (void)
                 AcpiGbl_Pm1EnableRegisterSave);
         }
 
-
         /* Ensure that all status bits are clear */
 
         AcpiHwClearAcpiStatus ();
-
 
         /* Now restore the GPEs */
 
@@ -372,7 +289,7 @@ AcpiEvRestoreAcpiState (void)
             }
         }
 
-        /* GPE 1 present? */
+        /* GPE Block 1 present? */
 
         if (AcpiGbl_FADT->Gpe1BlkLen)
         {
@@ -419,15 +336,14 @@ AcpiEvTerminate (void)
     /*
      * Free global tables, etc.
      */
-
     if (AcpiGbl_GpeRegisters)
     {
-        AcpiCmFree (AcpiGbl_GpeRegisters);
+        ACPI_MEM_FREE (AcpiGbl_GpeRegisters);
     }
 
     if (AcpiGbl_GpeInfo)
     {
-        AcpiCmFree (AcpiGbl_GpeInfo);
+        ACPI_MEM_FREE (AcpiGbl_GpeInfo);
     }
 
     return_VOID;
