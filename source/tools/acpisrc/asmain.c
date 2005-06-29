@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -757,7 +757,9 @@ main (
     {
         /* Process a single file */
 
-        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_HEADER);
+        /* TBD: Need to differentiate between source and header files !! */
+
+        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_SOURCE);
     }
 
     /* Always display final summary and stats */
