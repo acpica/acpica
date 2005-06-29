@@ -288,6 +288,9 @@ typedef UINT32              ACPI_EVENT_TYPE;
 #define ACPI_EVENT_MAX      6
 #define NUM_FIXED_EVENTS    (ACPI_EVENT_TYPE) 7
 
+#define GPE_INVALID         0xFF
+#define GPE_MAX             0xFF
+#define NUM_GPE             256
 
 
 /* 
