@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.137 $
+ *       $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -753,17 +753,6 @@ AcpiUtStrtoul64 (
 NATIVE_CHAR *
 AcpiUtStrupr (
     NATIVE_CHAR             *SrcString);
-
-ACPI_STATUS
-AcpiUtResolvePackageReferences (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-ACPI_STATUS
-AcpiUtResolveReference (
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context);
 
 UINT8 *
 AcpiUtGetResourceEndTag (
