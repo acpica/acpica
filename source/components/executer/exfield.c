@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.95 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -154,6 +154,7 @@ AcpiExReadDataFromField (
     ACPI_OPERAND_OBJECT     *BufferDesc;
     UINT32                  Length;
     void                    *Buffer;
+    BOOLEAN                 Locked;
 
 
     FUNCTION_TRACE_PTR ("ExReadDataFromField", ObjDesc);
@@ -164,6 +165,22 @@ AcpiExReadDataFromField (
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
+    }
+
+    if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
+    {
+        /*
+         * If the BufferField arguments have not been previously evaluated,
+         * evaluate them now and save the results.
+         */
+        if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
+        {
+            Status = AcpiDsGetBufferFieldArguments (ObjDesc);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+        }
     }
 
     /*
@@ -215,30 +232,25 @@ AcpiExReadDataFromField (
         Buffer = &BufferDesc->Integer.Value;
     }
 
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "Obj=%p Type=%X Buf=%p Len=%X\n",
+        ObjDesc, ObjDesc->Common.Type, Buffer, Length));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "FieldWrite: BitLen=%X BitOff=%X ByteOff=%X\n",
+        ObjDesc->CommonField.BitLength,
+        ObjDesc->CommonField.StartFieldBitOffset,
+        ObjDesc->CommonField.BaseByteOffset));
 
-    /* Read from the appropriate field */
+    Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.LockRule);
 
-    switch (ObjDesc->Common.Type)
-    {
-    case ACPI_TYPE_BUFFER_FIELD:
-        Status = AcpiExAccessBufferField (ACPI_READ, ObjDesc, Buffer, Length);
-        break;
+    /* Read from the field */
 
-    case INTERNAL_TYPE_REGION_FIELD:
-        Status = AcpiExAccessRegionField (ACPI_READ, ObjDesc, Buffer, Length);
-        break;
+    Status = AcpiExExtractFromField (ObjDesc, Buffer, Length);
 
-    case INTERNAL_TYPE_BANK_FIELD:
-        Status = AcpiExAccessBankField (ACPI_READ, ObjDesc, Buffer, Length);
-        break;
-
-    case INTERNAL_TYPE_INDEX_FIELD:
-        Status = AcpiExAccessIndexField (ACPI_READ, ObjDesc, Buffer, Length);
-        break;
-
-    default:
-        Status = AE_AML_INTERNAL;
-    }
+    /*
+     * Release global lock if we acquired it earlier
+     */
+    AcpiExReleaseGlobalLock (Locked);
 
 
     if (ACPI_FAILURE (Status))
@@ -270,7 +282,6 @@ AcpiExReadDataFromField (
  *
  ******************************************************************************/
 
-
 ACPI_STATUS
 AcpiExWriteDataToField (
     ACPI_OPERAND_OBJECT     *SourceDesc,
@@ -279,6 +290,7 @@ AcpiExWriteDataToField (
     ACPI_STATUS             Status;
     UINT32                  Length;
     void                    *Buffer;
+    BOOLEAN                 Locked;
 
 
     FUNCTION_TRACE_PTR ("ExWriteDataToField", ObjDesc);
@@ -289,6 +301,22 @@ AcpiExWriteDataToField (
     if (!SourceDesc || !ObjDesc)
     {
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
+    }
+
+    if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
+    {
+        /*
+         * If the BufferField arguments have not been previously evaluated,
+         * evaluate them now and save the results.
+         */
+        if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
+        {
+            Status = AcpiDsGetBufferFieldArguments (ObjDesc);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+        }
     }
 
 
@@ -317,320 +345,28 @@ AcpiExWriteDataToField (
     }
 
 
-    /*
-     * Decode the type of field to be written
-     */
-    switch (ObjDesc->Common.Type)
-    {
-    case ACPI_TYPE_BUFFER_FIELD:
-        Status = AcpiExAccessBufferField (ACPI_WRITE, ObjDesc, Buffer, Length);
-        break;
-
-    case INTERNAL_TYPE_REGION_FIELD:
-        Status = AcpiExAccessRegionField (ACPI_WRITE, ObjDesc, Buffer, Length);
-        break;
-
-    case INTERNAL_TYPE_BANK_FIELD:
-        Status = AcpiExAccessBankField (ACPI_WRITE, ObjDesc, Buffer, Length);
-        break;
-
-    case INTERNAL_TYPE_INDEX_FIELD:
-        Status = AcpiExAccessIndexField (ACPI_WRITE, ObjDesc, Buffer, Length);
-        break;
-
-    default:
-        return_ACPI_STATUS (AE_AML_INTERNAL);
-    }
-
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExAccessBufferField
- *
- * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
- *              *FieldNode          - Parent node for field to be accessed
- *              *Buffer             - Value(s) to be read or written
- *              BufferLength        - Number of bytes to transfer
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Read or write a named field
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExAccessBufferField (
-    UINT32                  Mode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE_PTR ("ExAccessBufferField", ObjDesc);
-
-
-    /*
-     * If the BufferField arguments have not been previously evaluated,
-     * evaluate them now and save the results.
-     */
-    if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
-    {
-        Status = AcpiDsGetBufferFieldArguments (ObjDesc);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
-
-
-    Status = AcpiExCommonAccessField (Mode, ObjDesc, Buffer, BufferLength);
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExAccessRegionField
- *
- * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
- *              *FieldNode          - Parent node for field to be accessed
- *              *Buffer             - Value(s) to be read or written
- *              BufferLength        - Number of bytes to transfer
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Read or write a named field
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExAccessRegionField (
-    UINT32                  Mode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength)
-{
-    ACPI_STATUS             Status;
-    BOOLEAN                 Locked;
-
-
-    FUNCTION_TRACE_PTR ("ExAccessRegionField", ObjDesc);
-
-
-    /*
-     * Get the global lock if needed
-     */
-    Locked = AcpiExAcquireGlobalLock (ObjDesc->Field.LockRule);
-
-    Status = AcpiExCommonAccessField (Mode, ObjDesc, Buffer, BufferLength);
-
-
-    /*
-     * Release global lock if we acquired it earlier
-     */
-    AcpiExReleaseGlobalLock (Locked);
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExAccessBankField
- *
- * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
- *              *FieldNode          - Parent node for field to be accessed
- *              *Buffer             - Value(s) to be read or written
- *              BufferLength        - Number of bytes to transfer
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Read or write a Bank Field
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExAccessBankField (
-    UINT32                  Mode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength)
-{
-    ACPI_STATUS             Status;
-    BOOLEAN                 Locked;
-
-
-    FUNCTION_TRACE_PTR ("ExAccessBankField", ObjDesc);
-
-
-    /*
-     * Get the global lock if needed
-     */
-    Locked = AcpiExAcquireGlobalLock (ObjDesc->BankField.LockRule);
-
-
-    /*
-     * Write the BankValue to the BankRegister to select the bank.
-     * The BankValue for this BankField is specified in the
-     * BankField ASL declaration.  The BankRegister is always a Field in
-     * an operation region.
-     */
-    Status = AcpiExCommonAccessField (ACPI_WRITE,
-                            ObjDesc->BankField.BankRegisterObj,
-                            &ObjDesc->BankField.Value,
-                            sizeof (ObjDesc->BankField.Value));
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
-
-    /*
-     * The bank was successfully selected, now read or write the actual
-     * data.
-     */
-    Status = AcpiExCommonAccessField (Mode, ObjDesc, Buffer, BufferLength);
-
-
-Cleanup:
-    /*
-     * Release global lock if we acquired it earlier
-     */
-    AcpiExReleaseGlobalLock (Locked);
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExAccessIndexField
- *
- * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
- *              *FieldNode          - Parent node for field to be accessed
- *              *Buffer             - Value(s) to be read or written
- *              BufferLength        - Number of bytes to transfer
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Read or write a Index Field
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExAccessIndexField (
-    UINT32                  Mode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength)
-{
-    ACPI_STATUS             Status;
-    BOOLEAN                 Locked;
-
-
-    FUNCTION_TRACE_PTR ("ExAccessIndexField", ObjDesc);
-
-
-    /*
-     * Get the global lock if needed
-     */
-    Locked = AcpiExAcquireGlobalLock (ObjDesc->IndexField.LockRule);
-
-
-    /*
-     * Set Index value to select proper Data register
-     */
-    Status = AcpiExCommonAccessField (ACPI_WRITE,
-                            ObjDesc->IndexField.IndexObj,
-                            &ObjDesc->IndexField.Value,
-                            sizeof (ObjDesc->IndexField.Value));
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
-
-    /* Now read/write the data register */
-
-    Status = AcpiExCommonAccessField (Mode, ObjDesc->IndexField.DataObj,
-                    Buffer, BufferLength);
-
-Cleanup:
-    /*
-     * Release global lock if we acquired it earlier
-     */
-    AcpiExReleaseGlobalLock (Locked);
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExCommonAccessField
- *
- * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
- *              *FieldNode          - Parent node for field to be accessed
- *              *Buffer             - Value(s) to be read or written
- *              BufferLength        - Size of buffer, in bytes.  Must be large
- *                                    enough for all bits of the field.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Read or write a named field
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExCommonAccessField (
-    UINT32                  Mode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE_PTR ("ExCommonAccessField", ObjDesc);
-
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Obj=%p Type=%X Buf=%p Len=%X\n",
-        ObjDesc, ObjDesc->Common.Type, Buffer, BufferLength));
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode=%d BitLen=%X BitOff=%X ByteOff=%X\n",
-        Mode, ObjDesc->CommonField.BitLength,
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "Obj=%p Type=%X Buf=%p Len=%X\n",
+        ObjDesc, ObjDesc->Common.Type, Buffer, Length));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "FieldRead: BitLen=%X BitOff=%X ByteOff=%X\n",
+        ObjDesc->CommonField.BitLength,
         ObjDesc->CommonField.StartFieldBitOffset,
         ObjDesc->CommonField.BaseByteOffset));
 
+    Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.LockRule);
 
-    /* Perform the actual read or write of the field */
+    /*
+     * Write to the field
+     */
+    Status = AcpiExInsertIntoField (ObjDesc, Buffer, Length);
 
-    switch (Mode)
-    {
-    case ACPI_READ:
-
-        Status = AcpiExExtractFromField (ObjDesc, Buffer, BufferLength);
-        break;
-
-
-    case ACPI_WRITE:
-
-        Status = AcpiExInsertIntoField (ObjDesc, Buffer, BufferLength);
-        break;
-
-
-    default:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown I/O Mode: %X\n", Mode));
-        Status = AE_BAD_PARAMETER;
-        break;
-    }
-
+    /*
+     * Release global lock if we acquired it earlier
+     */
+    AcpiExReleaseGlobalLock (Locked);
 
     return_ACPI_STATUS (Status);
 }
+
 
