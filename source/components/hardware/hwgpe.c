@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -170,7 +170,7 @@ AcpiHwWriteGpeEnableReg (
  *
  * PARAMETERS:  GpeEventInfo        - Info block for the GPE to be cleared
  *
- * RETURN:      StatusStatus
+ * RETURN:      Status
  *
  * DESCRIPTION: Clear the status bit for a single GPE.
  *
