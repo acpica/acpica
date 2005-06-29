@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -202,7 +202,7 @@ AcpiDsInitOneObject (
 
         if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
         {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
         }
 
         /*
