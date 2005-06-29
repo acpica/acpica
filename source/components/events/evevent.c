@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -620,9 +620,9 @@ AcpiEvGpeInitialize (void)
 
             ACPI_REPORT_INFO (("GPE Block%d defined as GPE%d to GPE%d\n",
                 (INT32) GpeBlock,
-                AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber,
-                AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber +
-                    ((AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount * 8) -1)));
+                (UINT32) AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber,
+                (UINT32) (AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber +
+                    ((AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount * 8) -1))));
         }
     }
 
