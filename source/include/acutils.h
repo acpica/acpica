@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.75 $
+ *       $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -134,7 +134,7 @@
 
 void
 AcpiCmInitGlobals (
-    ACPI_INIT_DATA *InitData);
+    void);
 
 void
 AcpiCmTerminate (
@@ -142,7 +142,7 @@ AcpiCmTerminate (
 
 
 /*
- * AcpiCmInit - miscellaneous initialization and shutdown
+ * CmInit - miscellaneous initialization and shutdown
  */
 
 ACPI_STATUS
@@ -153,8 +153,12 @@ ACPI_STATUS
 AcpiCmSubsystemShutdown (
     void);
 
+ACPI_STATUS
+AcpiCmValidateFacp (
+    void);
+
 /*
- * AcpiCmGlobal - Global data structures and procedures
+ * CmGlobal - Global data structures and procedures
  */
 
 NATIVE_CHAR *
@@ -175,7 +179,7 @@ AcpiCmAllocateOwnerId (
 
 
 /*
- * AcpiCmClib - Local implementations of C library functions
+ * CmClib - Local implementations of C library functions
  */
 
 NATIVE_UINT
@@ -252,7 +256,7 @@ AcpiCmToLower (
 
 
 /*
- * AcpiCmCopy - Object construction and conversion interfaces
+ * CmCopy - Object construction and conversion interfaces
  */
 
 ACPI_STATUS
@@ -295,7 +299,7 @@ AcpiCmBuildCopyInternalPackageObject (
 
 
 /*
- * AcpiCmCreate - Object creation
+ * CmCreate - Object creation
  */
 
 ACPI_STATUS
@@ -312,7 +316,7 @@ _CmCreateInternalObject (
 
 
 /*
- * AcpiCmDebug - Debug interfaces
+ * CmDebug - Debug interfaces
  */
 
 UINT32
@@ -406,22 +410,19 @@ void
 _ReportInfo (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *Message);
+    UINT32                  ComponentId);
 
 void
 _ReportError (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *Message);
+    UINT32                  ComponentId);
 
 void
 _ReportWarning (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *Message);
+    UINT32                  ComponentId);
 
 void
 AcpiCmDumpBuffer (
@@ -432,7 +433,7 @@ AcpiCmDumpBuffer (
 
 
 /*
- * AcpiCmDelete - Object deletion
+ * CmDelete - Object deletion
  */
 
 void
@@ -453,7 +454,7 @@ AcpiCmDeleteInternalObjectList (
 
 
 /*
- * AcpiCmEval - object evaluation
+ * CmEval - object evaluation
  */
 
 /* Method name strings */
@@ -490,7 +491,7 @@ AcpiCmExecute_UID (
 
 
 /*
- * AcpiCmError - exception interfaces
+ * CmError - exception interfaces
  */
 
 NATIVE_CHAR *
@@ -499,7 +500,7 @@ AcpiCmFormatException (
 
 
 /*
- * AcpiCmMutex - mutual exclusion interfaces
+ * CmMutex - mutual exclusion interfaces
  */
 
 ACPI_STATUS
@@ -528,7 +529,7 @@ AcpiCmReleaseMutex (
 
 
 /*
- * AcpiCmObject - internal object create/delete/cache routines
+ * CmObject - internal object create/delete/cache routines
  */
 
 void *
@@ -550,7 +551,7 @@ AcpiCmValidInternalObject (
 
 
 /*
- * AcpiCmRefCnt - Object reference count management
+ * CmRefCnt - Object reference count management
  */
 
 void
@@ -562,7 +563,7 @@ AcpiCmRemoveReference (
     ACPI_OPERAND_OBJECT     *Object);
 
 /*
- * AcpiCmSize - Object size routines
+ * CmSize - Object size routines
  */
 
 ACPI_STATUS
@@ -582,7 +583,7 @@ AcpiCmGetObjectSize(
 
 
 /*
- * AcpiCmState - Generic state creation/cache routines
+ * CmState - Generic state creation/cache routines
  */
 
 void
@@ -627,7 +628,7 @@ AcpiCmDeleteObjectCache (
     void);
 
 /*
- * AcpiCmutils
+ * Cmutils
  */
 
 BOOLEAN
