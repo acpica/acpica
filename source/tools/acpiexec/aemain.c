@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.44 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -224,6 +224,16 @@ AcpiGetIrqRoutingTable  (
 {
     return AE_NOT_IMPLEMENTED;
 }
+
+ACPI_STATUS
+AcpiGetFirmwareTable (
+    ACPI_STRING             Signature,
+    UINT32                  Instance,
+    UINT32                  Flags,
+    ACPI_TABLE_HEADER       **TablePointer)
+{
+    return (AE_NOT_IMPLEMENTED);
+}
 #endif
 
 /******************************************************************************
@@ -342,14 +352,11 @@ main (
         return -1;
     }
 
-
     /* Init ACPI and start debugger thread */
 
     AcpiInitializeSubsystem ();
 
-
-    InitFlags = (ACPI_NO_HARDWARE_INIT | ACPI_NO_ACPI_ENABLE | ACPI_NO_EVENT_INIT);
-
+    InitFlags = (ACPI_NO_HANDLER_INIT | ACPI_NO_ACPI_ENABLE);
     if (!AcpiGbl_DbOpt_ini_methods)
     {
         InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
@@ -362,7 +369,6 @@ main (
         AcpiGbl_DbOpt_tables = TRUE;
         AcpiGbl_DbFilename = argv[optind];
 
-
         Status = AcpiDbLoadAcpiTable (AcpiGbl_DbFilename);
         if (ACPI_FAILURE (Status))
         {
@@ -370,8 +376,7 @@ main (
             goto enterloop;
         }
 
-
-        /* Need a fake FADT so that the hardware component is happy */
+        /* Build a fake FADT so we can test the hardware/event init */
 
         ACPI_STORE_ADDRESS (LocalFADT.XGpe0Blk.Address, 0x70);
         ACPI_STORE_ADDRESS (LocalFADT.XPm1aEvtBlk.Address, 0x80);
@@ -379,6 +384,8 @@ main (
         ACPI_STORE_ADDRESS (LocalFADT.XPmTmrBlk.Address, 0xA0);
 
         LocalFADT.Gpe0BlkLen    = 8;
+        LocalFADT.Gpe1BlkLen    = 12;
+        LocalFADT.Gpe1Base      = 64;
         LocalFADT.Pm1EvtLen     = 4;
         LocalFADT.Pm1CntLen     = 4;
         LocalFADT.PmTmLen       = 8;
@@ -406,6 +413,7 @@ main (
         ReturnBuf.Length = 32;
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
+        AcpiEnableEvent (ACPI_EVENT_GLOBAL, ACPI_EVENT_FIXED, 0);
     }
 
 #ifdef _IA16

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -144,7 +144,7 @@ RSDP_DESCRIPTOR             LocalRsdp;
  *
  * FUNCTION:    AeLocalGetRootPointer
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -257,13 +257,14 @@ AeRegionHandler (
             return AE_NO_MEMORY;
         }
 
-        RegionElement->Buffer = AcpiOsCallocate (Length);
+        RegionElement->Buffer = AcpiOsAllocate (Length);
         if (!RegionElement->Buffer)
         {
             AcpiOsFree (RegionElement);
             return AE_NO_MEMORY;
         }
 
+        MEMSET (RegionElement->Buffer, 0, Length);
         RegionElement->Address      = BaseAddress;
         RegionElement->Length       = Length;
         RegionElement->NextRegion   = NULL;
