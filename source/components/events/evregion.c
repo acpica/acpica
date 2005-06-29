@@ -673,8 +673,8 @@ EvAssociateRegionAndHandler(
      *  Last thing, tell all users that this region is usable
      */
     CmReleaseMutex (MTX_NAMESPACE);
-	Status = EvExecuteRegMethod (RegionObj, 1);
-	CmAcquireMutex (MTX_NAMESPACE);
+    Status = EvExecuteRegMethod (RegionObj, 1);
+    CmAcquireMutex (MTX_NAMESPACE);
 
     return_ACPI_STATUS (Status);
 }
