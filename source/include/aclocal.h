@@ -135,7 +135,6 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
 #define DESC_TYPE_NTE           0xEE
 
 
-
 /*****************************************************************************
  *
  * Mutex typedefs and structs
@@ -350,13 +349,29 @@ typedef struct
 } PREDEFINED_NAMES;
 
 
-
-
 /*****************************************************************************
  *
- * AcpiEvent typedefs and structs
+ * Event typedefs and structs
  *
  ****************************************************************************/
+
+
+/* Status bits. */
+
+#define ACPI_STATUS_PMTIMER                  0x0001
+#define ACPI_STATUS_GLOBAL                   0x0020
+#define ACPI_STATUS_POWER_BUTTON             0x0100
+#define ACPI_STATUS_SLEEP_BUTTON             0x0200
+#define ACPI_STATUS_RTC_ALARM                0x0400
+
+/* Enable bits. */
+
+#define ACPI_ENABLE_PMTIMER                  0x0001
+#define ACPI_ENABLE_GLOBAL                   0x0020
+#define ACPI_ENABLE_POWER_BUTTON             0x0100
+#define ACPI_ENABLE_SLEEP_BUTTON             0x0200
+#define ACPI_ENABLE_RTC_ALARM                0x0400
+
 
 /*
  * Entry in the AddressSpace (AKA Operation Region) table
@@ -367,7 +382,7 @@ typedef struct
     ADDRESS_SPACE_HANDLER   Handler;
     void                    *Context;
 
-} ADDRESS_SPACE_INFO;
+} ACPI_ADDRESS_SPACE_INFO;
 
 
 /* Values and addresses of the GPE registers (both banks) */
@@ -380,11 +395,11 @@ typedef struct
     UINT16                  EnableAddr;     /* Address of enable reg */
     UINT8                   GpeBase;        /* Base GPE number */
 
-} GPE_REGISTERS;
+} ACPI_GPE_REGISTERS;
 
 
-#define GPE_LEVEL_TRIGGERED         1
-#define GPE_EDGE_TRIGGERED          2
+#define ACPI_GPE_LEVEL_TRIGGERED            1
+#define ACPI_GPE_EDGE_TRIGGERED             2
 
 
 /* Information about each particular GPE level */
@@ -397,7 +412,7 @@ typedef struct
     GPE_HANDLER             Handler;        /* Address of handler, if any */
     void                    *Context;       /* Context to be passed to handler */
 
-} GPE_LEVEL_INFO;
+} ACPI_GPE_LEVEL_INFO;
 
 
 /* Information about each particular fixed event */
@@ -407,8 +422,7 @@ typedef struct
     FIXED_EVENT_HANDLER     Handler;        /* Address of handler. */
     void                    *Context;       /* Context to be passed to handler */
 
-} FIXED_EVENT_INFO;
-
+} ACPI_FIXED_EVENT_INFO;
 
 
 /* Information used during field processing */
@@ -419,10 +433,7 @@ typedef struct
     UINT8                   FieldFlag;
     UINT32                  PkgLength;
 
-} FIELD_INFO;
-
-
-
+} ACPI_FIELD_INFO;
 
 
 /*****************************************************************************
@@ -525,7 +536,6 @@ typedef struct acpi_bytelist_op
 } ACPI_BYTELIST_OP;
 
 
-
 /*
  * Parse state - one state per parser invocation and each control
  * method.
@@ -561,8 +571,6 @@ typedef struct acpi_parse_scope
 } ACPI_PARSE_SCOPE;
 
 
-
-
 /*****************************************************************************
  *
  * Generic "state" object for stacks
@@ -575,7 +583,6 @@ typedef struct acpi_parse_scope
 #define CONTROL_PREDICATE_EXECUTING           0xC2
 #define CONTROL_PREDICATE_FALSE               0xC3
 #define CONTROL_PREDICATE_TRUE                0xC4
-
 
 
 #define ACPI_STATE_COMMON                  /* Two 32-bit fields and a pointer */\
@@ -636,8 +643,6 @@ typedef union acpi_gen_state
 } ACPI_GENERIC_STATE;
 
 
-
-
 /*****************************************************************************
  *
  * Tree walking typedefs and structs
@@ -693,12 +698,10 @@ typedef struct acpi_walk_list
 } ACPI_WALK_LIST;
 
 
-
 typedef
 ACPI_STATUS (*INTERPRETER_CALLBACK) (
     ACPI_WALK_STATE         *State,
     ACPI_GENERIC_OP         *Op);
-
 
 
 /* Info used by AcpiPsInitObjects */
