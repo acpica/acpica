@@ -136,6 +136,8 @@ extern char                     OutputToFile;
 extern char                     *Buffer;
 extern char                     *Filename;
 extern char					    *INDENT_STRING;
+extern UINT32                   Gbl_MethodBreakpoint;
+
 
 #define BUFFER_SIZE             4196
 
@@ -161,6 +163,11 @@ DbSingleStep (
     UINT8                   OpType);
 
 void
+DbDisassembleAml (
+    char                    *Statements,
+    ACPI_GENERIC_OP         *Op);
+
+void
 DbDecodeAndDisplayObject (
     char                    *Param);
 
@@ -171,6 +178,11 @@ DbDisplayResultObject (
 ACPI_STATUS
 DbDisplayStatistics (
     void);
+
+void
+DbSetMethodBreakpoint (
+    char                    *Location,
+    ACPI_GENERIC_OP         *Op);
 
 void
 DbSendNotify (
@@ -189,8 +201,8 @@ DbDumpBuffer (
 
 void
 DbDumpObject (
-    char                    *MethodName,
-    ACPI_BUFFER             *ReturnObj);
+    ACPI_OBJECT             *ObjDesc,
+    UINT32                  Level);
 
 ACPI_STATUS
 DbDisplayAllMethods (
@@ -214,7 +226,8 @@ DbDisplayCallingTree (void);
 
 void
 DbDisplayOp (
-    ACPI_GENERIC_OP         *origin);
+    ACPI_GENERIC_OP         *origin,
+    UINT32                  NumOpcodes);
 
 INT32
 DbSafeSprintf (
