@@ -161,16 +161,6 @@ NsPushCurrentScope (nte *NewScope, NsType Type)
             CurrentScope++;
             CurrentScope->Scope = NewScope;
             CurrentScope->Type = Type;
-
-            if (CurrentScope->Scope == RootObject->Scope)
-            {
-                NsCurrentSize = NsRootSize;
-            }
-        
-            else
-            {
-                NsCurrentSize = NS_DEFAULT_TABLE_SIZE;
-            }
         }
     
         else
@@ -267,18 +257,7 @@ NsPopCurrent (NsType Type)
     while (CurrentScope > &ScopeStack[0])
     {
         CurrentScope--;
-
-        if (RootObject->Scope == CurrentScope->Scope)
-        {
-            NsCurrentSize = NsRootSize;
-        }
-        else
-        {
-            NsCurrentSize = NS_DEFAULT_TABLE_SIZE;
-        }
-
         Count++;
-
 
         DEBUG_PRINT (TRACE_EXEC, ("Popped %d\n", (CurrentScope+1)->Type));
 
