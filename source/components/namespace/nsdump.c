@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.148 $
+ *              $Revision: 1.149 $
  *
  *****************************************************************************/
 
@@ -207,6 +207,7 @@ AcpiNsDumpPathname (
     /* Convert handle to a full pathname and print it (with supplied message) */
 
     AcpiNsPrintNodePathname (Handle, Msg);
+    AcpiOsPrintf ("\n");
     return_VOID;
 }
 
