@@ -331,57 +331,39 @@ AcpiOsMemOut32 (
 
 ACPI_STATUS
 AcpiOsReadPciCfgByte (
-    UINT32                  Seg,
-    UINT32                  Bus,
-    UINT32                  Dev,
-    UINT32                  Func,
-    UINT32                  Reg,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT8                   *Value);
 
 ACPI_STATUS
 AcpiOsReadPciCfgWord (
-    UINT32                  Seg,
-    UINT32                  Bus,
-    UINT32                  Dev,
-    UINT32                  Func,
-    UINT32                  Reg,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT16                  *Value);
 
 ACPI_STATUS
 AcpiOsReadPciCfgDword (
-    UINT32                  Seg,
-    UINT32                  Bus,
-    UINT32                  Dev,
-    UINT32                  Func,
-    UINT32                  Reg,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT32                  *Value);
 
 ACPI_STATUS
 AcpiOsWritePciCfgByte (
-    UINT32                  Seg,
-    UINT32                  Bus,
-    UINT32                  Dev,
-    UINT32                  Func,
-    UINT32                  Reg,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT8                   Value);
 
 ACPI_STATUS
 AcpiOsWritePciCfgWord (
-    UINT32                  Seg,
-    UINT32                  Bus,
-    UINT32                  Dev,
-    UINT32                  Func,
-    UINT32                  Reg,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT16                  Value);
 
 
 ACPI_STATUS
 AcpiOsWritePciCfgDword (
-    UINT32                  Seg,
-    UINT32                  Bus,
-    UINT32                  Dev,
-    UINT32                  Func,
-    UINT32                  Reg,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT32                  Value);
 
 
