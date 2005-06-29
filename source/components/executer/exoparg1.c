@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.162 $
+ *              $Revision: 1.163 $
  *
  *****************************************************************************/
 
@@ -789,6 +789,13 @@ AcpiExOpcode_1A_0T_1R (
 
     case AML_TYPE_OP:               /* ObjectType (SourceObject) */
 
+        /*
+         * Note: The operand is not resolved at this point because we want to
+         * get the associated object, not its value.  For example, we don't want
+         * to resolve a FieldUnit to its value, we want the actual FieldUnit
+         * object.
+         */
+
         /* Get the type of the base object */
 
         Status = AcpiExResolveMultiple (WalkState, Operand[0], &Type, NULL);
@@ -796,7 +803,6 @@ AcpiExOpcode_1A_0T_1R (
         {
             goto Cleanup;
         }
-
         /* Allocate a descriptor to hold the type. */
 
         ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
@@ -812,6 +818,11 @@ AcpiExOpcode_1A_0T_1R (
 
     case AML_SIZE_OF_OP:            /* SizeOf (SourceObject)  */
 
+        /*
+         * Note: The operand is not resolved at this point because we want to
+         * get the associated object, not its value.
+         */
+
         /* Get the base object */
 
         Status = AcpiExResolveMultiple (WalkState, Operand[0], &Type, &TempDesc);
@@ -821,12 +832,20 @@ AcpiExOpcode_1A_0T_1R (
         }
 
         /*
-         * Type is guaranteed to be a buffer, string, or package at this
-         * point (even if the original operand was an object reference, it
-         * will be resolved and typechecked during operand resolution.)
+         * The type of the base object must be integer, buffer, string, or
+         * package.  All others are not supported.
+         *
+         * NOTE: Integer is not specifically supported by the ACPI spec,
+         * but is supported implicitly via implicit operand conversion.
+         * rather than bother with conversion, we just use the byte width
+         * global (4 or 8 bytes).
          */
         switch (Type)
         {
+        case ACPI_TYPE_INTEGER:
+            Value = AcpiGbl_IntegerByteWidth;
+            break;
+
         case ACPI_TYPE_BUFFER:
             Value = TempDesc->Buffer.Length;
             break;
@@ -841,7 +860,7 @@ AcpiExOpcode_1A_0T_1R (
 
         default:
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "SizeOf, Not Buf/Str/Pkg - found type %s\n",
+                "SizeOf - Operand is not Buf/Int/Str/Pkg - found type %s\n",
                 AcpiUtGetTypeName (Type)));
             Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
