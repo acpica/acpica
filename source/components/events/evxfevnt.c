@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
         MODULE_NAME         ("evxfevnt")
 
 
-/**************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiEnable
  *
@@ -138,7 +138,7 @@
  *
  * DESCRIPTION: Transfers the system into ACPI mode.
  *
- *************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiEnable (void)
@@ -153,7 +153,7 @@ AcpiEnable (void)
 
     if (!AcpiGbl_DSDT)
     {
-        DEBUG_PRINT (ACPI_WARN, ("No ACPI tables present!\n"));
+        DEBUG_PRINTP (ACPI_WARN, ("No ACPI tables present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
@@ -161,8 +161,7 @@ AcpiEnable (void)
 
     if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
     {
-        DEBUG_PRINT (ACPI_WARN,
-            ("AcpiEnable: Only legacy mode supported!\n"));
+        DEBUG_PRINTP (ACPI_WARN, ("Only legacy mode supported!\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
@@ -171,17 +170,17 @@ AcpiEnable (void)
     Status = AcpiHwSetMode (SYS_MODE_ACPI);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
+        DEBUG_PRINTP (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
         return_ACPI_STATUS (Status);
     }
 
-    DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
+    DEBUG_PRINTP (ACPI_OK, ("Transition to ACPI mode successful\n"));
 
     return_ACPI_STATUS (Status);
 }
 
 
-/**************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDisable
  *
@@ -192,7 +191,7 @@ AcpiEnable (void)
  * DESCRIPTION: Returns the system to original ACPI/legacy mode, and
  *              uninstalls the SCI interrupt handler.
  *
- *************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDisable (void)
@@ -208,7 +207,7 @@ AcpiDisable (void)
     Status = AcpiHwSetMode (AcpiGbl_OriginalMode);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Unable to transition to original mode"));
+        DEBUG_PRINTP (ACPI_ERROR, ("Unable to transition to original mode"));
         return_ACPI_STATUS (Status);
     }
 
@@ -221,7 +220,7 @@ AcpiDisable (void)
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiEnableEvent
  *
@@ -291,7 +290,8 @@ AcpiEnableEvent (
 
         if (1 != AcpiHwRegisterBitAccess(ACPI_READ, ACPI_MTX_LOCK, RegisterId))
         {
-            DEBUG_PRINT(ACPI_ERROR, ("Fixed event bit clear when it should be set,\n"));
+            DEBUG_PRINTP (ACPI_ERROR, 
+                ("Fixed event bit clear when it should be set\n"));
             return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
         }
 
@@ -325,7 +325,7 @@ AcpiEnableEvent (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDisableEvent
  *
@@ -395,7 +395,8 @@ AcpiDisableEvent (
 
         if (0 != AcpiHwRegisterBitAccess(ACPI_READ, ACPI_MTX_LOCK, RegisterId))
         {
-            DEBUG_PRINT(ACPI_ERROR, ("Fixed event bit set when it should be clear,\n"));
+            DEBUG_PRINTP (ACPI_ERROR, 
+                ("Fixed event bit set when it should be clear,\n"));
             return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
         }
 
@@ -426,7 +427,7 @@ AcpiDisableEvent (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiClearEvent
  *
@@ -520,7 +521,7 @@ AcpiClearEvent (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetEventStatus
  *

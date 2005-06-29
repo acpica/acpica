@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
         MODULE_NAME         ("evxfregn")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiInstallAddressSpaceHandler
  *
@@ -269,9 +269,8 @@ AcpiInstallAddressSpaceHandler (
 
     else
     {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("Creating object on Device %p while installing handler\n",
-            Node));
+        DEBUG_PRINTP (TRACE_OPREGION,
+            ("Creating object on Device %p while installing handler\n", Node));
 
         /* ObjDesc does not exist, create one */
 
@@ -306,7 +305,7 @@ AcpiInstallAddressSpaceHandler (
         }
     }
 
-    DEBUG_PRINT (TRACE_OPREGION,
+    DEBUG_PRINTP (TRACE_OPREGION,
         ("Installing address handler for region %s(%X) on Device %p(%p)\n",
         AcpiUtGetRegionName (SpaceId), SpaceId, Node, ObjDesc));
 
@@ -366,7 +365,7 @@ UnlockAndExit:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiRemoveAddressSpaceHandler
  *
@@ -446,7 +445,7 @@ AcpiRemoveAddressSpaceHandler (
             /*
              *  Got it, first dereference this in the Regions
              */
-            DEBUG_PRINT (TRACE_OPREGION,
+            DEBUG_PRINTP (TRACE_OPREGION,
                 ("Removing address handler %p(%p) for region %s on Device %p(%p)\n",
                 HandlerObj, Handler, AcpiUtGetRegionName (SpaceId),
                 Node, ObjDesc));
@@ -500,7 +499,7 @@ AcpiRemoveAddressSpaceHandler (
     /*
      *  The handler does not exist
      */
-    DEBUG_PRINT (TRACE_OPREGION,
+    DEBUG_PRINTP (TRACE_OPREGION,
         ("Unable to remove address handler %p for %s(%X), DevNode %p, obj %p\n",
         Handler, AcpiUtGetRegionName (SpaceId), SpaceId, Node, ObjDesc));
 

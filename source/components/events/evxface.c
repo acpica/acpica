@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
         MODULE_NAME         ("evxface")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiInstallFixedEventHandler
  *
@@ -182,7 +182,7 @@ AcpiInstallFixedEventHandler (
     Status = AcpiEnableEvent (Event, ACPI_EVENT_FIXED);
     if (!ACPI_SUCCESS (Status))
     {
-        DEBUG_PRINT (ACPI_WARN, ("Could not enable fixed event.\n"));
+        DEBUG_PRINTP (ACPI_WARN, ("Could not enable fixed event.\n"));
 
         /* Remove the handler */
 
@@ -192,7 +192,7 @@ AcpiInstallFixedEventHandler (
 
     else
     {
-        DEBUG_PRINT (ACPI_INFO,
+        DEBUG_PRINTP (ACPI_INFO,
             ("Enabled fixed event %X, Handler=%p\n", Event, Handler));
     }
 
@@ -203,7 +203,7 @@ Cleanup:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiRemoveFixedEventHandler
  *
@@ -248,13 +248,13 @@ AcpiRemoveFixedEventHandler (
 
     if (!ACPI_SUCCESS(Status))
     {
-        DEBUG_PRINT (ACPI_WARN,
+        DEBUG_PRINTP (ACPI_WARN,
             ("Could not write to fixed event enable register.\n"));
     }
 
     else
     {
-        DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %X.\n", Event));
+        DEBUG_PRINTP (ACPI_INFO, ("Disabled fixed event %X.\n", Event));
     }
 
     AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
@@ -262,7 +262,7 @@ AcpiRemoveFixedEventHandler (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiInstallNotifyHandler
  *
@@ -438,7 +438,7 @@ UnlockAndExit:
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiRemoveNotifyHandler
  *
@@ -493,7 +493,7 @@ AcpiRemoveNotifyHandler (
      */
     if (Device == ACPI_ROOT_OBJECT) {
 
-        DEBUG_PRINT(ACPI_INFO, ("Removing notify handler for ROOT object.\n"));
+        DEBUG_PRINTP (ACPI_INFO, ("Removing notify handler for ROOT object.\n"));
 
         if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
               !AcpiGbl_SysNotify.Handler) ||
@@ -581,7 +581,7 @@ UnlockAndExit:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiInstallGpeHandler
  *
@@ -652,7 +652,7 @@ Cleanup:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiRemoveGpeHandler
  *
@@ -716,7 +716,7 @@ Cleanup:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiAcquireGlobalLock
  *
@@ -753,7 +753,7 @@ AcpiAcquireGlobalLock (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiReleaseGlobalLock
  *
