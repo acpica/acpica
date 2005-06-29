@@ -596,7 +596,6 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
     UINT32                  SpaceId; 
     NAME_TABLE_ENTRY       *Nte;        /* Namespace Object */
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY       *ParentScope;
     NAME_TABLE_ENTRY       *RegEntry;
     ACPI_NAME              *RegNamePtr = (ACPI_NAME *) METHOD_NAME__REG;
 
@@ -609,7 +608,6 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
 
     Nte = RegionObj->Region.Nte->ParentEntry;
     SpaceId = RegionObj->Region.SpaceId;
-    ParentScope = RegionObj->Region.Nte->ParentScope;
 
     RegionObj->Region.AddrHandler = NULL;
     RegionObj->Region.REGMethod = NULL;
@@ -618,7 +616,7 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
     /*
      *  First, do address space specific initialization
      */
-    switch (RegionObj->Region.SpaceId)
+    switch (SpaceId)
     {
         case REGION_PCIConfig:
         {
@@ -656,7 +654,7 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
     /*
      *  Find any "_REG" associated with this region definition
      */
-    Status = NsSearchOnly (*RegNamePtr, ParentScope, TYPE_Method, &RegEntry, NULL);
+    Status = NsSearchOnly (*RegNamePtr, Nte->Scope, TYPE_Method, &RegEntry, NULL);
     if (Status == AE_OK)
     {
         /*
