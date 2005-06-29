@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.78 $
+ *       $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -521,7 +521,7 @@
 #define DUMP_TABLES(a,b)                AcpiNsDumpTables(a,b)
 #define DUMP_PATHNAME(a,b,c,d)          AcpiNsDumpPathname(a,b,c,d)
 #define DUMP_RESOURCE_LIST(a)           AcpiRsDumpResourceList(a)
-#define BREAK_MSG(a)                    AcpiOsBreakpoint (a)
+#define BREAK_MSG(a)                    AcpiOsSignal (ACPI_SIGNAL_BREAKPOINT,(a))
 
 
 /*
@@ -530,7 +530,7 @@
 
 #define ERROR_BREAK
 #ifdef  ERROR_BREAK
-#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) AcpiOsBreakpoint("Fatal error encountered\n")
+#define BREAK_ON_ERROR(lvl)              if ((lvl)&ACPI_ERROR) AcpiOsSignal(ACPI_SIGNAL_BREAKPOINT,"Fatal error encountered\n")
 #else
 #define BREAK_ON_ERROR(lvl)
 #endif
@@ -651,10 +651,6 @@
 #define ACPI_MEM_CALLOCATE(a)           AcpiOsCallocate(a)
 #define ACPI_MEM_FREE(a)                AcpiOsFree(a)
 
-#define AcpiUtAddElementToAllocList(a,b,c,d,e,f)
-#define AcpiUtDeleteElementFromAllocList(a,b,c,d)
-#define AcpiUtDumpCurrentAllocations(a,b)
-#define AcpiUtDumpAllocationInfo()
 
 #define DECREMENT_OBJECT_METRICS(a)
 #define INCREMENT_OBJECT_METRICS(a)
