@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.45 $
+ *       $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -167,7 +167,7 @@ extern UINT32                   AcpiGbl_SizeOfAcpiObjects;
 
 
 
-#define BUFFER_SIZE             4196
+#define ACPI_DEBUG_BUFFER_SIZE  4196
 
 #define DB_REDIRECTABLE_OUTPUT  0x01
 #define DB_CONSOLE_OUTPUT       0x02
