@@ -215,6 +215,20 @@ OBSOLETE!
             /* NTE */
 
             ObjectType = ((NAME_TABLE_ENTRY *) ObjDesc)->Type;
+
+            /*
+             * Support for name aliases.  Follow the alias chain until
+             * we get to the real object.  This allows multiple aliases.
+             * (aliases of aliases>
+             */
+
+            while (ObjectType == INTERNAL_TYPE_Alias)
+            {
+                ObjDesc = ((NAME_TABLE_ENTRY *) ObjDesc)->Object;
+                ObjectType = ((NAME_TABLE_ENTRY *) ObjDesc)->Type;
+                (*StackPtr) = ObjDesc;
+            }
+
             DEBUG_EXEC (ObjectTypeName = "[NTE]");
         }
 
@@ -597,9 +611,9 @@ AmlPrepDefFieldValue (
     /* ObjDesc, Region, and ObjDesc->Field.Type valid    */
 
     ObjDesc->Field.Length       = (UINT16) FldLen;
-    ObjDesc->Field.UpdateRule   = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    ObjDesc->Field.LockRule     = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    ObjDesc->Field.Access       = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+    ObjDesc->Field.UpdateRule   = (UINT8) ((FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT);
+    ObjDesc->Field.LockRule     = (UINT8) ((FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT);
+    ObjDesc->Field.Access       = (UINT8) ((FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT);
 
     /* Decode the access type so we can compute offsets */
 
@@ -611,8 +625,8 @@ AmlPrepDefFieldValue (
 
     /* Compute field offset and bit offset within the minimum read/write data unit */
 
-    ObjDesc->Field.Granularity  = Granularity;
-    ObjDesc->Field.BitOffset    = (UINT16) FldPos % Granularity;
+    ObjDesc->Field.Granularity  = (UINT8) Granularity;
+    ObjDesc->Field.BitOffset    = (UINT8) (FldPos % Granularity);
     ObjDesc->Field.Offset       = (UINT32) FldPos / Granularity;
     ObjDesc->Field.Container    = NsGetAttachedObject (Region);
 
@@ -734,9 +748,9 @@ AmlPrepBankFieldValue (
 
     /*  ObjDesc, Region, and ObjDesc->BankField.ValTyp valid    */
 
-    ObjDesc->BankField.Access       = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-    ObjDesc->BankField.LockRule     = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    ObjDesc->BankField.UpdateRule   = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->BankField.Access       = (UINT8) ((FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT);
+    ObjDesc->BankField.LockRule     = (UINT8) ((FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT);
+    ObjDesc->BankField.UpdateRule   = (UINT8) ((FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT);
     ObjDesc->BankField.Length       = (UINT16) FldLen;
 
     /* Decode the access type so we can compute offsets */
@@ -747,9 +761,9 @@ AmlPrepBankFieldValue (
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    ObjDesc->Field.Granularity      = Granularity;
-    ObjDesc->BankField.BitOffset    = (UINT16) FldPos % Granularity;
-    ObjDesc->BankField.Offset       = (UINT32) FldPos / Granularity;
+    ObjDesc->Field.Granularity      = (UINT8) Granularity;
+    ObjDesc->BankField.BitOffset    = (UINT8) (FldPos % Granularity);
+    ObjDesc->BankField.Offset       = (UINT32) (FldPos / Granularity);
     ObjDesc->BankField.Value        = BankVal;
     ObjDesc->BankField.Container    = NsGetAttachedObject (Region);
     ObjDesc->BankField.BankSelect   = NsGetAttachedObject (BankReg);
@@ -853,9 +867,9 @@ AmlPrepIndexFieldValue (
 
     /*  ObjDesc, IndexRegion, and DataReg, and ObjDesc->IndexField.ValTyp valid */
 
-    ObjDesc->IndexField.Access      = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-    ObjDesc->IndexField.LockRule    = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    ObjDesc->IndexField.UpdateRule  = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->IndexField.Access      = (UINT8) ((FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT);
+    ObjDesc->IndexField.LockRule    = (UINT8) ((FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT);
+    ObjDesc->IndexField.UpdateRule  = (UINT8) ((FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT);
     ObjDesc->IndexField.Length      = (UINT16) FldLen;
 
     /* Decode the access type so we can compute offsets */
@@ -866,9 +880,9 @@ AmlPrepIndexFieldValue (
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    ObjDesc->Field.Granularity      = Granularity;
-    ObjDesc->IndexField.BitOffset   = (UINT16) FldPos % Granularity;
-    ObjDesc->IndexField.Value       = (UINT32) FldPos / Granularity;
+    ObjDesc->Field.Granularity      = (UINT8) Granularity;
+    ObjDesc->IndexField.BitOffset   = (UINT8) (FldPos % Granularity);
+    ObjDesc->IndexField.Value       = (UINT32) (FldPos / Granularity);
     ObjDesc->IndexField.Index       = IndexReg;
     ObjDesc->IndexField.Data        = DataReg;
 
