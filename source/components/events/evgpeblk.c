@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -270,8 +270,8 @@ AcpiEvSaveMethodInfo (
 
     /* Extract the name from the object and convert to a string */
 
-    ACPI_MOVE_UNALIGNED32_TO_32 (Name,
-                &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Integer);
+    ACPI_MOVE_32_TO_32 (Name,
+                        &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Integer);
     Name[ACPI_NAME_SIZE] = 0;
 
     /*
