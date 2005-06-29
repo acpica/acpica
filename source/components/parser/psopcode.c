@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -544,16 +544,16 @@ static const ACPI_OPCODE_INFO    AmlOpInfo[] =
 
 /* 00 */ ACPI_OP ("Zero",               ARGP_ZERO_OP,              ARGI_ZERO_OP,               AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
 /* 01 */ ACPI_OP ("One",                ARGP_ONE_OP,               ARGI_ONE_OP,                AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
-/* 02 */ ACPI_OP ("Alias",              ARGP_ALIAS_OP,             ARGI_ALIAS_OP,              AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
-/* 03 */ ACPI_OP ("Name",               ARGP_NAME_OP,              ARGI_NAME_OP,               AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
+/* 02 */ ACPI_OP ("Alias",              ARGP_ALIAS_OP,             ARGI_ALIAS_OP,              AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_SIMPLE,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
+/* 03 */ ACPI_OP ("Name",               ARGP_NAME_OP,              ARGI_NAME_OP,               AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_COMPLEX,   AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
 /* 04 */ ACPI_OP ("ByteConst",          ARGP_BYTE_OP,              ARGI_BYTE_OP,               AML_CLASS_ARGUMENT,        AML_TYPE_LITERAL,         0),
 /* 05 */ ACPI_OP ("WordConst",          ARGP_WORD_OP,              ARGI_WORD_OP,               AML_CLASS_ARGUMENT,        AML_TYPE_LITERAL,         0),
 /* 06 */ ACPI_OP ("DwordConst",         ARGP_DWORD_OP,             ARGI_DWORD_OP,              AML_CLASS_ARGUMENT,        AML_TYPE_LITERAL,         0),
 /* 07 */ ACPI_OP ("String",             ARGP_STRING_OP,            ARGI_STRING_OP,             AML_CLASS_ARGUMENT,        AML_TYPE_LITERAL,         0),
-/* 08 */ ACPI_OP ("Scope",              ARGP_SCOPE_OP,             ARGI_SCOPE_OP,              AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
+/* 08 */ ACPI_OP ("Scope",              ARGP_SCOPE_OP,             ARGI_SCOPE_OP,              AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_NO_OBJ,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
 /* 09 */ ACPI_OP ("Buffer",             ARGP_BUFFER_OP,            ARGI_BUFFER_OP,             AML_CLASS_ARGUMENT,        AML_TYPE_DATA_TERM,       AML_HAS_ARGS),
 /* 0A */ ACPI_OP ("Package",            ARGP_PACKAGE_OP,           ARGI_PACKAGE_OP,            AML_CLASS_ARGUMENT,        AML_TYPE_DATA_TERM,       AML_HAS_ARGS),
-/* 0B */ ACPI_OP ("Method",             ARGP_METHOD_OP,            ARGI_METHOD_OP,             AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED | AML_DEFER),
+/* 0B */ ACPI_OP ("Method",             ARGP_METHOD_OP,            ARGI_METHOD_OP,             AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_COMPLEX,   AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED | AML_DEFER),
 /* 0C */ ACPI_OP ("Local0",             ARGP_LOCAL0,               ARGI_LOCAL0,                AML_CLASS_ARGUMENT,        AML_TYPE_LOCAL_VARIABLE,  0),
 /* 0D */ ACPI_OP ("Local1",             ARGP_LOCAL1,               ARGI_LOCAL1,                AML_CLASS_ARGUMENT,        AML_TYPE_LOCAL_VARIABLE,  0),
 /* 0E */ ACPI_OP ("Local2",             ARGP_LOCAL2,               ARGI_LOCAL2,                AML_CLASS_ARGUMENT,        AML_TYPE_LOCAL_VARIABLE,  0),
@@ -615,8 +615,8 @@ static const ACPI_OPCODE_INFO    AmlOpInfo[] =
 
 /* Prefixed opcodes (Two-byte opcodes with a prefix op) */
 
-/* 46 */ ACPI_OP ("Mutex",              ARGP_MUTEX_OP,             ARGI_MUTEX_OP,              AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
-/* 47 */ ACPI_OP ("Event",              ARGP_EVENT_OP,             ARGI_EVENT_OP,              AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED ),
+/* 46 */ ACPI_OP ("Mutex",              ARGP_MUTEX_OP,             ARGI_MUTEX_OP,              AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_SIMPLE,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
+/* 47 */ ACPI_OP ("Event",              ARGP_EVENT_OP,             ARGI_EVENT_OP,              AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_SIMPLE,    AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED ),
 /* 48 */ ACPI_OP ("CondRefOf",          ARGP_COND_REF_OF_OP,       ARGI_COND_REF_OF_OP,        AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_1R,   AML_FLAGS_EXEC_1A_1T_1R),
 /* 49 */ ACPI_OP ("CreateField",        ARGP_CREATE_FIELD_OP,      ARGI_CREATE_FIELD_OP,       AML_CLASS_CREATE,          AML_TYPE_CREATE_FIELD,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSNODE | AML_DEFER | AML_FIELD | AML_CREATE),
 /* 4A */ ACPI_OP ("Load",               ARGP_LOAD_OP,              ARGI_LOAD_OP,               AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_0R,   AML_FLAGS_EXEC_1A_1T_0R),
@@ -633,14 +633,14 @@ static const ACPI_OPCODE_INFO    AmlOpInfo[] =
 /* 55 */ ACPI_OP ("Revision",           ARGP_REVISION_OP,          ARGI_REVISION_OP,           AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
 /* 56 */ ACPI_OP ("Debug",              ARGP_DEBUG_OP,             ARGI_DEBUG_OP,              AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
 /* 57 */ ACPI_OP ("Fatal",              ARGP_FATAL_OP,             ARGI_FATAL_OP,              AML_CLASS_EXECUTE,         AML_TYPE_EXEC_3A_0T_0R,   AML_FLAGS_EXEC_3A_0T_0R),
-/* 58 */ ACPI_OP ("OpRegion",           ARGP_REGION_OP,            ARGI_REGION_OP,             AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED | AML_DEFER),
-/* 59 */ ACPI_OP ("Field",              ARGP_FIELD_OP,             ARGI_FIELD_OP,              AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_FIELD),
-/* 5A */ ACPI_OP ("Device",             ARGP_DEVICE_OP,            ARGI_DEVICE_OP,             AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
-/* 5B */ ACPI_OP ("Processor",          ARGP_PROCESSOR_OP,         ARGI_PROCESSOR_OP,          AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
-/* 5C */ ACPI_OP ("PowerResource",      ARGP_POWER_RES_OP,         ARGI_POWER_RES_OP,          AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
-/* 5D */ ACPI_OP ("ThermalZone",        ARGP_THERMAL_ZONE_OP,      ARGI_THERMAL_ZONE_OP,       AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
-/* 5E */ ACPI_OP ("IndexField",         ARGP_INDEX_FIELD_OP,       ARGI_INDEX_FIELD_OP,        AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_FIELD),
-/* 5F */ ACPI_OP ("BankField",          ARGP_BANK_FIELD_OP,        ARGI_BANK_FIELD_OP,         AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_OBJECT,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_FIELD),
+/* 58 */ ACPI_OP ("OpRegion",           ARGP_REGION_OP,            ARGI_REGION_OP,             AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_COMPLEX,   AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED | AML_DEFER),
+/* 59 */ ACPI_OP ("Field",              ARGP_FIELD_OP,             ARGI_FIELD_OP,              AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_FIELD,     AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_FIELD),
+/* 5A */ ACPI_OP ("Device",             ARGP_DEVICE_OP,            ARGI_DEVICE_OP,             AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_NO_OBJ,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
+/* 5B */ ACPI_OP ("Processor",          ARGP_PROCESSOR_OP,         ARGI_PROCESSOR_OP,          AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_SIMPLE,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
+/* 5C */ ACPI_OP ("PowerResource",      ARGP_POWER_RES_OP,         ARGI_POWER_RES_OP,          AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_SIMPLE,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
+/* 5D */ ACPI_OP ("ThermalZone",        ARGP_THERMAL_ZONE_OP,      ARGI_THERMAL_ZONE_OP,       AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_NO_OBJ,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
+/* 5E */ ACPI_OP ("IndexField",         ARGP_INDEX_FIELD_OP,       ARGI_INDEX_FIELD_OP,        AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_FIELD,     AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_FIELD),
+/* 5F */ ACPI_OP ("BankField",          ARGP_BANK_FIELD_OP,        ARGI_BANK_FIELD_OP,         AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_FIELD,     AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_FIELD),
 
 /* Internal opcodes that map to invalid AML opcodes */
 
