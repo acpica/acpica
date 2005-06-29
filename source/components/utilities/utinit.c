@@ -96,7 +96,6 @@
 
 
 #define __ACPIINIT_C__
-#define DEFINE_ACPI_GLOBALS
 
 #include <acpi.h>
 #include <devices.h>
@@ -106,26 +105,7 @@
 
 
 #define _THIS_MODULE        "acpiinit.c"
-#define _COMPONENT          NAMESPACE
-
-/* 
- * We want the debug switches statically initialized so they 
- * are already set when the debugger is entered.
- */
-
-    /* Debug switch - level and trace mask */
-
-#ifdef _DEBUG
-INT32                       DebugLevel = DEBUG_DEFAULT;
-#else
-INT32                       DebugLevel = NORMAL_DEFAULT;
-#endif
-
-    /* Debug switch - layer (component) mask */
-
-INT32                       DebugLayer = ALL_COMPONENTS;
-
-
+#define _COMPONENT          MISCELLANEOUS
 
 
 static ST_KEY_DESC_TABLE KDT[] = {
@@ -169,78 +149,6 @@ IncFACPRegisterError (char *RegisterName, UINT32 Value,
     DEBUG_PRINT (ACPI_ERROR, ("  Assertion %d.%d.%d Failed  %s=%08lXh\n",
                 ACPI_CHAPTER, AcpiTestSpecSection, AcpiAssertion, RegisterName, Value));
 }
-
-
-
-/****************************************************************************
- *
- * FUNCTION:    InitAcpiLibGlobals
- *
- * PARAMETERS:  none
- *
- * DESCRIPTION: Init library globals.  All globals that require specific
- *              initialization should be initialized here!
- *
- ***************************************************************************/
-
-void 
-InitAcpiLibGlobals (void)
-{
-    FUNCTION_TRACE ("InitAcpiLibGlobals");
-
-    
-    /* table pointers */
-    
-    RSDP                    = NULL;
-    RSDT                    = NULL;
-    FACS                    = NULL;
-    FACP                    = NULL;
-    MAPIC                   = NULL;
-    DSDT                    = NULL;
-    PSDT                    = NULL;
-    SSDT                    = NULL;
-    SBDT                    = NULL;
-    
-    /* miscellaneous variables */
-    
-    Capabilities            = 0;
-    
-    /* file handles and names */
-    
-    AsmFile                 = NULL;
-    DsdtFile                = NULL;
-    OutputFile              = NULL;
-    InputFile               = NULL;
-    LstFileHandle           = NO_LOG_HANDLE;
-    
-    NameString              = NULL;
-    NameStringSize          = 0;
-
-    /*  global to track allocation failures */
-
-    OutOfMemory             = FALSE;
-
-
-    /* Hardware oriented */
-
-    RestoreAcpiChipset      = TRUE;
-    Pm1EnableRegisterSave   = 0;
-    Gpe0EnableRegisterSave  = NULL;
-    Gpe1EnableRegisterSave  = NULL;
-    EdgeLevelSave           = SAVE_NOT_VALID;
-    IrqEnableSave           = SAVE_NOT_VALID;
-    OriginalMode            = SAVE_NOT_VALID;   /*  original ACPI/legacy mode   */
-
-
-
-    AcpiHook                = 0;
-    AcpiLibInitStatus       = 0;
-
-    /* Namespace */
-
-    Root                    = NULL;
-
-}   
 
 
 /******************************************************************************
@@ -789,3 +697,7 @@ BREAKPOINT3;
 
     return (ErrorCheck);
 }
+
+
+
+
