@@ -15,15 +15,18 @@
  |                                  legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.3 $
- | $Date: 2005/06/29 19:31:09 $
+ | $Revision: 1.4 $
+ | $Date: 2005/06/29 19:31:10 $
  | $Log: acevents.h,v $
- | Revision 1.3  2005/06/29 19:31:09  aystarik
- | Made pretty
+ | Revision 1.4  2005/06/29 19:31:10  aystarik
+ | 16/32/64-bit common data types
  |
  | 
- | date	99.02.16.22.36.00;	author rmoore1;	state Exp;
+ | date	99.03.10.00.04.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 4     3/09/99 4:04p Rmoore1
+ * 16/32/64-bit common data types
  * 
  * 3     2/16/99 2:36p Rmoore1
  * Made pretty
@@ -79,28 +82,32 @@
 #define SAVE_NOT_VALID                  -1
 
 #ifdef __EVSCI_C__
-int EdgeLevelSave   = SAVE_NOT_VALID;
-int IrqEnableSave   = SAVE_NOT_VALID;
-int OriginalMode    = SAVE_NOT_VALID;   /*  original ACPI/legacy mode   */
+INT32 EdgeLevelSave   = SAVE_NOT_VALID;
+INT32 IrqEnableSave   = SAVE_NOT_VALID;
+INT32 OriginalMode    = SAVE_NOT_VALID;   /*  original ACPI/legacy mode   */
 
 #else
-extern  int EdgeLevelSave;
-extern  int IrqEnableSave; /*  original SCI config */
-extern  int OriginalMode;  /*  stores the original ACPI/legacy mode    */
+extern  INT32 EdgeLevelSave;
+extern  INT32 IrqEnableSave; /*  original SCI config */
+extern  INT32 OriginalMode;  /*  stores the original ACPI/legacy mode    */
 #endif
 
 /* Prototypes */
 
-int 
-InitializeSCI (int ProgramSCI);
+INT32 
+InitializeSCI (
+    INT32           ProgramSCI);
 
-int 
-VerifyAcpiTablesPresent (char *TestName);
+INT32 
+VerifyAcpiTablesPresent (
+    char *          TestName);
 
-int 
-InstallSCIHandlerXferToACPI (char *TestName, int Flags);
+INT32 
+InstallSCIHandlerXferToACPI (
+    char *          TestName, 
+    INT32           Flags);
 
-int 
+INT32 
 UninstallSCIHandlerXferToLegacy (void);
 
 
