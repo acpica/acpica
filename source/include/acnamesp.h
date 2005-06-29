@@ -14,15 +14,17 @@
  | FILENAME: acpinmsp.h - prototypes for accessing namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.8 $
- | $Date: 2005/06/29 19:49:34 $
+ | $Revision: 1.9 $
+ | $Date: 2005/06/29 19:49:35 $
  | $Log: acnamesp.h,v $
- | Revision 1.8  2005/06/29 19:49:34  aystarik
+ | Revision 1.9  2005/06/29 19:49:35  aystarik
  |
  |
  | 
- | date	99.02.16.23.04.00;	author rmosgrov;	state Exp;
+ | date	99.02.16.23.36.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 9     2/16/99 3:36p Rmosgrov
  * 
  * 8     2/16/99 3:04p Rmosgrov
  * 
@@ -189,6 +191,21 @@ extern char *NsTypeNames[];
 
 
 /****************************************************************************
+ * FUNCTION:    PriUnloadNameSpace 
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      E_OK or E_ERROR
+ *
+ * DESCRIPTION: Contracts namespace, typically in response to an undocking
+ *              event
+ *
+ ****************************************************************************/
+
+int
+PriUnloadNameSpace(void);
+
+/****************************************************************************
  * FUNCTION:    NsPushMethodScope
  *
  * PARAMETERS:  NsHandle nNewScope,             name to be made current
@@ -261,8 +278,21 @@ AcpiLoadNameSpace (int DisplayAmlDuringLoad);
  ****************************************************************************/
 
 int
-AcipUnloadNameSpace(void);
+AcpiUnloadNameSpace(void);
 
+/******************************************************************************
+ * FUNCTION:        void AcpiCleanup (void)
+ *
+ * PARAMETERS:      none
+ *
+ * RETURN:          none
+ *
+ * DESCRIPTION: Exit function registered by AcpiInit().  This function will
+ *                          free memory allocated for table storage.
+ *
+ ******************************************************************************/
+void
+AcpiCleanup (void);
 
 /****************************************************************************
  * FUNCTION:    NsValType
