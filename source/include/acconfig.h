@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.66 $
+ *       $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@
 #define MAX_PARSE_CACHE_DEPTH       96          /* Parse tree objects */
 #define MAX_EXTPARSE_CACHE_DEPTH    64          /* Parse tree objects */
 #define MAX_OBJECT_CACHE_DEPTH      64          /* Interpreter operand objects */
-#define MAX_WALK_CACHE_DEPTH        2           /* Objects for parse tree walks (method execution) */
+#define MAX_WALK_CACHE_DEPTH        4           /* Objects for parse tree walks (method execution) */
 
 
 /* String size constants */
