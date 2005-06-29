@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.118 $
+ *       $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -617,6 +617,10 @@ AcpiUtPopGenericState (
 
 ACPI_GENERIC_STATE *
 AcpiUtCreateGenericState (
+    void);
+
+ACPI_THREAD_STATE *
+AcpiUtCreateThreadState (
     void);
 
 ACPI_GENERIC_STATE *
