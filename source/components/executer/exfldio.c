@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfldio - Aml Field I/O
- *              $Revision: 1.46 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,6 @@
         MODULE_NAME         ("amfldio")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlSetupField
@@ -141,7 +140,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Common processing for AcpiAmlExtractFromField and 
+ * DESCRIPTION: Common processing for AcpiAmlExtractFromField and
  *              AcpiAmlInsertIntoField
  *
  ******************************************************************************/
@@ -154,6 +153,7 @@ AcpiAmlSetupField (
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  FieldByteWidth;
+    UINT32                  MinimumLength;
 
 
     FUNCTION_TRACE ("AmlSetupField");
@@ -213,17 +213,42 @@ AcpiAmlSetupField (
        (ObjDesc->CommonField.ByteOffset & ~((UINT32) FieldByteWidth - 1)) +
             FieldByteWidth)
     {
+
+        switch (ObjDesc->CommonField.Access)
+        {
+        case ACCESS_ANY_ACC:
+        case ACCESS_BYTE_ACC:
+        default:
+            MinimumLength = 1;
+            break;
+
+        case ACCESS_WORD_ACC:
+            MinimumLength = 2;
+            break;
+
+        case ACCESS_DWORD_ACC:
+            MinimumLength = 4;
+            break;
+
+        case ACCESS_QWORD_ACC:
+            MinimumLength = 8;
+            break;
+        }
+
+        if (RgnDesc->Region.Length < MinimumLength)
+        {
+            DEBUG_PRINT (ACPI_ERROR,
+                ("AmlSetupField:  Field access width (%d bytes) too large for region size (%X)\n",
+                FieldByteWidth, RgnDesc->Region.Length));
+        }
+
         /*
          * Offset rounded up to next multiple of field width
          * exceeds region length, indicate an error
          */
-
-        DUMP_STACK_ENTRY (RgnDesc);
-        DUMP_STACK_ENTRY (ObjDesc);
-
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlSetupField: Operation at %08lX width %d bits exceeds len %08lX field=%p region=%p\n",
-            ObjDesc->CommonField.ByteOffset, FieldBitWidth, 
+            ("AmlSetupField:  Field length %d bits at region offset %X exceeds region size (%X bytes) field=%p region=%p\n",
+            FieldBitWidth, ObjDesc->CommonField.ByteOffset, 
             RgnDesc->Region.Length, ObjDesc, RgnDesc));
 
         return_ACPI_STATUS (AE_AML_REGION_LIMIT);
@@ -231,7 +256,6 @@ AcpiAmlSetupField (
 
     return_ACPI_STATUS (AE_OK);
 }
-
 
 
 /*******************************************************************************
@@ -282,12 +306,12 @@ AcpiAmlReadFieldDatum (
     {
     case ACPI_TYPE_BUFFER_FIELD:
 
-        /* 
+        /*
          * For BufferFields, we only need to copy the data from the
          * source buffer.  Length is the field width in bytes.
          */
         MEMCPY (Value, (ObjDesc->BufferField.BufferObj)->Buffer.Pointer
-                        + ObjDesc->BufferField.ByteOffset + FieldByteOffset,  
+                        + ObjDesc->BufferField.ByteOffset + FieldByteOffset,
                         FieldByteWidth);
         Status = AE_OK;
         break;
@@ -296,7 +320,7 @@ AcpiAmlReadFieldDatum (
     case INTERNAL_TYPE_REGION_FIELD:
     case INTERNAL_TYPE_BANK_FIELD:
 
-        /* 
+        /*
          * For other fields, we need to go through an Operation Region
          * (Only types that will get here are RegionFields and BankFields)
          */
@@ -413,7 +437,7 @@ AcpiAmlExtractFromField (
     ThisFieldByteOffset = 0;
     ThisFieldDatumOffset= 0;
 
-    Status = AcpiAmlReadFieldDatum (ObjDesc, ThisFieldByteOffset, 
+    Status = AcpiAmlReadFieldDatum (ObjDesc, ThisFieldByteOffset,
                     BitGranularity, &PreviousRawDatum);
     if (ACPI_FAILURE (Status))
     {
@@ -624,12 +648,12 @@ AcpiAmlWriteFieldDatum (
     {
     case ACPI_TYPE_BUFFER_FIELD:
 
-        /* 
+        /*
          * For BufferFields, we only need to copy the data to the
          * target buffer.  Length is the field width in bytes.
          */
         MEMCPY ((ObjDesc->BufferField.BufferObj)->Buffer.Pointer
-                + ObjDesc->BufferField.ByteOffset + FieldByteOffset,  
+                + ObjDesc->BufferField.ByteOffset + FieldByteOffset,
                 &Value, FieldByteWidth);
         Status = AE_OK;
         break;
@@ -638,7 +662,7 @@ AcpiAmlWriteFieldDatum (
     case INTERNAL_TYPE_REGION_FIELD:
     case INTERNAL_TYPE_BANK_FIELD:
 
-        /* 
+        /*
          * For other fields, we need to go through an Operation Region
          * (Only types that will get here are RegionFields and BankFields)
          */
@@ -853,17 +877,17 @@ AcpiAmlInsertIntoField (
         break;
 
     case 2:
-        MOVE_UNALIGNED16_TO_32 (&PreviousRawDatum, 
+        MOVE_UNALIGNED16_TO_32 (&PreviousRawDatum,
                 &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
         break;
 
     case 4:
-        MOVE_UNALIGNED32_TO_32 (&PreviousRawDatum, 
+        MOVE_UNALIGNED32_TO_32 (&PreviousRawDatum,
                 &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
         break;
 
     default:
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("AmlInsertIntoField: Invalid granularity: %x\n",
             ByteGranularity));
         Status = AE_AML_OPERAND_VALUE;
@@ -933,17 +957,17 @@ AcpiAmlInsertIntoField (
             break;
 
         case 2:
-            MOVE_UNALIGNED16_TO_32 (&ThisRawDatum, 
+            MOVE_UNALIGNED16_TO_32 (&ThisRawDatum,
                     &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
             break;
 
         case 4:
-            MOVE_UNALIGNED32_TO_32 (&ThisRawDatum, 
+            MOVE_UNALIGNED32_TO_32 (&ThisRawDatum,
                     &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
             break;
 
         default:
-            DEBUG_PRINT (ACPI_ERROR, 
+            DEBUG_PRINT (ACPI_ERROR,
                 ("AmlInsertIntoField: Invalid Byte Granularity: %x\n",
                 ByteGranularity));
             Status = AE_AML_OPERAND_VALUE;
@@ -957,7 +981,7 @@ AcpiAmlInsertIntoField (
 
         if (ObjDesc->CommonField.BitOffset != 0)
         {
-            MergedDatum = (PreviousRawDatum >> 
+            MergedDatum = (PreviousRawDatum >>
                             (BitGranularity - ObjDesc->CommonField.BitOffset)) |
                           (ThisRawDatum << ObjDesc->CommonField.BitOffset);
         }
@@ -1003,12 +1027,12 @@ AcpiAmlInsertIntoField (
             break;
 
         case 2:
-            MOVE_UNALIGNED16_TO_32 (&ThisRawDatum, 
+            MOVE_UNALIGNED16_TO_32 (&ThisRawDatum,
                     &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
             break;
 
         case 4:
-            MOVE_UNALIGNED32_TO_32 (&ThisRawDatum, 
+            MOVE_UNALIGNED32_TO_32 (&ThisRawDatum,
                     &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
             break;
         }
@@ -1025,7 +1049,7 @@ AcpiAmlInsertIntoField (
         FieldValue = (PreviousRawDatum >>
                         (BitGranularity - ObjDesc->CommonField.BitOffset)) & Mask;
 
-        Status = AcpiAmlWriteFieldDatumWithUpdateRule (ObjDesc, Mask, 
+        Status = AcpiAmlWriteFieldDatumWithUpdateRule (ObjDesc, Mask,
                         FieldValue, ThisFieldByteOffset + ByteGranularity,
                         BitGranularity);
         if (ACPI_FAILURE (Status))
