@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.23 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -116,9 +116,11 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("asltree")
 
 /*******************************************************************************
  *
@@ -141,8 +143,8 @@ TrAllocateNode (
 
     Node = UtLocalCalloc (sizeof (ASL_PARSE_NODE));
 
-    Node->ParseOpcode       = ParseOpcode;
-    Node->Filename          = Gbl_InputFilename;
+    Node->ParseOpcode       = (UINT16) ParseOpcode;
+    Node->Filename          = Gbl_Files[ASL_FILE_INPUT].Filename;
     Node->LineNumber        = Gbl_CurrentLineNumber;
     Node->LogicalLineNumber = Gbl_LogicalLineNumber;
     Node->LogicalByteOffset = Gbl_CurrentLineOffset;
@@ -189,7 +191,7 @@ TrUpdateNode (
 
     /* Assign new opcode and name */
 
-    Node->ParseOpcode = ParseOpcode;
+    Node->ParseOpcode = (UINT16) ParseOpcode;
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
 
 
@@ -643,7 +645,7 @@ TrLinkPeerNode (
     ASL_PARSE_NODE          *Next;
 
 
-    DbgPrint (ASL_PARSE_OUTPUT, 
+    DbgPrint (ASL_PARSE_OUTPUT,
         "\nLinkPeerNode: 1=%p (%s), 2=%p (%s)\n\n",
         Node1, Node1 ? UtGetOpName(Node1->ParseOpcode) : NULL,
         Node2, Node2 ? UtGetOpName(Node2->ParseOpcode) : NULL);
@@ -670,7 +672,7 @@ TrLinkPeerNode (
 
     if (Node1 == Node2)
     {
-        DbgPrint (ASL_DEBUG_OUTPUT, 
+        DbgPrint (ASL_DEBUG_OUTPUT,
             "\n\n************* Internal error, linking node to itself %p\n\n\n", Node1);
         printf ("Internal error, linking node to itself\n");
         return Node1;
@@ -721,7 +723,7 @@ TrLinkPeerNodes (
     ASL_PARSE_NODE          *Start;
 
 
-    DbgPrint (ASL_PARSE_OUTPUT, 
+    DbgPrint (ASL_PARSE_OUTPUT,
         "\nLinkPeerNodes: (%d) ", NumPeers);
 
 
