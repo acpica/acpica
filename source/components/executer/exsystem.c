@@ -14,15 +14,18 @@
  | FILENAME: amlopsys.c
  |__________________________________________________________________________
  |
- | $Revision: 1.8 $
- | $Date: 2005/06/29 17:56:40 $
+ | $Revision: 1.9 $
+ | $Date: 2005/06/29 17:56:41 $
  | $Log: exsystem.c,v $
- | Revision 1.8  2005/06/29 17:56:40  aystarik
- | Integrated with 03/99 OPSD code
+ | Revision 1.9  2005/06/29 17:56:41  aystarik
+ | New version of DEBUG_PRINT
  |
  | 
- | date	99.03.31.22.33.00;	author rmoore1;	state Exp;
+ | date	99.04.02.22.39.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 9     4/02/99 2:39p Rmoore1
+ * New version of DEBUG_PRINT
  * 
  * 8     3/31/99 2:33p Rmoore1
  * Integrated with 03/99 OPSD code
@@ -131,32 +134,32 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
     {
         if (ObjDesc)
         {
-            DEBUG_PRINT2 (AML_INFO, 
-                        "NotifyOp: %s %s \n", NsTypeNames[ObjDesc->ValType],
-                        NsFullyQualifiedName (ObjDesc->Device.Device));
+            DEBUG_PRINT (AML_INFO, 
+                        ("NotifyOp: %s %s \n", NsTypeNames[ObjDesc->ValType],
+                        NsFullyQualifiedName (ObjDesc->Device.Device)));
         }
     
         switch (ValDesc->Number.Number)
         {
         case 0:
-            DEBUG_PRINT (AML_INFO, "Re-enumerate Devices \n");
+            DEBUG_PRINT (AML_INFO, ("Re-enumerate Devices \n"));
             break;
 
         case 1:
-            DEBUG_PRINT (AML_INFO, "Ejection Request \n");
+            DEBUG_PRINT (AML_INFO, ("Ejection Request \n"));
             break;
 
         case 2:
-            DEBUG_PRINT (AML_INFO, "Device Wake \n");
+            DEBUG_PRINT (AML_INFO, ("Device Wake \n"));
             break;
 
         case 0x80:
-            DEBUG_PRINT (AML_INFO, "Status Change \n");
+            DEBUG_PRINT (AML_INFO, ("Status Change \n"));
             break;
 
         default:
-            DEBUG_PRINT1 (AML_INFO, "%lx \n",
-                    ValDesc->Number.Number);
+            DEBUG_PRINT (AML_INFO, ("%lx \n",
+                    ValDesc->Number.Number));
             break;
         }
 
