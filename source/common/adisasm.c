@@ -321,7 +321,7 @@ AdSecondPassParse (
         if (Op->Opcode == AML_MethodOp)
         {
             Method = (ACPI_DEFERRED_OP *) Op;
-            Status = PsParseAml (Op, Method->Body, Method->BodyLength);
+            Status = PsParseAml (Op, Method->Body, Method->BodyLength, 0);
 
           
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
@@ -453,7 +453,7 @@ AdParseTables (void)
     AmlLength = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
     AmlPtr = ((UINT8 *) Gbl_DSDT + sizeof (ACPI_TABLE_HEADER));
 
-    Status = PsParseAml (Gbl_ParsedNamespaceRoot, AmlPtr, AmlLength); 
+    Status = PsParseAml (Gbl_ParsedNamespaceRoot, AmlPtr, AmlLength, 0); 
     if (ACPI_FAILURE (Status))
     {
         return Status;
