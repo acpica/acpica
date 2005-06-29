@@ -184,7 +184,7 @@ AcpiTbInstallTable (
     }
 
     DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n",
-                                Acpi_GblAcpiTableData[TableType].Name, TableHeader));
+                                AcpiGbl_AcpiTableData[TableType].Name, TableHeader));
 
     AcpiCmReleaseMutex (MTX_TABLES);
     return_ACPI_STATUS (AE_OK);
@@ -238,14 +238,14 @@ AcpiTbRecognizeTable (
     Status = AE_SUPPORT;
     for (i = 1; i < NUM_ACPI_TABLES; i++)       /* Start at one -> Skip RSDP */
     {
-        if (!STRNCMP (TableHeader->Signature, Acpi_GblAcpiTableData[i].Signature, Acpi_GblAcpiTableData[i].SigLength))
+        if (!STRNCMP (TableHeader->Signature, AcpiGbl_AcpiTableData[i].Signature, AcpiGbl_AcpiTableData[i].SigLength))
         {
             /* Found a signature match, get the pertinent info from the TableData structure */
 
             TableType       = i;
-            Status          = Acpi_GblAcpiTableData[i].Status;  /* AE_SUPPORT or AE_OK */
+            Status          = AcpiGbl_AcpiTableData[i].Status;  /* AE_SUPPORT or AE_OK */
 
-            DEBUG_PRINT (ACPI_INFO, ("TbRecognizeTable: Found %4.4s\n", Acpi_GblAcpiTableData[i].Signature));
+            DEBUG_PRINT (ACPI_INFO, ("TbRecognizeTable: Found %4.4s\n", AcpiGbl_AcpiTableData[i].Signature));
             break;
         }
     }
@@ -277,7 +277,7 @@ AcpiTbRecognizeTable (
     if (Status == AE_SUPPORT)
     {
         DEBUG_PRINT (ACPI_INFO, ("Unsupported table %s (Type %d) was found and discarded\n",
-                            Acpi_GblAcpiTableData[TableType].Name, TableType));
+                            AcpiGbl_AcpiTableData[TableType].Name, TableType));
     }
 
     return_ACPI_STATUS (Status);
@@ -312,7 +312,7 @@ AcpiTbInitTableDescriptor (
      * Install the table into the global data structure
      */
 
-    ListHead    = &Acpi_GblAcpiTables[TableType];
+    ListHead    = &AcpiGbl_AcpiTables[TableType];
     TableDesc   = ListHead;
 
 
@@ -323,7 +323,7 @@ AcpiTbInitTableDescriptor (
      * includes SSDT and PSDTs.
      */
 
-    if (Acpi_GblAcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE)
+    if (AcpiGbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE)
     {
         /*
          * Only one table allowed, just update the list head
@@ -390,9 +390,9 @@ AcpiTbInitTableDescriptor (
 
     /* Set the appropriate global pointer (if there is one) to point to the newly installed table */
 
-    if (Acpi_GblAcpiTableData[TableType].GlobalPtr)
+    if (AcpiGbl_AcpiTableData[TableType].GlobalPtr)
     {
-        *(Acpi_GblAcpiTableData[TableType].GlobalPtr) = TableInfo->Pointer;
+        *(AcpiGbl_AcpiTableData[TableType].GlobalPtr) = TableInfo->Pointer;
     }
 
 

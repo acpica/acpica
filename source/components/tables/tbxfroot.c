@@ -159,7 +159,7 @@ AcpiTbGetTableFacs (
 
     /* Must have a valid FACP pointer */
 
-    if (!Acpi_GblFACP)
+    if (!AcpiGbl_FACP)
     {
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
@@ -188,7 +188,7 @@ AcpiTbGetTableFacs (
     {
         /* Just map the physical memory to our address space */
 
-        Status = AcpiTbMapAcpiTable ((void *) Acpi_GblFACP->FirmwareCtrl, &Size, &TablePtr);
+        Status = AcpiTbMapAcpiTable ((void *) AcpiGbl_FACP->FirmwareCtrl, &Size, &TablePtr);
         if (ACPI_FAILURE(Status))
         {
             return_ACPI_STATUS (Status);

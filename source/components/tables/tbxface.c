@@ -265,7 +265,7 @@ AcpiUnloadTable (
 
     /* Find all tables of the requested type */
 
-    ListHead = &Acpi_GblAcpiTables[TableType];
+    ListHead = &AcpiGbl_AcpiTables[TableType];
     do
     {
         /* Delete the entire namespace under this table NTE */
@@ -276,7 +276,7 @@ AcpiUnloadTable (
 
         AcpiTbDeleteAcpiTable (TableType);
 
-    } while (ListHead != &Acpi_GblAcpiTables[TableType]);
+    } while (ListHead != &AcpiGbl_AcpiTables[TableType]);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -289,7 +289,7 @@ AcpiUnloadTable (
  * PARAMETERS:  TableType       - one of the defined table types
  *              Instance        - the non zero instance of the table, allows
  *                                support for multiple tables of the same type
- *                                see Acpi_GblAcpiTableFlag
+ *                                see AcpiGbl_AcpiTableFlag
  *              OutTableHeader  - pointer to the ACPI_TABLE_HEADER if successful
  *
  * DESCRIPTION: This function is called to get an ACPI table header.  The caller
@@ -330,7 +330,7 @@ AcpiGetTableHeader (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (Acpi_GblAcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
+        (AcpiGbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -369,7 +369,7 @@ AcpiGetTableHeader (
  * PARAMETERS:  TableType       - one of the defined table types
  *              Instance        - the non zero instance of the table, allows
  *                                support for multiple tables of the same type
- *                                see Acpi_GblAcpiTableFlag
+ *                                see AcpiGbl_AcpiTableFlag
  *              RetBuffer       - pointer to a structure containing a buffer to
  *                                receive the table
  *
@@ -417,13 +417,13 @@ AcpiGetTable (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (Acpi_GblAcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
+        (AcpiGbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    
+
     /* Get a pointer to the entire table */
 
     Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
