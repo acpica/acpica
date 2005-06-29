@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -246,10 +246,15 @@ AcpiExConvertToInteger (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /* Save the Result, delete original descriptor, store new descriptor */
+    /* Save the Result */
 
     RetDesc->Integer.Value = Result;
 
+    /*
+     * If we are about to overwrite the original object on the operand stack,
+     * we must remove a reference on the original object because we are
+     * essentially removing it from the stack.
+     */
     if (*ResultDesc == ObjDesc)
     {
         if (WalkState->Opcode != AML_STORE_OP)
@@ -293,6 +298,15 @@ AcpiExConvertToBuffer (
 
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
+    case ACPI_TYPE_BUFFER:
+
+        /* No conversion necessary */
+
+        *ResultDesc = ObjDesc;
+        return_ACPI_STATUS (AE_OK);
+        break;
+
+
     case ACPI_TYPE_INTEGER:
 
         /*
@@ -312,10 +326,6 @@ AcpiExConvertToBuffer (
         {
             NewBuf[i] = (UINT8) (ObjDesc->Integer.Value >> (i * 8));
         }
-
-        /* Return the new buffer descriptor */
-
-        *ResultDesc = RetDesc;
         break;
 
 
@@ -336,18 +346,6 @@ AcpiExConvertToBuffer (
         NewBuf = RetDesc->Buffer.Pointer;
         ACPI_STRNCPY ((char *) NewBuf, (char *) ObjDesc->String.Pointer, 
             ObjDesc->String.Length);
-
-        /* Return the new buffer descriptor */
-
-        *ResultDesc = RetDesc;
-        break;
-
-
-    case ACPI_TYPE_BUFFER:
-
-        /* No conversion necessary */
-
-        *ResultDesc = ObjDesc;
         break;
 
 
@@ -357,7 +355,22 @@ AcpiExConvertToBuffer (
 
     /* Mark buffer initialized */
 
-    (*ResultDesc)->Common.Flags |= AOPOBJ_DATA_VALID;
+    RetDesc->Common.Flags |= AOPOBJ_DATA_VALID;
+
+    /*
+     * If we are about to overwrite the original object on the operand stack,
+     * we must remove a reference on the original object because we are
+     * essentially removing it from the stack.
+     */
+    if (*ResultDesc == ObjDesc)
+    {
+        if (WalkState->Opcode != AML_STORE_OP)
+        {
+            AcpiUtRemoveReference (ObjDesc);
+        }
+    }
+
+    *ResultDesc = RetDesc;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -502,6 +515,22 @@ AcpiExConvertToString (
 
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
+    case ACPI_TYPE_STRING:
+
+        if (MaxLength >= ObjDesc->String.Length)
+        {
+            *ResultDesc = ObjDesc;
+            return_ACPI_STATUS (AE_OK);
+        }
+        else
+        {
+            /* Must copy the string first and then truncate it */
+
+            return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
+        }
+        break;
+
+
     case ACPI_TYPE_INTEGER:
 
         StringLength = AcpiGbl_IntegerByteWidth * 2;
@@ -548,18 +577,6 @@ AcpiExConvertToString (
         }
 
         RetDesc->Buffer.Pointer = NewBuf;
-
-        /* Return the new buffer descriptor */
-
-        if (*ResultDesc == ObjDesc)
-        {
-            if (WalkState->Opcode != AML_STORE_OP)
-            {
-                AcpiUtRemoveReference (ObjDesc);
-            }
-        }
-
-        *ResultDesc = RetDesc;
         break;
 
 
@@ -622,34 +639,6 @@ AcpiExConvertToString (
         NewBuf [Index-1] = 0;
         RetDesc->Buffer.Pointer = NewBuf;
         RetDesc->String.Length = (UINT32) ACPI_STRLEN ((char *) NewBuf);
-
-        /* Return the new buffer descriptor */
-
-        if (*ResultDesc == ObjDesc)
-        {
-            if (WalkState->Opcode != AML_STORE_OP)
-            {
-                AcpiUtRemoveReference (ObjDesc);
-            }
-        }
-
-        *ResultDesc = RetDesc;
-        break;
-
-
-    case ACPI_TYPE_STRING:
-
-        if (MaxLength >= ObjDesc->String.Length)
-        {
-            *ResultDesc = ObjDesc;
-        }
-
-        else
-        {
-            /* Must copy the string first and then truncate it */
-
-            return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
-        }
         break;
 
 
@@ -657,6 +646,21 @@ AcpiExConvertToString (
         return_ACPI_STATUS (AE_TYPE);
     }
 
+
+    /*
+     * If we are about to overwrite the original object on the operand stack,
+     * we must remove a reference on the original object because we are
+     * essentially removing it from the stack.
+     */
+    if (*ResultDesc == ObjDesc)
+    {
+        if (WalkState->Opcode != AML_STORE_OP)
+        {
+            AcpiUtRemoveReference (ObjDesc);
+        }
+    }
+
+    *ResultDesc = RetDesc;
     return_ACPI_STATUS (AE_OK);
 }
 
