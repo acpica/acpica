@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.8 $
+ *              $Revision: 1.11 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -205,7 +205,7 @@ AcpiDmByteList (
 
 
     ByteData = Op->Named.Data;
-    ByteCount = Op->Common.Value.Integer32;
+    ByteCount = (UINT32) Op->Common.Value.Integer;
 
     /*
      * The byte list belongs to a buffer, and can be produced by either
@@ -264,7 +264,7 @@ AcpiDmIsUnicodeBuffer (
     UINT32                  WordCount;
     ACPI_PARSE_OBJECT       *SizeOp;
     ACPI_PARSE_OBJECT       *NextOp;
-    NATIVE_UINT             i;
+    ACPI_NATIVE_UINT        i;
 
 
     /* Buffer size is the buffer argument */
@@ -282,7 +282,7 @@ AcpiDmIsUnicodeBuffer (
     /* Extract the byte list info */
 
     ByteData = NextOp->Named.Data;
-    ByteCount = NextOp->Common.Value.Integer32;
+    ByteCount = (UINT32) NextOp->Common.Value.Integer;
     WordCount = ACPI_DIV_2 (ByteCount);
 
     /*
@@ -353,7 +353,7 @@ AcpiDmIsStringBuffer (
     /* Extract the byte list info */
 
     ByteData = NextOp->Named.Data;
-    ByteCount = NextOp->Common.Value.Integer32;
+    ByteCount = (UINT32) NextOp->Common.Value.Integer;
 
     /* Last byte must be the null terminator */
 
@@ -405,7 +405,7 @@ AcpiDmUnicode (
     /* Extract the buffer info as a WORD buffer */
 
     WordData = ACPI_CAST_PTR (UINT16, Op->Named.Data);
-    WordCount = ACPI_DIV_2 (Op->Common.Value.Integer32);
+    WordCount = ACPI_DIV_2 (((UINT32) Op->Common.Value.Integer));
 
 
     AcpiOsPrintf ("\"");
@@ -440,7 +440,7 @@ AcpiIsEisaId (
     UINT32                  Name;
     UINT32                  BigEndianId;
     ACPI_PARSE_OBJECT       *NextOp;
-    NATIVE_UINT             i;
+    ACPI_NATIVE_UINT        i;
     UINT32                  Prefix[3];
 
 
@@ -470,7 +470,7 @@ AcpiIsEisaId (
 
     /* Swap from little-endian to big-endian to simplify conversion */
 
-    BigEndianId = AcpiUtDwordByteSwap (NextOp->Common.Value.Integer32);
+    BigEndianId = AcpiUtDwordByteSwap ((UINT32) NextOp->Common.Value.Integer);
 
     /* Create the 3 leading ASCII letters */
 
