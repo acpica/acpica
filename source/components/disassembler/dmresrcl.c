@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.16 $
+ *              $Revision: 1.18 $
  *
  ******************************************************************************/
 
@@ -189,9 +189,16 @@ void
 AcpiDmIoFlags2 (
         UINT8               SpecificFlags)
 {
-    AcpiOsPrintf (", %s, %s",
-        AcpiGbl_TTPDecode [(SpecificFlags & 0x10) >> 4],
-        AcpiGbl_TRSDecode [(SpecificFlags & 0x20) >> 5]);
+    AcpiOsPrintf (", %s",
+        AcpiGbl_TTPDecode [(SpecificFlags & 0x10) >> 4]);
+
+    /* TRS is only used if TTP is TypeTranslation */
+
+    if (SpecificFlags & 0x10)
+    {
+        AcpiOsPrintf (", %s",
+            AcpiGbl_TRSDecode [(SpecificFlags & 0x20) >> 5]);
+    }
 }
 
 
@@ -291,16 +298,16 @@ AcpiDmWordDescriptor (
 
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%4.4X, /* Address Space Granularity */\n",
+    AcpiOsPrintf ("0x%4.4X, // Address Space Granularity\n",
         (UINT32) Resource->Granularity);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%4.4X, /* Address Range Minimum */\n",
+    AcpiOsPrintf ("0x%4.4X, // Address Range Minimum\n",
         (UINT32) Resource->AddressMin);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%4.4X, /* Address Range Maximum */\n",
+    AcpiOsPrintf ("0x%4.4X, // Address Range Maximum\n",
         (UINT32) Resource->AddressMax);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%4.4X, /* Address Translation Offset */\n",
+    AcpiOsPrintf ("0x%4.4X, // Address Translation Offset\n",
         (UINT32) Resource->TranslationOffset);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%4.4X",
@@ -316,6 +323,10 @@ AcpiDmWordDescriptor (
         {
             AcpiOsPrintf (", %s",
                 &Resource->OptionalFields[1]);
+        }
+        else
+        {
+            AcpiOsPrintf (",,");
         }
     }
     else
@@ -390,16 +401,16 @@ AcpiDmDwordDescriptor (
 
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X, /* Address Space Granularity */\n",
+    AcpiOsPrintf ("0x%8.8X, // Address Space Granularity\n",
         Resource->Granularity);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X, /* Address Range Minimum */\n",
+    AcpiOsPrintf ("0x%8.8X, // Address Range Minimum\n",
         Resource->AddressMin);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X, /* Address Range Maximum */\n",
+    AcpiOsPrintf ("0x%8.8X, // Address Range Maximum\n",
         Resource->AddressMax);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X, /* Address Translation Offset */\n",
+    AcpiOsPrintf ("0x%8.8X, // Address Translation Offset\n",
         Resource->TranslationOffset);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X",
@@ -415,6 +426,10 @@ AcpiDmDwordDescriptor (
         {
             AcpiOsPrintf (", %s",
                 &Resource->OptionalFields[1]);
+        }
+        else
+        {
+            AcpiOsPrintf (",,");
         }
     }
     else
@@ -488,23 +503,23 @@ AcpiDmExtendedDescriptor (
 
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Space Granularity */\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, // Address Space Granularity\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Granularity)));
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Range Minimum */\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, // Address Range Minimum\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMin)));
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Range Maximum */\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, // Address Range Maximum\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMax)));
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Translation Offset */\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, // Address Translation Offset\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TranslationOffset)));
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Length */\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, // Address Length\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressLength)));
 
     /* Type-specific flags */
@@ -512,7 +527,7 @@ AcpiDmExtendedDescriptor (
     AcpiDmIndent (Level + 1);
     if (Resource->ResourceType == ACPI_IO_RANGE)
     {
-        AcpiOsPrintf ("0x%8.8X%8.8X, /* Type Specific Attributes */\n",
+        AcpiOsPrintf ("0x%8.8X%8.8X, // Type Specific Attributes\n",
             ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
         AcpiDmIndent (Level + 1);
         AcpiDmIoFlags2 (Resource->SpecificFlags);
@@ -520,7 +535,7 @@ AcpiDmExtendedDescriptor (
     }
     else if (Resource->ResourceType == ACPI_MEMORY_RANGE)
     {
-        AcpiOsPrintf ("0x%8.8X%8.8X, /* Type Specific Attributes */\n",
+        AcpiOsPrintf ("0x%8.8X%8.8X, // Type Specific Attributes\n",
             ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
         AcpiDmIndent (Level + 1);
         AcpiDmMemoryFlags2 (Resource->SpecificFlags);
@@ -528,7 +543,7 @@ AcpiDmExtendedDescriptor (
     }
     else
     {
-        AcpiOsPrintf ("0x%8.8X%8.8X) /* Type Specific Attributes */\n",
+        AcpiOsPrintf ("0x%8.8X%8.8X) // Type Specific Attributes\n",
             ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
     }
 
@@ -584,19 +599,19 @@ AcpiDmQwordDescriptor (
 
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Space Granularity */\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, // Address Space Granularity\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Granularity)));
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Range Minimum */\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, // Address Range Minimum\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMin)));
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Range Maximum */\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, // Address Range Maximum\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMax)));
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Translation Offset */\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, // Address Translation Offset\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TranslationOffset)));
 
     AcpiDmIndent (Level + 1);
@@ -613,6 +628,10 @@ AcpiDmQwordDescriptor (
         {
             AcpiOsPrintf (", %s",
                 &Resource->OptionalFields[1]);
+        }
+        else
+        {
+            AcpiOsPrintf (",,");
         }
     }
     else
