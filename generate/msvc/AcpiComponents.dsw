@@ -3,6 +3,118 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
+Project: "Device"=..\..\SUBSYSTEM\Device\Device.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/SubSystem/Device/Device", CEDAAAAA
+    ..\..\subsystem\device
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Event"=..\..\SUBSYSTEM\Event\Event.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/SubSystem/Event", FQBAAAAA
+    ..\..\subsystem\event
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Execute"=..\..\SUBSYSTEM\Execute\Execute.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/SubSystem/Execute", GQBAAAAA
+    ..\..\subsystem\execute
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Interpreter"=..\..\SUBSYSTEM\Interpreter\Interpreter.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/SubSystem/Interpreter", IQBAAAAA
+    ..\..\subsystem\interpreter
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Namespace"=..\..\SUBSYSTEM\Namespace\Namespace.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/SubSystem/Namespace", JQBAAAAA
+    ..\..\subsystem\namespace
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Resources"=..\..\SUBSYSTEM\Resources\Resources.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/SubSystem/Resources", KQBAAAAA
+    ..\..\subsystem\resources
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Subsystem"=..\..\Subsystem\Subsystem.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/Subsystem", CQBAAAAA
+    ..\..\subsystem
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "app"=..\..\App\WDM\app.dsp - Package Owner=<4>
 
 Package=<5>
