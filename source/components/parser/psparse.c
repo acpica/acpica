@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -716,13 +716,6 @@ AcpiPsParseLoop (
             Op = WalkState->PrevOp;
             ArgTypes = WalkState->PrevArgTypes;
         }
-
-        else
-        {
-            /* We had just completed an op, get the previous one */
-
-//            AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
-        }
     }
 
     /*
@@ -1100,13 +1093,7 @@ CloseThisOp:
             {
                 /*
                  * We are about to transfer to a called method.
-                 *
-                 * If
                  */
-//                if (ParserState->Scope->ParseScope.ArgList)
-//                {
-//                    AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
-//                }
                 WalkState->PrevOp = Op;
                 WalkState->PrevArgTypes = ArgTypes;
                 return_ACPI_STATUS (Status);
