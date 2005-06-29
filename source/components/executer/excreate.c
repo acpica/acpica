@@ -123,6 +123,7 @@
 #include <amlcode.h>
 #include <namesp.h>
 #include <events.h>
+#include <dispatch.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -161,7 +162,7 @@
 ACPI_STATUS
 AmlExecCreateField (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands)
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OBJECT_INTERNAL    *ResDesc = NULL;
     ACPI_OBJECT_INTERNAL    *CntDesc = NULL;
@@ -171,8 +172,7 @@ AmlExecCreateField (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_TYPE        ResType;
     ACPI_STATUS             Status;
-    char                    *OpName = NULL;
-    UINT32                  NumOperands;
+    UINT32                  NumOperands = 3;
     UINT32                  Offset;
     UINT32                  BitOffset;
     UINT16                  BitCount;
@@ -183,44 +183,32 @@ AmlExecCreateField (
     FUNCTION_TRACE ("AmlExecCreateField");
 
 
-    Status = AmlResolveOperands (Opcode, Operands);
-    if (Status != AE_OK)
-    {
-        /* Invalid parameters on object stack  */
+    /* Resolve the operands */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 3);
-        goto Cleanup;
-    }
-
+    Status = AmlResolveOperands (Opcode, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), NumOperands, "after AmlResolveOperands");
 
 
     /* Get the operands */
 
+    Status |= DsObjStackPopObject (&ResDesc, WalkState);
     if (AML_CreateFieldOp == Opcode)
     {
-        /* DefCreateField := CreateFieldOp SourceBuff BitIndex NumBits NameString  */
-        
         NumOperands = 4;
-        ResDesc = Operands[0];
-        CntDesc = Operands[-1];
-        OffDesc = Operands[-2];
-        SrcDesc = Operands[-3];
+        Status |= DsObjStackPopObject (&CntDesc, WalkState);
     }
+    Status |= DsObjStackPopObject (&OffDesc, WalkState);
+    Status |= DsObjStackPopObject (&SrcDesc, WalkState);
 
-    else
+    if (Status != AE_OK)
     {
-        /* 
-         * Create[Bit|Byte|DWord|Word]Field
-         * DefCreate*Field := Create*FieldOp SourceBuff [Bit|Byte]Index NameString
-         */
-        NumOperands = 3;
-        ResDesc = Operands[0];
-        OffDesc = Operands[-1];
-        SrcDesc = Operands[-2];
+        /* Invalid parameters on object stack  */
+
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 3);
+        goto Cleanup;
     }
 
-    OpName = PsGetOpcodeName (Opcode);
-    DUMP_OPERANDS (Operands, IMODE_Execute, OpName, NumOperands, "after AmlResolveOperands");
+
 
     Offset = OffDesc->Number.Value;
 
@@ -230,7 +218,7 @@ AmlExecCreateField (
     
     if (!VALID_DESCRIPTOR_TYPE (ResDesc, DESC_TYPE_NTE))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField (%s): destination must be a Name(NTE)\n", OpName));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField (%s): destination must be a Name(NTE)\n", PsGetOpcodeName (Opcode)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
@@ -440,23 +428,24 @@ AmlExecCreateField (
     }
 
 
+
 Cleanup:
 
     /* Always delete the operands */
 
-    CmDeleteOperand (&Operands[-1]);
-    CmDeleteOperand (&Operands[-2]);
+    CmDeleteInternalObject (OffDesc);
+    CmDeleteInternalObject (SrcDesc);
 
     if (AML_CreateFieldOp == Opcode)
     {
-        CmDeleteOperand (&Operands[-3]);
+        CmDeleteInternalObject (CntDesc);
     }
 
     /* On failure, delete the result descriptor */
 
     if (ACPI_FAILURE (Status))
     {
-        CmDeleteOperand (&Operands[0]);     /* Result descriptor */
+        CmDeleteInternalObject (ResDesc);     /* Result descriptor */
     }
 
     return_ACPI_STATUS (Status);
@@ -477,11 +466,11 @@ Cleanup:
 
 ACPI_STATUS
 AmlExecCreateAlias (
-    ACPI_OBJECT_INTERNAL    **Operands)
+    ACPI_WALK_STATE         *WalkState)
 {
     NAME_TABLE_ENTRY        *SrcEntry;
     NAME_TABLE_ENTRY        *AliasEntry;
-    UINT32                  Status;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlExecCreateAlias");
@@ -489,9 +478,13 @@ AmlExecCreateAlias (
 
     /* Get the source/alias operands (both NTEs) */
 
-    SrcEntry    = (NAME_TABLE_ENTRY *) Operands[0];
-    AliasEntry  = (NAME_TABLE_ENTRY *) Operands[-1];
+    Status = DsObjStackPopObject ((ACPI_OBJECT_INTERNAL **) &SrcEntry, WalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
+    AliasEntry  = DsObjStackGetValue (0, WalkState);    /* Don't pop it, it gets popped later */
 
     /* Add an additional reference to the object */
 
@@ -530,7 +523,7 @@ AmlExecCreateAlias (
 
 ACPI_STATUS
 AmlExecCreateEvent (
-    ACPI_OBJECT_INTERNAL    **Operands)
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -559,7 +552,7 @@ AmlExecCreateEvent (
 
     /* Attach object to the NTE */
 
-    Status = NsAttachObject (Operands[0], ObjDesc, (UINT8) ACPI_TYPE_Event);
+    Status = NsAttachObject (DsObjStackGetValue (0, WalkState), ObjDesc, (UINT8) ACPI_TYPE_Event);
     if (ACPI_FAILURE (Status))
     {
         OsdDeleteSemaphore (ObjDesc->Event.Semaphore);
@@ -590,8 +583,7 @@ Cleanup:
 
 ACPI_STATUS
 AmlExecCreateMutex (
-    OPERATING_MODE          InterpreterMode,
-    ACPI_OBJECT_INTERNAL    **Operands)
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OBJECT_INTERNAL    *SyncDesc;
@@ -599,52 +591,46 @@ AmlExecCreateMutex (
 
 
     
-    FUNCTION_TRACE_PTR ("AmlExecCreateMutex", Operands);
+    FUNCTION_TRACE_PTR ("AmlExecCreateMutex", WALK_OPERANDS);
 
 
-    if (IMODE_LoadPass2 == InterpreterMode)
-    {   
-        /* 
-         * Successful execution
-         * Convert the Number from AmlDoByteConst() into a Mutex 
-         */
+    /* Get the operand */
 
-        SyncDesc = Operands[0];
-        if (!SyncDesc)
-        {
-            return_ACPI_STATUS (AE_AML_NO_OPERAND);
-        }
+    Status = DsObjStackPopObject (&SyncDesc, WalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
-        /* Attempt to allocate a new object */
+    /* Attempt to allocate a new object */
 
-        ObjDesc = CmCreateInternalObject (ACPI_TYPE_Mutex);
-        if (!ObjDesc)
-        {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
+    ObjDesc = CmCreateInternalObject (ACPI_TYPE_Mutex);
+    if (!ObjDesc)
+    {
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+    }
 
-        /* Create the actual OS semaphore */
+    /* Create the actual OS semaphore */
 
-        Status = OsdCreateSemaphore (1, &ObjDesc->Mutex.Semaphore);
-        if (ACPI_FAILURE (Status))
-        {
-            CmDeleteInternalObject (ObjDesc);
-            goto Cleanup;
-        }
+    Status = OsdCreateSemaphore (1, &ObjDesc->Mutex.Semaphore);
+    if (ACPI_FAILURE (Status))
+    {
+        CmDeleteInternalObject (ObjDesc);
+        goto Cleanup;
+    }
 
-        ObjDesc->Mutex.SyncLevel = (UINT8) SyncDesc->Number.Value;
+    ObjDesc->Mutex.SyncLevel = (UINT8) SyncDesc->Number.Value;
 
-        /* ObjDesc was on the stack top, and the name is below it */
+    /* ObjDesc was on the stack top, and the name is below it */
 
-        Status = NsAttachObject (Operands [-1],  /* Name */
-                                    ObjDesc, (UINT8) ACPI_TYPE_Mutex);
-        if (ACPI_FAILURE (Status))
-        {
-            OsdDeleteSemaphore (ObjDesc->Mutex.Semaphore);
-            CmDeleteInternalObject (ObjDesc);
-            goto Cleanup;
-        }
+    Status = NsAttachObject (DsObjStackGetValue (0, WalkState),  /* Name */
+                                ObjDesc, (UINT8) ACPI_TYPE_Mutex);
+    if (ACPI_FAILURE (Status))
+    {
+        OsdDeleteSemaphore (ObjDesc->Mutex.Semaphore);
+        CmDeleteInternalObject (ObjDesc);
+        goto Cleanup;
     }
 
 
@@ -652,7 +638,7 @@ Cleanup:
 
     /* Always delete the operand */
 
-    CmDeleteOperand (&Operands[0]);
+    CmDeleteInternalObject (SyncDesc);
 
     return_ACPI_STATUS (Status);
 }
@@ -677,27 +663,32 @@ ACPI_STATUS
 AmlExecCreateRegion (
     UINT8                   *AmlPtr,
     UINT32                  AmlLength,
-    ACPI_OBJECT_INTERNAL    **Operands,
-    OPERATING_MODE          InterpreterMode)
+    UINT32                  RegionSpace,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *SpaceIdDesc;
-    ACPI_OBJECT_INTERNAL    *AddressDesc;
-    ACPI_OBJECT_INTERNAL    *LengthDesc;
     ACPI_OBJECT_INTERNAL    *ObjDescRegion;
     ACPI_HANDLE             *Entry;
-    UINT32                  RegionSpace;
 
 
     FUNCTION_TRACE ("AmlExecCreateRegion");
 
 
-    /* Get operands */
+    if (RegionSpace >= NUM_REGION_TYPES)
+    {
+        /* TBD: should this return an error, or should we just keep going? */
 
-    LengthDesc  = Operands [0];
-    AddressDesc = Operands [-1];
-    SpaceIdDesc = Operands [-2];
-    Entry       = (ACPI_HANDLE *) Operands [-3];
+        DEBUG_PRINT (TRACE_LOAD, ("AmlDoNamedObject: Type out of range [*???*]\n"));
+        REPORT_WARNING ("Unable to decode the RegionSpace");
+    }
+
+    DEBUG_PRINT (TRACE_LOAD, ("AmlDoNamedObject: Region Type [%s]\n",
+                    Gbl_RegionTypes[RegionSpace]));
+
+
+    /* Get the NTE from the object stack  */
+
+    Entry = DsObjStackGetValue (0, WalkState);
 
 
     /* Create the region descriptor */
@@ -709,105 +700,29 @@ AmlExecCreateRegion (
         goto Cleanup;
     }
 
-    /* Init the region from the operands */
+    /*
+     * Allocate a method object for this region.
+     */
+    ObjDescRegion->Region.Method = CmCreateInternalObject (ACPI_TYPE_Method);
+    if (!ObjDescRegion->Region.Method)
+    {
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+    }
 
-    RegionSpace = SpaceIdDesc->Number.Value;
+    /* Init the region from the operands */
 
     ObjDescRegion->Region.SpaceId   = (UINT16) RegionSpace;
     ObjDescRegion->Region.Address   = 0;
     ObjDescRegion->Region.Length    = 0;
     ObjDescRegion->Region.DataValid = 0;
 
-    /* Decode the RegionSpace */
-
-/* TBD: March2000: Is this check still necessary? */
-
-    if (RegionSpace >= NUM_REGION_TYPES)
-    {
-        DEBUG_PRINT (TRACE_LOAD, ("AmlDoNamedObject: Type out of range [*???*]\n"));
-        REPORT_WARNING ("Unable to decode the RegionSpace");
-    }
-
-    else
-    {
-        DEBUG_PRINT (TRACE_LOAD, ("AmlDoNamedObject: Region Type [%s]\n",
-                    Gbl_RegionTypes[RegionSpace]));
-    }
-
-    if ((IMODE_LoadPass1 == InterpreterMode) || 
-        (IMODE_LoadPass2 == InterpreterMode))
-    {
-        /*
-         * If not done already, we must allocate a method object
-         * for this region.
-         */
-        if (!ObjDescRegion->Region.Method)
-        {
-            ObjDescRegion->Region.Method =
-                CmCreateInternalObject (ACPI_TYPE_Method);
-
-            if (!ObjDescRegion->Region.Method)
-            {
-                Status = AE_NO_MEMORY;
-                /* Delete ObjDescRegion */
-                goto Cleanup;
-            }
-        }
-
-        /* 
-         * Remember location in AML stream of address & length
-         * operands since they need to be evaluated at run time.
-         */
-        ObjDescRegion->Region.Method->Method.Pcode       = AmlPtr;
-        ObjDescRegion->Region.Method->Method.PcodeLength = AmlLength;
-    }
-
-        
-    if (IMODE_Execute == InterpreterMode)
-    {
-        /* 
-         * Record value computed for the "region base address" expression
-         */
-        
-        if (VALID_DESCRIPTOR_TYPE (AddressDesc, DESC_TYPE_ACPI_OBJ))
-        {
-            if (AddressDesc->Common.Type != (UINT8) ACPI_TYPE_Number)
-            {
-                /* Object is not of type Number */
-
-                DEBUG_PRINT (ACPI_ERROR, 
-                    ("AmlDoNamedObject/RegionOp: Malformed Region/Address\n"));
-
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
-            }
-
-            ObjDescRegion->Region.Address = AddressDesc->Number.Value;
-        }
-
-
-
-        /* 
-         * Record value computed for the "region length" expression 
-         */
-    
-        if (VALID_DESCRIPTOR_TYPE (LengthDesc, DESC_TYPE_ACPI_OBJ))
-        {
-            if (LengthDesc->Common.Type != (UINT8) ACPI_TYPE_Number)
-            {
-                /* Object is not of type Number */
-
-                DEBUG_PRINT (ACPI_ERROR, 
-                    ("AmlDoNamedObject/RegionOp: Malformed Region/Length\n"));
-
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
-            }
-
-            ObjDescRegion->Region.Length = LengthDesc->Number.Value;
-            ObjDescRegion->Region.DataValid = 1;
-        }
-    } 
+    /* 
+     * Remember location in AML stream of address & length
+     * operands since they need to be evaluated at run time.
+     */
+    ObjDescRegion->Region.Method->Method.Pcode       = AmlPtr;
+    ObjDescRegion->Region.Method->Method.PcodeLength = AmlLength;
 
                     
     /* Install the new region object in the parent NTE */
@@ -836,11 +751,6 @@ Cleanup:
         }
     }
 
-    /* Delete operands  */
-
-    CmDeleteOperand (&Operands[0]);
-    CmDeleteOperand (&Operands[-1]);
-    CmDeleteOperand (&Operands[-2]);
 
     /*
      * If we have a valid region, initialize it
