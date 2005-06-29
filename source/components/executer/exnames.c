@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -167,7 +167,7 @@ AcpiExAllocateNameString (
      * Also, one byte for the null terminator.
      * This may actually be somewhat longer than needed.
      */
-    if (PrefixCount == (UINT32) -1)
+    if (PrefixCount == ACPI_UINT32_MAX)
     {
         /* Special case for root */
 
@@ -193,7 +193,7 @@ AcpiExAllocateNameString (
 
     /* Set up Root or Parent prefixes if needed */
 
-    if (PrefixCount == (UINT32) -1)
+    if (PrefixCount == ACPI_UINT32_MAX)
     {
         *TempPtr++ = AML_ROOT_PREFIX;
     }
@@ -397,7 +397,7 @@ AcpiExGetNameString (
              * Remember that we have a RootPrefix --
              * see comment in AcpiExAllocateNameString()
              */
-            PrefixCount = (UINT32) -1;
+            PrefixCount = ACPI_UINT32_MAX;
             HasPrefix = TRUE;
             break;
 
@@ -411,7 +411,7 @@ AcpiExGetNameString (
                 Prefix = *AmlAddress++;
                 ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "ParentPrefix: %x\n", Prefix));
 
-                ++PrefixCount;
+                PrefixCount++;
 
             } while (*AmlAddress == AML_PARENT_PREFIX);
             HasPrefix = TRUE;
@@ -486,7 +486,7 @@ AcpiExGetNameString (
 
             /* NullName valid as of 8-12-98 ASL/AML Grammar Update */
 
-            if (-1 == PrefixCount)
+            if (PrefixCount == ACPI_UINT32_MAX)
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "NameSeg is \"\\\" followed by NULL\n"));
             }
