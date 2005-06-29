@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.86 $
+ *       $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -239,7 +239,6 @@ typedef struct /* PACKAGE - has count, elements, next element */
 } ACPI_OBJECT_PACKAGE;
 
 
-
 typedef struct /* DEVICE - has handle and notification handler/context */
 {
     ACPI_OBJECT_COMMON_HEADER
@@ -374,7 +373,7 @@ typedef struct /* BANK FIELD */
 {
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_FIELD_INFO
-    
+
     union acpi_operand_obj      *RegionObj;         /* Containing OpRegion object */
     union acpi_operand_obj      *BankRegisterObj;   /* BankSelect Register object */
 
@@ -385,9 +384,9 @@ typedef struct /* INDEX FIELD */
 {
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_FIELD_INFO
-    
+
     /*
-     * No "RegionObj" pointer needed since the Index and Data registers 
+     * No "RegionObj" pointer needed since the Index and Data registers
      * are each field definitions unto themselves.
      */
     union acpi_operand_obj      *IndexObj;          /* Index register */
@@ -420,7 +419,7 @@ typedef struct /* NOTIFY HANDLER */
     ACPI_OBJECT_COMMON_HEADER
 
     ACPI_NAMESPACE_NODE         *Node;               /* Parent device */
-    NOTIFY_HANDLER              Handler;
+    ACPI_NOTIFY_HANDLER         Handler;
     void                        *Context;
 
 } ACPI_OBJECT_NOTIFY_HANDLER;
@@ -437,11 +436,11 @@ typedef struct /* ADDRESS HANDLER */
 
     UINT8                       SpaceId;
     UINT16                      Hflags;
-    ADDRESS_SPACE_HANDLER       Handler;
+    ACPI_ADR_SPACE_HANDLER      Handler;
 
     ACPI_NAMESPACE_NODE         *Node;              /* Parent device */
     void                        *Context;
-    ADDRESS_SPACE_SETUP         Setup;
+    ACPI_ADR_SPACE_SETUP        Setup;
     union acpi_operand_obj      *RegionList;        /* regions using this handler */
     union acpi_operand_obj      *Next;
 
