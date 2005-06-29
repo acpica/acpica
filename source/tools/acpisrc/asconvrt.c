@@ -1,7 +1,8 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: asconvrt - Source conversion code
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -9,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -38,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,11 +118,9 @@
 #include "acpisrc.h"
 
 
-
 /* Opening signature of the Intel legal header */
 
 char        *HeaderBegin = "/******************************************************************************\n *\n * 1. Copyright Notice";
-
 
 
 /******************************************************************************
@@ -146,7 +145,7 @@ AsPrint (
 
 /******************************************************************************
  *
- * FUNCTION:    AsTrimLines  
+ * FUNCTION:    AsTrimLines
  *
  * DESCRIPTION: Remove extra blanks from the end of source lines.  Does not
  *              check for tabs.
@@ -183,7 +182,7 @@ AsTrimLines (
             else
             {
                 StartWhiteSpace = NULL;
-            }  
+            }
 
             SubBuffer++;
         }
@@ -196,7 +195,7 @@ AsTrimLines (
             memmove (StartWhiteSpace, SubBuffer, Length);
             StartWhiteSpace = NULL;
         }
-        
+
         SubBuffer++;
     }
 
@@ -301,7 +300,6 @@ AsReplaceString (
     int                     ReplaceCount = 0;
 
 
-
     TargetLength = strlen (Target);
     ReplacementLength = strlen (Replacement);
 
@@ -315,7 +313,7 @@ AsReplaceString (
 
         SubString1 = strstr (SubBuffer, Target);
 
-        /* 
+        /*
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
@@ -325,11 +323,17 @@ AsReplaceString (
         if ((SubString2) &&
             (SubString2 < SubString1))
         {
-            SubString2 = strstr (SubBuffer, "!*/");
+            /* Find end of the escape block starting at "Substring2" */
+
+            SubString2 = strstr (SubString2, "!*/");
             if (!SubString2)
             {
+                /* Didn't find terminator */
+
                 return ReplaceCount;
             }
+
+            /* Move buffer to end of escape block and continue */
 
             SubBuffer = SubString2;
         }
@@ -349,7 +353,7 @@ AsReplaceString (
 
 /******************************************************************************
  *
- * FUNCTION:    AsMixedCaseToUnderscores  
+ * FUNCTION:    AsMixedCaseToUnderscores
  *
  * DESCRIPTION: Converts mixed case identifiers to underscored identifiers.
  *              for example,
@@ -373,7 +377,7 @@ AsMixedCaseToUnderscores (
     while (*SubBuffer)
     {
 
-        /* 
+        /*
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
@@ -425,9 +429,9 @@ AsMixedCaseToUnderscores (
 
 
         /*
-         * Convert each pair of letters that matches the form:  
-         * 
-         *      <LowerCase><UpperCase> 
+         * Convert each pair of letters that matches the form:
+         *
+         *      <LowerCase><UpperCase>
          * to
          *      <LowerCase><Underscore><LowerCase>
          */
@@ -438,12 +442,11 @@ AsMixedCaseToUnderscores (
         {
             TokenEnd = SubBuffer;
             while ((isalnum (*TokenEnd)) || (*TokenEnd == '_'))
-            {   
+            {
                 TokenEnd++;
             }
 
             SubBuffer[1] = (char) tolower (SubBuffer[1]);
-
 
 
             SubString = TokenEnd;
@@ -495,7 +498,7 @@ AsLowerCaseIdentifiers (
 
     while (*SubBuffer)
     {
-        /* 
+        /*
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
@@ -538,8 +541,8 @@ AsLowerCaseIdentifiers (
         }
 
 
-        /* 
-         * Only lower case if we have an upper followed by a lower 
+        /*
+         * Only lower case if we have an upper followed by a lower
          * This leaves the all-uppercase things (macros, etc.) intact
          */
 
@@ -580,7 +583,7 @@ AsBracesOnSameLine (
     {
         if (*SubBuffer == '{')
         {
-            /* 
+            /*
              * Backup to previous non-whitespace
              */
 
@@ -626,10 +629,10 @@ AsBracesOnSameLine (
 
 /******************************************************************************
  *
- * FUNCTION:    AsRemoveStatement 
+ * FUNCTION:    AsRemoveStatement
  *
  * DESCRIPTION: Remove all statements that contain the given keyword.
- *              Limitations:  Removes text from the start of the line that 
+ *              Limitations:  Removes text from the start of the line that
  *              contains the keyword to the next semicolon.  Currently
  *              doesn't ignore comments.
  *
@@ -643,7 +646,6 @@ AsRemoveStatement (
     char                    *SubString;
     char                    *SubBuffer;
     int                     StrLength;
-
 
 
     SubBuffer = Buffer;
@@ -719,7 +721,6 @@ AsRemoveConditionalCompile (
     char                    *ElsePtr;
     char                    *Comment;
     int                     StrLength;
-
 
 
     SubBuffer = Buffer;
@@ -798,7 +799,7 @@ AsRemoveConditionalCompile (
             {
                 return;
             }
-        
+
             /* Remove the #ifdef .... #else code */
 
             StrLength = strlen (SubBuffer);
@@ -852,7 +853,6 @@ AsRemoveLine (
     char                    *SubString;
     char                    *SubBuffer;
     int                     StrLength;
-
 
 
     SubBuffer = Buffer;
@@ -980,7 +980,7 @@ AsRemoveEmptyBlocks (
  *
  * FUNCTION:    AsTabify4
  *
- * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is 
+ * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is
  *              preserved.
  *
  ******************************************************************************/
@@ -993,8 +993,6 @@ AsTabify4 (
     char                    *NewSubBuffer;
     UINT32                  SpaceCount = 0;
     UINT32                  Column = 0;
-
-
 
 
     while (*SubBuffer)
@@ -1058,7 +1056,7 @@ AsTabify4 (
  *
  * FUNCTION:    AsTabify8
  *
- * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is 
+ * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is
  *              preserved.
  *
  ******************************************************************************/
@@ -1077,7 +1075,6 @@ AsTabify8 (
     UINT32                  ThisColumnStart = 0;
     UINT32                  ThisTabCount =  0;
     char                    *FirstNonBlank = NULL;
-
 
 
     while (*SubBuffer)
@@ -1135,7 +1132,7 @@ AsTabify8 (
             {
                 LastLineTabCount = TabCount;
             }
-            
+
             FirstNonBlank = NULL;
             LastLineColumnStart = ThisColumnStart;
             TabCount = 0;
@@ -1144,7 +1141,6 @@ AsTabify8 (
             SubBuffer++;
             continue;
         }
-
 
 
         SpaceCount++;
@@ -1175,7 +1171,7 @@ AsTabify8 (
 
 /******************************************************************************
  *
- * FUNCTION:    AsRemoveDebugMacros 
+ * FUNCTION:    AsRemoveDebugMacros
  *
  * DESCRIPTION: Remove all "Debug" macros -- macros that produce debug output.
  *
@@ -1198,6 +1194,7 @@ AsRemoveDebugMacros (
     AsReplaceString ("return_VALUE",        "return", Buffer);
 
     AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG");
+    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG_TRACK_ALLOCATIONS");
 }
 
 
@@ -1214,7 +1211,7 @@ UINT32
 AsCountLines (
     char                    *Buffer,
     char                    *Filename)
-{   
+{
     char                    *SubBuffer = Buffer;
     char                    *EndOfLine;
     UINT32                  LineCount = 0;
@@ -1263,7 +1260,7 @@ void
 AsCountTabs (
     char                    *Buffer,
     char                    *Filename)
-{   
+{
     UINT32                  i;
     UINT32                  TabCount = 0;
 
@@ -1299,7 +1296,7 @@ void
 AsCountNonAnsiComments (
     char                    *Buffer,
     char                    *Filename)
-{   
+{
     char                    *SubBuffer = Buffer;
     UINT32                  CommentCount = 0;
 
@@ -1325,7 +1322,7 @@ AsCountNonAnsiComments (
  *
  * FUNCTION:    AsCountSourceLines
  *
- * DESCRIPTION: Count the number of C source lines.  Defined by 1) not a 
+ * DESCRIPTION: Count the number of C source lines.  Defined by 1) not a
  *              comment, and 2) not a blank line.
  *
  ******************************************************************************/
@@ -1334,7 +1331,7 @@ void
 AsCountSourceLines (
     char                    *Buffer,
     char                    *Filename)
-{   
+{
     char                    *SubBuffer = Buffer;
     UINT32                  LineCount = 0;
     UINT32                  WhiteCount = 0;
@@ -1351,7 +1348,8 @@ AsCountSourceLines (
             CommentCount++;
             SubBuffer += 2;
 
-            while (!(((SubBuffer[0] == '*') &&
+            while (SubBuffer[0] && SubBuffer[1] &&
+                    !(((SubBuffer[0] == '*') &&
                       (SubBuffer[1] == '/'))))
             {
                 if (SubBuffer[0] == '\n')
@@ -1360,13 +1358,13 @@ AsCountSourceLines (
                 }
 
                 SubBuffer++;
-            } 
+            }
         }
 
         /* A linefeed followed by a non-linefeed is a valid source line */
 
         else if ((SubBuffer[0] == '\n') &&
-                 (SubBuffer[1] != '\n')) 
+                 (SubBuffer[1] != '\n'))
         {
             LineCount++;
         }
@@ -1374,7 +1372,7 @@ AsCountSourceLines (
         /* Two back-to-back linefeeds indicate a whitespace line */
 
         else if ((SubBuffer[0] == '\n') &&
-                 (SubBuffer[1] == '\n')) 
+                 (SubBuffer[1] == '\n'))
         {
             WhiteCount++;
         }
@@ -1391,10 +1389,9 @@ AsCountSourceLines (
     Gbl_WhiteLines += WhiteCount;
     Gbl_CommentLines += CommentCount;
 
-    VERBOSE_PRINT (("%d Comment %d White %d Code %d Lines in %s\n", 
+    VERBOSE_PRINT (("%d Comment %d White %d Code %d Lines in %s\n",
                 CommentCount, WhiteCount, LineCount, LineCount+WhiteCount+CommentCount, Filename));
 }
-
 
 
 /******************************************************************************
@@ -1418,7 +1415,6 @@ AsUppercaseTokens (
     UINT32                  Length;
 
 
-
     SubBuffer = Buffer;
 
     while (SubBuffer)
@@ -1428,7 +1424,7 @@ AsUppercaseTokens (
         {
             TokenEnd = SubBuffer;
             while ((isalnum (*TokenEnd)) || (*TokenEnd == '_'))
-            {   
+            {
                 TokenEnd++;
             }
 
