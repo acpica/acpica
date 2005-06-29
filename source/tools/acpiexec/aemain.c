@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -178,7 +178,11 @@ AfInstallGpeBlock (void)
     }
 
     BlockAddress.AddressSpaceId = 0;
+#if ACPI_MACHINE_WIDTH != 16
     ACPI_STORE_ADDRESS (BlockAddress.Address, 0x8000000076540000);
+#else
+    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x76540000);
+#endif
 
 //    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
 
