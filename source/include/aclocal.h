@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.184 $
+ *       $Revision: 1.185 $
  *
  *****************************************************************************/
 
@@ -959,7 +959,7 @@ typedef struct acpi_bit_register_info
 
 #define ACPI_DEVICE_ID_LENGTH                   0x09
 
-typedef struct  acpi_device_id
+typedef struct acpi_device_id
 {
     char            Buffer[ACPI_DEVICE_ID_LENGTH];
 
