@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -812,21 +812,11 @@ AcpiEvAsynchExecuteGpeMethod (
     AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
 
     /*
-     * Function Handler (e.g. EC):
-     * ---------------------------
-     * Execute the installed function handler to handle this event.
-     */
-    if (GpeInfo.Handler)
-    {
-        GpeInfo.Handler (GpeInfo.Context);
-    }
-
-    /*
      * Method Handler (_Lxx, _Exx):
      * ----------------------------
      * AcpiEvaluate the _Lxx/_Exx control method that corresponds to this GPE.
      */
-    else if (GpeInfo.MethodHandle)
+    if (GpeInfo.MethodHandle)
     {
         AcpiNsEvaluateByHandle (GpeInfo.MethodHandle, NULL, NULL);
     }
@@ -902,7 +892,7 @@ AcpiEvGpeDispatch (
      * level-triggered events are cleared after the GPE is serviced
      * (see AcpiEvAsynchExecuteGpeMethod).
      */
-    if (AcpiGbl_GpeInfo [GpeNumber].Type | ACPI_EVENT_EDGE_TRIGGERED)
+    if (AcpiGbl_GpeInfo[GpeNumber].Type | ACPI_EVENT_EDGE_TRIGGERED)
     {
         AcpiHwClearGpe (GpeNumber);
     }
@@ -913,8 +903,7 @@ AcpiEvGpeDispatch (
      * Queue the handler, which is either an installable function handler
      * (e.g. EC) or a control method (e.g. _Lxx/_Exx) for later execution.
      */
-    if (AcpiGbl_GpeInfo [GpeNumber].Handler ||
-        AcpiGbl_GpeInfo [GpeNumber].MethodHandle)
+    if (AcpiGbl_GpeInfo[GpeNumber].MethodHandle)
     {
         if (ACPI_FAILURE (AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
                                             AcpiEvAsynchExecuteGpeMethod,
@@ -930,7 +919,24 @@ AcpiEvGpeDispatch (
                 GpeNumber));
         }
     }
+    else if (AcpiGbl_GpeInfo[GpeNumber].Handler)
+    {
+        ACPI_GPE_LEVEL_INFO GpeInfo;
+        /*
+         * Function Handler (e.g. EC):
+         * ---------------------------
+         * Execute the installed function handler to handle this event.
+         * Without queueing.
+         */
+        AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
+        GpeInfo = AcpiGbl_GpeInfo [GpeNumber];
+        AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
 
+        if (GpeInfo.Handler)
+        {
+            GpeInfo.Handler (GpeInfo.Context);
+        }
+    }
     /*
      * Non Handled GPEs:
      * -----------------
