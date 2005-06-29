@@ -296,19 +296,23 @@ EvDisassociateRegionFromHandler(
     FUNCTION_TRACE ("EvDisassociateRegionAndHandler");
 
 
+    /* Get the address handler from the region object */
+
     HandlerObj = RegionObj->Region.AddrHandler;
     if (!HandlerObj)
     {
-        /*
-         *  This guy has no handler, we're done
-         */
+        /*  This guy has no handler, we're done */
+
         return_VOID;
     }
+
+
     /*
      *  Find this region in the handler's list
      */
+
     ObjDesc = HandlerObj->AddrHandler.RegionList;
-    LastObjPtr = &ObjDesc->AddrHandler.RegionList;
+    LastObjPtr = &HandlerObj->AddrHandler.RegionList;
 
     while (ObjDesc)
     {
@@ -380,7 +384,7 @@ EvDisassociateRegionFromHandler(
 
 /******************************************************************************
  *
- * FUNCTION:    EvAssociateRegionAndHander
+ * FUNCTION:    EvAssociateRegionAndHandler
  *
  * PARAMETERS:  HandlerObj      - Handler Object
  *              RegionObj       - Region Object
@@ -393,14 +397,14 @@ EvDisassociateRegionFromHandler(
  ******************************************************************************/
 
 ACPI_STATUS
-EvAssociateRegionAndHander(
+EvAssociateRegionAndHandler(
     ACPI_OBJECT_INTERNAL    *HandlerObj,
     ACPI_OBJECT_INTERNAL    *RegionObj)
 {
     ACPI_STATUS     Status;
 
 
-    FUNCTION_TRACE ("EvAssociateRegionAndHander");
+    FUNCTION_TRACE ("EvAssociateRegionAndHandler");
 
 
     DEBUG_PRINT (TRACE_OPREGION,
@@ -437,7 +441,7 @@ EvAssociateRegionAndHander(
 
     return_ACPI_STATUS (Status);
 
-}  /* EvAssociateRegionAndHander */
+}  /* EvAssociateRegionAndHandler */
 
 
 /****************************************************************************
@@ -583,9 +587,9 @@ EvAddrHandlerHelper (
     EvDisassociateRegionFromHandler (ObjDesc);
 
     /*
-     *  Then conenct the region to the new handler
+     *  Then connect the region to the new handler
      */
-    EvAssociateRegionAndHander (HandlerObj, ObjDesc);
+    EvAssociateRegionAndHandler (HandlerObj, ObjDesc);
 
     return (AE_OK);
 }
@@ -704,7 +708,8 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
          */
         HandlerObj = NULL;
         TmpObj = (ACPI_OBJECT_INTERNAL *) Nte->Object;
-        if (TmpObj) {
+        if (TmpObj) 
+        {
             /*
              *  can only be a handler if the object exists
              */
@@ -737,10 +742,10 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
                     DEBUG_PRINT (TRACE_OPREGION,
                         ("Found handler (0x%X) for region 0x%X in obj 0x%X\n",
                         HandlerObj, RegionObj, TmpObj));
-                   /*
-                     *  Found it!!! Now update the region and the handler
+                    /*
+                     *  Found it! Now update the region and the handler
                      */
-                    EvAssociateRegionAndHander(HandlerObj, RegionObj);
+                    EvAssociateRegionAndHandler(HandlerObj, RegionObj);
                     return_ACPI_STATUS (AE_OK);
                 }
 
