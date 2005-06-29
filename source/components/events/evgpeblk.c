@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -388,13 +388,11 @@ AcpiEvGetGpeType (
 
     Status = AcpiUtEvaluateObject (ObjHandle, METHOD_NAME__PRW,
                 ACPI_BTYPE_PACKAGE, &PkgDesc);
-    if (Status == AE_NOT_FOUND)
+    if (ACPI_FAILURE (Status))
     {
+        /* Ignore all errors from _PRW, we don't want to abort the subsystem */
+
         return_ACPI_STATUS (AE_OK);
-    }
-    else if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
     }
 
     /* The returned _PRW package must have at least two elements */
@@ -468,8 +466,7 @@ AcpiEvGetGpeType (
 
 Cleanup:
     AcpiUtRemoveReference (PkgDesc);
-
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
