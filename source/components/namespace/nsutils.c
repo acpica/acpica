@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.121 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -150,34 +150,44 @@ AcpiNsReportError (
     ACPI_STATUS             LookupStatus)
 {
     ACPI_STATUS             Status;
-    char                    *Name;
+    char                    *Name = NULL;
 
 
-    /* Convert path to external format */
-
-    Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, InternalName, NULL, &Name);
 
     AcpiOsPrintf ("%8s-%04d: *** Error: Looking up ",
         ModuleName, LineNumber);
 
-    /* Print target name */
-
-    if (ACPI_SUCCESS (Status))
+    if (LookupStatus == AE_BAD_CHARACTER)
     {
-        AcpiOsPrintf ("[%s]", Name);
+        /* There is a non-ascii character in the name */
+
+        AcpiOsPrintf ("[0x%4.4X] (NON-ASCII)\n", *((UINT32 *) InternalName));
     }
     else
     {
-        AcpiOsPrintf ("[COULD NOT EXTERNALIZE NAME]");
+        /* Convert path to external format */
+
+        Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, InternalName, NULL, &Name);
+
+        /* Print target name */
+
+        if (ACPI_SUCCESS (Status))
+        {
+            AcpiOsPrintf ("[%s]", Name);
+        }
+        else
+        {
+            AcpiOsPrintf ("[COULD NOT EXTERNALIZE NAME]");
+        }
+
+        if (Name)
+        {
+            ACPI_MEM_FREE (Name);
+        }
     }
 
     AcpiOsPrintf (" in namespace, %s\n",
         AcpiFormatException (LookupStatus));
-
-    if (Name)
-    {
-        ACPI_MEM_FREE (Name);
-    }
 }
 
 
