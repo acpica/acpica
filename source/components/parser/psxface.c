@@ -156,6 +156,8 @@ PsxLoadTable (
     FUNCTION_TRACE ("PsxLoadTable");
 
 
+/* TBD By using the NAMESPACE mutex, this is now a namespace  interface, move it */
+
     if (!PcodeAddr)
     {
         DEBUG_PRINT (ACPI_ERROR, ("PsxLoadTable: Null AML pointer\n"));
@@ -183,7 +185,9 @@ PsxLoadTable (
     DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Begin Namespace Load ****\n"));
 BREAKPOINT3;
 
+    CmAcquireMutex (MTX_NAMESPACE);
     Status = PsParseTable (PcodeAddr, PcodeLength, PsxLoadBeginOp, PsxLoadEndOp, NULL);
+    CmReleaseMutex (MTX_NAMESPACE);
 
 
 
@@ -231,6 +235,7 @@ PsxExecute (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     UINT8                   *Pcode;
     UINT32                  PcodeLength;
+    UINT32                  i;
 
 
     FUNCTION_TRACE ("PsxExecute");
@@ -263,6 +268,17 @@ BREAKPOINT3;
     DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Execution **** obj=%p code=%p len=%X\n",
                     ObjDesc, Pcode, PcodeLength));
 
+
+    if (Params)
+    {
+        /* The caller "owns" the parameters, so give them an extra reference */
+
+        for (i = 0; Params[i]; i++)
+        {
+            CmUpdateObjectReference (Params[i], REF_INCREMENT);
+        }
+    }
+
     /* 
      * If there is a concurrency limit on this method, we need to obtain a unit
      * from the method semaphore.  This releases the interpreter if we block
@@ -289,6 +305,17 @@ BREAKPOINT3;
     {
         Status = OsdSignalSemaphore (ObjDesc->Method.Semaphore, 1);
     }
+
+    if (Params)
+    {
+        /* Take away the extra reference we gave the parameters above */
+
+        for (i = 0; Params[i]; i++)
+        {
+            CmUpdateObjectReference (Params[i], REF_DECREMENT);
+        }
+    }
+
 
     /* 
      * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
