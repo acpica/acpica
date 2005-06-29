@@ -115,6 +115,34 @@
 SCOPE_STACK     ScopeStack[MAX_SCOPE_NESTING];
 SCOPE_STACK     *CurrentScope;
 
+
+/* 
+ * Names built-in to the interpreter
+ *
+ * Initial values are currently supported only for types String and Number.
+ * To avoid type punning, both are specified as strings in this table.
+ */
+
+static struct InitVal {
+    char        *Name;
+    NsType      Type;
+    char        *Val;
+} PreDefinedNames[] = {
+    {"_GPE",    TYPE_DefAny},
+    {"_PR_",    TYPE_DefAny},
+    {"_SB_",    TYPE_DefAny},
+    {"_SI_",    TYPE_DefAny},
+    {"_TZ_",    TYPE_DefAny},
+    {"_REV",    TYPE_Number, "2"},
+    {"_OS_",    TYPE_String, "Intel AML interpreter"},
+    {"_GL_",    TYPE_Mutex},
+
+    /* Table terminator */
+
+    {(char *)0, TYPE_Any}
+};
+
+
 /* 
  * Elements of NsProperties are bit significant
  * and should be one-to-one with values of NsType in acpinmsp.h
@@ -302,9 +330,9 @@ BREAKPOINT3;
         /* See comment near top of file re significance of FETCH_VALUES */
 
 #ifdef FETCH_VALUES
-        Status = NsEnter (MethodName, TYPE_Any, MODE_Exec, &MethodPtr);
+        Status = NsEnter (MethodName, TYPE_Any, MODE_Exec, (NsHandle *) &MethodPtr);
 #else 
-        Status = NsEnter (MethodName, TYPE_Method, MODE_Exec, &MethodPtr);
+        Status = NsEnter (MethodName, TYPE_Method, MODE_Exec, (NsHandle *) &MethodPtr);
 #endif
 
         if (Status != AE_OK)
@@ -723,7 +751,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 
         if (MODE_Load1 == LoadMode)
         {
-            if (Status = NsSetup () != AE_OK)
+            if ((Status = NsSetup ()) != AE_OK)
             {
                 return Status;
             }
@@ -786,9 +814,6 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
     
     else
     {
-        char        *OrigName = Name;
-
-
         /* Name is relative to current scope, start there */
         
         EntryToSearch = CurrentScope->Scope;
