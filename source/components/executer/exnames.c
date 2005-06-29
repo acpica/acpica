@@ -194,7 +194,7 @@ AcpiAmlAllocateNameString (
 
     /* Set up Root or Parent prefixes if needed */
 
-    if (PrefixCount < 0)
+    if (PrefixCount == (UINT32) -1)
     {
         *TempPtr++ = AML_ROOT_PREFIX;
     }
