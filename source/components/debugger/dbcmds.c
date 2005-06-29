@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  ******************************************************************************/
 
@@ -1216,7 +1216,7 @@ AcpiDbDisplayResources (
 
     AcpiOsPrintf ("Evaluating _PRT\n");
 
-    Status = AcpiEvaluateObject (ObjDesc, "_PRT", NULL, &ReturnObj);
+    Status = AcpiEvaluateObject (ObjDesc, METHOD_NAME__PRT, NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not obtain _PRT: %s\n",
@@ -1247,7 +1247,7 @@ GetCrs:
     ReturnObj.Pointer           = AcpiGbl_DbBuffer;
     ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
 
-    Status = AcpiEvaluateObject (ObjDesc, "_CRS", NULL, &ReturnObj);
+    Status = AcpiEvaluateObject (ObjDesc, METHOD_NAME__CRS, NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not obtain _CRS: %s\n",
@@ -1288,7 +1288,7 @@ GetPrs:
     ReturnObj.Pointer           = AcpiGbl_DbBuffer;
     ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
 
-    Status = AcpiEvaluateObject (ObjDesc, "_PRS", NULL, &ReturnObj);
+    Status = AcpiEvaluateObject (ObjDesc, METHOD_NAME__PRS, NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not obtain _PRS: %s\n",
