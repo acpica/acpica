@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.63 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -150,14 +150,14 @@ RSDP_DESCRIPTOR             LocalRsdp;
 RSDP_DESCRIPTOR             LocalRSDP;
 FADT_DESCRIPTOR_REV1        LocalFADT;
 FACS_DESCRIPTOR_REV1        LocalFACS;
+ACPI_TABLE_HEADER           LocalDSDT;
 ACPI_TABLE_HEADER           LocalTEST;
 ACPI_TABLE_HEADER           LocalBADTABLE;
 
 RSDT_DESCRIPTOR_REV1        *LocalRSDT;
 
-#define RSDT_TABLES         3
+#define RSDT_TABLES         4
 #define RSDT_SIZE           (sizeof (RSDT_DESCRIPTOR_REV1) + ((RSDT_TABLES -1) * sizeof (UINT32)))
-
 
 
 /******************************************************************************
@@ -206,8 +206,10 @@ AeCtrlCHandler (
  *****************************************************************************/
 
 ACPI_STATUS
-AeBuildLocalTables (void)
+AeBuildLocalTables (
+    ACPI_TABLE_HEADER       *UserTable)
 {
+
 
     /* Build an RSDT */
 
@@ -221,10 +223,10 @@ AeBuildLocalTables (void)
     ACPI_STRNCPY (LocalRSDT->Header.Signature, RSDT_SIG, 4);
     LocalRSDT->Header.Length = RSDT_SIZE;
 
+    LocalRSDT->TableOffsetEntry[3] = ACPI_PTR_TO_PHYSADDR (&LocalTEST);  /* Just a placeholder for a user SSDT */
     LocalRSDT->TableOffsetEntry[2] = ACPI_PTR_TO_PHYSADDR (&LocalFADT);
     LocalRSDT->TableOffsetEntry[1] = ACPI_PTR_TO_PHYSADDR (&LocalBADTABLE);
     LocalRSDT->TableOffsetEntry[0] = ACPI_PTR_TO_PHYSADDR (&LocalTEST);
-    LocalRSDT->Header.Checksum     = (UINT8) (0 - AcpiTbChecksum (LocalRSDT, LocalRSDT->Header.Length));
 
     /* Build an RSDP */
 
@@ -232,9 +234,40 @@ AeBuildLocalTables (void)
     ACPI_STRNCPY (LocalRSDP.Signature, RSDP_SIG, 8);
     LocalRSDP.Revision            = 1;
     LocalRSDP.RsdtPhysicalAddress = ACPI_PTR_TO_PHYSADDR (LocalRSDT);
-    LocalRSDP.Checksum            = (UINT8) (0 - AcpiTbChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
 
     AcpiGbl_RSDP = &LocalRSDP;
+
+    /* 
+     * Examine the incoming user table.  At this point, it has been verified
+     * to be either a DSDT, SSDT, or a PSDT, but they must be handled differently
+     */
+    if (!ACPI_STRNCMP ((char *) UserTable->Signature, DSDT_SIG, 4))
+    {
+        /* User DSDT is installed directly into the FADT */
+
+        AcpiGbl_DSDT = UserTable;
+    }
+    else
+    {
+        /* Build a local DSDT because incoming table is an SSDT or PSDT */
+
+        ACPI_MEMSET (&LocalDSDT, 0, sizeof (ACPI_TABLE_HEADER));
+        ACPI_STRNCPY (LocalDSDT.Signature, DSDT_SIG, 4);
+        LocalDSDT.Revision   = 1;
+        LocalDSDT.Length     = sizeof (ACPI_TABLE_HEADER);
+        LocalDSDT.Checksum   = (UINT8) (0 - AcpiTbChecksum (&LocalDSDT, LocalDSDT.Length));
+
+        AcpiGbl_DSDT = &LocalDSDT;
+
+        /* Install incoming table (SSDT or PSDT) directly into the RSDT */
+
+        LocalRSDT->TableOffsetEntry[3] = ACPI_PTR_TO_PHYSADDR (UserTable);
+    }
+
+    /* Set checksums for both RSDT and RSDP */
+
+    LocalRSDT->Header.Checksum  = (UINT8) (0 - AcpiTbChecksum (LocalRSDT, LocalRSDT->Header.Length));
+    LocalRSDP.Checksum          = (UINT8) (0 - AcpiTbChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
 
     /* Build a FADT so we can test the hardware/event init */
 
@@ -242,7 +275,7 @@ AeBuildLocalTables (void)
     ACPI_STRNCPY (LocalFADT.Header.Signature, FADT_SIG, 4);
 
     LocalFADT.FirmwareCtrl      = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
-    LocalFADT.Dsdt              = ACPI_PTR_TO_PHYSADDR (AcpiGbl_DbTablePtr);
+    LocalFADT.Dsdt              = ACPI_PTR_TO_PHYSADDR (AcpiGbl_DSDT);
     LocalFADT.Header.Revision   = 1;
     LocalFADT.Header.Length     = sizeof (FADT_DESCRIPTOR_REV1);
     LocalFADT.Gpe0BlkLen        = 4;

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.75 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -199,6 +199,7 @@ main (
     ACPI_STATUS             Status;
     UINT32                  InitFlags;
     ACPI_BUFFER             ReturnBuf;
+    ACPI_TABLE_HEADER       *Table;
     char                    Buffer[32];
 
 
@@ -285,15 +286,14 @@ main (
         AcpiGbl_DbOpt_tables = TRUE;
         AcpiGbl_DbFilename = argv[AcpiGbl_Optind];
 
-        Status = AcpiDbGetAcpiTable (AcpiGbl_DbFilename);
+        Status = AcpiDbReadTableFromFile (AcpiGbl_DbFilename, &Table);
         if (ACPI_FAILURE (Status))
         {
             printf ("**** Could not get input table, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
-
-        AeBuildLocalTables ();
+        AeBuildLocalTables (Table);
         Status = AeInstallTables ();
         if (ACPI_FAILURE (Status))
         {
