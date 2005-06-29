@@ -127,9 +127,21 @@
 #define _COMPONENT          MISCELLANEOUS
 
 /*
- * Only compile in support for memory allocation tracing if the global debug
- * flag is set.
+ * Most of this code is for tracking memory leaks in the subsystem, and it
+ * gets compiled out when the ACPI_DEBUG flag is not set.  It works like so:
+ * every memory allocation is kept track of in a doubly linked list.  Each
+ * element contains the caller's component, module name, function name, and
+ * line number.  _CmAllocate and _CmCallocate call CmAddElementToAllocList
+ * to add an element to the list; deletion occurs in the bosy of _CmFree.
  */
+
+#ifndef ACPI_DEBUG
+
+#define CmAddElementToAllocList
+#define CmDelteElementFromAllocList
+#define CmDumpCurrentAllocations
+
+#else
 
 enum {
 	MALLOC = 0,
@@ -143,7 +155,6 @@ typedef struct ALLOCATION_INFO {
 	UINT32 					Component;
 	char					Module[32];
 	INT32					Line;
-	char					Function[32];
 	struct ALLOCATION_INFO	*Previous;
 	struct ALLOCATION_INFO	*Next;
 } ALLOCATION_INFO;
@@ -151,15 +162,32 @@ typedef struct ALLOCATION_INFO {
 ALLOCATION_INFO *HeadAllocPtr;
 ALLOCATION_INFO *TailAllocPtr;
 
-ACPI_STATUS
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmAddElementToAllocList
+ *
+ * PARAMETERS:  Address				Address of allocated memory
+ *              Size				Size of the allocation
+ *              AllocType			MALLOC or CALLOC
+ *              Component			Component type of caller
+ *              Module				Source file name of caller
+ *              Line				Line number of caller
+ *              Function			Calling function name
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: Inserts an element into the global allocation tracking list.
+ *
+ ****************************************************************************/
+
+void
 CmAddElementToAllocList (
 	void 					*Address,
 	UINT32					Size,
 	UINT8					AllocType,
 	UINT32					Component,
 	ACPI_STRING				Module,
-	INT32                   Line,
-	ACPI_STRING				Function)
+	INT32                   Line)
 {
 	FUNCTION_TRACE ("CmAddElementToAllocList");
 	
@@ -176,7 +204,7 @@ CmAddElementToAllocList (
 	}
 	else
 	{
-		TailAllocPtr->Next = (ALLOCATION_INFO *) OsdAllocate (sizeof (ALLOCATION_INFO));
+		TailAllocPtr->Next = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
 		
 		/* error check */
 		
@@ -191,100 +219,47 @@ CmAddElementToAllocList (
 	TailAllocPtr->Component = Component;
 	strcpy (TailAllocPtr->Module, Module);
 	TailAllocPtr->Line = Line;
-	strcpy (TailAllocPtr->Function, Function);
 	
 	FUNCTION_EXIT;
-	return AE_OK;
+	return;
 }
 
-void *
-_CmAllocate (
-	UINT32					Size,
-	UINT32					Component,
-	ACPI_STRING				Module,
-	INT32                   Line,
-	ACPI_STRING				Function)
-{
-	void *Address = NULL;
 
-	FUNCTION_TRACE ("_CmAllocate");
-	
-	Address = OsdAllocate (Size);
-	
-    if (!Address)
-    {
-       	/* Report allocation error */
-       	_REPORT_ERROR (Module, Line, Component,
-       		"CmAllocate: Memory allocation failure");
-    }
-    else
-    {
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %x Size 0x%x\n",
-        	Address, Size));
-    }
-    
-    CmAddElementToAllocList (Address, Size, MALLOC, Component, Module, Line, Function);
-
-	FUNCTION_EXIT;	
-	return Address;
-}
-
-void *
-_CmCallocate (
-	UINT32					Size,
-	UINT32					Component,
-	ACPI_STRING				Module,
-	INT32                   Line,
-	ACPI_STRING				Function)
-{
-	void *Address = NULL;
-
-	FUNCTION_TRACE ("_CmCallocate");
-		
-	Address = OsdCallocate (Size);
-	
-    if (!Address)
-    {
-       	/* Report allocation error */
-       	_REPORT_ERROR (Module, Line, Component,
-       		"CmCallocate: Memory allocation failure");
-    }
-    else
-    {
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %x Size 0x%x\n",
-        	Address, Size));
-    }
-
-    CmAddElementToAllocList (Address, Size, CALLOC, Component, Module, Line, Function);
-	
-	FUNCTION_EXIT;
-	return Address;
-}
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmDeleteElementFromAllocList
+ *
+ * PARAMETERS:  Address				Address of allocated memory
+ *              Size				Size of the allocation
+ *              AllocType			MALLOC or CALLOC
+ *              Component			Component type of caller
+ *              Module				Source file name of caller
+ *              Line				Line number of caller
+ *              Function			Calling function name
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: Inserts an element into the global allocation tracking list.
+ *
+ ****************************************************************************/
 
 void
-_CmFree (
-	void					*Address,
+CmDeleteElementFromAllocList (
+	void 					*Address,
 	UINT32					Component,
 	ACPI_STRING				Module,
-	INT32                   Line,
-	ACPI_STRING				Function)
+	INT32                   Line)
 {
-
-#ifdef ACPI_DEBUG
 	ALLOCATION_INFO 	*Element = HeadAllocPtr;
-	BOOLEAN				Found = FALSE;
-#endif
-
-	FUNCTION_TRACE ("_CmFree");
 	
-#ifdef ACPI_DEBUG
+	FUNCTION_TRACE ("CmDeleteElementFromAllocList");
 
 	/* cases: none, one, multiple. */
 	if (NULL == HeadAllocPtr)
 	{
 		/* Boy we got problems. */
 		_REPORT_ERROR (Module, Line, Component,
-       		"_CmFree: Someone is trying to free non-allocated memory.  Must be Bob's code.");
+       		"CmDeleteElementFromAllocList: Empty allocation list and someone's calling CmFree.");
 		
 		FUNCTION_EXIT;
 		return;
@@ -292,7 +267,16 @@ _CmFree (
 	
 	if (HeadAllocPtr == TailAllocPtr)
 	{	
+		if (Address != HeadAllocPtr->Address)
+		{
+			_REPORT_ERROR (Module, Line, Component,
+				"CmDeleteElementFromAllocList: Deleting non-allocated memory...");
+			FUNCTION_EXIT;
+			return;
+		}
+		
 		OsdFree (HeadAllocPtr);
+		HeadAllocPtr = NULL;
 		TailAllocPtr = NULL;
 		
 		DEBUG_PRINT (TRACE_ALLOCATIONS,
@@ -301,19 +285,12 @@ _CmFree (
 		FUNCTION_EXIT;
 		return;
 	}
-		
+	
 	/* search and destroy. note - this always searches the entire list...*/
-	do {		
+	for (;;)
+	{		
 		if (Element->Address == Address)
 		{
-			if (Found)
-			{
-				_REPORT_ERROR (Module, Line, Component,
-    		   		"_CmFree: Address to be deleted is in the list twice.");
-			
-				continue;
-			}
-			
 			/* cases: head, tail, other */
 			if (Element == HeadAllocPtr)
 			{
@@ -334,28 +311,216 @@ _CmFree (
 				}
 			}		
 			
-			Found = TRUE;
 			OsdFree (Element);
-			break;
+			FUNCTION_EXIT;
+			return;
 		}
 			
-		if (NULL == Element->Next)
+		if (Element->Next == NULL)
 		{
 			_REPORT_ERROR (Module, Line, Component,
-				"_CmFree: Someone is trying to free non-allocated memory.  Must be Bob's code.");
-			break;
+				"_CmFree: Reached the end of the list without finding the entry.");
+			FUNCTION_EXIT;
+			return;
 		}
-		else
+		
+		Element = Element->Next;
+		
+	}
+	
+	FUNCTION_EXIT;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmDumpCurrentAllocations
+ *
+ * PARAMETERS:  Component			Componet(s) to dump info for.
+ *              Module				Module to dump info for.  NULL means all.
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ****************************************************************************/
+
+void
+CmDumpCurrentAllocations (
+	UINT32					Component,
+	ACPI_STRING				Module)
+{
+	ALLOCATION_INFO		*Element = HeadAllocPtr;
+	
+	FUNCTION_TRACE ("CmDumpCurrentAllocations");
+	
+	if (Element == NULL)
+	{
+		DEBUG_PRINT (TRACE_ALLOCATIONS, ("No outstanding allocations.\n"));
+		FUNCTION_EXIT;
+		return;
+	}
+	
+	for (;;)
+	{
+		if ((Element->Component & Component) &&
+			((Module == NULL) || (0 == strcmp (Module, Element->Module))))
 		{
-			Element = Element->Next;
-		}	
-	} while (Element);
+			DEBUG_PRINT (TRACE_ALLOCATIONS,
+				("%08x bytes at %p from file %s (line %d)\n",
+				Element->Size, Element->Address, Element->Module, Element->Line));
+		}
+		
+		if (Element->Next == NULL)
+		{
+			FUNCTION_EXIT;
+			return;
+		}
+		
+		Element = Element->Next;
+	}
+
+	/* won't ever get here. */
+}	
+
 
 #endif
 
-	FUNCTION_EXIT;
-	OsdFree (Address);
 
+/*****************************************************************************
+ * 
+ * FUNCTION:    _CmAllocate
+ *
+ * PARAMETERS:  Size				Size of the allocation
+ *              Component			Component type of caller
+ *              Module				Source file name of caller
+ *              Line				Line number of caller
+ *              Function			Calling function name
+ *
+ * RETURN:      Address of the allocated memory on success, NULL on failure.
+ *
+ * DESCRIPTION: The subsystem's equivalent of malloc.
+ *
+ ****************************************************************************/
+
+void *
+_CmAllocate (
+	UINT32					Size,
+	UINT32					Component,
+	ACPI_STRING				Module,
+	INT32                   Line)
+{
+	void *Address = NULL;
+
+	FUNCTION_TRACE ("_CmAllocate");
+	
+	Address = OsdAllocate (Size);
+	
+    if (!Address)
+    {
+       	/* Report allocation error */
+       	_REPORT_ERROR (Module, Line, Component,
+       		"CmAllocate: Memory allocation failure");
+    }
+    else
+    {
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %x Size 0x%x\n",
+        	Address, Size));
+    }
+    
+    CmAddElementToAllocList (Address, Size, MALLOC, Component, Module, Line);
+
+	FUNCTION_EXIT;	
+	return Address;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    _CmCallocate
+ *
+ * PARAMETERS:  Size				Size of the allocation
+ *              Component			Component type of caller
+ *              Module				Source file name of caller
+ *              Line				Line number of caller
+ *              Function			Calling function name
+ *
+ * RETURN:      Address of the allocated memory on success, NULL on failure.
+ *
+ * DESCRIPTION: Subsystem equivalent of calloc.
+ *
+ ****************************************************************************/
+
+void *
+_CmCallocate (
+	UINT32					Size,
+	UINT32					Component,
+	ACPI_STRING				Module,
+	INT32                   Line)
+{
+	void *Address = NULL;
+
+	FUNCTION_TRACE ("_CmCallocate");
+		
+	Address = OsdCallocate (Size);
+	
+    if (!Address)
+    {
+       	/* Report allocation error */
+       	_REPORT_ERROR (Module, Line, Component,
+       		"CmCallocate: Memory allocation failure");
+    }
+    else
+    {
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %x Size 0x%x\n",
+        	Address, Size));
+    }
+
+    CmAddElementToAllocList (Address, Size, CALLOC, Component, Module, Line);
+	
+	FUNCTION_EXIT;
+	return Address;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    _CmFree
+ *
+ * PARAMETERS:  Address				Address of the memory to deallocate
+ *              Component			Component type of caller
+ *              Module				Source file name of caller
+ *              Line				Line number of caller
+ *              Function			Calling function name
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: Frees the memory at Address
+ *
+ ****************************************************************************/
+
+void
+_CmFree (
+	void					*Address,
+	UINT32					Component,
+	ACPI_STRING				Module,
+	INT32                   Line)
+{
+	FUNCTION_TRACE ("_CmFree");
+	
+	if (NULL == Address)
+	{
+		_REPORT_ERROR (Module, Line, Component,
+    		"_CmFree: Trying to delete a NULL address.");
+    	FUNCTION_EXIT;
+    	return;
+    
+    }	
+	
+	CmDeleteElementFromAllocList (Address, Component, Module, Line);
+	OsdFree (Address);
+	
+	FUNCTION_EXIT;
 }
 
 
@@ -382,11 +547,16 @@ _AllocateObjectDesc (
     INT32                   ComponentId)
 {
     ACPI_OBJECT_INTERNAL    *NewDesc;
-
+    
+    FUNCTION_TRACE ("_AllocateObjectDesc");
 
     /* Attempt to allocate new descriptor */
 
-    NewDesc = OsdCallocate (sizeof (ACPI_OBJECT_INTERNAL));
+    NewDesc = _CmCallocate (sizeof (ACPI_OBJECT_INTERNAL),
+    	ComponentId,
+    	ModuleName,
+    	LineNumber);
+    	
     if (!NewDesc)
     {
         /* Allocation failed */
@@ -401,6 +571,7 @@ _AllocateObjectDesc (
                         NewDesc, sizeof (ACPI_OBJECT_INTERNAL)));
     }
 
+	FUNCTION_EXIT;
     return NewDesc;
 }
 
@@ -450,7 +621,7 @@ LocalDeleteObject (
 
         DEBUG_PRINT (ACPI_INFO, ("LocalDeleteObject: Actually deleting %x\n", *ObjDesc));
 
-        OsdFree (*ObjDesc);
+        CmFree (*ObjDesc);
 
         DEBUG_PRINT (ACPI_INFO, ("LocalDeleteObject: Successfully deleted %x\n", *ObjDesc));
 
