@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -419,7 +419,7 @@
 
 /******************************************************************************
 
- Opcodes that have associated namespace objects
+ Opcodes that have associated namespace objects (AML_NSOBJECT flag)
 
     AML_SCOPE_OP
     AML_DEVICE_OP
@@ -445,7 +445,7 @@
     AML_INT_METHODCALL_OP
     AML_INT_NAMEPATH_OP
 
-  Opcodes that are "namespace" opcodes
+  Opcodes that are "namespace" opcodes (AML_NSOPCODE flag)
 
     AML_SCOPE_OP
     AML_DEVICE_OP
@@ -463,7 +463,7 @@
     AML_REGION_OP
     AML_INT_NAMEDFIELD_OP
 
-  Opcodes that have an associated namespace node
+  Opcodes that have an associated namespace node (AML_NSNODE flag)
 
     AML_SCOPE_OP
     AML_DEVICE_OP
@@ -486,7 +486,7 @@
     AML_INT_METHODCALL_OP
     AML_INT_NAMEPATH_OP
 
-  Opcodes that define named ACPI objects
+  Opcodes that define named ACPI objects (AML_NAMED flag)
 
     AML_SCOPE_OP
     AML_DEVICE_OP
@@ -501,8 +501,8 @@
     AML_REGION_OP
     AML_INT_NAMEDFIELD_OP
 
-    Opcodes that contain executable AML as part of the definition that
-    must be deferred until needed
+  Opcodes that contain executable AML as part of the definition that
+  must be deferred until needed
 
     AML_METHOD_OP
     AML_VAR_PACKAGE_OP
