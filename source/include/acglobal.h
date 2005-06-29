@@ -162,7 +162,7 @@ ACPI_EXTERN UINT32              RsdpOriginalLocation;
 
 /* Procedure nesting level for debug output */
 
-ACPI_EXTERN UINT32              NestingLevel;
+extern UINT32                   NestingLevel;
 
 /* Runtime configuration of debug print levels */
 
