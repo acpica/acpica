@@ -310,6 +310,7 @@ HwObtainSleepTypeRegisterData (
  * FUNCTION:    HwRegisterIO
  *
  * PARAMETERS:  ReadWrite       - Either ACPI_READ or ACPI_WRITE.
+ *              UseLock         - Lock the hardware
  *              RegisterId      - index of ACPI register to access
  *              Value           - (only used on write) value to write to the
  *                                 register.  Shifted all the way right.
@@ -323,10 +324,10 @@ HwObtainSleepTypeRegisterData (
 
 UINT32
 HwRegisterIO (
-    INT32                   ReadWrite,
-    UINT32                  UseLock,
-    INT32                   RegisterId, 
-    ...)
+    NATIVE_UINT             ReadWrite,
+	BOOLEAN					UseLock,	
+    UINT32                  RegisterId,
+    ...)                    /* Value (only used on write) */
 {
     UINT32                  RegisterValue = 0;
     UINT32                  Mask = 0;
@@ -346,6 +347,7 @@ HwRegisterIO (
         va_end (marker);
     }
 
+    /* TBD: May want to split the Event code and the Control code */
     
     /*
      * Decode the Register ID
@@ -355,14 +357,15 @@ HwRegisterIO (
     {
     case PM1_EVT:
 
-        if (RegisterId < (INT32) TMR_EN)
+        if (RegisterId < TMR_EN)
         {   
-            if(MTX_LOCK == UseLock)
+            /* status register */
+
+            if (MTX_LOCK == UseLock)
             {
                 CmAcquireMutex (MTX_HARDWARE);
             }
 
-            /* status register */
             
             RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm1aEvtBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1a status: Read 0x%X from 0x%X\n", 
@@ -437,7 +440,7 @@ HwRegisterIO (
                 }
             }
 
-            if(MTX_LOCK == UseLock)
+            if (MTX_LOCK == UseLock)
             {
                 CmReleaseMutex (MTX_HARDWARE);
             }
@@ -447,7 +450,7 @@ HwRegisterIO (
         {   
             /* enable register */
             
-            if(MTX_LOCK == UseLock)
+            if (MTX_LOCK == UseLock)
             {
                 CmAcquireMutex (MTX_HARDWARE);
             }
@@ -523,12 +526,12 @@ HwRegisterIO (
 
         RegisterValue = 0;
         
-        if(MTX_LOCK == UseLock)
+        if (MTX_LOCK == UseLock)
         {
             CmAcquireMutex (MTX_HARDWARE);
         }
 
-        if (RegisterId != (INT32) SLP_TYPb)   
+        if (RegisterId != SLP_TYPb)   
         {
             /* 
              * SLP_TYPx registers are written differently
@@ -591,7 +594,7 @@ HwRegisterIO (
              * for A may be different than the value for B
              */
             
-            if (RegisterId != (INT32) SLP_TYPb)
+            if (RegisterId != SLP_TYPb)
             {
                 if (Mask == SLP_EN_MASK)
                 {
@@ -617,7 +620,7 @@ HwRegisterIO (
             }
         }
 
-        if(MTX_LOCK == UseLock)
+        if (MTX_LOCK == UseLock)
         {
             CmReleaseMutex (MTX_HARDWARE);
         }
@@ -626,10 +629,11 @@ HwRegisterIO (
 
     case PM2_CONTROL:
 
-        if(MTX_LOCK == UseLock)
+        if (MTX_LOCK == UseLock)
         {
             CmAcquireMutex (MTX_HARDWARE);
         }
+
         RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm2CntBlk);
         DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n", 
                         RegisterValue, Gbl_FACP->Pm2CntBlk));
@@ -657,7 +661,7 @@ HwRegisterIO (
             OsdOut16 (Gbl_FACP->Pm2CntBlk, (UINT16) RegisterValue);
         }
 
-        if(MTX_LOCK == UseLock)
+        if (MTX_LOCK == UseLock)
         {
             CmReleaseMutex (MTX_HARDWARE);
         }
