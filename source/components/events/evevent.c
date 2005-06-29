@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -155,16 +155,6 @@ AcpiEvInitialize (
         ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "No ACPI tables present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
-
-    /* Make sure the BIOS supports ACPI mode */
-
-    if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "ACPI Mode is not supported!\n"));
-        return_ACPI_STATUS (AE_ERROR);
-    }
-
-    AcpiGbl_OriginalMode = AcpiHwGetMode();
 
     /*
      * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
