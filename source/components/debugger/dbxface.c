@@ -337,11 +337,13 @@ DbInitialize (void)
     ScopeBuf [0] = '\\';
     ScopeBuf [1] =  0;
 
-    CmAcquireMutex (MTX_DEBUG_COMMAND);
-    CmAcquireMutex (MTX_DEBUGGER);
+    if (Gbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
+    {
+        CmAcquireMutex (MTX_DEBUG_COMMAND);
+        CmAcquireMutex (MTX_DEBUGGER);
 
-    OsdQueueForExecution (0, DbExecuteThread, NULL);
-
+        OsdQueueForExecution (0, DbExecuteThread, NULL);
+    }
 
 	if (!opt_verbose)
 	{

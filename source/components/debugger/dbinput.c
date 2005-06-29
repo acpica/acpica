@@ -792,6 +792,34 @@ DbExecuteThread (
 }
 
 
+/******************************************************************************
+ * 
+ * FUNCTION:    DbSingleThread
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Debugger execute thread.  Waits for a command line, then
+ *              simply dispatches it.
+ *
+ *****************************************************************************/
+
+void
+DbSingleThread (
+    void)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    Gbl_MethodExecuting = FALSE;
+    Gbl_StepToNextCall = FALSE;
+
+    Status = DbCommandDispatch (LineBuf, NULL, NULL);
+}
+
+
+
 
 /******************************************************************************
  * 
@@ -813,7 +841,8 @@ DbUserCommands (
 {
     ACPI_STATUS             Status = AE_OK;
 
-    /* TBD: NEed a separate command line buffer for step mode */
+
+    /* TBD: Need a separate command line buffer for step mode */
 
     while (!Gbl_DbTerminateThreads)
     {
@@ -836,10 +865,23 @@ DbUserCommands (
 
         OsdGetLine (LineBuf);
 
-        /* Signal the debug thread that we have a command to execute */
 
-        CmReleaseMutex (MTX_DEBUGGER);
-        CmAcquireMutex (MTX_DEBUG_COMMAND);
+        /* Check for single or multithreaded debug */
+
+        if (Gbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
+        {
+            /* Signal the debug thread that we have a command to execute */
+
+            CmReleaseMutex (MTX_DEBUGGER);
+            CmAcquireMutex (MTX_DEBUG_COMMAND);
+        }
+
+        else
+        {
+            /* Just call to the command line interpreter */
+
+            DbSingleThread ();
+        }
     }
 
 
