@@ -150,11 +150,14 @@ AcpiNsAllocateNameTable (
     FUNCTION_TRACE ("NsAllocateNameTable");
 
 
-    AllocSize = sizeof (ACPI_NAME_TABLE) + ((NumEntries - 1) * sizeof (ACPI_NAMED_OBJECT));
+    AllocSize = sizeof (ACPI_NAME_TABLE) + ((NumEntries - 1) *
+                sizeof (ACPI_NAMED_OBJECT));
+
     NameTable = AcpiCmCallocate (AllocSize);
 
 
-    DEBUG_PRINT (TRACE_EXEC, ("NsAllocateNameTable: NameTable=%p\n", NameTable));
+    DEBUG_PRINT (TRACE_EXEC,
+        ("NsAllocateNameTable: NameTable=%p\n", NameTable));
 
     return_PTR (NameTable);
 }
@@ -195,12 +198,21 @@ AcpiNsDeleteNamespaceSubtree (
 
     while (Level > 0)
     {
-        /* Get the next typed object in this scope.  Null returned if not found */
+        /*
+         * Get the next typed object in this scope.
+         * Null returned if not found
+         */
 
-        ChildEntry = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentEntry, ChildEntry);
+        ChildEntry = AcpiNsGetNextObject (ACPI_TYPE_ANY,
+                                            ParentEntry,
+                                            ChildEntry);
+
         if (ChildEntry)
         {
-            /* Found an object - delete the object within the Value field */
+            /*
+             * Found an object - delete the object within
+             * the Value field
+             */
 
             ObjDesc = AcpiNsGetAttachedObject (ChildEntry);
             if (ObjDesc)
@@ -210,7 +222,10 @@ AcpiNsDeleteNamespaceSubtree (
             }
 
 
-            /* Clear the NTE in case this scope is reused (e.g., a control method scope) */
+            /*
+             * Clear the NTE in case this scope is reused
+             * (e.g., a control method scope)
+             */
 
             ChildEntry->Type = ACPI_TYPE_ANY;
             ChildEntry->Name = 0;
@@ -219,7 +234,10 @@ AcpiNsDeleteNamespaceSubtree (
 
             if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildEntry, 0))
             {
-                /* There is at least one child of this object, visit the object */
+                /*
+                 * There is at least one child of this object,
+                 * visit the object
+                 */
 
                 Level++;
                 ParentEntry    = ChildEntry;
@@ -228,7 +246,10 @@ AcpiNsDeleteNamespaceSubtree (
 
             else
             {
-                /* There may be a name table even if there are no children */
+                /*
+                 * There may be a name table even if there are
+                 * no children
+                 */
 
                 AcpiNsDeleteNameTable (ChildEntry->ChildTable);
                 ChildEntry->ChildTable = NULL;
@@ -244,9 +265,13 @@ AcpiNsDeleteNamespaceSubtree (
              */
             Level--;
 
-            /* Delete the scope (Name Table) associated with the parent object */
-            /* Don't delete the top level scope, this allows the dynamic deletion of
-             * objects created underneath control methods!
+            /*
+             * Delete the scope (Name Table) associated with
+             * the parent object
+             */
+            /* Don't delete the top level scope, this allows
+             * the dynamic deletion of objects created underneath
+             * control methods!
              */
 
             if (Level != 0)
@@ -320,7 +345,10 @@ AcpiNsRemoveReference (
                 ThisEntry->ChildTable = NULL;
             }
 
-            /* Mark the entry free  (This doesn't deallocate anything) */
+            /*
+             * Mark the entry free
+             * (This doesn't deallocate anything)
+             */
 
             AcpiNsFreeTableEntry (ThisEntry);
 
@@ -371,14 +399,23 @@ AcpiNsDeleteNamespaceByOwner (
 
     while (Level > 0)
     {
-        /* Get the next typed object in this scope.  Null returned if not found */
+        /*
+         * Get the next typed object in this scope.
+         * Null returned if not found
+         */
 
-        ChildEntry = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentEntry, ChildEntry);
+        ChildEntry = AcpiNsGetNextObject (ACPI_TYPE_ANY,
+                                            ParentEntry,
+                                            ChildEntry);
+
         if (ChildEntry)
         {
             if (ChildEntry->OwnerId == OwnerId)
             {
-                /* Found an object - delete the object within the Value field */
+                /*
+                 * Found an object - delete the object within
+                 * the Value field
+                 */
 
                 ObjDesc = AcpiNsGetAttachedObject (ChildEntry);
                 if (ObjDesc)
@@ -392,7 +429,10 @@ AcpiNsDeleteNamespaceByOwner (
 
             if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildEntry, 0))
             {
-                /* There is at least one child of this object, visit the object */
+                /*
+                 * There is at least one child of this object,
+                 * visit the object
+                 */
 
                 Level++;
                 ParentEntry    = ChildEntry;
@@ -413,10 +453,15 @@ AcpiNsDeleteNamespaceByOwner (
              */
             Level--;
 
-            /* Delete the scope (Name Table) associated with the parent object */
-            /* Don't delete the top level scope, this allows the dynamic deletion of
-             * objects created underneath control methods!
+            /*
+             * Delete the scope (Name Table) associated with
+             * the parent object
              */
+            /* Don't delete the top level scope, this allows
+             * the dynamic deletion of objects created underneath
+             * control methods!
+             */
+
 
             if (Level != 0)
             {
@@ -481,7 +526,8 @@ AcpiNsDeleteNameTable (
     {
         NextTable = ThisTable->NextTable;
 
-        DEBUG_PRINT (ACPI_INFO, ("AcpiNsDeleteNameTable: Table %p \n", ThisTable));
+        DEBUG_PRINT (ACPI_INFO,
+            ("AcpiNsDeleteNameTable: Table %p \n", ThisTable));
 
         /* Now we can free the table */
 
