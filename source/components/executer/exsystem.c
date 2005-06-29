@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -188,11 +188,16 @@ AcpiExSystemWaitSemaphore (
  *
  * FUNCTION:    AcpiExSystemDoStall
  *
- * PARAMETERS:  HowLong             - The amount of time to stall
+ * PARAMETERS:  HowLong             - The amount of time to stall,
+ *                                    in microseconds
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Suspend running thread for specified amount of time.
+ *              Note: ACPI specification requires that Stall() does not
+ *              relinquish the processor, and delays longer than 100 usec
+ *              should use Sleep() instead.  We allow stalls up to 255 usec
+ *              for compatibility with other interpreters and existing BIOSs.
  *
  ******************************************************************************/
 
@@ -206,13 +211,16 @@ AcpiExSystemDoStall (
     ACPI_FUNCTION_ENTRY ();
 
 
-    if (HowLong > 100) /* 100 microseconds */
+    if (HowLong > 255) /* 255 microseconds */
     {
         /* 
-         * Longer than 100 usec, use sleep instead
-         * (according to ACPI specification)
+         * Longer than 255 usec, this is an error
+         *
+         * (ACPI specifies 100 usec as max, but this gives some slack in 
+         * order to support existing BIOSs)
          */
-        Status = AcpiExSystemDoSuspend ((HowLong / 1000) + 1);
+        ACPI_REPORT_ERROR (("Stall: Time parameter is too large (%d)\n", HowLong));
+        Status = AE_AML_OPERAND_VALUE;
     }
     else
     {
@@ -227,7 +235,8 @@ AcpiExSystemDoStall (
  *
  * FUNCTION:    AcpiExSystemDoSuspend
  *
- * PARAMETERS:  HowLong             - The amount of time to suspend
+ * PARAMETERS:  HowLong             - The amount of time to suspend, 
+ *                                    in milliseconds
  *
  * RETURN:      None
  *
