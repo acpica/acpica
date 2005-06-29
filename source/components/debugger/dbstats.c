@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  ******************************************************************************/
 
@@ -179,18 +179,18 @@ AcpiDbEnumerateObject (
 
     AcpiGbl_NumObjects++;
 
-    if (ObjDesc->Common.Type > INTERNAL_TYPE_NODE_MAX)
+    if (ACPI_GET_OBJECT_TYPE (ObjDesc) > INTERNAL_TYPE_NODE_MAX)
     {
         AcpiGbl_ObjTypeCountMisc++;
     }
     else
     {
-        AcpiGbl_ObjTypeCount [ObjDesc->Common.Type]++;
+        AcpiGbl_ObjTypeCount [ACPI_GET_OBJECT_TYPE (ObjDesc)]++;
     }
 
     /* Count the sub-objects */
 
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_PACKAGE:
         for (i = 0; i < ObjDesc->Package.Count; i++)
