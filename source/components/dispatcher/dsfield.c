@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -218,12 +218,13 @@ AcpiDsCreateBufferField (
      * we need to create the field object.  Otherwise, this was a lookup of an
      * existing node and we don't want to create the field object again.
      */
-    if (Node->Object)
+    ObjDesc = AcpiNsGetAttachedObject (Node);
+    if (ObjDesc)
     {
         /* No longer need the Extra field */
 
-        AcpiUtRemoveReference ((Node->Object)->BufferField.Extra);
-        (Node->Object)->BufferField.Extra = NULL;
+        AcpiUtRemoveReference (ObjDesc->BufferField.Extra);
+        ObjDesc->BufferField.Extra = NULL;
         return_ACPI_STATUS (AE_OK);
     }
 
