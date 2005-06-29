@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.119 $
+ *       $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -237,7 +237,7 @@ ACPI_EXTERN ACPI_NAMESPACE_NODE         AcpiGbl_RootNodeStruct;
 ACPI_EXTERN ACPI_NAMESPACE_NODE        *AcpiGbl_RootNode;
 
 extern const UINT8                      AcpiGbl_NsProperties[NUM_NS_TYPES];
-extern const PREDEFINED_NAMES           AcpiGbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
+extern const ACPI_PREDEFINED_NAMES      AcpiGbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
 
 #ifdef ACPI_DEBUG
 ACPI_EXTERN UINT32                      AcpiGbl_CurrentNodeCount;
