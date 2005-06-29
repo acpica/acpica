@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -126,453 +126,6 @@
 #define _COMPONENT          MISCELLANEOUS
 
 
-/******************************************************************************
- *
- * FUNCTION:    CmGetTableRsdt
- *
- * PARAMETERS:  NumberOfTables      - Where the table count is placed
- *              TablePtr            - Input buffer pointer, optional
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Load and validate the RSDP (ptr) and RSDT (table)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-CmGetTableRsdt (
-    UINT32                  *NumberOfTables, 
-    char                    **TablePtr)
-{
-    ACPI_STATUS             Status = AE_OK;
-    UINT32                  VersionLength;
-    ACPI_TABLE_INFO         TableInfo;
-
-
-    FUNCTION_TRACE ("CmGetTableRsdt");
-
-    if (*TablePtr)
-    {
-        /* Get the RSDP from a buffer */
-
-        VersionLength = strlen (ACPILIB_DATA_FILE_VERSION);
-
-        if (strncmp (ACPILIB_DATA_FILE_VERSION, *TablePtr, VersionLength))
-        {
-            /* data file version mismatch  */
-
-            REPORT_ERROR ("Data file version mismatch");
-
-            DEBUG_PRINT (ACPI_INFO,
-                        ("ACPICA version %s expects a data file version string of"
-                        "\n \"%s\"", ACPI_LIB_VER, ACPILIB_DATA_FILE_VERSION));
-            DEBUG_PRINT (ACPI_INFO,
-                        ("version string is \"%s\"\n", *TablePtr));
-
-            FUNCTION_STATUS_EXIT (AE_VERSION_MISMATCH);
-            return AE_VERSION_MISMATCH;
-        }
-        
-        else
-        {
-            *TablePtr += VersionLength;
-            memcpy (&RsdpOriginalLocation, *TablePtr, (ACPI_SIZE) 4);
-            *TablePtr += 4;
-        }
-    }
-    
-
-    /* Get the RSDP */
-
-    Status = NsFindRsdp (TablePtr, &TableInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        REPORT_WARNING ("RSDP structure not found");
-        FUNCTION_STATUS_EXIT (AE_NO_ACPI_TABLES);
-        return AE_NO_ACPI_TABLES;
-    }
-
-    /* Save the table pointers and allocation info */
-
-    RSDP = (ROOT_SYSTEM_DESCRIPTOR_POINTER *) TableInfo.Pointer;
-    AcpiTables[TABLE_RSDP].Pointer = TableInfo.Pointer;
-    AcpiTables[TABLE_RSDP].Length = TableInfo.Length;
-    AcpiTables[TABLE_RSDP].Allocation = TableInfo.Allocation;
-
-    /* RSDP structure was found */
-
-    if (!*TablePtr)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("RSDP located at %p\n", RSDP));
-    }
-    
-    else
-    {
-        DEBUG_PRINT (ACPI_INFO,
-                    ("RSDP located at %lX\n", RsdpOriginalLocation));
-        
-        /* 
-         * Since we're working from an input buffer, assume we're running on
-         * legacy hardware.  This is intended to prevent any accesses to the
-         * hardware since the ACPI tables are probably not valid for the
-         * current hardware 
-         */
-        
-        SystemFlags &= ~SYS_MODE_ACPI;
-        SystemFlags |= SYS_MODE_LEGACY;
-    }
-
-
-
-    /* Get the RSDT */
-
-    Status = NsGetTable ((void *) RSDP->RsdtPhysicalAddress, 
-                            TablePtr, &TableInfo);
-    if (Status != AE_OK)
-    {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
-    }
-
-
-    /* Save the table pointers and allocation info */
-
-    RSDT = (ROOT_SYSTEM_DESCRIPTION_TABLE *) TableInfo.Pointer;
-    AcpiTables[TABLE_RSDT].Pointer = TableInfo.Pointer;
-    AcpiTables[TABLE_RSDT].Length = TableInfo.Length;
-    AcpiTables[TABLE_RSDT].Allocation = TableInfo.Allocation;
-
-    /* Valid RSDT pointer */
-
-    if (strncmp (RSDT->header.Signature, RSDT_SIG, 4))
-    {
-        /* Invalid RSDT signature */
-
-        REPORT_ERROR ("Invalid signature where RSDP indicates RSDT should be located");
-
-        DEBUG_PRINT (ACPI_INFO,
-                    ("RSDP indicates RSDT should be located at %lXh, however the table\n"
-                    "  signature at %lXh is incorrect.\n"
-                    "  Expected signature: 'RSDT'  Actual signature: '%4.4s'\n",
-                    RSDP->RsdtPhysicalAddress, RSDP->RsdtPhysicalAddress,
-                    RSDT->header.Signature));
-
-        FUNCTION_STATUS_EXIT (AE_BAD_SIGNATURE);
-        return AE_BAD_SIGNATURE;
-    }
-
-
-    /* Valid RSDT signature, verify the checksum */
-
-    DEBUG_PRINT (ACPI_INFO, ("RSDT located at %p, physical address %lX\n", 
-                            RSDT, RSDP->RsdtPhysicalAddress));
-
-    Status = NsVerifyTableChecksum (RSDT);
-    
-    /* Determine the number of tables pointed to by the RSDT */
-
-    *NumberOfTables = (INT32) (RSDT->header.Length - sizeof (ACPI_TABLE_HEADER)) / 4;
-
-
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    CmInstallTable
- *
- * PARAMETERS:  TablePtr            - Input buffer pointer, optional
- *              TableInfo           - Return value from NsGetTable
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Load and validate all tables other than the RSDT.  The RSDT must
- *              already be loaded and validated.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-CmInstallTable (
-    char                    **TablePtr,
-    ACPI_TABLE_INFO         *TableInfo)
-{
-    ACPI_TABLE_HEADER       *TableHeader = NULL;
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_TABLE_TYPE         TableType;
-    char                    *TableName;
-    void                    **TableGlobalPtr;
-
-
-    FUNCTION_TRACE ("CmInstallTable");
-
-
-    /* Ensure that we have a valid table pointer */
-
-    TableHeader = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
-    if (!TableHeader)
-    {   
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
-    }
-
-
-    /* 
-     * Determine the table type from the 4-character signature 
-     */
-
-    if (!strncmp (TableHeader->Signature, FACP_SIG, 4))
-    {
-        TableType       = TABLE_FACP;
-        TableName       = FACP_SIG;
-        TableGlobalPtr  = (void **) &FACP;
-    }
-
-    else if (!strncmp (TableHeader->Signature, FACS_SIG, 4))
-    {
-        TableType       = TABLE_FACS;
-        TableName       = FACS_SIG;
-        TableGlobalPtr  = (void **) &FACS;
-    }
-
-    else if (!strncmp (TableHeader->Signature, DSDT_SIG, 4))
-    {
-        TableType       = TABLE_DSDT;
-        TableName       = DSDT_SIG;
-        TableGlobalPtr  = (void **) &DSDT;
-    }
-    
-    else if (!strncmp (TableHeader->Signature, APIC_SIG, 4))
-    {
-        /* APIC table */
-
-        TableType       = TABLE_APIC;
-        TableName       = APIC_SIG;
-        TableGlobalPtr  = (void **) &APIC;
-    }
-
-    else if (!strncmp (TableHeader->Signature, PSDT_SIG, 4))
-    {
-        /* PSDT table */
-
-        TableType       = TABLE_PSDT;
-        TableName       = PSDT_SIG;
-        TableGlobalPtr  = (void **) &PSDT;
-    }
-
-    else if (!strncmp (TableHeader->Signature, SSDT_SIG, 4))
-    {
-        /* SSDT table */
-        /* TBD - need to be able to deal with multiple SSDTs */
-
-        TableType       = TABLE_SSDT;
-        TableName       = SSDT_SIG;
-        TableGlobalPtr  = (void **) &SSDT;
-    }
-
-
-    else if (!strncmp (TableHeader->Signature, SBDT_SIG, 4))
-    {
-        /* SBDT table */
-
-        TableType       = TABLE_SBDT;
-        TableName       = SBDT_SIG;
-        TableGlobalPtr  = (void **) &SBDT;
-    }
-
-    else
-    {
-        /* Unknown table */
-
-        DEBUG_PRINT (ACPI_ERROR, ("Unknown table at %x in RSDT with signature '%4.4s'\n",
-                                TableHeader, TableHeader->Signature));
-        REPORT_ERROR ("Unknown table in the RSDT");
-
-        NsVerifyTableChecksum (TableHeader);
-    
-        /* 
-         * TBD: - need to be able to handle multiple unknown tables.  Error should be
-         * displayed when table is displayed,  Displaying it here for now 
-         */
-    
-        DUMP_BUFFER (TableHeader, 32, 0);
-
-        FUNCTION_STATUS_EXIT (AE_BAD_SIGNATURE);
-        return AE_BAD_SIGNATURE;
-    }
-
-
-    /* 
-     * Common table installation code 
-     */
-
-    if (ACPI_SUCCESS (Status))
-    {
-        /* Delete existing table if there is one */
-
-        NsDeleteAcpiTable (TableType);
-
-        /* Save the table pointers and allocation info */
-
-        *TableGlobalPtr = TableHeader;
-        AcpiTables[TableType].Pointer = TableInfo->Pointer;
-        AcpiTables[TableType].Length = TableInfo->Length;
-        AcpiTables[TableType].Allocation = TableInfo->Allocation;
-
-        DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n", TableName, TableHeader));
-
-        /* Validate checksum for _most_ tables */
-
-        if (TableType != TABLE_FACS)
-        {
-            NsVerifyTableChecksum (TableHeader);
-        }
-    }
-
-
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    CmGetAllTables
- *
- * PARAMETERS:  NumberOfTables      - Number of tables to get
- *              TablePtr            - Input buffer pointer, optional
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Load and validate all tables other than the RSDT.  The RSDT must
- *              already be loaded and validated.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-CmGetAllTables (
-    UINT32                  NumberOfTables, 
-    char                    **TablePtr)
-{
-    ACPI_STATUS             Status = AE_OK;
-    UINT32                  Index;
-    ACPI_TABLE_INFO         TableInfo;
-
-    
-    FUNCTION_TRACE ("CmGetAllTables");
-
-    DEBUG_PRINT (ACPI_INFO, ("Number of tables: %d\n", NumberOfTables));
-
-
-    /* 
-     * Loop through all table pointers found in RSDT.
-     * This will NOT include the FACS and DSDT - we must get 
-     * them after the loop
-     */
-
-    for (Index = 0; Index < NumberOfTables; Index++)
-    {
-        /* Get the table via the RSDT */
-
-        Status = NsGetTable ((void *) RSDT->TableOffsetEntry[Index], 
-                                TablePtr, &TableInfo);
-        if (ACPI_FAILURE (Status))
-        {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
-        }
-
-        /* Recognize and install the table */
-
-        Status = CmInstallTable (TablePtr, &TableInfo);
-        if (ACPI_FAILURE (Status))
-        {
-            if (Status == AE_BAD_SIGNATURE)
-            {
-                /* Unrecognized table, just delete it and ignore the error */
-
-                NsFreeAcpiTable (&TableInfo);
-            }
-
-            else
-            {
-                /* Abort on a serious error */
-
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
-            }
-        }
-
-    }
-
-
-    /* 
-     * Get the FACS (must have the FACP first, from loop above)
-     * NsGetTableFacs will fail if FACP pointer is not valid
-     */
-
-    Status = NsGetTableFacs (TablePtr, &TableInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
-    }
-
-    /* Install the FACS */
-
-    Status = CmInstallTable (TablePtr, &TableInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
-    }
-
-
-    /* Get the DSDT (must have the FACP first, from loop above) */
-
-    Status = NsGetTable ((void *) FACP->Dsdt, TablePtr, &TableInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
-    }
-
-    /* Install the DSDT */
-
-    Status = CmInstallTable (TablePtr, &TableInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
-    }
-
-    /* Dump the DSDT Header */
-
-    DEBUG_PRINT (TRACE_TABLES, ("Hex dump of DSDT Header:\n"));
-    DUMP_BUFFER ((UINT8 *) DSDT,
-                    (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER), HEX | ASCII);
-    
-    /* Dump the entire DSDT */
-
-    DEBUG_PRINT (TRACE_TABLES,
-                ("Hex dump of DSDT (After header), size %d (0x%x)\n",
-                (ACPI_SIZE)DSDT->Length, (ACPI_SIZE)DSDT->Length));
-    DUMP_BUFFER ((UINT8 *) (DSDT + 1),
-                    (ACPI_SIZE)DSDT->Length, HEX | ASCII);
-
-    /* 
-     * Initialize the capabilities flags.
-     * Assumes that platform supports ACPI_MODE since we have tables!
-     */
-        
-    SystemFlags |= HwGetModeCapabilities ();
-
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
-}
-  
-
 /*******************************************************************************
  *
  * FUNCTION:    CmFacpRegisterError
@@ -634,8 +187,7 @@ CmHardwareInitialize (void)
 
         DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: No FACP!\n"));
 
-        FUNCTION_STATUS_EXIT (AE_NO_ACPI_TABLES);
-        return AE_NO_ACPI_TABLES;
+        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
     /* Must support *some* mode! */
@@ -645,8 +197,7 @@ CmHardwareInitialize (void)
         RestoreAcpiChipset = FALSE;
 
         DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: Supported modes unitialized!\n"));
-        FUNCTION_STATUS_EXIT (AE_ERROR);
-        return AE_ERROR;
+        return_ACPI_STATUS (AE_ERROR);
     }
 
 */
@@ -728,8 +279,7 @@ CmHardwareInitialize (void)
             Gpe0EnableRegisterSave = CmAllocate ((ACPI_SIZE) (FACP->Gpe0BlkLen / 2));
             if (!Gpe0EnableRegisterSave)
             {
-                FUNCTION_STATUS_EXIT (Status);
-                return AE_NO_MEMORY;
+                return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
             /* Save state of GPE0 enable bits */
@@ -753,8 +303,7 @@ CmHardwareInitialize (void)
             Gpe1EnableRegisterSave = CmAllocate ((ACPI_SIZE) (FACP->Gpe1BlkLen / 2));
             if (!Gpe1EnableRegisterSave)
             {
-                FUNCTION_STATUS_EXIT (Status);
-                return AE_NO_MEMORY;
+                return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
             /* save state of GPE1 enable bits */
@@ -815,9 +364,8 @@ CmHardwareInitialize (void)
     }
 
 
-    FUNCTION_STATUS_EXIT (Status);
 BREAKPOINT3;
-    return (Status);
+    return_ACPI_STATUS ((Status));
 }
 
 
