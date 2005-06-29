@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExOpcode_3A_1T_0R
+ * FUNCTION:    AcpiExOpcode_3A_0T_0R
  *
  * PARAMETERS:  WalkState           - Current walk state
  *
@@ -140,72 +140,111 @@
  *
  * DESCRIPTION: Execute Triadic operator (3 operands)
  *
- * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExOpcode_3A_0T_0R (
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
+    ACPI_SIGNAL_FATAL_INFO  *Fatal;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_TRACE ("ExOpcode_3A_0T_0R");
+
+
+    switch (WalkState->Opcode)
+    {
+
+    case AML_FATAL_OP:          /* Fatal (FatalType  FatalCode  FatalArg)    */
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+            (UINT32) Operand[0]->Integer.Value, (UINT32) Operand[1]->Integer.Value,
+            (UINT32) Operand[2]->Integer.Value));
+
+
+        Fatal = ACPI_MEM_ALLOCATE (sizeof (ACPI_SIGNAL_FATAL_INFO));
+        if (Fatal)
+        {
+            Fatal->Type     = (UINT32) Operand[0]->Integer.Value;
+            Fatal->Code     = (UINT32) Operand[1]->Integer.Value;
+            Fatal->Argument = (UINT32) Operand[2]->Integer.Value;
+        }
+
+        /*
+         * Always signal the OS!
+         */
+        AcpiOsSignal (ACPI_SIGNAL_FATAL, Fatal);
+
+        /* Might return while OS is shutting down, just continue */
+
+        ACPI_MEM_FREE (Fatal);
+        break;
+
+
+    default:
+
+        REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+                WalkState->Opcode));
+        Status = AE_AML_BAD_OPCODE;
+        goto Cleanup;
+        break;
+    }
+
+
+
+Cleanup:
+
+    /* Always delete operands */
+
+    AcpiUtRemoveReference (Operand[0]);
+    AcpiUtRemoveReference (Operand[1]);
+    AcpiUtRemoveReference (Operand[2]);
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExOpcode_3A_1T_1R
+ *
+ * PARAMETERS:  WalkState           - Current walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute Triadic operator (3 operands)
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExOpcode_3A_1T_0R (
+AcpiExOpcode_3A_1T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_AML_OPERANDS       *Op = (ACPI_AML_OPERANDS *) &WalkState->Operands[0];
-    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
-    ACPI_OPERAND_OBJECT     *TmpDesc;
-    ACPI_SIGNAL_FATAL_INFO  *Fatal;
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
+    ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
     char                    *Buffer;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Index;
     UINT32                  Length;
 
 
-    FUNCTION_TRACE ("ExOpcode_3A_1T_0R");
+    FUNCTION_TRACE ("ExOpcode_3A_1T_1R");
 
 
 
     switch (WalkState->Opcode)
     {
-
-    case AML_FATAL_OP:
-
-        /* DefFatal    :=  FatalOp  FatalType   FatalCode   FatalArg    */
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
-            (UINT32) (Op->Fatal).Type->Value, (UINT32) (Op->Fatal).Code->Value,
-            (UINT32) (Op->Fatal).Argument->Value));
-
-
-        Fatal = ACPI_MEM_ALLOCATE (sizeof (ACPI_SIGNAL_FATAL_INFO));
-        if (Fatal)
-        {
-            Fatal->Type     = (UINT32) (Op->Fatal).Type->Value;
-            Fatal->Code     = (UINT32) (Op->Fatal).Code->Value;
-            Fatal->Argument = (UINT32) (Op->Fatal).Argument->Value;
-        }
-
-        /*
-         * Signal the OS
-         */
-        AcpiOsSignal (ACPI_SIGNAL_FATAL, Fatal);
-
-        /* Might return while OS is shutting down */
-
-        ACPI_MEM_FREE (Fatal);
-        AcpiUtRemoveReference (Op->Operands[2]);
-        break;
-
-
-    case AML_MID_OP:
-
-        /* DefMid       := MidOp  (0)Source (1)Index (2)Length (3)Result */
-
+    case AML_MID_OP:        /* Mid  (Source[0], Index[1], Length[2], Result[3]) */
 
         /* 
          * Create the return object.  The Source operand is guaranteed to be
          * either a String or a Buffer, so just use its type.
          */
-        RetDesc = AcpiUtCreateInternalObject ((Op->Mid).Source->Common.Type);
-        if (!RetDesc)
+        ReturnDesc = AcpiUtCreateInternalObject (Operand[0]->Common.Type);
+        if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
@@ -213,22 +252,22 @@ AcpiExOpcode_3A_1T_0R (
 
         /* Get the Integer values from the objects */
 
-        Index = (UINT32) (Op->Mid).Index->Value;
-        Length = (UINT32) (Op->Mid).Length->Value;
+        Index = (UINT32) Operand[1]->Integer.Value;
+        Length = (UINT32) Operand[2]->Integer.Value;
 
         /*
          * If the index is beyond the length of the String/Buffer, or if the
          * requested length is zero, return a zero-length String/Buffer
          */
-        if ((Index < (Op->Mid).Source->String.Length) &&
+        if ((Index < Operand[0]->String.Length) &&
             (Length > 0))
         {
             /* Truncate request if larger than the actual String/Buffer */
 
             if ((Index + Length) >
-                (Op->Mid).Source->String.Length)
+                Operand[0]->String.Length)
             {
-                Length = (Op->Mid).Source->String.Length - Index;
+                Length = Operand[0]->String.Length - Index;
             }
 
             /* Allocate a new buffer for the String/Buffer */
@@ -241,128 +280,53 @@ AcpiExOpcode_3A_1T_0R (
 
             /* Copy the portion requested */
 
-            MEMCPY (Buffer, (Op->Mid).Source->String.Pointer + Index,
+            MEMCPY (Buffer, Operand[0]->String.Pointer + Index,
                     Length);
 
             /* Set the length of the new String/Buffer */
 
-            RetDesc->String.Pointer = Buffer;
-            RetDesc->String.Length = Length;
+            ReturnDesc->String.Pointer = Buffer;
+            ReturnDesc->String.Length = Length;
         }
       
-        /* Store the result in the target */
-
-        Status = AcpiExStore (RetDesc, (Op->Mid).Target, WalkState);
         break;
 
 
-    case AML_INDEX_OP:
+    default:
 
-        /* DefIndex     := IndexOp Source Index Destination */
-
-        /* Create the internal return object */
-
-        RetDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
-        if (!RetDesc)
-        {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
-
-        Index = (UINT32) (Op->Index).Index->Value;
-
-        /*
-         * At this point, the ObjDesc1 operand is either a Package or a Buffer
-         */
-        if ((Op->Index).Source->Common.Type == ACPI_TYPE_PACKAGE)
-        {
-            /* Object to be indexed is a Package */
-
-            if (Index >= (Op->Index).Source->Package.Count)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index value beyond package end\n"));
-                Status = AE_AML_PACKAGE_LIMIT;
-                goto Cleanup;
-            }
-
-            if (((Op->Index).Target->Common.Type == INTERNAL_TYPE_REFERENCE) &&
-                ((Op->Index).Target->Reference.Opcode == AML_ZERO_OP))
-            {
-                /*
-                 * There is no actual result descriptor (the ZeroOp Result
-                 * descriptor is a placeholder), so just delete the placeholder and
-                 * return a reference to the package element
-                 */
-                AcpiUtRemoveReference ((Op->Index).Target);
-            }
-
-            else
-            {
-                /*
-                 * Each element of the package is an internal object.  Get the one
-                 * we are after.
-                 */
-                TmpDesc                       = (Op->Index).Source->Package.Elements [Index];
-                RetDesc->Reference.Opcode     = AML_INDEX_OP;
-                RetDesc->Reference.TargetType = TmpDesc->Common.Type;
-                RetDesc->Reference.Object     = TmpDesc;
-
-                Status = AcpiExStore (RetDesc, (Op->Index).Target, WalkState);
-                RetDesc->Reference.Object     = NULL;
-            }
-
-            /*
-             * The local return object must always be a reference to the package element,
-             * not the element itself.
-             */
-            RetDesc->Reference.Opcode     = AML_INDEX_OP;
-            RetDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
-            RetDesc->Reference.Where      = &(Op->Index).Source->Package.Elements [Index];
-        }
-
-        else
-        {
-            /* Object to be indexed is a Buffer */
-
-            if (Index >= (Op->Index).Source->Buffer.Length)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index value beyond end of buffer\n"));
-                Status = AE_AML_BUFFER_LIMIT;
-                goto Cleanup;
-            }
-
-            RetDesc->Reference.Opcode       = AML_INDEX_OP;
-            RetDesc->Reference.TargetType   = ACPI_TYPE_BUFFER_FIELD;
-            RetDesc->Reference.Object       = (Op->Index).Source;
-            RetDesc->Reference.Offset       = Index;
-
-            Status = AcpiExStore (RetDesc, (Op->Index).Target, WalkState);
-        }
-
+        REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+                WalkState->Opcode));
+        Status = AE_AML_BAD_OPCODE;
+        goto Cleanup;
         break;
     }
 
+
+    /* Store the result in the target */
+
+    Status = AcpiExStore (ReturnDesc, Operand[3], WalkState);
 
 Cleanup:
 
     /* Always delete operands */
 
-    AcpiUtRemoveReference (Op->Operands[0]);
-    AcpiUtRemoveReference (Op->Operands[1]);
+    AcpiUtRemoveReference (Operand[0]);
+    AcpiUtRemoveReference (Operand[1]);
+    AcpiUtRemoveReference (Operand[2]);
 
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiUtRemoveReference (Op->Operands[2]);
-        AcpiUtRemoveReference (RetDesc);
+        AcpiUtRemoveReference (ReturnDesc);
     }
 
     /* Set the return object and exit */
 
-    WalkState->ResultObj = RetDesc;
+    WalkState->ResultObj = ReturnDesc;
     return_ACPI_STATUS (Status);
 }
+
 
 
 BOOLEAN
@@ -451,7 +415,7 @@ AcpiExOpcode_6A_0T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
+    ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Index;
     ACPI_OPERAND_OBJECT     *ThisElement;
@@ -459,40 +423,35 @@ AcpiExOpcode_6A_0T_1R (
 
     FUNCTION_TRACE ("ExOpcode_6A_0T_1R");
 
-#define PkgDesc             Operand[0]
-#define Op1Desc             Operand[1]
-#define V1Desc              Operand[2]
-#define Op2Desc             Operand[3]
-#define V2Desc              Operand[4]
-#define StartDesc           Operand[5]
-
-
 
     switch (WalkState->Opcode)
     {
-
-        case AML_MATCH_OP:
+    case AML_MATCH_OP:  
+        /* 
+         * Match (SearchPackage[0], MatchOp1[1], MatchObject1[2], 
+         *                          MatchOp2[3], MatchObject2[4], StartIndex[5])
+         */
 
         /* Validate match comparison sub-opcodes */
 
-        if ((Op1Desc->Integer.Value > MAX_MATCH_OPERATOR) ||
-            (Op2Desc->Integer.Value > MAX_MATCH_OPERATOR))
+        if ((Operand[1]->Integer.Value > MAX_MATCH_OPERATOR) ||
+            (Operand[3]->Integer.Value > MAX_MATCH_OPERATOR))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "operation encoding out of range\n"));
             Status = AE_AML_OPERAND_VALUE;
             goto Cleanup;
         }
 
-        Index = (UINT32) StartDesc->Integer.Value;
-        if (Index >= (UINT32) PkgDesc->Package.Count)
+        Index = (UINT32) Operand[5]->Integer.Value;
+        if (Index >= (UINT32) Operand[0]->Package.Count)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index beyond package end\n"));
             Status = AE_AML_PACKAGE_LIMIT;
             goto Cleanup;
         }
 
-        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!RetDesc)
+        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+        if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
@@ -501,7 +460,7 @@ AcpiExOpcode_6A_0T_1R (
 
         /* Default return value if no match found */
 
-        RetDesc->Integer.Value = ACPI_INTEGER_MAX;
+        ReturnDesc->Integer.Value = ACPI_INTEGER_MAX;
 
         /*
          * Examine each element until a match is found.  Within the loop,
@@ -512,9 +471,9 @@ AcpiExOpcode_6A_0T_1R (
          * (its initial value) indicating that no match was found.  When
          * returned as a Number, this will produce the Ones value as specified.
          */
-        for ( ; Index < PkgDesc->Package.Count; Index++)
+        for ( ; Index < Operand[0]->Package.Count; Index++)
         {
-            ThisElement = PkgDesc->Package.Elements[Index];
+            ThisElement = Operand[0]->Package.Elements[Index];
 
             /*
              * Treat any NULL or non-numeric elements as non-matching.
@@ -534,53 +493,66 @@ AcpiExOpcode_6A_0T_1R (
              *      "continue" (proceed to next iteration of enclosing
              *          "for" loop) signifies a non-match.
              */
-            if (!AcpiExDoMatch ((UINT32) Op1Desc->Integer.Value, 
-                                ThisElement->Integer.Value, V1Desc->Integer.Value))
+            if (!AcpiExDoMatch ((UINT32) Operand[1]->Integer.Value, 
+                                ThisElement->Integer.Value, Operand[2]->Integer.Value))
             {
                 continue;
             }
 
 
-            if (!AcpiExDoMatch ((UINT32) Op2Desc->Integer.Value, 
-                                ThisElement->Integer.Value, V2Desc->Integer.Value))
+            if (!AcpiExDoMatch ((UINT32) Operand[3]->Integer.Value, 
+                                ThisElement->Integer.Value, Operand[4]->Integer.Value))
             {
                 continue;
             }
 
             /* Match found: Index is the return value */
 
-            RetDesc->Integer.Value = Index;
+            ReturnDesc->Integer.Value = Index;
             break;
         }
 
         break;
 
+
+    case AML_LOAD_TABLE_OP:
+
+        Status = AE_NOT_IMPLEMENTED;
+        goto Cleanup;
+        break;
+
+
+    default:
+
+        REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+                WalkState->Opcode));
+        Status = AE_AML_BAD_OPCODE;
+        goto Cleanup;
+        break;
     }
+
+
+    WalkState->ResultObj = ReturnDesc;
 
 
 Cleanup:
 
     /* Free the operands */
 
-    AcpiUtRemoveReference (StartDesc);
-    AcpiUtRemoveReference (V2Desc);
-    AcpiUtRemoveReference (Op2Desc);
-    AcpiUtRemoveReference (V1Desc);
-    AcpiUtRemoveReference (Op1Desc);
-    AcpiUtRemoveReference (PkgDesc);
+    AcpiUtRemoveReference (Operand[5]);
+    AcpiUtRemoveReference (Operand[4]);
+    AcpiUtRemoveReference (Operand[3]);
+    AcpiUtRemoveReference (Operand[2]);
+    AcpiUtRemoveReference (Operand[1]);
+    AcpiUtRemoveReference (Operand[0]);
 
 
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiUtRemoveReference (RetDesc);
-        RetDesc = NULL;
+        AcpiUtRemoveReference (ReturnDesc);
     }
 
-
-    /* Set the return object and exit */
-
-    WalkState->ResultObj = RetDesc;
     return_ACPI_STATUS (Status);
 }
