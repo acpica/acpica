@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abmain - Main module for the acpi binary utility
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,12 @@
 #include "acapps.h"
 #include "acconfig.h"
 
+/* Local prototypes */
+
+static void
+AbDisplayUsage (
+    UINT8                   OptionCount);
+
 
 /******************************************************************************
  *
@@ -130,7 +136,7 @@
  *
  ******************************************************************************/
 
-void
+static void
 AbDisplayUsage (
     UINT8                   OptionCount)
 {
@@ -169,7 +175,7 @@ main (
     char                    *argv[])
 {
     int                     j;
-    int                     Status;
+    int                     Status = AE_OK;
 
 
     AcpiOsInitialize ();

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -135,6 +135,22 @@ char                Buffer[BUFFER_SIZE];
 extern FILE                        *AcpiGbl_DebugFile = NULL;
 extern UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
 
+/* Local prototypes */
+
+static BOOLEAN
+AbValidateHeader (
+    ACPI_TABLE_HEADER       *Header);
+
+static UINT8
+AcpiTbChecksum (
+    void                    *Buffer,
+    UINT32                  Length);
+
+static char *
+AbGetFile (
+    char                    *Filename,
+    UINT32                  *FileSize);
+
 
 /******************************************************************************
  *
@@ -144,7 +160,7 @@ extern UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
  *
  ******************************************************************************/
 
-BOOLEAN
+static BOOLEAN
 AbValidateHeader (
     ACPI_TABLE_HEADER       *Header)
 {
@@ -172,7 +188,7 @@ AbValidateHeader (
  *
  ******************************************************************************/
 
-UINT8
+static UINT8
 AcpiTbChecksum (
     void                    *Buffer,
     UINT32                  Length)
@@ -298,12 +314,16 @@ AbComputeChecksum (
         printf ("\n");
     }
 
+    /* Allocate a buffer to hold the entire table */
+
     Table = AcpiOsAllocate (Header1.Length);
     if (!Table)
     {
         printf ("could not allocate\n");
         return;
     }
+
+    /* Read the entire table, including header */
 
     fseek (File1, 0, SEEK_SET);
     Actual1 = fread (Table, 1, Header1.Length, File1);
@@ -312,6 +332,8 @@ AbComputeChecksum (
         printf ("could not read table\n");
         return;
     }
+
+    /* Compute the checksum for the table */
 
     Table->Checksum = 0;
 
@@ -324,6 +346,8 @@ AbComputeChecksum (
         return;
     }
 
+    /* Open the target file for writing, to update checksum */
+
     fclose (File1);
     File1 = fopen (File1Path, "r+b");
     if (!File1)
@@ -331,6 +355,8 @@ AbComputeChecksum (
         printf ("Could not open file %s for writing\n", File1Path);
         return;
     }
+
+    /* Set the checksum, write the new header */
 
     Header1.Checksum = Checksum;
 
@@ -490,22 +516,21 @@ AbCompareAmlFiles (
  *
  * FUNCTION:    AsGetFile
  *
- * DESCRIPTION: Open a file and read it entirely into a an allocated buffer
+ * DESCRIPTION: Open a file and read it entirely into a new buffer
  *
  ******************************************************************************/
 
-char *
+static char *
 AbGetFile (
     char                    *Filename,
     UINT32                  *FileSize)
 {
-
     int                     FileHandle;
     UINT32                  Size;
     char                    *Buffer = NULL;
 
 
-    /* Binary mode leaves CR/LF pairs */
+    /* Binary mode does not alter CR/LF pairs */
 
     FileHandle = open (Filename, O_BINARY | O_RDONLY);
     if (!FileHandle)
@@ -514,15 +539,16 @@ AbGetFile (
         return NULL;
     }
 
+    /* Need file size to allocate a buffer */
+
     if (fstat (FileHandle, &Gbl_StatBuf))
     {
         printf ("Could not get file status for %s\n", Filename);
         goto ErrorExit;
     }
 
-    /*
-     * Create a buffer for the entire file
-     */
+    /* Allocate a buffer for the entire file */
+
     Size = Gbl_StatBuf.st_size;
     Buffer = calloc (Size, 1);
     if (!Buffer)
@@ -569,6 +595,8 @@ AbDumpAmlFile (
     FILE                    *FileOutHandle;
 
 
+    /* Get the entire AML file, validate header */
+
     FileBuffer = AbGetFile (File1Path, &FileSize);
     printf ("File %s contains 0x%X bytes\n\n", File1Path, FileSize);
 
@@ -584,12 +612,15 @@ AbDumpAmlFile (
         return -1;
     }
 
+    /* Convert binary AML to text, using common dump buffer routine */
+
     AcpiGbl_DebugFile = FileOutHandle;
     AcpiGbl_DbOutputFlags = ACPI_DB_REDIRECTABLE_OUTPUT;
 
     AcpiOsPrintf ("%4.4s\n", ((ACPI_TABLE_HEADER *) FileBuffer)->Signature);
     AcpiDbgLevel = ACPI_UINT32_MAX;
-    AcpiUtDumpBuffer (FileBuffer, FileSize, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer ((UINT8 *) FileBuffer, FileSize,
+        DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     return 0;
 }
@@ -618,9 +649,9 @@ AbExtractAmlFile (
     FILE                    *FileOutHandle;
 
 
-    /* Open in/out files. Binary mode leaves CR/LF pairs */
+    /* Open in/out files. input is in text mode, output is in binary mode */
 
-    FileHandle = fopen (File1Path, "rb");
+    FileHandle = fopen (File1Path, "rt");
     if (!FileHandle)
     {
         printf ("Could not open %s\n", File1Path);
@@ -638,11 +669,15 @@ AbExtractAmlFile (
 
     AcpiUtStrupr (TableSig);
 
+
+    /* TBD: examine input for ASCII */
+
+
     /* We have an ascii file, grab one line at a time */
 
     while (fgets (Buffer, BUFFER_SIZE, FileHandle))
     {
-        /* 4-char signature appears at the beginning of a line */
+        /* The 4-char ACPI signature appears at the beginning of a line */
 
         if (!strncmp (Buffer, TableSig, 4))
         {
@@ -650,40 +685,51 @@ AbExtractAmlFile (
 
             /* 
              * Eat all lines in the table, of the form:
-             * 
-             * offset: <16 bytes of data, separated by spaces>, extra junk, newline 
+             *   <offset>: <16 bytes of hex data, separated by spaces> <ASCII representation> <newline>
+             *
+             * Example:
+             *
+             *   02C0: 5F 53 42 5F 4C 4E 4B 44 00 12 13 04 0C FF FF 08  _SB_LNKD........
+             *
              */
             while (fgets (Buffer, BUFFER_SIZE, FileHandle))
             {
-                /* Get past the offset: */
+                /* Get past the offset, terminated by a colon */
 
                 Table = strchr (Buffer, ':');
                 if (!Table)
                 {
+                    printf ("Could not convert table\n");
                     return 0;
                 }
 
+                Table += 2; /* Eat the colon + space */
+
                 /* Convert up to 16 bytes per input line */
 
-                Table += 2;
                 for (i = 0; i < 16; i++)
                 {
+                    /* Convert next integer from ASCII to binary, eats the space */
+
                     Value = strtoul (Table, &End, 16);
                     if (End == Table)
                     {
-                        /* No conversion, all done */
-
+                        /*
+                         * No conversion was performed, all done.  If other tables
+                         * follow this one, this is where we will exit.
+                         */
                         return 0;
                     }
 
-                    /* Write the converted byte */
+                    Table += 3; /* Go past this hex byte and space */
 
-                    Table += 3;
+                    /* Write the converted (binary) byte */
+
                     fwrite (&(char *) Value, 1, 1, FileOutHandle);
                 }
             }
 
-            /* No more lines, all done */
+            /* No more lines, EOF, all done */
 
             return (0);
         }
