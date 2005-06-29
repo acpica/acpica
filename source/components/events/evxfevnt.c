@@ -271,36 +271,76 @@ AcpiEnableEvent (
     UINT32                  Type)
 {
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  RegisterId;
+
 
     FUNCTION_TRACE ("AcpiEnableEvent");
 
+
+    /* The Type must be either Fixed Event or GPE */
+
     switch (Type)
     {
+
     case EVENT_FIXED:
-        /*
-         * TBD - Fixed events...
-         */
-        Status = AE_NOT_IMPLEMENTED;
+
+        /* Decode the Fixed Event */
+
+        switch (Event)
+        {
+        case EVENT_PMTIMER:
+            RegisterId = TMR_EN;
+            break;
+
+        case EVENT_GLOBAL:
+            RegisterId = GBL_EN;
+            break;
+
+        case EVENT_POWER_BUTTON:
+            RegisterId = PWRBTN_EN;
+            break;
+
+        case EVENT_SLEEP_BUTTON:
+            RegisterId = SLPBTN_EN;
+            break;
+
+        case EVENT_RTC:
+            RegisterId = RTC_EN;
+            break;
+
+        default:
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+            break;
+        }
+
+        /* Enable the requested fixed event (by writing a one to the enable register bit) */
+
+        HwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 1); 
         break;
+
 
     case EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
-        if (Gbl_GpeValid[Event] == GPE_INVALID)
+        if ((Event >= NUM_GPE) ||
+            (Gbl_GpeValid[Event] == GPE_INVALID))
         {
-            Status = AE_BAD_PARAMETER;
-        }
-        else
-        {
-            HwEnableGpe (Event);
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
+
+        /* Enable the requested GPE number */
+
+        HwEnableGpe (Event);
         break;
 
+
     default:
+
         Status = AE_BAD_PARAMETER;
     }
+
 
     return_ACPI_STATUS (Status);
 }
@@ -325,32 +365,69 @@ AcpiDisableEvent (
     UINT32                  Type)
 {
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  RegisterId;
+
 
     FUNCTION_TRACE ("AcpiDisableEvent");
 
+
+    /* The Type must be either Fixed Event or GPE */
+
     switch (Type)
     {
+
     case EVENT_FIXED:
-        /*
-         * TBD - Fixed events...
-         */
-        Status = AE_NOT_IMPLEMENTED;
+
+        /* Decode the Fixed Event */
+
+        switch (Event)
+        {
+        case EVENT_PMTIMER:
+            RegisterId = TMR_EN;
+            break;
+
+        case EVENT_GLOBAL:
+            RegisterId = GBL_EN;
+            break;
+
+        case EVENT_POWER_BUTTON:
+            RegisterId = PWRBTN_EN;
+            break;
+
+        case EVENT_SLEEP_BUTTON:
+            RegisterId = SLPBTN_EN;
+            break;
+
+        case EVENT_RTC:
+            RegisterId = RTC_EN;
+            break;
+
+        default:
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+            break;
+        }
+
+        /* Disable the requested fixed event (by writing a zero to the enable register bit) */
+
+        HwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 0); 
         break;
+
 
     case EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
-        if (Gbl_GpeValid[Event] == GPE_INVALID)
+        if ((Event >= NUM_GPE) ||
+            (Gbl_GpeValid[Event] == GPE_INVALID))
         {
-            Status = AE_BAD_PARAMETER;
-        }
-        else
-        {
-            HwDisableGpe (Event);
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
+        /* Disable the requested GPE number */
+
+        HwDisableGpe (Event);
         break;
+
 
     default:
         Status = AE_BAD_PARAMETER;
@@ -379,34 +456,71 @@ AcpiClearEvent (
     UINT32                  Type)
 {
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  RegisterId;
+
 
     FUNCTION_TRACE ("AcpiClearEvent");
 
+
+    /* The Type must be either Fixed Event or GPE */
+
     switch (Type)
     {
+
     case EVENT_FIXED:
-        /*
-         * TBD - Fixed events...
-         */
-        Status = AE_NOT_IMPLEMENTED;
+
+        /* Decode the Fixed Event */
+
+        switch (Event)
+        {
+        case EVENT_PMTIMER:
+            RegisterId = TMR_STS;
+            break;
+
+        case EVENT_GLOBAL:
+            RegisterId = GBL_STS;
+            break;
+
+        case EVENT_POWER_BUTTON:
+            RegisterId = PWRBTN_STS;
+            break;
+
+        case EVENT_SLEEP_BUTTON:
+            RegisterId = SLPBTN_STS;
+            break;
+
+        case EVENT_RTC:
+            RegisterId = RTC_STS;
+            break;
+
+        default:
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+            break;
+        }
+
+        /* Clear the requested fixed event (By writing a one to the status register bit) */
+
+        HwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 1); 
         break;
+
 
     case EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
-        if (Gbl_GpeValid[Event] == GPE_INVALID)
+        if ((Event >= NUM_GPE) ||
+            (Gbl_GpeValid[Event] == GPE_INVALID))
         {
-            Status = AE_BAD_PARAMETER;
-        }
-        else
-        {
-            HwClearGpe (Event);
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
+
+        HwClearGpe (Event);
         break;
 
+
     default:
+
         Status = AE_BAD_PARAMETER;
     }
 
@@ -436,41 +550,81 @@ AcpiGetEventStatus (
     ACPI_EVENT_STATUS       *EventStatus)
 {
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  RegisterId;
+
 
     FUNCTION_TRACE ("AcpiGetEventStatus");
 
+
     if (!EventStatus)
     {
-        return_ACPI_STATUS(AE_BAD_PARAMETER);
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
+
+
+    /* The Type must be either Fixed Event or GPE */
 
     switch (Type)
     {
+
     case EVENT_FIXED:
-        /*
-         * TBD - Fixed events...
-         */
-        Status = AE_NOT_IMPLEMENTED;
+        
+        /* Decode the Fixed Event */
+
+        switch (Event)
+        {
+        case EVENT_PMTIMER:
+            RegisterId = TMR_STS;
+            break;
+
+        case EVENT_GLOBAL:
+            RegisterId = GBL_STS;
+            break;
+
+        case EVENT_POWER_BUTTON:
+            RegisterId = PWRBTN_STS;
+            break;
+
+        case EVENT_SLEEP_BUTTON:
+            RegisterId = SLPBTN_STS;
+            break;
+
+        case EVENT_RTC:
+            RegisterId = RTC_STS;
+            break;
+
+        default:
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+            break;
+        }
+
+        /* Get the status of the requested fixed event */
+
+        *EventStatus = HwRegisterIO (ACPI_READ, TRUE, RegisterId); 
         break;
+
 
     case EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
-        if (Gbl_GpeValid[Event] == GPE_INVALID)
+        if ((Event >= NUM_GPE) ||
+            (Gbl_GpeValid[Event] == GPE_INVALID))
         {
-            Status = AE_BAD_PARAMETER;
-        }
-        else
-        {
-            HwGetGpeStatus (Event, EventStatus);
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
+
+        /* Obtain status on the requested GPE number */
+
+        HwGetGpeStatus (Event, EventStatus);
         break;
+
 
     default:
         Status = AE_BAD_PARAMETER;
     }
+
 
     return_ACPI_STATUS (Status);
 }
