@@ -132,6 +132,13 @@
 #define STACK_TOP               0
 #define STACK_BOTTOM            (UINT32) -1
 
+
+/* For AmlMthStackSetValue */
+
+#define MTH_TYPE_LOCAL      0
+#define MTH_TYPE_ARG        1
+
+
 /*
  * iefield - ACPI AML (p-code) execution - field manipulation
  */
@@ -221,19 +228,34 @@ AmlMthStackLevel (
 
 ACPI_OBJECT_TYPE
 AmlMthStackGetType (
-    INT32                   Index);
+    UINT32                  Type,
+    UINT32                  Index);
 
 ACPI_STATUS
 AmlMthStackGetValue (
-    INT32                   Index, 
+    UINT32                  Type,
+    UINT32                  Index, 
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
 AmlMthStackSetValue (
-    INT32                   Index, 
+    UINT32                  Type,
+    UINT32                  Index, 
     ACPI_OBJECT_INTERNAL    *ObjDesc, 
     ACPI_OBJECT_INTERNAL    *ObjDesc2);
 
+ACPI_STATUS
+AmlMthStackPop (
+    void);
+
+ACPI_STATUS
+AmlMthStackPush (
+    ACPI_OBJECT_INTERNAL    **Params);
+
+ACPI_STATUS
+AmlMthStackDeleteValue (
+    UINT32                  Type,
+    UINT32                  Index) ;
 
 /*
  * ieostack - object stack utilities
@@ -514,11 +536,11 @@ AmlGetPCodeHandle (
 
 void
 AmlGetCurrentLocation (
-    METHOD_INFO             *Method);
+    ACPI_OBJECT_INTERNAL    *MethodDesc);
 
 void
 AmlSetCurrentLocation (
-    METHOD_INFO             *Method);
+    ACPI_OBJECT_INTERNAL    *MethodDesc);
 
 
 /*
