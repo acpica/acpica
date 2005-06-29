@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.104 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,93 +121,135 @@
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
-#include "acparser.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exprep")
+        ACPI_MODULE_NAME    ("exprep")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExDecodeFieldAccessType
+ * FUNCTION:    AcpiExDecodeFieldAccess
  *
  * PARAMETERS:  Access          - Encoded field access bits
  *              Length          - Field length.
  *
- * RETURN:      Field granularity (8, 16, 32 or 64)
+ * RETURN:      Field granularity (8, 16, 32 or 64) and
+ *              ByteAlignment (1, 2, 3, or 4)
  *
  * DESCRIPTION: Decode the AccessType bits of a field definition.
  *
  ******************************************************************************/
 
 static UINT32
-AcpiExDecodeFieldAccessType (
-    UINT32                  Access,
-    UINT16                  Length,
-    UINT32                  *Alignment)
+AcpiExDecodeFieldAccess (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT8                   FieldFlags,
+    UINT32                  *ReturnByteAlignment)
 {
-    PROC_NAME ("ExDecodeFieldAccessType");
+    UINT32                  Access;
+    UINT8                   ByteAlignment;
+    UINT8                   BitLength;
+/*    UINT32                  Length; */
 
+
+    ACPI_FUNCTION_NAME ("ExDecodeFieldAccess");
+
+
+    Access = (FieldFlags & AML_FIELD_ACCESS_TYPE_MASK);
 
     switch (Access)
     {
-    case ACCESS_ANY_ACC:
+    case AML_FIELD_ACCESS_ANY:
 
-        *Alignment = 8;
+        ByteAlignment = 1;
+        BitLength = 8;
+
+#if 0
+        /*
+         * TBD: optimize
+         *
+         * Any attempt to optimize the access size to the size of the field
+         * must take into consideration the length of the region and take
+         * care that an access to the field will not attempt to access
+         * beyond the end of the region.
+         */
 
         /* Use the length to set the access type */
 
+        Length = ObjDesc->CommonField.BitLength;
+
         if (Length <= 8)
         {
-            return (8);
+            BitLength = 8;
         }
         else if (Length <= 16)
         {
-            return (16);
+            BitLength = 16;
         }
         else if (Length <= 32)
         {
-            return (32);
+            BitLength = 32;
         }
         else if (Length <= 64)
         {
-            return (64);
+            BitLength = 64;
         }
+        else
+        {
+            /* Larger than Qword - just use byte-size chunks */
 
-        /* Default is 8 (byte) */
-
-        return (8);
+            BitLength = 8;
+        }
+#endif
         break;
 
-    case ACCESS_BYTE_ACC:
-        *Alignment = 8;
-        return (8);
+    case AML_FIELD_ACCESS_BYTE:
+        ByteAlignment = 1;
+        BitLength = 8;
         break;
 
-    case ACCESS_WORD_ACC:
-        *Alignment = 16;
-        return (16);
+    case AML_FIELD_ACCESS_WORD:
+        ByteAlignment = 2;
+        BitLength = 16;
         break;
 
-    case ACCESS_DWORD_ACC:
-        *Alignment = 32;
-        return (32);
+    case AML_FIELD_ACCESS_DWORD:
+        ByteAlignment = 4;
+        BitLength = 32;
         break;
 
-    case ACCESS_QWORD_ACC:  /* ACPI 2.0 */
-        *Alignment = 64;
-        return (64);
+    case AML_FIELD_ACCESS_QWORD:  /* ACPI 2.0 */
+        ByteAlignment = 8;
+        BitLength = 64;
+        break;
+
+    case AML_FIELD_ACCESS_BUFFER:  /* ACPI 2.0 */
+        ByteAlignment = 8;
+        BitLength = 8;
         break;
 
     default:
         /* Invalid field access type */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Unknown field access type %x\n",
+            "Unknown field access type %X\n",
             Access));
         return (0);
     }
+
+    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_BUFFER_FIELD)
+    {
+        /*
+         * BufferField access can be on any byte boundary, so the
+         * ByteAlignment is always 1 byte -- regardless of any ByteAlignment
+         * implied by the field access type.
+         */
+        ByteAlignment = 1;
+    }
+
+    *ReturnByteAlignment = ByteAlignment;
+    return (BitLength);
 }
 
 
@@ -225,7 +267,9 @@ AcpiExDecodeFieldAccessType (
  * RETURN:      Status
  *
  * DESCRIPTION: Initialize the areas of the field object that are common
- *              to the various types of fields.
+ *              to the various types of fields.  Note: This is very "sensitive"
+ *              code because we are solving the general case for field
+ *              alignment.
  *
  ******************************************************************************/
 
@@ -233,45 +277,44 @@ ACPI_STATUS
 AcpiExPrepCommonFieldObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT8                   FieldFlags,
+    UINT8                   FieldAttribute,
     UINT32                  FieldBitPosition,
     UINT32                  FieldBitLength)
 {
     UINT32                  AccessBitWidth;
-    UINT32                  Alignment;
+    UINT32                  ByteAlignment;
     UINT32                  NearestByteAddress;
 
 
-    FUNCTION_TRACE ("ExPrepCommonFieldObject");
+    ACPI_FUNCTION_TRACE ("ExPrepCommonFieldObject");
 
 
     /*
      * Note: the structure being initialized is the
-     * ACPI_COMMON_FIELD_INFO;  No structure fields outside of the common area
-     * are initialized by this procedure.
+     * ACPI_COMMON_FIELD_INFO;  No structure fields outside of the common
+     * area are initialized by this procedure.
      */
-
-    /* Demultiplex the FieldFlags byte */
-
-    ObjDesc->CommonField.LockRule   = (UINT8) ((FieldFlags & LOCK_RULE_MASK)
-                                                    >> LOCK_RULE_SHIFT);
-    ObjDesc->CommonField.UpdateRule = (UINT8) ((FieldFlags & UPDATE_RULE_MASK)
-                                                    >> UPDATE_RULE_SHIFT);
-    /* Other misc fields */
-
-    ObjDesc->CommonField.BitLength  = (UINT16) FieldBitLength;
+    ObjDesc->CommonField.FieldFlags = FieldFlags;
+    ObjDesc->CommonField.Attribute  = FieldAttribute;
+    ObjDesc->CommonField.BitLength  = FieldBitLength;
 
     /*
      * Decode the access type so we can compute offsets.  The access type gives
      * two pieces of information - the width of each field access and the
-     * necessary alignment of the access.  For AnyAcc, the width used is the
-     * largest necessary/possible in an attempt to access the whole field in one
-     * I/O operation.  However, for AnyAcc, the alignment is 8.  For all other
-     * access types (Byte, Word, Dword, Qword), the width is the same as the
-     * alignment.
+     * necessary ByteAlignment (address granularity) of the access.
+     *
+     * For AnyAcc, the AccessBitWidth is the largest width that is both 
+     * necessary and possible in an attempt to access the whole field in one
+     * I/O operation.  However, for AnyAcc, the ByteAlignment is always one 
+     * byte.
+     *
+     * For all Buffer Fields, the ByteAlignment is always one byte.
+     *
+     * For all other access types (Byte, Word, Dword, Qword), the Bitwidth is 
+     * the same (equivalent) as the ByteAlignment.
      */
-    AccessBitWidth = AcpiExDecodeFieldAccessType (
-                        ((FieldFlags & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT),
-                        ObjDesc->Field.BitLength, &Alignment);
+    AccessBitWidth = AcpiExDecodeFieldAccess (ObjDesc, FieldFlags, 
+                                &ByteAlignment);
     if (!AccessBitWidth)
     {
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
@@ -279,56 +322,61 @@ AcpiExPrepCommonFieldObject (
 
     /* Setup width (access granularity) fields */
 
-    ObjDesc->CommonField.AccessBitWidth    = (UINT8) AccessBitWidth;            /* 8, 16, 32, 64 */
-    ObjDesc->CommonField.AccessByteWidth   = (UINT8) DIV_8 (AccessBitWidth);    /* 1,  2,  4,  8 */
-
-    if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
-    {
-        /*
-         * BufferField access can be on any byte boundary, so the
-         * alignment is always 8 (regardless of any alignment implied by the
-         * field access type.)
-         */
-        Alignment = 8;
-    }
+    ObjDesc->CommonField.AccessByteWidth = (UINT8) 
+            ACPI_DIV_8 (AccessBitWidth); /* 1,  2,  4,  8 */
 
     /*
-     * BaseByteOffset is the address of the start of the field within the region.  It is
-     * the byte address of the first *datum* (field-width data unit) of the field.
-     * (i.e., the first datum that contains at least the first *bit* of the field.)
+     * BaseByteOffset is the address of the start of the field within the 
+     * region.  It is the byte address of the first *datum* (field-width data 
+     * unit) of the field. (i.e., the first datum that contains at least the 
+     * first *bit* of the field.)
+     *
+     * Note: ByteAlignment is always either equal to the AccessBitWidth or 8 
+     * (Byte access), and it defines the addressing granularity of the parent 
+     * region or buffer.
      */
-    NearestByteAddress                        = ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
-    ObjDesc->CommonField.BaseByteOffset       = ROUND_DOWN (NearestByteAddress,
-                                                            DIV_8 (Alignment));
+    NearestByteAddress = 
+            ACPI_ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
+    ObjDesc->CommonField.BaseByteOffset = 
+            ACPI_ROUND_DOWN (NearestByteAddress, ByteAlignment);
 
     /*
-     * StartFieldBitOffset is the offset of the first bit of the field within a field datum.
+     * StartFieldBitOffset is the offset of the first bit of the field within 
+     * a field datum.
      */
-    ObjDesc->CommonField.StartFieldBitOffset  = (UINT8) (FieldBitPosition % AccessBitWidth);
+    ObjDesc->CommonField.StartFieldBitOffset = (UINT8)
+        (FieldBitPosition - ACPI_MUL_8 (ObjDesc->CommonField.BaseByteOffset));
 
     /*
      * Valid bits -- the number of bits that compose a partial datum,
-     * 1) At the end of the field within the region (arbitrary starting bit offset)
-     * 2) At the end of a buffer used to contain the field (starting offset always zero)
+     * 1) At the end of the field within the region (arbitrary starting bit 
+     *    offset)
+     * 2) At the end of a buffer used to contain the field (starting offset 
+     *    always zero)
      */
-    ObjDesc->CommonField.EndFieldValidBits    = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) %
+    ObjDesc->CommonField.EndFieldValidBits   = (UINT8) 
+        ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) %
                                                             AccessBitWidth);
-    ObjDesc->CommonField.EndBufferValidBits   = (UINT8) (FieldBitLength % AccessBitWidth); /* StartBufferBitOffset always = 0 */
+    /* StartBufferBitOffset always = 0 */
+
+    ObjDesc->CommonField.EndBufferValidBits  = (UINT8) 
+        (FieldBitLength % AccessBitWidth);
 
     /*
-     * DatumValidBits is the number of valid field bits in the first field datum.
+     * DatumValidBits is the number of valid field bits in the first 
+     * field datum.
      */
-    ObjDesc->CommonField.DatumValidBits       = (UINT8) (AccessBitWidth -
-                                                         ObjDesc->CommonField.StartFieldBitOffset);
+    ObjDesc->CommonField.DatumValidBits      = (UINT8) 
+        (AccessBitWidth - ObjDesc->CommonField.StartFieldBitOffset);
 
     /*
      * Does the entire field fit within a single field access element? (datum)
      * (i.e., without crossing a datum boundary)
      */
     if ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) <=
-        (UINT16) AccessBitWidth)
+            (UINT16) AccessBitWidth)
     {
-        ObjDesc->CommonField.AccessFlags |= AFIELD_SINGLE_DATUM;
+        ObjDesc->Common.Flags |= AOPOBJ_SINGLE_DATUM;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -361,7 +409,7 @@ AcpiExPrepFieldValue (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("ExPrepFieldValue");
+    ACPI_FUNCTION_TRACE ("ExPrepFieldValue");
 
 
     /* Parameter validation */
@@ -377,7 +425,8 @@ AcpiExPrepFieldValue (
         Type = AcpiNsGetType (Info->RegionNode);
         if (Type != ACPI_TYPE_REGION)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Needed Region, found type %X %s\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Needed Region, found type %X %s\n",
                 Type, AcpiUtGetTypeName (Type)));
 
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -396,7 +445,7 @@ AcpiExPrepFieldValue (
 
     ObjDesc->CommonField.Node = Info->FieldNode;
     Status = AcpiExPrepCommonFieldObject (ObjDesc, Info->FieldFlags,
-                        Info->FieldBitPosition, Info->FieldBitLength);
+                Info->Attribute, Info->FieldBitPosition, Info->FieldBitLength);
     if (ACPI_FAILURE (Status))
     {
         AcpiUtDeleteObjectDesc (ObjDesc);
@@ -409,32 +458,36 @@ AcpiExPrepFieldValue (
     {
     case INTERNAL_TYPE_REGION_FIELD:
 
-        ObjDesc->Field.RegionObj    = AcpiNsGetAttachedObject (Info->RegionNode);
+        ObjDesc->Field.RegionObj     = AcpiNsGetAttachedObject (Info->RegionNode);
 
         /* An additional reference for the container */
 
         AcpiUtAddReference (ObjDesc->Field.RegionObj);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RegionField: Bitoff=%X Off=%X Gran=%X Region %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
+            "RegionField: Bitoff=%X Off=%X Gran=%X Region %p\n",
             ObjDesc->Field.StartFieldBitOffset, ObjDesc->Field.BaseByteOffset,
-            ObjDesc->Field.AccessBitWidth, ObjDesc->Field.RegionObj));
+            ObjDesc->Field.AccessByteWidth, ObjDesc->Field.RegionObj));
         break;
 
 
     case INTERNAL_TYPE_BANK_FIELD:
 
-        ObjDesc->BankField.Value        = Info->BankValue;
-        ObjDesc->BankField.RegionObj    = AcpiNsGetAttachedObject (Info->RegionNode);
-        ObjDesc->BankField.BankObj      = AcpiNsGetAttachedObject (Info->RegisterNode);
+        ObjDesc->BankField.Value     = Info->BankValue;
+        ObjDesc->BankField.RegionObj = AcpiNsGetAttachedObject (Info->RegionNode);
+        ObjDesc->BankField.BankObj   = AcpiNsGetAttachedObject (Info->RegisterNode);
 
         /* An additional reference for the attached objects */
 
         AcpiUtAddReference (ObjDesc->BankField.RegionObj);
         AcpiUtAddReference (ObjDesc->BankField.BankObj);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Bank Field: BitOff=%X Off=%X Gran=%X Region %p BankReg %p\n",
-            ObjDesc->BankField.StartFieldBitOffset, ObjDesc->BankField.BaseByteOffset,
-            ObjDesc->Field.AccessBitWidth, ObjDesc->BankField.RegionObj,
+        ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, 
+            "Bank Field: BitOff=%X Off=%X Gran=%X Region %p BankReg %p\n",
+            ObjDesc->BankField.StartFieldBitOffset, 
+            ObjDesc->BankField.BaseByteOffset,
+            ObjDesc->Field.AccessByteWidth, 
+            ObjDesc->BankField.RegionObj,
             ObjDesc->BankField.BankObj));
         break;
 
@@ -443,8 +496,8 @@ AcpiExPrepFieldValue (
 
         ObjDesc->IndexField.IndexObj = AcpiNsGetAttachedObject (Info->RegisterNode);
         ObjDesc->IndexField.DataObj  = AcpiNsGetAttachedObject (Info->DataRegisterNode);
-        ObjDesc->IndexField.Value    = (UINT32) (Info->FieldBitPosition /
-                                                ObjDesc->Field.AccessBitWidth);
+        ObjDesc->IndexField.Value    = (UINT32) 
+            (Info->FieldBitPosition / ACPI_MUL_8 (ObjDesc->Field.AccessByteWidth));
 
         if (!ObjDesc->IndexField.DataObj || !ObjDesc->IndexField.IndexObj)
         {
@@ -457,10 +510,17 @@ AcpiExPrepFieldValue (
         AcpiUtAddReference (ObjDesc->IndexField.DataObj);
         AcpiUtAddReference (ObjDesc->IndexField.IndexObj);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "IndexField: bitoff=%X off=%X gran=%X Index %p Data %p\n",
-            ObjDesc->IndexField.StartFieldBitOffset, ObjDesc->IndexField.BaseByteOffset,
-            ObjDesc->Field.AccessBitWidth, ObjDesc->IndexField.IndexObj,
+        ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, 
+            "IndexField: bitoff=%X off=%X gran=%X Index %p Data %p\n",
+            ObjDesc->IndexField.StartFieldBitOffset, 
+            ObjDesc->IndexField.BaseByteOffset,
+            ObjDesc->Field.AccessByteWidth, 
+            ObjDesc->IndexField.IndexObj,
             ObjDesc->IndexField.DataObj));
+        break;
+
+    default:
+        /* No other types should get here */
         break;
     }
 
@@ -469,10 +529,10 @@ AcpiExPrepFieldValue (
      * preserving the current type of that NamedObj.
      */
     Status = AcpiNsAttachObject (Info->FieldNode, ObjDesc,
-                    (UINT8) AcpiNsGetType (Info->FieldNode));
+                    AcpiNsGetType (Info->FieldNode));
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "set NamedObj %p (%4.4s) val = %p\n",
-            Info->FieldNode, (char*)&(Info->FieldNode->Name), ObjDesc));
+    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "set NamedObj %p (%4.4s) val = %p\n",
+            Info->FieldNode, Info->FieldNode->Name.Ascii, ObjDesc));
 
     /* Remove local reference to the object */
 

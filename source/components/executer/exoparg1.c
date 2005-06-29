@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.138 $
+ *              $Revision: 1.139 $
  *
  *****************************************************************************/
 
@@ -678,7 +678,7 @@ AcpiExOpcode_1A_0T_1R (
 
     case AML_TYPE_OP:               /* ObjectType (SourceObject) */
 
-        if (INTERNAL_TYPE_REFERENCE == Operand[0]->Common.Type)
+        if (ACPI_GET_OBJECT_TYPE (Operand[0]) == INTERNAL_TYPE_REFERENCE)
         {
             /*
              * Not a Name -- an indirect name pointer would have
@@ -706,7 +706,7 @@ AcpiExOpcode_1A_0T_1R (
                      * of the individual package element that is referenced by
                      * the index.
                      */
-                    Type = (*(Operand[0]->Reference.Where))->Common.Type;
+                    Type = ACPI_GET_OBJECT_TYPE (*(Operand[0]->Reference.Where));
                 }
                 break;
 
@@ -784,7 +784,7 @@ AcpiExOpcode_1A_0T_1R (
              * point (even if the original operand was an object reference, it
              * will be resolved and typechecked during operand resolution.)
              */
-            switch (TempDesc->Common.Type)
+            switch (ACPI_GET_OBJECT_TYPE (TempDesc))
             {
             case ACPI_TYPE_BUFFER:
                 Value = TempDesc->Buffer.Length;
@@ -800,7 +800,7 @@ AcpiExOpcode_1A_0T_1R (
 
             default:
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "SizeOf, Not Buf/Str/Pkg - found type %s\n",
-                    AcpiUtGetTypeName (TempDesc->Common.Type)));
+                    AcpiUtGetObjectTypeName (TempDesc)));
                 Status = AE_AML_OPERAND_TYPE;
                 goto Cleanup;
             }

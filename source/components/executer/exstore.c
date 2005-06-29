@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.157 $
+ *              $Revision: 1.167 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,16 +118,14 @@
 #define __EXSTORE_C__
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
-#include "actables.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exstore")
+        ACPI_MODULE_NAME    ("exstore")
 
 
 /*******************************************************************************
@@ -160,7 +158,7 @@ AcpiExStore (
     ACPI_OPERAND_OBJECT     *RefDesc = DestDesc;
 
 
-    FUNCTION_TRACE_PTR ("ExStore", DestDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExStore", DestDesc);
 
 
     /* Validate parameters */
@@ -185,19 +183,35 @@ AcpiExStore (
         return_ACPI_STATUS (Status);
     }
 
-    /* Destination object must be an object of type Reference */
+    /* Destination object must be a Reference or a Constant object */
 
-    if (DestDesc->Common.Type != INTERNAL_TYPE_REFERENCE)
-    {
+    switch (ACPI_GET_OBJECT_TYPE (DestDesc))
+    {  
+    case INTERNAL_TYPE_REFERENCE:
+        break;
+
+    case ACPI_TYPE_INTEGER:
+
+        /* Allow stores to Constants -- a Noop as per ACPI spec */
+
+        if (DestDesc->Common.Flags & AOPOBJ_AML_CONSTANT)
+        {
+            return_ACPI_STATUS (AE_OK);
+        }
+
+        /*lint: -fallthrough */
+
+    default:
+
         /* Destination is not an Reference */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Destination is not a ReferenceObj [%p]\n", DestDesc));
+            "Destination is not a Reference or Constant object [%p]\n", DestDesc));
 
-        DUMP_STACK_ENTRY (SourceDesc);
-        DUMP_STACK_ENTRY (DestDesc);
-        DUMP_OPERANDS (&DestDesc, IMODE_EXECUTE, "ExStore",
-                        2, "Target is not a ReferenceObj");
+        ACPI_DUMP_STACK_ENTRY (SourceDesc);
+        ACPI_DUMP_STACK_ENTRY (DestDesc);
+        ACPI_DUMP_OPERANDS (&DestDesc, ACPI_IMODE_EXECUTE, "ExStore",
+                        2, "Target is not a Reference or Constant object");
 
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
@@ -209,7 +223,6 @@ AcpiExStore (
      * 2) Store to an indexed area of a Buffer or Package
      * 3) Store to a Method Local or Arg
      * 4) Store to the debug object
-     * 5) Store to a constant -- a noop
      */
     switch (RefDesc->Reference.Opcode)
     {
@@ -246,24 +259,25 @@ AcpiExStore (
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see ACPI Specification
          */
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Write to Debug Object: ****:\n\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "**** Write to Debug Object: ****:\n\n"));
 
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[ACPI Debug] %s: ",
-                        AcpiUtGetTypeName (SourceDesc->Common.Type)));
+                        AcpiUtGetObjectTypeName (SourceDesc)));
 
-        switch (SourceDesc->Common.Type)
+        switch (ACPI_GET_OBJECT_TYPE (SourceDesc))
         {
         case ACPI_TYPE_INTEGER:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "0x%X (%d)\n",
-                (UINT32) SourceDesc->Integer.Value, (UINT32) SourceDesc->Integer.Value));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%8.8X%8.8X\n",
+                    ACPI_HIWORD (SourceDesc->Integer.Value),
+                    ACPI_LOWORD (SourceDesc->Integer.Value)));
             break;
 
 
         case ACPI_TYPE_BUFFER:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Length 0x%X\n",
-                (UINT32) SourceDesc->Buffer.Length));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Length %.2X\n",
+                    (UINT32) SourceDesc->Buffer.Length));
             break;
 
 
@@ -275,43 +289,31 @@ AcpiExStore (
 
         case ACPI_TYPE_PACKAGE:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Elements - 0x%X\n",
-                (UINT32) SourceDesc->Package.Elements));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Elements Ptr - %p\n",
+                    SourceDesc->Package.Elements));
             break;
 
 
         default:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "@0x%p\n", SourceDesc));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Type %s %p\n",
+                    AcpiUtGetObjectTypeName (SourceDesc), SourceDesc));
             break;
         }
 
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INFO, "\n"));
-        break;
-
-
-    case AML_ZERO_OP:
-    case AML_ONE_OP:
-    case AML_ONES_OP:
-    case AML_REVISION_OP:
-
-        /*
-         * Storing to a constant is a no-op according to the  ACPI 
-         * Specification. (Delete the reference descriptor, however.)
-         */
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC, "\n"));
         break;
 
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference subtype %02x\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference opcode %X\n",
             RefDesc->Reference.Opcode));
-        DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
+        ACPI_DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
 
         Status = AE_AML_INTERNAL;
         break;
-
-    }   /* switch (RefDesc->Reference.Opcode) */
+    }
 
     return_ACPI_STATUS (Status);
 }
@@ -343,7 +345,7 @@ AcpiExStoreObjectToIndex (
     UINT8                   Value = 0;
 
 
-    FUNCTION_TRACE ("ExStoreObjectToIndex");
+    ACPI_FUNCTION_TRACE ("ExStoreObjectToIndex");
 
 
     /*
@@ -391,7 +393,7 @@ AcpiExStoreObjectToIndex (
     case ACPI_TYPE_BUFFER_FIELD:
 
         /*
-         * Store into a Buffer (not actually a real BufferField) at a 
+         * Store into a Buffer (not actually a real BufferField) at a
          * location defined by an Index.
          *
          * The first 8-bit element of the source object is written to the
@@ -403,7 +405,7 @@ AcpiExStoreObjectToIndex (
          * Make sure the target is a Buffer
          */
         ObjDesc = IndexDesc->Reference.Object;
-        if (ObjDesc->Common.Type != ACPI_TYPE_BUFFER)
+        if (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_BUFFER)
         {
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
@@ -412,7 +414,7 @@ AcpiExStoreObjectToIndex (
          * The assignment of the individual elements will be slightly
          * different for each source type.
          */
-        switch (SourceDesc->Common.Type)
+        switch (ACPI_GET_OBJECT_TYPE (SourceDesc))
         {
         case ACPI_TYPE_INTEGER:
 
@@ -428,7 +430,7 @@ AcpiExStoreObjectToIndex (
 
         case ACPI_TYPE_STRING:
 
-            Value = SourceDesc->String.Pointer[0];
+            Value = (UINT8) SourceDesc->String.Pointer[0];
             break;
 
         default:
@@ -437,7 +439,7 @@ AcpiExStoreObjectToIndex (
 
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Source must be Integer/Buffer/String type, not %s\n",
-                AcpiUtGetTypeName (SourceDesc->Common.Type)));
+                AcpiUtGetObjectTypeName (SourceDesc)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
@@ -448,7 +450,7 @@ AcpiExStoreObjectToIndex (
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Target is not a Package or BufferField\n"));
         Status = AE_AML_OPERAND_TYPE;
         break;
@@ -492,10 +494,10 @@ AcpiExStoreObjectToNode (
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *TargetDesc;
     ACPI_OPERAND_OBJECT     *NewDesc;
-    ACPI_OBJECT_TYPE8       TargetType;
+    ACPI_OBJECT_TYPE        TargetType;
 
 
-    FUNCTION_TRACE_PTR ("ExStoreObjectToNode", SourceDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExStoreObjectToNode", SourceDesc);
 
 
     /*
@@ -504,8 +506,8 @@ AcpiExStoreObjectToNode (
     TargetType = AcpiNsGetType (Node);
     TargetDesc = AcpiNsGetAttachedObject (Node);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Storing %p(%s) into node %p(%s)\n",
-        SourceDesc, AcpiUtGetTypeName (SourceDesc->Common.Type),
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Storing %p(%s) into node %p(%s)\n",
+        SourceDesc, AcpiUtGetObjectTypeName (SourceDesc),
               Node, AcpiUtGetTypeName (TargetType)));
 
     /*
@@ -560,23 +562,23 @@ AcpiExStoreObjectToNode (
              */
             Status = AcpiNsAttachObject (Node, NewDesc, TargetType);
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                 "Store %s into %s via Convert/Attach\n",
-                AcpiUtGetTypeName (SourceDesc->Common.Type),
-                AcpiUtGetTypeName (NewDesc->Common.Type)));
+                AcpiUtGetObjectTypeName (SourceDesc),
+                AcpiUtGetObjectTypeName (NewDesc)));
         }
         break;
 
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
             "Storing %s (%p) directly into node (%p), no implicit conversion\n",
-            AcpiUtGetTypeName (SourceDesc->Common.Type), SourceDesc, Node));
+            AcpiUtGetObjectTypeName (SourceDesc), SourceDesc, Node));
 
         /* No conversions for all other types.  Just attach the source object */
 
-        Status = AcpiNsAttachObject (Node, SourceDesc, SourceDesc->Common.Type);
+        Status = AcpiNsAttachObject (Node, SourceDesc, ACPI_GET_OBJECT_TYPE (SourceDesc));
         break;
     }
 
