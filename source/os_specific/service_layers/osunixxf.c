@@ -261,7 +261,7 @@ AcpiOsVprintf (
 
 
     Flags = AcpiGbl_DbOutputFlags;
-    if (Flags & DB_REDIRECTABLE_OUTPUT)
+    if (Flags & ACPI_DB_REDIRECTABLE_OUTPUT)
     {
         /* Output is directable to either a file (if open) or the console */
 
@@ -275,11 +275,11 @@ AcpiOsVprintf (
         {
             /* No redirection, send output to console (once only!) */
 
-            Flags |= DB_CONSOLE_OUTPUT;
+            Flags |= ACPI_DB_CONSOLE_OUTPUT;
         }
     }
 
-    if (Flags & DB_CONSOLE_OUTPUT)
+    if (Flags & ACPI_DB_CONSOLE_OUTPUT)
     {
         Count = vprintf (Fmt, Args);
     }
