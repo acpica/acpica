@@ -412,38 +412,13 @@ AcpiOsAllocate (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsCallocate
- *
- * PARAMETERS:  Size                Amount to allocate, in bytes
- *
- * RETURN:      Pointer to the new allocation.  Null on error.
- *
- * DESCRIPTION: Allocate and zero memory.  Algorithm is dependent on the OS.
- *
- *****************************************************************************/
-
-void *
-AcpiOsCallocate (
-    UINT32                  size)
-{
-    void                    *Mem;
-
-
-    Mem = (void *) calloc ((size_t) size, 1);
-
-    return Mem;
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AcpiOsFree
  *
  * PARAMETERS:  mem                 Pointer to previously allocated memory
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Free memory allocated via AcpiOsAllocate or AcpiOsCallocate
+ * DESCRIPTION: Free memory allocated via AcpiOsAllocate
  *
  *****************************************************************************/
 
