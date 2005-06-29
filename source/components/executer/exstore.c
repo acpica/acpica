@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.153 $
+ *              $Revision: 1.154 $
  *
  *****************************************************************************/
 
@@ -341,8 +341,6 @@ AcpiExStoreObjectToIndex (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    UINT32                  Length;
-    UINT32                  i;
     UINT8                   Value = 0;
 
 
@@ -391,10 +389,11 @@ AcpiExStoreObjectToIndex (
             if (!ObjDesc)
             {
                 /*
-                 * If the ObjDesc is NULL, it means that an uninitialized package
-                 * element has been used as a destination (this is OK), therefore,
-                 * we must create the destination element to match the type of the
-                 * source element NOTE: SourceDesccan be of any type.
+                 * If the ObjDesc is NULL, it means that an uninitialized 
+                 * package element has been used as a destination (this is OK),
+                 * therefore, we must create the destination element to match 
+                 * the type of the source element NOTE: SourceDesc can be of 
+                 * any type.
                  */
                 ObjDesc = AcpiUtCreateInternalObject (SourceDesc->Common.Type);
                 if (!ObjDesc)
@@ -407,7 +406,8 @@ AcpiExStoreObjectToIndex (
                  */
                 if (ACPI_TYPE_PACKAGE == ObjDesc->Common.Type)
                 {
-                    Status = AcpiUtCopyIpackageToIpackage (SourceDesc, ObjDesc, WalkState);
+                    Status = AcpiUtCopyIpackageToIpackage (SourceDesc, ObjDesc,
+                                    WalkState);
                     if (ACPI_FAILURE (Status))
                     {
                         AcpiUtRemoveReference (ObjDesc);
@@ -446,18 +446,17 @@ AcpiExStoreObjectToIndex (
 
     case ACPI_TYPE_BUFFER_FIELD:
 
-
-        /* TBD: can probably call the generic Buffer/Field routines */
-
         /*
-         * Storing into a buffer at a location defined by an Index.
+         * Store into a Buffer (not actually a real BufferField) at a 
+         * location defined by an Index.
          *
-         * Each 8-bit element of the source object is written to the
-         * 8-bit Buffer Field of the Index destination object.
+         * The first 8-bit element of the source object is written to the
+         * 8-bit Buffer location defined by the Index destination object,
+         * according to the ACPI 2.0 specification.
          */
 
         /*
-         * Set the ObjDesc to the destination object and type check.
+         * Make sure the target is a Buffer
          */
         ObjDesc = DestDesc->Reference.Object;
         if (ObjDesc->Common.Type != ACPI_TYPE_BUFFER)
@@ -473,65 +472,41 @@ AcpiExStoreObjectToIndex (
         {
         case ACPI_TYPE_INTEGER:
 
-            /*
-             * Type is Integer, assign bytewise
-             * This loop to assign each of the elements is somewhat
-             * backward because of the Big Endian-ness of IA-64
-             */
-            Length = sizeof (ACPI_INTEGER);
-            for (i = Length; i != 0; i--)
-            {
-                Value = (UINT8)(SourceDesc->Integer.Value >> (MUL_8 (i - 1)));
-                ObjDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
-            }
-            break;
+            /* Use the least-significant byte of the integer */
 
+            Value = (UINT8) (SourceDesc->Integer.Value);
+            break;
 
         case ACPI_TYPE_BUFFER:
 
-            /*
-             * Type is Buffer, the Length is in the structure.
-             * Just loop through the elements and assign each one in turn.
-             */
-            Length = SourceDesc->Buffer.Length;
-            for (i = 0; i < Length; i++)
-            {
-                Value = SourceDesc->Buffer.Pointer[i];
-                ObjDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
-            }
+            Value = SourceDesc->Buffer.Pointer[0];
             break;
-
 
         case ACPI_TYPE_STRING:
 
-            /*
-             * Type is String, the Length is in the structure.
-             * Just loop through the elements and assign each one in turn.
-             */
-            Length = SourceDesc->String.Length;
-            for (i = 0; i < Length; i++)
-            {
-                Value = SourceDesc->String.Pointer[i];
-                ObjDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
-            }
+            Value = SourceDesc->String.Pointer[0];
             break;
-
 
         default:
 
-            /* Other types are invalid */
+            /* All other types are invalid */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Source must be Number/Buffer/String type, not %X\n",
-                SourceDesc->Common.Type));
-            Status = AE_AML_OPERAND_TYPE;
+                "Source must be Integer/Buffer/String type, not %s\n",
+                AcpiUtGetTypeName (SourceDesc->Common.Type)));
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             break;
         }
+
+        /* Store the source value into the target buffer byte */
+
+        ObjDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
         break;
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Target is not a Package or BufferField\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            "Target is not a Package or BufferField\n"));
         Status = AE_AML_OPERAND_TYPE;
         break;
     }
@@ -626,7 +601,8 @@ AcpiExStoreObjectToNode (
          *
          * Copy and/or convert the source object to a new target object
          */
-        Status = AcpiExStoreObject (SourceDesc, TargetType, &TargetDesc, WalkState);
+        Status = AcpiExStoreObject (SourceDesc, TargetType, &TargetDesc, 
+                                        WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -738,7 +714,8 @@ AcpiExStoreObjectToObject (
     /*
      * Copy and/or convert the source object to the destination object
      */
-    Status = AcpiExStoreObject (SourceDesc, DestinationType, &DestDesc, WalkState);
+    Status = AcpiExStoreObject (SourceDesc, DestinationType, &DestDesc, 
+                                    WalkState);
     return_ACPI_STATUS (Status);
 }
 
