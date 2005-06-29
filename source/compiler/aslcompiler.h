@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.86 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2035"
-#define CompilerCreatorRevision     0x02002035  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2040"
+#define CompilerCreatorRevision     0x02002040  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000 - 2002 Intel Corporation"
@@ -193,7 +193,7 @@ getopt (
 #define OP_TABLE_ENTRY(a,b,c,d)     {b,d,a,c}
 
 
-#define ASL_PARSE_OPCODE_BASE       ACCESSAS        /* First Lex type */
+#define ASL_PARSE_OPCODE_BASE       PARSEOP_ACCESSAS        /* First Lex type */
 
 
 /* Internal AML opcodes */
@@ -217,6 +217,8 @@ getopt (
 #define FILE_SUFFIX_DEBUG           "txt"
 #define FILE_SUFFIX_SOURCE          "src"
 #define FILE_SUFFIX_NAMESPACE       "nsp"
+#define FILE_SUFFIX_ASM_SOURCE      "asm"
+#define FILE_SUFFIX_C_SOURCE        "c"
 
 
 /* Misc */
@@ -342,20 +344,39 @@ AePrintErrorLog (
 void
 LsWriteListingHexBytes (
     char                    *Buffer,
-    UINT32                  Length);
+    UINT32                  Length,
+    UINT32                  FileId);
 
 void
 LsWriteNodeToListing (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  FileId);
+
+void
+LsWriteNodeToAsmListing (
     ASL_PARSE_NODE          *Node);
 
 void
-LsFlushListingBuffer (void);
+LsWriteNode (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  FileId);
 
 void
-LsFinishSourceListing (void);
+LsFinishSourceListing (
+    UINT32                  FileId);
+
+void
+LsFlushListingBuffer (
+    UINT32                  FileId);
 
 void
 LsDoHexOutput (void);
+
+void
+LsDoHexOutputC (void);
+
+void
+LsDoHexOutputAsm (void);
 
 void
 LsPushNode (
@@ -405,6 +426,14 @@ RsDoResourceTemplate (
 
 void
 CgGenerateAmlOutput (void);
+
+void
+CgGenerateListing (
+    UINT32                  FileId);
+
+void
+LsDoListings (void);
+
 void
 CgGenerateAmlLengths (
     ASL_PARSE_NODE          *Node);
@@ -639,7 +668,7 @@ FlWriteFile (
 ACPI_STATUS
 FlSeekFile (
     UINT32                  FileId,
-    UINT32                  Offset);
+    long                    Offset);
 
 ACPI_STATUS
 FlCloseFile (
@@ -651,6 +680,9 @@ FlPrintFile (
     char                    *Format,
     ...);
 
+void
+FlSetLineNumber (
+    ASL_PARSE_NODE          *Node);
 
 void
 FlOpenIncludeFile (
@@ -742,6 +774,11 @@ UtConvertByteToHex (
     UINT8                   RawByte,
     UINT8                   *Buffer);
 
+void
+UtConvertByteToAsmHex (
+    UINT8                   RawByte,
+    UINT8                   *Buffer);
+
 char *
 UtGetOpName (
     UINT32                  ParseOpcode);
@@ -771,11 +808,15 @@ UtCheckIntegerRange (
     UINT32                  LowValue,
     UINT32                  HighValue);
 
-ACPI_INTEGER
+ACPI_STATUS
 UtStrtoul64 (
     NATIVE_CHAR             *String,
-    NATIVE_CHAR             **Terminator,
-    UINT32                  Base);
+    UINT32                  Base,
+    ACPI_INTEGER            *RetInteger);
+
+ACPI_INTEGER
+UtDoConstant (
+    NATIVE_CHAR             *String);
 
 
 /* Find */

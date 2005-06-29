@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "acparser.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslcodegen")
+        ACPI_MODULE_NAME    ("aslcodegen")
 
 
 /*******************************************************************************
@@ -182,9 +182,9 @@ CgAmlWriteWalk (
         "%5.5d [%d]", Node->LogicalLineNumber, Level);
     UtPrintFormattedName (Node->ParseOpcode, Level);
 
-    if (Node->ParseOpcode == NAMESEG    ||
-        Node->ParseOpcode == NAMESTRING ||
-        Node->ParseOpcode == METHODCALL)
+    if (Node->ParseOpcode == PARSEOP_NAMESEG    ||
+        Node->ParseOpcode == PARSEOP_NAMESTRING ||
+        Node->ParseOpcode == PARSEOP_METHODCALL)
     {
         DbgPrint (ASL_TREE_OUTPUT,
             "%10.32s      ", Node->ExternalName);
@@ -285,7 +285,7 @@ CgWriteAmlOpcode (
 
     /* We expect some DEFAULT_ARGs, just ignore them */
 
-    if (Node->ParseOpcode == DEFAULT_ARG)
+    if (Node->ParseOpcode == PARSEOP_DEFAULT_ARG)
     {
         return;
     }
@@ -538,10 +538,10 @@ CgWriteNode (
     /* Always check for DEFAULT_ARG and other "Noop" nodes */
     /* TBD: this may not be the best place for this check */
 
-    if ((Node->ParseOpcode == DEFAULT_ARG)  ||
-        (Node->ParseOpcode == EXTERNAL)     ||
-        (Node->ParseOpcode == INCLUDE)      ||
-        (Node->ParseOpcode == INCLUDE_END))
+    if ((Node->ParseOpcode == PARSEOP_DEFAULT_ARG)  ||
+        (Node->ParseOpcode == PARSEOP_EXTERNAL)     ||
+        (Node->ParseOpcode == PARSEOP_INCLUDE)      ||
+        (Node->ParseOpcode == PARSEOP_INCLUDE_END))
     {
         return;
     }
@@ -576,18 +576,18 @@ CgWriteNode (
 
     switch (Node->ParseOpcode)
     {
-    case DEFAULT_ARG:
+    case PARSEOP_DEFAULT_ARG:
 
         break;
 
-    case DEFINITIONBLOCK:
+    case PARSEOP_DEFINITIONBLOCK:
 
         CgWriteTableHeader (Node);
         break;
 
-    case NAMESEG:
-    case NAMESTRING:
-    case METHODCALL:
+    case PARSEOP_NAMESEG:
+    case PARSEOP_NAMESTRING:
+    case PARSEOP_METHODCALL:
 
         CgLocalWriteAmlData (Node, Node->Value.String, Node->AmlLength);
         break;

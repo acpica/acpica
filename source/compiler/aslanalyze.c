@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -439,9 +439,9 @@ AnGetBtype (
     UINT32                  ThisNodeBtype = 0;
 
 
-    if ((PsNode->ParseOpcode == NAMESEG)     ||
-        (PsNode->ParseOpcode == NAMESTRING)  ||
-        (PsNode->ParseOpcode == METHODCALL))
+    if ((PsNode->ParseOpcode == PARSEOP_NAMESEG)     ||
+        (PsNode->ParseOpcode == PARSEOP_NAMESTRING)  ||
+        (PsNode->ParseOpcode == PARSEOP_METHODCALL))
     {
         NsNode = PsNode->NsNode;
         if (!NsNode)
@@ -460,7 +460,7 @@ AnGetBtype (
          */
         ThisNodeBtype |= ACPI_BTYPE_REFERENCE;
 
-        if (PsNode->ParseOpcode == METHODCALL)
+        if (PsNode->ParseOpcode == PARSEOP_METHODCALL)
         {
             ReferencedNode = (ASL_PARSE_NODE *) NsNode->Object;
             if (!ReferencedNode)
@@ -640,7 +640,7 @@ AnMethodAnalysisWalkBegin (
 
     switch (Node->ParseOpcode)
     {
-    case METHOD:
+    case PARSEOP_METHOD:
 
         TotalMethods++;
 
@@ -672,7 +672,7 @@ AnMethodAnalysisWalkBegin (
         break;
 
 
-    case METHODCALL:
+    case PARSEOP_METHODCALL:
 
         if (MethodInfo &&
            (Node->NsNode == MethodInfo->Node->NsNode))
@@ -682,14 +682,14 @@ AnMethodAnalysisWalkBegin (
         break;
 
 
-    case LOCAL0:
-    case LOCAL1:
-    case LOCAL2:
-    case LOCAL3:
-    case LOCAL4:
-    case LOCAL5:
-    case LOCAL6:
-    case LOCAL7:
+    case PARSEOP_LOCAL0:
+    case PARSEOP_LOCAL1:
+    case PARSEOP_LOCAL2:
+    case PARSEOP_LOCAL3:
+    case PARSEOP_LOCAL4:
+    case PARSEOP_LOCAL5:
+    case PARSEOP_LOCAL6:
+    case PARSEOP_LOCAL7:
 
         if (!MethodInfo)
         {
@@ -722,13 +722,13 @@ AnMethodAnalysisWalkBegin (
         break;
 
 
-    case ARG0:
-    case ARG1:
-    case ARG2:
-    case ARG3:
-    case ARG4:
-    case ARG5:
-    case ARG6:
+    case PARSEOP_ARG0:
+    case PARSEOP_ARG1:
+    case PARSEOP_ARG2:
+    case PARSEOP_ARG3:
+    case PARSEOP_ARG4:
+    case PARSEOP_ARG5:
+    case PARSEOP_ARG6:
 
         if (!MethodInfo)
         {
@@ -768,7 +768,7 @@ AnMethodAnalysisWalkBegin (
         break;
 
 
-    case RETURN:
+    case PARSEOP_RETURN:
 
         if (!MethodInfo)
         {
@@ -781,7 +781,7 @@ AnMethodAnalysisWalkBegin (
         /* Child indicates a return value */
 
         if ((Node->Child) &&
-            (Node->Child->ParseOpcode != DEFAULT_ARG))
+            (Node->Child->ParseOpcode != PARSEOP_DEFAULT_ARG))
         {
             MethodInfo->NumReturnWithValue++;
         }
@@ -792,13 +792,13 @@ AnMethodAnalysisWalkBegin (
         break;
 
 
-    case BREAK:
-    case CONTINUE:
+    case PARSEOP_BREAK:
+    case PARSEOP_CONTINUE:
 
         Next = Node->Parent;
         while (Next)
         {
-            if (Next->ParseOpcode == WHILE)
+            if (Next->ParseOpcode == PARSEOP_WHILE)
             {
                 break;
             }
@@ -844,7 +844,7 @@ AnLastStatementIsReturn (
     while (Next)
     {
         if ((!Next->Peer) &&
-            (Next->ParseOpcode == RETURN))
+            (Next->ParseOpcode == PARSEOP_RETURN))
         {
             return TRUE;
         }
@@ -881,8 +881,8 @@ AnMethodAnalysisWalkEnd (
 
     switch (Node->ParseOpcode)
     {
-    case METHOD:
-    case RETURN:
+    case PARSEOP_METHOD:
+    case PARSEOP_RETURN:
         if (!MethodInfo)
         {
             printf ("No method info for method! [%s]\n", Node->Namepath);
@@ -894,7 +894,7 @@ AnMethodAnalysisWalkEnd (
 
     switch (Node->ParseOpcode)
     {
-    case METHOD:
+    case PARSEOP_METHOD:
 
         WalkInfo->MethodStack = MethodInfo->Next;
 
@@ -952,25 +952,25 @@ AnMethodAnalysisWalkEnd (
         break;
 
 
-    case RETURN:
+    case PARSEOP_RETURN:
 
         Node->Parent->Flags |= NODE_HAS_NO_EXIT;
         Node->ParentMethod = MethodInfo->Node;      /* Used in the "typing" pass later */
         break;
 
 
-    case IF:
+    case PARSEOP_IF:
 
         if ((Node->Flags & NODE_HAS_NO_EXIT) &&
             (Node->Peer) &&
-            (Node->Peer->ParseOpcode == ELSE))
+            (Node->Peer->ParseOpcode == PARSEOP_ELSE))
         {
             Node->Peer->Flags |= NODE_IF_HAS_NO_EXIT;
         }
         break;
 
 
-    case ELSE:
+    case PARSEOP_ELSE:
 
         if ((Node->Flags & NODE_HAS_NO_EXIT) &&
             (Node->Flags & NODE_IF_HAS_NO_EXIT))
@@ -1044,19 +1044,19 @@ AnMethodTypingWalkEnd (
 
     switch (Node->ParseOpcode)
     {
-    case METHOD:
+    case PARSEOP_METHOD:
 
         Node->Flags |= NODE_METHOD_TYPED;
         break;
 
-    case RETURN:
+    case PARSEOP_RETURN:
 
         if ((Node->Child) &&
-            (Node->Child->ParseOpcode != DEFAULT_ARG))
+            (Node->Child->ParseOpcode != PARSEOP_DEFAULT_ARG))
         {
             ThisNodeBtype = AnGetBtype (Node->Child);
 
-            if ((Node->Child->ParseOpcode == METHODCALL) &&
+            if ((Node->Child->ParseOpcode == PARSEOP_METHODCALL) &&
                 (ThisNodeBtype == (ACPI_UINT32_MAX -1)))
             {
                 /*
@@ -1214,7 +1214,7 @@ AnOperandTypecheckWalkEnd (
             {
             case ARGI_TARGETREF:
 
-                if (ArgNode->ParseOpcode == ZERO)
+                if (ArgNode->ParseOpcode == PARSEOP_ZERO)
                 {
                     /* ZERO is the placeholder for "don't store result" */
 
@@ -1222,7 +1222,7 @@ AnOperandTypecheckWalkEnd (
                     break;
                 }
 
-                if (ArgNode->ParseOpcode == INTEGER)
+                if (ArgNode->ParseOpcode == PARSEOP_INTEGER)
                 {
                     /*
                      * This is the case where an original reference to a resource
@@ -1242,8 +1242,8 @@ AnOperandTypecheckWalkEnd (
                     break;
                 }
 
-                if ((ArgNode->ParseOpcode == METHODCALL) ||
-                    (ArgNode->ParseOpcode == DEREFOF))
+                if ((ArgNode->ParseOpcode == PARSEOP_METHODCALL) ||
+                    (ArgNode->ParseOpcode == PARSEOP_DEREFOF))
                 {
                     break;
                 }
@@ -1259,14 +1259,14 @@ AnOperandTypecheckWalkEnd (
 
                 switch (ArgNode->ParseOpcode)
                 {
-                case LOCAL0:
-                case LOCAL1:
-                case LOCAL2:
-                case LOCAL3:
-                case LOCAL4:
-                case LOCAL5:
-                case LOCAL6:
-                case LOCAL7:
+                case PARSEOP_LOCAL0:
+                case PARSEOP_LOCAL1:
+                case PARSEOP_LOCAL2:
+                case PARSEOP_LOCAL3:
+                case PARSEOP_LOCAL4:
+                case PARSEOP_LOCAL5:
+                case PARSEOP_LOCAL6:
+                case PARSEOP_LOCAL7:
 
                     /* TBD: implement analysis of current value (type) of the local */
                     /* For now, just treat any local as a typematch */
@@ -1274,13 +1274,13 @@ AnOperandTypecheckWalkEnd (
                     /*ThisNodeBtype = RequiredBtypes;*/
                     break;
 
-                case ARG0:
-                case ARG1:
-                case ARG2:
-                case ARG3:
-                case ARG4:
-                case ARG5:
-                case ARG6:
+                case PARSEOP_ARG0:
+                case PARSEOP_ARG1:
+                case PARSEOP_ARG2:
+                case PARSEOP_ARG3:
+                case PARSEOP_ARG4:
+                case PARSEOP_ARG5:
+                case PARSEOP_ARG6:
 
                     /* Hard to analyze argument types, sow we won't */
                     /* For now, just treat any arg as a typematch */
@@ -1288,11 +1288,11 @@ AnOperandTypecheckWalkEnd (
                     /* ThisNodeBtype = RequiredBtypes; */
                     break;
 
-                case DEBUG:
+                case PARSEOP_DEBUG:
                     break;
 
-                case REFOF:
-                case INDEX:
+                case PARSEOP_REFOF:
+                case PARSEOP_INDEX:
                     break;
 
                 }
@@ -1305,7 +1305,7 @@ AnOperandTypecheckWalkEnd (
 
             CommonBtypes = ThisNodeBtype & RequiredBtypes;
 
-            if (ArgNode->ParseOpcode == METHODCALL)
+            if (ArgNode->ParseOpcode == PARSEOP_METHODCALL)
             {
                 if (!CommonBtypes)
                 {
