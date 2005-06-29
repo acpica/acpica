@@ -135,6 +135,7 @@
 
 
 extern FILE                    *AcpiGbl_DebugFile;
+FILE                           *AcpiGbl_OutputFile = stdout;
 
 
 /******************************************************************************
@@ -264,6 +265,27 @@ AcpiOsWritable (
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiOsRedirectOutput
+ *
+ * PARAMETERS:  Destination         - An open file handle/pointer
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Causes redirect of AcpiOsPrintf and AcpiOsVprintf
+ *
+ *****************************************************************************/
+
+void
+AcpiOsRedirectOutput (
+    void                    *Destination)
+{
+
+    AcpiGbl_OutputFile = Destination;
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsPrintf
  *
  * PARAMETERS:  fmt, ...            Standard printf format
@@ -334,7 +356,7 @@ AcpiOsVprintf (
 
     if (Flags & ACPI_DB_CONSOLE_OUTPUT)
     {
-        Count = vprintf (Fmt, Args);
+        Count = vfprintf (AcpiGbl_OutputFile, Fmt, Args);
     }
 
     return;

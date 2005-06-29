@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.32 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -164,6 +164,8 @@ AeLocalGetRootPointer (
     UINT32                  Flags,
     ACPI_POINTER            *Address);
 
+FILE                        *AcpiGbl_OutputFile = stdout;
+
 
 /******************************************************************************
  *
@@ -248,6 +250,20 @@ AcpiOsTableOverride (
     }
 
     *NewTable = NULL;
+
+
+#ifdef _ACPI_EXEC_APP
+
+    /* This code exercises the table override mechanism in the core */
+
+    if (!ACPI_STRNCMP (ExistingTable->Signature, DSDT_SIG, ACPI_NAME_SIZE))
+    {
+        /* override DSDT with itself */
+
+        *NewTable = AcpiGbl_DbTablePtr;
+    }
+#endif
+
     return (AE_OK);
 }
 
@@ -325,6 +341,28 @@ AcpiOsWritable (
 }
 
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsRedirectOutput
+ *
+ * PARAMETERS:  Destination         - An open file handle/pointer
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Causes redirect of AcpiOsPrintf and AcpiOsVprintf
+ *
+ *****************************************************************************/
+
+void
+AcpiOsRedirectOutput (
+    void                    *Destination)
+{
+
+    AcpiGbl_OutputFile = Destination;
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsPrintf
@@ -397,7 +435,7 @@ AcpiOsVprintf (
 
     if (Flags & ACPI_DB_CONSOLE_OUTPUT)
     {
-        Count = vprintf (Fmt, Args);
+        Count = vfprintf (AcpiGbl_OutputFile, Fmt, Args);
     }
 
     return;
