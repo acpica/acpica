@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -404,7 +404,7 @@ AcpiDsCreateBankField (
 ACPI_STATUS
 AcpiDsCreateIndexField (
     ACPI_PARSE_OBJECT       *Op,
-    ACPI_HANDLE             RegionNode,
+    ACPI_NAMESPACE_NODE     *RegionNode,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
