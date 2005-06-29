@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -355,10 +355,6 @@ AcpiTerminate (void)
     /* Terminate the AML Debugger if present */
 
     DEBUGGER_EXEC(AcpiGbl_DbTerminateThreads = TRUE);
-
-    /* TBD: [Investigate] This is no longer needed?*/
-/*    AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_READY); */
-
 
     /* Shutdown and free all resources */
 
