@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -251,7 +251,7 @@ AcpiExSystemMemorySpaceHandler (
 
     switch (Function)
     {
-    case ACPI_READ_ADR_SPACE:
+    case ACPI_READ:
 
         switch (BitWidth)
         {
@@ -273,7 +273,7 @@ AcpiExSystemMemorySpaceHandler (
         }
         break;
 
-    case ACPI_WRITE_ADR_SPACE:
+    case ACPI_WRITE:
 
         switch (BitWidth)
         {
@@ -345,13 +345,13 @@ AcpiExSystemIoSpaceHandler (
 
     switch (Function)
     {
-    case ACPI_READ_ADR_SPACE:
+    case ACPI_READ:
 
         *Value = 0;
         Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) Address, Value, BitWidth);
         break;
 
-    case ACPI_WRITE_ADR_SPACE:
+    case ACPI_WRITE:
 
         Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) Address, *Value, BitWidth);
         break;
@@ -422,13 +422,13 @@ AcpiExPciConfigSpaceHandler (
 
     switch (Function)
     {
-    case ACPI_READ_ADR_SPACE:
+    case ACPI_READ:
 
         *Value = 0;
         Status = AcpiOsReadPciConfiguration (PciId, PciRegister, Value, BitWidth);
         break;
 
-    case ACPI_WRITE_ADR_SPACE:
+    case ACPI_WRITE:
 
         Status = AcpiOsWritePciConfiguration (PciId, PciRegister, *Value, BitWidth);
         break;
