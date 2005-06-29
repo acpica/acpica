@@ -168,8 +168,8 @@ AcpiAmlExecLoadTable (
     TableHeader.Length = 0;
     for (i = 0; i < sizeof (ACPI_TABLE_HEADER); i++)
     {
-        Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ, i, 8,
-                                            (UINT32 *) ((char *) &TableHeader + i));
+        Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ,
+                        i, 8, (UINT32 *) ((char *) &TableHeader + i));
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -194,8 +194,8 @@ AcpiAmlExecLoadTable (
 
     for (i = 0; i < TableHeader.Length; i++)
     {
-        Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ, i, 8,
-                                            (UINT32 *) (TableDataPtr + i));
+        Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ,
+                        i, 8, (UINT32 *) (TableDataPtr + i));
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -205,10 +205,16 @@ AcpiAmlExecLoadTable (
 
     /* Table must be either an SSDT or a PSDT */
 
-    if ((!STRNCMP (TableHeader.Signature, AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].Signature, AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].SigLength)) &&
-        (!STRNCMP (TableHeader.Signature, AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].Signature, AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].SigLength)))
+    if ((!STRNCMP (TableHeader.Signature,
+                    AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].Signature,
+                    AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].SigLength)) &&
+        (!STRNCMP (TableHeader.Signature,
+                    AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].Signature,
+                    AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].SigLength)))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Table has invalid signature [%4.4s], must be SSDT or PSDT\n", TableHeader.Signature));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
+            TableHeader.Signature));
         Status = AE_BAD_SIGNATURE;
         goto Cleanup;
     }
@@ -296,7 +302,8 @@ AcpiAmlExecUnloadTable (
 
     if ((!DdbHandle) ||
         (!VALID_DESCRIPTOR_TYPE (DdbHandle, ACPI_DESC_TYPE_INTERNAL)) ||
-        (((ACPI_OBJECT_INTERNAL *)DdbHandle)->Common.Type != INTERNAL_TYPE_REFERENCE))
+        (((ACPI_OBJECT_INTERNAL *)DdbHandle)->Common.Type !=
+                INTERNAL_TYPE_REFERENCE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -358,11 +365,13 @@ AcpiAmlExecReconfiguration (
     /* Resolve the operands */
 
     Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode), 2, "after AcpiAmlResolveOperands");
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
+                    2, "after AcpiAmlResolveOperands");
 
     /* Get the table handle, common for both opcodes */
 
-    Status |= AcpiDsObjStackPopObject ((ACPI_OBJECT_INTERNAL **) &DdbHandle, WalkState);
+    Status |= AcpiDsObjStackPopObject ((ACPI_OBJECT_INTERNAL **) &DdbHandle,
+                                        WalkState);
 
     switch (Opcode)
     {
@@ -374,7 +383,8 @@ AcpiAmlExecReconfiguration (
         Status |= AcpiDsObjStackPopObject (&RegionDesc, WalkState);
         if (Status != AE_OK)
         {
-            AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 2);
+            AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode,
+                                        WALK_OPERANDS, 2);
             goto Cleanup2;
         }
 
@@ -386,7 +396,8 @@ AcpiAmlExecReconfiguration (
 
         if (Status != AE_OK)
         {
-            AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 1);
+            AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode,
+                                        WALK_OPERANDS, 1);
             goto Cleanup1;
         }
 
@@ -396,7 +407,8 @@ AcpiAmlExecReconfiguration (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecReconfiguration: bad opcode=%X\n", Opcode));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecReconfiguration: bad opcode=%X\n",
+                        Opcode));
 
         Status = AE_AML_BAD_OPCODE;
         break;

@@ -126,10 +126,9 @@
         MODULE_NAME         ("amsystem");
 
 
-
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    OsThreadId
+ * FUNCTION:    AcpiAmlSystemThreadId
  *
  * PARAMETERS:  None
  *
@@ -142,15 +141,15 @@
  ******************************************************************************/
 
 UINT16
-OsThreadId (void)
+AcpiAmlSystemThreadId (void)
 {
     return (1);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    OsLocalWaitSemaphore
+ * FUNCTION:    AcpiAmlSystemWaitSemaphore
  *
  * PARAMETERS:  Semaphore           - OSD semaphore to wait on
  *              Timeout             - Max time to wait
@@ -164,16 +163,16 @@ OsThreadId (void)
  ******************************************************************************/
 
 ACPI_STATUS
-OsLocalWaitSemaphore (
+AcpiAmlSystemWaitSemaphore (
     ACPI_HANDLE             Semaphore,
     UINT32                  Timeout)
 {
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("OsLocalWaitSemaphore");
+    FUNCTION_TRACE ("AcpiAmlSystemWaitSemaphore");
 
-    Status = AcpiOsdWaitSemaphore (Semaphore, 1, 0);
+    Status = AcpiOsWaitSemaphore (Semaphore, 1, 0);
     if (ACPI_SUCCESS (Status))
     {
         return_ACPI_STATUS (Status);
@@ -185,22 +184,24 @@ OsLocalWaitSemaphore (
 
         AcpiAmlExitInterpreter ();
 
-        Status = AcpiOsdWaitSemaphore (Semaphore, 1, Timeout);
+        Status = AcpiOsWaitSemaphore (Semaphore, 1, Timeout);
 
         /* Reacquire the interpreter */
 
         AcpiAmlEnterInterpreter ();
 
-        DEBUG_PRINT (TRACE_EXEC, ("*** Thread awake and inside interpreter after blocking, %s\n", AcpiCmFormatException (Status)));
+        DEBUG_PRINT (TRACE_EXEC,
+            ("*** Thread awake and inside interpreter after blocking, %s\n",
+            AcpiCmFormatException (Status)));
     }
 
     return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    OsDoStall
+ * FUNCTION:    AcpiAmlSystemDoStall
  *
  * PARAMETERS:  HowLong             - The amount of time to stall
  *
@@ -211,7 +212,7 @@ OsLocalWaitSemaphore (
  ******************************************************************************/
 
 void
-OsDoStall (
+AcpiAmlSystemDoStall (
     UINT32                  HowLong)
 {
 
@@ -221,7 +222,7 @@ OsDoStall (
 
         AcpiAmlExitInterpreter ();
 
-        AcpiOsdSleepUsec (HowLong);
+        AcpiOsSleepUsec (HowLong);
 
         /* And now we must get the interpreter again */
 
@@ -230,14 +231,14 @@ OsDoStall (
 
     else
     {
-        AcpiOsdSleepUsec (HowLong);
+        AcpiOsSleepUsec (HowLong);
     }
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    OsDoSuspend
+ * FUNCTION:    AcpiAmlSystemDoSuspend
  *
  * PARAMETERS:  HowLong             - The amount of time to suspend
  *
@@ -248,14 +249,15 @@ OsDoStall (
  ******************************************************************************/
 
 void
-OsDoSuspend (
+AcpiAmlSystemDoSuspend (
     UINT32                  HowLong)
 {
     /* Since this thread will sleep, we must release the interpreter */
 
     AcpiAmlExitInterpreter ();
 
-    AcpiOsdSleep ((UINT16) (HowLong / (UINT32) 1000), (UINT16) (HowLong % (UINT32) 1000));
+    AcpiOsSleep ((UINT16) (HowLong / (UINT32) 1000),
+                 (UINT16) (HowLong % (UINT32) 1000));
 
     /* And now we must get the interpreter again */
 
@@ -263,9 +265,9 @@ OsDoSuspend (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    OsAcquireMutex
+ * FUNCTION:    AcpiAmlSystemAcquireMutex
  *
  * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
  *              *ObjDesc            - The object descriptor for this op
@@ -279,14 +281,14 @@ OsDoSuspend (
  ******************************************************************************/
 
 ACPI_STATUS
-OsAcquireMutex (
+AcpiAmlSystemAcquireMutex (
     ACPI_OBJECT_INTERNAL    *TimeDesc,
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("OsAcquireMutex", ObjDesc);
+    FUNCTION_TRACE_PTR ("AcpiAmlSystemAcquireMutex", ObjDesc);
 
     if (!ObjDesc)
     {
@@ -303,34 +305,35 @@ OsAcquireMutex (
         return_ACPI_STATUS (Status);
     }
 
-    Status = OsLocalWaitSemaphore (ObjDesc->Mutex.Semaphore, TimeDesc->Number.Value);
+    Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Mutex.Semaphore,
+                                         TimeDesc->Number.Value);
     return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    OsReleaseMutex
+ * FUNCTION:    AcpiAmlSystemReleaseMutex
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
- *              within the AML.  This operation is a request to release a previously
- *              acquired Mutex.  If the Mutex variable is set then it will be
- *              decremented.
+ *              within the AML.  This operation is a request to release a
+ *              previously acquired Mutex.  If the Mutex variable is set then
+ *              it will be decremented.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-OsReleaseMutex (
+AcpiAmlSystemReleaseMutex (
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("OsReleaseMutex");
+    FUNCTION_TRACE ("AcpiAmlSystemReleaseMutex");
 
 
     if (!ObjDesc)
@@ -347,14 +350,14 @@ OsReleaseMutex (
         return_ACPI_STATUS (AE_OK);
     }
 
-    Status = AcpiOsdSignalSemaphore (ObjDesc->Mutex.Semaphore, 1);
+    Status = AcpiOsSignalSemaphore (ObjDesc->Mutex.Semaphore, 1);
     return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    OsSignalEvent
+ * FUNCTION:    AcpiAmlSystemSignalEvent
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
@@ -366,27 +369,27 @@ OsReleaseMutex (
  ******************************************************************************/
 
 ACPI_STATUS
-OsSignalEvent (
+AcpiAmlSystemSignalEvent (
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("OsSignalEvent");
+    FUNCTION_TRACE ("AcpiAmlSystemSignalEvent");
 
 
     if (ObjDesc)
     {
-        Status = AcpiOsdSignalSemaphore (ObjDesc->Event.Semaphore, 1);
+        Status = AcpiOsSignalSemaphore (ObjDesc->Event.Semaphore, 1);
     }
 
     return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    OsWaitEvent
+ * FUNCTION:    AcpiAmlSystemWaitEvent
  *
  * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
  *              *ObjDesc            - The object descriptor for this op
@@ -394,24 +397,26 @@ OsSignalEvent (
  * RETURN:      Status
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
- *              within the AML.  This operation is a request to wait for an event.
+ *              within the AML.  This operation is a request to wait for an
+ *              event.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-OsWaitEvent (
+AcpiAmlSystemWaitEvent (
     ACPI_OBJECT_INTERNAL    *TimeDesc,
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("OsWaitEvent");
+    FUNCTION_TRACE ("AcpiAmlSystemWaitEvent");
 
 
     if (ObjDesc)
     {
-        Status = OsLocalWaitSemaphore (ObjDesc->Event.Semaphore, TimeDesc->Number.Value);
+        Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Event.Semaphore,
+                                             TimeDesc->Number.Value);
     }
 
 
@@ -419,9 +424,9 @@ OsWaitEvent (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    OsResetEvent
+ * FUNCTION:    AcpiAmlSystemResetEvent
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
@@ -433,19 +438,22 @@ OsWaitEvent (
  ******************************************************************************/
 
 ACPI_STATUS
-OsResetEvent (
+AcpiAmlSystemResetEvent (
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
     void                    *TempSemaphore;
 
 
-    /* We are going to simply delete the existing semaphore and create a new one! */
+    /*
+     * We are going to simply delete the existing semaphore and
+     * create a new one!
+     */
 
-    Status = AcpiOsdCreateSemaphore (0, &TempSemaphore);
+    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 0, &TempSemaphore);
     if (ACPI_SUCCESS (Status))
     {
-        AcpiOsdDeleteSemaphore (ObjDesc->Mutex.Semaphore);
+        AcpiOsDeleteSemaphore (ObjDesc->Mutex.Semaphore);
         ObjDesc->Mutex.Semaphore = TempSemaphore;
     }
 
