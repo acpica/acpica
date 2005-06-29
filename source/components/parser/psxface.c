@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -273,7 +273,13 @@ AcpiPsxExecute (
         /* TBD: delete walk state */
         return_ACPI_STATUS (Status);
     }
+
+    /* Init arguments if this is a control method */
+    /* TBD: [Restructure] move to InitAmlWalk */
+
+    AcpiDsMethodDataInitArgs (Params, MTH_NUM_ARGS, WalkState);
     
+
     /*
      * The walk of the parse tree is where we actually execute the method
      */
@@ -288,6 +294,13 @@ AcpiPsxExecute (
         {
             AcpiUtUpdateObjectReference (Params[i], REF_DECREMENT);
         }
+    }
+
+
+    if (ACPI_FAILURE (Status))
+    {
+        DUMP_PATHNAME (MethodNode, "PsExecute: method failed -",
+            ACPI_LV_ERROR, _COMPONENT);
     }
 
 
