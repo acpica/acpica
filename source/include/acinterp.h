@@ -214,19 +214,6 @@ AcpiAmlAccessNamedField (
     void                    *Buffer,
     UINT32                  Length);
 
-ACPI_STATUS
-AcpiAmlSetNamedFieldValue (
-    ACPI_HANDLE             NamedField,
-    void                    *Buffer,
-    UINT32                  Length);
-
-ACPI_STATUS
-AcpiAmlGetNamedFieldValue (
-    ACPI_HANDLE             NamedField,
-    void                    *Buffer,
-    UINT32                  Length);
-
-
 /*
  * ammisc - ACPI AML (p-code) execution - specific opcodes
  */
