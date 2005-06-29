@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  ******************************************************************************/
 
@@ -593,7 +593,7 @@ AcpiNsGetObjectValue (
             Status = AE_CTRL_RETURN_VALUE;
             Info->ReturnObject = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, ResolvedNode);
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Returning object %p [%s]\n",
-                *Info->ReturnObject, AcpiUtGetObjectTypeName (Info->ReturnObject)));
+                Info->ReturnObject, AcpiUtGetObjectTypeName (Info->ReturnObject)));
         }
     }
 
