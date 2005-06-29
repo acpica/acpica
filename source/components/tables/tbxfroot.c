@@ -116,9 +116,9 @@
 
 #define __TBFAC_C__
 
-#include <acpi.h>
-#include <hardware.h>
-#include <tables.h>
+#include "acpi.h"
+#include "hardware.h"
+#include "tables.h"
 
 
 #define _COMPONENT          TABLE_MANAGER
@@ -128,7 +128,7 @@
 
 /******************************************************************************
  *
- * FUNCTION:    TbGetTableFacs
+ * FUNCTION:    AcpiTbGetTableFacs
  *
  * PARAMETERS:  *BufferPtr              - If == NULL, read data from buffer
  *                                        rather than searching memory
@@ -144,14 +144,14 @@
  ******************************************************************************/
 
 ACPI_STATUS
-TbGetTableFacs (
+AcpiTbGetTableFacs (
     char                    *BufferPtr, 
     ACPI_TABLE_DESC         *TableInfo)
 {
     void                    *TablePtr = NULL;
     UINT32                  Size;
     UINT8                   Allocation;
-	ACPI_STATUS				Status = AE_OK;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("TbGetTableFacs");
@@ -159,7 +159,7 @@ TbGetTableFacs (
 
     /* Must have a valid FACP pointer */
 
-    if (!Gbl_FACP)
+    if (!Acpi_GblFACP)
     {
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
@@ -171,7 +171,7 @@ TbGetTableFacs (
          * Getting table from a file -- allocate a buffer and
          * read the table.
          */
-        TablePtr = CmAllocate (Size);
+        TablePtr = AcpiCmAllocate (Size);
         if(!TablePtr)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -188,11 +188,11 @@ TbGetTableFacs (
     {
         /* Just map the physical memory to our address space */
 
-        Status = TbMapAcpiTable ((void *) Gbl_FACP->FirmwareCtrl, &Size, &TablePtr);     
-		if (ACPI_FAILURE(Status))
-		{
-		    return_ACPI_STATUS (Status);
-		}
+        Status = AcpiTbMapAcpiTable ((void *) Acpi_GblFACP->FirmwareCtrl, &Size, &TablePtr);     
+        if (ACPI_FAILURE(Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
         
         /* Save allocation type */
 

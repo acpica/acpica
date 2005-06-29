@@ -117,10 +117,10 @@
 
 #define __TBAPI_C__
 
-#include <acpi.h>
-#include <namesp.h>
-#include <interp.h>
-#include <tables.h>
+#include "acpi.h"
+#include "namesp.h"
+#include "interp.h"
+#include "tables.h"
 
 
 #define _COMPONENT          TABLE_MANAGER
@@ -151,7 +151,7 @@ AcpiLoadFirmwareTables (void)
 
     /* Get the RSDT first */
 
-    Status = TbGetTableRsdt (&NumberOfTables);
+    Status = AcpiTbGetTableRsdt (&NumberOfTables);
     if (Status != AE_OK)
     {
         goto ErrorExit;
@@ -161,7 +161,7 @@ AcpiLoadFirmwareTables (void)
 
     /* Now get the rest of the tables */
 
-    Status = TbGetAllTables (NumberOfTables, NULL);
+    Status = AcpiTbGetAllTables (NumberOfTables, NULL);
     if (Status != AE_OK)
     {
         goto ErrorExit;
@@ -174,7 +174,7 @@ AcpiLoadFirmwareTables (void)
 
 
 ErrorExit:    
-    DEBUG_PRINT (ACPI_ERROR, ("Failure during ACPI Table Init: %s\n", CmFormatException (Status)));
+    DEBUG_PRINT (ACPI_ERROR, ("Failure during ACPI Table Init: %s\n", AcpiCmFormatException (Status)));
     
     return_ACPI_STATUS (Status);
 }
@@ -215,7 +215,7 @@ AcpiLoadTable (
 
     /* Copy the table to a local buffer */
 
-    Status = TbGetTable (NULL, ((char *) TablePtr), &TableInfo);
+    Status = AcpiTbGetTable (NULL, ((char *) TablePtr), &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -223,10 +223,10 @@ AcpiLoadTable (
     
     /* Install the new table into the local data structures */
 
-    Status = TbInstallTable (NULL, &TableInfo);
+    Status = AcpiTbInstallTable (NULL, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: [Errors] must free table allocated by TbGetTable */
+        /* TBD: [Errors] must free table allocated by AcpiTbGetTable */
     }
 
     return_ACPI_STATUS (Status);
@@ -265,18 +265,18 @@ AcpiUnloadTable (
     
     /* Find all tables of the requested type */
 
-    ListHead = &Gbl_AcpiTables[TableType];
+    ListHead = &Acpi_GblAcpiTables[TableType];
     do
     {            
         /* Delete the entire namespace under this table NTE */
 
-        NsDeleteNamespaceByOwner (ListHead->TableId);
+        AcpiNsDeleteNamespaceByOwner (ListHead->TableId);
 
         /* Delete (or unmap) the actual table */
 
-        TbDeleteAcpiTable (TableType);  
+        AcpiTbDeleteAcpiTable (TableType);  
 
-    } while (ListHead != &Gbl_AcpiTables[TableType]);
+    } while (ListHead != &Acpi_GblAcpiTables[TableType]);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -289,7 +289,7 @@ AcpiUnloadTable (
  * PARAMETERS:  TableType       - one of the defined table types
  *              Instance        - the non zero instance of the table, allows
  *                                support for multiple tables of the same type
- *                                see Gbl_AcpiTableFlag
+ *                                see Acpi_GblAcpiTableFlag
  *              OutTableHeader  - pointer to the ACPI_TABLE_HEADER if successful
  *
  * DESCRIPTION: This function is called to get an ACPI table header.  The caller
@@ -330,7 +330,7 @@ AcpiGetTableHeader (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (Gbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
+        (Acpi_GblAcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -339,7 +339,7 @@ AcpiGetTableHeader (
 
     /* Get a pointer to the entire table */
 
-    Status = TbGetTablePtr (TableType, Instance, &TblPtr);
+    Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
     if (Status != AE_OK)
     {
         return_ACPI_STATUS (Status);
@@ -369,7 +369,7 @@ AcpiGetTableHeader (
  * PARAMETERS:  TableType       - one of the defined table types
  *              Instance        - the non zero instance of the table, allows
  *                                support for multiple tables of the same type
- *                                see Gbl_AcpiTableFlag
+ *                                see Acpi_GblAcpiTableFlag
  *              RetBuffer       - pointer to a structure containing a buffer to
  *                                receive the table
  *
@@ -417,7 +417,7 @@ AcpiGetTable (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (Gbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
+        (Acpi_GblAcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -426,7 +426,7 @@ AcpiGetTable (
     
     /* Get a pointer to the entire table */
 
-    Status = TbGetTablePtr (TableType, Instance, &TblPtr);
+    Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
     if (Status != AE_OK)
     {
         return_ACPI_STATUS (Status);

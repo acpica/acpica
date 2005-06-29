@@ -117,9 +117,9 @@
 
 #define __TBINSTAL_C__
 
-#include <acpi.h>
-#include <hardware.h>
-#include <tables.h>
+#include "acpi.h"
+#include "hardware.h"
+#include "tables.h"
 
 
 #define _COMPONENT          TABLE_MANAGER
@@ -129,10 +129,10 @@
 
 /******************************************************************************
  *
- * FUNCTION:    TbInstallTable
+ * FUNCTION:    AcpiTbInstallTable
  *
  * PARAMETERS:  TablePtr            - Input buffer pointer, optional
- *              TableInfo           - Return value from TbGetTable
+ *              TableInfo           - Return value from AcpiTbGetTable
  *
  * RETURN:      Status
  *
@@ -143,7 +143,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-TbInstallTable (
+AcpiTbInstallTable (
     char                    *TablePtr,
     ACPI_TABLE_DESC         *TableInfo)
 {
@@ -160,7 +160,7 @@ TbInstallTable (
      * Also checks the header checksum
      */
 
-    Status = TbRecognizeTable (TablePtr, TableInfo);
+    Status = AcpiTbRecognizeTable (TablePtr, TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -173,30 +173,30 @@ TbInstallTable (
 
     /* Lock tables while installing */
 
-    CmAcquireMutex (MTX_TABLES);
+    AcpiCmAcquireMutex (MTX_TABLES);
 
     /* Install the table into the global data structure */
 
-    Status = TbInitTableDescriptor (TableInfo->Type, TableInfo);
+    Status = AcpiTbInitTableDescriptor (TableInfo->Type, TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
     DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n", 
-                                Gbl_AcpiTableData[TableType].Name, TableHeader));
+                                Acpi_GblAcpiTableData[TableType].Name, TableHeader));
 
-    CmReleaseMutex (MTX_TABLES);
+    AcpiCmReleaseMutex (MTX_TABLES);
     return_ACPI_STATUS (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    TbRecognizeTable
+ * FUNCTION:    AcpiTbRecognizeTable
  *
  * PARAMETERS:  TablePtr            - Input buffer pointer, optional
- *              TableInfo           - Return value from TbGetTable
+ *              TableInfo           - Return value from AcpiTbGetTable
  *
  * RETURN:      Status
  *
@@ -212,7 +212,7 @@ TbInstallTable (
  ******************************************************************************/
 
 ACPI_STATUS
-TbRecognizeTable (
+AcpiTbRecognizeTable (
     char                    *TablePtr,
     ACPI_TABLE_DESC         *TableInfo)
 {
@@ -238,14 +238,14 @@ TbRecognizeTable (
     Status = AE_SUPPORT;
     for (i = 1; i < NUM_ACPI_TABLES; i++)       /* Start at one -> Skip RSDP */
     {
-        if (!STRNCMP (TableHeader->Signature, Gbl_AcpiTableData[i].Signature, Gbl_AcpiTableData[i].SigLength))
+        if (!STRNCMP (TableHeader->Signature, Acpi_GblAcpiTableData[i].Signature, Acpi_GblAcpiTableData[i].SigLength))
         {
             /* Found a signature match, get the pertinent info from the TableData structure */
 
             TableType       = i;
-            Status          = Gbl_AcpiTableData[i].Status;  /* AE_SUPPORT or AE_OK */
+            Status          = Acpi_GblAcpiTableData[i].Status;  /* AE_SUPPORT or AE_OK */
 
-            DEBUG_PRINT (ACPI_INFO, ("TbRecognizeTable: Found %4.4s\n", Gbl_AcpiTableData[i].Signature));
+            DEBUG_PRINT (ACPI_INFO, ("TbRecognizeTable: Found %4.4s\n", Acpi_GblAcpiTableData[i].Signature));
             break;
         }
     }
@@ -266,7 +266,7 @@ TbRecognizeTable (
         /* But don't abort if the checksum is wrong */
         /* TBD: [Future] make this a configuration option? */
 
-        TbVerifyTableChecksum (TableHeader);
+        AcpiTbVerifyTableChecksum (TableHeader);
     }
 
     /* 
@@ -277,7 +277,7 @@ TbRecognizeTable (
     if (Status == AE_SUPPORT)
     {
         DEBUG_PRINT (ACPI_INFO, ("Unsupported table %s (Type %d) was found and discarded\n",
-                            Gbl_AcpiTableData[TableType].Name, TableType));
+                            Acpi_GblAcpiTableData[TableType].Name, TableType));
     }
 
     return_ACPI_STATUS (Status);
@@ -286,7 +286,7 @@ TbRecognizeTable (
 
 /****************************************************************************
  *
- * FUNCTION:    TbInitTableDescriptor
+ * FUNCTION:    AcpiTbInitTableDescriptor
  *
  * PARAMETERS:  TableType           - The type of the table
  *              TableInfo           - A table info struct
@@ -298,7 +298,7 @@ TbRecognizeTable (
  ***************************************************************************/
 
 ACPI_STATUS
-TbInitTableDescriptor (
+AcpiTbInitTableDescriptor (
     ACPI_TABLE_TYPE         TableType,
     ACPI_TABLE_DESC         *TableInfo)
 {
@@ -312,7 +312,7 @@ TbInitTableDescriptor (
      * Install the table into the global data structure 
      */
     
-    ListHead    = &Gbl_AcpiTables[TableType];
+    ListHead    = &Acpi_GblAcpiTables[TableType];
     TableDesc   = ListHead;
    
 
@@ -323,7 +323,7 @@ TbInitTableDescriptor (
      * includes SSDT and PSDTs.
      */
 
-    if (Gbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE)
+    if (Acpi_GblAcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE)
     {
         /*
          * Only one table allowed, just update the list head
@@ -347,7 +347,7 @@ TbInitTableDescriptor (
 
         if (ListHead->Pointer)
         {
-            TableDesc = CmCallocate (sizeof (ACPI_TABLE_DESC));
+            TableDesc = AcpiCmCallocate (sizeof (ACPI_TABLE_DESC));
             if (!TableDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -384,15 +384,15 @@ TbInitTableDescriptor (
     TableDesc->Allocation           = TableInfo->Allocation;
     TableDesc->AmlPointer           = (UINT8 *) (TableDesc->Pointer + 1),
     TableDesc->AmlLength            = (UINT32) (TableDesc->Length - (UINT32) sizeof (ACPI_TABLE_HEADER));
-    TableDesc->TableId              = CmAllocateOwnerId (OWNER_TYPE_TABLE);
+    TableDesc->TableId              = AcpiCmAllocateOwnerId (OWNER_TYPE_TABLE);
     TableDesc->LoadedIntoNamespace  = FALSE;
 
 
     /* Set the appropriate global pointer (if there is one) to point to the newly installed table */
 
-    if (Gbl_AcpiTableData[TableType].GlobalPtr)
+    if (Acpi_GblAcpiTableData[TableType].GlobalPtr)
     {
-        *(Gbl_AcpiTableData[TableType].GlobalPtr) = TableInfo->Pointer;
+        *(Acpi_GblAcpiTableData[TableType].GlobalPtr) = TableInfo->Pointer;
     }
 
 

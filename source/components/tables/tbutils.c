@@ -116,9 +116,9 @@
 
 #define __TBUTILS_C__
 
-#include <acpi.h>
-#include <tables.h>
-#include <interp.h>
+#include "acpi.h"
+#include "tables.h"
+#include "interp.h"
 
 
 #define _COMPONENT          TABLE_MANAGER
@@ -127,7 +127,7 @@
 
 /*****************************************************************************
  * 
- * FUNCTION:    TbSystemTablePointer
+ * FUNCTION:    AcpiTbSystemTablePointer
  *
  * PARAMETERS:  *Where              - Pointer to be examined
  *
@@ -138,7 +138,7 @@
  ****************************************************************************/
 
 ACPI_STATUS
-TbHandleToObject (
+AcpiTbHandleToObject (
     UINT16                  TableId,
     ACPI_TABLE_DESC         **TableDesc)
 {
@@ -148,7 +148,7 @@ TbHandleToObject (
 
     for (i = 0; i < ACPI_TABLE_MAX; i++)
     {
-        ListHead = &Gbl_AcpiTables[i];
+        ListHead = &Acpi_GblAcpiTables[i];
         do
         {
             if (ListHead->TableId == TableId)
@@ -159,7 +159,7 @@ TbHandleToObject (
 
             ListHead = ListHead->Next;
 
-        } while (ListHead != &Gbl_AcpiTables[i]);
+        } while (ListHead != &Acpi_GblAcpiTables[i]);
     }
 
 
@@ -171,7 +171,7 @@ TbHandleToObject (
 
 /*****************************************************************************
  * 
- * FUNCTION:    TbSystemTablePointer
+ * FUNCTION:    AcpiTbSystemTablePointer
  *
  * PARAMETERS:  *Where              - Pointer to be examined
  *
@@ -182,7 +182,7 @@ TbHandleToObject (
  ****************************************************************************/
 
 BOOLEAN
-TbSystemTablePointer (
+AcpiTbSystemTablePointer (
     void                    *Where)
 {
     UINT32                  i;
@@ -203,7 +203,7 @@ TbSystemTablePointer (
 
     /* Check for a pointer within the DSDT */
 
-    if (IS_IN_ACPI_TABLE (Where, Gbl_DSDT))
+    if (IS_IN_ACPI_TABLE (Where, Acpi_GblDSDT))
     {
         return (TRUE);
     }
@@ -211,9 +211,9 @@ TbSystemTablePointer (
 
     /* Check each of the loaded SSDTs (if any)*/
 
-    TableDesc = &Gbl_AcpiTables[TABLE_SSDT];
+    TableDesc = &Acpi_GblAcpiTables[TABLE_SSDT];
 
-    for (i = 0; i < Gbl_AcpiTables[TABLE_SSDT].Count; i++)
+    for (i = 0; i < Acpi_GblAcpiTables[TABLE_SSDT].Count; i++)
     {
         Table = TableDesc->Pointer;
 
@@ -226,8 +226,25 @@ TbSystemTablePointer (
     }
 
 
-    /* TBD: Need to check the PSDTs? */
+    /* Check each of the loaded PSDTs (if any)*/
 
+    TableDesc = &Acpi_GblAcpiTables[TABLE_PSDT];
+
+    for (i = 0; i < Acpi_GblAcpiTables[TABLE_PSDT].Count; i++)
+    {
+        Table = TableDesc->Pointer;
+
+        if (IS_IN_ACPI_TABLE (Where, Table))
+        {
+            return (TRUE);
+        }
+
+        TableDesc = TableDesc->Next;
+    }
+
+
+
+    /* Pointer does not point into any system table */
 
     return (FALSE);
 }
@@ -236,7 +253,7 @@ TbSystemTablePointer (
 
 /******************************************************************************
  *
- * FUNCTION:    TbValidateTableHeader
+ * FUNCTION:    AcpiTbValidateTableHeader
  *
  * PARAMETERS:  TableHeader         - Logical pointer to the table
  *
@@ -254,7 +271,7 @@ TbSystemTablePointer (
  ******************************************************************************/
 
 ACPI_STATUS
-TbValidateTableHeader (
+AcpiTbValidateTableHeader (
     ACPI_TABLE_HEADER       *TableHeader)
 {
     ACPI_NAME               Signature;
@@ -262,7 +279,7 @@ TbValidateTableHeader (
 
     /* Verify that this is a valid address */
 
-    if (!OsdReadable (TableHeader, sizeof (ACPI_TABLE_HEADER)))
+    if (!AcpiOsdReadable (TableHeader, sizeof (ACPI_TABLE_HEADER)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Cannot read table header at %p\n", TableHeader));
         return AE_BAD_ADDRESS;
@@ -272,7 +289,7 @@ TbValidateTableHeader (
     /* Ensure that the signature is 4 ASCII characters */
 
     STORE32 (&Signature, &TableHeader->Signature);
-    if (!CmValidAcpiName (Signature))
+    if (!AcpiCmValidAcpiName (Signature))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Table signature at %p [%X] has invalid characters\n", 
                         TableHeader, &Signature));
@@ -302,13 +319,13 @@ TbValidateTableHeader (
 
 /******************************************************************************
  *
- * FUNCTION:    TbMapAcpiTable
+ * FUNCTION:    AcpiTbMapAcpiTable
  *
  * PARAMETERS:  PhysicalAddress         - Physical address of table to map
  *              *Size                   - Size of the table.  If zero, the size
  *                                        from the table header is used.  Actual
  *                                        size is returned here.
- *				**LogicalAddress		- Logical address of mapped table
+ *              **LogicalAddress        - Logical address of mapped table
  *
  * RETURN:      Logical address of the mapped table.
  *
@@ -317,14 +334,14 @@ TbValidateTableHeader (
  ******************************************************************************/
 
 ACPI_STATUS
-TbMapAcpiTable (
+AcpiTbMapAcpiTable (
     void                    *PhysicalAddress,
     UINT32                  *Size,
-	void					**LogicalAddress)
+    void                    **LogicalAddress)
 {
     ACPI_TABLE_HEADER       *Table;
     UINT32                  TableSize = *Size;
-	ACPI_STATUS				Status = AE_OK;
+    ACPI_STATUS             Status = AE_OK;
 
 
 
@@ -334,11 +351,11 @@ TbMapAcpiTable (
     {
         /* Get the table header so we can extract the table length */
 
-        Status = OsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER), (void **)&Table);
-		if (ACPI_FAILURE (Status))
-		{
-			return Status;
-		}
+        Status = AcpiOsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER), (void **)&Table);
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
 
         /* Extract the full table length before we delete the mapping */
 
@@ -349,11 +366,11 @@ TbMapAcpiTable (
          * We will create a mapping for the full table below.
          */
 
-        Status = TbValidateTableHeader (Table);
+        Status = AcpiTbValidateTableHeader (Table);
 
         /* Always unmap the memory for the header */
 
-        OsdUnMapMemory (Table, sizeof (ACPI_TABLE_HEADER));
+        AcpiOsdUnMapMemory (Table, sizeof (ACPI_TABLE_HEADER));
 
         /* Exit if header invalid */
 
@@ -366,25 +383,25 @@ TbMapAcpiTable (
 
     /* Map the physical memory for the correct length */
 
-    Status = OsdMapMemory (PhysicalAddress, TableSize, (void **)&Table);
-	if (ACPI_FAILURE (Status))
-	{
-		return Status;
-	}
+    Status = AcpiOsdMapMemory (PhysicalAddress, TableSize, (void **)&Table);
+    if (ACPI_FAILURE (Status))
+    {
+        return Status;
+    }
 
-	DEBUG_PRINT (ACPI_INFO, ("Mapped memory for ACPI table, length=%d(0x%X) at %p\n",
+    DEBUG_PRINT (ACPI_INFO, ("Mapped memory for ACPI table, length=%d(0x%X) at %p\n",
                     TableSize, TableSize, Table));
 
     *Size = TableSize;
-	*LogicalAddress = Table;
+    *LogicalAddress = Table;
 
-	return Status;
+    return Status;
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    TbVerifyTableChecksum
+ * FUNCTION:    AcpiTbVerifyTableChecksum
  *
  * PARAMETERS:  *TableHeader            - ACPI table to verify
  *
@@ -396,7 +413,7 @@ TbMapAcpiTable (
  ******************************************************************************/
 
 ACPI_STATUS
-TbVerifyTableChecksum (
+AcpiTbVerifyTableChecksum (
     ACPI_TABLE_HEADER       *TableHeader)
 {
     UINT8                   CheckSum;
@@ -408,7 +425,7 @@ TbVerifyTableChecksum (
 
     /* Compute the checksum on the table */
 
-    CheckSum = TbChecksum (TableHeader, TableHeader->Length);
+    CheckSum = AcpiTbChecksum (TableHeader, TableHeader->Length);
 
     /* Return the appropriate exception */
 
@@ -428,7 +445,7 @@ TbVerifyTableChecksum (
 
 /******************************************************************************
  *
- * FUNCTION:    TbChecksum
+ * FUNCTION:    AcpiTbChecksum
  *
  * PARAMETERS:  Buffer              - Buffer to checksum
  *              Length              - Size of the buffer
@@ -440,7 +457,7 @@ TbVerifyTableChecksum (
  ******************************************************************************/
 
 UINT8
-TbChecksum (
+AcpiTbChecksum (
     void                    *Buffer, 
     UINT32                  Length)
 {
