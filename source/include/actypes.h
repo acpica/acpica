@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.253 $
+ *       $Revision: 1.254 $
  *
  *****************************************************************************/
 
@@ -598,9 +598,6 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
  * AcpiEvent Types: Fixed & General Purpose
  */
 typedef UINT32                          ACPI_EVENT_TYPE;
-
-#define ACPI_EVENT_FIXED                0
-#define ACPI_EVENT_GPE                  1
 
 /*
  * Fixed events
