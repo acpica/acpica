@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -121,6 +121,7 @@
 #include "acnamesp.h"
 #include "acdebug.h"
 #include "acdispat.h"
+#include "acdisasm.h"
 
 
 #ifdef ACPI_DEBUGGER
