@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -271,12 +271,14 @@ AcpiEnterSleepState (
 
     disable();
 
+    /* disable all non-wake GPEs here */
+
     PM1AControl = (UINT16) AcpiHwRegisterRead(ACPI_MTX_LOCK, PM1_CONTROL);
 
     DEBUG_PRINT(ACPI_OK, ("Entering S%d\n", SleepState));
 
     /* mask off SLP_EN and SLP_TYP fields */
-    PM1AControl &= 0xC3FF;
+    PM1AControl &= ~(SLP_TYPE_X_MASK | SLP_EN_MASK);
     PM1BControl = PM1AControl;
 
     /* mask in SLP_TYP */
@@ -291,20 +293,58 @@ AcpiEnterSleepState (
     PM1AControl |= (1 << AcpiHwGetBitShift (SLP_EN_MASK));
     PM1BControl |= (1 << AcpiHwGetBitShift (SLP_EN_MASK));
 
+    /* flush caches */
+    wbinvd();
+
     /* write #2: SLP_TYP + SLP_EN */
     AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
     AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
 
-    /* wait a second, then try again */
-    AcpiOsStall(1000000);
-
-    if (SleepState > ACPI_STATE_S1)
+    /* 
+     * Wait a second, then try again. This is to get S5 to work on all machines.
+     * Don't do this for S1; since S1 resumes at the next instruction, we'd be
+     * sleeping twice.
+     */
+    if (SleepState > ACPI_STATE_S3)
     {
+        AcpiOsStall(1000000);
+
         AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1_CONTROL,
             (1 << AcpiHwGetBitShift (SLP_EN_MASK)));
     }
 
+    /* wait until we enter sleep state */
+    while (!AcpiHwRegisterBitAccess(ACPI_READ,ACPI_MTX_LOCK,WAK_STS))
+        {  }
+
     enable();
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiLeaveSleepState
+ *
+ * PARAMETERS:  SleepState          - Which sleep state we just exited
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Perform OS-independent ACPI cleanup after a sleep
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiLeaveSleepState (
+    UINT8               SleepState)
+{
+    FUNCTION_TRACE ("AcpiLeaveSleepState");
+
+    /* Call _BFS */
+
+    /* Call _WAK */
+
+    /* Re-enable GPEs */
 
     return_ACPI_STATUS (AE_OK);
 }
