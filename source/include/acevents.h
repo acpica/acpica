@@ -204,6 +204,13 @@ EvAddressSpaceDispatch (
     UINT32                  BitWidth,
     UINT32                  *Value);
 
+typedef struct
+{
+    UINT16      SegNum;
+    UINT16      BusNum;
+    UINT16      DevNum;
+    UINT16      FuncNum;
+} PCI_HANDLER_CONTEXT;
 
 ACPI_STATUS
 EvInitializeRegion (
