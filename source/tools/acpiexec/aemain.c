@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -243,6 +243,7 @@ main (
 
     case 'l':
         AcpiDbgLevel = strtoul (optarg, NULL, 0);
+        AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         printf ("Debug Level: %lX\n", AcpiDbgLevel);
         break;
 
