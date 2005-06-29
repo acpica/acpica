@@ -148,7 +148,6 @@ NsAttachObject (
     ACPI_HANDLE             Object, 
     UINT8                   Type)
 {
-    void                    *Temp = NULL;
     NAME_TABLE_ENTRY        *ThisEntry;
 
 
@@ -159,7 +158,7 @@ NsAttachObject (
     {
         /* Name space not initialized  */
 
-        REPORT_ERROR ("NsAttachObject: name space not initialized");
+        REPORT_ERROR ("NsAttachObject: Name space not initialized");
         return_VOID;
     }
     
@@ -167,15 +166,15 @@ NsAttachObject (
     {
         /* Invalid handle */
 
-        REPORT_ERROR ("NsAttachObject: null name handle");
+        REPORT_ERROR ("NsAttachObject: Null name handle");
         return_VOID;
     }
     
     if (!Object && (TYPE_Any != Type))
     {
-        /* Null value handle */
+        /* Null object */
 
-        REPORT_ERROR ("NsAttachObject: null value handle");
+        REPORT_ERROR ("NsAttachObject: Null object, type not TYPE_Any");
         return_VOID;
     }
     
@@ -183,7 +182,7 @@ NsAttachObject (
     {
         /* Not a name handle */
 
-        REPORT_ERROR ("NsAttachObject: \"name handle\" param isn't a name handle");
+        REPORT_ERROR ("NsAttachObject: Invalid handle");
         return_VOID;
     }
 
@@ -192,29 +191,33 @@ NsAttachObject (
     
     ThisEntry = (NAME_TABLE_ENTRY *) handle;
 
-    /* 
-     * Delete the old value.  Must set the "Value" field to NULL first
-     * so that CmDeleteInternalObject() doesn't find the descriptor reachable.
-     */
-
-    Temp = ThisEntry->Object;
 
     /* Check if this object is already attached */
 
-    if (Temp == Object)
+    if (ThisEntry->Object == Object)
     {
         return_VOID;
     }
 
-    ThisEntry->Object = NULL;
-    CmUpdateObjectReference (Temp, REF_DECREMENT);
-    CmDeleteInternalObject ((ACPI_OBJECT_INTERNAL *) Temp);
+    /* 
+     * Delete an existing attached object. 
+     */
+
+    if (ThisEntry->Object)
+    {
+        CmUpdateObjectReference (ThisEntry->Object, REF_DECREMENT);
+        CmDeleteInternalObject ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object);
+    }
+
+    /* Set the new value */
+
+    ThisEntry->Object = Object;
 
     /* If the new value is NULL, done */
 
-    if (!Object && (TYPE_Any == Type))
+    if (!Object)
     {
-        ThisEntry->Type = (ACPI_OBJECT_TYPE) Type;
+        ThisEntry->Type = (ACPI_OBJECT_TYPE) TYPE_Any;
         DEBUG_PRINT (TRACE_EXEC,("Leave NsAttachObject (NULL value)\n")); 
         return_VOID;
     }
@@ -223,10 +226,6 @@ NsAttachObject (
     /* Must increment the new value's reference count (if it is an internal object) */
 
     CmUpdateObjectReference (Object, REF_INCREMENT);
-
-    /* Set the new value */
-
-    ThisEntry->Object = Object;
 
     /* Set the type if given, or if it can be discerned */
 
@@ -393,7 +392,7 @@ NsAttachMethod (
     ObjDesc = ThisEntry->Object;
     if (ObjDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("NsAttachMethod: ***Old: %p Val %p Off %d Len %d\n",
+        DEBUG_PRINT (ACPI_ERROR, ("NsAttachMethod: ***Old: %p Obj %p Pcode %p Len 0x%X\n",
                                     Handle, ObjDesc, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength));
 
         CmUpdateObjectReference (ObjDesc, REF_DECREMENT);
@@ -422,7 +421,7 @@ NsAttachMethod (
     CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
     ThisEntry->Object = (void *) ObjDesc;
 
-    DEBUG_PRINT (ACPI_INFO, ("NsAttachMethod: %p Val %p Oft %d Len %d\n",
+    DEBUG_PRINT (ACPI_INFO, ("NsAttachMethod: %p Obj %p Pcode %p Len 0x%X\n",
                             Handle, ObjDesc, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength));
 
     return_ACPI_STATUS (AE_OK);
