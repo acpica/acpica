@@ -136,24 +136,177 @@
 ARGUMENT_INFO               DbObjectTypes [] = 
 {
     "ANY",
-    "NUMBER",
-    "STRING",
-    "BUFFER",
-    "PACKAGE",
-    "FIELD",
-    "DEVICE",
-    "EVENT",
-    "METHOD",
-    "MUTEX",
-    "REGION",
-    "POWERRESOURCE",
-    "PROCESSOR",
-    "THERMALZONE",
-    "BUFFERFIELD",
-    "DDBHANDLE",
+    "NUMBERS",
+    "STRINGS",
+    "BUFFERS",
+    "PACKAGES",
+    "FIELDS",
+    "DEVICES",
+    "EVENTS",
+    "METHODS",
+    "MUTEXES",
+    "REGIONS",
+    "POWERRESOURCES",
+    "PROCESSORS",
+    "THERMALZONES",
+    "BUFFERFIELDS",
+    "DDBHANDLES",
     NULL            /* Must be null terminated */
 };
 
+
+typedef struct HistoryInfo
+{
+    char                    Command[80];
+    UINT32                  CmdNum;
+
+} HISTORY_INFO;
+
+
+#define HI_NO_HISTORY       0
+#define HI_RECORD_HISTORY   1
+
+#define HISTORY_SIZE        8
+HISTORY_INFO                HistoryBuffer[HISTORY_SIZE];
+UINT32                      LoHistory = 0;
+UINT32                      NumHistory = 0;
+UINT32                      NextHistoryIndex = 0;
+UINT32                      NextCmdNum = 1;
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbAddToHistory
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Add a command line to the history buffer.
+ *
+ *****************************************************************************/
+
+void
+DbAddToHistory (
+    char                    *CommandLine)
+{
+
+
+    STRCPY (HistoryBuffer[NextHistoryIndex].Command, CommandLine);
+    HistoryBuffer[NextHistoryIndex].CmdNum = NextCmdNum;
+
+    if ((NumHistory == HISTORY_SIZE) &&
+        (NextHistoryIndex == LoHistory))
+    {
+        LoHistory++;
+        if (LoHistory >= HISTORY_SIZE)
+        {
+            LoHistory = 0;
+        }
+    }
+
+    NextHistoryIndex++;
+    if (NextHistoryIndex >= HISTORY_SIZE)
+    {
+        NextHistoryIndex = 0;
+    }
+
+
+    NextCmdNum++;
+    if (NumHistory < HISTORY_SIZE)
+    {
+        NumHistory++;
+    }
+
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisplayHistory
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display the contents of the history buffer
+ *
+ *****************************************************************************/
+
+void
+DbDisplayHistory (void)
+{
+    UINT32                  i;
+    UINT32                  HistoryIndex;
+
+
+    HistoryIndex = LoHistory;
+    for (i = 0; i < NumHistory; i++)
+    {
+        OsdPrintf ("%d  %s\n", HistoryBuffer[HistoryIndex].CmdNum, &HistoryBuffer[HistoryIndex].Command);
+
+        HistoryIndex++;
+        if (HistoryIndex >= HISTORY_SIZE)
+        {
+            HistoryIndex = 0;
+        }
+    }
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbGetFromHistory
+ *
+ * PARAMETERS:  CommandNumArg           - String containing the number of the
+ *                                        command to be retrieved
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Get a command from the history buffer
+ *
+ *****************************************************************************/
+
+char *
+DbGetFromHistory (
+    char                    *CommandNumArg)
+{
+    UINT32                  i;
+    UINT32                  HistoryIndex;
+    UINT32                  CmdNum;
+
+
+    if (CommandNumArg == NULL)
+    {
+        CmdNum = NextCmdNum - 1;
+    }
+
+    else
+    {
+        CmdNum = STRTOUL (CommandNumArg, NULL, 0);
+    }
+
+    HistoryIndex = LoHistory;
+    for (i = 0; i < NumHistory; i++)
+    {
+        if (HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
+        {
+            return (HistoryBuffer[HistoryIndex].Command);
+        }
+
+
+        HistoryIndex++;
+        if (HistoryIndex >= HISTORY_SIZE)
+        {
+            HistoryIndex = 0;
+        }
+    }
+
+    OsdPrintf ("Invalid history number: %d\n", HistoryIndex);
+    return NULL;
+}
+    
 
 /******************************************************************************
  * 
@@ -544,7 +697,6 @@ DbWalkForSpecificObjects (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
     UINT32                  BufSize;
-    UINT32                  Type = (UINT32) Context;
     char                    buffer[64];
 
 
@@ -564,21 +716,30 @@ DbWalkForSpecificObjects (
 
     if (ObjDesc)
     {
-        switch (Type)
+        switch (ObjDesc->Common.Type)
         {
         case ACPI_TYPE_Method:
-
-            OsdPrintf ("  #args = %d", ObjDesc->Method.ParamCount);
+            OsdPrintf ("  #Args %d  Concurrency %d", ObjDesc->Method.ParamCount, ObjDesc->Method.Concurrency);
             break;
 
         case ACPI_TYPE_Number:
-
-            OsdPrintf ("  Value = 0x%X", ObjDesc->Number.Value);
+            OsdPrintf ("  Value 0x%X", ObjDesc->Number.Value);
             break;
     
         case ACPI_TYPE_String:
-
             OsdPrintf ("  \"%s\"", ObjDesc->String.Pointer);
+            break;
+
+        case ACPI_TYPE_Region:
+            OsdPrintf ("  SpaceId %d Address %X Length %X", ObjDesc->Region.SpaceId, ObjDesc->Region.Address, ObjDesc->Region.Length);
+            break;
+
+        case ACPI_TYPE_Package:
+            OsdPrintf ("  #Elements %d", ObjDesc->Package.Count);
+            break;
+
+        case ACPI_TYPE_Buffer:
+            OsdPrintf ("  Length %d", ObjDesc->Buffer.Length);
             break;
         }
     }
@@ -662,28 +823,44 @@ DbWalkAndMatchName (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
-    UINT32                  Name = *((UINT32 *) Context);
+    char                    *RequestedName = (char *) Context;
+    UINT32                  i;
     UINT32                  BufSize;
-    char                    buffer[64];
+    char                    Buffer[96];
 
 
     ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
 
-    if (Name == ((NAME_TABLE_ENTRY *)ObjHandle)->Name)
+
+    /* Check for a name match */
+
+    for (i = 0; i < 4; i++)
     {
-        /* Get the full pathname to this method */
+        /* Wildcard support */
 
-        Status = NsHandleToPathname (ObjHandle, &BufSize, buffer);
-
-        if (ACPI_FAILURE (Status))
+        if ((RequestedName[i] != '?') &&
+            (RequestedName[i] != ((char *)(&((NAME_TABLE_ENTRY *)ObjHandle)->Name))[i]))
         {
-            OsdPrintf ("Could Not get pathname for object %p\n", ObjHandle);
-        }
+            /* No match, just exit */
 
-        else
-        {
-            OsdPrintf ("%32s (0x%p) - %s\n", buffer, ObjHandle, CmGetTypeName (((NAME_TABLE_ENTRY *)ObjHandle)->Type));
+            return AE_OK;
         }
+    }
+
+
+    /* Get the full pathname to this object */
+
+    BufSize = sizeof (Buffer);
+
+    Status = NsHandleToPathname (ObjHandle, &BufSize, Buffer);
+    if (ACPI_FAILURE (Status))
+    {
+        OsdPrintf ("Could Not get pathname for object %p\n", ObjHandle);
+    }
+
+    else
+    {
+        OsdPrintf ("%32s (0x%p) - %s\n", Buffer, ObjHandle, CmGetTypeName (((NAME_TABLE_ENTRY *)ObjHandle)->Type));
     }
 
     return AE_OK;
