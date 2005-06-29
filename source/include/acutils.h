@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.104 $
+ *       $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -201,6 +201,11 @@ AcpiUtGetRegionName (
 
 #endif
 
+
+UINT8
+AcpiUtHexToAsciiChar (
+    ACPI_INTEGER            Integer,
+    UINT32                  Position);
 
 BOOLEAN
 AcpiUtValidObjectType (
