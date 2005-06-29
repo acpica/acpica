@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -1906,7 +1906,7 @@ PackageElement
 
 EISAIDTerm
     : EISAID '(' 
-        StringData ')' {$$ = TgCreateLeafNode (EISAID, $3);}
+        StringData ')' {$$ = TgUpdateNode (EISAID, $3);}
     ;
 
 
@@ -1947,6 +1947,9 @@ ObjectReference
 DDBHandle
     : String {}
     ;
+
+
+/******* Object References ***********************************************/
 
 
 NameString

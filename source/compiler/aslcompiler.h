@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -120,14 +120,24 @@
 #define AslCompiler_C_INTERFACE
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
 #include "acpi.h"
+
+
+#define CompilerId                  "ACPI Component Architecture ASL Compiler"
+#define CompilerName                "iasl"
+#define Version                     "X202"
+
+
+
 
 #define ASL_PARSE_OPCODE_BASE       ACCESSAS        /* First Lex type */   
 
 
 /* TBD: define new (2.0) opcodes  - move to amlcode.h */
 
-#define AML_BREAKPOINT_OP           (UINT16) 0x00FE
 #define AML_BUFF_OP                 (UINT16) 0x00FE
 #define AML_CASE_OP                 (UINT16) 0x00FE
 #define AML_CONCAT_TPL_OP           (UINT16) 0x00FE
@@ -393,6 +403,9 @@ void
 CgCloseTable (void);
 
 
+void
+CgWriteNode (
+    ASL_PARSE_NODE          *Node);
 
 
 void
@@ -439,6 +452,33 @@ ASL_PARSE_NODE *
 _TgLinkChildNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2);
+
+
+/* Utils */
+
+void
+UtPrintFormattedName (
+    UINT16                  ParseOpcode,
+    UINT32                  Level);
+
+ACPI_STATUS
+UtOpenAllFiles (
+    char                    *InputFilename);
+
+void
+UtDisplaySummary (
+    void);
+
+
+UINT8
+UtHexCharToValue (
+    int                     hc);
+
+
+char *
+UtGetOpName (
+    UINT32                  ParseOpcode);
+
 
 
 #endif

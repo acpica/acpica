@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -116,19 +116,10 @@
  *****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-
-#include "AslCompiler.y.h"
 #include "AslCompiler.h"
-#include "acpi.h"
+#include "AslCompiler.y.h"
 #include "amlcode.h"
 
-
-
-extern const char * const       yytname[];
 
 
 
@@ -146,31 +137,45 @@ extern const char * const       yytname[];
  ******************************************************************************/
 
 void
-CgGenerateOutput(
-    void)
+CgAmlWriteWalk (
+    ASL_PARSE_NODE              *Node,
+    UINT32                      Level,
+    void                        *Context)
 {
 
 
-    if (!RootNode)
-    {
-        return;
-    }
 
+    UtPrintFormattedName (Node->ParseOpcode, Level);
 
-    DbgPrint ("\nGenerating AML opcodes\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, CgAmlOpcodeWalk, NULL);
+	if (Node->ParseOpcode == NAMESEG ||
+		Node->ParseOpcode == NAMESTRING)
+	{
+		DbgPrint ("%4.4s      ", Node->Value.String);
+	}
 
-    DbgPrint ("\nGenerating Package lengths\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, CgAmlPackageLengthWalk, NULL);
+	else
+	{
+		DbgPrint ("          ");
+	}
 
+    DbgPrint ("Value %08X ParseOp 0x%04X AmlOp %04X OpLen %01X PByts %01X Len %04X SubLen %04X ParentSubLen %04X Node %X Chld %X Paren %X\n",
+                Node->Value.Integer,
+                Node->ParseOpcode,
+                Node->AmlOpcode,
+                Node->AmlOpcodeLength,
+                Node->AmlPkgLenBytes,
+                Node->AmlLength,
+                Node->AmlSubtreeLength,
+                Node->Parent ? Node->Parent->AmlSubtreeLength : 0,
+				Node,
+				Node->Child,
+				Node->Parent);
 
-    DbgPrint ("\nWriting AML\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL);
-
-
-    CgCloseTable ();
-    fclose (Gbl_OutputAmlFile);
+    CgWriteNode (Node);
 }
+
+
+
 
 
 /*******************************************************************************
@@ -447,7 +452,7 @@ CgCloseTable (void)
 
 void
 CgWriteNode (
-    ASL_PARSE_NODE              *Node)
+    ASL_PARSE_NODE          *Node)
 {
 
     /* TEMP FIX: always check for DEFAULT_ARG */
@@ -488,164 +493,6 @@ CgWriteNode (
 }
 
 
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-#define TEXT_OFFSET 10
-
-void
-CgPrintFormattedName (
-    UINT16                      ParseOpcode,
-    UINT32                      Level)
-{
-    UINT32                      i;
-
-    
-    for (i = 0; i < Level; i++)
-    {
-        DbgPrint ("    ");
-    }
-
-
-    DbgPrint ("%-16.16s", yytname[ParseOpcode-255]);
-        
-    
-    if (Level < TEXT_OFFSET)
-    {
-        for (i = 0; i < (TEXT_OFFSET - Level); i++)
-        {
-            DbgPrint ("    ");
-        }
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-void
-CgAmlOpcodeWalk (
-    ASL_PARSE_NODE              *Node,
-    UINT32                      Level,
-    void                        *Context)
-{
-
-    CgGenerateAmlOpcode (Node);
-    CgGenerateAmlOperands (Node);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-void
-CgAmlPackageLengthWalk (
-    ASL_PARSE_NODE              *Node,
-    UINT32                      Level,
-    void                        *Context)
-{
-
-
-
-    /* TBD Do an "init nodes" walk */
-/*
-    Node->AmlLength = 0;
-    Node->AmlOpcodeLength = 0;
-    Node->AmlSubtreeLength = 0;
-    Node->AmlPkgLenBytes = 0;
-*/
-    /* 
-     * generate the subtree length and
-     * bubble it up to the parent
-     */
-    CgGenerateAmlLengths (Node);
-    if ((Node->Parent) &&
-        (Node->ParseOpcode != DEFAULT_ARG))
-    {
-        Node->Parent->AmlSubtreeLength += (Node->AmlLength + 
-                                            Node->AmlOpcodeLength +
-                                            Node->AmlPkgLenBytes +                                            Node->AmlSubtreeLength);
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-void
-CgAmlWriteWalk (
-    ASL_PARSE_NODE              *Node,
-    UINT32                      Level,
-    void                        *Context)
-{
-
-
-
-    CgPrintFormattedName (Node->ParseOpcode, Level);
-
-	if (Node->ParseOpcode == NAMESEG ||
-		Node->ParseOpcode == NAMESTRING)
-	{
-		DbgPrint ("%4.4s      ", Node->Value.String);
-	}
-
-	else
-	{
-		DbgPrint ("          ");
-	}
-
-    DbgPrint ("Value %08X ParseOp 0x%04X AmlOp %04X OpLen %01X PByts %01X Len %04X SubLen %04X ParentSubLen %04X Node %X Chld %X Paren %X\n",
-                Node->Value.Integer,
-                Node->ParseOpcode,
-                Node->AmlOpcode,
-                Node->AmlOpcodeLength,
-                Node->AmlPkgLenBytes,
-                Node->AmlLength,
-                Node->AmlSubtreeLength,
-                Node->Parent ? Node->Parent->AmlSubtreeLength : 0,
-				Node,
-				Node->Child,
-				Node->Parent);
-
-    CgWriteNode (Node);
-}
 
 
 
