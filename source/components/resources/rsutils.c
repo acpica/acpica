@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.17 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -174,7 +174,7 @@ AcpiRsGetPrtMethodData (
     {
         /* Return object is required */
 
-        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _PRT\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object was returned from _PRT\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -210,7 +210,7 @@ AcpiRsGetPrtMethodData (
 
 Cleanup:
 
-    AcpiCmRemoveReference (RetObj);
+    AcpiUtRemoveReference (RetObj);
     return_ACPI_STATUS (Status);
 }
 
@@ -261,7 +261,7 @@ AcpiRsGetCrsMethodData (
     {
         /* Return object is required */
 
-        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _CRS\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object was returned from _CRS\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -297,7 +297,7 @@ AcpiRsGetCrsMethodData (
 
 Cleanup:
 
-    AcpiCmRemoveReference (RetObj);
+    AcpiUtRemoveReference (RetObj);
     return_ACPI_STATUS (Status);
 }
 
@@ -348,7 +348,7 @@ AcpiRsGetPrsMethodData (
     {
         /* Return object is required */
 
-        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _PRS\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object was returned from _PRS\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -383,7 +383,7 @@ AcpiRsGetPrsMethodData (
 
 Cleanup:
 
-    AcpiCmRemoveReference (RetObj);
+    AcpiUtRemoveReference (RetObj);
     return_ACPI_STATUS (Status);
 }
 
@@ -412,10 +412,9 @@ AcpiRsSetSrsMethodData (
     ACPI_BUFFER             *InBuffer)
 {
     ACPI_OPERAND_OBJECT     *Params[2];
-    ACPI_OPERAND_OBJECT     ParamObj;
     ACPI_STATUS             Status;
     UINT8                   *ByteStream = NULL;
-    UINT32                  BufferSizeNeeded = 0;
+    ACPI_SIZE               BufferSizeNeeded;
 
 
     FUNCTION_TRACE ("RsSetSrsMethodData");
@@ -447,7 +446,7 @@ AcpiRsSetSrsMethodData (
     /*
      * Allocate the buffer needed
      */
-    ByteStream = AcpiCmCallocate(BufferSizeNeeded);
+    ByteStream = ACPI_MEM_CALLOCATE (BufferSizeNeeded);
     if (NULL == ByteStream)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -466,32 +465,31 @@ AcpiRsSetSrsMethodData (
     /*
      * Init the param object
      */
-    AcpiCmInitStaticObject (&ParamObj);
-
-    /*
-     * Method requires one parameter.  Set it up
-     */
-    Params [0] = &ParamObj;
+    Params[0] = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+    if (!Params[0])
+    {
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+    }
     Params [1] = NULL;
 
     /*
      *  Set up the parameter object
      */
-    ParamObj.Common.Type    = ACPI_TYPE_BUFFER;
-    ParamObj.Buffer.Length  = BufferSizeNeeded;
-    ParamObj.Buffer.Pointer = ByteStream;
+    Params[0]->Buffer.Length  = BufferSizeNeeded;
+    Params[0]->Buffer.Pointer = ByteStream;
 
     /*
      * Execute the method, no return value
      */
     Status = AcpiNsEvaluateRelative (Handle, "_SRS", Params, NULL);
+    AcpiUtRemoveReference (Params[0]);
 
     /*
      * Clean up and return the status from AcpiNsEvaluateRelative
      */
 Cleanup:
 
-    AcpiCmFree (ByteStream);
     return_ACPI_STATUS (Status);
 }
 

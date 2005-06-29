@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  ******************************************************************************/
 
@@ -129,13 +129,12 @@
  *
  * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                        stream
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes consumed from
- *                                        the ByteStreamBuffer
- *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with
- *                                        the number of bytes in the filled
- *                                        in structure
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        consumed the ByteStreamBuffer is
+ *                                        returned
+ *              OutputBuffer            - Pointer to the return data buffer
+ *              StructureSize           - Pointer to where the number of bytes
+ *                                        in the return data struct is returned
  *
  * RETURN:      Status
  *
@@ -148,14 +147,14 @@
 ACPI_STATUS
 AcpiRsAddress16Resource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize)
+    ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
     ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
     NATIVE_CHAR             *TempPtr;
-    UINT32                  StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS16);
+    ACPI_SIZE               StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS16);
     UINT32                  Index;
     UINT16                  Temp16;
     UINT8                   Temp8;
@@ -355,9 +354,8 @@ AcpiRsAddress16Resource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes of the
- *                                        OutputBuffer used
+ *              BytesConsumed           - Pointer to where the number of bytes 
+ *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
  *
@@ -370,13 +368,13 @@ ACPI_STATUS
 AcpiRsAddress16Stream (
     ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed)
+    ACPI_SIZE               *BytesConsumed)
 {
     UINT8                   *Buffer = *OutputBuffer;
     UINT8                   *LengthField;
     UINT8                   Temp8;
     NATIVE_CHAR             *TempPointer = NULL;
-    UINT32                  ActualBytes;
+    ACPI_SIZE               ActualBytes;
 
 
     FUNCTION_TRACE ("RsAddress16Stream");
@@ -502,7 +500,7 @@ AcpiRsAddress16Stream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    ActualBytes = POINTER_DIFF (Buffer, *OutputBuffer);
+    ActualBytes = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
     *BytesConsumed = ActualBytes;
 
     /*
@@ -521,13 +519,12 @@ AcpiRsAddress16Stream (
  *
  * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                        stream
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes consumed from
- *                                        the ByteStreamBuffer
- *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with
- *                                        the number of bytes in the filled
- *                                        in structure
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        consumed the ByteStreamBuffer is
+ *                                        returned
+ *              OutputBuffer            - Pointer to the return data buffer
+ *              StructureSize           - Pointer to where the number of bytes
+ *                                        in the return data struct is returned
  *
  * RETURN:      Status
  *
@@ -540,16 +537,16 @@ AcpiRsAddress16Stream (
 ACPI_STATUS
 AcpiRsAddress32Resource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize)
+    ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer;
     ACPI_RESOURCE           *OutputStruct;
     UINT16                  Temp16;
     UINT8                   Temp8;
     NATIVE_CHAR             *TempPtr;
-    UINT32                  StructSize;
+    ACPI_SIZE               StructSize;
     UINT32                  Index;
 
 
@@ -566,7 +563,6 @@ AcpiRsAddress32Resource (
      */
     Buffer += 1;
     MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-
     *BytesConsumed = Temp16 + 3;
 
     OutputStruct->Id = ACPI_RSTYPE_ADDRESS32;
@@ -755,9 +751,8 @@ AcpiRsAddress32Resource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes of the
- *                                        OutputBuffer used
+ *              BytesConsumed           - Pointer to where the number of bytes 
+ *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
  *
@@ -770,7 +765,7 @@ ACPI_STATUS
 AcpiRsAddress32Stream (
     ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed)
+    ACPI_SIZE               *BytesConsumed)
 {
     UINT8                   *Buffer;
     UINT16                  *LengthField;
@@ -902,7 +897,7 @@ AcpiRsAddress32Stream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = POINTER_DIFF (Buffer, *OutputBuffer);
+    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
 
     /*
      * Set the length field to the number of bytes consumed
@@ -919,13 +914,12 @@ AcpiRsAddress32Stream (
  *
  * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                        stream
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes consumed from
- *                                        the ByteStreamBuffer
- *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with
- *                                        the number of bytes in the filled
- *                                        in structure
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        consumed the ByteStreamBuffer is
+ *                                        returned
+ *              OutputBuffer            - Pointer to the return data buffer
+ *              StructureSize           - Pointer to where the number of bytes
+ *                                        in the return data struct is returned
  *
  * RETURN:      Status
  *
@@ -938,16 +932,16 @@ AcpiRsAddress32Stream (
 ACPI_STATUS
 AcpiRsAddress64Resource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize)
+    ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer;
     ACPI_RESOURCE           *OutputStruct;
     UINT16                  Temp16;
     UINT8                   Temp8;
     NATIVE_CHAR             *TempPtr;
-    UINT32                  StructSize;
+    ACPI_SIZE               StructSize;
     UINT32                  Index;
 
 
@@ -1156,9 +1150,8 @@ AcpiRsAddress64Resource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes of the
- *                                        OutputBuffer used
+ *              BytesConsumed           - Pointer to where the number of bytes 
+ *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
  *
@@ -1171,7 +1164,7 @@ ACPI_STATUS
 AcpiRsAddress64Stream (
     ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed)
+    ACPI_SIZE               *BytesConsumed)
 {
     UINT8                   *Buffer;
     UINT16                  *LengthField;
@@ -1303,7 +1296,7 @@ AcpiRsAddress64Stream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = POINTER_DIFF (Buffer, *OutputBuffer);
+    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
 
     /*
      * Set the length field to the number of bytes consumed

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.16 $
+ *              $Revision: 1.18 $
  *
  ******************************************************************************/
 
@@ -129,13 +129,12 @@
  *
  * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                        stream
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes consumed from
- *                                        the ByteStreamBuffer
- *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with
- *                                        the number of bytes in the filled
- *                                        in structure
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        consumed the ByteStreamBuffer is
+ *                                        returned
+ *              OutputBuffer            - Pointer to the return data buffer
+ *              StructureSize           - Pointer to where the number of bytes
+ *                                        in the return data struct is returned
  *
  * RETURN:      Status
  *
@@ -148,12 +147,12 @@
 ACPI_STATUS
 AcpiRsEndTagResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize)
+    ACPI_SIZE               *StructureSize)
 {
     ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
-    UINT32                  StructSize = ACPI_RESOURCE_LENGTH;
+    ACPI_SIZE               StructSize = ACPI_RESOURCE_LENGTH;
 
 
     FUNCTION_TRACE ("RsEndTagResource");
@@ -188,9 +187,8 @@ AcpiRsEndTagResource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes of the
- *                                        OutputBuffer used
+ *              BytesConsumed           - Pointer to where the number of bytes 
+ *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
  *
@@ -203,7 +201,7 @@ ACPI_STATUS
 AcpiRsEndTagStream (
     ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed)
+    ACPI_SIZE               *BytesConsumed)
 {
     UINT8                   *Buffer = *OutputBuffer;
     UINT8                   Temp8 = 0;
@@ -230,7 +228,7 @@ AcpiRsEndTagStream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = POINTER_DIFF (Buffer, *OutputBuffer);
+    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -241,13 +239,12 @@ AcpiRsEndTagStream (
  *
  * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                        stream
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes consumed from
- *                                        the ByteStreamBuffer
- *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with
- *                                        the number of bytes in the filled
- *                                        in structure
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        consumed the ByteStreamBuffer is
+ *                                        returned
+ *              OutputBuffer            - Pointer to the return data buffer
+ *              StructureSize           - Pointer to where the number of bytes
+ *                                        in the return data struct is returned
  *
  * RETURN:      Status
  *
@@ -260,16 +257,16 @@ AcpiRsEndTagStream (
 ACPI_STATUS
 AcpiRsVendorResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize)
+    ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
     ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
     UINT8                   Index;
-    UINT32                  StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_VENDOR);
+    ACPI_SIZE               StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_VENDOR);
 
 
     FUNCTION_TRACE ("RsVendorResource");
@@ -283,8 +280,7 @@ AcpiRsVendorResource (
     if (Temp8 & 0x80)
     {
         /*
-         * Large Item
-         * Point to the length field
+         * Large Item, point to the length field
          */
         Buffer += 1;
 
@@ -300,12 +296,10 @@ AcpiRsVendorResource (
 
         Buffer += 2;
     }
-
     else
     {
         /*
-         * Small Item
-         * Dereference the size
+         * Small Item, dereference the size
          */
         Temp16 = (UINT8)(*Buffer & 0x07);
 
@@ -353,9 +347,8 @@ AcpiRsVendorResource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes of the
- *                                        OutputBuffer used
+ *              BytesConsumed           - Pointer to where the number of bytes 
+ *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
  *
@@ -368,7 +361,7 @@ ACPI_STATUS
 AcpiRsVendorStream (
     ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed)
+    ACPI_SIZE               *BytesConsumed)
 {
     UINT8                   *Buffer = *OutputBuffer;
     UINT16                  Temp16 = 0;
@@ -385,8 +378,7 @@ AcpiRsVendorStream (
     if(LinkedList->Data.VendorSpecific.Length > 7)
     {
         /*
-         * Large Item
-         * Set the descriptor field and length bytes
+         * Large Item, Set the descriptor field and length bytes
          */
         *Buffer = 0x84;
         Buffer += 1;
@@ -396,12 +388,10 @@ AcpiRsVendorStream (
         MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
         Buffer += 2;
     }
-
     else
     {
         /*
-         * Small Item
-         * Set the descriptor field
+         * Small Item, Set the descriptor field
          */
         Temp8 = 0x70;
         Temp8 |= LinkedList->Data.VendorSpecific.Length;
@@ -424,24 +414,23 @@ AcpiRsVendorStream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = POINTER_DIFF (Buffer, *OutputBuffer);
+    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
     return_ACPI_STATUS (AE_OK);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsStartDependentFunctionsResource
+ * FUNCTION:    AcpiRsStartDependFnsResource
  *
  * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                        stream
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes consumed from
- *                                        the ByteStreamBuffer
- *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with
- *                                        the number of bytes in the filled
- *                                        in structure
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        consumed the ByteStreamBuffer is
+ *                                        returned
+ *              OutputBuffer            - Pointer to the return data buffer
+ *              StructureSize           - Pointer to where the number of bytes
+ *                                        in the return data struct is returned
  *
  * RETURN:      Status
  *
@@ -452,19 +441,19 @@ AcpiRsVendorStream (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsStartDependentFunctionsResource (
+AcpiRsStartDependFnsResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize)
+    ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE          *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
     UINT8                   Temp8 = 0;
-    UINT32                  StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_START_DPF);
+    ACPI_SIZE               StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_START_DPF);
 
 
-    FUNCTION_TRACE ("RsStartDependentFunctionsResource");
+    FUNCTION_TRACE ("RsStartDependFnsResource");
 
 
     /*
@@ -504,7 +493,6 @@ AcpiRsStartDependentFunctionsResource (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
     }
-
     else
     {
         OutputStruct->Data.StartDpf.CompatibilityPriority =
@@ -529,17 +517,16 @@ AcpiRsStartDependentFunctionsResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsEndDependentFunctionsResource
+ * FUNCTION:    AcpiRsEndDependFnsResource
  *
  * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                        stream
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes consumed from
- *                                        the ByteStreamBuffer
- *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with
- *                                        the number of bytes in the filled
- *                                        in structure
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        consumed the ByteStreamBuffer is
+ *                                        returned
+ *              OutputBuffer            - Pointer to the return data buffer
+ *              StructureSize           - Pointer to where the number of bytes
+ *                                        in the return data struct is returned
  *
  * RETURN:      Status
  *
@@ -550,17 +537,17 @@ AcpiRsStartDependentFunctionsResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsEndDependentFunctionsResource (
+AcpiRsEndDependFnsResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize)
+    ACPI_SIZE               *StructureSize)
 {
     ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
-    UINT32                  StructSize = ACPI_RESOURCE_LENGTH;
+    ACPI_SIZE               StructSize = ACPI_RESOURCE_LENGTH;
 
 
-    FUNCTION_TRACE ("RsEndDependentFunctionsResource");
+    FUNCTION_TRACE ("RsEndDependFnsResource");
 
 
     /*
@@ -588,7 +575,7 @@ AcpiRsEndDependentFunctionsResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsStartDependentFunctionsStream
+ * FUNCTION:    AcpiRsStartDependFnsStream
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
@@ -604,16 +591,16 @@ AcpiRsEndDependentFunctionsResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsStartDependentFunctionsStream (
+AcpiRsStartDependFnsStream (
     ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed)
+    ACPI_SIZE               *BytesConsumed)
 {
     UINT8                   *Buffer = *OutputBuffer;
     UINT8                   Temp8 = 0;
 
 
-    FUNCTION_TRACE ("RsStartDependentFunctionsStream");
+    FUNCTION_TRACE ("RsStartDependFnsStream");
 
 
     /*
@@ -648,20 +635,19 @@ AcpiRsStartDependentFunctionsStream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = POINTER_DIFF (Buffer, *OutputBuffer);
+    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
     return_ACPI_STATUS (AE_OK);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsEndDependentFunctionsStream
+ * FUNCTION:    AcpiRsEndDependFnsStream
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                        the number of bytes of the
- *                                        OutputBuffer used
+ *              BytesConsumed           - Pointer to where the number of bytes 
+ *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
  *
@@ -671,16 +657,15 @@ AcpiRsStartDependentFunctionsStream (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsEndDependentFunctionsStream (
+AcpiRsEndDependFnsStream (
     ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed
-    )
+    ACPI_SIZE               *BytesConsumed)
 {
     UINT8                   *Buffer = *OutputBuffer;
 
 
-    FUNCTION_TRACE ("RsEndDependentFunctionsStream");
+    FUNCTION_TRACE ("RsEndDependFnsStream");
 
 
     /*
@@ -692,7 +677,7 @@ AcpiRsEndDependentFunctionsStream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = POINTER_DIFF (Buffer, *OutputBuffer);
+    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
     return_ACPI_STATUS (AE_OK);
 }
 

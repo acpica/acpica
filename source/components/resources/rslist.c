@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  ******************************************************************************/
 
@@ -196,9 +196,9 @@ AcpiRsByteStreamToList (
     ACPI_STATUS             Status;
     UINT32                  BytesParsed = 0;
     UINT8                   ResourceType = 0;
-    UINT32                  BytesConsumed = 0;
+    ACPI_SIZE               BytesConsumed = 0;
     UINT8                   **Buffer = OutputBuffer;
-    UINT32                  StructureSize = 0;
+    ACPI_SIZE               StructureSize = 0;
     BOOLEAN                 EndTagProcessed = FALSE;
 
 
@@ -309,7 +309,7 @@ AcpiRsByteStreamToList (
             /*
              * Start Dependent Functions Resource
              */
-            Status = AcpiRsStartDependentFunctionsResource (ByteStreamBuffer,
+            Status = AcpiRsStartDependFnsResource (ByteStreamBuffer,
                         &BytesConsumed, Buffer, &StructureSize);
             break;
 
@@ -318,7 +318,7 @@ AcpiRsByteStreamToList (
             /*
              * End Dependent Functions Resource
              */
-            Status = AcpiRsEndDependentFunctionsResource (ByteStreamBuffer,
+            Status = AcpiRsEndDependFnsResource (ByteStreamBuffer,
                         &BytesConsumed, Buffer, &StructureSize);
             break;
 
@@ -461,7 +461,7 @@ AcpiRsListToByteStream (
             /*
              * Start Dependent Functions Resource
              */
-            Status = AcpiRsStartDependentFunctionsStream (LinkedList,
+            Status = AcpiRsStartDependFnsStream (LinkedList,
                             &Buffer, &BytesConsumed);
             break;
 
@@ -469,7 +469,7 @@ AcpiRsListToByteStream (
             /*
              * End Dependent Functions Resource
              */
-            Status = AcpiRsEndDependentFunctionsStream (LinkedList,
+            Status = AcpiRsEndDependFnsStream (LinkedList,
                             &Buffer, &BytesConsumed);
             break;
 
@@ -585,7 +585,7 @@ AcpiRsListToByteStream (
         /*
          * Point to the next object
          */
-        LinkedList = POINTER_ADD (ACPI_RESOURCE,
+        LinkedList = ACPI_PTR_ADD (ACPI_RESOURCE,
                         LinkedList, LinkedList->Length);
     }
 

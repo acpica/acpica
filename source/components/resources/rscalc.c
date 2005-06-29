@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.32 $
+ *              $Revision: 1.35 $
  *
  ******************************************************************************/
 
@@ -144,10 +144,10 @@
 ACPI_STATUS
 AcpiRsCalculateByteStreamLength (
     ACPI_RESOURCE           *LinkedList,
-    UINT32                  *SizeNeeded)
+    ACPI_SIZE               *SizeNeeded)
 {
-    UINT32                  ByteStreamSizeNeeded = 0;
-    UINT32                  SegmentSize;
+    ACPI_SIZE               ByteStreamSizeNeeded = 0;
+    ACPI_SIZE               SegmentSize;
     ACPI_RESOURCE_EXT_IRQ   *ExIrq = NULL;
     BOOLEAN                 Done = FALSE;
 
@@ -355,7 +355,7 @@ AcpiRsCalculateByteStreamLength (
         /*
          * Point to the next object
          */
-        LinkedList = POINTER_ADD (ACPI_RESOURCE,
+        LinkedList = ACPI_PTR_ADD (ACPI_RESOURCE,
                         LinkedList, LinkedList->Length);
     }
 
@@ -627,7 +627,6 @@ AcpiRsCalculateListLength (
             {
                 Temp8 = (UINT8) (Temp16 - (9 + AdditionalBytes));
             }
-
             else
             {
                 Temp8 = 0;
@@ -656,7 +655,6 @@ AcpiRsCalculateListLength (
             {
                 BytesConsumed = 4;
             }
-
             else
             {
                 BytesConsumed = 3;
@@ -805,7 +803,6 @@ AcpiRsCalculateListLength (
             break;
         }
 
-
         /*
          * Update the return value and counter
          */
@@ -817,7 +814,6 @@ AcpiRsCalculateListLength (
          */
         ByteStreamBuffer += BytesConsumed;
     }
-
 
     /*
      * This is the data the caller needs
@@ -902,7 +898,6 @@ AcpiRsCalculatePciRoutingTableLength (
             {
                 NameFound = TRUE;
             }
-
             else
             {
                 /*
@@ -912,7 +907,7 @@ AcpiRsCalculatePciRoutingTableLength (
             }
         }
 
-        TempSizeNeeded += (sizeof (PCI_ROUTING_TABLE) - 4);
+        TempSizeNeeded += (sizeof (ACPI_PCI_ROUTING_TABLE) - 4);
 
         /*
          * Was a String type found?
@@ -927,14 +922,12 @@ AcpiRsCalculatePciRoutingTableLength (
                  */
                 TempSizeNeeded += (*SubObjectList)->String.Length;
             }
-
             else
             {
                 TempSizeNeeded += AcpiNsGetPathnameLength (
                                     (*SubObjectList)->Reference.Node);
             }
         }
-
         else
         {
             /*
@@ -954,10 +947,9 @@ AcpiRsCalculatePciRoutingTableLength (
         TopObjectList++;
     }
 
-
     /*
      * Adding an extra element to the end of the list, essentially a NULL terminator
      */
-    *BufferSizeNeeded = TempSizeNeeded + sizeof (PCI_ROUTING_TABLE);
+    *BufferSizeNeeded = TempSizeNeeded + sizeof (ACPI_PCI_ROUTING_TABLE);
     return_ACPI_STATUS (AE_OK);
 }
