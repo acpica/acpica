@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.53 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -569,8 +569,8 @@ AcpiDsLoad2EndOp (
     PROC_NAME ("DsLoad2EndOp");
 
     Op = WalkState->Op;
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Op=%p State=%p\n", Op, WalkState));
-
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Opcode [%4.4X] Op %p State %p\n", 
+            Op->Opcode, Op, WalkState));
 
     /* Only interested in opcodes that have namespace objects */
 
@@ -828,10 +828,14 @@ AcpiDsLoad2EndOp (
                         WalkState, &(NewNode));
         if (ACPI_SUCCESS (Status))
         {
-            /* TBD: has name already been resolved by here ??*/
-
-            /* TBD: [Restructure] Make sure that what we found is indeed a method! */
-            /* We didn't search for a method on purpose, to see if the name would resolve! */
+            /* 
+             * Make sure that what we found is indeed a method
+             * We didn't search for a method on purpose, to see if the name would resolve
+             */
+            if (NewNode->Type != ACPI_TYPE_METHOD)
+            {
+                Status = AE_AML_OPERAND_TYPE;
+            }
 
             /* We could put the returned object (Node) on the object stack for later, but
              * for now, we will put it in the "op" object that the parser uses, so we
