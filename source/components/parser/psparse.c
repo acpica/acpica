@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -130,6 +130,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acdebug.h"
+#include "acinterp.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psparse")
@@ -1263,6 +1264,8 @@ AcpiPsParseAml (
     /* Create and initialize a new walk list */
 
     WalkList.WalkState = NULL;
+    WalkList.AcquiredMutexList.Prev = NULL;
+    WalkList.AcquiredMutexList.Next = NULL;
 
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, ParserState->StartOp, MthDesc, &WalkList);
     if (!WalkState)
@@ -1436,8 +1439,10 @@ AcpiPsParseAml (
     }
 
 
+
     /* Normal exit */
 
+    AcpiAmlReleaseAllMutexes ((ACPI_OPERAND_OBJECT *) &WalkList.AcquiredMutexList);
     AcpiGbl_CurrentWalkList = PrevWalkList;
     return_ACPI_STATUS (Status);
 
@@ -1450,6 +1455,7 @@ Cleanup:
     AcpiPsCleanupScope (ParserState);
     AcpiCmFree (ParserState);
 
+    AcpiAmlReleaseAllMutexes ((ACPI_OPERAND_OBJECT *)&WalkList.AcquiredMutexList);
     AcpiGbl_CurrentWalkList = PrevWalkList;
 
     return_ACPI_STATUS (Status);
