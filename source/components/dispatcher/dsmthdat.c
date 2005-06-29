@@ -127,6 +127,8 @@
         MODULE_NAME         ("psxmargs");
 
 
+#define NAMEOF_LOCAL_NTE    "__L0"
+#define NAMEOF_ARG_NTE      "__A0"
 
 /*****************************************************************************
  * 
@@ -185,6 +187,9 @@ PsxMthStackInit (
 
     /*
      * WalkState fields are initialized to zero by the CmCallocate().
+     *
+     * An NTE is assigned to each argument and local so that RefOf() can return
+     * a pointer to the NTE.
      */
 
     /* Init the method arguments */
@@ -193,16 +198,16 @@ PsxMthStackInit (
     {
         WalkState->Arguments[i].DataType        = DESC_TYPE_NTE;
         WalkState->Arguments[i].Type            = INTERNAL_TYPE_MethodArgument;
-        WalkState->Arguments[i].Name            = *((UINT32 *) "__A0") | (i << 24);
+        WalkState->Arguments[i].Name            = *((UINT32 *) NAMEOF_ARG_NTE) | (i << 24);
     }
 
-    /* Init the method arguments */
+    /* Init the method locals */
 
-    for (i = 0; i < MTH_NUM_ARGS; i++)
+    for (i = 0; i < MTH_NUM_LOCALS; i++)
     {
         WalkState->LocalVariables[i].DataType   = DESC_TYPE_NTE;
         WalkState->LocalVariables[i].Type       = INTERNAL_TYPE_MethodLocalVar;
-        WalkState->LocalVariables[i].Name       = *((UINT32 *) "__L0") | (i << 24);
+        WalkState->LocalVariables[i].Name       = *((UINT32 *) NAMEOF_LOCAL_NTE) | (i << 24);
     }
 
 
@@ -324,7 +329,7 @@ PsxMthStackInitArgs (
         {
             /*
              * A valid parameter.
-             * define Params[Pindex++] argument object descriptor   
+             * Set the current method argument to the Params[Pindex++] argument object descriptor   
              */
             Status = PsxMthStackSetValue (MTH_TYPE_ARG, Mindex, Params[Pindex]);
             if (ACPI_FAILURE (Status))
@@ -456,9 +461,12 @@ PsxMthStackSetEntry (
         return_ACPI_STATUS (Status);
     }
 
-    /* Install the object into the stack entry */
+    /* Increment ref count so object can't be deleted while installed */
 
     CmUpdateObjectReference (Object, REF_INCREMENT);
+    
+    /* Install the object into the stack entry */
+
     *Entry = Object;
 
     return_ACPI_STATUS (AE_OK);
@@ -666,7 +674,7 @@ PsxMthStackGetValue (
      */
 
     *DestDesc = Object;
-    Object->Common.ReferenceCount++;
+    CmUpdateObjectReference (Object, REF_INCREMENT);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -711,6 +719,10 @@ PsxMthStackDeleteValue (
 
     Object = *Entry;
 
+    /* Always clear the entry */
+
+    *Entry = NULL;
+
     /* 
      * Undefine the Arg or Local by setting its descriptor pointer to NULL.
      * If it is currently defined, delete the old descriptor first.
@@ -734,14 +746,17 @@ PsxMthStackDeleteValue (
             Object->Buffer.Sequence ^= 0x80000000UL;
         }
 
-        CmUpdateObjectReference (Object, REF_DECREMENT);   /* Removed from Stack */
+
+        /* 
+         * Decrement the reference count by one to balance the increment when the 
+         * object was put on the stack.  Then we can attempt to delete it.
+         */
+
+        CmUpdateObjectReference (Object, REF_DECREMENT);
         CmDeleteInternalObject (Object);
     }
 
 
-    /* Always clear the entry */
-
-    *Entry = NULL;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -799,6 +814,13 @@ PsxMthStackSetValue (
         goto Cleanup;
     }
 
+    if (*Entry == SrcDesc)
+    {
+        DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Obj=%p already installed!\n",
+                        SrcDesc));
+        goto Cleanup;
+    }
+
     /* If there is an object already in this stack slot, delete it */
 
     if (*Entry)
@@ -810,13 +832,9 @@ PsxMthStackSetValue (
     /* 
      * Install the ObjStack descriptor (*SrcDesc) into the descriptor for the
      * Arg or Local.
+     * Install the new object in the stack entry
+     * (increments the object reference count by one)
      */
-
-    /* Return an additional reference to the object */
-
-    SrcDesc->Common.ReferenceCount++;
-
-    /* Install the new object in the stack entry */
 
     Status = PsxMthStackSetEntry (Type, Index, SrcDesc);
     if (ACPI_FAILURE (Status))
