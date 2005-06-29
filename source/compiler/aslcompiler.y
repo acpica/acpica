@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -1564,7 +1564,7 @@ CopyObjectTerm
     : COPYOBJECT '('                {$$ = TrCreateLeafNode (COPYOBJECT);}
         TermArg
         ',' SimpleTarget
-        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6);}
+        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,TrSetNodeFlags ($6, NODE_IS_TARGET));}
     | COPYOBJECT '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
