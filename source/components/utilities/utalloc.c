@@ -204,7 +204,7 @@ CmAddElementToAllocList (
     ALLOCATION_INFO         *Element;
 
 
-    FUNCTION_TRACE ("CmAddElementToAllocList");
+    FUNCTION_TRACE_PTR ("CmAddElementToAllocList", Address);
     
 
     CmAcquireMutex (MTX_MEMORY);
@@ -527,6 +527,11 @@ CmDumpCurrentAllocations (
                 {
                     DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" NTE Name %4.4s", 
                         &((NAME_TABLE_ENTRY *)(Element->Address))->Name));
+                }
+
+                else if (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType == DESC_TYPE_STATE)
+                {
+                    DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" StateObj"));
                 }
             }
 
