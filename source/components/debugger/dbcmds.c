@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -501,7 +501,7 @@ AcpiDbDumpNamespace (
                 return;
             }
 
-            if (!VALID_DESCRIPTOR_TYPE ((SubtreeEntry), ACPI_DESC_TYPE_NAMED))
+            if (ACPI_GET_DESCRIPTOR_TYPE (SubtreeEntry) != ACPI_DESC_TYPE_NAMED)
             {
                 AcpiOsPrintf ("Address %p is not a valid Named object\n", SubtreeEntry);
                 return;
