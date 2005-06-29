@@ -119,11 +119,11 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *
  * FUNCTION:    NsWalkNamespace
  *
- * PARAMETERS:  Type -              NsType to search for
- *              StartHandle -       Handle in namespace where search begins
- *              MaxDepth -          Depth to which search is to reach
- *              UserFunction -      Called when an object of "Type" is found
- *              Context -           Passed to user function
+ * PARAMETERS:  Type                - NsType to search for
+ *              StartHandle         - Handle in namespace where search begins
+ *              MaxDepth            - Depth to which search is to reach
+ *              UserFunction        - Called when an object of "Type" is found
+ *              Context             - Passed to user function
  *
  * RETURNS      Return value from the UserFunction if terminated early.
  *              Otherwise, returns NULL.
@@ -232,8 +232,8 @@ BREAKPOINT3;
  *
  * FUNCTION:    NsChecksum
  *
- * PARAMETERS:  Buffer -                    Buffer to checksum
- *              Length -                    Size of the buffer
+ * PARAMETERS:  Buffer              - Buffer to checksum
+ *              Length              - Size of the buffer
  *
  * RETURNS      8 bit checksum of buffer
  *
@@ -267,7 +267,7 @@ NsChecksum (void *Buffer, UINT32 Length)
  *
  * FUNCTION:    NsAllocateNteDesc
  *
- * PARAMETERS:  NteCount            Count of NTEs to allocate
+ * PARAMETERS:  NteCount            - Count of NTEs to allocate
  *
  * DESCRIPTION: Allocate an array of nte, including prepended link space
  *              Array is set to all zeros via OsdCallcate().
@@ -313,7 +313,7 @@ NsAllocateNteDesc (INT32 NteCount)
  *
  * FUNCTION:    NsGetType
  *
- * PARAMETERS:  NsHandle Handle          Handle of nte to be examined
+ * PARAMETERS:  Handle              - Handle of nte to be examined
  *
  * RETURN:      Type field from nte whose handle is passed
  *
@@ -341,7 +341,7 @@ NsGetType (NsHandle handle)
  *
  * FUNCTION:    NsGetValue
  *
- * PARAMETERS:  NsHandle Handle              Handle of nte to be examined
+ * PARAMETERS:  Handle              - Handle of nte to be examined
  *
  * RETURN:      Value field from nte whose handle is passed
  *
@@ -369,7 +369,7 @@ NsGetValue (NsHandle handle)
  *
  * FUNCTION:    IsNsValue
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc
+ * PARAMETERS:  *ObjDesc            - An object descriptor
  *
  * RETURN:      TRUE if the passed descriptor is the value of a Name in
  *              the name space, else FALSE
@@ -389,13 +389,12 @@ IsNsValue (OBJECT_DESCRIPTOR *ObjDesc)
 
 /****************************************************************************
  *
- *  FUNCTION:   NsLocal
+ * FUNCTION:    NsLocal
  *
- *  PARAMETERS: NsType Type
+ * PARAMETERS:  Type            - A namespace object type
  *
- *  RETURN: LOCAL if names must be found locally in objects of the
- *              passed type
- *          0 if enclosing scopes should be searched
+ * RETURN:      LOCAL if names must be found locally in objects of the
+ *              passed type, 0 if enclosing scopes should be searched
  *
  ***************************************************************************/
 
@@ -421,16 +420,12 @@ NsLocal (NsType Type)
  *
  * FUNCTION:    NsInternalizeName
  *
- * PARAMETERS:  char *DottedName -        external representation of name
+ * PARAMETERS:  *DottedName             - external representation of name
  *
  * RETURN:      Internal representation of name
  *
  * DESCRIPTION: Convert an external representation (e.g. "\_PR_.CPU0")
  *              to internal form (e.g. 5c 2f 02 5f 50 52 5f 43 50 55 30)
- *
- * ALLOCATION:
- * Reference   Size              Pool  Owner                Description
- * pcIN{sl}    INsiz{sl:HWM}     bu    NsInternalizeName      Internal name
  *
  ****************************************************************************/
 
@@ -515,7 +510,7 @@ static INT32    NumStaticBlocks = 0;
  *
  * FUNCTION:    RegisterStaticBlockPtr
  *
- * PARAMETERS:  void    **BlkPtr         Addr of static pointer to be registered
+ * PARAMETERS:  **BlkPtr            - Addr of static pointer to be registered
  *
  * DESCRIPTION: If compiled with bu_plumr.h, add the pointer whose address
  *              is passed to the registry.  MarkStaticBlocks() will then
@@ -544,7 +539,7 @@ RegisterStaticBlockPtr (void **BlkPtr)
  *
  * FUNCTION:    MarkStaticBlocks
  *
- * PARAMETERS:  INT32 *Count        Count of blocks marked
+ * PARAMETERS:  *Count          - Count of blocks marked
  *
  * DESCRIPTION: "Mark" all blocks pointed to by registered static pointers
  *
@@ -576,10 +571,10 @@ MarkStaticBlocks (INT32 *Count)
  *
  * FUNCTION:    NsMarkNT
  *
- * PARAMETERS:  nte     *ThisEntry  table to be marked
- *              INT32   Size        size of table
- *              INT32   *Count      output count of blocks marked
- *                                  Outermost caller should preset to 0
+ * PARAMETERS:  *ThisEntry          - table to be marked
+ *              Size                - size of table
+ *              *Count              - output count of blocks marked
+ *                                    Outermost caller should preset to 0
  *
  * DESCRIPTION: "Mark" a name table and its reachable values,
  *              including descendents.
