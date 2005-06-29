@@ -378,8 +378,15 @@ void (*NOTIFY_HANDLER) (
     void                    *Context);
 
 
+#define ADDRESS_SPACE_READ      1
+#define ADDRESS_SPACE_WRITE     2
+
 typedef
-void (*OPREGION_HANDLER) (
+ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
+    UINT32                  Function,
+    UINT32                  Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value,
     void                    *Context);
 
 
