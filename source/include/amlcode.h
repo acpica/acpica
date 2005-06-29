@@ -316,16 +316,18 @@
 
 #define ARGI_ANYTYPE                0x01
 #define ARGI_TARGETREF              0x02
-#define ARGI_LVALUE                 0x03
+#define ARGI_REFERENCE              0x03
 #define ARGI_IF                     0x04
 #define ARGI_NUMBER                 0x05
 #define ARGI_STRING                 0x06
 #define ARGI_BUFFER                 0x07
 #define ARGI_PACKAGE                0x08
-#define ARGI_DATAOBJECT             0x09     /* Buffer, string, or package */
+#define ARGI_DATAOBJECT             0x09     /* Buffer, string, package or NTE reference - Used only by SizeOf operator*/
 #define ARGI_COMPLEXOBJ             0x0A     /* Buffer or package */
 #define ARGI_MUTEX                  0x0B
 #define ARGI_EVENT                  0x0C
+#define ARGI_REGION                 0x0D
+#define ARGI_DDBHANDLE              0x0E
 
 #define ARGI_INVALID_OPCODE         0xFFFFFFFF
 
