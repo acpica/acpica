@@ -120,7 +120,6 @@
 #include <acpiobj.h>
 #include <interpreter.h>
 #include <namespace.h>
-#include <acpiosd.h>
 
 
 #define _THIS_MODULE        "cmalloc.c"
@@ -409,7 +408,7 @@ CmDumpCurrentAllocations (
 
     if (Element == NULL)
     {
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("No outstanding allocations.\n"));
+        DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("No outstanding allocations.\n"));
         return_VOID;
     }
 
@@ -423,7 +422,7 @@ CmDumpCurrentAllocations (
         if ((Element->Component & Component) &&
             ((Module == NULL) || (0 == strcmp (Module, Element->Module))))
         {
-            DEBUG_PRINT (TRACE_ALLOCATIONS,
+            DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                 ("%p: Length %04x %10.10s Line %d",
                 Element->Address, Element->Size, Element->Module, Element->Line));
 
@@ -431,11 +430,11 @@ CmDumpCurrentAllocations (
 
             if (Element->Size == sizeof (ACPI_OBJECT_INTERNAL))
             {
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS, (" Type %s", 
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" Type %s", 
                     NsTypeNames[((ACPI_OBJECT_INTERNAL *)(Element->Address))->Type]));
             }
 
-            DEBUG_PRINT_RAW (TRACE_ALLOCATIONS, ("\n")); 
+            DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, ("\n")); 
         }
         
         if (Element->Next == NULL)
@@ -447,10 +446,10 @@ CmDumpCurrentAllocations (
     }
 
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS,
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
         ("Total number of unfreed allocations = %d\n", i));
             
-    DEBUG_PRINT (TRACE_ALLOCATIONS,
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
         ("Stack Ptrs: Obj=%d Pkg=%d Mth=%d\n",
             AmlObjStackLevel(), AmlPkgStackLevel(), AmlMthStackLevel()));
  
@@ -648,3 +647,4 @@ _CmAllocateObjectDesc (
 
     return_VALUE (NewDesc);
 }
+
