@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.50 $
+ *       $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -335,11 +335,11 @@
 
 #else
 
-#define REPORT_INFO(fp)                 {_ReportInfo("",__LINE__,_COMPONENT); \
+#define REPORT_INFO(fp)                 {_ReportInfo("ACPI:",__LINE__,_COMPONENT); \
                                             DebugPrintRaw PARAM_LIST(fp);}
-#define REPORT_ERROR(fp)                {_ReportError("",__LINE__,_COMPONENT); \
+#define REPORT_ERROR(fp)                {_ReportError("ACPI:",__LINE__,_COMPONENT); \
                                             DebugPrintRaw PARAM_LIST(fp);}
-#define REPORT_WARNING(fp)              {_ReportWarning("",__LINE__,_COMPONENT); \
+#define REPORT_WARNING(fp)              {_ReportWarning("ACPI:",__LINE__,_COMPONENT); \
                                             DebugPrintRaw PARAM_LIST(fp);}
 
 #endif
