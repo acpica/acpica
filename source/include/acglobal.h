@@ -98,13 +98,11 @@
 #define __GLOBALS_H__
 
 
-
+/*
+ * Ensure that the globals are actually defined only once
+ */
 #ifdef DEFINE_ACPI_GLOBALS
 #define ACPI_EXTERN
-#ifndef __GNUC__
-#pragma message ("ACPI_EXTERN variables defined in this module.")
-#endif
-
 #else
 #define ACPI_EXTERN extern
 #endif
@@ -144,7 +142,7 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
 ACPI_EXTERN BOOLEAN             GlobalLockSet;
 ACPI_EXTERN INT32               Capabilities;
 ACPI_EXTERN INT32               NameStringSize;
-ACPI_EXTERN char                *NameString;        /* Runtime AML error message communication */
+ACPI_EXTERN char                *NameString;
 
 ACPI_EXTERN INT32               RestoreAcpiChipset;
 ACPI_EXTERN UINT16              Pm1EnableRegisterSave;
@@ -153,7 +151,6 @@ ACPI_EXTERN UINT8               *Gpe1EnableRegisterSave;
 ACPI_EXTERN INT32               OriginalMode;
 ACPI_EXTERN INT32               EdgeLevelSave;
 ACPI_EXTERN INT32               IrqEnableSave;
-ACPI_EXTERN INT32               OriginalMode;
 extern char                     *ExceptionNames[];
 
 /* File I/O globals */
@@ -161,9 +158,7 @@ extern char                     *ExceptionNames[];
 ACPI_EXTERN char                *DsdtFile;
 ACPI_EXTERN char                *OutputFile;
 ACPI_EXTERN char                *InputFile;
-
-ACPI_EXTERN INT32               AcpiLibInitStatus;
-ACPI_EXTERN INT32               AcpiHook; 
+ACPI_EXTERN UINT32              RsdpOriginalLocation; 
 
 /* Procedure nesting level for debug output */
 
@@ -173,8 +168,6 @@ ACPI_EXTERN UINT32              NestingLevel;
 
 extern UINT32                   DebugLevel;
 extern UINT32                   DebugLayer;
-
-extern char                     *FENames[];
 
 
 
@@ -212,6 +205,8 @@ extern INT32                    PkgStack_Len[AML_PKG_MAX_NEST];
 extern UINT8                    *PkgStack_Code[AML_PKG_MAX_NEST];
 extern void                     *ObjStack[AML_EXPR_MAX_NEST];
 extern INT32                    ObjStackTop;
+extern char                     *FENames[];
+
 
 /* 
  * Method Stack, containing locals and args
@@ -223,7 +218,7 @@ extern INT32                    ObjStackTop;
 #define NUMARG                  7
 
 
-extern OBJECT_DESCRIPTOR        *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
+extern ACPI_OBJECT              *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
 extern INT32                    MethodStackTop;
 
 /* Base of AML block, and pointer to current location in it */
@@ -247,7 +242,7 @@ ACPI_EXTERN UINT8               LastFieldFlag;
  * Handle to the last method found
  * used during pass1 of load 
  */
-ACPI_EXTERN NsHandle            LastMethod;
+ACPI_EXTERN ACPI_HANDLE         LastMethod;
 
 
 
@@ -261,7 +256,7 @@ ACPI_EXTERN NsHandle            LastMethod;
 extern UINT32         	        EventCount[NUM_FIXED_EVENTS];   
 extern FIXED_EVENT_HANDLER      FixedEventHandlers[NUM_FIXED_EVENTS];
 
-ACPI_EXTERN NsHandle            GpeObjHandle;
+ACPI_EXTERN ACPI_HANDLE         GpeObjHandle;
 ACPI_EXTERN UINT32              SciHandle;
 ACPI_EXTERN UINT32              GpeRegisterCount;
 ACPI_EXTERN GPE_REGISTERS       *GpeRegisters;
