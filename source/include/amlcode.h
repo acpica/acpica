@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.51 $
+ *       $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -328,8 +328,8 @@
 #define ARGI_ANYOBJECT              0x11
 #define ARGI_ANYTYPE                0x12
 #define ARGI_COMPUTEDATA            0x13     /* Buffer, String, or Integer */
-#define ARGI_DATAOBJECT             0x14     /* Buffer, string, package or reference to a Node - Used only by SizeOf operator*/
-#define ARGI_COMPLEXOBJ             0x15     /* Buffer or package */
+#define ARGI_DATAOBJECT             0x14     /* Buffer, String, package or reference to a Node - Used only by SizeOf operator*/
+#define ARGI_COMPLEXOBJ             0x15     /* Buffer, String, or package (Used by INDEX op only) */
 #define ARGI_INTEGER_REF            0x16
 #define ARGI_OBJECT_REF             0x17
 #define ARGI_DEVICE_REF             0x18
