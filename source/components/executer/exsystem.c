@@ -190,9 +190,9 @@ OsAcquireOpRqst (
     
         else if (ObjDesc->Mutex.ThreadId != (CurrentId = OsThreadId ()))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attemted to Aquire a resource owned "
+            DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attempted to acquire a resource owned "
                     "by thread %02Xh\n", CurrentId, ObjDesc->Mutex.ThreadId));
-            Status = AE_ERROR;
+            Status = AE_SHARE;
         }
 
         if (AE_OK == Status)
@@ -216,7 +216,7 @@ OsAcquireOpRqst (
  * DESCRIPTION: Provides an access point to perform synchronization operations
  *              within the AML.  This operation is a request to release a previously
  *              acquired Mutex.  If the Mutex variable is set then it will be
- *              decremented.  Otherwise AE_ERROR will be returned.
+ *              decremented.
  *
  ******************************************************************************/
 
@@ -238,9 +238,9 @@ OsReleaseOpRqst (
     
         else if (ObjDesc->Mutex.ThreadId != (CurrentId = OsThreadId ()))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attemted to Release a Mutex owned "
+            DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attempted to release a Mutex owned "
                         "by thread %02Xh\n", CurrentId, ObjDesc->Mutex.ThreadId));
-            Status = AE_ERROR;
+            Status = AE_SHARE;
         }
     
         if (AE_OK == Status)
@@ -382,7 +382,7 @@ ACPI_STATUS
 OsGetGlobalLock(void)
 {
     UINT32              GlobalLockReg;
-    ACPI_STATUS         Status = AE_ERROR;
+    ACPI_STATUS         Status;
 
 
     if (FACS)
@@ -396,7 +396,7 @@ OsGetGlobalLock(void)
             DEBUG_PRINT (ACPI_ERROR, ("The Global Lock is owned by another process\n"\
                     "This is a single threaded implementation. There is no way some\n"\
                     "other process can own the Global Lock!\n"));
-            Status = AE_ERROR;
+            Status = AE_SHARE;
         }
     
         else
