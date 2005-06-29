@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.150 $
+ *              $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -321,7 +321,7 @@ AcpiNsDumpOneObject (
 
         case ACPI_TYPE_DEVICE:
 
-            AcpiOsPrintf ("Notify object: %p", ObjDesc);
+            AcpiOsPrintf ("Notify Object: %p\n", ObjDesc);
             break;
 
 
@@ -468,7 +468,7 @@ AcpiNsDumpOneObject (
         case ACPI_TYPE_LOCAL_BANK_FIELD:
         case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
-            AcpiOsPrintf (" Off %.2X Len %.2X Acc %.2hd\n",
+            AcpiOsPrintf ("Off %.2X Len %.2X Acc %.2hd\n",
                     (ObjDesc->CommonField.BaseByteOffset * 8)
                         + ObjDesc->CommonField.StartFieldBitOffset,
                     ObjDesc->CommonField.BitLength,
