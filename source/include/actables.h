@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.34 $
+ *       $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -141,7 +141,7 @@ ACPI_STATUS
 AcpiTbConvertTableFadt (
     void);
 
-ACPI_STATUS
+void
 AcpiTbBuildCommonFacs (
     ACPI_TABLE_DESC         *TableInfo);
 
@@ -162,22 +162,16 @@ AcpiTbGetTablePtr (
 
 ACPI_STATUS
 AcpiTbGetTable (
-    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
-    ACPI_TABLE_HEADER       *BufferPtr,
+    ACPI_POINTER            *Address,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 AcpiTbVerifyRsdp (
-    ACPI_PHYSICAL_ADDRESS   RSDP_PhysicalAddress);
+    ACPI_POINTER            *Address);
 
-ACPI_STATUS
-AcpiTbGetTableFacs (
-    ACPI_TABLE_HEADER       *BufferPtr,
-    ACPI_TABLE_DESC         *TableInfo);
-
-ACPI_PHYSICAL_ADDRESS
+void
 AcpiTbGetRsdtAddress (
-    void);
+    ACPI_POINTER            *OutAddress);
 
 ACPI_STATUS
 AcpiTbValidateRsdt (
@@ -185,7 +179,7 @@ AcpiTbValidateRsdt (
 
 ACPI_STATUS
 AcpiTbGetTablePointer (
-    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
+    ACPI_POINTER            *Address,
     UINT32                  Flags,
     UINT32                  *Size,
     ACPI_TABLE_HEADER       **TablePtr);
