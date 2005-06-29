@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -122,6 +122,18 @@
 
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbxfroot")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiTbFindRsdp (
+    ACPI_TABLE_DESC         *TableInfo,
+    UINT32                  Flags);
+
+static UINT8 *
+AcpiTbScanMemoryForRsdp (
+    UINT8                   *StartAddress,
+    UINT32                  Length);
 
 
 /*******************************************************************************

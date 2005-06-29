@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,14 @@
 
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbinstal")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiTbMatchSignature (
+    char                    *Signature,
+    ACPI_TABLE_DESC         *TableInfo,
+    UINT8                   SearchType);
 
 
 /*******************************************************************************
