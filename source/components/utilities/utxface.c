@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: cmapi - External interfaces for "global" ACPI functions
+ *
+ * Module Name: cmxface - External interfaces for "global" ACPI functions
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,19 +115,19 @@
  *****************************************************************************/
 
 
-#define __CMAPI_C__
+#define __CMXFACE_C__
 
-#include <acpi.h>
-#include <events.h>
-#include <hardware.h>
-#include <namesp.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <debugger.h>
+#include "acpi.h"
+#include "events.h"
+#include "hardware.h"
+#include "namesp.h"
+#include "interp.h"
+#include "amlcode.h"
+#include "debugger.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmapi");
+        MODULE_NAME         ("cmxface");
 
 
 /*******************************************************************************
@@ -157,31 +157,31 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
 
     /* Initialize all globals used by the subsystem */
 
-    CmInitGlobals (InitData);
+    AcpiCmInitGlobals (InitData);
 
     /* Initialize the OS-Dependent layer */
 
-    Status = OsdInitialize ();
+    Status = AcpiOsdInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("OSD failed to initialize, %s\n", CmFormatException (Status)));
+        DEBUG_PRINT (ACPI_ERROR, ("OSD failed to initialize, %s\n", AcpiCmFormatException (Status)));
         REPORT_ERROR ("OSD Initialization Failure");
         return_ACPI_STATUS (Status);
     }
 
     /* Create the default mutex objects */
 
-    Status = CmMutexInitialize ();
+    Status = AcpiCmMutexInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Global mutex creation failure, %s\n", CmFormatException (Status)));
+        DEBUG_PRINT (ACPI_ERROR, ("Global mutex creation failure, %s\n", AcpiCmFormatException (Status)));
         REPORT_ERROR ("Global Mutex Initialization Failure");
         return_ACPI_STATUS (Status);
     }
 
     /* If configured, initialize the AML debugger */
 
-    DEBUG_EXEC (DbInitialize ());
+    DEBUG_EXEC (AcpiDbInitialize ());
 
     return_ACPI_STATUS (Status);
 }
@@ -207,23 +207,23 @@ AcpiTerminate (void)
 
     /* Terminate the AML Debuger if present */
 
-    Gbl_DbTerminateThreads = TRUE;
-    CmReleaseMutex (MTX_DEBUG_CMD_READY);
+    AcpiGbl_DbTerminateThreads = TRUE;
+    AcpiCmReleaseMutex (MTX_DEBUG_CMD_READY);
 
 
     /* Shutdown and free all resources */
 
-    CmSubsystemShutdown ();
+    AcpiCmSubsystemShutdown ();
 
 
     /* Free the mutex objects */
 
-    CmMutexTerminate ();
+    AcpiCmMutexTerminate ();
 
 
     /* Now we can shutdown the OS-dependent layer */
 
-    OsdTerminate ();
+    AcpiOsdTerminate ();
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -233,17 +233,17 @@ AcpiTerminate (void)
  *
  * FUNCTION:    AcpiGetSystemInfo
  *
- * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the 
+ * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the
  *                                resources for the device
  *              BufferLength    - the number of bytes available in the buffer
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
- * DESCRIPTION: This function is called to get information about the current 
+ *
+ * DESCRIPTION: This function is called to get information about the current
  *              state of the ACPI subsystem.  It will return system information
  *              in the OutBuffer.
  *
- *              If the function fails an appropriate status will be returned 
+ *              If the function fails an appropriate status will be returned
  *              and the value of OutBuffer is undefined.
  *
  ******************************************************************************/
@@ -268,7 +268,7 @@ AcpiGetSystemInfo (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    if (OutBuffer->Length < sizeof (ACPI_SYSTEM_INFO)) 
+    if (OutBuffer->Length < sizeof (ACPI_SYSTEM_INFO))
     {
         /*
          *  Caller's buffer is too small
@@ -289,11 +289,11 @@ AcpiGetSystemInfo (
 
     /* System flags (ACPI capabilities) */
 
-    InfoPtr->Flags              = Gbl_SystemFlags;
+    InfoPtr->Flags              = AcpiGbl_SystemFlags;
 
     /* Timer resolution - 24 or 32 bits  */
-    
-    InfoPtr->TimerResolution    = HwPmtResolution ();
+
+    InfoPtr->TimerResolution    = AcpiHwPmtResolution ();
 
     /* Clear the reserved fields */
 
@@ -310,7 +310,7 @@ AcpiGetSystemInfo (
     InfoPtr->NumTableTypes = NUM_ACPI_TABLES;
     for (i = 0; i < NUM_ACPI_TABLES; i++);
     {
-        InfoPtr->TableInfo[i].Count = Gbl_AcpiTables[i].Count;
+        InfoPtr->TableInfo[i].Count = AcpiGbl_AcpiTables[i].Count;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -321,11 +321,11 @@ AcpiGetSystemInfo (
  *
  * FUNCTION:    AcpiFormatException
  *
- * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the 
+ * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the
  *                                exception name
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
+ *
  * DESCRIPTION: This function translates an ACPI exception into an ASCII string.
  *
  ******************************************************************************/
@@ -362,7 +362,7 @@ AcpiFormatException (
 
     /* Convert the exception code */
 
-    FormattedException = CmFormatException (Exception);
+    FormattedException = AcpiCmFormatException (Exception);
 
     /*
      * Get length of string and check if it will fit in caller's buffer
