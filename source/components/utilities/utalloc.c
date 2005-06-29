@@ -117,7 +117,12 @@ static ST_KEY_DESC_TABLE KDT[] = {
  * 
  * FUNCTION:    _AllocateObjectDesc
  *
- * RETURN:      Pointer to newly allocated object descriptor
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              KdtEntry            - Error message to use on failure
+ *
+ * RETURN:      Pointer to newly allocated object descriptor.  Null on error
  *
  * DESCRIPTION: Allocate a new object descriptor.  Gracefully handle
  *              error conditions.
@@ -125,7 +130,8 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 void *
-_AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry)
+_AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId, 
+                     ST_KEY_DESC_TABLE *KdtEntry)
 {
     OBJECT_DESCRIPTOR       *NewDesc;
 
@@ -138,7 +144,6 @@ _AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_K
         /* Allocation failed */
         
         _REPORT_ERROR (ModuleName, LineNumber, ComponentId, KdtEntry);
-        OutOfMemory = TRUE;
     }
 
     return NewDesc;
@@ -149,7 +154,12 @@ _AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_K
  * 
  * FUNCTION:    _LocalAllocate 
  *
- * RETURN:      Pointer to newly allocated memory
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              AllocSize           - Memory to allocate, in bytes
+ *
+ * RETURN:      Pointer to newly allocated memory.  Null on error.
  *
  * DESCRIPTION: Allocate memory.  Gracefully handle
  *              error conditions.
@@ -168,7 +178,6 @@ _LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 All
         /* Report allocation error */
 
         _REPORT_ERROR (ModuleName, LineNumber, ComponentId, &KDT[0]);
-        OutOfMemory = TRUE;
     }
 
     return Block;
@@ -179,7 +188,12 @@ _LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 All
  * 
  * FUNCTION:    _LocalCallocate 
  *
- * RETURN:      Pointer to newly allocated memory
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              AllocSize           - Memory to allocate, in bytes
+ *
+ * RETURN:      Pointer to newly allocated memory. Null on error
  *
  * DESCRIPTION: Allocate memory via calloc (initialized to zero).  
  *              Gracefully handle error conditions.
@@ -198,7 +212,6 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
         /* Report allocation error */
 
         _REPORT_ERROR (ModuleName, LineNumber, ComponentId, &KDT[1]);
-        OutOfMemory = TRUE;
     }
 
     return Block;
