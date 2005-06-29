@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -121,25 +121,12 @@
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evgpeblk")
 
-#define ACPI_HID_POWER          "PNP0C0C"	
-#define ACPI_HID_LID            "PNP0C0D"
-#define ACPI_HID_SLEEP          "PNP0C0E"
-
-#define ACPI_NUM_COMBO_GPES     3
-
-char    *AcpiGbl_ComboGpeHids[ACPI_NUM_COMBO_GPES] =
-{
-    ACPI_HID_POWER,
-    ACPI_HID_LID,
-    ACPI_HID_SLEEP
-};
-
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiEvValidGpeEvent
  *
- * PARAMETERS:  GpeEventInfo - Info for this GPE
+ * PARAMETERS:  GpeEventInfo                - Info for this GPE
  *
  * RETURN:      TRUE if the GpeEvent is valid
  *
@@ -345,8 +332,8 @@ AcpiEvSaveMethodInfo (
      * 2) Edge/Level determination is based on the 2nd character
      *    of the method name
      *
-     * NOTE: Default GPE type is RUNTIME.  May be changed later to WAKE or
-     * WAKE/RUNTIME if a _PRW object is found that points to this GPE.
+     * NOTE: Default GPE type is RUNTIME.  May be changed later to WAKE
+     * if a _PRW object is found that points to this GPE.
      */
     switch (Name[1])
     {
@@ -405,7 +392,9 @@ AcpiEvSaveMethodInfo (
 
     GpeEventInfo->Dispatch.MethodNode = (ACPI_NAMESPACE_NODE *) ObjHandle;
 
-    GpeEventInfo->RegisterInfo->EnableForRun |= GpeEventInfo->RegisterBit;
+    /* Update enable mask, but don't enable the HW GPE as of yet */
+
+    AcpiEvEnableGpe (GpeEventInfo, FALSE);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_LOAD,
         "Registered GPE method %s as GPE number 0x%.2X\n",
@@ -436,7 +425,7 @@ AcpiEvMatchPrwAndGpe (
     void                    **ReturnValue)
 {
     ACPI_GPE_WALK_INFO      *GpeInfo = (void *) Info;
-    ACPI_NAMESPACE_NODE     *GpeDevice;
+    ACPI_NAMESPACE_NODE     *GpeDevice; 
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_NAMESPACE_NODE     *TargetGpeDevice;
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
@@ -444,8 +433,6 @@ AcpiEvMatchPrwAndGpe (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     UINT32                  GpeNumber;
     ACPI_STATUS             Status;
-    ACPI_DEVICE_ID          ObjectHID;
-    ACPI_NATIVE_UINT        i;
 
 
     ACPI_FUNCTION_TRACE ("EvMatchPrwAndGpe");
@@ -527,31 +514,11 @@ AcpiEvMatchPrwAndGpe (
     {
         GpeEventInfo = &GpeBlock->EventInfo[GpeNumber - GpeBlock->BlockBaseNumber];
 
-        /*
-         * Special handling for these devices:
-         * PowerButton, LidSwitch, SleepButton.  The GPEs for these devices
-         * are always enabled, sleeping or running.
-         */
-        Status = AcpiUtExecute_HID (ObjHandle, &ObjectHID);
-        if (ACPI_SUCCESS (Status))
-        {
-            for (i = 0; i < ACPI_NUM_COMBO_GPES; i++)
-            {
-                if (!ACPI_STRCMP (ObjectHID.Value, AcpiGbl_ComboGpeHids[i]))
-                {
-                    /* Mark GPE for combination WAKE/RUN and WAKE_ENABLED */
+        /* Mark GPE for WAKE-ONLY but WAKE_DISABLED */
 
-                    GpeEventInfo->Flags |= ACPI_GPE_WAKE_ENABLED;
-                    AcpiEvSetGpeType (GpeEventInfo, ACPI_GPE_TYPE_WAKE_RUN);
-                    goto Cleanup;
-                }
-            }
-        }
-
-        /* Default: Mark GPE for WAKE-ONLY but WAKE_DISABLED */
-
-        GpeEventInfo->Flags &= ~ACPI_GPE_WAKE_ENABLED;
+        GpeEventInfo->Flags &= ~(ACPI_GPE_WAKE_ENABLED | ACPI_GPE_RUN_ENABLED);
         AcpiEvSetGpeType (GpeEventInfo, ACPI_GPE_TYPE_WAKE);
+        AcpiEvUpdateGpeEnableMasks (GpeEventInfo, ACPI_GPE_DISABLE);
     }
 
 Cleanup:
@@ -1069,18 +1036,6 @@ AcpiEvCreateGpeBlock (
         return_ACPI_STATUS (Status);
     }
 
-    /* Dump info about this GPE block */
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INIT,
-        "GPE %02d to %02d [%4.4s] %d regs at %8.8X%8.8X on int %d\n",
-        GpeBlock->BlockBaseNumber,
-        (UINT32) (GpeBlock->BlockBaseNumber +
-                ((GpeBlock->RegisterCount * ACPI_GPE_REGISTER_WIDTH) -1)),
-        GpeDevice->Name.Ascii,
-        GpeBlock->RegisterCount,
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeBlock->BlockAddress.Address)),
-        InterruptLevel));
-
     /* Find all GPE methods (_Lxx, _Exx) for this block */
 
     Status = AcpiNsWalkNamespace (ACPI_TYPE_METHOD, GpeDevice,
@@ -1126,15 +1081,6 @@ AcpiEvCreateGpeBlock (
             if (((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) == ACPI_GPE_DISPATCH_METHOD) &&
                  (GpeEventInfo->Flags & ACPI_GPE_TYPE_RUNTIME))
             {
-                /* 
-                 * Enable this GPE, it is 1) either RUNTIME or WAKE/RUN
-                 * and 2) has an _Lxx or _Exx method
-                 */
-                Status = AcpiHwEnableGpe (GpeEventInfo);
-                if (ACPI_FAILURE (Status))
-                {
-                    return_ACPI_STATUS (Status);
-                }
                 GpeEnabledCount++;
             }
             
@@ -1144,6 +1090,23 @@ AcpiEvCreateGpeBlock (
             }
         }
     }
+
+    /* Dump info about this GPE block */
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_INIT,
+        "GPE %02d to %02d [%4.4s] %d regs at %8.8X%8.8X on int %d\n",
+        GpeBlock->BlockBaseNumber,
+        (UINT32) (GpeBlock->BlockBaseNumber +
+                ((GpeBlock->RegisterCount * ACPI_GPE_REGISTER_WIDTH) -1)),
+        GpeDevice->Name.Ascii,
+        GpeBlock->RegisterCount,
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeBlock->BlockAddress.Address)),
+        InterruptLevel));
+
+
+    /* Enable all valid GPEs found above */
+
+    Status = AcpiHwEnableRuntimeGpeBlock (NULL, GpeBlock);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INIT, 
             "Found %u Wake, Enabled %u Runtime GPEs in this block\n", 
@@ -1290,7 +1253,8 @@ AcpiEvGpeInitialize (
     {
         /* GPEs are not required by ACPI, this is OK */
 
-        ACPI_REPORT_INFO (("There are no GPE blocks defined in the FADT\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INIT, 
+                "There are no GPE blocks defined in the FADT\n"));
         Status = AE_OK;
         goto Cleanup;
     }
