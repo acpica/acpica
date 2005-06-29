@@ -149,17 +149,17 @@ AmlAppendOperandDiag(
     UINT16                  OpCode, 
     INT32                   NumOperands)
 {
-    ACPI_OBJECT_INTERNAL    MthDesc;
+/* TBD:    ACPI_OBJECT_INTERNAL    MthDesc; */
 
 
-    AmlGetCurrentLocation (&MthDesc);
+/* TBD: Rparser only    AmlGetCurrentLocation (&MthDesc); */
 
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
                     FileName, LineNum,
                     (OpCode > ACPI_UCHAR_MAX)
                         ? Gbl_LongOps[OpCode & 0x00ff]
                         : Gbl_ShortOps[OpCode],
-                    MthDesc.Method.Pcode));
+                        NULL /*MthDesc.Method.Pcode*/));
 
     if (GetDebugLevel () > 0)
     {
@@ -391,7 +391,7 @@ AmlEisaIdToString (
     UINT32                  id;
 
     
-    id = _ntohl (NumericId);                    // swap to big-endian to get contiguous bits
+    id = _ntohl (NumericId);                    /* swap to big-endian to get contiguous bits */
     
     OutString[0] = '@' + ((id >> 26) & 0x1f);
     OutString[1] = '@' + ((id >> 21) & 0x1f);
