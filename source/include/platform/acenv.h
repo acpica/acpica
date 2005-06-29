@@ -168,9 +168,6 @@
 #include <linux/ctype.h>
 #include <asm/system.h>
 
-/* Single threaded */
-
-#define ACPI_APPLICATION
 
 /* Use native Linux string library */
 
@@ -179,6 +176,10 @@
 /* Special functions */
 
 #define strtoul             simple_strtoul
+
+/* Linux clib doesn't to strupr, but we do. */
+char *
+strupr(char *str);
 
 #else
 
