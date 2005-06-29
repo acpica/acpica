@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.41 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -121,7 +121,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 
-#define _COMPONENT          PARSER
+#define _COMPONENT          ACPI_PARSER
         MODULE_NAME         ("psargs")
 
 
@@ -639,7 +639,7 @@ ACPI_PARSE_OBJECT *
 AcpiPsGetNextField (
     ACPI_PARSE_STATE        *ParserState)
 {
-    ACPI_PTRDIFF            AmlOffset = ParserState->Aml -
+    UINT32                  AmlOffset = ParserState->Aml -
                                         ParserState->AmlStart;
     ACPI_PARSE_OBJECT       *Field;
     UINT16                  Opcode;
