@@ -173,7 +173,8 @@ NsSetup (void)
 
     for (InitVal = PreDefinedNames; InitVal->Name; InitVal++)
     {
-        Status = NsEnter (InitVal->Name, InitVal->Type, MODE_Load, &NewEntry);
+        Status = NsLookup (CurrentScope->Scope, InitVal->Name, InitVal->Type, 
+                                    MODE_Load, NS_NO_UPSEARCH, &NewEntry);
 
         /* 
          * if name entered successfully
@@ -254,27 +255,29 @@ NsSetup (void)
 
 /****************************************************************************
  *
- * FUNCTION:    NsEnter
+ * FUNCTION:    NsLookup
  *
- * PARAMETERS:  Name        - Name to be entered, in internal format
- *                            as represented in the AML stream
- *              Type        - Type associated with name
- *              LoadMode    - MODE_Load => add name if not found
- *              RetEntry    - Where the new entry (NTE) is placed
+ * PARAMETERS:  PrefixScope     - Search scope if name is not fully qualified
+ *              Name            - Name to be entered, in internal format
+ *                                as represented in the AML stream
+ *              Type            - Type associated with name
+ *              LoadMode        - MODE_Load => add name if not found
+ *              RetEntry        - Where the new entry (NTE) is placed
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Find or enter the passed name in the name space.
  *              Log an error if name not found in Exec mode.
  *
- *
  ***************************************************************************/
 
 ACPI_STATUS
-NsEnter (
+NsLookup (
+    NAME_TABLE_ENTRY        *PrefixScope,
     char                    *Name, 
     ACPI_OBJECT_TYPE        Type, 
-    OPERATING_MODE          LoadMode, 
+    OPERATING_MODE          LoadMode,
+    UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry)
 {
     ACPI_STATUS             Status;
@@ -286,7 +289,7 @@ NsEnter (
     ACPI_OBJECT_TYPE        TypeToCheckFor;              /* Type To Check For */
 
 
-    FUNCTION_TRACE ("NsEnter");
+    FUNCTION_TRACE ("NsLookup");
 
 
     if (!RetEntry)
@@ -329,10 +332,10 @@ NsEnter (
     }
 
     DEBUG_PRINT (TRACE_NAMES,
-                    ("NsEnter: Name: [%4.4s] - %02x %02x %02x %02x %02x %02x \n",
-                    Name, Name[0], Name[1], Name[2], Name[3], Name[4], Name[5]));
+                    ("NsLookup: Name: [%4.4s] - %02x %02x %02x %02x %02x %02x  Flags=%x\n",
+                    Name, Name[0], Name[1], Name[2], Name[3], Name[4], Name[5], Flags));
 
-    CheckTrash ("enter NsEnter");
+    CheckTrash ("enter NsLookup");
 
     /* DefFieldDefn and BankFieldDefn define fields in a Region */
     
@@ -350,7 +353,7 @@ NsEnter (
      * of an optional scope prefix followed by a segment part.
      *
      * If present, the scope prefix is either a RootPrefix (in which case the
-     * name is fully qualified), or one or more ParentPrefixes (in which case
+     * name is fully qualified), or zero or more ParentPrefixes (in which case
      * the name's scope is relative to the current scope).
      *
      * The segment part consists of:
@@ -364,23 +367,28 @@ NsEnter (
     {
         /* Name is fully qualified, look in root name table */
         
-        DEBUG_PRINT (TRACE_NAMES, ("root \n"));
-        
         EntryToSearch = RootObject->Scope;
         Name++;                 /* point to segment part */
+
+        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching from root [%p]\n", 
+                                    EntryToSearch));
     }
     
     else
     {
         /* Name is relative to current scope, start there */
         
-        EntryToSearch = CurrentScope->Scope;
+        EntryToSearch = PrefixScope;
+
+        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching relative to pfx scope [%p]\n",
+                                    PrefixScope));
+
+        /* Handle up-prefix (carat).  More than one prefix is supported */
 
         while (*Name == AML_ParentPrefix)
         {
-            DEBUG_PRINT (TRACE_NAMES, ("parent \n"));
             
-            /* point to segment part or next ParentPrefix */
+            /* Point to segment part or next ParentPrefix */
 
             Name++;     
 
@@ -391,8 +399,8 @@ NsEnter (
             {
                 /* Current scope has no parent scope */
                 
-                REPORT_ERROR ("Scope has no parent");
-                CheckTrash ("leave NsEnter NOTFOUND 1");
+                REPORT_ERROR ("NsLookup: Too many parent prefixes or scope has no parent");
+                CheckTrash ("leave NsLookup NOTFOUND 1");
 
                 FUNCTION_EXIT;
                 return AE_NOT_FOUND;
@@ -402,7 +410,7 @@ NsEnter (
 
     if (*Name == AML_DualNamePrefix)
     {
-        DEBUG_PRINT (TRACE_NAMES, ("Dual Name \n"));
+        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Dual Name \n"));
 
         NumSegments = 2;
         Name++;                             /* point to first segment */
@@ -410,7 +418,7 @@ NsEnter (
     
     else if (*Name == AML_MultiNamePrefixOp)
     {
-        DEBUG_PRINT (TRACE_NAMES, ("Multi Name %d \n", Name[1]));
+        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Multi Name %d \n", Name[1]));
         
         NumSegments = (INT32)* (UINT8 *) ++Name;
         Name++;                             /* point to first segment */
@@ -434,28 +442,32 @@ NsEnter (
         NumSegments = 1;
     }
 
-    DEBUG_PRINT (TRACE_NAMES, ("Segments = %d \n", NumSegments));
+
+    /*
+     * Search namespace for each segment of the name.
+     * Loop through and verify/add each name segment.
+     */
+
+    DEBUG_PRINT (TRACE_NAMES, ("NsLookup: %d NameSegs to find\n", NumSegments));
 
     while (NumSegments-- && EntryToSearch)
     {
-        /*  loop through and verify/add each name segment   */
-        
-        CheckTrash ("before NsSearchTable");
-        
         /* 
          * Search for the current segment in the table where it should be.
          * Type is significant only at the last level.
          */
 
+        CheckTrash ("before NsSearchTable");
+        
         Status = NsSearchAndEnter (Name, EntryToSearch, LoadMode,
-                                    NumSegments == 0 ? Type : TYPE_Any, &ThisEntry);
+                                    NumSegments == 0 ? Type : TYPE_Any, Flags, &ThisEntry);
         CheckTrash ("after NsSearchTable");
 
         if (Status != AE_OK)
         {
             if (Status == AE_NOT_FOUND)
             {
-                /*  name not in ACPI namespace  */
+                /* Name not in ACPI namespace  */
 
                 if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
                 {
@@ -464,17 +476,17 @@ NsEnter (
 
                 else
                 {
-                    DEBUG_PRINT (TRACE_NAMES, ("Name not found in this scope\n"));
+                    DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Name not found in this scope\n"));
                 }
 
-                CheckTrash ("leave NsEnter NOTFOUND 2");
+                CheckTrash ("leave NsLookup NOTFOUND 2");
             }
 
             FUNCTION_EXIT;
             return Status;
         }
 
-        if (NumSegments         == 0  &&                    /* if last segment                  */
+        if (NumSegments         == 0  &&                    /* If last segment                  */
             TypeToCheckFor      != TYPE_Any &&              /* and looking for a specific type  */
             TypeToCheckFor      != TYPE_DefAny &&           /* which is not a phoney type       */
             TypeToCheckFor      != TYPE_Scope &&            /*   "   "   "  "   "     "         */
@@ -482,7 +494,7 @@ NsEnter (
             ThisEntry->Type     != TYPE_Any &&              /* and type of entry is known       */
             ThisEntry->Type     != TypeToCheckFor)          /* and entry does not match request */
         {                                                   /* complain.                        */
-            /*  complain about type mismatch    */
+            /* Complain about type mismatch */
 
             REPORT_WARNING ("Type mismatch");
         }
@@ -505,13 +517,13 @@ NsEnter (
              * and the next scope has not been allocated.
              */
 
-            DEBUG_PRINT (ACPI_INFO, ("Load mode= %d  ThisEntry= %x\n", LoadMode, ThisEntry));
+            DEBUG_PRINT (ACPI_INFO, ("NsLookup: Load mode=%d  ThisEntry=%x\n", LoadMode, ThisEntry));
 
             if ((MODE_Load1 == LoadMode) || (MODE_Load == LoadMode))
             {   
-                /*  first or second pass load mode ==> locate the next scope    */
+                /* First or second pass load mode ==> locate the next scope */
                 
-                DEBUG_PRINT (TRACE_NAMES, ("Creating/adding a new scope\n"));
+                DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Creating and adding a new scope\n"));
                 ThisEntry->Scope = NsAllocateNteDesc (NS_TABLE_SIZE);
 
                 if (!ThisEntry->Scope)
@@ -525,7 +537,7 @@ NsEnter (
             
             if (ThisEntry->Scope == NULL)
             {
-                DEBUG_PRINT (ACPI_ERROR, ("No child scope at entry %p\n", ThisEntry));
+                DEBUG_PRINT (ACPI_ERROR, ("NsLookup: No child scope at entry %p\n", ThisEntry));
 
                 if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
                 {
@@ -535,7 +547,7 @@ NsEnter (
                 }
 
                 REPORT_ERROR ("Name not found");
-                CheckTrash ("leave NsEnter NOTFOUND 3");
+                CheckTrash ("leave NsLookup NOTFOUND 3");
                 FUNCTION_EXIT;
                 return AE_NOT_FOUND;
             }
@@ -552,7 +564,7 @@ NsEnter (
         }
 
         EntryToSearch = ThisEntry->Scope;
-        Name += 4;                        /* point to next name segment */
+        Name += ACPI_NAME_SIZE;                 /* point to next name segment */
     }
 
     /* 
