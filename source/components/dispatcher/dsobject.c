@@ -442,8 +442,6 @@ PsxBuildInternalSimpleObj (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_TYPE        Type;
     ACPI_STATUS             Status;
-    char                    *NameString;
-    UINT32                  NameLength;
 
 
     FUNCTION_TRACE ("PsxBuildInternalSimpleObj");
@@ -451,43 +449,28 @@ PsxBuildInternalSimpleObj (
 
     if (Op->Opcode == AML_NAMEPATH)
     {
-        /* Get the entire name string from the AML stream */
+        /*
+         * This is an object reference.  The name was already looked up and the NTE
+         * is stored in this op.
+         */
 
-        Status = AmlGetNameString (ACPI_TYPE_Any, Op->Value.Buffer, &NameString, &NameLength);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-
-        Status = NsLookup (Gbl_CurrentScope->Scope, NameString, ACPI_TYPE_Any, IMODE_Execute, 
-                                    NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, (NAME_TABLE_ENTRY **) &ObjDesc);
-
-        /* Free the namestring created above */
-
-        CmFree (NameString);
-
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        *ObjDescPtr = Op->ResultObj;
+        return_ACPI_STATUS (AE_OK);
     }
 
-    else
+    Type = PsxMapOpcodeToDataType (Op->Opcode, NULL);
+
+    ObjDesc = CmCreateInternalObject (Type);
+    if (!ObjDesc)
     {
-        Type = PsxMapOpcodeToDataType (Op->Opcode, NULL);
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
 
-        ObjDesc = CmCreateInternalObject (Type);
-        if (!ObjDesc)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        Status = PsxInitObjectFromOp (WalkState, Op, Op->Opcode, ObjDesc);
-        if (ACPI_FAILURE (Status))
-        {
-            CmDeleteInternalObject (ObjDesc);
-            return_ACPI_STATUS (Status);
-        }
+    Status = PsxInitObjectFromOp (WalkState, Op, Op->Opcode, ObjDesc);
+    if (ACPI_FAILURE (Status))
+    {
+        CmDeleteInternalObject (ObjDesc);
+        return_ACPI_STATUS (Status);
     }
 
     *ObjDescPtr = ObjDesc;
