@@ -183,6 +183,105 @@ FunctionTrace (
 
 /*****************************************************************************
  * 
+ * FUNCTION:    FunctionTracePtr
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              Pointer             - Pointer to display
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+FunctionTracePtr (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    void                    *Pointer)
+{
+
+    NestingLevel++;
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2d Entered Function: %s, 0x%X\n", 
+                NestingLevel, FunctionName, Pointer);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    FunctionTraceStr
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              String              - Additional string to display
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+FunctionTraceStr (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    char                    *String)
+{
+
+    NestingLevel++;
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2d Entered Function: %s, %s\n", 
+                NestingLevel, FunctionName, String);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    FunctionTraceU32
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              Integer             - Integer to display
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+FunctionTraceU32 (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    UINT32                  Integer)
+{
+
+    NestingLevel++;
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2d Entered Function: %s, 0x%X\n", 
+                NestingLevel, FunctionName, Integer);
+}
+
+
+/*****************************************************************************
+ * 
  * FUNCTION:    FunctionExit
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
