@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.202 $
+ *       $Revision: 1.203 $
  *
  *****************************************************************************/
 
@@ -158,6 +158,7 @@ typedef INT64                           NATIVE_INT;
 typedef NATIVE_UINT                     ACPI_TBLPTR;
 typedef UINT64                          ACPI_IO_ADDRESS;
 typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
+typedef UINT64                          ACPI_SIZE;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000008      /* No hardware alignment support in IA64 */
 #define ACPI_USE_NATIVE_DIVIDE                          /* Native 64-bit integer support */
@@ -188,6 +189,7 @@ typedef INT16                           NATIVE_INT;
 typedef UINT32                          ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 typedef char                            *ACPI_PHYSICAL_ADDRESS;
+typedef UINT32                          ACPI_SIZE;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000002
 #define _HW_ALIGNMENT_SUPPORT
@@ -218,6 +220,7 @@ typedef INT32                           NATIVE_INT;
 typedef NATIVE_UINT                     ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
+typedef UINT32                          ACPI_SIZE;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000004
 #define _HW_ALIGNMENT_SUPPORT
