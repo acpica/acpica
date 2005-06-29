@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -117,7 +117,7 @@
 #ifndef _ACPIOBJ_H
 #define _ACPIOBJ_H
 
-#include <datatypes.h>
+#include <acpitypes.h>
 
 /* 
  * All variants of the ACPI_OBJECT_INTERNAL are defined with the same
