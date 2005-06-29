@@ -127,7 +127,7 @@
 
 /* This matches the #defines in actypes.h. */
 
-ACPI_STRING SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
+NATIVE_CHAR *SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
                                  "\\_S4_","\\_S4B","\\_S5_"};
 
 
@@ -144,11 +144,11 @@ ACPI_STRING SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
  *
  ******************************************************************************/
 
-INT32
+UINT32
 AcpiHwGetBitShift (
     UINT32                  Mask)
 {
-    INT32                   Shift;
+    UINT32                  Shift;
 
 
     FUNCTION_TRACE ("HwGetBitShift");
@@ -347,7 +347,7 @@ AcpiHwRegisterAccess (
         va_list         marker;
 
         va_start (marker, RegisterId);
-        Value = va_arg (marker, INT32);
+        Value = va_arg (marker, UINT32);
         va_end (marker);
     }
 
@@ -563,7 +563,7 @@ AcpiHwRegisterAccess (
                             RegisterValue, AcpiGbl_FACP->Pm1aCntBlk));
         }
 
-        if (AcpiGbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPE_A)
+        if (AcpiGbl_FACP->Pm1bCntBlk && RegisterId != (UINT32) SLP_TYPE_A)
         {
             RegisterValue |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bCntBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1b control: Read 0x%X from 0x%X\n",
@@ -632,7 +632,7 @@ AcpiHwRegisterAccess (
                 }
             }
 
-            if (AcpiGbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPE_A)
+            if (AcpiGbl_FACP->Pm1bCntBlk && RegisterId != (UINT32) SLP_TYPE_A)
             {
                 AcpiOsOut16 (AcpiGbl_FACP->Pm1bCntBlk, (UINT16) RegisterValue);
             }
