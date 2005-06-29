@@ -1,16 +1,16 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
+ *              $Revision: 1.69 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -122,11 +122,11 @@
 #include "actables.h"
 #include "acparser.h"
 
-#define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmdelete");
+#define _COMPONENT          ACPI_UTILITIES
+        MODULE_NAME         ("cmdelete")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteInternalObj
  *
@@ -141,9 +141,10 @@
 
 void
 AcpiCmDeleteInternalObj (
-    ACPI_OBJECT_INTERNAL    *Object)
+    ACPI_OPERAND_OBJECT     *Object)
 {
     void                    *ObjPointer = NULL;
+    ACPI_OPERAND_OBJECT     *HandlerDesc;
 
 
     FUNCTION_TRACE_PTR ("CmDeleteInternalObj", Object);
@@ -189,7 +190,7 @@ AcpiCmDeleteInternalObj (
     case ACPI_TYPE_PACKAGE:
 
         DEBUG_PRINT (ACPI_INFO,
-            ("CmDeleteInternalObj: **** Package of count %d\n",
+            ("CmDeleteInternalObj: **** Package of count %X\n",
             Object->Package.Count));
 
         /*
@@ -209,6 +210,7 @@ AcpiCmDeleteInternalObj (
             ("CmDeleteInternalObj: ***** Mutex %p, Semaphore %p\n",
             Object, Object->Mutex.Semaphore));
 
+        AcpiAmlUnlinkMutex (Object);
         AcpiOsDeleteSemaphore (Object->Mutex.Semaphore);
         break;
 
@@ -216,7 +218,7 @@ AcpiCmDeleteInternalObj (
     case ACPI_TYPE_EVENT:
 
         DEBUG_PRINT (ACPI_INFO,
-            ("CmDeleteInternalObj: ***** AcpiEvent %p, Semaphore %p\n",
+            ("CmDeleteInternalObj: ***** Event %p, Semaphore %p\n",
             Object, Object->Event.Semaphore));
 
         AcpiOsDeleteSemaphore (Object->Event.Semaphore);
@@ -227,18 +229,9 @@ AcpiCmDeleteInternalObj (
     case ACPI_TYPE_METHOD:
 
         DEBUG_PRINT (ACPI_INFO,
-            ("CmDeleteInternalObj: ***** Method %p, ParserOp %p\n",
-            Object, Object->Method.ParserOp));
+            ("CmDeleteInternalObj: ***** Method %p\n", Object));
 
-        /* Delete parse tree if it exists */
-
-        if (Object->Method.ParserOp)
-        {
-            AcpiPsDeleteParseTree (Object->Method.ParserOp);
-            Object->Method.ParserOp = NULL;
-        }
-
-        /* Delete semaphore if it exists */
+        /* Delete the method semaphore if it exists */
 
         if (Object->Method.Semaphore)
         {
@@ -248,6 +241,46 @@ AcpiCmDeleteInternalObj (
 
         break;
 
+
+    case ACPI_TYPE_REGION:
+
+        DEBUG_PRINT (ACPI_INFO,
+            ("CmDeleteInternalObj: ***** Region %p\n",
+            Object));
+
+
+        if (Object->Region.Extra)
+        {
+            /*
+             * Free the RegionContext if and only if the handler is one of the
+             * default handlers -- and therefore, we created the context object
+             * locally, it was not created by an external caller.
+             */
+            HandlerDesc = Object->Region.AddrHandler;
+            if ((HandlerDesc) &&
+                (HandlerDesc->AddrHandler.Hflags == ADDR_HANDLER_DEFAULT_INSTALLED))
+            {
+                ObjPointer = Object->Region.Extra->Extra.RegionContext;
+            }
+
+            /* Now we can free the Extra object */
+
+            AcpiCmDeleteObjectDesc (Object->Region.Extra);
+        }
+        break;
+
+
+    case ACPI_TYPE_BUFFER_FIELD:
+
+        DEBUG_PRINT (ACPI_INFO,
+            ("CmDeleteInternalObj: ***** Buffer Field %p\n",
+            Object));
+
+        if (Object->BufferField.Extra)
+        {
+            AcpiCmDeleteObjectDesc (Object->BufferField.Extra);
+        }
+        break;
 
     default:
         break;
@@ -272,14 +305,14 @@ AcpiCmDeleteInternalObj (
 
     /* Only delete the object if it was dynamically allocated */
 
-    if (Object->Common.Flags & AO_STATIC_ALLOCATION)
+    if (Object->Common.Flags & AOPOBJ_STATIC_ALLOCATION)
     {
         DEBUG_PRINT (ACPI_INFO,
             ("CmDeleteInternalObj: Object %p [%s] static allocation, no delete\n",
             Object, AcpiCmGetTypeName (Object->Common.Type)));
     }
 
-    if (!(Object->Common.Flags & AO_STATIC_ALLOCATION))
+    if (!(Object->Common.Flags & AOPOBJ_STATIC_ALLOCATION))
     {
         DEBUG_PRINT (ACPI_INFO,
             ("CmDeleteInternalObj: Deleting object %p [%s]\n",
@@ -293,7 +326,7 @@ AcpiCmDeleteInternalObj (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteInternalObjectList
  *
@@ -308,9 +341,9 @@ AcpiCmDeleteInternalObj (
 
 ACPI_STATUS
 AcpiCmDeleteInternalObjectList (
-    ACPI_OBJECT_INTERNAL    **ObjList)
+    ACPI_OPERAND_OBJECT     **ObjList)
 {
-    ACPI_OBJECT_INTERNAL    **InternalObj;
+    ACPI_OPERAND_OBJECT     **InternalObj;
 
 
     FUNCTION_TRACE ("CmDeleteInternalObjectList");
@@ -347,12 +380,11 @@ AcpiCmDeleteInternalObjectList (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmUpdateRefCount
  *
  * PARAMETERS:  *Object         - Object whose ref count is to be updated
- *              Count           - Current ref count
  *              Action          - What to do
  *
  * RETURN:      New ref count
@@ -361,9 +393,9 @@ AcpiCmDeleteInternalObjectList (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiCmUpdateRefCount (
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     UINT32                  Action)
 {
     UINT16                  Count;
@@ -392,7 +424,7 @@ AcpiCmUpdateRefCount (
         Object->Common.ReferenceCount = NewCount;
 
         DEBUG_PRINT (ACPI_INFO,
-            ("CmUpdateRefCount: Obj %p Refs=%d, [Incremented]\n",
+            ("CmUpdateRefCount: Obj %p Refs=%X, [Incremented]\n",
             Object, NewCount));
         break;
 
@@ -402,7 +434,7 @@ AcpiCmUpdateRefCount (
         if (Count < 1)
         {
             DEBUG_PRINT (ACPI_INFO,
-                ("CmUpdateRefCount: Obj %p Refs=%d, can't decrement! (Set to 0)\n",
+                ("CmUpdateRefCount: Obj %p Refs=%X, can't decrement! (Set to 0)\n",
                 Object, NewCount));
 
             NewCount = 0;
@@ -413,14 +445,14 @@ AcpiCmUpdateRefCount (
             NewCount--;
 
             DEBUG_PRINT (ACPI_INFO,
-                ("CmUpdateRefCount: Obj %p Refs=%d, [Decremented]\n",
+                ("CmUpdateRefCount: Obj %p Refs=%X, [Decremented]\n",
                 Object, NewCount));
         }
 
         if (Object->Common.Type == ACPI_TYPE_METHOD)
         {
             DEBUG_PRINT (ACPI_INFO,
-                ("CmUpdateRefCount: Method Obj %p Refs=%d, [Decremented]\n",
+                ("CmUpdateRefCount: Method Obj %p Refs=%X, [Decremented]\n",
                 Object, NewCount));
         }
 
@@ -436,7 +468,7 @@ AcpiCmUpdateRefCount (
     case REF_FORCE_DELETE:
 
         DEBUG_PRINT (ACPI_INFO,
-            ("CmUpdateRefCount: Obj %p Refs=%d, Force delete! (Set to 0)\n",
+            ("CmUpdateRefCount: Obj %p Refs=%X, Force delete! (Set to 0)\n",
             Object, Count));
 
         NewCount = 0;
@@ -448,7 +480,7 @@ AcpiCmUpdateRefCount (
     default:
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("CmUpdateRefCount: Unknown action (%d)\n", Action));
+            ("CmUpdateRefCount: Unknown action (%X)\n", Action));
         break;
     }
 
@@ -462,7 +494,7 @@ AcpiCmUpdateRefCount (
     {
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("CmUpdateRefCount: **** AE_ERROR **** Invalid Reference Count (0x%X) in object %p\n\n",
+            ("CmUpdateRefCount: **** AE_ERROR **** Invalid Reference Count (%X) in object %p\n\n",
             Count, Object));
     }
 
@@ -470,7 +502,7 @@ AcpiCmUpdateRefCount (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmUpdateObjectReference
  *
@@ -484,23 +516,23 @@ AcpiCmUpdateRefCount (
  * DESCRIPTION: Increment the object reference count
  *
  * Object references are incremented when:
- * 1) An object is added as a value in an Name Table Entry (NTE)
+ * 1) An object is attached to a Node (namespace object)
  * 2) An object is copied (all subobjects must be incremented)
  *
  * Object references are decremented when:
- * 1) An object is removed from an NTE
+ * 1) An object is detached from an Node
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmUpdateObjectReference (
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action)
 {
     ACPI_STATUS             Status;
     UINT32                  i;
-    ACPI_OBJECT_INTERNAL    *Next;
-    ACPI_OBJECT_INTERNAL    *New;
+    ACPI_OPERAND_OBJECT     *Next;
+    ACPI_OPERAND_OBJECT     *New;
     ACPI_GENERIC_STATE       *StateList = NULL;
     ACPI_GENERIC_STATE       *State;
 
@@ -571,10 +603,10 @@ AcpiCmUpdateObjectReference (
 
             /* Must walk list of address handlers */
 
-            Next = Object->AddrHandler.Link;
+            Next = Object->AddrHandler.Next;
             while (Next)
             {
-                New = Next->AddrHandler.Link;
+                New = Next->AddrHandler.Next;
                 AcpiCmUpdateRefCount (Next, Action);
 
                 Next = New;
@@ -596,9 +628,8 @@ AcpiCmUpdateObjectReference (
                  * these are simply ignored
                  */
 
-                Status =
-                    AcpiCmCreateUpdateStateAndPush (Object->Package.Elements[i],
-                                                    Action, &StateList);
+                Status = AcpiCmCreateUpdateStateAndPush (
+                            Object->Package.Elements[i], Action, &StateList);
                 if (ACPI_FAILURE (Status))
                 {
                     return_ACPI_STATUS (Status);
@@ -607,11 +638,11 @@ AcpiCmUpdateObjectReference (
             break;
 
 
-        case ACPI_TYPE_FIELD_UNIT:
+        case ACPI_TYPE_BUFFER_FIELD:
 
-            Status =
-                AcpiCmCreateUpdateStateAndPush (Object->FieldUnit.Container,
-                                                Action, &StateList);
+            Status = AcpiCmCreateUpdateStateAndPush (
+                        Object->BufferField.BufferObj, Action, &StateList);
+
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -619,11 +650,10 @@ AcpiCmUpdateObjectReference (
             break;
 
 
-        case INTERNAL_TYPE_DEF_FIELD:
+        case INTERNAL_TYPE_REGION_FIELD:
 
-            Status =
-                AcpiCmCreateUpdateStateAndPush (Object->Field.Container,
-                                                Action, &StateList);
+            Status = AcpiCmCreateUpdateStateAndPush (
+                        Object->Field.RegionObj, Action, &StateList);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -633,17 +663,33 @@ AcpiCmUpdateObjectReference (
 
         case INTERNAL_TYPE_BANK_FIELD:
 
-            Status =
-                AcpiCmCreateUpdateStateAndPush (Object->BankField.BankSelect,
-                                                Action, &StateList);
+            Status = AcpiCmCreateUpdateStateAndPush (
+                        Object->BankField.BankRegisterObj, Action, &StateList);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            Status =
-                AcpiCmCreateUpdateStateAndPush (Object->BankField.Container,
-                                                Action, &StateList);
+            Status = AcpiCmCreateUpdateStateAndPush (
+                        Object->BankField.RegionObj, Action, &StateList);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+            break;
+
+
+        case INTERNAL_TYPE_INDEX_FIELD:
+
+            Status = AcpiCmCreateUpdateStateAndPush (
+                        Object->IndexField.IndexObj, Action, &StateList);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+
+            Status = AcpiCmCreateUpdateStateAndPush (
+                        Object->IndexField.DataObj, Action, &StateList);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -652,8 +698,6 @@ AcpiCmUpdateObjectReference (
 
 
         case ACPI_TYPE_REGION:
-
-            AcpiCmUpdateRefCount (Object->Region.Method, Action);
 
     /* TBD: [Investigate]
             AcpiCmUpdateRefCount (Object->Region.AddrHandler, Action);
@@ -695,7 +739,7 @@ AcpiCmUpdateObjectReference (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmAddReference
  *
@@ -710,7 +754,7 @@ AcpiCmUpdateObjectReference (
 
 void
 AcpiCmAddReference (
-    ACPI_OBJECT_INTERNAL    *Object)
+    ACPI_OPERAND_OBJECT     *Object)
 {
 
     FUNCTION_TRACE_PTR ("CmAddReference", Object);
@@ -725,7 +769,6 @@ AcpiCmAddReference (
         return_VOID;
     }
 
-
     /*
      * We have a valid ACPI internal object, now increment the reference count
      */
@@ -736,7 +779,7 @@ AcpiCmAddReference (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmRemoveReference
  *
@@ -750,7 +793,7 @@ AcpiCmAddReference (
 
 void
 AcpiCmRemoveReference (
-    ACPI_OBJECT_INTERNAL    *Object)
+    ACPI_OPERAND_OBJECT     *Object)
 {
 
     FUNCTION_TRACE_PTR ("CmRemoveReference", Object);
@@ -765,7 +808,7 @@ AcpiCmRemoveReference (
         return_VOID;
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%d\n",
+    DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%X\n",
                                 Object, Object->Common.ReferenceCount));
 
     /*
@@ -776,16 +819,6 @@ AcpiCmRemoveReference (
 
     AcpiCmUpdateObjectReference  (Object, REF_DECREMENT);
 
-    /*
-     * If the reference count has reached zero,
-     * delete the object and all sub-objects contained within it
-     */
-/*
-    if (Object->Common.ReferenceCount == 0)
-    {
-        AcpiCmDeleteInternalObj (Object);
-    }
-*/
     return_VOID;
 }
 

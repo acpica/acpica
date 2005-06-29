@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmdebug - Debug print routines
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -474,7 +474,7 @@ DebugPrint (
 
         if (ThreadId != PrevThreadId)
         {
-            AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n", 
+            AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n",
                 PrevThreadId, ThreadId);
 
             PrevThreadId = ThreadId;
@@ -519,7 +519,7 @@ DebugPrintPrefix (
 
     if (ThreadId != PrevThreadId)
     {
-        AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n", 
+        AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n",
             PrevThreadId, ThreadId);
 
         PrevThreadId = ThreadId;
