@@ -218,16 +218,16 @@ RegionHandler (
 		/*
 		 * Do the memory allocations first
 		 */
-		RegionElement = malloc (sizeof(REGION));
+		RegionElement = OsdAllocate (sizeof(REGION));
 		if (!RegionElement)
 		{
 			return AE_NO_MEMORY;
 		}
 
-		RegionElement->Buffer = malloc (Length);
+		RegionElement->Buffer = OsdAllocate (Length);
 		if (!RegionElement->Buffer)
 		{
-			free(RegionElement);
+			OsdFree (RegionElement);
 			return AE_NO_MEMORY;
 		}
 
@@ -483,7 +483,7 @@ AdSecondPassParse (
         if (Op->Opcode == AML_MethodOp)
         {
             Method = (ACPI_DEFERRED_OP *) Op;
-            Status = PsParseAml (Op, Method->Body, Method->BodyLength);
+            Status = PsParseAml (Op, Method->Body, Method->BodyLength, 0);
 
           
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
