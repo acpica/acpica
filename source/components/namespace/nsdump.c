@@ -158,15 +158,13 @@ NsDumpPathname (
 
     if (!(DebugLevel & Level) || !(DebugLayer & Component))
     {
-        FUNCTION_EXIT;
-        return AE_OK;
+        return_ACPI_STATUS (AE_OK);
     }
 
     Buffer = CmAllocate (PATHNAME_MAX);
     if (!Buffer)
     {
-        FUNCTION_EXIT;
-        return AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Convert handle to a full pathname and print it (with supplied message) */
@@ -178,8 +176,8 @@ NsDumpPathname (
     }
 
     CmFree (Buffer);
-	FUNCTION_EXIT;
-    return AE_OK;
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -297,18 +295,18 @@ NsDumpOneObject (
                 ThisEntry->NextEntry));
 
 
-    if (TYPE_Method == Type && ThisEntry->Value)
+    if (TYPE_Method == Type && ThisEntry->Object)
     {
         /* name is a Method and its AML offset/length are set */
         
         DEBUG_PRINT_RAW (TRACE_TABLES, (" @%04x(%04lx)\n",
-                    ((METHOD_INFO *) ThisEntry->Value)->Offset,
-                    ((METHOD_INFO *) ThisEntry->Value)->Length));                
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Offset,
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Length));                
     }
     
     else
     {
-        UINT8           *Value = ThisEntry->Value;
+        UINT8           *Value = ThisEntry->Object;
 
 
         /* name is not a Method, or the AML offset/length are not set */
@@ -484,8 +482,7 @@ NsDumpTables (
          * there is nothing to dump.
          */
         DEBUG_PRINT (TRACE_TABLES, ("NsDumpTables: name space not initialized!\n"));
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
 
     if (NS_ALL == SearchBase)
@@ -498,7 +495,7 @@ NsDumpTables (
 
 
     NsDumpObjects (TYPE_Any, MaxDepth, SearchHandle);
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -523,7 +520,7 @@ NsDumpEntry (
     NsDumpOneObject (Handle, 1, NULL);
     
     DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpEntry %p\n", Handle));
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
