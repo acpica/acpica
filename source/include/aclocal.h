@@ -515,6 +515,7 @@ typedef struct acpi_walk_state
     union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
     union AcpiObjInternal   *Results[OBJ_NUM_OPERANDS];         /* Accumulated results */
     union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
+    union AcpiObjInternal   *MethodDesc;                        /* Method descriptor if running a method */
     struct acpi_walk_state  *Next;                              /* Next WalkState in list */
 
     BOOLEAN                 LastPredicate;                      /* Result of last predicate */
