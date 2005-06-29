@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.100 $
+ *       $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -459,6 +459,20 @@ typedef struct acpi_update_state
 
 } ACPI_UPDATE_STATE;
 
+
+/*
+ * Copy state - used to copy Internal<-->External objects (and packages)
+ */
+typedef struct acpi_copy_state
+{
+    ACPI_STATE_COMMON
+    union acpi_operand_obj  *InternalObject;
+    union AcpiObj           *ExternalObject;
+    UINT16                  Index;
+
+} ACPI_COPY_STATE;
+
+
 /*
  * Control state - one per if/else and while constructs.
  * Allows nesting of these constructs
@@ -516,6 +530,7 @@ typedef union acpi_gen_state
 {
     ACPI_COMMON_STATE       Common;
     ACPI_CONTROL_STATE      Control;
+    ACPI_COPY_STATE         Copy;
     ACPI_UPDATE_STATE       Update;
     ACPI_SCOPE_STATE        Scope;
     ACPI_PSCOPE_STATE       ParseScope;
