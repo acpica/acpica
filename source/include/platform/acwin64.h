@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.4 $
+ *       $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -140,10 +140,9 @@
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)
 #define BREAKPOINT3
-#define acpi_disable_irqs()
-#define acpi_enable_irqs()
-#define halt()
-#define wbinvd()
+#define ACPI_DISABLE_IRQS()
+#define ACPI_ENABLE_IRQS()
+#define ACPI_WBINVD()
 
 
 /*
