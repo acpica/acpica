@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsio - IO and DMA resource descriptors
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  ******************************************************************************/
 
@@ -505,6 +505,7 @@ AcpiRsDmaResource (
     {
         /* Zero channels is invalid! */
 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Found Zero DMA channels in resource list\n"));
         return_ACPI_STATUS (AE_BAD_DATA);
     }
     OutputStruct->Data.Dma.NumberOfChannels = i;
@@ -528,6 +529,7 @@ AcpiRsDmaResource (
 
     if (0x03 == OutputStruct->Data.Dma.Transfer)
     {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid DMA.Transfer preference (3)\n"));
         return_ACPI_STATUS (AE_BAD_DATA);
     }
 
