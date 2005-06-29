@@ -168,6 +168,8 @@ AcpiEvaluateObject (
     UINT32                  BufferSpaceNeeded;
     UINT32                  Count;
     UINT32                  i;
+    UINT32                  ParamLength;
+    UINT32                  ObjectLength;
 
 
     FUNCTION_TRACE ("AcpiEvaluateObject");
@@ -187,21 +189,19 @@ AcpiEvaluateObject (
          * TBD: merge into single allocation!
          */
 
-        Count = ParamObjects->Count;
-        ParamPtr = CmCallocate ((Count + 1) * sizeof (void *));
+        Count           = ParamObjects->Count;
+        ParamLength     = (Count + 1) * sizeof (void *);
+        ObjectLength    = Count * sizeof (ACPI_OBJECT_INTERNAL);
+
+        ParamPtr = CmCallocate (ParamLength +       /* Parameter List part */
+                                ObjectLength);      /* Actual objects */
         if (!ParamPtr)
         {
             FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
             return AE_NO_MEMORY;
         }
 
-        ObjectPtr = CmCallocate ((Count) * sizeof (ACPI_OBJECT_INTERNAL));
-        if (!ObjectPtr)
-        {
-            CmFree (ParamPtr);
-            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-            return AE_NO_MEMORY;
-        }
+        ObjectPtr = (ACPI_OBJECT_INTERNAL *) ((UINT8 *) ParamPtr + ParamLength);
 
         /*
          * Init the param array of pointers and NULL terminate the list
@@ -239,7 +239,6 @@ AcpiEvaluateObject (
 
     if ((Pathname) && (Pathname[0] == '\\'))
     {
-BREAKPOINT3;
         Status = NsEvaluateByName (Pathname, ParamPtr, ReturnPtr);
         goto Cleanup;
     }
@@ -266,7 +265,7 @@ BREAKPOINT3;
 
 
     /*
-     *  We get here we have a handle, and if we have a pathname it is relative.
+     *  We get here if we have a handle, and if we have a pathname it is relative.
      *
      *  Validate the handle
      */
@@ -308,7 +307,13 @@ Cleanup:
         CmDeleteInternalObjectList (ParamPtr);
     }
 
-    if (ReturnPtr)
+    
+    /* 
+     * If we are expecting a return value, and all went well above, 
+     * copy the return value to an external object.
+     */
+
+    if ((ACPI_SUCCESS (Status)) && (ReturnPtr))
     {
         /* Check if the return object is valid */
 
