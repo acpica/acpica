@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.29 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,7 +121,6 @@
 /* Opening signature of the Intel legal header */
 
 char        *HeaderBegin = "/******************************************************************************\n *\n * 1. Copyright Notice";
-
 
 
 /******************************************************************************
@@ -639,7 +638,6 @@ AsLowerCaseString (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AsMixedCaseToUnderscores
@@ -696,9 +694,6 @@ AsMixedCaseToUnderscores (
                 }
                 continue;
             }
-
-            SubBuffer++;
-            continue;
         }
 
         /* Ignore format specification fields */
