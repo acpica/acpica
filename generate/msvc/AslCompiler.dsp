@@ -294,7 +294,15 @@ SOURCE=..\..\AslCompiler\AslCompiler.y.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\AslCompiler\aslglobal.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\AslCompiler\aslresource.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\AslCompiler\asltypes.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
