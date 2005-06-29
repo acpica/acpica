@@ -141,6 +141,11 @@ AcpiExecuteMethod (
     OBJECT_DESCRIPTOR   *ReturnValue,
     OBJECT_DESCRIPTOR   **Params);
 
+ACPI_STATUS
+AcpiExecuteRelativeMethod (NsHandle Handle,
+                           char * MethodName,
+                           OBJECT_DESCRIPTOR *ReturnValue,
+                           OBJECT_DESCRIPTOR **Params);
 
 /*
  * Namespace and enumeration interfaces
