@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -314,6 +314,13 @@ main (
             goto enterloop;
         }
 
+        Status = AcpiInitializeObjects (InitFlags);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not InitializeObjects, %s\n", AcpiFormatException (Status));
+            goto enterloop;
+        }
+
         ReturnBuf.Length = 32;
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
@@ -360,6 +367,13 @@ main (
         if (ACPI_FAILURE (Status))
         {
             printf ("**** Could not EnableSubsystem, %s\n", AcpiFormatException (Status));
+            goto enterloop;
+        }
+
+        Status = AcpiInitializeObjects (InitFlags);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not InitializeObjects, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
      }
