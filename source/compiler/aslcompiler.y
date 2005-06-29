@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -177,17 +177,19 @@ AslLocalAllocate (unsigned int Size);
 
 /*
  * Token types: These are returned by the lexer
+ *
+ * NOTE: This list MUST match the AslKeywordMapping table found
+ *       in aslmap.c EXACTLY!  Double check any changes!
  */
 
 %token <i> PARSEOP_ACCESSAS
 %token <i> PARSEOP_ACCESSATTRIB_BLOCK
 %token <i> PARSEOP_ACCESSATTRIB_BLOCK_CALL
 %token <i> PARSEOP_ACCESSATTRIB_BYTE
-%token <i> PARSEOP_ACCESSATTRIB_BYTE_CALL
+%token <i> PARSEOP_ACCESSATTRIB_WORD_CALL
 %token <i> PARSEOP_ACCESSATTRIB_QUICK
 %token <i> PARSEOP_ACCESSATTRIB_SND_RCV
 %token <i> PARSEOP_ACCESSATTRIB_WORD
-%token <i> PARSEOP_ACCESSATTRIB_WORD_CALL
 %token <i> PARSEOP_ACCESSTYPE_ANY
 %token <i> PARSEOP_ACCESSTYPE_BUF
 %token <i> PARSEOP_ACCESSTYPE_BYTE
