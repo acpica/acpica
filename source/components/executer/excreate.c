@@ -360,16 +360,16 @@ AmlExecCreateField (
         TypeFound = SrcDesc->Common.Type;
 
         if ((TypeFound > (UINT8) INTERNAL_TYPE_Lvalue) ||
-            (Gbl_BadType == Gbl_NsTypeNames[TypeFound]))
+            !CmValidObjectType (TypeFound))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Tried to create field in improper object type - 0x%X\n",
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Tried to create field in invalid object type - 0x%X\n",
                             TypeFound));
         }
 
         else
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Tried to create field in improper object type - %s\n",
-                            Gbl_NsTypeNames[TypeFound]));
+                            CmGetTypeName (TypeFound)));
         }
 
         Status = AE_AML_ERROR;
