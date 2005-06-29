@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -388,7 +388,9 @@ typedef enum
     ASL_MSG_EARLY_EOF,
     ASL_MSG_SCOPE_FWD_REF,
     ASL_MSG_NON_ASCII,
-    ASL_MSG_INVALID_TIME
+    ASL_MSG_INVALID_TIME,
+    ASL_MSG_DUPLICATE_CASE,
+    ASL_MSG_NO_CASES
 
 } ASL_MESSAGE_IDS;
 
@@ -478,7 +480,10 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_EARLY_EOF */                  "Premature end-of-file reached",
 /*    ASL_MSG_SCOPE_FWD_REF */              "Forward references from Scope() not allowed",
 /*    ASL_MSG_NON_ASCII */                  "Invalid characters found in file",
-/*    ASL_MSG_INVALID_TIME */               "Time parameter too long (255 max)"
+/*    ASL_MSG_INVALID_TIME */               "Time parameter too long (255 max)",
+/*    ASL_MSG_DUPLICATE_CASE */             "Case value already specified",
+/*    ASL_MSG_NO_CASES */                   "No Case() statements under Switch()"
+
 
 };
 
