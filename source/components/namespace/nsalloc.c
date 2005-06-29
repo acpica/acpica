@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.66 $
+ *              $Revision: 1.71 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -123,7 +123,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsalloc")
+        ACPI_MODULE_NAME    ("nsalloc")
 
 
 /*******************************************************************************
@@ -145,7 +145,7 @@ AcpiNsCreateNode (
     ACPI_NAMESPACE_NODE     *Node;
 
 
-    FUNCTION_TRACE ("NsCreateNode");
+    ACPI_FUNCTION_TRACE ("NsCreateNode");
 
 
     Node = ACPI_MEM_CALLOCATE (sizeof (ACPI_NAMESPACE_NODE));
@@ -156,7 +156,7 @@ AcpiNsCreateNode (
 
     ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].TotalAllocated++);
 
-    Node->Name           = Name;
+    Node->Name.Integer   = Name;
     Node->ReferenceCount = 1;
     ACPI_SET_DESCRIPTOR_TYPE (Node, ACPI_DESC_TYPE_NAMED);
 
@@ -185,10 +185,10 @@ AcpiNsDeleteNode (
     ACPI_NAMESPACE_NODE     *NextNode;
 
 
-    FUNCTION_TRACE_PTR ("NsDeleteNode", Node);
+    ACPI_FUNCTION_TRACE_PTR ("NsDeleteNode", Node);
 
 
-    ParentNode = AcpiNsGetParentObject (Node);
+    ParentNode = AcpiNsGetParentNode (Node);
 
     PrevNode = NULL;
     NextNode = ParentNode->Child;
@@ -239,7 +239,7 @@ AcpiNsDeleteNode (
  *              its peers.
  *
  *              Note: Current namespace lookup is linear search, so the nodes
- *              are not linked in any particular order. 
+ *              are not linked in any particular order.
  *
  ******************************************************************************/
 
@@ -248,13 +248,13 @@ AcpiNsInstallNode (
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     *ParentNode,    /* Parent */
     ACPI_NAMESPACE_NODE     *Node,          /* New Child*/
-    ACPI_OBJECT_TYPE8       Type)
+    ACPI_OBJECT_TYPE        Type)
 {
     UINT16                  OwnerId = TABLE_ID_DSDT;
     ACPI_NAMESPACE_NODE     *ChildNode;
 
 
-    FUNCTION_TRACE ("NsInstallNode");
+    ACPI_FUNCTION_TRACE ("NsInstallNode");
 
 
     /*
@@ -343,7 +343,7 @@ AcpiNsInstallNode (
      * Increment the reference count(s) of all parents up to
      * the root!
      */
-    while ((Node = AcpiNsGetParentObject (Node)) != NULL)
+    while ((Node = AcpiNsGetParentNode (Node)) != NULL)
     {
         Node->ReferenceCount++;
     }
@@ -374,7 +374,7 @@ AcpiNsDeleteChildren (
     UINT8                   Flags;
 
 
-    FUNCTION_TRACE_PTR ("NsDeleteChildren", ParentNode);
+    ACPI_FUNCTION_TRACE_PTR ("NsDeleteChildren", ParentNode);
 
 
     if (!ParentNode)
@@ -457,7 +457,7 @@ AcpiNsDeleteNamespaceSubtree (
     UINT32                  Level = 1;
 
 
-    FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
+    ACPI_FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
 
 
     if (!ParentNode)
@@ -514,7 +514,7 @@ AcpiNsDeleteNamespaceSubtree (
 
             /* Move up the tree to the grandparent */
 
-            ParentNode = AcpiNsGetParentObject (ParentNode);
+            ParentNode = AcpiNsGetParentNode (ParentNode);
         }
     }
 
@@ -545,7 +545,7 @@ AcpiNsRemoveReference (
     ACPI_NAMESPACE_NODE     *ThisNode;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*
@@ -557,7 +557,7 @@ AcpiNsRemoveReference (
     {
         /* Prepare to move up to parent */
 
-        ParentNode = AcpiNsGetParentObject (ThisNode);
+        ParentNode = AcpiNsGetParentNode (ThisNode);
 
         /* Decrement the reference count on this node */
 
@@ -602,7 +602,7 @@ AcpiNsDeleteNamespaceByOwner (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    FUNCTION_TRACE_U32 ("NsDeleteNamespaceByOwner", OwnerId);
+    ACPI_FUNCTION_TRACE_U32 ("NsDeleteNamespaceByOwner", OwnerId);
 
 
     ParentNode    = AcpiGbl_RootNode;
@@ -616,7 +616,7 @@ AcpiNsDeleteNamespaceByOwner (
      */
     while (Level > 0)
     {
-        /* 
+        /*
          * Get the next child of this parent node. When ChildNode is NULL,
          * the first child of the parent is returned
          */
@@ -675,7 +675,7 @@ AcpiNsDeleteNamespaceByOwner (
 
             /* Move up the tree to the grandparent */
 
-            ParentNode = AcpiNsGetParentObject (ParentNode);
+            ParentNode = AcpiNsGetParentNode (ParentNode);
         }
     }
 
