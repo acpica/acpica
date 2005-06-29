@@ -10,10 +10,11 @@
 
 #define OSD_FILE    void
 
-#ifndef size_t
-#define size_t      unsigned long
+// FIX THIS !!
+#ifndef _SIZE_T_DEFINED
+typedef unsigned int size_t;
+#define _SIZE_T_DEFINED
 #endif
-
 
 
 /* File I/O */
