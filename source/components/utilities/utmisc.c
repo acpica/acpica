@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  ******************************************************************************/
 
@@ -945,25 +945,20 @@ AcpiCmDisplayInitPathname (
 {
 #ifdef ACPI_DEBUG
     ACPI_STATUS             Status;
-    ACPI_BUFFER             RetPath;
+    UINT32                  Length = 128;
     char                    Buffer[128];
 
 
-    RetPath.Length = 128;
-    RetPath.Pointer = Buffer;
-    Status = AcpiGetName (ObjHandle, ACPI_FULL_PATHNAME, &RetPath);
-
-
+    Status = AcpiNsHandleToPathname (ObjHandle, &Length, Buffer);
     if (ACPI_SUCCESS (Status))
     {
-
         if (Path)
         {
-            DEBUG_PRINT (TRACE_INIT, ("%s.%s\n", RetPath.Pointer, Path))
+            DEBUG_PRINT (TRACE_INIT, ("%s.%s\n", Buffer, Path))
         }
         else
         {
-            DEBUG_PRINT (TRACE_INIT, ("%s\n", RetPath.Pointer))
+            DEBUG_PRINT (TRACE_INIT, ("%s\n", Buffer))
         }
     }
 
