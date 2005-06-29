@@ -108,6 +108,10 @@ PostBuild_Cmds=copy Debug\iasldebug.exe ..\..\Libraries
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsobject.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
@@ -156,15 +160,15 @@ SOURCE=..\..\source\components\namespace\nsdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsload.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\namespace\nsnames.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\namespace\nsobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
 # End Source File
 # Begin Source File
 
@@ -316,10 +320,6 @@ SOURCE=..\..\source\components\interpreter\dispatcher\dsfield.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\dispatcher\dsobject.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\interpreter\dispatcher\dsopcode.c
 # End Source File
 # Begin Source File
@@ -398,10 +398,6 @@ SOURCE=.\AslCompiler\AslCompiler.y.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\executer\exconfig.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\interpreter\executer\exconvrt.c
 # End Source File
 # Begin Source File
@@ -411,14 +407,6 @@ SOURCE=..\..\source\components\interpreter\executer\excreate.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\executer\exdump.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exfield.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exfldio.c
 # End Source File
 # Begin Source File
 

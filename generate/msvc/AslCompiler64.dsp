@@ -109,27 +109,39 @@ PostBuild_Cmds=copy Debug\iasldebug64.exe ..\..\Libraries
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utalloc.c
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utdebug.c
+SOURCE=..\..\source\COMPONENTS\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utdelete.c
+SOURCE=..\..\source\COMPONENTS\utilities\utcopy.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utglobal.c
+SOURCE=..\..\source\COMPONENTS\utilities\utdebug.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utmisc.c
+SOURCE=..\..\source\COMPONENTS\utilities\utdelete.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utobject.c
+SOURCE=..\..\source\COMPONENTS\utilities\utglobal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\utilities\utmath.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\utilities\utmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\utilities\utobject.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -137,35 +149,43 @@ SOURCE=..\..\source\components\utilities\utobject.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\source\components\namespace\nsaccess.c
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsaccess.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\namespace\nsalloc.c
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\namespace\nsdump.c
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\namespace\nsnames.c
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsnames.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\namespace\nsobject.c
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\namespace\nssearch.c
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\namespace\nsutils.c
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nssearch.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\namespace\nswalk.c
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nswalk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsxfobj.c
 # End Source File
 # End Group
 # Begin Group "Compiler"
@@ -190,6 +210,10 @@ SOURCE=..\..\source\compiler\aslerror.c
 # Begin Source File
 
 SOURCE=..\..\source\compiler\aslfiles.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslfold.c
 # End Source File
 # Begin Source File
 
@@ -241,6 +265,10 @@ SOURCE=..\..\source\compiler\aslrestype2.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslstubs.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\asltransform.c
 # End Source File
 # Begin Source File
@@ -257,11 +285,31 @@ SOURCE=..\..\source\compiler\aslutils.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\parser\psopcode.c
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psargs.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\parser\psutils.c
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psparse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\pstree.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\pswalk.c
 # End Source File
 # End Group
 # Begin Group "Dispatcher"
@@ -269,11 +317,31 @@ SOURCE=..\..\source\components\interpreter\parser\psutils.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\Dispatcher\dswscope.c
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsfield.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\Dispatcher\dswstate.c
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswexec.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswload.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswstate.c
 # End Source File
 # End Group
 # Begin Group "Common"
@@ -306,6 +374,146 @@ SOURCE=.\AslCompiler\aslcompiler.y.c
 SOURCE=.\AslCompiler\AslCompiler.y.h
 # End Source File
 # End Group
+# Begin Group "Interpreter"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exconvrt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\excreate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exmutex.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exoparg1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exoparg2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exoparg3.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exoparg6.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exprep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exregion.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exresnte.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exresolv.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exresop.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exstore.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exstoren.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exstorob.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exsystem.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exutils.c
+# End Source File
+# End Group
+# Begin Group "Disassembler"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\common\adisasm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmbuffer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmwalk.c
+# End Source File
+# End Group
+# Begin Group "Tables"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\tables\tbinstal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\tables\tbutils.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
@@ -317,10 +525,6 @@ SOURCE=..\..\source\compiler\AslCompiler.h
 # Begin Source File
 
 SOURCE=..\..\source\compiler\aslglobal.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\compiler\aslresource.h
 # End Source File
 # Begin Source File
 
