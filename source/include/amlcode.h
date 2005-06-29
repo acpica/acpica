@@ -403,6 +403,18 @@ char *Gbl_UpdateRules[NUM_UPDATE_RULES] =
 
 
 
+
+/******************************************************************************
+ * 
+ * AML Decoding tables.  These tables are used by the recursive parser only.
+ *
+ * TBD: remove these tables when the Rparser is obsoleted
+ *
+ *****************************************************************************/
+
+
+#ifdef _RPARSER
+
 /* primary decoder */
 
 UINT8 Gbl_Aml[NUM_OPCODES] = 
@@ -553,7 +565,19 @@ UINT16 Gbl_Pfx[NUM_OPCODES] =
             AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED
 };
 
+#endif
 
+
+/******************************************************************************
+ * 
+ * AML Opcode name tables.  Used for debug output only
+ *
+ *****************************************************************************/
+
+
+/* TBD: there are some places where the release version uses these tables!! */
+
+/* #ifdef ACPI_DEBUG */
 
 /* primary op names */
 
@@ -704,6 +728,9 @@ char *Gbl_LongOps[NUM_OPCODES] =
             "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
             "*ERROR*",          "*ERROR*",          "*ERROR*",          "*RESERVED*"
 };
+
+/* #endif */
+
 
 #endif /* DEFINE_AML_GLOBALS */
 
