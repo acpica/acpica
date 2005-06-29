@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.156 $
+ *       $Revision: 1.157 $
  *
  *****************************************************************************/
 
@@ -291,7 +291,7 @@ typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an 
 /* 32-bit Integers */
 
 typedef UINT32                          ACPI_INTEGER;
-#define ACPI_INTEGER_MAX                ACPI_UINT32_MAX;
+#define ACPI_INTEGER_MAX                ACPI_UINT32_MAX
 #define ACPI_INTEGER_BIT_SIZE           32
 #define ACPI_MAX_BCD_VALUE              99999999
 #define ACPI_MAX_BCD_DIGITS             8
@@ -301,7 +301,7 @@ typedef UINT32                          ACPI_INTEGER;
 /* 64-bit Integers */
 
 typedef UINT64                          ACPI_INTEGER;
-#define ACPI_INTEGER_MAX                ACPI_UINT64_MAX;
+#define ACPI_INTEGER_MAX                ACPI_UINT64_MAX
 #define ACPI_INTEGER_BIT_SIZE           64
 #define ACPI_MAX_BCD_VALUE              9999999999999999
 #define ACPI_MAX_BCD_DIGITS             16
