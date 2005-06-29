@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -243,8 +243,9 @@ AcpiOsTableOverride (
         return (AE_BAD_PARAMETER);
     }
 
+    /* TODO: Add table-getting code here */
     *NewTable = NULL;
-    return (AE_OK);
+    return (AE_NO_ACPI_TABLES);
 }
 
 
@@ -452,10 +453,10 @@ AcpiOsGetLine (
 ACPI_STATUS
 AcpiOsMapMemory (
     ACPI_PHYSICAL_ADDRESS   where,
-    UINT32                  length,
+    ACPI_SIZE               length,
     void                    **there)
 {
-    *there = (void *) (UINT32) where;
+    *there = ACPI_TO_POINTER (where);
 
     return AE_OK;
 }
@@ -478,7 +479,7 @@ AcpiOsMapMemory (
 void
 AcpiOsUnmapMemory (
     void                    *where,
-    UINT32                  length)
+    ACPI_SIZE               length)
 {
 
     return;
@@ -499,7 +500,7 @@ AcpiOsUnmapMemory (
 
 void *
 AcpiOsAllocate (
-    UINT32                  size)
+    ACPI_SIZE               size)
 {
     void                    *Mem;
 
@@ -792,6 +793,10 @@ AcpiOsStall (
     UINT32                  microseconds)
 {
 
+    if (microseconds)
+    {
+        usleep (microseconds);
+    }
     return;
 }
 
@@ -815,7 +820,13 @@ AcpiOsSleep (
     UINT32                  milliseconds)
 {
 
-    sleep ((seconds * 1000) + milliseconds);
+    sleep (seconds + (milliseconds / 1000));    /* Sleep for whole seconds */
+
+    /*
+     * Arg to usleep() must be less than 1,000,000 (1 second)
+     */
+    usleep ((milliseconds % 1000) * 1000);      /* Sleep for remaining usecs */
+
     return;
 }
 

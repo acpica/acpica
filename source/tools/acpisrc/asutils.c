@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: oswindir - Windows directory access interfaces
- *              $Revision: 1.5 $
+ * Module Name: asutils - common utilities
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -115,204 +115,193 @@
  *
  *****************************************************************************/
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <io.h>
-
-#include <acpi.h>
-
-typedef struct ExternalFindInfo
-{
-    struct _finddata_t          DosInfo;
-    char                        *FullWildcardSpec;
-    long                        FindHandle;
-    char                        State;
-    char                        RequestedFileType;
-
-} EXTERNAL_FIND_INFO;
+#include "acpisrc.h"
 
 
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AcpiOsOpenDirectory
+ * FUNCTION:    AsSkipUntilChar
  *
- * PARAMETERS:  DirPathname         - Full pathname to the directory
- *              WildcardSpec        - string of the form "*.c", etc.
- *              RequestedFileType   - Either a directory or normal file
- *
- * RETURN:      A directory "handle" to be used in subsequent search operations.
- *              NULL returned on failure.
- *
- * DESCRIPTION: Open a directory in preparation for a wildcard search
- *
- ******************************************************************************/
-
-void *
-AcpiOsOpenDirectory (
-    char                    *DirPathname,
-    char                    *WildcardSpec,
-    char                    RequestedFileType)
-{
-    long                    FindHandle;
-    char                    *FullWildcardSpec;
-    EXTERNAL_FIND_INFO      *SearchInfo;
-
-
-    /* Allocate the info struct that will be returned to the caller */
-
-    SearchInfo = calloc (sizeof (EXTERNAL_FIND_INFO), 1);
-    if (!SearchInfo)
-    {
-        return NULL;
-    }
-
-    /* Allocate space for the full wildcard path */
-
-    FullWildcardSpec = calloc (strlen (DirPathname) + strlen (WildcardSpec) + 2, 1);
-    if (!FullWildcardSpec)
-    {
-        printf ("Could not allocate buffer for wildcard pathname\n");
-        return NULL;
-    }
-
-    /* Create the full wildcard path */
-
-    strcpy (FullWildcardSpec, DirPathname);
-    strcat (FullWildcardSpec, "/");
-    strcat (FullWildcardSpec, WildcardSpec);
-
-    /* Initialize the find functions, get first match */
-
-    FindHandle = _findfirst (FullWildcardSpec, &SearchInfo->DosInfo);
-    if (FindHandle == -1)
-    {
-        /* Failure means that no match was found */
-
-        free (FullWildcardSpec);
-        free (SearchInfo);
-        return NULL;
-    }
-
-    /* Save the info in the return structure */
-
-    SearchInfo->RequestedFileType = RequestedFileType;
-    SearchInfo->FullWildcardSpec = FullWildcardSpec;
-    SearchInfo->FindHandle = FindHandle;
-    SearchInfo->State = 0;
-    return (SearchInfo);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiOsGetNextFilename
- *
- * PARAMETERS:  DirHandle           - Created via AcpiOsOpenDirectory
- *
- * RETURN:      Next filename matched.  NULL if no more matches.
- *
- * DESCRIPTION: Get the next file in the directory that matches the wildcard
- *              specification.
+ * DESCRIPTION: Find the next instance of the input character
  *
  ******************************************************************************/
 
 char *
-AcpiOsGetNextFilename (
-    void                    *DirHandle)
+AsSkipUntilChar (
+    char                    *Buffer,
+    char                    Target)
 {
-    EXTERNAL_FIND_INFO      *SearchInfo = DirHandle;
-    int                     Status;
-    char                    FileTypeNotMatched = 1;
 
-
-    /*
-     * Loop while we have matched files but not found any files of
-     * the requested type.
-     */
-    while (FileTypeNotMatched)
+    while (*Buffer != Target)
     {
-        /* On the first call, we already have the first match */
-
-        if (SearchInfo->State == 0)
+        if (!*Buffer)
         {
-            /* No longer the first match */
-
-            SearchInfo->State = 1;
-        }
-        else
-        {
-            /* Get the next match */
-
-            Status = _findnext (SearchInfo->FindHandle, &SearchInfo->DosInfo);
-            if (Status != 0)
-            {
-                return NULL;
-            }
-        }
-
-        /*
-         * Found a match, now check to make sure that the file type
-         * matches the requested file type (directory or normal file)
-         *
-         * NOTE: use of the attrib field saves us from doing a very
-         * expensive stat() on the file!
-         */
-        switch (SearchInfo->RequestedFileType)
-        {
-        case REQUEST_FILE_ONLY:
-
-            /* Anything other than A_SUBDIR is OK */
-
-            if (!(SearchInfo->DosInfo.attrib & _A_SUBDIR))
-            {
-                FileTypeNotMatched = 0;
-            }
-            break;
-
-        case REQUEST_DIR_ONLY:
-
-            /* Must have A_SUBDIR bit set */
-
-            if (SearchInfo->DosInfo.attrib & _A_SUBDIR)
-            {
-                FileTypeNotMatched = 0;
-            }
-            break;
-
-        default:
             return NULL;
         }
+
+        Buffer++;
     }
 
-    return (SearchInfo->DosInfo.name);
+    return (Buffer);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AcpiOsCloseDirectory
+ * FUNCTION:    AsSkipPastChar
  *
- * PARAMETERS:  DirHandle           - Created via AcpiOsOpenDirectory
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Close the open directory and cleanup.
+ * DESCRIPTION: Find the next instance of the input character, return a buffer
+ *              pointer to this character+1.
  *
  ******************************************************************************/
 
-void
-AcpiOsCloseDirectory (
-    void                    *DirHandle)
+char *
+AsSkipPastChar (
+    char                    *Buffer,
+    char                    Target)
 {
-    EXTERNAL_FIND_INFO      *SearchInfo = DirHandle;
+
+    while (*Buffer != Target)
+    {
+        if (!*Buffer)
+        {
+            return NULL;
+        }
+
+        Buffer++;
+    }
+
+    Buffer++;
+
+    return (Buffer);
+}
 
 
-    /* Close the directory and free allocations */
+/******************************************************************************
+ *
+ * FUNCTION:    AsReplaceData
+ *
+ * DESCRIPTION: This function inserts and removes data from the file buffer.
+ *              if more data is inserted than is removed, the data in the buffer
+ *              is moved to make room.  If less data is inserted than is removed,
+ *              the remaining data is moved to close the hole.
+ *
+ ******************************************************************************/
 
-    _findclose (SearchInfo->FindHandle);
-    free (SearchInfo->FullWildcardSpec);
-    free (DirHandle);
+char *
+AsReplaceData (
+    char                    *Buffer,
+    UINT32                  LengthToRemove,
+    char                    *BufferToAdd,
+    UINT32                  LengthToAdd)
+{
+    UINT32                  BufferLength;
+
+
+    /*
+     * Buffer is a string, so the length must include the terminating zero
+     */
+    BufferLength = strlen (Buffer) + 1;
+
+    if (LengthToRemove != LengthToAdd)
+    {
+        /*
+         * Move some of the existing data
+         * 1) If adding more bytes than removing, make room for the new data
+         * 2) if removing more bytes than adding, delete the extra space
+         */
+        if (LengthToRemove > 0)
+        {
+            Gbl_MadeChanges = TRUE;
+            memmove ((Buffer + LengthToAdd), (Buffer + LengthToRemove), (BufferLength - LengthToRemove));
+        }
+    }
+
+    /*
+     * Now we can move in the new data
+     */
+    if (LengthToAdd > 0)
+    {
+        Gbl_MadeChanges = TRUE;
+        memmove (Buffer, BufferToAdd, LengthToAdd);
+    }
+
+    return (Buffer + LengthToAdd);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsInsertData
+ *
+ * DESCRIPTION: This function inserts and removes data from the file buffer.
+ *              if more data is inserted than is removed, the data in the buffer
+ *              is moved to make room.  If less data is inserted than is removed,
+ *              the remaining data is moved to close the hole.
+ *
+ ******************************************************************************/
+
+char *
+AsInsertData (
+    char                    *Buffer,
+    char                    *BufferToAdd,
+    UINT32                  LengthToAdd)
+{
+    UINT32                  BufferLength;
+
+
+    if (LengthToAdd > 0)
+    {
+        /*
+         * Buffer is a string, so the length must include the terminating zero
+         */
+        BufferLength = strlen (Buffer) + 1;
+
+        /*
+         * Move some of the existing data
+         * 1) If adding more bytes than removing, make room for the new data
+         * 2) if removing more bytes than adding, delete the extra space
+         */
+        Gbl_MadeChanges = TRUE;
+        memmove ((Buffer + LengthToAdd), Buffer, BufferLength);
+
+        /*
+         * Now we can move in the new data
+         */
+        memmove (Buffer, BufferToAdd, LengthToAdd);
+    }
+
+    return (Buffer + LengthToAdd);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveData
+ *
+ * DESCRIPTION: This function inserts and removes data from the file buffer.
+ *              if more data is inserted than is removed, the data in the buffer
+ *              is moved to make room.  If less data is inserted than is removed,
+ *              the remaining data is moved to close the hole.
+ *
+ ******************************************************************************/
+
+char *
+AsRemoveData (
+    char                    *StartPointer,
+    char                    *EndPointer)
+{
+    UINT32                  BufferLength;
+
+
+    /*
+     * Buffer is a string, so the length must include the terminating zero
+     */
+    BufferLength = strlen (EndPointer) + 1;
+
+    Gbl_MadeChanges = TRUE;
+    memmove (StartPointer, EndPointer, BufferLength);
+
+    return (StartPointer);
 }
 

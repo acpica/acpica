@@ -1,8 +1,6 @@
-
 /******************************************************************************
  *
- * Module Name: oswindir - Windows directory access interfaces
- *              $Revision: 1.5 $
+ * Module Name: aecommon - common include for the AcpiExec utility
  *
  *****************************************************************************/
 
@@ -115,204 +113,119 @@
  *
  *****************************************************************************/
 
+#ifndef _ADCOMMON
+#define _ADCOMMON
+
+#ifdef _MSC_VER                 /* disable some level-4 warnings */
+#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
+#endif
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <io.h>
 
-#include <acpi.h>
+extern UINT8                    *DsdtPtr;
+extern UINT32                   AcpiDsdtLength;
+extern UINT8                    *AmlStart;
+extern UINT32                   AmlLength;
+extern FILE                     *AcpiGbl_DebugFile;
 
-typedef struct ExternalFindInfo
+
+/*
+ * Debug Regions
+ */
+typedef struct Region
 {
-    struct _finddata_t          DosInfo;
-    char                        *FullWildcardSpec;
-    long                        FindHandle;
-    char                        State;
-    char                        RequestedFileType;
+    ACPI_PHYSICAL_ADDRESS   Address;
+    UINT32                  Length;
+    void                    *Buffer;
+    void                    *NextRegion;
 
-} EXTERNAL_FIND_INFO;
+} REGION;
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiOsOpenDirectory
- *
- * PARAMETERS:  DirPathname         - Full pathname to the directory
- *              WildcardSpec        - string of the form "*.c", etc.
- *              RequestedFileType   - Either a directory or normal file
- *
- * RETURN:      A directory "handle" to be used in subsequent search operations.
- *              NULL returned on failure.
- *
- * DESCRIPTION: Open a directory in preparation for a wildcard search
- *
- ******************************************************************************/
-
-void *
-AcpiOsOpenDirectory (
-    char                    *DirPathname,
-    char                    *WildcardSpec,
-    char                    RequestedFileType)
+typedef struct DebugRegions
 {
-    long                    FindHandle;
-    char                    *FullWildcardSpec;
-    EXTERNAL_FIND_INFO      *SearchInfo;
+    UINT32                  NumberOfRegions;
+    REGION                  *RegionList;
+
+} DEBUG_REGIONS;
 
 
-    /* Allocate the info struct that will be returned to the caller */
-
-    SearchInfo = calloc (sizeof (EXTERNAL_FIND_INFO), 1);
-    if (!SearchInfo)
-    {
-        return NULL;
-    }
-
-    /* Allocate space for the full wildcard path */
-
-    FullWildcardSpec = calloc (strlen (DirPathname) + strlen (WildcardSpec) + 2, 1);
-    if (!FullWildcardSpec)
-    {
-        printf ("Could not allocate buffer for wildcard pathname\n");
-        return NULL;
-    }
-
-    /* Create the full wildcard path */
-
-    strcpy (FullWildcardSpec, DirPathname);
-    strcat (FullWildcardSpec, "/");
-    strcat (FullWildcardSpec, WildcardSpec);
-
-    /* Initialize the find functions, get first match */
-
-    FindHandle = _findfirst (FullWildcardSpec, &SearchInfo->DosInfo);
-    if (FindHandle == -1)
-    {
-        /* Failure means that no match was found */
-
-        free (FullWildcardSpec);
-        free (SearchInfo);
-        return NULL;
-    }
-
-    /* Save the info in the return structure */
-
-    SearchInfo->RequestedFileType = RequestedFileType;
-    SearchInfo->FullWildcardSpec = FullWildcardSpec;
-    SearchInfo->FindHandle = FindHandle;
-    SearchInfo->State = 0;
-    return (SearchInfo);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiOsGetNextFilename
- *
- * PARAMETERS:  DirHandle           - Created via AcpiOsOpenDirectory
- *
- * RETURN:      Next filename matched.  NULL if no more matches.
- *
- * DESCRIPTION: Get the next file in the directory that matches the wildcard
- *              specification.
- *
- ******************************************************************************/
-
-char *
-AcpiOsGetNextFilename (
-    void                    *DirHandle)
+/*
+ * Pointer overlay for 16-bit code
+ */
+typedef union ptr_ovl
 {
-    EXTERNAL_FIND_INFO      *SearchInfo = DirHandle;
-    int                     Status;
-    char                    FileTypeNotMatched = 1;
-
-
-    /*
-     * Loop while we have matched files but not found any files of
-     * the requested type.
-     */
-    while (FileTypeNotMatched)
+    void                *ptr;
+    UINT32              dword;
+    struct
     {
-        /* On the first call, we already have the first match */
+        UINT16              offset;
+        UINT16              base;
+    } ovl;
 
-        if (SearchInfo->State == 0)
-        {
-            /* No longer the first match */
-
-            SearchInfo->State = 1;
-        }
-        else
-        {
-            /* Get the next match */
-
-            Status = _findnext (SearchInfo->FindHandle, &SearchInfo->DosInfo);
-            if (Status != 0)
-            {
-                return NULL;
-            }
-        }
-
-        /*
-         * Found a match, now check to make sure that the file type
-         * matches the requested file type (directory or normal file)
-         *
-         * NOTE: use of the attrib field saves us from doing a very
-         * expensive stat() on the file!
-         */
-        switch (SearchInfo->RequestedFileType)
-        {
-        case REQUEST_FILE_ONLY:
-
-            /* Anything other than A_SUBDIR is OK */
-
-            if (!(SearchInfo->DosInfo.attrib & _A_SUBDIR))
-            {
-                FileTypeNotMatched = 0;
-            }
-            break;
-
-        case REQUEST_DIR_ONLY:
-
-            /* Must have A_SUBDIR bit set */
-
-            if (SearchInfo->DosInfo.attrib & _A_SUBDIR)
-            {
-                FileTypeNotMatched = 0;
-            }
-            break;
-
-        default:
-            return NULL;
-        }
-    }
-
-    return (SearchInfo->DosInfo.name);
-}
+} PTR_OVL;
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiOsCloseDirectory
- *
- * PARAMETERS:  DirHandle           - Created via AcpiOsOpenDirectory
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Close the open directory and cleanup.
- *
- ******************************************************************************/
+#define GET_SEGMENT(ptr)                ((UINT16)(_segment)(ptr))
+#define GET_OFFSET(ptr)                 ((UINT16)(UINT32) (ptr))
+#define GET_PHYSICAL_ADDRESS(ptr)       (((((UINT32)GET_SEGMENT(ptr)) << 4)) + GET_OFFSET(ptr))
+#define PTR_OVL_BUILD_PTR(p,b,o)        {p.ovl.base=b;p.ovl.offset=o;}
+
+
+#define PARAM_LIST(pl)                  pl
+
+#define TEST_OUTPUT_LEVEL(lvl)          if ((lvl) & OutputLevel)
+
+#define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
+                                            AcpiOsPrintf PARAM_LIST(fp);}
+
+void __cdecl
+AeCtrlCHandler (
+    int                     Sig);
+
+ACPI_STATUS
+AeBuildLocalTables (
+    ACPI_TABLE_HEADER       *UserTable);
+
+ACPI_STATUS
+AeInstallTables (
+    void);
 
 void
-AcpiOsCloseDirectory (
-    void                    *DirHandle)
-{
-    EXTERNAL_FIND_INFO      *SearchInfo = DirHandle;
+AeDumpNamespace (
+    void);
+
+void
+AeDumpObject (
+    char                    *MethodName,
+    ACPI_BUFFER             *ReturnObj);
+
+void
+AeDumpBuffer (
+    UINT32                  Address);
+
+void
+AeExecute (
+    char                    *Name);
+
+void
+AeSetScope (
+    char                    *Name);
+
+void
+AeCloseDebugFile (
+    void);
+
+void
+AeOpenDebugFile (
+    char                    *Name);
+
+ACPI_STATUS
+AeDisplayAllMethods (
+    UINT32                  DisplayCount);
+
+ACPI_STATUS
+AeInstallHandlers (void);
 
 
-    /* Close the directory and free allocations */
-
-    _findclose (SearchInfo->FindHandle);
-    free (SearchInfo->FullWildcardSpec);
-    free (DirHandle);
-}
+#endif /* _ADCOMMON */
 
