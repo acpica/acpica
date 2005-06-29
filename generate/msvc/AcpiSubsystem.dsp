@@ -215,6 +215,10 @@ SOURCE=..\..\subsystem\Interpreter\amconfig.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\amconvrt.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\subsystem\Interpreter\amcreate.c
 # End Source File
 # Begin Source File
