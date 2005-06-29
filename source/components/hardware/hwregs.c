@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.126 $
+ *              $Revision: 1.128 $
  *
  ******************************************************************************/
 
@@ -201,7 +201,7 @@ UnlockAndExit:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiHwGetSleepTypeData
+ * FUNCTION:    AcpiGetSleepTypeData
  *
  * PARAMETERS:  SleepState          - Numeric sleep state
  *              *SleepTypeA         - Where SLP_TYPa is returned
@@ -215,7 +215,7 @@ UnlockAndExit:
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiHwGetSleepTypeData (
+AcpiGetSleepTypeData (
     UINT8                   SleepState,
     UINT8                   *SleepTypeA,
     UINT8                   *SleepTypeB)
@@ -224,7 +224,7 @@ AcpiHwGetSleepTypeData (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ACPI_FUNCTION_TRACE ("HwGetSleepTypeData");
+    ACPI_FUNCTION_TRACE ("AcpiGetSleepTypeData");
 
 
     /*
@@ -329,7 +329,7 @@ AcpiHwGetBitRegisterInfo (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiHwBitRegisterRead
+ * FUNCTION:    AcpiGetRegister
  *
  * PARAMETERS:  RegisterId      - index of ACPI Register to access
  *              UseLock         - Lock the hardware
@@ -342,7 +342,7 @@ AcpiHwGetBitRegisterInfo (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiHwBitRegisterRead (
+AcpiGetRegister (
     UINT32                  RegisterId,
     UINT32                  *ReturnValue,
     UINT32                  Flags)
@@ -352,7 +352,7 @@ AcpiHwBitRegisterRead (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("HwBitRegisterRead");
+    ACPI_FUNCTION_TRACE ("AcpiGetRegister");
 
 
     /* Get the info structure corresponding to the requested ACPI Register */
@@ -398,7 +398,7 @@ AcpiHwBitRegisterRead (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiHwBitRegisterWrite
+ * FUNCTION:    AcpiSetRegister
  *
  * PARAMETERS:  RegisterId      - ID of ACPI BitRegister to access
  *              Value           - (only used on write) value to write to the
@@ -412,7 +412,7 @@ AcpiHwBitRegisterRead (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiHwBitRegisterWrite (
+AcpiSetRegister (
     UINT32                  RegisterId,
     UINT32                  Value,
     UINT32                  Flags)
@@ -422,7 +422,7 @@ AcpiHwBitRegisterWrite (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("HwBitRegisterWrite", RegisterId);
+    ACPI_FUNCTION_TRACE_U32 ("AcpiSetRegister", RegisterId);
 
 
     /* Get the info structure corresponding to the requested ACPI Register */
