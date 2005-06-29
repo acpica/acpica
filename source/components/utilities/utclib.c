@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.47 $
+ * $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -843,7 +843,7 @@ AcpiUtStrtoul (
                             (UINT32) Base))
         {
             Status = AE_ERROR;
-            ReturnValue = 0L;           /* reset */
+            ReturnValue = 0;           /* reset */
         }
         else
         {
@@ -862,7 +862,7 @@ done:
      */
     if (Terminator)
     {
-        if (converted == 0 && ReturnValue == 0L && String != NULL)
+        if (converted == 0 && ReturnValue == 0 && String != NULL)
         {
             *Terminator = (NATIVE_CHAR *) StringStart;
         }
