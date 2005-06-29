@@ -120,11 +120,243 @@
 #include <acpiobj.h>
 #include <interpreter.h>
 #include <namespace.h>
+#include <acpiosd.h>
 
 
 #define _THIS_MODULE        "cmalloc.c"
 #define _COMPONENT          MISCELLANEOUS
 
+/*
+ * Only compile in support for memory allocation tracing if the global debug
+ * flag is set.
+ */
+
+enum {
+	MALLOC = 0,
+	CALLOC
+};
+
+typedef struct ALLOCATION_INFO {
+	void					*Address;
+	UINT32					Size;
+	UINT8					AllocType;
+	UINT32 					Component;
+	char					Module[32];
+	INT32					Line;
+	char					Function[32];
+	struct ALLOCATION_INFO	*Previous;
+	struct ALLOCATION_INFO	*Next;
+} ALLOCATION_INFO;
+
+ALLOCATION_INFO *HeadAllocPtr;
+ALLOCATION_INFO *TailAllocPtr;
+
+ACPI_STATUS
+CmAddElementToAllocList (
+	void 					*Address,
+	UINT32					Size,
+	UINT8					AllocType,
+	UINT32					Component,
+	ACPI_STRING				Module,
+	INT32                   Line,
+	ACPI_STRING				Function)
+{
+	FUNCTION_TRACE ("CmAddElementToAllocList");
+	
+	/* Any list locking should be done right here. */
+	
+	/* If the head pointer is null, create the first element and fill it in. */
+	if (NULL == HeadAllocPtr)
+	{
+		HeadAllocPtr = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
+		
+		/* error check */
+		
+		TailAllocPtr = HeadAllocPtr;
+	}
+	else
+	{
+		TailAllocPtr->Next = (ALLOCATION_INFO *) OsdAllocate (sizeof (ALLOCATION_INFO));
+		
+		/* error check */
+		
+		TailAllocPtr->Next->Previous = TailAllocPtr;
+		TailAllocPtr = TailAllocPtr->Next;
+	}
+
+	/* Fill in the instance data. */		
+	TailAllocPtr->Address = Address;
+	TailAllocPtr->Size = Size;
+	TailAllocPtr->AllocType = AllocType;
+	TailAllocPtr->Component = Component;
+	strcpy (TailAllocPtr->Module, Module);
+	TailAllocPtr->Line = Line;
+	strcpy (TailAllocPtr->Function, Function);
+	
+	FUNCTION_EXIT;
+	return AE_OK;
+}
+
+void *
+_CmAllocate (
+	UINT32					Size,
+	UINT32					Component,
+	ACPI_STRING				Module,
+	INT32                   Line,
+	ACPI_STRING				Function)
+{
+	void *Address = NULL;
+
+	FUNCTION_TRACE ("_CmAllocate");
+	
+	Address = OsdAllocate (Size);
+	
+    if (!Address)
+    {
+       	/* Report allocation error */
+       	_REPORT_ERROR (Module, Line, Component,
+       		"CmAllocate: Memory allocation failure");
+    }
+    else
+    {
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %x Size 0x%x\n",
+        	Address, Size));
+    }
+    
+    CmAddElementToAllocList (Address, Size, MALLOC, Component, Module, Line, Function);
+
+	FUNCTION_EXIT;	
+	return Address;
+}
+
+void *
+_CmCallocate (
+	UINT32					Size,
+	UINT32					Component,
+	ACPI_STRING				Module,
+	INT32                   Line,
+	ACPI_STRING				Function)
+{
+	void *Address = NULL;
+
+	FUNCTION_TRACE ("_CmCallocate");
+		
+	Address = OsdCallocate (Size);
+	
+    if (!Address)
+    {
+       	/* Report allocation error */
+       	_REPORT_ERROR (Module, Line, Component,
+       		"CmCallocate: Memory allocation failure");
+    }
+    else
+    {
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %x Size 0x%x\n",
+        	Address, Size));
+    }
+
+    CmAddElementToAllocList (Address, Size, CALLOC, Component, Module, Line, Function);
+	
+	FUNCTION_EXIT;
+	return Address;
+}
+
+void
+_CmFree (
+	void					*Address,
+	UINT32					Component,
+	ACPI_STRING				Module,
+	INT32                   Line,
+	ACPI_STRING				Function)
+{
+
+#ifdef ACPI_DEBUG
+	ALLOCATION_INFO 	*Element = HeadAllocPtr;
+	BOOLEAN				Found = FALSE;
+#endif
+
+	FUNCTION_TRACE ("_CmFree");
+	
+#ifdef ACPI_DEBUG
+
+	/* cases: none, one, multiple. */
+	if (NULL == HeadAllocPtr)
+	{
+		/* Boy we got problems. */
+		_REPORT_ERROR (Module, Line, Component,
+       		"_CmFree: Someone is trying to free non-allocated memory.  Must be Bob's code.");
+		
+		FUNCTION_EXIT;
+		return;
+	}
+	
+	if (HeadAllocPtr == TailAllocPtr)
+	{	
+		OsdFree (HeadAllocPtr);
+		TailAllocPtr = NULL;
+		
+		DEBUG_PRINT (TRACE_ALLOCATIONS,
+			("_CmFree: Allocation list deleted.  No more outstanding allocations.\n"));
+	
+		FUNCTION_EXIT;
+		return;
+	}
+		
+	/* search and destroy. note - this always searches the entire list...*/
+	do {		
+		if (Element->Address == Address)
+		{
+			if (Found)
+			{
+				_REPORT_ERROR (Module, Line, Component,
+    		   		"_CmFree: Address to be deleted is in the list twice.");
+			
+				continue;
+			}
+			
+			/* cases: head, tail, other */
+			if (Element == HeadAllocPtr)
+			{
+				Element->Next->Previous = NULL;
+				HeadAllocPtr = Element->Next;
+			}
+			else
+			{
+				if (Element == TailAllocPtr)
+				{
+					Element->Previous->Next = NULL;
+					TailAllocPtr = Element->Previous;
+				}
+				else
+				{
+					Element->Previous->Next = Element->Next;
+					Element->Next->Previous = Element->Previous;
+				}
+			}		
+			
+			Found = TRUE;
+			OsdFree (Element);
+			break;
+		}
+			
+		if (NULL == Element->Next)
+		{
+			_REPORT_ERROR (Module, Line, Component,
+				"_CmFree: Someone is trying to free non-allocated memory.  Must be Bob's code.");
+			break;
+		}
+		else
+		{
+			Element = Element->Next;
+		}	
+	} while (Element);
+
+#endif
+
+	FUNCTION_EXIT;
+	OsdFree (Address);
+
+}
 
 
 /*****************************************************************************
@@ -170,96 +402,6 @@ _AllocateObjectDesc (
     }
 
     return NewDesc;
-}
-
-
-/*****************************************************************************
- * 
- * FUNCTION:    _LocalAllocate 
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              AllocSize           - Memory to allocate, in bytes
- *
- * RETURN:      Pointer to newly allocated memory.  Null on error.
- *
- * DESCRIPTION: Allocate memory.  Gracefully handle
- *              error conditions.
- *
- ****************************************************************************/
-
-void *
-_LocalAllocate (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
-    INT32                   AllocSize)
-{
-    void                    *Block;
-
-
-    Block = OsdAllocate ((ACPI_SIZE) AllocSize);
-    if (!Block)
-    {
-        /* Report allocation error */
-
-        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, 
-                            "LocalAllocate: Memory allocation failure");
-    }
-
-    else
-    {
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("LocalAllocate: %x Size 0x%x\n",
-                        Block, AllocSize));
-    }
-
-    return Block;
-}
-
-
-/*****************************************************************************
- * 
- * FUNCTION:    _LocalCallocate 
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              AllocSize           - Memory to allocate, in bytes
- *
- * RETURN:      Pointer to newly allocated memory. Null on error
- *
- * DESCRIPTION: Allocate memory via calloc (initialized to zero).  
- *              Gracefully handle error conditions.
- *
- ****************************************************************************/
-
-void *
-_LocalCallocate (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
-    INT32                   AllocSize)
-{
-    void                    *Block;
-
-
-    Block = OsdCallocate ((ACPI_SIZE) AllocSize);
-    if (!Block)
-    {
-        /* Report allocation error */
-
-        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, 
-                        "LocalCallocate: Memory allocation failure");
-    }
-
-    else
-    {
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("LocalCallocate: %x Size 0x%x\n",
-                        Block, AllocSize));
-    }
-
-    return Block;
 }
 
 
@@ -319,4 +461,3 @@ LocalDeleteObject (
     *ObjDesc = NULL;
     FUNCTION_EXIT;
 }
-
