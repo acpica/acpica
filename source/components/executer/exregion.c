@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -219,7 +219,7 @@ AcpiExSystemMemorySpaceHandler (
          * Don't attempt to map memory beyond the end of the region, and
          * constrain the maximum mapping size to something reasonable.
          */
-        Remaining = (UINT32) ((MemInfo->Address + (ACPI_PHYSICAL_ADDRESS) MemInfo->Length) - Address);
+        Remaining = (UINT32) ((MemInfo->Address + MemInfo->Length) - Address);
         if (Remaining > SYSMEM_REGION_WINDOW_SIZE)
         {
             WindowSize = SYSMEM_REGION_WINDOW_SIZE;
