@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -290,7 +290,7 @@ AcpiDsGetFieldNames (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_U32 ("DsGetFieldNames", Info);
+    FUNCTION_TRACE_PTR ("DsGetFieldNames", Info);
 
 
     /* First field starts at bit zero */
@@ -517,7 +517,7 @@ AcpiDsInitFieldObjects (
             Arg->Node = Node;
         }
 
-        /* Move on to next field in the list */
+        /* Move to next field in the list */
 
         Arg = Arg->Next;
     }
