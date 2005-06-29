@@ -125,114 +125,6 @@ static ST_KEY_DESC_TABLE KDT[] = {
  * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
  */
 
-/* TBD: Remove this function.  it is bad. */
-
-/*****************************************************************************
- *
- * FUNCTION:    AmlLastFullyQualifiedName
- *
- * PARAMETERS:  none
- *
- * RETURN:      A pointer to storage containing the last name encountered,
- *              in fully qualified form.  Used to create labels when
- *              generating an assembly output file.
- *
- ****************************************************************************/
-
-char *
-AmlLastFullyQualifiedName (void)
-{
-    char                *CurrentScope;
-    char                *TempPtr;
-    size_t              MaxLength;
-    size_t              Length;
-    char                *FQN_ptr = NULL;
-    size_t              FQN_Length = 0;
-
-
-    FUNCTION_TRACE ("AmlLastFullyQualifiedName");
-
-
-    /* If NameString is fully qualified, just return a pointer to it. */
-
-    if (AML_RootPrefix == NameString[0])
-    {
-        return NameString;
-    }
-
-    /* Get the current scope */
-
-    CurrentScope = NsNameOfCurrentScope();
-
-    if (CurrentScope)
-    {
-
-        /* Max length of FQN = length of scope + length of name + trailing null */
-
-        MaxLength = strlen (CurrentScope) + strlen (NameString) + 1;
-
-
-        /* 
-         * TBD: FIX WEIRD CODE:  both FQN_Length and FQN_ptr are locals 
-         * initialized to zero (null)
-         */
-        if (FQN_Length < MaxLength)
-        {
-            if (FQN_ptr)
-            {
-                OsdFree (FQN_ptr);
-            }
-            else
-            {
-                RegisterStaticBlockPtr (&FQN_ptr);
-            }
-
-            FQN_ptr = LocalCallocate (MaxLength);
-            if (!FQN_ptr)
-            {
-                /* allocation failed */
-
-                REPORT_ERROR (&KDT[0]);
-                return NULL;
-            }
-        
-            FQN_Length = MaxLength;
-        }
-
-        if (FQN_ptr)
-        {
-            /* Copy scope into FQN_ptr string; set Length to its length */
-
-            strcpy (FQN_ptr, CurrentScope);
-            Length = strlen (FQN_ptr);
-
-            /* 
-             * For each ParentPrefix at the front of NameString,
-             * remove one segment (4 bytes) from the end of the scope.
-             */
-            for (TempPtr = NameString ; AML_ParentPrefix == *TempPtr ; ++TempPtr )
-            {
-                Length -= 4;
-                if (Length < 0)
-                {
-                    Length = 0;
-                }
-
-                FQN_ptr[Length] = '\0';
-            }
-
-            /* 
-             * Append NameString (with ParentPrefixes removed)
-             * to what is left of the scope.
-             */
-            strcat (FQN_ptr, TempPtr);
-        }
-    }
-
-    return FQN_ptr;
-
-}
-
 
 /*****************************************************************************
  *
@@ -318,6 +210,7 @@ AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
 
             REPORT_ERROR (&KDT[1]);
             NameStringSize = 0;
+            FUNCTION_EXIT;
             return;
         }
     }
@@ -370,6 +263,9 @@ AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
 
         DEBUG_PRINT_RAW (TRACE_NAMES, (" %s\n", NameString));
     }
+
+
+    FUNCTION_EXIT;
 }
 
 
@@ -439,6 +335,7 @@ AmlDecodePackageLength (INT32 LastPkgLen)
     else if (LastPkgLen < Type4)
         NumBytes = 4;
 
+    FUNCTION_EXIT;
     return NumBytes;
 }
 
@@ -545,6 +442,7 @@ AmlDoSeg (OpMode LoadExecMode)
 
     DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", ExceptionNames[Status]));
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -913,32 +811,8 @@ BREAKPOINT3;
 
     DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoName %s \n", ExceptionNames[Status]));
 
+    FUNCTION_EXIT;
     return Status;
 }
 
-
-/*****************************************************************************
- *
- * FUNCTION:    AmlGenLabel
- *
- * PARAMETERS:  *Name           - The name to be generated
- *
- * DESCRIPTION: If generating assembly output, generate a label.
- *              As of 3/5/97, this generates a comment instead so we don't
- *              need to worry about multiple definitions.
- *
- ****************************************************************************/
-
-void 
-AmlGenLabel (char *Name)
-{
-    FUNCTION_TRACE ("AmlGenLabel");
-
-
-    if (fAsmFile)
-    {
-        OsdPrintf (fAsmFile, "\n; %s", Name);
-    }
-
-}
 

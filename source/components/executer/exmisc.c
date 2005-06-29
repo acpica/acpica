@@ -190,6 +190,7 @@ AmlExecCreateField (UINT16 opcode)
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -211,6 +212,7 @@ AmlExecCreateField (UINT16 opcode)
     if (!IS_NS_HANDLE (ResDesc))
     {
         DEBUG_PRINT (ACPI_ERROR, ("%s: destination must be a Name\n", OpName));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
 
@@ -261,6 +263,7 @@ AmlExecCreateField (UINT16 opcode)
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlExecCreateField:internal error: Unknown field creation opcode %02x\n",
                 opcode));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
 
     } /* switch */
@@ -277,6 +280,7 @@ AmlExecCreateField (UINT16 opcode)
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
                             BitOffset + (UINT32)BitCount,
                             8 * (UINT32)SrcDesc->Buffer.BufLen));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
@@ -310,6 +314,7 @@ AmlExecCreateField (UINT16 opcode)
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlExecCreateField: Tried to create field in improper object type %s\n",
                 TypeFoundPtr));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     
     } /* switch */
@@ -319,7 +324,8 @@ AmlExecCreateField (UINT16 opcode)
     {
         /*  delete object descriptor unique to CreateField  */
 
-        DELETE (CntDesc);
+        OsdFree (CntDesc);
+        CntDesc = NULL;
     }
 
     /* 
@@ -357,6 +363,7 @@ AmlExecCreateField (UINT16 opcode)
     Status = AmlExecStore (OffDesc, ResDesc);
     ObjStackTop -= NumOperands - 1;
     
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -398,6 +405,7 @@ AmlExecFatal (void)
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_FatalOp, 3);
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -416,6 +424,7 @@ AmlExecFatal (void)
                 ArgDesc->Number.Number));
 
     DEBUG_PRINT (ACPI_ERROR, ("AmlExecFatal: FatalOp executed\n"));
+    FUNCTION_EXIT;
     return AE_AML_ERROR;
 }
 
@@ -493,12 +502,13 @@ AmlExecIndex (void)
 
         if (AE_OK == Status)
         {
-            DELETE (IdxDesc);
+            OsdFree (IdxDesc);
         }
 
         ObjStackTop -= 2;
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -551,6 +561,7 @@ AmlExecMatch (void)
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_MatchOp, 6);
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -569,6 +580,7 @@ AmlExecMatch (void)
         Op2Desc->Number.Number < 0 || Op2Desc->Number.Number > 5)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: operation encoding out of range\n"));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
 
@@ -576,6 +588,7 @@ AmlExecMatch (void)
     if (Look < 0 || Look >= (UINT32) PkgDesc->Package.PkgCount)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: start position value out of range\n"));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
 
@@ -715,13 +728,15 @@ AmlExecMatch (void)
     PkgDesc->ValType = (UINT8) TYPE_Number;
     PkgDesc->Number.Number = MatchValue;
 
-    DELETE (StartDesc);
-    DELETE (V2Desc);
-    DELETE (Op2Desc);
-    DELETE (V1Desc);
-    DELETE (Op1Desc);
+    OsdFree (StartDesc);
+    OsdFree (V2Desc);
+    OsdFree (Op2Desc);
+    OsdFree (V1Desc);
+    OsdFree (Op1Desc);
     
     ObjStackTop -= 5;          /* Remove operands */
+
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -858,6 +873,7 @@ AmlGetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDes
         OsReleaseGlobalLock ();
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -891,6 +907,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
     if (!StackPtr || !*StackPtr)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error: null pointer\n"));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
 
@@ -906,7 +923,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             /* Convert indirect name ptr to direct name ptr */
             
             TempHandle = (*StackPtr)->Lvalue.Ref;
-            DELETE (*StackPtr);
+            OsdFree (*StackPtr);
             (*StackPtr) = TempHandle;
             Status = AE_OK;
             break;
@@ -991,6 +1008,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
         if (AE_OK != Status)
         {
+            FUNCTION_EXIT;
             return Status;
         }
 
@@ -1002,15 +1020,18 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         {   
             /*  descriptor allocation failure   */
             
+            FUNCTION_EXIT;
             return AE_NO_MEMORY;
         }
 
         if ((Status = AmlGetFieldUnitValue (*StackPtr, ObjDesc)) != AE_OK)
         {
-            DELETE (ObjDesc);
+            OsdFree (ObjDesc);
+            ObjDesc = NULL;
         }
         
         *StackPtr = (void *) ObjDesc;
+        FUNCTION_EXIT;
         return Status;
 
     case TYPE_BankField:
@@ -1019,15 +1040,18 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         {   
             /*  descriptor allocation failure   */
             
+            FUNCTION_EXIT;
             return AE_NO_MEMORY;
         }
 
         if ((Status = AmlGetFieldUnitValue (*StackPtr, ObjDesc)) != AE_OK)
         {
-            DELETE(ObjDesc);
+            OsdFree(ObjDesc);
+            ObjDesc = NULL;
         }
 
         *StackPtr = (void *) ObjDesc;
+        FUNCTION_EXIT;
         return Status;
         break;
 
@@ -1070,6 +1094,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                 DEBUG_PRINT (TRACE_EXEC,
                             ("leave AmlGetRvalue: NULL Package ValuePtr ==> AE_AML_ERROR\n"));
 
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1083,6 +1108,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
                 if (AE_OK != (Status = AmlPushIfExec (MODE_Exec)))             /* ObjStack */
                 {
+                    FUNCTION_EXIT;
                     return Status;
                 }
 
@@ -1103,6 +1129,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                 else
                 {
                     ObjStackTop--;
+                    FUNCTION_EXIT;
                     return Status;
                 }
             }
@@ -1110,6 +1137,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             if (!ValDesc || (TYPE_Package != ValDesc->ValType))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue:internal error: Bad package value\n"));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1118,6 +1146,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {   
                 /*  descriptor allocation failure   */
                 
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
 
@@ -1131,6 +1160,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             if (TYPE_String != ValDesc->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue:internal error: Bad string value\n"));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1139,6 +1169,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {   
                 /*  descriptor allocation failure   */
 
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
 
@@ -1149,6 +1180,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error: null Buffer ValuePtr\n"));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1161,6 +1193,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                  */
                 if (AE_OK != (Status = AmlPushIfExec (MODE_Exec)))                /* ObjStack */
                 {
+                    FUNCTION_EXIT;
                     return Status;
                 }
 
@@ -1181,6 +1214,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                 else
                 {
                     ObjStackTop--;
+                    FUNCTION_EXIT;
                     return Status;
                 }
             }
@@ -1188,6 +1222,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             if (!ValDesc || (TYPE_Buffer != ValDesc->ValType))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Bad buffer value\n"));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1196,6 +1231,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {   
                 /*  descriptor allocation failure   */
                 
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
 
@@ -1217,6 +1253,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error: null Number ValuePtr\n"));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1227,6 +1264,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                 {   
                     /*  descriptor allocation failure   */
                     
+                    FUNCTION_EXIT;
                     return AE_NO_MEMORY;
                 }
                 
@@ -1242,6 +1280,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                 if (!AmlIsInPCodeBlock ((UINT8 *) ValDesc))
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue/Number: internal error: not a Number\n"));
+                    FUNCTION_EXIT;
                     return AE_AML_ERROR;
                 }
 
@@ -1250,6 +1289,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                 {   
                     /*  descriptor allocation failure   */
                     
+                    FUNCTION_EXIT;
                     return AE_NO_MEMORY;
                 }
                 
@@ -1284,10 +1324,11 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     break;
 
                 default:
-                    DELETE (ObjDesc);
-                   DEBUG_PRINT (ACPI_ERROR, (
+                    OsdFree (ObjDesc);
+                    DEBUG_PRINT (ACPI_ERROR, (
                             "AmlGetRvalue/Number: internal error: Expected AML number, found %02x\n",
                             *(UINT8 *) ValDesc));
+                    FUNCTION_EXIT;
                     return AE_AML_ERROR;
                 
                 }   /* switch */
@@ -1306,6 +1347,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             Status = AmlGetNamedFieldValue ((NsHandle)* StackPtr, &TempVal);
             if (AE_OK != Status)
             {
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1314,6 +1356,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {   
                 /*  descriptor allocation failure   */
                 
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
 
@@ -1325,6 +1368,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error: null BankField ValuePtr\n"));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1335,6 +1379,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         *StackPtr, TYPE_BankField, ValDesc->ValType, ValDesc));
                 
                 AmlAppendBlockOwner (ValDesc);
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1352,6 +1397,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     /* own this.  This means something grabbed it and did not */
                     /* release the Global Lock! */
                     
+                    FUNCTION_EXIT;
                     return (AE_AML_ERROR);
                 }
             }
@@ -1370,6 +1416,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
             if (AE_OK != Status)
             {
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
             
@@ -1378,6 +1425,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             Status = AmlGetNamedFieldValue ((NsHandle) ValDesc->BankField.Container, &TempVal);
             if (AE_OK != Status)
             {
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1386,6 +1434,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {
                 /*  descriptor allocation failure   */
 
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
 
@@ -1398,6 +1447,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error: null IndexField ValuePtr\n"));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1408,6 +1458,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         *StackPtr, TYPE_IndexField, ValDesc->ValType, ValDesc));
                 
                 AmlAppendBlockOwner (ValDesc);
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1425,6 +1476,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     /* own this.  This means something grabbed it and did not */
                     /* release the Global Lock!  */
                     
+                    FUNCTION_EXIT;
                     return (AE_AML_ERROR);
                 }
                 
@@ -1452,6 +1504,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
             if (AE_OK != Status)
             {
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1460,6 +1513,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             Status = AmlGetNamedFieldValue (ValDesc->IndexField.Data, &TempVal);
             if (AE_OK != Status)
             {
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1468,6 +1522,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {
                 /*  descriptor allocation failure   */
 
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
 
@@ -1479,6 +1534,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error: null FieldUnit ValuePtr\n"));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1490,6 +1546,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                           ValDesc->ValType, ValDesc));
                 
                 AmlAppendBlockOwner (ValDesc);
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
                 break;
             }
@@ -1499,12 +1556,14 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {
                 /*  descriptor allocation failure   */
 
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
 
             if ((Status = AmlGetFieldUnitValue (ValDesc, ObjDesc)) != AE_OK)
             {
-                DELETE (ObjDesc);
+                OsdFree (ObjDesc);
+                FUNCTION_EXIT;
                 return Status;
             }
 
@@ -1513,6 +1572,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         /* cases which just return the name as the rvalue */
         
         case TYPE_Device:
+            FUNCTION_EXIT;
             return AE_OK;
             break;
 
@@ -1540,6 +1600,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {
                 /*  descriptor allocation failure   */
                 
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
 
@@ -1551,6 +1612,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     "AmlGetRvalue: Fetch from [%s] not implemented\n",
                     NsTypeNames[NsGetType ((NsHandle)* StackPtr)]));
             
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
 #endif /* HACK */
 
@@ -1561,6 +1623,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Unknown NsType %d\n",
                             NsGetType ((NsHandle)* StackPtr)));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
@@ -1569,6 +1632,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
     DEBUG_PRINT (TRACE_EXEC, ("leave AmlGetRvalue: AE_OK\n"));
 
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -1607,11 +1671,13 @@ AmlIsMethodValue (OBJECT_DESCRIPTOR *ObjDesc)
         {
             if (ObjDesc == MethodStack[MethodNestLevel][Index])
             {
+                FUNCTION_EXIT;
                 return TRUE;
             }
         }
     }
 
+    FUNCTION_EXIT;
     return FALSE;
 }
 

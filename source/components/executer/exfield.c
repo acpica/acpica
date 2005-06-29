@@ -100,7 +100,7 @@
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
-#include <devices.h>
+#include <hardware.h>
 
 
 #define _THIS_MODULE        "iefield.c"
@@ -297,7 +297,7 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
     }
 
     DEBUG_PRINT (TRACE_EXEC, ("Leave iSetupFld: %s\n", ExceptionNames[Status]));
-
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -345,6 +345,7 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
     Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
     if (AE_OK != Status)
     {
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -390,6 +391,7 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         {
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField:implementation limitation: SystemMemory address %08lx over 1MB\n", Address));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
@@ -422,6 +424,7 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField: invalid SystemMemory width %d\n", FieldBitWidth));
             OsdUnMapMemory (PhysicalAddrPtr, 4);
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
@@ -448,6 +451,7 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         default:
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField: invalid SystemIO width %d\n", FieldBitWidth));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
         break;
@@ -476,10 +480,12 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         default:
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField: invalid PCIConfig width %d\n", FieldBitWidth));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
         if (PciExcep)
         {
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
         break;
@@ -491,16 +497,19 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: Region type %s not implemented\n",
                 RegionTypes[RgnDesc->Region.SpaceId]));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: Unknown region SpaceID %d\n",
                 RgnDesc->Region.SpaceId));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
 
     DEBUG_PRINT (TRACE_OPREGION, (" val %08lx \n", *Value));
 
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -546,6 +555,7 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
     Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
     if (AE_OK != Status)
     {
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -579,6 +589,7 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlWriteField:implementation limitation: SystemMemory address %08lx over 1MB\n", Address));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
@@ -683,6 +694,7 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         Status = AE_AML_ERROR;
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -804,6 +816,7 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         if (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset > (UINT16) MaxW)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Field exceeds %s\n", Type));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
     }
@@ -932,7 +945,7 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         OsReleaseGlobalLock ();
     }
 
-
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -968,6 +981,7 @@ AmlSetNamedFieldValue (NsHandle NamedField, UINT32 Value)
         Status = AmlAccessNamedField (ACPI_WRITE, NamedField, &Value);
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -1007,6 +1021,7 @@ AmlGetNamedFieldValue (NsHandle NamedField, UINT32 *Value)
         Status = AmlAccessNamedField (ACPI_READ, NamedField, Value);
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 

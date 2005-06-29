@@ -227,6 +227,8 @@ AmlDumpBuffer (size_t NumBytes)
 
     DEBUG_PRINT (TRACE_TABLES, ("AML from %p:\n", AmlGetPCodeHandle ()));
     DumpBuffer ((UINT8 *) AmlGetPCodeHandle (), NumBytes, HEX, INTERPRETER);
+
+    FUNCTION_EXIT;
 }
 
 
@@ -256,6 +258,7 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
     if (!EntryDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlDumpStackEntry: ***NULL stack entry pointer***\n"));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
 
@@ -540,6 +543,7 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
         }
     }
  
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -607,6 +611,8 @@ AmlDumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
             break;
         }
     }
+
+    FUNCTION_EXIT;
 }
 
 
@@ -840,6 +846,7 @@ AmlDumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 		break;
 	}
 
+    FUNCTION_EXIT;
 }
 
 
