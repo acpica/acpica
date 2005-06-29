@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfold - Constant folding
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -452,7 +452,7 @@ OpcAmlConstantWalk (
          * Because we know we executed type 3/4/5 opcodes above, we know that
          * the result must be either an Integer, String, or Buffer.
          */
-        switch (ObjDesc->Common.Type)
+        switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
         {
         case ACPI_TYPE_INTEGER:
 
@@ -517,7 +517,7 @@ OpcAmlConstantWalk (
 
         default:
             printf ("Unsupported return type: %s\n", 
-                        AcpiUtGetTypeName (ObjDesc->Common.Type));
+                        AcpiUtGetObjectTypeName (ObjDesc));
             break;
         }
     }
