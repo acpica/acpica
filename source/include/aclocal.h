@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.109 $
+ *       $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -545,6 +545,20 @@ typedef struct acpi_result_values
 } ACPI_RESULT_VALUES;
 
 
+/*
+ * Notify info - used to pass info to the deferred notify
+ * handler/dispatcher.
+ */
+
+typedef struct acpi_notify_info
+{
+    ACPI_STATE_COMMON
+    ACPI_NAMESPACE_NODE     *Node;
+    union acpi_operand_obj  *HandlerObj;
+
+} ACPI_NOTIFY_INFO;
+
+
 /* Generic state is union of structs above */
 
 typedef union acpi_gen_state
@@ -556,6 +570,7 @@ typedef union acpi_gen_state
     ACPI_PSCOPE_STATE       ParseScope;
     ACPI_PKG_STATE          Pkg;
     ACPI_RESULT_VALUES      Results;
+    ACPI_NOTIFY_INFO        Notify;
 
 } ACPI_GENERIC_STATE;
 
