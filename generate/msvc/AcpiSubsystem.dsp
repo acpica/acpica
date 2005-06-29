@@ -49,6 +49,11 @@ BSC32=bscmake.exe
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"Release\acpilib.lib"
+# Begin Special Build Tool
+SOURCE=$(InputPath)
+PostBuild_Desc=Copying built library [Release Version]
+PostBuild_Cmds=copy release\acpilib.lib ..\..\libraries\acpilib.lib
+# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
 
@@ -77,7 +82,7 @@ LIB32=link.exe -lib
 SOURCE=$(InputPath)
 PreLink_Desc=deleting old library
 PreLink_Cmds=del ..\..\libraries\acpilib.lib
-PostBuild_Desc=Copying built library
+PostBuild_Desc=Copying built library [Debug Version]
 PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
 # End Special Build Tool
 
