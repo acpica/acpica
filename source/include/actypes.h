@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.231 $
+ *       $Revision: 1.232 $
  *
  *****************************************************************************/
 
@@ -385,7 +385,7 @@ typedef UINT64                          ACPI_INTEGER;
  * Constants with special meanings
  */
 
-#define ACPI_ROOT_OBJECT                (ACPI_HANDLE)(void *) 1 /*(ACPI_HANDLE) ACPI_PTR_ADD (char, NULL, ACPI_UINT32_MAX)*/
+#define ACPI_ROOT_OBJECT                (ACPI_HANDLE) ACPI_PTR_ADD (char, NULL, ACPI_MAX_PTR)
 
 
 /*
