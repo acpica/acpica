@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -373,14 +373,15 @@ AcpiGetObjectInfo (
     if (Info.Type == ACPI_TYPE_DEVICE)
     {
         /*
-         * Get extra info for ACPI devices only.  Run the
-         * _HID, _UID, _STA, and _ADR methods.  Note: none
-         * of these methods are required, so they may or may
-         * not be present.  The Info.Valid bits are used
-         * to indicate which methods ran successfully.
+         * Get extra info for ACPI Devices objects only:
+         * Run the Device _HID, _UID, _CID, _STA, and _ADR methods. 
+         * 
+         * Note: none of these methods are required, so they may or may
+         * not be present for this device.  The Info.Valid bitfield is used
+         * to indicate which methods were found and ran successfully.
          */
 
-        /* Execute the _HID method and save the result */
+        /* Execute the Device._HID method */
 
         Status = AcpiUtExecute_HID (Node, &Info.HardwareId);
         if (ACPI_SUCCESS (Status))
@@ -388,7 +389,7 @@ AcpiGetObjectInfo (
             Info.Valid |= ACPI_VALID_HID;
         }
 
-        /* Execute the _UID method and save the result */
+        /* Execute the Device._UID method */
 
         Status = AcpiUtExecute_UID (Node, &Info.UniqueId);
         if (ACPI_SUCCESS (Status))
@@ -396,30 +397,28 @@ AcpiGetObjectInfo (
             Info.Valid |= ACPI_VALID_UID;
         }
 
-        /* Execute the _CID method and save the result */
+        /* Execute the Device._CID method */
 
         Status = AcpiUtExecute_CID (Node, &CidList);
         if (ACPI_SUCCESS (Status))
         {
-            Size += ((ACPI_SIZE) CidList->Count - 1) * sizeof (ACPI_COMPATIBLE_ID);
+            Size += ((ACPI_SIZE) CidList->Count - 1) * 
+                                 sizeof (ACPI_COMPATIBLE_ID);
             Info.Valid |= ACPI_VALID_CID;
         }
 
-        /*
-         * Execute the _STA method and save the result
-         * _STA is not always present
-         */
+        /* Execute the Device._STA method */
+
         Status = AcpiUtExecute_STA (Node, &Info.CurrentStatus);
         if (ACPI_SUCCESS (Status))
         {
             Info.Valid |= ACPI_VALID_STA;
         }
 
-        /*
-         * Execute the _ADR method and save result if successful
-         * _ADR is not always present
-         */
-        Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR, Node, &Info.Address);
+        /* Execute the Device._ADR method */
+
+        Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR, Node, 
+                        &Info.Address);
         if (ACPI_SUCCESS (Status))
         {
             Info.Valid |= ACPI_VALID_ADR;
