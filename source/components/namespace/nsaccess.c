@@ -141,7 +141,7 @@ NsSetup (void)
 {
     ACPI_STATUS             Status;
     PREDEFINED_NAMES        *InitVal = NULL;
-    NsHandle                handle;
+    NAME_TABLE_ENTRY        *NewEntry;
 
 
     FUNCTION_TRACE ("NsSetup");
@@ -188,14 +188,14 @@ NsSetup (void)
 
     for (InitVal = PreDefinedNames; InitVal->Name; InitVal++)
     {
-        Status = NsEnter (InitVal->Name, InitVal->Type, MODE_Load, &handle);
+        Status = NsEnter (InitVal->Name, InitVal->Type, MODE_Load, &NewEntry);
 
         /* 
          * if name entered successfully
          *  && its entry in PreDefinedNames[] specifies an initial value
          */
         
-        if ((Status == AE_OK) && handle && InitVal->Val)
+        if ((Status == AE_OK) && NewEntry && InitVal->Val)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
@@ -253,7 +253,7 @@ NsSetup (void)
 
                 /* Store pointer to value descriptor in nte */
             
-                NsSetValue(handle, ObjDesc, ObjDesc->ValType);
+                NsSetValue (NewEntry, ObjDesc, ObjDesc->ValType);
             }
         }
     }
@@ -275,7 +275,7 @@ NsSetup (void)
  *                            as represented in the AML stream
  *              Type        - Type associated with name
  *              LoadMode    - MODE_Load => add name if not found
- *              RetHandle   - Where the new handle is placed
+ *              RetEntry    - Where the new entry (NTE) is placed
  *
  * RETURN:      Status
  *
@@ -286,7 +286,7 @@ NsSetup (void)
  ***************************************************************************/
 
 ACPI_STATUS
-NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
+NsEnter (char *Name, NsType Type, OpMode LoadMode, NAME_TABLE_ENTRY **RetEntry)
 {
     ACPI_STATUS         Status;
     NAME_TABLE_ENTRY    *EntryToSearch = NULL;
@@ -300,13 +300,13 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
     FUNCTION_TRACE ("NsEnter");
 
 
-    if (!RetHandle)
+    if (!RetEntry)
     {
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
-    *RetHandle = ENTRY_NOT_FOUND;
+    *RetEntry = ENTRY_NOT_FOUND;
     if (!RootObject->Scope)
     {
         /* 
@@ -586,7 +586,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
         CheckTrash ("after  NsPushCurrentScope");
     }
 
-    *RetHandle = (NsHandle) ThisEntry;
+    *RetEntry = ThisEntry;
     FUNCTION_EXIT;
     return AE_OK;
 }
