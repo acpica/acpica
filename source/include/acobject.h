@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.109 $
+ *       $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
  * to the interpreter, and to keep track of the various handlers such as
  * address space handlers and notify handlers.  The object is a constant
  * size in order to allow it to be cached and reused.
- *
+ */
 
 /*******************************************************************************
  *
