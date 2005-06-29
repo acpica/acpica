@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -149,10 +149,15 @@ AcpiEvValidGpeEvent (
 
     /* No need for spin lock since we are not changing any list elements */
 
+    /* Walk the GPE interrupt levels */
+
     GpeXruptBlock = AcpiGbl_GpeXruptListHead;
     while (GpeXruptBlock)
     {
         GpeBlock = GpeXruptBlock->GpeBlockListHead;
+
+        /* Walk the GPE blocks on this interrupt level */
+
         while (GpeBlock)
         {
             if ((&GpeBlock->EventInfo[0] <= GpeEventInfo) &&
@@ -234,7 +239,7 @@ UnlockAndExit:
  *
  * PARAMETERS:  Callback from WalkNamespace
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Called from AcpiWalkNamespace.  Expects each object to be a
  *              control method under the _GPE portion of the namespace.
@@ -243,10 +248,10 @@ UnlockAndExit:
  *
  *              The name of each GPE control method is of the form:
  *                  "_Lnn" or "_Enn"
- *              Where:
- *                  L      - means that the GPE is level triggered
- *                  E      - means that the GPE is edge triggered
- *                  nn     - is the GPE number [in HEX]
+ *                  Where:
+ *                      L      - means that the GPE is level triggered
+ *                      E      - means that the GPE is edge triggered
+ *                      nn     - is the GPE number [in HEX]
  *
  ******************************************************************************/
 
@@ -275,7 +280,8 @@ AcpiEvSaveMethodInfo (
     Name[ACPI_NAME_SIZE] = 0;
 
     /*
-     * Edge/Level determination is based on the 2nd character of the method name
+     * Edge/Level determination is based on the 2nd character 
+     * of the method name
      */
     switch (Name[1])
     {
@@ -331,9 +337,8 @@ AcpiEvSaveMethodInfo (
     GpeEventInfo->Flags      = Type;
     GpeEventInfo->MethodNode = (ACPI_NAMESPACE_NODE *) ObjHandle;
 
-    /*
-     * Enable the GPE (SCIs should be disabled at this point)
-     */
+    /* Enable the GPE (SCIs should be disabled at this point) */
+
     Status = AcpiHwEnableGpe (GpeEventInfo);
     if (ACPI_FAILURE (Status))
     {
@@ -994,8 +999,8 @@ AcpiEvGpeInitialize (void)
             }
 
             /*
-             * GPE0 and GPE1 do not have to be contiguous in the GPE number space,
-             * But, GPE0 always starts at zero.
+             * GPE0 and GPE1 do not have to be contiguous in the GPE number
+             * space. However, GPE0 always starts at GPE number zero.
              */
             GpeNumberMax = AcpiGbl_FADT->Gpe1Base +
                                 ((RegisterCount1 * ACPI_GPE_REGISTER_WIDTH) - 1);
