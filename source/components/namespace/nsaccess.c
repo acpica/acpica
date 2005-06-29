@@ -165,7 +165,7 @@ NsSetup (void)
 
     /* Allocate a root scope table */
 
-    RootObject->Scope = NsAllocateNteDesc (NS_TABLE_SIZE);
+    RootObject->Scope = NsAllocateNameTable (NS_TABLE_SIZE);
     if (!RootObject->Scope)
     {
         /*  root name table allocation failure  */
@@ -534,7 +534,7 @@ NsLookup (
                 /* First or second pass load mode ==> locate the next scope */
                 
                 DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Creating and adding a new scope\n"));
-                ThisEntry->Scope = NsAllocateNteDesc (NS_TABLE_SIZE);
+                ThisEntry->Scope = NsAllocateNameTable (NS_TABLE_SIZE);
 
                 if (!ThisEntry->Scope)
                 {
