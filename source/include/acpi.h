@@ -14,15 +14,18 @@
  | FILENAME: acpi.h - Publics and external data for ACPI.LIB
  |__________________________________________________________________________
  |
- | $Revision: 1.4 $
- | $Date: 2005/06/29 19:58:20 $
+ | $Revision: 1.5 $
+ | $Date: 2005/06/29 19:58:21 $
  | $Log: acpi.h,v $
- | Revision 1.4  2005/06/29 19:58:20  aystarik
- | Cleanup.  Support for tables up to 48K.
+ | Revision 1.5  2005/06/29 19:58:21  aystarik
+ | Anti-Polish clean up
  |
  | 
- | date	99.02.03.00.01.00;	author rmoore1;	state Exp;
+ | date	99.02.12.18.26.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 5     2/12/99 10:26a Rmosgrov
+ * Anti-Polish clean up
  * 
  * 4     2/02/99 4:01p Rmoore1
  * Cleanup.  Support for tables up to 48K.
@@ -130,13 +133,13 @@
  * Initialization of all variables occurs in iAcpiInit 
  */
 
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      * pRSDP;
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       * pRSDT;
-ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     * pFACS;
-ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        * pFACP;
-ACPI_EXTERN APIC_TABLE                          * pMAPIC;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * pDSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * pPSDT;
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      * RSDP;
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       * RSDT;
+ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     * FACS;
+ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        * FACP;
+ACPI_EXTERN APIC_TABLE                          * MAPIC;
+ACPI_EXTERN ACPI_TABLE_HEADER                   * DSDT;
+ACPI_EXTERN ACPI_TABLE_HEADER                   * PSDT;
 
 
 /* 
@@ -145,8 +148,8 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * pPSDT;
  * necessary. 
  */
 
-ACPI_EXTERN ACPI_TABLE_HEADER                   * pSSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * pSBDT;
+ACPI_EXTERN ACPI_TABLE_HEADER                   * SSDT;
+ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
 
 
 #endif /* __ACPI_H__ */
