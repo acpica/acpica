@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.6 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,6 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acnamesp.h"
-#include "acdispat.h"
 
 
 #define _COMPONENT          ACPI_COMPILER
@@ -276,10 +275,10 @@ OptBuildShortestPath (
      * Note: The external NamePath string lengths are always a multiple of 5 
      * (ACPI_NAME_SIZE + separator)
      */
-    MaxCommonSegments = TargetPath->Length / PATH_SEGMENT_LENGTH;
+    MaxCommonSegments = TargetPath->Length / ACPI_PATH_SEGMENT_LENGTH;
     if (CurrentPath->Length < TargetPath->Length)
     {
-        MaxCommonSegments = CurrentPath->Length / PATH_SEGMENT_LENGTH;
+        MaxCommonSegments = CurrentPath->Length / ACPI_PATH_SEGMENT_LENGTH;
     }
 
     /* 
@@ -293,8 +292,8 @@ OptBuildShortestPath (
         /* Compare two single NameSegs */
 
         if (ACPI_STRNCMP (
-            &((NATIVE_CHAR *) TargetPath->Pointer)[(NumCommonSegments * PATH_SEGMENT_LENGTH) + 1],
-            &((NATIVE_CHAR *) CurrentPath->Pointer)[(NumCommonSegments * PATH_SEGMENT_LENGTH) + 1],
+            &((NATIVE_CHAR *) TargetPath->Pointer)[(NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1],
+            &((NATIVE_CHAR *) CurrentPath->Pointer)[(NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1],
             ACPI_NAME_SIZE))
         {
             /* Mismatch */
@@ -328,7 +327,7 @@ OptBuildShortestPath (
 
     /* Determine how many prefix Carats are required */
 
-    NumCarats = (CurrentPath->Length / PATH_SEGMENT_LENGTH) - NumCommonSegments;
+    NumCarats = (CurrentPath->Length / ACPI_PATH_SEGMENT_LENGTH) - NumCommonSegments;
 
     /*
      * Construct a new target string
@@ -344,7 +343,7 @@ OptBuildShortestPath (
 
     /* Copy only the necessary (optimal) segments from the original target string */
 
-    Index = (NumCommonSegments * PATH_SEGMENT_LENGTH) + 1;
+    Index = (NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1;
 
     /* Special handling for exact subpath in a name declaration */
 
@@ -354,7 +353,7 @@ OptBuildShortestPath (
          * The current path is longer than the target, and the target is a subpath
          * of the current path.  We must include one more NameSeg of the target path 
          */
-        Index -= PATH_SEGMENT_LENGTH;
+        Index -= ACPI_PATH_SEGMENT_LENGTH;
     }
 
     ACPI_STRCPY (&NewPathExternal[i], &((NATIVE_CHAR *) TargetPath->Pointer)[Index]);
