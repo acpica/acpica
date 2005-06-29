@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.74 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -484,7 +484,7 @@ LkNamespaceLocateBegin (
     ACPI_FUNCTION_TRACE_PTR ("LkNamespaceLocateBegin", Op);
 
     /*
-     * If this node is the actual declaration of a name 
+     * If this node is the actual declaration of a name
      * [such as the XXXX name in "Method (XXXX)"],
      * we are not interested in it here.  We only care about names that are
      * references to other objects within the namespace and the parent objects
@@ -523,14 +523,20 @@ LkNamespaceLocateBegin (
          */
         Flags |= ACPI_NS_DONT_OPEN_SCOPE;
     }
- 
+
     /* Get the NamePath from the appropriate place */
 
     if (OpInfo->Flags & AML_NAMED)
     {
+        /* For all NAMED operators, the name reference is the first child */
+
         Path = Op->Asl.Child->Asl.Value.String;
         if (Op->Asl.AmlOpcode == AML_ALIAS_OP)
         {
+            /*
+             * ALIAS is the only oddball opcode, the name declaration
+             * (alias name) is the second operand
+             */
             Path = Op->Asl.Child->Asl.Next->Asl.Value.String;
         }
     }
@@ -562,7 +568,7 @@ LkNamespaceLocateBegin (
      */
     Gbl_NsLookupCount++;
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, ObjectType, 
+    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, ObjectType,
                     ACPI_IMODE_EXECUTE, Flags, WalkState, &(Node));
     if (ACPI_FAILURE (Status))
     {
@@ -616,7 +622,7 @@ LkNamespaceLocateBegin (
 
     OptOptimizeNamePath (Op, OpInfo->Flags, WalkState, Path, Node);
 
-    /* 
+    /*
      * Dereference an alias. (A name reference that is an alias.)
      * Aliases are not nested;  The alias always points to the final object
      */
@@ -624,7 +630,7 @@ LkNamespaceLocateBegin (
     {
         /* This node points back to the original PARSEOP_ALIAS */
 
-        NextOp = (ACPI_PARSE_OBJECT *) Node->Object;
+        NextOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
 
         /* The first child is the alias target op */
 

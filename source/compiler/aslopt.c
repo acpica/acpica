@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.10 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -174,7 +174,7 @@ OptSearchToRoot (
      * name in the search path before the one we want, the nodes will
      * not match, and we cannot use this optimization.
      */
-    Path = &(((char *) TargetPath->Pointer)[TargetPath->Length - ACPI_NAME_SIZE]),
+    Path = &(((NATIVE_CHAR *) TargetPath->Pointer)[TargetPath->Length - ACPI_NAME_SIZE]),
     ScopeInfo.Scope.Node = CurrentNode;
 
     /* Lookup the NameSeg using SEARCH_PARENT (search-to-root) */
@@ -292,8 +292,8 @@ OptBuildShortestPath (
         /* Compare two single NameSegs */
 
         if (ACPI_STRNCMP (
-            &((char *) TargetPath->Pointer)[(NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1],
-            &((char *) CurrentPath->Pointer)[(NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1],
+            &((NATIVE_CHAR *) TargetPath->Pointer)[(NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1],
+            &((NATIVE_CHAR *) CurrentPath->Pointer)[(NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1],
             ACPI_NAME_SIZE))
         {
             /* Mismatch */
@@ -356,7 +356,7 @@ OptBuildShortestPath (
         Index -= ACPI_PATH_SEGMENT_LENGTH;
     }
 
-    ACPI_STRCPY (&NewPathExternal[i], &((char *) TargetPath->Pointer)[Index]);
+    ACPI_STRCPY (&NewPathExternal[i], &((NATIVE_CHAR *) TargetPath->Pointer)[Index]);
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " %-24s", NewPathExternal));
 
     /*
@@ -448,7 +448,7 @@ OptOptimizeNameDeclaration (
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     *CurrentNode,
     ACPI_NAMESPACE_NODE     *TargetNode,
-    char                    *AmlNameString,
+    NATIVE_CHAR             *AmlNameString,
     char                    **NewPath)
 {
     ACPI_STATUS             Status;
@@ -555,7 +555,7 @@ OptOptimizeNamePath (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Flags,
     ACPI_WALK_STATE         *WalkState,
-    char                    *AmlNameString,
+    NATIVE_CHAR             *AmlNameString,
     ACPI_NAMESPACE_NODE     *TargetNode)
 {
     ACPI_STATUS             Status;
