@@ -113,12 +113,6 @@
 #define ENABLE_POWER_BUTTON             256
 #define ENABLE_SLEEP_BUTTON             512
 
-/* Interrupt handler return values (must be unique bits) */
-
-#define INTERRUPT_HANDLED               0x01
-#define INTERRUPT_NOT_HANDLED           0x02
-#define INTERRUPT_ERROR                 0x04
-
 
 /* SCI handling - evsci */
     
