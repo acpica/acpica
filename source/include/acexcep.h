@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.41 $
+ *       $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -209,8 +209,12 @@
 #define AE_AML_INVALID_SPACE_ID         (ACPI_STATUS) (0x0012 | AE_CODE_AML)
 #define AE_AML_STRING_LIMIT             (ACPI_STATUS) (0x0013 | AE_CODE_AML)
 #define AE_AML_NO_RETURN_VALUE          (ACPI_STATUS) (0x0014 | AE_CODE_AML)
+#define AE_AML_METHOD_LIMIT             (ACPI_STATUS) (0x0015 | AE_CODE_AML)
+#define AE_AML_NOT_OWNER                (ACPI_STATUS) (0x0016 | AE_CODE_AML)
+#define AE_AML_MUTEX_ORDER              (ACPI_STATUS) (0x0017 | AE_CODE_AML)
+#define AE_AML_MUTEX_NOT_ACQUIRED       (ACPI_STATUS) (0x0018 | AE_CODE_AML)
 
-#define AE_CODE_AML_MAX                 0x0014
+#define AE_CODE_AML_MAX                 0x0018
 
 /*
  * Internal exceptions used for control
@@ -297,6 +301,10 @@ static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Aml[] =
     "AE_AML_INVALID_SPACE_ID",
     "AE_AML_STRING_LIMIT",
     "AE_AML_NO_RETURN_VALUE",
+    "AE_AML_METHOD_LIMIT",
+    "AE_AML_NOT_OWNER",
+    "AE_AML_MUTEX_ORDER",
+    "AE_AML_MUTEX_NOT_ACQUIRED",
 };
 
 static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Ctrl[] =
