@@ -171,10 +171,24 @@ CmBuildExternalSimpleObject (
     FUNCTION_TRACE ("CmBuildExternalSimpleObject");
 
 
-    ExternalObj->Type = InternalObj->Common.Type;
+    /* Check for an NTE which will become an ACPI_HANDLE */
+
+    if (VALID_DESCRIPTOR_TYPE (InternalObj, DESC_TYPE_NTE))
+    {
+        ExternalObj->Type = ACPI_TYPE_Any;
+    }
+
+    else
+    {
+        ExternalObj->Type = InternalObj->Common.Type;
+    }
 
     switch (ExternalObj->Type)
     {
+    case ACPI_TYPE_Any:
+        ExternalObj->Reference.Handle = InternalObj;
+        break;
+
 
     case ACPI_TYPE_String:
 
@@ -303,7 +317,8 @@ CmBuildExternalPackageObject (
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
-        if (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
+        if ((VALID_DESCRIPTOR_TYPE (ThisInternalObj, DESC_TYPE_ACPI_OBJ)) &&
+            (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package)))
         {
             /*
              * If this object is a package then we go one deeper
@@ -353,7 +368,7 @@ CmBuildExternalPackageObject (
             }
 
             FreeSpace   += ObjectSpace;
-            Length      +=ObjectSpace;
+            Length      += ObjectSpace;
 
             LevelPtr->Index++;
             while (LevelPtr->Index >= LevelPtr->InternalObj->Package.Count)
