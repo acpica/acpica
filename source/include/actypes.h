@@ -180,6 +180,27 @@ typedef char            BIT8;
 #define HI_LIMIT(b)     ((UINT8) (((b) & 0x00FF0000) >> 16))
 
 
+/*
+ * Fast power-of-two math for non-optimized compilers
+ */
+
+#define DIV_2(a)        ((a)>>1)
+#define MUL_2(a)        ((a)<<1)
+#define MOD_2(a)        ((a)&0x01)
+
+#define DIV_4(a)        ((a)>>2)
+#define MUL_4(a)        ((a)<<2)
+#define MOD_4(a)        ((a)&0x03)
+
+#define DIV_8(a)        ((a)>>3)
+#define MUL_8(a)        ((a)<<3)
+#define MOD_8(a)        ((a)&0x07)
+
+#define DIV_16(a)       ((a)>>4)
+#define MUL_16(a)       ((a)<<4)
+#define MOD_16(a)       ((a)&0x0F)
+
+
 /* 
  * Useful defines 
  */
