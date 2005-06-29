@@ -134,6 +134,7 @@ char                    *Gbl_FileBuffer;
 UINT32                  Gbl_FileSize;
 BOOLEAN                 Gbl_VerboseMode = FALSE;
 BOOLEAN                 Gbl_BatchMode = FALSE;
+BOOLEAN                 Gbl_DebugStatementsMode = FALSE;
 
 
 
@@ -486,13 +487,14 @@ AsDisplayUsage (void)
 {
 
     printf ("\n");
-    printf ("Usage: acpisrc [-clsvy] <SourceDir> <DestinationDir>\n\n");
+    printf ("Usage: acpisrc [-c | -l | -u] [-s] [-v] [-y] <SourceDir> <DestinationDir>\n\n");
     printf ("Where: -c          Generate cleaned version of the source\n");
     printf ("       -l          Generate Linux version of the source\n");
-    printf ("       -s          Generate source statistics only\n");
     printf ("       -u          Custom source translation\n");
+    printf ("       -s          Generate source statistics only\n");
     printf ("       -v          Verbose mode\n");
     printf ("       -y          Suppress file overwrite prompts\n");
+    printf ("       -d          Leave debug statements in code\n");
     printf ("\n");
     return;
 }
@@ -529,7 +531,7 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "lcsuvy")) != EOF) switch(j) 
+    while ((j = getopt (argc, argv, "lcsuvyd")) != EOF) switch(j) 
     {
     case 'l':
         /* Linux code generation */
@@ -569,6 +571,12 @@ main (
         Gbl_BatchMode = TRUE;
         break;
 
+    case 'd':
+        /* Leave debug statements in */
+
+        Gbl_DebugStatementsMode = TRUE;   
+        break;
+
     default:    
         AsDisplayUsage ();
         return -1;
@@ -586,6 +594,11 @@ main (
 
         printf ("Source code statistics only\n");
         ConversionTable = &StatsConversionTable;
+    }
+
+    if (Gbl_DebugStatementsMode)
+    {
+        ConversionTable->SourceFunctions &= ~CVT_REMOVE_DEBUG_MACROS;
     }
 
 
