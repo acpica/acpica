@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.80 $
+ *              $Revision: 1.82 $
  *
  ******************************************************************************/
 
@@ -119,8 +119,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "amlcode.h"
-#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -1534,5 +1532,54 @@ AcpiUtReportInfo (
 
     AcpiOsPrintf ("%8s-%04d: *** Info: ", ModuleName, LineNumber);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtReportNsError
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              Message             - Error message to use on failure
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print warning message
+ *
+ ******************************************************************************/
+
+void
+AcpiUtReportNsError (
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    char                    *InternalName,
+    ACPI_STATUS             LookupStatus)
+{
+    ACPI_STATUS             Status;
+    char                    *Name;
+
+    
+    Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, InternalName, NULL, &Name);
+
+    AcpiOsPrintf ("%8s-%04d: *** Error: Looking up ", 
+        ModuleName, LineNumber);
+
+    if (Name)
+    {
+        AcpiOsPrintf ("[%s]", Name);
+        ACPI_MEM_FREE (Name);
+    }
+    else
+    {
+        AcpiOsPrintf ("[COULD NOT EXTERNALIZE NAME]");
+    }
+
+    AcpiOsPrintf (" in namespace, %s\n", 
+        AcpiFormatException (LookupStatus));
+
+}
+
 
 
