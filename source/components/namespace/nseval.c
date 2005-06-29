@@ -64,6 +64,7 @@
  * property embodied in the software Licensee provides to its licensee, and
  * not to intellectual property embodied in modifications its licensee may
  * make.
+
  *
  * 3.3. Redistribution of Executable. Redistribution in executable form of any
  * substantial portion of the Covered Code or modification must reproduce the
@@ -213,7 +214,7 @@ NsEvaluateRelative (
 
     /* Cleanup */
 
-    OsdFree (InternalPath);
+    CmFree (InternalPath);
 
     FUNCTION_STATUS_EXIT (Status);
     return Status;
@@ -297,7 +298,7 @@ NsEvaluateByName (
 
     if (InternalPath)
     {
-        OsdFree (InternalPath);
+        CmFree (InternalPath);
     }
 
     FUNCTION_STATUS_EXIT (Status);
@@ -359,7 +360,7 @@ NsEvaluateByHandle (
         /* Initialize the return value to an invalid object */
 
         memset (ReturnObject, 0, sizeof (ACPI_OBJECT_INTERNAL));
-        ReturnObject->ValType = TYPE_Invalid;
+        ReturnObject->Type = TYPE_Invalid;
     }
 
 
@@ -580,9 +581,9 @@ NsGetObjectValue (
 
     /* Construct a descriptor pointing to the name */
 
-    ObjDesc->Lvalue.ValType = (UINT8) TYPE_Lvalue;
+    ObjDesc->Lvalue.Type    = (UINT8) TYPE_Lvalue;
     ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
-    ObjDesc->Lvalue.Ref     = (void *) ObjectEntry;
+    ObjDesc->Lvalue.Object  = (void *) ObjectEntry;
 
 
     /* 
@@ -606,9 +607,9 @@ NsGetObjectValue (
     if (Status == AE_OK)
     {
         Status = AE_RETURN_VALUE;
+        DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning obj %p\n", ObjStack[ObjStackTop]));
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning object value (on obj stack)\n"));
 
     FUNCTION_STATUS_EXIT (Status);
     return Status;
