@@ -127,7 +127,6 @@
         MODULE_NAME         ("evxface");
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiInstallFixedEventHandler
@@ -583,7 +582,7 @@ AcpiInstallGpeHandler (
 
     /* Ensure that we have a valid GPE number */
 
-    if (AcpiGbl_GpeValid[GpeNumber] == GPE_INVALID)
+    if (AcpiGbl_GpeValid[GpeNumber] == ACPI_GPE_INVALID)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -648,7 +647,7 @@ AcpiRemoveGpeHandler (
 
     /* Ensure that we have a valid GPE number */
 
-    if (AcpiGbl_GpeValid[GpeNumber] == GPE_INVALID)
+    if (AcpiGbl_GpeValid[GpeNumber] == ACPI_GPE_INVALID)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -677,7 +676,6 @@ Cleanup:
     AcpiCmReleaseMutex (MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
-
 
 
 /******************************************************************************
@@ -712,7 +710,6 @@ AcpiAcquireGlobalLock (
     *OutHandle = 0;
     return Status;
 }
-
 
 
 /******************************************************************************
