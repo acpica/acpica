@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -596,7 +596,7 @@ AcpiEvSaveMethodInfo (
     void                    *ObjDesc,
     void                    **ReturnValue)
 {
-    NATIVE_UINT             GpeNumber;
+    UINT32                  GpeNumber;
     NATIVE_CHAR             Name[ACPI_NAME_SIZE + 1];
     UINT8                   Type;
 
