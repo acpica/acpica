@@ -244,18 +244,8 @@ typedef char *va_list;
  *
  *****************************************************************************/
 
-
 /*
- * Handle differences for invoking assembly instructions across C compliers.
- */
-#ifdef GCC
-#define ASM(a)	__asm(#a)
-#else
-#define ASM(a)	__asm{##a}
-#endif 
-
- 
-/*
+ * Handle platform- and compiler-specific assembly language differences.
  *
  * Notes:
  * 1) Interrupt 3 is used to break into a debugger
@@ -268,6 +258,15 @@ typedef char *va_list;
 #define BREAKPOINT3             __asm {int 3}
 #define disable()               __asm {cli}
 #define enable()                __asm {sti}
+#define halt()                  __asm {hlt}
+
+#elif GCC
+
+#define causeinterrupt(level)   /*__asm ("int" #level)*/
+#define BREAKPOINT3             /*__asm ("int 3")*/
+#define disable()               __asm ("cli")
+#define enable()                __asm ("sti")
+#define halt()                  __asm ("hlt")
 
 #else
 
@@ -275,6 +274,7 @@ typedef char *va_list;
 #define BREAKPOINT3
 #define disable()
 #define enable()
+#define halt()
 
 #endif
 
