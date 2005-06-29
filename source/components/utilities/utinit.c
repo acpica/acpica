@@ -103,32 +103,6 @@
 #include <events.h>
 
 
-ACPI_STATUS
-InitAcpiGetRsdt (
-    UINT32          *NumberOfTables, 
-    OSD_FILE        *FilePtr);
-
-ACPI_STATUS
-InitAcpiGetAllTables (
-    UINT32          NumberOfTables, 
-    OSD_FILE        *FilePtr);
-
-ACPI_STATUS
-InitAcpiRegisters (
-    void);
-
-ACPI_STATUS
-InitOpenFile (
-    char            *Filename, 
-    OSD_FILE        **FilePtr);
-void
-InitCloseFile (
-    OSD_FILE        *FilePtr);
-
-
-UINT32              RsdpOriginalLocation = 0;
-
-
 #define _THIS_MODULE        "acpiinit.c"
 #define _COMPONENT          MISCELLANEOUS
 
@@ -164,7 +138,8 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInit (char *Filename)
+AcpiInit (
+    char                    *Filename)
 {
     ACPI_STATUS             Status = AE_OK;
     INT32                   NumberOfTables = 0; 
@@ -176,9 +151,10 @@ AcpiInit (char *Filename)
     DEBUG_PRINT (ACPI_INFO, ("Initializing ACPI Subsystem...\n"));
 
 
-    /* first initialize ACPILIB globals... */
+    /* Initialize all globals used by the subsystem */
 
     InitAcpiLibGlobals ();
+
 
     /* Open input file if we are getting tables from there */
 
@@ -187,7 +163,8 @@ AcpiInit (char *Filename)
     {
         goto ErrorExit;
     }
-        
+      
+    
     /* Get the RSDT first */
 
     Status = InitAcpiGetRsdt (&NumberOfTables, FilePtr);
@@ -195,6 +172,7 @@ AcpiInit (char *Filename)
     {
         goto ErrorExit;
     }
+
 
     /* Now get the rest of the tables */
 
@@ -222,8 +200,9 @@ AcpiInit (char *Filename)
         goto ErrorExit;
     }
 
+
     InitCloseFile (FilePtr);
-    DEBUG_PRINT (ACPI_OK, ("ACPI Subsystem successfully initialized.\n"));
+    DEBUG_PRINT (ACPI_OK, ("ACPI Subsystem successfully initialized\n"));
 
     FUNCTION_EXIT;
     return AE_OK;
@@ -253,7 +232,9 @@ ErrorExit:
  ******************************************************************************/
 
 ACPI_STATUS
-InitOpenFile (char *Filename, OSD_FILE **FilePtr)
+InitOpenFile (
+    char                    *Filename, 
+    OSD_FILE                **FilePtr)
 {
 
     InputFile = Filename;
@@ -291,7 +272,8 @@ InitOpenFile (char *Filename, OSD_FILE **FilePtr)
  ******************************************************************************/
 
 void
-InitCloseFile (OSD_FILE *FilePtr)
+InitCloseFile (
+    OSD_FILE                *FilePtr)
 {
 
     if (FilePtr)
@@ -317,7 +299,9 @@ InitCloseFile (OSD_FILE *FilePtr)
  ******************************************************************************/
 
 ACPI_STATUS
-InitAcpiGetRsdt (UINT32 *NumberOfTables, OSD_FILE *FilePtr)
+InitAcpiGetRsdt (
+    UINT32                  *NumberOfTables, 
+    OSD_FILE                *FilePtr)
 {
     ACPI_STATUS             Status = AE_OK;
     char                    Buffer[80];
@@ -459,7 +443,9 @@ InitAcpiGetRsdt (UINT32 *NumberOfTables, OSD_FILE *FilePtr)
  ******************************************************************************/
 
 ACPI_STATUS
-InitAcpiGetAllTables (UINT32 NumberOfTables, OSD_FILE *FilePtr)
+InitAcpiGetAllTables (
+    UINT32                  NumberOfTables, 
+    OSD_FILE                *FilePtr)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Index;
@@ -626,8 +612,11 @@ InitAcpiGetAllTables (UINT32 NumberOfTables, OSD_FILE *FilePtr)
  ******************************************************************************/
 
 void
-ReportFacpRegisterError (char *RegisterName, UINT32 Value,
-                        INT32 AcpiTestSpecSection, INT32 AcpiAssertion)
+ReportFacpRegisterError (
+    char                    *RegisterName, 
+    UINT32                  Value,
+    INT32                   AcpiTestSpecSection, 
+    INT32                   AcpiAssertion)
 {
     
     REPORT_ERROR (&KDT[11]);
@@ -661,7 +650,7 @@ InitAcpiRegisters (void)
     if (OutputFile && 
         !InputFile)
     {
-        /*  write BIOS ACPI tables to .dat file */
+        /* write BIOS ACPI tables to .dat file */
 
         /* TBD:  Needed for this ACPI driver ??? !!! */
 
@@ -871,8 +860,6 @@ InitAcpiRegisters (void)
         
         
         }
-
-        AcpiHook = 2;              /* indicate to the outside world we're up and OK ... */
     }
     
     else
