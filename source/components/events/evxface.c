@@ -589,7 +589,7 @@ AcpiInstallNotifyHandler (
             return_ACPI_STATUS (AE_EXIST);
         }
 
-        if (HandlerType = ACPI_SYSTEM_NOTIFY)
+        if (HandlerType == ACPI_SYSTEM_NOTIFY)
         {
             Gbl_SysNotify.Nte = ObjEntry;
             Gbl_SysNotify.Handler = Handler;
