@@ -125,8 +125,8 @@
 #include <amlcode.h>
 
 
-#define _THIS_MODULE        "cmapi.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmapi");
 
 
 /*******************************************************************************
