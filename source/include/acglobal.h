@@ -242,9 +242,12 @@ ACPI_EXTERN BOOLEAN                     Gbl_DbTerminateThreads;
 ACPI_EXTERN ACPI_GENERIC_STATE         *Gbl_GenericStateCache;
 ACPI_EXTERN UINT16                      Gbl_GenericStateCacheDepth;
 ACPI_EXTERN UINT32                      Gbl_StateCacheRequests;
+ACPI_EXTERN UINT32                      Gbl_StateCacheHits;
 ACPI_EXTERN ACPI_GENERIC_OP            *Gbl_ParseCache;
 ACPI_EXTERN UINT16                      Gbl_ParseCacheDepth;
 ACPI_EXTERN UINT32                      Gbl_ParseCacheRequests;
+ACPI_EXTERN UINT32                      Gbl_ParseCacheHits;
+ACPI_EXTERN UINT8                       Gbl_DebuggerConfiguration;
 
 extern		BOOLEAN                     Gbl_Shutdown;
 extern      UINT32                      Gbl_SystemFlags;
