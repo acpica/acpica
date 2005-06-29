@@ -144,14 +144,18 @@ void
 DsScopeStackClear (
 	ACPI_WALK_STATE			*WalkState)
 {
-	ACPI_STATUS				Status = AE_OK;
+    SCOPE_STACK             *ScopeInfo;
 
 
-    while (Status == AE_OK)
+    while (WalkState->ScopeInfo)
     {
         /* Pop a scope off the stack */
 
-		Status = DsScopeStackPop (WalkState);
+	    ScopeInfo = WalkState->ScopeInfo;
+	    WalkState->ScopeInfo = ScopeInfo->Next;
+
+        DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Type));
+        CmFree (ScopeInfo);
     }
 }
 
