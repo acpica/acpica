@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.149 $
+ *              $Revision: 1.150 $
  *
  ******************************************************************************/
 
@@ -455,9 +455,9 @@ AcpiSetRegister (
 
     /*
      * Decode the Register ID
-     * Register id = Register block id | bit id
+     * Register ID = [Register block ID] | [bit ID]
      *
-     * Check bit id to fine locate Register offset.
+     * Check bit ID to fine locate Register offset.
      * Check Mask to determine Register offset, and then read-write.
      */
     switch (BitRegInfo->ParentRegister)
@@ -466,9 +466,9 @@ AcpiSetRegister (
 
         /*
          * Status Registers are different from the rest.  Clear by
-         * writing 1, writing 0 has no effect.  So, the only relevant
+         * writing 1, and writing 0 has no effect.  So, the only relevant
          * information is the single bit we're interested in, all others should
-         * be written as 0 so they will be left unchanged
+         * be written as 0 so they will be left unchanged.
          */
         Value = ACPI_REGISTER_PREPARE_BITS (Value,
                     BitRegInfo->BitPosition, BitRegInfo->AccessBitMask);
@@ -494,17 +494,17 @@ AcpiSetRegister (
     case ACPI_REGISTER_PM1_CONTROL:
 
         /*
-         * Read the PM1 Control register.
+         * Write the PM1 Control register.
          * Note that at this level, the fact that there are actually TWO
-         * registers (A and B - and that B may not exist) is abstracted.
+         * registers (A and B - and B may not exist) is abstracted.
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM1 control: Read %X\n", RegisterValue));
 
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition,
                 BitRegInfo->AccessBitMask, Value);
 
-        Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId,
-                (UINT16) RegisterValue);
+        Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, 
+                        ACPI_REGISTER_PM1_CONTROL, (UINT16) RegisterValue);
         break;
 
 
@@ -842,7 +842,7 @@ AcpiHwLowLevelRead (
 
     /*
      * Three address spaces supported:
-     * Memory, Io, or PCI config.
+     * Memory, IO, or PCI_Config.
      */
     switch (Reg->AddressSpaceId)
     {
@@ -928,9 +928,10 @@ AcpiHwLowLevelWrite (
     {
         return (AE_OK);
     }
+
     /*
      * Three address spaces supported:
-     * Memory, Io, or PCI config.
+     * Memory, IO, or PCI_Config.
      */
     switch (Reg->AddressSpaceId)
     {
