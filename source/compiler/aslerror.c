@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -161,7 +161,7 @@ char                        *AslMessages [] = {
     "Invalid type",
     "Multiple types",
     "",
-    "Not a control method",
+    "Not a control method, cannot invoke",
     "Splitting long input line",
     "Recursive method call",
     "Not a parameter, used as local only",
@@ -173,6 +173,8 @@ char                        *AslMessages [] = {
     "Access width is greater than region size",
     "Field unit extends beyond region limit",
     "Resource field name cannot be used as a target",
+    "Byte Offset converted to Bit Offset",
+    "Bit Offset converted to Byte Offset",
 };
 
 
