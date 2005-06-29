@@ -191,30 +191,30 @@ AcpiOsGetRootPointer (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsTableOverride
+ * FUNCTION:    AcpiOsPredefinedOverride
  *
- * PARAMETERS:  ExistingTable   - Header of current table (probably firmware)
- *              NewTable        - Where an entire new table is returned.
+ * PARAMETERS:  InitVal     - Initial value of the predefined object
+ *              NewVal      - The new value for the object
  *
- * RETURN:      Status, pointer to new table.  Null pointer returned if no
- *              table is available to override
+ * RETURN:      Status, pointer to value.  Null pointer returned if not
+ *              overriding.
  *
- * DESCRIPTION: Return a different version of a table if one is available
+ * DESCRIPTION: Allow the OS to override predefined names
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AcpiOsTableOverride (
-    ACPI_TABLE_HEADER       *ExistingTable,
-    ACPI_TABLE_HEADER       **NewTable)
+AcpiOsPredefinedOverride (
+	const ACPI_PREDEFINED_NAMES *InitVal,
+	ACPI_STRING                 *NewVal)
 {
 
-    if (!ExistingTable || !NewTable)
+    if (!InitVal || !NewVal)
     {
         return (AE_BAD_PARAMETER);
     }
 
-    *NewTable = NULL;
+    *NewVal = NULL;
     return (AE_OK);
 }
 

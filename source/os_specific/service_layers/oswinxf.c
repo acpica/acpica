@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.44 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -349,6 +349,36 @@ AcpiOsGetRootPointer (
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiOsPredefinedOverride
+ *
+ * PARAMETERS:  InitVal     - Initial value of the predefined object
+ *              NewVal      - The new value for the object
+ *
+ * RETURN:      Status, pointer to value.  Null pointer returned if not
+ *              overriding.
+ *
+ * DESCRIPTION: Allow the OS to override predefined names
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsPredefinedOverride (
+	const ACPI_PREDEFINED_NAMES *InitVal,
+	ACPI_STRING                 *NewVal)
+{
+
+    if (!InitVal || !NewVal)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    *NewVal = NULL;
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsTableOverride
  *
  * PARAMETERS:  ExistingTable   - Header of current table (probably firmware)
@@ -436,7 +466,6 @@ AcpiOsGetTimer (void)
     return ((SysTime.wMinute * 60000) +
             (SysTime.wSecond * 1000) +
              SysTime.wMilliseconds);
-
 }
 
 
@@ -647,6 +676,7 @@ AcpiOsMapMemory (
     ACPI_SIZE               length,
     void                    **there)
 {
+
     *there = ACPI_TO_POINTER ((ACPI_NATIVE_UINT) where);
 
     return AE_OK;
@@ -719,7 +749,6 @@ AcpiOsFree (
     void                    *Mem)
 {
 
-
     free (Mem);
 }
 
@@ -766,7 +795,6 @@ AcpiOsCreateSemaphore (
         return AE_BAD_PARAMETER;
     }
 
-
 #ifdef _MULTI_THREADED
 
     /* Create an OS semaphore */
@@ -778,7 +806,6 @@ AcpiOsCreateSemaphore (
 
         return AE_NO_MEMORY;
     }
-
 
     AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].MaxUnits = (UINT16) MaxUnits;
     AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].CurrentUnits = (UINT16) InitialUnits;
@@ -905,7 +932,6 @@ AcpiOsWaitSemaphore (
     AcpiGbl_Semaphores[Index].CurrentUnits--;
 #endif
 
-
     return AE_OK;
 }
 
@@ -931,6 +957,7 @@ AcpiOsSignalSemaphore (
 #ifdef _MULTI_THREADED
 
     UINT32              Index = (UINT32) Handle;
+
 
     ACPI_FUNCTION_NAME ("OsSignalSemaphore");
 
@@ -990,7 +1017,6 @@ AcpiOsInstallInterruptHandler (
     void                    *Context)
 {
 
-
     return AE_OK;
 }
 
@@ -1034,9 +1060,7 @@ AcpiOsGetThreadId (
     void)
 {
 
-
     return (GetCurrentThreadId ());
-
 }
 
 
@@ -1171,11 +1195,12 @@ AcpiOsWritePciConfiguration (
 /* TEMPORARY STUB FUNCTION */
 void
 AcpiOsDerivePciId(
-    ACPI_HANDLE	            rhandle,
+    ACPI_HANDLE             rhandle,
     ACPI_HANDLE             chandle,
-    ACPI_PCI_ID	            **PciId)
+    ACPI_PCI_ID             **PciId)
 {
 
+    return;
 }
 
 
@@ -1354,7 +1379,6 @@ AcpiOsSignal (
 
         break;
     }
-
 
     return (AE_OK);
 }
