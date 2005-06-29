@@ -147,7 +147,6 @@ extern      UINT32                      AcpiDbgLayer;
 extern      UINT32                      AcpiGbl_NestingLevel;
 
 
-
 /*****************************************************************************
  *
  * ACPI Table globals
@@ -251,7 +250,6 @@ extern      UINT32                      AcpiGbl_SystemFlags;
 extern      UINT32                      AcpiGbl_StartupFlags;
 
 
-
 /*****************************************************************************
  *
  * Namespace globals
@@ -275,7 +273,6 @@ extern      PREDEFINED_NAMES            AcpiGbl_PreDefinedNames [NUM_PREDEFINED_
 ACPI_EXTERN ALLOCATION_INFO            *AcpiGbl_HeadAllocPtr;
 ACPI_EXTERN ALLOCATION_INFO            *AcpiGbl_TailAllocPtr;
 #endif
-
 
 
 /*****************************************************************************
@@ -311,13 +308,12 @@ ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_LastMethod;
  * Table of Address Space handlers
  */
 
-ACPI_EXTERN ADDRESS_SPACE_INFO          AcpiGbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
+ACPI_EXTERN ACPI_ADDRESS_SPACE_INFO     AcpiGbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
 
 
 /* Control method single step flag */
 
 ACPI_EXTERN UINT8                       AcpiGbl_CmSingleStep;
-
 
 
 /*****************************************************************************
@@ -333,19 +329,28 @@ extern UINT8                            AcpiGbl_AmlOpInfoIndex[256];
 extern char                             *AcpiGbl_ParserId;
 
 
-
 /*****************************************************************************
  *
- * AcpiEvent globals
+ * Hardware globals
  *
  ****************************************************************************/
 
-ACPI_EXTERN FIXED_EVENT_INFO            AcpiGbl_FixedEventHandlers[NUM_FIXED_EVENTS];
+extern ACPI_C_STATE_HANDLER             AcpiHwCxHandlers[MAX_CX_STATES];
+extern UINT32                           AcpiHwActiveCxState;
+
+
+/*****************************************************************************
+ *
+ * Event globals
+ *
+ ****************************************************************************/
+
+ACPI_EXTERN ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventHandlers[NUM_FIXED_EVENTS];
 
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeObjHandle;
 ACPI_EXTERN UINT32                      AcpiGbl_GpeRegisterCount;
-ACPI_EXTERN GPE_REGISTERS              *AcpiGbl_GpeRegisters;
-ACPI_EXTERN GPE_LEVEL_INFO             *AcpiGbl_GpeInfo;
+ACPI_EXTERN ACPI_GPE_REGISTERS          *AcpiGbl_GpeRegisters;
+ACPI_EXTERN ACPI_GPE_LEVEL_INFO         *AcpiGbl_GpeInfo;
 
 /*
  * Gpe validation and translation table
@@ -364,7 +369,6 @@ ACPI_EXTERN UINT32                      AcpiGbl_EventCount[NUM_FIXED_EVENTS];
 #endif
 
 
-
 /*****************************************************************************
  *
  * Debugger globals
@@ -373,7 +377,6 @@ ACPI_EXTERN UINT32                      AcpiGbl_EventCount[NUM_FIXED_EVENTS];
 
 ACPI_EXTERN BOOLEAN                     AcpiGbl_MethodExecuting;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DbTerminateThreads;
-
 
 
 /* Memory allocation metrics - Debug Only! */
@@ -394,9 +397,6 @@ ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectCount;
 ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectSize;
 
 #endif
-
-
-
 
 
 #endif /* __GLOBALS_H__ */
