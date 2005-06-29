@@ -124,8 +124,8 @@
 #include <amlcode.h>
 
 
-#define _THIS_MODULE        "iedyad.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("iedyad");
 
 
 /*****************************************************************************
@@ -308,7 +308,7 @@ AmlExecDyadic2R (
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], NumOperands, "after AmlPrepObjStack");
@@ -427,7 +427,8 @@ AmlExecDyadic2R (
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2R/ConcatOp: operand type mismatch %d %d\n",
                     ObjDesc->Common.Type, ObjDesc2->Common.Type));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            Status = AE_AML_ERROR;
+            goto Cleanup;
         }
 
         /* Both operands are now known to be the same */
@@ -441,11 +442,12 @@ AmlExecDyadic2R (
             if (!NewBuf)
             {
                 REPORT_ERROR ("AmlExecDyadic2R/ConcatOp: String allocation failure");
-                return_ACPI_STATUS (AE_AML_ERROR);
+                Status = AE_AML_ERROR;
+                goto Cleanup;
             }
             
-            strcpy (NewBuf, (char *) ObjDesc->String.Pointer);
-            strcpy (NewBuf + ObjDesc->String.Length,
+            STRCPY (NewBuf, (char *) ObjDesc->String.Pointer);
+            STRCPY (NewBuf + ObjDesc->String.Length,
                      (char *) ObjDesc2->String.Pointer);
             
             /* Don't free old ObjDesc->String.Pointer; the operand still exists */
@@ -473,12 +475,13 @@ AmlExecDyadic2R (
                 DEBUG_PRINT (ACPI_ERROR, (
                             "AmlExecDyadic2R/ConcatOp: Buffer allocation failure %d\n",
                             ObjDesc->Buffer.Length + ObjDesc2->Buffer.Length));
-                return_ACPI_STATUS (AE_AML_ERROR);
+                Status = AE_AML_ERROR;
+                goto Cleanup;
             }
 
-            memcpy (NewBuf, ObjDesc->Buffer.Pointer, 
+            MEMCPY (NewBuf, ObjDesc->Buffer.Pointer, 
                             (ACPI_SIZE) ObjDesc->Buffer.Length);
-            memcpy (NewBuf + ObjDesc->Buffer.Length, ObjDesc2->Buffer.Pointer,
+            MEMCPY (NewBuf + ObjDesc->Buffer.Length, ObjDesc2->Buffer.Pointer,
                             (ACPI_SIZE) ObjDesc2->Buffer.Length);
             
             /*
@@ -494,7 +497,8 @@ AmlExecDyadic2R (
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R: Unknown dyadic opcode %02x\n", opcode));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        Status = AE_AML_ERROR;
+        goto Cleanup;
     }
 
     
@@ -506,14 +510,16 @@ AmlExecDyadic2R (
 
     if ((Status = AmlExecStore (ObjDesc, ResDesc)) != AE_OK)
     {
-        AmlObjStackPop (NumOperands - 1);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
     
     if (AML_DivideOp == opcode)
     {
         Status = AmlExecStore(ObjDesc2, ResDesc2);
     }
+
+
+Cleanup:
 
     /*
      * Don't delete ObjDesc because it will remain on the stack.
