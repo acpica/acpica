@@ -213,7 +213,7 @@ AmlBufSeq (void)
 
 BOOLEAN
 AmlAcquireGlobalLock (
-    UINT16                  Rule)
+    UINT32                  Rule)
 {
     BOOLEAN                 Locked = FALSE;
 
@@ -223,7 +223,7 @@ AmlAcquireGlobalLock (
 
     /*  Only attempt lock if the Rule says so */
     
-    if (Rule == (UINT16) GLOCK_AlwaysLock)
+    if (Rule == (UINT32) GLOCK_AlwaysLock)
     {   
         /*  OK to get the lock   */
         
