@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  ******************************************************************************/
 
@@ -174,7 +174,7 @@ AcpiRsGetPrtMethodData (
     {
         /* Return object is required */
 
-        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _PRT\n"));
+        DEBUG_PRINTP (ACPI_ERROR, ("No object was returned from _PRT\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -261,7 +261,7 @@ AcpiRsGetCrsMethodData (
     {
         /* Return object is required */
 
-        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _CRS\n"));
+        DEBUG_PRINTP (ACPI_ERROR, ("No object was returned from _CRS\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -348,7 +348,7 @@ AcpiRsGetPrsMethodData (
     {
         /* Return object is required */
 
-        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _PRS\n"));
+        DEBUG_PRINTP (ACPI_ERROR, ("No object was returned from _PRS\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
