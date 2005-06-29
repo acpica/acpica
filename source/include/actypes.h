@@ -484,6 +484,7 @@ void (*GPE_HANDLER) (
 
 typedef
 void (*NOTIFY_HANDLER) (
+    ACPI_HANDLE                 Device,
     UINT32                      Value,
     void                        *Context);
     
