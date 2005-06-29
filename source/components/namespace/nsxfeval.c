@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  ******************************************************************************/
 
@@ -542,15 +542,15 @@ AcpiNsGetDeviceCallback (
     void                    *Context,
     void                    **ReturnValue)
 {
+    ACPI_GET_DEVICES_INFO   *Info = Context;
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
     UINT32                  Flags;
     ACPI_DEVICE_ID          Hid;
-    ACPI_DEVICE_ID          Cid;
-    ACPI_GET_DEVICES_INFO   *Info;
+    ACPI_COMPATIBLE_ID_LIST *Cid;
+    ACPI_NATIVE_UINT        i;
 
 
-    Info = Context;
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
@@ -570,9 +570,8 @@ AcpiNsGetDeviceCallback (
         return (AE_BAD_PARAMETER);
     }
 
-    /*
-     * Run _STA to determine if device is present
-     */
+    /* Run _STA to determine if device is present */
+
     Status = AcpiUtExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
     {
@@ -582,12 +581,12 @@ AcpiNsGetDeviceCallback (
     if (!(Flags & 0x01))
     {
         /* Don't return at the device or children of the device if not there */
+
         return (AE_CTRL_DEPTH);
     }
 
-    /*
-     * Filter based on device HID & CID
-     */
+    /* Filter based on device HID & CID */
+
     if (Info->Hid != NULL)
     {
         Status = AcpiUtExecute_HID (Node, &Hid);
@@ -600,8 +599,10 @@ AcpiNsGetDeviceCallback (
             return (AE_CTRL_DEPTH);
         }
 
-        if (ACPI_STRNCMP (Hid.Buffer, Info->Hid, sizeof (Hid.Buffer)) != 0)
+        if (ACPI_STRNCMP (Hid.Value, Info->Hid, sizeof (Hid.Value)) != 0)
         {
+            /* Get the list of Compatible IDs */
+
             Status = AcpiUtExecute_CID (Node, &Cid);
             if (Status == AE_NOT_FOUND)
             {
@@ -612,12 +613,18 @@ AcpiNsGetDeviceCallback (
                 return (AE_CTRL_DEPTH);
             }
 
-            /* TBD: Handle CID packages */
+            /* Walk the CID list */
 
-            if (ACPI_STRNCMP (Cid.Buffer, Info->Hid, sizeof (Cid.Buffer)) != 0)
+            for (i = 0; i < Cid->Count; i++)
             {
-                return (AE_OK);
+                if (ACPI_STRNCMP (Cid->Id[i].Value, Info->Hid, 
+                                        sizeof (ACPI_COMPATIBLE_ID)) != 0)
+                {
+                    ACPI_MEM_FREE (Cid);
+                    return (AE_OK);
+                }
             }
+            ACPI_MEM_FREE (Cid);
         }
     }
 
