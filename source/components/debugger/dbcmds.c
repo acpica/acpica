@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  ******************************************************************************/
 
@@ -1023,9 +1023,11 @@ void
 AcpiDbDisplayResources (
     NATIVE_CHAR             *ObjectArg)
 {
+#ifndef _IA16
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
     ACPI_BUFFER             ReturnObj;
+
 
     AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
 
@@ -1119,6 +1121,7 @@ Cleanup:
 
     AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
     return;
+#endif
 
 }
 
