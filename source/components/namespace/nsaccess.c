@@ -1063,8 +1063,8 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
             (ThisEntry->Scope == (nte *) 0))
         {
             /* 
-             * more segments or the type implies enclosed scope, 
-             * and the next scope has not been allocated ...
+             * More segments or the type implies enclosed scope, 
+             * and the next scope has not been allocated.
              */
 
             DEBUG_PRINT (ACPI_INFO, ("Load mode= %d  ThisEntry= %x\n", LoadMode, ThisEntry));
@@ -1073,7 +1073,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
             {   
                 /*  first or second pass load mode ==> locate the next scope    */
                 
-                DEBUG_PRINT (TRACE_NAMES, ("add level \n"));
+                DEBUG_PRINT (TRACE_NAMES, ("Creating/adding a new scope\n"));
                 ThisEntry->Scope = NsAllocateNteDesc (NS_DEFAULT_TABLE_SIZE);
 
                 if (!ThisEntry->Scope)
@@ -1103,10 +1103,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
             }
 
 
-#ifdef NSLOGFILE
-            OsdPrintf (LogFile, "%s = %08x size %d\n",
-                        Name, ThisEntry->Scope, NS_DEFAULT_TABLE_SIZE);
-#endif
+            /* Scope table initialization */
 
             if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
             {
