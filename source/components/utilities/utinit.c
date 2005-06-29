@@ -16,15 +16,18 @@
  | library initialization and some types of table access
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 19:15:01 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 19:15:02 $
  | $Log: utinit.c,v $
- | Revision 1.5  2005/06/29 19:15:01  aystarik
- | New version of DEBUG_PRINT
+ | Revision 1.6  2005/06/29 19:15:02  aystarik
+ | Header cleanup;  Split debug switch into component_id and level
  |
  | 
- | date	99.04.02.22.39.00;	author rmoore1;	state Exp;
+ | date	99.04.05.23.10.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 6     4/05/99 4:10p Rmoore1
+ * Header cleanup;  Split debug switch into component_id and level
  * 
  * 5     4/02/99 2:39p Rmoore1
  * New version of DEBUG_PRINT
@@ -45,14 +48,16 @@
 */
 
 #define __NSTABLES_C__
-#define _THIS_MODULE        "AcpiInit.c"
 
 #include <acpi.h>
 #include <acpilgcy.h>
 #include <acpinmsp.h>
 #include <display.h>
-
 #include <string.h>
+
+
+#define _THIS_MODULE        "AcpiInit.c"
+#define _COMPONENT          NAMESPACE
 
 static INT32        RestoreAcpiChipset = TRUE;
 static UINT16       Pm1EnableRegisterSave = 0;
@@ -101,7 +106,7 @@ IncFACPRegisterError (char *RegisterName, UINT32 Value,
     
     REPORT_ERROR (&KDT[11]);
     
-    DEBUG_PRINT (GLOBAL_ERROR, ("  Assertion %d.%d.%d Failed  %s=%08lXh\n",
+    DEBUG_PRINT (ACPI_ERROR, ("  Assertion %d.%d.%d Failed  %s=%08lXh\n",
                 ACPI_CHAPTER, AcpiTestSpecSection, AcpiAssertion, RegisterName, Value));
 }
 
@@ -146,7 +151,7 @@ AcpiInit (char *FileName)
     /* Exit function is obsolete !!!!  remove TBD */
     /* atexit_bu (AcpiCleanup);  */
 
-    DEBUG_PRINT (NS_INFO, ("Initializing ACPILIB...\n"));
+    DEBUG_PRINT (ACPI_INFO, ("Initializing ACPILIB...\n"));
     IncIndent ();
 
     InputFile = FileName;
@@ -154,7 +159,7 @@ AcpiInit (char *FileName)
     {
         RestoreAcpiChipset = FALSE;
 
-        DEBUG_PRINT (NS_INFO,
+        DEBUG_PRINT (ACPI_INFO,
                     ("Loading all ACPI table data and addresses from %s.\n", InputFile));
         
         FilePtr = OsdOpen (InputFile, "rb");
@@ -176,10 +181,10 @@ AcpiInit (char *FileName)
 
                 REPORT_ERROR (&KDT[1]);
 
-                DEBUG_PRINT (NS_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("ACPILIB version %s expects a data file version string of"
                             "\n \"%s\"", ACPI_LIB_VER, ACPILIB_DATA_FILE_VERSION));
-                DEBUG_PRINT (NS_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("%s's version string is \"%s\"\n", InputFile, Buffer));
                 ErrorCheck = E_FILE_NOT_EXIST;
             }
@@ -199,7 +204,7 @@ AcpiInit (char *FileName)
 
         if (HardwareOverride)
         {
-            DEBUG_PRINT (NS_INFO,
+            DEBUG_PRINT (ACPI_INFO,
                         ("HwOverride specified on command line, but no input file was provided"
                         "\n  HwOverride ignored\n"));
             /* dKinc_info ("0003", PRINT);*/
@@ -224,12 +229,12 @@ AcpiInit (char *FileName)
 
         if (!FilePtr)
         {
-            DEBUG_PRINT (NS_INFO, ("RSDP located at %lXh\n", RSDP));
+            DEBUG_PRINT (ACPI_INFO, ("RSDP located at %lXh\n", RSDP));
         }
         
         else
         {
-            DEBUG_PRINT (NS_INFO,
+            DEBUG_PRINT (ACPI_INFO,
                         ("RSDP located at %lXh\n", RsdpOriginalLocation));
             
             /* 
@@ -258,7 +263,7 @@ AcpiInit (char *FileName)
 
                 REPORT_ERROR (&KDT[5]);
 
-                DEBUG_PRINT (NS_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("RSDP indicates RSDT should be located at %lXh, however the table\n"
                             "  signature at %lXh is incorrect.\n"
                             "  Expected signature: 'RSDT'  Actual signature: '%4.4s'\n",
@@ -272,7 +277,7 @@ AcpiInit (char *FileName)
             {
                 /* Valid RSDT signature */
 
-                DEBUG_PRINT (NS_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("RSDT located at %lXh\n", RSDP->RsdtPhysicalAddress));
             }
         
@@ -296,7 +301,7 @@ AcpiInit (char *FileName)
                 if (!strncmp (TableHeader->Signature, FACP_SIG, 4))
                 {
                     FACP = (FIXED_ACPI_DESCRIPTION_TABLE *) TableHeader;
-                    DEBUG_PRINT (NS_INFO,
+                    DEBUG_PRINT (ACPI_INFO,
                                 ("FACP located at %lXh\n", RSDT->TableOffsetEntry[Index]));
 
                     ErrorCheck |= VerifyTableChecksum (FACP, OUTPUT_DATA | OUTPUT_ERRORS);
@@ -304,7 +309,7 @@ AcpiInit (char *FileName)
                     FACS = GetFACS (FilePtr);
                     if (FACS)
                     {
-                        DEBUG_PRINT (NS_INFO,
+                        DEBUG_PRINT (ACPI_INFO,
                                     ("FACS located at %lXh\n", FACP->FirmwareCtrl));
                     }
 
@@ -338,7 +343,7 @@ BREAKPOINT3;
                     {
                         /* Found the DSDT */
 
-                        DEBUG_PRINT (NS_INFO,
+                        DEBUG_PRINT (ACPI_INFO,
                                     ("DSDT located at %lXh\n", FACP->Dsdt));
                         ErrorCheck |= VerifyTableChecksum (DSDT,
                                                 OUTPUT_DATA | OUTPUT_ERRORS);
@@ -356,7 +361,7 @@ BREAKPOINT3;
                     /*  pointer to APIC table   */
 
                     MAPIC = (APIC_TABLE *) TableHeader;
-                    DEBUG_PRINT (NS_INFO,
+                    DEBUG_PRINT (ACPI_INFO,
                                 ("APIC Table located at %lXh\n", RSDT->TableOffsetEntry[Index]));
                     ErrorCheck |= VerifyTableChecksum (MAPIC, OUTPUT_DATA | OUTPUT_ERRORS);
                 }
@@ -366,7 +371,7 @@ BREAKPOINT3;
                     /*  pointer to PSDT table   */
 
                     PSDT = TableHeader;
-                    DEBUG_PRINT (NS_INFO,
+                    DEBUG_PRINT (ACPI_INFO,
                                 ("PSDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
                     ErrorCheck |= VerifyTableChecksum (PSDT, OUTPUT_DATA | OUTPUT_ERRORS);
                 }
@@ -376,7 +381,7 @@ BREAKPOINT3;
                     /* TBD - need to be able to deal with multiple SSDTs */
                 
                     SSDT = TableHeader;
-                    DEBUG_PRINT (NS_INFO,
+                    DEBUG_PRINT (ACPI_INFO,
                                 ("SSDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
                     ErrorCheck |= VerifyTableChecksum (SSDT, OUTPUT_DATA | OUTPUT_ERRORS);
                 }
@@ -385,7 +390,7 @@ BREAKPOINT3;
                     /*  pointer to SBDT table   */
 
                     SBDT = TableHeader;
-                    DEBUG_PRINT (NS_INFO,
+                    DEBUG_PRINT (ACPI_INFO,
                                 ("SBDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
                     ErrorCheck |= VerifyTableChecksum (SBDT, OUTPUT_DATA | OUTPUT_ERRORS);
                 }
@@ -393,7 +398,7 @@ BREAKPOINT3;
                 {
                     /*  pointer to unknown table    */
 
-                    DEBUG_PRINT (NS_INFO,
+                    DEBUG_PRINT (ACPI_INFO,
                                 ("Unknown table listed in RSDT with signature '%4.4' located at %lXh\n",
                                 TableHeader->Signature, RSDT->TableOffsetEntry[Index]));
                     ErrorCheck |= VerifyTableChecksum (TableHeader, OUTPUT_DATA | OUTPUT_ERRORS);
@@ -488,23 +493,23 @@ BREAKPOINT3;
 
         case (ACPI_MODE):
             OriginalMode = ACPI_MODE;
-            DEBUG_PRINT (NS_INFO,
+            DEBUG_PRINT (ACPI_INFO,
                         ("System supports ACPI mode only.\n"));
             break;
 
         case (LEGACY_MODE):
             OriginalMode = LEGACY_MODE;
-            DEBUG_PRINT (NS_INFO,
+            DEBUG_PRINT (ACPI_INFO,
                         ("Tables loaded from file, hardware assumed to support LEGACY mode only.\n"));
             break;
 
         case (ACPI_MODE | LEGACY_MODE):
             (AcpiModeStatus () == ACPI_MODE) ? (OriginalMode = ACPI_MODE) : (OriginalMode = LEGACY_MODE);
 
-            DEBUG_PRINT (NS_INFO,
+            DEBUG_PRINT (ACPI_INFO,
                         ("System supports both ACPI and LEGACY modes.\n"));
 
-            DEBUG_PRINT (NS_INFO,
+            DEBUG_PRINT (ACPI_INFO,
                         ("System is currently in %s mode.\n",
                         (OriginalMode == ACPI_MODE) ? "ACPI" : "LEGACY"));
             break;
@@ -636,7 +641,7 @@ BREAKPOINT3;
         
         }
 
-        DEBUG_PRINT (GLOBAL_SUCCESS,
+        DEBUG_PRINT (ACPI_SUCCESS,
                     ("ACPILIB successfully initialized.\n"));
 
         AcpiHook = 2;              /* indicate to the outside world we're up and OK ... */
@@ -648,12 +653,12 @@ BREAKPOINT3;
 
         if (!ErrorCheck && (!Capabilities || (Capabilities & ~(ACPI_MODE | LEGACY_MODE))))
         {
-            DEBUG_PRINT (GLOBAL_ERROR,
+            DEBUG_PRINT (ACPI_ERROR,
                         ("Internal ACPILIB error. Capabilities not initialized correctly by AcpiInit()\n"));
             ErrorCheck |= E_ERROR;
         }
 
-        DEBUG_PRINT (GLOBAL_ERROR,
+        DEBUG_PRINT (ACPI_ERROR,
                     ("ACPILIB NOT successfully initialized.\n"));
         RestoreAcpiChipset = FALSE;
     }
