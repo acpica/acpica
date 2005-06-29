@@ -25,7 +25,7 @@ CFG=AcpiSubsystem_Linux - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi/generate/msvc", SVBAAAAA"
 # PROP Scc_LocalPath "."
-CPP=xicl6.exe
+CPP=cl.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiSubsystem_Linux - Win32 Release"
@@ -47,7 +47,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"\Acpi\Generate\msvc\AcpiSubsystem_Linux\AcpiCa_Linux.lib"
 
@@ -64,13 +64,13 @@ LIB32=xilink6.exe -lib
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem_Linux"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Gz /Za /W4 /Gm /GX /ZI /Od /I "..\..\source_linux\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "ENABLE_DEBUGGER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "DEFINE_ALTERNATE_TYPES" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /Gz /Za /W4 /Gm /GX /ZI /Od /I "..\..\source_linux\Include" /D "ACPI_DEBUG_OUTPUT" /D "_DEBUG" /D "ACPI_DEBUGGER" /D "ACPI_DISASSEMBLER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "DEFINE_ALTERNATE_TYPES" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"\Acpi\Generate\msvc\AcpiSubsystem_Linux\AcpiCa_Linux.lib"
 
@@ -82,536 +82,636 @@ LIB32=xilink6.exe -lib
 # Name "AcpiSubsystem_Linux - Win32 Debug"
 # Begin Group "Source Files"
 
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# PROP Default_Filter ""
+# Begin Group "Utilities"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\debugger\dbcmds.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\debugger\dbdisasm.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utclib.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\debugger\dbdisply.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utcopy.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\debugger\dbexec.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utdebug.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\debugger\dbfileio.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utdelete.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\debugger\dbhistry.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\uteval.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\debugger\dbinput.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utglobal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\debugger\dbstats.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utinit.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\debugger\dbutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\debugger\dbxface.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\dispatcher\dsfield.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\dispatcher\dsmethod.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\dispatcher\dsmthdat.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\dispatcher\dsobject.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\dispatcher\dsopcode.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\dispatcher\dsutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\dispatcher\dswexec.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\dispatcher\dswload.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\dispatcher\dswscope.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\dispatcher\dswstate.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\events\evevent.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\events\evmisc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\events\evregion.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\events\evrgnini.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\events\evsci.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\events\evxface.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\events\evxfevnt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\events\evxfregn.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exconfig.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exconvrt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\excreate.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exdump.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exfield.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exfldio.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exmisc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exmutex.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exnames.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exoparg1.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exoparg2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exoparg3.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exoparg6.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exprep.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exregion.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exresnte.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exresolv.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exresop.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exstore.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exstoren.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exstorob.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exsystem.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\executer\exutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\hardware\hwacpi.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\hardware\hwgpe.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\hardware\hwregs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\hardware\hwsleep.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\hardware\hwtimer.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utmath.c
 # ADD CPP /Ze
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nsaccess.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nsalloc.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nsdump.c
+SOURCE=..\..\source_linux\COMPONENTS\utilities\utxface.c
+# End Source File
+# End Group
+# Begin Group "Events"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evevent.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nseval.c
+SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evgpe.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nsinit.c
+SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nsload.c
+SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evregion.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nsnames.c
+SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evrgnini.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nsobject.c
+SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evsci.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nssearch.c
+SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evxface.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nsutils.c
+SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evxfevnt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nswalk.c
+SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evxfregn.c
+# End Source File
+# End Group
+# Begin Group "Hardware"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\HARDWARE\hwacpi.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nsxfname.c
+SOURCE=..\..\source_linux\COMPONENTS\HARDWARE\hwgpe.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\namespace\nsxfobj.c
+SOURCE=..\..\source_linux\COMPONENTS\HARDWARE\hwregs.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\parser\psargs.c
+SOURCE=..\..\source_linux\COMPONENTS\HARDWARE\hwsleep.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\parser\psfind.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\parser\psopcode.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\parser\psparse.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\parser\psscope.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\parser\pstree.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\parser\psutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\parser\pswalk.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\interpreter\parser\psxface.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rsaddr.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rscalc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rscreate.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rsdump.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rsio.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rsirq.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rslist.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rsmemory.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rsmisc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rsutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\resources\rsxface.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\tables\tbconvrt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\tables\tbget.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\tables\tbinstal.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\tables\tbutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\tables\tbxface.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\tables\tbxfroot.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\utilities\utalloc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\utilities\utclib.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\utilities\utcopy.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\utilities\utdebug.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\utilities\utdelete.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\utilities\uteval.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\utilities\utglobal.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\utilities\utinit.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\utilities\utmath.c
+SOURCE=..\..\source_linux\COMPONENTS\HARDWARE\hwtimer.c
 # ADD CPP /Ze
 # End Source File
+# End Group
+# Begin Group "Interpreter"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\utilities\utmisc.c
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exconfig.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\utilities\utobject.c
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exconvrt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\utilities\utxface.c
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\excreate.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exfldio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exmutex.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exoparg1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exoparg2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exoparg3.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exoparg6.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exprep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exregion.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exresnte.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exresolv.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exresop.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exstore.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exstoren.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exstorob.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exsystem.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\EXECUTER\exutils.c
+# End Source File
+# End Group
+# Begin Group "Namespace"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsaccess.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsdumpdv.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nseval.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsinit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsload.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsparse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nssearch.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nswalk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsxfeval.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsxfname.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nsxfobj.c
+# End Source File
+# End Group
+# Begin Group "Resources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rsaddr.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rscalc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rscreate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rsdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rsio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rsirq.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rslist.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rsmemory.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rsmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rsutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\resources\rsxface.c
+# End Source File
+# End Group
+# Begin Group "Tables"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\tables\tbconvrt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\tables\tbget.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\tables\tbgetall.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\tables\tbinstal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\tables\tbrsdt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\tables\tbutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\tables\tbxface.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\tables\tbxfroot.c
+# End Source File
+# End Group
+# Begin Group "Parser"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\psargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\psopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\psparse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\psscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\pstree.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\psutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\pswalk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\psxface.c
+# End Source File
+# End Group
+# Begin Group "Dispatcher"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dsfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dsinit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dsmethod.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dsmthdat.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dsobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dsopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dsutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dswexec.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dswload.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dswscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dswstate.c
+# End Source File
+# End Group
+# Begin Group "Disassembler"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmbuffer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmresrc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmresrcl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmresrcs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmwalk.c
+# End Source File
+# End Group
+# Begin Group "Debugger"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\DEBUGGER\dbcmds.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\DEBUGGER\dbdisply.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\DEBUGGER\dbexec.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\DEBUGGER\dbfileio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\DEBUGGER\dbhistry.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\DEBUGGER\dbinput.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\DEBUGGER\dbstats.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\DEBUGGER\dbutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\DEBUGGER\dbxface.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
-# PROP Default_Filter "h;hpp;hxx;hm;inl"
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acconfig.h
+SOURCE=..\..\source_linux\Include\acconfig.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acdebug.h
+SOURCE=..\..\source_linux\Include\acdebug.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acdispat.h
+SOURCE=..\..\source_linux\INCLUDE\acdisasm.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\platform\acefi.h
+SOURCE=..\..\source_linux\Include\acdispat.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\platform\acenv.h
+SOURCE=..\..\source_linux\Include\platform\acefi.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acevents.h
+SOURCE=..\..\source_linux\Include\platform\acenv.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acexcep.h
+SOURCE=..\..\source_linux\Include\acevents.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\platform\acfreebsd.h
+SOURCE=..\..\source_linux\Include\acexcep.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\platform\acgcc.h
+SOURCE=..\..\source_linux\Include\platform\acfreebsd.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acglobal.h
+SOURCE=..\..\source_linux\Include\platform\acgcc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\achware.h
+SOURCE=..\..\source_linux\Include\acglobal.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acinterp.h
+SOURCE=..\..\source_linux\Include\achware.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\platform\aclinux.h
+SOURCE=..\..\source_linux\Include\acinterp.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\aclocal.h
+SOURCE=..\..\source_linux\Include\platform\aclinux.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acmacros.h
+SOURCE=..\..\source_linux\Include\aclocal.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\platform\acmsvc.h
+SOURCE=..\..\source_linux\Include\acmacros.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acnamesp.h
+SOURCE=..\..\source_linux\Include\platform\acmsvc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acobject.h
+SOURCE=..\..\source_linux\Include\acnamesp.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acoutput.h
+SOURCE=..\..\source_linux\Include\acobject.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acparser.h
+SOURCE=..\..\source_linux\Include\acoutput.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acpi.h
+SOURCE=..\..\source_linux\Include\acparser.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acpiosxf.h
+SOURCE=..\..\source_linux\Include\acpi.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acpixf.h
+SOURCE=..\..\source_linux\Include\acpiosxf.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acresrc.h
+SOURCE=..\..\source_linux\Include\acpixf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\Include\acresrc.h
 # End Source File
 # Begin Source File
 
@@ -619,35 +719,39 @@ SOURCE=..\..\source_linux\include\acstruct.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\actables.h
+SOURCE=..\..\source_linux\Include\actables.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\actbl.h
+SOURCE=..\..\source_linux\Include\actbl.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\actbl1.h
+SOURCE=..\..\source_linux\Include\actbl1.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\actbl2.h
+SOURCE=..\..\source_linux\Include\actbl2.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\actypes.h
+SOURCE=..\..\source_linux\Include\actypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\acutils.h
+SOURCE=..\..\source_linux\Include\acutils.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\platform\acwin.h
+SOURCE=..\..\source_linux\Include\platform\acwin.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\include\amlcode.h
+SOURCE=..\..\source_linux\Include\amlcode.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\INCLUDE\amlresrc.h
 # End Source File
 # End Group
 # End Target
