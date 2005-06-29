@@ -199,8 +199,6 @@ AcpiNsParseTable (
 }
 
 
-
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiNsLoadTable
@@ -277,7 +275,6 @@ AcpiNsLoadTable (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiNsLoadTableByType
@@ -316,11 +313,11 @@ AcpiNsLoadTableByType (
     switch (TableType)
     {
 
-    case TABLE_DSDT:
+    case ACPI_TABLE_DSDT:
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading DSDT\n"));
 
-        TableDesc = &AcpiGbl_AcpiTables[TABLE_DSDT];
+        TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_DSDT];
 
         /* If table already loaded into namespace, just return */
 
@@ -350,17 +347,17 @@ AcpiNsLoadTableByType (
         break;
 
 
-    case TABLE_SSDT:
+    case ACPI_TABLE_SSDT:
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading %d SSDTs\n",
-                        AcpiGbl_AcpiTables[TABLE_SSDT].Count));
+                        AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count));
 
         /*
          * Traverse list of SSDT tables
          */
 
-        TableDesc = &AcpiGbl_AcpiTables[TABLE_SSDT];
-        for (i = 0; i < AcpiGbl_AcpiTables[TABLE_SSDT].Count; i++)
+        TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_SSDT];
+        for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count; i++)
         {
             TablePtr = TableDesc->Pointer;
 
@@ -383,17 +380,17 @@ AcpiNsLoadTableByType (
         break;
 
 
-    case TABLE_PSDT:
+    case ACPI_TABLE_PSDT:
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading %d PSDTs\n",
-                        AcpiGbl_AcpiTables[TABLE_PSDT].Count));
+                        AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count));
 
         /*
          * Traverse list of PSDT tables
          */
 
-        TableDesc = &AcpiGbl_AcpiTables[TABLE_PSDT];
-        for (i = 0; i < AcpiGbl_AcpiTables[TABLE_PSDT].Count ; i++)
+        TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_PSDT];
+        for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count; i++)
         {
             TablePtr = TableDesc->Pointer;
 
@@ -586,7 +583,6 @@ AcpiNsDeleteSubtree (
 
     return_ACPI_STATUS (AE_OK);
 }
-
 
 
 /****************************************************************************
