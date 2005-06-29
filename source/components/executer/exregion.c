@@ -26,7 +26,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -239,8 +239,7 @@ AmlSystemMemorySpaceHandler (
         break;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -338,8 +337,7 @@ AmlSystemIoSpaceHandler (
         break;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -368,7 +366,7 @@ AmlPciConfigSpaceHandler (
     void                    *Context)
 {
     ACPI_STATUS             Status = AE_OK;
-    UINT8                   PciBus;
+    UINT32                  PciBus;
     UINT8                   DevFunc;
     UINT8                   PciReg;
 
@@ -383,10 +381,10 @@ AmlPciConfigSpaceHandler (
 
     case ADDRESS_SPACE_READ:
 
-        PciBus  = (UINT8) (Address >> 16);
         DevFunc = (UINT8) (Address >> 8);
         PciReg  = (UINT8) ((Address >> 2) & 0x3f);
         *Value  = 0;
+        PciBus = *((UINT32 *)Context);
 
         switch (BitWidth)
         {
@@ -449,8 +447,7 @@ AmlPciConfigSpaceHandler (
         break;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -484,8 +481,7 @@ AmlEmbeddedControllerSpaceHandler (
     FUNCTION_TRACE ("AmlEmbeddedControllerSpaceHandler");
 
     DEBUG_PRINT (ACPI_ERROR, ("AmlEmbeddedControllerSpaceHandler: **** EC OpRegion not implemented\n"));
-    FUNCTION_STATUS_EXIT (AE_NOT_IMPLEMENTED);
-    return AE_NOT_IMPLEMENTED;
+    return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
 
 
     /* Decode the function parameter */
@@ -503,8 +499,7 @@ AmlEmbeddedControllerSpaceHandler (
         break;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -538,8 +533,7 @@ AmlSmBusSpaceHandler (
     FUNCTION_TRACE ("AmlSmBusSpaceHandler");
 
     DEBUG_PRINT (ACPI_ERROR, ("AmlSmBusSpaceHandler: **** SmBus OpRegion not implemented\n"));
-    FUNCTION_STATUS_EXIT (AE_NOT_IMPLEMENTED);
-    return AE_NOT_IMPLEMENTED;
+    return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
 
 
     /* Decode the function parameter */
@@ -557,7 +551,6 @@ AmlSmBusSpaceHandler (
         break;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
