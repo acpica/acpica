@@ -239,7 +239,7 @@ NsDumpOneObject (
     /* Check if the owner matches */
 
     if ((Info->OwnerId != ACPI_UINT32_MAX) &&
-        (Info->OwnerId != ThisEntry->TableId))
+        (Info->OwnerId != ThisEntry->OwnerId))
     {
         return AE_OK;
     }
@@ -307,7 +307,7 @@ NsDumpOneObject (
         Type = INTERNAL_TYPE_DefAny;                                 /* prints as *ERROR* */
     }
     
-    if (!AmlGoodChar ((INT32)* (char *) &ThisEntry->Name))
+    if (!CmValidAcpiName (*(UINT32 *) &ThisEntry->Name))
     {
         REPORT_WARNING ("Invalid Name");
     }
