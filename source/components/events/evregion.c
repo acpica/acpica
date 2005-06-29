@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -195,8 +195,6 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
     return_ACPI_STATUS (AE_OK);
 }
 
-
-/* TBD: [Restructure] Move elsewhere */
 
 /*******************************************************************************
  *
