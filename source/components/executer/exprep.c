@@ -222,12 +222,14 @@ OBSOLETE!
              * (aliases of aliases>
              */
 
+/* TBD: OBSOLETE, remove
             while (ObjectType == INTERNAL_TYPE_Alias)
             {
                 ObjDesc = ((NAME_TABLE_ENTRY *) ObjDesc)->Object;
                 ObjectType = ((NAME_TABLE_ENTRY *) ObjDesc)->Type;
                 (*StackPtr) = ObjDesc;
             }
+*/
 
             DEBUG_EXEC (ObjectTypeName = "[NTE]");
         }
