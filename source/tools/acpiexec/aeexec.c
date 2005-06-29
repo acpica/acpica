@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: aeexec - Top level parse and execute routines
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,34 +114,32 @@
  *****************************************************************************/
 
 
-#include <acpi.h>
-#include <parser.h>
-#include <amlcode.h>
-#include <namesp.h>
-#include <debugger.h>
+#include "acpi.h"
+#include "acparser.h"
+#include "amlcode.h"
+#include "acnamesp.h"
+#include "acdebug.h"
 #include "aecommon.h"
 
 #include <stdio.h>
-
 
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("aeexec");
 
 
-
-ACPI_GENERIC_OP             *Gbl_ParsedNamespaceRoot;
+ACPI_GENERIC_OP             *AcpiGbl_ParsedNamespaceRoot;
 ACPI_GENERIC_OP             *root;
 UINT8                       *AmlPtr;
-UINT32                      AmlLength;
+UINT32                      AcpiAmlLength;
 UINT8                       *DsdtPtr;
-UINT32                      DsdtLength;
+UINT32                      AcpiDsdtLength;
 
-DEBUG_REGIONS	            Regions;
+DEBUG_REGIONS               Regions;
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    RegionHandler
  *
  * PARAMETERS:  Standard region handler parameters
@@ -149,11 +147,11 @@ DEBUG_REGIONS	            Regions;
  * RETURN:      Status
  *
  * DESCRIPTION: Test handler - Handles some dummy regions via memory that can
- *				be manipulated in Ring 3.
+ *              be manipulated in Ring 3.
  *
  *****************************************************************************/
 
-ACPI_STATUS 
+ACPI_STATUS
 RegionHandler (
     UINT32                      Function,
     UINT32                      Address,
@@ -162,42 +160,42 @@ RegionHandler (
     void                        *Context)
 {
 
-    ACPI_OBJECT_INTERNAL	*RegionObject = (ACPI_OBJECT_INTERNAL *)Context;
-	UINT32					BaseAddress;
-	UINT32					Length;
-	BOOLEAN					BufferExists;
-	REGION					*RegionElement;
+    ACPI_OBJECT_INTERNAL    *RegionObject = (ACPI_OBJECT_INTERNAL *)Context;
+    UINT32                  BaseAddress;
+    UINT32                  Length;
+    BOOLEAN                 BufferExists;
+    REGION                  *RegionElement;
     void                    *BufferValue;
     UINT32                  ByteWidth;
-		
+
     printf ("Received an OpRegion request\n");
 
-	/*
-	 * If the object is not a region, simply return
-	 */
-	if (RegionObject->Region.Type != ACPI_TYPE_Region)
-	{
-		return AE_OK;
-	}
+    /*
+     * If the object is not a region, simply return
+     */
+    if (RegionObject->Region.Type != ACPI_TYPE_REGION)
+    {
+        return AE_OK;
+    }
 
-	/*
-	 * Find the region's address space and length before searching
-	 *	the linked list.
-	 */
-	BaseAddress = RegionObject->Region.Address;
-	Length = RegionObject->Region.Length;
+    /*
+     * Find the region's address space and length before searching
+     *  the linked list.
+     */
+    BaseAddress = RegionObject->Region.Address;
+    Length = RegionObject->Region.Length;
 
-	/*
-	 * Search through the linked list for this region's buffer
-	 */
+    /*
+     * Search through the linked list for this region's buffer
+     */
     BufferExists = FALSE;
 
     RegionElement = Regions.RegionList;
 
     if (0 != Regions.NumberOfRegions)
-	{
+    {
         while (!BufferExists && RegionElement)
-		{
+        {
             if (RegionElement->Address == BaseAddress &&
                 RegionElement->Length == Length)
             {
@@ -207,60 +205,60 @@ RegionHandler (
             {
                 RegionElement = RegionElement->NextRegion;
             }
-		}
-	}
+        }
+    }
 
-	/*
-	 * If the Region buffer does not exist, create it now
-	 */
-	if (FALSE == BufferExists)
-	{
-		/*
-		 * Do the memory allocations first
-		 */
-		RegionElement = OsdAllocate (sizeof(REGION));
-		if (!RegionElement)
-		{
-			return AE_NO_MEMORY;
-		}
+    /*
+     * If the Region buffer does not exist, create it now
+     */
+    if (FALSE == BufferExists)
+    {
+        /*
+         * Do the memory allocations first
+         */
+        RegionElement = AcpiOsAllocate (sizeof(REGION));
+        if (!RegionElement)
+        {
+            return AE_NO_MEMORY;
+        }
 
-		RegionElement->Buffer = OsdAllocate (Length);
-		if (!RegionElement->Buffer)
-		{
-			OsdFree (RegionElement);
-			return AE_NO_MEMORY;
-		}
+        RegionElement->Buffer = AcpiOsAllocate (Length);
+        if (!RegionElement->Buffer)
+        {
+            AcpiOsFree (RegionElement);
+            return AE_NO_MEMORY;
+        }
 
-		RegionElement->Address = BaseAddress;
-		
-		RegionElement->Length = Length;
-		
-		MEMSET(RegionElement->Buffer, 0, Length);
+        RegionElement->Address = BaseAddress;
 
-		RegionElement->NextRegion = NULL;
+        RegionElement->Length = Length;
 
-		/*
-		 * Increment the number of regions and put this one
-		 *	at the head of the list as it will probably get accessed
-		 *	more often anyway.
-		 */
-		Regions.NumberOfRegions += 1;
-		
+        MEMSET(RegionElement->Buffer, 0, Length);
+
+        RegionElement->NextRegion = NULL;
+
+        /*
+         * Increment the number of regions and put this one
+         *  at the head of the list as it will probably get accessed
+         *  more often anyway.
+         */
+        Regions.NumberOfRegions += 1;
+
         if (NULL != Regions.RegionList)
         {
             RegionElement->NextRegion = Regions.RegionList->NextRegion;
         }
-		
-        Regions.RegionList = RegionElement;
-	}
 
-	/*
-	 * The buffer exists and is pointed to by RegionElement.
-     *	We now need to verify the request is valid and perform the operation.
+        Regions.RegionList = RegionElement;
+    }
+
+    /*
+     * The buffer exists and is pointed to by RegionElement.
+     *  We now need to verify the request is valid and perform the operation.
      *
      * NOTE: RegionElement->Length is in bytes, therefore it is multiplied by
      *  the bitwidth of a byte.
-	 */ 
+     */
     if ((Address + BitWidth) > (RegionElement->Address + (RegionElement->Length * 8)))
     {
         return AE_BUFFER_OVERFLOW;
@@ -270,7 +268,7 @@ RegionHandler (
      * Get BufferValue to point to the "address" in the buffer
      */
     BufferValue = ((UINT8 *)RegionElement->Buffer + (Address - RegionElement->Address));
-    
+
     /*
      * Calculate the size of the memory copy
      */
@@ -309,7 +307,7 @@ RegionHandler (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    RegionInit
  *
  * PARAMETERS:  None
@@ -331,26 +329,26 @@ RegionInit (
      * Real simple, set the ReturnContext to the RegionHandle
      */
     *ReturnContext = RegionHandle;
-    
+
     return AE_OK;
 }
 
 
 /******************************************************************************
- * 
- * FUNCTION:    NotifyHandler 
+ *
+ * FUNCTION:    NotifyHandler
  *
  * PARAMETERS:  Standard notify handler parameters
  *
  * RETURN:      Status
  *
  * DESCRIPTION: System notify handler for AcpiExec utility.  Used by the ASL
- *              test suite(s) to communicate errors and other information to  
+ *              test suite(s) to communicate errors and other information to
  *              this utility via the Notify() operator.
  *
  *****************************************************************************/
 
-void 
+void
 NotifyHandler (
     ACPI_HANDLE                 Device,
     UINT32                      Value,
@@ -363,7 +361,7 @@ NotifyHandler (
         printf ("**** Method Error 0x%X: Results not equal\n", Value);
         if (DebugFile)
         {
-            OsdPrintf ("**** Method Error: Results not equal\n");
+            AcpiOsPrintf ("**** Method Error: Results not equal\n");
         }
         break;
 
@@ -372,7 +370,7 @@ NotifyHandler (
         printf ("**** Method Error: Incorrect numeric result\n");
         if (DebugFile)
         {
-            OsdPrintf ("**** Method Error: Incorrect numeric result\n");
+            AcpiOsPrintf ("**** Method Error: Incorrect numeric result\n");
         }
         break;
 
@@ -381,16 +379,16 @@ NotifyHandler (
         printf ("**** Method Error: An operand was overwritten\n");
         if (DebugFile)
         {
-            OsdPrintf ("**** Method Error: An operand was overwritten\n");
+            AcpiOsPrintf ("**** Method Error: An operand was overwritten\n");
         }
         break;
-    
+
 
     default:
         printf ("**** Received a notify, value 0x%X\n", Value);
         if (DebugFile)
         {
-            OsdPrintf ("**** Received a notify, value 0x%X\n", Value);
+            AcpiOsPrintf ("**** Received a notify, value 0x%X\n", Value);
         }
         break;
     }
@@ -399,7 +397,7 @@ NotifyHandler (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AeInstallHandlers
  *
  * PARAMETERS:  None
@@ -427,31 +425,31 @@ AeInstallHandlers (void)
 
     for (i = 0; i < 3; i++)
     {
-        Status = AcpiRemoveAddressSpaceHandler (Gbl_RootObject, i, RegionHandler);
+        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootObject, i, RegionHandler);
 
-        /* Install handler at the root object. 
+        /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
-        Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, i, RegionHandler, RegionInit, NULL);
+        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootObject, i, RegionHandler, RegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");
         }
     }
 
-	/*
-	 * Initialize the global Region Handler space 
-	 * MCW 3/23/00
-	 */
-	Regions.NumberOfRegions = 0;
-	Regions.RegionList = NULL;
+    /*
+     * Initialize the global Region Handler space
+     * MCW 3/23/00
+     */
+    Regions.NumberOfRegions = 0;
+    Regions.RegionList = NULL;
 
     return Status;
 }
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdSecondPassParse
  *
  * PARAMETERS:  Root            - Root of the parse tree
@@ -480,12 +478,12 @@ AdSecondPassParse (
     {
         /* We are looking for control methods */
 
-        if (Op->Opcode == AML_MethodOp)
+        if (Op->Opcode == AML_METHOD_OP)
         {
             Method = (ACPI_DEFERRED_OP *) Op;
-            Status = PsParseAml (Op, Method->Body, Method->BodyLength, 0);
+            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0);
 
-          
+
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
             StartOp = (Method->Value.Arg)->Next;
             SearchOp = StartOp;
@@ -493,17 +491,17 @@ AdSecondPassParse (
             while (SearchOp)
             {
                 SearchOp->AmlOffset += BaseAmlOffset;
-                SearchOp = PsGetDepthNext (StartOp, SearchOp);
+                SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
             }
 
         }
 
-        if (Op->Opcode == AML_RegionOp)
+        if (Op->Opcode == AML_REGION_OP)
         {
             /* TBD: this isn't quite the right thing to do! */
 
             // Method = (ACPI_DEFERRED_OP *) Op;
-            // Status = PsParseAml (Op, Method->Body, Method->BodyLength);
+            // Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength);
         }
 
         if (ACPI_FAILURE (Status))
@@ -511,16 +509,15 @@ AdSecondPassParse (
             return Status;
         }
 
-        Op = PsGetDepthNext (Root, Op);
+        Op = AcpiPsGetDepthNext (Root, Op);
     }
 
     return Status;
 }
 
 
-
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdGetTables
  *
  * PARAMETERS:  Filename        - Optional filename
@@ -538,11 +535,9 @@ xxxAdGetTables (
     ACPI_STATUS             Status;
 
 
-    Status = DbLoadAcpiTable (Filename);
+    Status = AcpiDbLoadAcpiTable (Filename);
 
     return Status;
 }
-
-
 
 

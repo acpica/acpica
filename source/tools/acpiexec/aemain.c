@@ -1,5 +1,5 @@
-/******************************************************************************
- * 
+    /******************************************************************************
+ *
  * Module Name: aemain - Main routine for the AcpiExec utility
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,14 +117,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <acpi.h>
-#include <acapi.h>
-#include <amlcode.h>
-#include <parser.h>
-#include <tables.h>
-#include <namesp.h>
-#include <interp.h>
-#include <debugger.h>
+#include "acpi.h"
+#include "amlcode.h"
+#include "acparser.h"
+#include "actables.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "acdebug.h"
 
 #include "aecommon.h"
 
@@ -134,10 +133,10 @@
 
 
 char                    *Version = "X004";
-   
+
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    usage
  *
  * PARAMETERS:  None
@@ -162,9 +161,8 @@ usage (void)
 }
 
 
-
 /******************************************************************************
- * 
+ *
  * FUNCTION:    main
  *
  * PARAMETERS:  argc, argv
@@ -177,9 +175,9 @@ usage (void)
 
 int
 main (
-    int                     argc, 
+    int                     argc,
     char                    **argv)
-{      
+{
     int                     j;
     ACPI_STATUS             Status;
 
@@ -187,15 +185,23 @@ main (
     /* Init globals */
 
     Buffer = malloc (BUFFER_SIZE);
-    DebugLevel = DEBUG_DEFAULT & (~TRACE_TABLES);    
-    DebugLayer = 0xFFFFFFFF;
+    AcpiDbgLevel = DEBUG_DEFAULT & (~TRACE_TABLES);
+    AcpiDbgLayer = 0xFFFFFFFF;
 
 
-    printf ("ACPI AML Execution/Debug Utility version %s\n", Version);
+    printf ("ACPI AML Execution/Debug Utility ");
+
+#ifdef _IA16
+    printf ("16-bit ");
+#else
+    printf ("32-bit ");
+#endif
+
+    printf ("version [%s]\n", __DATE__);
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "dgjl:o:s")) != EOF) switch(j) 
+    while ((j = getopt (argc, argv, "dgjl:o:s")) != EOF) switch(j)
     {
     case 'd':
         opt_disasm = TRUE;
@@ -206,14 +212,14 @@ main (
         opt_tables = TRUE;
         Filename = NULL;
         break;
-    
+
     case 'j':
         opt_parse_jit = TRUE;
         break;
 
     case 'l':
-        DebugLevel = strtoul (optarg, NULL, 0);
-        printf ("Debug Level: %lX\n", DebugLevel);
+        AcpiDbgLevel = strtoul (optarg, NULL, 0);
+        printf ("Debug Level: %lX\n", AcpiDbgLevel);
         break;
 
     case 'o':
@@ -224,11 +230,11 @@ main (
         opt_stats = TRUE;
         break;
 
-    default:    
+    default:
         usage();
         return -1;
-    }                      
-    
+    }
+
 
     /* Init ACPI and start debugger thread */
 
@@ -241,19 +247,19 @@ main (
     {
         opt_tables = TRUE;
         Filename = argv[optind];
-        Status = DbLoadAcpiTable (Filename);
+        Status = AcpiDbLoadAcpiTable (Filename);
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            goto enterloop;
         }
 
-        DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
         Status = AcpiLoadNamespace ();
-        DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            goto enterloop;
         }
 
         /* TBD:
@@ -262,11 +268,37 @@ main (
         AeInstallHandlers ();
     }
 
+#ifdef _IA16
+    else
+    {
+        Status = AdFindDsdt (NULL, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
 
+        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        Status = AcpiLoadNamespace ();
+        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
+
+
+        /* TBD:
+         * Need a way to call this after the "LOAD" command
+         */
+        AeInstallHandlers ();
+    }
+#endif
+
+enterloop:
 
     /* Enter the debugger command loop */
 
-    DbUserCommands (DB_COMMAND_PROMPT, NULL);
+    AcpiDbUserCommands (DB_COMMAND_PROMPT, NULL);
 
     return 0;
 }
