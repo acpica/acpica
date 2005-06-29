@@ -252,19 +252,64 @@ DbDisassembleAml (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Interface to NsDumpObjects
+ * DESCRIPTION: Dump entire namespace or a subtree
  *
  *****************************************************************************/
 
 void
-DbDumpNamespace (void)
+DbDumpNamespace (
+    char                    *StartArg)
 {
+    ACPI_HANDLE             SubtreeEntry;
+
+
+
+    /* No argument given, just start at the root and dump entire namespace */
+
+    if (!StartArg)
+    {
+        SubtreeEntry = Gbl_RootObject;
+    }
+
+    /* Check if numeric argument, must be an NTE */
+
+    else if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
+    {
+
+        SubtreeEntry = (ACPI_HANDLE) STRTOUL (StartArg, NULL, 16);
+        if (!OsdVerifyReadable (SubtreeEntry, sizeof (NAME_TABLE_ENTRY)))
+        {
+            OsdPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
+            return;
+        }
+        if (!VALID_DESCRIPTOR_TYPE ((SubtreeEntry), DESC_TYPE_NTE))
+        {
+            OsdPrintf ("Address %p is not a valid NTE\n", SubtreeEntry);
+            return;
+        }
+    }
+
+    /* Alpha argument */
+
+    else
+    {
+        /* The parameter is a name string that must be resolved to an NTE */
+
+        SubtreeEntry = DbLocalNsLookup (StartArg);
+        if (!SubtreeEntry)
+        {
+            return;
+        }
+    }
+
 
     DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    OsdPrintf ("Entire loaded ACPI Namespace:\n");
+    OsdPrintf ("ACPI Namespace (from %p subtree):\n", SubtreeEntry);
+
+    /* Display the subtree */
 
     DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-    NsDumpObjects (ACPI_TYPE_Any, ACPI_UINT32_MAX, Gbl_RootObject);
+    NsDumpObjects (ACPI_TYPE_Any, ACPI_UINT32_MAX, SubtreeEntry);
     DbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
@@ -518,16 +563,18 @@ DbDisplayAllMethods (
 void
 DbExecute (
     char                    *Name,
+    char                    **Args,
     UINT32                  Flags)
 {
     ACPI_STATUS             Status;
     ACPI_BUFFER             ReturnObj;
     ACPI_OBJECT_LIST        ParamObjects;
-    ACPI_OBJECT             Params[2];
+    ACPI_OBJECT             Params[MTH_NUM_ARGS];
     UINT32                  PreviousAllocations;
     UINT32                  PreviousSize;
     UINT32                  Allocations;
     UINT32                  Size;
+    UINT32                  i;
     char                    LocalBuf[64];
 
 
@@ -541,17 +588,32 @@ DbExecute (
     PreviousAllocations = Gbl_CurrentAllocCount;
     PreviousSize = Gbl_CurrentAllocSize;
 
-    /* Setup parameters */
+    if (Args[0])
+    {
+        for (i = 0; Args[i] && i < MTH_NUM_ARGS; i++)
+        {
+            Params[i].Type              = ACPI_TYPE_Number;
+            Params[i].Number.Value      = STRTOUL (Args[i], NULL, 16);
+        }
 
-    Params[0].Type              = ACPI_TYPE_Number;
-    Params[0].Number.Value      = 0x01020304;
+        ParamObjects.Pointer        = Params;
+        ParamObjects.Count          = i;
+    }
 
-    Params[1].Type              = ACPI_TYPE_String;
-    Params[1].String.Length     = 12;
-    Params[1].String.Pointer    = "AML Debugger";
+    else
+    {
+        /* Setup default parameters */
 
-    ParamObjects.Pointer        = Params;
-    ParamObjects.Count          = 2;
+        Params[0].Type              = ACPI_TYPE_Number;
+        Params[0].Number.Value      = 0x01020304;
+
+        Params[1].Type              = ACPI_TYPE_String;
+        Params[1].String.Length     = 12;
+        Params[1].String.Pointer    = "AML Debugger";
+
+        ParamObjects.Pointer        = Params;
+        ParamObjects.Count          = 2;
+    }
 
     /* Prepare for a return object of arbitrary size */
 
