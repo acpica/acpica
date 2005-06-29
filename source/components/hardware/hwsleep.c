@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -456,7 +456,7 @@ AcpiEnterSleepStateS4bios (
 
     ACPI_FLUSH_CPU_CACHE();
 
-    Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, (ACPI_INTEGER) AcpiGbl_FADT->S4BiosReq, 8);
+    Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, (UINT32) AcpiGbl_FADT->S4BiosReq, 8);
 
     do {
         AcpiOsStall(1000);
