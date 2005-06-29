@@ -206,6 +206,27 @@ AcpiAmlResolveEntryToValue (
     }
 
 
+    /* 
+     * Several EntryTypes do not require further processing, so
+     *  we will return immediately
+     */
+    /* Devices rarely have an attached object, return the NTE
+     *  and Method locals and arguments have a pseudo-NTE 
+     */
+    if (EntryType == ACPI_TYPE_DEVICE ||
+        EntryType == INTERNAL_TYPE_METHOD_ARGUMENT ||
+        EntryType == INTERNAL_TYPE_METHOD_LOCAL_VAR)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    if (!ValDesc)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlResolveEntryToValue: Internal error - null parameter\n"));
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
+    }
+
     /*
      * Action is based on the type of the NTE, which indicates the type
      * of the attached object or pointer
@@ -214,18 +235,6 @@ AcpiAmlResolveEntryToValue (
     {
 
     case ACPI_TYPE_PACKAGE:
-
-        /*
-         * ValDesc should point to either an ACPI_OBJECT_INTERNAL of
-         * type Package, or an initialization in the AML stream.
-         */
-        if (!ValDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveEntryToValue: Internal error - null ValDesc\n"));
-            return_ACPI_STATUS (AE_AML_NO_OPERAND);
-        }
-
 
         if (AttachedAmlPointer)
         {
@@ -240,7 +249,7 @@ AcpiAmlResolveEntryToValue (
 
         /* ValDesc is an internal object in all cases by the time we get here */
 
-        if (!ValDesc || (ACPI_TYPE_PACKAGE != ValDesc->Common.Type))
+        if (ACPI_TYPE_PACKAGE != ValDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("AmlResolveEntryToValue: Internal error - Bad pkg value\n"));
@@ -256,13 +265,6 @@ AcpiAmlResolveEntryToValue (
 
     case ACPI_TYPE_BUFFER:
 
-        if (!ValDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveEntryToValue: Internal error - null Buffer ValuePtr\n"));
-            return_ACPI_STATUS (AE_AML_NO_OPERAND);
-        }
-
         if (AttachedAmlPointer)
         {
             /*
@@ -276,7 +278,7 @@ AcpiAmlResolveEntryToValue (
 
         /* ValDesc is an internal object in all cases by the time we get here */
 
-        if (!ValDesc || (ACPI_TYPE_BUFFER != ValDesc->Common.Type))
+        if (ACPI_TYPE_BUFFER != ValDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("AmlResolveEntryToValue: Bad buffer value\n"));
@@ -333,14 +335,6 @@ AcpiAmlResolveEntryToValue (
     case ACPI_TYPE_NUMBER:
 
         DEBUG_PRINT (TRACE_EXEC, ("AmlResolveEntryToValue: case Number \n"));
-
-        if (!ValDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveEntryToValue: Internal error - null Number ValuePtr\n"));
-            return_ACPI_STATUS (AE_AML_NO_OPERAND);
-        }
-
 
         /*
          * An ACPI_TYPE_NUMBER can be either an object or an AML pointer
@@ -519,13 +513,6 @@ AcpiAmlResolveEntryToValue (
 
     case INTERNAL_TYPE_BANK_FIELD:
 
-        if (!ValDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveEntryToValue: Internal error - null BankField ValuePtr\n"));
-            return_ACPI_STATUS (AE_AML_NO_OPERAND);
-        }
-
         if (AttachedAmlPointer)
         {
             DEBUG_PRINT (ACPI_ERROR,
@@ -548,16 +535,15 @@ AcpiAmlResolveEntryToValue (
 
         ObjDesc = (ACPI_OBJECT_INTERNAL *) *StackPtr;
         Locked = AcpiAmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
-        {
 
-            /* Set Index value to select proper Data register */
-            /* perform the update */
+        /* Set Index value to select proper Data register */
+        /* perform the update */
 
-            Status = AcpiAmlAccessNamedField (ACPI_WRITE,
-                                    ValDesc->BankField.BankSelect,
-                                    &ValDesc->BankField.Value,
-                                    sizeof (ValDesc->BankField.Value));
-        }
+        Status = AcpiAmlAccessNamedField (ACPI_WRITE,
+                                ValDesc->BankField.BankSelect,
+                                &ValDesc->BankField.Value,
+                                sizeof (ValDesc->BankField.Value));
+
         AcpiAmlReleaseGlobalLock (Locked);
 
 
@@ -588,13 +574,6 @@ AcpiAmlResolveEntryToValue (
 
     case INTERNAL_TYPE_INDEX_FIELD:
 
-        if (!ValDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveEntryToValue: Internal error - null IndexField ValuePtr\n"));
-            return_ACPI_STATUS (AE_AML_NO_OPERAND);
-        }
-
         if (AttachedAmlPointer)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlResolveEntryToValue: Internal error - IndexField cannot be an AcpiAml ptr\n"));
@@ -616,14 +595,13 @@ AcpiAmlResolveEntryToValue (
 
         ObjDesc = (ACPI_OBJECT_INTERNAL *) *StackPtr;
         Locked = AcpiAmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
-        {
-            /* Perform the update */
 
-            Status = AcpiAmlAccessNamedField (ACPI_WRITE, 
-                                    ValDesc->IndexField.Index,
-                                    &ValDesc->IndexField.Value,
-                                    sizeof (ValDesc->IndexField.Value));
-        }
+        /* Perform the update */
+        Status = AcpiAmlAccessNamedField (ACPI_WRITE, 
+                                ValDesc->IndexField.Index,
+                                &ValDesc->IndexField.Value,
+                                sizeof (ValDesc->IndexField.Value));
+
         AcpiAmlReleaseGlobalLock (Locked);
 
         if (ACPI_FAILURE (Status))
@@ -652,13 +630,6 @@ AcpiAmlResolveEntryToValue (
 
 
     case ACPI_TYPE_FIELD_UNIT:
-
-        if (!ValDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveEntryToValue: Internal error - null FieldUnit ValuePtr\n"));
-            return_ACPI_STATUS (AE_AML_NO_OPERAND);
-        }
 
         if (AttachedAmlPointer)
         {
@@ -707,37 +678,11 @@ AcpiAmlResolveEntryToValue (
     case ACPI_TYPE_REGION:
 
 
-        /* There must be an object attached to this NTE */
-
-        if (!ValDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveEntryToValue: NTE %p has no attached object\n",
-                StackEntry));
-
-            return_ACPI_STATUS (AE_AML_INTERNAL);
-        }
-
         /* Return an additional reference to the object */
 
         ObjDesc = ValDesc;
         AcpiCmAddReference (ObjDesc);
         break;
-
-
-    /* Devices rarely have an attached object, return the NTE */
-
-    case ACPI_TYPE_DEVICE:
-
-
-    /* Method locals and arguments have a pseudo-NTE, just return it */
-
-    case INTERNAL_TYPE_METHOD_ARGUMENT:
-    case INTERNAL_TYPE_METHOD_LOCAL_VAR:
-
-        return_ACPI_STATUS (AE_OK);
-        break;
-
 
     /* TYPE_Any is untyped, and thus there is no object associated with it */
 
