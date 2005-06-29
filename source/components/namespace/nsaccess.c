@@ -239,16 +239,14 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *
  * FUNCTION:    AcpiExecuteMethod
  *
- * PARAMETERS:  char *MethodName        Name of method to execute
- *              OBJECT_DESCRIPTOR       where to put method's return
- *              *ReturnValue            value (if any).  If NULL, no
- *                                      value is returned.
- *              OBJECT_DESCRIPTOR 
- *              **Params                list of parameters to pass to
- *                                      method, terminated by NULL.
- *                                      Params itself may be NULL
- *                                      if no parameters are being
- *                                      passed.
+ * PARAMETERS:  *MethodName         - Name of method to execute
+ *              *ReturnValue        - Where to put method's return value (if 
+ *                                    any).  If NULL, no value is returned.
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
  *
  * RETURN:      Status
  *
@@ -261,8 +259,8 @@ ACPI_STATUS
 AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnValue,
                     OBJECT_DESCRIPTOR **Params)
 {
-    nte             *MethodPtr = NULL;
-    INT32           Excep = AE_ERROR;
+    ACPI_STATUS         Status = AE_ERROR;
+    nte                 *MethodPtr = NULL;
 
 
     FUNCTION_TRACE ("AcpiExecuteMethod");
@@ -304,18 +302,19 @@ BREAKPOINT3;
         /* See comment near top of file re significance of FETCH_VALUES */
 
 #ifdef FETCH_VALUES
-        MethodPtr = (nte *) NsEnter (MethodName, TYPE_Any, MODE_Exec);
+        Status = NsEnter (MethodName, TYPE_Any, MODE_Exec, &MethodPtr);
 #else 
-        MethodPtr = (nte *) NsEnter (MethodName, TYPE_Method, MODE_Exec);
+        Status = NsEnter (MethodName, TYPE_Method, MODE_Exec, &MethodPtr);
 #endif
 
-        if (NOTFOUND == MethodPtr)
+        if (Status != AE_OK)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Method [%s] was not found\n", MethodName));
+            DEBUG_PRINT (ACPI_ERROR, ("Method [%s] was not found, status=%x\n",
+                            MethodName, Status));
         }
     }
 
-    if (RootObject->Scope && MethodName && (NOTFOUND != MethodPtr))
+    if (RootObject->Scope && MethodName && (Status == AE_OK))
     {   
         /*  Root, MethodName, and Method valid  */
 
@@ -377,7 +376,7 @@ BREAKPOINT3;
                 
                 /* Excecute the method here */
 
-                Excep = AmlExecuteMethod (
+                Status = AmlExecuteMethod (
                                  ((meth *) MethodPtr->Value)->Offset + 1,
                                  ((meth *) MethodPtr->Value)->Length - 1,
                                  Params);
@@ -444,30 +443,39 @@ BREAKPOINT3;
 
                 /* This causes ObjDesc (allocated above) to always be deleted */
 
-                Excep = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+                Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
 
                 /* 
                  * If AmlGetRvalue() succeeded, treat the top stack entry as
                  * a return value.
                  */
 
-                if (S_SUCCESS == Excep)
+                if (AE_OK == Status)
                 {
-                    Excep = S_RETURN;
+                    Status = AE_RETURN_VALUE;
                 }
+            }
+
+            else
+            {
+                /* Descriptor allocation failure */
+
+                Status = AE_NO_MEMORY;
             }
         }
 #endif
 
 
 
-        if (S_ERROR == Excep)
+        /* TBD: Unecessary mapping? */
+
+        if (AE_AML_ERROR == Status)
         {
-            Excep = AE_ERROR;
+            Status = AE_ERROR;
         }
     
 BREAKPOINT3;
-        if (S_RETURN == Excep)
+        if (AE_RETURN_VALUE == Status)
         {
             /* 
              * If the Method returned a value and the caller provided a place
@@ -487,11 +495,11 @@ BREAKPOINT3;
 
             /* DELETE (ObjStack[ObjStackTop]); */
 
-            Excep = AE_OK;
+            Status = AE_OK;
         }
     }
 
-    return Excep;
+    return Status;
 }
 
 
@@ -499,7 +507,7 @@ BREAKPOINT3;
  *
  * FUNCTION:    AcpiLoadTableInNameSpace
  *
- * PARAMETERS:  none
+ * PARAMETERS:  None
  *
  * RETURN:      Status
  *
@@ -527,16 +535,20 @@ AcpiLoadTableInNameSpace (void)
  * 
  * FUNCTION:    NsSetup()
  *
- * PARAMETERS:  none
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
  *
  * DESCRIPTION: Allocate and initialize the root name table
  *
  ***************************************************************************/
 
-void
+ACPI_STATUS
 NsSetup (void)
 {
+    ACPI_STATUS             Status;
     struct InitVal          *InitVal = NULL;
+    NsHandle                handle;
 
 
     FUNCTION_TRACE ("NsSetup");
@@ -549,7 +561,7 @@ NsSetup (void)
 
     if (RootObject->Scope)
     {
-        return;
+        return AE_OK;
     }
 
     NsCurrentSize = NsRootSize = NS_ROOT_TABLE_SIZE;
@@ -559,6 +571,7 @@ NsSetup (void)
         /*  root name table allocation failure  */
 
         REPORT_ERROR (&KDT[4]);
+        return AE_NO_MEMORY;
     }
 
     /* 
@@ -584,20 +597,25 @@ NsSetup (void)
 
     for (InitVal = PreDefinedNames; InitVal->Name; InitVal++)
     {
-        NsHandle handle = NsEnter (InitVal->Name, InitVal->Type, MODE_Load);
+        Status = NsEnter (InitVal->Name, InitVal->Type, MODE_Load, &handle);
 
         /* 
          * if name entered successfully
          *  && its entry in PreDefinedNames[] specifies an initial value
          */
         
-        if (handle && InitVal->Val)
+        if ((Status == AE_OK) && handle && InitVal->Val)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
             OBJECT_DESCRIPTOR       *ObjDesc = AllocateObjectDesc (&KDT[5]);
 
-            if (ObjDesc)
+            if (!ObjDesc)
+            {
+                return AE_NO_MEMORY;
+            }
+
+            else
             {
                 ObjDesc->ValType = (UINT8) InitVal->Type;
 
@@ -625,6 +643,7 @@ NsSetup (void)
                     if (!ObjDesc->String.String)
                     {
                         REPORT_ERROR (&KDT[6]);
+                        return AE_NO_MEMORY;
                     }
                     else
                     {
@@ -648,6 +667,8 @@ NsSetup (void)
 #ifdef PLUMBER
     RegisterMarkingFunction (NsMarkNS);
 #endif
+
+    return AE_OK;
 }
 
 
@@ -655,12 +676,13 @@ NsSetup (void)
  *
  * FUNCTION:    NsEnter
  *
- * PARAMETERS:  char    *Name       name to be entered, in internal format
- *                                  as represented in the AML stream
- *              NsType  Type        type associated with name
- *              OpMode  LoadMode    MODE_Load => add name if not found
+ * PARAMETERS:  Name        - Name to be entered, in internal format
+ *                            as represented in the AML stream
+ *              Type        - Type associated with name
+ *              LoadMode    - MODE_Load => add name if not found
+ *              RetHandle   - Where the new handle is placed
  *
- * RETURN:      Handle to the nte for the passed name
+ * RETURN:      Status
  *
  * DESCRIPTION: Find or enter the passed name in the name space.
  *              Log an error if name not found in Exec mode.
@@ -668,9 +690,10 @@ NsSetup (void)
  *
  ***************************************************************************/
 
-NsHandle
-NsEnter (char *Name, NsType Type, OpMode LoadMode)
+ACPI_STATUS
+NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 {
+    ACPI_STATUS     Status;
     nte             *EntryToSearch = NULL;
     nte             *ThisEntry = NULL;
     nte             *ScopeToPush = NULL;
@@ -683,6 +706,12 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
     FUNCTION_TRACE ("NsEnter");
 
 
+    if (!RetHandle)
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+    *RetHandle = NOTFOUND;
     if (!RootObject->Scope)
     {
         /* 
@@ -694,11 +723,14 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
 
         if (MODE_Load1 == LoadMode)
         {
-            NsSetup ();
+            if (Status = NsSetup () != AE_OK)
+            {
+                return Status;
+            }
         }
         else
         {
-            return NOTFOUND;
+            return AE_NOT_FOUND;
         }
     }
 
@@ -706,7 +738,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
     {
         /* Invalid parameter */
 
-        return NOTFOUND;
+        return AE_BAD_PARAMETER;
     }
 
     DEBUG_PRINT (TRACE_NAMES,
@@ -780,7 +812,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
                 REPORT_ERROR (&KDT[7]);
                 CheckTrash ("leave NsEnter NOTFOUND 1");
 
-                return (NsHandle) NOTFOUND;
+                return AE_NOT_FOUND;
             }
         }
 
@@ -846,26 +878,30 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
          * Type is significant only at the last level.
          */
 
-        ThisEntry = NsSearchTable (Name, EntryToSearch, Size, LoadMode,
-                                NumSegments == 0 ? Type : TYPE_Any);
+        Status = NsSearchTable (Name, EntryToSearch, Size, LoadMode,
+                                NumSegments == 0 ? Type : TYPE_Any, &ThisEntry);
         CheckTrash ("after NsSearchTable");
 
-        if (ThisEntry == NOTFOUND)
+        if (Status != AE_OK)
         {
-            /*  name not in ACPI namespace  */
-
-            if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
+            if (Status == AE_NOT_FOUND)
             {
-                REPORT_ERROR (&KDT[8]);
+                /*  name not in ACPI namespace  */
+
+                if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
+                {
+                    REPORT_ERROR (&KDT[8]);
+                }
+
+                else
+                {
+                    REPORT_ERROR (&KDT[9]);
+                }
+
+                CheckTrash ("leave NsEnter NOTFOUND 2");
             }
 
-            else
-            {
-                REPORT_ERROR (&KDT[9]);
-            }
-
-            CheckTrash ("leave NsEnter NOTFOUND 2");
-            return (NsHandle) NOTFOUND;
+            return Status;
         }
 
         if (NumSegments         == 0  &&                    /* if last segment                  */
@@ -907,6 +943,11 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
                 
                 DEBUG_PRINT (TRACE_NAMES, ("add level \n"));
                 ThisEntry->Scope = NsAllocateNteDesc (NS_DEFAULT_TABLE_SIZE);
+
+                if (!ThisEntry->Scope)
+                {
+                    return AE_NO_MEMORY;
+                }
             }
 
             /* Now complain if there is no next scope */
@@ -918,12 +959,12 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
                 if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
                 {
                     REPORT_ERROR (&KDT[11]);
-                    return (NsHandle) NOTFOUND;
+                    return AE_NOT_FOUND;
                 }
 
                 REPORT_ERROR (&KDT[12]);
                 CheckTrash ("leave NsEnter NOTFOUND 3");
-                return (NsHandle) NOTFOUND;
+                return AE_NOT_FOUND;
             }
 
 
@@ -975,14 +1016,15 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
         CheckTrash ("after  NsPushCurrentScope");
     }
 
-    return (NsHandle) ThisEntry;
+    *RetHandle = (NsHandle) ThisEntry;
+    return AE_OK;
 }
 
 /****************************************************************************
  *
  *  FUNCTION:       PriUnloadNameSpace (void)
  *
- *  PARAMETERS:     none
+ *  PARAMETERS:     None
  *
  *  RETURN:         Status
  *
