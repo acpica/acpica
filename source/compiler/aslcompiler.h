@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2022"
-#define CompilerCreatorRevision     0x02002022  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2023"
+#define CompilerCreatorRevision     0x02002023  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
@@ -530,6 +530,9 @@ TrLinkPeerNodes (
     UINT32                  NumPeers,
     ...);
 
+void
+TrReleaseNode (
+    ASL_PARSE_NODE          *Node);
 
 /* Analyze */
 
@@ -666,6 +669,15 @@ LsDisplayNamespace (void);
 
 
 /* Utils */
+
+void
+UtBeginEvent (
+    UINT32                  Event,
+    char                    *Name);
+
+void
+UtEndEvent (
+    UINT32                  Event);
 
 void *
 UtLocalCalloc (

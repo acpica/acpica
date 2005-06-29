@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.29 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -123,64 +123,21 @@
 #define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslcompile")
 
-
+/*
 #undef HIWORD
 #undef LOWORD
 #undef HIBYTE
 #undef LOBYTE
-#include <time.h>
-#ifdef WIN32
-#include <windows.h>
-#include <winbase.h>
-#endif
-
-struct tm                   *NewTime;
-time_t                      Aclock;
-
-#ifdef WIN32
-SYSTEMTIME                 SysTime;
-#endif
-
-typedef struct
-{
-    time_t                  StartTime;
-    time_t                  EndTime;
-    char                    *EventName;
-
-} ASL_EVENT_INFO;
-
-ASL_EVENT_INFO              AslGbl_Events[20];
+*/
 
 
-#ifdef WIN32
-
-#define ASL_START_EVENT(a,b)    {AslGbl_Events[a].StartTime = AnGetTimeMs();\
-                                  AslGbl_Events[a].EventName = b;}
-#define ASL_END_EVENT(a)        {AslGbl_Events[a].EndTime = AnGetTimeMs();}
-
-
-UINT32
-AnGetTimeMs (void)
-{
-    GetSystemTime (&SysTime);
-    return ((SysTime.wMinute * 60000) +
-        (SysTime.wSecond * 1000) +
-        SysTime.wMilliseconds);
-}
-
-#else
-
-#define ASL_START_EVENT(a,b)
-#define ASL_END_EVENT(a)
-
-#endif
 
 /*
  * Stubs to simplify linkage to the
  * ACPI Namespace Manager (Unused functions).
+ * TBD: These functions should be split out so 
+ * that these stubs are no longer needed.
  */
-
-
 void
 AcpiExUnlinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc)
@@ -241,7 +198,6 @@ AslCompilerSignon (
     FlPrintFile (FileId,
         "\n%s %s [%s]\n%s\nSupports ACPI Specification Revision 2.0\n\n",
         CompilerId, CompilerVersion, __DATE__, CompilerCopyright);
-
 }
 
 
@@ -261,6 +217,9 @@ void
 AslCompilerFileHeader (
     UINT32                  FileId)
 {
+    struct tm               *NewTime;
+    time_t                  Aclock;
+
 
     time (&Aclock);
     NewTime = localtime (&Aclock);
@@ -268,7 +227,6 @@ AslCompilerFileHeader (
     FlPrintFile (FileId,
         "Compilation of \"%s\" - %s\n",
         Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime));
-
 }
 
 
@@ -288,10 +246,12 @@ int
 CmDoCompile (void)
 {
     ACPI_STATUS             Status;
+    UINT32                  i = 0;
 
 
-    ASL_START_EVENT (12, "Total Compile time");
-    ASL_START_EVENT (0, "Open files");
+    UtBeginEvent (12, "Total Compile time");
+    UtBeginEvent (i, "Initialize");
+
 
     /* Open the required input and output files */
 
@@ -310,38 +270,35 @@ CmDoCompile (void)
     }
 
 
-    ASL_END_EVENT (0);
-
     /* ACPI CA subsystem initialization */
 
-    ASL_START_EVENT (1, "ACPI CA Init");
     AcpiUtInitGlobals ();
     AcpiUtMutexInitialize ();
     AcpiNsRootInitialize ();
-    ASL_END_EVENT (1);
+    UtEndEvent (i++);
+
 
     /* Build the parse tree */
 
-    ASL_START_EVENT (2, "Build parse tree");
-
+    UtBeginEvent (i, "Parse source code and build parse tree");
     AslCompilerparse();
-    ASL_END_EVENT (2);
+    UtEndEvent (i++);
 
 
     /* Generate AML opcodes corresponding to the parse tokens */
 
-    ASL_START_EVENT (3, "Generate AML opcodes");
+    UtBeginEvent (i, "Generate AML opcodes");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating AML opcodes\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
-    ASL_END_EVENT (3);
+    UtEndEvent (i++);
 
 
     /* Calculate all AML package lengths */
 
-    ASL_START_EVENT (4, "Generate AML package lengths");
+    UtBeginEvent (i, "Generate AML package lengths");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating Package lengths\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
-    ASL_END_EVENT (4);
+    UtEndEvent (i++);
 
 
     if (Gbl_ParseOnlyFlag)
@@ -365,57 +322,58 @@ CmDoCompile (void)
 
     /* Namespace loading */
 
-    ASL_START_EVENT (5, "Load ACPI Namespace");
+    UtBeginEvent (i, "Create ACPI Namespace");
     LdLoadNamespace ();
-    ASL_END_EVENT (5);
+    UtEndEvent (i++);
 
 
     /* Namespace lookup */
 
-    ASL_START_EVENT (6, "Cross reference ACPI Namespace");
+    UtBeginEvent (i, "Cross reference parse tree and Namespace");
     LkCrossReferenceNamespace ();
-    ASL_END_EVENT (6);
+    UtEndEvent (i++);
+
 
     /*
-     * Semantic error checking.  This must happen only after the
+     * Semantic analysis.  This can happen only after the
      * namespace has been loaded and cross-referenced.
      *
      * part one - check control methods
      */
 
-    ASL_START_EVENT (7, "Check method return types");
+    UtBeginEvent (i, "Analyze control method return types");
     AnalysisWalkInfo.MethodStack = NULL;
 
     DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Method analysis\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnMethodAnalysisWalkBegin,
                         AnMethodAnalysisWalkEnd, &AnalysisWalkInfo);
-    ASL_END_EVENT (7);
+    UtEndEvent (i++);
 
 
     /* Semantic error checking part two - typing of method returns */
 
-    ASL_START_EVENT (8, "Determine type(s) returned by methods");
+    UtBeginEvent (i, "Determine object types returned by methods");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Method typing \n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
                         AnMethodTypingWalkEnd, NULL);
-    ASL_END_EVENT (8);
+    UtEndEvent (i++);
 
     /* Semantic error checking part three - operand type checking */
 
-    ASL_START_EVENT (9, "Operand type checking");
+    UtBeginEvent (i, "Analyze AML operand types");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Operand type checking \n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
                         AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
-    ASL_END_EVENT (9);
+    UtEndEvent (i++);
 
 
     /* Calculate all AML package lengths */
 
-    ASL_START_EVENT (10, "Finish AML package length generation");
+    UtBeginEvent (i, "Finish AML package length generation");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating Package lengths\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
-    ASL_END_EVENT (10);
+    UtEndEvent (i++);
 
 
     /*
@@ -433,10 +391,12 @@ CmDoCompile (void)
 
     /* Code generation - emit the AML */
 
-    ASL_START_EVENT (11, "AML code generation");
+    UtBeginEvent (i, "Generate AML code and write output files");
     CgGenerateAmlOutput ();
-    ASL_END_EVENT (11);
+    UtEndEvent (i++);
 
+
+    UtBeginEvent (i, "Write optional output files");
 
     /* Dump the AML as hex if requested */
 
@@ -445,9 +405,10 @@ CmDoCompile (void)
     /* Dump the namespace to the .nsp file if requested */
 
     LsDisplayNamespace ();
-    ASL_END_EVENT (12);
+    UtEndEvent (i++);
 
 
+    UtEndEvent (12);
     CmCleanupAndExit ();
 
     return 0;
@@ -483,10 +444,13 @@ CmCleanupAndExit (void)
     DbgPrint (ASL_DEBUG_OUTPUT, "\n\nElapsed time for major events\n\n");
     for (i = 0; i < 13; i++)
     {
-        DbgPrint (ASL_DEBUG_OUTPUT, "%8d ms - %s\n",
-            AslGbl_Events[i].EndTime -
-            AslGbl_Events[i].StartTime,
-            AslGbl_Events[i].EventName);
+        if (AslGbl_Events[i].Valid)
+        {
+            DbgPrint (ASL_DEBUG_OUTPUT, "%8d ms - %s\n",
+                AslGbl_Events[i].EndTime -
+                AslGbl_Events[i].StartTime,
+                AslGbl_Events[i].EventName);
+        }
     }
 
     if (Gbl_CompileTimesFlag)
@@ -494,10 +458,13 @@ CmCleanupAndExit (void)
         printf ("\nElapsed time for major events\n\n");
         for (i = 0; i < 13; i++)
         {
-            printf ("%8d ms : %s\n",
-                AslGbl_Events[i].EndTime -
-                AslGbl_Events[i].StartTime,
-                AslGbl_Events[i].EventName);
+            if (AslGbl_Events[i].Valid)
+            {
+                printf ("%8ld ms : %s\n",
+                    AslGbl_Events[i].EndTime -
+                    AslGbl_Events[i].StartTime,
+                    AslGbl_Events[i].EventName);
+            }
         }
         printf ("\nMiscellaneous compile statistics\n\n");
         printf ("%11d : %s\n", TotalParseNodes, "Parse nodes");

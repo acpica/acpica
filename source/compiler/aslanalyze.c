@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -989,10 +989,7 @@ AnMethodAnalysisWalkEnd (
  *
  * RETURN:      none
  *
- * DESCRIPTION: Descending callback for the typing walk.  Check methods for :
- *              1) Initialized local variables
- *              2) Valid arguments
- *              3) Return types
+ * DESCRIPTION: Descending callback for the typing walk.  
  *
  ******************************************************************************/
 
@@ -1002,12 +999,6 @@ AnMethodTypingWalkBegin (
     UINT32                  Level,
     void                    *Context)
 {
-
-
-    switch (Node->ParseOpcode)
-    {
-    }
-
 
     return AE_OK;
 }
@@ -1022,7 +1013,10 @@ AnMethodTypingWalkBegin (
  * RETURN:      None.
  *
  * DESCRIPTION: Ascending callback for typing walk.  Complete method
- *              return analysis.
+ *              return analysis.  Check methods for :
+ *              1) Initialized local variables
+ *              2) Valid arguments
+ *              3) Return types
  *
  ******************************************************************************/
 
@@ -1050,14 +1044,13 @@ AnMethodTypingWalkEnd (
             if ((Node->Child->ParseOpcode == METHODCALL) &&
                 (ThisNodeBtype == (ACPI_UINT32_MAX -1)))
             {
-
                 /*
-                 * The method is untyped at this time (typically a forward reference).  We must
-                 * recursively type the method here
+                 * The method is untyped at this time (typically a forward reference).
+                 * We must recursively type the method here
                  */
-
-                TrWalkParseTree (Node->Child->NsNode->Object, ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
-                                    AnMethodTypingWalkEnd, NULL);
+                TrWalkParseTree (Node->Child->NsNode->Object, 
+                        ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
+                        AnMethodTypingWalkEnd, NULL);
 
                 ThisNodeBtype = AnGetBtype (Node->Child);
             }
@@ -1095,7 +1088,6 @@ AnSemanticAnalysisWalkBegin (
     UINT32                  Level,
     void                    *Context)
 {
-    /* ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context; */
 
     return AE_OK;
 }
@@ -1120,7 +1112,6 @@ AnSemanticAnalysisWalkEnd (
     UINT32                  Level,
     void                    *Context)
 {
-    /* ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context; */
     ACPI_OPCODE_INFO        *OpInfo;
     UINT32                  ParseArgTypes;
     UINT32                  RuntimeArgTypes;
@@ -1324,21 +1315,6 @@ AnSemanticAnalysisWalkEnd (
                         AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgNode, MsgBuffer);
                     }
                 }
-
-/* TBD: needs to handle the implicit conversion rules
-
-                else if (CommonBtypes ^ ThisNodeBtype)
-                {
-                    AnFormatBtype (StringBuffer, ThisNodeBtype);
-                    AnFormatBtype (StringBuffer2, RequiredBtypes);
-
-                    sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]",
-                                StringBuffer, OpInfo->Name, StringBuffer2);
-
-                    AslError (ASL_WARNING, ASL_MSG_MULTIPLE_TYPES, ArgNode, MsgBuffer);
-                }
-***********************************/
-
             }
 
             /*
@@ -1347,9 +1323,7 @@ AnSemanticAnalysisWalkEnd (
              */
             else if (!CommonBtypes)
             {
-
-                /* Can an implicit conversion be performed? */
-
+                /* TBD: Can an implicit conversion be performed? */
 
                 AcpiEtype = AnMapBtypeToEtype (ThisNodeBtype);
 
@@ -1358,7 +1332,6 @@ AnSemanticAnalysisWalkEnd (
 
                 sprintf (MsgBuffer, "[%s] found, %s operator requires [%s]",
                             StringBuffer, OpInfo->Name, StringBuffer2);
-
 
                 AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgNode, MsgBuffer);
             }
