@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acintel.h - VC specific defines, etc.
- *       $Revision: 1.1 $
+ *       $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -122,8 +122,16 @@
 /*
  * Math helper functions
  */
-#define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32)
-#define ACPI_SHIFT_RIGHT_64(n_hi, n_lo)
+#define ACPI_DIV_64_BY_32(n, n_hi, n_lo, d32, q32, r32) \
+{ \
+    q32 = n / d32; \
+    r32 = n % d32; \
+}
+
+#define ACPI_SHIFT_RIGHT_64(n, n_hi, n_lo) \
+{ \
+    n <<= 1; \
+}
 
 
 #pragma warning(disable:810)
