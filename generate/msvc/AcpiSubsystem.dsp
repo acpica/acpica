@@ -93,154 +93,446 @@ PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\acpiinit.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\cmalloc.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\cmdebug.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\cmerror.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\cmglobal.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Device\dvlegacy.c
-# End Source File
-# Begin Source File
+SOURCE=..\..\Subsystem\Event\evapi.c
 
-SOURCE=..\..\Subsystem\Device\dvregs.c
-# End Source File
-# Begin Source File
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
 
-SOURCE=..\..\Subsystem\Device\dvsleep.c
-# End Source File
-# Begin Source File
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
 
-SOURCE=..\..\Subsystem\Device\dvtimer.c
-# End Source File
-# Begin Source File
+# ADD CPP /W3 /Z7
 
-SOURCE=..\..\Subsystem\Event\evregs.c
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Event\evsci.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Execute\exmexist.c
+SOURCE=..\..\Subsystem\Hardware\hwlegacy.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Execute\exmpts.c
+SOURCE=..\..\Subsystem\Hardware\hwregs.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Execute\exmwak.c
+SOURCE=..\..\Subsystem\Hardware\hwsleep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Hardware\hwtimer.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\iefield.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\ieopexec.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\ieprep.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\iesystem.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\iexecute.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isatoms.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\iscode.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isdebug.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isdump.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isexprs.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isidata.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isnames.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isopcode.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isrdata.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isstack.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isutils.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Methods\mtexist.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Methods\mtpts.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Methods\mtwak.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\NameSpace\nsaccess.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\NameSpace\nsapi.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\NameSpace\nsdump.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\NameSpace\nsfamily.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\NameSpace\nsscope.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Namespace\nssearch.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\NameSpace\nsstack.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\NameSpace\nstables.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\NameSpace\nsutils.c
+
+!IF  "$(CFG)" == "Subsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+
+# ADD CPP /W3 /Z7
+
+!ENDIF 
+
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -284,10 +576,6 @@ SOURCE=..\..\Subsystem\Include\datatypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\devices.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Include\enumerate.h
 # End Source File
 # Begin Source File
@@ -300,11 +588,15 @@ SOURCE=..\..\Subsystem\Include\excep.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\exmethod.h
+SOURCE=..\..\Subsystem\Include\hardware.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\interpreter.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\methods.h
 # End Source File
 # Begin Source File
 
