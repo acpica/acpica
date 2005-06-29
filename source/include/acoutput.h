@@ -234,6 +234,7 @@
                                         FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define FUNCTION_EXIT                   FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc)
 #define FUNCTION_STATUS_EXIT(s)         FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,s)
+#define FUNCTION_VALUE_EXIT(s)          FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,(UINT32)s)
 
 /* Stack and buffer dumping */
 
@@ -275,6 +276,7 @@
 #define FUNCTION_TRACE(a)
 #define FUNCTION_EXIT
 #define FUNCTION_STATUS_EXIT(s)
+#define FUNCTION_VALUE_EXIT(s)
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_STACK(a,b,c,d)
 #define DUMP_ENTRY(a)
