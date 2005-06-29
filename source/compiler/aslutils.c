@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.47 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -130,6 +130,14 @@ static const char * const       *yytname = &AslCompilername[255];
 #else
 extern const char * const       yytname[];
 #endif
+
+
+void
+AslOptimizeNamepath (
+    char                *Buffer)
+{
+    printf ("NamePath: %s\n", Buffer);
+}
 
 
 /*******************************************************************************
@@ -444,7 +452,7 @@ UtGetOpName (
     UINT32                  ParseOpcode)
 {
 
-    /* 
+    /*
      * First entries (ASL_YYTNAME_START) in yytname are special reserved names.
      * Ignore first 8 characters of the name
      */
@@ -473,8 +481,8 @@ UtDisplaySummary (
     {
         /* Compiler name and version number */
 
-        FlPrintFile (FileId, "%s %s [%s]\n",
-            CompilerId, CompilerVersion, __DATE__);
+        FlPrintFile (FileId, "%s version %X [%s]\n",
+            CompilerId, (UINT32) ACPI_CA_VERSION, __DATE__);
     }
 
     /* Input/Output summary */
@@ -497,8 +505,10 @@ UtDisplaySummary (
     /* Error summary */
 
     FlPrintFile (FileId,
-        "Compilation complete. %d Errors %d Warnings\n",
-        Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
+        "Compilation complete. %d Errors, %d Warnings, %d Remarks\n",
+        Gbl_ExceptionCount[ASL_ERROR], 
+        Gbl_ExceptionCount[ASL_WARNING],
+        Gbl_ExceptionCount[ASL_REMARK]);
 }
 
 
@@ -693,7 +703,6 @@ UtDoConstant (
     ACPI_STATUS             Status;
     ACPI_INTEGER            Converted;
     char                    ErrBuf[64];
-
 
 
     Status = UtStrtoul64 (String, 0, &Converted);
