@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -1085,41 +1085,25 @@ AcpiOsWriteMemory (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsDbgTrap
+ * FUNCTION:    AcpiOsSignal
  *
- * PARAMETERS:  pTrapCause      - pointer to char array that contains description
- *                                of cause of trap.
+ * PARAMETERS:  Function            ACPI CA signal function code
+ *              Info                Pointer to function-dependent structure
  *
- * RETURN:      None.
+ * RETURN:      Status
  *
- * DESCRIPTION: Trap. Causes execution to halt after logging message.
- *
- *****************************************************************************/
-
-void
-AcpiOsDbgTrap (char *pTrapCause)
-{
-} // Debug_TRAP
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsDbgTrap
- *
- * PARAMETERS:  This should not be called directly. Use DEBUG_ASSERT macro.
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Assertion routine.
+ * DESCRIPTION: Miscellaneous functions
  *
  *****************************************************************************/
 
-void
-AcpiOsDbgAssert(void *FailedAssertion, void *FileName, UINT32 LineNumber,
-             char *Message)
+ACPI_STATUS
+AcpiOsSignal (
+    UINT32                  Function,
+    void                    *Info)
 {
 
-//    return 0;
-} // Debug_Assert
+    return (AE_OK);
+}
+
 
 
