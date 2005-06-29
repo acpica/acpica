@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -159,9 +159,7 @@ typedef struct semaphore_entry
 SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
 
 
-
 extern FILE                 *AcpiGbl_DebugFile;
-
 
 
 /******************************************************************************
@@ -180,7 +178,6 @@ ACPI_STATUS
 AcpiOsInitialize (void)
 {
     UINT32                  i;
-
 
 
     for (i = 0; i < NUM_SEMAPHORES; i++)
@@ -552,8 +549,6 @@ AcpiOsCreateSemaphore (
 #endif
 
 
-
-
     if (MaxUnits == ACPI_UINT32_MAX)
     {
         MaxUnits = 255;
@@ -674,7 +669,6 @@ AcpiOsWaitSemaphore (
     }
 
 
-
 /* Make this a command line option so that we can catch
  * synchronization deadlocks
  *
@@ -685,7 +679,7 @@ AcpiOsWaitSemaphore (
     WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, Timeout);
     if (WaitStatus == WAIT_TIMEOUT)
     {
-/* Make optional -- wait of 0 is used to detect if unit is available 
+/* Make optional -- wait of 0 is used to detect if unit is available
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WaitSemaphore [%d]: *** Timeout on semaphore %d\n",
                     Handle));
 */
@@ -747,10 +741,10 @@ AcpiOsSignalSemaphore (
     }
 
 
-    if ((AcpiGbl_Semaphores[Index].CurrentUnits + 1) > 
+    if ((AcpiGbl_Semaphores[Index].CurrentUnits + 1) >
         AcpiGbl_Semaphores[Index].MaxUnits)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Oversignalled semaphore[%d]! Current %d Max %d\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Oversignalled semaphore[%d]! Current %d Max %d\n",
             Index, AcpiGbl_Semaphores[Index].CurrentUnits, AcpiGbl_Semaphores[Index].MaxUnits));
 
         return (AE_LIMIT);
@@ -760,7 +754,7 @@ AcpiOsSignalSemaphore (
 
     AcpiGbl_Semaphores[Index].CurrentUnits++;
 #endif
-    
+
 
     return (AE_OK);
 }
@@ -865,7 +859,6 @@ AcpiOsQueueForExecution (
 
     return 0;
 }
-
 
 
 /******************************************************************************
@@ -999,7 +992,7 @@ AcpiOsReadPort (
         *((UINT16 *) Value) = 0;
         break;
 
-    case 32: 
+    case 32:
         *((UINT32 *) Value) = 0;
         break;
     }
@@ -1064,7 +1057,7 @@ AcpiOsReadMemory (
         *((UINT16 *) Value) = 0;
         break;
 
-    case 32: 
+    case 32:
         *((UINT32 *) Value) = 0;
         break;
     }
@@ -1138,7 +1131,5 @@ AcpiOsSignal (
 
     return (AE_OK);
 }
-
-
 
 

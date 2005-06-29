@@ -116,7 +116,7 @@
 
 /*
  * These interfaces are required in order to compile the ASL compiler under
- * Linux. 
+ * Linux.
  */
 
 #include <stdio.h>
@@ -818,7 +818,7 @@ AcpiOsReadPort (
         *((UINT16 *) Value) = 0;
         break;
 
-    case 32: 
+    case 32:
         *((UINT32 *) Value) = 0;
         break;
     }
@@ -883,7 +883,7 @@ AcpiOsReadMemory (
         *((UINT16 *) Value) = 0;
         break;
 
-    case 32: 
+    case 32:
         *((UINT32 *) Value) = 0;
         break;
     }
@@ -914,8 +914,6 @@ AcpiOsWriteMemory (
 
     return (AE_OK);
 }
-
-
 
 
 UINT32
