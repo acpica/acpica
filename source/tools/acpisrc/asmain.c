@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -189,7 +189,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" *  Copyright (C) 2000 - 2002, R. Byron Moore\n"
+" *  Copyright (C) 2000 - 2003, R. Byron Moore\n"
 " *\n"
 " *  This program is free software; you can redistribute it and/or modify\n"
 " *  it under the terms of the GNU General Public License as published by\n"
@@ -430,15 +430,21 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     "ASL_START_DEPENDENT_NOPRIO_DESC",  SRC_TYPE_STRUCT,
     "ASL_WALK_CALLBACK",                SRC_TYPE_SIMPLE,
     "ASL_WORD_ADDRESS_DESC",            SRC_TYPE_STRUCT,
+    "FACS_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
     "FACS_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT,
     "FACS_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
+    "FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
     "FADT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT,
     "FADT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
     "RSDP_DESCRIPTOR",                  SRC_TYPE_STRUCT,
+    "RSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
+    "RSDT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT,
+    "RSDT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
     "UINT32_STRUCT",                    SRC_TYPE_STRUCT,
     "UINT64_OVERLAY",                   SRC_TYPE_UNION,
     "UINT64_STRUCT",                    SRC_TYPE_STRUCT,
     "XSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
+    "XSDT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
 
     NULL
 };
