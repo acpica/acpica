@@ -428,6 +428,14 @@ NsInitializeTable (
     NAME_TABLE_ENTRY        *ParentScope, 
     NAME_TABLE_ENTRY        *ParentEntry);
 
+ACPI_STATUS
+NsSearchOnly (
+    UINT32                  EntryName, 
+    NAME_TABLE_ENTRY        *NameTable, 
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        **RetEntry, 
+    NS_SEARCH_DATA          *RetInfo);
+
 
 /*
  * Scope Stack manipulation - nsstack
