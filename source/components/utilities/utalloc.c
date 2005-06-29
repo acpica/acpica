@@ -297,6 +297,8 @@ CmDeleteElementFromAllocList (
 {
     ALLOCATION_INFO         *Element;
     UINT32					Size;
+    UINT32                  DwordLen;
+    UINT32                  i;
     
 
     FUNCTION_TRACE ("CmDeleteElementFromAllocList");
@@ -375,7 +377,12 @@ CmDeleteElementFromAllocList (
 
         if (Element->Size > sizeof (void *))
         {
-            *((void **) Element->Address) = (void *) 0x00DEAD00;
+            DwordLen = Element->Size / 4;
+
+            for (i = 0; i < DwordLen; i++)
+            {
+                ((void **) Element->Address)[i] = (void *) 0x00DEAD00;
+            }
         }
 
         Size = Element->Size;
