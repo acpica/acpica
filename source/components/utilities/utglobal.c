@@ -136,8 +136,8 @@ UINT32                      NestingLevel = 0;
  */
 char            *ExceptionNames[] = 
 { 
-    "AE_OK", 
-    "AE_PENDING", 
+    "AE_OK",
+    "AE_PENDING",
     "AE_AML_ERROR",
     "AE_RETURN_VALUE",
     "AE_ERROR",
@@ -149,13 +149,18 @@ char            *ExceptionNames[] =
     "AE_BAD_PARAMETER",
     "AE_BAD_CHARACTER",
     "AE_NOT_FOUND",
+    "AE_NOT_EXIST",
+    "AE_EXIST",
+    "AE_TYPE",
     "AE_NULL_ENTRY",
-    "AE_FILE_NOT_EXIST",
     "AE_BUFFER_OVERFLOW",
-    "AE_HANDLER_EXISTS",
-    "AE_TERMINATED",
-    "AE_CONTEXT",
+    "AE_STACK_OVERFLOW",
+    "AE_STACK_UNDERFLOW",
     "AE_NOT_IMPLEMENTED",
+    "AE_VERSION_MISMATCH",
+    "AE_BAD_SIGNATURE",
+    "AE_SUPPORT",
+    "AE_SHARE",
     "AE_UNKNOWN_STATUS"
 };
 
