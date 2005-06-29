@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  ******************************************************************************/
 
@@ -868,7 +868,7 @@ AcpiHwLowLevelRead (
         PciId.Device   = ACPI_PCI_DEVICE (ACPI_GET_ADDRESS (Reg->Address));
         PciId.Function = ACPI_PCI_FUNCTION (ACPI_GET_ADDRESS (Reg->Address));
         PciRegister    = (UINT16) (ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address))
-                                    + (ACPI_PHYSICAL_ADDRESS) Offset);
+                                    + Offset);
 
         Status = AcpiOsReadPciConfiguration  (&PciId, PciRegister, &Value, Width);
         break;
@@ -959,7 +959,7 @@ AcpiHwLowLevelWrite (
         PciId.Device   = ACPI_PCI_DEVICE (ACPI_GET_ADDRESS (Reg->Address));
         PciId.Function = ACPI_PCI_FUNCTION (ACPI_GET_ADDRESS (Reg->Address));
         PciRegister    = (UINT16) (ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address)) 
-                                    + (ACPI_PHYSICAL_ADDRESS) Offset);
+                                    + Offset);
 
         Status = AcpiOsWritePciConfiguration (&PciId, PciRegister, (ACPI_INTEGER) Value, Width);
         break;
