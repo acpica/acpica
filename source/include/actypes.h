@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.178 $
+ *       $Revision: 1.179 $
  *
  *****************************************************************************/
 
@@ -336,8 +336,11 @@ typedef UINT64                          ACPI_INTEGER;
 
 
 /*
- * System states
+ * Power state values
  */
+
+#define ACPI_STATE_UNKNOWN              (UINT8) 0xFF
+
 #define ACPI_STATE_S0                   (UINT8) 0
 #define ACPI_STATE_S1                   (UINT8) 1
 #define ACPI_STATE_S2                   (UINT8) 2
@@ -349,9 +352,6 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_S_STATES_MAX               ACPI_STATE_S5
 #define ACPI_S_STATE_COUNT              6
 
-/*
- * Device power states
- */
 #define ACPI_STATE_D0                   (UINT8) 0
 #define ACPI_STATE_D1                   (UINT8) 1
 #define ACPI_STATE_D2                   (UINT8) 2
@@ -359,7 +359,17 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_D_STATES_MAX               ACPI_STATE_D3
 #define ACPI_D_STATE_COUNT              4
 
-#define ACPI_STATE_UNKNOWN              (UINT8) 0xFF
+/*
+ * Standard notify values
+ */
+#define ACPI_NOTIFY_BUS_CHECK           (UINT8) 0
+#define ACPI_NOTIFY_DEVICE_CHECK        (UINT8) 1
+#define ACPI_NOTIFY_DEVICE_WAKE         (UINT8) 2
+#define ACPI_NOTIFY_EJECT_REQUEST       (UINT8) 3
+#define ACPI_NOTIFY_DEVICE_CHECK_LIGHT  (UINT8) 4
+#define ACPI_NOTIFY_FREQUENCY_MISMATCH  (UINT8) 5
+#define ACPI_NOTIFY_BUS_MODE_MISMATCH   (UINT8) 6
+#define ACPI_NOTIFY_POWER_FAULT	        (UINT8) 7
 
 
 /*
@@ -815,7 +825,7 @@ typedef struct
     ACPI_COMMON_OBJ_INFO;
 
     UINT32                      Valid;              /*  Are the next bits legit? */
-    NATIVE_CHAR                 HardwareId [9];     /*  _HID value if any */
+    NATIVE_CHAR                 HardwareId[9];      /*  _HID value if any */
     NATIVE_CHAR                 UniqueId[9];        /*  _UID value if any */
     ACPI_INTEGER                Address;            /*  _ADR value if any */
     UINT32                      CurrentStatus;      /*  _STA value */
