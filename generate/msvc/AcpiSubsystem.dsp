@@ -609,6 +609,10 @@ SOURCE=..\..\Subsystem\Resources\rscrbyst.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Resources\rscrprt.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Resources\rscrresl.c
 # End Source File
 # Begin Source File
