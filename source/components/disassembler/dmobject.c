@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  ******************************************************************************/
 
@@ -503,6 +503,10 @@ AcpiDmDisplayInternalObject (
                 }
                 break;
 
+            case AML_INT_NAMEPATH_OP:
+
+                AcpiDmDecodeNode (ObjDesc->Reference.Node);
+                break;
 
             default:
 
