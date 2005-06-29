@@ -129,11 +129,13 @@ UINT8 DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
  *
  * FUNCTION:    HwEnableGpe
  *
- * PARAMETERS:  GpeNumber       - The GPE number
+ * PARAMETERS:  RegisterIndex   - Register containing this GPE
+ *              BitMask         - Bit location within the register
  *
  * RETURN:      None
  *
- * DESCRIPTION: Enable a single GPE
+ * DESCRIPTION: Enable a single GPE.  Note that the GPE is specified using
+ *              its (already translated) register/bit index values.
  *
  ******************************************************************************/
 
@@ -143,7 +145,7 @@ HwEnableGpe (
 {
     UINT8                   InByte;
     UINT32                  RegisterIndex;
-    UINT8                   BitIndex;
+    UINT8                   BitMask;
 
     /* 
      * Translate GPE number to index into global registers array.
@@ -153,14 +155,14 @@ HwEnableGpe (
     /* 
      * Figure out the bit offset for this GPE within the target register.
      */
-    BitIndex = DecodeTo8bit [MOD_8 (GpeNumber)];
+    BitMask = DecodeTo8bit [MOD_8 (GpeNumber)];
 
     /* 
-     * Read the current value of the register, set the appropriate bit,
-     * and write out the new register value to enable the GPE.
+     * Read the current value of the register, set the appropriate bit
+     * to enable the GPE, and write out the new register.
      */
     InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr);
-    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte | BitIndex));
+    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte | BitMask));
 }
 
 
@@ -168,11 +170,13 @@ HwEnableGpe (
  *
  * FUNCTION:    HwDisableGpe
  *
- * PARAMETERS:  GpeNumber       - The GPE number
+ * PARAMETERS:  RegisterIndex   - Register containing this GPE
+ *              BitMask         - Bit location within the register
  *
  * RETURN:      None
  *
- * DESCRIPTION: Disable a single GPE 
+ * DESCRIPTION: Disable a single GPE. Note that the GPE is specified using
+ *              its (already translated) register/bit index values.
  *
  ******************************************************************************/
 
@@ -182,7 +186,7 @@ HwDisableGpe (
 {
     UINT8                   InByte;
     UINT32                  RegisterIndex;
-    UINT8                   BitIndex;
+    UINT8                   BitMask;
 
     /* 
      * Translate GPE number to index into global registers array.
@@ -192,14 +196,14 @@ HwDisableGpe (
     /* 
      * Figure out the bit offset for this GPE within the target register.
      */
-    BitIndex = DecodeTo8bit [MOD_8 (GpeNumber)];
+    BitMask = DecodeTo8bit [MOD_8 (GpeNumber)];
 
     /* 
      * Read the current value of the register, clear the appropriate bit,
      * and write out the new register value to disable the GPE.
      */
     InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr);
-    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte & ~BitIndex));
+    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte & ~BitMask));
 }
 
 
@@ -207,11 +211,13 @@ HwDisableGpe (
  *
  * FUNCTION:    HwClearGpe
  *
- * PARAMETERS:  GpeNumber       - The GPE number
+ * PARAMETERS:  RegisterIndex   - Register containing this GPE
+ *              BitMask         - Bit location within the register
  *
  * RETURN:      None
  *
- * DESCRIPTION: Clear a single GPE
+ * DESCRIPTION: Clear a single GPE. Note that the GPE is specified using
+ *              its (already translated) register/bit index values.
  *
  ******************************************************************************/
 
@@ -220,7 +226,7 @@ HwClearGpe (
     UINT32                  GpeNumber)
 {
     UINT32                  RegisterIndex;
-    UINT8                   BitIndex;
+    UINT8                   BitMask;
 
     /* 
      * Translate GPE number to index into global registers array.
@@ -230,10 +236,11 @@ HwClearGpe (
     /* 
      * Figure out the bit offset for this GPE within the target register.
      */
-    BitIndex = DecodeTo8bit [MOD_8 (GpeNumber)];
+    BitMask = DecodeTo8bit [MOD_8 (GpeNumber)];
 
     /* 
-     * Write a one to the appropriate status bit
+     * Write a one to the appropriate bit in the status register to 
+     * clear this GPE.
      */
-    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].StatusAddr, BitIndex);
+    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].StatusAddr, BitMask);
 }
