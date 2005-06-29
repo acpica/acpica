@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -352,6 +352,8 @@ AcpiTbInitTableDescriptor (
         }
 
         TableDesc->Count = 1;
+        TableDesc->Prev = NULL;
+        TableDesc->Next = NULL;
     }
     else
     {
