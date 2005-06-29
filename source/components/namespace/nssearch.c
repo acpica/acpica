@@ -679,9 +679,7 @@ NsSearchAndEnter (
      * the parent search when the namespace is actually being loaded.
      */
 
-    /* TBD: should this be (LoadMode == MODE_Exec) to exclude MODE_Load1 from search? */
-
-    if (LoadMode != MODE_Load)
+    if (LoadMode == MODE_Exec)
     {
         /* Not found in table - search parent tree according to ACPI specification */
 
