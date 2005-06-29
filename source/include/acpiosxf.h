@@ -154,11 +154,11 @@ typedef struct AcpiFatalInfo
  * Types specific to the OS service interfaces
  */
 
-typedef UINT32 
+typedef UINT32
 (ACPI_SYSTEM_XFACE *OSD_HANDLER) (
     void                    *Context);
 
-typedef void 
+typedef void
 (ACPI_SYSTEM_XFACE *OSD_EXECUTION_CALLBACK) (
     void                    *Context);
 
@@ -209,7 +209,7 @@ ACPI_STATUS
 AcpiOsWaitSemaphore (
     ACPI_HANDLE             Handle,
     UINT32                  Units,
-    UINT32                  Timeout);
+    UINT16                  Timeout);
 
 ACPI_STATUS
 AcpiOsSignalSemaphore (
