@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.149 $
+ *              $Revision: 1.151 $
  *
  *****************************************************************************/
 
@@ -392,7 +392,7 @@ AcpiExOpcode_1A_1T_1R (
 
                 if (Temp32 > 9)
                 {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                         "BCD digit too large (not decimal): 0x%X\n",
                         Temp32));
 
@@ -436,8 +436,7 @@ AcpiExOpcode_1A_1T_1R (
             if (Digit > 0)
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Integer too large to convert to BCD: %8.8X%8.8X\n",
-                    ACPI_HIDWORD(Operand[0]->Integer.Value),
-                    ACPI_LODWORD(Operand[0]->Integer.Value)));
+                        ACPI_FORMAT_UINT64 (Operand[0]->Integer.Value)));
                 Status = AE_AML_NUMERIC_OVERFLOW;
                 goto Cleanup;
             }
