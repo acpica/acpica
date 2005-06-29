@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.70 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -357,6 +357,7 @@ NamePathTail                [.]{NameSeg}
 "MutexObj"                  { count (0); return (PARSEOP_OBJECTTYPE_MTX); }
 "OpRegionObj"               { count (0); return (PARSEOP_OBJECTTYPE_OPR); }
 "PowerResObj"               { count (0); return (PARSEOP_OBJECTTYPE_POW); }
+"ProcessorObj"              { count (0); return (PARSEOP_OBJECTTYPE_PRO); }
 "ThermalZoneObj"            { count (0); return (PARSEOP_OBJECTTYPE_THZ); }
 "BuffFieldObj"              { count (0); return (PARSEOP_OBJECTTYPE_BFF); }
 "DDBHandleObj"              { count (0); return (PARSEOP_OBJECTTYPE_DDB); }
