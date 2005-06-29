@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -288,7 +288,8 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "ACPI_RESOURCE_ADDRESS32",  "acpi_resource_address32",
     "ACPI_RESOURCE_ADDRESS64",  "acpi_resource_address64",
     "ACPI_RESOURCE_EXT_IRQ",    "acpi_resource_ext_irq",
-    "ACPI_RESOURCE",            "acpi_resource",    /* Must be last resource desc*/
+    "ACPI_RESOURCE",            "acpi_resource",    /* Must be last resource desc */
+    "ACPI_SYSTEM_INFO",         "acpi_system_info",
     "ACPI_TABLE_DESC",          "acpi_table_desc",
     "XSDT_DESCRIPTOR",          "xsdt_descriptor",
     "FADT_DESCRIPTOR_REV071",   "fadt_descriptor_rev071",
@@ -341,7 +342,7 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
      * Function return values.
      * This is fragile. We have to put these in to get it to compile, BUT
      * we can't put all tokens here, because that will break strings where
-     * we want to conver FOO but not FOO_MAX_LEN, for example.
+     * we want to convert FOO but not FOO_MAX_LEN, for example.
      */
     "ACPI_OWNER_ID",           "acpi_owner_id_t",
     "ACPI_OBJECT_TYPE8",       "acpi_object_type8_t",
