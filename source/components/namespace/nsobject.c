@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  ******************************************************************************/
 
@@ -276,13 +276,13 @@ AcpiNsAttachObject (
  *
  * FUNCTION:    AcpiNsDetachObject
  *
- * PARAMETERS:  Node           - An object whose Value will be deleted
+ * PARAMETERS:  Node           - An node whose object will be detached
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Delete the Value associated with a namespace object.  If the
- *              Value is an allocated object, it is freed.  Otherwise, the
- *              field is simply cleared.
+ * DESCRIPTION: Detach/delete an object associated with a namespace node.  
+ *              if the object is an allocated object, it is freed.
+ *              Otherwise, the field is simply cleared.
  *
  ******************************************************************************/
 
@@ -340,6 +340,8 @@ AcpiNsDetachObject (
  * RETURN:      Current value of the object field from the Node whose
  *              handle is passed
  *
+ * DESCRIPTION: Obtain the object attached to a namespace node.
+ *
  ******************************************************************************/
 
 ACPI_OPERAND_OBJECT *
@@ -374,7 +376,9 @@ AcpiNsGetAttachedObject (
  * PARAMETERS:  Node             - Parent Node to be examined
  *
  * RETURN:      Current value of the object field from the Node whose
- *              handle is passed
+ *              handle is passed.
+ *
+ * DESCRIPTION: Obtain a secondary object associated with a namespace node.
  *
  ******************************************************************************/
 
@@ -401,11 +405,13 @@ AcpiNsGetSecondaryObject (
  *
  * FUNCTION:    AcpiNsAttachData
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Namespace node
+ *              Handler         - Handler to be associated with the data
+ *              Data            - Data to be attached
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Low-level attach data.  Create and attach a Data object.
  *
  ******************************************************************************/
 
@@ -420,7 +426,8 @@ AcpiNsAttachData (
     ACPI_OPERAND_OBJECT     *DataDesc;
 
 
-    /* */
+    /* We only allow one attachment per handler */
+
     PrevObjDesc = NULL;
     ObjDesc = Node->Object;
     while (ObjDesc)
@@ -435,7 +442,6 @@ AcpiNsAttachData (
         ObjDesc = ObjDesc->Common.NextObject;
     }
 
-
     /* Create an internal object for the data */
 
     DataDesc = AcpiUtCreateInternalObject (ACPI_TYPE_LOCAL_DATA);
@@ -446,7 +452,6 @@ AcpiNsAttachData (
 
     DataDesc->Data.Handler = Handler;
     DataDesc->Data.Pointer = Data;
-
 
     /* Install the data object */
 
@@ -467,11 +472,13 @@ AcpiNsAttachData (
  *
  * FUNCTION:    AcpiNsDetachData
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Namespace node
+ *              Handler         - Handler associated with the data
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Low-level detach data.  Delete the data node, but the caller
+ *              is responsible for the actual data.
  *
  ******************************************************************************/
 
@@ -516,11 +523,14 @@ AcpiNsDetachData (
  *
  * FUNCTION:    AcpiNsGetAttachedData
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Namespace node
+ *              Handler         - Handler associated with the data
+ *              Data            - Where the data is returned
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Low level interface to obtain data previously associated with
+ *              a namespace node.
  *
  ******************************************************************************/
 
