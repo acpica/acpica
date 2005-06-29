@@ -187,8 +187,8 @@ main (
     /* Init globals */
 
     Buffer = malloc (BUFFER_SIZE);
-    DebugLevel = DEBUG_DEFAULT & (~TRACE_TABLES);
-    DebugLayer = 0xFFFFFFFF;
+    AcpiDbgLevel = DEBUG_DEFAULT & (~TRACE_TABLES);
+    AcpiDbgLayer = 0xFFFFFFFF;
 
 
     printf ("ACPI AML Execution/Debug Utility ");
@@ -220,8 +220,8 @@ main (
         break;
 
     case 'l':
-        DebugLevel = strtoul (optarg, NULL, 0);
-        printf ("Debug Level: %lX\n", DebugLevel);
+        AcpiDbgLevel = strtoul (optarg, NULL, 0);
+        printf ("Debug Level: %lX\n", AcpiDbgLevel);
         break;
 
     case 'o':
