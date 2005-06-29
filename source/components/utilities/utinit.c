@@ -1,6 +1,4 @@
-
-/*
-  __________________________________________________________________________
+/*__________________________________________________________________________
  |
  |
  |           Copyright (C) Intel Corporation 1994-1996
@@ -12,45 +10,11 @@
  | otherwise, without the prior written permission of Intel Corporation.
  |__________________________________________________________________________
  |
- | Publics for ACPI tables and prototypes for
- | library initialization and some types of table access
+ | ModuleName: acpiinit -- Main ACPI subsystem initialization
  |__________________________________________________________________________
- |
- | $Revision: 1.7 $
- | $Date: 2005/06/29 19:15:03 $
- | $Log: utinit.c,v $
- | Revision 1.7  2005/06/29 19:15:03  aystarik
- | Major header file consolidation
- |
- | 
- | date	99.04.07.22.34.00;	author rmoore1;	state Exp;
- |
- * 
- * 7     4/07/99 3:34p Rmoore1
- * Major header file consolidation
- * 
- * 6     4/05/99 4:10p Rmoore1
- * Header cleanup;  Split debug switch into component_id and level
- * 
- * 5     4/02/99 2:39p Rmoore1
- * New version of DEBUG_PRINT
- * 
- * 4     3/31/99 2:33p Rmoore1
- * Integrated with 03/99 OPSD code
- * 
- * 3     3/10/99 1:20p Rmoore1
- * Comment out long pointer code
- * 
- * 2     3/09/99 4:06p Rmoore1
- * 16/32/64-bit common data types
- * 
- * 1     2/16/99 2:15p Rmosgrov
- * Module contains the AcpiInit fucntion only
- |__________________________________________________________________________
-
 */
 
-#define __NSTABLES_C__
+#define __ACPIINIT_C__
 
 #include <acpi.h>
 #include <devices.h>
@@ -59,7 +23,7 @@
 #include <string.h>
 
 
-#define _THIS_MODULE        "AcpiInit.c"
+#define _THIS_MODULE        "acpiinit.c"
 #define _COMPONENT          NAMESPACE
 
 static INT32        RestoreAcpiChipset = TRUE;
@@ -150,9 +114,6 @@ AcpiInit (char *FileName)
 
     InitAcpiLibGlobals ();
 
-
-    /* Exit function is obsolete !!!!  remove TBD */
-    /* atexit_bu (AcpiCleanup);  */
 
     DEBUG_PRINT (ACPI_INFO, ("Initializing ACPILIB...\n"));
     IncIndent ();
@@ -338,7 +299,7 @@ AcpiInit (char *FileName)
                     else
                     {
                         /* Normal -- get DSDT from BIOS table */
-BREAKPOINT3;
+
                         DSDT = GetTable (FACP->Dsdt, FilePtr);
                     }
 
@@ -352,7 +313,7 @@ BREAKPOINT3;
                                                 OUTPUT_DATA | OUTPUT_ERRORS);
 
                         DEBUG_PRINT (TRACE_TABLES,
-                                    ("Hex dump of DSDT (not including header), size %d (0x%x)\n",
+                                    ("Hex dump of DSDT (no header), size %d (0x%x)\n",
                                     (size_t)DSDT->Length, (size_t)DSDT->Length));
                         DUMP_BUFFER ((UINT8 *) (DSDT + 1),
                                         (size_t)DSDT->Length, HEX | ASCII);
@@ -378,6 +339,7 @@ BREAKPOINT3;
                                 ("PSDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
                     ErrorCheck |= VerifyTableChecksum (PSDT, OUTPUT_DATA | OUTPUT_ERRORS);
                 }
+
                 else if (!strncmp (TableHeader->Signature, SSDT_SIG, 4))
                 {
                     /*  pointer to SSDT table   */
@@ -388,6 +350,7 @@ BREAKPOINT3;
                                 ("SSDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
                     ErrorCheck |= VerifyTableChecksum (SSDT, OUTPUT_DATA | OUTPUT_ERRORS);
                 }
+
                 else if (!strncmp (TableHeader->Signature, SBDT_SIG, 4))
                 {
                     /*  pointer to SBDT table   */
@@ -397,6 +360,7 @@ BREAKPOINT3;
                                 ("SBDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
                     ErrorCheck |= VerifyTableChecksum (SBDT, OUTPUT_DATA | OUTPUT_ERRORS);
                 }
+
                 else
                 {
                     /*  pointer to unknown table    */
@@ -518,8 +482,6 @@ BREAKPOINT3;
             break;
         }
 
-
-BREAKPOINT3;
 
         if (Capabilities != LEGACY_MODE)
         {
@@ -665,6 +627,9 @@ BREAKPOINT3;
                     ("ACPILIB NOT successfully initialized.\n"));
         RestoreAcpiChipset = FALSE;
     }
+
+
+BREAKPOINT3;
 
     return (ErrorCheck);
 }
