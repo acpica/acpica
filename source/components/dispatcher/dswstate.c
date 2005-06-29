@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.71 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -844,7 +844,7 @@ AcpiDsGetCurrentWalkState (
         return (NULL);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "DsGetCurrentWalkState, =%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Current WalkState %p\n",
         Thread->WalkStateList));
 
     return (Thread->WalkStateList);
@@ -1062,7 +1062,7 @@ AcpiDsInitAmlWalk (
     }
     else
     {
-        /* 
+        /*
          * Setup the current scope.
          * Find a Named Op that has a namespace node associated with it.
          * search upwards from this Op.  Current scope is the first
@@ -1081,7 +1081,7 @@ AcpiDsInitAmlWalk (
         {
             ParserState->StartNode = ExtraOp->Common.Node;
         }
-        
+
         if (ParserState->StartNode)
         {
             /* Push start scope on scope stack and make it current  */
