@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,6 @@
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psargs")
-
 
 
 /*******************************************************************************
@@ -529,7 +528,7 @@ AcpiPsGetNextNamepath (
     /*
      * Either we didn't find the object in the namespace, or the object is
      * something other than a control method.  Just initialize the Op with the
-     * pathname
+     * pathname.
      */
 
     AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
