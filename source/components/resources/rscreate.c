@@ -191,7 +191,7 @@ AcpiRsCreateResourceList (
                                         &ListSizeNeeded);
 
     DEBUG_PRINT (VERBOSE_INFO, 
-        ("RsCreateResourceList: Status = %d; ListSizeNeeded = %d\n", 
+        ("RsCreateResourceList: Status=%d ListSizeNeeded=%d\n", 
         Status, ListSizeNeeded));
 
     /*
