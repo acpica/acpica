@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -506,13 +506,13 @@ AcpiAmlDumpOperand (
         break;
 
 
-    case INTERNAL_TYPE_FIELD:
+    case INTERNAL_TYPE_REGION_FIELD:
 
         DEBUG_PRINT_RAW (ACPI_INFO,
-            ("DefField: bits=%X  acc=%X lock=%X update=%X at byte=%lX bit=%X of below:\n",
-            EntryDesc->Field.Length,   EntryDesc->Field.Access,
-            EntryDesc->Field.LockRule, EntryDesc->Field.UpdateRule,
-            EntryDesc->Field.Offset,   EntryDesc->Field.BitOffset));
+            ("RegionField: bits=%X  acc=%X lock=%X update=%X at byte=%lX bit=%X of below:\n",
+            EntryDesc->Field.BitLength, EntryDesc->Field.Access,
+            EntryDesc->Field.LockRule,  EntryDesc->Field.UpdateRule,
+            EntryDesc->Field.Offset,    EntryDesc->Field.BitOffset));
         DUMP_STACK_ENTRY (EntryDesc->Field.RegionObj);
         break;
 
@@ -523,28 +523,27 @@ AcpiAmlDumpOperand (
         break;
 
 
-    case ACPI_TYPE_FIELD_UNIT:
+    case ACPI_TYPE_BUFFER_FIELD:
 
         DEBUG_PRINT_RAW (ACPI_INFO,
-            ("FieldUnit: %X bits acc %X lock %X update %X at byte %lX bit %X of \n",
-            EntryDesc->FieldUnit.Length,   EntryDesc->FieldUnit.Access,
-            EntryDesc->FieldUnit.LockRule, EntryDesc->FieldUnit.UpdateRule,
-            EntryDesc->FieldUnit.Offset,   EntryDesc->FieldUnit.BitOffset));
+            ("BufferField: %X bits at byte %lX bit %X of \n",
+            EntryDesc->BufferField.BitLength, EntryDesc->BufferField.Offset,
+            EntryDesc->BufferField.BitOffset));
 
-        if (!EntryDesc->FieldUnit.ContainerObj)
+        if (!EntryDesc->BufferField.BufferObj)
         {
             DEBUG_PRINT (ACPI_INFO, ("*NULL* \n"));
         }
 
         else if (ACPI_TYPE_BUFFER !=
-                     EntryDesc->FieldUnit.ContainerObj->Common.Type)
+                     EntryDesc->BufferField.BufferObj->Common.Type)
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("*not a Buffer* \n"));
         }
 
         else
         {
-            DUMP_STACK_ENTRY (EntryDesc->FieldUnit.ContainerObj);
+            DUMP_STACK_ENTRY (EntryDesc->BufferField.BufferObj);
         }
 
         break;
@@ -797,16 +796,13 @@ AcpiAmlDumpObjectDescriptor (
         break;
 
 
-    case ACPI_TYPE_FIELD_UNIT:
+    case ACPI_TYPE_BUFFER_FIELD:
 
-        AcpiOsPrintf ("%20s : %s\n", "Type", "FieldUnit");
-        AcpiOsPrintf ("%20s : %X\n", "Access", ObjDesc->FieldUnit.Access);
-        AcpiOsPrintf ("%20s : %X\n", "LockRule", ObjDesc->FieldUnit.LockRule);
-        AcpiOsPrintf ("%20s : %X\n", "UpdateRule", ObjDesc->FieldUnit.UpdateRule);
-        AcpiOsPrintf ("%20s : %X\n", "Length", ObjDesc->FieldUnit.Length);
-        AcpiOsPrintf ("%20s : %X\n", "BitOffset", ObjDesc->FieldUnit.BitOffset);
-        AcpiOsPrintf ("%20s : %X\n", "Offset", ObjDesc->FieldUnit.Offset);
-        AcpiOsPrintf ("%20s : %p\n", "ContainerObj", ObjDesc->FieldUnit.ContainerObj);
+        AcpiOsPrintf ("%20s : %s\n", "Type", "BufferField");
+        AcpiOsPrintf ("%20s : %X\n", "BitLength", ObjDesc->BufferField.BitLength);
+        AcpiOsPrintf ("%20s : %X\n", "BitOffset", ObjDesc->BufferField.BitOffset);
+        AcpiOsPrintf ("%20s : %X\n", "Offset", ObjDesc->BufferField.Offset);
+        AcpiOsPrintf ("%20s : %p\n", "BufferObj", ObjDesc->BufferField.BufferObj);
         break;
 
 
@@ -888,13 +884,24 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : %p\n", "AddrHandler", ObjDesc->ThermalZone.AddrHandler);
         break;
 
+
+    case INTERNAL_TYPE_REGION_FIELD:
+
+        AcpiOsPrintf ("%20s : %p\n", "Granularity", ObjDesc->Field.Granularity);
+        AcpiOsPrintf ("%20s : %p\n", "BitLength", ObjDesc->Field.BitLength);
+        AcpiOsPrintf ("%20s : %p\n", "Offset", ObjDesc->Field.Offset);
+        AcpiOsPrintf ("%20s : %p\n", "BitOffset", ObjDesc->Field.BitOffset);
+        AcpiOsPrintf ("%20s : %p\n", "RegionObj", ObjDesc->Field.RegionObj);
+        break;
+
+
     case INTERNAL_TYPE_BANK_FIELD:
 
         AcpiOsPrintf ("%20s : %s\n", "Type", "BankField");
         AcpiOsPrintf ("%20s : %X\n", "Access", ObjDesc->BankField.Access);
         AcpiOsPrintf ("%20s : %X\n", "LockRule", ObjDesc->BankField.LockRule);
         AcpiOsPrintf ("%20s : %X\n", "UpdateRule", ObjDesc->BankField.UpdateRule);
-        AcpiOsPrintf ("%20s : %X\n", "Length", ObjDesc->BankField.Length);
+        AcpiOsPrintf ("%20s : %X\n", "BitLength", ObjDesc->BankField.BitLength);
         AcpiOsPrintf ("%20s : %X\n", "BitOffset", ObjDesc->BankField.BitOffset);
         AcpiOsPrintf ("%20s : %X\n", "Offset", ObjDesc->BankField.Offset);
         AcpiOsPrintf ("%20s : %X\n", "Value", ObjDesc->BankField.Value);
@@ -909,7 +916,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : %X\n", "Access", ObjDesc->IndexField.Access);
         AcpiOsPrintf ("%20s : %X\n", "LockRule", ObjDesc->IndexField.LockRule);
         AcpiOsPrintf ("%20s : %X\n", "UpdateRule", ObjDesc->IndexField.UpdateRule);
-        AcpiOsPrintf ("%20s : %X\n", "Length", ObjDesc->IndexField.Length);
+        AcpiOsPrintf ("%20s : %X\n", "BitLength", ObjDesc->IndexField.BitLength);
         AcpiOsPrintf ("%20s : %X\n", "BitOffset", ObjDesc->IndexField.BitOffset);
         AcpiOsPrintf ("%20s : %X\n", "Value", ObjDesc->IndexField.Value);
         AcpiOsPrintf ("%20s : %X\n", "Index", ObjDesc->IndexField.Index);
@@ -950,14 +957,6 @@ AcpiAmlDumpObjectDescriptor (
         break;
 
 
-    case INTERNAL_TYPE_FIELD:
-
-        AcpiOsPrintf ("%20s : %p\n", "Granularity", ObjDesc->Field.Granularity);
-        AcpiOsPrintf ("%20s : %p\n", "Length", ObjDesc->Field.Length);
-        AcpiOsPrintf ("%20s : %p\n", "Offset", ObjDesc->Field.Offset);
-        AcpiOsPrintf ("%20s : %p\n", "BitOffset", ObjDesc->Field.BitOffset);
-        AcpiOsPrintf ("%20s : %p\n", "RegionObj", ObjDesc->Field.RegionObj);
-        break;
 
 
     case INTERNAL_TYPE_ALIAS:
