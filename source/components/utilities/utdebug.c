@@ -269,9 +269,8 @@ wInstallInterruptHandler (
 
     OsdPrintf (NULL, "wInstallInterruptHandler called, not supported **********\n");
 
-    OsdInstallInterruptHandler (InterruptNumber, Isr, ExceptPtr);
+    return (DWORD) OsdInstallInterruptHandler (InterruptNumber, Isr, ExceptPtr);
 
-    return 0;
 }
 
 int
