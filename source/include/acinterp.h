@@ -590,6 +590,10 @@ AmlDumpObjectDescriptor (
  */
 
 ACPI_STATUS
+AmlDoCodeBlock (
+    OPERATING_MODE          InterpreterMode);
+
+ACPI_STATUS
 AmlDoDataTerm (
     OPERATING_MODE          LoadExecMode);
 
