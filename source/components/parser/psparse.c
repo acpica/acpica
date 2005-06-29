@@ -450,7 +450,8 @@ PsFindObject (
 ACPI_STATUS
 PsParseLoop (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_WALK_STATE         *WalkState)
+    ACPI_WALK_STATE         *WalkState,
+    UINT32                  ParseFlags)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_OP         *Op = NULL;            /* current op */
@@ -587,8 +588,8 @@ PsParseLoop (
 
             if (OpInfo)
             {
-                DEBUG_PRINT (TRACE_PARSE, ("ParseLoop:  Op=%p (%s) Opcode=%4.4lX Offset=%5.5lX\n",
-                                Op, OpInfo->Name, Op->Opcode, Op->AmlOffset));
+                DEBUG_PRINT (TRACE_PARSE, ("ParseLoop:  Op=%p Opcode=%4.4lX Offset=%5.5lX\n",
+                                Op, Op->Opcode, Op->AmlOffset));
             }
         }
 
@@ -720,6 +721,15 @@ PsParseLoop (
 
             ParserState->Scope->ArgCount--;
 
+
+            /* Delete op if asked to */
+
+            if (ParseFlags & PARSE_DELETE_TREE)
+            {
+                PsDeleteParseTree (Op);
+            }
+            
+                
             if (PsHasCompletedScope (ParserState))
             {
                 PsPopScope (ParserState, &Op, &ArgTypes);
@@ -765,7 +775,8 @@ ACPI_STATUS
 PsParseAml (
     ACPI_GENERIC_OP         *StartScope,
     UINT8                   *Aml, 
-    UINT32                  AmlSize)
+    UINT32                  AmlSize,
+    UINT32                  ParseFlags)
 {
     ACPI_STATUS             Status;
     ACPI_PARSE_STATE        *ParserState;
@@ -820,7 +831,7 @@ PsParseAml (
 
     /* Create the parse tree */
 
-    Status = PsParseLoop (ParserState, WalkState);
+    Status = PsParseLoop (ParserState, WalkState, ParseFlags);
 
 
 Cleanup:
