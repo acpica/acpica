@@ -133,6 +133,14 @@ typedef UINT32              ACPI_MUTEX_HANDLE;
 #define DESC_TYPE_PARSER    0xBB
 
 
+
+/*****************************************************************************
+ * 
+ * Mutex typedefs and structs
+ *
+ ****************************************************************************/
+
+
 /*
  * Predefined handles for the mutex objects used within the subsystem
  * All mutex objects are automatically created by CmMutexInitialize.
@@ -150,6 +158,27 @@ typedef UINT32              ACPI_MUTEX_HANDLE;
 
 #define MAX_MTX             8
 #define NUM_MTX             MAX_MTX+1
+
+
+/* Table for the global mutexes */
+
+typedef struct AcpiMutexInfo
+{
+    ACPI_MUTEX                  Mutex;
+    UINT32                      UseCount;
+    BOOLEAN                     Locked;
+
+} ACPI_MUTEX_INFO;
+
+
+
+
+
+/*****************************************************************************
+ * 
+ * Namespace typedefs and structs
+ *
+ ****************************************************************************/
 
 
 /* Operational modes of the AML interpreter/scanner */
@@ -275,6 +304,14 @@ typedef struct
 
 } PREDEFINED_NAMES;
 
+
+
+
+/*****************************************************************************
+ * 
+ * Event typedefs and structs
+ *
+ ****************************************************************************/
 
 /* 
  * Entry in the AddressSpace (AKA Operation Region) table
