@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.69 $
+ *       $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -146,7 +146,7 @@
 #define ACPI_USE_SYSTEM_CLIBRARY
 #endif
 
-/* 
+/*
  * Memory allocation tracking.  Used only if
  * 1) This is the debug version
  * 2) This is NOT a 16-bit version of the code (not enough real-mode memory)
@@ -292,17 +292,17 @@ typedef char *va_list;
  * Storage alignment properties
  */
 
-#define  _AUPBND         (sizeof(int) - 1)
-#define  _ADNBND         (sizeof(int) - 1)
+#define  _AUPBND         (sizeof (NATIVE_INT) - 1)
+#define  _ADNBND         (sizeof (NATIVE_INT) - 1)
 
 /*
  * Variable argument list macro definitions
  */
 
-#define _Bnd(X, bnd)    (((sizeof(X)) + (bnd)) & (~(bnd)))
-#define va_arg(ap, T)  (*(T *)(((ap)+=((_Bnd(T, _AUPBND)))-(_Bnd(T,_ADNBND)))))
-#define va_end(ap)      (void)0
-#define va_start(ap, A) (void)((ap)=(((char*)&(A))+(_Bnd(A,_AUPBND))))
+#define _Bnd(X, bnd)    (((sizeof (X)) + (bnd)) & (~(bnd)))
+#define va_arg(ap, T)	(*(T *)(((ap) += (_Bnd (T, _AUPBND))) - (_Bnd (T,_ADNBND))))
+#define va_end(ap)      (void) 0
+#define va_start(ap, A) (void) ((ap) = (((char *) &(A)) + (_Bnd (A,_AUPBND))))
 
 #endif /* va_arg */
 
