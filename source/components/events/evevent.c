@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,6 @@
 
 #define _COMPONENT          ACPI_EVENTS
         MODULE_NAME         ("evevent")
-
 
 
 /*******************************************************************************
