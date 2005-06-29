@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -133,81 +133,77 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlGetFieldUnitValue
+ * FUNCTION:    AcpiAmlGetBufferFieldValue
  *
- * PARAMETERS:  *FieldDesc          - Pointer to a FieldUnit
+ * PARAMETERS:  *ObjDesc          - Pointer to a BufferField
  *              *ResultDesc         - Pointer to an empty descriptor which will
  *                                    become an Integer with the field's value
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Retrieve the value from a FieldUnit
+ * DESCRIPTION: Retrieve the value from a BufferField
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlGetFieldUnitValue (
-    ACPI_OPERAND_OBJECT     *FieldDesc,
+AcpiAmlGetBufferFieldValue (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     *ResultDesc)
 {
     ACPI_STATUS             Status;
     UINT32                  Mask;
     UINT8                   *Location;
-    BOOLEAN                 Locked;
 
 
-    FUNCTION_TRACE ("AmlGetFieldUnitValue");
+    FUNCTION_TRACE ("AmlGetBufferFieldValue");
 
 
     /*
      * Parameter validation 
      */
-    if (!FieldDesc)
+    if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - null field pointer\n"));
+            ("AmlGetBufferFieldValue: Internal error - null field pointer\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
-    if (!(FieldDesc->Common.Flags & AOPOBJ_DATA_VALID))
+    if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
     {
-        Status = AcpiDsGetFieldUnitArguments (FieldDesc);
+        Status = AcpiDsGetBufferFieldArguments (ObjDesc);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
     }
 
-    if (!FieldDesc->FieldUnit.ContainerObj)
+    if (!ObjDesc->BufferField.BufferObj)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - null container pointer\n"));
+            ("AmlGetBufferFieldValue: Internal error - null container pointer\n"));
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    if (ACPI_TYPE_BUFFER != FieldDesc->FieldUnit.ContainerObj->Common.Type)
+    if (ACPI_TYPE_BUFFER != ObjDesc->BufferField.BufferObj->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - container is not a Buffer\n"));
+            ("AmlGetBufferFieldValue: Internal error - container is not a Buffer\n"));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
     if (!ResultDesc)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - null result pointer\n"));
+            ("AmlGetBufferFieldValue: Internal error - null result pointer\n"));
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
 
-    /* Get the global lock if needed */
-
-    Locked = AcpiAmlAcquireGlobalLock (FieldDesc->FieldUnit.LockRule);
 
     /* Field location is (base of buffer) + (byte offset) */
 
-    Location = FieldDesc->FieldUnit.ContainerObj->Buffer.Pointer
-                + FieldDesc->FieldUnit.Offset;
+    Location = ObjDesc->BufferField.BufferObj->Buffer.Pointer
+                + ObjDesc->BufferField.Offset;
 
     /*
      * Construct Mask with as many 1 bits as the field width
@@ -218,9 +214,9 @@ AcpiAmlGetFieldUnitValue (
      * TBD: [Unhandled] Fields greater than 32 bits will not work.
      */
 
-    if (FieldDesc->FieldUnit.Length < 32)
+    if (ObjDesc->BufferField.BitLength < 32)
     {
-        Mask = ((UINT32) 1 << FieldDesc->FieldUnit.Length) - (UINT32) 1;
+        Mask = ((UINT32) 1 << ObjDesc->BufferField.BitLength) - (UINT32) 1;
     }
     else
     {
@@ -239,19 +235,15 @@ AcpiAmlGetFieldUnitValue (
      */
 
     ResultDesc->Integer.Value =
-        (ResultDesc->Integer.Value >> FieldDesc->FieldUnit.BitOffset) & Mask;
+        (ResultDesc->Integer.Value >> ObjDesc->BufferField.BitOffset) & Mask;
 
     DEBUG_PRINT (ACPI_INFO,
         ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
-        FieldDesc->FieldUnit.ContainerObj->Buffer.Pointer,
-        FieldDesc->FieldUnit.Offset,
-        FieldDesc->FieldUnit.BitOffset,
-        FieldDesc->FieldUnit.Length,
+        ObjDesc->BufferField.BufferObj->Buffer.Pointer,
+        ObjDesc->BufferField.Offset,
+        ObjDesc->BufferField.BitOffset,
+        ObjDesc->BufferField.BitLength,
         Location, Mask, ResultDesc->Integer.Value));
-
-    /* Release global lock if we acquired it earlier */
-
-    AcpiAmlReleaseGlobalLock (Locked);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -520,7 +512,7 @@ AcpiAmlResolveObjectToValue (
         break; /* case INTERNAL_TYPE_REFERENCE */
 
 
-    case ACPI_TYPE_FIELD_UNIT:
+    case ACPI_TYPE_BUFFER_FIELD:
 
         ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_ANY);
         if (!ObjDesc)
@@ -528,7 +520,7 @@ AcpiAmlResolveObjectToValue (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        Status = AcpiAmlGetFieldUnitValue (StackDesc, ObjDesc);
+        Status = AcpiAmlGetBufferFieldValue (StackDesc, ObjDesc);
         if (ACPI_FAILURE (Status))
         {
             AcpiCmRemoveReference (ObjDesc);
@@ -547,7 +539,9 @@ AcpiAmlResolveObjectToValue (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        Status = AcpiAmlGetFieldUnitValue (StackDesc, ObjDesc);
+        /* TBD: WRONG! */
+
+        Status = AcpiAmlGetBufferFieldValue (StackDesc, ObjDesc);
         if (ACPI_FAILURE (Status))
         {
             AcpiCmRemoveReference (ObjDesc);
