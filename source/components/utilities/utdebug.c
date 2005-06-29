@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.104 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -250,7 +250,7 @@ AcpiUtDebugPrint (
 
     if (ACPI_LV_THREADS & AcpiDbgLevel)
     {
-        AcpiOsPrintf ("[%04lX] ", ThreadId, AcpiGbl_NestingLevel, DbgInfo->ProcName);
+        AcpiOsPrintf ("[%04lX] ", ThreadId);
     }
 
     AcpiOsPrintf ("[%02ld] %-22.22s: ", AcpiGbl_NestingLevel, DbgInfo->ProcName);
@@ -387,7 +387,7 @@ void
 AcpiUtTraceStr (
     UINT32                  LineNumber,
     ACPI_DEBUG_PRINT_INFO   *DbgInfo,
-    NATIVE_CHAR             *String)
+    char                    *String)
 {
 
     AcpiGbl_NestingLevel++;
@@ -592,8 +592,8 @@ AcpiUtDumpBuffer (
     UINT32                  Display,
     UINT32                  ComponentId)
 {
-    NATIVE_UINT             i = 0;
-    NATIVE_UINT             j;
+    ACPI_NATIVE_UINT        i = 0;
+    ACPI_NATIVE_UINT        j;
     UINT32                  Temp32;
     UINT8                   BufChar;
 
@@ -620,7 +620,7 @@ AcpiUtDumpBuffer (
     {
         /* Print current offset */
 
-        AcpiOsPrintf ("%05X    ", i);
+        AcpiOsPrintf ("%05X    ", (UINT32) i);
 
         /* Print 16 hex chars */
 
@@ -648,8 +648,7 @@ AcpiUtDumpBuffer (
 
             case DB_WORD_DISPLAY:
 
-                ACPI_MOVE_UNALIGNED16_TO_32 (&Temp32,
-                                             &Buffer[i + j]);
+                ACPI_MOVE_16_TO_32 (&Temp32, &Buffer[i + j]);
                 AcpiOsPrintf ("%04X ", Temp32);
                 j += 2;
                 break;
@@ -657,8 +656,7 @@ AcpiUtDumpBuffer (
 
             case DB_DWORD_DISPLAY:
 
-                ACPI_MOVE_UNALIGNED32_TO_32 (&Temp32,
-                                             &Buffer[i + j]);
+                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[i + j]);
                 AcpiOsPrintf ("%08X ", Temp32);
                 j += 4;
                 break;
@@ -666,12 +664,10 @@ AcpiUtDumpBuffer (
 
             case DB_QWORD_DISPLAY:
 
-                ACPI_MOVE_UNALIGNED32_TO_32 (&Temp32,
-                                             &Buffer[i + j]);
+                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[i + j]);
                 AcpiOsPrintf ("%08X", Temp32);
 
-                ACPI_MOVE_UNALIGNED32_TO_32 (&Temp32,
-                                             &Buffer[i + j + 4]);
+                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[i + j + 4]);
                 AcpiOsPrintf ("%08X ", Temp32);
                 j += 8;
                 break;
