@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -298,8 +298,11 @@ AcpiEnterSleepState (
     /* wait a second, then try again */
     AcpiOsStall(1000000);
 
-    AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1_CONTROL,
-        (1 << AcpiHwGetBitShift (SLP_EN_MASK)));
+    if (SleepState > ACPI_STATE_S1)
+    {
+        AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1_CONTROL,
+            (1 << AcpiHwGetBitShift (SLP_EN_MASK)));
+    }
 
     enable();
 
