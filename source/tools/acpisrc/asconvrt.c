@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.15 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -145,6 +145,156 @@ AsPrint (
 
 /******************************************************************************
  *
+ * FUNCTION:    AsCheckAndSkipLiterals
+ *
+ * DESCRIPTION: Generic routine to skip comments and quoted string literals.
+ *              Keeps a line count.
+ *
+ ******************************************************************************/
+
+char *
+AsCheckAndSkipLiterals (
+    char                    *Buffer,
+    UINT32                  *TotalLines)
+{
+    UINT32                  NewLines = 0;
+    char                    *SubBuffer = Buffer;
+    char                    *LiteralEnd;
+
+
+    /* Ignore comments */
+
+    if ((SubBuffer[0] == '/') &&
+        (SubBuffer[1] == '*'))
+    {
+        LiteralEnd = strstr (SubBuffer, "*/");
+        SubBuffer += 2;     /* Get past comment opening */
+
+        if (!LiteralEnd)
+        {
+            return SubBuffer;
+        }
+
+        while (SubBuffer < LiteralEnd)
+        {
+            if (*SubBuffer == '\n')
+            {
+                NewLines++;
+            }
+
+            SubBuffer++;
+        }
+
+        SubBuffer += 2;     /* Get past comment close */
+    }
+
+    /* Ignore quoted strings */
+
+    else if (*SubBuffer == '\"')
+    {
+        SubBuffer++;
+        LiteralEnd = AsSkipPastChar (SubBuffer, '\"');
+        if (!LiteralEnd)
+        {
+            return SubBuffer;
+        }
+    }
+
+
+    if (TotalLines)
+    {
+        (*TotalLines) += NewLines;
+    }
+    return SubBuffer;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsAsCheckForBraces
+ *
+ * DESCRIPTION: Check for an open brace after each if statement
+ *
+ ******************************************************************************/
+
+void
+AsCheckForBraces (
+    char                    *Buffer,
+    char                    *Filename)
+{
+    char                    *SubBuffer = Buffer;
+    char                    *NextBrace;
+    char                    *NextSemicolon;
+    char                    *NextIf;
+    UINT32                  TotalLines = 1;
+
+
+    while (*SubBuffer)
+    {
+
+        SubBuffer = AsCheckAndSkipLiterals (SubBuffer, &TotalLines);
+
+        if (*SubBuffer == '\n')
+        {
+            TotalLines++;
+        }
+
+        else if (!(strncmp (" if", SubBuffer, 3)))
+        {
+            SubBuffer += 2;
+            NextBrace = strstr (SubBuffer, "{");
+            NextSemicolon = strstr (SubBuffer, ";");
+            NextIf = strstr (SubBuffer, " if");
+
+            if ((!NextBrace) ||
+               (NextSemicolon && (NextBrace > NextSemicolon)) ||
+               (NextIf && (NextBrace > NextIf)))
+            {
+                Gbl_MissingBraces++;
+                printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
+            }
+        }
+
+        else if (!(strncmp (" else if", SubBuffer, 8)))
+        {
+            SubBuffer += 7;
+            NextBrace = strstr (SubBuffer, "{");
+            NextSemicolon = strstr (SubBuffer, ";");
+            NextIf = strstr (SubBuffer, " if");
+
+            if ((!NextBrace) ||
+               (NextSemicolon && (NextBrace > NextSemicolon)) ||
+               (NextIf && (NextBrace > NextIf)))
+            {
+                Gbl_MissingBraces++;
+                printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
+            }
+        }
+
+
+        else if (!(strncmp (" else", SubBuffer, 5)))
+        {
+            SubBuffer += 4;
+            NextBrace = strstr (SubBuffer, "{");
+            NextSemicolon = strstr (SubBuffer, ";");
+            NextIf = strstr (SubBuffer, " if");
+
+            if ((!NextBrace) ||
+               (NextSemicolon && (NextBrace > NextSemicolon)) ||
+               (NextIf && (NextBrace > NextIf)))
+            {
+                Gbl_MissingBraces++;
+                printf ("Missing braces for <else>, line %d: %s\n", TotalLines, Filename);
+            }
+        }
+
+        SubBuffer++;
+    }
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AsTrimLines
  *
  * DESCRIPTION: Remove extra blanks from the end of source lines.  Does not
@@ -192,6 +342,7 @@ AsTrimLines (
             SpaceCount += (SubBuffer - StartWhiteSpace);
 
             Length = strlen (SubBuffer) + 1;
+
             memmove (StartWhiteSpace, SubBuffer, Length);
             StartWhiteSpace = NULL;
         }
@@ -203,6 +354,7 @@ AsTrimLines (
 Exit:
     if (SpaceCount)
     {
+        Gbl_MadeChanges = TRUE;
         AsPrint ("Extraneous spaces Removed", SpaceCount, Filename);
     }
 }
@@ -453,6 +605,7 @@ AsMixedCaseToUnderscores (
 
             /* Force the UpperCase letter (#2) to lower case */
 
+            Gbl_MadeChanges = TRUE;
             SubBuffer[1] = (char) tolower (SubBuffer[1]);
 
 
@@ -461,8 +614,8 @@ AsMixedCaseToUnderscores (
 
             while (*SubString != '\n')
             {
-                /* 
-                 * If we have at least two trailing spaces, we can get rid of 
+                /*
+                 * If we have at least two trailing spaces, we can get rid of
                  * one to make up for the newly inserted underscore.  This will
                  * help preserve the alignment of the text
                  */
@@ -561,6 +714,7 @@ AsLowerCaseIdentifiers (
         if ((isupper (SubBuffer[0])) &&
             (islower (SubBuffer[1])))
         {
+            Gbl_MadeChanges = TRUE;
             *SubBuffer = (char) tolower (*SubBuffer);
         }
 
@@ -623,7 +777,7 @@ AsBracesOnSameLine (
         if (!strncmp ("\n}", SubBuffer, 2))
         {
             /*
-             * A newline followed by a closing brace closes a function 
+             * A newline followed by a closing brace closes a function
              * or struct or initializer block
              */
             BlockBegin = TRUE;
@@ -659,7 +813,7 @@ AsBracesOnSameLine (
 
                 /*
                  * Move the brace up to the previous line, UNLESS:
-                 * 
+                 *
                  * 1) There is a conditional compile on the line (starts with '#')
                  * 2) Previous line ends with an '=' (Start of initializer block)
                  * 3) Previous line ends with a comma (part of an init list)
@@ -675,6 +829,7 @@ AsBracesOnSameLine (
                     SubBuffer++;
                     Length = strlen (SubBuffer);
 
+                    Gbl_MadeChanges = TRUE;
                     memmove (Beginning + 2, SubBuffer, Length+3);
                     memmove (Beginning, " {", 2);
                 }
@@ -752,6 +907,7 @@ AsRemoveStatement (
 
             StrLength = strlen (SubBuffer);
 
+            Gbl_MadeChanges = TRUE;
             memmove (SubString, SubBuffer, StrLength+1);
             SubBuffer = SubString;
         }
@@ -862,6 +1018,7 @@ AsRemoveConditionalCompile (
             /* Remove the #ifdef .... #else code */
 
             StrLength = strlen (SubBuffer);
+            Gbl_MadeChanges = TRUE;
             memmove (SubString, SubBuffer, StrLength+1);
 
             /* Next, we will remove the #endif statement */
@@ -889,6 +1046,7 @@ AsRemoveConditionalCompile (
 
         StrLength = strlen (SubBuffer);
 
+        Gbl_MadeChanges = TRUE;
         memmove (SubString, SubBuffer, StrLength+1);
         SubBuffer = SubString;
     }
@@ -943,6 +1101,7 @@ AsRemoveLine (
             }
 
             StrLength = strlen (SubBuffer);
+            Gbl_MadeChanges = TRUE;
 
             memmove (SubString, SubBuffer, StrLength+1);
             SubBuffer = SubString;
@@ -1030,6 +1189,7 @@ AsRemoveEmptyBlocks (
 
     if (BlockCount)
     {
+        Gbl_MadeChanges = TRUE;
         AsPrint ("Code blocks deleted", BlockCount, Filename);
     }
 }
@@ -1105,6 +1265,7 @@ AsTabify4 (
                 NewSubBuffer = (SubBuffer + 1) - 4;
                 *NewSubBuffer = '\t';
 
+                Gbl_MadeChanges = TRUE;
                 SubBuffer++;
                 memmove ((NewSubBuffer + 1), SubBuffer, strlen (SubBuffer) + 1);
                 SubBuffer = NewSubBuffer;
@@ -1177,7 +1338,7 @@ AsTabify8 (
             }
 
             /*
-             * This mechanism limits the difference in tab counts from 
+             * This mechanism limits the difference in tab counts from
              * line to line.  It helps avoid the situation where a second
              * continuation line (which was indented correctly for tabs=4) would
              * get indented off the screen if we just blindly converted to tabs.
@@ -1322,6 +1483,7 @@ AsTabify8 (
                     TabCount++;
                 }
 
+                Gbl_MadeChanges = TRUE;
                 memmove (NewSubBuffer, SubBuffer, strlen (SubBuffer) + 1);
                 SubBuffer = NewSubBuffer;
                 continue;
