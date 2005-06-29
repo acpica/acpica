@@ -454,25 +454,24 @@ _CmAllocate (
     void                    *Address = NULL;
 
 
-    FUNCTION_TRACE ("_CmAllocate");
+    FUNCTION_TRACE_U32 ("_CmAllocate", Size);
     
 
     Address = OsdAllocate (Size);
-    
     if (!Address)
     {
         /* Report allocation error */
 
         _REPORT_ERROR (Module, Line, Component,
             "CmAllocate: Memory allocation failure");
-    }
-    else
-    {
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %x Size 0x%x\n",
-            Address, Size));
+
+        return_VALUE (NULL);
     }
     
     CmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
+
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %x Size 0x%x\n",
+        Address, Size));
 
     return_VALUE (Address);
 }
@@ -503,7 +502,7 @@ _CmCallocate (
     void                    *Address = NULL;
 
 
-    FUNCTION_TRACE ("_CmCallocate");
+    FUNCTION_TRACE_U32 ("_CmCallocate", Size);
        
     
     Address = OsdCallocate (Size);
@@ -514,15 +513,15 @@ _CmCallocate (
 
         _REPORT_ERROR (Module, Line, Component,
             "CmCallocate: Memory allocation failure");
-    }
-    else
-    {
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %x Size 0x%x\n",
-            Address, Size));
+
+        return_VALUE (NULL);
     }
 
     CmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
     
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %x Size 0x%x\n",
+        Address, Size));
+
     return_VALUE (Address);
 }
 
@@ -549,7 +548,7 @@ _CmFree (
     ACPI_STRING             Module,
     INT32                   Line)
 {
-    FUNCTION_TRACE ("_CmFree");
+    FUNCTION_TRACE_PTR ("_CmFree", Address);
     
 
     if (NULL == Address)
@@ -558,13 +557,12 @@ _CmFree (
             "_CmFree: Trying to delete a NULL address.");
 
         return_VOID;
-    
     }   
     
     CmDeleteElementFromAllocList (Address, Component, Module, Line);
     OsdFree (Address);
     
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %x\n", Address));
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %x freed\n", Address));
 
     return_VOID;
 }
