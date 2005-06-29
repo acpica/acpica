@@ -140,7 +140,7 @@
 /*
  * 64-bit type definitions
  */
-typedef signed char                     INT8;
+typedef char                            INT8;
 typedef unsigned char                   UINT8;
 typedef unsigned char                   UCHAR;
 typedef short                           INT16;
@@ -165,7 +165,7 @@ typedef UINT64                          ACPI_IO_ADDRESS;
 /*
  * 16-bit type definitions
  */
-typedef signed char                     INT8;
+typedef char                            INT8;
 typedef unsigned char                   UINT8;
 typedef unsigned char                   UCHAR;
 typedef int                             INT16;
@@ -187,7 +187,7 @@ typedef UINT32                          ACPI_IO_ADDRESS;
 /*
  * 32-bit type definitions (default)
  */
-typedef signed char                     INT8;
+typedef char                            INT8;
 typedef unsigned char                   UINT8;
 typedef unsigned char                   UCHAR;
 typedef short                           INT16;
