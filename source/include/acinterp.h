@@ -84,7 +84,7 @@ extern INT32        OBJECT_DESCRIPTOR_IS_VOID;
 
 /* Object Stack */
 
-#ifdef __AMLSCAN_C__
+#ifdef __ISIDATA_C__
 void            *ObjStack[AML_EXPR_MAX_NEST];  /* values are NsHandle or ObjHandle */
 INT32           ObjStackTop = 0;
 
@@ -92,6 +92,25 @@ INT32           ObjStackTop = 0;
 extern void     *ObjStack[];  /* values are NsHandle or ObjHandle */
 extern INT32    ObjStackTop;
 #endif
+
+
+#define PUSH_PKG_LENGTH         1
+#define DO_NOT_PUSH_PKG_LENGTH  0
+
+
+/* 
+ * Method Stack, containing locals and args
+ * per level, 0-7 are Local# and 8-14 are Arg#
+ */
+
+#define LCLBASE             0
+#define NUMLCL              8
+#define ARGBASE             (LCLBASE+NUMLCL)
+#define NUMARG              7
+
+extern OBJECT_DESCRIPTOR    *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
+extern INT32                MethodStackTop;
+
 
 /* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
  * Functions which Load/Dump/Execute Interpreted Data
@@ -450,6 +469,121 @@ GetGlobalLock(void);
 
 void
 ReleaseGlobalLock(void);
+
+
+
+INT32 
+DoByteConst (
+    OpMode              LoadExecMode, 
+    INT32               LeadSpace);
+
+INT32 
+DoWordConst (
+    OpMode              LoadExecMode, 
+    INT32               LeadSpace);
+
+INT32 
+DoDWordConst (
+    OpMode              LoadExecMode, 
+    INT32               LeadSpace);
+
+INT32 
+DoName (
+    NsType              DataType, 
+    OpMode              LoadExecMode);
+
+
+INT32 
+DoPkgLength (
+    INT32               DoPush, 
+    OpMode              LoadExecMode);
+
+INT32 
+DoFieldFlag (
+    OpMode              LoadExecMode);
+
+INT32 
+GetEncodedPkgLen (
+    INT32               LastPkgLen);
+
+INT32 
+DoType2OpCode (
+    OpMode              LoadExecMode);
+
+
+INT32 
+DoSuperName (
+    OpMode              LoadExecMode, 
+    NsType              Define);
+
+INT32 
+DoRefOpCode (
+    OpMode              LoadExecMode);
+
+INT32 
+DoLiteral (
+    OpMode              LoadExecMode);
+
+char *
+LastFullyQualifiedName (
+    void);
+
+INT32 
+DoDataTerm (
+    OpMode              LoadExecMode);
+
+INT32 
+DoType1OpCode (
+    OpMode              LoadExecMode);
+
+INT32
+SetNamedFieldValue (
+    NsHandle            NamedField, 
+    UINT32              Value);
+
+INT32
+GetNamedFieldValue (
+    NsHandle            NamedField, 
+    UINT32              *Value);
+
+INT32
+SetMethodValue (
+    INT32               Index, 
+    OBJECT_DESCRIPTOR   *ObjDesc, 
+    OBJECT_DESCRIPTOR   *ObjDesc2);
+
+INT32
+GetMethodValue (
+    INT32               Index, 
+    OBJECT_DESCRIPTOR   *ObjDesc);
+
+NsType
+GetMethodValTyp (
+    INT32               Index);
+
+void 
+SetWhy (
+    char                *Function, 
+    char                *Case, 
+    char                *Description);
+
+void
+AmlAppendBlockOwner (
+    void                *Owner);
+
+void 
+ShowHexValue (
+    INT32               ByteCount, 
+    UINT8               *AmlPtr, 
+    OpMode              LoadExecMode, 
+    INT32               LeadSpace);
+
+
+
+UINT8 *
+ConsumeAMLByte (
+    size_t              Bytes);
+
 
 
 #endif /* __AML_H__ */
