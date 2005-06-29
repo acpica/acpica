@@ -158,6 +158,10 @@ const char *
 AcpiFormatException (
     ACPI_STATUS             Exception);
 
+ACPI_STATUS
+AcpiPurgeCachedObjects (
+    void);
+
 
 /*
  * ACPI Memory manager
