@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.68 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2023"
-#define CompilerCreatorRevision     0x02002023  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2028"
+#define CompilerCreatorRevision     0x02002028  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
@@ -451,6 +451,34 @@ CgCloseTable (void);
 
 void
 CgWriteNode (
+    ASL_PARSE_NODE          *Node);
+
+
+/* 
+ * asltransform - parse tree transformations
+ */
+
+ACPI_STATUS
+TrAmlTransformWalk (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+
+void
+TrTransformSubtree (
+    ASL_PARSE_NODE          *Node);
+
+void
+TrDoSwitch (
+    ASL_PARSE_NODE          *Node);
+
+void
+TrDoDefinitionBlock (
+    ASL_PARSE_NODE          *Node);
+
+void
+TrDoElseif (
     ASL_PARSE_NODE          *Node);
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -460,7 +460,7 @@ AnGetBtype (
 
         if (PsNode->ParseOpcode == METHODCALL)
         {
-            ReferencedNode = NsNode->Object;
+            ReferencedNode = (ASL_PARSE_NODE *) NsNode->Object;
             if (!ReferencedNode)
             {
                printf ("No back ptr to PsNode: type %X\n", NsNode->Type);
@@ -1057,7 +1057,7 @@ AnMethodTypingWalkEnd (
                  * The method is untyped at this time (typically a forward reference).
                  * We must recursively type the method here
                  */
-                TrWalkParseTree (Node->Child->NsNode->Object, 
+                TrWalkParseTree ((ASL_PARSE_NODE *) Node->Child->NsNode->Object, 
                         ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
                         AnMethodTypingWalkEnd, NULL);
 
