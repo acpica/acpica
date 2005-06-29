@@ -232,18 +232,14 @@ AmlAppendOperandDiag (
     ACPI_OBJECT_INTERNAL    **Operands,
     INT32                   NumOperands)
 {
-/* TBD:    ACPI_OBJECT_INTERNAL    MthDesc; */
-
-
-/* TBD: Rparser only    AmlGetCurrentLocation (&MthDesc); */
 
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
-                    FileName, LineNum, PsGetOpcodeName (OpCode), NULL /*MthDesc.Method.Pcode*/));
+                    FileName, LineNum, PsGetOpcodeName (OpCode), NULL));
 
     if (GetDebugLevel () > 0)
     {
         DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (OpCode),
-                      NumOperands, "after PrepStack failed");
+                        NumOperands, "after PrepStack failed");
     }
 }
 
