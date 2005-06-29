@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.179 $
+ *       $Revision: 1.180 $
  *
  *****************************************************************************/
 
@@ -440,25 +440,26 @@ typedef UINT8                           ACPI_OBJECT_TYPE8;
 #define INTERNAL_TYPE_NOTIFY            22 /* 0x16  */
 #define INTERNAL_TYPE_ADDRESS_HANDLER   23 /* 0x17  */
 #define INTERNAL_TYPE_RESOURCE          24 /* 0x18  */
+#define INTERNAL_TYPE_RESOURCE_FIELD    25 /* 0x19  */
 
 
-#define INTERNAL_TYPE_NODE_MAX          24
+#define INTERNAL_TYPE_NODE_MAX          25
 
 /* These are pseudo-types because there are never any namespace nodes with these types */
 
-#define INTERNAL_TYPE_FIELD_DEFN        25 /* 0x19  Name, ByteConst, multiple FieldElement */
-#define INTERNAL_TYPE_BANK_FIELD_DEFN   26 /* 0x1A  2 Name,DWordConst,ByteConst,multi FieldElement */
-#define INTERNAL_TYPE_INDEX_FIELD_DEFN  27 /* 0x1B  2 Name, ByteConst, multiple FieldElement */
-#define INTERNAL_TYPE_IF                28 /* 0x1C  */
-#define INTERNAL_TYPE_ELSE              29 /* 0x1D  */
-#define INTERNAL_TYPE_WHILE             30 /* 0x1E  */
-#define INTERNAL_TYPE_SCOPE             31 /* 0x1F  Name, multiple Node */
-#define INTERNAL_TYPE_DEF_ANY           32 /* 0x20  type is Any, suppress search of enclosing scopes */
-#define INTERNAL_TYPE_EXTRA             33 /* 0x21  */
+#define INTERNAL_TYPE_FIELD_DEFN        26 /* 0x1A  Name, ByteConst, multiple FieldElement */
+#define INTERNAL_TYPE_BANK_FIELD_DEFN   27 /* 0x1B  2 Name,DWordConst,ByteConst,multi FieldElement */
+#define INTERNAL_TYPE_INDEX_FIELD_DEFN  28 /* 0x1C  2 Name, ByteConst, multiple FieldElement */
+#define INTERNAL_TYPE_IF                29 /* 0x1D  */
+#define INTERNAL_TYPE_ELSE              30 /* 0x1E  */
+#define INTERNAL_TYPE_WHILE             31 /* 0x1F  */
+#define INTERNAL_TYPE_SCOPE             32 /* 0x20  Name, multiple Node */
+#define INTERNAL_TYPE_DEF_ANY           33 /* 0x21  type is Any, suppress search of enclosing scopes */
+#define INTERNAL_TYPE_EXTRA             34 /* 0x22  */
 
-#define INTERNAL_TYPE_MAX               33
+#define INTERNAL_TYPE_MAX               34
 
-#define INTERNAL_TYPE_INVALID           34
+#define INTERNAL_TYPE_INVALID           35
 #define ACPI_TYPE_NOT_FOUND             0xFF
 
 
