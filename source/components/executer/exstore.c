@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.174 $
+ *              $Revision: 1.176 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -270,8 +270,8 @@ AcpiExStore (
         case ACPI_TYPE_INTEGER:
 
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%8.8X%8.8X\n",
-                    ACPI_HIWORD (SourceDesc->Integer.Value),
-                    ACPI_LOWORD (SourceDesc->Integer.Value)));
+                    ACPI_HIDWORD (SourceDesc->Integer.Value),
+                    ACPI_LODWORD (SourceDesc->Integer.Value)));
             break;
 
 
