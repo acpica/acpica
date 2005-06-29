@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -225,6 +225,19 @@ AnSemanticAnalysisWalkBegin (
         break;
         
 
+    case RETURN:
+
+        if (Node->Child)
+        {
+            MethodInfo->NumReturnWithValue++;
+        }
+        else
+        {
+            MethodInfo->NumReturnNoValue++;
+        }
+        break;
+
+
     case NAMESEG:
     case NAMESTRING:
 
@@ -257,6 +270,7 @@ AnSemanticAnalysisWalkEnd (
 {
     ASL_ANALYSIS_WALK_INFO      *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
     ASL_METHOD_INFO             *MethodInfo;
+    ASL_PARSE_NODE              *Next;
 
 
     UtPrintFormattedName (Node->ParseOpcode, Level);
@@ -269,9 +283,38 @@ AnSemanticAnalysisWalkEnd (
 
         MethodInfo = WalkInfo->MethodStack;
         WalkInfo->MethodStack = MethodInfo->Next;
-        free (MethodInfo);
+
+        /*
+         * Check if last statement is a return
+         */
+        Next = ASL_GET_CHILD_NODE (Node);
+        while (Next)
+        {
+            if ((!Next->Peer) &&
+                (Next->ParseOpcode != RETURN))
+            {
+                MethodInfo->NumReturnNoValue++;
+            }
+
+            Next = ASL_GET_PEER_NODE (Next);
+        }
+
+
+        /*
+         * Check for case where some return statements have a return value
+         * and some do not.  Exit without a return statement is a return with
+         * no value
+         */
+
+        if (MethodInfo->NumReturnNoValue &&
+            MethodInfo->NumReturnWithValue)
+        {
+            printf ("%s %4d Warning: Method %s contains mixed return types\n", 
+                Gbl_InputFilename, Node->LineNumber, Node->ExternalName);
+        }
 
         DbgPrint ("Method obj %p popped\n", MethodInfo);
+        free (MethodInfo);
 
         break;
     }
