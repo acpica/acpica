@@ -375,10 +375,15 @@ AcpiCmDeleteObjectDesc (
 
     if (Object->Common.Next)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
-            Object));
-        return_VOID;
+        /* Some objects actually use the Next link field */
+
+        if (Object->Common.Type != ACPI_TYPE_REGION)
+        {
+            DEBUG_PRINT (ACPI_ERROR,
+                ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
+                Object));
+            return_VOID;
+        }
     }
 
 
