@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -133,25 +133,63 @@
 
 /*****************************************************************************
  * 
- * ACPI Table globals 
+ * Debug support
  *
  ****************************************************************************/
 
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      * RSDP;
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       * RSDT;
-ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     * FACS;
-ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        * FACP;
-ACPI_EXTERN APIC_TABLE                          * MAPIC;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * DSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * PSDT;
+/* Runtime configuration of debug print levels */
 
-/* 
- * TBD - There may be multiple SSDTs so a single pointer is not sufficient 
- * to tag them all.  An array or linked list of SSDT pointers will be
- * necessary. 
+extern      UINT32              DebugLevel;
+extern      UINT32              DebugLayer;
+
+
+/* Procedure nesting level for debug output */
+
+extern      UINT32              Gbl_NestingLevel;
+
+
+
+/*****************************************************************************
+ * 
+ * ACPI Table globals 
+ * 
+ ****************************************************************************/
+
+/*
+ * Table pointers.
+ * Although these pointers are somewhat redundant with the global AcpiTable,
+ * they are convenient because they are typed pointers.
+ *
+ * These tables are single-table only; meaning that there can be at most one
+ * of each in the system.  Each global points to the actual table.
+ *
  */
-ACPI_EXTERN ACPI_TABLE_HEADER                   * SSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      *Gbl_RSDP;
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       *Gbl_RSDT;
+ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     *Gbl_FACS;
+ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        *Gbl_FACP;
+ACPI_EXTERN APIC_TABLE                          *Gbl_APIC;
+ACPI_EXTERN ACPI_TABLE_HEADER                   *Gbl_DSDT;
+ACPI_EXTERN ACPI_TABLE_HEADER                   *Gbl_SBST;
+/* 
+ * Since there may be multiple SSDTs and PSDTS, a single pointer is not 
+ * sufficient; Therefore, there isn't one!
+ */
+
+
+/*
+ * ACPI Table info arrays
+ */
+extern      ACPI_TABLE_DESC     Gbl_AcpiTables[NUM_ACPI_TABLES];
+extern      UINT8               Gbl_AcpiTableFlags[NUM_ACPI_TABLES];
+extern      char               *Gbl_AcpiTableNames[NUM_ACPI_TABLES];
+
+/*
+ * Predefined mutex objects.  This array contains the 
+ * actual OS mutex handles, indexed by the local ACPI_MUTEX_HANDLEs.
+ * (The table maps local handles to the real OS handles)
+ */
+ACPI_EXTERN ACPI_MUTEX          Gbl_AcpiMutexTable [NUM_MTX];
 
 
 
@@ -161,33 +199,20 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
  *
  ****************************************************************************/
 
-ACPI_EXTERN BOOLEAN             GlobalLockSet;
-ACPI_EXTERN INT32               Capabilities;
+ACPI_EXTERN BOOLEAN             Gbl_GlobalLockSet;
+ACPI_EXTERN INT32               Gbl_RestoreAcpiChipset;
+ACPI_EXTERN UINT16              Gbl_Pm1EnableRegisterSave;
+ACPI_EXTERN UINT8              *Gbl_Gpe0EnableRegisterSave;
+ACPI_EXTERN UINT8              *Gbl_Gpe1EnableRegisterSave;
+ACPI_EXTERN UINT32              Gbl_OriginalMode;
+ACPI_EXTERN INT32               Gbl_EdgeLevelSave;
+ACPI_EXTERN INT32               Gbl_IrqEnableSave;
+ACPI_EXTERN UINT32              Gbl_RsdpOriginalLocation; 
 
-ACPI_EXTERN INT32               RestoreAcpiChipset;
-ACPI_EXTERN UINT16              Pm1EnableRegisterSave;
-ACPI_EXTERN UINT8               *Gpe0EnableRegisterSave;
-ACPI_EXTERN UINT8               *Gpe1EnableRegisterSave;
-ACPI_EXTERN INT32               OriginalMode;
-ACPI_EXTERN INT32               EdgeLevelSave;
-ACPI_EXTERN INT32               IrqEnableSave;
-extern char                     *ExceptionNames[];
 
-/* File I/O globals */
-
-ACPI_EXTERN char                *DsdtFile;
-ACPI_EXTERN char                *OutputFile;
-ACPI_EXTERN char                *InputFile;
-ACPI_EXTERN UINT32              RsdpOriginalLocation; 
-
-/* Procedure nesting level for debug output */
-
-extern UINT32                   NestingLevel;
-
-/* Runtime configuration of debug print levels */
-
-extern UINT32                   DebugLevel;
-extern UINT32                   DebugLayer;
+extern      UINT32              Gbl_SystemFlags;
+extern      UINT32              Gbl_StartupFlags;
+extern      char                *Gbl_ExceptionNames[];
 
 
 
@@ -197,20 +222,21 @@ extern UINT32                   DebugLayer;
  *
  ****************************************************************************/
 
-#define NUM_NS_TYPES            37
+#define NUM_NS_TYPES            TYPE_Invalid+1
 #define NUM_PREDEFINED_NAMES    9
 
-extern SCOPE_STACK              ScopeStack[];
-extern SCOPE_STACK              *CurrentScope;
-extern char                     BadType[];
-extern char                     *NsTypeNames[NUM_NS_TYPES];
-extern INT32                    NsProperties[NUM_NS_TYPES];
-extern PREDEFINED_NAMES         PreDefinedNames [NUM_PREDEFINED_NAMES];
+/* Scope stack */
 
+ACPI_EXTERN SCOPE_STACK         Gbl_ScopeStack[MAX_SCOPE_NESTING];
+ACPI_EXTERN SCOPE_STACK        *Gbl_CurrentScope;
 
-ACPI_EXTERN INT32               NamedObjectErr;     /* indicate if inc_error should be called */
-ACPI_EXTERN NAME_TABLE_ENTRY    RootObjStruct;
-ACPI_EXTERN NAME_TABLE_ENTRY    *RootObject;
+ACPI_EXTERN NAME_TABLE_ENTRY    Gbl_RootObjStruct;
+ACPI_EXTERN NAME_TABLE_ENTRY   *Gbl_RootObject;
+
+extern      char                Gbl_BadType[];
+extern      char               *Gbl_NsTypeNames[NUM_NS_TYPES];
+extern      INT32               Gbl_NsProperties[NUM_NS_TYPES];
+extern      PREDEFINED_NAMES    Gbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
 
 
 
@@ -220,47 +246,52 @@ ACPI_EXTERN NAME_TABLE_ENTRY    *RootObject;
  *
  ****************************************************************************/
 
-/* Package stack */
+/* 
+ * Package stack.  used for keeping track of nested AML packages.
+ * Grows upwards. 
+ */
 
-extern INT32                    PkgStackLevel;
-extern INT32                    PkgStack_Len[AML_PKG_MAX_NEST];
-extern UINT8                    *PkgStack_Code[AML_PKG_MAX_NEST];
+ACPI_EXTERN INT32               Gbl_PkgStackLevel;
+ACPI_EXTERN INT32               Gbl_PkgStack_Len[AML_PKG_MAX_NEST];
+ACPI_EXTERN UINT8               *Gbl_PkgStack_Code[AML_PKG_MAX_NEST];
 
 /* Object stack */
 
-extern void                     *ObjStack[AML_EXPR_MAX_NEST];
-extern INT32                    ObjStackTop;
+ACPI_EXTERN void               *Gbl_ObjStack[AML_EXPR_MAX_NEST];
+ACPI_EXTERN INT32               Gbl_ObjStackTop;
 
 /* Method stack - contains arguments and locals */
-/* TBD: Split into parallel arg stack and local stack */
 
-extern ACPI_OBJECT_INTERNAL     *MethodStack[AML_METHOD_MAX_NEST][MTH_ENTRY_SIZE];
-extern INT32                    MethodStackTop;
+ACPI_EXTERN METHOD_STACK        Gbl_MethodStack[AML_METHOD_MAX_NEST];
+ACPI_EXTERN INT32               Gbl_MethodStackTop;
 
 /* Base of AML block, and pointer to current location in it */
 
-ACPI_EXTERN UINT8               *PCodeBase;
-ACPI_EXTERN UINT8               *PCode;
+ACPI_EXTERN UINT8              *Gbl_PCodeBase;
+ACPI_EXTERN UINT8              *Gbl_PCode;
 
 /* 
  * Length of AML block, and remaining length of current package.
- * PCodeBlockLen is used in IsInPCodeBlock()
  */
-ACPI_EXTERN INT32               PCodeBlockLen;
-ACPI_EXTERN INT32               PCodeLen;
+ACPI_EXTERN UINT32              Gbl_PCodeBlockLen;
+ACPI_EXTERN UINT32              Gbl_PCodeLen;
 
-ACPI_EXTERN UINT32              BufSeq;             /* Counts allocated Buffer descriptors */
-ACPI_EXTERN INT32               SkipField;
-ACPI_EXTERN INT32               LastPkgLen;
-ACPI_EXTERN UINT8               LastFieldFlag;
-extern char                     *FENames[];
+ACPI_EXTERN UINT32              Gbl_BufSeq;             /* Counts allocated Buffer descriptors */
+ACPI_EXTERN INT32               Gbl_SkipField;
+ACPI_EXTERN UINT32              Gbl_LastPkgLen;
+ACPI_EXTERN UINT8               Gbl_LastFieldFlag;
+ACPI_EXTERN INT32               Gbl_NamedObjectErr;     /* Indicate if inc_error should be called */
 
 /* 
- * Handle to the last method found
- * used during pass1 of load 
+ * Handle to the last method found - used during pass1 of load 
  */
-ACPI_EXTERN ACPI_HANDLE         LastMethod;
+ACPI_EXTERN ACPI_HANDLE         Gbl_LastMethod;
 
+/*
+ * Table of Address Space handlers
+ */
+
+ACPI_EXTERN ADDRESS_SPACE_INFO  Gbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
 
 
 
@@ -270,14 +301,28 @@ ACPI_EXTERN ACPI_HANDLE         LastMethod;
  *
  ****************************************************************************/
 
-extern UINT32         	        EventCount[NUM_FIXED_EVENTS];   
-extern FIXED_EVENT_HANDLER      FixedEventHandlers[NUM_FIXED_EVENTS];
+ACPI_EXTERN FIXED_EVENT_HANDLER Gbl_FixedEventHandlers[NUM_FIXED_EVENTS];
 
-ACPI_EXTERN ACPI_HANDLE         GpeObjHandle;
-ACPI_EXTERN UINT32              SciHandle;
-ACPI_EXTERN UINT32              GpeRegisterCount;
-ACPI_EXTERN GPE_REGISTERS       *GpeRegisters;
-ACPI_EXTERN GPE_LEVEL_INFO      *GpeInfo;
+ACPI_EXTERN ACPI_HANDLE         Gbl_GpeObjHandle;
+ACPI_EXTERN UINT32              Gbl_GpeRegisterCount;
+ACPI_EXTERN GPE_REGISTERS      *Gbl_GpeRegisters;
+ACPI_EXTERN GPE_LEVEL_INFO     *Gbl_GpeInfo;
+
+/* 
+ * Gpe validation and translation table
+ * Indexed by the GPE number, returns GPE_INVALID if the GPE is not supported.
+ * Otherwise, returns a valid index into the global GPE table.
+ *
+ * This table is needed because the GPE numbers supported by block 1 do not
+ * have to be contiguous with the GPE numbers supported by block 0.
+ */
+ACPI_EXTERN UINT8               Gbl_GpeValid [NUM_GPE];
+
+/* Event counter for debug only */
+
+#ifdef ACPI_DEBUG
+ACPI_EXTERN UINT32              Gbl_EventCount[NUM_FIXED_EVENTS];   
+#endif
 
 
 

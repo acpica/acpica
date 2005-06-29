@@ -217,7 +217,7 @@ INT32
 EvSciCount (
     ACPI_EVENT_TYPE         Event);
 
-#define DEBUG_INCREMENT_EVENT_COUNT(a)   EventCount[a]++;
+#define DEBUG_INCREMENT_EVENT_COUNT(a)   Gbl_EventCount[a]++;
 
 #else
 

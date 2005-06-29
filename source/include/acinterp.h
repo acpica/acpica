@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -118,27 +118,40 @@
 #define __INTERPRETER_H__
 
 
-#define AML_END_OF_BLOCK    -1
-
-#include <datatypes.h>
+#include <acpitypes.h>
 #include <acpiobj.h>
 
 
-/* 
- * Macro to test for out-of-range subscript
- * No parens needed around Array in expansion since the actual parameter
- * must be the name of a declared array and cannot be an expression.
- */
+/* Interpreter constants */
 
-#define OUTRANGE(Subscript, Array) \
-    (sizeof(Array[0]) == 0 ||\
-    (UINT32)(Subscript) >= (sizeof(Array)/sizeof(Array[0])))
-
-
+#define AML_END_OF_BLOCK        -1
 #define PUSH_PKG_LENGTH         1
 #define DO_NOT_PUSH_PKG_LENGTH  0
 
 
+#define STACK_TOP               0
+#define STACK_BOTTOM            (UINT32) -1
+
+
+/* For AmlMthStackSetValue */
+
+#define MTH_TYPE_LOCAL      0
+#define MTH_TYPE_ARG        1
+
+
+/*
+ * iapi - External interpreter interfaces
+ */
+
+ACPI_STATUS
+AmlLoadTable (
+    ACPI_TABLE_TYPE         TableId);
+
+ACPI_STATUS
+AmlExecuteMethod (
+    UINT8                   *Pcode, 
+    UINT32                  Length, 
+    ACPI_OBJECT_INTERNAL    **Params);
 
 
 /*
@@ -182,7 +195,7 @@ AmlExecMatch (
  * ievalue - ACPI AML (p-code) execution - get value functions
  */
 
-INT32
+ACPI_STATUS
 AmlGetRvalue (
     ACPI_OBJECT_INTERNAL    **StackPtr);
 
@@ -230,19 +243,34 @@ AmlMthStackLevel (
 
 ACPI_OBJECT_TYPE
 AmlMthStackGetType (
-    INT32                   Index);
+    UINT32                  Type,
+    UINT32                  Index);
 
 ACPI_STATUS
 AmlMthStackGetValue (
-    INT32                   Index, 
+    UINT32                  Type,
+    UINT32                  Index, 
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
 AmlMthStackSetValue (
-    INT32                   Index, 
+    UINT32                  Type,
+    UINT32                  Index, 
     ACPI_OBJECT_INTERNAL    *ObjDesc, 
     ACPI_OBJECT_INTERNAL    *ObjDesc2);
 
+ACPI_STATUS
+AmlMthStackPop (
+    void);
+
+ACPI_STATUS
+AmlMthStackPush (
+    ACPI_OBJECT_INTERNAL    **Params);
+
+ACPI_STATUS
+AmlMthStackDeleteValue (
+    UINT32                  Type,
+    UINT32                  Index) ;
 
 /*
  * ieostack - object stack utilities
@@ -252,7 +280,7 @@ UINT32
 AmlObjStackLevel (
      void);
 void
-AmlClearObjStack (
+AmlObjStackClearAll (
     void);
 
 ACPI_STATUS
@@ -260,8 +288,54 @@ AmlPrepObjStack (
     char                    *Types);
 
 ACPI_STATUS
-AmlObjPushIfExec (
+AmlObjStackPushIfExec (
     OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlObjStackPush (
+    void);
+
+void *
+AmlObjStackPopValue (
+    void);
+
+ACPI_STATUS
+AmlObjStackPop (
+    UINT32                  StackEntries);
+
+ACPI_OBJECT_INTERNAL **
+AmlObjStackGetPtr (
+    UINT32                  OffsetFromStackTop);
+
+void *
+AmlObjStackGetValue (
+    UINT32                  OffsetFromStackTop);
+
+void
+AmlObjStackSetValue (
+    UINT32                  OffsetFromStackTop,
+    void                    *StackEntry);
+
+void *
+AmlObjStackRemoveValue (
+    UINT32                  OffsetFromStackTop);
+
+void
+AmlObjStackDeleteValue (
+    UINT32                  OffsetFromStackTop);
+
+ACPI_STATUS
+AmlObjStackClearUntil (
+    ACPI_OBJECT_TYPE        Type);
+
+
+ACPI_OBJECT_INTERNAL **
+AmlObjStackGetTopPtr (
+    void);
+
+void
+AmlObjStackClearTop (
+    void);
 
 
 
@@ -279,17 +353,17 @@ AmlClearPkgStack (
 
 ACPI_STATUS
 AmlPkgPushLength (
-    INT32                   Length, 
+    UINT32                  Length, 
     OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlPkgPushExecLength (
-    INT32                   Length);
+    UINT32                  Length);
 
 ACPI_STATUS
 AmlPkgPushExec (
     UINT8                   *Code, 
-    INT32                   Len);
+    UINT32                  Len);
 
 ACPI_STATUS
 AmlPkgPopLength (
@@ -358,15 +432,16 @@ OsReleaseGlobalLock(
  */
 
 ACPI_STATUS
-AmlExecuteMethod (
-    INT32                   Offset, 
-    INT32                   Len, 
-    ACPI_OBJECT_INTERNAL    **Params);
-
-ACPI_STATUS
 AmlExecStore (
     ACPI_OBJECT_INTERNAL    *op1, 
     ACPI_OBJECT_INTERNAL    *res);
+
+ACPI_STATUS
+AmlExecute (
+    UINT8                   *Pcode, 
+    UINT32                  Length, 
+    ACPI_OBJECT_INTERNAL    **Params);
+
 
 
 /*
@@ -434,9 +509,9 @@ AmlPeek (
 
 INT32
 AmlGetPCodeByte (
-    ACPI_PTRDIFF            Offset);
+    UINT8                   *Pcode);
 
-INT32
+UINT16
 AmlPeekOp (
     void);
 
@@ -453,14 +528,10 @@ void
 AmlConsumePackage (
     OPERATING_MODE          LoadExecMode);
 
-INT32
-AmlIsInPCodeBlock (
-    UINT8                   *Where);
-
 void
 AmlSetPCodeInput (
     UINT8                   *Base, 
-    INT32                   Len);
+    UINT32                  Length);
 
 ACPI_STATUS
 AmlSetMethod (
@@ -468,20 +539,20 @@ AmlSetMethod (
 
 ACPI_STATUS
 AmlPrepExec (
-    ACPI_PTRDIFF            Offset, 
-    INT32                   Len);
+    UINT8                   *Pcode, 
+    UINT32                  PcodeLength);
 
-ACPI_OBJECT_HANDLE
+ACPI_HANDLE
 AmlGetPCodeHandle (
     void);
 
 void
 AmlGetCurrentLocation (
-    METHOD_INFO             *Method);
+    ACPI_OBJECT_INTERNAL    *MethodDesc);
 
 void
 AmlSetCurrentLocation (
-    METHOD_INFO             *Method);
+    ACPI_OBJECT_INTERNAL    *MethodDesc);
 
 
 /*
@@ -523,7 +594,6 @@ AmlDoCode (
 
 ACPI_STATUS
 AmlDoDefinitionBlock (
-    char                    *name, 
     UINT8                   *addr, 
     INT32                   Length);
     
@@ -540,6 +610,76 @@ AmlDoFieldElement (
 ACPI_STATUS
 AmlDoPkg (
     ACPI_OBJECT_TYPE        Type, 
+    OPERATING_MODE          LoadExecMode);
+
+
+/*
+ * idopkobj - typed package routines for misc types
+ */
+
+ACPI_STATUS
+AmlDoPackagePkg (
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoDevicePkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoPowerPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoProcessorPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoMethodPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoBufferPkg (
+    OPERATING_MODE          LoadExecMode);
+
+
+/*
+ * idopkfld - typed package routines for field types
+ */
+
+ACPI_STATUS
+AmlDoDefFieldPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoBankFieldPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoIndexFieldPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+
+/*
+ * idopkctl - typed package routines for control types
+ */
+
+ACPI_STATUS
+AmlDoWhilePkg (
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoIfPkg (
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoElsePkg (
     OPERATING_MODE          LoadExecMode);
 
 
@@ -586,7 +726,7 @@ AmlAllocateNameString (
 
 INT32
 AmlGoodChar (
-    INT32                   c);
+    INT32                   Character);
 
 ACPI_STATUS
 AmlDoSeg (
@@ -672,7 +812,7 @@ AmlDoDWordConst (
 
 BOOLEAN
 AmlAcquireGlobalLock (
-    UINT16                  Rule);
+    UINT32                  Rule);
 
 ACPI_STATUS
 AmlReleaseGlobalLock (
@@ -693,6 +833,53 @@ INT32
 AmlDigitsNeeded (
     INT32                   Value, 
     INT32                   Base);
+
+
+/*
+ * ieregion - default OpRegion handlers
+ */
+
+ACPI_STATUS
+AmlSystemMemorySpaceHandler (
+    UINT32                  Function,
+    UINT32                  Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value,
+    void                    *Context);
+
+ACPI_STATUS
+AmlSystemIoSpaceHandler (
+    UINT32                  Function,
+    UINT32                  Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value,
+    void                    *Context);
+
+ACPI_STATUS
+AmlPciConfigSpaceHandler (
+    UINT32                  Function,
+    UINT32                  Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value,
+    void                    *Context);
+
+ACPI_STATUS
+AmlEmbeddedControllerSpaceHandler (
+    UINT32                  Function,
+    UINT32                  Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value,
+    void                    *Context);
+
+ACPI_STATUS
+AmlSmBusSpaceHandler (
+    UINT32                  Function,
+    UINT32                  Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value,
+    void                    *Context);
+
+
 
 
 #endif /* __INTERPRETER_H__ */
