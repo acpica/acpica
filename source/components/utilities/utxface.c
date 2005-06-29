@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -370,9 +370,17 @@ AcpiTerminate (void)
     AcpiUtMutexTerminate ();
 
 
+#ifdef ENABLE_DEBUGGER
+
+    /* Shut down the debugger */
+
+    AcpiDbTerminate ();
+#endif
+
     /* Now we can shutdown the OS-dependent layer */
 
     AcpiOsTerminate ();
+
 
     return_ACPI_STATUS (AE_OK);
 }
