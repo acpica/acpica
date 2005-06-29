@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmglobal");
+        MODULE_NAME         ("cmglobal")
 
 
 /******************************************************************************
@@ -222,31 +222,25 @@ UINT8                       AcpiGbl_NsProperties[] =
     NSP_NEWSCOPE | NSP_LOCAL,   /* 13 Thermal          */
     NSP_NORMAL,                 /* 14 BufferField      */
     NSP_NORMAL,                 /* 15 DdbHandle        */
-    NSP_NORMAL,                 /* 16 reserved         */
-    NSP_NORMAL,                 /* 17 reserved         */
-    NSP_NORMAL,                 /* 18 reserved         */
-    NSP_NORMAL,                 /* 19 reserved         */
-    NSP_NORMAL,                 /* 20 reserved         */
-    NSP_NORMAL,                 /* 21 reserved         */
-    NSP_NORMAL,                 /* 22 reserved         */
-    NSP_NORMAL,                 /* 23 reserved         */
-    NSP_NORMAL,                 /* 24 reserved         */
-    NSP_NORMAL,                 /* 25 DefField         */
-    NSP_NORMAL,                 /* 26 BankField        */
-    NSP_NORMAL,                 /* 27 IndexField       */
-    NSP_NORMAL,                 /* 28 DefFieldDefn     */
-    NSP_NORMAL,                 /* 29 BankFieldDefn    */
-    NSP_NORMAL,                 /* 30 IndexFieldDefn   */
-    NSP_NORMAL,                 /* 31 If               */
-    NSP_NORMAL,                 /* 32 Else             */
-    NSP_NORMAL,                 /* 33 While            */
-    NSP_NEWSCOPE,               /* 34 Scope            */
-    NSP_LOCAL,                  /* 35 DefAny           */
-    NSP_NORMAL,                 /* 36 Reference        */
-    NSP_NORMAL,                 /* 37 Alias            */
-    NSP_NORMAL,                 /* 38 Notify           */
-    NSP_NORMAL,                 /* 39 Address Handler  */
-    NSP_NORMAL                  /* 40 Invalid          */
+    NSP_NORMAL,                 /* 16 Debug Object     */
+    NSP_NORMAL,                 /* 17 DefField         */
+    NSP_NORMAL,                 /* 18 BankField        */
+    NSP_NORMAL,                 /* 19 IndexField       */
+    NSP_NORMAL,                 /* 20 Reference        */
+    NSP_NORMAL,                 /* 21 Alias            */
+    NSP_NORMAL,                 /* 22 Notify           */
+    NSP_NORMAL,                 /* 23 Address Handler  */
+    NSP_NORMAL,                 /* 24 DefFieldDefn     */
+    NSP_NORMAL,                 /* 25 BankFieldDefn    */
+    NSP_NORMAL,                 /* 26 IndexFieldDefn   */
+    NSP_NORMAL,                 /* 27 If               */
+    NSP_NORMAL,                 /* 28 Else             */
+    NSP_NORMAL,                 /* 29 While            */
+    NSP_NEWSCOPE,               /* 30 Scope            */
+    NSP_LOCAL,                  /* 31 DefAny           */
+    NSP_NORMAL,                 /* 32 Method Arg       */
+    NSP_NORMAL,                 /* 33 Method Local     */
+    NSP_NORMAL                  /* 34 Invalid          */
 };
 
 
@@ -287,7 +281,7 @@ ACPI_INIT_DATA AcpiGbl_AcpiInitData;
  *
  ******************************************************************************/
 
-INT8                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
+NATIVE_CHAR                 *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
 
 
 /*****************************************************************************
@@ -302,7 +296,7 @@ INT8                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n"
  *
  ****************************************************************************/
 
-INT8 *
+NATIVE_CHAR *
 AcpiCmGetMutexName (
     UINT32                  MutexId)
 {
@@ -325,52 +319,46 @@ AcpiCmGetMutexName (
  * indicatewhat type is actually going to be stored for this entry.
  */
 
-static INT8                 AcpiGbl_BadType[] = "UNDEFINED";
+static NATIVE_CHAR          AcpiGbl_BadType[] = "UNDEFINED";
 #define TYPE_NAME_LENGTH    9                       /* Maximum length of each string */
 
-static INT8                 *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
+static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
 {
-    "Untyped",
-    "Number",
-    "String",
-    "Buffer",
-    "Package",
-    "FieldUnit",
-    "Device",
-    "Event",
-    "Method",
-    "Mutex",
-    "Region",
-    "Power",
-    "Processor",
-    "Thermal",
-    "BufferFld",
-    "DdbHandle",
-     AcpiGbl_BadType,
-     AcpiGbl_BadType,
-     AcpiGbl_BadType,
-     AcpiGbl_BadType,
-     AcpiGbl_BadType,
-     AcpiGbl_BadType,
-     AcpiGbl_BadType,
-     AcpiGbl_BadType,
-     AcpiGbl_BadType,
-    "DefField",
-    "BnkField",
-    "IdxField",
-    "DefFldDfn",
-    "BnkFldDfn",
-    "IdxFldDfn",
-    "If",
-    "Else",
-    "While",
-    "Scope",
-    "DefAny",
-    "Reference",
-    "Alias",
-    "Notify",
-    "AddrHndlr",
-    "Invalid"
+    /* 00 */ "Untyped",
+    /* 01 */ "Number",
+    /* 02 */ "String",
+    /* 03 */ "Buffer",
+    /* 04 */ "Package",
+    /* 05 */ "FieldUnit",
+    /* 06 */ "Device",
+    /* 07 */ "Event",
+    /* 08 */ "Method",
+    /* 09 */ "Mutex",
+    /* 10 */ "Region",
+    /* 11 */ "Power",
+    /* 12 */ "Processor",
+    /* 13 */ "Thermal",
+    /* 14 */ "BufferFld",
+    /* 15 */ "DdbHandle",
+    /* 16 */ "DebugObj",
+    /* 17 */ "DefField",
+    /* 18 */ "BnkField",
+    /* 19 */ "IdxField",
+    /* 20 */ "Reference",
+    /* 21 */ "Alias",
+    /* 22 */ "Notify",
+    /* 23 */ "AddrHndlr",
+    /* 24 */ "DefFldDfn",
+    /* 25 */ "BnkFldDfn",
+    /* 26 */ "IdxFldDfn",
+    /* 27 */ "If",
+    /* 28 */ "Else",
+    /* 29 */ "While",
+    /* 30 */ "Scope",
+    /* 31 */ "DefAny",
+    /* 32 */ "MethodArg",
+    /* 33 */ "MethodLcl",
+    /* 34 */ "Invalid"
 };
 
 
@@ -386,7 +374,7 @@ static INT8                 *AcpiGbl_NsTypeNames[] =    /* printable names of AC
  *
  ****************************************************************************/
 
-INT8 *
+NATIVE_CHAR *
 AcpiCmGetTypeName (
     UINT32                  Type)
 {
@@ -444,11 +432,11 @@ AcpiCmValidObjectType (
  *
  ****************************************************************************/
 
-INT8 *
+NATIVE_CHAR *
 AcpiCmFormatException (
     ACPI_STATUS             Status)
 {
-    INT8                    *Exception = "UNKNOWN_STATUS";
+    NATIVE_CHAR             *Exception = "UNKNOWN_STATUS";
     ACPI_STATUS             SubStatus;
 
 
@@ -688,7 +676,7 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
     /* Interpreter */
 
     AcpiGbl_BufSeq                      = 0;
-    AcpiGbl_NamedObjectErr              = FALSE;
+    AcpiGbl_NodeErr                     = FALSE;
 
     /* Parser */
 
@@ -704,18 +692,15 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
 
     /* Namespace */
 
-    AcpiGbl_RootNameTable.NextTable     = NULL;
-    AcpiGbl_RootNameTable.ParentEntry   = NULL;
-    AcpiGbl_RootNameTable.ParentTable   = NULL;
+    AcpiGbl_RootNode                    = NULL;
 
-    AcpiGbl_RootObject                  = AcpiGbl_RootNameTable.Entries;
-
-    AcpiGbl_RootObject->Name            = ACPI_ROOT_NAME;
-    AcpiGbl_RootObject->DataType        = ACPI_DESC_TYPE_NAMED;
-    AcpiGbl_RootObject->Type            = ACPI_TYPE_ANY;
-    AcpiGbl_RootObject->ThisIndex       = 0;
-    AcpiGbl_RootObject->ChildTable      = NULL;
-    AcpiGbl_RootObject->Object          = NULL;
+    AcpiGbl_RootNodeStruct.Name         = ACPI_ROOT_NAME;
+    AcpiGbl_RootNodeStruct.DataType     = ACPI_DESC_TYPE_NAMED;
+    AcpiGbl_RootNodeStruct.Type         = ACPI_TYPE_ANY;
+    AcpiGbl_RootNodeStruct.Child        = NULL;
+    AcpiGbl_RootNodeStruct.Peer         = NULL;
+    AcpiGbl_RootNodeStruct.Object       = NULL;
+    AcpiGbl_RootNodeStruct.Flags        = ANOBJ_END_OF_PEER_LIST;
 
     /* Memory allocation metrics - compiled out in non-debug mode. */
 
