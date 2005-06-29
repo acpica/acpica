@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("dswscope");
+        MODULE_NAME         ("dswscope")
 
 
 #define STACK_POP(head) head
@@ -164,17 +164,17 @@ AcpiDsScopeStackClear (
  *
  * FUNCTION:    AcpiDsScopeStackPush
  *
- * PARAMETERS:  *NewScope,              - Name to be made current
- *              Type,                   - Type of frame being pushed
+ * PARAMETERS:  *Node,              - Name to be made current
+ *              Type,               - Type of frame being pushed
  *
  * DESCRIPTION: Push the current scope on the scope stack, and make the
- *              passed nte current.
+ *              passed Node current.
  *
  ***************************************************************************/
 
 ACPI_STATUS
 AcpiDsScopeStackPush (
-    ACPI_NAME_TABLE         *NewScope,
+    ACPI_NAMESPACE_NODE     *Node,
     OBJECT_TYPE_INTERNAL    Type,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -184,7 +184,7 @@ AcpiDsScopeStackPush (
     FUNCTION_TRACE ("DsScopeStackPush");
 
 
-    if (!NewScope)
+    if (!Node)
     {
         /*  invalid scope   */
 
@@ -210,7 +210,7 @@ AcpiDsScopeStackPush (
 
     /* Init new scope object */
 
-    ScopeInfo->Scope.NameTable  = NewScope;
+    ScopeInfo->Scope.Node  = Node;
     ScopeInfo->Common.Value = (UINT16) Type;
 
     /* Push new scope object onto stack */

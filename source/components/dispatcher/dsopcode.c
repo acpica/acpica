@@ -1,8 +1,8 @@
-
 /******************************************************************************
  *
- * Module Name: dsopcode - Dispatcher Op Region support
- *                          and handling of "control" opcodes
+ * Module Name: dsopcode - Dispatcher Op Region support and handling of
+ *                         "control" opcodes
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 #include "actables.h"
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dsopcode");
+        MODULE_NAME         ("dsopcode")
 
 
 /*****************************************************************************
@@ -145,12 +145,12 @@
 
 ACPI_STATUS
 AcpiDsGetRegionArguments (
-    ACPI_OBJECT_INTERNAL    *RgnDesc)
+    ACPI_OPERAND_OBJECT     *RgnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *MethodDesc;
-    ACPI_NAMED_OBJECT       *Entry;
-    ACPI_GENERIC_OP         *Op;
-    ACPI_GENERIC_OP         *RegionOp;
+    ACPI_OPERAND_OBJECT     *MethodDesc;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_PARSE_OBJECT       *Op;
+    ACPI_PARSE_OBJECT       *RegionOp;
     ACPI_STATUS             Status;
     ACPI_TABLE_DESC         *TableDesc;
 
@@ -165,7 +165,7 @@ AcpiDsGetRegionArguments (
 
 
     MethodDesc = RgnDesc->Region.Method;
-    Entry = RgnDesc->Region.Nte;
+    Node = RgnDesc->Region.Node;
 
 
     /*
@@ -173,19 +173,19 @@ AcpiDsGetRegionArguments (
      * OpRegion tree
      */
 
-    Op = AcpiPsAllocOp (AML_REGION_OP);
+    Op = AcpiPsAllocOp (AML_SCOPE_OP);
     if (!Op)
     {
-        return AE_NO_MEMORY;
+        return (AE_NO_MEMORY);
     }
 
-    /* Save the NTE for use in AcpiPsParseAml */
+    /* Save the Node for use in AcpiPsParseAml */
 
-    Op->AcpiNamedObject = AcpiNsGetParentEntry (Entry);
+    Op->Node = AcpiNsGetParentObject (Node);
 
     /* Get a handle to the parent ACPI table */
 
-    Status = AcpiTbHandleToObject (Entry->OwnerId, &TableDesc);
+    Status = AcpiTbHandleToObject (Node->OwnerId, &TableDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -194,21 +194,46 @@ AcpiDsGetRegionArguments (
     /* Parse the entire OpRegion declaration, creating a parse tree */
 
     Status = AcpiPsParseAml (Op, MethodDesc->Method.Pcode,
-                                MethodDesc->Method.PcodeLength, 0);
-    if (ACPI_SUCCESS (Status))
+                                MethodDesc->Method.PcodeLength, 0,
+                                NULL, NULL, NULL, AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
+
+    if (ACPI_FAILURE (Status))
     {
-        /* Get and init the actual RegionOp created above */
-
-        RegionOp = Op->Value.Arg;
-        RegionOp->AcpiNamedObject = Entry;
-
-        /* AcpiEvaluate the address and length arguments for the OpRegion */
-
-        AcpiPsWalkParsedAml (RegionOp, RegionOp, NULL, NULL, NULL,
-                                NULL, TableDesc->TableId,
-                                AcpiDsExecBeginOp, AcpiDsExecEndOp);
+        AcpiPsDeleteParseTree (Op);
+        return_ACPI_STATUS (Status);
     }
 
+
+    /* Get and init the actual RegionOp created above */
+
+/*    RegionOp = Op->Value.Arg;
+    Op->Node = Node;*/
+
+
+    RegionOp = Op->Value.Arg;
+    RegionOp->Node = Node;
+    AcpiPsDeleteParseTree (Op);
+
+    /* AcpiEvaluate the address and length arguments for the OpRegion */
+
+    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!Op)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    Op->Node = AcpiNsGetParentObject (Node);
+
+    Status = AcpiPsParseAml (Op, MethodDesc->Method.Pcode,
+                                MethodDesc->Method.PcodeLength,
+                                ACPI_PARSE_EXECUTE | ACPI_PARSE_DELETE_TREE,
+                                NULL /*MethodDesc*/, NULL, NULL,
+                                AcpiDsExecBeginOp, AcpiDsExecEndOp);
+/*
+    AcpiPsWalkParsedAml (RegionOp, RegionOp, NULL, NULL, NULL,
+                            NULL, TableDesc->TableId,
+                            AcpiDsExecBeginOp, AcpiDsExecEndOp);
+*/
     /* All done with the parse tree, delete it */
 
     AcpiPsDeleteParseTree (Op);
@@ -233,7 +258,7 @@ ACPI_STATUS
 AcpiDsInitializeRegion (
     ACPI_HANDLE             ObjHandle)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
@@ -243,7 +268,7 @@ AcpiDsInitializeRegion (
 
     Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -263,13 +288,13 @@ AcpiDsInitializeRegion (
 ACPI_STATUS
 AcpiDsEvalRegionOperands (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *RegionDesc;
-    ACPI_NAMED_OBJECT       *Entry;
-    ACPI_GENERIC_OP         *NextOp;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *RegionDesc;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_PARSE_OBJECT       *NextOp;
 
 
     FUNCTION_TRACE_PTR ("DsEvalRegionOperands", Op);
@@ -279,7 +304,7 @@ AcpiDsEvalRegionOperands (
      * This is where we evaluate the address and length fields of the OpRegion declaration
      */
 
-    Entry =  Op->AcpiNamedObject;
+    Node =  Op->Node;
 
     /* NextOp points to the op that holds the SpaceID */
     NextOp = Op->Value.Arg;
@@ -295,7 +320,7 @@ AcpiDsEvalRegionOperands (
         return_ACPI_STATUS (Status);
     }
 
-    RegionDesc = AcpiNsGetAttachedObject (Entry);
+    RegionDesc = AcpiNsGetAttachedObject (Node);
     if (!RegionDesc)
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
@@ -347,7 +372,7 @@ AcpiDsEvalRegionOperands (
 ACPI_STATUS
 AcpiDsExecBeginControlOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_STATE      *ControlState;
@@ -376,6 +401,14 @@ AcpiDsExecBeginControlOp (
         }
 
         AcpiCmPushGenericState (&WalkState->ControlState, ControlState);
+
+        /*
+         * Save a pointer to the predicate for multiple executions
+         * of a loop
+         */
+        WalkState->ControlState->Control.AmlPredicateStart =
+                    WalkState->ParserState->Aml - 1;
+                    /*AcpiPsPkgLengthEncodingSize (GET8 (WalkState->ParserState->Aml));*/
         break;
 
 
@@ -401,7 +434,7 @@ AcpiDsExecBeginControlOp (
         break;
     }
 
-    return Status;
+    return (Status);
 }
 
 
@@ -423,7 +456,7 @@ AcpiDsExecBeginControlOp (
 ACPI_STATUS
 AcpiDsExecEndControlOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_STATE      *ControlState;
@@ -471,11 +504,11 @@ AcpiDsExecEndControlOp (
         {
             /* Predicate was true, go back and evaluate it again! */
 
-            Status = AE_CTRL_TRUE;
+            Status = AE_CTRL_PENDING;
         }
 
-        else
-        {
+/*        else
+        {*/
             DEBUG_PRINT (TRACE_DISPATCH,
                 ("EndControlOp: [WHILE_OP] termination! Op=%p\n", Op));
 
@@ -483,8 +516,10 @@ AcpiDsExecEndControlOp (
 
             ControlState =
                     AcpiCmPopGenericState (&WalkState->ControlState);
+
+            WalkState->AmlLastWhile = ControlState->Control.AmlPredicateStart;
             AcpiCmDeleteGenericState (ControlState);
-        }
+/*        }*/
 
         break;
 
@@ -495,20 +530,20 @@ AcpiDsExecEndControlOp (
             ("EndControlOp: [RETURN_OP] Op=%p Arg=%p\n",Op, Op->Value.Arg));
 
 
-        /* One optional operand -- the return value */
-
+        /*
+         * One optional operand -- the return value
+         * It can be either an immediate operand or a result that
+         * has been bubbled up the tree
+         */
         if (Op->Value.Arg)
         {
+            /* Return statement has an immediate operand */
+
             Status = AcpiDsCreateOperands (WalkState, Op->Value.Arg);
             if (ACPI_FAILURE (Status))
             {
-                return Status;
+                return (Status);
             }
-
-            /*
-             * TBD: [Restructure] Just check for NULL arg
-             * to signify no return value???
-             */
 
             /*
              * If value being returned is a Reference (such as
@@ -516,27 +551,48 @@ AcpiDsExecEndControlOp (
              * cease to exist at the end of the method.
              */
 
-            Status = AcpiAmlResolveToValue (&WalkState->Operands [0]);
+            Status = AcpiAmlResolveToValue (&WalkState->Operands [0], WalkState);
             if (ACPI_FAILURE (Status))
             {
-                return Status;
+                return (Status);
             }
 
             /*
              * Get the return value and save as the last result
-             * value
-             * This is the only place where WalkState->ReturnDesc
+             * value.  This is the only place where WalkState->ReturnDesc
              * is set to anything other than zero!
              */
 
             WalkState->ReturnDesc = WalkState->Operands[0];
         }
 
+        else if (WalkState->NumResults > 0)
+        {
+            /*
+             * The return value has come from a previous calculation.
+             *
+             * If value being returned is a Reference (such as
+             * an arg or local), resolve it now because it may
+             * cease to exist at the end of the method.
+             */
+
+            Status = AcpiAmlResolveToValue (&WalkState->Results [0], WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            WalkState->ReturnDesc = WalkState->Results [0];
+        }
+
         else
         {
             /* No return operand */
 
-            AcpiCmRemoveReference (WalkState->Operands [0]);
+            if (WalkState->NumOperands)
+            {
+                AcpiCmRemoveReference (WalkState->Operands [0]);
+            }
 
             WalkState->Operands [0]     = NULL;
             WalkState->NumOperands      = 0;
@@ -553,7 +609,7 @@ AcpiDsExecEndControlOp (
         break;
 
 
-    case AML_NOOP_CODE:
+    case AML_NOOP_OP:
 
         /* Just do nothing! */
         break;
@@ -602,6 +658,6 @@ AcpiDsExecEndControlOp (
     }
 
 
-    return Status;
+    return (Status);
 }
 

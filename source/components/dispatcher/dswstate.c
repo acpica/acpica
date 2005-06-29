@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -124,7 +125,7 @@
 #include "acinterp.h"
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dswstate");
+        MODULE_NAME         ("dswstate")
 
 
 /*******************************************************************************
@@ -148,7 +149,7 @@ AcpiDsResultStackClear (
     WalkState->NumResults = 0;
     WalkState->CurrentResult = 0;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -177,7 +178,7 @@ AcpiDsResultStackPush (
         DEBUG_PRINT (ACPI_ERROR,
             ("DsResultStackPush: overflow! Obj=%p State=%p Num=%X\n",
             Object, WalkState, WalkState->NumResults));
-        return AE_STACK_OVERFLOW;
+        return (AE_STACK_OVERFLOW);
     }
 
     WalkState->Results [WalkState->NumResults] = Object;
@@ -187,7 +188,7 @@ AcpiDsResultStackPush (
         ("DsResultStackPush: Obj=%p State=%p Num=%X Cur=%X\n",
         Object, WalkState, WalkState->NumResults, WalkState->CurrentResult));
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -207,7 +208,7 @@ AcpiDsResultStackPush (
 
 ACPI_STATUS
 AcpiDsResultStackPop (
-    ACPI_OBJECT_INTERNAL    **Object,
+    ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState)
 {
 
@@ -219,7 +220,7 @@ AcpiDsResultStackPop (
         DEBUG_PRINT (ACPI_ERROR,
             ("DsResultStackPop: Underflow! State=%p Cur=%X Num=%X\n",
             WalkState, WalkState->CurrentResult, WalkState->NumResults));
-        return AE_AML_NO_OPERAND;
+        return (AE_AML_NO_OPERAND);
     }
 
 
@@ -234,7 +235,7 @@ AcpiDsResultStackPop (
         DEBUG_PRINT (ACPI_ERROR,
             ("DsResultStackPop: Null operand! State=%p #Ops=%X\n",
             WalkState, WalkState->NumResults));
-        return AE_AML_NO_OPERAND;
+        return (AE_AML_NO_OPERAND);
     }
 
     *Object = WalkState->Results [WalkState->NumResults];
@@ -244,7 +245,7 @@ AcpiDsResultStackPop (
         ("DsResultStackPop: Obj=%p State=%p Num=%X Cur=%X\n",
         *Object, WalkState, WalkState->NumResults, WalkState->CurrentResult));
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -313,7 +314,7 @@ AcpiDsObjStackPush (
         DEBUG_PRINT (ACPI_ERROR,
             ("DsObjStackPush: overflow! Obj=%p State=%p #Ops=%X\n",
             Object, WalkState, WalkState->NumOperands));
-        return AE_STACK_OVERFLOW;
+        return (AE_STACK_OVERFLOW);
     }
 
     /* Put the object onto the stack */
@@ -324,7 +325,7 @@ AcpiDsObjStackPush (
     DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPush: Obj=%p State=%p #Ops=%X\n",
                     Object, WalkState, WalkState->NumOperands));
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -344,7 +345,7 @@ AcpiDsObjStackPush (
 
 ACPI_STATUS
 AcpiDsObjStackPopObject (
-    ACPI_OBJECT_INTERNAL    **Object,
+    ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState)
 {
 
@@ -356,7 +357,7 @@ AcpiDsObjStackPopObject (
         DEBUG_PRINT (ACPI_ERROR,
             ("DsObjStackPop: Missing operand/stack empty! State=%p #Ops=%X\n",
             WalkState, WalkState->NumOperands));
-        return AE_AML_NO_OPERAND;
+        return (AE_AML_NO_OPERAND);
     }
 
 
@@ -371,7 +372,7 @@ AcpiDsObjStackPopObject (
         DEBUG_PRINT (ACPI_ERROR,
             ("DsObjStackPop: Null operand! State=%p #Ops=%X\n",
             WalkState, WalkState->NumOperands));
-        return AE_AML_NO_OPERAND;
+        return (AE_AML_NO_OPERAND);
     }
 
     /* Get operand and set stack entry to null */
@@ -382,7 +383,7 @@ AcpiDsObjStackPopObject (
     DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPopObject: State=%p #Ops=%X\n",
                     WalkState, WalkState->NumOperands));
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -417,7 +418,7 @@ AcpiDsObjStackPop (
             DEBUG_PRINT (ACPI_ERROR,
                 ("DsObjStackPop: Underflow! Count=%X State=%p #Ops=%X\n",
                 PopCount, WalkState, WalkState->NumOperands));
-            return AE_STACK_UNDERFLOW;
+            return (AE_STACK_UNDERFLOW);
         }
 
         /* Just set the stack entry to null */
@@ -429,7 +430,7 @@ AcpiDsObjStackPop (
     DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPop: Count=%X State=%p #Ops=%X\n",
                     PopCount, WalkState, WalkState->NumOperands));
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -453,7 +454,7 @@ AcpiDsObjStackPopAndDelete (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  i;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
     for (i = 0; i < PopCount; i++)
@@ -465,7 +466,7 @@ AcpiDsObjStackPopAndDelete (
             DEBUG_PRINT (ACPI_ERROR,
                 ("DsObjStackPop: Underflow! Count=%X State=%p #Ops=%X\n",
                 PopCount, WalkState, WalkState->NumOperands));
-            return AE_STACK_UNDERFLOW;
+            return (AE_STACK_UNDERFLOW);
         }
 
         /* Pop the stack and delete an object if present in this stack entry */
@@ -482,7 +483,7 @@ AcpiDsObjStackPopAndDelete (
     DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPop: Count=%X State=%p #Ops=%X\n",
                     PopCount, WalkState, WalkState->NumOperands));
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -553,10 +554,10 @@ AcpiDsGetCurrentWalkState (
 
     if (!WalkList)
     {
-        return NULL;
+        return (NULL);
     }
 
-    return WalkList->WalkState;
+    return (WalkList->WalkState);
 }
 
 
@@ -650,8 +651,8 @@ AcpiDsPopWalkState (
 ACPI_WALK_STATE *
 AcpiDsCreateWalkState (
     ACPI_OWNER_ID           OwnerId,
-    ACPI_GENERIC_OP         *Origin,
-    ACPI_OBJECT_INTERNAL    *MthDesc,
+    ACPI_PARSE_OBJECT       *Origin,
+    ACPI_OPERAND_OBJECT     *MthDesc,
     ACPI_WALK_LIST          *WalkList)
 {
     ACPI_WALK_STATE         *WalkState;
@@ -675,6 +676,8 @@ AcpiDsCreateWalkState (
         AcpiGbl_WalkStateCacheHits++;
         AcpiGbl_WalkStateCacheDepth--;
 
+        DEBUG_PRINT (TRACE_EXEC, ("DsCreateWalkState: State %p from cache\n", WalkState));
+
         AcpiCmReleaseMutex (ACPI_MTX_CACHES);
    }
 
@@ -683,6 +686,7 @@ AcpiDsCreateWalkState (
         /* The cache is empty, create a new object */
 
         /* Avoid deadlock with AcpiCmCallocate */
+
         AcpiCmReleaseMutex (ACPI_MTX_CACHES);
 
         WalkState = AcpiCmCallocate (sizeof (ACPI_WALK_STATE));
@@ -828,6 +832,7 @@ AcpiDsDeleteWalkStateCache (
         Next = AcpiGbl_WalkStateCache->Next;
         AcpiCmFree (AcpiGbl_WalkStateCache);
         AcpiGbl_WalkStateCache = Next;
+        AcpiGbl_WalkStateCacheDepth--;
     }
 
     return_VOID;

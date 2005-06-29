@@ -1,7 +1,7 @@
-
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -125,8 +125,7 @@
 #include "acdebug.h"
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("dsutils");
-
+        MODULE_NAME         ("dsutils")
 
 
 /*******************************************************************************
@@ -145,9 +144,9 @@
 
 BOOLEAN
 AcpiDsIsResultUsed (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_OP_INFO            *ParentInfo;
+    ACPI_OPCODE_INFO        *ParentInfo;
 
 
     FUNCTION_TRACE_PTR ("DsIsResultUsed", Op);
@@ -182,7 +181,7 @@ AcpiDsIsResultUsed (
     if (ACPI_GET_OP_TYPE (ParentInfo) != ACPI_OP_TYPE_OPCODE)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("DsIsResultUsed: Unknown parent opcode. Op=%X\n", 
+            ("DsIsResultUsed: Unknown parent opcode. Op=%X\n",
             Op));
 
         return_VALUE (FALSE);
@@ -234,7 +233,6 @@ AcpiDsIsResultUsed (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsDeleteResultIfNotUsed
@@ -254,11 +252,11 @@ AcpiDsIsResultUsed (
 
 void
 AcpiDsDeleteResultIfNotUsed (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_OBJECT_INTERNAL    *ResultObj,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_OPERAND_OBJECT     *ResultObj,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
@@ -316,14 +314,14 @@ AcpiDsDeleteResultIfNotUsed (
 ACPI_STATUS
 AcpiDsCreateOperand (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Arg)
+    ACPI_PARSE_OBJECT       *Arg)
 {
     ACPI_STATUS             Status = AE_OK;
     NATIVE_CHAR             *NameString;
     UINT32                  NameLength;
     OBJECT_TYPE_INTERNAL    DataType;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_GENERIC_OP         *ParentOp;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_PARSE_OBJECT       *ParentOp;
     UINT16                  Opcode;
     UINT32                  Flags;
     OPERATING_MODE          InterpreterMode;
@@ -365,7 +363,7 @@ AcpiDsCreateOperand (
          */
 
         ParentOp = Arg->Parent;
-        if ((AcpiPsIsNamedObjectOp (ParentOp->Opcode)) &&
+        if ((AcpiPsIsNodeOp (ParentOp->Opcode)) &&
             (ParentOp->Opcode != AML_METHODCALL_OP) &&
             (ParentOp->Opcode != AML_NAMEPATH_OP))
         {
@@ -385,7 +383,7 @@ AcpiDsCreateOperand (
                                 ACPI_TYPE_ANY, InterpreterMode,
                                 NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE,
                                 WalkState,
-                                (ACPI_NAMED_OBJECT**) &ObjDesc);
+                                (ACPI_NAMESPACE_NODE **) &ObjDesc);
 
         /* Free the namestring created above */
 
@@ -406,7 +404,7 @@ AcpiDsCreateOperand (
                  * indicate this to the interpreter, set the
                  * object to the root
                  */
-                ObjDesc = (ACPI_OBJECT_INTERNAL *) AcpiGbl_RootObject;
+                ObjDesc = (ACPI_OPERAND_OBJECT  *) AcpiGbl_RootNode;
                 Status = AE_OK;
             }
 
@@ -434,7 +432,7 @@ AcpiDsCreateOperand (
         {
             return_ACPI_STATUS (Status);
         }
-        DEBUG_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
+        DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
     }
 
 
@@ -480,7 +478,7 @@ AcpiDsCreateOperand (
             DEBUG_PRINT (TRACE_DISPATCH,
                 ("DsCreateOperand: Argument previously created, already stacked \n"));
 
-            DEBUG_EXEC (AcpiDbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1], WalkState));
+            DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1], WalkState));
 
             /*
              * Use value that was already previously returned
@@ -530,7 +528,7 @@ AcpiDsCreateOperand (
             return_ACPI_STATUS (Status);
         }
 
-        DEBUG_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
+        DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -554,10 +552,10 @@ AcpiDsCreateOperand (
 ACPI_STATUS
 AcpiDsCreateOperands (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *FirstArg)
+    ACPI_PARSE_OBJECT       *FirstArg)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_GENERIC_OP         *Arg;
+    ACPI_PARSE_OBJECT       *Arg;
     UINT32                  ArgsPushed = 0;
 
 
@@ -675,7 +673,7 @@ AcpiDsMapOpcodeToDataType (
     UINT32                  *OutFlags)
 {
     OBJECT_TYPE_INTERNAL    DataType = INTERNAL_TYPE_INVALID;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_OPCODE_INFO        *OpInfo;
     UINT32                  Flags = 0;
 
 

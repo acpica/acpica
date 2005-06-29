@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -124,14 +124,14 @@
 #include "acnamesp.h"
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dsobject");
+        MODULE_NAME         ("dsobject")
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsInitOneObject
  *
- * PARAMETERS:  ObjHandle       - NTE of the object
+ * PARAMETERS:  ObjHandle       - Node
  *              Level           - Current nesting level
  *              Context         - Points to a init info struct
  *              ReturnValue     - Not used
@@ -164,7 +164,7 @@ AcpiDsInitOneObject (
      * was just loaded
      */
 
-    if (((ACPI_NAMED_OBJECT*) ObjHandle)->OwnerId !=
+    if (((ACPI_NAMESPACE_NODE *) ObjHandle)->OwnerId !=
             Info->TableDesc->TableId)
     {
         return (AE_OK);
@@ -206,7 +206,7 @@ AcpiDsInitOneObject (
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("DsInitOneObject: Method %p [%4.4s] parse failed! %s\n",
-                ObjHandle, &((ACPI_NAMED_OBJECT*)ObjHandle)->Name,
+                ObjHandle, &((ACPI_NAMESPACE_NODE *)ObjHandle)->Name,
                 AcpiCmFormatException (Status)));
             break;
         }
@@ -243,7 +243,7 @@ AcpiDsInitOneObject (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Walk the entire namespace and perform any necessary 
+ * DESCRIPTION: Walk the entire namespace and perform any necessary
  *              initialization on the objects found therein
  *
  ******************************************************************************/
@@ -251,7 +251,7 @@ AcpiDsInitOneObject (
 ACPI_STATUS
 AcpiDsInitializeObjects (
     ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMED_OBJECT       *StartEntry)
+    ACPI_NAMESPACE_NODE     *StartNode)
 {
     ACPI_STATUS             Status;
     INIT_WALK_INFO          Info;
@@ -272,7 +272,7 @@ AcpiDsInitializeObjects (
 
     /* Walk entire namespace from the supplied root */
 
-    Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartEntry,
+    Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartNode,
                                 ACPI_UINT32_MAX, AcpiDsInitOneObject,
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
@@ -311,15 +311,15 @@ AcpiDsInitializeObjects (
 ACPI_STATUS
 AcpiDsInitObjectFromOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **ObjDesc)
+    ACPI_OPERAND_OBJECT     **ObjDesc)
 {
     ACPI_STATUS             Status;
-    ACPI_GENERIC_OP         *Arg;
-    ACPI_EXTENDED_OP        *ByteList;
-    ACPI_OBJECT_INTERNAL    *ArgDesc;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_PARSE_OBJECT       *Arg;
+    ACPI_PARSE2_OBJECT      *ByteList;
+    ACPI_OPERAND_OBJECT     *ArgDesc;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
@@ -386,7 +386,7 @@ AcpiDsInitObjectFromOp (
 
         /* skip first arg */
         Arg = Op->Value.Arg;
-        ByteList = (ACPI_EXTENDED_OP *) Arg->Next;
+        ByteList = (ACPI_PARSE2_OBJECT *) Arg->Next;
         if (ByteList)
         {
             if (ByteList->Opcode != AML_BYTELIST_OP)
@@ -404,20 +404,20 @@ AcpiDsInitObjectFromOp (
         break;
 
 
-	case ACPI_TYPE_PACKAGE:
-        
+    case ACPI_TYPE_PACKAGE:
+
         /*
          * When called, an internal package object has already
-         *  been built and is pointed to by *ObjDesc.  
-         *  AcpiDsBuildInternalObject build another internal 
-         *  package object, so remove reference to the original 
+         *  been built and is pointed to by *ObjDesc.
+         *  AcpiDsBuildInternalObject build another internal
+         *  package object, so remove reference to the original
          *  so that it is deleted.  Error checking is done
          *  within the remove reference function.
          */
         AcpiCmRemoveReference(*ObjDesc);
 
         Status = AcpiDsBuildInternalObject (WalkState, Op, ObjDesc);
-		break;
+        break;
 
     case ACPI_TYPE_NUMBER:
         (*ObjDesc)->Number.Value = Op->Value.Integer;
@@ -458,9 +458,9 @@ AcpiDsInitObjectFromOp (
 
             if (Op->Opcode == AML_NAMEPATH_OP)
             {
-                /* Nte was saved in Op */
+                /* Node was saved in Op */
 
-                (*ObjDesc)->Reference.Nte = Op->AcpiNamedObject;
+                (*ObjDesc)->Reference.Node = Op->Node;
             }
 
             (*ObjDesc)->Reference.OpCode = Opcode;
@@ -500,10 +500,10 @@ AcpiDsInitObjectFromOp (
 ACPI_STATUS
 AcpiDsBuildInternalSimpleObj (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op,
-    ACPI_OBJECT_INTERNAL    **ObjDescPtr)
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_OPERAND_OBJECT     **ObjDescPtr)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     OBJECT_TYPE_INTERNAL    Type;
     ACPI_STATUS             Status;
 
@@ -519,14 +519,14 @@ AcpiDsBuildInternalSimpleObj (
          * Otherwise, go ahead and look it up now
          */
 
-        if (!Op->AcpiNamedObject)
+        if (!Op->Node)
         {
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             Op->Value.String, ACPI_TYPE_ANY,
                             IMODE_EXECUTE,
                             NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE,
                             NULL,
-                            (ACPI_NAMED_OBJECT**)&(Op->AcpiNamedObject));
+                            (ACPI_NAMESPACE_NODE **)&(Op->Node));
 
             if (ACPI_FAILURE (Status))
             {
@@ -588,11 +588,11 @@ AcpiDsBuildInternalSimpleObj (
 ACPI_STATUS
 AcpiDsBuildInternalPackageObj (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op,
-    ACPI_OBJECT_INTERNAL    **ObjDescPtr)
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_OPERAND_OBJECT     **ObjDescPtr)
 {
-    ACPI_GENERIC_OP         *Arg;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_PARSE_OBJECT       *Arg;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -677,8 +677,8 @@ AcpiDsBuildInternalPackageObj (
 ACPI_STATUS
 AcpiDsBuildInternalObject (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op,
-    ACPI_OBJECT_INTERNAL    **ObjDescPtr)
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_OPERAND_OBJECT     **ObjDescPtr)
 {
     ACPI_STATUS             Status;
 
@@ -701,7 +701,7 @@ AcpiDsBuildInternalObject (
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiDsCreateNamedObject
+ * FUNCTION:    AcpiDsCreateNode
  *
  * PARAMETERS:  Op              - Parser object to be translated
  *              ObjDescPtr      - Where the ACPI internal object is returned
@@ -713,16 +713,16 @@ AcpiDsBuildInternalObject (
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiDsCreateNamedObject (
+AcpiDsCreateNode (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMED_OBJECT       *Entry,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("DsCreateNamedObject", Op);
+    FUNCTION_TRACE_PTR ("DsCreateNode", Op);
 
 
     if (!Op->Value.Arg)
@@ -745,12 +745,12 @@ AcpiDsCreateNamedObject (
 
     /* Re-type the object according to it's argument */
 
-    Entry->Type = ObjDesc->Common.Type;
+    Node->Type = ObjDesc->Common.Type;
 
     /* Init obj */
 
-    Status = AcpiNsAttachObject ((ACPI_HANDLE) Entry, ObjDesc,
-                                    (UINT8) Entry->Type);
+    Status = AcpiNsAttachObject ((ACPI_HANDLE) Node, ObjDesc,
+                                    (UINT8) Node->Type);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;

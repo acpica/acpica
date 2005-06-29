@@ -3,6 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -122,7 +123,7 @@
 #include "acnamesp.h"
 
 #define _COMPONENT          HARDWARE
-        MODULE_NAME         ("hwregs");
+        MODULE_NAME         ("hwregs")
 
 
 /* This matches the #defines in actypes.h. */
@@ -246,7 +247,7 @@ AcpiHwObtainSleepTypeRegisterData (
     UINT8                   *Slp_TypB)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
     FUNCTION_TRACE ("HwObtainSleepTypeRegisterData");
@@ -291,7 +292,7 @@ AcpiHwObtainSleepTypeRegisterData (
         REPORT_ERROR ("Sleep State object is not of type Package");
         Status = AE_ERROR;
     }
-        
+
     else if (ObjDesc->Package.Count < 2)
     {
         /* Must have at least two elements */
@@ -300,7 +301,7 @@ AcpiHwObtainSleepTypeRegisterData (
         Status = AE_ERROR;
     }
 
-    else if (((ObjDesc->Package.Elements[0])->Common.Type != 
+    else if (((ObjDesc->Package.Elements[0])->Common.Type !=
                 ACPI_TYPE_NUMBER) ||
              ((ObjDesc->Package.Elements[1])->Common.Type !=
                 ACPI_TYPE_NUMBER))
@@ -324,7 +325,7 @@ AcpiHwObtainSleepTypeRegisterData (
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("SleepTypeRegisterData: Bad Sleep object %p type %X\n",
             ObjDesc, ObjDesc->Common.Type));
     }
@@ -758,16 +759,16 @@ AcpiHwRegisterAccess (
         Mask = (((UINT32) RegisterId) & BIT_IN_REGISTER_MASK);
         Mask = 1 << (Mask-1);
 
-        /* 
+        /*
          * The base address of the GPE 0 Register Block
          * Plus 1/2 the length of the GPE 0 Register Block
          * The enable register is the register following the Status Register
          * and each register is defined as 1/2 of the total Register Block
          */
 
-        /* 
+        /*
          * This sets the bit within EnableBit that needs to be written to
-         * the register indicated in Mask to a 1, all others are 0 
+         * the register indicated in Mask to a 1, all others are 0
          */
 
         if (Mask > LOW_BYTE)
