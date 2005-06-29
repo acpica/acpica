@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.136 $
+ *       $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -773,6 +773,10 @@ UINT8
 AcpiUtGenerateChecksum (
     UINT8                   *Buffer,
     UINT32                  Length);
+
+UINT32
+AcpiUtDwordByteSwap (
+    UINT32                  Value);
 
 void
 AcpiUtSetIntegerWidth (
