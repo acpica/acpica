@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  ******************************************************************************/
 
@@ -287,7 +287,7 @@ AcpiPsDisplayObjectPathname (
     }
 
     AcpiOsPrintf ("  (Path %s)", Buffer.Pointer);
-    AcpiOsFree (Buffer.Pointer);
+    ACPI_MEM_FREE (Buffer.Pointer);
 
 
 Exit:
