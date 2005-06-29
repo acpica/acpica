@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: acpitypes.h - Common data types for the entire ACPI subsystem
+ * Name: actypes.h - Common data types for the entire ACPI subsystem
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef _ACPITYPES_H
-#define _ACPITYPES_H
+#ifndef _ACTYPES_H
+#define _ACTYPES_H
 
 
 /* 
@@ -135,27 +135,9 @@
  * UCHAR        Character. 1 byte unsigned value. 
  */
 
-#ifndef IA64
-
+#ifdef IA64
 /*
- * IA-32 type definitions
- */
-typedef signed char                     INT8;
-typedef unsigned char                   UINT8;
-typedef unsigned char                   UCHAR;
-typedef short                           INT16;
-typedef unsigned short                  UINT16;
-typedef int                             INT32;
-typedef unsigned int                    UINT32;
-
-typedef UINT32                          NATIVE_UINT;
-typedef INT32                           NATIVE_INT;
-
-    
-#else
-
-/*
- * IA-64 type definitions 
+ * 64-bit type definitions 
  */
 typedef signed char                     INT8;
 typedef unsigned char                   UINT8;
@@ -169,6 +151,44 @@ typedef unsigned long                   UINT64;
 
 typedef UINT64                          NATIVE_UINT;
 typedef INT64                           NATIVE_INT;
+
+typedef NATIVE_UINT                     ACPI_TBLPTR;
+
+
+#elif IA16
+/*
+ * 16-bit type definitions
+ */
+typedef signed char                     INT8;
+typedef unsigned char                   UINT8;
+typedef unsigned char                   UCHAR;
+typedef int                             INT16;
+typedef unsigned int                    UINT16;
+typedef long                            INT32;
+typedef unsigned long                   UINT32;
+
+typedef UINT16                          NATIVE_UINT;
+typedef INT16                           NATIVE_INT;
+
+typedef UINT32                          ACPI_TBLPTR;
+
+ 
+#else
+/*
+ * 32-bit type definitions (default)
+ */
+typedef signed char                     INT8;
+typedef unsigned char                   UINT8;
+typedef unsigned char                   UCHAR;
+typedef short                           INT16;
+typedef unsigned short                  UINT16;
+typedef int                             INT32;
+typedef unsigned int                    UINT32;
+
+typedef UINT32                          NATIVE_UINT;
+typedef INT32                           NATIVE_INT;
+
+typedef NATIVE_UINT                     ACPI_TBLPTR;
 
 #endif
 
@@ -189,20 +209,16 @@ typedef UINT32                          UINT32_BIT;
 
 typedef NATIVE_INT                      ACPI_PTRDIFF;
 typedef NATIVE_UINT                     ACPI_SIZE;
-typedef NATIVE_UINT                     ACPI_TBLPTR;
 typedef NATIVE_UINT                     ACPI_IO_ADDRESS;
 
 
 /*
  * Data type ranges
- * TBD: should be updated to INT32, UINT32, etc.
  */
 
-#define ACPI_UCHAR_MAX                  0xFF
-#define ACPI_INT_MAX                    0x7FFFFFFF
-#define ACPI_UINT_MAX                   0xFFFFFFFF
-#define ACPI_LONG_MAX                   0x7FFFFFFF
-#define ACPI_ULONG_MAX                  0xFFFFFFFF
+#define ACPI_UCHAR_MAX                  (UCHAR)  0xFF
+#define ACPI_INT32_MAX                  (INT32)  0x7FFFFFFF
+#define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
 
  
 
@@ -336,7 +352,9 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 
 
 /* 
- * Event types (fixed & general purpose)
+ * Event Types:
+ * ------------
+ * Fixed & general purpose...
  */
 
 typedef UINT32                          ACPI_EVENT_TYPE;
@@ -365,6 +383,26 @@ typedef UINT32                          ACPI_EVENT_TYPE;
 #define GPE_INVALID                     0xFF
 #define GPE_MAX                         0xFF
 #define NUM_GPE                         256
+
+
+/* 
+ * Event Status:
+ * -------------
+ * The encoding of ACPI_EVENT_STATUS is illustrated below.
+ * Note that a set bit (1) indicates the property is TRUE
+ * (e.g. if bit 0 is set then the event is enabled).
+ * +---------------+-+-+
+ * |   Bits 31:2   |1|0|    
+ * +---------------+-+-+
+ *          |       | |
+ *          |       | +- Enabled?
+ *          |       +--- Set?
+ *          +----------- <Reserved>
+ */
+typedef UINT32                          ACPI_EVENT_STATUS;
+
+#define EVENT_FLAG_ENABLED              (ACPI_EVENT_STATUS) 0x01
+#define EVENT_FLAG_SET                  (ACPI_EVENT_STATUS) 0x02
 
 
 /* Notify types */
@@ -918,4 +956,4 @@ typedef struct _prt_tag
  * END: Definitions for PCI Routing tables
  */
 
-#endif /* ACPITYPES_H */
+#endif /* ACTYPES_H */
