@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.80 $
+ *              $Revision: 1.83 $
  *
  ******************************************************************************/
 
@@ -123,7 +123,7 @@
 
 
 #define _COMPONENT          ACPI_EVENTS
-        MODULE_NAME         ("evsci")
+        ACPI_MODULE_NAME    ("evsci")
 
 
 /*******************************************************************************
@@ -140,24 +140,25 @@
  *
  ******************************************************************************/
 
-static UINT32
-AcpiEvSciHandler (void *Context)
+static UINT32 ACPI_SYSTEM_XFACE
+AcpiEvSciHandler (
+    void                    *Context)
 {
-    UINT32                  InterruptHandled = INTERRUPT_NOT_HANDLED;
+    UINT32                  InterruptHandled = ACPI_INTERRUPT_NOT_HANDLED;
 
 
-    FUNCTION_TRACE("EvSciHandler");
+    ACPI_FUNCTION_TRACE("EvSciHandler");
 
 
     /*
      * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
      * required to treat the SCI interrupt as sharable, level, active low.
      */
-    if (!AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_DO_NOT_LOCK, ACPI_SCI_ENABLE))
+    if (!AcpiHwBitRegisterRead (ACPI_BITREG_SCI_ENABLE, ACPI_MTX_DO_NOT_LOCK))
     {
         /* ACPI is not enabled;  this interrupt cannot be for us */
 
-        return_VALUE (INTERRUPT_NOT_HANDLED);
+        return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
     }
 
     /*
@@ -196,7 +197,7 @@ AcpiEvInstallSciHandler (void)
     UINT32                  Status = AE_OK;
 
 
-    FUNCTION_TRACE ("EvInstallSciHandler");
+    ACPI_FUNCTION_TRACE ("EvInstallSciHandler");
 
 
     Status = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
@@ -227,7 +228,7 @@ AcpiEvInstallSciHandler (void)
 ACPI_STATUS
 AcpiEvRemoveSciHandler (void)
 {
-    FUNCTION_TRACE ("EvRemoveSciHandler");
+    ACPI_FUNCTION_TRACE ("EvRemoveSciHandler");
 
 
     /* Just let the OS remove the handler and disable the level */
