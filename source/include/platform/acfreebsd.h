@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acfreebsd.h - OS specific defines, etc.
- *       $Revision: 1.7 $
+ *       $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,6 +126,7 @@
 /* FreeBSD uses GCC */
 
 #include "acgcc.h"
+#include <machine/acpica_machdep.h>
 
 #ifdef _KERNEL
 #include <sys/ctype.h>
@@ -138,16 +139,16 @@
 #define __cli()     disable_intr()
 #define __sti()     enable_intr()
 
-#ifdef ACPI_DEBUG
+#ifdef ACPI_DEBUG_OUTPUT
 #ifdef DEBUGGER_THREADING
 #undef DEBUGGER_THREADING
 #endif /* DEBUGGER_THREADING */
 #define DEBUGGER_THREADING 0    /* integrated with DDB */
 #include "opt_ddb.h"
 #ifdef DDB
-#define ENABLE_DEBUGGER
+#define ACPI_DEBUGGER
 #endif /* DDB */
-#endif /* ACPI_DEBUG */
+#endif /* ACPI_DEBUG_OUTPUT */
 
 #else /* _KERNEL */
 

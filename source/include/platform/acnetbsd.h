@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.11 $
+ * Name: acnetbsd.h - OS specific defines, etc.
+ *       $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -114,52 +114,99 @@
  *
  *****************************************************************************/
 
-#ifndef __ACWIN64_H__
-#define __ACWIN64_H__
+#ifndef __ACNETBSD_H__
+#define __ACNETBSD_H__
 
-/*! [Begin] no source code translation (Keep the include) */
-
-#include "acintel.h"
-/*! [End] no source code translation !*/
-
-#define ACPI_OS_NAME                "Windows"
-
-#define ACPI_MACHINE_WIDTH          64
-
-#define strupr              _strupr
-#define ACPI_USE_STANDARD_HEADERS
-
+#if 0
 /*
- * Handle platform- and compiler-specific assembly language differences.
- *
- * Notes:
- * 1) Interrupt 3 is used to break into a debugger
- * 2) Interrupts are turned off during ACPI register setup
+ * XXX this is technically correct, but will cause problems with some ASL
+ *     which only works if the string names a Microsoft operating system.
  */
-
-/*! [Begin] no source code translation  */
-
-#define ACPI_ASM_MACROS
-#define causeinterrupt(level)
-#define BREAKPOINT3
-#define ACPI_DISABLE_IRQS()
-#define ACPI_ENABLE_IRQS()
-#define ACPI_FLUSH_CPU_CACHE()
-
-
-/*
- * For Acpi applications, we don't want to try to access the global lock
- */
-#ifdef ACPI_APPLICATION
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       if (AcpiGbl_GlobalLockPresent) {Acq = 0xFF;} else {Acq = 0;}
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       if (AcpiGbl_GlobalLockPresent) {Pnd = 0xFF;} else {Pnd = 0;}
+#define ACPI_OS_NAME                "NetBSD"
 #else
-
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)
-
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)
-
+#define ACPI_OS_NAME                "Microsoft Windows NT"
 #endif
 
+/* NetBSD uses GCC */
 
-#endif /* __ACWIN_H__ */
+#include "acgcc.h"
+
+#ifdef _LP64
+#define ACPI_MACHINE_WIDTH      64
+#else
+#define ACPI_MACHINE_WIDTH      32
+#endif
+
+#define COMPILER_DEPENDENT_INT64  int64_t
+#define COMPILER_DEPENDENT_UINT64 uint64_t
+
+#ifdef _KERNEL
+#include "opt_acpi.h"           /* collect build-time options here */
+
+#include <sys/param.h>
+#include <sys/systm.h>
+#include <machine/stdarg.h>
+#include <machine/acpi_func.h>
+
+#define asm         __asm
+
+#define ACPI_USE_NATIVE_DIVIDE
+
+#define ACPI_ASM_MACROS         /* tell acenv.h */
+
+#define ACPI_SYSTEM_XFACE
+#define ACPI_EXTERNAL_XFACE
+#define ACPI_INTERNAL_XFACE
+#define ACPI_INTERNAL_VAR_XFACE
+#define ACPI_DISASSEMBLER
+
+#ifdef ACPI_DEBUG
+#define ACPI_DEBUG_OUTPUT
+#define ACPI_DBG_TRACK_ALLOCATIONS
+#ifdef DEBUGGER_THREADING
+#undef DEBUGGER_THREADING
+#endif /* DEBUGGER_THREADING */
+#define DEBUGGER_THREADING 0    /* integrated with DDB */
+#include "opt_ddb.h"
+#ifdef DDB
+#define ACPI_DEBUGGER
+#endif /* DDB */
+#endif /* ACPI_DEBUG */
+
+static __inline int
+isprint(int ch)
+{
+        return(isspace(ch) || isascii(ch));
+}
+
+#else /* _KERNEL */
+
+#include <ctype.h>
+
+/* Not building kernel code, so use libc */
+#define ACPI_USE_STANDARD_HEADERS
+
+#define __cli()
+#define __sti()
+
+/* XXX */
+#define __inline inline
+
+#endif /* _KERNEL */
+
+/* Always use NetBSD code over our local versions */
+#define ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_USE_NATIVE_DIVIDE
+
+/* NetBSD doesn't have strupr, should be fixed. (move to libkern) */
+static __inline char *
+strupr(char *str)
+{
+    char *c = str;
+    while(*c) {
+        *c = toupper(*c);
+        c++;
+    }
+    return(str);
+}
+#endif /* __ACNETBSD_H__ */

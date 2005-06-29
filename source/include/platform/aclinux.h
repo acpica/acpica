@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.15 $
+ *       $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,6 +120,7 @@
 #define ACPI_OS_NAME                "Linux"
 
 #define ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_USE_DO_WHILE_0
 
 #ifdef __KERNEL__
 
@@ -130,24 +131,35 @@
 #include <asm/system.h>
 #include <asm/atomic.h>
 #include <asm/div64.h>
+#include <asm/acpi.h>
 
 #define strtoul simple_strtoul
 
-#else
+#define ACPI_MACHINE_WIDTH  BITS_PER_LONG
+
+#else /* !__KERNEL__ */
 
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <unistd.h>
 
+#if defined(__ia64__) || defined(__x86_64__)
+#define ACPI_MACHINE_WIDTH          64
+#define COMPILER_DEPENDENT_INT64    long
+#define COMPILER_DEPENDENT_UINT64   unsigned long
+#else
+#define ACPI_MACHINE_WIDTH          32
+#define COMPILER_DEPENDENT_INT64    long long
+#define COMPILER_DEPENDENT_UINT64   unsigned long long
+#define ACPI_USE_NATIVE_DIVIDE
 #endif
+
+#endif /* __KERNEL__ */
 
 /* Linux uses GCC */
 
 #include "acgcc.h"
-
-#undef DEBUGGER_THREADING
-#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
-
 
 #endif /* __ACLINUX_H__ */
