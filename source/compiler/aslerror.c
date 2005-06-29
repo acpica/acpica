@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.46 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -143,8 +143,8 @@ char                        *AslMessages [] = {
     "Effective AML buffer length is zero",
     "Effective AML package length is zero",
     "Mixed return types in method",
-    "Object not found or not accessable from scope",
-    "Object not accessable from this scope",
+    "Object not found or not accessible from scope",
+    "Object not accessible from this scope",
     "Object does not exist",
     "Nested comment found",
     "Reserved method has too many arguments",
@@ -161,7 +161,7 @@ char                        *AslMessages [] = {
     "Invalid type",
     "Multiple types",
     "",
-    "Not a control method",
+    "Not a control method, cannot invoke",
     "Splitting long input line",
     "Recursive method call",
     "Not a parameter, used as local only",
@@ -172,6 +172,10 @@ char                        *AslMessages [] = {
     "Could not close file",
     "Access width is greater than region size",
     "Field unit extends beyond region limit",
+    "Resource field name cannot be used as a target",
+    "Invalid Byte Offset, Bit Offset required",
+    "Invalid Bit Offset, Byte Offset required",
+    "Opcode is not implemented in compiler AML code generator",
 };
 
 

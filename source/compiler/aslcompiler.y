@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -1447,35 +1447,35 @@ SwitchTerm
     ;
 
 CaseTermList
-    :                               {}
+    :                               {$$ = NULL;}
     | CaseTerm                      {}
     | DefaultTerm
-        DefaultTermList             {}
+        DefaultTermList             {$$ = TrLinkPeerNode ($1,$2);}
     | CaseTerm
-        CaseTermList                {}
+        CaseTermList                {$$ = TrLinkPeerNode ($1,$2);}
     ;
 
 DefaultTermList
-    :                               {}
+    :                               {$$ = NULL;}
     | CaseTerm                      {}
     | CaseTerm
-        DefaultTermList             {}
+        DefaultTermList             {$$ = TrLinkPeerNode ($1,$2);}
     ;
 
 CaseTerm
     : CASE '('                      {$$ = TrCreateLeafNode (CASE);}
         DataObject
         ')' '{'
-            TermList '}'
-                                    {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
     | CASE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 DefaultTerm
     : DEFAULT '{'                   {$$ = TrCreateLeafNode (DEFAULT);}
-        TermList '}'
-                                    {$$ = TrLinkChildren ($<n>3,1,$4);}
+        TermList '}'                {$$ = TrLinkChildren ($<n>3,1,$4);}
+    | DEFAULT '('
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 UnloadTerm
