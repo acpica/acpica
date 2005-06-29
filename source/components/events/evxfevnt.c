@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -195,6 +195,7 @@ AcpiDisable (void)
 
 
     ACPI_FUNCTION_TRACE ("AcpiDisable");
+
 
     if (!AcpiGbl_FADT)
     {
@@ -784,7 +785,6 @@ AcpiInstallGpeBlock (
 
 
 UnlockAndExit:
-
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
@@ -850,7 +850,6 @@ AcpiRemoveGpeBlock (
     }
 
 UnlockAndExit:
-
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
