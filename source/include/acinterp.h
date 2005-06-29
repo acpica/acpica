@@ -625,6 +625,13 @@ AmlSetCurrentLocation (
  * isdump - Scanner debug output routines
  */
 
+void 
+AmlShowHexValue (
+    INT32                   ByteCount, 
+    UINT8                   *AmlPtr, 
+    OPERATING_MODE          LoadExecMode, 
+    INT32                   LeadSpace);
+
 void
 AmlDumpBuffer (
     ACPI_SIZE               Length);
