@@ -138,6 +138,7 @@
 /* Functions for AcpiOsSignal */
 
 #define ACPI_SIGNAL_FATAL           0
+#define ACPI_SIGNAL_BREAKPOINT      1
 
 typedef struct AcpiFatalInfo
 {
@@ -332,10 +333,6 @@ AcpiOsWritePciConfiguration (
 /*
  * Miscellaneous
  */
-
-ACPI_STATUS
-AcpiOsBreakpoint (
-    NATIVE_CHAR             *Message);
 
 BOOLEAN
 AcpiOsReadable (
