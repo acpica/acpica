@@ -30,6 +30,7 @@
  * or modifications of the Original Intel Code.  No other license or right is 
  * granted directly or by implication, estoppel or otherwise;
  *
+
  * the above copyright and patent license is granted only if the following 
  * conditions are met:
  *
@@ -285,7 +286,7 @@ EvRemoveSciHandler (void)
  *
  ******************************************************************************/
 
-#ifdef _DEBUG
+#ifdef ACPI_DEBUG
 
 INT32 
 EvSciCount (
