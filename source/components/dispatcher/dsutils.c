@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  ******************************************************************************/
 
@@ -128,8 +128,6 @@
         ACPI_MODULE_NAME    ("dsutils")
 
 
-#ifndef ACPI_NO_METHOD_EXECUTION
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsClearImplicitReturn
@@ -176,6 +174,8 @@ AcpiDsClearImplicitReturn (
     }
 }
 
+
+#ifndef ACPI_NO_METHOD_EXECUTION
 
 /*******************************************************************************
  *
