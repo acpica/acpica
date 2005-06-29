@@ -145,7 +145,7 @@ ACPI_STATUS
 AcpiPsGetNextWalkOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
-    INTERPRETER_CALLBACK    AscendingCallback)
+    ACPI_PARSE_UPWARDS      AscendingCallback)
 {
     ACPI_GENERIC_OP         *Next;
     ACPI_GENERIC_OP         *Parent;
@@ -243,6 +243,19 @@ AcpiPsGetNextWalkOp (
 
         default:
             /*
+             * If we are back to the starting point, the walk is complete.
+             */
+            if (Op == WalkState->Origin)
+            {
+                /* Reached the point of origin, the walk is complete */
+
+                WalkState->PrevOp       = Op;
+                WalkState->NextOp       = NULL;
+
+                return_ACPI_STATUS (Status);
+            }
+
+            /*
              * Check for a sibling to the current op.  A sibling means
              * we are still going "downward" in the tree.
              */
@@ -264,7 +277,7 @@ AcpiPsGetNextWalkOp (
              * No sibling, but check status.
              * Abort on error from callback routine
              */
-            if (Status != AE_OK)
+            if (ACPI_FAILURE (Status))
             {
                 /* Next op will be the parent */
 
@@ -405,7 +418,7 @@ AcpiPsGetNextWalkOp (
          * No sibling, check for an error from closing the parent
          * (Also, AE_PENDING if a method call was encountered)
          */
-        if (Status != AE_OK)
+        if (ACPI_FAILURE (Status))
         {
             WalkState->PrevOp       = Parent;
             WalkState->NextOp       = GrandParent;
@@ -452,8 +465,8 @@ ACPI_STATUS
 AcpiPsWalkLoop (
     ACPI_WALK_LIST          *WalkList,
     ACPI_GENERIC_OP         *StartOp,
-    INTERPRETER_CALLBACK    DescendingCallback,
-    INTERPRETER_CALLBACK    AscendingCallback)
+    ACPI_PARSE_DOWNWARDS    DescendingCallback,
+    ACPI_PARSE_UPWARDS      AscendingCallback)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_WALK_STATE         *WalkState;
@@ -472,7 +485,7 @@ AcpiPsWalkLoop (
     {
         if (WalkState->NextOpInfo != NEXT_OP_UPWARD)
         {
-            Status = DescendingCallback (WalkState, Op);
+            Status = DescendingCallback (Op->Opcode, Op, WalkState, NULL);
         }
 
         /*
@@ -556,8 +569,8 @@ AcpiPsWalkParsedAml (
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     ACPI_OWNER_ID           OwnerId,
-    INTERPRETER_CALLBACK    DescendingCallback,
-    INTERPRETER_CALLBACK    AscendingCallback)
+    ACPI_PARSE_DOWNWARDS    DescendingCallback,
+    ACPI_PARSE_UPWARDS      AscendingCallback)
 {
     ACPI_GENERIC_OP         *Op;
     ACPI_WALK_STATE         *WalkState;
@@ -574,7 +587,7 @@ AcpiPsWalkParsedAml (
 
     if (!StartOp || !EndOp)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
     /* Initialize a new walk list */
@@ -609,7 +622,7 @@ AcpiPsWalkParsedAml (
         /* Init arguments if this is a control method */
         /* TBD: [Restructure] add walkstate as a param */
 
-        AcpiDsMethodDataInitArgs (Params, MTH_NUM_ARGS);
+        AcpiDsMethodDataInitArgs (Params, MTH_NUM_ARGS, WalkState);
     }
 
     Op = StartOp;
@@ -626,7 +639,7 @@ AcpiPsWalkParsedAml (
 
     while (WalkState)
     {
-        if (Status == AE_OK)
+        if (ACPI_SUCCESS (Status))
         {
             Status = AcpiPsWalkLoop (&WalkList, Op, DescendingCallback,
                                     AscendingCallback);
@@ -673,7 +686,7 @@ AcpiPsWalkParsedAml (
 
         WalkState = AcpiDsGetCurrentWalkState (&WalkList);
         if (WalkState &&
-            Status == AE_OK)
+            ACPI_SUCCESS (Status))
         {
             /* There is another walk state, restart it */
 

@@ -149,20 +149,20 @@ AcpiPsGetArg (
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (!OpInfo)
+    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
-        /* Invalid opcode */
+        /* Invalid opcode or ASCII character */
 
-        return NULL;
+        return (NULL);
     }
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
+    if (!(ACPI_GET_OP_ARGS (OpInfo)))
     {
         /* Has no linked argument objects */
 
-        return NULL;
+        return (NULL);
     }
 
     /* Get the requested argument object */
@@ -174,7 +174,7 @@ AcpiPsGetArg (
         Arg = Arg->Next;
     }
 
-    return Arg;
+    return (Arg);
 }
 
 
@@ -208,7 +208,7 @@ AcpiPsAppendArg (
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (!OpInfo)
+    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
         /* Invalid opcode */
 
@@ -217,7 +217,7 @@ AcpiPsAppendArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
+    if (!(ACPI_GET_OP_ARGS (OpInfo)))
     {
         /* Has no linked argument objects */
 
@@ -314,7 +314,7 @@ AcpiPsGetChild (
 
     }
 
-    return Child;
+    return (Child);
 }
 
 
@@ -344,7 +344,7 @@ AcpiPsGetDepthNext (
 
     if (!Op)
     {
-        return NULL;
+        return (NULL);
     }
 
     /* look for an argument or child */
@@ -352,7 +352,7 @@ AcpiPsGetDepthNext (
     Next = AcpiPsGetArg (Op, 0);
     if (Next)
     {
-        return Next;
+        return (Next);
     }
 
     /* look for a sibling */
@@ -360,7 +360,7 @@ AcpiPsGetDepthNext (
     Next = Op->Next;
     if (Next)
     {
-        return Next;
+        return (Next);
     }
 
     /* look for a sibling of parent */
@@ -379,20 +379,20 @@ AcpiPsGetDepthNext (
         {
             /* reached parent of origin, end search */
 
-            return NULL;
+            return (NULL);
         }
 
         if (Parent->Next)
         {
             /* found sibling of parent */
-            return Parent->Next;
+            return (Parent->Next);
         }
 
         Op = Parent;
         Parent = Parent->Parent;
     }
 
-    return Next;
+    return (Next);
 }
 
 
@@ -413,7 +413,7 @@ AcpiPsGetDepthNext (
 ACPI_GENERIC_OP *
 AcpiPsFetchPrefix (
     ACPI_GENERIC_OP         *Scope,
-    char                    **Path,
+    INT8                    **Path,
     UINT32                  io)
 {
     UINT32                  prefix = io ? GET8 (*Path):**Path;
@@ -450,7 +450,7 @@ AcpiPsFetchPrefix (
         Scope = AcpiPsGetChild (Scope);
     }
 
-    return Scope;
+    return (Scope);
 }
 
 
@@ -461,7 +461,7 @@ AcpiPsFetchPrefix (
  * PARAMETERS:  Path            - A string containing the name segment
  *              io              - Direction flag
  *
- * RETURN:      The 4-char ASCII ACPI Name as a UINT32
+ * RETURN:      The 4-INT8 ASCII ACPI Name as a UINT32
  *
  * DESCRIPTION: Fetch ACPI name segment (dot-delimited)
  *
@@ -469,13 +469,13 @@ AcpiPsFetchPrefix (
 
 UINT32
 AcpiPsFetchName (
-    char                    **Path,
+    INT8                    **Path,
     UINT32                  io)
 {
     UINT32                  Name = 0;
-    char                    *nm;
+    INT8                    *nm;
     UINT32                  i;
-    char                    ch;
+    INT8                    ch;
 
 
     if (io)
@@ -511,7 +511,7 @@ AcpiPsFetchName (
         }
     }
 
-    return Name;
+    return (Name);
 }
 
 

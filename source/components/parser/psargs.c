@@ -124,6 +124,20 @@
         MODULE_NAME         ("psargs");
 
 
+UINT32
+AcpiPsPkgLengthEncodingSize (
+    UINT32                  FirstByte)
+{
+
+    /*
+     * Bits 6-7 contain the number of bytes
+     * in the encoded package length (-1)
+     */
+
+    return ((FirstByte >> 6) + 1);
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiPsGetNextPackageLength
@@ -136,6 +150,58 @@
  * DESCRIPTION: Decode and return a package length field
  *
  ******************************************************************************/
+
+UINT32
+xxxAcpiPsGetNextPackageLength (
+    ACPI_PARSE_STATE        *ParserState)
+{
+    UINT32                  EncodingLength;
+    UINT32                  PackageLength = 0;
+    UINT8                   *AmlPtr = ParserState->Aml;
+
+
+    FUNCTION_TRACE ("PsGetNextPackageLength");
+
+
+    EncodingLength = AcpiPsPkgLengthEncodingSize ((UINT32) GET8 (AmlPtr));
+
+
+    switch (EncodingLength)
+    {
+    case 1: /* 1-byte encoding (bits 0-5) */
+
+        PackageLength =  ((UINT32) GET8 (AmlPtr) & 0x3f);
+        break;
+
+
+    case 2: /* 2-byte encoding (next byte + bits 0-3) */
+
+        PackageLength = ((((UINT32) GET8 (AmlPtr + 1)) << 4)  | 
+                         (((UINT32) GET8 (AmlPtr)) & 0x0f));
+        break;
+
+
+    case 3: /* 3-byte encoding (next 2 bytes + bits 0-3) */
+
+        PackageLength = ((((UINT32) GET8 (AmlPtr + 2)) << 12) |
+                         (((UINT32) GET8 (AmlPtr + 1)) << 4)  |
+                         (((UINT32) GET8 (AmlPtr)) & 0x0f));
+        break;
+
+
+    case 4: /* 4-byte encoding (next 3 bytes + bits 0-3) */
+
+        PackageLength = ((((UINT32) GET8 (AmlPtr + 3)) << 20) |
+                         (((UINT32) GET8 (AmlPtr + 2)) << 12) |
+                         (((UINT32) GET8 (AmlPtr + 1)) << 4)  |
+                         (((UINT32) GET8 (AmlPtr)) & 0x0f));
+        break;
+    }
+
+    ParserState->Aml += EncodingLength;
+
+    return_VALUE (PackageLength);
+}
 
 UINT32
 AcpiPsGetNextPackageLength (
@@ -235,12 +301,12 @@ AcpiPsGetNextPackageEnd (
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiPsGetNextNamestring (
     ACPI_PARSE_STATE        *ParserState)
 {
-    char                    *Start = (char *) ParserState->Aml;
-    char                    *End = (char *) ParserState->Aml;
+    INT8                    *Start = (INT8 *) ParserState->Aml;
+    INT8                    *End = (INT8 *) ParserState->Aml;
     INT32                   Length;
 
 
@@ -335,7 +401,7 @@ AcpiPsGetNextNamepath (
     UINT32                  *ArgCount,
     BOOLEAN                 MethodCall)
 {
-    char                    *Path;
+    INT8                    *Path;
     ACPI_GENERIC_OP         *Name;
     ACPI_GENERIC_OP         *Op;
     ACPI_GENERIC_OP         *Count;
@@ -437,7 +503,7 @@ AcpiPsGetNextNamepath (
     UINT32                  *ArgCount,
     BOOLEAN                 MethodCall)
 {
-    char                    *Path;
+    INT8                    *Path;
     ACPI_GENERIC_OP         *Name;
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *Method = NULL;
@@ -465,7 +531,7 @@ AcpiPsGetNextNamepath (
          * Lookup the name in the internal namespace
          */
         ScopeInfo.Scope.NameTable = NULL;
-        Entry = ParserState->StartOp->AcpiNamedObject;
+        Entry = ParserState->StartEntry;
         if (Entry)
         {
             ScopeInfo.Scope.NameTable = Entry->ChildTable;
