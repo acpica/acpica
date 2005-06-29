@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.128 $
+ *              $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,6 @@ AcpiNsReportError (
     char                    *Name = NULL;
 
 
-
     AcpiOsPrintf ("%8s-%04d: *** Error: Looking up ",
         ModuleName, LineNumber);
 
@@ -256,6 +255,12 @@ AcpiNsPrintNodePathname (
     ACPI_BUFFER             Buffer;
     ACPI_STATUS             Status;
 
+
+    if (!Node)
+    {
+        AcpiOsPrintf ("[NULL NAME]");
+        return;
+    }
 
     /* Convert handle to a full pathname and print it (with supplied message) */
 
@@ -578,12 +583,12 @@ AcpiNsBuildInternalName (
 
     if (Info->FullyQualified)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "returning [%p] (abs) \"\\%s\"\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Returning [%p] (abs) \"\\%s\"\n",
             InternalName, InternalName));
     }
     else
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "returning [%p] (rel) \"%s\"\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Returning [%p] (rel) \"%s\"\n",
             InternalName, InternalName));
     }
 
