@@ -280,6 +280,38 @@ AcpiOsOut32 (
     ACPI_IO_ADDRESS         OutPort,
     UINT32                  Value);
 
+/*
+ * Platform/Hardware independent physical memory interfaces
+ */
+
+UINT8
+AcpiOsMemIn8 (
+    ACPI_MEM_ADDRESS         InAddr);
+
+
+UINT16
+AcpiOsMemIn16 (
+    ACPI_MEM_ADDRESS         InAddr);
+
+UINT32
+AcpiOsMemIn32 (
+    ACPI_MEM_ADDRESS         InAddr);
+
+void
+AcpiOsMemOut8 (
+    ACPI_MEM_ADDRESS        OutAddr,
+    UINT8                   Value);
+
+void
+AcpiOsMemOut16 (
+    ACPI_MEM_ADDRESS        OutAddr,
+    UINT16                  Value);
+
+void
+AcpiOsMemOut32 (
+    ACPI_MEM_ADDRESS        OutAddr,
+    UINT32                  Value);
+
 
 /*
  * Standard access to PCI configuration space
@@ -335,7 +367,7 @@ AcpiOsWritePciCfgDword (
 
 ACPI_STATUS
 AcpiOsBreakpoint (
-    char                    *Message);
+    NATIVE_CHAR             *Message);
 
 BOOLEAN
 AcpiOsReadable (
@@ -355,12 +387,12 @@ AcpiOsWritable (
 
 INT32
 AcpiOsPrintf (
-    const char              *Format,
+    const NATIVE_CHAR       *Format,
     ...);
 
 INT32
 AcpiOsVprintf (
-    const char              *Format,
+    const NATIVE_CHAR       *Format,
     va_list                 Args);
 
 /*
@@ -369,7 +401,7 @@ AcpiOsVprintf (
 
 UINT32
 AcpiOsGetLine (
-    char                    *Buffer);
+    NATIVE_CHAR             *Buffer);
 
 
 /*
@@ -381,7 +413,7 @@ AcpiOsDbgAssert(
     void                    *FailedAssertion,
     void                    *FileName,
     UINT32                  LineNumber,
-    char                    *Message);
+    NATIVE_CHAR             *Message);
 
 
 #endif /* __ACPIOSD_H__ */
