@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.27 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -118,9 +118,9 @@
 
 #define _DECLARE_GLOBALS
 
-#include "AslCompiler.h"
+#include "aslcompiler.h"
 
-#define _COMPONENT          COMPILER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslmain")
 
 
@@ -160,6 +160,41 @@ Usage (
 }
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslInitialize
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Initialize compiler globals
+ *
+ ******************************************************************************/
+
+void
+AslInitialize (void)
+{
+    UINT32              i;
+
+
+    AcpiDbgLevel = 0;
+
+    for (i = 0; i < ASL_NUM_FILES; i++)
+    {
+        Gbl_Files[i].Handle = NULL;
+        Gbl_Files[i].Filename = NULL;
+    }
+
+    Gbl_Files[ASL_FILE_STDOUT].Handle   = stdout;
+    Gbl_Files[ASL_FILE_STDOUT].Filename = "STDOUT";
+
+    Gbl_Files[ASL_FILE_STDERR].Handle   = stderr;
+    Gbl_Files[ASL_FILE_STDERR].Filename = "STDERR";
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    main
@@ -179,14 +214,13 @@ main (
     char                **argv)
 {
     UINT32              j;
-    UINT32              DebugLevel = AcpiDbgLevel;
     BOOLEAN             BadCommandLine = FALSE;
     int                 Status;
 
 
-    AcpiDbgLevel = 0;
 
-    AslCompilerSignon (stdout);
+    AslInitialize ();
+    AslCompilerSignon (ASL_FILE_STDOUT);
 
     /* Minimum command line contains at least the input file */
 
@@ -195,6 +229,7 @@ main (
         Usage ();
         return 0;
     }
+
 
 
     /* Get the command line options */
@@ -276,8 +311,8 @@ main (
 
     /* Next parameter must be the input filename */
 
-    Gbl_InputFilename = argv[optind];
-    if (!Gbl_InputFilename)
+    Gbl_Files[ASL_FILE_INPUT].Filename = argv[optind];
+    if (!Gbl_Files[ASL_FILE_INPUT].Filename)
     {
         printf ("Missing input filename\n");
         BadCommandLine = TRUE;
@@ -303,7 +338,7 @@ main (
      */
     if (Gbl_UseDefaultAmlFilename)
     {
-        Gbl_OutputFilenamePrefix = Gbl_InputFilename;
+        Gbl_OutputFilenamePrefix = Gbl_Files[ASL_FILE_INPUT].Filename;
     }
 
 
