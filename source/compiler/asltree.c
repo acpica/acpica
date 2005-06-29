@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -230,6 +230,34 @@ TgSetNodeFlags (
  *
  ******************************************************************************/
 
+void
+TgSetEndLineNumber (
+    ASL_PARSE_NODE          *Node)
+{
+
+    if (Node->EndLine)
+    {
+        return;
+    }
+
+    Node->EndLine = Gbl_CurrentLineNumber;
+    Node->EndLogicalLine = Gbl_LogicalLineNumber;
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
 ASL_PARSE_NODE *
 TgCreateNode (
     UINT32                  ParseOpcode,
@@ -364,8 +392,7 @@ TgLinkChildren (
     va_start (ap, NumChildren);
 
 
-    Node->EndLine = Gbl_CurrentLineNumber;
-    Node->EndLogicalLine = Gbl_LogicalLineNumber;
+    TgSetEndLineNumber (Node);
 
     DbgPrint ("\nLinkChildren  Line %d NewParent %p Child %d Op %s  ", 
                 Node->LineNumber,
@@ -609,6 +636,75 @@ TgLinkPeerNode (
 
     return Node1;
 }
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE *
+TgLinkPeerNodes (
+    UINT32                  NumPeers,
+    ...)
+{
+    ASL_PARSE_NODE          *This;
+    ASL_PARSE_NODE          *Next;
+    va_list                 ap;
+    UINT32                  i;
+    ASL_PARSE_NODE          *Start;
+
+
+    DbgPrint ("\nLinkPeerNodes: (%d) ", NumPeers);
+
+
+
+    va_start (ap, NumPeers);
+
+    This = va_arg (ap, ASL_PARSE_NODE *);
+    DbgPrint ("Include file:  %s\n", This->Child->Value.Pointer);
+
+    Start = This;
+
+    for (i = 0; i < (NumPeers -1); i++)
+    {
+        DbgPrint ("%d=%p ", (i+1), This);
+
+        while (This->Peer)
+        {
+            DbgPrint ("\nLinkPeers: (n%d) This=%p (%s), This->Peer=%p\n", 
+                            i, This, UtGetOpName(This->ParseOpcode), This->Peer);
+            This = This->Peer;
+        }
+
+        Next = va_arg (ap, ASL_PARSE_NODE *);
+        if (!Next)
+        {
+            Next = TgAllocateNode (DEFAULT_ARG);
+        }
+        This->Peer = Next;
+        if ((UINT32) Next == 0x64)
+        {
+            printf ("Found 64\n");
+            This->Peer = NULL;
+        }
+
+        This = Next;
+    }
+
+
+    DbgPrint ("\n\n");
+    return (Start);
+}
+
 
 
 /*******************************************************************************
