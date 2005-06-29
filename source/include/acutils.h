@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.110 $
+ *       $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -345,25 +345,18 @@ AcpiUtUpdateObjectReference (
     ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action);
 
-ACPI_OPERAND_OBJECT  *
-_UtCreateInternalObject (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    ACPI_OBJECT_TYPE8       Type);
-
 
 /*
  * UtDebug - Debug interfaces
  */
 
-UINT32
-GetDebugLevel (
+void
+AcpiUtInitStackPtrTrace (
     void);
 
 void
-SetDebugLevel (
-    UINT32                  level);
+AcpiUtTrackStackPtr (
+    void);
 
 void
 AcpiUtTrace (
@@ -412,19 +405,19 @@ AcpiUtPtrExit (
     UINT8                   *Ptr);
 
 void
-_ReportInfo (
+AcpiUtReportInfo (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId);
 
 void
-_ReportError (
+AcpiUtReportError (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId);
 
 void
-_ReportWarning (
+AcpiUtReportWarning (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId);
@@ -439,33 +432,13 @@ AcpiUtDumpBuffer (
 void
 AcpiUtDebugPrint (
     UINT32                  RequestedDebugLevel,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *ModuleName,
-    NATIVE_CHAR             *ProcName,
-    UINT32                  LineNumber,
-    char                    *Format,
-    ...);
-
-void
-AcpiUtDebugPrintRaw (
-    UINT32                  RequestedDebugLevel,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *ModuleName,
-    NATIVE_CHAR             *ProcName,
-    UINT32                  LineNumber,
-    char                    *Format,
-    ...);
-
-void
-AcpiUtDebugPrint2 (
-    UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
     ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     char                    *Format,
     ...);
 
 void
-AcpiUtDebugPrintRaw2 (
+AcpiUtDebugPrintRaw (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
     ACPI_DEBUG_PRINT_INFO   *DbgInfo,
@@ -564,14 +537,21 @@ AcpiUtReleaseMutex (
  * UtObject - internal object create/delete/cache routines
  */
 
+ACPI_OPERAND_OBJECT  *
+AcpiUtCreateInternalObjectDbg (
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    ACPI_OBJECT_TYPE8       Type);
+
 void *
-_UtAllocateObjectDesc (
+AcpiUtAllocateObjectDescDbg (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId);
 
-#define AcpiUtCreateInternalObject(t)   _UtCreateInternalObject(_THIS_MODULE,__LINE__,_COMPONENT,t)
-#define AcpiUtAllocateObjectDesc()      _UtAllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
+#define AcpiUtCreateInternalObject(t)   AcpiUtCreateInternalObjectDbg (_THIS_MODULE,__LINE__,_COMPONENT,t)
+#define AcpiUtAllocateObjectDesc()      AcpiUtAllocateObjectDescDbg (_THIS_MODULE,__LINE__,_COMPONENT)
 
 void
 AcpiUtDeleteObjectDesc (
@@ -758,7 +738,6 @@ AcpiUtDumpCurrentAllocations (
     UINT32                  Component,
     NATIVE_CHAR             *Module);
 #endif
-
 
 
 #endif /* _ACUTILS_H */
