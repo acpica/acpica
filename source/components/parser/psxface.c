@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -297,11 +297,6 @@ Cleanup2:
     AcpiPsDeleteParseTree (Op);
 
 Cleanup1:
-    if (!Info)
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     if ((Info->ParameterType == ACPI_PARAM_ARGS) &&
         (Info->Parameters))
     {
