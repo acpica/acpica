@@ -292,7 +292,7 @@ HwObtainSleepTypeRegisterData (
                 *Slp_TypB = (UINT8) (ObjDesc->Package.Elements[1])->Number.Value;
             }
 
-            CmDeleteInternalObject (ObjDesc);
+            CmRemoveReference (ObjDesc);
         }
     }
 
