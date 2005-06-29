@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.267 $
+ *       $Revision: 1.268 $
  *
  *****************************************************************************/
 
@@ -638,26 +638,39 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 
 /*
  * GPE info flags - Per GPE
- * +---------+-+-+-+
- * |Bits 8:3 |2|1|0|
- * +---------+-+-+-+
- *          | | | |
- *          | | | +- Edge or Level Triggered
- *          | | +--- Type: Wake or Runtime
- *          | +----- Enabled for wake?
- *          +--------<Reserved>
+ * +-+---+-+---+-+-+
+ * |7|6:5|4|3:2|1|0|
+ * +-+---+-+---+-+-+
+ *  |  |  |  |  | |
+ *  |  |  |  |  | +--- Interrupt type: Edge or Level Triggered
+ *  |  |  |  |  +--- Enabled for wake?
+ *  |  |  |  +----- Type: Wake-only, Runtime-only, or wake/runtime
+ *  |  |  +--- System state when GPE ocurred (running/waking)
+ *  |  +--- Type of dispatch -- to method, handler, or none
+ *  +--- <Reserved>
  */
-#define ACPI_GPE_XRUPT_TYPE_MASK        (UINT8) 1
-#define ACPI_GPE_LEVEL_TRIGGERED        (UINT8) 1
-#define ACPI_GPE_EDGE_TRIGGERED         (UINT8) 0
+#define ACPI_GPE_XRUPT_TYPE_MASK        (UINT8) 0x01
+#define ACPI_GPE_LEVEL_TRIGGERED        (UINT8) 0x01
+#define ACPI_GPE_EDGE_TRIGGERED         (UINT8) 0x00
 
-#define ACPI_GPE_TYPE_MASK              (UINT8) 2
-#define ACPI_GPE_TYPE_WAKE              (UINT8) 2
-#define ACPI_GPE_TYPE_RUNTIME           (UINT8) 0       /* Default */
+#define ACPI_GPE_WAKE_ENABLE_MASK       (UINT8) 0x02
+#define ACPI_GPE_WAKE_ENABLED           (UINT8) 0x02
+#define ACPI_GPE_WAKE_DISABLED          (UINT8) 0x00       /* Default */
 
-#define ACPI_GPE_ENABLE_MASK            (UINT8) 4
-#define ACPI_GPE_ENABLED                (UINT8) 4
-#define ACPI_GPE_DISABLED               (UINT8) 0       /* Default */
+#define ACPI_GPE_TYPE_MASK              (UINT8) 0x0C
+#define ACPI_GPE_TYPE_WAKE_RUN          (UINT8) 0x0C
+#define ACPI_GPE_TYPE_WAKE              (UINT8) 0x04
+#define ACPI_GPE_TYPE_RUNTIME           (UINT8) 0x08       /* Default */
+
+#define ACPI_GPE_SYSTEM_MASK            (UINT8) 0x10
+#define ACPI_GPE_SYSTEM_RUNNING         (UINT8) 0x10
+#define ACPI_GPE_SYSTEM_WAKING          (UINT8) 0x00
+
+#define ACPI_GPE_DISPATCH_MASK          (UINT8) 0x60
+#define ACPI_GPE_DISPATCH_HANDLER       (UINT8) 0x20
+#define ACPI_GPE_DISPATCH_METHOD        (UINT8) 0x40
+#define ACPI_GPE_DISPATCH_NOT_USED      (UINT8) 0x00       /* Default */
+
 
 /*
  * Flags for GPE and Lock interfaces
@@ -871,10 +884,6 @@ typedef void
  */
 typedef
 UINT32 (*ACPI_EVENT_HANDLER) (
-    void                        *Context);
-
-typedef
-void (*ACPI_GPE_HANDLER) (
     void                        *Context);
 
 typedef
