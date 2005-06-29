@@ -470,8 +470,11 @@ AdGetTables (
 #ifdef _IA16
         printf ("Scanning for DSDT\n");
 
-        Status = AdFindDsdt (&DsdtPtr, &DsdtLength);
+        Status = AdFindDsdt (&DsdtPtr, &DsdtLength);    
+        
+        printf ("About to dump DSDT\n");
         AdDumpTables ();
+        printf ("Dumped DSDT\n");
 #else
         printf ("Must supply filename for ACPI tables, cannot scan memory\n");
         Status = AE_NO_ACPI_TABLES;
@@ -518,7 +521,9 @@ AdParseTables (void)
     ((ACPI_PARSE2_OBJECT *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
-
+    
+    printf ("Pass 1 parse\n"); 
+    
     DsdtLength = AcpiGbl_DSDT->Length;
     AmlLength = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
     AmlPtr = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
@@ -531,9 +536,11 @@ AdParseTables (void)
     }
 
     /* Pass 2: Parse control methods and link their parse trees into the main parse tree */
-
+    
+    printf ("Pass 2 parse\n");
     Status = AdSecondPassParse (AcpiGbl_ParsedNamespaceRoot);
-
+                              
+    printf ("Parsing completed\n");                          
     return Status;
 }
 
