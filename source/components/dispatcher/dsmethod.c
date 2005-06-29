@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -136,7 +136,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Call the parser and parse the AML that is associated with the 
+ * DESCRIPTION: Call the parser and parse the AML that is associated with the
  *              method.
  *
  * MUTEX:       Assumes parser is locked
@@ -543,7 +543,7 @@ AcpiDsRestartControlMethod (
                 return_ACPI_STATUS (Status);
             }
 
-            /* 
+            /*
              * Save as THIS method's return value in case it is returned
              * immediately to yet another method
              */
