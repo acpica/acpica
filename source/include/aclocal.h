@@ -725,6 +725,203 @@ typedef struct AcpiWalkInfo
 } ACPI_WALK_INFO;
 
 
+
+
+
+/*****************************************************************************
+ *
+ * Hardware and PNP
+ *
+ ****************************************************************************/
+
+
+/* Sleep states */
+
+#define SLWA_DEBUG_LEVEL    4
+#define GTS_CALL            0
+#define GTS_WAKE            1
+
+/* Cx States */
+
+#define MAX_CX_STATE_LATENCY 0xFFFFFFFF
+#define MAX_CX_STATES       4
+
+/*
+ * The #define's and enum below establish an abstract way of identifying what
+ * register block and register is to be accessed.  Do not change any of the
+ * values as they are used in switch statements and offset calculations.
+ */
+
+#define REGISTER_BLOCK_MASK     0xFF00
+#define BIT_IN_REGISTER_MASK    0x00FF
+#define PM1_EVT                 0x0100
+#define PM1_CONTROL             0x0200
+#define PM2_CONTROL             0x0300
+#define PM_TIMER                0x0400
+#define PROCESSOR_BLOCK         0x0500
+#define GPE0_STS_BLOCK          0x0600
+#define GPE0_EN_BLOCK           0x0700
+#define GPE1_STS_BLOCK          0x0800
+#define GPE1_EN_BLOCK           0x0900
+
+enum
+{
+    /* PM1 status register ids */
+
+    TMR_STS =   (PM1_EVT        | 0x01),
+    BM_STS,
+    GBL_STS,
+    PWRBTN_STS,
+    SLPBTN_STS,
+    RTC_STS,
+    WAK_STS,
+
+    /* PM1 enable register ids */
+
+    TMR_EN,
+    /* need to skip 1 enable number since there's no bus master enable register */
+    GBL_EN =    (PM1_EVT        | 0x0A),
+    PWRBTN_EN,
+    SLPBTN_EN,
+    RTC_EN,
+
+    /* PM1 control register ids */
+
+    SCI_EN =    (PM1_CONTROL    | 0x01),
+    BM_RLD,
+    GBL_RLS,
+    SLP_TYPE_A,
+    SLP_TYPE_B,
+    SLP_EN,
+
+    /* PM2 control register ids */
+
+    ARB_DIS =   (PM2_CONTROL    | 0x01),
+
+    /* PM Timer register ids */
+
+    TMR_VAL =   (PM_TIMER       | 0x01),
+
+    GPE0_STS =  (GPE0_STS_BLOCK | 0x01),
+    GPE0_EN =   (GPE0_EN_BLOCK  | 0x01),
+
+    GPE1_STS =  (GPE1_STS_BLOCK | 0x01),
+    GPE1_EN =   (GPE0_EN_BLOCK  | 0x01),
+
+    /* Last register value is one less than LAST_REG */
+
+    LAST_REG
+};
+
+
+#define TMR_STS_MASK        0x0001
+#define BM_STS_MASK         0x0010
+#define GBL_STS_MASK        0x0020
+#define PWRBTN_STS_MASK     0x0100
+#define SLPBTN_STS_MASK     0x0200
+#define RTC_STS_MASK        0x0400
+#define WAK_STS_MASK        0x8000
+
+#define ALL_FIXED_STS_BITS  (TMR_STS_MASK   | BM_STS_MASK  | GBL_STS_MASK | PWRBTN_STS_MASK |  \
+                            SLPBTN_STS_MASK | RTC_STS_MASK | WAK_STS_MASK)
+
+#define TMR_EN_MASK         0x0001
+#define GBL_EN_MASK         0x0020
+#define PWRBTN_EN_MASK      0x0100
+#define SLPBTN_EN_MASK      0x0200
+#define RTC_EN_MASK         0x0400
+
+#define SCI_EN_MASK         0x0001
+#define BM_RLD_MASK         0x0002
+#define GBL_RLS_MASK        0x0004
+#define SLP_TYPE_X_MASK     0x1C00
+#define SLP_EN_MASK         0x2000
+
+#define ARB_DIS_MASK        0x0001
+
+#define GPE0_STS_MASK
+#define GPE0_EN_MASK
+
+#define GPE1_STS_MASK
+#define GPE1_EN_MASK
+
+
+#define ACPI_READ           1
+#define ACPI_WRITE          2
+
+#define LOW_BYTE            0x00FF
+#define ONE_BYTE            0x08
+
+#ifndef SET
+    #define SET             1
+#endif
+#ifndef CLEAR
+    #define CLEAR           0
+#endif
+
+
+/* Plug and play */
+
+/* Pnp and ACPI data */
+
+#define VERSION_NO                      0x01
+#define LOGICAL_DEVICE_ID               0x02
+#define COMPATIBLE_DEVICE_ID            0x03
+#define IRQ_FORMAT                      0x04
+#define DMA_FORMAT                      0x05
+#define START_DEPENDENT_TAG             0x06
+#define END_DEPENDENT_TAG               0x07
+#define IO_PORT_DESCRIPTOR              0x08
+#define FIXED_LOCATION_IO_DESCRIPTOR    0x09
+#define RESERVED_TYPE0                  0x0A
+#define RESERVED_TYPE1                  0x0B
+#define RESERVED_TYPE2                  0x0C
+#define RESERVED_TYPE3                  0x0D
+#define SMALL_VENDOR_DEFINED            0x0E
+#define END_TAG                         0x0F
+
+/* Pnp and ACPI data */
+
+#define MEMORY_RANGE_24                 0x81
+#define ISA_MEMORY_RANGE                0x81
+#define LARGE_VENDOR_DEFINED            0x84
+#define EISA_MEMORY_RANGE               0x85
+#define MEMORY_RANGE_32                 0x85
+#define FIXED_EISA_MEMORY_RANGE         0x86
+#define FIXED_MEMORY_RANGE_32           0x86
+
+/* ACPI only data */
+
+#define DWORD_ADDRESS_SPACE             0x87
+#define WORD_ADDRESS_SPACE              0x88
+#define EXTENDED_IRQ                    0x89
+
+/* MUST HAVES */
+
+
+typedef enum
+{
+    DWORD_DEVICE_ID,
+    STRING_PTR_DEVICE_ID,
+    STRING_DEVICE_ID
+
+}   DEVICE_ID_TYPE;
+
+typedef struct
+{
+    DEVICE_ID_TYPE      Type;
+    union
+    {
+        UINT32              Number;
+        char                *StringPtr;
+        char                Buffer[9];
+    } Data;
+
+} DEVICE_ID;
+
+
+
+
 /*****************************************************************************
  *
  * Debug
