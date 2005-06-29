@@ -389,22 +389,54 @@ AmlGetRvalueFromObject (
 
         case AML_IndexOp:
 
-            ObjDesc = StackDesc->Lvalue.Object;
-            if (ObjDesc)
+            switch (StackDesc->Lvalue.TargetType)
             {
-                /*
-                 * Valid obj descriptor, copy pointer to return value
-                 */
-                *StackPtr = ObjDesc;
-                Status = AE_OK;
-            }
+            case ACPI_TYPE_Buffer:
+                ObjDesc = StackDesc->Lvalue.Object;
+                if (ObjDesc)
+                {
+                    /*
+                     * Valid obj descriptor, copy pointer to return value
+                     */
+                    *StackPtr = ObjDesc;
+                    Status = AE_OK;
+                }
 
-            else
-            {
+                else
+                {
+                    /* Invalid obj descriptor */
+
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromObject: Null buffer ptr in obj %p\n", StackDesc));
+                    Status = AE_AML_INTERNAL;
+                }
+                break;
+
+            case ACPI_TYPE_Package:
+                ObjDesc = *StackDesc->Lvalue.Where;
+                if (ObjDesc)
+                {
+                    /*
+                     * Valid obj descriptor, copy pointer to return value
+                     */
+                    *StackPtr = ObjDesc;
+                    Status = AE_OK;
+                }
+
+                else
+                {
+                    /* Invalid obj descriptor */
+
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromObject: Null package ptr in obj %p\n", StackDesc));
+                    Status = AE_AML_INTERNAL;
+                }
+                break;
+
+            default:
                 /* Invalid obj descriptor */
 
-                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromObject: Null IndexOp value ptr\n"));
-                Status = AE_AML_INTERNAL;
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromObject: Bad target type in obj %p\n", StackDesc));
+                Status = AE_AML_INTERNAL;   
+                break;
             }
 
             break;
