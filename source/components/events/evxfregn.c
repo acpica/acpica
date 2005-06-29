@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.28 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -147,16 +147,16 @@
 ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
     ACPI_HANDLE             Device,
-    ACPI_ADDRESS_SPACE_TYPE SpaceId,
-    ADDRESS_SPACE_HANDLER   Handler,
-    ADDRESS_SPACE_SETUP     Setup,
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_ADR_SPACE_HANDLER  Handler,
+    ACPI_ADR_SPACE_SETUP    Setup,
     void                    *Context)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status = AE_OK;
-    OBJECT_TYPE_INTERNAL    Type;
+    ACPI_OBJECT_TYPE8       Type;
     UINT16                  Flags = 0;
 
 
@@ -203,17 +203,17 @@ AcpiInstallAddressSpaceHandler (
 
         switch (SpaceId)
         {
-        case ADDRESS_SPACE_SYSTEM_MEMORY:
+        case ACPI_ADR_SPACE_SYSTEM_MEMORY:
             Handler = AcpiAmlSystemMemorySpaceHandler;
             Setup = AcpiEvSystemMemoryRegionSetup;
             break;
 
-        case ADDRESS_SPACE_SYSTEM_IO:
+        case ACPI_ADR_SPACE_SYSTEM_IO:
             Handler = AcpiAmlSystemIoSpaceHandler;
             Setup = AcpiEvIoSpaceRegionSetup;
             break;
 
-        case ADDRESS_SPACE_PCI_CONFIG:
+        case ACPI_ADR_SPACE_PCI_CONFIG:
             Handler = AcpiAmlPciConfigSpaceHandler;
             Setup = AcpiEvPciConfigRegionSetup;
             break;
@@ -237,7 +237,7 @@ AcpiInstallAddressSpaceHandler (
      *  Check for an existing internal object
      */
 
-    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Node);
+    ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
     {
         /*
@@ -382,8 +382,8 @@ UnlockAndExit:
 ACPI_STATUS
 AcpiRemoveAddressSpaceHandler (
     ACPI_HANDLE             Device,
-    ACPI_ADDRESS_SPACE_TYPE SpaceId,
-    ADDRESS_SPACE_HANDLER   Handler)
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_ADR_SPACE_HANDLER  Handler)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *HandlerObj;
@@ -419,7 +419,7 @@ AcpiRemoveAddressSpaceHandler (
 
     /* Make sure the internal object exists */
 
-    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Node);
+    ObjDesc = AcpiNsGetAttachedObject (Node);
     if (!ObjDesc)
     {
         /*
@@ -464,7 +464,7 @@ AcpiRemoveAddressSpaceHandler (
                  *  The region is just inaccessible as indicated to
                  *  the _REG method
                  */
-                AcpiEvDisassociateRegionFromHandler(RegionObj, FALSE);
+                AcpiEvDisassociateRegionFromHandler(RegionObj, TRUE);
 
                 /*
                  *  Walk the list, since we took the first region and it

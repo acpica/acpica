@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.104 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@
 ACPI_STATUS
 AcpiInstallFixedEventHandler (
     UINT32                  Event,
-    FIXED_EVENT_HANDLER     Handler,
+    ACPI_EVENT_HANDLER      Handler,
     void                    *Context)
 {
     ACPI_STATUS             Status;
@@ -158,7 +158,7 @@ AcpiInstallFixedEventHandler (
 
     /* Parameter validation */
 
-    if (Event >= NUM_FIXED_EVENTS)
+    if (Event > ACPI_EVENT_MAX)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -219,7 +219,7 @@ Cleanup:
 ACPI_STATUS
 AcpiRemoveFixedEventHandler (
     UINT32                  Event,
-    FIXED_EVENT_HANDLER     Handler)
+    ACPI_EVENT_HANDLER      Handler)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -229,7 +229,7 @@ AcpiRemoveFixedEventHandler (
 
     /* Parameter validation */
 
-    if (Event >= NUM_FIXED_EVENTS)
+    if (Event > ACPI_EVENT_MAX)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -245,7 +245,7 @@ AcpiRemoveFixedEventHandler (
     AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
     AcpiGbl_FixedEventHandlers[Event].Context = NULL;
 
-    
+
     if (!ACPI_SUCCESS(Status))
     {
         DEBUG_PRINT (ACPI_WARN,
@@ -283,7 +283,7 @@ ACPI_STATUS
 AcpiInstallNotifyHandler (
     ACPI_HANDLE             Device,
     UINT32                  HandlerType,
-    NOTIFY_HANDLER          Handler,
+    ACPI_NOTIFY_HANDLER     Handler,
     void                    *Context)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -371,7 +371,7 @@ AcpiInstallNotifyHandler (
 
         /* Check for an existing internal object */
 
-        ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) DeviceNode);
+        ObjDesc = AcpiNsGetAttachedObject (DeviceNode);
         if (ObjDesc)
         {
 
@@ -401,7 +401,6 @@ AcpiInstallNotifyHandler (
             /* Attach new object to the Node */
 
             Status = AcpiNsAttachObject (Device, ObjDesc, (UINT8) DeviceNode->Type);
-
             if (ACPI_FAILURE (Status))
             {
                 goto UnlockAndExit;
@@ -426,6 +425,7 @@ AcpiInstallNotifyHandler (
         {
             ObjDesc->Device.SysHandler = NotifyObj;
         }
+
         else /* ACPI_DEVICE_NOTIFY */
         {
             ObjDesc->Device.DrvHandler = NotifyObj;
@@ -457,14 +457,16 @@ ACPI_STATUS
 AcpiRemoveNotifyHandler (
     ACPI_HANDLE             Device,
     UINT32                  HandlerType,
-    NOTIFY_HANDLER          Handler)
+    ACPI_NOTIFY_HANDLER     Handler)
 {
     ACPI_OPERAND_OBJECT     *NotifyObj;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *DeviceNode;
     ACPI_STATUS             Status = AE_OK;
 
+
     FUNCTION_TRACE ("AcpiRemoveNotifyHandler");
+
 
     /* Parameter validation */
 
@@ -533,7 +535,7 @@ AcpiRemoveNotifyHandler (
 
         /* Check for an existing internal object */
 
-        ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) DeviceNode);
+        ObjDesc = AcpiNsGetAttachedObject (DeviceNode);
         if (!ObjDesc)
         {
             Status = AE_NOT_EXIST;
@@ -600,16 +602,18 @@ ACPI_STATUS
 AcpiInstallGpeHandler (
     UINT32                  GpeNumber,
     UINT32                  Type,
-    GPE_HANDLER             Handler,
+    ACPI_GPE_HANDLER        Handler,
     void                    *Context)
 {
     ACPI_STATUS             Status = AE_OK;
 
+
     FUNCTION_TRACE ("AcpiInstallGpeHandler");
+
 
     /* Parameter validation */
 
-    if (!Handler || (GpeNumber > NUM_GPE))
+    if (!Handler || (GpeNumber > ACPI_GPE_MAX))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -664,7 +668,7 @@ Cleanup:
 ACPI_STATUS
 AcpiRemoveGpeHandler (
     UINT32                  GpeNumber,
-    GPE_HANDLER             Handler)
+    ACPI_GPE_HANDLER        Handler)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -674,7 +678,7 @@ AcpiRemoveGpeHandler (
 
     /* Parameter validation */
 
-    if (!Handler || (GpeNumber > NUM_GPE))
+    if (!Handler || (GpeNumber > ACPI_GPE_MAX))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -765,6 +769,7 @@ ACPI_STATUS
 AcpiReleaseGlobalLock (
     void)
 {
+
     AcpiEvReleaseGlobalLock ();
     return (AE_OK);
 }

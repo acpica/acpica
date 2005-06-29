@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.99 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -165,7 +165,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
      */
 
     Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
-                                             ADDRESS_SPACE_SYSTEM_MEMORY,
+                                             ACPI_ADR_SPACE_SYSTEM_MEMORY,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
     if ((ACPI_FAILURE (Status)) &&
         (Status != AE_EXIST))
@@ -174,7 +174,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
     }
 
     Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
-                                             ADDRESS_SPACE_SYSTEM_IO,
+                                             ACPI_ADR_SPACE_SYSTEM_IO,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
     if ((ACPI_FAILURE (Status)) &&
         (Status != AE_EXIST))
@@ -183,7 +183,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
     }
 
     Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
-                                             ADDRESS_SPACE_PCI_CONFIG,
+                                             ACPI_ADR_SPACE_PCI_CONFIG,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
     if ((ACPI_FAILURE (Status)) &&
         (Status != AE_EXIST))
@@ -295,8 +295,8 @@ AcpiEvAddressSpaceDispatch (
     UINT32                  *Value)
 {
     ACPI_STATUS             Status;
-    ADDRESS_SPACE_HANDLER   Handler;
-    ADDRESS_SPACE_SETUP     RegionSetup;
+    ACPI_ADR_SPACE_HANDLER  Handler;
+    ACPI_ADR_SPACE_SETUP    RegionSetup;
     ACPI_OPERAND_OBJECT     *HandlerDesc;
     void                    *RegionContext = NULL;
 
@@ -440,7 +440,7 @@ AcpiEvDisassociateRegionFromHandler(
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     **LastObjPtr;
-    ADDRESS_SPACE_SETUP     RegionSetup;
+    ACPI_ADR_SPACE_SETUP    RegionSetup;
     void                    *RegionContext;
     ACPI_STATUS             Status;
 
@@ -693,7 +693,7 @@ AcpiEvAddrHandlerHelper (
 
     /* Check for an existing internal object */
 
-    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Node);
+    ObjDesc = AcpiNsGetAttachedObject (Node);
     if (!ObjDesc)
     {
         /*

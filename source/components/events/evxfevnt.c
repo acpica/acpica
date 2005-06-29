@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -302,7 +302,7 @@ AcpiEnableEvent (
 
         /* Ensure that we have a valid GPE number */
 
-        if ((Event >= NUM_GPE) ||
+        if ((Event > ACPI_GPE_MAX) ||
             (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -406,7 +406,7 @@ AcpiDisableEvent (
 
         /* Ensure that we have a valid GPE number */
 
-        if ((Event >= NUM_GPE) ||
+        if ((Event > ACPI_GPE_MAX) ||
             (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -500,7 +500,7 @@ AcpiClearEvent (
 
         /* Ensure that we have a valid GPE number */
 
-        if ((Event >= NUM_GPE) ||
+        if ((Event > ACPI_GPE_MAX) ||
             (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -601,7 +601,7 @@ AcpiGetEventStatus (
 
         /* Ensure that we have a valid GPE number */
 
-        if ((Event >= NUM_GPE) ||
+        if ((Event > ACPI_GPE_MAX) ||
             (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);

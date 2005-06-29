@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -247,7 +247,7 @@ AcpiEvFixedEventInitialize(void)
 
     /* Initialize the structure that keeps track of fixed event handlers */
 
-    for (i = 0; i < NUM_FIXED_EVENTS; i++)
+    for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
     {
         AcpiGbl_FixedEventHandlers[i].Handler = NULL;
         AcpiGbl_FixedEventHandlers[i].Context = NULL;
@@ -488,7 +488,7 @@ AcpiEvGpeInitialize (void)
 
     /* Set the Gpe validation table to GPE_INVALID */
 
-    MEMSET (AcpiGbl_GpeValid, (int) ACPI_GPE_INVALID, NUM_GPE);
+    MEMSET (AcpiGbl_GpeValid, (int) ACPI_GPE_INVALID, ACPI_NUM_GPE);
 
     /*
      * Initialize the Gpe information and validation blocks.  A goal of these
