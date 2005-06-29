@@ -250,7 +250,7 @@ CmAddElementToAllocList (
     Gbl_TailAllocPtr->AllocType = AllocType;
     Gbl_TailAllocPtr->Component = Component;
     Gbl_TailAllocPtr->Line      = Line;
-    strcpy (Gbl_TailAllocPtr->Module, Module);
+    STRCPY (Gbl_TailAllocPtr->Module, Module);
     
     CmReleaseMutex (MTX_MEMORY);
     return_VOID;
@@ -418,7 +418,7 @@ CmDumpCurrentAllocations (
     for (i = 1; ; i++)  /* Just a counter */
     {
         if ((Element->Component & Component) &&
-            ((Module == NULL) || (0 == strcmp (Module, Element->Module))))
+            ((Module == NULL) || (0 == STRCMP (Module, Element->Module))))
         {
             DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                 ("%p: Length %04x %10.10s Line %d",
@@ -686,7 +686,7 @@ CmInitStaticObject (
     /*
      * Clear the entire descriptor 
      */
-    memset ((void *) ObjDesc, 0, sizeof (ACPI_OBJECT_INTERNAL));
+    MEMSET ((void *) ObjDesc, 0, sizeof (ACPI_OBJECT_INTERNAL));
 
 
     /*
