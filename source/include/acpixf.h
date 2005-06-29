@@ -3,7 +3,10 @@
 // Interfaces to the Generic ACPI Subsystem
 //
 
-#define OBJECT_DESCRIPTOR       void
+
+#include "datatypes.h"
+#include "acpiobj.h"
+
 #define ACPI_MODE               1
 #define LEGACY_MODE             2
 #define DISABLE_KNOWN_EVENTS    8
@@ -33,3 +36,6 @@ AcpiModeCapabilities (void);
 
 int
 AcpiEnable (char *pcTestName, int iFlags);
+
+int 
+AcpiDisable (void);
