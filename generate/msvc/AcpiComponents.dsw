@@ -33,7 +33,7 @@ Package=<5>
 {{{
     begin source code control
     "$/Acpi Components/Subsystem", CQBAAAAA
-    .
+    ..\..\Subsystem
     end source code control
 }}}
 
