@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -165,6 +165,13 @@ AnGetTimeMs (void)
  * Stubs to simplify linkage to the
  * ACPI Namespace Manager (Unused functions).
  */
+
+
+void
+AcpiAmlUnlinkMutex (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+}
 
 void
 AcpiTbDeleteAcpiTables (void)
