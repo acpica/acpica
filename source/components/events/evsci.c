@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.64 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -150,7 +150,7 @@
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiEvSciHandler (void *Context)
 {
     UINT32                  InterruptHandled = INTERRUPT_NOT_HANDLED;
@@ -347,22 +347,13 @@ AcpiEvRestoreAcpiState (void)
     {
         /* Restore the fixed events */
 
-        if (AcpiOsIn16 (AcpiGbl_FADT->Pm1aEvtBlk + 2) !=
-            AcpiGbl_Pm1EnableRegisterSave)
+        if (AcpiHwRegisterRead (ACPI_MTX_LOCK, PM1_EN) !=
+                AcpiGbl_Pm1EnableRegisterSave)
         {
-            AcpiOsOut16 ((AcpiGbl_FADT->Pm1aEvtBlk + 2),
-                          AcpiGbl_Pm1EnableRegisterSave);
+            AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1_EN,
+                AcpiGbl_Pm1EnableRegisterSave);
         }
 
-        if (AcpiGbl_FADT->Pm1bEvtBlk)
-        {
-            if (AcpiOsIn16 (AcpiGbl_FADT->Pm1bEvtBlk + 2) !=
-                AcpiGbl_Pm1EnableRegisterSave)
-            {
-                AcpiOsOut16 ((AcpiGbl_FADT->Pm1bEvtBlk + 2),
-                              AcpiGbl_Pm1EnableRegisterSave);
-            }
-        }
 
 
         /* Ensure that all status bits are clear */
@@ -374,27 +365,25 @@ AcpiEvRestoreAcpiState (void)
 
         for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe0BlkLen); Index++)
         {
-            if (AcpiOsIn8 (AcpiGbl_FADT->Gpe0Blk +
-                DIV_2 (AcpiGbl_FADT->Gpe0BlkLen)) !=
-                AcpiGbl_Gpe0EnableRegisterSave[Index])
+            if (AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index) !=
+                    AcpiGbl_Gpe0EnableRegisterSave[Index])
             {
-                AcpiOsOut8 ((AcpiGbl_FADT->Gpe0Blk +
-                             DIV_2 (AcpiGbl_FADT->Gpe0BlkLen)),
-                             AcpiGbl_Gpe0EnableRegisterSave[Index]);
+                AcpiHwRegisterWrite (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index,
+                    AcpiGbl_Gpe0EnableRegisterSave[Index]);
             }
         }
 
-        if (AcpiGbl_FADT->Gpe1Blk && AcpiGbl_FADT->Gpe1BlkLen)
+        /* GPE 1 present? */
+
+        if (AcpiGbl_FADT->Gpe1BlkLen)
         {
             for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe1BlkLen); Index++)
             {
-                if (AcpiOsIn8 (AcpiGbl_FADT->Gpe1Blk +
-                    DIV_2 (AcpiGbl_FADT->Gpe1BlkLen)) !=
+                if (AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index) !=
                     AcpiGbl_Gpe1EnableRegisterSave[Index])
                 {
-                    AcpiOsOut8 ((AcpiGbl_FADT->Gpe1Blk +
-                                 DIV_2 (AcpiGbl_FADT->Gpe1BlkLen)),
-                                 AcpiGbl_Gpe1EnableRegisterSave[Index]);
+                    AcpiHwRegisterWrite (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index,
+                        AcpiGbl_Gpe1EnableRegisterSave[Index]);
                 }
             }
         }
