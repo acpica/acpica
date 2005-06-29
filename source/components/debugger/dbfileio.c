@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *                  be used when running the debugger in Ring 0 (Kernel mode)
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,13 +115,13 @@
  *****************************************************************************/
 
 
-#include <acpi.h>
-#include <acapi.h>
-#include <debugger.h>
-#include <namesp.h>
-#include <parser.h>
-#include <events.h>
-#include <tables.h>
+#include "acpi.h"
+#include "acxface.h"
+#include "debugger.h"
+#include "namesp.h"
+#include "parser.h"
+#include "events.h"
+#include "tables.h"
 
 #ifdef ACPI_DEBUG
 
@@ -140,8 +140,8 @@ FILE                    *DebugFile = NULL;
 /* NOTE: this is here for lack of a better place.  It is used in all flavors of the debugger, need LCD file */
 
 /******************************************************************************
- * 
- * FUNCTION:    DbMatchArgument
+ *
+ * FUNCTION:    AcpiDbMatchArgument
  *
  * PARAMETERS:  UserArgument             - User command line
  *
@@ -152,7 +152,7 @@ FILE                    *DebugFile = NULL;
  *****************************************************************************/
 
 OBJECT_TYPE_INTERNAL
-DbMatchArgument (
+AcpiDbMatchArgument (
     char                    *UserArgument,
     ARGUMENT_INFO           *Arguments)
 {
@@ -161,7 +161,7 @@ DbMatchArgument (
 
     if (!UserArgument || UserArgument[0] == 0)
     {
-        return ACPI_TYPE_NotFound;
+        return ACPI_TYPE_NOT_FOUND;
     }
 
     for (i = 0; Arguments[i].Name; i++)
@@ -174,15 +174,15 @@ DbMatchArgument (
 
     /* Argument not recognized */
 
-    return ACPI_TYPE_NotFound;
+    return ACPI_TYPE_NOT_FOUND;
 }
 
 
 
 
 /******************************************************************************
- * 
- * FUNCTION:    DbCloseDebugFile
+ *
+ * FUNCTION:    AcpiDbCloseDebugFile
  *
  * PARAMETERS:  None
  *
@@ -193,7 +193,7 @@ DbMatchArgument (
  *****************************************************************************/
 
 void
-DbCloseDebugFile (
+AcpiDbCloseDebugFile (
     void)
 {
 
@@ -204,7 +204,7 @@ DbCloseDebugFile (
        fclose (DebugFile);
        DebugFile = NULL;
        OutputToFile = FALSE;
-       OsdPrintf ("Debug output file %s closed\n", DebugFilename);
+       AcpiOsdPrintf ("Debug output file %s closed\n", DebugFilename);
     }
 #endif
 
@@ -212,10 +212,10 @@ DbCloseDebugFile (
 
 
 /******************************************************************************
- * 
- * FUNCTION:    DbOpenDebugFile
  *
- * PARAMETERS:  Name                - Filename  
+ * FUNCTION:    AcpiDbOpenDebugFile
+ *
+ * PARAMETERS:  Name                - Filename
  *
  * RETURN:      Status
  *
@@ -224,17 +224,17 @@ DbCloseDebugFile (
  *****************************************************************************/
 
 void
-DbOpenDebugFile (
+AcpiDbOpenDebugFile (
     char                    *Name)
 {
 
 #ifdef ACPI_APPLICATION
 
-    DbCloseDebugFile ();
+    AcpiDbCloseDebugFile ();
     DebugFile = fopen (Name, "w+");
     if (DebugFile)
     {
-        OsdPrintf ("Debug output file %s opened\n", Name);
+        AcpiOsdPrintf ("Debug output file %s opened\n", Name);
         STRCPY (DebugFilename, Name);
         OutputToFile = TRUE;
     }
@@ -245,10 +245,10 @@ DbOpenDebugFile (
 
 #ifdef ACPI_APPLICATION
 /******************************************************************************
- * 
- * FUNCTION:    DbLoadTable
  *
- * PARAMETERS:  
+ * FUNCTION:    AcpiDbLoadTable
+ *
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -257,9 +257,9 @@ DbOpenDebugFile (
  *****************************************************************************/
 
 ACPI_STATUS
-DbLoadTable(
-    FILE                    *fp, 
-    char                    **TablePtr, 
+AcpiDbLoadTable(
+    FILE                    *fp,
+    char                    **TablePtr,
     UINT32                  *TableLength)
 {
     ACPI_TABLE_HEADER       TableHeader;
@@ -271,7 +271,7 @@ DbLoadTable(
 
     if (fread (&TableHeader, 1, sizeof (TableHeader), fp) != sizeof (TableHeader))
     {
-        OsdPrintf ("Couldn't read the table header\n");
+        AcpiOsdPrintf ("Couldn't read the table header\n");
         return (AE_BAD_SIGNATURE);
     }
 
@@ -280,7 +280,7 @@ DbLoadTable(
     *TableLength = TableHeader.Length;
     if (!*TableLength)
     {
-        OsdPrintf ("Found a table length of zero!\n");
+        AcpiOsdPrintf ("Found a table length of zero!\n");
         return (AE_ERROR);
     }
 
@@ -289,10 +289,10 @@ DbLoadTable(
     *TablePtr = (char *) malloc ((size_t) *TableLength);
     if (!*TablePtr)
     {
-        OsdPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
+        AcpiOsdPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
         return (AE_NO_MEMORY);
     }
-            
+
 
     AmlPtr      = *TablePtr + sizeof (TableHeader);
     AmlLength   = *TableLength - sizeof (TableHeader);
@@ -308,7 +308,7 @@ DbLoadTable(
         return AE_OK;
     }
 
-    OsdPrintf ("Error reading the table\n");
+    AcpiOsdPrintf ("Error reading the table\n");
     free (*TablePtr);
     *TablePtr = NULL;
     *TableLength = 0;
@@ -319,10 +319,10 @@ DbLoadTable(
 
 
 /******************************************************************************
- * 
- * FUNCTION:    DbLoadAcpiTable
  *
- * PARAMETERS:  
+ * FUNCTION:    AcpiDbLoadAcpiTable
+ *
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -331,7 +331,7 @@ DbLoadTable(
  *****************************************************************************/
 
 ACPI_STATUS
-DbLoadAcpiTable (
+AcpiDbLoadAcpiTable (
     char                    *Filename)
 {
 #ifdef ACPI_APPLICATION
@@ -345,46 +345,46 @@ DbLoadAcpiTable (
     fp = fopen (Filename, "rb");
     if (!fp)
     {
-        OsdPrintf ("Could not open file %s\n", Filename);
+        AcpiOsdPrintf ("Could not open file %s\n", Filename);
         return AE_ERROR;
     }
 
-    OsdPrintf ("Loading Acpi table from file %s\n", Filename);
-    Status = DbLoadTable (fp, &TablePtr, &TableLength);
+    AcpiOsdPrintf ("Loading Acpi table from file %s\n", Filename);
+    Status = AcpiDbLoadTable (fp, &TablePtr, &TableLength);
     fclose(fp);
 
     if (ACPI_FAILURE (Status))
     {
-        OsdPrintf ("Couldn't get table from the file\n");
+        AcpiOsdPrintf ("Couldn't get table from the file\n");
         return Status;
     }
 
 
     /* Attempt to recognize and install the table */
 
-    TableInfo.Pointer = (ACPI_TABLE_HEADER *) TablePtr;                       /* TBD: Fix redundant parameter */
-    Status = TbInstallTable (TablePtr, &TableInfo);
+    TableInfo.Pointer = (ACPI_TABLE_HEADER *) TablePtr;                       /* TBD: [Restructure] Fix redundant parameter */
+    Status = AcpiTbInstallTable (TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_EXIST)
         {
-            OsdPrintf ("Table is already installed/loaded\n");
+            AcpiOsdPrintf ("Table is already installed/loaded\n");
         }
         else
         {
-            OsdPrintf ("Could not install table, %s\n", CmFormatException (Status));
+            AcpiOsdPrintf ("Could not install table, %s\n", AcpiCmFormatException (Status));
         }
         free (TablePtr);
         return Status;
     }
 
 
-    OsdPrintf ("%s successfully loaded and installed at %p\n", 
-                                Gbl_AcpiTableData[TableInfo.Type].Name, TablePtr);
+    AcpiOsdPrintf ("%s successfully loaded and installed at %p\n",
+                                AcpiGbl_AcpiTableData[TableInfo.Type].Name, TablePtr);
 
-    Gbl_AcpiHardwarePresent = FALSE;
+    AcpiGbl_AcpiHardwarePresent = FALSE;
 
-#endif  /* ACPI_APPLICATION */  
+#endif  /* ACPI_APPLICATION */
     return AE_OK;
 }
 
