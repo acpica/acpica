@@ -234,8 +234,12 @@ AcpiOsRemoveInterruptHandler (
 
 
 /*
- * Scheduling
+ * Threads and Scheduling
  */
+
+UINT32
+AcpiOsGetThreadId (
+    void);
 
 ACPI_STATUS
 AcpiOsQueueForExecution (
