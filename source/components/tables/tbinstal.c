@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -145,7 +145,7 @@ AcpiTbMatchSignature (
     ACPI_TABLE_DESC         *TableInfo,
     UINT8                   SearchType)
 {
-    NATIVE_UINT             i;
+    ACPI_NATIVE_UINT        i;
 
 
     ACPI_FUNCTION_TRACE ("TbMatchSignature");
