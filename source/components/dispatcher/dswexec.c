@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.45 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -163,6 +163,10 @@ AcpiDsGetPredicateValue (
         Status = AcpiDsResultStackPop (&ObjDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
+            DEBUG_PRINT (ACPI_ERROR,
+                ("DsGetPredicateValue: Missing or null operand, %s\n", 
+                AcpiCmFormatException (Status)));
+
             return_ACPI_STATUS (Status);
         }
     }
@@ -209,6 +213,10 @@ AcpiDsGetPredicateValue (
         goto Cleanup;
     }
 
+
+    /* TBD: 64/32-bit */
+
+    ObjDesc->Number.Value &= (UINT64) 0x00000000FFFFFFFF;
 
     /* 
      * Save the result of the predicate evaluation on
@@ -756,6 +764,13 @@ AcpiDsExecEndOp (
     }
 
 
+
+    /* 
+     * ACPI 2.0 support for 64-bit integers:
+     * Truncate numeric result value if we are executing from a 32-bit ACPI table
+     */
+    AcpiAmlTruncateFor32bitTable (ResultObj, WalkState);
+
     /*
      * Check if we just completed the evaluation of a
      * conditional predicate
@@ -766,14 +781,12 @@ AcpiDsExecEndOp (
             CONTROL_PREDICATE_EXECUTING) &&
         (WalkState->ControlState->Control.PredicateOp == Op))
     {
-
         Status = AcpiDsGetPredicateValue (WalkState, Op, (UINT32) ResultObj);
         ResultObj = NULL;
     }
 
 
 Cleanup:
-
     if (ResultObj)
     {
         /* Break to debugger to display result */
