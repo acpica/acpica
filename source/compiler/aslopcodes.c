@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -155,6 +155,40 @@ OpcAmlOpcodeWalk (
 
 /*******************************************************************************
  *
+ * FUNCTION:    OpcGetIntegerWidth
+ *
+ * PARAMETERS:  Op          - DEFINITION BLOCK op
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Extract integer width from the table revision
+ *
+ ******************************************************************************/
+
+void
+OpcGetIntegerWidth (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *Child;
+
+    if (!Op)
+    {
+        return;
+    }
+
+    Child = Op->Asl.Child;
+    Child = Child->Asl.Next;
+    Child = Child->Asl.Next;
+
+    /* Use the revision to set the integer width */
+
+    AcpiUtSetIntegerWidth (Child->Asl.Value.Integer8);
+}
+
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    OpcSetOptimalIntegerSize
  *
  * PARAMETERS:  Op        - A parse tree node
@@ -186,14 +220,22 @@ OpcSetOptimalIntegerSize (
         return 1;
     }
 
-    /* TBD: add check for table width (32 or 64) */
+    /* Check for table integer width (32 or 64) */
 
-    if (Op->Asl.Value.Integer == ACPI_INTEGER_MAX)
+    if (AcpiGbl_IntegerByteWidth == 4)
+    {
+        if (Op->Asl.Value.Integer == ACPI_UINT32_MAX)
+        {
+            Op->Asl.AmlOpcode = AML_ONES_OP;
+            return 1;
+        }
+    }
+    else if (Op->Asl.Value.Integer == ACPI_INTEGER_MAX)
     {
         Op->Asl.AmlOpcode = AML_ONES_OP;
         return 1;
     }
-  
+ 
     /* Find the best fit */
 
     if (Op->Asl.Value.Integer <= ACPI_UINT8_MAX)
