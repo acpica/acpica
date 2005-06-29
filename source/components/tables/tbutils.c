@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.30 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -121,7 +121,7 @@
 #include "acinterp.h"
 
 
-#define _COMPONENT          TABLE_MANAGER
+#define _COMPONENT          ACPI_TABLES
         MODULE_NAME         ("tbutils")
 
 
@@ -164,7 +164,7 @@ AcpiTbHandleToObject (
     }
 
 
-    DEBUG_PRINT (ACPI_ERROR, ("TableId=0x%X does not exist\n", TableId));
+    DEBUG_PRINT (ACPI_ERROR, ("TableId=%X does not exist\n", TableId));
     return (AE_BAD_PARAMETER);
 }
 
@@ -296,7 +296,7 @@ AcpiTbValidateTableHeader (
             ("Table signature at %p [%X] has invalid characters\n",
             TableHeader, &Signature));
 
-        REPORT_WARNING (("Invalid table signature found\n"));
+        REPORT_WARNING (("Invalid table signature %4.4s found\n", &Signature));
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_SIGNATURE);
     }
@@ -392,7 +392,7 @@ AcpiTbMapAcpiTable (
     }
 
     DEBUG_PRINT (ACPI_INFO,
-        ("Mapped memory for ACPI table, length=%d(0x%X) at %p\n",
+        ("Mapped memory for ACPI table, length=%d(%X) at %p\n",
         TableSize, TableSize, Table));
 
     *Size = TableSize;
