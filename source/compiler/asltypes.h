@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -365,7 +365,11 @@ typedef enum
     ASL_MSG_INVALID_CONSTANT_OP,
     ASL_MSG_CONSTANT_EVALUATION,
     ASL_MSG_CONSTANT_FOLDED,
-    ASL_MSG_INVALID_EISAID
+    ASL_MSG_INVALID_EISAID,
+    ASL_MSG_RESERVED_OPERAND_TYPE,
+    ASL_MSG_RESERVED_METHOD,
+    ASL_MSG_ALPHANUMERIC_STRING,
+    ASL_MSG_RESERVED_USE
 
 } ASL_MESSAGE_IDS;
 
