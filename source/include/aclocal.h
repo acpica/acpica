@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.122 $
+ *       $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,11 @@
 typedef void*                           ACPI_MUTEX;
 typedef UINT32                          ACPI_MUTEX_HANDLE;
 
+
+
+#define ACPI_MEMORY_MODE                0x01
+#define ACPI_LOGICAL_ADDRESSING         0x00
+#define ACPI_PHYSICAL_ADDRESSING        0x01
 
 /* Object descriptor types */
 
@@ -289,6 +294,8 @@ typedef struct acpi_node
 #define ANOBJ_METHOD_LOCAL              0x10
 #define ANOBJ_METHOD_NO_RETVAL          0x20
 #define ANOBJ_METHOD_SOME_NO_RETVAL     0x40
+
+#define ANOBJ_IS_BIT_OFFSET             0x80
 
 
 /*
