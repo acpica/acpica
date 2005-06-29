@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.42 $
+ * Module Name: utobject - ACPI object create/delete/size/cache routines
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __CMOBJECT_C__
+#define __UTOBJECT_C__
 
 #include "acpi.h"
 #include "acinterp.h"
@@ -124,12 +124,12 @@
 
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("cmobject")
+        MODULE_NAME         ("utobject")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    _CmCreateInternalObject
+ * FUNCTION:    _UtCreateInternalObject
  *
  * PARAMETERS:  Address             - Address of the memory to deallocate
  *              Component           - Component type of caller
@@ -150,21 +150,21 @@
  ******************************************************************************/
 
 ACPI_OPERAND_OBJECT  *
-_CmCreateInternalObject (
+_UtCreateInternalObject (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
-    OBJECT_TYPE_INTERNAL    Type)
+    ACPI_OBJECT_TYPE8       Type)
 {
     ACPI_OPERAND_OBJECT     *Object;
 
 
-    FUNCTION_TRACE_STR ("CmCreateInternalObject", AcpiCmGetTypeName (Type));
+    FUNCTION_TRACE_STR ("UtCreateInternalObject", AcpiUtGetTypeName (Type));
 
 
     /* Allocate the raw object descriptor */
 
-    Object = _CmAllocateObjectDesc (ModuleName, LineNumber, ComponentId);
+    Object = _UtAllocateObjectDesc (ModuleName, LineNumber, ComponentId);
     if (!Object)
     {
         /* Allocation failure */
@@ -182,14 +182,13 @@ _CmCreateInternalObject (
 
     /* Any per-type initialization should go here */
 
-
     return_PTR (Object);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmValidInternalObject
+ * FUNCTION:    AcpiUtValidInternalObject
  *
  * PARAMETERS:  Operand             - Object to be validated
  *
@@ -198,16 +197,19 @@ _CmCreateInternalObject (
  ******************************************************************************/
 
 BOOLEAN
-AcpiCmValidInternalObject (
+AcpiUtValidInternalObject (
     void                    *Object)
 {
+
+    PROC_NAME ("UtValidInternalObject");
+
 
     /* Check for a null pointer */
 
     if (!Object)
     {
         DEBUG_PRINT (ACPI_INFO,
-            ("CmValidInternalObject: **** Null Object Ptr\n"));
+            ("**** Null Object Ptr\n"));
         return (FALSE);
     }
 
@@ -215,8 +217,7 @@ AcpiCmValidInternalObject (
 
     if (AcpiTbSystemTablePointer (Object))
     {
-        DEBUG_PRINT (ACPI_INFO,
-            ("CmValidInternalObject: **** Object %p is a Pcode Ptr\n", Object));
+        DEBUG_PRINTP (ACPI_INFO, ("**** Object %p is a Pcode Ptr\n", Object));
         return (FALSE);
     }
 
@@ -228,23 +229,20 @@ AcpiCmValidInternalObject (
 
         if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
         {
-            DEBUG_PRINT (ACPI_INFO,
-                ("CmValidInternalObject: **** Obj %p is a named obj, not ACPI obj\n",
-                Object));
+            DEBUG_PRINTP (ACPI_INFO,
+                ("**** Obj %p is a named obj, not ACPI obj\n", Object));
         }
 
         else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_PARSER))
         {
-            DEBUG_PRINT (ACPI_INFO,
-                ("CmValidInternalObject: **** Obj %p is a parser obj, not ACPI obj\n",
-                Object));
+            DEBUG_PRINTP (ACPI_INFO,
+                ("**** Obj %p is a parser obj, not ACPI obj\n", Object));
         }
 
         else
         {
-            DEBUG_PRINT (ACPI_INFO,
-                ("CmValidInternalObject: **** Obj %p is of unknown type\n",
-                Object));
+            DEBUG_PRINTP (ACPI_INFO,
+                ("**** Obj %p is of unknown type\n", Object));
         }
 
         return (FALSE);
@@ -259,7 +257,7 @@ AcpiCmValidInternalObject (
 
 /*******************************************************************************
  *
- * FUNCTION:    _CmAllocateObjectDesc
+ * FUNCTION:    _UtAllocateObjectDesc
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -274,7 +272,7 @@ AcpiCmValidInternalObject (
  ******************************************************************************/
 
 void *
-_CmAllocateObjectDesc (
+_UtAllocateObjectDesc (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
@@ -285,57 +283,22 @@ _CmAllocateObjectDesc (
     FUNCTION_TRACE ("_AllocateObjectDesc");
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_CACHES);
-
-    AcpiGbl_ObjectCacheRequests++;
-
-    /* Check the cache first */
-
-    if (AcpiGbl_ObjectCache)
+    Object = AcpiUtAcquireFromCache (ACPI_MEM_LIST_OPERAND);
+    if (!Object)
     {
-        /* There is an object available, use it */
+        _REPORT_ERROR (ModuleName, LineNumber, ComponentId,
+                        ("Could not allocate an object descriptor\n"));
 
-        Object = AcpiGbl_ObjectCache;
-        AcpiGbl_ObjectCache = Object->Cache.Next;
-        Object->Cache.Next = NULL;
-
-        AcpiGbl_ObjectCacheHits++;
-        AcpiGbl_ObjectCacheDepth--;
-
-        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+        return_PTR (NULL);
     }
 
-    else
-    {
-        /* The cache is empty, create a new object */
-
-        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
-
-        /* Attempt to allocate new descriptor */
-
-        Object = _CmCallocate (sizeof (ACPI_OPERAND_OBJECT), ComponentId,
-                                    ModuleName, LineNumber);
-        if (!Object)
-        {
-            /* Allocation failed */
-
-            _REPORT_ERROR (ModuleName, LineNumber, ComponentId,
-                            ("Could not allocate an object descriptor\n"));
-
-            return_PTR (NULL);
-        }
-
-        /* Memory allocation metrics - compiled out in non debug mode. */
-
-        INCREMENT_OBJECT_METRICS (sizeof (ACPI_OPERAND_OBJECT));
-    }
 
     /* Mark the descriptor type */
 
     Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL;
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size %X\n",
-                    Object, sizeof (ACPI_OPERAND_OBJECT)));
+    DEBUG_PRINTP (TRACE_ALLOCATIONS, ("%p Size %X\n",
+            Object, sizeof (ACPI_OPERAND_OBJECT)));
 
     return_PTR (Object);
 }
@@ -343,7 +306,7 @@ _CmAllocateObjectDesc (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmDeleteObjectDesc
+ * FUNCTION:    AcpiUtDeleteObjectDesc
  *
  * PARAMETERS:  Object          - Acpi internal object to be deleted
  *
@@ -354,69 +317,30 @@ _CmAllocateObjectDesc (
  ******************************************************************************/
 
 void
-AcpiCmDeleteObjectDesc (
+AcpiUtDeleteObjectDesc (
     ACPI_OPERAND_OBJECT     *Object)
 {
+    FUNCTION_TRACE_PTR ("AcpiUtDeleteObjectDesc", Object);
 
-    FUNCTION_TRACE_PTR ("AcpiCmDeleteObjectDesc", Object);
-
-
-    /* Make sure that the object isn't already in the cache */
-
-    if (Object->Common.DataType == (ACPI_DESC_TYPE_INTERNAL | ACPI_CACHED_OBJECT))
-    {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
-            Object));
-        return_VOID;
-    }
 
     /* Object must be an ACPI_OPERAND_OBJECT  */
 
     if (Object->Common.DataType != ACPI_DESC_TYPE_INTERNAL)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("CmDeleteObjectDesc: Obj %p is not an ACPI object\n", Object));
+        DEBUG_PRINTP (ACPI_ERROR,
+            ("Obj %p is not an ACPI object\n", Object));
         return_VOID;
     }
 
+    AcpiUtReleaseToCache (ACPI_MEM_LIST_OPERAND, Object);
 
-    /* If cache is full, just free this object */
-
-    if (AcpiGbl_ObjectCacheDepth >= MAX_OBJECT_CACHE_DEPTH)
-    {
-        /*
-         * Memory allocation metrics.  Call the macro here since we only
-         * care about dynamically allocated objects.
-         */
-        DECREMENT_OBJECT_METRICS (sizeof (ACPI_OPERAND_OBJECT));
-
-        AcpiCmFree (Object);
-        return_VOID;
-    }
-
-    AcpiCmAcquireMutex (ACPI_MTX_CACHES);
-
-    /* Clear the entire object.  This is important! */
-
-    MEMSET (Object, 0, sizeof (ACPI_OPERAND_OBJECT));
-    Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL | ACPI_CACHED_OBJECT;
-
-    /* Put the object at the head of the global cache list */
-
-    Object->Cache.Next = AcpiGbl_ObjectCache;
-    AcpiGbl_ObjectCache = Object;
-    AcpiGbl_ObjectCacheDepth++;
-
-
-    AcpiCmReleaseMutex (ACPI_MTX_CACHES);
     return_VOID;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmDeleteObjectCache
+ * FUNCTION:    AcpiUtDeleteObjectCache
  *
  * PARAMETERS:  None
  *
@@ -428,42 +352,20 @@ AcpiCmDeleteObjectDesc (
  ******************************************************************************/
 
 void
-AcpiCmDeleteObjectCache (
+AcpiUtDeleteObjectCache (
     void)
 {
-    ACPI_OPERAND_OBJECT     *Next;
+    FUNCTION_TRACE ("UtDeleteObjectCache");
 
 
-    FUNCTION_TRACE ("CmDeleteObjectCache");
-
-
-    /* Traverse the global cache list */
-
-    while (AcpiGbl_ObjectCache)
-    {
-        /* Delete one cached state object */
-
-        Next = AcpiGbl_ObjectCache->Cache.Next;
-        AcpiGbl_ObjectCache->Cache.Next = NULL;
-
-        /*
-         * Memory allocation metrics.  Call the macro here since we only
-         * care about dynamically allocated objects.
-         */
-        DECREMENT_OBJECT_METRICS (sizeof (ACPI_OPERAND_OBJECT));
-
-        AcpiCmFree (AcpiGbl_ObjectCache);
-        AcpiGbl_ObjectCache = Next;
-        AcpiGbl_ObjectCacheDepth--;
-    }
-
+    AcpiUtDeleteGenericCache (ACPI_MEM_LIST_OPERAND);
     return_VOID;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmInitStaticObject
+ * FUNCTION:    AcpiUtInitStaticObject
  *
  * PARAMETERS:  ObjDesc             - Pointer to a "static" object - on stack
  *                                    or in the data segment.
@@ -476,11 +378,11 @@ AcpiCmDeleteObjectCache (
  ******************************************************************************/
 
 void
-AcpiCmInitStaticObject (
+AcpiUtInitStaticObject (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 
-    FUNCTION_TRACE_PTR ("CmInitStaticObject", ObjDesc);
+    FUNCTION_TRACE_PTR ("UtInitStaticObject", ObjDesc);
 
 
     if (!ObjDesc)
@@ -514,7 +416,7 @@ AcpiCmInitStaticObject (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmGetSimpleObjectSize
+ * FUNCTION:    AcpiUtGetSimpleObjectSize
  *
  * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
  *              *RetLength          - Where the length is returned
@@ -530,7 +432,7 @@ AcpiCmInitStaticObject (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiCmGetSimpleObjectSize (
+AcpiUtGetSimpleObjectSize (
     ACPI_OPERAND_OBJECT     *InternalObject,
     UINT32                  *ObjLength)
 {
@@ -538,7 +440,7 @@ AcpiCmGetSimpleObjectSize (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("CmGetSimpleObjectSize", InternalObject);
+    FUNCTION_TRACE_PTR ("UtGetSimpleObjectSize", InternalObject);
 
 
     /* Handle a null object (Could be a uninitialized package element -- which is legal) */
@@ -598,13 +500,13 @@ AcpiCmGetSimpleObjectSize (
     case INTERNAL_TYPE_REFERENCE:
 
         /*
-         * The only type that should be here is opcode AML_NAMEPATH_OP -- since
+         * The only type that should be here is internal opcode NAMEPATH_OP -- since
          * this means an object reference
          */
-        if (InternalObject->Reference.Opcode != AML_NAMEPATH_OP)
+        if (InternalObject->Reference.Opcode != AML_INT_NAMEPATH_OP)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("CmGetSimpleObjectSize: Unsupported Reference opcode=%X in object %p\n",
+            DEBUG_PRINTP (ACPI_ERROR,
+                ("Unsupported Reference opcode=%X in object %p\n",
                 InternalObject->Reference.Opcode, InternalObject));
             Status = AE_TYPE;
         }
@@ -622,8 +524,7 @@ AcpiCmGetSimpleObjectSize (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("CmGetSimpleObjectSize: Unsupported type=%X in object %p\n",
+        DEBUG_PRINTP (ACPI_ERROR, ("Unsupported type=%X in object %p\n",
             InternalObject->Common.Type, InternalObject));
         Status = AE_TYPE;
         break;
@@ -644,7 +545,7 @@ AcpiCmGetSimpleObjectSize (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmGetElementLength
+ * FUNCTION:    AcpiUtGetElementLength
  *
  * PARAMETERS:  ACPI_PKG_CALLBACK
  *
@@ -655,7 +556,7 @@ AcpiCmGetSimpleObjectSize (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiCmGetElementLength (
+AcpiUtGetElementLength (
     UINT8                   ObjectType,
     ACPI_OPERAND_OBJECT     *SourceObject,
     ACPI_GENERIC_STATE      *State,
@@ -674,7 +575,7 @@ AcpiCmGetElementLength (
          * Simple object - just get the size (Null object/entry is handled
          * here also) and sum it into the running package length
          */
-        Status = AcpiCmGetSimpleObjectSize (SourceObject, &ObjectSpace);
+        Status = AcpiUtGetSimpleObjectSize (SourceObject, &ObjectSpace);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -702,7 +603,7 @@ AcpiCmGetElementLength (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmGetPackageObjectSize
+ * FUNCTION:    AcpiUtGetPackageObjectSize
  *
  * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
  *              *RetLength          - Where the length is returned
@@ -718,7 +619,7 @@ AcpiCmGetElementLength (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiCmGetPackageObjectSize (
+AcpiUtGetPackageObjectSize (
     ACPI_OPERAND_OBJECT     *InternalObject,
     UINT32                  *ObjLength)
 {
@@ -726,15 +627,15 @@ AcpiCmGetPackageObjectSize (
     ACPI_PKG_INFO           Info;
 
 
-    FUNCTION_TRACE_PTR ("CmGetPackageObjectSize", InternalObject);
+    FUNCTION_TRACE_PTR ("UtGetPackageObjectSize", InternalObject);
 
 
     Info.Length      = 0;
     Info.ObjectSpace = 0;
     Info.NumPackages = 1;
 
-    Status = AcpiCmWalkPackageTree (InternalObject, NULL,
-                            AcpiCmGetElementLength, &Info);
+    Status = AcpiUtWalkPackageTree (InternalObject, NULL,
+                            AcpiUtGetElementLength, &Info);
 
     /*
      * We have handled all of the objects in all levels of the package.
@@ -753,7 +654,7 @@ AcpiCmGetPackageObjectSize (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmGetObjectSize
+ * FUNCTION:    AcpiUtGetObjectSize
  *
  * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
  *              *RetLength          - Where the length will be returned
@@ -766,7 +667,7 @@ AcpiCmGetPackageObjectSize (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiCmGetObjectSize(
+AcpiUtGetObjectSize(
     ACPI_OPERAND_OBJECT     *InternalObject,
     UINT32                  *ObjLength)
 {
@@ -776,12 +677,12 @@ AcpiCmGetObjectSize(
     if ((VALID_DESCRIPTOR_TYPE (InternalObject, ACPI_DESC_TYPE_INTERNAL)) &&
         (IS_THIS_OBJECT_TYPE (InternalObject, ACPI_TYPE_PACKAGE)))
     {
-        Status = AcpiCmGetPackageObjectSize (InternalObject, ObjLength);
+        Status = AcpiUtGetPackageObjectSize (InternalObject, ObjLength);
     }
 
     else
     {
-        Status = AcpiCmGetSimpleObjectSize (InternalObject, ObjLength);
+        Status = AcpiUtGetSimpleObjectSize (InternalObject, ObjLength);
     }
 
     return (Status);

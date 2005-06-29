@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  ******************************************************************************/
 
@@ -715,45 +715,12 @@ AcpiUtCreateGenericState (void)
     ACPI_GENERIC_STATE      *State;
 
 
-    AcpiUtAcquireMutex (ACPI_MTX_CACHES);
-
-    AcpiGbl_StateCacheRequests++;
-
-    /* Check the cache first */
-
-    if (AcpiGbl_GenericStateCache)
-    {
-        /* There is an object available, use it */
-
-        State = AcpiGbl_GenericStateCache;
-        AcpiGbl_GenericStateCache = State->Common.Next;
-        State->Common.Next = NULL;
-
-        AcpiGbl_StateCacheHits++;
-        AcpiGbl_GenericStateCacheDepth--;
-
-        AcpiUtReleaseMutex (ACPI_MTX_CACHES);
-
-        DEBUG_PRINT (TRACE_EXEC, ("CreateGenState: State %p from cache\n", State));
-    }
-
-    else
-    {
-        /* The cache is empty, create a new object */
-
-        AcpiUtReleaseMutex (ACPI_MTX_CACHES);
-
-        State = ACPI_MEM_CALLOCATE (sizeof (ACPI_GENERIC_STATE));
-    }
+    State = AcpiUtAcquireFromCache (ACPI_MEM_LIST_STATE);
 
     /* Initialize */
 
     if (State)
     {
-        /* Always zero out the object before init */
-
-        MEMSET (State, 0, sizeof (ACPI_GENERIC_STATE));
-
         State->Common.DataType = ACPI_DESC_TYPE_STATE;
     }
 
@@ -911,33 +878,7 @@ AcpiUtDeleteGenericState (
     FUNCTION_TRACE ("UtDeleteGenericState");
 
 
-    /* If cache is full, just free this state object */
-
-    if (AcpiGbl_GenericStateCacheDepth >= MAX_STATE_CACHE_DEPTH)
-    {
-        ACPI_MEM_FREE (State);
-    }
-
-    /* Otherwise put this object back into the cache */
-
-    else
-    {
-        AcpiUtAcquireMutex (ACPI_MTX_CACHES);
-
-        /* Clear the state */
-
-        MEMSET (State, 0, sizeof (ACPI_GENERIC_STATE));
-        State->Common.DataType = ACPI_DESC_TYPE_STATE;
-
-        /* Put the object at the head of the global cache list */
-
-        State->Common.Next = AcpiGbl_GenericStateCache;
-        AcpiGbl_GenericStateCache = State;
-        AcpiGbl_GenericStateCacheDepth++;
-
-
-        AcpiUtReleaseMutex (ACPI_MTX_CACHES);
-    }
+    AcpiUtReleaseToCache (ACPI_MEM_LIST_STATE, State);
     return_VOID;
 }
 
@@ -959,25 +900,10 @@ void
 AcpiUtDeleteGenericStateCache (
     void)
 {
-    ACPI_GENERIC_STATE      *Next;
-
-
     FUNCTION_TRACE ("UtDeleteGenericStateCache");
 
 
-    /* Traverse the global cache list */
-
-    while (AcpiGbl_GenericStateCache)
-    {
-        /* Delete one cached state object */
-
-        Next = AcpiGbl_GenericStateCache->Common.Next;
-        ACPI_MEM_FREE (AcpiGbl_GenericStateCache);
-
-        AcpiGbl_GenericStateCache = Next;
-        AcpiGbl_GenericStateCacheDepth--;
-    }
-
+    AcpiUtDeleteGenericCache (ACPI_MEM_LIST_STATE);
     return_VOID;
 }
 
