@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -532,7 +532,7 @@ AbCompareAmlFiles (
     {
         if (Char1 != Char2)
         {
-            printf ("Error - Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n", 
+            printf ("Error - Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n",
                 Offset, Char1, Char2);
             Mismatches++;
             if (Mismatches > 100)
@@ -746,7 +746,7 @@ AbExtractAmlFile (
         {
             printf ("Found table [%4.4s]\n", TableSig);
 
-            /* 
+            /*
              * Eat all lines in the table, of the form:
              *   <offset>: <16 bytes of hex data, separated by spaces> <ASCII representation> <newline>
              *

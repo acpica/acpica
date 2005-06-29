@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abmain - Main module for the acpi binary utility
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@ AbDisplayUsage (
     }
 
     printf ("Usage: acpibin [options]\n\n");
-    printf ("Options:\n\n");  
+    printf ("Options:\n\n");
     printf (" -c <File1> <File2>           Compare two AML files\n");
     printf (" -d <InFile> <OutFile>        Dump AML binary to text file\n");
     printf (" -e <Sig> <InFile> <OutFile>  Extract binary AML table from AcpiDmp file\n\n");
