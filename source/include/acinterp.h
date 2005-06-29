@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.134 $
+ *       $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -127,6 +127,11 @@ AcpiExResolveOperands (
     ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState);
 
+ACPI_STATUS
+AcpiExCheckObjectType (
+    ACPI_OBJECT_TYPE        TypeNeeded,
+    ACPI_OBJECT_TYPE        ThisType,
+    void                    *Object);
 
 /*
  * exxface - External interpreter interfaces
@@ -174,6 +179,11 @@ AcpiExConvertToTargetType (
     ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState);
 
+UINT32
+AcpiExConvertToAscii (
+    ACPI_INTEGER            Integer,
+    UINT32                  Base,
+    UINT8                   *String);
 
 /*
  * exfield - ACPI AML (p-code) execution - field manipulation
@@ -262,6 +272,12 @@ AcpiExOpcode_3A_1T_1R (
 ACPI_STATUS
 AcpiExOpcode_6A_0T_1R (
     ACPI_WALK_STATE         *WalkState);
+
+BOOLEAN
+AcpiExDoMatch (
+    UINT32                  MatchOp,
+    ACPI_INTEGER            PackageValue,
+    ACPI_INTEGER            MatchValue);
 
 ACPI_STATUS
 AcpiExGetObjectReference (
@@ -374,7 +390,7 @@ AcpiExReleaseMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
-ACPI_STATUS
+void
 AcpiExReleaseAllMutexes (
     ACPI_THREAD_STATE       *Thread);
 
@@ -520,7 +536,7 @@ AcpiExShowHexValue (
     UINT32                  LeadSpace);
 
 
-ACPI_STATUS
+void
 AcpiExDumpOperand (
     ACPI_OPERAND_OBJECT     *EntryDesc);
 
@@ -539,11 +555,30 @@ AcpiExDumpObjectDescriptor (
     ACPI_OPERAND_OBJECT     *Object,
     UINT32                  Flags);
 
-
 void
 AcpiExDumpNode (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  Flags);
+
+void
+AcpiExOutString (
+    char                    *Title,
+    char                    *Value);
+
+void
+AcpiExOutPointer (
+    char                    *Title,
+    void                    *Value);
+
+void
+AcpiExOutInteger (
+    char                    *Title,
+    UINT32                  Value);
+
+void
+AcpiExOutAddress (
+    char                    *Title,
+    ACPI_PHYSICAL_ADDRESS   Value);
 
 
 /*
@@ -691,7 +726,7 @@ AcpiExEisaIdToString (
     UINT32                  NumericId,
     NATIVE_CHAR             *OutString);
 
-ACPI_STATUS
+void
 AcpiExUnsignedIntegerToString (
     ACPI_INTEGER            Value,
     NATIVE_CHAR             *OutString);
