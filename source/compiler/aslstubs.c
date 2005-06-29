@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.9 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -125,16 +125,51 @@
 
 
 /*
- * Stubs to simplify linkage to the ACPI CA core subsystem.
- * Things like Events, Global Lock, etc. are not used
- * by the compiler, so they are stubbed out here.
+ * Stubs to simplify linkage to the
+ * ACPI Namespace Manager (Unused functions).
+ * TBD: These functions should be split out so
+ * that these stubs are no longer needed.
  */
+
+ACPI_STATUS
+AcpiEvAcquireGlobalLock(
+    UINT32                  Timeout)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiEvReleaseGlobalLock(
+    void)
+{
+    return (AE_OK);
+}
+
 ACPI_STATUS
 AeLocalGetRootPointer (
     UINT32                  Flags,
     ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
 {
     return AE_ERROR;
+}
+
+ACPI_STATUS
+AcpiEvAddressSpaceDispatch (
+    ACPI_OPERAND_OBJECT    *RegionObj,
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    void                    *Value)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiEvInitializeRegion (
+    ACPI_OPERAND_OBJECT     *RegionObj,
+    BOOLEAN                 AcpiNsLocked)
+{
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -157,11 +192,10 @@ AcpiDsMethodDataGetNode (
     return (AE_OK);
 }
 
-ACPI_STATUS
-AcpiDsStoreObjectToLocal (
+ACPI_OBJECT_TYPE
+AcpiDsMethodDataGetType (
     UINT16                  Opcode,
     UINT32                  Index,
-    ACPI_OPERAND_OBJECT     *SrcDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     return (AE_OK);
@@ -183,77 +217,44 @@ AcpiEvIsNotifyObject (
 }
 
 ACPI_STATUS
-AcpiEvAcquireGlobalLock(
-    UINT32                  Timeout)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiEvReleaseGlobalLock(
-    void)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiEvInitializeRegion (
-    ACPI_OPERAND_OBJECT     *RegionObj,
-    BOOLEAN                 AcpiNsLocked)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiExReadDataFromField (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **RetBufferDesc)
-{
-    return (AE_SUPPORT);
-}
-
-ACPI_STATUS
-AcpiExWriteDataToField (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **ResultDesc)
-{
-    return (AE_SUPPORT);
-}
-
-ACPI_STATUS
-AcpiExLoadTableOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
-{
-    return (AE_SUPPORT);
-}
-
-
-ACPI_STATUS
-AcpiExUnloadTable (
-    ACPI_OPERAND_OBJECT     *DdbHandle)
-{
-    return (AE_SUPPORT);
-}
-
-ACPI_STATUS
-AcpiExLoadOp (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     *Target,
+AcpiDsStoreObjectToLocal (
+    UINT16                  Opcode,
+    UINT32                  Index,
+    ACPI_OPERAND_OBJECT     *SrcDesc,
     ACPI_WALK_STATE         *WalkState)
 {
-    return (AE_SUPPORT);
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiDsParseMethod (
+    ACPI_HANDLE             ObjHandle)
+{
+    return (AE_OK);
+}
+
+
+ACPI_STATUS
+AcpiWalkNamespace (
+    ACPI_OBJECT_TYPE        Type,
+    ACPI_HANDLE             StartObject,
+    UINT32                  MaxDepth,
+    ACPI_WALK_CALLBACK      UserFunction,
+    void                    *Context,
+    void *                  *ReturnValue)
+{
+    return (AE_OK);
 }
 
 ACPI_STATUS
 AcpiTbFindTable (
-    char                    *Signature,
-    char                    *OemId,
-    char                    *OemTableId,
+    NATIVE_CHAR             *Signature,
+    NATIVE_CHAR             *OemId,
+    NATIVE_CHAR             *OemTableId,
     ACPI_TABLE_HEADER       **TablePtr)
 {
     return (AE_SUPPORT);
 }
+
+
 

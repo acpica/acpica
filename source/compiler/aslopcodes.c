@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.49 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -206,7 +206,7 @@ OpcSetOptimalIntegerSize (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-    /*
+    /* 
      * Check for the special AML integers first - Zero, One, Ones.
      * These are single-byte opcodes that are the smallest possible
      * representation of an integer.

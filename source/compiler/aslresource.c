@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -585,7 +585,10 @@ RsDoResourceTemplate (
 
     if (State == ACPI_RSTATE_DEPENDENT_LIST)
     {
-        LastOp = LastOp->Asl.Parent;
+        if (LastOp)
+        {
+            LastOp = LastOp->Asl.Parent;
+        }
         AslError (ASL_ERROR, ASL_MSG_MISSING_ENDDEPENDENT, LastOp, NULL);
     }
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -630,7 +630,7 @@ LkNamespaceLocateBegin (
     {
         /* This node points back to the original PARSEOP_ALIAS */
 
-        NextOp = (ACPI_PARSE_OBJECT *) Node->Object;
+        NextOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
 
         /* The first child is the alias target op */
 
