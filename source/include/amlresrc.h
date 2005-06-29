@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource.h - ASL resource descriptors
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,9 @@
 
 
 
+#define ASL_RESNAME_ADDRESS                     "_ADR"
 #define ASL_RESNAME_ALIGNMENT                   "_ALN"
+#define ASL_RESNAME_ADDRESSSPACE                "_ASI"
 #define ASL_RESNAME_BASEADDRESS                 "_BAS"
 #define ASL_RESNAME_BUSMASTER                   "_BM_"  /* Master(1), Slave(0) */
 #define ASL_RESNAME_DECODE                      "_DEC"
@@ -138,6 +140,8 @@
 #define ASL_RESNAME_MINADDR                     "_MIN"
 #define ASL_RESNAME_MAXTYPE                     "_MAF"
 #define ASL_RESNAME_MINTYPE                     "_MIF"
+#define ASL_RESNAME_REGISTERBITOFFSET           "_RBO"
+#define ASL_RESNAME_REGISTERBITWIDTH            "_RBW"
 #define ASL_RESNAME_RANGETYPE                   "_RNG"
 #define ASL_RESNAME_READWRITETYPE               "_RW_"  /* ReadOnly(0), Writeable (1) */
 #define ASL_RESNAME_TRANSLATION                 "_TRA"
@@ -278,6 +282,7 @@ typedef struct asl_fixed_io_port_desc
 typedef struct asl_small_vendor_desc
 {
     UINT8                       DescriptorType;
+    UINT8                       VendorDefined[7];
 
 } ASL_SMALL_VENDOR_DESC;
 
@@ -314,6 +319,7 @@ typedef struct asl_large_vendor_desc
 {
     UINT8                       DescriptorType;
     UINT16                      Length;
+    UINT8                       VendorDefined[1];
 
 } ASL_LARGE_VENDOR_DESC;
 
@@ -564,6 +570,11 @@ RsDoStartDependentNoPriDescriptor (
     ASL_PARSE_NODE          *Node,
     UINT32                  CurrentByteOffset);
 
+ASL_RESOURCE_NODE *
+RsDoVendorSmallDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
 
 /*
  * Large descriptors
@@ -599,6 +610,15 @@ RsDoWordBusNumberDescriptor (
     ASL_PARSE_NODE          *Node,
     UINT32                  CurrentByteOffset);
 
+ASL_RESOURCE_NODE *
+RsDoVendorLargeDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoGeneralRegisterDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
 
 
 #endif
