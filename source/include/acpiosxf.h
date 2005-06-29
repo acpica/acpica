@@ -338,6 +338,14 @@ AcpiOsWritePciConfiguration (
     ACPI_INTEGER            Value,
     UINT32                  Width);
 
+/*
+ * Interim function needed for PCI IRQ routing
+ */
+void
+AcpiOsDerivePciId(
+    ACPI_HANDLE	            rhandle,
+    ACPI_HANDLE             chandle,
+    ACPI_PCI_ID	            **PciId);
 
 /*
  * Miscellaneous
