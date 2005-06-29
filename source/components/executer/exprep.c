@@ -274,7 +274,7 @@ AcpiAmlPrepDefFieldValue (
     UINT32                  FieldLength)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    INT32                   Type;
+    UINT32                  Type;
     ACPI_STATUS             Status;
 
 
@@ -395,7 +395,7 @@ AcpiAmlPrepBankFieldValue (
     UINT32                  FieldLength)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    INT32                   Type;
+    UINT32                  Type;
     ACPI_STATUS             Status;
 
 
