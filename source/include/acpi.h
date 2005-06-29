@@ -122,11 +122,11 @@
  * We put them here because we don't want to duplicate them
  * in the rest of the source code again and again.
  */
+#include <config.h>         /* Configuration constants */
 #include <environment.h>    /* Target environment specific items */
 #include <acpitypes.h>      /* Fundamental data types */
-#include <internal.h>       /* Internal data types */
 #include <acpiexcep.h>      /* Local exception codes */
-#include <config.h>         /* Configuration constants */
+#include <internal.h>       /* Internal data types */
 #include <output.h>         /* Error output and Debug macros */
 #include <acpitables.h>     /* ACPI table definitions */
 #include <acpiosd.h>        /* Interfaces to OS-dependent part (OSD) */
