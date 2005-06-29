@@ -458,6 +458,21 @@ _CmFree (
 #define CmCallocate(a)		        _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
 #define CmFree(a)			        _CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
 
+#ifndef ACPI_DEBUG
+
+#define CmAddElementToAllocList(a,b,c,d,e,f)
+#define CmDeleteElementFromAllocList(a,b,c,d)
+#define CmDumpCurrentAllocations(a,b)
+
+#else
+
+void
+CmDumpCurrentAllocations (
+	UINT32					Component,
+	ACPI_STRING				Module);
+
+#endif
+
 #define CmCreateInternalObject(t)   _CmCreateInternalObject(_THIS_MODULE,__LINE__,_COMPONENT,t)
 #define CmAllocateObjectDesc()      _CmAllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
 
@@ -467,9 +482,5 @@ _CmAllocateObjectDesc (
     INT32                   LineNumber, 
     INT32                   ComponentId); 
 
-void
-CmDumpCurrentAllocations (
-	UINT32					Component,
-	ACPI_STRING				Module);
 
 #endif /* _COMMON_H */
