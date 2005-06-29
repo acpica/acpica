@@ -155,7 +155,7 @@
 ACPI_STATUS
 AcpiEvaluateObject (
     ACPI_HANDLE             Handle, 
-    char                    *Pathname, 
+    ACPI_STRING             Pathname, 
     ACPI_OBJECT_LIST        *ParamObjects,
     ACPI_BUFFER             *ReturnBuffer)
 {
@@ -171,6 +171,7 @@ AcpiEvaluateObject (
 
 
     FUNCTION_TRACE ("AcpiEvaluateObject");
+    DEBUG_MEMSTAT;
 
 
     /* 
@@ -313,7 +314,7 @@ Cleanup:
     {
         /* Check if the return object is valid */
 
-        if (ReturnPtr->ValType != TYPE_Invalid)
+        if (ReturnPtr->Type != TYPE_Invalid)
         {
             /*
              *  Find out how large a buffer is needed to contain the
@@ -361,6 +362,7 @@ Cleanup:
         }
     }
 
+    DEBUG_MEMSTAT;
     FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
@@ -399,7 +401,7 @@ AcpiGetNextObject (
     *RetHandle = NULL;
 
 
-    if (OUTRANGE (Type, NsTypeNames))
+    if (Type > ACPI_TYPE_MAX)
     {
         return AE_BAD_PARAMETER;
     }
@@ -416,7 +418,7 @@ AcpiGetNextObject (
 
         /* Start search at the beginning of the specified scope */
 
-        if (!(ThisEntry = NsConvertHandleToEntry (Scope)))
+        else if (!(ThisEntry = NsConvertHandleToEntry (Scope)))
         {
             return AE_BAD_PARAMETER;
         }
@@ -508,6 +510,14 @@ AcpiGetType (
         return AE_BAD_PARAMETER;
     }
 
+    /* Special case for the predefined Root Object (return type ANY) */
+
+    if (Handle == ACPI_ROOT_OBJECT)
+    {
+        *RetType = TYPE_Any;
+        return AE_OK;
+    }
+
     /* Convert and validate the handle */
 
     if (!(Object = NsConvertHandleToEntry (Handle)))
@@ -547,11 +557,17 @@ AcpiGetParent (
         return AE_BAD_PARAMETER;
     }
 
+    /* Special case for the predefined Root Object (no parent) */
+
+    if (Handle == ACPI_ROOT_OBJECT)
+    {
+        return AE_NULL_ENTRY;
+    }
+
     /* Convert and validate the handle */
 
     if (!(Object = NsConvertHandleToEntry (Handle)))
     {
-        *RetHandle = INVALID_HANDLE;
         return AE_BAD_PARAMETER;
     }
 
@@ -600,6 +616,14 @@ AcpiGetScope (
         return AE_BAD_PARAMETER;
     }
 
+    /* Special case for the predefined Root Object (return Root Scope) */
+
+    if (Handle == ACPI_ROOT_OBJECT)
+    {
+        *RetScope = RootObject->Scope;
+        return AE_OK;
+    }
+
     /* Convert and validate the handle */
 
     if (!(Object = NsConvertHandleToEntry (Handle)))
@@ -608,16 +632,16 @@ AcpiGetScope (
         return AE_BAD_PARAMETER;
     }
 
-    /* Get the scope entry */
-
-    *RetScope = Object->Scope;
-
     /* Return exception in the case of no scope */
 
     if (!Object->Scope)
     {
         return AE_NULL_ENTRY;
     }
+
+    /* Get the scope entry */
+
+    *RetScope = Object->Scope;
 
     return AE_OK;
 }
@@ -652,11 +676,17 @@ AcpiGetContainingScope (
         return AE_BAD_PARAMETER;
     }
 
+    /* Special case for the predefined Root Object (No containing scope) */
+
+    if (Handle == ACPI_ROOT_OBJECT)
+    {
+        return AE_NULL_ENTRY;
+    }
+
     /* Convert and validate the handle */
 
     if (!(Object = NsConvertHandleToEntry (Handle)))
     {
-        *RetHandle = INVALID_HANDLE;
         return AE_BAD_PARAMETER;
     }
 
@@ -725,7 +755,7 @@ AcpiWalkNamespace (
 
     /* Parameter validation */
 
-    if (OUTRANGE (Type, NsTypeNames))
+    if (Type > ACPI_TABLE_MAX)
     {
         FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
@@ -738,13 +768,21 @@ AcpiWalkNamespace (
     }
 
     /* Begin search in the scope owned by the starting object */
-    /* Failure could be bad scope or simply *no* scope */
 
-    if (ACPI_FAILURE (AcpiGetScope (StartHandle, &Scope)))
+    if (StartHandle == ACPI_ROOT_OBJECT)
     {
+        Scope = RootObject->Scope;
+        StartHandle = RootObject;
+    }
+
+    else if (ACPI_FAILURE (AcpiGetScope (StartHandle, &Scope)))
+    {
+        /* Failure could be bad scope or simply *no* scope */
+
         FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
+
 
     /* Init return value, if any */
 
@@ -827,7 +865,7 @@ AcpiWalkNamespace (
 
 ACPI_STATUS
 AcpiGetObject (
-    char                    *Pathname, 
+    ACPI_STRING             *Pathname, 
     ACPI_HANDLE             *RetHandle)
 {
 
