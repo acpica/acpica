@@ -224,8 +224,8 @@ NsAttachObject (
      * we will use that (attached) object
      */
 
-    if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE) && 
-        ((NAME_TABLE_ENTRY *) Object)->Object)
+    else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE) && 
+            ((NAME_TABLE_ENTRY *) Object)->Object)
     {
         /* 
          * Value passed is a name handle and that name has a non-null value.
