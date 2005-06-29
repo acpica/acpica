@@ -142,7 +142,17 @@ HwEnableGpe (
      */
 
     InByte = OsdIn8 (GpeRegisters[RegIndex].EnableAddr);
+    
+    DEBUG_PRINT (VERBOSE_EVENTS,
+        ("Enabling GPE %d by writing byte %08x to port %08x\n",
+    	GpeNumber, (UINT8)(InByte | GpeBit), GpeRegisters[RegIndex].EnableAddr));
+    
     OsdOut8 (GpeRegisters[RegIndex].EnableAddr, (UINT8)(InByte | GpeBit));
+    
+    if (OsdIn8 (GpeRegisters[RegIndex].EnableAddr) != (UINT8)(InByte | GpeBit))
+    {
+        DEBUG_PRINT (ACPI_WARN, ("Enabling the GPE %d didn't stick...\n", GpeNumber));
+    }
 }
 
 
