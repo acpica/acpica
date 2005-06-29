@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -267,9 +267,9 @@ AcpiGetName (
         goto UnlockAndExit;
     }
 
-    /* Validate caller buffer size or allocate new buffer */
+    /* Validate/Allocate/Clear caller buffer */
 
-    Status = AcpiUtValidateBufferSize (Buffer, PATH_SEGMENT_LENGTH);
+    Status = AcpiUtInitializeBuffer (Buffer, PATH_SEGMENT_LENGTH);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;

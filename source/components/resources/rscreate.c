@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.46 $
+ *              $Revision: 1.51 $
  *
  ******************************************************************************/
 
@@ -182,18 +182,15 @@ AcpiRsCreateResourceList (
         return_ACPI_STATUS (Status);
     }
 
-    /* Validate buffer size or allocate new buffer */
+    /* Validate/Allocate/Clear caller buffer */
 
-    Status = AcpiUtValidateBufferSize (OutputBuffer, ListSizeNeeded);
+    Status = AcpiUtInitializeBuffer (OutputBuffer, ListSizeNeeded);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    /*
-     * Zero out the return buffer before proceeding
-     */
-    MEMSET (OutputBuffer->Pointer, 0x00, OutputBuffer->Length);
+    /* Do the conversion */
 
     Status = AcpiRsByteStreamToList (ByteStreamStart, ByteStreamBufferLength,
                     OutputBuffer->Pointer);
@@ -202,7 +199,8 @@ AcpiRsCreateResourceList (
         return_ACPI_STATUS (Status);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer = %p\n", OutputBuffer->Pointer));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer %p Length %X\n", 
+            OutputBuffer->Pointer, OutputBuffer->Length));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -264,23 +262,17 @@ AcpiRsCreatePciRoutingTable (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "BufferSizeNeeded = %X\n", BufferSizeNeeded));
 
-    /* Validate caller buffer size */
+    /* Validate/Allocate/Clear caller buffer */
 
-    Status = AcpiUtValidateBufferSize (OutputBuffer, BufferSizeNeeded);
+    Status = AcpiUtInitializeBuffer (OutputBuffer, BufferSizeNeeded);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
     /*
-     * Zero out the return buffer before proceeding
-     */
-    MEMSET (OutputBuffer->Pointer, 0x00, OutputBuffer->Length);
-
-    /*
-     * Loop through the ACPI_INTERNAL_OBJECTS - Each object should
-     * contain an ACPI_INTEGER Address, a UINT8 Pin, a Name and a UINT8
-     * SourceIndex.
+     * Loop through the ACPI_INTERNAL_OBJECTS - Each object should contain an 
+     * ACPI_INTEGER Address, a UINT8 Pin, a Name and a UINT8 SourceIndex.
      */
     TopObjectList    = PackageObject->Package.Elements;
     NumberOfElements = PackageObject->Package.Count;
@@ -299,10 +291,9 @@ AcpiRsCreatePciRoutingTable (
         UserPrt = (ACPI_PCI_ROUTING_TABLE *) Buffer;
 
         /*
-         * Fill in the Length field with the information we
-         * have at this point.
-         * The minus four is to subtract the size of the
-         * UINT8 Source[4] member because it is added below.
+         * Fill in the Length field with the information we have at this point.
+         * The minus four is to subtract the size of the UINT8 Source[4] member 
+         * because it is added below.
          */
         UserPrt->Length = (sizeof (ACPI_PCI_ROUTING_TABLE) -4);
 
@@ -382,9 +373,8 @@ AcpiRsCreatePciRoutingTable (
             STRCPY (UserPrt->Source,
                   (*SubObjectList)->String.Pointer);
 
-            /*
-             * Add to the Length field the length of the string
-             */
+            /* Add to the Length field the length of the string */
+
             UserPrt->Length += (*SubObjectList)->String.Length;
             break;
 
@@ -427,16 +417,13 @@ AcpiRsCreatePciRoutingTable (
             return_ACPI_STATUS (AE_BAD_DATA);
         }
 
-        /*
-         * Point to the next ACPI_OPERAND_OBJECT
-         */
+        /* Point to the next ACPI_OPERAND_OBJECT */
+
         TopObjectList++;
     }
 
-    /*
-     * Report the amount of buffer used
-     */
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer = %p\n", OutputBuffer->Pointer));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer %p Length %X\n", 
+            OutputBuffer->Pointer, OutputBuffer->Length));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -489,27 +476,25 @@ AcpiRsCreateByteStream (
         return_ACPI_STATUS (Status);
     }
 
-    /* Validate buffer size or allocate new buffer */
+    /* Validate/Allocate/Clear caller buffer */
 
-    Status = AcpiUtValidateBufferSize (OutputBuffer, ByteStreamSizeNeeded);
+    Status = AcpiUtInitializeBuffer (OutputBuffer, ByteStreamSizeNeeded);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    /*
-     * Zero out the return buffer before proceeding
-     */
-    MEMSET (OutputBuffer->Pointer, 0x00, OutputBuffer->Length);
+    /* Do the conversion */
 
     Status = AcpiRsListToByteStream (LinkedListBuffer, ByteStreamSizeNeeded,
-                OutputBuffer->Pointer);
+                    OutputBuffer->Pointer);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer = %p\n", OutputBuffer->Pointer));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer %p Length %X\n", 
+            OutputBuffer->Pointer, OutputBuffer->Length));
     return_ACPI_STATUS (AE_OK);
 }
 

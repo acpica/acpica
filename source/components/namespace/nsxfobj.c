@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  ******************************************************************************/
 
@@ -299,11 +299,9 @@ AcpiEvaluateObject (
                                                 &BufferSpaceNeeded);
                 if (ACPI_SUCCESS (Status))
                 {
-                    /*
-                     * Check if there is enough room in the
-                     * caller's buffer
-                     */
-                    Status = AcpiUtValidateBufferSize (ReturnBuffer, BufferSpaceNeeded);
+                    /* Validate/Allocate/Clear caller buffer */
+
+                    Status = AcpiUtInitializeBuffer (ReturnBuffer, BufferSpaceNeeded);
                     if (ACPI_FAILURE (Status))
                     {
                         /*
