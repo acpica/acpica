@@ -2,6 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -146,7 +147,7 @@ UINT32                      TableSize;
 UINT32                      AcpiGbl_SystemFlags;
 UINT32                      AcpiGbl_RsdpOriginalLocation;
 
-
+#if 0
 /******************************************************************************
  *
  * FUNCTION:    AfWriteBuffer
@@ -226,14 +227,24 @@ AfGenerateFilename (char *TableId)
 void
 AfDumpTables (void)
 {
+    char                    *Filename;
 
-    if (AcpiGbl_DSDT)
+
+    if (!AcpiGbl_DSDT)
     {
-        AfWriteBuffer (AfGenerateFilename (AcpiGbl_DSDT->OemTableId),
-            (char *) AcpiGbl_DSDT, AcpiGbl_DSDT->Length);
+        AcpiOsPrintf ("No DSDT!\n");
+        return;
     }
+
+
+    Filename = AfGenerateFilename (AcpiGbl_DSDT->OemTableId);
+        AfWriteBuffer (Filename,
+            (char *) AcpiGbl_DSDT, AcpiGbl_DSDT->Length);
+
+    AcpiOsPrintf ("DSDT AML written to \"%s\"\n", Filename);
 }
 
+#endif
 
 /******************************************************************************
  *
@@ -369,8 +380,8 @@ AfRecognizeTable (
                     AcpiGbl_AcpiTableData[i].Signature, 
                     AcpiGbl_AcpiTableData[i].SigLength))
         {
-            AcpiOsPrintf ("Found table named: %s Length 0x%X\n", 
-                AcpiGbl_AcpiTableData[i].Signature, TableHeader->Length);
+            AcpiOsPrintf ("Found table [%s] Length 0x%X\n", 
+                AcpiGbl_AcpiTableData[i].Signature, (UINT32) TableHeader->Length);
 
             TableType       = i;
             TableGlobalPtr  = AcpiGbl_AcpiTableData[i].GlobalPtr;
@@ -392,19 +403,18 @@ AfRecognizeTable (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
             "Unsupported table %s (Type %d) was found and discarded\n",
-            AcpiGbl_AcpiTableData[TableType].Name, TableType));
+            AcpiGbl_AcpiTableData[TableType].Name, (UINT32) TableType));
 
-        *TableGlobalPtr = NULL;
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiTbValidateTableHeader (TableHeader);
+   Status = AcpiTbValidateTableHeader (TableHeader);
     if (ACPI_FAILURE (Status))
     {
         /* Table failed verification, map all errors to BAD_DATA */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid table header found in table named %s (Type %d)\n",
-                            AcpiGbl_AcpiTableData[TableType].Name, TableType));
+                            AcpiGbl_AcpiTableData[TableType].Name, (UINT32) TableType));
 
         return_ACPI_STATUS (AE_BAD_DATA);
     }
@@ -414,8 +424,8 @@ AfRecognizeTable (
     *TableGlobalPtr = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
     if (!*TableGlobalPtr)
     {
-        AcpiOsPrintf ("Could not allocate buffer for Acpi table of length 0x%lX\n",
-                        ((FACS_DESCRIPTOR *) &AcpiTblHeader)->Length);
+        AcpiOsPrintf ("Could not allocate buffer for Acpi table of length 0x%X\n",
+                        (UINT32) ((FACS_DESCRIPTOR *) &AcpiTblHeader)->Length);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
@@ -424,10 +434,13 @@ AfRecognizeTable (
 
     CopyExtendedToReal (*TableGlobalPtr, PhysAddr, AcpiTblHeader.Length);
 
-    AcpiOsPrintf ("%s=%p, (TableGlobalPtr=%p)\n", AcpiGbl_AcpiTableData[TableType].Signature,
-                    *TableGlobalPtr, TableGlobalPtr);
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%s=%p, (TableGlobalPtr=%p)\n", AcpiGbl_AcpiTableData[TableType].Signature,
+                    *TableGlobalPtr, TableGlobalPtr));
 
-    AcpiUtDumpBuffer (*TableGlobalPtr, 48, 0, 0);
+    if (AcpiGbl_DbOpt_verbose)
+    {
+        AcpiUtDumpBuffer (*TableGlobalPtr, 48, 0, 0);
+    }
 
     /*
      * Validate checksum for _most_ tables,
@@ -469,7 +482,10 @@ AfGetAllTables (
 
     ACPI_FUNCTION_TRACE ("AfGetAllTables");
 
-    AcpiOsPrintf ("Number of tables: %d\n", NumberOfTables);
+    if (AcpiGbl_DbOpt_verbose)
+    {
+        AcpiOsPrintf ("Number of tables: %d\n", (UINT32) NumberOfTables);
+    }
 
 
     /*
@@ -483,11 +499,13 @@ AfGetAllTables (
 
         CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_XSDT->TableOffsetEntry[Index]),
                             sizeof (ACPI_TABLE_HEADER));
+
         TableInfo.Pointer       = &AcpiTblHeader;
         TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
         TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
 
-        AcpiOsPrintf ("Table pointer: %p\n", TableInfo.Pointer);
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Table pointer: %X\n", 
+            (UINT32) ACPI_GET_ADDRESS (AcpiGbl_XSDT->TableOffsetEntry[Index])));
 
         Status = AfRecognizeTable (NULL, ACPI_GET_ADDRESS (AcpiGbl_XSDT->TableOffsetEntry[Index]), &TableInfo);
         if (ACPI_SUCCESS (Status))
@@ -510,24 +528,27 @@ AfGetAllTables (
         return_ACPI_STATUS (Status);
     }
 
-    /* Get the FACS */
-
+    /* No need to get the FACS, but here is the code if needed */
+#if 0
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl),
                         sizeof (ACPI_TABLE_HEADER));
     AcpiGbl_FACS = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
     if (!AcpiGbl_FACS)
     {
-        AcpiOsPrintf ("Could not allocate buffer for FADT length 0x%lX\n",
-                        AcpiTblHeader.Length);
+        AcpiOsPrintf ("Could not allocate buffer for FADT length 0x%X\n",
+                        (UINT32) AcpiTblHeader.Length);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     CopyExtendedToReal (AcpiGbl_FACS, ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl), AcpiTblHeader.Length);
 
-    AcpiOsPrintf ("FACS at %p (Phys %lX) length %lX FADT=%p\n",
-                    AcpiGbl_FACS, ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl),
-                    AcpiTblHeader.Length, AcpiGbl_FADT);
-    AcpiUtDumpBuffer ((char *) AcpiGbl_FADT, sizeof (ACPI_TABLE_HEADER), 0, 0);
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "FACS at %p (Phys %8.8X) length %X FADT at%p\n",
+                    AcpiGbl_FACS, (UINT32) ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl),
+                    (UINT32) AcpiTblHeader.Length, AcpiGbl_FADT));      
+    if (AcpiGbl_DbOpt_verbose)
+    {
+        AcpiUtDumpBuffer ((char *) AcpiGbl_FADT, sizeof (ACPI_TABLE_HEADER), 0, 0);
+    }
 
     TableInfo.Type          = ACPI_TABLE_FADT;
     TableInfo.Pointer       = (void *) AcpiGbl_FADT;
@@ -540,6 +561,8 @@ AfGetAllTables (
     AcpiTbInitTableDescriptor (TableInfo.Type, &TableInfo);
 
     AcpiTbBuildCommonFacs (&TableInfo);
+#endif
+
 
     /* Get the DSDT */
 
@@ -547,18 +570,21 @@ AfGetAllTables (
     AcpiGbl_DSDT = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
     if (!AcpiGbl_DSDT)
     {
-        AcpiOsPrintf ("Could not allocate buffer for DSDT length 0x%lX\n", AcpiTblHeader.Length);
+        AcpiOsPrintf ("Could not allocate buffer for DSDT length 0x%X\n", (UINT32) AcpiTblHeader.Length);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     CopyExtendedToReal (AcpiGbl_DSDT, ACPI_GET_ADDRESS (AcpiGbl_FADT->XDsdt), AcpiTblHeader.Length);
 
-    AcpiOsPrintf ("DSDT at %p (Phys %lX) length %lX FADT=%p\n",
-                    AcpiGbl_DSDT, ACPI_GET_ADDRESS (AcpiGbl_FADT->XDsdt),
-                    AcpiTblHeader.Length, AcpiGbl_FADT);
-    AcpiUtDumpBuffer ((char *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), 0, 0);
+    AcpiOsPrintf ("DSDT at %p (Phys %8.8X) length %X FADT at %p\n",
+                    AcpiGbl_DSDT, (UINT32) ACPI_GET_ADDRESS (AcpiGbl_FADT->XDsdt),
+                    (UINT32) AcpiTblHeader.Length, AcpiGbl_FADT);
+    if (AcpiGbl_DbOpt_verbose)
+    {
+        AcpiUtDumpBuffer ((char *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), 0, 0); 
+    }
 
-    TableInfo.Type          =  ACPI_TABLE_DSDT;
+    TableInfo.Type          = ACPI_TABLE_DSDT;
     TableInfo.Pointer       = (void *) AcpiGbl_DSDT;
     TableInfo.BasePointer   = (void *) AcpiGbl_DSDT;
     TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
@@ -627,14 +653,20 @@ AfFindDsdt(
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found ACPI 2.0 RSDP\n"));
     }
 
-    AcpiUtDumpBuffer ((char *) AcpiGbl_RSDP, sizeof (RSDP_DESCRIPTOR), 0, ACPI_UINT32_MAX);
+    if (AcpiGbl_DbOpt_verbose)
+    {
+        AcpiUtDumpBuffer ((char *) AcpiGbl_RSDP, sizeof (RSDP_DESCRIPTOR), 0, ACPI_UINT32_MAX);
+    }
 
     /* Get the RSDT/XSDT header to determine the table length */
 
     CopyExtendedToReal (&AcpiTblHeader, PhysicalAddress, sizeof (ACPI_TABLE_HEADER));
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RSDT/XSDT at %lX\n", PhysicalAddress));
-    AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, ACPI_UINT32_MAX);
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RSDT/XSDT at %8.8X\n", (UINT32) PhysicalAddress));
+    if (AcpiGbl_DbOpt_verbose)
+    {
+        AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, ACPI_UINT32_MAX);   
+    }
 
     /* Validate the table header */
 
@@ -652,15 +684,21 @@ AfFindDsdt(
     AcpiGbl_XSDT = (void *) malloc ((size_t) AcpiTblHeader.Length);
     if (!AcpiGbl_XSDT)
     {
-        AcpiOsPrintf ("Could not allocate buffer for RSDT length 0x%lX\n", AcpiTblHeader.Length);
+        AcpiOsPrintf ("Could not allocate buffer for RSDT length 0x%X\n", 
+            (UINT32) AcpiTblHeader.Length);
         return AE_NO_MEMORY;
     }
 
     /* Get the entire RSDT/XSDT */
 
     CopyExtendedToReal (AcpiGbl_XSDT, PhysicalAddress, AcpiTblHeader.Length);
-    AcpiOsPrintf ("%s at %p (Paddr=%lX)\n", TableSignature, PhysicalAddress);
-    AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, 0);
+    AcpiOsPrintf ("%s at %p (Phys %8.8X)\n", 
+        TableSignature, AcpiGbl_XSDT, (UINT32) PhysicalAddress);   
+        
+    if (AcpiGbl_DbOpt_verbose)
+    {
+        AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, 0);
+    }
 
     /* Convert to common format XSDT */
 
@@ -678,7 +716,6 @@ AfFindDsdt(
     }
 
     AcpiGbl_XSDT = (XSDT_DESCRIPTOR *) TableInfo.Pointer;
-    AcpiOsPrintf ("Number of tables: %d\n", AcpiGbl_RsdtTableCount);
 
     /* Get the rest of the required tables (DSDT, FADT) */
 
