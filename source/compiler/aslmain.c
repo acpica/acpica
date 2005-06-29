@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -501,6 +501,9 @@ main (
     {
         Gbl_OutputFilenamePrefix = Gbl_Files[ASL_FILE_INPUT].Filename;
     }
+#include <fcntl.h>
+    printf ("Default mode: %X text: %X, binary: %X\n", _fmode, _O_TEXT, _O_BINARY);
+   // _fmode = _O_BINARY;
 
     Status = CmDoCompile ();
     return (0);
