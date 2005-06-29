@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.116 $
+ *       $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -435,7 +435,7 @@ AcpiUtDebugPrint (
     UINT32                  LineNumber,
     ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     char                    *Format,
-    ...);
+    ...) ACPI_PRINTF_LIKE_FUNC;
 
 void
 AcpiUtDebugPrintRaw (
@@ -443,7 +443,7 @@ AcpiUtDebugPrintRaw (
     UINT32                  LineNumber,
     ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     char                    *Format,
-    ...);
+    ...) ACPI_PRINTF_LIKE_FUNC;
 
 
 /*
