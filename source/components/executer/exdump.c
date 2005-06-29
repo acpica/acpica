@@ -658,7 +658,7 @@ AcpiAmlDumpOperands (
     INT8                    *ModuleName,
     INT32                   LineNumber)
 {
-    UINT32                  i;
+    INT32                   i;
     ACPI_OBJECT_INTERNAL    **EntryDesc;
 
 
