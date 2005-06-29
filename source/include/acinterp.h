@@ -436,6 +436,13 @@ AmlExecStore (
     ACPI_OBJECT_INTERNAL    *op1, 
     ACPI_OBJECT_INTERNAL    *res);
 
+ACPI_STATUS
+AmlExecute (
+    UINT8                   *Pcode, 
+    UINT32                  Length, 
+    ACPI_OBJECT_INTERNAL    **Params);
+
+
 
 /*
  * iemonadic - ACPI AML (p-code) execution, monadic operators
@@ -720,6 +727,10 @@ AmlAllocateNameString (
 INT32
 AmlGoodChar (
     INT32                   Character);
+
+BOOLEAN 
+AmlGoodName (
+    UINT32                  Name);
 
 ACPI_STATUS
 AmlDoSeg (

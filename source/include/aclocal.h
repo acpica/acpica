@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
- * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.108 $
+ * 
+ * Name: internal.h - Internal data types used across the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,207 +114,131 @@
  *
  *****************************************************************************/
 
-#ifndef __ACLOCAL_H__
-#define __ACLOCAL_H__
+#ifndef _ACPI_INTERNAL_H
+#define _ACPI_INTERNAL_H
+
+#include "config.h"
 
 
-#define WAIT_FOREVER                ((UINT32) -1)
+#define WAIT_FOREVER        -1
 
-typedef void*                       ACPI_MUTEX;
-typedef UINT32                      ACPI_MUTEX_HANDLE;
+typedef void*               ACPI_MUTEX;
+typedef UINT32              ACPI_MUTEX_HANDLE;
 
-
-/* Object descriptor types */
-
-#define ACPI_CACHED_OBJECT          0x11    /* ORed in when object is cached */
-#define ACPI_DESC_TYPE_STATE        0x22
-#define ACPI_DESC_TYPE_WALK         0x44
-#define ACPI_DESC_TYPE_PARSER       0x66
-#define ACPI_DESC_TYPE_INTERNAL     0x88
-#define ACPI_DESC_TYPE_NAMED        0xAA
-
-
-/*****************************************************************************
- *
- * Mutex typedefs and structs
- *
- ****************************************************************************/
-
+#define DESC_TYPE_NTE       0xEE
+#define DESC_TYPE_ACPI_OBJ  0xAA
 
 /*
  * Predefined handles for the mutex objects used within the subsystem
- * All mutex objects are automatically created by AcpiCmMutexInitialize.
- *
- * The acquire/release ordering protocol is implied via this list.  Mutexes
- * with a lower value must be acquired before mutexes with a higher value.
- *
- * NOTE: any changes here must be reflected in the AcpiGbl_MutexNames table also!
+ * All mutex objects are automatically created by CmMutexInitialize.
  */
 
-#define ACPI_MTX_EXECUTE            0
-#define ACPI_MTX_INTERPRETER        1
-#define ACPI_MTX_PARSER             2
-#define ACPI_MTX_DISPATCHER         3
-#define ACPI_MTX_TABLES             4
-#define ACPI_MTX_OP_REGIONS         5
-#define ACPI_MTX_NAMESPACE          6
-#define ACPI_MTX_EVENTS             7
-#define ACPI_MTX_HARDWARE           8
-#define ACPI_MTX_CACHES             9
-#define ACPI_MTX_MEMORY             10
-#define ACPI_MTX_DEBUG_CMD_COMPLETE 11
-#define ACPI_MTX_DEBUG_CMD_READY    12
+#define MTX_INTERPRETER     0
+#define MTX_NAMESPACE       1
+#define MTX_MEMORY          2
+#define MTX_GP_EVENT        3
+#define MTX_FIXED_EVENT     4
+#define MTX_OP_REGIONS      5
 
-#define MAX_MTX                     12
-#define NUM_MTX                     MAX_MTX+1
-
-
-#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
-#ifdef DEFINE_ACPI_GLOBALS
-
-/* Names for the mutexes used in the subsystem */
-
-static NATIVE_CHAR          *AcpiGbl_MutexNames[] =
-{
-    "ACPI_MTX_Execute",
-    "ACPI_MTX_Interpreter",
-    "ACPI_MTX_Parser",
-    "ACPI_MTX_Dispatcher",
-    "ACPI_MTX_Tables",
-    "ACPI_MTX_OpRegions",
-    "ACPI_MTX_Namespace",
-    "ACPI_MTX_Events",
-    "ACPI_MTX_Hardware",
-    "ACPI_MTX_Caches",
-    "ACPI_MTX_Memory",
-    "ACPI_MTX_DebugCmdComplete"
-    "ACPI_MTX_DebugCmdReady",
-};
-
-#endif
-#endif
-
-
-/* Table for the global mutexes */
-
-typedef struct AcpiMutexInfo
-{
-    ACPI_MUTEX                  Mutex;
-    UINT32                      UseCount;
-    UINT32                      OwnerId;
-    BOOLEAN                     Locked;
-
-} ACPI_MUTEX_INFO;
-
-
-/* Lock flag parameter for various interfaces */
-
-#define ACPI_MTX_DO_NOT_LOCK        0
-#define ACPI_MTX_LOCK               1
-
-
-typedef UINT16                      ACPI_OWNER_ID;
-#define OWNER_TYPE_TABLE            0x0
-#define OWNER_TYPE_METHOD           0x1
-#define FIRST_METHOD_ID             0x0000
-#define FIRST_TABLE_ID              0x8000
-
-/* TBD: [Restructure] get rid of the need for this! */
-
-#define TABLE_ID_DSDT               (ACPI_OWNER_ID) 0x8000
-
-/*****************************************************************************
- *
- * Namespace typedefs and structs
- *
- ****************************************************************************/
+#define MAX_MTX             5
+#define NUM_MTX             MAX_MTX+1
 
 
 /* Operational modes of the AML interpreter/scanner */
 
-typedef enum
+typedef enum 
 {
-    IMODE_LOAD_PASS1                = 0x01,
-    IMODE_LOAD_PASS2                = 0x02,
-    IMODE_EXECUTE                   = 0x0E
+    IMODE_LoadPass1 = 0x01,
+    IMODE_LoadPass2 = 0x02,
+    IMODE_Execute   = 0x0E
 
 } OPERATING_MODE;
 
 
-/*
- * The Node describes a named object that appears in the AML
- * An AcpiNode is used to store Nodes.
+/* 
+ * Typedef nte (name table entry) is private to avoid global
+ * impact in the event of changes to it.  The externally-known type ACPI_HANDLE
+ * is actually an (nte *).  If an external program needs to extract a field
+ * from the nte, it should use an access function defined in acpinmsp.c
+ *
+ * If you need an access function not provided herein, add it to this module
+ * rather than exporting the nte typedef.
+ *
+ * (nte *) are actually used in two different and not entirely compatible
+ * ways: as pointer to an individual nte and as pointer to an entire name
+ * table (which is an array of nte, sometimes referred to as a scope).  In
+ * the latter case, the specific nte pointed to may be unused; however its
+ * ParentScope member will be valid.
  *
  * DataType is used to differentiate between internal descriptors, and MUST
  * be the first byte in this structure.
  */
 
-typedef struct acpi_node
+typedef struct NAME_TABLE_ENTRY
 {
     UINT8                   DataType;
     UINT8                   Type;           /* Type associated with this name */
-    UINT16                  OwnerId;
+    UINT16                  Fill1;
+
+    struct NAME_TABLE_ENTRY *ParentScope;   /* Previous level of names */
+    struct NAME_TABLE_ENTRY *ParentEntry;   /* Actual parent NTE */
+    struct NAME_TABLE_ENTRY *Scope;         /* Scope owned by this name */
     UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
+    void                    *Object;        /* Pointer to attached ACPI object */
+    struct NAME_TABLE_ENTRY *NextEntry;     /* Next within this scope */
+    struct NAME_TABLE_ENTRY *PrevEntry;     /* Previous within this scope */
+
+} NAME_TABLE_ENTRY;
+
+#define ENTRY_NOT_FOUND     NULL
+#define INVALID_HANDLE      0
+#define NULL_HANDLE         INVALID_HANDLE
 
 
-    void                    *Object;        /* Pointer to attached ACPI object (optional) */
-    struct acpi_node        *Child;         /* first child */
-    struct acpi_node        *Peer;          /* Next peer*/
-    UINT16                  ReferenceCount; /* Current count of references and children */
-    UINT8                   Flags;
-
-} ACPI_NAMESPACE_NODE;
-
-
-#define ENTRY_NOT_FOUND             NULL
-
-
-/* Node flags */
-
-#define ANOBJ_AML_ATTACHMENT        0x01
-#define ANOBJ_END_OF_PEER_LIST      0x02
-#define ANOBJ_DATA_WIDTH_32         0x04     /* Parent table is 64-bits */
-#define ANOBJ_METHOD_ARG            0x08
-#define ANOBJ_METHOD_LOCAL          0x10
-#define ANOBJ_METHOD_NO_RETVAL      0x20
-#define ANOBJ_METHOD_SOME_NO_RETVAL 0x40
-
-
-/*
- * ACPI Table Descriptor.  One per ACPI table
+/* 
+ * Stack of currently executing control methods 
+ * Contains the arguments and local variables for each nested method.
  */
-typedef struct AcpiTableDesc
-{
-    struct AcpiTableDesc    *Prev;
-    struct AcpiTableDesc    *Next;
-    struct AcpiTableDesc    *InstalledDesc;
-    ACPI_TABLE_HEADER       *Pointer;
-    void                    *BasePointer;
-    UINT8                   *AmlPointer;
-    UINT64                  PhysicalAddress;
-    UINT32                  AmlLength;
-    UINT32                  Length;
-    UINT32                  Count;
-    ACPI_OWNER_ID           TableId;
-    UINT8                   Type;
-    UINT8                   Allocation;
-    BOOLEAN                 LoadedIntoNamespace;
-
-} ACPI_TABLE_DESC;
-
 
 typedef struct
 {
-    NATIVE_CHAR             *SearchFor;
+    union AcpiObjInternal   *Arguments[MTH_NUM_ARGS];
+    union AcpiObjInternal   *LocalVariables[MTH_NUM_LOCALS];
+
+} METHOD_STACK;
+
+
+/* Stack of currently-open scopes, and pointer to top of that stack */
+
+typedef struct
+{
+    NAME_TABLE_ENTRY        *Scope;
+    /* 
+     * Type of scope, typically the same as the type of its parent's entry 
+     * (but not the same as the type of its parent's scope).
+     */
+    ACPI_OBJECT_TYPE        Type;   
+
+
+} SCOPE_STACK;    
+
+
+typedef struct 
+{
+    char                    *SearchFor;
     ACPI_HANDLE             *List;
-    UINT32                  *Count;
+    INT32                   *Count;
 
 } FIND_CONTEXT;
 
 
 typedef struct
 {
-    ACPI_NAMESPACE_NODE     *Node;
+    NAME_TABLE_ENTRY        *PreviousEntry;
+    NAME_TABLE_ENTRY        *NameTable;
+    UINT32                  Position;
+    BOOLEAN                 TableFull;
+
 } NS_SEARCH_DATA;
 
 
@@ -327,38 +251,14 @@ typedef struct
 
 typedef struct
 {
-    NATIVE_CHAR             *Name;
+    char                    *Name;
     ACPI_OBJECT_TYPE        Type;
-    NATIVE_CHAR             *Val;
+    char                    *Val;
 
 } PREDEFINED_NAMES;
 
 
-/*****************************************************************************
- *
- * Event typedefs and structs
- *
- ****************************************************************************/
-
-
-/* Status bits. */
-
-#define ACPI_STATUS_PMTIMER                  0x0001
-#define ACPI_STATUS_GLOBAL                   0x0020
-#define ACPI_STATUS_POWER_BUTTON             0x0100
-#define ACPI_STATUS_SLEEP_BUTTON             0x0200
-#define ACPI_STATUS_RTC_ALARM                0x0400
-
-/* Enable bits. */
-
-#define ACPI_ENABLE_PMTIMER                  0x0001
-#define ACPI_ENABLE_GLOBAL                   0x0020
-#define ACPI_ENABLE_POWER_BUTTON             0x0100
-#define ACPI_ENABLE_SLEEP_BUTTON             0x0200
-#define ACPI_ENABLE_RTC_ALARM                0x0400
-
-
-/*
+/* 
  * Entry in the AddressSpace (AKA Operation Region) table
  */
 
@@ -367,24 +267,23 @@ typedef struct
     ADDRESS_SPACE_HANDLER   Handler;
     void                    *Context;
 
-} ACPI_ADDRESS_SPACE_INFO;
+} ADDRESS_SPACE_INFO;
 
 
 /* Values and addresses of the GPE registers (both banks) */
 
-typedef struct
+typedef struct 
 {
     UINT8                   Status;         /* Current value of status reg */
     UINT8                   Enable;         /* Current value of enable reg */
     UINT16                  StatusAddr;     /* Address of status reg */
     UINT16                  EnableAddr;     /* Address of enable reg */
-    UINT8                   GpeBase;        /* Base GPE number */
 
-} ACPI_GPE_REGISTERS;
+} GPE_REGISTERS;
 
 
-#define ACPI_GPE_LEVEL_TRIGGERED            1
-#define ACPI_GPE_EDGE_TRIGGERED             2
+#define GPE_LEVEL_TRIGGERED         1
+#define GPE_EDGE_TRIGGERED          2
 
 
 /* Information about each particular GPE level */
@@ -392,509 +291,39 @@ typedef struct
 typedef struct
 {
     UINT8                   Type;           /* Level or Edge */
-
     ACPI_HANDLE             MethodHandle;   /* Method handle for direct (fast) execution */
     GPE_HANDLER             Handler;        /* Address of handler, if any */
     void                    *Context;       /* Context to be passed to handler */
 
-} ACPI_GPE_LEVEL_INFO;
-
+} GPE_LEVEL_INFO;
 
 /* Information about each particular fixed event */
 
 typedef struct
 {
-    FIXED_EVENT_HANDLER     Handler;        /* Address of handler. */
-    void                    *Context;       /* Context to be passed to handler */
-
-} ACPI_FIXED_EVENT_INFO;
-
-
-/* Information used during field processing */
-
-typedef struct
-{
-    UINT8                   SkipField;
-    UINT8                   FieldFlag;
-    UINT32                  PkgLength;
-
-} ACPI_FIELD_INFO;
-
-
-/*****************************************************************************
- *
- * Generic "state" object for stacks
- *
- ****************************************************************************/
-
-
-#define CONTROL_NORMAL                        0xC0
-#define CONTROL_CONDITIONAL_EXECUTING         0xC1
-#define CONTROL_PREDICATE_EXECUTING           0xC2
-#define CONTROL_PREDICATE_FALSE               0xC3
-#define CONTROL_PREDICATE_TRUE                0xC4
-
-
-/* Forward declarations */
-struct acpi_walk_state;
-struct acpi_walk_list;
-struct acpi_parse_obj;
-struct acpi_obj_mutex;
-
-
-#define ACPI_STATE_COMMON                  /* Two 32-bit fields and a pointer */\
-    UINT8                   DataType;           /* To differentiate various internal objs */\
-    UINT8                   Flags; \
-    UINT16                  Value; \
-    UINT16                  State; \
-    UINT16                  AcpiEval;  \
-    void                    *Next; \
-
-typedef struct acpi_common_state
-{
-    ACPI_STATE_COMMON
-} ACPI_COMMON_STATE;
-
-
-/*
- * Update state - used to traverse complex objects such as packages
- */
-typedef struct acpi_update_state
-{
-    ACPI_STATE_COMMON
-    union acpi_operand_obj  *Object;
-
-} ACPI_UPDATE_STATE;
-
-
-/*
- * Pkg state - used to traverse nested package structures
- */
-typedef struct acpi_pkg_state
-{
-    ACPI_STATE_COMMON
-    union acpi_operand_obj  *SourceObject;
-    union acpi_operand_obj  *DestObject;
-    struct acpi_walk_state  *WalkState;
-    void                    *ThisTargetObj;
-    UINT32                  NumPackages;
-    UINT16                  Index;
-
-} ACPI_PKG_STATE;
-
-
-/*
- * Control state - one per if/else and while constructs.
- * Allows nesting of these constructs
- */
-typedef struct acpi_control_state
-{
-    ACPI_STATE_COMMON
-    struct acpi_parse_obj   *PredicateOp;
-    UINT8                   *AmlPredicateStart;   /* Start of if/while predicate */
-
-} ACPI_CONTROL_STATE;
-
-
-/*
- * Scope state - current scope during namespace lookups
- */
-
-typedef struct acpi_scope_state
-{
-    ACPI_STATE_COMMON
-    ACPI_NAMESPACE_NODE     *Node;
-
-} ACPI_SCOPE_STATE;
-
-
-typedef struct acpi_pscope_state
-{
-    ACPI_STATE_COMMON
-    struct acpi_parse_obj   *Op;            /* current op being parsed */
-    UINT8                   *ArgEnd;        /* current argument end */
-    UINT8                   *PkgEnd;        /* current package end */
-    UINT32                  ArgList;        /* next argument to parse */
-    UINT32                  ArgCount;       /* Number of fixed arguments */
-
-} ACPI_PSCOPE_STATE;
-
-
-/*
- * Result values - used to accumulate the results of nested
- * AML arguments
- */
-typedef struct acpi_result_values
-{
-    ACPI_STATE_COMMON
-    union acpi_operand_obj  *ObjDesc [OBJ_NUM_OPERANDS];
-    UINT8                   NumResults;
-    UINT8                   LastInsert;
-
-} ACPI_RESULT_VALUES;
-
-
-/* Generic state is union of structs above */
-
-typedef union acpi_gen_state
-{
-    ACPI_COMMON_STATE       Common;
-    ACPI_CONTROL_STATE      Control;
-    ACPI_UPDATE_STATE       Update;
-    ACPI_SCOPE_STATE        Scope;
-    ACPI_PSCOPE_STATE       ParseScope;
-    ACPI_PKG_STATE          Pkg;
-    ACPI_RESULT_VALUES      Results;
-
-} ACPI_GENERIC_STATE;
-
-
-typedef
-ACPI_STATUS (*ACPI_PARSE_DOWNWARDS) (
-    UINT16                  Opcode,
-    struct acpi_parse_obj   *Op,
-    struct acpi_walk_state  *WalkState,
-    struct acpi_parse_obj   **OutOp);
-
-typedef
-ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
-    struct acpi_walk_state  *WalkState,
-    struct acpi_parse_obj   *Op);
-
-
-/*****************************************************************************
- *
- * Parser typedefs and structs
- *
- ****************************************************************************/
-
-
-#define ACPI_OP_CLASS_MASK          0x1F
-#define ACPI_OP_ARGS_MASK           0x20
-#define ACPI_OP_TYPE_MASK           0xC0
-
-#define ACPI_OP_TYPE_OPCODE         0x00
-#define ACPI_OP_TYPE_ASCII          0x40
-#define ACPI_OP_TYPE_PREFIX         0x80
-#define ACPI_OP_TYPE_UNKNOWN        0xC0
-
-#define ACPI_GET_OP_CLASS(a)        ((a)->Flags & ACPI_OP_CLASS_MASK)
-#define ACPI_GET_OP_ARGS(a)         ((a)->Flags & ACPI_OP_ARGS_MASK)
-#define ACPI_GET_OP_TYPE(a)         ((a)->Flags & ACPI_OP_TYPE_MASK)
-
-
-/*
- * AML opcode, name, and argument layout
- */
-typedef struct acpi_opcode_info
-{
-    UINT8                   Flags;          /* Opcode type, HasArgs flag */
-    UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
-    UINT32                  RuntimeArgs;    /* Interpret time arguments */
-
-#ifdef _OPCODE_NAMES
-    NATIVE_CHAR             *Name;          /* op name (debug only) */
-#endif
-
-} ACPI_OPCODE_INFO;
-
-
-typedef union acpi_parse_val
-{
-    UINT32                  Integer;        /* integer constant */
-    NATIVE_UINT             Size;           /* bytelist or field size */
-    NATIVE_CHAR             *String;        /* NULL terminated string */
-    UINT8                   *Buffer;        /* buffer or string */
-    NATIVE_CHAR             *Name;          /* NULL terminated string */
-    struct acpi_parse_obj   *Arg;           /* arguments and contained ops */
-
-} ACPI_PARSE_VALUE;
-
-
-#define ACPI_PARSE_COMMON \
-    UINT8                   DataType;       /* To differentiate various internal objs */\
-    UINT8                   Flags;          /* Type of Op */\
-    UINT16                  Opcode;         /* AML opcode */\
-    ACPI_PTRDIFF            AmlOffset;      /* offset of declaration in AML */\
-    struct acpi_parse_obj   *Parent;        /* parent op */\
-    struct acpi_parse_obj   *Next;          /* next op */\
-    DEBUG_ONLY_MEMBERS (\
-    NATIVE_CHAR             OpName[16])     /* op name (debug only) */\
-                                            /* NON-DEBUG members below: */\
-    ACPI_NAMESPACE_NODE     *Node;          /* for use by interpreter */\
-    ACPI_PARSE_VALUE        Value;          /* Value or args associated with the opcode */\
-
-
-/*
- * generic operation (eg. If, While, Store)
- */
-typedef struct acpi_parse_obj
-{
-    ACPI_PARSE_COMMON
-} ACPI_PARSE_OBJECT;
-
-
-/*
- * Extended Op for named ops (Scope, Method, etc.), deferred ops (Methods and OpRegions),
- * and bytelists.
- */
-typedef struct acpi_parse2_obj
-{
-    ACPI_PARSE_COMMON
-    UINT8                   *Data;          /* AML body or bytelist data */
-    NATIVE_UINT             Length;         /* AML length */
-    UINT32                  Name;           /* 4-byte name or zero if no name */
-
-} ACPI_PARSE2_OBJECT;
-
-
-/*
- * Parse state - one state per parser invocation and each control
- * method.
- */
-
-typedef struct acpi_parse_state
-{
-    UINT8                   *AmlStart;      /* first AML byte */
-    UINT8                   *Aml;           /* next AML byte */
-    UINT8                   *AmlEnd;        /* (last + 1) AML byte */
-    UINT8                   *PkgStart;      /* current package begin */
-    UINT8                   *PkgEnd;        /* current package end */
-    ACPI_PARSE_OBJECT       *StartOp;       /* root of parse tree */
-    struct acpi_node        *StartNode;
-    ACPI_GENERIC_STATE      *Scope;         /* current scope */
-    struct acpi_parse_state *Next;
-
-} ACPI_PARSE_STATE;
-
-
-/*****************************************************************************
- *
- * Hardware and PNP
- *
- ****************************************************************************/
-
-
-/* PCI */
-
-#define PCI_ROOT_HID_STRING         "PNP0A03"
-#define PCI_ROOT_HID_VALUE          0x030AD041       /* EISAID("PNP0A03") */
-
-
-/* Sleep states */
-
-#define SLWA_DEBUG_LEVEL            4
-#define GTS_CALL                    0
-#define GTS_WAKE                    1
-
-/* Cx States */
-
-#define MAX_CX_STATE_LATENCY        0xFFFFFFFF
-#define MAX_CX_STATES               4
-
-
-/*
- * The #define's and enum below establish an abstract way of identifying what
- * register block and register is to be accessed.  Do not change any of the
- * values as they are used in switch statements and offset calculations.
- */
-
-#define REGISTER_BLOCK_MASK         0xFF00  /* Register Block Id    */
-#define BIT_IN_REGISTER_MASK        0x00FF  /* Bit Id in the Register Block Id    */
-#define BYTE_IN_REGISTER_MASK       0x00FF  /* Register Offset in the Register Block    */
-
-#define REGISTER_BLOCK_ID(RegId)    (RegId & REGISTER_BLOCK_MASK)
-#define REGISTER_BIT_ID(RegId)      (RegId & BIT_IN_REGISTER_MASK)
-#define REGISTER_OFFSET(RegId)      (RegId & BYTE_IN_REGISTER_MASK)
-
-/*
- * Access Rule
- *  To access a Register Bit:
- *  -> Use Bit Name (= Register Block Id | Bit Id) defined in the enum.
- *
- *  To access a Register:
- *  -> Use Register Id (= Register Block Id | Register Offset)
- */
-
-
-/*
- * Register Block Id
- */
-#define PM1_STS                     0x0100
-#define PM1_EN                      0x0200
-#define PM1_CONTROL                 0x0300
-#define PM1A_CONTROL                0x0400
-#define PM1B_CONTROL                0x0500
-#define PM2_CONTROL                 0x0600
-#define PM_TIMER                    0x0700
-#define PROCESSOR_BLOCK             0x0800
-#define GPE0_STS_BLOCK              0x0900
-#define GPE0_EN_BLOCK               0x0A00
-#define GPE1_STS_BLOCK              0x0B00
-#define GPE1_EN_BLOCK               0x0C00
-#define SMI_CMD_BLOCK               0x0D00
-
-/*
- * Address space bitmasks for mmio or io spaces
- */
-
-#define SMI_CMD_ADDRESS_SPACE       0x01
-#define PM1_BLK_ADDRESS_SPACE       0x02
-#define PM2_CNT_BLK_ADDRESS_SPACE   0x04
-#define PM_TMR_BLK_ADDRESS_SPACE    0x08
-#define GPE0_BLK_ADDRESS_SPACE      0x10
-#define GPE1_BLK_ADDRESS_SPACE      0x20
-
-/*
- * Control bit definitions
- */
-#define TMR_STS                     (PM1_STS | 0x01)
-#define BM_STS                      (PM1_STS | 0x02)
-#define GBL_STS                     (PM1_STS | 0x03)
-#define PWRBTN_STS                  (PM1_STS | 0x04)
-#define SLPBTN_STS                  (PM1_STS | 0x05)
-#define RTC_STS                     (PM1_STS | 0x06)
-#define WAK_STS                     (PM1_STS | 0x07)
-
-#define TMR_EN                      (PM1_EN | 0x01)
-                                    /* no BM_EN */
-#define GBL_EN                      (PM1_EN | 0x03)
-#define PWRBTN_EN                   (PM1_EN | 0x04)
-#define SLPBTN_EN                   (PM1_EN | 0x05)
-#define RTC_EN                      (PM1_EN | 0x06)
-#define WAK_EN                      (PM1_EN | 0x07)
-
-#define SCI_EN                      (PM1_CONTROL | 0x01)
-#define BM_RLD                      (PM1_CONTROL | 0x02)
-#define GBL_RLS                     (PM1_CONTROL | 0x03)
-#define SLP_TYPE_A                  (PM1_CONTROL | 0x04)
-#define SLP_TYPE_B                  (PM1_CONTROL | 0x05)
-#define SLP_EN                      (PM1_CONTROL | 0x06)
-
-#define ARB_DIS                     (PM2_CONTROL | 0x01)
-
-#define TMR_VAL                     (PM_TIMER | 0x01)
-
-#define GPE0_STS                    (GPE0_STS_BLOCK | 0x01)
-#define GPE0_EN                     (GPE0_EN_BLOCK  | 0x01)
-
-#define GPE1_STS                    (GPE1_STS_BLOCK | 0x01)
-#define GPE1_EN                     (GPE1_EN_BLOCK  | 0x01)
-
-
-#define TMR_STS_MASK                0x0001
-#define BM_STS_MASK                 0x0010
-#define GBL_STS_MASK                0x0020
-#define PWRBTN_STS_MASK             0x0100
-#define SLPBTN_STS_MASK             0x0200
-#define RTC_STS_MASK                0x0400
-#define WAK_STS_MASK                0x8000
-
-#define ALL_FIXED_STS_BITS          (TMR_STS_MASK   | BM_STS_MASK  | GBL_STS_MASK \
-                                    | PWRBTN_STS_MASK | SLPBTN_STS_MASK \
-                                    | RTC_STS_MASK | WAK_STS_MASK)
-
-#define TMR_EN_MASK                 0x0001
-#define GBL_EN_MASK                 0x0020
-#define PWRBTN_EN_MASK              0x0100
-#define SLPBTN_EN_MASK              0x0200
-#define RTC_EN_MASK                 0x0400
-
-#define SCI_EN_MASK                 0x0001
-#define BM_RLD_MASK                 0x0002
-#define GBL_RLS_MASK                0x0004
-#define SLP_TYPE_X_MASK             0x1C00
-#define SLP_EN_MASK                 0x2000
-
-#define ARB_DIS_MASK                0x0001
-#define TMR_VAL_MASK                0xFFFFFFFF
-
-#define GPE0_STS_MASK
-#define GPE0_EN_MASK
-
-#define GPE1_STS_MASK
-#define GPE1_EN_MASK
-
-
-#define ACPI_READ                   1
-#define ACPI_WRITE                  2
-
-
-/* Plug and play */
-
-/* Pnp and ACPI data */
-
-#define VERSION_NO                      0x01
-#define LOGICAL_DEVICE_ID               0x02
-#define COMPATIBLE_DEVICE_ID            0x03
-#define IRQ_FORMAT                      0x04
-#define DMA_FORMAT                      0x05
-#define START_DEPENDENT_TAG             0x06
-#define END_DEPENDENT_TAG               0x07
-#define IO_PORT_DESCRIPTOR              0x08
-#define FIXED_LOCATION_IO_DESCRIPTOR    0x09
-#define RESERVED_TYPE0                  0x0A
-#define RESERVED_TYPE1                  0x0B
-#define RESERVED_TYPE2                  0x0C
-#define RESERVED_TYPE3                  0x0D
-#define SMALL_VENDOR_DEFINED            0x0E
-#define END_TAG                         0x0F
-
-/* Pnp and ACPI data */
-
-#define MEMORY_RANGE_24                 0x81
-#define ISA_MEMORY_RANGE                0x81
-#define LARGE_VENDOR_DEFINED            0x84
-#define EISA_MEMORY_RANGE               0x85
-#define MEMORY_RANGE_32                 0x85
-#define FIXED_EISA_MEMORY_RANGE         0x86
-#define FIXED_MEMORY_RANGE_32           0x86
-
-/* ACPI only data */
-
-#define DWORD_ADDRESS_SPACE             0x87
-#define WORD_ADDRESS_SPACE              0x88
-#define EXTENDED_IRQ                    0x89
-
-/* MUST HAVES */
-
-#define DEVICE_ID_LENGTH                0x09
-
-typedef struct
-{
-        NATIVE_CHAR         Buffer[DEVICE_ID_LENGTH];
-
-} DEVICE_ID;
-
-
-/*****************************************************************************
- *
- * Debug
- *
- ****************************************************************************/
+	FIXED_EVENT_HANDLER		Handler;		/* Address of handler. */
+	void					*Context;		/* Context to be passed to handler */
+} FIXED_EVENT_INFO;
 
 
 /* Entry for a memory allocation (debug only) */
 
-#ifdef ACPI_DEBUG
 
 #define MEM_MALLOC          0
 #define MEM_CALLOC          1
-#define MAX_MODULE_NAME     16
 
-typedef struct AllocationInfo
+typedef struct AllocationInfo 
 {
-    struct AllocationInfo   *Previous;
-    struct AllocationInfo   *Next;
     void                    *Address;
     UINT32                  Size;
-    UINT32                  Component;
-    UINT32                  Line;
-    NATIVE_CHAR             Module[MAX_MODULE_NAME];
     UINT8                   AllocType;
+    UINT32                  Component;
+    char                    Module[32];
+    INT32                   Line;
+    struct AllocationInfo   *Previous;
+    struct AllocationInfo   *Next;
 
 } ALLOCATION_INFO;
 
-#endif
 
-#endif /* __ACLOCAL_H__ */
+#endif
