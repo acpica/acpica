@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.27 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -157,13 +157,12 @@ typedef struct semaphore_entry
 
 
 SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
-
-
 extern FILE                 *AcpiGbl_DebugFile;
+
 ACPI_STATUS
 AeLocalGetRootPointer (
     UINT32                  Flags,
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress);
+    ACPI_POINTER            *Address);
 
 
 /******************************************************************************
@@ -200,13 +199,56 @@ AcpiOsTerminate (void)
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetRootPointer
+ *
+ * PARAMETERS:  Flags   - Logical or physical addressing mode
+ *              Address - Where the address is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Gets the root pointer (RSDP)
+ *
+ *****************************************************************************/
+
 ACPI_STATUS
 AcpiOsGetRootPointer (
     UINT32                  Flags,
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+    ACPI_POINTER           *Address)
 {
 
-    return (AeLocalGetRootPointer (Flags, RsdpPhysicalAddress));
+    return (AeLocalGetRootPointer (Flags, Address));
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsTableOverride
+ *
+ * PARAMETERS:  ExistingTable   - Header of current table (probably firmware)
+ *              NewTable        - Where an entire new table is returned.
+ *
+ * RETURN:      Status, pointer to new table.  Null pointer returned if no
+ *              table is available to override
+ *
+ * DESCRIPTION: Return a different version of a table if one is available
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_TABLE_HEADER       **NewTable)
+{
+
+    if (!ExistingTable || !NewTable)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    *NewTable = NULL;
+    return (AE_OK);
 }
 
 
@@ -560,7 +602,7 @@ AcpiOsCreateSemaphore (
     AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].CurrentUnits = (UINT16) InitialUnits;
     AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].OsHandle = Mutex;
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
             AcpiGbl_NextSemaphore, MaxUnits, InitialUnits, Mutex));
 
     *OutHandle = (void *) AcpiGbl_NextSemaphore;
