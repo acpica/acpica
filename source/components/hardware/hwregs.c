@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.142 $
+ *              $Revision: 1.146 $
  *
  ******************************************************************************/
 
@@ -120,6 +120,7 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
+#include "acevents.h"
 
 #define _COMPONENT          ACPI_HARDWARE
         ACPI_MODULE_NAME    ("hwregs")
@@ -140,9 +141,7 @@
 ACPI_STATUS
 AcpiHwClearAcpiStatus (void)
 {
-    ACPI_NATIVE_UINT        i;
     ACPI_STATUS             Status;
-    ACPI_GPE_BLOCK_INFO     *GpeBlock;
 
 
     ACPI_FUNCTION_TRACE ("HwClearAcpiStatus");
@@ -171,7 +170,7 @@ AcpiHwClearAcpiStatus (void)
     if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1bEvtBlk.Address))
     {
         Status = AcpiHwLowLevelWrite (16, ACPI_BITMASK_ALL_FIXED_STATUS,
-                    &AcpiGbl_FADT->XPm1bEvtBlk, 0);
+                    &AcpiGbl_FADT->XPm1bEvtBlk);
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
@@ -180,21 +179,7 @@ AcpiHwClearAcpiStatus (void)
 
     /* Clear the GPE Bits in all GPE registers in all GPE blocks */
 
-    GpeBlock = AcpiGbl_GpeBlockListHead;
-    while (GpeBlock)
-    {
-        for (i = 0; i < GpeBlock->RegisterCount; i++)
-        {
-            Status = AcpiHwLowLevelWrite (8, 0xFF,
-                        &GpeBlock->RegisterInfo[i].StatusAddress, (UINT32) i);
-            if (ACPI_FAILURE (Status))
-            {
-                goto UnlockAndExit;
-            }
-        }
-
-        GpeBlock = GpeBlock->Next;
-    }
+    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock);
 
 UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
@@ -585,7 +570,6 @@ AcpiHwRegisterRead (
 {
     UINT32                  Value1 = 0;
     UINT32                  Value2 = 0;
-    UINT32                  BankOffset;
     ACPI_STATUS             Status;
 
 
@@ -605,53 +589,56 @@ AcpiHwRegisterRead (
     {
     case ACPI_REGISTER_PM1_STATUS:           /* 16-bit access */
 
-        Status = AcpiHwLowLevelRead (16, &Value1, &AcpiGbl_FADT->XPm1aEvtBlk, 0);
+        Status = AcpiHwLowLevelRead (16, &Value1, &AcpiGbl_FADT->XPm1aEvtBlk);
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
         }
 
-        Status = AcpiHwLowLevelRead (16, &Value2, &AcpiGbl_FADT->XPm1bEvtBlk, 0);
+        /* PM1B is optional */
+
+        Status = AcpiHwLowLevelRead (16, &Value2, &AcpiGbl_FADT->XPm1bEvtBlk);
         Value1 |= Value2;
         break;
 
 
-    case ACPI_REGISTER_PM1_ENABLE:           /* 16-bit access*/
+    case ACPI_REGISTER_PM1_ENABLE:           /* 16-bit access */
 
-        BankOffset  = ACPI_DIV_2 (AcpiGbl_FADT->Pm1EvtLen);
-        Status = AcpiHwLowLevelRead (16, &Value1, &AcpiGbl_FADT->XPm1aEvtBlk, BankOffset);
+        Status = AcpiHwLowLevelRead (16, &Value1, &AcpiGbl_XPm1aEnable);
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
         }
 
-        Status = AcpiHwLowLevelRead (16, &Value2, &AcpiGbl_FADT->XPm1bEvtBlk, BankOffset);
+        /* PM1B is optional */
+
+        Status = AcpiHwLowLevelRead (16, &Value2, &AcpiGbl_XPm1bEnable);
         Value1 |= Value2;
         break;
 
 
     case ACPI_REGISTER_PM1_CONTROL:          /* 16-bit access */
 
-        Status = AcpiHwLowLevelRead (16, &Value1, &AcpiGbl_FADT->XPm1aCntBlk, 0);
+        Status = AcpiHwLowLevelRead (16, &Value1, &AcpiGbl_FADT->XPm1aCntBlk);
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
         }
 
-        Status = AcpiHwLowLevelRead (16, &Value2, &AcpiGbl_FADT->XPm1bCntBlk, 0);
+        Status = AcpiHwLowLevelRead (16, &Value2, &AcpiGbl_FADT->XPm1bCntBlk);
         Value1 |= Value2;
         break;
 
 
     case ACPI_REGISTER_PM2_CONTROL:          /* 8-bit access */
 
-        Status = AcpiHwLowLevelRead (8, &Value1, &AcpiGbl_FADT->XPm2CntBlk, 0);
+        Status = AcpiHwLowLevelRead (8, &Value1, &AcpiGbl_FADT->XPm2CntBlk);
         break;
 
 
     case ACPI_REGISTER_PM_TIMER:             /* 32-bit access */
 
-        Status = AcpiHwLowLevelRead (32, &Value1, &AcpiGbl_FADT->XPmTmrBlk, 0);
+        Status = AcpiHwLowLevelRead (32, &Value1, &AcpiGbl_FADT->XPmTmrBlk);
         break;
 
     case ACPI_REGISTER_SMI_COMMAND_BLOCK:    /* 8-bit access */
@@ -700,7 +687,6 @@ AcpiHwRegisterWrite (
     UINT32                  RegisterId,
     UINT32                  Value)
 {
-    UINT32                  BankOffset;
     ACPI_STATUS             Status;
 
 
@@ -720,62 +706,65 @@ AcpiHwRegisterWrite (
     {
     case ACPI_REGISTER_PM1_STATUS:           /* 16-bit access */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1aEvtBlk, 0);
+        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1aEvtBlk);
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
         }
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1bEvtBlk, 0);
+        /* PM1B is optional */
+
+        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1bEvtBlk);
         break;
 
 
     case ACPI_REGISTER_PM1_ENABLE:           /* 16-bit access*/
 
-        BankOffset = ACPI_DIV_2 (AcpiGbl_FADT->Pm1EvtLen);
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1aEvtBlk, BankOffset);
+        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_XPm1aEnable);
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
         }
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1bEvtBlk, BankOffset);
+        /* PM1B is optional */
+
+        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_XPm1bEnable);
         break;
 
 
     case ACPI_REGISTER_PM1_CONTROL:          /* 16-bit access */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1aCntBlk, 0);
+        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1aCntBlk);
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
         }
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1bCntBlk, 0);
+        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1bCntBlk);
         break;
 
 
     case ACPI_REGISTER_PM1A_CONTROL:         /* 16-bit access */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1aCntBlk, 0);
+        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1aCntBlk);
         break;
 
 
     case ACPI_REGISTER_PM1B_CONTROL:         /* 16-bit access */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1bCntBlk, 0);
+        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1bCntBlk);
         break;
 
 
     case ACPI_REGISTER_PM2_CONTROL:          /* 8-bit access */
 
-        Status = AcpiHwLowLevelWrite (8, Value, &AcpiGbl_FADT->XPm2CntBlk, 0);
+        Status = AcpiHwLowLevelWrite (8, Value, &AcpiGbl_FADT->XPm2CntBlk);
         break;
 
 
     case ACPI_REGISTER_PM_TIMER:             /* 32-bit access */
 
-        Status = AcpiHwLowLevelWrite (32, Value, &AcpiGbl_FADT->XPmTmrBlk, 0);
+        Status = AcpiHwLowLevelWrite (32, Value, &AcpiGbl_FADT->XPmTmrBlk);
         break;
 
 
@@ -783,7 +772,7 @@ AcpiHwRegisterWrite (
 
         /* SMI_CMD is currently always in IO space */
 
-        Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, (ACPI_INTEGER) Value, 8);
+        Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, Value, 8);
         break;
 
 
@@ -806,11 +795,11 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiHwLowLevelRead
  *
- * PARAMETERS:  Register            - GAS register structure
- *              Offset              - Offset from the base address in the GAS
- *              Width               - 8, 16, or 32
+ * PARAMETERS:  Width               - 8, 16, or 32
+ *              Value               - Where the value is returned
+ *              Register            - GAS register structure
  *
- * RETURN:      Value read
+ * RETURN:      Status
  *
  * DESCRIPTION: Read from either memory, IO, or PCI config space.
  *
@@ -820,11 +809,8 @@ ACPI_STATUS
 AcpiHwLowLevelRead (
     UINT32                  Width,
     UINT32                  *Value,
-    ACPI_GENERIC_ADDRESS    *Reg,
-    UINT32                  Offset)
+    ACPI_GENERIC_ADDRESS    *Reg)
 {
-    ACPI_PHYSICAL_ADDRESS   MemAddress;
-    ACPI_IO_ADDRESS         IoAddress;
     ACPI_PCI_ID             PciId;
     UINT16                  PciRegister;
     ACPI_STATUS             Status;
@@ -853,19 +839,16 @@ AcpiHwLowLevelRead (
     {
     case ACPI_ADR_SPACE_SYSTEM_MEMORY:
 
-        MemAddress = (ACPI_GET_ADDRESS (Reg->Address)
-                        + (ACPI_PHYSICAL_ADDRESS) Offset);
-
-        Status = AcpiOsReadMemory (MemAddress, Value, Width);
+        Status = AcpiOsReadMemory (
+                    (ACPI_PHYSICAL_ADDRESS) ACPI_GET_ADDRESS (Reg->Address), 
+                    Value, Width);
         break;
 
 
     case ACPI_ADR_SPACE_SYSTEM_IO:
 
-        IoAddress = (ACPI_IO_ADDRESS) (ACPI_GET_ADDRESS (Reg->Address)
-                                        + (ACPI_PHYSICAL_ADDRESS) Offset);
-
-        Status = AcpiOsReadPort (IoAddress, Value, Width);
+        Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Reg->Address), 
+                    Value, Width);
         break;
 
 
@@ -875,15 +858,16 @@ AcpiHwLowLevelRead (
         PciId.Bus      = 0;
         PciId.Device   = ACPI_PCI_DEVICE (ACPI_GET_ADDRESS (Reg->Address));
         PciId.Function = ACPI_PCI_FUNCTION (ACPI_GET_ADDRESS (Reg->Address));
-        PciRegister    = (UINT16) (ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address))
-                                    + Offset);
+        PciRegister    = (UINT16) ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address));
 
-        Status = AcpiOsReadPciConfiguration  (&PciId, PciRegister, Value, Width);
+        Status = AcpiOsReadPciConfiguration  (&PciId, PciRegister, 
+                    Value, Width);
         break;
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported address space: %X\n", Reg->AddressSpaceId));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            "Unsupported address space: %X\n", Reg->AddressSpaceId));
         Status = AE_BAD_PARAMETER;
         break;
     }
@@ -899,12 +883,10 @@ AcpiHwLowLevelRead (
  * PARAMETERS:  Width               - 8, 16, or 32
  *              Value               - To be written
  *              Register            - GAS register structure
- *              Offset              - Offset from the base address in the GAS
  *
+ * RETURN:      Status
  *
- * RETURN:      Value read
- *
- * DESCRIPTION: Read from either memory, IO, or PCI config space.
+ * DESCRIPTION: Write to either memory, IO, or PCI config space.
  *
  ******************************************************************************/
 
@@ -912,11 +894,8 @@ ACPI_STATUS
 AcpiHwLowLevelWrite (
     UINT32                  Width,
     UINT32                  Value,
-    ACPI_GENERIC_ADDRESS    *Reg,
-    UINT32                  Offset)
+    ACPI_GENERIC_ADDRESS    *Reg)
 {
-    ACPI_PHYSICAL_ADDRESS   MemAddress;
-    ACPI_IO_ADDRESS         IoAddress;
     ACPI_PCI_ID             PciId;
     UINT16                  PciRegister;
     ACPI_STATUS             Status;
@@ -943,19 +922,16 @@ AcpiHwLowLevelWrite (
     {
     case ACPI_ADR_SPACE_SYSTEM_MEMORY:
 
-        MemAddress = (ACPI_GET_ADDRESS (Reg->Address)
-                        + (ACPI_PHYSICAL_ADDRESS) Offset);
-
-        Status = AcpiOsWriteMemory (MemAddress, (ACPI_INTEGER) Value, Width);
+        Status = AcpiOsWriteMemory (
+                    (ACPI_PHYSICAL_ADDRESS) ACPI_GET_ADDRESS (Reg->Address), 
+                    Value, Width);
         break;
 
 
     case ACPI_ADR_SPACE_SYSTEM_IO:
 
-        IoAddress = (ACPI_IO_ADDRESS) (ACPI_GET_ADDRESS (Reg->Address)
-                                        + (ACPI_PHYSICAL_ADDRESS) Offset);
-
-        Status = AcpiOsWritePort (IoAddress, (ACPI_INTEGER) Value, Width);
+        Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Reg->Address), 
+                    Value, Width);
         break;
 
 
@@ -965,15 +941,16 @@ AcpiHwLowLevelWrite (
         PciId.Bus      = 0;
         PciId.Device   = ACPI_PCI_DEVICE (ACPI_GET_ADDRESS (Reg->Address));
         PciId.Function = ACPI_PCI_FUNCTION (ACPI_GET_ADDRESS (Reg->Address));
-        PciRegister    = (UINT16) (ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address))
-                                    + Offset);
+        PciRegister    = (UINT16) ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address));
 
-        Status = AcpiOsWritePciConfiguration (&PciId, PciRegister, (ACPI_INTEGER) Value, Width);
+        Status = AcpiOsWritePciConfiguration (&PciId, PciRegister, 
+                    (ACPI_INTEGER) Value, Width);
         break;
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported address space: %X\n", Reg->AddressSpaceId));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            "Unsupported address space: %X\n", Reg->AddressSpaceId));
         Status = AE_BAD_PARAMETER;
         break;
     }
