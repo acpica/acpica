@@ -150,25 +150,16 @@
  *****************************************************************************/
 
 /*
- * Common area for all objects 
+ * Common area for all objects.
+ * NOTE: The first byte must NEVER be an ASCII character;  This is what 
+ * is used to differentiate an internal object from an NTE.
  */
 
-#ifdef ACPI_DEBUG
-
-#define ACPI_OBJECT_COMMON \
-    char                    Name[8]; \
-    UINT8                   Type;           /* See definition of NsType for values */ \
-    UINT8                   Flags;\
-    UINT16                  ReferenceCount; /* For object deletion management */
-
-#else /* ACPI_DEBUG */
 
 #define ACPI_OBJECT_COMMON \
     UINT8                   Type;           /* See definition of NsType for values */ \
     UINT8                   Flags;\
     UINT16                  ReferenceCount; /* For object deletion management */
-
-#endif /* ACPI_DEBUG */
 
 /* Defines for flag byte above */
 

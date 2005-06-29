@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
- * Name: acoutput.h -- debug output
- *       $Revision: 1.70 $
+ * 
+ * Name: output.h -- debug macros and procedures
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,8 +114,12 @@
  *
  *****************************************************************************/
 
-#ifndef __ACOUTPUT_H__
-#define __ACOUTPUT_H__
+#ifndef _OUTPUT_H
+#define _OUTPUT_H
+
+#include "acpiobj.h"
+#include "globals.h"
+#include "common.h"
 
 /*
  * Debug levels and component IDs.  These are used to control the
@@ -126,51 +130,32 @@
 /* Component IDs -- used in the global "DebugLayer" */
 
 #define GLOBAL                      0x00000001
-#define COMMON                      0x00000002
-#define PARSER                      0x00000004
-#define DISPATCHER                  0x00000008
-#define INTERPRETER                 0x00000010
-#define NAMESPACE                   0x00000020
-#define RESOURCE_MANAGER            0x00000040
-#define TABLE_MANAGER               0x00000080
-#define EVENT_HANDLING              0x00000100
-#define HARDWARE                    0x00000200
-#define MISCELLANEOUS               0x00000400
-#define OS_DEPENDENT                0x00000800
-
-#define BUS_MANAGER                 0x00001000
-
-#define PROCESSOR_CONTROL           0x00002000
-#define SYSTEM_CONTROL              0x00004000
-#define THERMAL_CONTROL             0x00008000
-#define POWER_CONTROL               0x00010000
-
-#define EMBEDDED_CONTROLLER         0x00020000
-#define BATTERY                     0x00040000
-
-#define DEBUGGER                    0x00100000
-#define COMPILER                    0x00200000
-#define ALL_COMPONENTS              0x001FFFFF
-
-#define COMPONENT_DEFAULT           (ALL_COMPONENTS)
+#define INTERPRETER                 0x00000002
+#define NAMESPACE                   0x00000004
+#define DEVICE_MANAGER              0x00000008
+#define RESOURCE_MANAGER            0x00000010
+#define EVENT_HANDLING              0x00000020
+#define MISCELLANEOUS               0x00000040
+#define OS_DEPENDENT                0x00000080
+#define OS_APP_INTERFACE            0x00000100
+#define OSPM						0x00000200
 
 
-/* Exception level -- used in the global "DebugLevel" */
+#define ALL_COMPONENTS              0x000002FF
+
+
+/* Exception level or Trace level -- used in the global "DebugLevel" */
 
 #define ACPI_OK                     0x00000001
 #define ACPI_INFO                   0x00000002
 #define ACPI_WARN                   0x00000004
 #define ACPI_ERROR                  0x00000008
 #define ACPI_FATAL                  0x00000010
-#define ACPI_DEBUG_OBJECT           0x00000020
-#define ACPI_ALL                    0x0000003F
+#define ACPI_ALL                    0x0000001F
 
-
-/* Trace level -- also used in the global "DebugLevel" */
-
-#define TRACE_PARSE                 0x00000100
-#define TRACE_DISPATCH              0x00000200
-#define TRACE_LOAD                  0x00000400
+#define TRACE_LOAD                  0x00000100
+#define TRACE_OPCODE                0x00000200
+#define TRACE_STACK                 0x00000400
 #define TRACE_EXEC                  0x00000800
 #define TRACE_NAMES                 0x00001000
 #define TRACE_OPREGION              0x00002000
@@ -180,40 +165,172 @@
 #define TRACE_FUNCTIONS             0x00020000
 #define TRACE_VALUES                0x00040000
 #define TRACE_OBJECTS               0x00080000
-#define TRACE_ALLOCATIONS           0x00100000
-#define TRACE_RESOURCES             0x00200000
-#define TRACE_IO                    0x00400000
+#define TRACE_IO                    0x00100000
+#define TRACE_ALLOCATIONS           0x00200000
+#define TRACE_RESOURCES				0x00400000
 #define TRACE_INTERRUPTS            0x00800000
 #define TRACE_USER_REQUESTS         0x01000000
 #define TRACE_PACKAGE               0x02000000
-#define TRACE_MUTEX                 0x04000000
-#define TRACE_INIT                  0x08000000
-
 #define TRACE_ALL                   0x0FFFFF00
 
+/* Exceptionally verbose output -- used in the global "DebugLevel"  */
 
-/* Exceptionally verbose output -- also used in the global "DebugLevel"  */
-
-#define VERBOSE_AML_DISASSEMBLE     0x10000000
-#define VERBOSE_INFO                0x20000000
-#define VERBOSE_TABLES              0x40000000
-#define VERBOSE_EVENTS              0x80000000
-
-#define VERBOSE_ALL                 0xF0000000
-
+#define VERBOSE_INFO                0x01000000
+#define VERBOSE_TABLES              0x02000000
+#define VERBOSE_EVENTS              0x08000000
 
 /* Defaults for DebugLevel, debug and normal */
 
-#define DEBUG_DEFAULT               (ACPI_OK | ACPI_WARN | ACPI_ERROR | ACPI_DEBUG_OBJECT)
-#define NORMAL_DEFAULT              (ACPI_OK | ACPI_WARN | ACPI_ERROR | ACPI_DEBUG_OBJECT)
-#define DEBUG_ALL                   (VERBOSE_AML_DISASSEMBLE | TRACE_ALL | ACPI_ALL)
+#define DEBUG_DEFAULT               0x0011001D  /* Tables, I/O, errors, success */
+#define NORMAL_DEFAULT              0x0000001D  /* errors, warnings, success */
 
 /* Misc defines */
 
 #define HEX                         0x01
 #define ASCII                       0x02
 #define FULL_ADDRESS                0x04
-#define CHARS_PER_LINE              16          /* used in DumpBuf function */
+#define CHARS_PER_LINE              16      /* used in DumpBuf function */
 
 
-#endif /* __ACOUTPUT_H__ */
+
+
+
+/*
+ * Reporting macros that are never compiled out
+ */
+
+/* Error reporting.  These versions add callers module and line# */
+
+#define REPORT_INFO(a)                  _ReportInfo(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define REPORT_ERROR(a)                 _ReportError(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define REPORT_WARNING(a)               _ReportWarning(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define REPORT_SUCCESS(a)               _ReportSuccess(_THIS_MODULE,__LINE__,_COMPONENT,a)
+
+/* Error reporting.  These versions pass thru the module and line# */
+
+#define _REPORT_INFO(a,b,c,d)           _ReportInfo(a,b,c,d)
+#define _REPORT_ERROR(a,b,c,d)          _ReportError(a,b,c,d)
+#define _REPORT_WARNING(a,b,c,d)        _ReportWarning(a,b,c,d)
+
+/* Buffer dump macros */
+
+#define DUMP_BUFFER(a,b,c)              DumpBuffer((char *)a,b,c,_COMPONENT)
+
+
+/*
+ * Debug macros that are conditionally compiled
+ */
+
+#ifdef ACPI_DEBUG
+
+/* 
+ * Function entry tracing. 
+ * The first parameter should be the procedure name as a quoted string.  This is declared
+ * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
+ */
+
+#define FUNCTION_TRACE(a)               char * _ProcName = a;\
+                                        FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define FUNCTION_TRACE_PTR(a,b)         char * _ProcName = a;\
+                                        FunctionTracePtr(_THIS_MODULE,__LINE__,_COMPONENT,a,(void *)b)
+#define FUNCTION_TRACE_U32(a,b)         char * _ProcName = a;\
+                                        FunctionTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
+#define FUNCTION_TRACE_STR(a,b)         char * _ProcName = a;\
+                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(char *)b)
+/* 
+ * Function exit tracing. 
+ * WARNING: These macros include a return statement.  This is usually considered 
+ * bad form, but having a separate exit macro is very ugly and difficult to maintain.
+ * One of the FUNCTION_TRACE macros above must be used in conjunction with these macros
+ * so that "_ProcName" is defined.
+ */
+#define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
+#define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
+#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT32)s);return(s);}
+
+
+/* Conditional execution */
+
+#define DEBUG_EXEC(a)                   a;
+#define DEBUG_DEFINE(a)                 a;
+
+
+/* Stack and buffer dumping */
+
+#define DUMP_STACK_ENTRY(a)             AmlDumpObjStackEntry(a)
+#define DUMP_STACK(a,b,c,d)             AmlDumpObjStack(a,b,c,d)
+#define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
+#define DUMP_TABLES(a,b)                NsDumpTables(a,b)
+
+/* 
+ * Master debug print macros 
+ * Print iff:
+ *    1) Debug print for the current component is enabled
+ *    2) Debug error level or trace level for the print statement is enabled
+ *
+ */
+
+#define	PARAM_LIST(PL) PL
+
+#define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & DebugLevel) && (_COMPONENT & DebugLayer))
+
+#define DEBUG_PRINT(lvl,fp)             TEST_DEBUG_SWITCH(lvl) {\
+                                            DebugPrintPrefix (_THIS_MODULE,__LINE__,_COMPONENT);\
+                                            DebugPrintRaw PARAM_LIST(fp);}
+
+#define DEBUG_PRINT_RAW(lvl,fp)         TEST_DEBUG_SWITCH(lvl) {\
+                                            DebugPrintRaw PARAM_LIST(fp);}
+
+
+
+#else
+/* 
+ * This is the non-debug case -- make everything go away,
+ * leaving no executable debug code!
+ */
+
+#define DEBUG_EXEC(a)  
+#define DEBUG_DEFINE(a)                     
+#define FUNCTION_TRACE(a)
+#define FUNCTION_TRACE_PTR(a,b)
+#define FUNCTION_TRACE_U32(a,b)
+#define FUNCTION_TRACE_STR(a,b)
+#define FUNCTION_EXIT
+#define FUNCTION_STATUS_EXIT(s)
+#define FUNCTION_VALUE_EXIT(s)
+#define DUMP_STACK_ENTRY(a)
+#define DUMP_STACK(a,b,c,d)
+#define DUMP_ENTRY(a,b)
+#define DUMP_TABLES(a,b)
+#define DEBUG_PRINT(l,f)
+#define DEBUG_PRINT_RAW(l,f) 
+
+#define return_VOID                     return
+#define return_ACPI_STATUS(s)           return(s)
+#define return_VALUE(s)                 return(s)
+
+
+#endif
+
+
+
+
+/********************************************************************************************
+ *
+ * Obsolete??
+ */
+
+/*  Bitflags for all display functions  */
+
+#define DISPLAY_DATA        SCREEN
+#define LOG_DATA            LOGFILE 
+#define OUTPUT_DATA         (DISPLAY_DATA | LOG_DATA)
+#define OUTPUT_ERRORS       0x80
+#define PRINT               1                 
+#define APPEND_CRLF         4   
+#define PACRLF              (PRINT | APPEND_CRLF)
+#define SCREEN              1
+#define LOGFILE             2
+
+
+#endif /* _OUTPUT_H */
