@@ -137,6 +137,7 @@ UINT32                      AmlLength;
 UINT8                       *DsdtPtr;
 UINT32                      DsdtLength;
 
+DEBUG_REGIONS	            Regions;
 
 
 /******************************************************************************
@@ -147,7 +148,8 @@ UINT32                      DsdtLength;
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Test handler; doesn't do anything
+ * DESCRIPTION: Test handler - Handles some dummy regions via memory that can
+ *				be manipulated in Ring 3.
  *
  *****************************************************************************/
 
@@ -160,7 +162,147 @@ RegionHandler (
     void                        *Context)
 {
 
+    ACPI_OBJECT_INTERNAL	*RegionObject = (ACPI_OBJECT_INTERNAL *)Context;
+	UINT32					BaseAddress;
+	UINT32					Length;
+	BOOLEAN					BufferExists;
+	REGION					*RegionElement;
+    void                    *BufferValue;
+    UINT32                  ByteWidth;
+		
     printf ("Received an OpRegion request\n");
+
+	/*
+	 * If the object is not a region, simply return
+	 */
+	if (RegionObject->Region.Type != ACPI_TYPE_Region)
+	{
+		return AE_OK;
+	}
+
+	/*
+	 * Find the region's address space and length before searching
+	 *	the linked list.
+	 */
+	BaseAddress = RegionObject->Region.Address;
+	Length = RegionObject->Region.Length;
+
+	/*
+	 * Search through the linked list for this region's buffer
+	 */
+    BufferExists = FALSE;
+
+    RegionElement = Regions.RegionList;
+
+    if (0 != Regions.NumberOfRegions)
+	{
+        while (!BufferExists && RegionElement)
+		{
+            if (RegionElement->Address == BaseAddress &&
+                RegionElement->Length == Length)
+            {
+                BufferExists = TRUE;
+            }
+            else
+            {
+                RegionElement = RegionElement->NextRegion;
+            }
+		}
+	}
+
+	/*
+	 * If the Region buffer does not exist, create it now
+	 */
+	if (FALSE == BufferExists)
+	{
+		/*
+		 * Do the memory allocations first
+		 */
+		RegionElement = malloc (sizeof(REGION));
+		if (!RegionElement)
+		{
+			return AE_NO_MEMORY;
+		}
+
+		RegionElement->Buffer = malloc (Length);
+		if (!RegionElement->Buffer)
+		{
+			free(RegionElement);
+			return AE_NO_MEMORY;
+		}
+
+		RegionElement->Address = BaseAddress;
+		
+		RegionElement->Length = Length;
+		
+		MEMSET(RegionElement->Buffer, 0, Length);
+
+		RegionElement->NextRegion = NULL;
+
+		/*
+		 * Increment the number of regions and put this one
+		 *	at the head of the list as it will probably get accessed
+		 *	more often anyway.
+		 */
+		Regions.NumberOfRegions += 1;
+		
+        if (NULL != Regions.RegionList)
+        {
+            RegionElement->NextRegion = Regions.RegionList->NextRegion;
+        }
+		
+        Regions.RegionList = RegionElement;
+	}
+
+	/*
+	 * The buffer exists and is pointed to by RegionElement.
+     *	We now need to verify the request is valid and perform the operation.
+     *
+     * NOTE: RegionElement->Length is in bytes, therefore it is multiplied by
+     *  the bitwidth of a byte.
+	 */ 
+    if ((Address + BitWidth) > (RegionElement->Address + (RegionElement->Length * 8)))
+    {
+        return AE_BUFFER_OVERFLOW;
+    }
+
+    /*
+     * Get BufferValue to point to the "address" in the buffer
+     */
+    BufferValue = ((UINT8 *)RegionElement->Buffer + (Address - RegionElement->Address));
+    
+    /*
+     * Calculate the size of the memory copy
+     */
+    ByteWidth = (BitWidth / 8);
+
+    if (BitWidth % 8)
+    {
+        ByteWidth += 1;
+    }
+
+    /*
+     * Perform a read or write to the buffer space
+     */
+    switch (Function)
+    {
+    case ADDRESS_SPACE_READ:
+        /*
+         * Set the pointer Value to whatever is in the buffer
+         */
+        MEMCPY (Value, BufferValue, ByteWidth);
+        break;
+
+    case ADDRESS_SPACE_WRITE:
+        /*
+         * Write the contents of Value to the buffer
+         */
+        MEMCPY (BufferValue, Value, ByteWidth);
+        break;
+
+    default:
+        return AE_BAD_PARAMETER;
+    }
 
     return AE_OK;
 }
@@ -268,6 +410,13 @@ AeInstallHandlers (void)
             printf ("Could not install an OpRegion handler\n");
         }
     }
+
+	/*
+	 * Initialize the global Region Handler space 
+	 * MCW 3/23/00
+	 */
+	Regions.NumberOfRegions = 0;
+	Regions.RegionList = NULL;
 
     return Status;
 }
