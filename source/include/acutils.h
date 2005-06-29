@@ -454,12 +454,12 @@ _strtoul (
     INT32                   Base);
 
 char *
-__strstr (
+_strstr (
     char                    *String1,
     char                    *String2);
 
 char *
-_strupr (
+__strupr (
     char                    *SrcString);
 
 void *
