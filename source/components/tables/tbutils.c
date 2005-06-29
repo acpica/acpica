@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.51 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,6 @@
 
 #include "acpi.h"
 #include "actables.h"
-#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_TABLES
@@ -212,7 +211,7 @@ AcpiTbValidateTableHeader (
 
     /* Ensure that the signature is 4 ASCII characters */
 
-    ACPI_MOVE_UNALIGNED32_TO_32 (&Signature, &TableHeader->Signature);
+    ACPI_MOVE_UNALIGNED32_TO_32 (&Signature, TableHeader->Signature);
     if (!AcpiUtValidAcpiName (Signature))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -260,11 +259,11 @@ AcpiTbValidateTableHeader (
 ACPI_STATUS
 AcpiTbMapAcpiTable (
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
-    UINT32                  *Size,
+    ACPI_SIZE               *Size,
     ACPI_TABLE_HEADER       **LogicalAddress)
 {
     ACPI_TABLE_HEADER       *Table;
-    UINT32                  TableSize = *Size;
+    ACPI_SIZE               TableSize = *Size;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -286,7 +285,7 @@ AcpiTbMapAcpiTable (
 
         /* Extract the full table length before we delete the mapping */
 
-        TableSize = Table->Length;
+        TableSize = (ACPI_SIZE) Table->Length;
 
         /*
          * Validate the header and delete the mapping.
@@ -358,7 +357,7 @@ AcpiTbVerifyTableChecksum (
     if (Checksum)
     {
         ACPI_REPORT_WARNING (("Invalid checksum (%X) in table %4.4s\n",
-            Checksum, (char *) &TableHeader->Signature));
+            Checksum, TableHeader->Signature));
 
         Status = AE_BAD_CHECKSUM;
     }

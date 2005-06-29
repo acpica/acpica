@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -283,7 +283,7 @@ AcpiLoadTable (
 
     case ACPI_TABLE_FACS:
 
-        AcpiTbBuildCommonFacs (&TableInfo);
+        Status = AcpiTbBuildCommonFacs (&TableInfo);
         break;
 
     default:
@@ -465,7 +465,7 @@ AcpiGetTable (
 {
     ACPI_TABLE_HEADER       *TblPtr;
     ACPI_STATUS             Status;
-    UINT32                  TableLength;
+    ACPI_SIZE               TableLength;
 
 
     ACPI_FUNCTION_TRACE ("AcpiGetTable");
@@ -522,7 +522,7 @@ AcpiGetTable (
     }
     else
     {
-        TableLength = TblPtr->Length;
+        TableLength = (ACPI_SIZE) TblPtr->Length;
     }
 
     /* Validate/Allocate/Clear caller buffer */

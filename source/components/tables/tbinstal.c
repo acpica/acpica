@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -290,7 +290,7 @@ AcpiTbRecognizeTable (
 
     /* Return the table type and length via the info struct */
 
-    TableInfo->Length = TableHeader->Length;
+    TableInfo->Length = (ACPI_SIZE) TableHeader->Length;
 
     /*
      * Validate checksum for _most_ tables,

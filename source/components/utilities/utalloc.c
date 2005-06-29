@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.124 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -667,6 +667,7 @@ AcpiUtFreeAndTrack (
     UINT32                  Line)
 {
     ACPI_DEBUG_MEM_BLOCK    *DebugBlock;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE_PTR ("UtFree", Allocation);
@@ -686,8 +687,14 @@ AcpiUtFreeAndTrack (
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].TotalFreed++;
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].CurrentTotalSize -= DebugBlock->Size;
 
-    AcpiUtRemoveAllocation (ACPI_MEM_LIST_GLOBAL, DebugBlock,
-            Component, Module, Line);
+    Status = AcpiUtRemoveAllocation (ACPI_MEM_LIST_GLOBAL, DebugBlock,
+                    Component, Module, Line);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not free memory, %s\n",
+            AcpiFormatException (Status)));
+    }
+
     AcpiOsFree (DebugBlock);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "%p freed\n", Allocation));
@@ -1025,13 +1032,13 @@ AcpiUtDumpAllocations (
                 switch (ACPI_GET_DESCRIPTOR_TYPE (Descriptor))
                 {
                 case ACPI_DESC_TYPE_OPERAND:
-                    AcpiOsPrintf ("ObjType %12.12s R%d",
+                    AcpiOsPrintf ("ObjType %12.12s R%hd",
                             AcpiUtGetTypeName (Descriptor->Object.Common.Type),
                             Descriptor->Object.Common.ReferenceCount);
                     break;
 
                 case ACPI_DESC_TYPE_PARSER:
-                    AcpiOsPrintf ("ParseObj AmlOpcode %04X",
+                    AcpiOsPrintf ("ParseObj AmlOpcode %04hX",
                             Descriptor->Op.Asl.AmlOpcode);
                     break;
 
