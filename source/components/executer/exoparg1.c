@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.148 $
+ *              $Revision: 1.149 $
  *
  *****************************************************************************/
 
@@ -615,7 +615,7 @@ AcpiExOpcode_1A_0T_1R (
     ACPI_INTEGER            Value;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_1A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_1A_0T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /* Examine the AML opcode */
