@@ -160,8 +160,7 @@ NsIsInSystemTable (
 
     /* Check for a pointer within the DSDT */
 
-    if ((Where >= (void *) (DSDT + 1)) &&
-        (Where <= (void *) (DSDT + DSDT->Length)))
+    if (IS_IN_ACPI_TABLE (Where, DSDT))
     {
         return_VALUE (TRUE);
     }
@@ -175,8 +174,12 @@ NsIsInSystemTable (
     {
         Table = TableDesc->Pointer;
 
-        if ((Where >= (void *) (Table + 1)) &&
-            (Where <= (void *) (Table + Table->Length)))
+
+//        if ((Where >= (void *) (Table + 1)) &&
+//            (Where < (void *) (Table + Table->Length)))
+
+
+        if (IS_IN_ACPI_TABLE (Where, Table))
         {
             return_VALUE (TRUE);
         }
