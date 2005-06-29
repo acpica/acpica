@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -408,10 +408,10 @@ AcpiCmDeleteElementFromAllocList (
 
             /* Set obj type, desc, and ref count fields to all ones */
 
-            DwordPtr[0] = 0xFFFFFFFF;
+            DwordPtr[0] = ACPI_UINT32_MAX;
             if (Element->Size >= 8)
             {
-                DwordPtr[1] = 0xFFFFFFFF;
+                DwordPtr[1] = ACPI_UINT32_MAX;
             }
         }
 
@@ -653,7 +653,7 @@ _CmAllocate (
 
     if (!Size)
     {
-        _REPORT_ERROR (Module, Line, Component, 
+        _REPORT_ERROR (Module, Line, Component,
                 ("CmAllocate: Attempt to allocate zero bytes\n"));
         Size = 1;
     }
@@ -720,7 +720,7 @@ _CmCallocate (
 
     if (!Size)
     {
-        _REPORT_ERROR (Module, Line, Component, 
+        _REPORT_ERROR (Module, Line, Component,
                 ("CmCallocate: Attempt to allocate zero bytes\n"));
         return_VALUE (NULL);
     }
