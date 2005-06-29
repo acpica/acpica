@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -715,7 +715,7 @@ AsGetFile (
 
     /*
      * Create a buffer for the entire file
-     * Add 10% extra to accomodate string replacements
+     * Add plenty extra buffer to accomodate string replacements
      */
     Size = Gbl_StatBuf.st_size;
     Buffer = calloc (Size * 2, 1);
@@ -737,7 +737,6 @@ AsGetFile (
     Buffer [Size] = 0;         /* Null terminate the buffer */
     close (FileHandle);
 
-
     /* Check for unix contamination */
 
     if (AsDetectLoneLineFeeds (Filename, Buffer))
@@ -745,34 +744,11 @@ AsGetFile (
         return -1;
     }
 
-    /* Text mode translates CR/LF to LF only on input */
-
-    FileHandle = open (Filename, O_TEXT | O_RDONLY);
-    if (!FileHandle)
-    {
-        printf ("Could not open %s\n", Filename);
-        return -1;
-    }
-
-    if (fstat (FileHandle, &Gbl_StatBuf))
-    {
-        printf ("Could not get file status for %s\n", Filename);
-        goto ErrorExit;
-    }
-    Size = Gbl_StatBuf.st_size;
-
-    /* Read the entire file */
-
-    Size = read (FileHandle, Buffer, Size);
-    if (Size == -1)
-    {
-        printf ("Could not read the input file %s\n", Filename);
-        goto ErrorExit;
-    }
-
-    Buffer [Size] = 0;         /* Null terminate the buffer */
-    close (FileHandle);
-
+    /*
+     * Convert all CR/LF pairs to LF only.  We do this locally so that
+     * this code is portable across operating systems.
+     */
+    AsConvertToLineFeeds (Buffer);
 
     *FileBuffer = Buffer;
     *FileSize = Size;
@@ -809,15 +785,13 @@ AsPutFile (
 
     /* Create the target file */
 
-    OpenFlags = O_TRUNC | O_CREAT | O_WRONLY;
+    OpenFlags = O_TRUNC | O_CREAT | O_WRONLY | O_BINARY;
 
-    if (SystemFlags & FLG_NO_CARRIAGE_RETURNS)
+    if (!(SystemFlags & FLG_NO_CARRIAGE_RETURNS))
     {
-        OpenFlags |= O_BINARY;
-    }
-    else
-    {
-        OpenFlags |= O_TEXT;
+        /* Put back the CR before each LF */
+
+        AsInsertCarriageReturns (FileBuffer);
     }
 
     DestHandle = open (Pathname, OpenFlags, S_IREAD | S_IWRITE);

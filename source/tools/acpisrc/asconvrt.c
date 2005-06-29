@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -538,6 +538,77 @@ AsReplaceString (
 
     return ReplaceCount;
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsConvertToLineFeeds
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+AsConvertToLineFeeds (
+    char                    *Buffer)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+    while (SubString)
+    {
+        /* Find the target string */
+
+        SubString = strstr (SubBuffer, "\r\n");
+        if (!SubString)
+        {
+            return;
+        }
+
+        SubBuffer = AsReplaceData (SubString, 1, NULL, 0);
+    }
+    return;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsInsertCarriageReturns
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+AsInsertCarriageReturns (
+    char                    *Buffer)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+    while (SubString)
+    {
+        /* Find the target string */
+
+        SubString = strstr (SubBuffer, "\n");
+        if (!SubString)
+        {
+            return;
+        }
+
+        SubBuffer = AsInsertData (SubString, "\r", 1);
+    }
+    return;
+}
+
 
 /******************************************************************************
  *

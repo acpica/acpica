@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.5 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -336,7 +336,6 @@ AsMixedCaseToUnderscores (
 
             Gbl_MadeChanges = TRUE;
             SubBuffer[1] = (char) tolower (SubBuffer[1]);
-
 
             SubString = TokenEnd;
             Length = 0;

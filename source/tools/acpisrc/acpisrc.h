@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,6 @@ max (int a, int b)
 }
 
 #define O_BINARY    0x0
-#define O_TEXT      0x0
 
 #define mkdir(x) mkdir(x, 0)
 #define stricmp strcasecmp
@@ -454,5 +453,14 @@ char *
 AsRemoveData (
     char                    *StartPointer,
     char                    *EndPointer);
+
+void
+AsInsertCarriageReturns (
+    char                    *Buffer);
+
+void
+AsConvertToLineFeeds (
+    char                    *Buffer);
+
 
 
