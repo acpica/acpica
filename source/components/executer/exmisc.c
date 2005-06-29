@@ -425,6 +425,11 @@ AmlExecCreateField (
     CmDeleteInternalObject (FieldDesc);
 
 
+    /* Delete the parameters */
+
+    CmDeleteInternalObject (SrcDesc);
+    CmDeleteInternalObject (OffDesc);
+
     /* 
      * Pop off everything from the stack except the result,
      * which we want to leave sitting at the stack top.
