@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.66 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -141,9 +141,9 @@
 
 ACPI_STATUS
 AcpiTbFindTable (
-    NATIVE_CHAR             *Signature,
-    NATIVE_CHAR             *OemId,
-    NATIVE_CHAR             *OemTableId,
+    char                    *Signature,
+    char                    *OemId,
+    char                    *OemTableId,
     ACPI_TABLE_HEADER       **TablePtr)
 {
     ACPI_STATUS             Status;
@@ -260,7 +260,7 @@ AcpiGetFirmwareTable (
         if ((Flags & ACPI_MEMORY_MODE) == ACPI_LOGICAL_ADDRESSING)
         {
             Status = AcpiOsMapMemory (RsdpAddress.Pointer.Physical, sizeof (RSDP_DESCRIPTOR),
-                                        (void **) &AcpiGbl_RSDP);
+                                        (void *) &AcpiGbl_RSDP);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -274,7 +274,7 @@ AcpiGetFirmwareTable (
         /*
          *  The signature and checksum must both be correct
          */
-        if (ACPI_STRNCMP ((NATIVE_CHAR *) AcpiGbl_RSDP, RSDP_SIG, sizeof (RSDP_SIG)-1) != 0)
+        if (ACPI_STRNCMP ((char *) AcpiGbl_RSDP, RSDP_SIG, sizeof (RSDP_SIG)-1) != 0)
         {
             /* Nope, BAD Signature */
 
@@ -460,7 +460,7 @@ AcpiTbScanMemoryForRsdp (
 
         /* The signature and checksum must both be correct */
 
-        if (ACPI_STRNCMP ((NATIVE_CHAR *) MemRover,
+        if (ACPI_STRNCMP ((char *) MemRover,
                 RSDP_SIG, sizeof (RSDP_SIG)-1) == 0 &&
             AcpiTbChecksum (MemRover, ACPI_RSDP_CHECKSUM_LENGTH) == 0)
         {
@@ -521,7 +521,7 @@ AcpiTbFindRsdp (
          * 1) Search EBDA (low memory) paragraphs
          */
         Status = AcpiOsMapMemory ((UINT64) ACPI_LO_RSDP_WINDOW_BASE, ACPI_LO_RSDP_WINDOW_SIZE,
-                                    (void **) &TablePtr);
+                                    (void *) &TablePtr);
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not map memory at %X for length %X\n",
@@ -547,7 +547,7 @@ AcpiTbFindRsdp (
          * 2) Search upper memory: 16-byte boundaries in E0000h-F0000h
          */
         Status = AcpiOsMapMemory ((UINT64) ACPI_HI_RSDP_WINDOW_BASE, ACPI_HI_RSDP_WINDOW_SIZE,
-                                    (void **) &TablePtr);
+                                    (void *) &TablePtr);
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not map memory at %X for length %X\n",
