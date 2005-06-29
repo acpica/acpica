@@ -114,11 +114,11 @@
  *****************************************************************************/
 
 
-#include <acpi.h>
-#include <parser.h>
-#include <amlcode.h>
-#include <debugger.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "parser.h"
+#include "amlcode.h"
+#include "debugger.h"
+#include "namesp.h"
 #include "adcommon.h"
 
 #include <stdio.h>
@@ -130,12 +130,12 @@
 
 
 
-ACPI_GENERIC_OP         *Gbl_ParsedNamespaceRoot;
+ACPI_GENERIC_OP         *Acpi_GblParsedNamespaceRoot;
 ACPI_GENERIC_OP         *root;
 UINT8                   *AmlPtr;
 UINT32                  AmlLength;
-UINT8                    *DsdtPtr;
-UINT32                   DsdtLength;
+UINT8                   *DsdtPtr;
+UINT32                  DsdtLength;
 
 
 
@@ -155,8 +155,8 @@ void
 AdCreateTableHeaders (void)
 {
 
-    OsdPrintf ("%s\n", "DefinitionBlock(\"SE0005B.aml\",\"DSDT\",1,\"Intel\",\"Seattl\",2)");
-    OsdPrintf ("%s\n", "{");
+    AcpiOsdPrintf ("%s\n", "DefinitionBlock(\"SE0005B.aml\",\"DSDT\",1,\"Intel\",\"Seattl\",2)");
+    AcpiOsdPrintf ("%s\n", "{");
 }
 
 
@@ -182,7 +182,7 @@ c (
 
     switch (Op->Opcode)
     {
-    case AML_MethodOp:
+    case AML_METHOD_OP:
         return BLOCK_BRACE;
         break;
 
@@ -211,7 +211,7 @@ AdDisplayTables (void)
 {
 
 
-    if (!Gbl_DSDT || !Gbl_ParsedNamespaceRoot)
+    if (!Acpi_GblDSDT || !Acpi_GblParsedNamespaceRoot)
     {
         return AE_NOT_EXIST;
     }
@@ -222,13 +222,13 @@ AdDisplayTables (void)
         AdCreateTableHeaders ();
     }
 
-    DbDisplayOp (PsGetChild (Gbl_ParsedNamespaceRoot), ACPI_UINT32_MAX);
+    AcpiDbDisplayOp (AcpiPsGetChild (Acpi_GblParsedNamespaceRoot), ACPI_UINT32_MAX);
 
-    OsdPrintf ("\n\nDSDT Header:\n");
-    CmDumpBuffer ((char *) Gbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiOsdPrintf ("\n\nDSDT Header:\n");
+    AcpiCmDumpBuffer ((char *) Acpi_GblDSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
-    OsdPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
-    CmDumpBuffer ((char *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiOsdPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
+    AcpiCmDumpBuffer ((char *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     return AE_OK;
 }
@@ -314,34 +314,50 @@ AdSecondPassParse (
     UINT32                  BaseAmlOffset;
 
 
-    printf ("Pass two parse ....\n");
+    printf ("Parsing Control Methods \n");
 
     while (Op)
     {
-        if (Op->Opcode == AML_MethodOp)
+        if (Op->Opcode == AML_METHOD_OP)
         {
-            Method = (ACPI_DEFERRED_OP *) Op;
-            Status = PsParseAml (Op, Method->Body, Method->BodyLength, 0);
+            printf (".");
 
+            Method = (ACPI_DEFERRED_OP *) Op;
+            DEBUG_PRINT (ACPI_INFO, ("Parsing method [%4.4s]\n", &Method->Name)); 
+
+            /* Parse the method */
+
+            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0);
+
+            /*
+             * We need to update all of the Aml offsets, since the parser thought
+             * that the method began at offset zero.  In reality, it began somewhere
+             * within the ACPI table, at the BaseAmlOffset.  Walk the entire tree that
+             * was just created and update the AmlOffset in each Op
+             */
           
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
             StartOp = (Method->Value.Arg)->Next;
             SearchOp = StartOp;
 
+            /* Walk the parse tree */
+
             while (SearchOp)
             {
                 SearchOp->AmlOffset += BaseAmlOffset;
-                SearchOp = PsGetDepthNext (StartOp, SearchOp);
+                SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
             }
 
         }
 
-        if (Op->Opcode == AML_RegionOp)
+        if (Op->Opcode == AML_REGION_OP)
         {
-            /* TBD: this isn't quite the right thing to do! */
+            /* TBD: Code below isn't quite the right thing to do!
+             * Is there any need to parse regions here?
+             */
 
             // Method = (ACPI_DEFERRED_OP *) Op;
-            // Status = PsParseAml (Op, Method->Body, Method->BodyLength);
+            // Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength);
         }
 
         if (ACPI_FAILURE (Status))
@@ -349,8 +365,10 @@ AdSecondPassParse (
             return Status;
         }
 
-        Op = PsGetDepthNext (Root, Op);
+        Op = AcpiPsGetDepthNext (Root, Op);
     }
+
+    printf ("\n");
 
     return Status;
 }
@@ -430,30 +448,30 @@ AdParseTables (void)
     ACPI_STATUS             Status = AE_OK;
 
 
-    if (!Gbl_DSDT)
+    if (!Acpi_GblDSDT)
     {
         return AE_NOT_EXIST;
     }
 
     /* Create the root object */
 
-    Gbl_ParsedNamespaceRoot = PsAllocOp (AML_ScopeOp);
-    if (!Gbl_ParsedNamespaceRoot)
+    Acpi_GblParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!Acpi_GblParsedNamespaceRoot)
     {
         return AE_NO_MEMORY;
     }
 
     /* Initialize the root object */
 
-    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    ((ACPI_NAMED_OP *) Acpi_GblParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
-    DsdtLength = Gbl_DSDT->Length;
+    DsdtLength = Acpi_GblDSDT->Length;
     AmlLength = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
-    AmlPtr = ((UINT8 *) Gbl_DSDT + sizeof (ACPI_TABLE_HEADER));
+    AmlPtr = ((UINT8 *) Acpi_GblDSDT + sizeof (ACPI_TABLE_HEADER));
 
-    Status = PsParseAml (Gbl_ParsedNamespaceRoot, AmlPtr, AmlLength, 0); 
+    Status = AcpiPsParseAml (Acpi_GblParsedNamespaceRoot, AmlPtr, AmlLength, 0); 
     if (ACPI_FAILURE (Status))
     {
         return Status;
@@ -461,7 +479,7 @@ AdParseTables (void)
 
     /* Pass 2: Parse control methods and link their parse trees into the main parse tree */
 
-    Status = AdSecondPassParse (Gbl_ParsedNamespaceRoot);
+    Status = AdSecondPassParse (Acpi_GblParsedNamespaceRoot);
 
     return Status;
 }
