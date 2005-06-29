@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -149,8 +149,13 @@ RSDP_DESCRIPTOR             LocalRsdp;
 RSDP_DESCRIPTOR             LocalRSDP;
 FADT_DESCRIPTOR_REV1        LocalFADT;
 FACS_DESCRIPTOR_REV1        LocalFACS;
-RSDT_DESCRIPTOR_REV1        LocalRSDT;
 ACPI_TABLE_HEADER           LocalTEST;
+ACPI_TABLE_HEADER           LocalBADTABLE;
+
+RSDT_DESCRIPTOR_REV1        *LocalRSDT;
+
+#define RSDT_TABLES         3
+#define RSDT_SIZE           (sizeof (RSDT_DESCRIPTOR_REV1) + ((RSDT_TABLES -1) * sizeof (UINT32)))
 
 /******************************************************************************
  *
@@ -167,27 +172,34 @@ ACPI_TABLE_HEADER           LocalTEST;
 ACPI_STATUS
 AeBuildLocalTables (void)
 {
+
+    /* Build an RSDT */
+
+    LocalRSDT = AcpiOsAllocate (RSDT_SIZE);
+    if (!LocalRSDT)
+    {
+        return AE_NO_MEMORY;
+    }
+
+    ACPI_MEMSET (LocalRSDT, 0, RSDT_SIZE);
+    ACPI_MEMCPY (LocalRSDT->Header.Signature, RSDT_SIG, 4);
+    LocalRSDT->Header.Length = RSDT_SIZE;
+
+    LocalRSDT->TableOffsetEntry[2] = ACPI_TO_INTEGER (&LocalFADT);
+    LocalRSDT->TableOffsetEntry[1] = ACPI_TO_INTEGER (&LocalBADTABLE);
+    LocalRSDT->TableOffsetEntry[0] = ACPI_TO_INTEGER (&LocalTEST);
+    LocalRSDT->Header.Checksum = (UINT8) (0 - AcpiTbChecksum (LocalRSDT, LocalRSDT->Header.Length));
+
     /* Build an RSDP */
 
     ACPI_MEMSET (&LocalRSDP, 0, sizeof (RSDP_DESCRIPTOR));
     ACPI_MEMCPY (&LocalRSDP.Signature, RSDP_SIG, 8);
     LocalRSDP.Revision            = 1;
-    LocalRSDP.RsdtPhysicalAddress = ACPI_TO_INTEGER (&LocalRSDT);
+    LocalRSDP.RsdtPhysicalAddress = ACPI_TO_INTEGER (LocalRSDT);
     LocalRSDP.Checksum     = (UINT8) (0 - AcpiTbChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
 
     AcpiGbl_RSDP = &LocalRSDP;
 
-
-    /* Build an RSDT */
-
-    ACPI_MEMSET (&LocalRSDT, 0, sizeof (LocalRSDT));
-    ACPI_MEMCPY (&LocalRSDT.Header.Signature, RSDT_SIG, 4);
-    LocalRSDT.Header.Length = sizeof (RSDT_DESCRIPTOR_REV1) + sizeof (UINT32);
-
-
-    LocalRSDT.TableOffsetEntry[1] = ACPI_TO_INTEGER (&LocalFADT);
-    LocalRSDT.TableOffsetEntry[0] = ACPI_TO_INTEGER (&LocalTEST);
-    LocalRSDT.Header.Checksum = (UINT8) (0 - AcpiTbChecksum (&LocalRSDT, LocalRSDT.Header.Length));
 
     /* Build a FADT so we can test the hardware/event init */
 
@@ -225,7 +237,6 @@ AeBuildLocalTables (void)
     LocalFACS.Length = sizeof (FACS_DESCRIPTOR_REV1);
     LocalFACS.GlobalLock = 0x11AA0011;
 
-
     /* Build a fake table so that we make sure that the CA core ignores it */
 
     ACPI_MEMSET (&LocalTEST, 0, sizeof (ACPI_TABLE_HEADER));
@@ -234,6 +245,13 @@ AeBuildLocalTables (void)
     LocalTEST.Revision   = 1;
     LocalTEST.Length     = sizeof (ACPI_TABLE_HEADER);
 
+    /* Build a fake table with a bad signature so that we make sure that the CA core ignores it */
+
+    ACPI_MEMSET (&LocalBADTABLE, 0, sizeof (ACPI_TABLE_HEADER));
+    ACPI_MEMCPY (&LocalBADTABLE.Signature, "BAD!", 4);
+
+    LocalBADTABLE.Revision   = 1;
+    LocalBADTABLE.Length     = sizeof (ACPI_TABLE_HEADER);
     return (AE_OK);
 }
 
