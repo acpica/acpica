@@ -225,6 +225,13 @@ CmUpdateRefCount (
     }
 
 
+    if (Count > MAX_REFERENCE_COUNT)
+    {
+
+        DEBUG_PRINT (ACPI_ERROR, ("CmUpdateRefCount: **** AE_ERROR **** Invalid Reference Count (0x%X) in object %p\n\n", 
+                        Count, Object));
+    }
+
     return (NewCount);
 }
 
@@ -696,7 +703,7 @@ CmDeleteInternalObject (
         return_VOID;
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: Obj %x Refs=%d\n", 
+    DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: Obj %p Refs=%X\n", 
                             Object, Object->Common.ReferenceCount));
 
     /*
