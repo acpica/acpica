@@ -15,48 +15,6 @@
  |                      legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 19:31:12 $
- | $Log: acevents.h,v $
- | Revision 1.6  2005/06/29 19:31:12  aystarik
- |
- |
- | 
- | date	99.04.06.20.41.00;	author rmoore1;	state Exp;
- |
- * 
- * 6     4/06/99 1:41p Rmoore1
- * 
- * 5     3/31/99 2:30p Rmoore1
- * Integrated with 03/99 OPSD code
- * 
- * 4     3/09/99 4:04p Rmoore1
- * 16/32/64-bit common data types
- * 
- * 3     2/16/99 2:36p Rmoore1
- * Made pretty
- * 
- * 2     2/12/99 2:26p Rmosgrov
- * 
- * 1     2/12/99 9:57a Rmosgrov
- * 
- * 1     2/12/99 9:54a Rmosgrov
- * 
- * 3     1/13/99 2:49p Grsmith1
- * First BeOS build.
- * 
- * 2     1/11/99 4:08p Grsmith1
- * Detabified.
- * 
- * 1     1/11/99 2:08p Rmoore1
- * Event Handling
-// 
-//    Rev 1.2   14 Aug 1998 17:46:16   jkreinem
-// Added VerifyAcpiTablesPresent() function and NO_ACPI_TABLES_MASK
-// error code.
-// 
-//    Rev 1.1   13 Aug 1998 17:27:34   jkreinem
-// Added SAVE_NOT_VALID definition for interrupt configuration.
 // 
 //    Rev 1.0   12 Aug 1998 15:54:32   jkreinem
 // Initial revision.
@@ -105,7 +63,91 @@ extern  INT32 IrqEnableSave; /*  original SCI config */
 extern  INT32 OriginalMode;  /*  stores the original ACPI/legacy mode    */
 #endif
 
+
+/* identifier strings for fixed events */
+
+#define TMR_FIXED_EVENT         "TMR_FIXED_EVENT"
+#define NOT_USED_EVENT          "UNHANDLED_SCI"
+#define GBL_FIXED_EVENT         "GBL_FIXED_EVENT"
+#define PWR_BTN_FIXED_EVENT     "PWR_BTN_FIXED_EVENT"
+#define SLP_BTN_FIXED_EVENT     "SLP_BTN_FIXED_EVENT"
+#define RTC_FIXED_EVENT         "RTC_FIXED_EVENT"
+
+/* event index for types of events */
+
+enum 
+{
+    TMR_EVENT,
+    NOT_USED,
+    /* 
+     * There's no bus master event so index 1 is used for IRQ's that are not
+     * handled by the SCI handler 
+     */
+    GBL_EVENT, 
+    PWR_BTN_EVENT, 
+    SLP_BTN_EVENT, 
+    RTC_EVENT, 
+    GENERAL_EVENT
+};
+
+#define DISABLE 0
+#define STATUS  0
+#define ENABLE  1
+
+/* 
+ * Use the four macros below + the function iAcpiEventClearStatusBit for
+ * accessing and manipulating status/enable bits for various events.
+ *  
+ * IMPORTANT!! SCI handler must be installed or the enable bit will not be
+ * modified. 
+ */
+#define AcpiEventEnableEvent(name)                      AcpiEventEnableDisableEvent(name, ENABLE)
+#define AcpiEventDisableEvent(name)                     AcpiEventEnableDisableEvent(name, DISABLE)
+#define AcpiGenEventEnableEvent(name, offset)           AcpiEventEnableDisableEvent(name, ENABLE, offset)
+#define AcpiGenEventDisableEvent(name, offset)          AcpiEventEnableDisableEvent(name, DISABLE, offset)
+#define AcpiEventReadEnableBit(name, buf)               AcpiEventReadStatusEnableBit(name, ENABLE, buf)
+#define AcpiEventReadStatusBit(name, buf)               AcpiEventReadStatusEnableBit(name, STATUS, buf)
+#define AcpiGenEventReadEnableBit(name, buf, offset)    AcpiEventReadStatusEnableBit(name, ENABLE, buf, offset)
+#define AcpiGenEventReadStatusBit(name, buf, offset)    AcpiEventReadStatusEnableBit(name, STATUS, buf, offset)
+
+/* 
+ * elements correspond to counts for
+ * TMR, GBL, PWR_BTN, SLP_BTN, and RTC
+ * respectively.  These counts are modified
+ * by the ACPI interrupt handler... 
+ */
+
+extern volatile UINT32 EventCount[];   
+
+
 /* Prototypes */
+
+INT32
+AcpiEventClearStatusBit (
+    char *          EventName, ...);
+
+INT32
+AcpiEventEnableDisableEvent (
+    char *          EventName, 
+    INT32           Action, ...);
+
+INT32
+AcpiEventReadStatusEnableBit (
+    char *          EventName, 
+    INT32           StatusOrEnable, 
+    BOOLEAN *       OutBit, ...);
+
+UINT32 
+InstallSciHandler (
+    void);
+
+void 
+UninstallSciHandler (
+    void);
+
+UINT32 
+SciCount (
+    char *          EventName);
 
 INT32 
 InitializeSCI (
@@ -121,7 +163,8 @@ InstallSCIHandlerXferToACPI (
     INT32           Flags);
 
 INT32 
-UninstallSCIHandlerXferToLegacy (void);
+UninstallSCIHandlerXferToLegacy (
+    void);
 
 UINT32
 InstallInterruptHandler (
