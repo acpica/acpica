@@ -387,36 +387,17 @@ DbDisplayOp (
     ACPI_GENERIC_OP         *origin,
     UINT32                  NumOpcodes);
 
-INT32
-DbSafeSprintf (
-    char                    *Buffer,
-    INT32                   BufferSize,
-    INT32                   ExpandedSize,
-    char                    *Format,
-    ...);
 
 INT32
-DbSprintName (
-    char                    *Buffer, 
-    UINT32                  BufferSize, 
-    UINT32                  Name);
-
-INT32
-DbSprintNamestring (
-    char                    *BufferStart, 
-    INT32                   BufferSize, 
+DbDisplayNamestring (
     UINT8                   *Name);
 
 INT32
-DbSprintPath (
-    char                    *BufferStart,
-    UINT32                  BufferSize,
+DbDisplayPath (
     ACPI_GENERIC_OP         *Op);
 
 INT32
-DbSprintOp (
-    char                    *BufferStart, 
-    UINT32                  BufferSize, 
+DbDisplayOpcode (
     ACPI_GENERIC_OP         *Op);
 
 
