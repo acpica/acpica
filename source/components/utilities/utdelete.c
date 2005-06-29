@@ -630,13 +630,13 @@ CmDeleteInternalObj (
     if (Object->Common.Flags & AO_STATIC_ALLOCATION)
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Obj %p [%s] static allocation!\n",
-                                Object, Gbl_NsTypeNames[Object->Common.Type]));
+                                Object, CmGetTypeName (Object->Common.Type)));
     }
 
     else
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj %p [%s]\n",
-                                Object, Gbl_NsTypeNames[Object->Common.Type]));
+                                Object, CmGetTypeName (Object->Common.Type)));
 
         /* Memory allocation metrics.  Call the macro here since we only
          * care about dynamically allocated objects.
