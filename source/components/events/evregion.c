@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -217,13 +217,20 @@ AcpiEvExecuteRegMethod (
     UINT32                  Function)
 {
     ACPI_OPERAND_OBJECT    *Params[3];
+    ACPI_OPERAND_OBJECT    *RegionObj2;
     ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("EvExecuteRegMethod");
 
 
-    if (RegionObj->Region.Extra->Extra.Method_REG == NULL)
+    RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
+    if (!RegionObj2)
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
+
+    if (RegionObj2->Extra.Method_REG == NULL)
     {
         return_ACPI_STATUS (AE_OK);
     }
@@ -260,8 +267,8 @@ AcpiEvExecuteRegMethod (
     /*
      *  Execute the method, no return value
      */
-    DEBUG_EXEC(AcpiUtDisplayInitPathname (RegionObj->Region.Extra->Extra.Method_REG, "  [Method]"));
-    Status = AcpiNsEvaluateByHandle (RegionObj->Region.Extra->Extra.Method_REG, Params, NULL);
+    DEBUG_EXEC(AcpiUtDisplayInitPathname (RegionObj2->Extra.Method_REG, "  [Method]"));
+    Status = AcpiNsEvaluateByHandle (RegionObj2->Extra.Method_REG, Params, NULL);
 
     AcpiUtRemoveReference (Params[1]);
 
@@ -302,11 +309,18 @@ AcpiEvAddressSpaceDispatch (
     ACPI_ADR_SPACE_HANDLER  Handler;
     ACPI_ADR_SPACE_SETUP    RegionSetup;
     ACPI_OPERAND_OBJECT     *HandlerDesc;
+    ACPI_OPERAND_OBJECT     *RegionObj2;
     void                    *RegionContext = NULL;
 
 
     FUNCTION_TRACE ("EvAddressSpaceDispatch");
 
+
+    RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
+    if (!RegionObj2)
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
 
     /*
      * Ensure that there is a handler associated with this region
@@ -370,7 +384,7 @@ AcpiEvAddressSpaceDispatch (
          *  Save the returned context for use in all accesses to
          *  this particular region.
          */
-        RegionObj->Region.Extra->Extra.RegionContext = RegionContext;
+        RegionObj2->Extra.RegionContext = RegionContext;
     }
 
     /*
@@ -398,7 +412,7 @@ AcpiEvAddressSpaceDispatch (
      */
     Status = Handler (Function, Address, BitWidth, Value,
                       HandlerDesc->AddrHandler.Context,
-                      RegionObj->Region.Extra->Extra.RegionContext);
+                      RegionObj2->Extra.RegionContext);
 
     if (ACPI_FAILURE (Status))
     {
@@ -443,13 +457,19 @@ AcpiEvDisassociateRegionFromHandler(
     ACPI_OPERAND_OBJECT     **LastObjPtr;
     ACPI_ADR_SPACE_SETUP    RegionSetup;
     void                    *RegionContext;
+    ACPI_OPERAND_OBJECT     *RegionObj2;
     ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("EvDisassociateRegionFromHandler");
 
 
-    RegionContext = RegionObj->Region.Extra->Extra.RegionContext;
+    RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
+    if (!RegionObj2)
+    {
+        return;
+    }
+    RegionContext = RegionObj2->Extra.RegionContext;
 
     /*
      *  Get the address handler from the region object

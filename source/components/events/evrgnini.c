@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -506,6 +506,7 @@ AcpiEvInitializeRegion (
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *MethodNode;
     ACPI_NAME               *RegNamePtr = (ACPI_NAME *) METHOD_NAME__REG;
+    ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
     FUNCTION_TRACE_U32 ("EvInitializeRegion", AcpiNsLocked);
@@ -521,13 +522,18 @@ AcpiEvInitializeRegion (
         return_ACPI_STATUS (AE_OK);
     }
 
+    RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
+    if (!RegionObj2)
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
     Node = AcpiNsGetParentObject (RegionObj->Region.Node);
 
 
     SpaceId = RegionObj->Region.SpaceId;
 
     RegionObj->Region.AddrHandler = NULL;
-    RegionObj->Region.Extra->Extra.Method_REG = NULL;
+    RegionObj2->Extra.Method_REG = NULL;
     RegionObj->Common.Flags &= ~(AOPOBJ_SETUP_COMPLETE);
     RegionObj->Common.Flags |= AOPOBJ_OBJECT_INITIALIZED;
 
@@ -543,7 +549,7 @@ AcpiEvInitializeRegion (
          *  definition.  This will be executed when the handler is attached
          *  or removed
          */
-        RegionObj->Region.Extra->Extra.Method_REG = MethodNode;
+        RegionObj2->Extra.Method_REG = MethodNode;
     }
 
     /*
