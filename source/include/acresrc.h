@@ -273,7 +273,7 @@ RsDmaStream (
     );
 
 ACPI_STATUS
-RsAddress16DescriptorResource (
+RsAddress16Resource (
     UINT8       * ByteStreamBuffer,
     UINT32      * BytesConsumed,
     UINT8      ** OutputBuffer,
@@ -281,14 +281,14 @@ RsAddress16DescriptorResource (
     );
 
 ACPI_STATUS
-RsAddress16DescriptorStream (
+RsAddress16Stream (
     RESOURCE    * LinkedList,
     UINT8      ** OutputBuffer,
     UINT32      * BytesConsumed
     );
 
 ACPI_STATUS
-RsAddress32DescriptorResource (
+RsAddress32Resource (
     UINT8       * ByteStreamBuffer,
     UINT32      * BytesConsumed,
     UINT8      ** OutputBuffer,
@@ -296,7 +296,7 @@ RsAddress32DescriptorResource (
     );
 
 ACPI_STATUS
-RsAddress32DescriptorStream (
+RsAddress32Stream (
     RESOURCE    * LinkedList,
     UINT8      ** OutputBuffer,
     UINT32      * BytesConsumed
