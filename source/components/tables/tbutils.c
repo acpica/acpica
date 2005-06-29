@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.37 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -147,6 +147,9 @@ AcpiTbHandleToObject (
     ACPI_TABLE_DESC         *ListHead;
 
 
+    PROC_NAME ("TbHandleToObject");
+
+
     for (i = 0; i < ACPI_TABLE_MAX; i++)
     {
         ListHead = &AcpiGbl_AcpiTables[i];
@@ -164,7 +167,7 @@ AcpiTbHandleToObject (
     }
 
 
-    DEBUG_PRINT (ACPI_ERROR, ("TableId=%X does not exist\n", TableId));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "TableId=%X does not exist\n", TableId));
     return (AE_BAD_PARAMETER);
 }
 
@@ -284,8 +287,8 @@ AcpiTbValidateTableHeader (
 
     if (!AcpiOsReadable (TableHeader, sizeof (ACPI_TABLE_HEADER)))
     {
-        DEBUG_PRINTP (ACPI_ERROR,
-            ("Cannot read table header at %p\n", TableHeader));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Cannot read table header at %p\n", TableHeader));
         return (AE_BAD_ADDRESS);
     }
 
@@ -295,8 +298,8 @@ AcpiTbValidateTableHeader (
     MOVE_UNALIGNED32_TO_32 (&Signature, &TableHeader->Signature);
     if (!AcpiUtValidAcpiName (Signature))
     {
-        DEBUG_PRINTP (ACPI_ERROR,
-            ("Table signature at %p [%X] has invalid characters\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Table signature at %p [%X] has invalid characters\n",
             TableHeader, &Signature));
 
         REPORT_WARNING (("Invalid table signature %4.4s found\n", &Signature));
@@ -309,8 +312,8 @@ AcpiTbValidateTableHeader (
 
     if (TableHeader->Length < sizeof (ACPI_TABLE_HEADER))
     {
-        DEBUG_PRINTP (ACPI_ERROR,
-            ("Invalid length in table header %p name %4.4s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Invalid length in table header %p name %4.4s\n",
             TableHeader, &Signature));
 
         REPORT_WARNING (("Invalid table header length found\n"));
@@ -342,11 +345,14 @@ ACPI_STATUS
 AcpiTbMapAcpiTable (
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     UINT32                  *Size,
-    void                    **LogicalAddress)
+    ACPI_TABLE_HEADER       **LogicalAddress)
 {
     ACPI_TABLE_HEADER       *Table;
     UINT32                  TableSize = *Size;
     ACPI_STATUS             Status = AE_OK;
+
+
+    PROC_NAME ("TbMapAcpiTable");
 
 
     /* If size is zero, look at the table header to get the actual size */
@@ -370,7 +376,6 @@ AcpiTbMapAcpiTable (
          * Validate the header and delete the mapping.
          * We will create a mapping for the full table below.
          */
-
         Status = AcpiTbValidateTableHeader (Table);
 
         /* Always unmap the memory for the header */
@@ -394,8 +399,8 @@ AcpiTbMapAcpiTable (
         return (Status);
     }
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("Mapped memory for ACPI table, length=%d(%X) at %p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "Mapped memory for ACPI table, length=%d(%X) at %p\n",
         TableSize, TableSize, Table));
 
     *Size = TableSize;

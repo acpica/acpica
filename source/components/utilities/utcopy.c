@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.74 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -161,7 +161,6 @@ AcpiUtCopyIsimpleToEsimple (
      * Check for NULL object case (could be an uninitialized
      * package element
      */
-
     if (!InternalObject)
     {
         *BufferSpaceUsed = 0;
@@ -176,7 +175,6 @@ AcpiUtCopyIsimpleToEsimple (
      * In general, the external object will be the same type as
      * the internal object
      */
-
     ExternalObject->Type = InternalObject->Common.Type;
 
     /* However, only a limited number of external types are supported */
@@ -213,7 +211,6 @@ AcpiUtCopyIsimpleToEsimple (
         /*
          * This is an object reference.  Attempt to dereference it.
          */
-
         switch (InternalObject->Reference.Opcode)
         {
         case AML_ZERO_OP:
@@ -318,10 +315,12 @@ AcpiUtCopyIelementToEelement (
     ACPI_OBJECT             *TargetObject;
 
 
-    ThisIndex       = State->Pkg.Index;
-    TargetObject    = (ACPI_OBJECT *)
-                        &((ACPI_OBJECT *)(State->Pkg.DestObject))->Package.Elements[ThisIndex];
+    FUNCTION_ENTRY ();
 
+
+    ThisIndex    = State->Pkg.Index;
+    TargetObject = (ACPI_OBJECT *)
+                    &((ACPI_OBJECT *)(State->Pkg.DestObject))->Package.Elements[ThisIndex];
 
     switch (ObjectType)
     {
@@ -330,7 +329,6 @@ AcpiUtCopyIelementToEelement (
         /*
          * This is a simple or null object -- get the size
          */
-
         Status = AcpiUtCopyIsimpleToEsimple (SourceObject,
                         TargetObject, Info->FreeSpace, &ObjectSpace);
         if (ACPI_FAILURE (Status))
@@ -430,7 +428,6 @@ AcpiUtCopyIpackageToEpackage (
      * Build an array of ACPI_OBJECTS in the buffer
      * and move the free space past it
      */
-
     Info.FreeSpace += ExternalObject->Package.Count *
                     ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
 
@@ -527,6 +524,9 @@ AcpiUtCopyEsimpleToIsimple (
 
     InternalObject->Common.Type = (UINT8) ExternalObject->Type;
 
+    /*
+     * Simple types supported are: String, Buffer, Integer
+     */
     switch (ExternalObject->Type)
     {
 
@@ -545,15 +545,15 @@ AcpiUtCopyEsimpleToIsimple (
 
 
     case ACPI_TYPE_INTEGER:
-        /*
-         * Number is included in the object itself
-         */
+
         InternalObject->Integer.Value   = ExternalObject->Integer.Value;
         break;
 
-
     default:
-        return_ACPI_STATUS (AE_CTRL_RETURN_VALUE);
+        /*
+         * Whatever other type -- it is not supported
+         */
+        return_ACPI_STATUS (AE_SUPPORT);
         break;
     }
 
@@ -623,7 +623,6 @@ AcpiUtCopyEpackageToIpackage (
      * Build an array of ACPI_OBJECTS in the buffer
      * and move the free space past it
      */
-
     FreeSpace += ExternalObject->Package.Count * sizeof(ACPI_OBJECT);
 
 
@@ -673,7 +672,8 @@ AcpiUtCopyEobjectToIobject (
                                                   RetBuffer->Pointer,
                                                   &RetBuffer->Length);
 */
-        DEBUG_PRINTP (ACPI_ERROR, ("Packages as parameters not implemented!\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            "Packages as parameters not implemented!\n"));
 
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
     }
@@ -717,6 +717,9 @@ AcpiUtCopyIelementToIelement (
     UINT32                  ThisIndex;
     ACPI_OPERAND_OBJECT     **ThisTargetPtr;
     ACPI_OPERAND_OBJECT     *TargetObject;
+
+
+    FUNCTION_ENTRY ();
 
 
     ThisIndex     = State->Pkg.Index;
@@ -804,6 +807,7 @@ AcpiUtCopyIpackageToIpackage (
 {
     ACPI_STATUS             Status = AE_OK;
 
+
     FUNCTION_TRACE ("UtCopyIpackageToIpackage");
 
 
@@ -814,8 +818,7 @@ AcpiUtCopyIpackageToIpackage (
     /*
      * Create the object array and walk the source package tree
      */
-
-    DestObj->Package.Elements = AcpiUtCallocate ((SourceObj->Package.Count + 1) *
+    DestObj->Package.Elements = ACPI_MEM_CALLOCATE ((SourceObj->Package.Count + 1) *
                                                     sizeof (void *));
     DestObj->Package.NextElement = DestObj->Package.Elements;
 
