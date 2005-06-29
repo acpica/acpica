@@ -669,11 +669,15 @@ NsDumpEntry (
     ACPI_HANDLE             Handle,
     UINT32                  DebugLevel)
 {
+    ACPI_WALK_INFO          Info;
+
 
     FUNCTION_TRACE_PTR ("NsDumpEntry", Handle);
 
+    Info.DebugLevel = DebugLevel;
+    Info.OwnerId = ACPI_UINT32_MAX;
 
-    NsDumpOneObject (Handle, 1, (void *) DebugLevel, NULL);
+    NsDumpOneObject (Handle, 1, &Info, NULL);
     
     DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpEntry %p\n", Handle));
     return_VOID;
