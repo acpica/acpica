@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.81 $
+ *       $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -275,8 +275,8 @@
 #define STRCAT(d,s)     strcat((d), (s))
 #define STRNCAT(d,s,n)  strncat((d), (s), (NATIVE_INT)(n))
 #define STRTOUL(d,s,n)  strtoul((d), (s), (NATIVE_INT)(n))
-#define MEMCPY(d,s,n)   memcpy((d), (s), (NATIVE_INT)(n))
-#define MEMSET(d,s,n)   memset((d), (s), (NATIVE_INT)(n))
+#define MEMCPY(d,s,n)   (void) memcpy((d), (s), (NATIVE_INT)(n))
+#define MEMSET(d,s,n)   (void) memset((d), (s), (NATIVE_INT)(n))
 #define TOUPPER         toupper
 #define TOLOWER         tolower
 #define IS_XDIGIT       isxdigit
@@ -331,8 +331,8 @@ typedef char *va_list;
 #define STRCAT(d,s)      AcpiUtStrcat  ((d), (s))
 #define STRNCAT(d,s,n)   AcpiUtStrncat ((d), (s), (n))
 #define STRTOUL(d,s,n)   AcpiUtStrtoul ((d), (s),(n))
-#define MEMCPY(d,s,n)    AcpiUtMemcpy  ((d), (s), (n))
-#define MEMSET(d,v,n)    AcpiUtMemset  ((d), (v), (n))
+#define MEMCPY(d,s,n)    (void) AcpiUtMemcpy  ((d), (s), (n))
+#define MEMSET(d,v,n)    (void) AcpiUtMemset  ((d), (v), (n))
 #define TOUPPER          AcpiUtToUpper
 #define TOLOWER          AcpiUtToLower
 
