@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.45 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -119,10 +119,54 @@
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
 #include "amlcode.h"
+#include "acdispat.h"
+#include "acparser.h"
 
 
 #define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslmap")
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslMapNamedOpcodeToDataType
+ *
+ * PARAMETERS:  Opcode              - The Named AML opcode to map
+ *
+ * RETURN:      The ACPI type associated with the named opcode
+ *
+ * DESCRIPTION: Convert a raw Named AML opcode to the associated data type.
+ *              Named opcodes are a subset of the AML opcodes.
+ *
+ ******************************************************************************/
+
+ACPI_OBJECT_TYPE8
+AslMapNamedOpcodeToDataType (
+    UINT16                  Opcode)
+{
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    /*
+     * There are some differences from the opcode table types, we 
+     * catch them here.
+     */
+    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
+
+    if (OpInfo->Flags & AML_NSOBJECT)
+    {
+        if (Opcode == AML_INT_NAMEPATH_OP)
+        {
+            return (ACPI_TYPE_ANY);
+        }
+
+        return (OpInfo->ObjectType);
+    }
+
+    return (ACPI_TYPE_ANY);
+}
 
 
 /*******************************************************************************
@@ -291,7 +335,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 {
 
 /* ACCESSAS */                  OP_TABLE_ENTRY (AML_INT_ACCESSFIELD_OP,     0,                  0,                  0),
-/* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BLOCK_ACC,   0,                  0),
+/* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0), /* Obsolete */
 /* ACCESSATTRIB_BYTE */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
 /* ACCESSATTRIB_CALL */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
 /* ACCESSATTRIB_QUICK */        OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
@@ -542,14 +586,10 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 };
 
 
-#include "amlcode.h"
-#include "acdispat.h"
-#include "acparser.h"
-
 /*
  * TBD:
  *
- * These are here temporarily until they are segregated out into separate
+ * This function is here temporarily until it is segregated out into separate
  * modules in the main subsystem source.
  */
 
@@ -578,261 +618,5 @@ AcpiExValidateObjectType (
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDsMapOpcodeToDataType
- *
- * PARAMETERS:  Opcode          - AML opcode to map
- *              OutFlags        - Additional info about the opcode
- *
- * RETURN:      The ACPI type associated with the opcode
- *
- * DESCRIPTION: Convert a raw AML opcode to the associated ACPI data type,
- *              if any.  If the opcode returns a value as part of the
- *              intepreter execution, a flag is returned in OutFlags.
- *
- ******************************************************************************/
-
-ACPI_OBJECT_TYPE8
-AcpiDsMapOpcodeToDataType (
-    UINT16                  Opcode,
-    UINT32                  *OutFlags)
-{
-    ACPI_OBJECT_TYPE8       DataType = INTERNAL_TYPE_INVALID;
-    const ACPI_OPCODE_INFO  *OpInfo;
-    UINT32                  Flags = 0;
-    UINT32                  OpType;
-
-
-    PROC_NAME ("DsMapOpcodeToDataType");
-
-
-    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    OpType = OpInfo->Type;
-
-    switch (OpInfo->Class)
-    {
-    case AML_CLASS_ARGUMENT:
-
-        switch (OpType)
-        {
-        case AML_TYPE_LITERAL:
-
-            switch (Opcode)
-            {
-            case AML_BYTE_OP:
-            case AML_WORD_OP:
-            case AML_DWORD_OP:
-            case AML_QWORD_OP:
-
-                DataType = ACPI_TYPE_INTEGER;
-                break;
-
-
-            case AML_STRING_OP:
-
-                DataType = ACPI_TYPE_STRING;
-                break;
-
-            case AML_INT_NAMEPATH_OP:
-                DataType = INTERNAL_TYPE_REFERENCE;
-                break;
-
-            default:
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Unknown (type LITERAL) AML opcode: %x\n",
-                    Opcode));
-                break;
-            }
-            break;
-
-
-        case AML_TYPE_DATA_TERM:
-
-            switch (Opcode)
-            {
-            case AML_BUFFER_OP:
-
-                DataType = ACPI_TYPE_BUFFER;
-                break;
-
-            case AML_PACKAGE_OP:
-            case AML_VAR_PACKAGE_OP:
-
-                DataType = ACPI_TYPE_PACKAGE;
-                break;
-
-            default:
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Unknown (type DATA_TERM) AML opcode: %x\n",
-                    Opcode));
-                break;
-            }
-            break;
-
-
-        case AML_TYPE_CONSTANT:
-        case AML_TYPE_METHOD_ARGUMENT:
-        case AML_TYPE_LOCAL_VARIABLE:
-
-            DataType = INTERNAL_TYPE_REFERENCE;
-            break;
-        }
-        break;
-
-
-    case AML_CLASS_EXECUTE:
-    case AML_CLASS_RETURN_VALUE:
-
-        if (OpInfo->Flags & AML_HAS_RETVAL)
-        {
-            Flags = OP_HAS_RETURN_VALUE;
-        }
-
-        DataType = ACPI_TYPE_ANY;
-        break;
-
-
-    case AML_CLASS_METHOD_CALL:
-
-        Flags = OP_HAS_RETURN_VALUE;
-        DataType = ACPI_TYPE_METHOD;
-        break;
-
-
-    case AML_CLASS_NAMED_OBJECT:
-
-        DataType = AcpiDsMapNamedOpcodeToDataType (Opcode);
-        break;
-
-
-    case AML_CLASS_CONTROL:
-
-        /* No mapping needed at this time */
-
-        break;
-
-
-    default:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Unimplemented data type opcode: %x\n",
-            Opcode));
-        break;
-    }
-
-    /* Return flags to caller if requested */
-
-    if (OutFlags)
-    {
-        *OutFlags = Flags;
-    }
-
-    return (DataType);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDsMapNamedOpcodeToDataType
- *
- * PARAMETERS:  Opcode              - The Named AML opcode to map
- *
- * RETURN:      The ACPI type associated with the named opcode
- *
- * DESCRIPTION: Convert a raw Named AML opcode to the associated data type.
- *              Named opcodes are a subset of the AML opcodes.
- *
- ******************************************************************************/
-
-ACPI_OBJECT_TYPE8
-AcpiDsMapNamedOpcodeToDataType (
-    UINT16                  Opcode)
-{
-    ACPI_OBJECT_TYPE8       DataType;
-
-
-    /* Decode Opcode */
-
-    switch (Opcode)
-    {
-    case AML_SCOPE_OP:
-        DataType = INTERNAL_TYPE_SCOPE;
-        break;
-
-    case AML_DEVICE_OP:
-        DataType = ACPI_TYPE_DEVICE;
-        break;
-
-    case AML_THERMAL_ZONE_OP:
-        DataType = ACPI_TYPE_THERMAL;
-        break;
-
-    case AML_METHOD_OP:
-        DataType = ACPI_TYPE_METHOD;
-        break;
-
-    case AML_POWER_RES_OP:
-        DataType = ACPI_TYPE_POWER;
-        break;
-
-    case AML_PROCESSOR_OP:
-        DataType = ACPI_TYPE_PROCESSOR;
-        break;
-
-    case AML_FIELD_OP:                              /* DefFieldOp */
-        DataType = INTERNAL_TYPE_FIELD_DEFN;
-        break;
-
-    case AML_INDEX_FIELD_OP:                        /* IndexFieldOp */
-        DataType = INTERNAL_TYPE_INDEX_FIELD_DEFN;
-        break;
-
-    case AML_BANK_FIELD_OP:                         /* BankFieldOp */
-        DataType = INTERNAL_TYPE_BANK_FIELD_DEFN;
-        break;
-
-    case AML_INT_NAMEDFIELD_OP:                      /* NO CASE IN ORIGINAL  */
-        DataType = ACPI_TYPE_ANY;
-        break;
-
-    case AML_NAME_OP:                               /* NameOp - special code in original */
-    case AML_INT_NAMEPATH_OP:
-        DataType = ACPI_TYPE_ANY;
-        break;
-
-    case AML_ALIAS_OP:
-        DataType = INTERNAL_TYPE_ALIAS;
-        break;
-
-    case AML_MUTEX_OP:
-        DataType = ACPI_TYPE_MUTEX;
-        break;
-
-    case AML_EVENT_OP:
-        DataType = ACPI_TYPE_EVENT;
-        break;
-
-    case AML_REGION_OP:
-        DataType = ACPI_TYPE_REGION;
-        break;
-
-    case AML_CREATE_FIELD_OP:
-    case AML_CREATE_DWORD_FIELD_OP:
-    case AML_CREATE_WORD_FIELD_OP:
-    case AML_CREATE_BYTE_FIELD_OP:
-    case AML_CREATE_BIT_FIELD_OP:
-    case AML_CREATE_QWORD_FIELD_OP:
-        DataType = ACPI_TYPE_BUFFER_FIELD;
-        break;
-
-    default:
-        DataType = ACPI_TYPE_ANY;
-        break;
-
-    }
-
-    return (DataType);
-}
 
 
