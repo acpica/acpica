@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.96 $
+ *       $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -131,7 +131,7 @@ AcpiEvInstallXruptHandlers (
  * Evfixed - Fixed event handling
  */
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiEvFixedEventInitialize (
     void);
 
@@ -139,7 +139,7 @@ UINT32
 AcpiEvFixedEventDetect (
     void);
 
-UINT32
+static UINT32
 AcpiEvFixedEventDispatch (
     UINT32                  Event);
 
@@ -173,23 +173,21 @@ AcpiEvQueueNotifyRequest (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue);
 
-void ACPI_SYSTEM_XFACE
+static void ACPI_SYSTEM_XFACE
 AcpiEvNotifyDispatch (
     void                    *Context);
 
+static void ACPI_SYSTEM_XFACE
+AcpiEvGlobalLockThread (
+    void                    *Context);
+
+static UINT32
+AcpiEvGlobalLockHandler (
+    void                    *Context);
 
 /*
  * Evgpe - GPE handling and dispatch
  */
-
-ACPI_STATUS
-AcpiEvWalkGpeList (
-    ACPI_GPE_CALLBACK       GpeWalkCallback,
-    UINT32                  Flags);
-
-BOOLEAN
-AcpiEvValidGpeEvent (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
 AcpiEvUpdateGpeEnableMasks (
@@ -210,9 +208,27 @@ AcpiEvGetGpeEventInfo (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber);
 
+static void ACPI_SYSTEM_XFACE
+AcpiEvAsynchExecuteGpeMethod (
+    void                    *Context);
+
+/*
+ * evgpeblk
+ */
+
+BOOLEAN
+AcpiEvValidGpeEvent (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
 ACPI_STATUS
-AcpiEvGpeInitialize (
-    void);
+AcpiEvWalkGpeList (
+    ACPI_GPE_CALLBACK       GpeWalkCallback,
+    UINT32                  Flags);
+
+ACPI_STATUS
+AcpiEvDeleteGpeHandlers (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
 
 ACPI_STATUS
 AcpiEvCreateGpeBlock (
@@ -225,11 +241,6 @@ AcpiEvCreateGpeBlock (
 
 ACPI_STATUS
 AcpiEvDeleteGpeBlock (
-    ACPI_GPE_BLOCK_INFO     *GpeBlock);
-
-ACPI_STATUS
-AcpiEvDeleteGpeHandlers (
-    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
     ACPI_GPE_BLOCK_INFO     *GpeBlock);
 
 UINT32
@@ -250,6 +261,41 @@ ACPI_STATUS
 AcpiEvCheckForWakeOnlyGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
+ACPI_STATUS
+AcpiEvGpeInitialize (
+    void);
+
+static ACPI_STATUS
+AcpiEvSaveMethodInfo (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *ObjDesc,
+    void                    **ReturnValue);
+
+static ACPI_STATUS
+AcpiEvMatchPrwAndGpe (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Info,
+    void                    **ReturnValue);
+
+static ACPI_GPE_XRUPT_INFO *
+AcpiEvGetGpeXruptBlock (
+    UINT32                  InterruptLevel);
+
+static ACPI_STATUS
+AcpiEvDeleteGpeXrupt (
+    ACPI_GPE_XRUPT_INFO     *GpeXrupt);
+
+static ACPI_STATUS
+AcpiEvInstallGpeBlock (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    UINT32                  InterruptLevel);
+
+static ACPI_STATUS
+AcpiEvCreateGpeInfoBlocks (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
 /*
  * Evregion - Address Space handling
  */
@@ -269,13 +315,6 @@ AcpiEvAddressSpaceDispatch (
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     void                    *Value);
-
-ACPI_STATUS
-AcpiEvInstallHandler (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
 
 ACPI_STATUS
 AcpiEvAttachRegion (
@@ -306,8 +345,15 @@ AcpiEvExecuteRegMethod (
     ACPI_OPERAND_OBJECT    *RegionObj,
     UINT32                  Function);
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiEvRegRun (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
+
+static ACPI_STATUS
+AcpiEvInstallHandler (
     ACPI_HANDLE             ObjHandle,
     UINT32                  Level,
     void                    *Context,
@@ -388,6 +434,10 @@ AcpiEvInitializeSCI (
 void
 AcpiEvTerminate (
     void);
+
+static UINT32 ACPI_SYSTEM_XFACE
+AcpiEvSciXruptHandler (
+    void                    *Context);
 
 
 #endif  /* __ACEVENTS_H__  */
