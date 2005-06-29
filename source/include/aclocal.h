@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.142 $
+ *       $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -631,7 +631,6 @@ typedef union acpi_gen_state
 } ACPI_GENERIC_STATE;
 
 
-
 /*****************************************************************************
  *
  * Interpreter typedefs and structs
@@ -740,8 +739,6 @@ typedef struct acpi_parse_state
 
 
     struct acpi_parse_obj   *StartScope;
-
-
 
 
 } ACPI_PARSE_STATE;
