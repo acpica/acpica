@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.175 $
+ *              $Revision: 1.176 $
  *
  *****************************************************************************/
 
@@ -187,12 +187,15 @@ AcpiExDumpOperand (
 
     /* ObjDesc is a valid object */
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, ""));
     if (Depth > 0)
     {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC, "%*s[%u] ", Depth, " ", Depth));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%*s[%u] %p ",
+            Depth, " ", Depth, ObjDesc));
     }
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC, "%p ", ObjDesc));
+    else
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%p ", ObjDesc));
+    }
 
 
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
