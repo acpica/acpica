@@ -180,7 +180,7 @@ AmlExecMonadic1 (
 
     /* ObjDesc can be an NTE - extract the object from the NTE */
 
-    if (IS_NS_HANDLE (ObjDesc))
+    if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
         if (((NAME_TABLE_ENTRY *) ObjDesc)->Object)
         {
