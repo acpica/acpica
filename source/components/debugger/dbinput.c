@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.105 $
+ *              $Revision: 1.108 $
  *
  ******************************************************************************/
 
@@ -123,6 +123,30 @@
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbinput")
+
+/* Local prototypes */
+
+static char *
+AcpiDbGetNextToken (
+    char                    *String,
+    char                    **Next);
+
+static UINT32
+AcpiDbGetLine (
+    char                    *InputBuffer);
+
+static UINT32
+AcpiDbMatchCommand (
+    char                    *UserCommand);
+
+static void
+AcpiDbSingleThread (
+    void);
+
+static void
+AcpiDbDisplayHelp (
+    char                    *HelpType);
+
 
 /*
  * Top-level debugger commands.
@@ -264,6 +288,8 @@ AcpiDbDisplayHelp (
     char                    *HelpType)
 {
 
+    AcpiUtStrupr (HelpType);
+
     /* No parameter, just give the overview */
 
     if (!HelpType)
@@ -320,18 +346,19 @@ AcpiDbDisplayHelp (
         AcpiOsPrintf ("\nNamespace Access Commands\n\n");
         AcpiOsPrintf ("Disassemble <Method>                Disassemble a control method\n");
         AcpiOsPrintf ("Event <F|G> <Value>                 Generate AcpiEvent (Fixed/GPE)\n");
-        AcpiOsPrintf ("Find <Name>   (? is wildcard)       Find ACPI name(s) with wildcards\n");
+        AcpiOsPrintf ("Find <AcpiName>  (? is wildcard)    Find ACPI name(s) with wildcards\n");
         AcpiOsPrintf ("Gpe <GpeNum> <GpeBlock>             Simulate a GPE\n");
         AcpiOsPrintf ("Gpes                                Display info on all GPEs\n");
         AcpiOsPrintf ("Integrity                           Validate namespace integrity\n");
-        AcpiOsPrintf ("Method                              Display list of loaded control methods\n");
-        AcpiOsPrintf ("Namespace [<Addr>|<Path>] [Depth]   Display loaded namespace tree/subtree\n");
-        AcpiOsPrintf ("Notify <NamePath> <Value>           Send a notification\n");
+        AcpiOsPrintf ("Methods                             Display list of loaded control methods\n");
+        AcpiOsPrintf ("Namespace [Object] [Depth]          Display loaded namespace tree/subtree\n");
+        AcpiOsPrintf ("Notify <Object> <Value>             Send a notification on Object\n");
         AcpiOsPrintf ("Objects <ObjectType>                Display all objects of the given type\n");
         AcpiOsPrintf ("Owner <OwnerId> [Depth]             Display loaded namespace by object owner\n");
         AcpiOsPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
         AcpiOsPrintf ("References <Addr>                   Find all references to object at addr\n");
-        AcpiOsPrintf ("Resources xxx                       Get and display resources\n");
+        AcpiOsPrintf ("Resources <Device>                  Get and display Device resources\n");
+        AcpiOsPrintf ("Set N <NamedObject> <Value>         Set value for named integer\n");
         AcpiOsPrintf ("Sleep <SleepState>                  Simulate sleep/wake sequence\n");
         AcpiOsPrintf ("Terminate                           Delete namespace and all internal objects\n");
         AcpiOsPrintf ("Thread <Threads><Loops><NamePath>   Spawn threads to execute method(s)\n");
@@ -461,7 +488,6 @@ AcpiDbGetLine (
 
 
     ACPI_STRCPY (AcpiGbl_DbParsedBuf, InputBuffer);
-    ACPI_STRUPR (AcpiGbl_DbParsedBuf);
 
     This = AcpiGbl_DbParsedBuf;
     for (i = 0; i < ACPI_DEBUGGER_MAX_ARGS; i++)
@@ -479,7 +505,7 @@ AcpiDbGetLine (
 
     if (AcpiGbl_DbArgs[0])
     {
-        ACPI_STRUPR (AcpiGbl_DbArgs[0]);
+        AcpiUtStrupr (AcpiGbl_DbArgs[0]);
     }
 
     Count = i;
@@ -764,7 +790,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_OBJECT:
-        ACPI_STRUPR (AcpiGbl_DbArgs[1]);
+        AcpiUtStrupr (AcpiGbl_DbArgs[1]);
         Status = AcpiDbDisplayObjects (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2]);
         break;
 

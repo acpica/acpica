@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.65 $
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -127,6 +127,32 @@
 
 static ACPI_DB_METHOD_INFO  AcpiGbl_DbMethodInfo;
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiDbExecuteMethod (
+    ACPI_DB_METHOD_INFO     *Info,
+    ACPI_BUFFER             *ReturnObj);
+
+static void
+AcpiDbExecuteSetup (
+    ACPI_DB_METHOD_INFO     *Info);
+
+static UINT32
+AcpiDbGetOutstandingAllocations (
+    void);
+
+static void ACPI_SYSTEM_XFACE
+AcpiDbMethodThread (
+    void                    *Context);
+
+static ACPI_STATUS
+AcpiDbExecutionWalk (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
 
 /*******************************************************************************
  *
@@ -250,6 +276,14 @@ AcpiDbExecuteSetup (
 }
 
 
+UINT32
+AcpiDbGetCacheInfo (
+    ACPI_MEMORY_LIST        *Cache)
+{
+
+    return (Cache->TotalAllocated - Cache->TotalFreed - Cache->CurrentDepth);
+}
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbGetOutstandingAllocations
@@ -271,8 +305,14 @@ AcpiDbGetOutstandingAllocations (
     UINT32                  Outstanding = 0;
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
-    UINT32                  i;
 
+
+    Outstanding += AcpiDbGetCacheInfo (AcpiGbl_StateCache);
+    Outstanding += AcpiDbGetCacheInfo (AcpiGbl_PsNodeCache);
+    Outstanding += AcpiDbGetCacheInfo (AcpiGbl_PsNodeExtCache);
+    Outstanding += AcpiDbGetCacheInfo (AcpiGbl_OperandCache);
+
+/*
 
     for (i = ACPI_MEM_LIST_FIRST_CACHE_LIST; i < ACPI_NUM_MEM_LISTS; i++)
     {
@@ -280,6 +320,7 @@ AcpiDbGetOutstandingAllocations (
                         AcpiGbl_MemoryLists[i].TotalFreed -
                         AcpiGbl_MemoryLists[i].CacheDepth);
     }
+*/
 #endif
 
     return (Outstanding);
@@ -381,6 +422,7 @@ AcpiDbExecute (
     }
     else
     {
+        AcpiUtStrupr (Name);
         AcpiGbl_DbMethodInfo.Name = Name;
         AcpiGbl_DbMethodInfo.Args = Args;
         AcpiGbl_DbMethodInfo.Flags = Flags;
