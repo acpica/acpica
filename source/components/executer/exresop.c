@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -404,7 +404,7 @@ AcpiExResolveOperands (
             goto NextOperand;
 
 
-        case ARGI_ANYTYPE:
+        case ARGI_DATAREFOBJ:  /* Store operator only */
 
             /*
              * We don't want to resolve IndexOp reference objects during
