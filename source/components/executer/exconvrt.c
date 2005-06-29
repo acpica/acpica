@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -133,7 +133,7 @@
  * PARAMETERS:  ObjDesc         - Object to be converted.  Must be an
  *                                Integer, Buffer, or String
  *              ResultDesc      - Where the new Integer object is returned
- *              Opcode          - AML opcode
+ *              Flags           - Used for string conversion
  *
  * RETURN:      Status
  *
@@ -145,7 +145,7 @@ ACPI_STATUS
 AcpiExConvertToInteger (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **ResultDesc,
-    UINT16                  Opcode)
+    UINT32                  Flags)
 {
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     UINT8                   *Pointer;
@@ -206,10 +206,12 @@ AcpiExConvertToInteger (
     case ACPI_TYPE_STRING:
 
         /*
-         * Convert string to an integer - the string must be hexadecimal
-         * as per the ACPI specification
+         * Convert string to an integer - for most cases, the string must be
+         * hexadecimal as per the ACPI specification.  The only exception (as
+         * of ACPI 3.0) is that the ToInteger() operator allows both decimal
+         * and hexadecimal strings (hex prefixed with "0x").
          */
-        Status = AcpiUtStrtoul64 ((char *) Pointer, 16, &Result);
+        Status = AcpiUtStrtoul64 ((char *) Pointer, Flags, &Result);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -252,20 +254,6 @@ AcpiExConvertToInteger (
     /* Save the Result */
 
     ReturnDesc->Integer.Value = Result;
-
-    /*
-     * If we are about to overwrite the original object on the operand stack,
-     * we must remove a reference on the original object because we are
-     * essentially removing it from the stack.
-     */
-    if (*ResultDesc == ObjDesc)
-    {
-        if (Opcode != AML_STORE_OP)
-        {
-            AcpiUtRemoveReference (ObjDesc);
-        }
-    }
-
     *ResultDesc = ReturnDesc;
     return_ACPI_STATUS (AE_OK);
 }
@@ -278,7 +266,6 @@ AcpiExConvertToInteger (
  * PARAMETERS:  ObjDesc         - Object to be converted.  Must be an
  *                                Integer, Buffer, or String
  *              ResultDesc      - Where the new buffer object is returned
- *              Opcode          - AML opcode
  *
  * RETURN:      Status
  *
@@ -289,8 +276,7 @@ AcpiExConvertToInteger (
 ACPI_STATUS
 AcpiExConvertToBuffer (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **ResultDesc,
-    UINT16                  Opcode)
+    ACPI_OPERAND_OBJECT     **ResultDesc)
 {
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     UINT8                   *NewBuf;
@@ -357,20 +343,6 @@ AcpiExConvertToBuffer (
     /* Mark buffer initialized */
 
     ReturnDesc->Common.Flags |= AOPOBJ_DATA_VALID;
-
-    /*
-     * If we are about to overwrite the original object on the operand stack,
-     * we must remove a reference on the original object because we are
-     * essentially removing it from the stack.
-     */
-    if (*ResultDesc == ObjDesc)
-    {
-        if (Opcode != AML_STORE_OP)
-        {
-            AcpiUtRemoveReference (ObjDesc);
-        }
-    }
-
     *ResultDesc = ReturnDesc;
     return_ACPI_STATUS (AE_OK);
 }
@@ -443,7 +415,7 @@ AcpiExConvertToAscii (
             Digit = Integer;
             for (j = 0; j < i; j++)
             {
-                (void) AcpiUtShortDivide (&Digit, 10, &Digit, &Remainder);
+                (void) AcpiUtShortDivide (Digit, 10, &Digit, &Remainder);
             }
 
             /* Handle leading zeros */
@@ -503,7 +475,6 @@ AcpiExConvertToAscii (
  *                                Integer, Buffer, or String
  *              ResultDesc      - Where the string object is returned
  *              Type            - String flags (base and conversion type)
- *              Opcode          - AML opcode
  *
  * RETURN:      Status
  *
@@ -515,8 +486,7 @@ ACPI_STATUS
 AcpiExConvertToString (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **ResultDesc,
-    UINT32                  Type,
-    UINT16                  Opcode)
+    UINT32                  Type)
 {
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     UINT8                   *NewBuf;
@@ -578,6 +548,7 @@ AcpiExConvertToString (
 
         /* Null terminate at the correct place */
 
+        ReturnDesc->String.Length = StringLength;
         NewBuf [StringLength] = 0;
         break;
 
@@ -630,8 +601,10 @@ AcpiExConvertToString (
 
             NewBuf = ReturnDesc->Buffer.Pointer;
 
-            /* Convert buffer bytes to hex or decimal values (separated by commas) */
-
+            /* 
+             * Convert buffer bytes to hex or decimal values 
+             * (separated by commas)
+             */
             for (i = 0; i < ObjDesc->Buffer.Length; i++)
             {
                 NewBuf += AcpiExConvertToAscii (
@@ -653,19 +626,6 @@ AcpiExConvertToString (
 
     default:
         return_ACPI_STATUS (AE_TYPE);
-    }
-
-    /*
-     * If we are about to overwrite the original object on the operand stack,
-     * we must remove a reference on the original object because we are
-     * essentially removing it from the stack.
-     */
-    if (*ResultDesc == ObjDesc)
-    {
-        if (Opcode != AML_STORE_OP)
-        {
-            AcpiUtRemoveReference (ObjDesc);
-        }
     }
 
     *ResultDesc = ReturnDesc;
@@ -751,7 +711,7 @@ AcpiExConvertToTargetType (
              * a Buffer or a String to an Integer if necessary.
              */
             Status = AcpiExConvertToInteger (SourceDesc, ResultDesc,
-                        WalkState->Opcode);
+                        16);
             break;
 
 
@@ -762,7 +722,7 @@ AcpiExConvertToTargetType (
              * Integer or Buffer if necessary
              */
             Status = AcpiExConvertToString (SourceDesc, ResultDesc,
-                        ACPI_IMPLICIT_CONVERT_HEX, WalkState->Opcode);
+                        ACPI_IMPLICIT_CONVERT_HEX);
             break;
 
 
@@ -772,8 +732,7 @@ AcpiExConvertToTargetType (
              * The operand must be a Buffer.  We can convert an
              * Integer or String if necessary
              */
-            Status = AcpiExConvertToBuffer (SourceDesc, ResultDesc,
-                        WalkState->Opcode);
+            Status = AcpiExConvertToBuffer (SourceDesc, ResultDesc);
             break;
 
 
