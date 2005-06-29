@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.246 $
+ *       $Revision: 1.247 $
  *
  *****************************************************************************/
 
@@ -131,21 +131,34 @@
 #define ACPI_ASCII_MAX                  0x7F
 
 
+#ifdef DEFINE_ALTERNATE_TYPES
+/*
+ * Types used only in translated source, defined here to enable
+ * cross-platform compilation only.
+ */
+typedef int                             s32;
+typedef unsigned char                   u8;
+typedef unsigned short                  u16;
+typedef unsigned int                    u32;
+typedef COMPILER_DEPENDENT_UINT64       u64;
+
+#endif
+
 
 /*
  * Data types - Fixed across all compilation models (16/32/64)
  *
- * BOOLEAN      Logical Boolean.
- * INT8         8-bit  (1 byte) signed value
- * UINT8        8-bit  (1 byte) unsigned value
- * INT16        16-bit (2 byte) signed value
- * UINT16       16-bit (2 byte) unsigned value
- * INT32        32-bit (4 byte) signed value
- * UINT32       32-bit (4 byte) unsigned value
- * INT64        64-bit (8 byte) signed value
- * UINT64       64-bit (8 byte) unsigned value
- * NATIVE_INT   32-bit on IA-32, 64-bit on IA-64 signed value
- * NATIVE_UINT  32-bit on IA-32, 64-bit on IA-64 unsigned value
+ * BOOLEAN          Logical Boolean.
+ * INT8             8-bit  (1 byte) signed value
+ * UINT8            8-bit  (1 byte) unsigned value
+ * INT16            16-bit (2 byte) signed value
+ * UINT16           16-bit (2 byte) unsigned value
+ * INT32            32-bit (4 byte) signed value
+ * UINT32           32-bit (4 byte) unsigned value
+ * INT64            64-bit (8 byte) signed value
+ * UINT64           64-bit (8 byte) unsigned value
+ * ACPI_NATIVE_INT  32-bit on IA-32, 64-bit on IA-64 signed value
+ * ACPI_NATIVE_UINT 32-bit on IA-32, 64-bit on IA-64 unsigned value
  */
 
 #ifndef ACPI_MACHINE_WIDTH
@@ -169,13 +182,10 @@ typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
 /*! [End] no source code translation !*/
 
-typedef INT64                           NATIVE_INT;
-typedef UINT64                          NATIVE_UINT;
+typedef INT64                           ACPI_NATIVE_INT;
+typedef UINT64                          ACPI_NATIVE_UINT;
 
-typedef UINT32                          NATIVE_UINT_MAX32;
-typedef UINT64                          NATIVE_UINT_MIN32;
-
-typedef UINT64                          ACPI_TBLPTR;
+typedef UINT64                          ACPI_TABLE_PTR;
 typedef UINT64                          ACPI_IO_ADDRESS;
 typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 typedef UINT64                          ACPI_SIZE;
@@ -209,13 +219,10 @@ typedef struct
 
 /*! [End] no source code translation !*/
 
-typedef UINT16                          NATIVE_UINT;
-typedef INT16                           NATIVE_INT;
+typedef UINT16                          ACPI_NATIVE_UINT;
+typedef INT16                           ACPI_NATIVE_INT;
 
-typedef UINT16                          NATIVE_UINT_MAX32;
-typedef UINT32                          NATIVE_UINT_MIN32;
-
-typedef UINT32                          ACPI_TBLPTR;
+typedef UINT32                          ACPI_TABLE_PTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 typedef char                            *ACPI_PHYSICAL_ADDRESS;
 typedef UINT16                          ACPI_SIZE;
@@ -250,13 +257,10 @@ typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
 /*! [End] no source code translation !*/
 
-typedef INT32                           NATIVE_INT;
-typedef UINT32                          NATIVE_UINT;
+typedef INT32                           ACPI_NATIVE_INT;
+typedef UINT32                          ACPI_NATIVE_UINT;
 
-typedef UINT32                          NATIVE_UINT_MAX32;
-typedef UINT32                          NATIVE_UINT_MIN32;
-
-typedef UINT64                          ACPI_TBLPTR;
+typedef UINT64                          ACPI_TABLE_PTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 typedef UINT32                          ACPI_SIZE;
@@ -275,8 +279,7 @@ typedef UINT32                          ACPI_SIZE;
  * Miscellaneous common types
  */
 typedef UINT32                          UINT32_BIT;
-typedef NATIVE_UINT                     ACPI_PTRDIFF;
-typedef char                            NATIVE_CHAR;
+typedef ACPI_NATIVE_UINT                ACPI_PTRDIFF;
 
 /*
  * Pointer overlays to avoid lots of typecasting for
@@ -286,7 +289,7 @@ typedef union acpi_ptrs
 {
     ACPI_PHYSICAL_ADDRESS       Physical;
     void                        *Logical;
-    ACPI_TBLPTR                 Value;
+    ACPI_TABLE_PTR              Value;
 
 } ACPI_POINTERS;
 
