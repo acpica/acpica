@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.57 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -303,13 +303,15 @@ AcpiTbRecognizeTable (
     if (TableInfo->Type != ACPI_TABLE_FACS)
     {
         Status = AcpiTbVerifyTableChecksum (TableHeader);
-        if (ACPI_FAILURE (Status) &&
-            (!ACPI_CHECKSUM_ABORT))
+
+#if (!ACPI_CHECKSUM_ABORT)
+        if (ACPI_FAILURE (Status))
         {
             /* Ignore the error if configuration says so */
 
             Status = AE_OK;
         }
+#endif
     }
 
     return_ACPI_STATUS (Status);
@@ -614,6 +616,9 @@ AcpiTbDeleteSingleTable (
         case ACPI_MEM_MAPPED:
 
             AcpiOsUnmapMemory (TableDesc->BasePointer, TableDesc->Length);
+            break;
+
+        default:
             break;
         }
     }

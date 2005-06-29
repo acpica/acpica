@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.52 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "acinterp.h"
 #include "actables.h"
 
 
@@ -284,7 +283,7 @@ AcpiLoadTable (
 
     case ACPI_TABLE_FACS:
 
-        Status = AcpiTbBuildCommonFacs (&TableInfo);
+        AcpiTbBuildCommonFacs (&TableInfo);
         break;
 
     default:
@@ -298,7 +297,7 @@ AcpiLoadTable (
     {
         /* Uninstall table and free the buffer */
 
-        AcpiTbUninstallTable (TableInfo.InstalledDesc);
+        (void) AcpiTbUninstallTable (TableInfo.InstalledDesc);
     }
 
     return_ACPI_STATUS (Status);

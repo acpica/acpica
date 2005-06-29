@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.44 $
+ * $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -290,7 +290,7 @@ AcpiUtStrcmp (
  *
  ******************************************************************************/
 
-UINT32
+int
 AcpiUtStrncmp (
     const NATIVE_CHAR       *String1,
     const NATIVE_CHAR       *String2,
@@ -638,9 +638,9 @@ static const UINT8 _acpi_ctype[257] = {
  *
  ******************************************************************************/
 
-UINT32
+int
 AcpiUtToUpper (
-    UINT32                  c)
+    int                     c)
 {
 
     return (IS_LOWER(c) ? ((c)-0x20) : (c));
@@ -659,9 +659,9 @@ AcpiUtToUpper (
  *
  ******************************************************************************/
 
-UINT32
+int
 AcpiUtToLower (
-    UINT32                  c)
+    int                     c)
 {
 
     return (IS_UPPER(c) ? ((c)+0x20) : (c));
@@ -827,11 +827,11 @@ AcpiUtStrtoul (
     {
         if (IS_DIGIT (*String))
         {
-            index = *String - '0';
+            index = (UINT32) ((UINT8) *String - '0');
         }
         else
         {
-            index = AcpiUtToUpper (*String);
+            index = (UINT32) AcpiUtToUpper (*String);
             if (IS_UPPER (index))
             {
                 index = index - 'A' + 10;

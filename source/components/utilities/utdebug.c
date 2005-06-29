@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.95 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -122,9 +122,9 @@
         ACPI_MODULE_NAME    ("utdebug")
 
 
-UINT32          AcpiGbl_PrevThreadId = 0xFFFFFFFF;
-char            *AcpiGbl_FnEntryStr = "----Entry";
-char            *AcpiGbl_FnExitStr  = "----Exit-";
+static UINT32   AcpiGbl_PrevThreadId = 0xFFFFFFFF;
+static char     *AcpiGbl_FnEntryStr = "----Entry";
+static char     *AcpiGbl_FnExitStr  = "----Exit-";
 
 
 #ifdef ACPI_DEBUG
@@ -206,7 +206,7 @@ AcpiUtTrackStackPtr (
  *
  ****************************************************************************/
 
-void
+void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrint (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
@@ -283,7 +283,7 @@ AcpiUtDebugPrint (
  *
  ****************************************************************************/
 
-void
+void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrintRaw (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
@@ -610,6 +610,12 @@ AcpiUtDumpBuffer (
         return;
     }
 
+    if ((Count < 4) || (Count & 0x01))
+    {
+        Display = DB_BYTE_DISPLAY;
+    }
+
+    AcpiOsPrintf ("\nOffset   Value\n");
 
     /*
      * Nasty little dump buffer routine!

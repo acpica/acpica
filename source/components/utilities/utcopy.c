@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.94 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -117,7 +117,6 @@
 #define __UTCOPY_C__
 
 #include "acpi.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 #include "amlcode.h"
 
@@ -248,7 +247,7 @@ AcpiUtCopyIsimpleToEsimple (
             Buffer.Length = MAX_STRING_LENGTH;
             Buffer.Pointer = DataSpace;
 
-            Status = AcpiNsHandleToPathname ((ACPI_HANDLE *) InternalObject->Reference.Node,
+            Status = AcpiNsHandleToPathname ((ACPI_HANDLE) InternalObject->Reference.Node,
                         &Buffer);
 
             /* Converted (external) string length is returned from above */
@@ -354,7 +353,7 @@ AcpiUtCopyIelementToEelement (
          */
         TargetObject->Type              = ACPI_TYPE_PACKAGE;
         TargetObject->Package.Count     = SourceObject->Package.Count;
-        TargetObject->Package.Elements  = (ACPI_OBJECT *) Info->FreeSpace;
+        TargetObject->Package.Elements  = ACPI_CAST_PTR (ACPI_OBJECT, Info->FreeSpace);
 
         /*
          * Pass the new package object back to the package walk routine
@@ -416,7 +415,7 @@ AcpiUtCopyIpackageToEpackage (
     /*
      * First package at head of the buffer
      */
-    ExternalObject = (ACPI_OBJECT *) Buffer;
+    ExternalObject = ACPI_CAST_PTR (ACPI_OBJECT, Buffer);
 
     /*
      * Free space begins right after the first package
@@ -428,7 +427,7 @@ AcpiUtCopyIpackageToEpackage (
 
     ExternalObject->Type               = InternalObject->Common.Type;
     ExternalObject->Package.Count      = InternalObject->Package.Count;
-    ExternalObject->Package.Elements   = (ACPI_OBJECT *) Info.FreeSpace;
+    ExternalObject->Package.Elements   = ACPI_CAST_PTR (ACPI_OBJECT, Info.FreeSpace);
 
     /*
      * Build an array of ACPI_OBJECTS in the buffer
@@ -591,6 +590,10 @@ AcpiUtCopyEsimpleToIsimple (
     case ACPI_TYPE_INTEGER:
 
         InternalObject->Integer.Value   = ExternalObject->Integer.Value;
+        break;
+
+    default:
+        /* Other types can't get here */
         break;
     }
 
@@ -761,6 +764,10 @@ AcpiUtCopySimpleObject (
     case ACPI_TYPE_BUFFER:
 
         DestDesc->Buffer.Node = NULL;
+        DestDesc->Common.Flags = SourceDesc->Common.Flags;
+
+        /* Fall through to common string/buffer case */
+        /*lint -fallthrough */
 
     case ACPI_TYPE_STRING:
 
@@ -782,6 +789,10 @@ AcpiUtCopySimpleObject (
             ACPI_MEMCPY (DestDesc->String.Pointer, SourceDesc->String.Pointer,
                          SourceDesc->String.Length);
         }
+        break;
+
+    default:
+        /* Nothing to do for other simple objects */
         break;
     }
 
@@ -857,6 +868,7 @@ AcpiUtCopyIelementToIelement (
         }
 
         TargetObject->Package.Count = SourceObject->Package.Count;
+        TargetObject->Common.Flags  = SourceObject->Common.Flags;
 
         /*
          * Pass the new package object back to the package walk routine
@@ -905,6 +917,7 @@ AcpiUtCopyIpackageToIpackage (
 
 
     DestObj->Common.Type    = SourceObj->Common.Type;
+    DestObj->Common.Flags   = SourceObj->Common.Flags;
     DestObj->Package.Count  = SourceObj->Package.Count;
 
 
@@ -919,10 +932,6 @@ AcpiUtCopyIpackageToIpackage (
             ("AmlBuildCopyInternalPackageObject: Package allocation failure\n"));
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
-
-    /* Init */
-
-    DestObj->Package.NextElement = DestObj->Package.Elements;
 
     /*
      * Copy the package element-by-element by walking the package "tree".
