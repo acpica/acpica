@@ -135,6 +135,7 @@ GetBitShift (UINT32 Mask)
     for (Shift = 0; ((Mask >> Shift) & 1) == 0; Shift++)
     { ; }
 
+	FUNCTION_EXIT;
     return (Shift);
 }
 
