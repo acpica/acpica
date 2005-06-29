@@ -165,7 +165,7 @@ NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
  ***************************************************************************/
 
 void *
-NsDumpOneObject (NsHandle ObjHandle, INT32 Level, void *Context)
+NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
 {
     UINT32              DownstreamSiblingMask = 0;
     INT32               LevelTmp;
