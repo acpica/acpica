@@ -662,7 +662,7 @@ AmlResolveEntryToValue (
         /* Return an additional reference to the object */
 
         ObjDesc = ValDesc;
-        CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+        CmAddReference (ObjDesc);
         break;
 
 
@@ -738,7 +738,7 @@ AmlResolveEntryToValue (
         /* Return an additional reference to the object */
 
         ObjDesc = ValDesc;
-        CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+        CmAddReference (ObjDesc);
 
         DEBUG_PRINT (TRACE_BFIELD,
                     ("AmlResolveEntryToValue: New Buffer descriptor seq# %ld @ %p \n",
@@ -777,7 +777,7 @@ AmlResolveEntryToValue (
             /* Return an additional reference to the object */
 
             ObjDesc = ValDesc;
-            CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+            CmAddReference (ObjDesc);
         }
 
         break;
@@ -882,7 +882,7 @@ AmlResolveEntryToValue (
             /* Return an additional reference to the object */
 
             ObjDesc = ValDesc;
-            CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+            CmAddReference (ObjDesc);
         }
 
         break;
@@ -1114,7 +1114,7 @@ AmlResolveEntryToValue (
         /* Return an additional reference to the object */
 
         ObjDesc = ValDesc;
-        CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+        CmAddReference (ObjDesc);
         break;
 
 
