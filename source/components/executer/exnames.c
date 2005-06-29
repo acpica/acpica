@@ -184,7 +184,7 @@ AmlAllocateNameString (
         /* Allocation failure  */
 
         REPORT_ERROR ("AmlAllocateNameString: name allocation failure");
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     TempPtr = NameString;
@@ -226,7 +226,7 @@ AmlAllocateNameString (
 
     *TempPtr = 0;
 
-    return_VALUE (NameString);
+    return_PTR (NameString);
 }
 
 
