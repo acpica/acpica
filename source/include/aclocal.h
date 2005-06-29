@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.197 $
+ *       $Revision: 1.199 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -445,6 +445,14 @@ typedef struct acpi_gpe_xrupt_info
     UINT32                          InterruptLevel;     /* System interrupt level */
 
 } ACPI_GPE_XRUPT_INFO;
+
+
+typedef struct acpi_gpe_walk_info
+{
+    ACPI_NAMESPACE_NODE             *GpeDevice;
+    ACPI_GPE_BLOCK_INFO             *GpeBlock;
+
+} ACPI_GPE_WALK_INFO;
 
 
 typedef ACPI_STATUS (*ACPI_GPE_CALLBACK) (
