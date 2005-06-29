@@ -156,22 +156,22 @@ EvInstallDefaultAddressSpaceHandlers (
     */
 
 
-    Status = AcpiPathnameToHandle("\\_SB_.PCI0", &BusHandle);
+    Status = AcpiGetHandle (NULL, "\\_SB_.PCI0", &BusHandle);
     if(Status == AE_OK)
     {
         AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)0);
     }
-    Status = AcpiPathnameToHandle("\\_SB_.PCI0.PCI3", &BusHandle);
+    Status = AcpiGetHandle (NULL, "\\_SB_.PCI0.PCI3", &BusHandle);
     if(Status == AE_OK)
     {
         AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)3);
     }
-    Status = AcpiPathnameToHandle("\\_SB_.PCI1", &BusHandle);
+    Status = AcpiGetHandle (NULL, "\\_SB_.PCI1", &BusHandle);
     if(Status == AE_OK)
     {
         AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)1);
     }
-    Status = AcpiPathnameToHandle("\\_SB_.PCI2", &BusHandle);
+    Status = AcpiGetHandle (NULL, "\\_SB_.PCI2", &BusHandle);
     if(Status == AE_OK)
     {
         AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)2);
