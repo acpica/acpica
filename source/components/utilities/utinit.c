@@ -286,7 +286,7 @@ CmHardwareInitialize (void)
         {
             /* GPE0 specified in FACP  */
 
-            Gbl_Gpe0EnableRegisterSave = CmAllocate ((ACPI_SIZE) (Gbl_FACP->Gpe0BlkLen / 2));
+            Gbl_Gpe0EnableRegisterSave = CmAllocate (DIV_2 (Gbl_FACP->Gpe0BlkLen));
             if (!Gbl_Gpe0EnableRegisterSave)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -294,10 +294,10 @@ CmHardwareInitialize (void)
 
             /* Save state of GPE0 enable bits */
 
-            for (Index = 0; Index < Gbl_FACP->Gpe0BlkLen / 2; Index++)
+            for (Index = 0; Index < DIV_2 (Gbl_FACP->Gpe0BlkLen); Index++)
             {
                 Gbl_Gpe0EnableRegisterSave[Index] =
-                    OsdIn8 ((Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2));
+                    OsdIn8 (Gbl_FACP->Gpe0Blk + DIV_2 (Gbl_FACP->Gpe0BlkLen));
             }
         }
         
@@ -310,7 +310,7 @@ CmHardwareInitialize (void)
         {
             /* GPE1 defined */
 
-            Gbl_Gpe1EnableRegisterSave = CmAllocate ((ACPI_SIZE) (Gbl_FACP->Gpe1BlkLen / 2));
+            Gbl_Gpe1EnableRegisterSave = CmAllocate (DIV_2 (Gbl_FACP->Gpe1BlkLen));
             if (!Gbl_Gpe1EnableRegisterSave)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -318,10 +318,10 @@ CmHardwareInitialize (void)
 
             /* save state of GPE1 enable bits */
     
-            for (Index = 0; Index < Gbl_FACP->Gpe1BlkLen / 2; Index++)
+            for (Index = 0; Index < DIV_2 (Gbl_FACP->Gpe1BlkLen); Index++)
             {
                 Gbl_Gpe1EnableRegisterSave[Index] =
-                    OsdIn8 ((Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2));
+                    OsdIn8 (Gbl_FACP->Gpe1Blk + DIV_2 (Gbl_FACP->Gpe1BlkLen));
             }
         }
         
@@ -476,7 +476,7 @@ CmSubsystemShutdown (void)
 
     /* Close the Parser */
 
-    /* TBD: PsTerminate () */
+    /* TBD: [Restructure] PsTerminate () */
 
     PsDeleteParseCache ();
 
