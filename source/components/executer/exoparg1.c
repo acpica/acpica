@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.156 $
+ *              $Revision: 1.157 $
  *
  *****************************************************************************/
 
@@ -141,7 +141,7 @@
  * Where:
  *
  * xA - ARGUMENTS:    The number of arguments (input operands) that are
- *                    required for this opcode type (1 through 6 args).
+ *                    required for this opcode type (0 through 6 args).
  * yT - TARGETS:      The number of targets (output operands) that are required
  *                    for this opcode type (0, 1, or 2 targets).
  * zR - RETURN VALUE: Indicates whether this opcode type returns a value
@@ -159,8 +159,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute Type 1 monadic operator with numeric operand on
- *              object stack
+ * DESCRIPTION: Execute operator with no operands, one return value
  *
  ******************************************************************************/
 
@@ -173,6 +172,7 @@ AcpiExOpcode_0A_0T_1R (
 
 
     ACPI_FUNCTION_TRACE_STR ("ExOpcode_0A_0T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+
 
     /* Examine the AML opcode */
 
