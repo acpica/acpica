@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -409,7 +409,7 @@ AcpiNsDumpOneObject (
 
         case ACPI_TYPE_BUFFER_FIELD:
             AcpiOsPrintf (" Buf [%4.4s]",
-                    (char *) &ObjDesc->CommonField.Node->Name);
+                    (char *) &ObjDesc->BufferField.BufferObj->Buffer.Node->Name);
             break;
 
         case INTERNAL_TYPE_REGION_FIELD:
@@ -420,7 +420,7 @@ AcpiNsDumpOneObject (
         case INTERNAL_TYPE_BANK_FIELD:
             AcpiOsPrintf (" Rgn [%4.4s] Bnk [%4.4s]",
                     (char *) &ObjDesc->CommonField.RegionObj->Region.Node->Name,
-                    (char *) &ObjDesc->BankField.BankRegisterObj->CommonField.Node->Name);
+                    (char *) &ObjDesc->BankField.BankObj->CommonField.Node->Name);
             break;
 
         case INTERNAL_TYPE_INDEX_FIELD:
