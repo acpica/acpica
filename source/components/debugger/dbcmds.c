@@ -312,46 +312,6 @@ DbGetFromHistory (
 
 /******************************************************************************
  * 
- * FUNCTION:    DbMatchArgument
- *
- * PARAMETERS:  UserArgument             - User command line
- *
- * RETURN:      Index into command array, -1 if not found
- *
- * DESCRIPTION: Search command array for a command match
- *
- *****************************************************************************/
-
-INT32
-DbMatchArgument (
-    char                    *UserArgument,
-    ARGUMENT_INFO           *Arguments)
-{
-    UINT32                  i;
-
-
-    if (!UserArgument || UserArgument[0] == 0)
-    {
-        return -1;
-    }
-
-    for (i = 0; Arguments[i].Name; i++)
-    {
-        if (STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
-        {
-            return i;
-        }
-    }
-
-    /* Argument not recognized */
-
-    return -1;
-}
-
-
-
-/******************************************************************************
- * 
  * FUNCTION:    DbDisplayTableInfo
  *
  * PARAMETERS:  
