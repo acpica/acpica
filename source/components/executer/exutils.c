@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -273,7 +273,7 @@ AcpiExTruncateFor32bitTable (
         return;
     }
 
-    if (WalkState->MethodNode->Flags & ANOBJ_DATA_WIDTH_32)
+    if (AcpiGbl_IntegerByteWidth == 4)
     {
         /*
          * We are running a method that exists in a 32-bit ACPI table.
