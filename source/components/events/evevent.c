@@ -115,10 +115,10 @@
  *****************************************************************************/
 
 #include "acpi.h"
-#include "hardware.h"
-#include "events.h"
-#include "namesp.h"
-#include "common.h"
+#include "achware.h"
+#include "acevents.h"
+#include "acnamesp.h"
+#include "accommon.h"
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evevent");
@@ -460,7 +460,7 @@ AcpiEvSaveMethodInfo (
     void                    **ReturnValue)
 {
     UINT32                  GpeNumber;
-    char                    Name[ACPI_NAME_SIZE + 1];
+    INT8                    Name[ACPI_NAME_SIZE + 1];
     UINT8                   Type;
 
 
@@ -470,7 +470,7 @@ AcpiEvSaveMethodInfo (
     Name[ACPI_NAME_SIZE] = 0;
 
     /*
-     * Edge/Level determination is based on the 2nd char of the method name
+     * Edge/Level determination is based on the 2nd INT8 of the method name
      */
     if (Name[1] == 'L')
     {
