@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: hwmode - Functions for ACPI<->Legacy mode switching logic
+ * Module Name: hwacpi - ACPI hardware functions - mode and timer
  *
  *****************************************************************************/
 
@@ -114,14 +114,14 @@
  *
  *****************************************************************************/
 
-#define __HWMODE_C__
+#define __HWACPI_C__
 
 #include "acpi.h"
 #include "hardware.h"
 
 
 #define _COMPONENT          HARDWARE
-        MODULE_NAME         ("hwmode");
+        MODULE_NAME         ("hwacpi");
 
 
 /******************************************************************************
@@ -269,3 +269,56 @@ AcpiHwGetModeCapabilities (void)
 
     return_VALUE (AcpiGbl_SystemFlags & SYS_MODES_MASK);
 }
+
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwPmtTicks
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      Current value of the ACPI PMT (timer)
+ *
+ * DESCRIPTION: Obtains current value of ACPI PMT
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiHwPmtTicks (void)
+{
+    UINT32                   Ticks;
+
+    FUNCTION_TRACE ("AcpiPmtTicks");
+
+    Ticks = AcpiOsdIn32 (AcpiGbl_FACP->PmTmrBlk);
+
+    return_VALUE (Ticks);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwPmtResolution
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      Number of bits of resolution in the PMT (either 24 or 32)
+ *
+ * DESCRIPTION: Obtains resolution of the ACPI PMT (either 24bit or 32bit)
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiHwPmtResolution (void)
+{
+    FUNCTION_TRACE ("AcpiPmtResolution");
+
+    if (0 == AcpiGbl_FACP->TmrValExt)
+    {
+        return_VALUE (24);
+    }
+
+    return_VALUE (32);
+}
+
