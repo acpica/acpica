@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.129 $
+ *       $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -243,8 +243,12 @@ extern const NATIVE_CHAR               *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_
  ****************************************************************************/
 
 #define NUM_NS_TYPES                    INTERNAL_TYPE_INVALID+1
-#define NUM_PREDEFINED_NAMES            9
 
+#if defined (ACPI_NO_METHOD_EXECUTION) || defined (ACPI_CONSTANT_EVAL_ONLY)
+#define NUM_PREDEFINED_NAMES            10
+#else
+#define NUM_PREDEFINED_NAMES            9
+#endif
 
 ACPI_EXTERN ACPI_NAMESPACE_NODE         AcpiGbl_RootNodeStruct;
 ACPI_EXTERN ACPI_NAMESPACE_NODE        *AcpiGbl_RootNode;
