@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -194,7 +194,6 @@ AcpiPsDisplayObjectPathname (
     ACPI_PARSE_OBJECT       *TargetOp;
 
 
-    AcpiOsPrintf ("  (Path ");
 
     /* Search parent tree up to the root if necessary */
 
@@ -208,17 +207,18 @@ AcpiPsDisplayObjectPathname (
          * the predefined names, just display the name as given
          */
 
-        AcpiDbDisplayNamestring (Op->Value.Name);
+        AcpiOsPrintf ("  **** Path not found in parse tree");
     }
 
     else
     {
         /* The target was found, print the name and complete path */
 
+        AcpiOsPrintf ("  (Path ");
         AcpiDbDisplayPath (TargetOp);
+        AcpiOsPrintf (")");
     }
 
-    AcpiOsPrintf (")");
     return (AE_OK);
 }
 
