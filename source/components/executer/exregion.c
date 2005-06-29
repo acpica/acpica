@@ -198,14 +198,14 @@ AcpiAmlSystemMemorySpaceHandler (
         {
             /* Valid mapping, delete it */
 
-            AcpiOsdUnmapMemory (MemInfo->MappedLogicalAddress, MemInfo->MappedLength);
+            AcpiOsUnmapMemory (MemInfo->MappedLogicalAddress, MemInfo->MappedLength);
         }
 
         MemInfo->MappedLength = 0;  /* In case of failure below */
 
         /* Create a new mapping starting at the address given */
 
-        Status = AcpiOsdMapMemory ((void *) Address, SYSMEM_REGION_WINDOW_SIZE, (void **) &MemInfo->MappedLogicalAddress);
+        Status = AcpiOsMapMemory ((void *) Address, SYSMEM_REGION_WINDOW_SIZE, (void **) &MemInfo->MappedLogicalAddress);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -325,15 +325,15 @@ AcpiAmlSystemIoSpaceHandler (
         /* I/O Port width */
 
         case 8:
-            *Value = (UINT32) AcpiOsdIn8 ((ACPI_IO_ADDRESS) Address);
+            *Value = (UINT32) AcpiOsIn8 ((ACPI_IO_ADDRESS) Address);
             break;
 
         case 16:
-            *Value = (UINT32) AcpiOsdIn16 ((ACPI_IO_ADDRESS) Address);
+            *Value = (UINT32) AcpiOsIn16 ((ACPI_IO_ADDRESS) Address);
             break;
 
         case 32:
-            *Value = AcpiOsdIn32 ((ACPI_IO_ADDRESS) Address);
+            *Value = AcpiOsIn32 ((ACPI_IO_ADDRESS) Address);
             break;
 
         default:
@@ -354,15 +354,15 @@ AcpiAmlSystemIoSpaceHandler (
         {
         /* I/O Port width */
         case 8:
-            AcpiOsdOut8 ((ACPI_IO_ADDRESS) Address, (UINT8) *Value);
+            AcpiOsOut8 ((ACPI_IO_ADDRESS) Address, (UINT8) *Value);
             break;
 
         case 16:
-            AcpiOsdOut16 ((ACPI_IO_ADDRESS) Address, (UINT16) *Value);
+            AcpiOsOut16 ((ACPI_IO_ADDRESS) Address, (UINT16) *Value);
             break;
 
         case 32:
-            AcpiOsdOut32 ((ACPI_IO_ADDRESS) Address, *Value);
+            AcpiOsOut32 ((ACPI_IO_ADDRESS) Address, *Value);
             break;
 
         default:
@@ -416,7 +416,7 @@ AcpiAmlPciConfigSpaceHandler (
     FUNCTION_TRACE ("AmlPciConfigSpaceHandler");
 
     /*
-     *  The arguments to AcpiOsd(Read|Write)PciCfg(Byte|Word|Dword) are:
+     *  The arguments to AcpiOs(Read|Write)PciCfg(Byte|Word|Dword) are:
      *
      *  SegBus - 0xSSSSBBBB     - SSSS is the PCI bus segment
      *                            BBBB is the PCI bus number
@@ -455,15 +455,15 @@ AcpiAmlPciConfigSpaceHandler (
         /* PCI Register width */
 
         case 8:
-            Status = AcpiOsdReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
+            Status = AcpiOsReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
             break;
 
         case 16:
-            Status = AcpiOsdReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
+            Status = AcpiOsReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
             break;
 
         case 32:
-            Status = AcpiOsdReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
+            Status = AcpiOsReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
             break;
 
         default:
@@ -493,15 +493,15 @@ AcpiAmlPciConfigSpaceHandler (
         /* PCI Register width */
 
         case 8:
-            Status = AcpiOsdWritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *) Value);
+            Status = AcpiOsWritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *) Value);
             break;
 
         case 16:
-            Status = AcpiOsdWritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *) Value);
+            Status = AcpiOsWritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *) Value);
             break;
 
         case 32:
-            Status = AcpiOsdWritePciCfgDword (PciBus, DevFunc, PciReg, *Value);
+            Status = AcpiOsWritePciCfgDword (PciBus, DevFunc, PciReg, *Value);
             break;
 
         default:
