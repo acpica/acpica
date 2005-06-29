@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -295,7 +295,8 @@ AnMapEtypeToBtype (
 
 
     case INTERNAL_TYPE_RESOURCE:
-        return (ACPI_BTYPE_COMPUTE_DATA);
+    case INTERNAL_TYPE_RESOURCE_FIELD:
+        return (ACPI_BTYPE_REFERENCE);
 
     default:
         printf ("Unhandled encoded type: %X\n", Etype);
@@ -450,6 +451,12 @@ AnGetBtype (
         }
 
         ThisNodeBtype = AnMapEtypeToBtype (NsNode->Type);
+
+        /*
+         * Since it was a named reference, enable the
+         * reference bit also
+         */
+        ThisNodeBtype |= ACPI_BTYPE_REFERENCE;
 
         if (PsNode->ParseOpcode == METHODCALL)
         {
@@ -1172,6 +1179,11 @@ AnSemanticAnalysisWalkEnd (
     case OPTYPE_DYADIC2S:
     case OPTYPE_INDEX:
     case OPTYPE_MATCH:
+    case OPTYPE_CREATE_FIELD:
+    case OPTYPE_FATAL:
+    case OPTYPE_RECONFIGURATION:
+    case OPTYPE_CONTROL:
+    case OPTYPE_RETURN:
 
         RuntimeArgTypes2 = 0;
         while ((ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes)))
@@ -1215,7 +1227,8 @@ AnSemanticAnalysisWalkEnd (
                      * These named fields are supported at compile-time only;
                      * the names are not passed to the interpreter (via the AML).
                      */
-                    if (ArgNode->NsNode->Type == INTERNAL_TYPE_RESOURCE)
+                    if ((ArgNode->NsNode->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
+                        (ArgNode->NsNode->Type == INTERNAL_TYPE_RESOURCE))
                     {
                         AslError (ASL_ERROR, ASL_MSG_RESOURCE_FIELD, ArgNode, NULL);
                     }
@@ -1281,6 +1294,9 @@ AnSemanticAnalysisWalkEnd (
                     break;
 
                 }
+                break;
+
+            case ARGI_INTEGER:
                 break;
             }
 
