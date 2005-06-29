@@ -173,12 +173,6 @@ AmlAllocateNameString (
         SizeNeeded = PrefixCount + (ACPI_NAME_SIZE * NumNameSegs) + 2;
     }
 
-    if (SizeNeeded < INITIAL_NAME_BUF_SIZE)
-    {
-        SizeNeeded = INITIAL_NAME_BUF_SIZE;
-    }
-
-
     /* 
      * Allocate a buffer for the name.
      * This buffer must be deleted by the caller!
