@@ -1,7 +1,6 @@
 /******************************************************************************
- *
- * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.64 $
+ * 
+ * Module Name: dispatch.h
  *
  *****************************************************************************/
 
@@ -9,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,416 +114,333 @@
  *****************************************************************************/
 
 
-#ifndef _ACDISPAT_H_
-#define _ACDISPAT_H_
+
+
+#ifndef _DISPATCH_H_
+#define _DISPATCH_H_
 
 
 #define NAMEOF_LOCAL_NTE    "__L0"
 #define NAMEOF_ARG_NTE      "__A0"
 
 
-/*
- * dsopcode - support for late evaluation
- */
-ACPI_STATUS
-AcpiDsGetBufferFieldArguments (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
+/* For DsMthStackSetValue */
+
+#define MTH_TYPE_LOCAL              0
+#define MTH_TYPE_ARG                1
+
+
+
+/* Common interfaces */
 
 ACPI_STATUS
-AcpiDsGetRegionArguments (
-    ACPI_OPERAND_OBJECT     *RgnDesc);
-
-ACPI_STATUS
-AcpiDsGetBufferArguments (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-ACPI_STATUS
-AcpiDsGetPackageArguments (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-ACPI_STATUS
-AcpiDsEvalBufferFieldOperands (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
-
-ACPI_STATUS
-AcpiDsEvalRegionOperands (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
-
-ACPI_STATUS
-AcpiDsEvalDataObjectOperands (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-ACPI_STATUS
-AcpiDsInitializeRegion (
-    ACPI_HANDLE             ObjHandle);
-
-
-/*
- * dsctrl - Parser/Interpreter interface, control stack routines
- */
-ACPI_STATUS
-AcpiDsExecBeginControlOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
-
-ACPI_STATUS
-AcpiDsExecEndControlOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
-
-
-/*
- * dsexec - Parser/Interpreter interface, method execution callbacks
- */
-ACPI_STATUS
-AcpiDsGetPredicateValue (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     *ResultObj);
-
-ACPI_STATUS
-AcpiDsExecBeginOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       **OutOp);
-
-ACPI_STATUS
-AcpiDsExecEndOp (
-    ACPI_WALK_STATE         *State);
-
-
-/*
- * dsfield - Parser/Interpreter interface for AML fields
- */
-ACPI_STATUS
-AcpiDsCreateField (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     *RegionNode,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsCreateBankField (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     *RegionNode,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsCreateIndexField (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     *RegionNode,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsCreateBufferField (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsInitFieldObjects (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState);
-
-
-/*
- * dsload - Parser/Interpreter interface, namespace load callbacks
- */
-ACPI_STATUS
-AcpiDsLoad1BeginOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       **OutOp);
-
-ACPI_STATUS
-AcpiDsLoad1EndOp (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsLoad2BeginOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       **OutOp);
-
-ACPI_STATUS
-AcpiDsLoad2EndOp (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsInitCallbacks (
-    ACPI_WALK_STATE         *WalkState,
-    UINT32                  PassNumber);
-
-
-/*
- * dsmthdat - method data (locals/args)
- */
-ACPI_STATUS
-AcpiDsStoreObjectToLocal (
-    UINT16                  Opcode,
-    UINT32                  Index,
-    ACPI_OPERAND_OBJECT     *SrcDesc,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsMethodDataGetEntry (
-    UINT16                  Opcode,
-    UINT32                  Index,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     ***Node);
-
-void
-AcpiDsMethodDataDeleteAll (
-    ACPI_WALK_STATE         *WalkState);
-
-BOOLEAN
-AcpiDsIsMethodValue (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-ACPI_STATUS
-AcpiDsMethodDataGetValue (
-    UINT16                  Opcode,
-    UINT32                  Index,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **DestDesc);
-
-ACPI_STATUS
-AcpiDsMethodDataInitArgs (
-    ACPI_OPERAND_OBJECT     **Params,
-    UINT32                  MaxParamCount,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsMethodDataGetNode (
-    UINT16                  Opcode,
-    UINT32                  Index,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     **Node);
-
-void
-AcpiDsMethodDataInit (
-    ACPI_WALK_STATE         *WalkState);
-
-
-/*
- * dsmethod - Parser/Interpreter interface - control method parsing
- */
-ACPI_STATUS
-AcpiDsParseMethod (
-    ACPI_HANDLE             ObjHandle);
-
-ACPI_STATUS
-AcpiDsCallControlMethod (
-    ACPI_THREAD_STATE       *Thread,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
-
-ACPI_STATUS
-AcpiDsRestartControlMethod (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     *ReturnDesc);
-
-ACPI_STATUS
-AcpiDsTerminateControlMethod (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsBeginMethodExecution (
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_NAMESPACE_NODE     *CallingMethodNode);
-
-
-/*
- * dsinit
- */
-ACPI_STATUS
-AcpiDsInitializeObjects (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMESPACE_NODE     *StartNode);
-
-
-/*
- * dsobject - Parser/Interpreter interface - object initialization and conversion
- */
-ACPI_STATUS
-AcpiDsBuildInternalBufferObj (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  BufferLength,
-    ACPI_OPERAND_OBJECT     **ObjDescPtr);
-
-ACPI_STATUS
-AcpiDsBuildInternalPackageObj (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *op,
-    UINT32                  PackageLength,
-    ACPI_OPERAND_OBJECT     **ObjDesc);
-
-ACPI_STATUS
-AcpiDsInitObjectFromOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    UINT16                  Opcode,
-    ACPI_OPERAND_OBJECT     **ObjDesc);
-
-ACPI_STATUS
-AcpiDsCreateNode (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_PARSE_OBJECT       *Op);
-
-
-/*
- * dsutils - Parser/Interpreter interface utility routines
- */
-void
-AcpiDsClearImplicitReturn (
-    ACPI_WALK_STATE         *WalkState);
-
-BOOLEAN
-AcpiDsDoImplicitReturn (
-    ACPI_OPERAND_OBJECT     *ReturnDesc,
-    ACPI_WALK_STATE         *WalkState,
-    BOOLEAN                 AddReference);
-
-BOOLEAN
-AcpiDsIsResultUsed (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState);
-
-void
-AcpiDsDeleteResultIfNotUsed (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_OPERAND_OBJECT     *ResultObj,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsCreateOperand (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Arg,
-    UINT32                  ArgsRemaining);
-
-ACPI_STATUS
-AcpiDsCreateOperands (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *FirstArg);
-
-ACPI_STATUS
-AcpiDsResolveOperands (
-    ACPI_WALK_STATE         *WalkState);
-
-void
-AcpiDsClearOperands (
-    ACPI_WALK_STATE         *WalkState);
-
-
-/*
- * dswscope - Scope Stack manipulation
- */
-ACPI_STATUS
-AcpiDsScopeStackPush (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_TYPE        Type,
-    ACPI_WALK_STATE         *WalkState);
-
-
-ACPI_STATUS
-AcpiDsScopeStackPop (
-    ACPI_WALK_STATE         *WalkState);
-
-void
-AcpiDsScopeStackClear (
-    ACPI_WALK_STATE         *WalkState);
-
-
-/*
- * dswstate - parser WALK_STATE management routines
- */
-ACPI_STATUS
-AcpiDsObjStackPush (
+DsObjStackPush (
     void                    *Object,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiDsObjStackPop (
+DsObjStackPop (
     UINT32                  PopCount,
     ACPI_WALK_STATE         *WalkState);
 
-ACPI_WALK_STATE *
-AcpiDsCreateWalkState (
-    ACPI_OWNER_ID           OwnerId,
-    ACPI_PARSE_OBJECT       *Origin,
-    ACPI_OPERAND_OBJECT     *MthDesc,
-    ACPI_THREAD_STATE       *Thread);
-
-ACPI_STATUS
-AcpiDsInitAmlWalk (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    UINT8                   *AmlStart,
-    UINT32                  AmlLength,
-    ACPI_PARAMETER_INFO     *Info,
-    UINT32                  PassNumber);
-
-ACPI_STATUS
-AcpiDsObjStackPopAndDelete (
-    UINT32                  PopCount,
-    ACPI_WALK_STATE         *WalkState);
-
-void
-AcpiDsDeleteWalkState (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_WALK_STATE *
-AcpiDsPopWalkState (
-    ACPI_THREAD_STATE       *Thread);
-
-void
-AcpiDsPushWalkState (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_THREAD_STATE       *Thread);
-
-ACPI_STATUS
-AcpiDsResultStackPop (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsResultStackPush (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsResultStackClear (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_WALK_STATE *
-AcpiDsGetCurrentWalkState (
-    ACPI_THREAD_STATE       *Thread);
-
-ACPI_STATUS
-AcpiDsResultRemove (
-    ACPI_OPERAND_OBJECT     **Object,
+void *
+DsObjStackGetValue (
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState);
 
-ACPI_STATUS
-AcpiDsResultPop (
-    ACPI_OPERAND_OBJECT     **Object,
-    ACPI_WALK_STATE         *WalkState);
+
+
+/* dsregion - Op region support */
 
 ACPI_STATUS
-AcpiDsResultPush (
-    ACPI_OPERAND_OBJECT     *Object,
-    ACPI_WALK_STATE         *WalkState);
+DsGetRegionData (
+    ACPI_OBJECT_INTERNAL    *RgnDesc);
 
-ACPI_STATUS
-AcpiDsResultPopFromBottom (
-    ACPI_OPERAND_OBJECT     **Object,
-    ACPI_WALK_STATE         *WalkState);
 
-#ifdef ACPI_ENABLE_OBJECT_CACHE
+/* dsctrl - Parser/Interpreter interface, control stack routines */
+
+ACPI_CTRL_STATE *
+DsCreateControlState (void);
+
 void
-AcpiDsDeleteWalkStateCache (
-    void);
-#endif
+DsPushControlState (
+    ACPI_CTRL_STATE         *ControlState,
+    ACPI_WALK_STATE         *WalkState);
 
-#endif /* _ACDISPAT_H_ */
+ACPI_CTRL_STATE *
+DsPopControlState (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS 
+DsExecBeginControlOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op);
+
+ACPI_STATUS 
+DsExecEndControlOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op);
+
+
+/* dsexec - Parser/Interpreter interface, method execution callbacks */
+
+ACPI_STATUS
+DsExecBeginOp (
+    ACPI_WALK_STATE         *State,
+    ACPI_GENERIC_OP         *Op);
+
+ACPI_STATUS
+DsExecEndOp (
+    ACPI_WALK_STATE         *State,
+    ACPI_GENERIC_OP         *Op);
+
+
+/* dsfield - Parser/Interpreter interface for AML fields */
+
+
+ACPI_STATUS
+DsCreateField (
+    ACPI_GENERIC_OP         *Op,
+    ACPI_HANDLE             Region,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+DsCreateBankField (
+    ACPI_GENERIC_OP         *Op,
+    ACPI_HANDLE             Region,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+DsCreateIndexField (
+    ACPI_GENERIC_OP         *Op,
+    ACPI_HANDLE             Region,
+    ACPI_WALK_STATE         *WalkState);
+
+
+/* dsload - Parser/Interpreter interface, namespace load callbacks */
+
+ACPI_STATUS
+DsLoad1BeginOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op);
+
+ACPI_STATUS
+DsLoad1EndOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op);
+
+ACPI_STATUS
+DsLoad2BeginOp (
+    ACPI_WALK_STATE         *State,
+    ACPI_GENERIC_OP         *Op);
+
+ACPI_STATUS
+DsLoad2EndOp (
+    ACPI_WALK_STATE         *State,
+    ACPI_GENERIC_OP         *Op);
+
+
+/* dsmargs - method stack utilities */
+
+
+ACPI_STATUS
+DsMthStackDeleteArgs (
+    ACPI_WALK_STATE         *WalkState);
+
+BOOLEAN
+DsIsMethodValue (
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+INT32
+DsMthStackLevel (
+    void);
+
+ACPI_OBJECT_TYPE
+DsMthStackGetType (
+    UINT32                  Type,
+    UINT32                  Index);
+
+ACPI_STATUS
+DsMthStackGetValue (
+    UINT32                  Type,
+    UINT32                  Index, 
+    ACPI_OBJECT_INTERNAL    **ObjDesc);
+
+ACPI_STATUS
+DsMthStackSetValue (
+    UINT32                  Type,
+    UINT32                  Index, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc); 
+
+ACPI_STATUS
+DsMthStackPop (
+    void);
+
+ACPI_STATUS
+DsMthStackPush (
+    ACPI_OBJECT_INTERNAL    **Params);
+
+ACPI_STATUS
+DsMthStackDeleteValue (
+    UINT32                  Type,
+    UINT32                  Index);
+
+ACPI_STATUS
+DsMthStackInitArgs (
+    ACPI_OBJECT_INTERNAL    **Params,
+    UINT32                  ParamCount);
+
+NAME_TABLE_ENTRY *
+DsMthStackGetNte (
+    UINT32                  Type,
+    UINT32                  Index);
+
+ACPI_STATUS
+DsMthStackInit (
+    ACPI_WALK_STATE         *WalkState);
+
+
+/* dsmethod - Parser/Interpreter interface - control method parsing */
+
+ACPI_STATUS
+DsParseMethod (
+    ACPI_HANDLE             ObjHandle);
+
+ACPI_STATUS
+DsCallControlMethod (
+    ACPI_WALK_LIST          *WalkList,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op);
+
+ACPI_STATUS
+DsRestartControlMethod (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OBJECT_INTERNAL    *ReturnDesc);
+
+
+/* dsobj - Parser/Interpreter interface - object initialization and conversion */
+
+ACPI_STATUS
+DsInitOneObject (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context,
+    void                    **ReturnValue);
+
+ACPI_STATUS
+DsInitializeObjects (
+    void);
+
+ACPI_STATUS
+DsBuildInternalPackageObj (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *op,
+    ACPI_OBJECT_INTERNAL    **ObjDesc);
+
+ACPI_STATUS
+DsBuildInternalObject (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *op,
+    ACPI_OBJECT_INTERNAL    **ObjDescPtr);
+
+ACPI_STATUS
+DsInitObjectFromOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op,
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+ACPI_STATUS
+DsCreateNamedObject (
+    ACPI_WALK_STATE         *WalkState,
+    NAME_TABLE_ENTRY        *Entry,
+    ACPI_GENERIC_OP         *Op);
+
+
+/* dsregn - Parser/Interpreter interface - Op Region parsing */
+
+ACPI_STATUS
+DsEvalRegionOperands (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op);
+
+ACPI_STATUS
+DsInitializeRegion (
+    ACPI_HANDLE             ObjHandle);
+
+    
+/* dsutils - Parser/Interpreter interface utility routines */
+
+void
+DsDeleteResultIfNotUsed (
+    ACPI_GENERIC_OP         *Op,
+    ACPI_OBJECT_INTERNAL    *ResultObj,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+DsCreateOperand (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Arg);
+
+ACPI_STATUS
+DsCreateOperands (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *FirstArg);
+
+ACPI_STATUS
+DsResolveOperands (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_OBJECT_TYPE
+DsMapOpcodeToDataType (
+    UINT16                  Opcode,
+    UINT32                  *OutFlags);
+
+ACPI_OBJECT_TYPE 
+DsMapNamedOpcodeToDataType (
+    UINT16                  Opcode);
+
+
+/* Dswstate - parser WALK_STATE management routines */
+
+ACPI_WALK_STATE *
+DsCreateWalkState (
+    ACPI_GENERIC_OP         *Origin,
+    ACPI_OBJECT_INTERNAL    *MthDesc,
+    ACPI_WALK_LIST          *WalkList);
+
+ACPI_STATUS
+DsObjStackDeleteAll (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+DsObjStackPopAndDelete (
+    UINT32                  PopCount,
+    ACPI_WALK_STATE         *WalkState);
+
+void
+DsDeleteWalkState (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_WALK_STATE *
+DsPopWalkState (
+    ACPI_WALK_LIST          *WalkList);
+
+ACPI_STATUS
+DsResultStackPop (
+    ACPI_OBJECT_INTERNAL    **Object,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+DsResultStackPush (
+    void                    *Object,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+DsResultStackClear (
+    ACPI_WALK_STATE         *WalkState);
+
+
+
+
+#endif /* _DISPATCH_H_ */
