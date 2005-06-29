@@ -228,7 +228,6 @@ NotifyHandler (
 }
 
 
-
 /******************************************************************************
  * 
  * FUNCTION:    AeInstallHandlers
@@ -246,7 +245,7 @@ ACPI_STATUS
 AeInstallHandlers (void)
 {
     ACPI_STATUS             Status;
-
+    UINT32                  i;
 
 
     Status = AcpiInstallNotifyHandler (ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
@@ -256,15 +255,19 @@ AeInstallHandlers (void)
         printf ("Could not install a global notify handler\n");
     }
 
-    /* Install handler at the root object. 
-     * TBD: all default handlers should be installed here!
-     */
-    Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, 0x1, RegionHandler, NULL);
-    if (ACPI_FAILURE (Status))
+    for (i = 0; i < 3; i++)
     {
-        printf ("Could not install an OpRegion handler\n");
-    }
+        Status = AcpiRemoveAddressSpaceHandler (Gbl_RootObject, i, RegionHandler);
 
+        /* Install handler at the root object. 
+         * TBD: all default handlers should be installed here!
+         */
+        Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, i, RegionHandler, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("Could not install an OpRegion handler\n");
+        }
+    }
 
     return Status;
 }
