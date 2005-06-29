@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.58 $
+ *       $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -178,8 +178,11 @@
 #define AE_BAD_DATA                     (ACPI_STATUS) (0x0004 | AE_CODE_PROGRAMMER)
 #define AE_BAD_ADDRESS                  (ACPI_STATUS) (0x0005 | AE_CODE_PROGRAMMER)
 #define AE_ALIGNMENT                    (ACPI_STATUS) (0x0006 | AE_CODE_PROGRAMMER)
+#define AE_BAD_HEX_CONSTANT             (ACPI_STATUS) (0x0007 | AE_CODE_PROGRAMMER)
+#define AE_BAD_OCTAL_CONSTANT           (ACPI_STATUS) (0x0008 | AE_CODE_PROGRAMMER)
+#define AE_BAD_DECIMAL_CONSTANT         (ACPI_STATUS) (0x0009 | AE_CODE_PROGRAMMER)
 
-#define AE_CODE_PGM_MAX                 0x0006
+#define AE_CODE_PGM_MAX                 0x0009
 
 
 /*
@@ -291,7 +294,10 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Pgm[] =
     "AE_BAD_PATHNAME",
     "AE_BAD_DATA",
     "AE_BAD_ADDRESS",
-    "AE_ALIGNMENT"
+    "AE_ALIGNMENT",
+    "AE_BAD_HEX_CONSTANT",
+    "AE_BAD_OCTAL_CONSTANT",
+    "AE_BAD_DECIMAL_CONSTANT"
 };
 
 NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Tbl[] =
