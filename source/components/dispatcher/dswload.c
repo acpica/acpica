@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.58 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          ACPI_DISPATCHER
-        MODULE_NAME         ("dswload")
+        ACPI_MODULE_NAME    ("dswload")
 
 
 /*******************************************************************************
@@ -202,7 +202,7 @@ AcpiDsLoad1BeginOp (
     NATIVE_CHAR             *Path;
 
 
-    PROC_NAME ("DsLoad1BeginOp");
+    ACPI_FUNCTION_NAME ("DsLoad1BeginOp");
 
     Op = WalkState->Op;
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Op=%p State=%p\n", Op, WalkState));
@@ -247,7 +247,7 @@ AcpiDsLoad1BeginOp (
      * arguments to the opcode must be created as we go back up the parse tree later.
      */
     Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ObjectType,
-                    IMODE_LOAD_PASS1, NS_NO_UPSEARCH, WalkState, &(Node));
+                    ACPI_IMODE_LOAD_PASS1, ACPI_NS_NO_UPSEARCH, WalkState, &(Node));
 
     if (ACPI_FAILURE (Status))
     {
@@ -304,7 +304,7 @@ AcpiDsLoad1EndOp (
     ACPI_OBJECT_TYPE        ObjectType;
 
 
-    PROC_NAME ("DsLoad1EndOp");
+    ACPI_FUNCTION_NAME ("DsLoad1EndOp");
 
     Op = WalkState->Op;
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Op=%p State=%p\n", Op, WalkState));
@@ -392,7 +392,7 @@ AcpiDsLoad2BeginOp (
     void                    *Original = NULL;
 
 
-    PROC_NAME ("DsLoad2BeginOp");
+    ACPI_FUNCTION_NAME ("DsLoad2BeginOp");
 
 
     Op = WalkState->Op;
@@ -459,7 +459,7 @@ AcpiDsLoad2BeginOp (
          * name into the namespace, but look it up for use later
          */
         Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
-                        IMODE_EXECUTE, NS_SEARCH_PARENT, WalkState, &(Node));
+                        ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
     }
     else
     {
@@ -486,7 +486,7 @@ AcpiDsLoad2BeginOp (
          * arguments to the opcode must be created as we go back up the parse tree later.
          */
         Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
-                        IMODE_EXECUTE, NS_NO_UPSEARCH, WalkState, &(Node));
+                        ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH, WalkState, &(Node));
     }
 
     if (ACPI_SUCCESS (Status))
@@ -557,11 +557,11 @@ AcpiDsLoad2EndOp (
     UINT32                  i;
 
 
-    PROC_NAME ("DsLoad2EndOp");
+    ACPI_FUNCTION_NAME ("DsLoad2EndOp");
 
     Op = WalkState->Op;
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Opcode [%4.4X] Op %p State %p\n", 
-            Op->Opcode, Op, WalkState));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Opcode [%s] Op %p State %p\n",
+            WalkState->OpInfo->Name, Op, WalkState));
 
     /* Only interested in opcodes that have namespace objects */
 
@@ -813,12 +813,12 @@ AcpiDsLoad2EndOp (
          * Lookup the method name and save the Node
          */
         Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
-                        ACPI_TYPE_ANY, IMODE_LOAD_PASS2,
-                        NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE,
+                        ACPI_TYPE_ANY, ACPI_IMODE_LOAD_PASS2,
+                        ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE,
                         WalkState, &(NewNode));
         if (ACPI_SUCCESS (Status))
         {
-            /* 
+            /*
              * Make sure that what we found is indeed a method
              * We didn't search for a method on purpose, to see if the name would resolve
              */
