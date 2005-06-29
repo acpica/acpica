@@ -239,14 +239,10 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *
  * FUNCTION:    AcpiExecuteMethod
  *
- * PARAMETERS:  char *MethodName        name of method to execute
+ * PARAMETERS:  char *MethodName        Name of method to execute
  *              OBJECT_DESCRIPTOR       where to put method's return
- *              **ReturnValue           value (if any).
- *                                      ReturnValue must not be
- *                                      passed in as NULL because
- *                                      *ReturnValue will always
- *                                      be set (to NULL if there is
- *                                      no return value).
+ *              *ReturnValue            value (if any).  If NULL, no
+ *                                      value is returned.
  *              OBJECT_DESCRIPTOR 
  *              **Params                list of parameters to pass to
  *                                      method, terminated by NULL.
@@ -254,33 +250,33 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *                                      if no parameters are being
  *                                      passed.
  *
- * RETURN:      E_OK or E_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Find and execute the requested method passing the given
  *              parameters
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnValue,
                     OBJECT_DESCRIPTOR **Params)
 {
     nte             *MethodPtr = NULL;
-    char            *FullyQualifiedName = NULL;
-    INT32           Excep = E_ERROR;
-    
+    INT32           Excep = AE_ERROR;
+
+
     FUNCTION_TRACE ("AcpiExecuteMethod");
 
 
 BREAKPOINT3;
 
-    /*
     if (ReturnValue)
     {
-        *ReturnValue = NULL;
+        /* Init return value */
+
+        memset (ReturnValue, 0, sizeof (OBJECT_DESCRIPTOR));
     }
-	*/
-		
+
     if (!RootObject->Scope)
     {
         /* 
@@ -359,9 +355,9 @@ BREAKPOINT3;
 
             else
             {
-                DEBUG_EXEC ((FullyQualifiedName = NsFullyQualifiedName(MethodPtr->Scope)));
-                DEBUG_PRINT (TRACE_NAMES, ("Set scope %s \n", FullyQualifiedName));
-        
+                NsDumpPathname (MethodPtr->Scope, "Set scope: ", 
+                                TRACE_NAMES, _COMPONENT);
+
                 /*  reset current scope to beginning of scope stack */
 
                 CurrentScope = &ScopeStack[0];
@@ -370,49 +366,45 @@ BREAKPOINT3;
 
                 NsPushCurrentScope (MethodPtr->Scope, TYPE_Method);
 
-                DEBUG_EXEC ((FullyQualifiedName = NsFullyQualifiedName (MethodPtr)));
-                DEBUG_PRINT (TRACE_NAMES, ("Exec Method %s at offset %8XH\n",
-                                  FullyQualifiedName, 
+                NsDumpPathname (MethodPtr, "Exec Method: ", 
+                                TRACE_NAMES, _COMPONENT);
+
+                DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
                                   ((meth *) MethodPtr->Value)->Offset + 1));
         
                 ClearPkgStack ();
-                ObjStackTop = 0;                                           /* Clear object stack */
+                ObjStackTop = 0;    /* Clear object stack */
                 
                 /* Excecute the method here */
 
                 Excep = AmlExec (((meth *) MethodPtr->Value)->Offset + 1,
-                                    ((meth *) MethodPtr->Value)->Length - 1,
-                                    Params);
+                                 ((meth *) MethodPtr->Value)->Length - 1,
+                                 Params);
 
                 if (PkgNested ())
                 {
-                    /*  Package stack not empty at method exit  */
+                    /*  Package stack not empty at method exit and should be  */
 
                     REPORT_INFO (&KDT[0]);
                 }
 
                 if (GetMethodDepth () > -1)
                 {
-                    /*  Method stack not empty at method exit   */
+                    /*  Method stack not empty at method exit and should be */
 
                     REPORT_ERROR (&KDT[1]);
                 }
 
                 if (ObjStackTop)
                 {
-                    /*  Object stack not empty at method exit   */
-
-                    /* OBSOLETE!!  INT32           SaveTrace = Trace; */
+                    /* Object stack is not empty at method exit and should be */
 
                     REPORT_INFO (&KDT[2]);
-            
-                    /* OBSOLETE:  Trace |= TraceExec;  */        
-                    /* enable output from DumpStack */
                     DumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
                 }
 
                 DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
-                                FullyQualifiedName));
+                                MethodName));
             }
 
 #ifdef FETCH_VALUES
@@ -428,16 +420,11 @@ BREAKPOINT3;
             OBJECT_DESCRIPTOR           *ObjDesc;
 
 
-            DEBUG_PRINT (ACPI_INFO, ("Value: \n"));
+            DEBUG_PRINT (ACPI_INFO, ("Method Return Value (below): \n"));
             DUMP_ENTRY (MethodPtr);
 
             ObjDesc = AllocateObjectDesc (&KDT[3]);
-            if (!ObjDesc)
-            {               
-                DEBUG_PRINT (ACPI_ERROR, ("AcpiExecuteMethod: Descriptor Allocation Failure\n"));
-            }
-            
-            else
+            if (ObjDesc)
             {
                 /* Construct a descriptor pointing to the name */
             
@@ -453,6 +440,9 @@ BREAKPOINT3;
 
                 DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
                 ObjStack[ObjStackTop] = (void *) ObjDesc;
+
+                /* This causes ObjDesc (allocated above) to always be deleted */
+
                 Excep = GetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
 
                 /* 
@@ -469,31 +459,34 @@ BREAKPOINT3;
 #endif
 
 
-BREAKPOINT3;
 
         if (S_ERROR == Excep)
         {
-            Excep = E_ERROR;
+            Excep = AE_ERROR;
         }
     
+BREAKPOINT3;
         if (S_RETURN == Excep)
         {
             /* 
              * If the Method returned a value and the caller provided a place
-             * to store a returned value, pass back the returned value.
+             * to store a returned value, Copy the returned value to the object
+             * descriptor provided by the caller.
              */
 
             if (ReturnValue)
             {
-                (*ReturnValue) = *((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);
+                (*ReturnValue) = *((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);            
             }
         
-            else
-            {
-                DELETE (ObjStack[ObjStackTop]);
-            }
+            /* 
+             * TBD: do we ever want to delete this??? 
+             * There are clearly cases that we don't and this will fault
+             */
 
-            Excep = E_OK;
+            /* DELETE (ObjStack[ObjStackTop]); */
+
+            Excep = AE_OK;
         }
     }
 
@@ -507,13 +500,13 @@ BREAKPOINT3;
  *
  * PARAMETERS:  none
  *
- * RETURN:      E_OK or E_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Expands namespace, typically in response to a docking event
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AcpiLoadTableInNameSpace (void)
 {
     FUNCTION_TRACE ("AcpiLoadTableInNameSpace");
@@ -521,10 +514,10 @@ AcpiLoadTableInNameSpace (void)
 
     if (!RootObject->Scope)
     {
-        return E_ERROR;
+        return AE_ERROR;
     }
     
-    return (E_OK);
+    return (AE_OK);
 }
 
 
@@ -990,14 +983,14 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
  *
  *  PARAMETERS:     none
  *
- *  RETURN:         E_OK or E_ERROR
+ *  RETURN:         Status
  *
  *  DESCRIPTION:    Shrinks the namespace, typically in response to an undocking
  *                  event
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 PriUnloadNameSpace (void)
 {
     FUNCTION_TRACE ("PriUnloadNameSpace");
@@ -1005,10 +998,10 @@ PriUnloadNameSpace (void)
 
     if (!RootObject->Scope)
     {
-        return E_ERROR;
+        return AE_ERROR;
     }
     
-    return (E_OK);
+    return (AE_OK);
 }
 
 

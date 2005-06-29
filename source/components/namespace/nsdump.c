@@ -112,6 +112,44 @@ static ST_KEY_DESC_TABLE KDT[] = {
 };
 
 
+/****************************************************************************
+ *
+ * FUNCTION:    NsDumpPathname   
+ *
+ * PARAMETERS:  Handle              Object
+ *              Msg                 Prefix message
+ *              Level               Desired debug level
+ *              Component           Caller's component ID
+ *
+ * DESCRIPTION: Print an object's full namespace pathname
+ *              Manages allocation/freeing of a pathname buffer
+ *
+ ***************************************************************************/
+
+void
+NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
+{
+    char            *Buffer;
+
+
+    if (!(DebugLevel & Level) || !(DebugLayer & Component))
+    {
+        return;
+    }
+
+    Buffer = LocalAllocate (PATHNAME_MAX);
+    if (!Buffer)
+    {
+        return;
+    }
+
+    if (ACPI_SUCCESS (NsHandleToPathname (Handle, PATHNAME_MAX, Buffer)))
+    {
+        OsdPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
+    }
+
+    OsdFree (Buffer);
+}
 
 
 /****************************************************************************
@@ -153,12 +191,12 @@ NsDumpOneObject (NsHandle ObjHandle, INT32 Level, void *Context)
         {
             if (DownstreamSiblingMask & WhichBit)
             {    
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("| "));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("|"));
             }
 
             else
             {
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("  "));
+                DEBUG_PRINT_RAW (TRACE_TABLES, (" "));
             }
         
             WhichBit <<= 1;
@@ -169,29 +207,29 @@ NsDumpOneObject (NsHandle ObjHandle, INT32 Level, void *Context)
             if (NsExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
             {
                 DownstreamSiblingMask |= (1 << (Level - 1));
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("+-"));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
             }
 
             else
             {
                 DownstreamSiblingMask &= 0xffffffff ^ (1 << (Level - 1));
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("+-"));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
             }
 
             if (ThisEntry->Scope == NULL)
             {
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("- "));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("-"));
             }
         
             else if (NsExistDownstreamSibling (ThisEntry->Scope, NS_DEFAULT_TABLE_SIZE,
                                                 NEXTSEG (ThisEntry->Scope)))
             {
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("+ "));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
             }
         
             else
             {
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("- "));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("-"));
             }
         }
     }
@@ -227,7 +265,7 @@ NsDumpOneObject (NsHandle ObjHandle, INT32 Level, void *Context)
     {
         /* name is a Method and its AML offset/length are set */
         
-        DEBUG_PRINT_RAW (TRACE_TABLES, (" At:%04x(%04lx)\n",
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" @%04x(%04lx)\n",
                     ((meth *) ThisEntry->Value)->Offset,
                     ((meth *) ThisEntry->Value)->Length));                
     }
@@ -322,7 +360,7 @@ NsDumpRootDevices (void)
         return;
     }
 
-    SysBusHandle = AcpiNameToHandle (0, NS_SYSTEM_BUS);
+    AcpiNameToHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("All devices in the namespace:\n"));
     NsDumpObjects (TYPE_Device, SysBusHandle);
