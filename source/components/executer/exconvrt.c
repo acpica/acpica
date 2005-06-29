@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -531,9 +531,9 @@ AcpiExConvertToString (
 
         /*
          * Create a new String
-         * Need enough space for one ASCII integer plus null terminator
+         * Need enough space for one ASCII integer (plus null terminator)
          */
-        ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) StringLength + 1);
+        ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) StringLength);
         if (!ReturnDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -593,7 +593,7 @@ AcpiExConvertToString (
 
             /* Create a new string object and string buffer */
 
-            ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) StringLength);
+            ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) StringLength -1);
             if (!ReturnDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -617,6 +617,10 @@ AcpiExConvertToString (
 
             NewBuf--;
             *NewBuf = 0;
+
+            /* Recalculate length */
+
+            ReturnDesc->String.Length = ACPI_STRLEN (ReturnDesc->String.Pointer);
             break;
 
         default: 
