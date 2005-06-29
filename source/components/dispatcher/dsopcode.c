@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.25 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -290,8 +290,8 @@ AcpiDsGetRegionArguments (
     Node = ObjDesc->Region.Node;
 
     DEBUG_PRINT (TRACE_EXEC,
-        ("DsGetRegionArguments: [%4.4s] OpRegion JIT Init\n",
-        &Node->Name));
+        ("DsGetRegionArguments: [%4.4s] OpRegion Init at AML %p[%x]\n",
+        &Node->Name, ExtraDesc->Extra.Pcode, *(UINT32*) ExtraDesc->Extra.Pcode));
 
     /*
      * Allocate a new parser op to be the root of the parsed
@@ -478,7 +478,7 @@ AcpiDsEvalFieldUnitOperands (
         /* Invalid parameters on object stack  */
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("ExecCreateField/%s: bad operand(s) (0x%X)\n",
+            ("ExecCreateField/%s: bad operand(s) (%X)\n",
             AcpiPsGetOpcodeName (Op->Opcode), Status));
 
         goto Cleanup;
@@ -625,7 +625,7 @@ AcpiDsEvalFieldUnitOperands (
             !AcpiCmValidObjectType (SrcDesc->Common.Type))
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecCreateField: Tried to create field in invalid object type - 0x%X\n",
+                ("AmlExecCreateField: Tried to create field in invalid object type %X\n",
                 SrcDesc->Common.Type));
         }
 
