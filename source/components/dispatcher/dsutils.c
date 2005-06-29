@@ -489,13 +489,13 @@ PsxCreateOperands (
             goto Cleanup;
         }
 
+        DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: Arg #%d (%p) done, Arg1=%p\n", 
+                        ArgsPushed, Arg, FirstArg));
+
         /* Move on to next argument, if any */
 
         Arg = Arg->Next;
         ArgsPushed++;
-
-        DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: Arg #%d (%p) done, Arg1=%p\n", 
-                        ArgsPushed, Arg, FirstArg));
     }
 
     return_ACPI_STATUS (Status);
@@ -616,10 +616,8 @@ PsxMapOpcodeToDataType (
             DataType = ACPI_TYPE_String;
             break;
 
-        /* TBD: Might not be correct */
-
         case AML_NAMEPATH:
-            DataType = ACPI_TYPE_String;
+            DataType = INTERNAL_TYPE_Reference;
             break;
         }
 
