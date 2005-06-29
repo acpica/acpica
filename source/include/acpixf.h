@@ -99,35 +99,11 @@
 #define __ACPISUBSYS_H__
 
 #include <datatypes.h>
+#include <acpitables.h>
 #include <acpiobj.h>
 
 #define ACPI_MODE               1
 #define LEGACY_MODE             2
-
-
-/*
- * Common Data Structures used by the interfaces
- */
-
-typedef struct 
-{
-    UINT32              Length;         // Length in bytes of the buffer;
-    char                *BufferPtr;     // pointer to buffer
-} ACPI_BUFFER;
-
-typedef struct _AcpiSysInfo 
-{
-    INT32               DebugLevel;
-    INT32               DebugLayer;
-} ACPI_SYS_INFO;
-
-typedef struct 
-{
-    UINT32              HardwareId;
-    UINT32              UniqueId;
-    UINT32              Address;
-    UINT32              CurrentStatus;
-} ACPI_DEVICE_INFO;
 
 
 /*
@@ -136,7 +112,7 @@ typedef struct
 
 ACPI_STATUS
 AcpiInit (
-    char                *AcpiFile);
+    char                    *AcpiFile);
 
 
 /*
@@ -145,10 +121,10 @@ AcpiInit (
 
 ACPI_STATUS
 AcpiEvaluateObject (
-    NsHandle            Handle, 
-    char                *Pathname, 
-    OBJECT_DESCRIPTOR   *ReturnObject,
-    OBJECT_DESCRIPTOR   **Params);
+    ACPI_HANDLE             Handle, 
+    char                    *Pathname, 
+    ACPI_OBJECT             *ReturnObject,
+    ACPI_OBJECT             **Params);
 
 
 /*
@@ -157,105 +133,98 @@ AcpiEvaluateObject (
 
 ACPI_STATUS
 AcpiLoadNameSpace (
-    INT32               DisplayAmlDuringLoad);
+    INT32                   DisplayAmlDuringLoad);
 
 ACPI_STATUS
 AcpiLoadTable (
-    ACPI_TABLE_HEADER   *TablePtr,
-    NsHandle            *OutTableHandle);
+    ACPI_TABLE_HEADER       *TablePtr,
+    ACPI_HANDLE             *OutTableHandle);
 
 ACPI_STATUS
 AcpiUnLoadTable (
-    NsHandle            TableHandle);
+    ACPI_HANDLE             TableHandle);
 
 ACPI_STATUS
 AcpiLoadTableFromFile (
-    char                *FileName,
-    NsHandle            *OutTableHandle);
+    char                    *FileName,
+    ACPI_HANDLE             *OutTableHandle);
 
 ACPI_STATUS
 AcpiGetTableHeader (
-    AcpiTableType       TableType,
-    char                *OutTableHeader);
+    ACPI_TABLE_TYPE         TableType,
+    char                    *OutTableHeader);
 
 ACPI_STATUS
 AcpiGetTable (
-    AcpiTableType       TableType,
-    ACPI_BUFFER         *RetBuffer);
+    ACPI_TABLE_TYPE         TableType,
+    ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiNameToHandle (
-    NsHandle            Scope, 
-    UINT32              Name,
-    NsHandle            *OutHandle);
+    ACPI_HANDLE             Scope, 
+    UINT32                  Name,
+    ACPI_HANDLE             *OutHandle);
 
 ACPI_STATUS
 AcpiHandleToName (
-    NsHandle            Handle,
-    UINT32              *RetName);
+    ACPI_HANDLE             Handle,
+    UINT32                  *RetName);
 
 ACPI_STATUS
 AcpiPathnameToHandle (
-    char                *Pathname,
-    NsHandle            *OutHandle);
+    char                    *Pathname,
+    ACPI_HANDLE             *OutHandle);
 
 ACPI_STATUS
 AcpiHandleToPathname (
-    NsHandle            Handle,
-    ACPI_BUFFER         *OutPathBuffer);
-
-ACPI_STATUS
-AcpiGetNextObject (
-    NsType              Type, 
-    NsHandle            Scope, 
-    NsHandle            Handle,
-    NsHandle            *OutHandle);
-
-ACPI_STATUS
-AcpiGetParent (
-    NsHandle            Handle,
-    NsHandle            *OutHandle);
-
-ACPI_STATUS
-AcpiGetScope (
-    NsHandle            Handle,
-    NsHandle            *OutHandle);
-
-ACPI_STATUS
-AcpiGetContainingScope (
-    NsHandle            Handle,
-    NsHandle            *OutHandle);
+    ACPI_HANDLE             Handle,
+    ACPI_BUFFER             *OutPathBuffer);
 
 ACPI_STATUS
 AcpiWalkNamespace (
-    NsType              Type, 
-    NsHandle            StartHandle, 
-    UINT32              MaxDepth,
-    void *              (* UserFunction)(NsHandle,UINT32,void *), 
-    void                *Context, 
-    void *              *ReturnValue);
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             StartHandle, 
+    UINT32                  MaxDepth,
+    void *                  (* UserFunction)(ACPI_HANDLE,UINT32,void *), 
+    void                    *Context, 
+    void *                  *ReturnValue);
 
 ACPI_STATUS
 AcpiGetDeviceInfo (
-    NsHandle            Device, 
-    ACPI_DEVICE_INFO    *Info);
+    ACPI_HANDLE             Device, 
+    ACPI_DEVICE_INFO        *Info);
 
 
-/*
- * Hardware (ACPI device) interfaces
+/* 
+ * Object manipulation
  */
 
 ACPI_STATUS
-AcpiSetMode (
-    INT32               Mode);
+AcpiGetNextObject (
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             Scope, 
+    ACPI_HANDLE             Handle,
+    ACPI_HANDLE             *OutHandle);
 
-INT32
-AcpiGetMode (
-    void);
+ACPI_STATUS 
+AcpiGetType (
+    ACPI_HANDLE             Handle,
+    ACPI_OBJECT_TYPE        *RetType);
 
-INT32
-AcpiModeCapabilities (
-    void);
+ACPI_STATUS
+AcpiGetParent (
+    ACPI_HANDLE             Handle,
+    ACPI_HANDLE             *OutHandle);
+
+ACPI_STATUS
+AcpiGetScope (
+    ACPI_HANDLE             Handle,
+    ACPI_HANDLE             *OutHandle);
+
+ACPI_STATUS
+AcpiGetContainingScope (
+    ACPI_HANDLE             Handle,
+    ACPI_HANDLE             *OutHandle);
 
 
 /*
@@ -270,6 +239,51 @@ ACPI_STATUS
 AcpiDisable (
     void);
 
+ACPI_STATUS
+AcpiInstallFixedEventHandler (
+    UINT32                  Event,
+    FIXED_EVENT_HANDLER     Handler,
+    void                    *Context);
+    
+ACPI_STATUS
+AcpiRemoveFixedEventHandler (
+    UINT32                  Event,
+    FIXED_EVENT_HANDLER     Handler);
+
+ACPI_STATUS
+AcpiInstallGpeHandler (
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler, 
+    void                    *Context);
+
+ACPI_STATUS
+AcpiRemoveGpeHandler (
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler);
+
+ACPI_STATUS
+AcpiInstallNotifyHandler (
+    ACPI_HANDLE             Device, 
+    NOTIFY_HANDLER          Handler, 
+    void                    *Context);
+
+ACPI_STATUS
+AcpiRemoveNotifyHandler (
+    ACPI_HANDLE             Device, 
+    NOTIFY_HANDLER          Handler);
+
+ACPI_STATUS
+AcpiInstallOpRegionHandler (
+    UINT32                  OpRegion, 
+    OPREGION_HANDLER        Handler, 
+    void                    *Context);
+
+ACPI_STATUS
+AcpiRemoveOpRegionHandler (
+    UINT32                  OpRegion, 
+    OPREGION_HANDLER        Handler);
+
+
 
 /*
  * Resource related interfaces
@@ -277,22 +291,39 @@ AcpiDisable (
 
 ACPI_STATUS
 AcpiGetCurrentResources(
-    NsHandle            DeviceHandle,
-    ACPI_BUFFER         *RetBuffer);
+    ACPI_HANDLE             DeviceHandle,
+    ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiGetPossibleResources(
-    NsHandle            DeviceHandle,
-    ACPI_BUFFER         *RetBuffer);
+    ACPI_HANDLE             DeviceHandle,
+    ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiSetCurrentResources (
-    NsHandle            DeviceHandle,
-    ACPI_BUFFER         *InBuffer);
+    ACPI_HANDLE             DeviceHandle,
+    ACPI_BUFFER             *InBuffer);
 
 ACPI_STATUS
 AcpiGetSystemInfo(
-    ACPI_BUFFER         *OutBuffer);
+    ACPI_BUFFER             *OutBuffer);
+
+
+/*
+ * Hardware (ACPI device) interfaces
+ */
+
+ACPI_STATUS
+AcpiSetMode (
+    INT32                   Mode);
+
+INT32
+AcpiGetMode (
+    void);
+
+INT32
+AcpiModeCapabilities (
+    void);
 
 
 
@@ -313,24 +344,24 @@ InitAcpiLibGlobals (
 
 INT32
 LoadNameSpace (
-    INT32               DisplayAmlDuringLoad);
+    INT32                   DisplayAmlDuringLoad);
 
 INT32
 AcpiSetFirmwareWakingVector (
-    UINT32              PhysicalAddress);
+    UINT32                  PhysicalAddress);
 
 INT32
 AcpiGetFirmwareWakingVector (
-    UINT32              *PhysicalAddress);
+    UINT32                  *PhysicalAddress);
 
 
-NsHandle 
+ACPI_HANDLE 
 AcpiGetParentHandle (
-    NsHandle            ChildHandle);
+    ACPI_HANDLE             ChildHandle);
 
-NsType 
+ACPI_OBJECT_TYPE 
 AcpiValueType (
-    NsHandle            Handle);
+    ACPI_HANDLE             Handle);
 
 char * 
 AcpiCurrentScopeName (
@@ -338,19 +369,19 @@ AcpiCurrentScopeName (
 
 BOOLEAN 
 AcpiIsNameSpaceHandle (
-    NsHandle            QueryHandle);
+    ACPI_HANDLE             QueryHandle);
 
 BOOLEAN 
 AcpiIsNameSpaceValue (
-    NsType              Value);
+    ACPI_OBJECT_TYPE        Value);
 
 INT32
 AcpiSetFirmwareWakingVector (
-    UINT32              PhysicalAddress);
+    UINT32                  PhysicalAddress);
 
 INT32
 AcpiGetFirmwareWakingVector (
-    UINT32              *PhysicalAddress);
+    UINT32                  *PhysicalAddress);
 
 /* End of potentiallly obsolete functions */
 
