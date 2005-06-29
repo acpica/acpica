@@ -120,6 +120,7 @@
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
+#include <tables.h>
 #include <acpiosd.h>
 
 #define _THIS_MODULE        "isdump.c"
@@ -288,7 +289,7 @@ AmlDumpObjStackEntry (
         return_ACPI_STATUS (AE_OK);
     }
 
-    if (NsIsInSystemTable (EntryDesc))
+    if (TbSystemTablePointer (EntryDesc))
     {
         DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: %p is a Pcode pointer\n",
                         EntryDesc));
