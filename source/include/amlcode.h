@@ -16,15 +16,18 @@
  | the ACPI specification.
  |__________________________________________________________________________
  |
- | $Revision: 1.3 $
- | $Date: 2005/06/29 20:18:08 $
+ | $Revision: 1.4 $
+ | $Date: 2005/06/29 20:18:09 $
  | $Log: amlcode.h,v $
- | Revision 1.3  2005/06/29 20:18:08  aystarik
- | First BeOS compatible check-in.
+ | Revision 1.4  2005/06/29 20:18:09  aystarik
+ | Anti-Polish clean up
  |
  | 
- | date	99.01.13.18.50.00;	author grsmith1;	state Exp;
+ | date	99.02.12.19.10.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 4     2/12/99 11:10a Rmosgrov
+ * Anti-Polish clean up
  * 
  * 3     1/13/99 10:50a Grsmith1
  * First BeOS compatible check-in.
@@ -240,19 +243,19 @@ typedef enum {
 #define METHOD_SYNCHRONIZED     8
 
 #ifndef DEFINE_GLOBALS
-extern BYTE  abAml[256];
-extern WORD  awPfx[256];
-extern char *apcShortOps[256];
-extern char *apcLongOps[256];
-extern char *apcRegionTypes[5];
+extern BYTE  Aml[256];
+extern WORD  Pfx[256];
+extern char *ShortOps[256];
+extern char *LongOps[256];
+extern char *RegionTypes[5];
 extern char *MatchOps[];
-extern char *apcAccessTypes[];
-extern char *apcUpdateRules[];
+extern char *AccessTypes[];
+extern char *UpdateRules[];
 #else
 
 /* primary decoder */
 
-BYTE abAml[256] = {
+BYTE Aml[256] = {
             /*      x0                  x1                  x2                      x3          */
             /*      x4                  x5                  x6                      x7          */
             /*      x8                  x9                  xa                      xb          */
@@ -325,7 +328,7 @@ BYTE abAml[256] = {
 
 /* prefixed decoder */
 
-WORD awPfx[256] = {
+WORD Pfx[256] = {
             /*      x0                  x1                  x2                      x3          */
             /*      x4                  x5                  x6                      x7          */
             /*      x8                  x9                  xa                      xb          */
@@ -398,7 +401,7 @@ WORD awPfx[256] = {
 
 /* primary op names */
 
-char *apcShortOps[256] = {
+char *ShortOps[256] = {
             /*      x0                  x1                      x2                      x3          */
             /*      x4                  x5                      x6                      x7          */
             /*      x8                  x9                      xa                      xb          */
@@ -471,7 +474,7 @@ char *apcShortOps[256] = {
 
 /* prefixed op names */
 
-char *apcLongOps[256] = {
+char *LongOps[256] = {
             /*      x0                  x1                      x2                      x3          */
             /*      x4                  x5                      x6                      x7          */
             /*      x8                  x9                      xa                      xb          */
@@ -542,7 +545,7 @@ char *apcLongOps[256] = {
             "*ERROR*",          "*ERROR*",          "*ERROR*",          "*RESERVED*"
 };
 
-char *apcRegionTypes[5] = {   /* Region type decoding */
+char *RegionTypes[5] = {   /* Region type decoding */
     "SystemMemory",
     "SystemIO",
     "PCIConfig",
@@ -552,7 +555,7 @@ char *apcRegionTypes[5] = {   /* Region type decoding */
 
 char *MatchOps[] = { "Error", "MTR", "MEQ", "MLE", "MLT", "MGE", "MGT" };
 
-char *apcAccessTypes[] = {   /* Access type decoding */
+char *AccessTypes[] = {   /* Access type decoding */
     "AnyAcc",
     "ByteAcc",
     "WordAcc",
@@ -562,7 +565,7 @@ char *apcAccessTypes[] = {   /* Access type decoding */
     "SMBQuickAcc"
 };
 
-char *apcUpdateRules[] = {   /* Update rule decoding */
+char *UpdateRules[] = {   /* Update rule decoding */
     "Preserve",
     "WriteAsOnes",
     "WriteAsZeros"
