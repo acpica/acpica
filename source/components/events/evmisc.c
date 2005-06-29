@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.34 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -180,7 +180,7 @@ AcpiEvQueueNotifyRequest (
         break;
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Unknown Notify Value: %lx \n", NotifyValue));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Unknown Notify Value: %X \n", NotifyValue));
         break;
     }
 
@@ -219,7 +219,6 @@ AcpiEvQueueNotifyRequest (
             break;
         }
     }
-
 
     /* If there is any handler to run, schedule the dispatcher */
 
@@ -298,7 +297,6 @@ AcpiEvNotifyDispatch (
             GlobalContext = AcpiGbl_SysNotify.Context;
         }
     }
-
     else
     {
         /* Global driver notification handler */
@@ -309,7 +307,6 @@ AcpiEvNotifyDispatch (
             GlobalContext = AcpiGbl_DrvNotify.Context;
         }
     }
-
 
     /* Invoke the system handler first, if present */
 
@@ -476,7 +473,6 @@ AcpiEvAcquireGlobalLock(void)
 
     AcpiGbl_GlobalLockThreadCount++;
 
-
     /* If we (OS side) have the hardware lock already, we are done */
 
     if (AcpiGbl_GlobalLockAcquired)
@@ -491,7 +487,6 @@ AcpiEvAcquireGlobalLock(void)
         return_ACPI_STATUS (AE_OK);
     }
 
-
     /* We must acquire the actual hardware lock */
 
     GlobalLock = AcpiGbl_FACS->GlobalLock;
@@ -505,7 +500,6 @@ AcpiEvAcquireGlobalLock(void)
         AcpiGbl_GlobalLockAcquired = TRUE;
         return_ACPI_STATUS (AE_OK);
     }
-
 
     /*
      * Did not get the lock.  The pending bit was set above, and we must now
