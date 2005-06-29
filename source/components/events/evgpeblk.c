@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -413,7 +413,8 @@ AcpiEvSaveMethodInfo (
  *
  * PARAMETERS:  Callback from WalkNamespace
  *
- * RETURN:      Status
+ * RETURN:      Status.  NOTE: We ignore errors so that the _PRW walk is
+ *              not aborted on a single _PRW failure.
  *
  * DESCRIPTION: Called from AcpiWalkNamespace.  Expects each object to be a
  *              Device.  Run the _PRW method.  If present, extract the GPE
