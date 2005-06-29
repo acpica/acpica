@@ -107,23 +107,6 @@
 #define _COMPONENT          MISCELLANEOUS
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-   {"0000", '1', "Unable to open input file", "Unable to open input file"},
-   {"0001", '1', "Data file version mismatch", "Data file version mismatch"},
-   {"0002", '1', "", ""},   /*  obsolete    */
-   {"0003", 'I', "", ""},   /*  obsolete    */
-   {"0004", 'W', "RSDP structure not found", "RSDP structure not found"},
-   {"0005", '1', "Invalid signature where RSDP indicates RSDT should be located", "Invalid signature where RSDP indicates RSDT should be located"},
-   {"0006", '1', "Unable to open DSDT file", "Unable to open DSDT file"},
-   {"0007", '1', "Error creating output file", "Error creating output file"},
-   {"0008", '1', "", ""},   /*  obsolete    */
-   {"0009", '1', "", ""},   /*  obsolete    */
-   {"0010", '1', "", ""},   /*  obsolete    */
-   {"0011", '1', "Invalid value", "Invalid value"},
-   {NULL, 'I', NULL, NULL}
-};
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiInit
@@ -250,7 +233,7 @@ InitOpenFile (
         {
             /*  unable to open ACPI table input file    */
 
-            REPORT_ERROR (&KDT[0]);
+            REPORT_ERROR ("Unable to open input file");
             return AE_FILE_NOT_EXIST;
         }
     }
@@ -317,7 +300,7 @@ InitAcpiGetRsdt (
         {
             /*  data file version mismatch  */
 
-            REPORT_ERROR (&KDT[1]);
+            REPORT_ERROR ("Data file version mismatch");
 
             DEBUG_PRINT (ACPI_INFO,
                         ("ACPILIB version %s expects a data file version string of"
@@ -346,7 +329,7 @@ InitAcpiGetRsdt (
 
         if (Status)
         {
-            REPORT_WARNING (&KDT[4]);
+            REPORT_WARNING ("RSDP structure not found");
             Status = AE_NO_ACPI_TABLES;
         }
     }    
@@ -394,7 +377,7 @@ InitAcpiGetRsdt (
             {
                 /* Invalid RSDT signature */
 
-                REPORT_ERROR (&KDT[5]);
+                REPORT_ERROR ("Invalid signature where RSDP indicates RSDT should be located");
 
                 DEBUG_PRINT (ACPI_INFO,
                             ("RSDP indicates RSDT should be located at %lXh, however the table\n"
@@ -495,7 +478,7 @@ InitAcpiGetAllTables (
                 
                     else
                     {
-                        REPORT_ERROR (&KDT[6]);
+                        REPORT_ERROR ("Unable to open DSDT file");
                         Status = AE_FILE_NOT_EXIST;
                     }
                 }
@@ -619,7 +602,7 @@ ReportFacpRegisterError (
     INT32                   AcpiAssertion)
 {
     
-    REPORT_ERROR (&KDT[11]);
+    REPORT_ERROR ("Invalid value");
     
     DEBUG_PRINT (ACPI_ERROR, ("  Assertion %d.%d.%d Failed  %s=%08lXh\n",
                 ACPI_CHAPTER, AcpiTestSpecSection, AcpiAssertion, RegisterName, Value));
@@ -691,7 +674,7 @@ InitAcpiRegisters (void)
         
         else
         {
-            REPORT_ERROR (&KDT[7]);
+            REPORT_ERROR ("Error creating output file");
         }
     }
 
