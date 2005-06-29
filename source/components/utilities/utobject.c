@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -217,7 +217,9 @@ AcpiUtValidInternalObject (
 
     if (AcpiTbSystemTablePointer (Object))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Object %p is a Pcode Ptr\n", Object));
+        ACPI_DEBUG_PRINT (
+            (ACPI_DB_INFO, "**** Object %p points into an ACPI table\n", 
+            Object));
         return (FALSE);
     }
 
