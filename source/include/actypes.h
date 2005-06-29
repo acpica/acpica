@@ -190,6 +190,7 @@ typedef UINT32                          UINT32_BIT;
 typedef NATIVE_INT                      ACPI_PTRDIFF;
 typedef NATIVE_UINT                     ACPI_SIZE;
 typedef NATIVE_UINT                     ACPI_TBLPTR;
+typedef NATIVE_UINT                     ACPI_IO_ADDRESS;
 
 
 /*
@@ -427,6 +428,15 @@ typedef struct
     void                        *Pointer;       /* pointer to buffer */
 
 } ACPI_BUFFER;
+
+
+/*
+ * NameType for AcpiGetName
+ */
+
+#define ACPI_FULL_PATHNAME              0
+#define ACPI_SINGLE_NAME                1
+#define ACPI_NAME_TYPE_MAX              1
 
 
 /*
