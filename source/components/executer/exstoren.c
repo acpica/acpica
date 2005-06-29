@@ -3,7 +3,7 @@
  *
  * Module Name: amstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -133,16 +133,18 @@
 
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlResolveObject
  *
- * PARAMETERS:  
+ * PARAMETERS:  SourceDescPtr       - Pointer to the source object
+ *              TargetType          - Current type of the target
+ *              WalkState           - Current walk state
  *
- * RETURN:      Status
+ * RETURN:      Status, resolved object in SourceDescPtr.
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Resolve an object.  If the object is a reference, dereference 
+ *              it and return the actual object in the SourceDescPtr.
  *
  ******************************************************************************/
 
@@ -245,11 +247,17 @@ AcpiAmlResolveObject (
  *
  * FUNCTION:    AcpiAmlStoreObject
  *
- * PARAMETERS:  
+ * PARAMETERS:  SourceDesc          - Object to store
+ *              TargetType          - Current type of the target
+ *              TargetDescPtr       - Pointer to the target
+ *              WalkState           - Current walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: "Store" an object to another object.  This may include 
+ *              converting the source type to the target type (implicit
+ *              conversion), and a copy of the value of the source to
+ *              the target.
  *
  ******************************************************************************/
 
@@ -311,7 +319,7 @@ AcpiAmlStoreObject (
 
     case ACPI_TYPE_FIELD_UNIT:
 
-        Status = AcpiAmlCopyIntegerToFieldUnit (SourceDesc, TargetDesc, WalkState);
+        Status = AcpiAmlCopyIntegerToFieldUnit (SourceDesc, TargetDesc);
         break;
 
 
@@ -351,12 +359,8 @@ AcpiAmlStoreObject (
     default:
 
         /*
-         * All other types than Alias and the various Fields come here.
-         * Store SourceDesc as the new value of the Name, and set
-         * the Name's type to that of the value being stored in it.
-         * SourceDesc reference count is incremented by AttachObject.
+         * All other types come here.
          */
-
         DEBUG_PRINT (ACPI_WARN,
             ("AmlStoreObject: Store into type %s not implemented\n",
             AcpiCmGetTypeName (TargetType)));

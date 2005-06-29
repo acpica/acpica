@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -135,11 +135,12 @@
  *
  * FUNCTION:    AcpiAmlCopyBufferToBuffer
  *
- * PARAMETERS:  
+ * PARAMETERS:  SourceDesc          - Source object to copy
+ *              TargetDesc          - Destination object of the copy
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Copy a buffer object to another buffer object.
  *
  ******************************************************************************/
 
@@ -192,11 +193,12 @@ AcpiAmlCopyBufferToBuffer (
  *
  * FUNCTION:    AcpiAmlCopyStringToString
  *
- * PARAMETERS:  
+ * PARAMETERS:  SourceDesc          - Source object to copy
+ *              TargetDesc          - Destination object of the copy
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Copy a String object to another String object
  *
  ******************************************************************************/
 
@@ -263,11 +265,12 @@ AcpiAmlCopyStringToString (
  *
  * FUNCTION:    AcpiAmlCopyIntegerToIndexField
  *
- * PARAMETERS:  
+ * PARAMETERS:  SourceDesc          - Source object to copy
+ *              TargetDesc          - Destination object of the copy
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Write an Integer to an Index Field
  *
  ******************************************************************************/
 
@@ -329,11 +332,12 @@ AcpiAmlCopyIntegerToIndexField (
  *
  * FUNCTION:    AcpiAmlCopyIntegerToBankField
  *
- * PARAMETERS:  
+ * PARAMETERS:  SourceDesc          - Source object to copy
+ *              TargetDesc          - Destination object of the copy
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Write an Integer to a Bank Field
  *
  ******************************************************************************/
 
@@ -395,11 +399,13 @@ AcpiAmlCopyIntegerToBankField (
  *
  * FUNCTION:    AcpiAmlCopyDataToNamedField
  *
- * PARAMETERS:  
+ * PARAMETERS:  SourceDesc          - Source object to copy
+ *              Node                - Destination Namespace node
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Copy raw data to a Named Field.  No implicit conversion
+ *              is performed on the source object
  *
  ******************************************************************************/
 
@@ -460,19 +466,19 @@ AcpiAmlCopyDataToNamedField (
  *
  * FUNCTION:    AcpiAmlCopyIntegerToFieldUnit
  *
- * PARAMETERS:  
+ * PARAMETERS:  SourceDesc          - Source object to copy
+ *              TargetDesc          - Destination object of the copy
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Write an Integer to a Field Unit.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiAmlCopyIntegerToFieldUnit (
     ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc,
-    ACPI_WALK_STATE         *WalkState)
+    ACPI_OPERAND_OBJECT     *TargetDesc)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT8                   *Location = NULL;
