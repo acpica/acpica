@@ -26,6 +26,18 @@
 
 
 /* 
+ * If USE_HASHING is not set, there will be an (nte *) prefix to each name
+ * table, containing either a NULL pointer or the address of the next array
+ * of nte's in the scope.
+ */
+
+#ifndef USE_HASHING
+#define NEXTSEG(NameTbl) ((nte **)NameTbl)[-1]
+#endif
+
+
+
+/* 
  * An NsHandle (which is actually an nte *) can appear in some contexts,
  * such as on apObjStack, where a pointer to an OBJECT_DESCRIPTOR can also
  * appear.  This macro is used to distinguish them.
@@ -44,8 +56,103 @@
 #define  NS_ALL                 ((NsHandle)0)
 
 
+#define NUM_NS_TYPES            37
+
 extern char                     BadType[];
-extern char                     *NsTypeNames[];
+extern char                     *NsTypeNames[NUM_NS_TYPES];
+extern INT32                    NsProperties[NUM_NS_TYPES];
+
+
+/* 
+ * Elements of NsProperties are bit significant
+ * and should be one-to-one with values of NsType in acpinmsp.h
+ */
+#define NEWSCOPE    1               /* a definition of this type opens a name scope */
+#define LOCAL       2               /* suppress search of enclosing scopes */
+
+
+
+/* 
+ * Names built-in to the interpreter
+ *
+ * Initial values are currently supported only for types String and Number.
+ * To avoid type punning, both are specified as strings in this table.
+ */
+
+static struct InitVal {
+    char        *Name;
+    NsType      Type;
+    char        *Val;
+} PreDefinedNames[] = {
+    {"_GPE",    DefAny},
+    {"_PR_",    DefAny},
+    {"_SB_",    DefAny},
+    {"_SI_",    DefAny},
+    {"_TZ_",    DefAny},
+    {"_REV",    Number, "2"},
+    {"_OS_",    String, "Intel AML interpreter"},
+    {"_GL_",    Mutex},
+
+    /* Table terminator */
+
+    {(char *)0, Any}
+};
+
+
+/* 
+ * Typedef nte (name table entry) is private to acpinmsp.c to avoid global
+ * impact in the event of changes to it.  The externally-known type NsHandle
+ * is actually an (nte *).  If an external program needs to extract a field
+ * from the nte, it should use an access function defined in acpinmsp.c
+ *
+ * If you need an access function not provided herein, add it to this module
+ * rather than exporting the nte typedef.
+ *
+ * (nte *) are actually used in two different and not entirely compatible
+ * ways: as pointer to an individual nte and as pointer to an entire name
+ * table (which is an array of nte, sometimes referred to as a scope).  In
+ * the latter case, the specific nte pointed to may be unused; however its
+ * ParentScope member will be valid.
+ */
+
+typedef struct nte
+{
+    UINT32          NameSeg;        /* name segment, always 4 chars per ACPI spec.
+                                     * NameSeg must be the first field in the nte
+                                     * -- see the IsNsHandle macro in acpinmsp.h
+                                     */
+    struct nte      *ChildScope;    /* next level of names */
+    struct nte      *ParentScope;   /* previous level of names */
+    NsType          NtType;         /* type associated with name */
+    void            *ptrVal;        /* pointer to value */
+} nte;
+
+#define NOTFOUND    (nte *)0
+
+
+/* Stack of currently-open scopes, and pointer to top of that stack */
+
+typedef struct
+{
+    nte         *Scope;
+    /* 
+     * Type of scope, typically the same as the type of its parent's entry 
+     * (but not the same as the type of its parent's scope).
+     */
+    NsType      Type;   
+} SCOPE_STACK;    
+
+
+
+/* Namespace globals */
+
+extern nte          *Root;
+extern INT32        NsRootSize;        
+extern INT32        NsCurrentSize;      
+extern SCOPE_STACK  ScopeStack[];
+extern SCOPE_STACK  *CurrentScope;
+
+
 
 
 /* Prototypes */
@@ -304,6 +411,56 @@ GetTable (
 void * 
 GetFACS (
     OSD_FILE            *InputFile);
+
+
+
+
+/* nsaccess functions */
+
+
+INT32
+ExistDownstreamSibling (
+    nte                 *ThisEntry, 
+    INT32               Size, 
+    nte                 *Appendage);
+
+
+char *
+InternalizeName (
+    char                *DottedName);
+
+void
+NsPushCurrentScope (
+    nte                 *NewScope, 
+    NsType              Type);
+
+nte *
+AllocateNteDesc (
+    INT32               Size);
+
+nte *
+SearchTable (
+    char                *NamSeg, 
+    nte                 *NameTbl, 
+    INT32               TableSize, 
+    OpMode              LoadMode, 
+    NsType              Type);
+
+INT32
+NsOpensScope (
+    NsType              Type);
+
+NsHandle
+NsFindpVal (
+    OBJECT_DESCRIPTOR   *ObjDesc, 
+    NsHandle            SearchBase, 
+    INT32               MaxDepth);
+
+char *
+FindParentName (
+    nte                 *EntryToSearch, 
+    INT32               Trace);
+
 
 
 #endif /* __NAMESPACE_H__ */
