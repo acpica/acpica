@@ -866,6 +866,10 @@ AmlExecMonadic2 (
                 Value = ObjDesc->Package.Count;
                 break;
 
+            case INTERNAL_TYPE_Reference:
+
+                Value = 4;
+                break;
 
             default:
 
