@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -405,7 +405,7 @@ AcpiExLoadTableOp (
     Status = AcpiExStore (Operand[5], (ACPI_OPERAND_OBJECT *) ParameterNode, WalkState);
     if (ACPI_FAILURE (Status))
     {
-        /* Unload the table? */
+        AcpiExUnloadTable (DdbHandle);
     }
 
     return_ACPI_STATUS  (Status);
@@ -416,7 +416,8 @@ AcpiExLoadTableOp (
  *
  * FUNCTION:    AcpiExLoadOp
  *
- * PARAMETERS:  RgnDesc         - Op region where the table will be obtained
+ * PARAMETERS:  ObjDesc         - Region or Field where the table will be 
+ *                                obtained
  *              DdbHandle       - Where a handle to the table will be returned
  *
  * RETURN:      Status
@@ -427,12 +428,14 @@ AcpiExLoadTableOp (
 
 ACPI_STATUS
 AcpiExLoadOp (
-    ACPI_OPERAND_OBJECT     *RgnDesc,
-    ACPI_OPERAND_OBJECT     *Target)
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *Target,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *DdbHandle;
-    UINT8                   *TablePtr;
+    ACPI_OPERAND_OBJECT     *BufferDesc = NULL;
+    ACPI_TABLE_HEADER       *TablePtr = NULL;
     UINT8                   *TableDataPtr;
     ACPI_TABLE_HEADER       TableHeader;
     UINT32                  i;
@@ -440,86 +443,132 @@ AcpiExLoadOp (
 
     FUNCTION_TRACE ("ExLoadOp");
 
-    /* Object can be either a field or an opregion */
 
-    /* TBD: Handle field vs. Opregion */
+    /* Object can be either an OpRegion or a Field */
 
-
-    /* Get the table header */
-
-    TableHeader.Length = 0;
-    for (i = 0; i < sizeof (ACPI_TABLE_HEADER); i++)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
-        Status = AcpiEvAddressSpaceDispatch (RgnDesc, ACPI_READ,
-                            (ACPI_PHYSICAL_ADDRESS) i, 8,
-                            (ACPI_INTEGER *) ((UINT8 *) &TableHeader + i));
-        if (ACPI_FAILURE (Status))
+    case ACPI_TYPE_REGION:
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Region %p %s\n",
+            ObjDesc));
+
+        /* Get the table header */
+
+        TableHeader.Length = 0;
+        for (i = 0; i < sizeof (ACPI_TABLE_HEADER); i++)
         {
-            return_ACPI_STATUS (Status);
+            Status = AcpiEvAddressSpaceDispatch (ObjDesc, ACPI_READ,
+                                (ACPI_PHYSICAL_ADDRESS) i, 8,
+                                (ACPI_INTEGER *) ((UINT8 *) &TableHeader + i));
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
         }
-    }
 
-    /* Allocate a buffer for the entire table */
+        /* Allocate a buffer for the entire table */
 
-    TablePtr = ACPI_MEM_ALLOCATE (TableHeader.Length);
-    if (!TablePtr)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
+        TablePtr = ACPI_MEM_ALLOCATE (TableHeader.Length);
+        if (!TablePtr)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
 
-    /* Copy the header to the buffer */
+        /* Copy the header to the buffer */
 
-    MEMCPY (TablePtr, &TableHeader, sizeof (ACPI_TABLE_HEADER));
-    TableDataPtr = TablePtr + sizeof (ACPI_TABLE_HEADER);
+        MEMCPY (TablePtr, &TableHeader, sizeof (ACPI_TABLE_HEADER));
+        TableDataPtr = ACPI_PTR_ADD (UINT8, TablePtr, sizeof (ACPI_TABLE_HEADER));
 
 
-    /* Get the table from the op region */
+        /* Get the table from the op region */
 
-    for (i = 0; i < TableHeader.Length; i++)
-    {
-        Status = AcpiEvAddressSpaceDispatch (RgnDesc, ACPI_READ,
-                            (ACPI_PHYSICAL_ADDRESS) i, 8,
-                            (ACPI_INTEGER *) (TableDataPtr + i));
+        for (i = 0; i < TableHeader.Length; i++)
+        {
+            Status = AcpiEvAddressSpaceDispatch (ObjDesc, ACPI_READ,
+                                (ACPI_PHYSICAL_ADDRESS) i, 8,
+                                (ACPI_INTEGER *) (TableDataPtr + i));
+            if (ACPI_FAILURE (Status))
+            {
+                goto Cleanup;
+            }
+        }
+        break;
+
+
+    case ACPI_TYPE_BUFFER_FIELD:
+    case INTERNAL_TYPE_REGION_FIELD:
+    case INTERNAL_TYPE_BANK_FIELD:
+    case INTERNAL_TYPE_INDEX_FIELD:
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Field %p %s\n",
+            ObjDesc, AcpiUtGetTypeName (ObjDesc->Common.Type)));
+
+        /*
+         * The length of the field must be at least as large as the table.
+         * Read the entire field and thus the entire table.  Buffer is
+         * allocated during the read.
+         */
+        Status = AcpiExReadDataFromField (ObjDesc, &BufferDesc);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
         }
+ 
+        TablePtr = (ACPI_TABLE_HEADER *) BufferDesc->Buffer.Pointer;
+        break;
+
+
+    default:
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
+
 
     /* Table must be either an SSDT or a PSDT */
 
-    if ((!STRNCMP (TableHeader.Signature,
+    if ((!STRNCMP (TablePtr->Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].SigLength)) &&
-        (!STRNCMP (TableHeader.Signature,
+        (!STRNCMP (TablePtr->Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].SigLength)))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
-            (char *) &TableHeader.Signature));
+            (char *) &TablePtr->Signature));
         Status = AE_BAD_SIGNATURE;
         goto Cleanup;
     }
 
     /* Install the new table into the local data structures */
 
-    Status = AcpiNsAddTable ((ACPI_TABLE_HEADER *) TablePtr, AcpiGbl_RootNode, &DdbHandle);
+    Status = AcpiNsAddTable (TablePtr, AcpiGbl_RootNode, &DdbHandle);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
     }
 
+    /* Store the DdbHandle into the Target operand */
 
-    /* Store the tabledesc into the DdbHandle target */
-    /* DdbHandle = TableDesc; */
+    Status = AcpiExStore (DdbHandle, Target, WalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiExUnloadTable (DdbHandle);
+    }
 
     return_ACPI_STATUS (Status);
 
 
 Cleanup:
 
-    ACPI_MEM_FREE (TablePtr);
+    if (BufferDesc)
+    {
+        AcpiUtRemoveReference (BufferDesc);
+    }
+    else
+    {
+        ACPI_MEM_FREE (TablePtr);
+    }
     return_ACPI_STATUS (Status);
 }
 
