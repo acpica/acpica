@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -196,9 +196,8 @@ AcpiNsInitializeObjects (
  * DESCRIPTION: Walk the entire namespace and initialize all ACPI devices.
  *              This means running _INI on all present devices.
  *
- *              Also: Install PCI config space handler for all PCI root bridges.
- *              A PCI root bridge is found by searching for devices containing
- *              a HID with the value EISAID("PNP0A03")
+ *              Note: We install PCI config space handler on region access,
+ *              not here.
  *
  ******************************************************************************/
 
