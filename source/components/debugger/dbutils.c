@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.32 $
+ *              $Revision: 1.38 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -128,7 +128,7 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbutils")
 
 
@@ -183,10 +183,10 @@ AcpiDbDumpBuffer (
     UINT32                  Address)
 {
 
-    AcpiOsPrintf ("\nLocation 0x%X:\n", Address);
+    AcpiOsPrintf ("\nLocation %X:\n", Address);
 
     AcpiDbgLevel |= TRACE_TABLES;
-    AcpiCmDumpBuffer ((UINT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer ((UINT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 }
 
 
@@ -230,8 +230,8 @@ AcpiDbDumpObject (
         break;
 
 
-    case ACPI_TYPE_NUMBER:
-        AcpiOsPrintf ("[Number]  Value: %ld (0x%lX)\n", ObjDesc->Number.Value, ObjDesc->Number.Value);
+    case ACPI_TYPE_INTEGER:
+        AcpiOsPrintf ("[Number]  Value: %ld (%lX)\n", ObjDesc->Integer.Value, ObjDesc->Integer.Value);
         break;
 
 
@@ -249,7 +249,7 @@ AcpiDbDumpObject (
     case ACPI_TYPE_BUFFER:
 
         AcpiOsPrintf ("[Buffer]  Value: ");
-        AcpiCmDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         break;
 
 
@@ -278,7 +278,7 @@ AcpiDbDumpObject (
 
     default:
 
-        AcpiOsPrintf ("[Unknown Type] 0x%X \n", ObjDesc->Type);
+        AcpiOsPrintf ("[Unknown Type] %X \n", ObjDesc->Type);
         break;
     }
 }
@@ -450,11 +450,11 @@ AcpiDbLocalNsLookup (
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiUtFormatException (Status));
     }
 
 
-    AcpiCmFree (InternalPath);
+    ACPI_MEM_FREE (InternalPath);
 
     return (Node);
 }
