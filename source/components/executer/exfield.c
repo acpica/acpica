@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -624,7 +624,7 @@ AcpiAmlCommonAccessField (
     DEBUG_PRINT (ACPI_INFO,
         ("CommonAccessField: Mode=%d BitLen=%X BitOff=%X ByteOff=%X\n",
         Mode, ObjDesc->CommonField.BitLength, ObjDesc->CommonField.BitOffset,
-        ObjDesc->CommonField.Offset));
+        ObjDesc->CommonField.ByteOffset));
 
 
 

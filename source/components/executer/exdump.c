@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -510,9 +510,9 @@ AcpiAmlDumpOperand (
 
         DEBUG_PRINT_RAW (ACPI_INFO,
             ("RegionField: bits=%X  acc=%X lock=%X update=%X at byte=%lX bit=%X of below:\n",
-            EntryDesc->Field.BitLength, EntryDesc->Field.Access,
-            EntryDesc->Field.LockRule,  EntryDesc->Field.UpdateRule,
-            EntryDesc->Field.Offset,    EntryDesc->Field.BitOffset));
+            EntryDesc->Field.BitLength,  EntryDesc->Field.Access,
+            EntryDesc->Field.LockRule,   EntryDesc->Field.UpdateRule,
+            EntryDesc->Field.ByteOffset, EntryDesc->Field.BitOffset));
         DUMP_STACK_ENTRY (EntryDesc->Field.RegionObj);
         break;
 
@@ -527,7 +527,7 @@ AcpiAmlDumpOperand (
 
         DEBUG_PRINT_RAW (ACPI_INFO,
             ("BufferField: %X bits at byte %lX bit %X of \n",
-            EntryDesc->BufferField.BitLength, EntryDesc->BufferField.Offset,
+            EntryDesc->BufferField.BitLength, EntryDesc->BufferField.ByteOffset,
             EntryDesc->BufferField.BitOffset));
 
         if (!EntryDesc->BufferField.BufferObj)
@@ -801,7 +801,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : %s\n", "Type", "BufferField");
         AcpiOsPrintf ("%20s : %X\n", "BitLength", ObjDesc->BufferField.BitLength);
         AcpiOsPrintf ("%20s : %X\n", "BitOffset", ObjDesc->BufferField.BitOffset);
-        AcpiOsPrintf ("%20s : %X\n", "Offset", ObjDesc->BufferField.Offset);
+        AcpiOsPrintf ("%20s : %X\n", "ByteOffset",ObjDesc->BufferField.ByteOffset);
         AcpiOsPrintf ("%20s : %p\n", "BufferObj", ObjDesc->BufferField.BufferObj);
         break;
 
@@ -889,7 +889,7 @@ AcpiAmlDumpObjectDescriptor (
 
         AcpiOsPrintf ("%20s : %p\n", "Granularity", ObjDesc->Field.Granularity);
         AcpiOsPrintf ("%20s : %p\n", "BitLength", ObjDesc->Field.BitLength);
-        AcpiOsPrintf ("%20s : %p\n", "Offset", ObjDesc->Field.Offset);
+        AcpiOsPrintf ("%20s : %p\n", "ByteOffset",ObjDesc->Field.ByteOffset);
         AcpiOsPrintf ("%20s : %p\n", "BitOffset", ObjDesc->Field.BitOffset);
         AcpiOsPrintf ("%20s : %p\n", "RegionObj", ObjDesc->Field.RegionObj);
         break;
@@ -903,7 +903,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : %X\n", "UpdateRule", ObjDesc->BankField.UpdateRule);
         AcpiOsPrintf ("%20s : %X\n", "BitLength", ObjDesc->BankField.BitLength);
         AcpiOsPrintf ("%20s : %X\n", "BitOffset", ObjDesc->BankField.BitOffset);
-        AcpiOsPrintf ("%20s : %X\n", "Offset", ObjDesc->BankField.Offset);
+        AcpiOsPrintf ("%20s : %X\n", "ByteOffset", ObjDesc->BankField.ByteOffset);
         AcpiOsPrintf ("%20s : %X\n", "Value", ObjDesc->BankField.Value);
         AcpiOsPrintf ("%20s : %p\n", "RegionObj", ObjDesc->BankField.RegionObj);
         AcpiOsPrintf ("%20s : %X\n", "BankRegisterObj", ObjDesc->BankField.BankRegisterObj);
