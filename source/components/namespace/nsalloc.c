@@ -191,60 +191,75 @@ NsAllocateNameTable (
 ACPI_STATUS
 NsDeleteNamespace (void)
 {
-    ACPI_HANDLE             ObjHandle = 0;
-    ACPI_HANDLE             StartHandle;
-    ACPI_HANDLE             Scope;
-    ACPI_HANDLE             NewScope;
+    ACPI_HANDLE             ChildHandle;
+    ACPI_HANDLE             ParentHandle;
+    ACPI_HANDLE             Dummy;
+    UINT32                  Level;
 
 
     FUNCTION_TRACE ("NsDeleteNamespace");
 
 
-    /* Begin search in the scope owned by the starting object */
+    /* Begin deletion walk at the root object */
 
-    Scope = RootObject->Scope;
-    StartHandle = RootObject;
+    ParentHandle    = RootObject;
+    ChildHandle     = 0;
+    Level           = 1;
 
     /* 
      * Traverse the tree of objects until we bubble back up 
      * to where we started.
      */
 
-    while (ObjHandle != StartHandle)
+    while (Level > 0)
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (TYPE_Any, Scope, ObjHandle, &ObjHandle)))
+        if (ACPI_SUCCESS (AcpiGetNextObject (TYPE_Any, ParentHandle, ChildHandle, &ChildHandle)))
         {
             /* Found an object - delete the object within the Value field */
 
-            NsDeleteValue (ObjHandle);
+            NsDeleteValue (ChildHandle);
 
-            /* Check for a valid scope for this object */
+            /* Check if this object has any children */
 
-            if (ACPI_SUCCESS (AcpiGetScope (ObjHandle, &NewScope)))
+            if (ACPI_SUCCESS (AcpiGetNextObject (TYPE_Any, ChildHandle, 0, &Dummy)))
             {
-                /* There is a valid scope, we will check for child objects */
+                /* There is at least one child of this object, visit the object */
 
-                ObjHandle = 0;
-                Scope = NewScope;
+                Level++;
+                ParentHandle    = ChildHandle;
+                ChildHandle     = 0;
+            }
+
+            else
+            {
+                /* There may be a name table even if there are no children */
+
+                NsDeleteScope (((NAME_TABLE_ENTRY *) ChildHandle)->Scope);
+
             }
         }
 
         else
         {
-            /*
-             * No more objects in this scope, get the scope parent, then we can
-             * delete the scope.
+            /* 
+             * No more children in this object.  
+             * We will move up to the grandparent.
              */
-            AcpiGetParent (Scope, &ObjHandle);
-            NsDeleteScope (Scope);
+            Level--;
 
-            /*
-             * Go back up to the parent's scope 
-             * (But only back up to where we started the search)
-             */
-            AcpiGetContainingScope (ObjHandle, &Scope);
+            /* Delete the scope (Name Table) associated with the parent object */
+
+            NsDeleteScope (((NAME_TABLE_ENTRY *) ParentHandle)->Scope);
+
+            /* New "last child" is this parent object */
+
+            ChildHandle = ParentHandle;
+
+            /* Now we can move up the tree to the grandparent */
+
+            AcpiGetParent (ParentHandle, &ParentHandle);
         }
     }
 
@@ -384,15 +399,22 @@ NsDeleteScope (
     NAME_TABLE_ENTRY        *ThisTable;
     char                    *AllocatedTable;
 
+
 	FUNCTION_TRACE ("NsDeleteScope");
     DEBUG_PRINT (ACPI_INFO, ("NsDeleteScope: Deleting Scope %p \n", Scope));
 
+    if (!Scope)
+    {
+        FUNCTION_EXIT;
+        return;
+    }
+
     ThisTable = (NAME_TABLE_ENTRY *) Scope;
+
 
     /*
      * Deallocate the name table and all appendages
      */
-
     do
     {
         /* 
