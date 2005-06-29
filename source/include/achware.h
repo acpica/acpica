@@ -118,21 +118,11 @@
 #define __HARDWARE_H__
 
 
-
-/* flags for use in DisplayBitFlags parameters */
-
-#define ACPI_MODE               1
-#define LEGACY_MODE             2
-
 /* Sleep states */
 
-#define S0                      "_S0_"
-#define S1                      "_S1_"
-#define S2                      "_S2_"
-#define S3                      "_S3_"
-#define S4                      "_S4_"
-#define S4BIOS                  "_S4B"
-#define S5                      "_S5_"
+#define SLWA_DEBUG_LEVEL    4
+#define GTS_CALL            0
+#define GTS_WAKE            1
 
 /* 
  * The #define's and enum below establish an abstract way of identifying what
@@ -255,20 +245,26 @@ enum
 
 /* Register read/write Macros */
 
-#define READ_ACPI_REGISTER(RegId)       AcpiRegisterIO (ACPI_READ, (INT32)(RegId))
-#define WRITE_ACPI_REGISTER(RegId,Val)  AcpiRegisterIO (ACPI_WRITE, (INT32) (RegId), Val)
+#define READ_ACPI_REGISTER(RegId)       HwRegisterIO (ACPI_READ, (INT32)(RegId))
+#define WRITE_ACPI_REGISTER(RegId,Val)  HwRegisterIO (ACPI_WRITE, (INT32) (RegId), Val)
 
 
+ACPI_STATUS
+HwSetMode (
+    UINT32                  Mode);
+
+UINT32
+HwGetMode (
+    void);
 
 UINT32
 HwGetModeCapabilities (
     void);
 
-
 /* Register I/O Prototypes */
 
 UINT32
-AcpiRegisterIO (
+HwRegisterIO (
     INT32                   ReadWrite, 
     INT32                   RegisterId, ... /* DWORD Value */);
 
@@ -295,18 +291,10 @@ HwClearGpe (
 /* Sleep Prototypes */
 
 ACPI_STATUS
-AcpiObtainSleepTypeRegisterData (
+HwObtainSleepTypeRegisterData (
     char                    *SleepStateReq,
     UINT8                   *Slp_TypA,
     UINT8                   *Slp_TypB);
-
-BOOLEAN 
-AcpiSleepStateSupported (
-    char                    *SleepState);
-
-ACPI_STATUS
-AcpiGoToSleep (
-    char                    *SleepState);
 
 
 /* ACPI Timer prototypes */
