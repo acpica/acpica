@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.86 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -381,13 +381,13 @@ AcpiExGetNameString (
         {
         case AML_ROOT_PREFIX:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "RootPrefix: %x\n", *AmlAddress));
+            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "RootPrefix(\\) at %p\n", AmlAddress));
 
             /*
              * Remember that we have a RootPrefix --
              * see comment in AcpiExAllocateNameString()
              */
-            *AmlAddress++;
+            AmlAddress++;
             PrefixCount = ACPI_UINT32_MAX;
             HasPrefix = TRUE;
             break;
@@ -399,9 +399,9 @@ AcpiExGetNameString (
 
             do
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "ParentPrefix: %x\n", *AmlAddress));
+                ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "ParentPrefix (^) at %p\n", AmlAddress));
 
-                *AmlAddress++;
+                AmlAddress++;
                 PrefixCount++;
 
             } while (*AmlAddress == AML_PARENT_PREFIX);
@@ -424,9 +424,9 @@ AcpiExGetNameString (
         {
         case AML_DUAL_NAME_PREFIX:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "DualNamePrefix: %x\n", *AmlAddress));
+            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "DualNamePrefix at %p\n", AmlAddress));
 
-            *AmlAddress++;
+            AmlAddress++;
             NameString = AcpiExAllocateNameString (PrefixCount, 2);
             if (!NameString)
             {
@@ -448,11 +448,11 @@ AcpiExGetNameString (
 
         case AML_MULTI_NAME_PREFIX_OP:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "MultiNamePrefix: %x\n", *AmlAddress));
+            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "MultiNamePrefix at %p\n", AmlAddress));
 
             /* Fetch count of segments remaining in name path */
 
-            *AmlAddress++;
+            AmlAddress++;
             NumSegments = *AmlAddress;
 
             NameString = AcpiExAllocateNameString (PrefixCount, NumSegments);
@@ -464,7 +464,7 @@ AcpiExGetNameString (
 
             /* Indicate that we processed a prefix */
 
-            *AmlAddress++;
+            AmlAddress++;
             HasPrefix = TRUE;
 
             while (NumSegments &&
