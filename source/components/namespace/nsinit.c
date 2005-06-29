@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -300,6 +300,13 @@ AcpiNsInitOneObject (
 
         Info->OpRegionInit++;
         Status = AcpiDsGetRegionArguments (ObjDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
+            DEBUG_PRINT (ACPI_ERROR, ("%s while getting region arguments [%4.4s]\n", 
+                            AcpiCmFormatException (Status), &Node->Name));
+        }
+
         DEBUG_PRINT_RAW (ACPI_OK, ("."));
         break;
 
@@ -314,6 +321,12 @@ AcpiNsInitOneObject (
 
         Info->FieldInit++;
         Status = AcpiDsGetFieldUnitArguments (ObjDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
+            DEBUG_PRINT (ACPI_ERROR, ("%s while getting field arguments [%4.4s]\n", 
+                            AcpiCmFormatException (Status), &Node->Name));
+        }
         DEBUG_PRINT_RAW (ACPI_OK, ("."));
 
         break;
