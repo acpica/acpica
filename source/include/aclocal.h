@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.180 $
+ *       $Revision: 1.181 $
  *
  *****************************************************************************/
 
@@ -392,7 +392,6 @@ typedef struct
 
 typedef struct
 {
-    UINT8                   AddressSpaceId;
     ACPI_GENERIC_ADDRESS    *BlockAddress;
     UINT16                  RegisterCount;
     UINT8                   BlockBaseNumber;
