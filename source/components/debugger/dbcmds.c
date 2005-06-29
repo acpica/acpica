@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  ******************************************************************************/
 
@@ -574,7 +574,8 @@ AcpiDbDisassembleMethod (
     ACPI_NAMESPACE_NODE     *Method;
 
 
-    Method = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, ACPI_STRTOUL (Name, NULL, 16));
+    Method = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, 
+                ACPI_TO_POINTER (ACPI_STRTOUL (Name, NULL, 16)));
     if (!Method)
     {
         return (AE_BAD_PARAMETER);
