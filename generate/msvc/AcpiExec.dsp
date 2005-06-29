@@ -525,7 +525,15 @@ SOURCE=..\..\source\components\tables\tbget.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\tables\tbgetall.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\tables\tbinstal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\tables\tbrsdt.c
 # End Source File
 # Begin Source File
 
@@ -538,6 +546,15 @@ SOURCE=..\..\source\components\tables\tbxface.c
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbxfroot.c
+
+!IF  "$(CFG)" == "AcpiExec - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
+
+# SUBTRACT CPP /FA<none>
+
+!ENDIF 
+
 # End Source File
 # End Group
 # Begin Group "Common"
