@@ -205,7 +205,7 @@ CmBuildExternalSimpleObject (
         break;
 
 
-    case INTERNAL_TYPE_Lvalue:
+    case INTERNAL_TYPE_Reference:
 
         /* 
          * This is an object reference.  We use the object type of "Any" to
@@ -214,7 +214,7 @@ CmBuildExternalSimpleObject (
          */
 
         ExternalObj->Type = ACPI_TYPE_Any;
-        ExternalObj->Reference.Handle = InternalObj->Lvalue.Nte;
+        ExternalObj->Reference.Handle = InternalObj->Reference.Nte;
         break;
 
 
