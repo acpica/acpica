@@ -257,7 +257,7 @@ AmlResolveObjectToValue (
     ACPI_STATUS             Status = AE_OK;
     ACPI_HANDLE             TempHandle = NULL;
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    UINT32				    MvIndex = 0;
+    UINT32				    Index = 0;
     UINT16                  Opcode;
 
 
@@ -286,7 +286,7 @@ AmlResolveObjectToValue (
              */
         
             TempHandle = StackDesc->Reference.Object;
-            CmRemoveReference (StackDesc);
+            CmRemoveReference (StackDesc);     /* Delete the Reference Object */
 
             /* Put direct name pointer onto stack and exit */
 
@@ -297,16 +297,15 @@ AmlResolveObjectToValue (
 
         case AML_LocalOp:
 
-            MvIndex = StackDesc->Reference.Offset;
+            Index = StackDesc->Reference.Offset;
+            CmRemoveReference (StackDesc);     /* Delete the Reference Object */
 
-            DEBUG_PRINT (ACPI_INFO, ("AmlResolveObjectToValue: [Local%d] before MethodDataGetValue %p %p %08lx \n",
-                            MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
+            /* 
+             * Get the local from the method's state info 
+             * Note: this increments the object reference count
+             */
 
-            CmRemoveReference (StackDesc);     /* Delete the Reference */
-
-            /* Get the local from the method's state info */
-
-            Status = DsMethodDataGetValue (MTH_TYPE_LOCAL, MvIndex, StackPtr);
+            Status = DsMethodDataGetValue (MTH_TYPE_LOCAL, Index, StackPtr);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -314,16 +313,15 @@ AmlResolveObjectToValue (
 
             StackDesc = *StackPtr;
 
-            DEBUG_PRINT (ACPI_INFO, ("AmlResolveObjectToValue: [Local%d] after MSGV Status=%s %p %p %08lx \n",
-                            MvIndex, CmFormatException (Status), StackPtr, StackDesc,
-                            *(UINT32 *) StackDesc));
+            DEBUG_PRINT (ACPI_INFO, ("AmlResolveObjectToValue: [Local%d] ValueObj is %p\n",
+                            Index, StackDesc));
         
             if (ACPI_TYPE_Number == StackDesc->Common.Type)
             {
                 /* Value is a Number */
             
                 DEBUG_PRINT (ACPI_INFO, ("AmlResolveObjectToValue: [Local%d] value is [0x%X] \n", 
-                                            MvIndex, StackDesc->Number.Value));
+                                            Index, StackDesc->Number.Value));
             }
 
             break;
@@ -331,16 +329,15 @@ AmlResolveObjectToValue (
 
         case AML_ArgOp:
 
-            MvIndex = StackDesc->Reference.Offset;
+            Index = StackDesc->Reference.Offset;
+            CmRemoveReference (StackDesc);     /* Delete the Reference Object*/
 
-            DEBUG_PRINT (TRACE_EXEC, ("AmlResolveObjectToValue: [Arg%d] before PsxMethodDataGetValue %p %p %08lx \n",
-                            MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
+            /* 
+             * Get the argument from the method's state info 
+             * Note: this increments the object reference count
+             */
 
-            CmRemoveReference (StackDesc);     /* Delete the Reference */
-            Status = DsMethodDataGetValue (MTH_TYPE_ARG, MvIndex, StackPtr);
-
-            /* Get the argument from the method's state info */
-
+            Status = DsMethodDataGetValue (MTH_TYPE_ARG, Index, StackPtr);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -348,20 +345,24 @@ AmlResolveObjectToValue (
 
             StackDesc = *StackPtr;
    
-            DEBUG_PRINT (TRACE_EXEC, ("AmlResolveObjectToValue: [Arg%d] MSGV returned %s %p %p %08lx \n",
-                            MvIndex, CmFormatException (Status), StackPtr, StackDesc,
-                            *(UINT32 *) StackDesc));
+            DEBUG_PRINT (TRACE_EXEC, ("AmlResolveObjectToValue: [Arg%d] ValueObj is %p\n",
+                            Index, StackDesc));
 
             if (ACPI_TYPE_Number == StackDesc->Common.Type)
             {
                 /* Value is a Number */
             
                 DEBUG_PRINT (ACPI_INFO, ("AmlResolveObjectToValue: [Arg%d] value is [0x%X] \n", 
-                                            MvIndex, StackDesc->Number.Value));
+                                            Index, StackDesc->Number.Value));
             }
 
             break;
 
+
+        /*
+         * TBD:  These next three opcodes change the type of the object,
+         * which is actually a no-no.
+         */
 
         case AML_ZeroOp:
 
@@ -392,8 +393,10 @@ AmlResolveObjectToValue (
             switch (StackDesc->Reference.TargetType)
             {
             case ACPI_TYPE_BufferField:
+
                 /* Just return - leave the Reference on the stack */
                 break;
+
 
             case ACPI_TYPE_Package:
                 ObjDesc = *StackDesc->Reference.Where;
@@ -402,6 +405,7 @@ AmlResolveObjectToValue (
                     /*
                      * Valid obj descriptor, copy pointer to return value
                      */
+                    CmRemoveReference (StackDesc);     /* Delete the Reference object */
                     *StackPtr = ObjDesc;
                     Status = AE_OK;
                 }
@@ -428,7 +432,7 @@ AmlResolveObjectToValue (
 
         case AML_DebugOp:
 
-            /* Just leave it be */
+            /* Just leave the object as-is */
             break;
 
 
@@ -466,7 +470,7 @@ AmlResolveObjectToValue (
         }
     
         *StackPtr = (void *) ObjDesc;
-        return_ACPI_STATUS (Status);
+        break;
 
 
     case INTERNAL_TYPE_BankField:
@@ -486,7 +490,6 @@ AmlResolveObjectToValue (
         }
 
         *StackPtr = (void *) ObjDesc;
-        return_ACPI_STATUS (Status);
         break;
 
 
