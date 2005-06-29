@@ -11,19 +11,22 @@
  | otherwise, without the prior written permission of Intel Corporation.
  |__________________________________________________________________________
  |
- | FILENAME: scilast.c -  System Control Interrupt configuration and
- |                                  legacy to ACPI mode state transition functions
+ | System Control Interrupt configuration and
+ | legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.3 $
- | $Date: 2005/06/29 16:43:41 $
+ | $Revision: 1.4 $
+ | $Date: 2005/06/29 16:43:42 $
  | $Log: evsci.c,v $
- | Revision 1.3  2005/06/29 16:43:41  aystarik
- | First BeOS build.
+ | Revision 1.4  2005/06/29 16:43:42  aystarik
+ | Major cleanup
  |
  | 
- | date	99.01.13.22.49.00;	author grsmith1;	state Exp;
+ | date	99.01.20.17.39.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 4     1/20/99 9:39a Rmoore1
+ * Major cleanup
  * 
  * 3     1/13/99 2:49p Grsmith1
  * First BeOS build.
@@ -54,7 +57,8 @@
 
 */
 
-#define __SCILAST_C__
+#define __EVSCI_C__
+#define _THIS_MODULE        "evsci.c"
 
 #include <bu.h>
 #include "acpi.h"
@@ -66,26 +70,29 @@
 extern int  __iAcpiLibInitStatus;
 
 
-/**************************************************************************
- *  FUNCTION:       int iInitializeSCI
+/**************************************************************************
  *
- *  PARAMETERS:
- *      iProgramSCI --  TRUE if SCI can be reprogrammed to level sensitivity
- *                          FALSE if current SCI sensitivity must be preserved
+ * FUNCTION:    iInitializeSCI
  *
- *  RETURN:         0 if successful; non-zero if failure encountered
+ * PARAMETERS:  iProgramSCI     TRUE if SCI can be reprogrammed to level sensitivity
+ *                              FALSE if current SCI sensitivity must be preserved
  *
- *  DESCRIPTION:    iInitializeSCI() ensures that the system control
- *                      interrupt (SCI) is properly configured.
- *                      If successful, return 0. Otherwise, return non-zero.
+ * RETURN:      0 if successful; non-zero if failure encountered
+ *
+ * DESCRIPTION: iInitializeSCI() ensures that the system control
+ *              interrupt (SCI) is properly configured.
+ *              If successful, return 0. Otherwise, return non-zero.
+ *
  *************************************************************************/
+
+/* TOO LOW LEVEL FOR OS=INDEPENDENT CODE !!! */
+
+
 /*
 int iInitializeSCI (int iProgramSCI)
 {
     int iErrorMask=0, iStatusOfIrq;
 
-/  enter_function (GetMasterLogHandle(), LOGFILE, "iInitializeSCI",
-//      "iProgramSCI=%d", iProgramSCI);
 
     //  Set up the System Control Interrupt (SCI) as required.
     //  If it is installed, verify it is level not edge triggered.
@@ -178,147 +185,157 @@ int iInitializeSCI (int iProgramSCI)
         iSetIrqToLevel (pFACP->wSciInt);
     }
 
-//  exit_function (GetMasterLogHandle(), LOGFILE,
-//      "iInitializeSCI", "iErrorMask=%d", iErrorMask);
 
     return iErrorMask;
-
 }
 
 
-/**************************************************************************
- *  FUNCTION:       int iVerifyAcpiTablesPresent
+/**************************************************************************
  *
- *  PARAMETERS:
- *      pcTestName  --  pointer to test name string for log messages
+ * FUNCTION:    iVerifyAcpiTablesPresent
  *
- *  RETURN:
- *      0               if tables are present
- *      non-zero        if ACPI tables can NOT be located
+ * PARAMETERS:  pcTestName      pointer to test name string for log messages
  *
- *  DESCRIPTION:    iVerifyAcpiTablesPresent() ensures that the current
- *                      environment contains ACPI (namespace) tables from
- *                      either the BIOS or from an input file.
- *                      Return 0 if tables are present; non-zero otherwise.
+ * RETURN:      0               if tables are present
+ *              non-zero        if ACPI tables can NOT be located
+ *
+ * DESCRIPTION: iVerifyAcpiTablesPresent() ensures that the current
+ *              environment contains ACPI (namespace) tables from
+ *              either the BIOS or from an input file.
+ *              Return 0 if tables are present; non-zero otherwise.
+ *
  *************************************************************************/
 
-int iVerifyAcpiTablesPresent (char *pcTestName)
+int 
+iVerifyAcpiTablesPresent (char *pcTestName)
 {
-    int iErrorMask=0;
+    int         iErrorMask=0;
 
-/*  enter_function (GetMasterLogHandle(), LOGFILE, "iVerifyAcpiTablesPresent",
-      NULL);
-*/
+    FUNCTION_TRACE ("iVerifyAcpiTablesPresent");
+
+
     if (__iAcpiLibInitStatus == E_NO_ACPI_TBLS)
     {
         printf_bu ("\nACPI tables are required for %s but not available",
-            pcTestName);
+                    pcTestName);
         dKinc_error ("0002", PRINT | APPEND_CRLF);
 
         iErrorMask = NO_ACPI_TABLES_MASK;
         printf_bu ("\nACPI tables can be loaded from an input file."
-            "\nCommand line help is available with the '/?' switch.\n");
+                    "\nCommand line help is available with the '/?' switch.\n");
     }
 
-/*  exit_function (GetMasterLogHandle(), LOGFILE,
-      "iVerifyAcpiTablesPresent", "iErrorMask=%d", iErrorMask);
-*/
     return iErrorMask;
+}
 
-}   /*  iVerifyAcpiTablesPresent    */
 
-
-/**************************************************************************
- *  FUNCTION:       int iInstallSCIHandlerXferToACPI
+/**************************************************************************
  *
- *  PARAMETERS:
- *      pcTestName  --  pointer to test name string for log messages
- *      iFlags      --  flag bitmask (logical OR) to specify:
- *                          ACPI_TABLES_REQUIRED, HW_OVERRIDE_SUPPORTED,
- *                          PROGRAM_SCI_LEVEL_SENSITIVITY, DISABLE_KNOWN_EVENTS
+ * FUNCTION:    AcpiEnable
  *
- *  RETURN:         0 if successful; non-zero if failure encountered
+ * PARAMETERS:  pcTestName      pointer to test name string for log messages
+ *              iFlags          flag bitmask (logical OR) to specify:
+ *                              ACPI_TABLES_REQUIRED, HW_OVERRIDE_SUPPORTED,
+ *                              PROGRAM_SCI_LEVEL_SENSITIVITY, DISABLE_KNOWN_EVENTS
  *
- *  DESCRIPTION:    iInstallSCIHandlerXferToACPI() ensures that the system
- *                      control interrupt (SCI) is properly configured, disables
- *                      SCI event sources, installs the SCI handler, and
- *                      transfers the system into ACPI mode.
- *                      If successful, return 0. Otherwise, return non-zero.
+ * RETURN:      0 if successful; non-zero if failure encountered
+ *
+ * DESCRIPTION: iInstallSCIHandlerXferToACPI() ensures that the system
+ *              control interrupt (SCI) is properly configured, disables
+ *              SCI event sources, installs the SCI handler, and
+ *              transfers the system into ACPI mode.
+ *              If successful, return 0. Otherwise, return non-zero.
+ *
  *************************************************************************/
 
-int AcpiEnable (char *pcTestName, int iFlags)
+int 
+AcpiEnable (char *pcTestName, int iFlags)
 {
-    int iErrorMask=0;
+    int             iErrorMask = 0;
 
-/*  enter_function (GetMasterLogHandle(), LOGFILE,
-      "iInstallSCIHandlerXferToACPI", "pcTestName=%p, iFlags=%d",
-      pcTestName, iFlags);
-*/
+    FUNCTION_TRACE ("AcpiEnable");
+
+
     if (NULL == pcTestName)
+    {
         pcTestName = "";    /*  create valid pointer    */
+    }
 
     if (iFlags & ACPI_TABLES_REQUIRED)
+    {
         iErrorMask |= iVerifyAcpiTablesPresent (pcTestName);
+    }
 
     if (E_OK == iErrorMask)
-    {   /*  ACPI tables are available or not required   */
+    {   
+        /*  ACPI tables are available or not required   */
 
         if (LEGACY_MODE == AcpiModeCapabilities ())
-        {   /*  no ACPI mode support provided by BIOS   */
+        {   
+            /*  no ACPI mode support provided by BIOS   */
             /*  The only way to get through sign_on() without ACPI support is
              *  if we are running from an input file.
              */
 
             if (iFlags & HW_OVERRIDE_SUPPORTED)
-            {   /*  hardware over-ride supported    */
+            {   
+                /*  hardware override supported    */
 
-                if (!iHardwareOverrideStatus())
-                {   /*  hardware over-ride not specified    */
+                if (!iHardwareOverrideStatus ())
+                {   
+                    /*  hardware override not specified    */
+                    
                     printf_bu ("\n%s execution from input table requires HwOverride\n",
-                        pcTestName);
+                                pcTestName);
                     dKinc_error ("0003", PRINT | APPEND_CRLF);
                 }
-            }   /*  hardware over-ride supported    */
+            }
 
             else
-            {   /*  hardware over-ride not supported    */
+            {   
+                /*  hardware override not supported    */
+                
                 printf_bu ("\n%s does NOT support execution from input table with HwOverride\n",
-                    pcTestName);
+                            pcTestName);
                 dKinc_error ("0004", PRINT | APPEND_CRLF);
             }
-        }   /*  no ACPI mode support provided by BIOS   */
+        }
 
-        iOriginalMode = AcpiModeStatus();
+        iOriginalMode = AcpiModeStatus ();
 
         /*  do not change the SCI sensitivity while in legacy mode  */
 
-/* TOO LOW LEVEL FOR OS-independent code!!
+/* !!! TOO LOW LEVEL FOR OS-independent code!!
 
       iErrorMask |= iInitializeSCI (FALSE);
 */
         if (0 == iErrorMask)
-        {   /*  SCI configured correctly    */
+        {   
+            /*  SCI configured correctly    */
 
             if (iFlags & DISABLE_KNOWN_EVENTS)
-            {   /*  disable any ACPI interrupt sources that may be enabled  */
+            {   
+                /*  disable any ACPI interrupt sources that may be enabled  */
 
                 iAcpiEventDisableEvent (TMR_FIXED_EVENT);
                 iAcpiEventDisableEvent (GBL_FIXED_EVENT);
                 iAcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
                 iAcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
                 iAcpiEventDisableEvent (RTC_FIXED_EVENT);
-            }   /*  disable any ACPI interrupt sources that may be enabled  */
+            }
 
-            if (wInstallSciHandler())
-            {   /*  SCI Interrupt Handler installed properly    */
+            if (wInstallSciHandler ())
+            {   
+                /*  SCI Interrupt Handler installed properly    */
 
                 if (E_OK == AcpiSetMode (ACPI_MODE))
-                {   /*  in ACPI mode    */
+                {   
+                    /*  in ACPI mode    */
 
                     printf_bu ("\nTransition to ACPI mode successful\n");
 
                     /*  verify SCI sensitivity while in ACPI mode   */
-/* Nope, DON'T DO IT
+/* !!! Nope, DON'T DO IT
                     iErrorMask |= iInitializeSCI (iFlags & PROGRAM_SCI_LEVEL_SENSITIVITY);
 */
                 }
@@ -330,7 +347,7 @@ int AcpiEnable (char *pcTestName, int iFlags)
                     vSetNotSupported ();
                     iErrorMask |= NO_ACPI_TRANSITION_MASK;
                 }
-            }   /*  SCI Interrupt Handler installed properly    */
+            }
 
             else
             {
@@ -338,46 +355,46 @@ int AcpiEnable (char *pcTestName, int iFlags)
                 dKinc_error ("0006", PRINT | APPEND_CRLF);
                 iErrorMask |= NO_SCI_HANDLER_MASK;
             }
-        }   /*  SCI configured correctly    */
-    }   /*  ACPI tables are available or not required   */
+        }
+    }
 
-/*  exit_function (GetMasterLogHandle(), LOGFILE,
-      "iInstallSCIHandlerXferToACPI", "iErrorMask=%d", iErrorMask);
-*/
     return iErrorMask;
 
-}   /*  iInstallSCIHandlerXferToACPI    */
-
+}
     
-/**************************************************************************
- *  FUNCTION:       int iUninstallSCIHandlerXferToLegacy
+
+/**************************************************************************
  *
- *  PARAMETERS:     none
+ * FUNCTION:    AcpiDisable
  *
- *  RETURN:         0 if successful; non-zero if failure encountered
+ * PARAMETERS:  none
  *
- *  DESCRIPTION:    iUninstallSCIHandlerXferToLegacy() returns the system
- *                      to original ACPI/legacy mode, unloads the SCI handler,
- *                      and restores the SCI to its original configuration.
- *                      If successful, return 0. Otherwise, return non-zero.
+ * RETURN:      0 if successful; non-zero if failure encountered
+ *
+ * DESCRIPTION: iUninstallSCIHandlerXferToLegacy() returns the system
+ *              to original ACPI/legacy mode, unloads the SCI handler,
+ *              and restores the SCI to its original configuration.
+ *              If successful, return 0. Otherwise, return non-zero.
+ *
  *************************************************************************/
 
 int AcpiDisable ()
 {
-    int iErrorMask=0;
+    int         iErrorMask = 0;
 
-/*  enter_function (GetMasterLogHandle(), LOGFILE,
-      "vUninstallSCIHandlerXferToLegacy", NULL);
-*/
+    FUNCTION_TRACE ("AcpiDisable");
+
+
     /*  restore IRQ before returning to legacy mode */
+
+/* Don't fuss with PIC here !!!
 
     if (IRQ_EDGE == iEdgeLevelSave)
     {
         trace_bu (debug_level() >= 4, __FILE__, __LINE__,
-            "iUninstallSCIHandlerXferToLegacy: Restore IRQ %d to edge sensitivity",
-            pFACP->wSciInt);
+                    "iUninstallSCIHandlerXferToLegacy: Restore IRQ %d to edge sensitivity",
+                    pFACP->wSciInt);
 
-/* Don't fuss with PIC here !!!
 
         if (iSetIrqToEdge (pFACP->wSciInt))
         {
@@ -389,9 +406,9 @@ int AcpiDisable ()
         else
             printf_bu ("\nInterrupt %d restored to edge sensitivity\n",
                 pFACP->wSciInt);
-*/
 
     }
+*/
 
 /* Don't fuss with PIC here !!!
 
@@ -419,16 +436,13 @@ int AcpiDisable ()
     {
         printf_bu ("\nUnable to transition to the Original Mode");
         dKinc_warning ("0009", PRINT | APPEND_CRLF);
+        
         /*  iErrorMask |= NO_LEGACY_TRANSITION_MASK;    */
     }
 
     /*  unload SCI handler  */
 
-    vUninstallSciHandler();
+    vUninstallSciHandler ();
 
-/*  exit_function (GetMasterLogHandle(), LOGFILE,
-      "vUninstallSCIHandlerXferToLegacy", "iErrorMask=%d", iErrorMask);
-*/
     return iErrorMask;
-
-}   /*  iUninstallSCIHandlerXferToLegacy    */
+}
