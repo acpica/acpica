@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  ******************************************************************************/
 
@@ -378,7 +378,8 @@ AcpiCmAcquireMutex (
      */
     for (i = MutexId; i < MAX_MTX; i++)
     {
-        if (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId)
+        if ((AcpiGbl_AcpiMutexInfo[i].Locked) &&
+            (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId))
         {
             if (i == MutexId)
             {
@@ -473,7 +474,8 @@ AcpiCmReleaseMutex (
     ThisThreadId = AcpiOsGetThreadId ();
     for (i = MutexId; i < MAX_MTX; i++)
     {
-        if (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId)
+        if ((AcpiGbl_AcpiMutexInfo[i].Locked) &&
+            (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId))
         {
             if (i == MutexId)
             {
