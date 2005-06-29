@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -177,11 +177,13 @@ AslLocalAllocate (unsigned int Size);
 
 %token <i> PARSEOP_ACCESSAS
 %token <i> PARSEOP_ACCESSATTRIB_BLOCK
+%token <i> PARSEOP_ACCESSATTRIB_BLOCK_CALL
 %token <i> PARSEOP_ACCESSATTRIB_BYTE
-%token <i> PARSEOP_ACCESSATTRIB_CALL
+%token <i> PARSEOP_ACCESSATTRIB_WORD_CALL
 %token <i> PARSEOP_ACCESSATTRIB_QUICK
 %token <i> PARSEOP_ACCESSATTRIB_SND_RCV
 %token <i> PARSEOP_ACCESSATTRIB_WORD
+%token <i> PARSEOP_ACCESSATTRIB_WORD_CALL
 %token <i> PARSEOP_ACCESSTYPE_ANY
 %token <i> PARSEOP_ACCESSTYPE_BUF
 %token <i> PARSEOP_ACCESSTYPE_BYTE
@@ -2004,7 +2006,8 @@ AccessAttribKeyword
     | PARSEOP_ACCESSATTRIB_BYTE             {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_BYTE);}
     | PARSEOP_ACCESSATTRIB_WORD             {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_WORD);}
     | PARSEOP_ACCESSATTRIB_BLOCK            {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_BLOCK);}
-    | PARSEOP_ACCESSATTRIB_CALL             {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_CALL);}
+    | PARSEOP_ACCESSATTRIB_WORD_CALL        {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_WORD_CALL);}
+    | PARSEOP_ACCESSATTRIB_BLOCK_CALL       {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_BLOCK_CALL);}
     ;
 
 LockRuleKeyword
