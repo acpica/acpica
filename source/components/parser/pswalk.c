@@ -507,7 +507,7 @@ PsWalkParsedAml (
      * control method invocations without recursion.
      */
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: Entering walk loop at Op=%X State=%X\n", Op, WalkState));
+    DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: Op=%p EndOp=%p State=%p\n", Op, EndOp, WalkState));
 
     while (WalkState)
     {
@@ -516,7 +516,7 @@ PsWalkParsedAml (
             Status = PsWalkLoop (&WalkList, Op, DescendingCallback, AscendingCallback);
         }
 
-        DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: Completed one call to walk loop, State=%X\n", WalkState));
+        DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: Completed one call to walk loop, State=%p\n", WalkState));
 
         /* We are done with this walk, move on to the parent if any */
 
