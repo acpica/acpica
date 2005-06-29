@@ -121,6 +121,7 @@
 #include <parser.h>
 #include <interp.h>
 #include <amlcode.h>
+#include <dispatch.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -149,7 +150,7 @@
 
 ACPI_STATUS
 AmlExecFatal (    
-    ACPI_OBJECT_INTERNAL    **Operands)
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OBJECT_INTERNAL    *TypeDesc;
     ACPI_OBJECT_INTERNAL    *CodeDesc;
@@ -160,23 +161,28 @@ AmlExecFatal (
     FUNCTION_TRACE ("AmlExecFatal");
 
 
-    Status = AmlResolveOperands (AML_FatalOp, Operands);
+    /* Resolve operands */
+
+    Status = AmlResolveOperands (AML_FatalOp, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (AML_FatalOp), 3, "after AmlResolveOperands");
+
+    /* Get operands */
+
+    Status |= DsObjStackPopObject (&ArgDesc, WalkState);
+    Status |= DsObjStackPopObject (&CodeDesc, WalkState);
+    Status |= DsObjStackPopObject (&TypeDesc, WalkState);
     if (Status != AE_OK)
     {
         /* invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_FatalOp, Operands, 3);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_FatalOp, WALK_OPERANDS, 3);
         goto Cleanup;
     }
 
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_FatalOp), 3, "after AmlResolveOperands");
 
 
     /* DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
 
-    ArgDesc  = Operands[0];
-    CodeDesc = Operands[-1];
-    TypeDesc = Operands[-2];
 
     DEBUG_PRINT (ACPI_INFO, ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
                     TypeDesc->Number.Value, CodeDesc->Number.Value, ArgDesc->Number.Value));
@@ -189,9 +195,9 @@ Cleanup:
 
     /* Free the operands */
 
-    CmDeleteOperand (&Operands[0]);
-    CmDeleteOperand (&Operands[-1]);
-    CmDeleteOperand (&Operands[-2]);
+    CmDeleteInternalObject (ArgDesc);
+    CmDeleteInternalObject (CodeDesc);
+    CmDeleteInternalObject (TypeDesc);
 
 
     /* If we get back from the OS call, we might as well keep going. */
@@ -225,7 +231,7 @@ Cleanup:
 
 ACPI_STATUS
 AmlExecIndex (
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -239,22 +245,24 @@ AmlExecIndex (
     FUNCTION_TRACE ("AmlExecIndex");
 
 
+    /* Resolve operands */
     /* First operand can be either a package or a buffer */
 
-    Status = AmlResolveOperands (AML_IndexOp, Operands);
+    Status = AmlResolveOperands (AML_IndexOp, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (AML_IndexOp), 3, "after AmlResolveOperands");
+
+    /* Get all operands */
+
+    Status |= DsObjStackPopObject (&ResDesc, WalkState);
+    Status |= DsObjStackPopObject (&IdxDesc, WalkState);
+    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
     if (Status != AE_OK)
     {
-        /* invalid parameters on object stack  */
+        /* Invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_IndexOp, Operands, 3);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_IndexOp, WALK_OPERANDS, 3);
         goto Cleanup;
     }
-
-
-    ResDesc = Operands[0];
-    IdxDesc = Operands[-1];
-    ObjDesc = Operands[-2];
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_IndexOp), 3, "after AmlResolveOperands");
 
 
     /* Create the internal return object */
@@ -351,18 +359,21 @@ Cleanup:
 
     /* Always delete operands */
 
-    CmDeleteOperand (&Operands[-1]);
-    CmDeleteOperand (&Operands[-2]);
+    CmDeleteInternalObject (ObjDesc);
+    CmDeleteInternalObject (IdxDesc);
 
     /* Delete return object on error */
 
-    if (ACPI_FAILURE (Status) &&
-        (RetDesc))
+    if (ACPI_FAILURE (Status))
     {
-        CmDeleteInternalObject (RetDesc);
-        RetDesc = NULL;
-    }
+        CmDeleteInternalObject (ResDesc);
 
+        if (RetDesc)
+        {
+            CmDeleteInternalObject (RetDesc);
+            RetDesc = NULL;
+        }
+    }
 
     /* Set the return object and exit */
 
@@ -397,7 +408,7 @@ Cleanup:
 
 ACPI_STATUS
 AmlExecMatch (
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
     ACPI_OBJECT_INTERNAL    *PkgDesc;
@@ -415,26 +426,27 @@ AmlExecMatch (
     FUNCTION_TRACE ("AmlExecMatch");
 
 
-    Status = AmlResolveOperands (AML_MatchOp, Operands);
+    /* Resolve all operands */
+
+    Status = AmlResolveOperands (AML_MatchOp, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (AML_MatchOp), 6, "after AmlResolveOperands");
+
+    /* Get all operands */
+
+    Status |= DsObjStackPopObject (&StartDesc, WalkState);
+    Status |= DsObjStackPopObject (&V2Desc, WalkState);
+    Status |= DsObjStackPopObject (&Op2Desc, WalkState);
+    Status |= DsObjStackPopObject (&V1Desc, WalkState);
+    Status |= DsObjStackPopObject (&Op1Desc, WalkState);
+    Status |= DsObjStackPopObject (&PkgDesc, WalkState);
+
     if (Status != AE_OK)
     {
         /* invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_MatchOp, Operands, 6);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_MatchOp, WALK_OPERANDS, 6);
         goto Cleanup;
     }
-
-
-    /* Get the parameters from the object stack */
-
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_MatchOp), 6, "after AmlResolveOperands");
-
-    StartDesc = Operands[0];
-    V2Desc    = Operands[-1];
-    Op2Desc   = Operands[-2];
-    V1Desc    = Operands[-3];
-    Op1Desc   = Operands[-4];
-    PkgDesc   = Operands[-5];
 
     /* Validate match comparison sub-opcodes */
     
@@ -632,12 +644,13 @@ Cleanup:
 
     /* Free the operands */
 
-    CmDeleteOperand (&Operands[0]);
-    CmDeleteOperand (&Operands[-1]);
-    CmDeleteOperand (&Operands[-2]);
-    CmDeleteOperand (&Operands[-3]);
-    CmDeleteOperand (&Operands[-4]);
-    CmDeleteOperand (&Operands[-5]);
+    CmDeleteInternalObject (StartDesc);
+    CmDeleteInternalObject (V2Desc);
+    CmDeleteInternalObject (Op2Desc);
+    CmDeleteInternalObject (V1Desc);
+    CmDeleteInternalObject (Op1Desc);
+    CmDeleteInternalObject (PkgDesc);
+
     
     /* Delete return object on error */
 

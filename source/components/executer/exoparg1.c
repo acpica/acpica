@@ -229,32 +229,28 @@ Cleanup:
 ACPI_STATUS
 AmlExecMonadic1 (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands)
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecMonadic1", Operands);
+    FUNCTION_TRACE_PTR ("AmlExecMonadic1", WALK_OPERANDS);
 
 
-    Status = AmlResolveOperands (Opcode, Operands); 
+    /* Resolve all operands */
+
+    Status = AmlResolveOperands (Opcode, WALK_OPERANDS); 
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlResolveOperands");
+
+    /* Get all operands */
+
+    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
     if (Status != AE_OK)
     {
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 1);
         goto Cleanup;
     }
-
-
-    /* Get the operand from the stack */
-
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlResolveOperands");
-    ObjDesc = Operands[0];
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_AML_NO_OPERAND);
-    }
-
 
 
     /* Examine the opcode */
@@ -318,7 +314,7 @@ Cleanup:
 
     /* Always delete the operand */
 
-    CmDeleteOperand (&Operands[0]);
+    CmDeleteInternalObject (ObjDesc);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -340,7 +336,7 @@ Cleanup:
 ACPI_STATUS
 AmlExecMonadic2R (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -356,28 +352,23 @@ AmlExecMonadic2R (
     INT32                   d3;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecMonadic2R", Operands);
+    FUNCTION_TRACE_PTR ("AmlExecMonadic2R", WALK_OPERANDS);
 
 
-    /*
-     * Resolve operands based upon the opcode
-     */
+    /* Resolve all operands */
 
-    Status = AmlResolveOperands (Opcode, Operands);
+    Status = AmlResolveOperands (Opcode, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
+
+    /* Get all operands */
+
+    Status |= DsObjStackPopObject (&ResDesc, WalkState);
+    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
     if (Status != AE_OK)
     {
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 2);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 2);
         goto Cleanup;
     }
-
-    /*
-     * Stack was prepped successfully
-     */
-
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
-
-    ResDesc = Operands[0];
-    ObjDesc = Operands[-1];
 
 
     /* Create a return object of type NUMBER for most opcodes */
@@ -501,7 +492,7 @@ AmlExecMonadic2R (
 
             /* Must delete the result descriptor since there is no reference being returned */
 
-            CmDeleteOperand (&Operands[0]);
+            CmDeleteInternalObject (ResDesc);
             goto Cleanup;
         }
 
@@ -549,8 +540,8 @@ AmlExecMonadic2R (
             CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
         }
         
-        Operands[-1] = NULL;
         *ReturnDesc = ObjDesc;
+        ObjDesc = NULL;
         return_ACPI_STATUS (Status);
 
         break;
@@ -605,13 +596,13 @@ AmlExecMonadic2R (
 Cleanup:
     /* Always delete the operand object */
 
-    CmDeleteOperand (&Operands[-1]);
+    CmDeleteInternalObject (ObjDesc);
 
     /* Delete return object(s) on error */
 
     if (ACPI_FAILURE (Status))
     {
-        CmDeleteOperand (&Operands[0]);     /* Result descriptor */
+        CmDeleteInternalObject (ResDesc);     /* Result descriptor */
         if (RetDesc)
         {
             CmDeleteInternalObject (RetDesc);
@@ -643,7 +634,7 @@ Cleanup:
 ACPI_STATUS
 AmlExecMonadic2 (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -654,22 +645,27 @@ AmlExecMonadic2 (
     UINT32                  Value;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecMonadic2", Operands);
+    FUNCTION_TRACE_PTR ("AmlExecMonadic2", WALK_OPERANDS);
 
 
-    Status = AmlResolveOperands (Opcode, Operands);
+    /* Resolve all operands */
+
+    Status = AmlResolveOperands (Opcode, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlResolveOperands");
+
+    /* Get all operands */
+
+    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
     if (Status != AE_OK)
     {
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 1);
         goto Cleanup;
     }
 
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlResolveOperands");
 
 
     /* Get the operand and decode the opcode */
 
-    ObjDesc = Operands[0];
 
     switch (Opcode)
     {
@@ -703,53 +699,40 @@ AmlExecMonadic2 (
          * is expected!! 10/99
          */
 
- //       if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
- //       {
- //           RetDesc = ObjDesc;
- //       }
+       if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+       {
+           RetDesc = ObjDesc;
+       }
 
- //       else
- //       {
+       else
+       {
             /* 
              * Duplicate the Lvalue in a new object so that we can resolve it
              * without destroying the original Lvalue object
              */
         
- //           RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
- //          if (!RetDesc)
- //           {
- //               Status = AE_NO_MEMORY;
- //               goto Cleanup;
- //           }
-//
- //           RetDesc->Lvalue.OpCode = ObjDesc->Lvalue.OpCode;
- //           RetDesc->Lvalue.Offset = ObjDesc->Lvalue.Offset;
- //         RetDesc->Lvalue.Object = ObjDesc->Lvalue.Object;
- //     }
+            RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
+            if (!RetDesc)
+            {
+              Status = AE_NO_MEMORY;
+               goto Cleanup;
+            }
+
+            RetDesc->Lvalue.OpCode = ObjDesc->Lvalue.OpCode;
+            RetDesc->Lvalue.Offset = ObjDesc->Lvalue.Offset;
+            RetDesc->Lvalue.Object = ObjDesc->Lvalue.Object;
+        }
         
 
         /* 
          * Convert the RetDesc Lvalue to a Number
          * (This deletes the original RetDesc)
          */
- /*     
-        Status = AmlResolveOperands (ARGI_LIST1 (ARGI_NUMBER), &RetDesc);
+    
+        Status = AmlResolveOperands (AML_LNotOp, &RetDesc);
         if (Status != AE_OK)
         {
-            AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
-            if (Status == AE_TYPE)
-            {
-                Status = AE_AML_OPERAND_TYPE;
-            }
-            goto Cleanup;
-        }
-
-*/
-
-        RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
-        if (!RetDesc)
-        {
-            Status = AE_NO_MEMORY;
+            AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 1);
             goto Cleanup;
         }
 
@@ -757,21 +740,20 @@ AmlExecMonadic2 (
     
         if (AML_IncrementOp == Opcode)
         {
-            ObjDesc->Number.Value++;
+            RetDesc->Number.Value++;
         }
         else
         {
-            ObjDesc->Number.Value--;
+            RetDesc->Number.Value--;
         }
 
         /* Store the result back in the original descriptor */
 
- //     Status = AmlExecStore (RetDesc, ObjDesc);
+        Status = AmlExecStore (RetDesc, ObjDesc);
 
         /* Objdesc was just deleted (because it is an Lvalue) */
 
-//        Operands[0] = NULL;
-        RetDesc->Number.Value = ObjDesc->Number.Value;
+        ObjDesc = NULL;
 
         break;
 
@@ -1042,9 +1024,9 @@ AmlExecMonadic2 (
 
 Cleanup:
 
-    if (Operands[0])
+    if (ObjDesc)
     {
-        CmDeleteOperand (&Operands[0]);
+        CmDeleteInternalObject (ObjDesc);
     }
 
     /* Delete return object on error */

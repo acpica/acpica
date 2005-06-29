@@ -123,6 +123,7 @@
 #include <interp.h>
 #include <events.h>
 #include <amlcode.h>
+#include <dispatch.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -147,7 +148,7 @@
 ACPI_STATUS
 AmlExecDyadic1 (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands)
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_OBJECT_INTERNAL    *ValDesc = NULL;
@@ -155,24 +156,26 @@ AmlExecDyadic1 (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecDyadic1", Operands);
+    FUNCTION_TRACE_PTR ("AmlExecDyadic1", WALK_OPERANDS);
 
 
-    Status = AmlResolveOperands (Opcode, Operands);
-    if (Status != AE_OK)
-    {
-        /* Invalid parameters on object stack  */
+    /* Resolve all operands */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 2);
-        goto Cleanup;
-    }
-
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
+    Status = AmlResolveOperands (Opcode, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
 
     /* Get the operands */
 
-    ValDesc = Operands[0];
-    ObjDesc = Operands[-1];
+    Status |= DsObjStackPopObject (&ValDesc, WalkState);
+    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Invalid parameters on object stack  */
+
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 2);
+        goto Cleanup;
+    }
+
 
 
     /* Examine the opcode */
@@ -224,8 +227,8 @@ Cleanup:
 
     /* Always delete both operands */
 
-    CmDeleteOperand (&Operands[0]);
-    CmDeleteOperand (&Operands[-1]);
+    CmDeleteInternalObject (ValDesc);
+    CmDeleteInternalObject (ObjDesc);
     
 
     return_ACPI_STATUS (Status);
@@ -250,51 +253,46 @@ Cleanup:
 ACPI_STATUS
 AmlExecDyadic2R (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *ObjDesc2;
-    ACPI_OBJECT_INTERNAL    *ResDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *ResDesc2 = NULL;
-    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *RetDesc2 = NULL;
-    ACPI_STATUS             Status;
+    ACPI_OBJECT_INTERNAL    *ObjDesc    = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc2   = NULL;
+    ACPI_OBJECT_INTERNAL    *ResDesc    = NULL;
+    ACPI_OBJECT_INTERNAL    *ResDesc2   = NULL;
+    ACPI_OBJECT_INTERNAL    *RetDesc    = NULL;
+    ACPI_OBJECT_INTERNAL    *RetDesc2   = NULL;
+    ACPI_STATUS             Status      = AE_OK;
     UINT32                  Remainder;
     INT32                   NumOperands = 3;
     char                    *NewBuf;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecDyadic2R", Operands);
+    FUNCTION_TRACE_U32 ("AmlExecDyadic2R", Opcode);
 
 
-    Status = AmlResolveOperands (Opcode, Operands);
-    if (Status != AE_OK)
-    {
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, NumOperands);
-        goto Cleanup;
-    }
+    /* Resolve all operands */
 
-    /* Get all operand and result objects from the stack */
+    Status = AmlResolveOperands (Opcode, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), NumOperands, "after AmlResolveOperands");
+
+    /* Get all operands */
 
     if (AML_DivideOp == Opcode)
     {
         NumOperands = 4;
-        ResDesc2    = Operands[0];
-        ResDesc     = Operands[-1];
-        ObjDesc2    = Operands[-2];
-        ObjDesc     = Operands[-3];
+        Status |= DsObjStackPopObject (&ResDesc2, WalkState);
     }
 
-    else
+    Status |= DsObjStackPopObject (&ResDesc, WalkState);
+    Status |= DsObjStackPopObject (&ObjDesc2, WalkState);
+    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
+    if (Status != AE_OK)
     {
-        NumOperands = 3;
-        ResDesc     = Operands[0];
-        ObjDesc2    = Operands[-1];
-        ObjDesc     = Operands[-2];
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, &(WalkState->Operands [WalkState->NumOperands -1]), NumOperands);
+        goto Cleanup;
     }
 
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), NumOperands, "after AmlResolveOperands");
 
 
 
@@ -388,6 +386,7 @@ AmlExecDyadic2R (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R/DivideOp: Divide by zero\n"));
             REPORT_ERROR ("AmlExecDyadic2R/DivideOp: Divide by zero");
+
             Status = AE_AML_DIVIDE_BY_ZERO;
             goto Cleanup;
         }
@@ -400,8 +399,8 @@ AmlExecDyadic2R (
         }
 
         Remainder               = ObjDesc->Number.Value % ObjDesc2->Number.Value;
-        RetDesc->Number.Value   = ObjDesc->Number.Value / ObjDesc2->Number.Value;   /* Result (what we used to call the quotient) */
-        RetDesc2->Number.Value  = Remainder;                                        /* Remainder */
+        RetDesc2->Number.Value   = ObjDesc->Number.Value / ObjDesc2->Number.Value;   /* Result (what we used to call the quotient) */
+        RetDesc->Number.Value  = Remainder;                                        /* Remainder */
         break;
 
         
@@ -573,42 +572,27 @@ Cleanup:
 
     /* Always delete the operands */
 
-    if (AML_DivideOp == Opcode)
-    {
-        CmDeleteOperand (&Operands[-2]);
-        CmDeleteOperand (&Operands[-3]);
+    CmDeleteInternalObject (ObjDesc);
+    CmDeleteInternalObject (ObjDesc2);
 
-        /* On failure, delete the result ops */
-
-        if (ACPI_FAILURE (Status))
-        {
-            CmDeleteOperand (&Operands[-1]);
-            CmDeleteOperand (&Operands[0]);
-        }
-    }
-
-    else
-    {
-        CmDeleteOperand (&Operands[-1]);
-        CmDeleteOperand (&Operands[-2]);
-
-        /* On failure, delete the result op */
-
-        if (ACPI_FAILURE (Status))
-        {
-            CmDeleteOperand (&Operands[0]);
-        }
-    }
 
     /* Delete return object on error */
 
-    if (ACPI_FAILURE (Status) &&
-        (RetDesc))
+    if (ACPI_FAILURE (Status))
     {
-        CmDeleteInternalObject (RetDesc);
-        RetDesc = NULL;
-    }
+        /* On failure, delete the result ops */
 
+        CmDeleteInternalObject (ResDesc);
+        CmDeleteInternalObject (ResDesc2);
+
+        if (RetDesc)
+        {
+            /* And delete ther internal return object */
+
+            CmDeleteInternalObject (RetDesc);
+            RetDesc = NULL;
+        }
+    }
 
     /* Set the return object and exit */
 
@@ -634,7 +618,7 @@ Cleanup:
 ACPI_STATUS
 AmlExecDyadic2S (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -643,31 +627,26 @@ AmlExecDyadic2S (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecDyadic2S", Operands);
+    FUNCTION_TRACE_PTR ("AmlExecDyadic2S", WALK_OPERANDS);
 
 
-    Status = AmlResolveOperands (Opcode, Operands);
+    /* Resolve all operands */
+
+    Status = AmlResolveOperands (Opcode, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
+
+    /* Get all operands */
+
+    Status |= DsObjStackPopObject (&TimeDesc, WalkState);
+    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
     if (Status != AE_OK)
     {   
         /* Invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 2);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 2);
         goto Cleanup;
     }
 
-
-    /* Get the operands and validate them */
-
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
-
-    TimeDesc    = Operands[0];
-    ObjDesc     = Operands[-1];
-
-    if (!TimeDesc || !ObjDesc)
-    {
-        Status = AE_AML_NO_OPERAND;
-        goto Cleanup;
-    }
 
 
     /* Create the internal return object */
@@ -725,8 +704,8 @@ Cleanup:
 
     /* Delete params */
 
-    CmDeleteOperand (&Operands[0]);
-    CmDeleteOperand (&Operands[-1]);
+    CmDeleteInternalObject (TimeDesc);
+    CmDeleteInternalObject (ObjDesc);
 
     /* Delete return object on error */
 
@@ -764,7 +743,7 @@ Cleanup:
 ACPI_STATUS
 AmlExecDyadic2 (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -774,21 +753,26 @@ AmlExecDyadic2 (
     BOOLEAN                 Lboolean;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecDyadic2", Operands);
+    FUNCTION_TRACE_PTR ("AmlExecDyadic2", WALK_OPERANDS);
 
 
-    Status = AmlResolveOperands (Opcode, Operands);
+    /* Resolve all operands */
+
+    Status = AmlResolveOperands (Opcode, WALK_OPERANDS);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
+
+    /* Get all operands */
+
+    Status |= DsObjStackPopObject (&ObjDesc2, WalkState);
+    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
     if (Status != AE_OK)
     {
         /* Invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 2);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 2);
         goto Cleanup;
     }
 
-    ObjDesc2    = Operands[0];
-    ObjDesc     = Operands[-1];
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
 
 
 
@@ -874,8 +858,8 @@ Cleanup:
 
     /* Always delete operands */
 
-    CmDeleteOperand (&Operands[0]);
-    CmDeleteOperand (&Operands[-1]);
+    CmDeleteInternalObject (ObjDesc);
+    CmDeleteInternalObject (ObjDesc2);
 
  
     /* Delete return object on error */
