@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: psxmethd - Parser/Interpreter interface - control method parsing
+ * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
  *
  *****************************************************************************/
 
@@ -114,23 +114,24 @@
  *
  *****************************************************************************/
 
-#define __PSXMETHD_C__
+#define __DSMETHOD_C__
 
 #include <acpi.h>
-#include <amlcode.h>
 #include <parser.h>
+#include <amlcode.h>
+#include <dispatch.h>
 #include <interp.h>
 #include <namesp.h>
 
 
-#define _COMPONENT          PARSER
-        MODULE_NAME         ("psxmethd");
+#define _COMPONENT          DISPATCHER
+        MODULE_NAME         ("dsmeth0d");
 
 
 
 /*******************************************************************************
  *
- * FUNCTION:    PsxParseMethod
+ * FUNCTION:    DsParseMethod
  *
  * PARAMETERS:  ObjHandle       - NTE of the method
  *              Level           - Current nesting level
@@ -146,7 +147,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-PsxParseMethod (
+DsParseMethod (
     ACPI_HANDLE             ObjHandle)
 {
     ACPI_STATUS             Status;
@@ -155,9 +156,9 @@ PsxParseMethod (
     NAME_TABLE_ENTRY        *Entry;
 
 
-    FUNCTION_TRACE ("PsxParseMethod");
+    FUNCTION_TRACE ("DsParseMethod");
 
-    DEBUG_PRINT (ACPI_INFO, ("PsxParseMethod: **** Parsing [%4.4s] **** Nte=%p\n", 
+    DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** Parsing [%4.4s] **** Nte=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
 
 
@@ -189,15 +190,8 @@ PsxParseMethod (
     /* Init new op with the method name and pointer back to the NTE */
 
     PsSetName (Op, Entry->Name);
-    Op->ResultObj = Entry;
+    Op->NameTableEntry = Entry;
 
-    /* Open a new scope */
-
-    Status = NsScopeStackPush (Entry->Scope, ACPI_TYPE_Method);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /* Parse the method, creating a parse tree */
 
@@ -215,18 +209,14 @@ PsxParseMethod (
 	 * so that operands are evaluated dynamically.
 	 */
 
-    PsWalkParsedAml (PsGetChild (Op), Op, NULL, NULL, NULL,
-                        PsxLoad1BeginOp, PsxLoad1EndOp);
-
-
-    NsScopeStackPop (ACPI_TYPE_Any);
-
+    PsWalkParsedAml (Op->Value.Arg, Op, ObjDesc, Entry->Scope, NULL, NULL,
+                        DsLoad1BeginOp, DsLoad1EndOp);
 
     /* Install the parsed tree in the method object */
 
     ObjDesc->Method.ParserOp = Op;
 
-    DEBUG_PRINT (ACPI_INFO, ("PsxParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n", 
+    DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle, Op));
 
     return_ACPI_STATUS (Status);
@@ -235,7 +225,7 @@ PsxParseMethod (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsxCallControlMethod
+ * FUNCTION:    DsCallControlMethod
  *
  * PARAMETERS:  WalkState           - Current state of the walk
  *              Op                  - Current Op to be walked
@@ -247,7 +237,7 @@ PsxParseMethod (
  ******************************************************************************/
 
 ACPI_STATUS
-PsxCallControlMethod (
+DsCallControlMethod (
     ACPI_WALK_LIST          *WalkList,
     ACPI_WALK_STATE         *ThisWalkState,
     ACPI_GENERIC_OP         *Op)
@@ -261,9 +251,9 @@ PsxCallControlMethod (
     UINT32                  i;
 
 
-    FUNCTION_TRACE_PTR ("PsxCallControlMethod", ThisWalkState);
+    FUNCTION_TRACE_PTR ("DsCallControlMethod", ThisWalkState);
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsxCall, execute method %p, currentstate=%p\n", 
+    DEBUG_PRINT (TRACE_DISPATCH, ("DsCall, execute method %p, currentstate=%p\n", 
                         ThisWalkState->PrevOp, ThisWalkState));
     BREAKPOINT3;
 
@@ -275,7 +265,7 @@ PsxCallControlMethod (
      * Get the NTE entry (in the METHOD_CALL->NAME Op) and the corresponding METHOD Op
      */
 
-    MethodNte   = (ThisWalkState->PrevOp->Value.Arg)->ResultObj;
+    MethodNte   = (ThisWalkState->PrevOp->Value.Arg)->NameTableEntry;
     ObjDesc  = NsGetAttachedObject (MethodNte);
 
     /*
@@ -283,9 +273,9 @@ PsxCallControlMethod (
      */
     if (!ObjDesc->Method.ParserOp)
     {
-        DEBUG_PRINT (TRACE_PARSE, ("PsxCall, parsing control method\n"));
+        DEBUG_PRINT (TRACE_DISPATCH, ("DsCall, parsing control method\n"));
 
-        Status = PsxParseMethod (MethodNte);
+        Status = DsParseMethod (MethodNte);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -304,7 +294,7 @@ PsxCallControlMethod (
 
     /* Create a new state for the preempting walk */
 
-    NextWalkState = PsCreateWalkState ((ACPI_GENERIC_OP *) Method, ObjDesc, WalkList);
+    NextWalkState = DsCreateWalkState ((ACPI_GENERIC_OP *) Method, ObjDesc, WalkList);
     if (!NextWalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -313,7 +303,7 @@ PsxCallControlMethod (
 
     /* Open a new scope */
 
-    Status = NsScopeStackPush (MethodNte->Scope, ACPI_TYPE_Method);
+    Status = NsScopeStackPush (MethodNte->Scope, ACPI_TYPE_Method, NextWalkState);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -327,7 +317,7 @@ PsxCallControlMethod (
      * on the previous walk state's operand stack
      */
 
-    Status = PsxMthStackInitArgs (&ThisWalkState->Operands[0], ThisWalkState->NumOperands);
+    Status = DsMthStackInitArgs (&ThisWalkState->Operands[0], ThisWalkState->NumOperands);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -363,7 +353,7 @@ PsxCallControlMethod (
     }
 
  
-    DEBUG_PRINT (TRACE_PARSE, ("PsxCall, starting nested execution, newstate=%p\n", NextWalkState));
+    DEBUG_PRINT (TRACE_DISPATCH, ("DsCall, starting nested execution, newstate=%p\n", NextWalkState));
     BREAKPOINT3;
 
     return_ACPI_STATUS (AE_OK);
@@ -372,7 +362,7 @@ PsxCallControlMethod (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsxRestartControlMethod
+ * FUNCTION:    DsRestartControlMethod
  *
  * PARAMETERS:  WalkState           - State of the method when it was preempted
  *              Op                  - Pointer to new current op
@@ -384,36 +374,28 @@ PsxCallControlMethod (
  ******************************************************************************/
 
 ACPI_STATUS
-PsxRestartControlMethod (
+DsRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    *ReturnDesc)
 {
 
-    FUNCTION_TRACE_PTR ("PsxRestartControlMethod", WalkState);
+    FUNCTION_TRACE_PTR ("DsRestartControlMethod", WalkState);
 
 
     if (ReturnDesc)
     {
         /* Get the return value (if any) from the previous method.  NULL if no return value */
 
-        PsxResultStackPush (ReturnDesc, WalkState);
+        DsResultStackPush (ReturnDesc, WalkState);
 
         /* Delete the return value if it will not be used by the calling method */
 
-        PsxDeleteResultIfNotUsed (WalkState->MethodCallOp, ReturnDesc, WalkState);
+        DsDeleteResultIfNotUsed (WalkState->MethodCallOp, ReturnDesc, WalkState);
     }
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsxRestart: Method=%p Return=%p State=%p\n", 
+    DEBUG_PRINT (TRACE_DISPATCH, ("DsRestart: Method=%p Return=%p State=%p\n", 
                         WalkState->MethodCallOp, ReturnDesc, WalkState));
 
-    /*
-     * Currently, the only way a method can be preempted is by the nested execution
-     * of another method.  Therefore, we can safely pop the scope stack here
-     * because we know that a nested control method just finished.
-     */
-    /* Pop scope stack */
-    
-    NsScopeStackPop (ACPI_TYPE_Any);
 
     return_ACPI_STATUS (AE_OK);
 }
