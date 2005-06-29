@@ -225,7 +225,7 @@ NsEvaluateByName (
     ACPI_OBJECT             *ReturnObject,
     ACPI_OBJECT             **Params)
 {
-    ACPI_STATUS             Status = AE_ERROR;
+    ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
     char                    *InternalPath = NULL;
 
@@ -309,7 +309,7 @@ NsEvaluateByHandle (
     ACPI_OBJECT             *ReturnObject,
     ACPI_OBJECT             **Params)
 {
-    ACPI_STATUS             Status = AE_ERROR;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("NsEvaluateByHandle");
@@ -361,14 +361,6 @@ NsEvaluateByHandle (
         /* Case 2) Object is NOT a method, just return its current value */
     
         Status = NsGetObjectValue (ObjEntry);
-    }
-
-
-    /* TBD: Unecessary mapping? */
-
-    if (AE_AML_ERROR == Status)
-    {
-        Status = AE_ERROR;
     }
 
 
