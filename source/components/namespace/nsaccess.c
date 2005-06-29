@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.150 $
+ *              $Revision: 1.151 $
  *
  ******************************************************************************/
 
@@ -144,7 +144,7 @@
 ACPI_STATUS
 AcpiNsRootInitialize (void)
 {
-    ACPI_STATUS                 Status = AE_OK;
+    ACPI_STATUS                 Status;
     const ACPI_PREDEFINED_NAMES *InitVal = NULL;
     ACPI_NAMESPACE_NODE         *NewNode;
     ACPI_OPERAND_OBJECT         *ObjDesc;
@@ -153,7 +153,11 @@ AcpiNsRootInitialize (void)
     ACPI_FUNCTION_TRACE ("NsRootInitialize");
 
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /*
      * The global root ptr is initially NULL, so a non-NULL value indicates
@@ -289,7 +293,7 @@ AcpiNsRootInitialize (void)
 
 
 UnlockAndExit:
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
