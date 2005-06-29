@@ -500,66 +500,6 @@ AcpiAmlGetFieldUnitValue (
 
 
 /*
- * amcode - Scanner AML code manipulation routines
- */
-
-INT32
-AcpiAmlAvail (
-    ACPI_SIZE               n);
-
-INT32
-AcpiAmlPeek (
-    void);
-
-INT32
-AcpiAmlGetPCodeByte (
-    UINT8                   *Pcode);
-
-UINT16
-AcpiAmlPeekOp (
-    void);
-
-UINT8 *
-AcpiAmlConsumeBytes (
-    ACPI_SIZE               Bytes);
-
-ACPI_SIZE
-AcpiAmlConsumeStreamBytes (
-    ACPI_SIZE               BytesToGet,
-    UINT8                   *AmlBuffer);
-
-void
-AcpiAmlConsumePackage (
-    OPERATING_MODE          LoadExecMode);
-
-void
-AcpiAmlSetPCodeInput (
-    UINT8                   *Base,
-    UINT32                  Length);
-
-ACPI_STATUS
-AcpiAmlSetMethod (
-    void                    *Object);
-
-ACPI_STATUS
-AcpiAmlPrepExec (
-    UINT8                   *Pcode,
-    UINT32                  PcodeLength);
-
-ACPI_HANDLE
-AcpiAmlGetPCodeHandle (
-    void);
-
-void
-AcpiAmlGetCurrentLocation (
-    ACPI_OBJECT_INTERNAL    *MethodDesc);
-
-void
-AcpiAmlSetCurrentLocation (
-    ACPI_OBJECT_INTERNAL    *MethodDesc);
-
-
-/*
  * amdump - Scanner debug output routines
  */
 
@@ -568,10 +508,6 @@ AcpiAmlShowHexValue (
     INT32                   ByteCount,
     UINT8                   *AmlPtr,
     INT32                   LeadSpace);
-
-void
-AcpiAmlDumpBuffer (
-    ACPI_SIZE               Length);
 
 
 ACPI_STATUS
