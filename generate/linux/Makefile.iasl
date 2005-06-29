@@ -27,7 +27,7 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	../os_interfaces/osunixxf.c
 
 NOMAN=	YES
-CFLAGS+= -Wall -Wno-unused -D_LINUX -D_ACPI_ASL_COMPILER -I../include 
+CFLAGS+= -Wall -Wno-unused -Wstrict-prototypes -D_LINUX -D_ACPI_ASL_COMPILER -I../include 
 
 #YACC=	yacc
 YACC=	bison
