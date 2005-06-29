@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.58 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsobject")
 
 
@@ -284,9 +284,8 @@ AcpiDsInitializeObjects (
 
     /* Walk entire namespace from the supplied root */
 
-    Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartNode,
-                                ACPI_UINT32_MAX, AcpiDsInitOneObject,
-                                &Info, NULL);
+    Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartNode, ACPI_UINT32_MAX, 
+                    AcpiDsInitOneObject, &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR,
@@ -603,9 +602,7 @@ AcpiDsBuildInternalSimpleObj (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitObjectFromOp (WalkState, Op,
-                                        Op->Opcode, &ObjDesc);
-
+    Status = AcpiDsInitObjectFromOp (WalkState, Op, Op->Opcode, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         AcpiCmRemoveReference (ObjDesc);
@@ -663,16 +660,11 @@ AcpiDsBuildInternalPackageObj (
      * that the list is always null terminated.
      */
 
-    ObjDesc->Package.Elements =
-                AcpiCmCallocate ((ObjDesc->Package.Count + 1) *
-                sizeof (void *));
+    ObjDesc->Package.Elements = 
+        AcpiCmCallocate ((ObjDesc->Package.Count + 1) * sizeof (void *));
 
     if (!ObjDesc->Package.Elements)
     {
-        /* Package vector allocation failure   */
-
-        REPORT_ERROR (("DsBuildInternalPackageObj: Package vector allocation failure\n"));
-
         AcpiCmDeleteObjectDesc (ObjDesc);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
@@ -732,14 +724,12 @@ AcpiDsBuildInternalObject (
 
     if (Op->Opcode == AML_PACKAGE_OP)
     {
-        Status = AcpiDsBuildInternalPackageObj (WalkState, Op,
-                                                ObjDescPtr);
+        Status = AcpiDsBuildInternalPackageObj (WalkState, Op, ObjDescPtr);
     }
 
     else
     {
-        Status = AcpiDsBuildInternalSimpleObj (WalkState, Op,
-                                                ObjDescPtr);
+        Status = AcpiDsBuildInternalSimpleObj (WalkState, Op, ObjDescPtr);
     }
 
     return (Status);
@@ -782,8 +772,7 @@ AcpiDsCreateNode (
 
     /* Build an internal object for the argument(s) */
 
-    Status = AcpiDsBuildInternalObject (WalkState,
-                                        Op->Value.Arg, &ObjDesc);
+    Status = AcpiDsBuildInternalObject (WalkState, Op->Value.Arg, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -796,8 +785,7 @@ AcpiDsCreateNode (
 
     /* Init obj */
 
-    Status = AcpiNsAttachObject ((ACPI_HANDLE) Node, ObjDesc,
-                                    (UINT8) Node->Type);
+    Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) Node->Type);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;

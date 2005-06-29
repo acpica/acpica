@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.31 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acevents.h"
 #include "actables.h"
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsopcode")
 
 
@@ -169,7 +169,7 @@ AcpiDsGetFieldUnitArguments (
     ExtraDesc = ObjDesc->FieldUnit.Extra;
     Node = ObjDesc->FieldUnit.Node;
 
-    AcpiCmDisplayInitPathname (Node, "  [Field]");
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "  [Field]"));
     DEBUG_PRINT (TRACE_EXEC,
         ("DsGetFieldUnitArguments: [%4.4s] FieldUnit JIT Init\n",
         &Node->Name));
@@ -290,8 +290,8 @@ AcpiDsGetRegionArguments (
     ExtraDesc = ObjDesc->Region.Extra;
     Node = ObjDesc->Region.Node;
 
-    AcpiCmDisplayInitPathname (Node, "  [Operation Region]");
-        
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "  [Operation Region]"));
+
     DEBUG_PRINT (TRACE_EXEC,
         ("DsGetRegionArguments: [%4.4s] OpRegion Init at AML %p[%x]\n",
         &Node->Name, ExtraDesc->Extra.Pcode, *(UINT32*) ExtraDesc->Extra.Pcode));
@@ -610,7 +610,7 @@ AcpiDsEvalFieldUnitOperands (
         FieldDesc->FieldUnit.Length       = BitCount;
         FieldDesc->FieldUnit.BitOffset    = (UINT8) (BitOffset % 8);
         FieldDesc->FieldUnit.Offset       = DIV_8 (BitOffset);
-        FieldDesc->FieldUnit.Container    = SrcDesc;
+        FieldDesc->FieldUnit.ContainerObj = SrcDesc;
 
         /* Reference count for SrcDesc inherits FieldDesc count */
 
@@ -624,9 +624,10 @@ AcpiDsEvalFieldUnitOperands (
 
     default:
 
-        if ((SrcDesc->Common.Type > (UINT8) INTERNAL_TYPE_REFERENCE) ||
-            !AcpiCmValidObjectType (SrcDesc->Common.Type))
+        if ((SrcDesc->Common.Type > (UINT8) INTERNAL_TYPE_REFERENCE) || !AcpiCmValidObjectType (SrcDesc->Common.Type)) /* TBD: This line MUST be a single line until AcpiSrc can handle it (block deletion) */
         {
+
+
             DEBUG_PRINT (ACPI_ERROR,
                 ("AmlExecCreateField: Tried to create field in invalid object type %X\n",
                 SrcDesc->Common.Type));
@@ -975,7 +976,6 @@ AcpiDsExecEndControlOp (
              * an arg or local), resolve it now because it may
              * cease to exist at the end of the method.
              */
-
             Status = AcpiAmlResolveToValue (&WalkState->Operands [0], WalkState);
             if (ACPI_FAILURE (Status))
             {
@@ -1000,12 +1000,19 @@ AcpiDsExecEndControlOp (
              * If value being returned is a Reference (such as
              * an arg or local), resolve it now because it may
              * cease to exist at the end of the method.
+             *
+             * Allow references created by the Index operator to return unchanged.
              */
 
-            Status = AcpiAmlResolveToValue (&WalkState->Results->Results.ObjDesc [0], WalkState);
-            if (ACPI_FAILURE (Status))
+            if (VALID_DESCRIPTOR_TYPE (WalkState->Results->Results.ObjDesc [0], ACPI_DESC_TYPE_INTERNAL) &&
+                ((WalkState->Results->Results.ObjDesc [0])->Common.Type == INTERNAL_TYPE_REFERENCE) &&
+                ((WalkState->Results->Results.ObjDesc [0])->Reference.Opcode != AML_INDEX_OP))
             {
-                return (Status);
+                    Status = AcpiAmlResolveToValue (&WalkState->Results->Results.ObjDesc [0], WalkState);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
             }
 
             WalkState->ReturnDesc = WalkState->Results->Results.ObjDesc [0];
