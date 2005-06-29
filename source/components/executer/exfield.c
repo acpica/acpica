@@ -118,9 +118,9 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <hardware.h>
 #include <events.h>
 
@@ -232,12 +232,12 @@ AmlSetupField (
              * exceeds region length, indicate an error
              */
 
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlSetupField: Operation at %08lx width %d bits exceeds region bound %08lx\n",
-                    ObjDesc->Field.Offset, FieldBitWidth, RgnDesc->Region.Length));
-
             DUMP_STACK_ENTRY (RgnDesc);
             DUMP_STACK_ENTRY (ObjDesc);
+
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlSetupField: Operation at %08lX width %d bits exceeds len %08lX field=%p region=%p\n",
+                    ObjDesc->Field.Offset, FieldBitWidth, RgnDesc->Region.Length, ObjDesc, RgnDesc));
 
             Status = AE_AML_ERROR;
         }
