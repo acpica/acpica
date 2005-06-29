@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: nsload - namespace loading procedures
+ *
+ * Module Name: nsload - namespace loading/expanding/contracting procedures
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,13 +116,13 @@
 
 #define __NSLOAD_C__
 
-#include <acpi.h>
-#include <interp.h>
-#include <namesp.h>
-#include <amlcode.h>
-#include <parser.h>
-#include <dispatch.h>
-#include <debugger.h>
+#include "acpi.h"
+#include "interp.h"
+#include "namesp.h"
+#include "amlcode.h"
+#include "parser.h"
+#include "dispatch.h"
+#include "debugger.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -131,7 +131,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    NsParseTable
+ * FUNCTION:    AcpiNsParseTable
  *
  * PARAMETERS:  TableDesc       - An ACPI table descriptor for table to parse
  *              Scope           - Where to enter the table into the namespace
@@ -143,7 +143,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-NsParseTable (
+AcpiNsParseTable (
     ACPI_TABLE_DESC         *TableDesc,
     NAME_TABLE_ENTRY        *Scope)
 {
@@ -155,19 +155,19 @@ NsParseTable (
 
     /* Create the root object */
 
-    Gbl_ParsedNamespaceRoot = PsAllocOp (AML_ScopeOp);
-    if (!Gbl_ParsedNamespaceRoot)
+    AcpiGbl_ParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!AcpiGbl_ParsedNamespaceRoot)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Initialize the root object */
 
-    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    ((ACPI_NAMED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
-    Status = PsParseAml (Gbl_ParsedNamespaceRoot, TableDesc->AmlPointer, TableDesc->AmlLength, 0); 
+    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot, TableDesc->AmlPointer, TableDesc->AmlLength, 0);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -177,8 +177,8 @@ NsParseTable (
 #ifndef PARSER_ONLY
     DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Building Internal Namespace\n"));
 
-    Status = PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
-                        TableDesc->TableId, DsLoad2BeginOp, DsLoad2EndOp);
+    Status = AcpiPsWalkParsedAml (AcpiPsGetChild (AcpiGbl_ParsedNamespaceRoot), AcpiGbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
+                        TableDesc->TableId, AcpiDsLoad2BeginOp, AcpiDsLoad2EndOp);
 
 
     /*
@@ -188,10 +188,10 @@ NsParseTable (
 
     DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Deleting Parsed Namespace\n"));
 
-    DEBUG_EXEC (DbGenerateStatistics (Gbl_ParsedNamespaceRoot, 0));
+    DEBUG_EXEC (AcpiDbGenerateStatistics (AcpiGbl_ParsedNamespaceRoot, 0));
 
-    PsDeleteParseTree (Gbl_ParsedNamespaceRoot);
-    Gbl_ParsedNamespaceRoot = NULL;
+    AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
+    AcpiGbl_ParsedNamespaceRoot = NULL;
 #endif
 
 
@@ -203,7 +203,7 @@ NsParseTable (
 
 /*****************************************************************************
  *
- * FUNCTION:    NsLoadTable
+ * FUNCTION:    AcpiNsLoadTable
  *
  * PARAMETERS:  *PcodeAddr          - Address of pcode block
  *              PcodeLength         - Length of pcode block
@@ -216,7 +216,7 @@ NsParseTable (
  ****************************************************************************/
 
 ACPI_STATUS
-NsLoadTable (
+AcpiNsLoadTable (
     ACPI_TABLE_DESC         *TableDesc,
     NAME_TABLE_ENTRY        *Entry)
 {
@@ -243,18 +243,18 @@ NsLoadTable (
 
 
     /*
-     * Parse the table and load the namespace with all named objects found within.  
-     * Control methods are NOT parsed at this time.  In fact, the control methods 
-     * cannot be parsed until the entire namespace is loaded, because if a control 
-     * method makes a forward reference (call) to another control method, we can't 
+     * Parse the table and load the namespace with all named objects found within.
+     * Control methods are NOT parsed at this time.  In fact, the control methods
+     * cannot be parsed until the entire namespace is loaded, because if a control
+     * method makes a forward reference (call) to another control method, we can't
      * continue parsing because we don't know how many arguments to parse next!
      */
 
     DEBUG_PRINT (ACPI_INFO, ("NsLoadTable: **** Loading table into namespace ****\n"));
 
-    CmAcquireMutex (MTX_NAMESPACE);
-    Status = NsParseTable (TableDesc, Entry->Scope);
-    CmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    Status = AcpiNsParseTable (TableDesc, Entry->Scope);
+    AcpiCmReleaseMutex (MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
     {
@@ -269,7 +269,7 @@ NsLoadTable (
 
     DEBUG_PRINT (ACPI_INFO, ("NsLoadTable: **** Begin Table Method Parsing and Object Initialization ****\n"));
 
-    Status = DsInitializeObjects (TableDesc, Entry);
+    Status = AcpiDsInitializeObjects (TableDesc, Entry);
 
     DEBUG_PRINT (ACPI_INFO, ("NsLoadTable: **** Completed Table Method Parsing and Object Initialization ****\n"));
 
@@ -279,8 +279,8 @@ NsLoadTable (
 
 
 /******************************************************************************
- * 
- * FUNCTION:    NsLoadTableByType
+ *
+ * FUNCTION:    AcpiNsLoadTableByType
  *
  * PARAMETERS:  TableType           - Id of the table type to load
  *
@@ -293,7 +293,7 @@ NsLoadTable (
  *****************************************************************************/
 
 ACPI_STATUS
-NsLoadTableByType (
+AcpiNsLoadTableByType (
     ACPI_TABLE_TYPE         TableType)
 {
     UINT32                  i;
@@ -301,11 +301,11 @@ NsLoadTableByType (
     ACPI_TABLE_HEADER       *TablePtr;
     ACPI_TABLE_DESC         *TableDesc;
 
-    
+
     FUNCTION_TRACE ("NsLoadTableByType");
 
 
-    CmAcquireMutex (MTX_TABLES);
+    AcpiCmAcquireMutex (MTX_TABLES);
 
 
     /*
@@ -320,7 +320,7 @@ NsLoadTableByType (
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading DSDT\n"));
 
-        TableDesc = &Gbl_AcpiTables[TABLE_DSDT];
+        TableDesc = &AcpiGbl_AcpiTables[TABLE_DSDT];
 
         /* If table already loaded into namespace, just return */
 
@@ -332,8 +332,8 @@ NsLoadTableByType (
         TableDesc->TableId = TABLE_ID_DSDT;
 
         /* Initialize the root of the namespace tree */
-    
-        Status = NsRootInitialize ();
+
+        Status = AcpiNsRootInitialize ();
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
@@ -341,7 +341,7 @@ NsLoadTableByType (
 
         /* Now load the single DSDT */
 
-        Status = NsLoadTable (TableDesc, Gbl_RootObject);
+        Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootObject);
         if (ACPI_SUCCESS (Status))
         {
             TableDesc->LoadedIntoNamespace = TRUE;
@@ -353,14 +353,14 @@ NsLoadTableByType (
     case TABLE_SSDT:
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading %d SSDTs\n",
-                        Gbl_AcpiTables[TABLE_SSDT].Count));
+                        AcpiGbl_AcpiTables[TABLE_SSDT].Count));
 
         /*
          * Traverse list of SSDT tables
          */
 
-        TableDesc = &Gbl_AcpiTables[TABLE_SSDT];
-        for (i = 0; i < Gbl_AcpiTables[TABLE_SSDT].Count; i++)
+        TableDesc = &AcpiGbl_AcpiTables[TABLE_SSDT];
+        for (i = 0; i < AcpiGbl_AcpiTables[TABLE_SSDT].Count; i++)
         {
             TablePtr = TableDesc->Pointer;
 
@@ -368,7 +368,7 @@ NsLoadTableByType (
 
             if (!TableDesc->LoadedIntoNamespace)
             {
-                Status = NsLoadTable (TableDesc, Gbl_RootObject);
+                Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootObject);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -386,14 +386,14 @@ NsLoadTableByType (
     case TABLE_PSDT:
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading %d PSDTs\n",
-                        Gbl_AcpiTables[TABLE_PSDT].Count));
+                        AcpiGbl_AcpiTables[TABLE_PSDT].Count));
 
         /*
          * Traverse list of PSDT tables
          */
 
-        TableDesc = &Gbl_AcpiTables[TABLE_PSDT];
-        for (i = 0; i < Gbl_AcpiTables[TABLE_PSDT].Count ; i++)
+        TableDesc = &AcpiGbl_AcpiTables[TABLE_PSDT];
+        for (i = 0; i < AcpiGbl_AcpiTables[TABLE_PSDT].Count ; i++)
         {
             TablePtr = TableDesc->Pointer;
 
@@ -401,7 +401,7 @@ NsLoadTableByType (
 
             if (!TableDesc->LoadedIntoNamespace)
             {
-                Status = NsLoadTable (TableDesc, Gbl_RootObject);
+                Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootObject);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -423,13 +423,214 @@ NsLoadTableByType (
 
 UnlockAndExit:
 
-    CmReleaseMutex (MTX_TABLES);
+    AcpiCmReleaseMutex (MTX_TABLES);
 
     return_ACPI_STATUS (Status);
 
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiNsFreeTableEntry
+ *
+ * PARAMETERS:  Entry           - The entry to be deleted
+ *
+ * RETURNS      None
+ *
+ * DESCRIPTION: Free an entry in a namespace table.  Delete any objects contained
+ *              in the entry, unlink the entry, then mark it unused.
+ *
+ ******************************************************************************/
 
+void
+AcpiNsFreeTableEntry (
+    NAME_TABLE_ENTRY        *Entry)
+{
+    FUNCTION_TRACE ("NsFreeTableEntry");
+
+
+    if (!Entry)
+    {
+        return_VOID;
+    }
+
+    /*
+     * Need to delete
+     * 1) The scope, if any
+     * 2) An attached object, if any
+     */
+
+    if (Entry->Scope)
+    {
+        AcpiCmFree (Entry->Scope);
+        Entry->Scope = NULL;
+    }
+
+    if (Entry->Object)
+    {
+        AcpiNsDetachObject (Entry->Object);
+        Entry->Object = NULL;
+    }
+
+
+    /* Unlink the NTE from the table */
+
+    if (Entry->PrevEntry)
+    {
+        Entry->PrevEntry->NextEntry = Entry->NextEntry;
+    }
+
+    if (Entry->NextEntry)
+    {
+        Entry->NextEntry->PrevEntry = Entry->PrevEntry;
+    }
+
+
+    /* Mark the entry unallocated */
+
+    Entry->Name = 0;
+
+    return_VOID;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiNsDeleteSubtree
+ *
+ * PARAMETERS:  StartHandle         - Handle in namespace where search begins
+ *
+ * RETURNS      Status
+ *
+ * DESCRIPTION: Walks the namespace starting at the given handle and deletes
+ *              all objects, entries, and scopes in the entire subtree.
+ *
+ *              TBD: [Investigate] What if any part of this subtree is in use?  (i.e. on one
+ *              of the object stacks?)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsDeleteSubtree (
+    ACPI_HANDLE             StartHandle)
+{
+    ACPI_STATUS             Status;
+    ACPI_HANDLE             ChildHandle;
+    ACPI_HANDLE             ParentHandle;
+    ACPI_HANDLE             NextChildHandle;
+    ACPI_HANDLE             Dummy;
+    UINT32                  Level;
+
+
+    FUNCTION_TRACE ("NsDeleteSubtree");
+
+
+    ParentHandle    = StartHandle;
+    ChildHandle     = 0;
+    Level           = 1;
+
+    /*
+     * Traverse the tree of objects until we bubble back up
+     * to where we started.
+     */
+
+    while (Level > 0)
+    {
+        /* Attempt to get the next object in this scope */
+
+        Status = AcpiGetNextObject (ACPI_TYPE_ANY, ParentHandle, ChildHandle, &NextChildHandle);
+
+        /*
+         * Regardless of the success or failure of the previous operation,
+         * we are done with the previous object (if there was one), and any
+         * children it may have had.  So we can now safely delete it (and
+         * its scope, if any)
+         */
+
+        AcpiNsFreeTableEntry (ChildHandle);
+        ChildHandle = NextChildHandle;
+
+
+        /* Did we get a new object? */
+
+        if (ACPI_SUCCESS (Status))
+        {
+            /* Check if this object has any children */
+
+            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY, ChildHandle, 0, &Dummy)))
+            {
+                /* There is at least one child of this object, visit the object */
+
+                Level++;
+                ParentHandle    = ChildHandle;
+                ChildHandle     = 0;
+            }
+        }
+
+        else
+        {
+            /*
+             * No more children in this object, go back up to the object's parent
+             */
+            Level--;
+            ChildHandle = ParentHandle;
+            AcpiGetParent (ParentHandle, &ParentHandle);
+        }
+    }
+
+    /* Now delete the starting object, and we are done */
+
+    AcpiNsFreeTableEntry ((NAME_TABLE_ENTRY *) ChildHandle);
+
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+
+/****************************************************************************
+ *
+ *  FUNCTION:       AcpiNsUnloadNameSpace
+ *
+ *  PARAMETERS:     Handle          - Root of namespace subtree to be deleted
+ *
+ *  RETURN:         Status
+ *
+ *  DESCRIPTION:    Shrinks the namespace, typically in response to an undocking
+ *                  event.  Deletes an entire subtree starting from (and
+ *                  including) the given handle.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiNsUnloadNamespace (
+    ACPI_HANDLE             Handle)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("NsUnloadNameSpace");
+
+
+    /* Parameter validation */
+
+    if (!AcpiGbl_RootObject->Scope)
+    {
+        return_ACPI_STATUS (AE_NO_NAMESPACE);
+    }
+
+    if (!Handle)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    /* This function does the real work */
+
+    Status = AcpiNsDeleteSubtree (Handle);
+
+    return_ACPI_STATUS (Status);
+}
 
 
