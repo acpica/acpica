@@ -423,13 +423,12 @@ AcpiDbDecodeInternalObject (
 
 void
 AcpiDbDisplayInternalObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
     UINT8                   Type;
-    ACPI_WALK_STATE         *WalkState;
 
 
-    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
 
     AcpiOsPrintf ("%p ", ObjDesc);
 
@@ -593,18 +592,22 @@ AcpiDbDisplayMethodInfo (
 
         NumOps++;
         if (CountRemaining)
+        {
             NumRemainingOps++;
+        }
 
         OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-        if (!OpInfo)
+        if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
         {
+            /* Bad opcode or ASCII character */
+
             continue;
         }
 
 
         /* Decode the opcode */
 
-        switch ((OpInfo->Flags & OP_INFO_TYPE))
+        switch (ACPI_GET_OP_CLASS (OpInfo))
         {
         case OPTYPE_CONSTANT:           /* argument type only */
         case OPTYPE_LITERAL:            /* argument type only */
@@ -675,7 +678,7 @@ AcpiDbDisplayLocals (void)
     {
         ObjDesc = WalkState->LocalVariables[i].Object;
         AcpiOsPrintf ("Local%d: ", i);
-        AcpiDbDisplayInternalObject (ObjDesc);
+        AcpiDbDisplayInternalObject (ObjDesc, WalkState);
     }
 }
 
@@ -722,7 +725,7 @@ AcpiDbDisplayArguments (void)
     {
         ObjDesc = WalkState->Arguments[i].Object;
         AcpiOsPrintf ("Arg%d: ", i);
-        AcpiDbDisplayInternalObject (ObjDesc);
+        AcpiDbDisplayInternalObject (ObjDesc, WalkState);
     }
 }
 
@@ -766,7 +769,7 @@ AcpiDbDisplayResults (void)
     {
         ObjDesc = WalkState->Results[i];
         AcpiOsPrintf ("Result%d: ", i);
-        AcpiDbDisplayInternalObject (ObjDesc);
+        AcpiDbDisplayInternalObject (ObjDesc, WalkState);
     }
 }
 
@@ -830,7 +833,8 @@ AcpiDbDisplayCallingTree (void)
 
 void
 AcpiDbDisplayResultObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
 
     /* TBD: [Future] We don't always want to display the result.
@@ -844,7 +848,7 @@ AcpiDbDisplayResultObject (
     }
 
     AcpiOsPrintf ("ResultObj: ");
-    AcpiDbDisplayInternalObject (ObjDesc);
+    AcpiDbDisplayInternalObject (ObjDesc, WalkState);
     AcpiOsPrintf ("\n");
 }
 
@@ -863,7 +867,8 @@ AcpiDbDisplayResultObject (
 
 void
 AcpiDbDisplayArgumentObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
 
 
@@ -873,7 +878,7 @@ AcpiDbDisplayArgumentObject (
     }
 
     AcpiOsPrintf ("ArgObj:    ");
-    AcpiDbDisplayInternalObject (ObjDesc);
+    AcpiDbDisplayInternalObject (ObjDesc, WalkState);
 }
 
 #endif /* ENABLE_DEBUGGER */

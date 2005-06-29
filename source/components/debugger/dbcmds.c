@@ -337,8 +337,7 @@ AcpiDbSetMethodBreakpoint (
 
     /* Just save the breakpoint in a global */
 
-    AcpiGbl_MethodBreakpoint = Address;
-    AcpiGbl_BreakpointWalk = WalkState;
+    WalkState->MethodBreakpoint = Address;
     AcpiOsPrintf ("Breakpoint set at AML offset 0x%X\n", Address);
 }
 
@@ -647,10 +646,10 @@ AcpiDbSetMethodData (
             return;
         }
 
-        AcpiDsMethodDataSetValue (MTH_TYPE_ARG, Index, ObjDesc);
+        AcpiDsMethodDataSetValue (MTH_TYPE_ARG, Index, ObjDesc, WalkState);
         ObjDesc = WalkState->Arguments[Index].Object;
         AcpiOsPrintf ("Arg%d: ", Index);
-        AcpiDbDisplayInternalObject (ObjDesc);
+        AcpiDbDisplayInternalObject (ObjDesc, WalkState);
         break;
 
     case 'L':
@@ -663,10 +662,10 @@ AcpiDbSetMethodData (
             return;
         }
 
-        AcpiDsMethodDataSetValue (MTH_TYPE_LOCAL, Index, ObjDesc);
+        AcpiDsMethodDataSetValue (MTH_TYPE_LOCAL, Index, ObjDesc, WalkState);
         ObjDesc = WalkState->LocalVariables[Index].Object;
         AcpiOsPrintf ("Local%d: ", Index);
-        AcpiDbDisplayInternalObject (ObjDesc);
+        AcpiDbDisplayInternalObject (ObjDesc, WalkState);
         break;
 
     default:
