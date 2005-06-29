@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.83 $
+ *       $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -196,7 +196,7 @@ AcpiEvGpeDispatch (
 
 UINT32
 AcpiEvGpeDetect (
-    void);
+    ACPI_GPE_BLOCK_INFO     *GpeBlockListHead);
 
 /*
  * Evregion - Address Space handling
