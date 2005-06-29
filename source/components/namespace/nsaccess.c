@@ -301,7 +301,7 @@ NsRootInitialize (void)
                     Gbl_GlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
                 }
 
-                /* TBD: These fields may be obsolete */
+                /* TBD: [Restructure] These fields may be obsolete */
 
                 ObjDesc->Mutex.LockCount = 0;
                 ObjDesc->Mutex.ThreadId  = 0;
@@ -496,8 +496,8 @@ NsLookup (
 
             if (!(*Pathname))
             {
-                *RetEntry = Gbl_RootObject;
-                return_ACPI_STATUS (AE_OK);
+                ThisEntry = Gbl_RootObject;
+                goto CheckForNewScopeAndExit;
             }
         }
     
@@ -701,6 +701,13 @@ NsLookup (
         Pathname += ACPI_NAME_SIZE;                 /* point to next name segment */
     }
 
+
+
+    /*
+     * Always check if we need to open a new scope 
+     */
+
+CheckForNewScopeAndExit:
 
     if (!(Flags & NS_DONT_OPEN_SCOPE) && (WalkState))
     {
