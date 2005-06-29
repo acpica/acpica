@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,46 @@
         MODULE_NAME         ("nsdump")
 
 #if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsPrintPathname
+ *
+ * PARAMETERS:  NumSegment          - Number of ACPI name segments
+ *              Pathname            - The compressed (internal) path
+ *
+ * DESCRIPTION: Print an object's full namespace pathname
+ *
+ ******************************************************************************/
+
+void
+AcpiNsPrintPathname (
+    UINT32                  NumSegments,
+    char                    *Pathname)
+{
+    UINT32                  i;
+
+    PROC_NAME ("AcpiNsPrintPathname");
+
+
+    if (!(AcpiDbgLevel & ACPI_LV_NAMES) || !(AcpiDbgLayer & ACPI_NAMESPACE))
+    {
+        return;
+    }
+
+        /* Print the entire name */
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "["));
+
+    for (i = 0; i < NumSegments; i++)
+    {
+        AcpiOsPrintf ("%4.4s.", (char *) &Pathname[i * 4]);
+    }
+
+    AcpiOsPrintf ("]\n");
+}
+
 
 /*******************************************************************************
  *
