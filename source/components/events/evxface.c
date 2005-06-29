@@ -95,6 +95,7 @@
 
 #include <acpi.h>
 #include <hardware.h>
+#include <namespace.h>
 #include <events.h>
 #include <string.h>
 #include <stdarg.h>
@@ -460,7 +461,7 @@ ACPI_STATUS
 AcpiInstallNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler, void *Context)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
-    nte                     *DeviceNte;
+    NAME_TABLE_ENTRY        *ObjEntry;
 
 
     FUNCTION_TRACE ("AcpiInstallNotifyHandler");
@@ -475,14 +476,21 @@ AcpiInstallNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler, void *Context
     }
 
 
+    /* Convert and validate the device handle */
+
+    if (!(ObjEntry = NsConvertHandleToEntry (Device)))
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
     /*
      * The handle must refer to either a device or a thermal zone.  These
      * are the ONLY objects that can receive ACPI notifications
      */
 
-    DeviceNte = (nte *) Device;
-    if ((DeviceNte->Type != TYPE_Device) &&
-        (DeviceNte->Type != TYPE_Thermal))
+    if ((ObjEntry->Type != TYPE_Device) &&
+        (ObjEntry->Type != TYPE_Thermal))
     {
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
@@ -491,7 +499,7 @@ AcpiInstallNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler, void *Context
 
     /* Check for an existing handler */
 
-    ObjDesc = DeviceNte->Value;
+    ObjDesc = ObjEntry->Value;
     if (ObjDesc->Device.Handler)
     {
         FUNCTION_EXIT;
@@ -532,7 +540,7 @@ ACPI_STATUS
 AcpiRemoveNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
-    nte                     *DeviceNte;
+    NAME_TABLE_ENTRY        *ObjEntry;
 
 
     FUNCTION_TRACE ("AcpiRemoveNotifyHandler");
@@ -547,14 +555,21 @@ AcpiRemoveNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler)
     }
 
 
+    /* Convert and validate the device handle */
+
+    if (!(ObjEntry = NsConvertHandleToEntry (Device)))
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
     /*
      * The handle must refer to either a device or a thermal zone.  These
      * are the ONLY objects that can receive ACPI notifications
      */
 
-    DeviceNte = (nte *) Device;
-    if ((DeviceNte->Type != TYPE_Device) &&
-        (DeviceNte->Type != TYPE_Thermal))
+    if ((ObjEntry->Type != TYPE_Device) &&
+        (ObjEntry->Type != TYPE_Thermal))
     {
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
@@ -563,7 +578,7 @@ AcpiRemoveNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler)
 
     /* Make sure handler matches */
 
-    ObjDesc = DeviceNte->Value;
+    ObjDesc = ObjEntry->Value;
     if (ObjDesc->Device.Handler != Handler)
     {
         FUNCTION_EXIT;
