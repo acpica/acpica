@@ -243,11 +243,6 @@ void
 OsdSleepUsec (
     UINT32                  Microseconds);
 
-void
-OsdStall (
-	UINT32			        Microseconds);
-
-
 /*
  * Platform/Hardware independent I/O interfaces
  */
@@ -376,10 +371,6 @@ OsdGetLine (
 /*
  * Debug 
  */
-
-void
-OsdDbgTrap(
-    char                    *pTrapCause);
 
 void
 OsdDbgAssert(
