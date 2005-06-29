@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.149 $
+ *              $Revision: 1.150 $
  *
  *****************************************************************************/
 
@@ -918,7 +918,7 @@ AcpiExDumpObjectDescriptor (
 
         AcpiExOutInteger ("Processor ID",    ObjDesc->Processor.ProcId);
         AcpiExOutInteger ("Length",          ObjDesc->Processor.Length);
-        AcpiExOutInteger ("Address",         ObjDesc->Processor.Address);
+        AcpiExOutAddress ("Address",         (ACPI_PHYSICAL_ADDRESS) ObjDesc->Processor.Address);
         AcpiExOutPointer ("SysHandler",      ObjDesc->Processor.SysHandler);
         AcpiExOutPointer ("DrvHandler",      ObjDesc->Processor.DrvHandler);
         AcpiExOutPointer ("AddrHandler",     ObjDesc->Processor.AddrHandler);
