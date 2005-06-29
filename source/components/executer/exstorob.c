@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -535,6 +535,7 @@ AcpiAmlCopyIntegerToFieldUnit (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlCopyIntegerToFieldUnit: FieldUnit: Implementation limitation - Field exceeds UINT32\n"));
+        AcpiAmlReleaseGlobalLock (Locked);
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
     }
 
