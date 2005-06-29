@@ -135,7 +135,7 @@ AcpiTbHandleToObject (
 
 ACPI_STATUS
 AcpiTbGetTableFacs (
-    INT8                    *BufferPtr,
+    ACPI_TABLE_HEADER       *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 
@@ -152,7 +152,7 @@ AcpiTbGetTablePtr (
 ACPI_STATUS
 AcpiTbGetTable (
     void                    *PhysicalAddress,
-    INT8                    *BufferPtr,
+    ACPI_TABLE_HEADER       *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 
@@ -163,7 +163,7 @@ AcpiTbGetTable (
 ACPI_STATUS
 AcpiTbGetAllTables (
     UINT32                  NumberOfTables,
-    INT8                    *BufferPtr);
+    ACPI_TABLE_HEADER       *BufferPtr);
 
 
 /*
@@ -172,12 +172,12 @@ AcpiTbGetAllTables (
 
 ACPI_STATUS
 AcpiTbInstallTable (
-    INT8                    *TablePtr,
+    ACPI_TABLE_HEADER       *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 AcpiTbRecognizeTable (
-    INT8                    *TablePtr,
+    ACPI_TABLE_HEADER       *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS

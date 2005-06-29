@@ -247,6 +247,8 @@ typedef struct  /* Smart Battery Description Table */
 #define ACPI_MEM_ALLOCATED      1
 #define ACPI_MEM_MAPPED         2
 
+/* Definitions for the Flags bitfield member of ACPI_TABLE_SUPPORT */
+
 #define ACPI_TABLE_SINGLE       0
 #define ACPI_TABLE_MULTIPLE     1
 
