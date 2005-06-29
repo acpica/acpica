@@ -364,7 +364,8 @@ NsLookup (
     NAME_TABLE_ENTRY        *ThisEntry = NULL;
     NAME_TABLE_ENTRY        *ScopeToPush = NULL;
     UINT32                  NumSegments;
-    ACPI_OBJECT_TYPE        TypeToCheckFor;              /* Type To Check For */
+    ACPI_OBJECT_TYPE        TypeToCheckFor;
+    ACPI_OBJECT_TYPE        ThisSearchType;
     UINT32                  i;
     BOOLEAN                 NullNamePath = FALSE;
 
@@ -585,11 +586,16 @@ NsLookup (
     {
         /* 
          * Search for the current segment in the table where it should be.
-         * Type is significant only at the last level.
+         * Type is significant only at the last (topmost) level.
          */
+        ThisSearchType = ACPI_TYPE_Any;
+        if (!NumSegments)
+        {
+            ThisSearchType = Type;
+        }
 
         Status = NsSearchAndEnter (*(UINT32 *) Name, WalkState, EntryToSearch, InterpreterMode,
-                                    NumSegments == 0 ? Type : ACPI_TYPE_Any, Flags, &ThisEntry);
+                                    ThisSearchType, Flags, &ThisEntry);
         if (Status != AE_OK)
         {
             if (Status == AE_NOT_FOUND)
