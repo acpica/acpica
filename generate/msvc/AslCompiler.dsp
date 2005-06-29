@@ -75,7 +75,7 @@ PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "..\..\components\Include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /FD /GZ /c
+# ADD CPP /nologo /W4 /Gm /GX /ZI /Od /I "..\..\components\Include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -184,10 +184,28 @@ SOURCE=..\..\components\compiler\aslcompile.c
 # Begin Source File
 
 SOURCE=..\..\components\compiler\aslcompiler.l.c
+
+!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+
+# ADD CPP /W3
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\components\compiler\aslcompiler.y.c
+
+!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+
+# ADD CPP /W3
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -240,6 +258,15 @@ SOURCE=..\..\components\compiler\aslrestype1.c
 # Begin Source File
 
 SOURCE=..\..\components\compiler\aslrestype2.c
+
+!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+
+# SUBTRACT CPP /FA<none>
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
