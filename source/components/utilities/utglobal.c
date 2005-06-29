@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.179 $
+ *              $Revision: 1.180 $
  *
  *****************************************************************************/
 
@@ -810,6 +810,10 @@ AcpiUtInitGlobals (
         AcpiGbl_AcpiMutexInfo[i].UseCount   = 0;
     }
 
+    /* GPE support */
+
+    AcpiGbl_GpeBlockListHead            = NULL;
+
     /* Global notify handlers */
 
     AcpiGbl_SysNotify.Handler           = NULL;
@@ -847,8 +851,6 @@ AcpiUtInitGlobals (
 
     /* Hardware oriented */
 
-    AcpiGbl_GpeRegisterInfo             = NULL;
-    AcpiGbl_GpeNumberInfo               = NULL;
     AcpiGbl_EventsInitialized           = FALSE;
 
     /* Namespace */
