@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.52 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -1013,6 +1013,8 @@ AcpiDsInitAmlWalk (
     ACPI_NAMESPACE_NODE     *MethodNode,
     UINT8                   *AmlStart,
     UINT32                  AmlLength,
+    ACPI_OPERAND_OBJECT     **Params,
+    ACPI_OPERAND_OBJECT     **ReturnObjDesc,
     UINT32                  PassNumber)
 {
     ACPI_STATUS             Status;
@@ -1022,15 +1024,17 @@ AcpiDsInitAmlWalk (
     FUNCTION_TRACE ("DsInitAmlWalk");
 
 
-    WalkState->ParserState.Aml          =
-    WalkState->ParserState.AmlStart     = AmlStart;
-    WalkState->ParserState.AmlEnd       =
-    WalkState->ParserState.PkgEnd       = AmlStart + AmlLength;
+    WalkState->ParserState.Aml      =
+    WalkState->ParserState.AmlStart = AmlStart;
+    WalkState->ParserState.AmlEnd   =
+    WalkState->ParserState.PkgEnd   = AmlStart + AmlLength;
 
     /* The NextOp of the NextWalk will be the beginning of the method */
     /* TBD: [Restructure] -- obsolete? */
 
-    WalkState->NextOp       = NULL;
+    WalkState->NextOp               = NULL;
+    WalkState->Params               = Params;
+    WalkState->CallerReturnDesc     = ReturnObjDesc;
 
     Status = AcpiPsInitScope (&WalkState->ParserState, Op);
     if (ACPI_FAILURE (Status))
@@ -1053,6 +1057,10 @@ AcpiDsInitAmlWalk (
         {
             return_ACPI_STATUS (Status);
         }
+
+        /* Init the method arguments */
+
+        AcpiDsMethodDataInitArgs (Params, MTH_NUM_ARGS, WalkState);
     }
     
     else
@@ -1073,30 +1081,7 @@ AcpiDsInitAmlWalk (
         }
     }
 
-    switch (PassNumber)
-    {
-    case 1:
-        WalkState->ParseFlags         = ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE;
-        WalkState->DescendingCallback = AcpiDsLoad1BeginOp;
-        WalkState->AscendingCallback  = AcpiDsLoad1EndOp;
-        break;
-
-    case 2:
-        WalkState->ParseFlags         = ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE;
-        WalkState->DescendingCallback = AcpiDsLoad2BeginOp;
-        WalkState->AscendingCallback  = AcpiDsLoad2EndOp;
-        break;
-
-    case 3:
-        WalkState->ParseFlags        |= ACPI_PARSE_EXECUTE  | ACPI_PARSE_DELETE_TREE;
-        WalkState->DescendingCallback = AcpiDsExecBeginOp;
-        WalkState->AscendingCallback  = AcpiDsExecEndOp;
-        break;
-
-    default:
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-        break;
-    }
+    AcpiDsInitCallbacks (WalkState, PassNumber);
 
     return_ACPI_STATUS (AE_OK);
 }
