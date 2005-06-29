@@ -124,8 +124,6 @@
 
 extern UINT8                    *DsdtPtr;
 extern UINT32                   AcpiDsdtLength;
-extern int                      optind;
-extern char                     *optarg;
 extern UINT8                    *AmlStart;
 extern UINT32                   AmlLength;
 extern FILE                     *AcpiGbl_DebugFile;
@@ -180,11 +178,9 @@ typedef union ptr_ovl
 #define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
-int
-getopt (
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
+void __cdecl
+AeCtrlCHandler (
+    int                     Sig);
 
 ACPI_STATUS
 AeBuildLocalTables (
@@ -223,42 +219,12 @@ void
 AeOpenDebugFile (
     char                    *Name);
 
-void
-AdPrintStatistics (void);
-
 ACPI_STATUS
 AeDisplayAllMethods (
     UINT32                  DisplayCount);
 
 ACPI_STATUS
-AdFindDsdt(
-    UINT8                   **DsdtPtr,
-    UINT32                  *DsdtLength);
-
-void
-AdDumpTables (void);
-
-ACPI_STATUS
 AeInstallHandlers (void);
-
-int
-FlatMove (
-    UINT32                  Dest,
-    UINT32                  Src,
-    UINT32                  Size);
-
-ACPI_STATUS
-AdGetTables (
-    char                    *Filename);
-
-ACPI_STATUS
-AdParseTables (void);
-
-ACPI_STATUS
-AdDisplayTables (void);
-
-ACPI_STATUS
-AdDisplayStatistics (void);
 
 
 #endif /* _ADCOMMON */

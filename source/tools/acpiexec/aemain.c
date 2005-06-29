@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.57 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -117,6 +117,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #include "acpi.h"
 #include "amlcode.h"
@@ -124,90 +125,22 @@
 #include "acnamesp.h"
 #include "acinterp.h"
 #include "acdebug.h"
+#include "acapps.h"
 
 #include "aecommon.h"
 
-
-#define _COMPONENT          PARSER
-        MODULE_NAME         ("aemain")
-
-/*
- * TBD: Debug only, remove!
- */
-#ifdef _IA32
-void
-AcpiCompare (
-    UINT64_OVERLAY          Dividend,
-    UINT64_OVERLAY          Divisor,
-    UINT64_OVERLAY          LibDiv,
-    UINT64_OVERLAY          Div,
-    UINT64_OVERLAY          LibMod,
-    UINT64_OVERLAY          Mod)
-{
-
-    if (LibDiv.Full != Div.Full)
-    {
-        AcpiOsPrintf ("Mismatch-DIV: n=%8.8X%8.8X d=%8.8X%8.8X, lr=%8.8X%8.8X ar=%8.8X%8.8X\n",
-                Dividend.Part.Hi,       Dividend.Part.Lo,
-                Divisor.Part.Hi,        Divisor.Part.Lo,
-                LibDiv.Part.Hi,         LibDiv.Part.Lo,
-                Div.Part.Hi,            Div.Part.Lo);
-    }
-
-    if (LibMod.Full != Mod.Full)
-    {
-        AcpiOsPrintf ("Mismatch-MOD: n=%8.8X%8.8X d=%8.8X%8.8X, lr=%8.8X%8.8X ar=%8.8X%8.8X\n",
-                Dividend.Part.Hi,       Dividend.Part.Lo,
-                Divisor.Part.Hi,        Divisor.Part.Lo,
-                LibMod.Part.Hi,         LibMod.Part.Lo,
-                Mod.Part.Hi,            Mod.Part.Lo);
-    }
-}
-
-    /* Check answer against the library (DEBUG ONLY) */
-/*
-    CompareDiv.Full = Dividend.Full / Divisor.Full;
-    CompareMod.Full = Dividend.Full % Divisor.Full;
-    AcpiCompare (Dividend, Divisor, CompareDiv, Quotient, CompareMod, Remainder);
-*/
-void
-AeDoDivideCheck (void)
-{
-    UINT32                  i;
-    UINT64_OVERLAY          CompareDiv;
-    UINT64_OVERLAY          CompareMod;
-    UINT64_OVERLAY          Dividend;
-    UINT64_OVERLAY          Divisor;
-    UINT64_OVERLAY          Quotient;
-    UINT64_OVERLAY          Remainder;
-
-
-    for (i = 1; i < 0xFFFFFF; i++)
-    {
-        Dividend.Part.Hi = rand ();
-        Dividend.Part.Lo = rand ();
-        Divisor.Part.Hi  = rand ();
-        Divisor.Part.Lo  = rand ();
-
-        CompareDiv.Full = Dividend.Full / Divisor.Full;
-        CompareMod.Full = Dividend.Full % Divisor.Full;
-
-        AcpiUtDivide (&Dividend.Full, &Divisor.Full, &Quotient.Full, &Remainder.Full);
-
-        AcpiCompare (Dividend, Divisor, CompareDiv, Quotient, CompareMod, Remainder);
-    }
-
-}
-#else
-void
-AeDoDivideCheck (void)
-{
-}
+#ifdef _DEBUG
+#if ACPI_MACHINE_WIDTH != 16
+#include <crtdbg.h>
+#endif
 #endif
 
+#define _COMPONENT          PARSER
+        ACPI_MODULE_NAME    ("aemain")
 
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
+
 ACPI_STATUS
 AcpiGetIrqRoutingTable  (
     ACPI_HANDLE             DeviceHandle,
@@ -240,7 +173,7 @@ usage (void)
     printf ("    Miscellaneous Options\n");
     printf ("        -?                  Display this message\n");
     printf ("        -i                  Do not run INI methods\n");
-    printf ("        -l DebugLevel       Specify debug output level\n");
+    printf ("        -x DebugLevel       Specify debug output level\n");
     printf ("        -v                  Verbose init output\n");
 }
 
@@ -257,7 +190,7 @@ usage (void)
  *
  *****************************************************************************/
 
-int
+int ACPI_SYSTEM_XFACE
 main (
     int                     argc,
     char                    **argv)
@@ -269,27 +202,36 @@ main (
     char                    Buffer[32];
 
 
-    /* Init globals */
-
-    AcpiDbgLevel = NORMAL_DEFAULT;
-    AcpiDbgLayer = 0xFFFFFFFF;
-
-
-    AeDoDivideCheck ();
-
-    printf ("ACPI AML Execution/Debug Utility ");
-
-#ifdef _IA16
-    printf ("(16-bit) ");
-#else
-    printf ("(32-bit) ");
+#ifdef _DEBUG
+#if ACPI_MACHINE_WIDTH != 16
+    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CrtSetDbgFlag(0));
+#endif
 #endif
 
-    printf ("CA version %4.4X [%s]\n", ACPI_CA_VERSION, __DATE__);
+    signal (SIGINT, AeCtrlCHandler);
+
+    /* Init globals */
+
+    AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
+    AcpiDbgLayer = 0xFFFFFFFF;
+
+    /* Init ACPI and start debugger thread */
+
+    AcpiInitializeSubsystem ();
+    AcpiGbl_GlobalLockPresent = TRUE;
+
+    printf ("\nIntel ACPI Component Architecture\nAML Execution/Debug Utility");
+
+#if ACPI_MACHINE_WIDTH == 16
+    printf (" (16-bit)");
+#endif
+
+    printf (" version %8.8X", ((UINT32) ACPI_CA_VERSION));
+    printf (" [%s]\n\n",  __DATE__);
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "?dgil:o:sv")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?dgio:svx:")) != EOF) switch(j)
     {
     case 'd':
         AcpiGbl_DbOpt_disasm = TRUE;
@@ -305,8 +247,8 @@ main (
         AcpiGbl_DbOpt_ini_methods = FALSE;
         break;
 
-    case 'l':
-        AcpiDbgLevel = strtoul (optarg, NULL, 0);
+    case 'x':
+        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
         AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         printf ("Debug Level: %lX\n", AcpiDbgLevel);
         break;
@@ -320,7 +262,7 @@ main (
         break;
 
     case 'v':
-        AcpiDbgLevel |= ACPI_LV_INIT;
+        AcpiDbgLevel |= ACPI_LV_INIT_NAMES;
         break;
 
     case '?':
@@ -329,9 +271,6 @@ main (
         return -1;
     }
 
-    /* Init ACPI and start debugger thread */
-
-    AcpiInitializeSubsystem ();
 
     InitFlags = (ACPI_NO_HANDLER_INIT | ACPI_NO_ACPI_ENABLE);
     if (!AcpiGbl_DbOpt_ini_methods)
@@ -341,15 +280,15 @@ main (
 
     /* Standalone filename is the only argument */
 
-    if (argv[optind])
+    if (argv[AcpiGbl_Optind])
     {
         AcpiGbl_DbOpt_tables = TRUE;
-        AcpiGbl_DbFilename = argv[optind];
+        AcpiGbl_DbFilename = argv[AcpiGbl_Optind];
 
-        Status = AcpiDbLoadAcpiTable (AcpiGbl_DbFilename);
+        Status = AcpiDbGetAcpiTable (AcpiGbl_DbFilename);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load input table, %s\n", AcpiFormatException (Status));
+            printf ("**** Could not get input table, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
@@ -362,7 +301,7 @@ main (
             goto enterloop;
         }
 
-        /* 
+        /*
          * TBD:
          * Need a way to call this after the "LOAD" command
          */
@@ -379,6 +318,13 @@ main (
             goto enterloop;
         }
 
+        Status = AcpiInitializeObjects (InitFlags);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not InitializeObjects, %s\n", AcpiFormatException (Status));
+            goto enterloop;
+        }
+
         ReturnBuf.Length = 32;
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
@@ -386,12 +332,12 @@ main (
         AcpiEnableEvent (0, ACPI_EVENT_GPE, 0);
     }
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
     else
     {
 #include "16bit.h"
 
-        Status = AfFindDsdt (NULL, NULL);
+        Status = AfFindTable (DSDT_SIG, NULL, NULL);
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
@@ -425,6 +371,13 @@ main (
         if (ACPI_FAILURE (Status))
         {
             printf ("**** Could not EnableSubsystem, %s\n", AcpiFormatException (Status));
+            goto enterloop;
+        }
+
+        Status = AcpiInitializeObjects (InitFlags);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not InitializeObjects, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
      }
