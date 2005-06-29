@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.151 $
+ *              $Revision: 1.153 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -428,7 +428,7 @@ AcpiExOpcode_1A_1T_1R (
 
                 /* Insert the BCD digit that resides in the remainder from above */
 
-                ReturnDesc->Integer.Value |= (((ACPI_INTEGER) Temp32) << (i * 4));
+                ReturnDesc->Integer.Value |= (((ACPI_INTEGER) Temp32) << ACPI_MUL_4 (i));
             }
 
             /* Overflow if there is any data left in Digit */
@@ -518,31 +518,36 @@ AcpiExOpcode_1A_1T_1R (
      */
     case AML_COPY_OP:               /* Copy (Source, Target) */
 
-        Status = AcpiUtCopyIobjectToIobject (Operand[0], &ReturnDesc, WalkState);
+        Status = AcpiUtCopyIobjectToIobject (Operand[0], &ReturnDesc,
+                    WalkState);
         break;
 
 
     case AML_TO_DECSTRING_OP:       /* ToDecimalString (Data, Result) */
 
-        Status = AcpiExConvertToString (Operand[0], &ReturnDesc, 10, ACPI_UINT32_MAX, WalkState);
+        Status = AcpiExConvertToString (Operand[0], &ReturnDesc,
+                    ACPI_EXPLICIT_CONVERT_DECIMAL, WalkState->Opcode);
         break;
 
 
     case AML_TO_HEXSTRING_OP:       /* ToHexString (Data, Result) */
 
-        Status = AcpiExConvertToString (Operand[0], &ReturnDesc, 16, ACPI_UINT32_MAX, WalkState);
+        Status = AcpiExConvertToString (Operand[0], &ReturnDesc,
+                    ACPI_EXPLICIT_CONVERT_HEX, WalkState->Opcode);
         break;
 
 
     case AML_TO_BUFFER_OP:          /* ToBuffer (Data, Result) */
 
-        Status = AcpiExConvertToBuffer (Operand[0], &ReturnDesc, WalkState);
+        Status = AcpiExConvertToBuffer (Operand[0], &ReturnDesc,
+                    WalkState->Opcode);
         break;
 
 
     case AML_TO_INTEGER_OP:         /* ToInteger (Data, Result) */
 
-        Status = AcpiExConvertToInteger (Operand[0], &ReturnDesc, WalkState);
+        Status = AcpiExConvertToInteger (Operand[0], &ReturnDesc,
+                    WalkState->Opcode);
         break;
 
 
@@ -552,8 +557,9 @@ AcpiExOpcode_1A_1T_1R (
         /*
          * These are two obsolete opcodes
          */
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s is obsolete and not implemented\n",
-                        AcpiPsGetOpcodeName (WalkState->Opcode)));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "%s is obsolete and not implemented\n",
+            AcpiPsGetOpcodeName (WalkState->Opcode)));
         Status = AE_SUPPORT;
         goto Cleanup;
 
