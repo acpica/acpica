@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -808,10 +808,32 @@ AeInstallHandlers (void)
     {
         Status = AcpiInstallNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
                                             AeNotifyHandler, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("Could not install a notify handler, %s\n",
+                AcpiFormatException (Status));
+        }
+
         Status = AcpiRemoveNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
                                             AeNotifyHandler);
-        Status = AcpiInstallNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("Could not remove a notify handler, %s\n",
+                AcpiFormatException (Status));
+        }
+
+        Status = AcpiInstallNotifyHandler (Handle, ACPI_ALL_NOTIFY,
                                             AeNotifyHandler, NULL);
+        Status = AcpiRemoveNotifyHandler (Handle, ACPI_ALL_NOTIFY,
+                                            AeNotifyHandler);
+        Status = AcpiInstallNotifyHandler (Handle, ACPI_ALL_NOTIFY,
+                                            AeNotifyHandler, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("Could not install a notify handler, %s\n",
+                AcpiFormatException (Status));
+        }
+
     }
 
     for (i = 0; i < AEXEC_NUM_REGIONS; i++)
