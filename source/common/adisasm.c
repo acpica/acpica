@@ -275,10 +275,10 @@ AdDisplayTables (void)
     AcpiDbDisplayOp (NULL, AcpiPsGetChild (AcpiGbl_ParsedNamespaceRoot), ACPI_UINT32_MAX);
 
     AcpiOsPrintf ("\n\nDSDT Header:\n");
-    AcpiCmDumpBuffer ((UINT8 *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer ((UINT8 *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     AcpiOsPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
-    AcpiCmDumpBuffer ((UINT8 *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer ((UINT8 *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     return AE_OK;
 }
