@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -353,6 +353,8 @@ AcpiNsInitOneDevice (
 {
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT    *RetObj = NULL;
+    ACPI_NAMESPACE_NODE    *Node;
+    UINT32                  Flags;
     ACPI_DEVICE_WALK_INFO  *Info = (ACPI_DEVICE_WALK_INFO *) Context;
 
 
@@ -362,39 +364,34 @@ AcpiNsInitOneDevice (
     DEBUG_PRINT_RAW (ACPI_OK, ("."));
     Info->DeviceCount++;
 
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+
+    Node = AcpiNsConvertHandleToEntry (ObjHandle);
+    if (!Node)
+    {
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        return (AE_BAD_PARAMETER);
+    }
+
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+
     /*
      * Run _STA to determine if we can run _INI on the device.
      */
 
-    Status = AcpiNsEvaluateRelative (ObjHandle, "_STA", NULL, &RetObj);
-    if (AE_NOT_FOUND == Status)
-    {
-         /* No _STA means device is present */
-    }
-
-    else if (ACPI_FAILURE (Status))
+    Status = AcpiCmExecute_STA (Node, &Flags);
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    else if (RetObj)
+    Info->Num_STA++;
+
+    if (!(Flags & 0x01))
     {
-        if (ACPI_TYPE_NUMBER != RetObj->Common.Type)
-        {
-            Status = AE_AML_OPERAND_TYPE;
-            goto Cleanup;
-        }
-
-        /*
-         * if _STA "present" bit not set, we're done.
-         */
-        Info->Num_STA++;
-        if (!(RetObj->Number.Value & 1))
-        {
-            goto Cleanup;
-        }
+        /* don't look at children of a not present device */
+        return_ACPI_STATUS(AE_CTRL_DEPTH);
     }
-
 
     /*
      * The device is present. Run _INI.
