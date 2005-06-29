@@ -208,7 +208,7 @@ AcpiEvaluateObject (
         for (i = 0; i < Count; i++)
         {
             ParamPtr[i] = &ObjectPtr[i];
-            ObjectPtr[i].Common.Flags = AO_STATIC_ALLOCATION;
+            CmInitStaticObject (&ObjectPtr[i]);
         }
         ParamPtr[Count] = NULL;                 
 
@@ -229,6 +229,7 @@ AcpiEvaluateObject (
     if (ReturnBuffer && ReturnBuffer->Pointer)
     {
         ReturnPtr = &InternalRetObj;
+        CmInitStaticObject (&InternalRetObj);
     }
 
     /*
@@ -365,7 +366,6 @@ Cleanup:
              * any subobjects that are contained therein.
              */
 
-            ReturnPtr->Common.Flags = AO_STATIC_ALLOCATION;
             CmDeleteInternalObject (ReturnPtr);
 
         }
