@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.36 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsload")
 
 
@@ -427,7 +427,6 @@ AcpiNsLoadTableByType (
 {
     UINT32                  i;
     ACPI_STATUS             Status = AE_OK;
-    ACPI_TABLE_HEADER       *TablePtr;
     ACPI_TABLE_DESC         *TableDesc;
 
 
@@ -484,8 +483,6 @@ AcpiNsLoadTableByType (
         TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_SSDT];
         for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count; i++)
         {
-            TablePtr = TableDesc->Pointer;
-
             /*
              * Only attempt to load table if it is not
              * already loaded!
@@ -521,8 +518,6 @@ AcpiNsLoadTableByType (
 
         for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count; i++)
         {
-            TablePtr = TableDesc->Pointer;
-
             /* Only attempt to load table if it is not already loaded! */
 
             if (!TableDesc->LoadedIntoNamespace)
