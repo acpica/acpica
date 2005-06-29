@@ -210,8 +210,18 @@ NsAttachObject (
     Flags = ThisEntry->Flags;
     Flags &= ~NTE_AML_ATTACHMENT;
 
+
+    /* If null object, we will just install it */
+
+    if (!Object)
+    {
+        ObjDesc = NULL;
+        ObjType = ACPI_TYPE_Any;
+    }
+
     /*
-     * If the object is an NTE with an attached object, we will use that object
+     * If the object is an NTE with an attached object, 
+     * we will use that (attached) object
      */
 
     if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE) && 
@@ -245,17 +255,15 @@ NsAttachObject (
         ObjDesc = (ACPI_OBJECT_INTERNAL *) Object;
 
 
-        /* Set the type if given, or if it can be discerned */
+        /* If a valid type (non-ANY) was given, just use it */
 
         if (ACPI_TYPE_Any != Type)
         {
             ObjType = (ACPI_OBJECT_TYPE) Type;
         }
 
-        else if (!Object)
-        {
-            ObjType = ACPI_TYPE_Any;
-        }
+    
+        /* Type is TYPE_Any, we must try to determinte the actual type of the object */
 
         /*
          * Check if value points into the AML code
