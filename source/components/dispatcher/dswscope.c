@@ -1,7 +1,7 @@
-
 /******************************************************************************
- * 
+ *
  * Module Name: dswscope - Scope stack manipulation
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,16 +117,15 @@
 #define __DSWSCOPE_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "dispatch.h"
+#include "acinterp.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("dswscope");
+        MODULE_NAME         ("dswscope")
 
 
 #define STACK_POP(head) head
-
 
 
 /****************************************************************************
@@ -154,28 +153,28 @@ AcpiDsScopeStackClear (
         ScopeInfo = WalkState->ScopeInfo;
         WalkState->ScopeInfo = ScopeInfo->Scope.Next;
 
-        DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+        DEBUG_PRINT (TRACE_EXEC,
+            ("Popped object type %X\n", ScopeInfo->Common.Value));
         AcpiCmDeleteGenericState (ScopeInfo);
     }
 }
-
 
 
 /****************************************************************************
  *
  * FUNCTION:    AcpiDsScopeStackPush
  *
- * PARAMETERS:  *NewScope,              - Name to be made current
- *              Type,                   - Type of frame being pushed
+ * PARAMETERS:  *Node,              - Name to be made current
+ *              Type,               - Type of frame being pushed
  *
  * DESCRIPTION: Push the current scope on the scope stack, and make the
- *              passed nte current.
+ *              passed Node current.
  *
  ***************************************************************************/
 
 ACPI_STATUS
 AcpiDsScopeStackPush (
-    NAME_TABLE_ENTRY        *NewScope, 
+    ACPI_NAMESPACE_NODE     *Node,
     OBJECT_TYPE_INTERNAL    Type,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -185,11 +184,11 @@ AcpiDsScopeStackPush (
     FUNCTION_TRACE ("DsScopeStackPush");
 
 
-    if (!NewScope)
+    if (!Node)
     {
         /*  invalid scope   */
 
-        REPORT_ERROR ("DsScopeStackPush: null scope passed");
+        REPORT_ERROR (("DsScopeStackPush: null scope passed\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -197,7 +196,7 @@ AcpiDsScopeStackPush (
 
     if (!AcpiAmlValidateObjectType (Type))
     {
-        REPORT_WARNING ("DsScopeStackPush: type code out of range");
+        REPORT_WARNING (("DsScopeStackPush: type code out of range\n"));
     }
 
 
@@ -211,7 +210,7 @@ AcpiDsScopeStackPush (
 
     /* Init new scope object */
 
-    ScopeInfo->Scope.Entry  = NewScope;
+    ScopeInfo->Scope.Node  = Node;
     ScopeInfo->Common.Value = (UINT16) Type;
 
     /* Push new scope object onto stack */
@@ -258,12 +257,12 @@ AcpiDsScopeStackPop (
         return_ACPI_STATUS (AE_STACK_UNDERFLOW);
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+    DEBUG_PRINT (TRACE_EXEC,
+        ("Popped object type %X\n", ScopeInfo->Common.Value));
 
     AcpiCmDeleteGenericState (ScopeInfo);
 
     return_ACPI_STATUS (AE_OK);
 }
-
 
 
