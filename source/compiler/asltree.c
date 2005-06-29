@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.58 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,16 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("asltree")
+
+/* Local prototypes */
+
+static ACPI_PARSE_OBJECT *
+TrGetNextNode (
+    void);
+
+static char *
+TrGetNodeFlagName (
+    UINT32                  Flags);
 
 
 /*******************************************************************************
@@ -1002,7 +1012,7 @@ TrWalkParseTree (
             if (!NodePreviouslyVisited)
             {
                 /* Let the callback process the node. */
-                
+
                 Status = DescendingCallback (Op, Level, Context);
                 if (ACPI_SUCCESS (Status))
                 {
@@ -1062,7 +1072,7 @@ TrWalkParseTree (
                 (NodePreviouslyVisited))
             {
                 /* Let the callback process the node. */
-                
+
                 Status = AscendingCallback (Op, Level, Context);
                 if (ACPI_FAILURE (Status))
                 {
@@ -1122,7 +1132,7 @@ TrWalkParseTree (
             else
             {
                 /* Let the callback process the node. */
-                
+
                 Status = DescendingCallback (Op, Level, Context);
                 if (ACPI_SUCCESS (Status))
                 {

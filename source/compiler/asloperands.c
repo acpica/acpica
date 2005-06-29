@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -122,6 +122,53 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("asloperands")
+
+/* Local prototypes */
+
+static void
+OpnDoField (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpnDoBankField (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpnDoBuffer (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpnDoDefinitionBlock (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpnDoFieldCommon (
+    ACPI_PARSE_OBJECT       *FieldOp,
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpnDoIndexField (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpnDoLoadTable (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpnDoMethod (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpnDoPackage (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpnDoRegion (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpnAttachNameToNode (
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*******************************************************************************
@@ -795,7 +842,7 @@ OpnDoLoadTable (
     }
 
 #ifdef ASL_FUTURE_IMPLEMENTATION
-    
+
     /* TBD: NOT IMPLEMENTED */
     /* Fifth child is the [optional] ParameterPathString */
     /* Sixth child is the [optional] ParameterData */

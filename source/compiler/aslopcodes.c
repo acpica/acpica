@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.64 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -126,10 +126,28 @@
 
 /* UUID support */
 
-static UINT8 OpcMapToUUID[16] = 
+static UINT8 OpcMapToUUID[16] =
 {
     6,4,2,0,11,9,16,14,19,21,24,26,28,30,32,34
 };
+
+/* Local prototypes */
+
+static void
+OpcDoAccessAs (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpcDoUnicode (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpcDoEisaId (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+OpcDoUuId (
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*******************************************************************************
@@ -215,7 +233,7 @@ OpcSetOptimalIntegerSize (
 {
 
 #if 0
-    /* 
+    /*
      * TBD: - we don't want to optimize integers in the block header, but the
      * code below does not work correctly.
      */

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.90 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -126,6 +126,46 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("asllookup")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+LsCompareOneNamespaceObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
+
+static ACPI_STATUS
+LsDoOneNamespaceObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
+
+static BOOLEAN
+LkObjectExists (
+    char                    *Name);
+
+static void
+LkCheckFieldRange (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  RegionBitLength,
+    UINT32                  FieldBitOffset,
+    UINT32                  FieldBitLength,
+    UINT32                  AccessBitWidth);
+
+static ACPI_STATUS
+LkNamespaceLocateBegin (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static ACPI_STATUS
+LkNamespaceLocateEnd (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
 
 
 /*******************************************************************************
@@ -956,7 +996,7 @@ LkNamespaceLocateBegin (
     }
 
     /* 3) Check for an ASL Field definition */
-    
+
     else if ((Op->Asl.Parent) &&
             ((Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_FIELD)     ||
              (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_BANKFIELD)))

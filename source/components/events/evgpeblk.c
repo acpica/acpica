@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.40 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,39 @@
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evgpeblk")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiEvSaveMethodInfo (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *ObjDesc,
+    void                    **ReturnValue);
+
+static ACPI_STATUS
+AcpiEvMatchPrwAndGpe (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Info,
+    void                    **ReturnValue);
+
+static ACPI_GPE_XRUPT_INFO *
+AcpiEvGetGpeXruptBlock (
+    UINT32                  InterruptLevel);
+
+static ACPI_STATUS
+AcpiEvDeleteGpeXrupt (
+    ACPI_GPE_XRUPT_INFO     *GpeXrupt);
+
+static ACPI_STATUS
+AcpiEvInstallGpeBlock (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    UINT32                  InterruptLevel);
+
+static ACPI_STATUS
+AcpiEvCreateGpeInfoBlocks (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
 
 /*******************************************************************************
  *
@@ -234,7 +267,7 @@ UnlockAndExit:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiEvDeleteGpeHandlers
  *
@@ -271,7 +304,8 @@ AcpiEvDeleteGpeHandlers (
         {
             GpeEventInfo = &GpeBlock->EventInfo[(i * ACPI_GPE_REGISTER_WIDTH) + j];
 
-            if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) == ACPI_GPE_DISPATCH_HANDLER)
+            if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+                    ACPI_GPE_DISPATCH_HANDLER)
             {
                 ACPI_MEM_FREE (GpeEventInfo->Dispatch.Handler);
                 GpeEventInfo->Dispatch.Handler = NULL;
@@ -564,7 +598,7 @@ AcpiEvGetGpeXruptBlock (
     ACPI_FUNCTION_TRACE ("EvGetGpeXruptBlock");
 
 
-    /* No need for spin lock since we are not changing any list elements here */
+    /* No need for lock since we are not changing any list elements here */
 
     NextGpeXrupt = AcpiGbl_GpeXruptListHead;
     while (NextGpeXrupt)
@@ -726,7 +760,7 @@ AcpiEvInstallGpeBlock (
         goto UnlockAndExit;
     }
 
-    /* Install the new block at the end of the list for this interrupt with lock */
+    /* Install the new block at the end of the list with lock */
 
     AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
     if (GpeXruptBlock->GpeBlockListHead)
@@ -874,11 +908,13 @@ AcpiEvCreateGpeInfoBlocks (
      * per register.  Initialization to zeros is sufficient.
      */
     GpeEventInfo = ACPI_MEM_CALLOCATE (
-                        ((ACPI_SIZE) GpeBlock->RegisterCount * ACPI_GPE_REGISTER_WIDTH) *
+                        ((ACPI_SIZE) GpeBlock->RegisterCount *
+                        ACPI_GPE_REGISTER_WIDTH) *
                         sizeof (ACPI_GPE_EVENT_INFO));
     if (!GpeEventInfo)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not allocate the GpeEventInfo table\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Could not allocate the GpeEventInfo table\n"));
         Status = AE_NO_MEMORY;
         goto ErrorExit;
     }
@@ -1026,7 +1062,8 @@ AcpiEvCreateGpeBlock (
     GpeBlock->BlockBaseNumber = GpeBlockBaseNumber;
     GpeBlock->Node            = GpeDevice;
 
-    ACPI_MEMCPY (&GpeBlock->BlockAddress, GpeBlockAddress, sizeof (ACPI_GENERIC_ADDRESS));
+    ACPI_MEMCPY (&GpeBlock->BlockAddress, GpeBlockAddress,
+        sizeof (ACPI_GENERIC_ADDRESS));
 
     /* Create the RegisterInfo and EventInfo sub-structures */
 
@@ -1198,8 +1235,9 @@ AcpiEvGpeInitialize (
 
         /* Install GPE Block 0 */
 
-        Status = AcpiEvCreateGpeBlock (AcpiGbl_FadtGpeDevice, &AcpiGbl_FADT->XGpe0Blk,
-                    RegisterCount0, 0, AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[0]);
+        Status = AcpiEvCreateGpeBlock (AcpiGbl_FadtGpeDevice,
+                    &AcpiGbl_FADT->XGpe0Blk, RegisterCount0, 0,
+                    AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[0]);
 
         if (ACPI_FAILURE (Status))
         {
@@ -1235,8 +1273,9 @@ AcpiEvGpeInitialize (
         {
             /* Install GPE Block 1 */
 
-            Status = AcpiEvCreateGpeBlock (AcpiGbl_FadtGpeDevice, &AcpiGbl_FADT->XGpe1Blk,
-                        RegisterCount1, AcpiGbl_FADT->Gpe1Base,
+            Status = AcpiEvCreateGpeBlock (AcpiGbl_FadtGpeDevice,
+                        &AcpiGbl_FADT->XGpe1Blk, RegisterCount1,
+                        AcpiGbl_FADT->Gpe1Base,
                         AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[1]);
 
             if (ACPI_FAILURE (Status))
@@ -1251,7 +1290,7 @@ AcpiEvGpeInitialize (
              * space. However, GPE0 always starts at GPE number zero.
              */
             GpeNumberMax = AcpiGbl_FADT->Gpe1Base +
-                                ((RegisterCount1 * ACPI_GPE_REGISTER_WIDTH) - 1);
+                            ((RegisterCount1 * ACPI_GPE_REGISTER_WIDTH) - 1);
         }
     }
 

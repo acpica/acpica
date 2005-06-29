@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,25 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslfiles")
+
+/* Local prototypes */
+
+static void
+FlOpenFile (
+    UINT32                  FileId,
+    char                    *Filename,
+    char                    *Mode);
+
+static FILE *
+FlOpenLocalFile (
+    char                    *LocalName,
+    char                    *Mode);
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+ACPI_STATUS
+FlParseInputPathname (
+    char                    *InputFilename);
+#endif
 
 
 /*******************************************************************************

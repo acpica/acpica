@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,25 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("asllength")
+
+/* Local prototypes */
+
+static UINT8
+CgGetPackageLenByteCount (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  PackageLength);
+
+static void
+CgGenerateAmlOpcodeLength (
+    ACPI_PARSE_OBJECT       *Op);
+
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+void
+LnAdjustLengthToRoot (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  LengthDelta);
+#endif
 
 
 /*******************************************************************************

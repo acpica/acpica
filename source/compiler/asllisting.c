@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.54 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,80 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslisting")
+
+/* Local prototypes */
+
+static void
+LsDumpAscii (
+    UINT32                  FileId,
+    UINT32                  Count,
+    UINT8                   *Buffer);
+
+static void
+LsDumpAsciiInComment (
+    UINT32                  FileId,
+    UINT32                  Count,
+    UINT8                   *Buffer);
+
+static ACPI_STATUS
+LsAmlListingWalk (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static void
+LsGenerateListing (
+    UINT32                  FileId);
+
+static void
+LsPushNode (
+    char                    *Filename);
+
+static ASL_LISTING_NODE *
+LsPopNode (
+    void);
+
+static void
+LsCheckException (
+    UINT32                  LineNumber,
+    UINT32                  FileId);
+
+static void
+LsFlushListingBuffer (
+    UINT32                  FileId);
+
+static void
+LsWriteListingHexBytes (
+    UINT8                   *Buffer,
+    UINT32                  Length,
+    UINT32                  FileId);
+
+static UINT32
+LsWriteOneSourceLine (
+    UINT32                  FileId);
+
+static void
+LsFinishSourceListing (
+    UINT32                  FileId);
+
+static void
+LsWriteSourceLines (
+    UINT32                  ToLineNumber,
+    UINT32                  ToLogicalLineNumber,
+    UINT32                  FileId);
+
+static void
+LsWriteNodeToListing (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  FileId);
+
+static void
+LsDoHexOutputC (
+    void);
+
+static void
+LsDoHexOutputAsm (
+    void);
 
 
 /*******************************************************************************
@@ -829,7 +903,7 @@ LsWriteSourceLines (
     LsFlushListingBuffer (FileId);
 
     /* Read lines and write them as long as we are not caught up */
-    
+
     if (Gbl_SourceLine < Gbl_CurrentLine)
     {
         /*
@@ -848,7 +922,7 @@ LsWriteSourceLines (
         }
 
         /* Write one line at a time until we have reached the target line # */
-        
+
         while ((Gbl_SourceLine < Gbl_CurrentLine) &&
                 LsWriteOneSourceLine (FileId))
         { ; }
@@ -983,12 +1057,12 @@ LsWriteNodeToListing (
     case PARSEOP_INCLUDE:
 
         /* Flush everything up to and including the include source line */
-        
+
         LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber,
             FileId);
 
         /* Create a new listing node and push it */
-        
+
         LsPushNode (Op->Asl.Child->Asl.Value.String);
         return;
 
@@ -996,12 +1070,12 @@ LsWriteNodeToListing (
     case PARSEOP_INCLUDE_END:
 
         /* Flush out the rest of the include file */
-        
+
         LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber,
             FileId);
 
         /* Pop off this listing node and go back to the parent file */
-        
+
         LsPopNode ();
         return;
 
@@ -1223,7 +1297,7 @@ LsDoHexOutputC (
         }
 
         /* Convert each AML byte to hex */
-        
+
         UtConvertByteToHex (FileByte[j], Buffer);
         FlWriteFile (ASL_FILE_HEX_OUTPUT, Buffer, 4);
         FlPrintFile (ASL_FILE_HEX_OUTPUT, ",");
@@ -1304,7 +1378,7 @@ LsDoHexOutputAsm (
         }
 
         /* Convert each AML byte to hex */
-        
+
         UtConvertByteToAsmHex (FileByte[j], Buffer);
         FlWriteFile (ASL_FILE_HEX_OUTPUT, Buffer, 4);
 

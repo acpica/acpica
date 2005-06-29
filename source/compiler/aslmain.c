@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.81 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -133,10 +133,33 @@ BOOLEAN                 AslToFile = TRUE;
 BOOLEAN                 DoCompile = TRUE;
 BOOLEAN                 DoSignon = TRUE;
 
-char                    hex[] = 
+char                    hex[] =
 {
     '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
 };
+
+/* Local prototypes */
+
+static void
+Options (
+    void);
+
+static void
+HelpMessage (
+    void);
+
+static void
+Usage (
+    void);
+
+static void 
+AslInitialize (
+    void);
+
+static void
+AslCommandLine (
+    int                     argc,
+    char                    **argv);
 
 
 /*******************************************************************************
@@ -724,7 +747,7 @@ main (
     }
 
     /* AML Disassembly (Optional) */
-    
+
     if (Gbl_DisasmFlag || Gbl_GetAllTables)
     {
         /* ACPI CA subsystem initialization */

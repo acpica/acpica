@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,12 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslerror")
+
+/* Local prototypes */
+
+static void
+AeAddToErrorLog (
+    ASL_ERROR_MSG           *Enode);
 
 
 /*******************************************************************************

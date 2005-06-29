@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfold - Constant folding
- *              $Revision: 1.14 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,26 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslfold")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+OpcAmlEvaluationWalk1 (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static ACPI_STATUS
+OpcAmlEvaluationWalk2 (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static ACPI_STATUS
+OpcAmlCheckForConstant (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
 
 
 /*******************************************************************************
@@ -345,7 +365,7 @@ OpcAmlConstantWalk (
     }
 
     /* Set the walk type based on the reduction used for this op */
-    
+
     if (Op->Asl.CompileFlags & NODE_IS_TERM_ARG)
     {
         /* Op is a TermArg, constant folding is merely optional */
@@ -420,7 +440,7 @@ OpcAmlConstantWalk (
         Op->Common.Parent = RootOp;
 
         /* Hand off the subtree to the AML interpreter */
-        
+
         Status = TrWalkParseTree (Op, ASL_WALK_VISIT_TWICE,
                     OpcAmlEvaluationWalk1, OpcAmlEvaluationWalk2, WalkState);
         Op->Common.Parent = OriginalParentOp;

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,45 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("asltransform")
+
+/* Local prototypes */
+
+static void
+TrTransformSubtree (
+    ACPI_PARSE_OBJECT       *Op);
+
+static char *
+TrAmlGetNextTempName (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   *TempCount);
+
+static void
+TrAmlInitLineNumbers (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *Neighbor);
+
+static void
+TrAmlInitNode (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT16                  ParseOpcode);
+
+static void
+TrAmlSetSubtreeParent (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *Parent);
+
+static void
+TrAmlInsertPeer (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *NewPeer);
+
+static void
+TrDoDefinitionBlock (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+TrDoSwitch (
+    ACPI_PARSE_OBJECT       *StartNode);
 
 
 /*******************************************************************************

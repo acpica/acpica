@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.65 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,30 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslload")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+LdLoadFieldElements (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState);
+
+static ACPI_STATUS
+LdLoadResourceElements (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState);
+
+static ACPI_STATUS
+LdNamespace1Begin (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static ACPI_STATUS
+LdNamespace1End (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
 
 
 /*******************************************************************************
@@ -533,7 +557,7 @@ LdNamespace1Begin (
             AslError (ASL_REMARK, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
 
             /* Switch the type to scope, open the new scope */
-            
+
             Node->Type = ACPI_TYPE_LOCAL_SCOPE;
             Status = AcpiDsScopeStackPush (Node, ACPI_TYPE_LOCAL_SCOPE,
                         WalkState);
@@ -546,7 +570,7 @@ LdNamespace1Begin (
         default:
 
             /* All other types are an error */
-            
+
             sprintf (MsgBuffer, "%s [%s]", Op->Asl.ExternalName,
                 AcpiUtGetTypeName (Node->Type));
             AslError (ASL_ERROR, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);

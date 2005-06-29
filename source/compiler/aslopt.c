@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,39 @@
 
 
 static UINT32 OptTotal = 0;
+
+/* Local prototypes */
+
+static ACPI_STATUS
+OptSearchToRoot (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_NAMESPACE_NODE     *CurrentNode,
+    ACPI_NAMESPACE_NODE     *TargetNode,
+    ACPI_BUFFER             *TargetPath,
+    char                    **NewPath);
+
+static ACPI_STATUS
+OptBuildShortestPath (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_NAMESPACE_NODE     *CurrentNode,
+    ACPI_NAMESPACE_NODE     *TargetNode,
+    ACPI_BUFFER             *CurrentPath,
+    ACPI_BUFFER             *TargetPath,
+    ACPI_SIZE               AmlNameStringLength,
+    UINT8                   IsDeclaration,
+    char                    **ReturnNewPath);
+
+static ACPI_STATUS
+OptOptimizeNameDeclaration (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_NAMESPACE_NODE     *CurrentNode,
+    ACPI_NAMESPACE_NODE     *TargetNode,
+    char                    *AmlNameString,
+    char                    **NewPath);
+
 
 /*******************************************************************************
  *

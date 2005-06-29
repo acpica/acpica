@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.61 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -130,6 +130,18 @@ static const char * const       *yytname = &AslCompilername[254];
 #else
 extern const char * const       yytname[];
 #endif
+
+/* Local prototypes */
+
+static void
+UtPadNameWithUnderscores (
+    char                    *NameSeg,
+    char                    *PaddedNameSeg);
+
+static void
+UtAttachNameseg (
+    ACPI_PARSE_OBJECT       *Op,
+    char                    *Name);
 
 
 /*******************************************************************************
@@ -825,7 +837,7 @@ UtDoConstant (
  * FUNCTION:    UtStrtoul64
  *
  * PARAMETERS:  String          - Null terminated string
- *              Terminater      - Where a pointer to the terminating byte is 
+ *              Terminater      - Where a pointer to the terminating byte is
  *                                returned
  *              Base            - Radix of the string
  *
@@ -866,7 +878,7 @@ UtStrtoul64 (
     }
 
     /* Skip over any white space in the buffer: */
-    
+
     while (isspace (*String) || *String == '\t')
     {
         ++String;
@@ -975,7 +987,7 @@ UtStrtoul64 (
 
 
     /* If a minus sign was present, then "the conversion is negated": */
-    
+
     if (Sign == NEGATIVE)
     {
         ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
