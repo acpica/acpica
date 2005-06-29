@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.54 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -179,10 +179,10 @@ AslCompilerSignon (
     /* Compiler signon with copyright */
 
     FlPrintFile (FileId,
-        "%s\n%s%s %s [%s]\n%sIncludes ACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0\n%s\n",
+        "%s\n%s%s\n%s%s Version %X [%s]\n%s%s\n%sSupports ACPI Specification Revision 2.0a\n%s\n",
         Prefix,
-        Prefix, CompilerId, CompilerVersion, __DATE__,
-        Prefix, ACPI_CA_VERSION,
+        Prefix, IntelAcpiCA,
+        Prefix, CompilerId, ACPI_CA_VERSION, __DATE__,
         Prefix, CompilerCopyright,
         Prefix,
         Prefix);
@@ -303,20 +303,6 @@ CmDoCompile (void)
         return -1;
     }
 
-    /* ACPI CA subsystem initialization */
-
-    AcpiUtInitGlobals ();
-    Status = AcpiUtMutexInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        return -1;
-    }
-
-    Status = AcpiNsRootInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        return -1;
-    }
     UtEndEvent (i++);
 
     /* Build the parse tree */
@@ -324,6 +310,8 @@ CmDoCompile (void)
     UtBeginEvent (i, "Parse source code and build parse tree");
     AslCompilerparse();
     UtEndEvent (i++);
+
+    OpcGetIntegerWidth (RootNode);
 
     /* Pre-process parse tree for any operator transforms */
 
@@ -372,7 +360,7 @@ CmDoCompile (void)
     /* Namespace loading */
 
     UtBeginEvent (i, "Create ACPI Namespace");
-    Status = LdLoadNamespace ();
+    Status = LdLoadNamespace (RootNode);
     UtEndEvent (i++);
     if (ACPI_FAILURE (Status))
     {
