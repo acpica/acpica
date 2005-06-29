@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -426,6 +426,9 @@ AeInstallHandlers (void)
     UINT32                  i;
 
 
+    PROC_NAME ("AeInstallHandlers");
+
+
     Status = AcpiInstallNotifyHandler (ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
                                         AeNotifyHandler, NULL);
     if (ACPI_FAILURE (Status))
@@ -445,8 +448,10 @@ AeInstallHandlers (void)
                         (ACPI_ADR_SPACE_TYPE) i, AeRegionHandler, AeRegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
-            printf ("Could not install an OpRegion handler for %s space (%d)\n", 
-                AcpiUtGetRegionName((UINT8) i), i);
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                "Could not install an OpRegion handler for %s space (%d)\n", 
+                AcpiUtGetRegionName((UINT8) i), i));
+            return (Status);
         }
     }
 

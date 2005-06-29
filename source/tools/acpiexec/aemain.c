@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -391,7 +391,11 @@ main (
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
-        AeInstallHandlers ();
+        Status = AeInstallHandlers ();
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
 
         Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
@@ -434,7 +438,11 @@ main (
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
-        AeInstallHandlers ();
+        Status = AeInstallHandlers ();
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
 
         Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
