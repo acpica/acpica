@@ -209,6 +209,7 @@ DbDumpObject (
 
     if (!ObjDesc)
     {
+        OsdPrintf ("[Null Object]\n");
         return;
     }
 
@@ -220,14 +221,18 @@ DbDumpObject (
     switch (ObjDesc->Type)
     {
     case ACPI_TYPE_Any:
+
         OsdPrintf ("[Object Reference]  Value: %p\n", ObjDesc->Reference.Handle);
         break;
+
 
     case ACPI_TYPE_Number:
         OsdPrintf ("[Number]  Value: %ld (0x%lX)\n", ObjDesc->Number.Value, ObjDesc->Number.Value);
         break;
 
+
     case ACPI_TYPE_String:
+
         OsdPrintf ("[String]  Value: ");
         for (i = 0; i < ObjDesc->String.Length; i++)
         {
@@ -236,12 +241,16 @@ DbDumpObject (
         OsdPrintf ("\n");
         break;
 
+
     case ACPI_TYPE_Buffer:
+
         OsdPrintf ("[Buffer]  Value: ");
         CmDumpBuffer ((char *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         break;
 
+
     case ACPI_TYPE_Package:
+
         OsdPrintf ("[Package]  Contains %d Elements: \n", ObjDesc->Package.Count);
 
         for (i = 0; i < ObjDesc->Package.Count; i++)
@@ -250,7 +259,9 @@ DbDumpObject (
         }
         break;
 
+
     default:
+
         OsdPrintf ("[Unknown Type] 0x%X \n", ObjDesc->Type);
         break;
     }
@@ -281,6 +292,8 @@ DbPrepNamestring (
         return;
     }
 
+    STRUPR (Name);
+
     /* Convert a leading forward slash to a backslash */
 
     if (*Name == '/')
@@ -292,7 +305,7 @@ DbPrepNamestring (
 
     if (*Name == '\\')
     {
-        *Name++;
+        Name++;
     }
 
     /* Convert all slash path separators to dots */
@@ -341,7 +354,7 @@ DbSecondPassParse (
         if (Op->Opcode == AML_MethodOp)
         {
             Method = (ACPI_DEFERRED_OP *) Op;
-            Status = PsParseAml (Op, Method->Body, Method->BodyLength);
+            Status = PsParseAml (Op, Method->Body, Method->BodyLength, 0);
 
           
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;

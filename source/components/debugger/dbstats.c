@@ -126,12 +126,12 @@
 
 ARGUMENT_INFO               DbStatTypes [] = 
 {
-    "ALLOCATIONS"
-    "OBJECTS",
-    "MEMORY",
-    "MISC",
-    "TABLES",
-    NULL            /* Must be null terminated */
+    {"ALLOCATIONS"},
+    {"OBJECTS"},
+    {"MEMORY"},
+    {"MISC"},
+    {"TABLES"},
+    {NULL}           /* Must be null terminated */
 };
 
 #define CMD_OBJECTS         0
