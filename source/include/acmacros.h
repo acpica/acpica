@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.140 $
+ *       $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -218,14 +218,14 @@
                                                      /*  Hi...Lo                     Lo...Hi     */
 /* 16-bit source, 16/32/64 destination */
 
-#define ACPI_MOVE_UNALIGNED16_TO_16(d,s)      {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[1];\
-                                               ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[0];}
+#define ACPI_MOVE_UNALIGNED16_TO_16(d,s)    {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[1];\
+                                             ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[0];}
 
-#define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    {(*(UINT32 *)(void *)(d)) = 0;\
+#define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    {(*(UINT32 *)(void *)(d))=0;\
                                                ((UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[1];\
                                                ((UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[0];}
 
-#define ACPI_MOVE_UNALIGNED16_TO_64(d,s)    {(*(UINT64 *)(void *)(d)) = 0;\
+#define ACPI_MOVE_UNALIGNED16_TO_64(d,s)    {(*(UINT64 *)(void *)(d))=0;\
                                                ((UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[1];\
                                                ((UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[0];}
 
@@ -233,12 +233,12 @@
 
 #define ACPI_MOVE_UNALIGNED32_TO_16(d,s)     ACPI_MOVE_UNALIGNED16_TO_16(d,s)    /* Truncate to 16 */
 
-#define ACPI_MOVE_UNALIGNED32_TO_32(d,s)      {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[3];\
-                                               ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[2];\
-                                               ((UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[1];\
-                                               ((UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[0];}
+#define ACPI_MOVE_UNALIGNED32_TO_32(d,s)    {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[3];\
+                                             ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[2];\
+                                             ((  UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[1];\
+                                             ((  UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[0];}
 
-#define ACPI_MOVE_UNALIGNED32_TO_64(d,s)    {(*(UINT64 *)(void *)(d)) = 0;\
+#define ACPI_MOVE_UNALIGNED32_TO_64(d,s)    {(*(UINT64 *)(void *)(d))=0;\
                                                ((UINT8 *)(void *)(d))[4] = ((UINT8 *)(void *)(s))[3];\
                                                ((UINT8 *)(void *)(d))[5] = ((UINT8 *)(void *)(s))[2];\
                                                ((UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[1];\
@@ -250,14 +250,14 @@
 
 #define ACPI_MOVE_UNALIGNED64_TO_32(d,s)    ACPI_MOVE_UNALIGNED32_TO_32(d,s)    /* Truncate to 32 */
 
-#define ACPI_MOVE_UNALIGNED64_TO_64(d,s)      {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[7];\
-                                               ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[6];\
-                                               ((UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[5];\
-                                               ((UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[4];\
-                                               ((UINT8 *)(void *)(d))[4] = ((UINT8 *)(void *)(s))[3];\
-                                               ((UINT8 *)(void *)(d))[5] = ((UINT8 *)(void *)(s))[2];\
-                                               ((UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[1];\
-                                               ((UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[0];}
+#define ACPI_MOVE_UNALIGNED64_TO_64(d,s)    {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[7];\
+                                             ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[6];\
+                                             ((  UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[5];\
+                                             ((  UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[4];\
+                                             ((  UINT8 *)(void *)(d))[4] = ((UINT8 *)(void *)(s))[3];\
+                                             ((  UINT8 *)(void *)(d))[5] = ((UINT8 *)(void *)(s))[2];\
+                                             ((  UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[1];\
+                                             ((  UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[0];}
 #else
 /*
  * Macros for little-endian machines
@@ -271,6 +271,28 @@
 
 /* The hardware supports unaligned transfers, just do the little-endian move */
 
+#if ACPI_MACHINE_WIDTH == 16
+
+/* No 64-bit integers */
+/* 16-bit source, 16/32/64 destination */
+
+#define ACPI_MOVE_UNALIGNED16_TO_16(d,s)    *(UINT16 *)(void *)(d) = *(UINT16 *)(void *)(s)
+#define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    *(UINT32 *)(void *)(d) = *(UINT16 *)(void *)(s)
+#define ACPI_MOVE_UNALIGNED16_TO_64(d,s)    ACPI_MOVE_UNALIGNED16_TO_32(d,s)
+ 
+/* 32-bit source, 16/32/64 destination */
+
+#define ACPI_MOVE_UNALIGNED32_TO_16(d,s)    ACPI_MOVE_UNALIGNED16_TO_16(d,s)    /* Truncate to 16 */
+#define ACPI_MOVE_UNALIGNED32_TO_32(d,s)    *(UINT32 *)(void *)(d) = *(UINT32 *)(void *)(s)
+#define ACPI_MOVE_UNALIGNED32_TO_64(d,s)    ACPI_MOVE_UNALIGNED32_TO_32(d,s)
+
+/* 64-bit source, 16/32/64 destination */
+
+#define ACPI_MOVE_UNALIGNED64_TO_16(d,s)    ACPI_MOVE_UNALIGNED16_TO_16(d,s)    /* Truncate to 16 */
+#define ACPI_MOVE_UNALIGNED64_TO_32(d,s)    ACPI_MOVE_UNALIGNED32_TO_32(d,s)    /* Truncate to 32 */
+#define ACPI_MOVE_UNALIGNED64_TO_64(d,s)    ACPI_MOVE_UNALIGNED32_TO_32(d,s)
+
+#else
 /* 16-bit source, 16/32/64 destination */
 
 #define ACPI_MOVE_UNALIGNED16_TO_16(d,s)    *(UINT16 *)(void *)(d) = *(UINT16 *)(void *)(s)
@@ -288,6 +310,7 @@
 #define ACPI_MOVE_UNALIGNED64_TO_16(d,s)    ACPI_MOVE_UNALIGNED16_TO_16(d,s)    /* Truncate to 16 */
 #define ACPI_MOVE_UNALIGNED64_TO_32(d,s)    ACPI_MOVE_UNALIGNED32_TO_32(d,s)    /* Truncate to 32 */
 #define ACPI_MOVE_UNALIGNED64_TO_64(d,s)    *(UINT64 *)(void *)(d) = *(UINT64 *)(void *)(s)
+#endif
 
 #define ACPI_MOVE_UNALIGNED_SIZE_TO_16(d,s) ACPI_MOVE_UNALIGNED16_TO_16(d,s)
 
@@ -300,8 +323,8 @@
 
 /* 16-bit source, 16/32/64 destination */
 
-#define ACPI_MOVE_UNALIGNED16_TO_16(d,s)      {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];\
-                                               ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[1];}
+#define ACPI_MOVE_UNALIGNED16_TO_16(d,s)    {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];\
+                                             ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[1];}
 
 #define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    {(*(UINT32 *)(void *)(d)) = 0; ACPI_MOVE_UNALIGNED16_TO_16(d,s);}
 #define ACPI_MOVE_UNALIGNED16_TO_64(d,s)    {(*(UINT64 *)(void *)(d)) = 0; ACPI_MOVE_UNALIGNED16_TO_16(d,s);}
@@ -310,10 +333,10 @@
 
 #define ACPI_MOVE_UNALIGNED32_TO_16(d,s)    ACPI_MOVE_UNALIGNED16_TO_16(d,s)    /* Truncate to 16 */
 
-#define ACPI_MOVE_UNALIGNED32_TO_32(d,s)      {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];\
-                                               ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[1];\
-                                               ((UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[2];\
-                                               ((UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[3];}
+#define ACPI_MOVE_UNALIGNED32_TO_32(d,s)    {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];\
+                                             ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[1];\
+                                             ((  UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[2];\
+                                             ((  UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[3];}
 
 #define ACPI_MOVE_UNALIGNED32_TO_64(d,s)    {(*(UINT64 *)(void *)(d)) = 0; ACPI_MOVE_UNALIGNED32_TO_32(d,s);}
 
@@ -321,14 +344,14 @@
 
 #define ACPI_MOVE_UNALIGNED64_TO_16(d,s)    ACPI_MOVE_UNALIGNED16_TO_16(d,s)    /* Truncate to 16 */
 #define ACPI_MOVE_UNALIGNED64_TO_32(d,s)    ACPI_MOVE_UNALIGNED32_TO_32(d,s)    /* Truncate to 32 */
-#define ACPI_MOVE_UNALIGNED64_TO_64(d,s)      {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];\
-                                               ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[1];\
-                                               ((UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[2];\
-                                               ((UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[3];\
-                                               ((UINT8 *)(void *)(d))[4] = ((UINT8 *)(void *)(s))[4];\
-                                               ((UINT8 *)(void *)(d))[5] = ((UINT8 *)(void *)(s))[5];\
-                                               ((UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[6];\
-                                               ((UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[7];}
+#define ACPI_MOVE_UNALIGNED64_TO_64(d,s)    {((  UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];\
+                                             ((  UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[1];\
+                                             ((  UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[2];\
+                                             ((  UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[3];\
+                                             ((  UINT8 *)(void *)(d))[4] = ((UINT8 *)(void *)(s))[4];\
+                                             ((  UINT8 *)(void *)(d))[5] = ((UINT8 *)(void *)(s))[5];\
+                                             ((  UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[6];\
+                                             ((  UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[7];}
 #endif
 #endif
 
@@ -396,21 +419,6 @@
 /* Macros for GAS addressing */
 
 #if ACPI_MACHINE_WIDTH != 16
-
-#define ACPI_PCI_DEVICE_MASK            (UINT64) 0x0000FFFF00000000
-#define ACPI_PCI_FUNCTION_MASK          (UINT64) 0x00000000FFFF0000
-#define ACPI_PCI_REGISTER_MASK          (UINT64) 0x000000000000FFFF
-
-/*
- * Obsolete
- */
-
-/*
-#define ACPI_PCI_FUNCTION(a)            (UINT16) ((((UINT64)((UINT64)(a) & ACPI_PCI_FUNCTION_MASK)) >> 16))
-#define ACPI_PCI_DEVICE(a)              (UINT16) ((((UINT64)((UINT64)(a) & ACPI_PCI_DEVICE_MASK)) >> 32))
-#define ACPI_PCI_REGISTER(a)            (UINT16) (((UINT64)((UINT64)(a) & ACPI_PCI_REGISTER_MASK)))
-*/
-
 
 #define ACPI_PCI_DEVICE(a)              (UINT16) ((ACPI_HIDWORD ((a))) & 0x0000FFFF)
 #define ACPI_PCI_FUNCTION(a)            (UINT16) ((ACPI_LODWORD ((a))) >> 16)
@@ -516,7 +524,7 @@
  * Reporting macros that are never compiled out
  */
 
-#define ACPI_PARAM_LIST(pl)                  pl
+#define ACPI_PARAM_LIST(pl)                 pl
 
 /*
  * Error reporting.  These versions add callers module and line#.  Since
@@ -573,21 +581,21 @@
  * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
  */
 
-#define ACPI_FUNCTION_NAME(a)           ACPI_DEBUG_PRINT_INFO _Dbg;     \
-                                        _Dbg.ComponentId = _COMPONENT;  \
-                                        _Dbg.ProcName    = a;           \
-                                        _Dbg.ModuleName  = _THIS_MODULE;
+#define ACPI_FUNCTION_NAME(a)               ACPI_DEBUG_PRINT_INFO _Dbg; \
+                                                _Dbg.ComponentId = _COMPONENT; \
+                                                _Dbg.ProcName    = a; \
+                                                _Dbg.ModuleName  = _THIS_MODULE;
 
-#define ACPI_FUNCTION_TRACE(a)          ACPI_FUNCTION_NAME(a)\
-                                            AcpiUtTrace(__LINE__,&_Dbg)
-#define ACPI_FUNCTION_TRACE_PTR(a,b)    ACPI_FUNCTION_NAME(a)\
-                                            AcpiUtTracePtr(__LINE__,&_Dbg,(void *)b)
-#define ACPI_FUNCTION_TRACE_U32(a,b)    ACPI_FUNCTION_NAME(a)\
-                                            AcpiUtTraceU32(__LINE__,&_Dbg,(UINT32)b)
-#define ACPI_FUNCTION_TRACE_STR(a,b)    ACPI_FUNCTION_NAME(a)\
-                                            AcpiUtTraceStr(__LINE__,&_Dbg,(char *)b)
+#define ACPI_FUNCTION_TRACE(a)              ACPI_FUNCTION_NAME(a) \
+                                                AcpiUtTrace(__LINE__,&_Dbg)
+#define ACPI_FUNCTION_TRACE_PTR(a,b)        ACPI_FUNCTION_NAME(a) \
+                                                AcpiUtTracePtr(__LINE__,&_Dbg,(void *)b)
+#define ACPI_FUNCTION_TRACE_U32(a,b)        ACPI_FUNCTION_NAME(a) \
+                                                AcpiUtTraceU32(__LINE__,&_Dbg,(UINT32)b)
+#define ACPI_FUNCTION_TRACE_STR(a,b)        ACPI_FUNCTION_NAME(a) \
+                                                AcpiUtTraceStr(__LINE__,&_Dbg,(char *)b)
 
-#define ACPI_FUNCTION_ENTRY()           AcpiUtTrackStackPtr()
+#define ACPI_FUNCTION_ENTRY()               AcpiUtTrackStackPtr()
 
 /*
  * Function exit tracing.
