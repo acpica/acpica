@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.101 $
+ *       $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -150,7 +150,7 @@
 
 
 #define ACPI_OBJECT_COMMON_HEADER           /* SIZE/ALIGNMENT: 32 bits, one ptr plus trailing 8-bit flag */\
-    UINT8                       DataType;           /* To differentiate various internal objs */\
+    UINT8                       Descriptor;         /* To differentiate various internal objs */\
     UINT8                       Type;               /* ACPI_OBJECT_TYPE */\
     UINT16                      ReferenceCount;     /* For object deletion management */\
     union acpi_operand_obj      *NextObject;        /* Objects linked to parent NS node */\
