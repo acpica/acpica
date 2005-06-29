@@ -578,8 +578,7 @@ AcpiNsLookup (
                 {
                     /* Current scope has no parent scope */
 
-                    REPORT_ERROR ("NsLookup: Too many parent"
-                                    "prefixes or scope has no parent");
+                    REPORT_ERROR ("Too many parent prefixes (^) - reached root");
 
 
                     return_ACPI_STATUS (AE_NOT_FOUND);
