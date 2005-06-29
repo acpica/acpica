@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -731,11 +731,16 @@ AsMixedCaseToUnderscores (
         {
             if (isdigit (SubBuffer[0]))
             {
-                if (isupper (*(SubBuffer-1)))
+                /* Ignore <UpperCase><Digit><UpperCase> */
+                /* Ignore <Underscore><Digit><UpperCase> */
+
+                if (isupper (*(SubBuffer-1)) ||
+                    *(SubBuffer-1) == '_')
                 {
                     SubBuffer++;
                     continue;
                 }
+
             }
 
             /*
