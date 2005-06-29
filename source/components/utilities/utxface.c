@@ -267,6 +267,8 @@ AcpiGetSystemInfo (
     OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
+    InfoPtr->AcpiCAVersion = Gbl_AcpiCaVersion;
+
     /* System flags (ACPI capabilities) */
 
     InfoPtr->Flags              = Gbl_SystemFlags;
