@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.114 $
+ *       $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -305,6 +305,11 @@ AcpiNsDumpPathname (
     NATIVE_CHAR             *Msg,
     UINT32                  Level,
     UINT32                  Component);
+
+void
+AcpiNsPrintPathname (
+    UINT32                  NumSegments,
+    char                    *Pathname);
 
 void
 AcpiNsDumpRootDevices (
