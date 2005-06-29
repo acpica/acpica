@@ -212,8 +212,7 @@ extern      ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES];
  * actual OS mutex handles, indexed by the local ACPI_MUTEX_HANDLEs.
  * (The table maps local handles to the real OS handles)
  */
-ACPI_EXTERN ACPI_MUTEX                  Gbl_AcpiMutexTable [NUM_MTX];
-ACPI_EXTERN BOOLEAN                     Gbl_AcpiMutexLocked [NUM_MTX];
+ACPI_EXTERN ACPI_MUTEX_INFO             Gbl_AcpiMutexInfo [NUM_MTX];
 extern      ACPI_INIT_DATA              Gbl_AcpiInitData;
 
 
@@ -249,6 +248,8 @@ ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_DrvNotify;
 ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_SysNotify;
 
 
+ACPI_EXTERN UINT32                      Gbl_NsLookupCount;
+ACPI_EXTERN UINT32                      Gbl_PsFindCount;
 
 /*****************************************************************************
  * 
