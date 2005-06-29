@@ -14,15 +14,17 @@
  | FILENAME: acpinmsp.h - prototypes for accessing namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 19:49:32 $
+ | $Revision: 1.7 $
+ | $Date: 2005/06/29 19:49:33 $
  | $Log: acnamesp.h,v $
- | Revision 1.6  2005/06/29 19:49:32  aystarik
+ | Revision 1.7  2005/06/29 19:49:33  aystarik
  |
  |
  | 
- | date	99.02.13.00.22.00;	author rmosgrov;	state Exp;
+ | date	99.02.16.18.15.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 7     2/16/99 10:15a Rmosgrov
  * 
  * 6     2/12/99 4:22p Rmosgrov
  * 
@@ -180,8 +182,8 @@
    #include <amlpub.h>
 #endif
 
-extern char acBadType[];
-extern char *apcNsTypeNames[];
+extern char BadType[];
+extern char *NsTypeNames[];
 
 
 /****************************************************************************
