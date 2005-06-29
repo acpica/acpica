@@ -1,6 +1,8 @@
+
 /******************************************************************************
  *
  * Module Name: amregion - ACPI default OpRegion (address space) handlers
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -195,8 +197,8 @@ AcpiAmlSystemMemorySpaceHandler (
      *    2) Address beyond the current mapping?
      */
 
-    if (((INT8 *) Address < MemInfo->MappedPhysicalAddress) ||
-        (((INT8 *) Address + Length) >
+    if (((UINT8 *) Address < MemInfo->MappedPhysicalAddress) ||
+        (((UINT8 *) Address + Length) >
             (MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))
     {
         /*
@@ -223,7 +225,7 @@ AcpiAmlSystemMemorySpaceHandler (
             return_ACPI_STATUS (Status);
         }
 
-        MemInfo->MappedPhysicalAddress = (INT8 *) Address;
+        MemInfo->MappedPhysicalAddress = (UINT8 *) Address;
         MemInfo->MappedLength = SYSMEM_REGION_WINDOW_SIZE;
     }
 
@@ -234,7 +236,7 @@ AcpiAmlSystemMemorySpaceHandler (
      */
 
     LogicalAddrPtr = MemInfo->MappedLogicalAddress +
-                    ((INT8 *) Address - MemInfo->MappedPhysicalAddress);
+                    ((UINT8 *) Address - MemInfo->MappedPhysicalAddress);
 
     /* Perform the memory read or write */
 
@@ -507,11 +509,6 @@ AcpiAmlPciConfigSpaceHandler (
 
 
     case ADDRESS_SPACE_WRITE:
-
-        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("R%d S(%04x) B(%04x) DF(%08x) R(%04x)\n", BitWidth,
-            PCIContext->Seg,PCIContext->Bus,PCIContext->DevFunc, PciReg));
-
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("W%d S(%04x) B(%04x) DF(%08x) R(%04x) D(%08x)\n", BitWidth,
