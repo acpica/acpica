@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -162,7 +162,6 @@ AcpiDsCreateField (
     ACPI_PARSE_OBJECT       *Arg;
     ACPI_NAMESPACE_NODE     *Node;
     UINT8                   FieldFlags;
-    UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
 
 
@@ -207,10 +206,8 @@ AcpiDsCreateField (
              * Get a new AccessType and AccessAttribute for all
              * entries (until end or another AccessAs keyword)
              */
-
-            AccessAttribute = (UINT8) Arg->Value.Integer;
-            FieldFlags      = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) ||
-                                        ((UINT8) (Arg->Value.Integer >> 8)));
+            FieldFlags  = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) ||
+                                   ((UINT8) (Arg->Value.Integer >> 8)));
             break;
 
 
@@ -232,7 +229,7 @@ AcpiDsCreateField (
              */
 
             Status = AcpiAmlPrepRegionFieldValue (Node, RegionNode, FieldFlags,
-                            AccessAttribute, FieldBitPosition, Arg->Value.Size);
+                            FieldBitPosition, Arg->Value.Size);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -277,7 +274,6 @@ AcpiDsCreateBankField (
     ACPI_NAMESPACE_NODE     *Node;
     UINT32                  BankValue;
     UINT8                   FieldFlags;
-    UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
 
 
@@ -341,10 +337,8 @@ AcpiDsCreateBankField (
              * Get a new AccessType and AccessAttribute for
              * all entries (until end or another AccessAs keyword)
              */
-
-            AccessAttribute = (UINT8) Arg->Value.Integer;
-            FieldFlags      = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) ||
-                                      ((UINT8) (Arg->Value.Integer >> 8)));
+            FieldFlags = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) ||
+                                 ((UINT8) (Arg->Value.Integer >> 8)));
             break;
 
 
@@ -366,8 +360,8 @@ AcpiDsCreateBankField (
              */
 
             Status = AcpiAmlPrepBankFieldValue (Node, RegionNode, RegisterNode,
-                            BankValue, FieldFlags, AccessAttribute,
-                            FieldBitPosition, Arg->Value.Size);
+                            BankValue, FieldFlags, FieldBitPosition, 
+                            Arg->Value.Size);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -413,7 +407,6 @@ AcpiDsCreateIndexField (
     ACPI_NAMESPACE_NODE     *IndexRegisterNode;
     ACPI_NAMESPACE_NODE     *DataRegisterNode;
     UINT8                   FieldFlags;
-    UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
 
 
@@ -472,10 +465,8 @@ AcpiDsCreateIndexField (
              * Get a new AccessType and AccessAttribute for all
              * entries (until end or another AccessAs keyword)
              */
-
-            AccessAttribute = (UINT8) Arg->Value.Integer;
-            FieldFlags      = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) ||
-                                        ((UINT8) (Arg->Value.Integer >> 8)));
+            FieldFlags = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) ||
+                                 ((UINT8) (Arg->Value.Integer >> 8)));
             break;
 
 
@@ -497,7 +488,7 @@ AcpiDsCreateIndexField (
              */
 
             Status = AcpiAmlPrepIndexFieldValue (Node, IndexRegisterNode, 
-                            DataRegisterNode, FieldFlags, AccessAttribute,
+                            DataRegisterNode, FieldFlags,
                             FieldBitPosition, Arg->Value.Size);
             if (ACPI_FAILURE (Status))
             {
