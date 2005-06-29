@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.68 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -124,13 +124,14 @@
 #include "acnamesp.h"
 #include "acinterp.h"
 #include "acdebug.h"
+#include "acapps.h"
 
 #include "aecommon.h"
 
-#ifdef _DEBUG  
+#ifdef _DEBUG
 #if ACPI_MACHINE_WIDTH != 16
 #include <crtdbg.h>
-#endif     
+#endif
 #endif
 
 #define _COMPONENT          PARSER
@@ -200,10 +201,10 @@ main (
     char                    Buffer[32];
 
 
-#ifdef _DEBUG 
+#ifdef _DEBUG
 #if ACPI_MACHINE_WIDTH != 16
     _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CrtSetDbgFlag(0));
-#endif    
+#endif
 #endif
 
     /* Init globals */
@@ -214,6 +215,7 @@ main (
     /* Init ACPI and start debugger thread */
 
     AcpiInitializeSubsystem ();
+    AcpiGbl_GlobalLockPresent = TRUE;
 
     printf ("\nIntel ACPI Component Architecture\nAML Execution/Debug Utility");
 
@@ -225,7 +227,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "?dgil:o:sv")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?dgil:o:sv")) != EOF) switch(j)
     {
     case 'd':
         AcpiGbl_DbOpt_disasm = TRUE;
@@ -242,7 +244,7 @@ main (
         break;
 
     case 'l':
-        AcpiDbgLevel = strtoul (optarg, NULL, 0);
+        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
         AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         printf ("Debug Level: %lX\n", AcpiDbgLevel);
         break;
@@ -274,10 +276,10 @@ main (
 
     /* Standalone filename is the only argument */
 
-    if (argv[optind])
+    if (argv[AcpiGbl_Optind])
     {
         AcpiGbl_DbOpt_tables = TRUE;
-        AcpiGbl_DbFilename = argv[optind];
+        AcpiGbl_DbFilename = argv[AcpiGbl_Optind];
 
         Status = AcpiDbGetAcpiTable (AcpiGbl_DbFilename);
         if (ACPI_FAILURE (Status))
