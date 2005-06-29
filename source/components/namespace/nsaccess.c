@@ -244,10 +244,6 @@ NsSetup (void)
         }
     }
 
-#ifdef PLUMBER
-    RegisterMarkingFunction (NsMarkNS);
-#endif
-
     FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
