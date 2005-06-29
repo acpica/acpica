@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -838,7 +838,7 @@ AcpiDbDisplayObjects (
     NATIVE_CHAR             *ObjTypeArg,
     NATIVE_CHAR             *DisplayCountArg)
 {
-    OBJECT_TYPE_INTERNAL    Type;
+    ACPI_OBJECT_TYPE8       Type;
 
 
     /* Get the object type */
