@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.14 $
+ *              $Revision: 1.16 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -302,7 +302,7 @@ AcpiDmResourceDescriptor (
                 AcpiOsPrintf ("}\n");
                 AcpiDmIndent (Level);
 
-                AcpiOsPrintf ("/*** Missing EndDependentFunctions descriptor */");
+                AcpiOsPrintf ("//*** Missing EndDependentFunctions descriptor");
 
                 /*
                  * We could fix the problem, but then the ASL would not match the AML
@@ -384,7 +384,7 @@ AcpiDmResourceDescriptor (
              * validated, this is a very serious error indicating that someone
              * overwrote the buffer.
              */
-            AcpiOsPrintf ("/* Unknown Resource type (%X) */\n", DescriptorId);
+            AcpiOsPrintf ("//*** Unknown Resource type (%X)\n", DescriptorId);
             return;
         }
     }
