@@ -152,7 +152,7 @@ NsNameOfScope (
             Temp->ParentScope;
             Temp = Temp->ParentScope)
     {
-        Size += 4;
+        Size += ACPI_NAME_SIZE;
     }
 
 
@@ -168,9 +168,9 @@ NsNameOfScope (
     /* Store terminator byte, then build name backwards */
     
     NameBuffer[Size] = '\0';
-    while ((Size > 4) && EntryToSearch->ParentScope)
+    while ((Size > ACPI_NAME_SIZE) && EntryToSearch->ParentScope)
     {
-        Size -= 4;
+        Size -= ACPI_NAME_SIZE;
         *(UINT32 *) (NameBuffer + Size) = 
                         *(UINT32 *) NsFindParentName (EntryToSearch, 0);
         EntryToSearch = EntryToSearch->ParentScope;
@@ -555,10 +555,7 @@ NsFindNames (
     /* Pass 1.  Get required buffer size, don't try to build list */
     
     Count = 0;
-    CheckTrash ("NsFindNames before count");
-
     NsLowFindNames (StartHandle, SearchFor, &Count, NULL, MaxDepth);
-    CheckTrash ("NsFindNames after count");
     
     if (0 == Count)
     {
@@ -578,10 +575,7 @@ NsFindNames (
     /* Pass 2.  Fill buffer */
 
     Count = 0;
-    CheckTrash ("NsFindNames before list");
-
     NsLowFindNames (StartHandle, SearchFor, &Count, List, MaxDepth);
-    CheckTrash ("NsFindNames after list");
 
     FUNCTION_EXIT;
     return List;

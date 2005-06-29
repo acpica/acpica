@@ -408,8 +408,17 @@ NsInternalizeName (
     *ConvertedName = InternalName;
 
 
-    DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] \"%s\"\n", 
-                                InternalName, InternalName));     
+    if (FullyQualified)
+    {
+        DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (abs) \"\\%s\"\n", 
+                                InternalName, &InternalName[3])); 
+    }
+    else
+    {
+        DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (rel) \"%s\"\n", 
+                                InternalName, &InternalName[2])); 
+    }
+
     FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
