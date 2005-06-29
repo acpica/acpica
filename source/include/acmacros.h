@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.129 $
+ *       $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -456,7 +456,7 @@
                                                 AcpiOsPrintf ACPI_PARAM_LIST(fp);}
 #define ACPI_REPORT_WARNING(fp)             {AcpiUtReportWarning(_THIS_MODULE,__LINE__,_COMPONENT); \
                                                 AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_NSERROR(s,e)            AcpiUtReportNsError(_THIS_MODULE,__LINE__,_COMPONENT, s, e);
+#define ACPI_REPORT_NSERROR(s,e)            AcpiNsReportError(_THIS_MODULE,__LINE__,_COMPONENT, s, e);
 
 #else
 
@@ -466,7 +466,7 @@
                                                 AcpiOsPrintf ACPI_PARAM_LIST(fp);}
 #define ACPI_REPORT_WARNING(fp)             {AcpiUtReportWarning("ACPI",__LINE__,_COMPONENT); \
                                                 AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_NSRROR(s,e)             AcpiUtReportNsError("ACPI",__LINE__,_COMPONENT, s, e);
+#define ACPI_REPORT_NSERROR(s,e)            AcpiNsReportError("ACPI",__LINE__,_COMPONENT, s, e);
 
 #endif
 
