@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: psxobj - Parser/Interpreter interface object management routines
+ * Module Name: dsobject - Dispatcher object management routines
  *
  *****************************************************************************/
 
@@ -114,22 +114,23 @@
  *
  *****************************************************************************/
 
-#define __PSXOBJ_C__
+#define __DSOBJECT_C__
 
 #include <acpi.h>
-#include <amlcode.h>
 #include <parser.h>
+#include <amlcode.h>
+#include <dispatch.h>
 #include <interp.h>
 #include <namesp.h>
 
-#define _COMPONENT          PARSER
-        MODULE_NAME         ("psxobj");
+#define _COMPONENT          DISPATCHER
+        MODULE_NAME         ("DSOBJECT");
 
 
 
 /*******************************************************************************
  *
- * FUNCTION:    PsxInitOneObject
+ * FUNCTION:    DsInitOneObject
  *
  * PARAMETERS:  ObjHandle       - NTE of the object
  *              Level           - Current nesting level
@@ -148,7 +149,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-PsxInitOneObject (
+DsInitOneObject (
     ACPI_HANDLE             ObjHandle, 
     UINT32                  Level, 
     void                    *Context,
@@ -166,7 +167,7 @@ PsxInitOneObject (
 
     case ACPI_TYPE_Region:
 
-        PsxInitializeRegion (ObjHandle);
+        DsInitializeRegion (ObjHandle);
 
         ((INIT_WALK_INFO *) Context)->OpRegionCount++;
         break;
@@ -178,13 +179,13 @@ PsxInitOneObject (
 
         /* Always parse methods to detect errors, we may delete the parse tree below */
 
-        Status = PsxParseMethod (ObjHandle);
+        Status = DsParseMethod (ObjHandle);
 
         /* TBD: what do we do with an error? */
 
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("PsxInitOneObject: Method %p [%4.4s] parse failed! %x\n", 
+            DEBUG_PRINT (ACPI_ERROR, ("DsInitOneObject: Method %p [%4.4s] parse failed! %x\n", 
                                         ObjHandle, ((NAME_TABLE_ENTRY *)ObjHandle)->Name, Status));
             break;
         }
@@ -214,7 +215,7 @@ PsxInitOneObject (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsxInitializeObjects
+ * FUNCTION:    DsInitializeObjects
  *
  * PARAMETERS:  None
  *
@@ -226,16 +227,16 @@ PsxInitOneObject (
  ******************************************************************************/
 
 ACPI_STATUS
-PsxInitializeObjects (void)
+DsInitializeObjects (void)
 {
     ACPI_STATUS             Status;
     INIT_WALK_INFO          Info;
 
 
-    FUNCTION_TRACE ("PsxInitializeObjects");
+    FUNCTION_TRACE ("DsInitializeObjects");
 
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsxInitializeObjects: **** Starting initialization of namespace objects ****\n"));
+    DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: **** Starting initialization of namespace objects ****\n"));
 
     Info.MethodCount = 0;
     Info.OpRegionCount = 0;
@@ -243,15 +244,15 @@ PsxInitializeObjects (void)
 
     /* Walk entire namespace from the root */
 
-    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Gbl_RootObject, ACPI_INT32_MAX, PsxInitOneObject, 
+    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Gbl_RootObject, ACPI_INT32_MAX, DsInitOneObject, 
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxInitializeObjects: WalkNamespace failed! %x\n", Status));
+        DEBUG_PRINT (ACPI_ERROR, ("DsInitializeObjects: WalkNamespace failed! %x\n", Status));
     }
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsxInitializeObjects: %d Control Methods found\n", Info.MethodCount));
-    DEBUG_PRINT (TRACE_PARSE, ("PsxInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
+    DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
+    DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -259,7 +260,7 @@ PsxInitializeObjects (void)
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxInitObjectFromOp
+ * FUNCTION:    DsInitObjectFromOp
  *
  * PARAMETERS:  Op              - Parser op used to init the internal object
  *              Opcode          - AML opcode associated with the object
@@ -274,7 +275,7 @@ PsxInitializeObjects (void)
  ****************************************************************************/
 
 ACPI_STATUS
-PsxInitObjectFromOp (
+DsInitObjectFromOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     UINT16                  Opcode,
@@ -306,9 +307,9 @@ PsxInitObjectFromOp (
 
         /* First arg is a number */
 
-        PsxCreateOperand (WalkState, Op->Value.Arg);
+        DsCreateOperand (WalkState, Op->Value.Arg);
         ArgDesc = WalkState->Operands [WalkState->NumOperands - 1];
-        PsxObjStackPop (1, WalkState);
+        DsObjStackPop (1, WalkState);
 
         /* Resolve the object (could be an arg or local) */
 
@@ -428,7 +429,7 @@ PsxInitObjectFromOp (
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxBuildInternalSimpleObj
+ * FUNCTION:    DsBuildInternalSimpleObj
  *
  * PARAMETERS:  Op              - Parser object to be translated
  *              ObjDescPtr      - Where the ACPI internal object is returned
@@ -441,7 +442,7 @@ PsxInitObjectFromOp (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxBuildInternalSimpleObj (
+DsBuildInternalSimpleObj (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     ACPI_OBJECT_INTERNAL    **ObjDescPtr)
@@ -451,7 +452,7 @@ PsxBuildInternalSimpleObj (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("PsxBuildInternalSimpleObj");
+    FUNCTION_TRACE ("DsBuildInternalSimpleObj");
 
 
     if (Op->Opcode == AML_NAMEPATH)
@@ -474,14 +475,14 @@ PsxBuildInternalSimpleObj (
         /*
          * The reference will be an Lvalue
          * TBD: unless we really need a separate type of INTERNAL_TYPE_reference
-         * TBD: change PsxMapOpcodeToDataType to handle this case 
+         * TBD: change DsMapOpcodeToDataType to handle this case 
          */
         Type = INTERNAL_TYPE_Lvalue;
     }
 
     else
     {
-        Type = PsxMapOpcodeToDataType (Op->Opcode, NULL);
+        Type = DsMapOpcodeToDataType (Op->Opcode, NULL);
     }
 
 
@@ -493,7 +494,7 @@ PsxBuildInternalSimpleObj (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = PsxInitObjectFromOp (WalkState, Op, Op->Opcode, ObjDesc);
+    Status = DsInitObjectFromOp (WalkState, Op, Op->Opcode, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         CmDeleteInternalObject (ObjDesc);
@@ -508,7 +509,7 @@ PsxBuildInternalSimpleObj (
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxBuildInternalPackageObj
+ * FUNCTION:    DsBuildInternalPackageObj
  *
  * PARAMETERS:  Op              - Parser object to be translated
  *              ObjDescPtr      - Where the ACPI internal object is returned
@@ -521,7 +522,7 @@ PsxBuildInternalSimpleObj (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxBuildInternalPackageObj (
+DsBuildInternalPackageObj (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     ACPI_OBJECT_INTERNAL    **ObjDescPtr)
@@ -531,7 +532,7 @@ PsxBuildInternalPackageObj (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("PsxBuildInternalPackageObj");
+    FUNCTION_TRACE ("DsBuildInternalPackageObj");
 
 
     ObjDesc = CmCreateInternalObject (ACPI_TYPE_Package);
@@ -556,7 +557,7 @@ PsxBuildInternalPackageObj (
     {
         /* Package vector allocation failure   */
 
-        REPORT_ERROR ("PsxBuildInternalPackageObj: Package vector allocation failure");
+        REPORT_ERROR ("DsBuildInternalPackageObj: Package vector allocation failure");
         CmFree (ObjDesc);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
@@ -573,12 +574,12 @@ PsxBuildInternalPackageObj (
     {
         if (Arg->Opcode == AML_PackageOp)
         {
-            Status = PsxBuildInternalPackageObj (WalkState, Arg, ObjDesc->Package.NextElement);
+            Status = DsBuildInternalPackageObj (WalkState, Arg, ObjDesc->Package.NextElement);
         }
         
         else
         {
-            Status = PsxBuildInternalSimpleObj (WalkState, Arg, ObjDesc->Package.NextElement);
+            Status = DsBuildInternalSimpleObj (WalkState, Arg, ObjDesc->Package.NextElement);
         }
 
         ObjDesc->Package.NextElement++;
@@ -592,7 +593,7 @@ PsxBuildInternalPackageObj (
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxBuildInternalObject
+ * FUNCTION:    DsBuildInternalObject
  *
  * PARAMETERS:  Op              - Parser object to be translated
  *              ObjDescPtr      - Where the ACPI internal object is returned
@@ -604,7 +605,7 @@ PsxBuildInternalPackageObj (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxBuildInternalObject (
+DsBuildInternalObject (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     ACPI_OBJECT_INTERNAL    **ObjDescPtr)
@@ -614,12 +615,12 @@ PsxBuildInternalObject (
 
     if (Op->Opcode == AML_PackageOp)
     {
-        Status = PsxBuildInternalPackageObj (WalkState, Op, ObjDescPtr);
+        Status = DsBuildInternalPackageObj (WalkState, Op, ObjDescPtr);
     }
     
     else
     {
-        Status = PsxBuildInternalSimpleObj (WalkState, Op, ObjDescPtr);
+        Status = DsBuildInternalSimpleObj (WalkState, Op, ObjDescPtr);
     }
 
     return (Status);
@@ -629,7 +630,7 @@ PsxBuildInternalObject (
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxCreateNamedObject
+ * FUNCTION:    DsCreateNamedObject
  *
  * PARAMETERS:  Op              - Parser object to be translated
  *              ObjDescPtr      - Where the ACPI internal object is returned
@@ -641,7 +642,7 @@ PsxBuildInternalObject (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxCreateNamedObject (
+DsCreateNamedObject (
     ACPI_WALK_STATE         *WalkState,
     NAME_TABLE_ENTRY        *Entry,
     ACPI_GENERIC_OP         *Op)
@@ -651,7 +652,7 @@ PsxCreateNamedObject (
 
 
 
-    FUNCTION_TRACE_PTR ("PsxCreateNamedObject", Op);
+    FUNCTION_TRACE_PTR ("DsCreateNamedObject", Op);
 
 
     if (!Op->Value.Arg)
@@ -664,7 +665,7 @@ PsxCreateNamedObject (
 
     /* Build an internal object for the argument(s) */
 
-    Status = PsxBuildInternalObject (WalkState, Op->Value.Arg, &ObjDesc);
+    Status = DsBuildInternalObject (WalkState, Op->Value.Arg, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;

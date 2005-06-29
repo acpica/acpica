@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: dpfield- Parser/Interpreter interface field routines
+ * Module Name: dsfield - Dispatcher field routines
  *
  *****************************************************************************/
 
@@ -114,23 +114,23 @@
  *
  *****************************************************************************/
 
-#define __PSXFIELD_C__
+#define __DSFIELD_C__
 
 #include <acpi.h>
 #include <amlcode.h>
-#include <parser.h>
+#include <dispatch.h>
 #include <interp.h>
 #include <namesp.h>
 
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dpfield");
+        MODULE_NAME         ("dsfield");
 
 
 
 /*****************************************************************************
  *
- * FUNCTION:    DpCreateField 
+ * FUNCTION:    DsCreateField 
  *
  * PARAMETERS:  Op              - Op containing the Field definition and args
  *              Region          - NTE for the containing Operation Region
@@ -142,7 +142,7 @@
  ****************************************************************************/
 
 ACPI_STATUS
-DpCreateField (
+DsCreateField (
     ACPI_GENERIC_OP         *Op,
     ACPI_HANDLE             Region,
     ACPI_WALK_STATE         *WalkState)
@@ -155,7 +155,7 @@ DpCreateField (
     UINT32                  FieldBitPosition = 0;
 
 
-    FUNCTION_TRACE_PTR ("DpCreateField", Op);
+    FUNCTION_TRACE_PTR ("DsCreateField", Op);
     
 
     Arg = Op->Value.Arg;
@@ -214,7 +214,7 @@ DpCreateField (
 
 /*****************************************************************************
  *
- * FUNCTION:    DpCreateBankField
+ * FUNCTION:    DsCreateBankField
  *
  * PARAMETERS:  Op              - Op containing the Field definition and args
  *              Region          - NTE for the containing Operation Region
@@ -226,7 +226,7 @@ DpCreateField (
  ****************************************************************************/
 
 ACPI_STATUS
-DpCreateBankField (
+DsCreateBankField (
     ACPI_GENERIC_OP         *Op,
     ACPI_HANDLE             Region,
     ACPI_WALK_STATE         *WalkState)
@@ -241,7 +241,7 @@ DpCreateBankField (
     UINT32                  FieldBitPosition = 0;
 
     
-    FUNCTION_TRACE_PTR ("DpCreateBankField", Op);
+    FUNCTION_TRACE_PTR ("DsCreateBankField", Op);
 
 
     /* First arg is the Bank Register */
@@ -317,7 +317,7 @@ DpCreateBankField (
 
 /*****************************************************************************
  *
- * FUNCTION:    DpCreateIndexField
+ * FUNCTION:    DsCreateIndexField
  *
  * PARAMETERS:  Op              - Op containing the Field definition and args
  *              Region          - NTE for the containing Operation Region
@@ -329,7 +329,7 @@ DpCreateBankField (
  ****************************************************************************/
 
 ACPI_STATUS
-DpCreateIndexField (
+DsCreateIndexField (
     ACPI_GENERIC_OP         *Op,
     ACPI_HANDLE             Region,
     ACPI_WALK_STATE         *WalkState)
@@ -344,7 +344,7 @@ DpCreateIndexField (
     UINT32                  FieldBitPosition = 0;
 
     
-    FUNCTION_TRACE_PTR ("DpCreateIndexField", Op);
+    FUNCTION_TRACE_PTR ("DsCreateIndexField", Op);
 
 
 
@@ -421,7 +421,7 @@ DpCreateIndexField (
 
         default:
 
-            DEBUG_PRINT (ACPI_ERROR, ("DpEnterIndexField: Invalid opcode in field list: %X\n", Arg->Opcode));
+            DEBUG_PRINT (ACPI_ERROR, ("DsEnterIndexField: Invalid opcode in field list: %X\n", Arg->Opcode));
             Status = AE_AML_ERROR;
             break;
         }

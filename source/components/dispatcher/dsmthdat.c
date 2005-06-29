@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: psxmargs - control method arguments and local variables
+ * Module Name: dsmthdat - control method arguments and local variables
  *
  *****************************************************************************/
 
@@ -114,25 +114,24 @@
  *
  *****************************************************************************/
 
-#define __PSXMARGS_C__
+#define __DSMTHDAT_C__
 
 #include <acpi.h>
 #include <parser.h>
+#include <dispatch.h>
 #include <interp.h>
 #include <amlcode.h>
 #include <namesp.h>
 
 
-#define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("psxmargs");
+#define _COMPONENT          DISPATCHER
+        MODULE_NAME         ("dsmthdat");
 
 
-#define NAMEOF_LOCAL_NTE    "__L0"
-#define NAMEOF_ARG_NTE      "__A0"
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxIsMethodValue
+ * FUNCTION:    DsIsMethodValue
  *
  * PARAMETERS:  *ObjDesc 
  *
@@ -145,10 +144,10 @@
  ****************************************************************************/
 
 BOOLEAN
-PsxIsMethodValue (
+DsIsMethodValue (
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
-    FUNCTION_TRACE ("PsxIsMethodValue");
+    FUNCTION_TRACE ("DsIsMethodValue");
 
 
     /* For each active Method */
@@ -163,7 +162,7 @@ PsxIsMethodValue (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackInit
+ * FUNCTION:    DsMthStackInit
  *
  * PARAMETERS:  *ObjDesc 
  *
@@ -177,13 +176,13 @@ PsxIsMethodValue (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxMthStackInit (
+DsMthStackInit (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("PsxMthStackInit");
+    FUNCTION_TRACE ("DsMthStackInit");
 
     /*
      * WalkState fields are initialized to zero by the CmCallocate().
@@ -218,7 +217,7 @@ PsxMthStackInit (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackPush
+ * FUNCTION:    DsMthStackPush
  *
  * PARAMETERS:  None.
  *
@@ -227,10 +226,10 @@ PsxMthStackInit (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxMthStackPush (
+DsMthStackPush (
     ACPI_OBJECT_INTERNAL    **Params)
 {
-    FUNCTION_TRACE ("PsxMthStackPush");
+    FUNCTION_TRACE ("DsMthStackPush");
 
 
     return_ACPI_STATUS (AE_OK);
@@ -239,7 +238,7 @@ PsxMthStackPush (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackDeleteArgs
+ * FUNCTION:    DsMthStackDeleteArgs
  *
  * PARAMETERS:  None
  *
@@ -251,14 +250,14 @@ PsxMthStackPush (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxMthStackDeleteArgs (
+DsMthStackDeleteArgs (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  Index;
     ACPI_OBJECT_INTERNAL    *Object;
 
 
-    FUNCTION_TRACE ("PsxMthStackDeleteArgs");
+    FUNCTION_TRACE ("DsMthStackDeleteArgs");
 
 
     for (Index = 0; Index < MTH_NUM_LOCALS; Index++)
@@ -297,7 +296,7 @@ PsxMthStackDeleteArgs (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackInitArgs
+ * FUNCTION:    DsMthStackInitArgs
  *
  * PARAMETERS:  None
  *
@@ -308,7 +307,7 @@ PsxMthStackDeleteArgs (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxMthStackInitArgs (
+DsMthStackInitArgs (
     ACPI_OBJECT_INTERNAL    **Params,
     UINT32                  MaxParamCount)
 {
@@ -317,12 +316,12 @@ PsxMthStackInitArgs (
     UINT32                  Pindex;
 
 
-    FUNCTION_TRACE_PTR ("PsxMthStackInitArgs", Params);
+    FUNCTION_TRACE_PTR ("DsMthStackInitArgs", Params);
 
 
     if (!Params)
     {
-        DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackInitArgs: No param list passed to method\n"));
+        DEBUG_PRINT (TRACE_EXEC, ("DsMthStackInitArgs: No param list passed to method\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -336,7 +335,7 @@ PsxMthStackInitArgs (
              * A valid parameter.
              * Set the current method argument to the Params[Pindex++] argument object descriptor   
              */
-            Status = PsxMthStackSetValue (MTH_TYPE_ARG, Mindex, Params[Pindex]);
+            Status = DsMthStackSetValue (MTH_TYPE_ARG, Mindex, Params[Pindex]);
             if (ACPI_FAILURE (Status))
             {
                 break;
@@ -351,7 +350,7 @@ PsxMthStackInitArgs (
         }
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackInitArgs: %d args passed to method\n", Pindex));
+    DEBUG_PRINT (TRACE_EXEC, ("DsMthStackInitArgs: %d args passed to method\n", Pindex));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -359,7 +358,7 @@ PsxMthStackInitArgs (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackGetEntry
+ * FUNCTION:    DsMthStackGetEntry
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument to get
@@ -373,7 +372,7 @@ PsxMthStackInitArgs (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxMthStackGetEntry (
+DsMthStackGetEntry (
     UINT32                  Type,
     UINT32                  Index,
     ACPI_OBJECT_INTERNAL    ***Entry)
@@ -381,7 +380,7 @@ PsxMthStackGetEntry (
     ACPI_WALK_STATE         *WalkState;
 
 
-    FUNCTION_TRACE_U32 ("PsxMthStackGetEntry", Index);
+    FUNCTION_TRACE_U32 ("DsMthStackGetEntry", Index);
 
 
     WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
@@ -398,7 +397,7 @@ PsxMthStackGetEntry (
 
         if (Index > MTH_MAX_LOCAL)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetEntry: LocalVar index %d is invalid (max %d)\n",
+            DEBUG_PRINT (ACPI_ERROR, ("DsMthStackGetEntry: LocalVar index %d is invalid (max %d)\n",
                                     Index, MTH_MAX_LOCAL));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -411,7 +410,7 @@ PsxMthStackGetEntry (
 
         if (Index > MTH_MAX_ARG)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetEntry: Argument index %d is invalid (max %d)\n",
+            DEBUG_PRINT (ACPI_ERROR, ("DsMthStackGetEntry: Argument index %d is invalid (max %d)\n",
                                     Index, MTH_MAX_ARG));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -421,7 +420,7 @@ PsxMthStackGetEntry (
 
 
     default:
-        DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetEntry: Stack type %d is invalid\n",
+        DEBUG_PRINT (ACPI_ERROR, ("DsMthStackGetEntry: Stack type %d is invalid\n",
                                 Type));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -433,7 +432,7 @@ PsxMthStackGetEntry (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackSetEntry
+ * FUNCTION:    DsMthStackSetEntry
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument to get
@@ -446,7 +445,7 @@ PsxMthStackGetEntry (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxMthStackSetEntry (
+DsMthStackSetEntry (
     UINT32                  Type,
     UINT32                  Index,
     ACPI_OBJECT_INTERNAL    *Object)
@@ -455,12 +454,12 @@ PsxMthStackSetEntry (
     ACPI_OBJECT_INTERNAL    **Entry;
 
 
-    FUNCTION_TRACE ("PsxMthStackSetEntry");
+    FUNCTION_TRACE ("DsMthStackSetEntry");
 
 
     /* Get a pointer to the stack entry to set */
 
-    Status = PsxMthStackGetEntry (Type, Index, &Entry);
+    Status = DsMthStackGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -480,7 +479,7 @@ PsxMthStackSetEntry (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackGetType
+ * FUNCTION:    DsMthStackGetType
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument whose type to get
@@ -491,7 +490,7 @@ PsxMthStackSetEntry (
  ****************************************************************************/
 
 ACPI_OBJECT_TYPE
-PsxMthStackGetType (
+DsMthStackGetType (
     UINT32                  Type,
     UINT32                  Index)
 {
@@ -500,12 +499,12 @@ PsxMthStackGetType (
     ACPI_OBJECT_INTERNAL    *Object;
 
 
-    FUNCTION_TRACE ("PsxMthStackGetType");
+    FUNCTION_TRACE ("DsMthStackGetType");
 
 
     /* Get a pointer to the requested stack entry */
 
-    Status = PsxMthStackGetEntry (Type, Index, &Entry);
+    Status = DsMthStackGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_VALUE ((ACPI_OBJECT_TYPE) -1);
@@ -528,7 +527,7 @@ PsxMthStackGetType (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackGetNte
+ * FUNCTION:    DsMthStackGetNte
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument whose type to get
@@ -538,7 +537,7 @@ PsxMthStackGetType (
  ****************************************************************************/
 
 NAME_TABLE_ENTRY *
-PsxMthStackGetNte (
+DsMthStackGetNte (
     UINT32                  Type,
     UINT32                  Index)
 {
@@ -546,7 +545,7 @@ PsxMthStackGetNte (
     ACPI_WALK_STATE         *WalkState;
 
 
-    FUNCTION_TRACE ("PsxMthStackGetNte");
+    FUNCTION_TRACE ("DsMthStackGetNte");
 
 
     WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
@@ -559,7 +558,7 @@ PsxMthStackGetNte (
 
         if (Index > MTH_MAX_LOCAL)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetEntry: LocalVar index %d is invalid (max %d)\n",
+            DEBUG_PRINT (ACPI_ERROR, ("DsMthStackGetEntry: LocalVar index %d is invalid (max %d)\n",
                                     Index, MTH_MAX_LOCAL));
             return_VALUE (Entry);
         }
@@ -572,7 +571,7 @@ PsxMthStackGetNte (
 
         if (Index > MTH_MAX_ARG)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetEntry: Argument index %d is invalid (max %d)\n",
+            DEBUG_PRINT (ACPI_ERROR, ("DsMthStackGetEntry: Argument index %d is invalid (max %d)\n",
                                     Index, MTH_MAX_ARG));
             return_VALUE (Entry);
         }
@@ -582,7 +581,7 @@ PsxMthStackGetNte (
 
 
     default:
-        DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetEntry: Stack type %d is invalid\n",
+        DEBUG_PRINT (ACPI_ERROR, ("DsMthStackGetEntry: Stack type %d is invalid\n",
                                 Type));
         break;
     }
@@ -594,7 +593,7 @@ PsxMthStackGetNte (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackGetValue
+ * FUNCTION:    DsMthStackGetValue
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument to get
@@ -610,7 +609,7 @@ PsxMthStackGetNte (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxMthStackGetValue (
+DsMthStackGetValue (
     UINT32                  Type,
     UINT32                  Index, 
     ACPI_OBJECT_INTERNAL    **DestDesc)
@@ -620,21 +619,21 @@ PsxMthStackGetValue (
     ACPI_OBJECT_INTERNAL    *Object;
 
 
-    FUNCTION_TRACE ("PsxMthStackGetValue");
+    FUNCTION_TRACE ("DsMthStackGetValue");
 
 
     /* Validate the object descriptor */
 
     if (!DestDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetValue: NULL object descriptor pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("DsMthStackGetValue: NULL object descriptor pointer\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
 
     /* Get a pointer to the requested method stack entry */
 
-    Status = PsxMthStackGetEntry (Type, Index, &Entry);
+    Status = DsMthStackGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -659,13 +658,13 @@ PsxMthStackGetValue (
         switch (Type)
         {
         case MTH_TYPE_ARG:
-            DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetValue: Uninitialized Arg[%d] at entry %X\n",
+            DEBUG_PRINT (ACPI_ERROR, ("DsMthStackGetValue: Uninitialized Arg[%d] at entry %X\n",
                             Index, Entry));
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_ARG);
             break;
 
         case MTH_TYPE_LOCAL:
-            DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetValue: Uninitialized Local[%d] at entry %X\n",
+            DEBUG_PRINT (ACPI_ERROR, ("DsMthStackGetValue: Uninitialized Local[%d] at entry %X\n",
                             Index, Entry));
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_LOCAL);
             break;
@@ -687,7 +686,7 @@ PsxMthStackGetValue (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackDeleteValue
+ * FUNCTION:    DsMthStackDeleteValue
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument to delete
@@ -700,7 +699,7 @@ PsxMthStackGetValue (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxMthStackDeleteValue (
+DsMthStackDeleteValue (
     UINT32                  Type,
     UINT32                  Index) 
 {
@@ -709,12 +708,12 @@ PsxMthStackDeleteValue (
     ACPI_OBJECT_INTERNAL    *Object;
 
 
-    FUNCTION_TRACE ("PsxMthStackDeleteValue");
+    FUNCTION_TRACE ("DsMthStackDeleteValue");
 
 
     /* Get a pointer to the requested method stack entry */
 
-    Status = PsxMthStackGetEntry (Type, Index, &Entry);
+    Status = DsMthStackGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -771,7 +770,7 @@ PsxMthStackDeleteValue (
 
 /*****************************************************************************
  * 
- * FUNCTION:    PsxMthStackSetValue
+ * FUNCTION:    DsMthStackSetValue
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument to set
@@ -791,7 +790,7 @@ PsxMthStackDeleteValue (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxMthStackSetValue (
+DsMthStackSetValue (
     UINT32                  Type,
     UINT32                  Index, 
     ACPI_OBJECT_INTERNAL    *SrcDesc) 
@@ -800,8 +799,8 @@ PsxMthStackSetValue (
     ACPI_OBJECT_INTERNAL    **Entry;
 
 
-    FUNCTION_TRACE ("PsxMthStackSetValue");
-    DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Type=%d Idx=%d Obj=%p\n",
+    FUNCTION_TRACE ("DsMthStackSetValue");
+    DEBUG_PRINT (TRACE_EXEC, ("DsMthStackSetValue: Type=%d Idx=%d Obj=%p\n",
                     Type, Index, SrcDesc));
 
 
@@ -815,7 +814,7 @@ PsxMthStackSetValue (
 
     /* Get a pointer to the requested method stack entry */
 
-    Status = PsxMthStackGetEntry (Type, Index, &Entry);
+    Status = DsMthStackGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -823,7 +822,7 @@ PsxMthStackSetValue (
 
     if (*Entry == SrcDesc)
     {
-        DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Obj=%p already installed!\n",
+        DEBUG_PRINT (TRACE_EXEC, ("DsMthStackSetValue: Obj=%p already installed!\n",
                         SrcDesc));
         goto Cleanup;
     }
@@ -854,7 +853,7 @@ PsxMthStackSetValue (
         if ((Type == MTH_TYPE_ARG) &&
             (VALID_DESCRIPTOR_TYPE (*Entry, DESC_TYPE_NTE)))
         {
-            DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Arg (%p) is an ObjRef(NTE), storing in %p\n",
+            DEBUG_PRINT (TRACE_EXEC, ("DsMthStackSetValue: Arg (%p) is an ObjRef(NTE), storing in %p\n",
                             SrcDesc, *Entry));
 
             /* Detach an existing object from the NTE */
@@ -870,7 +869,7 @@ PsxMthStackSetValue (
 
         /* Otherwise, just delete the existing object before storing the new one */
 
-        PsxMthStackDeleteValue (Type, Index);
+        DsMthStackDeleteValue (Type, Index);
     }
 
 
@@ -881,7 +880,7 @@ PsxMthStackSetValue (
      * (increments the object reference count by one)
      */
 
-    Status = PsxMthStackSetEntry (Type, Index, SrcDesc);
+    Status = DsMthStackSetEntry (Type, Index, SrcDesc);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
