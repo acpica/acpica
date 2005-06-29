@@ -488,7 +488,7 @@ AmlDoName (
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("AmlDoName");
+    FUNCTION_TRACE_U32 ("AmlDoName", DataType);
 
 
 BREAKPOINT3;
