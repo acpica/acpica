@@ -15,15 +15,18 @@
  | legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.12 $
- | $Date: 2005/06/29 16:43:50 $
+ | $Revision: 1.13 $
+ | $Date: 2005/06/29 16:43:51 $
  | $Log: evsci.c,v $
- | Revision 1.12  2005/06/29 16:43:50  aystarik
- |
+ | Revision 1.13  2005/06/29 16:43:51  aystarik
+ | Major header file consolidation
  |
  | 
- | date	99.04.06.20.42.00;	author rmoore1;	state Exp;
+ | date	99.04.07.22.34.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 13    4/07/99 3:34p Rmoore1
+ * Major header file consolidation
  * 
  * 12    4/06/99 1:42p Rmoore1
  * 
@@ -67,11 +70,9 @@
 #define __EVSCI_C__
 
 #include <acpi.h>
-#include <acpinmsp.h>
-#include <acpievnt.h>
-#include <acpilgcy.h>
+#include <namespace.h>
+#include <devices.h>
 #include <events.h>
-#include <acpitbls.h>
 
 
 #define _THIS_MODULE        "evsci.c"
