@@ -116,6 +116,10 @@ SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utcache.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utcopy.c
 # End Source File
 # Begin Source File
@@ -140,7 +144,15 @@ SOURCE=..\..\source\components\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utmutex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -285,6 +297,10 @@ SOURCE=..\..\source\compiler\aslutils.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\parser\psloop.c
 # End Source File
 # Begin Source File
 

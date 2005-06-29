@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /Gz /Za /W3 /Gm /GX /Zi /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /D "_IA64" /FR /FD /c
+# ADD CPP /Gz /Za /W3 /Gm /GX /Zi /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "_IA64" /FR /FD /c
 # SUBTRACT CPP /nologo /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -76,7 +76,7 @@ PostBuild_Cmds=copy Release\iasl64.exe ..\..\Libraries
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /Gz /Za /W4 /Gm /GX /Zi /Od /I "$(OutDir)" /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "_DEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /D "_IA64" /D "_M_IX86" /FR /FD /GZ /c
+# ADD CPP /Gz /Za /W4 /Gm /GX /Zi /Od /I "$(OutDir)" /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "_DEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "_IA64" /D "_M_IX86" /FR /FD /GZ /c
 # SUBTRACT CPP /nologo /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -117,6 +117,10 @@ SOURCE=..\..\source\COMPONENTS\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utcache.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\utilities\utcopy.c
 # End Source File
 # Begin Source File
@@ -141,7 +145,15 @@ SOURCE=..\..\source\COMPONENTS\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utmutex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\utilities\utobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -286,6 +298,10 @@ SOURCE=..\..\source\compiler\aslutils.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\parser\psloop.c
 # End Source File
 # Begin Source File
 
@@ -522,6 +538,14 @@ SOURCE=..\..\source\COMPONENTS\tables\tbutils.c
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=..\..\source\include\acnames.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\include\acopcode.h
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\compiler\AslCompiler.h
