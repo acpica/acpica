@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -296,7 +296,7 @@ AcpiNsAttachObject (
                     break;
                 }
 
-                /* Otherwise, fall through and set the type to Integer */
+                /* case AML_REVISION_OP: fall through and set the type to Integer */
 
             case AML_ZERO_OP:
             case AML_ONES_OP:
