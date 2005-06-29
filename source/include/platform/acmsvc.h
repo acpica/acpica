@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmsvc.h - VC specific defines, etc.
- *       $Revision: 1.7 $
+ *       $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,26 +117,56 @@
 #ifndef __ACMSVC_H__
 #define __ACMSVC_H__
 
-#define COMPILER_DEPENDENT_UINT64   unsigned __int64
+#define COMPILER_DEPENDENT_INT64   __int64
+#define COMPILER_DEPENDENT_UINT64  unsigned __int64
 
+/*
+ * Calling conventions:
+ *
+ * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
+ * ACPI_EXTERNAL_XFACE      - External ACPI interfaces
+ * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
+ * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
+ */
+#define ACPI_SYSTEM_XFACE           __cdecl
+#define ACPI_EXTERNAL_XFACE
+#define ACPI_INTERNAL_XFACE
+#define ACPI_INTERNAL_VAR_XFACE     __cdecl
+
+#ifndef _LINT
 /*
  * Math helper functions
  */
 #define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32) \
 {                           \
-    _asm mov    edx, n_hi   \
-    _asm mov    eax, n_lo   \
-    _asm div    d32         \
-    _asm mov    q32, eax    \
-    _asm mov    r32, edx    \
+    __asm mov    edx, n_hi  \
+    __asm mov    eax, n_lo  \
+    __asm div    d32        \
+    __asm mov    q32, eax   \
+    __asm mov    r32, edx   \
 }
 
 #define ACPI_SHIFT_RIGHT_64(n_hi, n_lo) \
 {                           \
-    _asm shr    n_hi, 1     \
-    _asm rcr    n_lo, 1     \
+    __asm shr    n_hi, 1    \
+    __asm rcr    n_lo, 1    \
+}
+#else
+
+/* Fake versions to make lint happy */
+
+#define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32) \
+{                           \
+    q32 = n_hi / d32;       \
+    r32 = n_lo / d32;       \
 }
 
+#define ACPI_SHIFT_RIGHT_64(n_hi, n_lo) \
+{                           \
+    n_hi >>= 1;    \
+    n_lo >>= 1;    \
+}
+#endif
 
 /* warn C4100: unreferenced formal parameter */
 #pragma warning(disable:4100)
@@ -152,5 +182,13 @@
  * doesn't, so this is proprocessed away.
  */
 #define ACPI_PRINTF_LIKE_FUNC
+
+/* Some compilers complain about unused variables. Sometimes we don't want to
+ * use all the variables (most specifically for _THIS_MODULE). This allow us
+ * to to tell the compiler warning in a per-variable manner that a variable
+ * is unused. However, MSVC doesn't do this.
+ */
+#define ACPI_UNUSED_VAR
+
 
 #endif /* __ACMSVC_H__ */
