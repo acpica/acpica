@@ -542,42 +542,6 @@ SOURCE=..\..\Subsystem\Parser\pswstate.c
 
 SOURCE=..\..\Subsystem\Parser\psxctrl.c
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Parser\psxexec.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Parser\psxfield.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Parser\psxload1.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Parser\psxload2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Parser\psxmargs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Parser\psxmethd.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Parser\psxobj.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Parser\psxregn.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Parser\psxutils.c
-# End Source File
 # End Group
 # Begin Group "Debugger"
 
@@ -613,6 +577,50 @@ SOURCE=..\..\Subsystem\Debugger\dbstats.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Debugger\dbutils.c
+# End Source File
+# End Group
+# Begin Group "Dispatcher"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dpcontrl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dpfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dpmethod.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dpmthdat.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dpobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dpregion.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dputils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dpwexec.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dpwload1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dpwload2.c
 # End Source File
 # End Group
 # End Group
