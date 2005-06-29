@@ -8,88 +8,108 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
  * reserved.
  *
  * 2. License
- * 
- * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
- * copy of the source code appearing in this file ("Covered Code") a license 
- * under Intel's copyrights in the base code distributed originally by Intel 
- * ("Original Intel Code") to copy, make derivatives, distribute, use and 
- * display any portion of the Covered Code in any form; and
  *
- * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * 2.1. This is your license from Intel Corp. under its intellectual property
+ * rights.  You may have additional license terms from the party that provided
+ * you this software, covering your right to use that party's intellectual
+ * property rights.
+ *
+ * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
+ * copy of the source code appearing in this file ("Covered Code") an
+ * irrevocable, perpetual, worldwide license under Intel's copyrights in the
+ * base code distributed originally by Intel ("Original Intel Code") to copy,
+ * make derivatives, distribute, use and display any portion of the Covered
+ * Code in any form, with the right to sublicense such rights; and
+ *
+ * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
  * license (without the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell, 
- * offer to sell, and import the Covered Code and derivative works thereof 
- * solely to the minimum extent necessary to exercise the above copyright 
- * license, and in no event shall the patent license extend to any additions to
- * or modifications of the Original Intel Code.  No other license or right is 
- * granted directly or by implication, estoppel or otherwise;
+ * patents that are infringed by the Original Intel Code, to make, use, sell,
+ * offer to sell, and import the Covered Code and derivative works thereof
+ * solely to the minimum extent necessary to exercise the above copyright
+ * license, and in no event shall the patent license extend to any additions
+ * to or modifications of the Original Intel Code.  No other license or right
+ * is granted directly or by implication, estoppel or otherwise;
  *
- * the above copyright and patent license is granted only if the following 
+ * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
  * 3. Conditions 
  *
- * 3.1. Redistribution of source code of any substantial portion of the Covered 
- * Code or modification must include the above Copyright Notice, the above 
- * License, this list of Conditions, and the following Disclaimer and Export 
- * Compliance provision.  In addition, Licensee must cause all Covered Code to 
- * which Licensee contributes to contain a file documenting the changes 
- * Licensee made to create that Covered Code and the date of any change.  
- * Licensee must include in that file the documentation of any changes made by
- * any predecessor Licensee.  Licensee must include a prominent statement that
- * the modification is derived, directly or indirectly, from Original Intel 
- * Code.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification with rights to further distribute source must include
+ * the above Copyright Notice, the above License, this list of Conditions,
+ * and the following Disclaimer and Export Compliance provision.  In addition,
+ * Licensee must cause all Covered Code to which Licensee contributes to
+ * contain a file documenting the changes Licensee made to create that Covered
+ * Code and the date of any change.  Licensee must include in that file the
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * must include a prominent statement that the modification is derived,
+ * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution in binary form of any substantial portion of the Covered 
- * Code or modification must reproduce the above Copyright Notice, and the 
- * following Disclaimer and Export Compliance provision in the documentation 
- * and/or other materials provided with the distribution.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification without rights to further distribute source must
+ * include the following Disclaimer and Export Compliance provision in the
+ * documentation and/or other materials provided with distribution.  In
+ * addition, Licensee may not authorize further sublicense of source of any
+ * portion of the Covered Code, and must include terms to the effect that the
+ * license from Licensee to its licensee is limited to the intellectual
+ * property embodied in the software Licensee provides to its licensee, and
+ * not to intellectual property embodied in modifications its licensee may
+ * make.
  *
- * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * 3.3. Redistribution of Executable. Redistribution in executable form of any
+ * substantial portion of the Covered Code or modification must reproduce the
+ * above Copyright Notice, and the following Disclaimer and Export Compliance
+ * provision in the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * 3.4. Intel retains all right, title, and interest in and to the Original
  * Intel Code.
  *
- * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
- * Intel shall be used in advertising or otherwise to promote the sale, use or 
- * other dealings in products derived from or relating to the Covered Code 
+ * 3.5. Neither the name Intel nor any other trademark owned or controlled by
+ * Intel shall be used in advertising or otherwise to promote the sale, use or
+ * other dealings in products derived from or relating to the Covered Code
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
  * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this 
- * software or system incorporating such software without first obtaining any 
- * required license or other approval from the U. S. Department of Commerce or 
- * any other agency or department of the United States Government.  In the 
- * event Licensee exports any such software from the United States or re-
- * exports any such software from a foreign destination, Licensee shall ensure
- * that the distribution and export/re-export of the software is in compliance 
- * with all laws, regulations, orders, or other restrictions of the U.S. Export 
- * Administration Regulations. Licensee agrees that neither it nor any of its 
- * subsidiaries will export/re-export any technical data, process, software, or 
- * service, directly or indirectly, to any country for which the United States 
- * government or any agency thereof requires an export license, other 
- * governmental approval, or letter of assurance, without first obtaining such
- * license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this
+ * software or system incorporating such software without first obtaining any
+ * required license or other approval from the U. S. Department of Commerce or
+ * any other agency or department of the United States Government.  In the
+ * event Licensee exports any such software from the United States or
+ * re-exports any such software from a foreign destination, Licensee shall
+ * ensure that the distribution and export/re-export of the software is in
+ * compliance with all laws, regulations, orders, or other restrictions of the
+ * U.S. Export Administration Regulations. Licensee agrees that neither it nor
+ * any of its subsidiaries will export/re-export any technical data, process,
+ * software, or service, directly or indirectly, to any country for which the
+ * United States government or any agency thereof requires an export license,
+ * other governmental approval, or letter of assurance, without first obtaining
+ * such license, approval or letter.
  *
  *****************************************************************************/
 
@@ -101,6 +121,7 @@
 #include <amlcode.h>
 #include <namespace.h>
 #include <hardware.h>
+#include <events.h>
 
 
 #define _THIS_MODULE        "iefield.c"
@@ -137,13 +158,13 @@
 
 ACPI_STATUS
 AmlSetupField (
-    ACPI_OBJECT         *ObjDesc, 
-    ACPI_OBJECT         *RgnDesc, 
-    INT32               FieldBitWidth)
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *RgnDesc, 
+    INT32                   FieldBitWidth)
 {
-    ACPI_OBJECT         *ObjValDesc = NULL;
-    ACPI_STATUS         Status = AE_OK;
-    INT32               FieldByteWidth;
+    ACPI_OBJECT_INTERNAL    *ObjValDesc = NULL;
+    ACPI_STATUS             Status = AE_OK;
+    INT32                   FieldByteWidth;
 
 
     FUNCTION_TRACE ("AmlSetupField");
@@ -155,16 +176,16 @@ AmlSetupField (
         Status = AE_AML_ERROR;
     }
 
-    else if (TYPE_Region != RgnDesc->ValType)
+    else if (TYPE_Region != RgnDesc->Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Needed Region, found %d %s\n",
-                        RgnDesc->ValType, NsTypeNames[RgnDesc->ValType]));
+                        RgnDesc->Type, NsTypeNames[RgnDesc->Type]));
         Status = AE_AML_ERROR;
     }
 
     if (AE_OK == Status)
     {   
-        /* ObjDesc, RgnDesc, and RgnDesc->ValType valid */
+        /* ObjDesc, RgnDesc, and RgnDesc->Type valid */
         
         FieldByteWidth = FieldBitWidth / 8;     /*  possible values are 1, 2, 4 */
 
@@ -184,7 +205,7 @@ AmlSetupField (
          * If the address and length have not been previously evaluated,
          * evaluate them and save the results.
          */
-        if (0 == RgnDesc->Region.AdrLenValid)
+        if (0 == RgnDesc->Region.DataValid)
         {
             /* 
              * Address and length have not been previously evaluated
@@ -200,12 +221,12 @@ AmlSetupField (
                  * Point to Address opcode in AML stream
                  */
 
-                AmlSetCurrentLocation (&RgnDesc->Region.AdrLoc);
+                AmlSetCurrentLocation (&RgnDesc->Region.AddressLocation);
 
                 /* Evaluate the Address opcode */
 
                 if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK && 
-                    (Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop])) == AE_OK)
+                    (Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop])) == AE_OK)
                 {
                     /* Capture the address */
 
@@ -213,18 +234,18 @@ AmlSetupField (
 
 
                     if (!ObjValDesc ||
-                        ObjValDesc->ValType != (UINT8) TYPE_Number)
+                        ObjValDesc->Type != (UINT8) TYPE_Number)
                     {
                         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Address "
-                                    "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh\n",
-                                    ObjValDesc, ObjValDesc->ValType, (UINT8) TYPE_Number));
+                                    "ObjValDesc = %p, ObjValDesc->Type = %02Xh, Number = %02Xh\n",
+                                    ObjValDesc, ObjValDesc->Type, (UINT8) TYPE_Number));
 
                         Status = AE_AML_ERROR;
                     }
 
                     else
                     {
-                        RgnDesc->Region.Address = ObjValDesc->Number.Number;
+                        RgnDesc->Region.Address = ObjValDesc->Number.Value;
                     }
                 }
 
@@ -233,14 +254,14 @@ AmlSetupField (
                     /* Evaluate the Length opcode */
 
                     if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK &&
-                        (Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop])) == AE_OK)
+                        (Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop])) == AE_OK)
                     {
                         /* Capture the length */
 
                         ObjValDesc = ObjStack[ObjStackTop];
 
                         if (!ObjValDesc ||
-                            ObjValDesc->ValType != (UINT8) TYPE_Number)
+                            ObjValDesc->Type != (UINT8) TYPE_Number)
                         {
 
                             DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Length \n"));
@@ -251,13 +272,13 @@ AmlSetupField (
                         {
                             /* Region Length valid */
 
-                            RgnDesc->Region.Length = ObjValDesc->Number.Number;
+                            RgnDesc->Region.Length = ObjValDesc->Number.Value;
 
                             /* 
                              * Remember that both Address and Length
                              * have been successfully evaluated and saved.
                              */
-                            RgnDesc->Region.AdrLenValid = 1;
+                            RgnDesc->Region.DataValid = 1;
                         }
                     }
                 }
@@ -319,20 +340,20 @@ AmlSetupField (
 
 ACPI_STATUS
 AmlReadField (
-    ACPI_OBJECT         *ObjDesc, 
-    UINT32              *Value, 
-    INT32               FieldBitWidth)
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    UINT32                  *Value, 
+    INT32                   FieldBitWidth)
 {
-    ACPI_OBJECT         *RgnDesc = NULL;
-    ACPI_STATUS         Status;
-    UINT32              Address;
-    UINT32              LocalValue = 0;
-    INT32               FieldByteWidth;
-    void *              PhysicalAddrPtr = NULL;
-    UINT8               PciBus = 0;
-    UINT8               DevFunc = 0;
-    UINT8               PciReg = 0;
-    UINT8               PciExcep = 0;
+    ACPI_OBJECT_INTERNAL    *RgnDesc = NULL;
+    ACPI_STATUS             Status;
+    UINT32                  Address;
+    UINT32                  LocalValue = 0;
+    INT32                   FieldByteWidth;
+    void *                  PhysicalAddrPtr = NULL;
+    UINT8                   PciBus = 0;
+    UINT8                  DevFunc = 0;
+    UINT8                   PciReg = 0;
+    UINT8                   PciExcep = 0;
 
 
     FUNCTION_TRACE ("AmlReadField");
@@ -354,7 +375,7 @@ AmlReadField (
         return Status;
     }
 
-    /* SetupFld validated RgnDesc and FieldBitWidth  */
+    /* SetupField validated RgnDesc and FieldBitWidth  */
 
     if (!Value)
     {
@@ -370,7 +391,7 @@ AmlReadField (
     Address = RgnDesc->Region.Address
             + (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1));
 
-    if (OUTRANGE (RgnDesc->Region.SpaceId, RegionTypes))
+    if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
     {
         DEBUG_PRINT (TRACE_OPREGION,
                     ("AmlReadField: **** Read from unknown OpRegion SpaceID %d at %08lx width %d ** \n",
@@ -385,140 +406,27 @@ AmlReadField (
     }
 
 
-    switch(RgnDesc->Region.SpaceId)
+    /* Invoke the appropriate AddressSpace/OpRegion handler */
+
+    Status = EvAddressSpaceDispatch (RgnDesc->Region.SpaceId, ADDRESS_SPACE_READ, 
+                                        Address, FieldBitWidth, Value);
+
+    if (Status == AE_NOT_IMPLEMENTED)
     {
-
-    case REGION_SystemMemory:
-
-        /* System memory defined to be in first Mbyte  */
-        /* XXX:  Is this true on all OS/platform combinations??  */
-        /* RBM:  Do we need to worry about this in protected mode?? */
-
-        if (Address & 0xFFF00000UL)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: **** Implementation limitation - SystemMemory address %08lx over 1MB\n", Address));
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-
-        /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
-
-        /* 
-         * XXX: This may be too high an overhead to do every time.
-         * Probably should have a mapping cached.
-         */
-
-        PhysicalAddrPtr = OsdMapMemory ((void *) Address, 4);
-
-        switch (FieldBitWidth)
-        {
-        /* System memory width */
-
-        case 8:
-            *Value = (UINT32)* (UINT8 *) PhysicalAddrPtr;
-            break;
-
-        case 16:
-            *Value = (UINT32)* (UINT16 *) PhysicalAddrPtr;
-            break;
-
-        case 32:
-            *Value = * (UINT32 *) PhysicalAddrPtr;
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: Invalid SystemMemory width %d\n", FieldBitWidth));
-            OsdUnMapMemory (PhysicalAddrPtr, 4);
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-
-        OsdUnMapMemory (PhysicalAddrPtr, 4);
-        break;
-
-    case REGION_SystemIO:
-        switch (FieldBitWidth)
-        {
-        /* I/O Port width */
-
-        case 8:
-            *Value = (UINT32) OsdIn8 ((UINT16) Address);
-            break;
-
-        case 16:
-            *Value = (UINT32) OsdIn16 ((UINT16) Address);
-            break;
-
-        case 32:
-            *Value = OsdIn32 ((UINT16) Address);
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: Invalid SystemIO width %d\n", FieldBitWidth));
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-        break;
-
-    case REGION_PCIConfig:
-        PciBus = (UINT8) (Address >> 16);
-        DevFunc = (UINT8) (Address >> 8);
-        PciReg = (UINT8) ((Address >> 2) & 0x3f);
-        *Value = 0;
-
-        switch (FieldBitWidth)
-        {
-        /* PCI Register width */
-
-        case 8:
-            PciExcep = OsdReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
-            break;
-
-        case 16:
-            PciExcep = OsdReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
-            break;
-
-        case 32:
-            PciExcep = OsdReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: Invalid PCIConfig width %d\n", FieldBitWidth));
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-        if (PciExcep)
-        {
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-        break;
-
-    case REGION_EmbeddedControl:
-    case REGION_SMBus:
-
-        /* XXX - Actual read should happen here */
-
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: **** OpRegion type %s not implemented\n",
                 RegionTypes[RgnDesc->Region.SpaceId]));
-        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-        return AE_AML_ERROR;
+    }
 
-    default:
+    else if (Status == AE_EXIST)
+    {
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: **** Unknown OpRegion SpaceID %d\n",
                 RgnDesc->Region.SpaceId));
-        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-        return AE_AML_ERROR;
     }
 
     DEBUG_PRINT (TRACE_OPREGION, ("AmlReadField: Returned value=%08lx \n", *Value));
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    FUNCTION_STATUS_EXIT (Status);
+    return Status;
 }
 
 
@@ -538,11 +446,11 @@ AmlReadField (
 
 ACPI_STATUS
 AmlWriteField (
-    ACPI_OBJECT             *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
     UINT32                  Value, 
     INT32                   FieldBitWidth)
 {
-    ACPI_OBJECT             *RgnDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *RgnDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Address;
     INT32                   FieldByteWidth;
@@ -574,7 +482,7 @@ AmlWriteField (
     Address = RgnDesc->Region.Address
                 + (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1));
 
-    if (OUTRANGE (RgnDesc->Region.SpaceId, RegionTypes))
+    if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
     {
         DEBUG_PRINT (TRACE_OPREGION,
                 ("AmlWriteField: **** Store %lx in unknown OpRegion SpaceID %d at %08lx width %d ** \n",
@@ -587,128 +495,27 @@ AmlWriteField (
                 Value, RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
+    /* Invoke the appropriate AddressSpace/OpRegion handler */
 
-    /*  switch on region SpaceID    */
+    Status = EvAddressSpaceDispatch (RgnDesc->Region.SpaceId, ADDRESS_SPACE_WRITE, 
+                                        Address, FieldBitWidth, &Value);
 
-    switch(RgnDesc->Region.SpaceId)
+    if (Status == AE_NOT_IMPLEMENTED)
     {
-     
-    case REGION_SystemMemory:
-
-        /* TBD:  Is this an issue in protected mode?  !!! */
-
-        if (Address & 0xFFF00000UL)
-        {
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: Implementation limitation - SystemMemory address %08lx over 1MB\n", Address));
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-
-
-        /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
-
-        /* XXX: This may be too high an overhead to do every time.
-         * Probably should have a mapping cached.
-         */
-
-        PhysicalAddrPtr = OsdMapMemory ((void *) Address, 4);
-                
-        switch (FieldBitWidth)
-        {
-        case 8:
-            *(UINT8 *) PhysicalAddrPtr = (UINT8) Value;
-            break;
-
-        case 16:
-            *(UINT16 *) PhysicalAddrPtr = (UINT16) Value;
-            break;
-
-        case 32:
-            *(UINT32 *) PhysicalAddrPtr = Value;
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: Invalid SystemMemory width %d\n", FieldBitWidth));
-            OsdUnMapMemory (PhysicalAddrPtr, 4);
-            Status = AE_AML_ERROR;
-        }
-
-        OsdUnMapMemory (PhysicalAddrPtr, 4);
-        break;
-
-    case REGION_SystemIO:
-        switch (FieldBitWidth)
-        {
-        case 8:
-            OsdOut8 ((UINT16) Address, (UINT8) Value);
-            break;
-
-        case 16:
-            OsdOut16 ((UINT16) Address, (UINT16) Value);
-            break;
-
-        case 32:
-            OsdOut32 ((UINT16) Address, Value);
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: Invalid SystemIO width %d\n", FieldBitWidth));
-            Status = AE_AML_ERROR;
-        }
-        break;
-
-    case REGION_PCIConfig:
-        PciBus = (UINT8) (Address >> 16);
-        DevFunc = (UINT8) (Address >> 8);
-        PciReg = (UINT8) ((Address >> 2) & 0x3f);
-
-        switch (FieldBitWidth)
-        {
-        case 8:
-            PciExcep = OsdWritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *)&Value);
-            break;
-
-        case 16:
-            PciExcep = OsdWritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *)&Value);
-            break;
-
-        case 32:
-            PciExcep = OsdWritePciCfgDword (PciBus, DevFunc, PciReg, Value);
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: Invalid PCIConfig width %d\n", FieldBitWidth));
-            Status = AE_AML_ERROR;
-        }
-
-        if (PciExcep)
-        {
-            Status = AE_AML_ERROR;
-        }
-        break;
-
-    case REGION_EmbeddedControl:
-    case REGION_SMBus:
-
-        /* XXX - Actual write should happen here */
-
         DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** OpRegion type %s not implemented\n",
                         RegionTypes[RgnDesc->Region.SpaceId]));
-        Status = AE_AML_ERROR;
+    }
 
-    default:
+    else if (Status == AE_EXIST)
+    {
         DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** Unknown OpRegion SpaceID %d\n",
                         RgnDesc->Region.SpaceId));
-        Status = AE_AML_ERROR;
     }
 
     FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
+
 
 /*****************************************************************************
  * 
@@ -730,7 +537,7 @@ AmlAccessNamedField (
     ACPI_HANDLE             NamedField, 
     UINT32                  *Value)
 {
-    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_AML_ERROR;
     char                    *Type = NULL;
     UINT32                  Granularity = 0;
@@ -765,16 +572,16 @@ AmlAccessNamedField (
                     ("AmlAccessNamedField: DefField type and ValPtr OK in nte \n"));
         DUMP_ENTRY (NamedField);
 
-        DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, ObjDesc->ValType=%d\n",
-                    ObjDesc, ObjDesc->ValType));
+        DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, ObjDesc->Type=%d\n",
+                    ObjDesc, ObjDesc->Type));
         DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DatLen=%d, BitOffset=%d\n",
-                    ObjDesc->FieldUnit.DatLen, ObjDesc->FieldUnit.BitOffset));
+                    ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
 
-        if (TYPE_DefField != ObjDesc->ValType)
+        if (TYPE_DefField != ObjDesc->Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlAccessNamedField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                    NamedField, NsGetType (NamedField), ObjDesc->ValType, ObjDesc));
+                    NamedField, NsGetType (NamedField), ObjDesc->Type, ObjDesc));
         }
 
         else
@@ -825,10 +632,10 @@ AmlAccessNamedField (
 
 
     if (AE_OK == Status)
-    {
+   {
         /* Field has valid access type */
 
-        if ((UINT32) (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset) > MaxW)
+        if ((UINT32) (ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset) > MaxW)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Field exceeds %s\n", Type));
             Status = AE_AML_ERROR;
@@ -850,7 +657,7 @@ AmlAccessNamedField (
          * divide MaxW by 2.
          */
         while (Granularity < MaxW && 
-               ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset
+               ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset
                     <= (UINT16) MaxW / 2)
         {
             MaxW /= 2;
@@ -861,7 +668,7 @@ AmlAccessNamedField (
             /* Write access */
             /* Construct Mask with 1 bits where the field is, 0 bits elsewhere */
 
-            Mask = (((UINT32) 1 << ObjDesc->FieldUnit.DatLen) - (UINT32) 1)
+            Mask = (((UINT32) 1 << ObjDesc->FieldUnit.Length) - (UINT32) 1)
                                 << ObjDesc->Field.BitOffset;
             
             if (Value)
@@ -872,7 +679,7 @@ AmlAccessNamedField (
             }
 
 
-            if (ObjDesc->FieldUnit.DatLen % Granularity || 
+            if (ObjDesc->FieldUnit.Length % Granularity || 
                 ObjDesc->FieldUnit.BitOffset)
             {
                 /* Write does not fill an integral number of naturally aligned units */
@@ -934,7 +741,7 @@ AmlAccessNamedField (
                  Value)
             {
                 *Value >>= ObjDesc->Field.BitOffset;
-                *Value &= (((UINT32) 1 << ObjDesc->FieldUnit.DatLen) - (UINT32) 1);
+                *Value &= (((UINT32) 1 << ObjDesc->FieldUnit.Length) - (UINT32) 1);
             }
         }
     }
@@ -1030,3 +837,4 @@ AmlGetNamedFieldValue (
 }
 
 
+  
