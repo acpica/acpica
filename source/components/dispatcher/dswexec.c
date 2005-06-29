@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -306,6 +306,13 @@ AcpiDsExecBeginOp (
         WalkState->Op = Op;
         WalkState->OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
         WalkState->Opcode = Op->Opcode;
+
+        if (AcpiNsOpensScope (WalkState->OpInfo->ObjectType))
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "(%s) Popping scope for Op %p\n",
+                AcpiUtGetTypeName (WalkState->OpInfo->ObjectType), Op));
+            AcpiDsScopeStackPop (WalkState);
+        }
     }
 
     if (Op == WalkState->Origin)
@@ -620,6 +627,7 @@ AcpiDsExecEndOp (
         case AML_TYPE_NAMED_FIELD:
         case AML_TYPE_NAMED_COMPLEX:
         case AML_TYPE_NAMED_SIMPLE:
+        case AML_TYPE_NAMED_NO_OBJ:
 
             Status = AcpiDsLoad2EndOp (WalkState);
             if (ACPI_FAILURE (Status))
