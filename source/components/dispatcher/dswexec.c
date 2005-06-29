@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -871,7 +871,7 @@ Cleanup:
 
     WalkState->NumOperands = 0;
 
-#ifdef ACPI_DEBUG_OUTPUT    
+#ifdef ACPI_DEBUG_OUTPUT
     if (ACPI_FAILURE (Status))
     {
         AcpiDsDumpMethodInfo (Status, WalkState, Op);
