@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML opcode generation
- *              $Revision: 1.17 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -711,6 +711,75 @@ OpnDoPackage (
 }
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    OpnDoLoadTable
+ *
+ * PARAMETERS:  Node        - The parent parse node
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+OpnDoLoadTable (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+    /* Opcode is parent node */
+    /* First child is the table signature */
+
+    Next = Node->Child;
+
+    /* Second child is the OEM ID*/
+
+    Next = Next->Peer;
+
+    /* Third child is the OEM table ID */
+
+    Next = Next->Peer;
+
+    /* Fourth child is the RootPath string */
+
+    Next = Next->Peer;
+    if (Next->ParseOpcode == ZERO)
+    {
+        Next->ParseOpcode    = STRING_LITERAL;
+        Next->Value.String   = "\\";
+        Next->AmlLength      = 2;
+        OpcGenerateAmlOpcode (Next);
+    }
+
+    /* Fifth child is the [optional] ParameterPathString */
+    /* Sixth child is the [optional] ParameterData */
+
+/*
+    Next = Next->Peer;
+    if (Next->ParseOpcode == DEFAULT_ARG)
+    {
+        Next->AmlLength = 1;
+        Next->ParseOpcode = ZERO;
+        OpcGenerateAmlOpcode (Next);
+    }       
+
+
+    Next = Next->Peer;
+    if (Next->ParseOpcode == DEFAULT_ARG)
+    {
+        Next->AmlLength = 1;
+        Next->ParseOpcode = ZERO;
+        OpcGenerateAmlOpcode (Next);
+    }      
+ */
+
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    OpnDoDefinitionBlock
@@ -952,6 +1021,10 @@ OpnGenerateAmlOperands (
 
     case BUFFER:
         OpnDoBuffer (Node);
+        break;
+
+    case LOADTABLE:
+        OpnDoLoadTable (Node);
         break;
 
     case PACKAGE:
