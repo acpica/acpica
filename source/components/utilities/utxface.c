@@ -156,20 +156,6 @@ AcpiInitialize (void)
 
     CmInitGlobals ();
 
-    /* Install the default OpRegion handlers */
-/*
-    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemMemory, AmlSystemMemorySpaceHandler, NULL);
-    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemIO, AmlSystemIoSpaceHandler, NULL);
-*/
-
-/*
-    Can't be any defaults till a device appears.
-
-    AcpiInstallAddressSpaceHandler (REGION_PCIConfig, AmlPciConfigSpaceHandler, NULL);
-    AcpiInstallAddressSpaceHandler (REGION_EmbeddedControl, AmlEmbeddedControllerSpaceHandler, NULL);
-    AcpiInstallAddressSpaceHandler (REGION_SMBus, AmlSmBusSpaceHandler, NULL);
-*/
-
     /* Create the default mutex objects */
 
     Status = CmMutexInitialize ();
