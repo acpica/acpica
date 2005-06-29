@@ -174,7 +174,6 @@ AcpiInit (
         goto ErrorExit;
     }
 
-
     /* Everything OK, now init the hardware */
 
     Status = InitAcpiRegisters ();
@@ -294,7 +293,7 @@ InitAcpiGetRsdt (
 
     if (FilePtr)
     {
-        OsdRead (Buffer, strlen (ACPILIB_DATA_FILE_VERSION), (size_t) 1, FilePtr);
+        OsdRead (Buffer, strlen (ACPILIB_DATA_FILE_VERSION), (ACPI_SIZE) 1, FilePtr);
         
         if (strncmp (ACPILIB_DATA_FILE_VERSION, Buffer, strlen (ACPILIB_DATA_FILE_VERSION)))
         {
@@ -312,7 +311,7 @@ InitAcpiGetRsdt (
         
         else
         {
-            OsdRead (&RsdpOriginalLocation, (size_t) 4, (size_t) 1, FilePtr);
+            OsdRead (&RsdpOriginalLocation, (ACPI_SIZE) 4, (ACPI_SIZE) 1, FilePtr);
         }
     }
     
@@ -501,15 +500,15 @@ InitAcpiGetAllTables (
 
                     DEBUG_PRINT (TRACE_TABLES, ("Hex dump of DSDT Header:\n"));
                     DUMP_BUFFER ((UINT8 *) DSDT,
-                                    (size_t) sizeof (ACPI_TABLE_HEADER), HEX | ASCII);
+                                    (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER), HEX | ASCII);
                     
                     /* Dump the entire DSDT */
 
                     DEBUG_PRINT (TRACE_TABLES,
                                 ("Hex dump of DSDT (After header), size %d (0x%x)\n",
-                                (size_t)DSDT->Length, (size_t)DSDT->Length));
+                                (ACPI_SIZE)DSDT->Length, (ACPI_SIZE)DSDT->Length));
                     DUMP_BUFFER ((UINT8 *) (DSDT + 1),
-                                    (size_t)DSDT->Length, HEX | ASCII);
+                                    (ACPI_SIZE)DSDT->Length, HEX | ASCII);
                 }
             }
             
@@ -647,7 +646,7 @@ InitAcpiRegisters (void)
         if (FilePtr)
         {
             OsdWrite (ACPILIB_DATA_FILE_VERSION, strlen (ACPILIB_DATA_FILE_VERSION),
-                        (size_t) 1, FilePtr);
+                        (ACPI_SIZE) 1, FilePtr);
             
             /* POINTER STUFF COMMENTED OUT !!!! */
 
@@ -655,25 +654,25 @@ InitAcpiRegisters (void)
  *           RsdpOriginalLocation = (UINT32) PtrOffset (RSDP);
  */
 
-            OsdWrite (&RsdpOriginalLocation, sizeof (UINT32), (size_t) 1, FilePtr);
-            OsdWrite (RSDP, sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER), (size_t) 1, FilePtr);
+            OsdWrite (&RsdpOriginalLocation, sizeof (UINT32), (ACPI_SIZE) 1, FilePtr);
+            OsdWrite (RSDP, sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER), (ACPI_SIZE) 1, FilePtr);
             
             if (RSDT)
-                OsdWrite (RSDT, (size_t) RSDT->header.Length, (size_t) 1, FilePtr);
+                OsdWrite (RSDT, (ACPI_SIZE) RSDT->header.Length, (ACPI_SIZE) 1, FilePtr);
             if (FACP)
-                OsdWrite (FACP, (size_t) FACP->header.Length, (size_t) 1, FilePtr);
+                OsdWrite (FACP, (ACPI_SIZE) FACP->header.Length, (ACPI_SIZE) 1, FilePtr);
             if (FACS)
-                OsdWrite (FACS, (size_t) FACS->Length, (size_t) 1, FilePtr);
+                OsdWrite (FACS, (ACPI_SIZE) FACS->Length, (ACPI_SIZE) 1, FilePtr);
             if (DSDT)
-                OsdWrite (DSDT, (size_t) DSDT->Length, (size_t) 1, FilePtr);
+                OsdWrite (DSDT, (ACPI_SIZE) DSDT->Length, (ACPI_SIZE) 1, FilePtr);
             if (MAPIC)
-                OsdWrite (MAPIC, (size_t) MAPIC->header.Length, (size_t) 1, FilePtr);
+                OsdWrite (MAPIC, (ACPI_SIZE) MAPIC->header.Length, (ACPI_SIZE) 1, FilePtr);
             if (PSDT)
-                OsdWrite (PSDT, (size_t) PSDT->Length, (size_t) 1, FilePtr);
+                OsdWrite (PSDT, (ACPI_SIZE) PSDT->Length, (ACPI_SIZE) 1, FilePtr);
             if (SSDT)
-                OsdWrite (SSDT, (size_t) SSDT->Length, (size_t) 1, FilePtr);
+                OsdWrite (SSDT, (ACPI_SIZE) SSDT->Length, (ACPI_SIZE) 1, FilePtr);
             if (SBDT)
-                OsdWrite (SBDT, (size_t) SBDT->Length, (size_t) 1, FilePtr);
+                OsdWrite (SBDT, (ACPI_SIZE) SBDT->Length, (ACPI_SIZE) 1, FilePtr);
             
             OsdClose (FilePtr);
         }
@@ -757,7 +756,7 @@ InitAcpiRegisters (void)
             {
                 /* GPE0 specified in FACP  */
 
-                Gpe0EnableRegisterSave = LocalAllocate ((size_t) (FACP->Gpe0BlkLen / 2));
+                Gpe0EnableRegisterSave = LocalAllocate ((ACPI_SIZE) (FACP->Gpe0BlkLen / 2));
                 if (!Gpe0EnableRegisterSave)
                 {
                     FUNCTION_EXIT;
@@ -784,7 +783,7 @@ InitAcpiRegisters (void)
             {
                 /* GPE1 defined    */
 
-                Gpe1EnableRegisterSave = LocalAllocate ((size_t) (FACP->Gpe1BlkLen / 2));
+                Gpe1EnableRegisterSave = LocalAllocate ((ACPI_SIZE) (FACP->Gpe1BlkLen / 2));
                 if (!Gpe1EnableRegisterSave)
                 {
                     return AE_NO_MEMORY;
