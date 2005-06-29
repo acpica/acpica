@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.3 $
+ *       $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -116,6 +116,7 @@
 
 #ifndef __ACSTRUCT_H__
 #define __ACSTRUCT_H__
+
 
 
 /*****************************************************************************
@@ -238,11 +239,12 @@ typedef struct acpi_walk_info
 
 typedef struct acpi_get_devices_info
 {
-    ACPI_WALK_CALLBACK      UserFunction;
+    WALK_CALLBACK           UserFunction;
     void                    *Context;
     NATIVE_CHAR             *Hid;
 
 } ACPI_GET_DEVICES_INFO;
+
 
 
 #endif
