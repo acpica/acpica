@@ -296,7 +296,7 @@ AmlDumpObjStackEntry (
 
     DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: %p ", EntryDesc));
 
-    switch (EntryDesc->Type)
+    switch (EntryDesc->Common.Type)
     {
     case TYPE_Lvalue:
 
@@ -347,7 +347,7 @@ AmlDumpObjStackEntry (
             DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Arg%d",
                         EntryDesc->Lvalue.OpCode - AML_Arg0));
 
-            if (TYPE_Number == EntryDesc->Type)
+            if (TYPE_Number == EntryDesc->Common.Type)
             {
                 /* Value is a Number */
             
@@ -365,7 +365,7 @@ AmlDumpObjStackEntry (
             DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Local%d",
                         EntryDesc->Lvalue.OpCode - AML_Local0));
 
-            if (TYPE_Number == EntryDesc->Type)
+            if (TYPE_Number == EntryDesc->Common.Type)
             {
 
                 /* Value is a Number */
@@ -541,10 +541,12 @@ AmlDumpObjStackEntry (
         {
             DEBUG_PRINT (ACPI_INFO, ("*NULL* \n"));
         }
-        else if (TYPE_Buffer != EntryDesc->FieldUnit.Container->Type)
+
+        else if (TYPE_Buffer != EntryDesc->FieldUnit.Container->Common.Type)
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("*not a Buffer* \n"));
         }
+
         else
         {
             if (EntryDesc->FieldUnit.Sequence
@@ -605,15 +607,15 @@ AmlDumpObjStackEntry (
 
 
     default:
-        /*  unknown EntryDesc->Type value    */
+        /*  unknown EntryDesc->Common.Type value    */
 
         REPORT_ERROR ("AmlDumpObjStackEntry: Unknown Type");
         
-        if (AML_UNASSIGNED != Gbl_Aml[(INT32) EntryDesc->Type])
+        if (AML_UNASSIGNED != Gbl_Aml[(INT32) EntryDesc->Common.Type])
         {
             DEBUG_PRINT_RAW (ACPI_ERROR,
                           ("AmlDumpObjStackEntry: Unhandled opcode (AML %s) \n", 
-                          Gbl_ShortOps[Gbl_Aml[(INT32) EntryDesc->Type]]));
+                          Gbl_ShortOps[Gbl_Aml[(INT32) EntryDesc->Common.Type]]));
         }
 
 
@@ -747,7 +749,7 @@ AmlDumpObjectDescriptor (
         return;
     }	
 	
-	switch (Object->Type)
+	switch (Object->Common.Type)
 	{
 	case TYPE_Number:
 
@@ -943,13 +945,13 @@ AmlDumpObjectDescriptor (
 	case TYPE_DefAny:
 
 		OsdPrintf ("*** Structure display not implemented for type %d! ***\n",
-        	Object->Type);
+        	Object->Common.Type);
 		break;
 
 
 	default:
 
-		OsdPrintf ("*** Cannot display unknown type %d! ***\n", Object->Type);
+		OsdPrintf ("*** Cannot display unknown type %d! ***\n", Object->Common.Type);
 		break;
 	}
 

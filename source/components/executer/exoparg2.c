@@ -205,7 +205,7 @@ AmlExecDyadic1 (
             default:
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecDyadic1/NotifyOp: unexpected notify object type %d\n",
-                        ObjDesc->Type));
+                        ObjDesc->Common.Type));
                 
                 Status = AE_AML_ERROR;
             }
@@ -422,17 +422,17 @@ AmlExecDyadic2R (
     /* DefConcat   :=  ConcatOp    Data1   Data2   Result  */
 
     case AML_ConcatOp:
-        if (ObjDesc2->Type != ObjDesc->Type)
+        if (ObjDesc2->Common.Type != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2R/ConcatOp: operand type mismatch %d %d\n",
-                    ObjDesc->Type, ObjDesc2->Type));
+                    ObjDesc->Common.Type, ObjDesc2->Common.Type));
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
         /* Both operands are now known to be the same */
         
-        if (TYPE_String == ObjDesc->Type)
+        if (TYPE_String == ObjDesc->Common.Type)
         {
             /* Operand1 is string  */
 
@@ -611,11 +611,11 @@ AmlExecDyadic2S (
 
     case AML_AcquireOp:
 
-        if (TYPE_Mutex != ObjDesc->Type)
+        if (TYPE_Mutex != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2S/AcquireOp: Needed Mutex, found %d\n",
-                    ResDesc->Type));
+                    ResDesc->Common.Type));
             Status = AE_AML_ERROR;
         }
         else
@@ -629,11 +629,11 @@ AmlExecDyadic2S (
 
     case AML_WaitOp:
 
-        if (TYPE_Event != ObjDesc->Type)
+        if (TYPE_Event != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2S/WaitOp: Needed Event, found %d\n",
-                    ResDesc->Type));
+                    ResDesc->Common.Type));
             Status = AE_AML_ERROR;
         }
         else

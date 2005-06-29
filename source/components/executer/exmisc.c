@@ -302,7 +302,7 @@ AmlExecCreateField (
      * Setup field according to the object type
      */
 
-    switch (SrcDesc->Type)
+    switch (SrcDesc->Common.Type)
     {
     
     /* SourceBuff  :=  TermArg=>Buffer */
@@ -347,7 +347,7 @@ AmlExecCreateField (
 
     default:
 
-        TypeFound = SrcDesc->Type;
+        TypeFound = SrcDesc->Common.Type;
 
         if ((TypeFound > (UINT8) TYPE_Lvalue) ||
             (Gbl_BadType == Gbl_NsTypeNames[TypeFound]))
@@ -577,7 +577,7 @@ AmlExecIndex (void)
              * TBD - before this pointer is used, the results may be surprising.
              */
             PkgDesc->Lvalue.Object  = (void *) &PkgDesc->Package.Elements[IdxDesc->Number.Value];
-            PkgDesc->Type           = (UINT8) TYPE_Lvalue;
+            PkgDesc->Common.Type    = (UINT8) TYPE_Lvalue;
             PkgDesc->Lvalue.OpCode  = AML_IndexOp;
 
             Status = AmlExecStore (PkgDesc, ResDesc);
@@ -693,7 +693,7 @@ AmlExecMatch (void)
          * XXX - if an element is a Name, should we examine its value?
          */
         if (!PkgDesc->Package.Elements[Index] ||
-            TYPE_Number != PkgDesc->Package.Elements[Index]->Type)
+            TYPE_Number != PkgDesc->Package.Elements[Index]->Common.Type)
         {
             continue;
         }
@@ -837,7 +837,7 @@ AmlExecMatch (void)
         break;
     }
 
-    PkgDesc->Type = (UINT8) TYPE_Number;
+    PkgDesc->Common.Type  = (UINT8) TYPE_Number;
     PkgDesc->Number.Value = MatchValue;
 
     /* Free the operands */

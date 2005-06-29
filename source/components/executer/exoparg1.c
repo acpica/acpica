@@ -211,11 +211,11 @@ AmlExecMonadic1 (
 
     case AML_ReleaseOp:
 
-        if (TYPE_Mutex != ObjDesc->Type)
+        if (TYPE_Mutex != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
-                    ObjDesc->Type));
+                    ObjDesc->Common.Type));
            return_ACPI_STATUS (AE_AML_ERROR);
         }
 
@@ -227,10 +227,10 @@ AmlExecMonadic1 (
 
     case AML_ResetOp:
 
-        if (TYPE_Event != ObjDesc->Type)
+        if (TYPE_Event != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->Type));
+                    "AmlExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->Common.Type));
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
@@ -242,10 +242,10 @@ AmlExecMonadic1 (
     
     case AML_SignalOp:
 
-        if (TYPE_Event != ObjDesc->Type)
+        if (TYPE_Event != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->Type));
+                    "AmlExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->Common.Type));
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
@@ -579,7 +579,7 @@ AmlExecMonadic2 (
         
         /* This case uses Status to hold the type encoding */
         
-        if (TYPE_Lvalue == ObjDesc->Type)
+        if (TYPE_Lvalue == ObjDesc->Common.Type)
         {
             /* 
              * Not a Name -- an indirect name pointer would have
@@ -655,7 +655,7 @@ AmlExecMonadic2 (
             AmlObjStackSetValue (STACK_TOP, ObjDesc);
         }
         
-        ObjDesc->Type = (UINT8) TYPE_Number;
+        ObjDesc->Common.Type = (UINT8) TYPE_Number;
         ObjDesc->Number.Value = (UINT32) Status;
         break;
 
@@ -664,34 +664,34 @@ AmlExecMonadic2 (
 
     case AML_SizeOfOp:
 
-        switch (ObjDesc->Type)
+        switch (ObjDesc->Common.Type)
         {
 
         case TYPE_Buffer:
 
             ObjDesc->Number.Value = ObjDesc->Buffer.Length;
-            ObjDesc->Type = (UINT8) TYPE_Number;
+            ObjDesc->Common.Type = (UINT8) TYPE_Number;
             break;
 
 
         case TYPE_String:
 
             ObjDesc->Number.Value = ObjDesc->String.Length;
-            ObjDesc->Type = (UINT8) TYPE_Number;
+            ObjDesc->Common.Type = (UINT8) TYPE_Number;
             break;
 
 
         case TYPE_Package:
 
             ObjDesc->Number.Value = ObjDesc->Package.Count;
-            ObjDesc->Type = (UINT8) TYPE_Number;
+            ObjDesc->Common.Type = (UINT8) TYPE_Number;
             break;
 
 
         default:
 
            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->Type));
+                    "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->Common.Type));
             return_ACPI_STATUS (AE_AML_ERROR);
 
         }
