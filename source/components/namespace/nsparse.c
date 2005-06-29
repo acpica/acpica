@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsparse - namespace interface to AML parser
- *              $Revision: 1.2 $
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -246,5 +246,6 @@ AcpiNsParseTable (
 
     return_ACPI_STATUS (Status);
 }
+
 
 
