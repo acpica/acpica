@@ -490,6 +490,11 @@ PsGetCurrentWalkState (
 
     DEBUG_PRINT (TRACE_PARSE, ("PsGetCurrentWalkState, =%p\n", WalkList->WalkState));
 
+    if (!WalkList)
+    {
+        return NULL;
+    }
+
     return WalkList->WalkState;
 }
 
@@ -615,6 +620,7 @@ PsPopWalkState (
 ACPI_WALK_STATE *
 PsCreateWalkState (
     ACPI_GENERIC_OP         *Origin,
+    ACPI_OBJECT_INTERNAL    *MthDesc,
     ACPI_WALK_LIST          *WalkList)
 {
     ACPI_WALK_STATE         *WalkState;
@@ -630,6 +636,7 @@ PsCreateWalkState (
     }
 
     WalkState->Origin           = Origin;
+    WalkState->MethodDesc       = MthDesc;
 
     /* Init the method args/local */
 
