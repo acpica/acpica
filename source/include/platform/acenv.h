@@ -164,19 +164,19 @@
  * 2) Interrupts are turned off during ACPI register setup
  */
 
-#ifdef __GNUC__
-
-#define causeinterrupt(level)   /* asm ("int %0", :level) */
-#define BREAKPOINT3             /* asm ("int 0x03") */ 
-#define disable()               asm("cli")
-#define enable()                asm("sti")
-
-#else   /* MS VC */
+#ifdef WIN32   /* MS VC */
 
 #define causeinterrupt(level)   __asm {int level}
 #define BREAKPOINT3             __asm {int 3}
 #define disable()               __asm {cli}
 #define enable()                __asm {sti}
+
+#else
+
+#define causeinterrupt(level)
+#define BREAKPOINT3
+#define disable()
+#define enable()
 
 #endif
 
