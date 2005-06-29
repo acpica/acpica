@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.87 $
+ *       $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -280,13 +280,13 @@
  */
 
 #define ACPI_STRSTR(s1,s2)      strstr((s1), (s2))
-#define ACPI_STRUPR(s)          AcpiUtStrupr  ((s))
+#define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
 #define ACPI_STRLEN(s)          (UINT32) strlen((s))
-#define ACPI_STRCPY(d,s)        strcpy((d), (s))
-#define ACPI_STRNCPY(d,s,n)     strncpy((d), (s), (NATIVE_UINT)(n))
+#define ACPI_STRCPY(d,s)        (void) strcpy((d), (s))
+#define ACPI_STRNCPY(d,s,n)     (void) strncpy((d), (s), (NATIVE_UINT)(n))
 #define ACPI_STRNCMP(d,s,n)     strncmp((d), (s), (NATIVE_UINT)(n))
 #define ACPI_STRCMP(d,s)        strcmp((d), (s))
-#define ACPI_STRCAT(d,s)        strcat((d), (s))
+#define ACPI_STRCAT(d,s)        (void) strcat((d), (s))
 #define ACPI_STRNCAT(d,s,n)     strncat((d), (s), (NATIVE_UINT)(n))
 #define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (NATIVE_UINT)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (NATIVE_UINT)(n))
@@ -336,13 +336,13 @@ typedef char *va_list;
 
 
 #define ACPI_STRSTR(s1,s2)      AcpiUtStrstr  ((s1), (s2))
-#define ACPI_STRUPR(s)          AcpiUtStrupr  ((s))
+#define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
 #define ACPI_STRLEN(s)          AcpiUtStrlen  ((s))
-#define ACPI_STRCPY(d,s)        AcpiUtStrcpy  ((d), (s))
-#define ACPI_STRNCPY(d,s,n)     AcpiUtStrncpy ((d), (s), (NATIVE_UINT)(n))
+#define ACPI_STRCPY(d,s)        (void) AcpiUtStrcpy  ((d), (s))
+#define ACPI_STRNCPY(d,s,n)     (void) AcpiUtStrncpy ((d), (s), (NATIVE_UINT)(n))
 #define ACPI_STRNCMP(d,s,n)     AcpiUtStrncmp ((d), (s), (NATIVE_UINT)(n))
 #define ACPI_STRCMP(d,s)        AcpiUtStrcmp  ((d), (s))
-#define ACPI_STRCAT(d,s)        AcpiUtStrcat  ((d), (s))
+#define ACPI_STRCAT(d,s)        (void) AcpiUtStrcat  ((d), (s))
 #define ACPI_STRNCAT(d,s,n)     AcpiUtStrncat ((d), (s), (NATIVE_UINT)(n))
 #define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s), (NATIVE_UINT)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy  ((d), (s), (NATIVE_UINT)(n))
