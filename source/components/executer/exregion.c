@@ -122,7 +122,6 @@
 #include <namesp.h>
 #include <hardware.h>
 #include <events.h>
-#include <methods.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -148,103 +147,128 @@
 ACPI_STATUS
 AmlSystemMemorySpaceHandler (
     UINT32                  Function,
-    UINT32                  Address,
+    UINT32                  Address,        /* TBD: THIS MUST BE A POINTER for 64-bit support */
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *Context)
 {
     ACPI_STATUS             Status = AE_OK;
-    void                    *PhysicalAddrPtr = NULL;
+    void                    *LogicalAddrPtr = NULL;
+    MEM_HANDLER_CONTEXT     *MemInfo = Context;
+    UINT32                  Length;
 
 
     FUNCTION_TRACE ("AmlSystemMemorySpaceHandler");
 
 
-    /* Decode the function parameter */
+    /* Validate and translate the bit width */
+
+    switch (BitWidth)
+    {
+    case 8:
+        Length = 1;
+        break;
+
+    case 16:
+        Length = 2;
+        break;
+
+    case 32:
+        Length = 4;
+        break;
+
+    default:
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSystemMemorySpaceHandler: Invalid SystemMemory width %d\n", BitWidth));
+        return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
+        break;
+    }
+
+
+
+    /* Does the request fit into the cached memory mapping? */
+
+    if (((char *) Address < MemInfo->MappedPhysicalAddress) ||                                       /* Address is below the current mapping */
+        (((char *) Address + Length) > (MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))    /* Goes beyond the current mapping */
+    {
+        /*
+         * The request cannot be resolved by the current memory mapping;
+         * Delete the existing mapping and create a new one.  
+         */
+
+        if (MemInfo->MappedLength)
+        {
+            /* Valid mapping, delete it */
+
+            OsdUnMapMemory (MemInfo->MappedLogicalAddress, MemInfo->MappedLength);
+        }
+
+        MemInfo->MappedLength = 0;  /* In case of failure below */
+
+        /* Create a new mapping starting at the address given */
+
+        Status = OsdMapMemory ((void *) Address, SYSMEM_REGION_WINDOW_SIZE, &MemInfo->MappedLogicalAddress);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        MemInfo->MappedPhysicalAddress = (char *) Address;
+        MemInfo->MappedLength = SYSMEM_REGION_WINDOW_SIZE;
+    }
+
+
+    /* Generate a logical pointer corresponding to the address we want to access */
+
+    LogicalAddrPtr = MemInfo->MappedLogicalAddress + ((char *) Address - MemInfo->MappedPhysicalAddress);
+
+    /* Perform the memory read or write */
 
     switch (Function)
     {
 
     case ADDRESS_SPACE_READ:
 
-        /* 
-         * TBD: This may be too high an overhead to do every time.
-         * Probably should have a mapping cached.
-         */
-
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Read(%d width) Address:0x%08x\n", BitWidth, Address));
-
-        Status = OsdMapMemory ((void *) Address, 4, &PhysicalAddrPtr);
-
-		if (ACPI_FAILURE (Status))
-		{
-		    return_ACPI_STATUS (Status);
-		}
+            ("Read (%d width) Address:0x%X\n", BitWidth, Address));
 
         switch (BitWidth)
         {
-        /* System memory width */
-
         case 8:
-            *Value = (UINT32)* (UINT8 *) PhysicalAddrPtr;
+            *Value = (UINT32)* (UINT8 *) LogicalAddrPtr;
             break;
 
         case 16:
-            *Value = (UINT32)* (UINT16 *) PhysicalAddrPtr;
+            *Value = (UINT32)* (UINT16 *) LogicalAddrPtr;
             break;
 
         case 32:
-            *Value = * (UINT32 *) PhysicalAddrPtr;
+            *Value = * (UINT32 *) LogicalAddrPtr;
             break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlSystemMemorySpaceHandler: Invalid SystemMemory width %d\n", BitWidth));
-            Status = AE_AML_OPERAND_VALUE;
         }
 
-        OsdUnMapMemory (PhysicalAddrPtr, 4);
         break;
 
 
     case ADDRESS_SPACE_WRITE:
 
-
-        /* TBD: This may be too high an overhead to do every time.
-         * Probably should have a mapping cached.
-         */
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Write(%d width) Address:0x%08x Value 0x%08x\n", BitWidth, Address, *Value));
-
-        Status = OsdMapMemory ((void *) Address, 4, &PhysicalAddrPtr);
-                
-		if (ACPI_FAILURE (Status))
-		{
-		    return_ACPI_STATUS (Status);
-		}
+            ("Write (%d width) Address:0x%p Value 0x%X\n", BitWidth, Address, *Value));
 
         switch (BitWidth)
         {
         case 8:
-            *(UINT8 *) PhysicalAddrPtr = (UINT8) *Value;
+            *(UINT8 *) LogicalAddrPtr = (UINT8) *Value;
             break;
 
         case 16:
-            *(UINT16 *) PhysicalAddrPtr = (UINT16) *Value;
+            *(UINT16 *) LogicalAddrPtr = (UINT16) *Value;
             break;
 
         case 32:
-            *(UINT32 *) PhysicalAddrPtr = *Value;
+            *(UINT32 *) LogicalAddrPtr = *Value;
             break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlSystemMemorySpaceHandler: Invalid SystemMemory width %d\n", BitWidth));
-            Status = AE_AML_OPERAND_VALUE;
         }
 
-        OsdUnMapMemory (PhysicalAddrPtr, 4);
         break;
 
 
