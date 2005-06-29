@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.206 $
+ *       $Revision: 1.207 $
  *
  *****************************************************************************/
 
@@ -682,7 +682,7 @@ typedef union AcpiObj
         UINT32                      ResourceOrder;
     } PowerResource;
 
-} ACPI_OBJECT, *PACPI_OBJECT;
+} ACPI_OBJECT;
 
 
 /*
@@ -694,7 +694,7 @@ typedef struct AcpiObjList
     UINT32                      Count;
     ACPI_OBJECT                 *Pointer;
 
-} ACPI_OBJECT_LIST, *PACPI_OBJECT_LIST;
+} ACPI_OBJECT_LIST;
 
 
 /*
