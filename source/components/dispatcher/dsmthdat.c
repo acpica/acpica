@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  ******************************************************************************/
 
@@ -540,7 +540,24 @@ AcpiDsMethodDataGetValue (
          * was referenced by the method (via the ASL)
          * before it was initialized.  Either case is an error.
          */
-        switch (Opcode)
+
+        /* If slack enabled, init the LocalX/ArgX to an Integer of value zero */
+
+        if (AcpiGbl_EnableInterpreterSlack)
+        {
+            Object = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+            if (!Object)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            Object->Integer.Value = 0;
+            Node->Object = Object;
+        }
+
+        /* Otherwise, return the error */
+
+        else switch (Opcode)
         {
         case AML_ARG_OP:
 
