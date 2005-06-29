@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -907,7 +907,7 @@ AcpiExCommonBufferSetup (
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "BufferBytes %X, ActualBytes %X, Datums %X, ByteGran %X\n",
         ByteFieldLength, ActualByteFieldLength,
-        DatumCount, ObjDesc->CommonField.AccessByteWidth));
+        *DatumCount, ObjDesc->CommonField.AccessByteWidth));
 
     return_ACPI_STATUS (AE_OK);
 }
