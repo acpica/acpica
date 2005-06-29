@@ -126,102 +126,6 @@
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("isdump");
 
-/* TBD: Move this routine to common code */
-
-/*****************************************************************************
- * 
- * FUNCTION:    DumpBuffer
- *
- * PARAMETERS:  Buffer              - Buffer to dump
- *              Count               - Amount to dump, in bytes
- *              Flags               - Options (not implemented)
- *              ComponentID         - Caller's component ID
- *
- * RETURN:      None
- *
- * DESCRIPTION: Generic dump buffer in both hex and ascii.
- *
- ****************************************************************************/
-
-void
-DumpBuffer (
-    char                    *Buffer, 
-    UINT32                  Count, 
-    INT32                   Flags, 
-    INT32                   ComponentId)
-{
-    UINT32                  i = 0;
-    UINT32                  j;
-    UINT8                   BufChar;
-
-
-    /* Only dump the buffer if tracing is enabled */
-
-    if (!((TRACE_TABLES & DebugLevel) && (ComponentId & DebugLayer)))
-    {
-        return;
-    }
-
-
-    /*
-     * Nasty little dump buffer routine!
-     */
-    while (i < Count)
-    {
-        /* Print current offset */
-
-        OsdPrintf ("%05X    ", i);
-
-
-        /* Print 16 hex chars */
-
-        for (j = 0; j < 16; j++)
-        {
-            if (i + j >= Count)
-                goto cleanup;
-
-
-            /* Make sure that the char doesn't get sign-extended! */
-
-            BufChar = Buffer[i + j];
-            OsdPrintf ("%02X ", BufChar);
-        }
-
-        /* 
-         * Print the ASCII equivalent characters
-         * But watch out for the bad unprintable ones...
-         */
-
-        for (j = 0; j < 16; j++)
-        {
-            if (i + j >= Count)
-                goto cleanup;
-
-            BufChar = Buffer[i + j];
-            if ((BufChar > 0x1F && BufChar < 0x2E) ||
-                (BufChar > 0x2F && BufChar < 0x61) ||
-                (BufChar > 0x60 && BufChar < 0x7F))
-
-                OsdPrintf ("%c", BufChar);
-            else
-                OsdPrintf (".");
-                
-        }
-
-        /* Done with that line. */
-
-        OsdPrintf ("\n");
-        i += 16;
-    }
-
-    return;
-
-cleanup:
-    OsdPrintf ("\n");
-    return;
-
-}
-
 
 /*
  * The following routines are used for debug output only 
@@ -249,7 +153,6 @@ void
 AmlShowHexValue (
     INT32                   ByteCount, 
     UINT8                   *AmlPtr, 
-    OPERATING_MODE          InterpreterMode, 
     INT32                   LeadSpace)
 {
     INT32                   Value;                  /*  Value retrieved from AML stream */
@@ -336,7 +239,7 @@ AmlDumpOperand (
     ACPI_OBJECT_INTERNAL    *EntryDesc)
 {
     UINT8                   *Buf = NULL;
-    UINT16                  Length;
+    UINT32                  Length;
     UINT32                  i;
 
 
@@ -367,7 +270,7 @@ AmlDumpOperand (
     if (!VALID_DESCRIPTOR_TYPE (EntryDesc, DESC_TYPE_ACPI_OBJ))
     {
         DEBUG_PRINT (ACPI_INFO, ("AmlDumpOperand: %p Not a local object \n", EntryDesc));
-        DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
+        DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT_INTERNAL));
         return AE_OK;
     }
 
@@ -720,9 +623,9 @@ AmlDumpOperand (
         /* TBD:  Change to use dump object routine !! */
         /* TBD:  What is all of this?? */
 
-        DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
-        DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
-        DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
+        DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT_INTERNAL));
+        DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT_INTERNAL));
+        DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT_INTERNAL));
         break;
 
     }
