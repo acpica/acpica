@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.68 $
+ *              $Revision: 1.70 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -131,10 +131,10 @@
  * FUNCTION:    AcpiNsBuildExternalPath
  *
  * PARAMETERS:  Node            - NS node whose pathname is needed
- *              Size            - Size of the pathname 
+ *              Size            - Size of the pathname
  *              *NameBuffer     - Where to return the pathname
  *
- * RETURN:      Places the pathname into the NameBuffer, in external format 
+ * RETURN:      Places the pathname into the NameBuffer, in external format
  *              (name segments separated by path separators)
  *
  * DESCRIPTION: Generate a full pathaname
@@ -190,8 +190,8 @@ AcpiNsBuildExternalPath (
 
     if (Index != 0)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
-            "Could not construct pathname; index=%X, size=%X, Path=%s\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Could not construct pathname; index=%X, size=%X, Path=%s\n",
             Index, Size, &NameBuffer[Size]));
     }
 
@@ -292,40 +292,26 @@ AcpiNsGetPathnameLength (
  *
  * PARAMETERS:  TargetHandle            - Handle of named object whose name is
  *                                        to be found
- *              BufSize                 - Size of the buffer provided
- *              UserBuffer              - Where the pathname is returned
+ *              Buffer                  - Where the pathname is returned
  *
  * RETURN:      Status, Buffer is filled with pathname if status is AE_OK
  *
  * DESCRIPTION: Build and return a full namespace pathname
- *
- * MUTEX:       Locks Namespace
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsHandleToPathname (
     ACPI_HANDLE             TargetHandle,
-    ACPI_SIZE               *BufSize,
-    NATIVE_CHAR             *UserBuffer)
+    ACPI_BUFFER             *Buffer)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_SIZE               UserBufSize;
-    ACPI_SIZE               Size;
+    ACPI_SIZE               RequiredSize;
 
 
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
-
-    if (!AcpiGbl_RootNode)
-    {
-        /*
-         * If the name space has not been initialized,
-         * this function should not have been called.
-         */
-        return_ACPI_STATUS (AE_NO_NAMESPACE);
-    }
 
     Node = AcpiNsMapHandleToNode (TargetHandle);
     if (!Node)
@@ -333,32 +319,24 @@ AcpiNsHandleToPathname (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Set return length to the required path length */
+    /* Determine size required for the caller buffer */
 
-    Size = AcpiNsGetPathnameLength (Node);
+    RequiredSize = AcpiNsGetPathnameLength (Node);
 
-    /* Always return the required/used size */
+    /* Validate caller buffer */
 
-    UserBufSize = *BufSize;
-    *BufSize = Size;
-
-    /* Check if the user buffer is sufficiently large */
-
-    if (Size > UserBufSize)
+    AcpiUtValidateBufferSize (Buffer, RequiredSize);
+    if (ACPI_FAILURE (Status))
     {
-        Status = AE_BUFFER_OVERFLOW;
-        goto Exit;
+        return_ACPI_STATUS (Status);
     }
 
-    /* Build the path in the user buffer */
+    /* Build the path in the caller buffer */
 
-    AcpiNsBuildExternalPath (Node, Size, UserBuffer);
+    AcpiNsBuildExternalPath (Node, RequiredSize, Buffer->Pointer);
 
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", UserBuffer, Size));
-
-Exit:
-    return_ACPI_STATUS (Status);
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", Buffer->Pointer, RequiredSize));
+    return_ACPI_STATUS (AE_OK);
 }
 
 
