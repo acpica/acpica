@@ -255,7 +255,7 @@ AcpiDbOpenDebugFile (
 ACPI_STATUS
 AcpiDbLoadTable(
     FILE                    *fp,
-    INT8                    **TablePtr,
+    ACPI_TABLE_HEADER       **TablePtr,
     UINT32                  *TableLength)
 {
     ACPI_TABLE_HEADER       TableHeader;
@@ -282,7 +282,7 @@ AcpiDbLoadTable(
 
     /* Allocate a buffer for the table */
 
-    *TablePtr = (INT8 *) malloc ((size_t) *TableLength);
+    *TablePtr = (ACPI_TABLE_HEADER *) malloc ((size_t) *TableLength);
     if (!*TablePtr)
     {
         AcpiOsPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
@@ -290,7 +290,7 @@ AcpiDbLoadTable(
     }
 
 
-    AmlPtr      = *TablePtr + sizeof (TableHeader);
+    AmlPtr      = (INT8 *) *TablePtr + sizeof (TableHeader);
     AmlLength   = *TableLength - sizeof (TableHeader);
 
     /* Copy the header to the buffer */
@@ -333,7 +333,7 @@ AcpiDbLoadAcpiTable (
 #ifdef ACPI_APPLICATION
     FILE                    *fp;
     ACPI_STATUS             Status;
-    INT8                    *TablePtr;
+    ACPI_TABLE_HEADER       *TablePtr;
     UINT32                  TableLength;
     ACPI_TABLE_DESC         TableInfo;
 
@@ -358,7 +358,7 @@ AcpiDbLoadAcpiTable (
 
     /* Attempt to recognize and install the table */
 
-    TableInfo.Pointer = (ACPI_TABLE_HEADER *) TablePtr;                       /* TBD: [Restructure] Fix redundant parameter */
+    TableInfo.Pointer = TablePtr;
     Status = AcpiTbInstallTable (TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
