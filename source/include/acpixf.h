@@ -406,6 +406,11 @@ ACPI_STATUS
 AcpiGetFirmwareWakingVector (
     ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
 
+
+ACPI_STATUS
+AcpiEnterSleepStatePrep (
+    UINT8 SleepState);
+
 ACPI_STATUS
 AcpiEnterSleepState (
     UINT8 SleepState);
