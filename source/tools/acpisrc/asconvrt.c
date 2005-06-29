@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,39 @@
 /* Opening signature of the Intel legal header */
 
 char        *HeaderBegin = "/******************************************************************************\n *\n * 1. Copyright Notice";
+
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsMatchExactWord
+ *
+ * DESCRIPTION: Check previous and next characters for whitespace
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+AsMatchExactWord (
+    char                    *Word,
+    UINT32                  WordLength)
+{
+    char                    NextChar;
+    char                    PrevChar;
+
+
+    NextChar = Word[WordLength];
+    PrevChar = * (Word -1);
+
+    if (isalnum (NextChar) ||
+        (NextChar == '_')  ||
+        isalnum (PrevChar) ||
+        (PrevChar == '_'))
+    {
+        return (FALSE);
+    }
+
+    return (TRUE);
+}
 
 
 /******************************************************************************
@@ -451,8 +484,6 @@ AsReplaceString (
     int                     TargetLength;
     int                     ReplacementLength;
     int                     ReplaceCount = 0;
-    char                    NextChar;
-    char                    PrevChar;
 
 
     TargetLength = strlen (Target);
@@ -467,6 +498,11 @@ AsReplaceString (
         /* Find the target string */
 
         SubString1 = strstr (SubBuffer, Target);
+        if (!SubString1)
+        {
+            return ReplaceCount;
+        }
+
 
         /*
          * Check for translation escape string -- means to ignore
@@ -495,17 +531,11 @@ AsReplaceString (
 
         /* Do the actual replace if the target was found */
 
-        else if (SubString1)
+        else
         {
             if (Type == REPLACE_WHOLE_WORD)
             {
-                NextChar = SubString1[TargetLength];
-                PrevChar = SubString1[-1];
-
-                if (isalnum (NextChar) ||
-                    (NextChar == '_')  ||
-                    isalnum (PrevChar) ||
-                    (PrevChar == '_'))
+                if (!AsMatchExactWord (SubString1, TargetLength))
                 {
                     SubBuffer = SubString1 + 1;
                     continue;
@@ -888,13 +918,16 @@ AsBracesOnSameLine (
 void
 AsRemoveStatement (
     char                    *Buffer,
-    char                    *Keyword)
+    char                    *Keyword,
+    UINT32                  Type)
 {
     char                    *SubString;
     char                    *SubBuffer;
     int                     StrLength;
+    int                     KeywordLength;
 
 
+    KeywordLength = strlen (Keyword);
     SubBuffer = Buffer;
     SubString = Buffer;
 
@@ -906,6 +939,13 @@ AsRemoveStatement (
         if (SubString)
         {
             SubBuffer = SubString;
+
+            if ((Type == REPLACE_WHOLE_WORD) &&
+                (!AsMatchExactWord (SubString, KeywordLength)))
+            {
+                SubBuffer++;
+                continue;
+            }
 
             /* Find start of this line */
 
@@ -969,8 +1009,10 @@ AsRemoveConditionalCompile (
     char                    *ElsePtr;
     char                    *Comment;
     int                     StrLength;
+    int                     KeywordLength;
 
 
+    KeywordLength = strlen (Keyword);
     SubBuffer = Buffer;
     SubString = Buffer;
 
@@ -998,6 +1040,11 @@ AsRemoveConditionalCompile (
         }
 
         SubString = SubBuffer;
+        if (!AsMatchExactWord (SubString, KeywordLength))
+        {
+            SubString++;
+            continue;
+        }
 
         /* Find start of this line */
 
@@ -1542,10 +1589,12 @@ AsRemoveDebugMacros (
 {
     AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG");
 
-    AsRemoveStatement (Buffer, "DEBUG_PRINT");
-    AsRemoveStatement (Buffer, "DEBUG_EXEC");
-    AsRemoveStatement (Buffer, "FUNCTION_TRACE");
-    AsRemoveStatement (Buffer, "DUMP_");
+    AsRemoveStatement (Buffer, "ACPI_DEBUG_PRINT",  REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "DEBUG_EXEC",        REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "FUNCTION_ENTRY",    REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "PROC_NAME",         REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "FUNCTION_TRACE",    REPLACE_SUBSTRINGS);
+    AsRemoveStatement (Buffer, "DUMP_",             REPLACE_SUBSTRINGS);
 
     AsReplaceString ("return_VOID",         "return", REPLACE_WHOLE_WORD, Buffer);
     AsReplaceString ("return_PTR",          "return", REPLACE_WHOLE_WORD, Buffer);
