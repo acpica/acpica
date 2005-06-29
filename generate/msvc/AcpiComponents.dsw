@@ -139,6 +139,22 @@ Package=<4>
 
 ###############################################################################
 
+Project: "AslCompiler_Linux"=.\AslCompiler_Linux.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi/source/compiler", CRIAAAAA
+    ..\..
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Global:
 
 Package=<5>
