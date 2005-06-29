@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.162 $
+ *              $Revision: 1.163 $
  *
  ******************************************************************************/
 
@@ -460,8 +460,8 @@ AcpiNsLookup (
             /* Pathname is relative to current scope, start there */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "Searching relative to prefix scope [%p]\n",
-                PrefixNode));
+                "Searching relative to prefix scope [%4.4s] (%p)\n",
+                &PrefixNode->Name.Ascii, PrefixNode));
 
             /*
              * Handle multiple Parent Prefixes (carat) by just getting
@@ -688,17 +688,13 @@ AcpiNsLookup (
          * If entry is a type which opens a scope, push the new scope on the
          * scope stack.
          */
-        if (AcpiNsOpensScope (TypeToCheckFor))
+        if (AcpiNsOpensScope (Type))
         {
             Status = AcpiDsScopeStackPush (ThisNode, Type, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "Setting current scope to [%4.4s] (%p)\n",
-                ThisNode->Name.Ascii, ThisNode));
         }
     }
 
