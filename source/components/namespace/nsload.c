@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -329,6 +329,17 @@ AcpiNsLoadTable (
 
     FUNCTION_TRACE ("NsLoadTable");
 
+
+    /* Check if table contains valid AML (must be DSDT, PSDT, SSDT, etc.) */
+
+    if (!(AcpiGbl_AcpiTableData[TableDesc->Type].Flags & ACPI_TABLE_EXECUTABLE))
+    {
+        /* Just ignore this table */
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Check validity of the AML start and length */
 
     if (!TableDesc->AmlStart)
     {
