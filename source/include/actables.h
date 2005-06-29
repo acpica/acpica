@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.37 $
+ *       $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -190,8 +190,7 @@ AcpiTbGetTablePointer (
 
 ACPI_STATUS
 AcpiTbGetAllTables (
-    UINT32                  NumberOfTables,
-    ACPI_TABLE_HEADER       *BufferPtr);
+    UINT32                  NumberOfTables);
 
 
 /*
@@ -200,7 +199,6 @@ AcpiTbGetAllTables (
 
 ACPI_STATUS
 AcpiTbInstallTable (
-    ACPI_TABLE_HEADER       *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
@@ -210,7 +208,6 @@ AcpiTbMatchSignature (
 
 ACPI_STATUS
 AcpiTbRecognizeTable (
-    ACPI_TABLE_HEADER       *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
