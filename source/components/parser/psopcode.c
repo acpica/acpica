@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser opcode information table
- *              $Revision: 1.21 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -124,9 +124,6 @@
         MODULE_NAME         ("psopcode")
 
 
-UINT8 AcpiGbl_AmlShortOpInfoIndex[];
-UINT8 AcpiGbl_AmlLongOpInfoIndex[];
-
 #define _UNK                        0x6B
 /*
  * Reserved ASCII characters.  Do not use any of these for
@@ -142,119 +139,6 @@ UINT8 AcpiGbl_AmlLongOpInfoIndex[];
 #define NUM_EXTENDED_OPCODE         MAX_EXTENDED_OPCODE + 1
 #define MAX_INTERNAL_OPCODE
 #define NUM_INTERNAL_OPCODE         MAX_INTERNAL_OPCODE + 1
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsGetOpcodeInfo
- *
- * PARAMETERS:  Opcode              - The AML opcode
- *
- * RETURN:      A pointer to the info about the opcode.  NULL if the opcode was
- *              not found in the table.
- *
- * DESCRIPTION: Find AML opcode description based on the opcode.
- *              NOTE: This procedure must ALWAYS return a valid pointer!
- *
- ******************************************************************************/
-
-ACPI_OPCODE_INFO *
-AcpiPsGetOpcodeInfo (
-    UINT16                  Opcode)
-{
-    ACPI_OPCODE_INFO        *OpInfo;
-    UINT8                   UpperOpcode;
-    UINT8                   LowerOpcode;
-
-
-    /* Split the 16-bit opcode into separate bytes */
-
-    UpperOpcode = (UINT8) (Opcode >> 8);
-    LowerOpcode = (UINT8) Opcode;
-
-    /* Default is "unknown opcode" */
-
-    OpInfo = &AcpiGbl_AmlOpInfo [_UNK];
-
-
-    /*
-     * Detect normal 8-bit opcode or extended 16-bit opcode
-     */
-
-    switch (UpperOpcode)
-    {
-    case 0:
-
-        /* Simple (8-bit) opcode: 0-255, can't index beyond table  */
-
-        OpInfo = &AcpiGbl_AmlOpInfo [AcpiGbl_AmlShortOpInfoIndex [LowerOpcode]];
-        break;
-
-
-    case AML_EXTOP:
-
-        /* Extended (16-bit, prefix+opcode) opcode */
-
-        if (LowerOpcode <= MAX_EXTENDED_OPCODE)
-        {
-            OpInfo = &AcpiGbl_AmlOpInfo [AcpiGbl_AmlLongOpInfoIndex [LowerOpcode]];
-        }
-        break;
-
-
-    case AML_LNOT_OP:
-
-        /* This case is for the bogus opcodes LNOTEQUAL, LLESSEQUAL, LGREATEREQUAL */
-        /* TBD: [Investigate] remove this case? */
-
-        DEBUG_PRINT (ACPI_ERROR, ("PsGetOpcodeInfo: Bad multi-byte opcode=%X\n",
-                Opcode));
-
-        break;
-
-
-    default:
-
-        DEBUG_PRINT (ACPI_ERROR, ("PsGetOpcodeInfo: Unknown extended opcode=%X\n",
-                Opcode));
-
-        break;
-    }
-
-
-    /* Get the Op info pointer for this opcode */
-
-    return (OpInfo);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsGetOpcodeName
- *
- * PARAMETERS:  Opcode              - The AML opcode
- *
- * RETURN:      A pointer to the name of the opcode (ASCII String)
- *              Note: Never returns NULL.
- *
- * DESCRIPTION: Translate an opcode into a human-readable string
- *
- ******************************************************************************/
-
-NATIVE_CHAR *
-AcpiPsGetOpcodeName (
-    UINT16                  Opcode)
-{
-    ACPI_OPCODE_INFO             *Op;
-
-
-    Op = AcpiPsGetOpcodeInfo (Opcode);
-
-    /* Always guaranteed to return a valid pointer */
-
-    DEBUG_ONLY_MEMBERS (return Op->Name);
-    return ("AE_NOT_CONFIGURED");
-}
 
 
 /*******************************************************************************
@@ -394,7 +278,7 @@ AcpiPsGetOpcodeName (
  * All AML opcodes and the runtime arguments for each.  Used by the AML interpreter  Each list is compressed
  * into a 32-bit number and stored in the master opcode table at the end of this file.
  *
- * (Used by AcpiAmlPrepOperands procedure)
+ * (Used by AcpiAmlPrepOperands procedure and the ASL Compiler)
  */
 
 #define ARGI_ZERO_OP                    ARG_NONE
@@ -425,12 +309,12 @@ AcpiPsGetOpcodeName (
 #define ARGI_ARG5                       ARG_NONE
 #define ARGI_ARG6                       ARG_NONE
 #define ARGI_STORE_OP                   ARGI_LIST2 (ARGI_ANYTYPE,    ARGI_TARGETREF)
-#define ARGI_REF_OF_OP                  ARGI_LIST1 (ARGI_REFERENCE)
+#define ARGI_REF_OF_OP                  ARGI_LIST1 (ARGI_OBJECT_REF)
 #define ARGI_ADD_OP                     ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
-#define ARGI_CONCAT_OP                  ARGI_LIST3 (ARGI_STRING,     ARGI_STRING,        ARGI_TARGETREF)
+#define ARGI_CONCAT_OP                  ARGI_LIST3 (ARGI_COMPUTEDATA,ARGI_COMPUTEDATA,   ARGI_TARGETREF)
 #define ARGI_SUBTRACT_OP                ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
-#define ARGI_INCREMENT_OP               ARGI_LIST1 (ARGI_REFERENCE)
-#define ARGI_DECREMENT_OP               ARGI_LIST1 (ARGI_REFERENCE)
+#define ARGI_INCREMENT_OP               ARGI_LIST1 (ARGI_INTEGER_REF)
+#define ARGI_DECREMENT_OP               ARGI_LIST1 (ARGI_INTEGER_REF)
 #define ARGI_MULTIPLY_OP                ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
 #define ARGI_DIVIDE_OP                  ARGI_LIST4 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF,    ARGI_TARGETREF)
 #define ARGI_SHIFT_LEFT_OP              ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_TARGETREF)
@@ -444,7 +328,7 @@ AcpiPsGetOpcodeName (
 #define ARGI_FIND_SET_LEFT_BIT_OP       ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
 #define ARGI_FIND_SET_RIGHT_BIT_OP      ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
 #define ARGI_DEREF_OF_OP                ARGI_LIST1 (ARGI_REFERENCE)
-#define ARGI_NOTIFY_OP                  ARGI_LIST2 (ARGI_REFERENCE,  ARGI_NUMBER)
+#define ARGI_NOTIFY_OP                  ARGI_LIST2 (ARGI_DEVICE_REF, ARGI_NUMBER)
 #define ARGI_SIZE_OF_OP                 ARGI_LIST1 (ARGI_DATAOBJECT)
 #define ARGI_INDEX_OP                   ARGI_LIST3 (ARGI_COMPLEXOBJ, ARGI_NUMBER,        ARGI_TARGETREF)
 #define ARGI_MATCH_OP                   ARGI_LIST6 (ARGI_PACKAGE,    ARGI_NUMBER,        ARGI_NUMBER,       ARGI_NUMBER,    ARGI_NUMBER,    ARGI_NUMBER)
@@ -469,7 +353,7 @@ AcpiPsGetOpcodeName (
 #define ARGI_ONES_OP                    ARG_NONE
 #define ARGI_MUTEX_OP                   ARGI_INVALID_OPCODE
 #define ARGI_EVENT_OP                   ARGI_INVALID_OPCODE
-#define ARGI_COND_REF_OF_OP             ARGI_LIST2 (ARGI_REFERENCE,  ARGI_TARGETREF)
+#define ARGI_COND_REF_OF_OP             ARGI_LIST2 (ARGI_OBJECT_REF, ARGI_TARGETREF)
 #define ARGI_CREATE_FIELD_OP            ARGI_LIST4 (ARGI_BUFFER,     ARGI_NUMBER,        ARGI_NUMBER,       ARGI_REFERENCE)
 #define ARGI_LOAD_OP                    ARGI_LIST2 (ARGI_REGION,     ARGI_TARGETREF)
 #define ARGI_STALL_OP                   ARGI_LIST1 (ARGI_NUMBER)
@@ -510,12 +394,12 @@ AcpiPsGetOpcodeName (
  */
 
 
-ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
+static ACPI_OPCODE_INFO    AmlOpInfo[] =
 {
 /* Index          Opcode                                   Type                   Class                 Has Arguments?   Name                 Parser Args             Interpreter Args */
 
-/*  00 */   /* AML_ZERO_OP */               OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_CONSTANT|        AML_NO_ARGS,  "ZeroOp",             ARGP_ZERO_OP,           ARGI_ZERO_OP),
-/*  01 */   /* AML_ONE_OP */                OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_CONSTANT|        AML_NO_ARGS,  "OneOp",              ARGP_ONE_OP,            ARGI_ONE_OP),
+/*  00 */   /* AML_ZERO_OP */               OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_CONSTANT|        AML_NO_ARGS,  "Zero",               ARGP_ZERO_OP,           ARGI_ZERO_OP),
+/*  01 */   /* AML_ONE_OP */                OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_CONSTANT|        AML_NO_ARGS,  "One",                ARGP_ONE_OP,            ARGI_ONE_OP),
 /*  02 */   /* AML_ALIAS_OP */              OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS, "Alias",              ARGP_ALIAS_OP,          ARGI_ALIAS_OP),
 /*  03 */   /* AML_NAME_OP */               OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS, "Name",               ARGP_NAME_OP,           ARGI_NAME_OP),
 /*  04 */   /* AML_BYTE_OP */               OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_LITERAL|         AML_NO_ARGS,  "ByteConst",          ARGP_BYTE_OP,           ARGI_BYTE_OP),
@@ -544,7 +428,7 @@ ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
 /*  1B */   /* AML_STORE_OP */              OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_MONADIC2R|       AML_HAS_ARGS, "Store",              ARGP_STORE_OP,          ARGI_STORE_OP),
 /*  1C */   /* AML_REF_OF_OP */             OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_MONADIC2|        AML_HAS_ARGS, "RefOf",              ARGP_REF_OF_OP,         ARGI_REF_OF_OP),
 /*  1D */   /* AML_ADD_OP */                OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_DYADIC2R|        AML_HAS_ARGS, "Add",                ARGP_ADD_OP,            ARGI_ADD_OP),
-/*  1E */   /* AML_CONCAT_OP */             OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_DYADIC2R|        AML_HAS_ARGS, "Concat",             ARGP_CONCAT_OP,         ARGI_CONCAT_OP),
+/*  1E */   /* AML_CONCAT_OP */             OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_DYADIC2R|        AML_HAS_ARGS, "Concatenate",        ARGP_CONCAT_OP,         ARGI_CONCAT_OP),
 /*  1F */   /* AML_SUBTRACT_OP */           OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_DYADIC2R|        AML_HAS_ARGS, "Subtract",           ARGP_SUBTRACT_OP,       ARGI_SUBTRACT_OP),
 /*  20 */   /* AML_INCREMENT_OP */          OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_MONADIC2|        AML_HAS_ARGS, "Increment",          ARGP_INCREMENT_OP,      ARGI_INCREMENT_OP),
 /*  21 */   /* AML_DECREMENT_OP */          OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_MONADIC2|        AML_HAS_ARGS, "Decrement",          ARGP_DECREMENT_OP,      ARGI_DECREMENT_OP),
@@ -583,7 +467,7 @@ ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
 /*  42 */   /* AML_RETURN_OP */             OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_CONTROL|         AML_HAS_ARGS, "Return",             ARGP_RETURN_OP,         ARGI_RETURN_OP),
 /*  43 */   /* AML_BREAK_OP */              OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_CONTROL|         AML_NO_ARGS,  "Break",              ARGP_BREAK_OP,          ARGI_BREAK_OP),
 /*  44 */   /* AML_BREAK_POINT_OP */        OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_CONTROL|         AML_NO_ARGS,  "BreakPoint",         ARGP_BREAK_POINT_OP,    ARGI_BREAK_POINT_OP),
-/*  45 */   /* AML_ONES_OP */               OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_CONSTANT|        AML_NO_ARGS,  "OnesOp",             ARGP_ONES_OP,           ARGI_ONES_OP),
+/*  45 */   /* AML_ONES_OP */               OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_CONSTANT|        AML_NO_ARGS,  "Ones",               ARGP_ONES_OP,           ARGI_ONES_OP),
 
 /* Prefixed opcodes (Two-byte opcodes with a prefix op) */
 
@@ -609,7 +493,7 @@ ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
 /*  59 */   /* AML_DEF_FIELD_OP */          OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS, "Field",              ARGP_DEF_FIELD_OP,      ARGI_DEF_FIELD_OP),
 /*  5A */   /* AML_DEVICE_OP */             OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS, "Device",             ARGP_DEVICE_OP,         ARGI_DEVICE_OP),
 /*  5B */   /* AML_PROCESSOR_OP */          OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS, "Processor",          ARGP_PROCESSOR_OP,      ARGI_PROCESSOR_OP),
-/*  5C */   /* AML_POWER_RES_OP */          OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS, "PowerRes",           ARGP_POWER_RES_OP,      ARGI_POWER_RES_OP),
+/*  5C */   /* AML_POWER_RES_OP */          OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS, "PowerResource",      ARGP_POWER_RES_OP,      ARGI_POWER_RES_OP),
 /*  5D */   /* AML_THERMAL_ZONE_OP */       OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS, "ThermalZone",        ARGP_THERMAL_ZONE_OP,   ARGI_THERMAL_ZONE_OP),
 /*  5E */   /* AML_INDEX_FIELD_OP */        OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS, "IndexField",         ARGP_INDEX_FIELD_OP,    ARGI_INDEX_FIELD_OP),
 /*  5F */   /* AML_BANK_FIELD_OP */         OP_INFO_ENTRY (ACPI_OP_TYPE_OPCODE | OPTYPE_NAMED_OBJECT|    AML_HAS_ARGS, "BankField",          ARGP_BANK_FIELD_OP,     ARGI_BANK_FIELD_OP),
@@ -637,7 +521,7 @@ ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
  * index into the table above
  */
 
-UINT8 AcpiGbl_AmlShortOpInfoIndex[256] =
+static UINT8 AmlShortOpInfoIndex[256] =
 {
 /*              0     1     2     3     4     5     6     7  */
 /* 0x00 */    0x00, 0x01, _UNK, _UNK, _UNK, _UNK, 0x02, _UNK,
@@ -675,7 +559,7 @@ UINT8 AcpiGbl_AmlShortOpInfoIndex[256] =
 };
 
 
-UINT8 AcpiGbl_AmlLongOpInfoIndex[NUM_EXTENDED_OPCODE] =
+static UINT8 AmlLongOpInfoIndex[NUM_EXTENDED_OPCODE] =
 {
 /*              0     1     2     3     4     5     6     7  */
 /* 0x00 */    _UNK, 0x46, 0x47, _UNK, _UNK, _UNK, _UNK, _UNK,
@@ -700,5 +584,121 @@ UINT8 AcpiGbl_AmlLongOpInfoIndex[NUM_EXTENDED_OPCODE] =
 
 /*              0     1     2     3     4     5     6     7  */
 /* 0x00 */
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetOpcodeInfo
+ *
+ * PARAMETERS:  Opcode              - The AML opcode
+ *
+ * RETURN:      A pointer to the info about the opcode.  NULL if the opcode was
+ *              not found in the table.
+ *
+ * DESCRIPTION: Find AML opcode description based on the opcode.
+ *              NOTE: This procedure must ALWAYS return a valid pointer!
+ *
+ ******************************************************************************/
+
+ACPI_OPCODE_INFO *
+AcpiPsGetOpcodeInfo (
+    UINT16                  Opcode)
+{
+    ACPI_OPCODE_INFO        *OpInfo;
+    UINT8                   UpperOpcode;
+    UINT8                   LowerOpcode;
+
+
+    /* Split the 16-bit opcode into separate bytes */
+
+    UpperOpcode = (UINT8) (Opcode >> 8);
+    LowerOpcode = (UINT8) Opcode;
+
+    /* Default is "unknown opcode" */
+
+    OpInfo = &AmlOpInfo [_UNK];
+
+
+    /*
+     * Detect normal 8-bit opcode or extended 16-bit opcode
+     */
+
+    switch (UpperOpcode)
+    {
+    case 0:
+
+        /* Simple (8-bit) opcode: 0-255, can't index beyond table  */
+
+        OpInfo = &AmlOpInfo [AmlShortOpInfoIndex [LowerOpcode]];
+        break;
+
+
+    case AML_EXTOP:
+
+        /* Extended (16-bit, prefix+opcode) opcode */
+
+        if (LowerOpcode <= MAX_EXTENDED_OPCODE)
+        {
+            OpInfo = &AmlOpInfo [AmlLongOpInfoIndex [LowerOpcode]];
+        }
+        break;
+
+
+    case AML_LNOT_OP:
+
+        /* This case is for the bogus opcodes LNOTEQUAL, LLESSEQUAL, LGREATEREQUAL */
+        /* TBD: [Investigate] remove this case? */
+
+        DEBUG_PRINT (ACPI_ERROR, ("PsGetOpcodeInfo: Bad multi-byte opcode=%X\n",
+                Opcode));
+
+        break;
+
+
+    default:
+
+        DEBUG_PRINT (ACPI_ERROR, ("PsGetOpcodeInfo: Unknown extended opcode=%X\n",
+                Opcode));
+
+        break;
+    }
+
+
+    /* Get the Op info pointer for this opcode */
+
+    return (OpInfo);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetOpcodeName
+ *
+ * PARAMETERS:  Opcode              - The AML opcode
+ *
+ * RETURN:      A pointer to the name of the opcode (ASCII String)
+ *              Note: Never returns NULL.
+ *
+ * DESCRIPTION: Translate an opcode into a human-readable string
+ *
+ ******************************************************************************/
+
+NATIVE_CHAR *
+AcpiPsGetOpcodeName (
+    UINT16                  Opcode)
+{
+    ACPI_OPCODE_INFO             *Op;
+
+
+    Op = AcpiPsGetOpcodeInfo (Opcode);
+
+    /* Always guaranteed to return a valid pointer */
+
+#ifdef ACPI_DEBUG
+    return (Op->Name);
+#else
+    return ("AE_NOT_CONFIGURED");
+#endif
+}
 
 
