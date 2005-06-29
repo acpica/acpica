@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.77 $
+ *       $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -199,13 +199,20 @@
 #ifdef _LINUX
 #include "aclinux.h"
 
-#elif _AED_EFI
+#else
+#ifdef _AED_EFI
 #include "acefi.h"
 
-#elif WIN32
+#else
+#ifdef WIN32
 #include "acwin.h"
 
-#elif __FreeBSD__
+#else
+#ifdef WIN64
+#include "acwin64.h"
+
+#else
+#ifdef __FreeBSD__
 #include "acfreebsd.h"
 
 #else
@@ -224,6 +231,10 @@
  */
 #define ACPI_PRINTF_LIKE_FUNC
 
+#endif
+#endif
+#endif
+#endif
 #endif
 
 
