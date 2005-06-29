@@ -831,7 +831,7 @@ AmlExecCreateProcessor (
 
     /* Second arg is the PBlock Address */
 
-    ObjDesc->Processor.PBLKAddress = (UINT32) Arg->Value.Integer;
+    ObjDesc->Processor.PBLKAddress = (ACPI_IO_ADDRESS) Arg->Value.Integer;
 
     /* Move to next arg and check existence */
 
