@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -304,7 +304,25 @@ AcpiDsLoad1BeginOp (
             /* These are acceptable types */
             break;
 
-        default:
+        case ACPI_TYPE_INTEGER:
+        case ACPI_TYPE_STRING:
+        case ACPI_TYPE_BUFFER:
+
+            /* 
+             * These types we will allow, but we will change the type.  This
+             * enables some existing code of the form:
+             *
+             *  Name (DEB, 0)
+             *  Scope (DEB) { ... }
+             */
+
+            ACPI_REPORT_ERROR (("Invalid type (%s) for target of Scope operator [%4.4s], changing type to ANY\n", 
+                AcpiUtGetTypeName (Node->Type), Path));
+
+             Node->Type = ACPI_TYPE_ANY;
+             break;
+
+       default:
 
             /* All other types are an error */
 
