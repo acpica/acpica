@@ -130,29 +130,29 @@
 #define PARSER                      0x00000004
 #define INTERPRETER                 0x00000008
 #define NAMESPACE                   0x00000010
-#define DEVICE_MANAGER              0x00000020
-#define RESOURCE_MANAGER            0x00000040
-#define TABLE_MANAGER               0x00000080
-#define EVENT_HANDLING              0x00000100
-#define HARDWARE                    0x00000200
-#define MISCELLANEOUS               0x00000400
-#define OS_DEPENDENT                0x00000800
-#define OS_APP_INTERFACE            0x00010000
-#define POWER_MANAGER               0x00020000
-#define ACPI_DEVICE_DRIVER          0x00040000
+#define RESOURCE_MANAGER            0x00000020
+#define TABLE_MANAGER               0x00000040
+#define EVENT_HANDLING              0x00000080
+#define HARDWARE                    0x00000100
+#define MISCELLANEOUS               0x00000200
+#define OS_DEPENDENT                0x00000400
+#define DEVICE_MANAGER              0x00000800
+
+#define ALL_COMPONENTS              0x00000FFF
 
 
-#define ALL_COMPONENTS              0x00007FFF
-
-
-/* Exception level or Trace level -- used in the global "DebugLevel" */
+/* Exception level -- used in the global "DebugLevel" */
 
 #define ACPI_OK                     0x00000001
 #define ACPI_INFO                   0x00000002
 #define ACPI_WARN                   0x00000004
 #define ACPI_ERROR                  0x00000008
 #define ACPI_FATAL                  0x00000010
+
 #define ACPI_ALL                    0x0000001F
+
+
+/* Trace level -- also used in the global "DebugLevel" */
 
 #define TRACE_PARSE                 0x00000100
 #define TRACE_LOAD                  0x00000200
@@ -173,19 +173,24 @@
 #define TRACE_INTERRUPTS            0x01000000
 #define TRACE_USER_REQUESTS         0x02000000
 #define TRACE_PACKAGE               0x04000000
-#define TRACE_ALL                   0x0FFFFF00
 
-/* Exceptionally verbose output -- used in the global "DebugLevel"  */
+#define TRACE_ALL                   0x07FFFF00
+
+
+/* Exceptionally verbose output -- also used in the global "DebugLevel"  */
 
 #define VERBOSE_INFO                0x10000000
 #define VERBOSE_TABLES              0x20000000
-#define VERBOSE_EVENTS              0x80000000
-#define VERBOSE_ALL                 0xB0000000
+#define VERBOSE_EVENTS              0x40000000
+
+#define VERBOSE_ALL                 0x70000000
+
 
 /* Defaults for DebugLevel, debug and normal */
 
-#define DEBUG_DEFAULT               0x0082001D  /* Tables, I/O, errors, success */
-#define NORMAL_DEFAULT              0x0000001D  /* errors, warnings, success */
+#define DEBUG_DEFAULT               0x0000001D  /* errors, warnings, success (OK) */
+#define NORMAL_DEFAULT              0x0000001D  /* errors, warnings, success (OK) */
+
 
 /* Misc defines */
 
