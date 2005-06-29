@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -731,6 +731,11 @@ AcpiDsEvalRegionOperands (
     /* Resolve the length and address operands to numbers */
 
     Status = AcpiAmlResolveOperands (Op->Opcode, WALK_OPERANDS, WalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
                     AcpiPsGetOpcodeName (Op->Opcode),
                     1, "after AcpiAmlResolveOperands");
