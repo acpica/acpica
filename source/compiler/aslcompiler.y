@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.18 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -258,6 +258,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> IF
 %token <i> INCLUDE
 %token <i> INCLUDE_CSTYLE
+%token <i> INCLUDE_END
 %token <i> INCREMENT
 %token <i> INDEX
 %token <i> INDEXFIELD
@@ -310,6 +311,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> MEMTYPE_PREFETCHABLE
 %token <i> MEMTYPE_WRITECOMBINING
 %token <i> METHOD
+%token <i> METHODCALL
 %token <i> MID
 %token <i> MINTYPE_FIXED
 %token <i> MINTYPE_NOTFIXED
@@ -689,6 +691,7 @@ AslLocalAllocate (unsigned int Size);
 
 /* Local types that help construct the AML, not in ACPI spec */
 
+%type <n> IncludeEndTerm
 %type <n> AmlPackageLengthTerm
 %type <n> OptionalComma
 %type <n> OptionalByteConstExpr
@@ -702,6 +705,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> OptionalDecodeType
 %type <n> OptionalRangeType
 %type <n> OptionalShareType
+%type <n> OptionalTermList
 %type <n> OptionalType
 %type <n> OptionalTranslationType
 %type <n> OptionalStringData 
@@ -740,8 +744,9 @@ DefinitionBlockTerm
         String ','
         String ','
         DwordConst
-        ')' '{' TermList '}' 
-                                {$$ = TgLinkChildren ($<n>3,7,$4,$6,$8,$10,$12,$14,$17)}
+        ')'                     {TgSetEndLineNumber ($<n>3)}
+            '{' TermList '}'    {$$ = TgLinkChildren ($<n>3,7,$4,$6,$8,$10,$12,$14,$18)}
+                                
     ;
 
 TermList
@@ -840,8 +845,8 @@ NameSpaceModifier
     ;
 
 UserTerm
-    : NameString '(' 
-        ArgList ')'             {$$ = TgLinkChildNode ($1,$3)}
+    : NameString '('            {TgUpdateNode (METHODCALL, $1)}
+        ArgList ')'             {$$ = TgLinkChildNode ($1,$4)}
     ;
 
 ArgList
@@ -1010,10 +1015,14 @@ Type6Opcode
     ;
 
 IncludeTerm
-    : INCLUDE '(' 
-        String                  {FlOpenIncludeFile ($3)}
-        ')'
-        TermList                {$$ = $6}                     
+    : INCLUDE '('               {$$ = TgCreateLeafNode (INCLUDE)}
+        String  ')'             {$$ = TgLinkChildren ($<n>3,1,$4);FlOpenIncludeFile ($4);}
+        OptionalTermList        
+        IncludeEndTerm          {$$ = TgLinkPeerNodes (3,$<n>3,$7,$8)}                     
+    ;
+
+IncludeEndTerm
+    : INCLUDE_END               {$$ = TgCreateLeafNode (INCLUDE_END)}
     ;
 
 IncludeCStyleTerm
@@ -2054,8 +2063,10 @@ QwordConst
 
 String
     : STRING_LITERAL            {$$ = TgCreateValuedLeafNode (STRING_LITERAL, AslCompilerlval.s)}
-    | error                     {$$= NULL}
     ;
+
+/* REMOVED ERROR FROM ABOVE     | error                     {$$= NULL}
+*/
 
 /* 
  * TBD: Needs     | REVISION
@@ -2511,6 +2522,12 @@ DDBHandle
 
 AmlPackageLengthTerm
     : Integer                   {$$ = TgUpdateNode (PACKAGE_LENGTH,(ASL_PARSE_NODE *) $1)}
+    ;
+
+
+OptionalTermList
+    :                           {$$ = NULL}
+    | TermList                  {$$ = $1}
     ;
 
 

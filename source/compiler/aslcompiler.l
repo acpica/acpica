@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.14 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -481,7 +481,7 @@ NamePathTail        [.]{NameSeg}
                                 return (NAMESTRING); }
 
 
-<<EOF>>                     { if (AslPopInputFileStack ()) yyterminate();};
+<<EOF>>                     { if (AslPopInputFileStack ()) yyterminate(); else return (INCLUDE_END);};
 
 %%
 
@@ -518,7 +518,7 @@ copy (void)
 {
 
 
-    if (Gbl_SourceOutputFlag)
+    if (Gbl_SourceOutputFile)
     {
        fwrite (yytext, strlen(yytext), 1, Gbl_SourceOutputFile);
     }
@@ -529,7 +529,7 @@ void
 copy_one (int c)
 {
 
-    if (Gbl_SourceOutputFlag)
+    if (Gbl_SourceOutputFile)
     {
        fwrite (&c, 1, 1, Gbl_SourceOutputFile);
     }

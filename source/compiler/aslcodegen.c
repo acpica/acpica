@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.14 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -149,10 +149,17 @@ CgGenerateAmlOutput (void)
     }
 
     Gbl_SourceLine = 0;
+    LsPushNode (Gbl_InputFilename);
     AslGbl_NextError = AslGbl_ErrorLog;
 
     TgWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
 
+
+    if (Gbl_ListingFlag)
+    {
+        LsFinishSourceListing ();
+        fprintf (Gbl_ListingFile, "\n\nTable header with final checksum:\n\n");
+    }
 
     CgCloseTable ();
 }
@@ -179,20 +186,22 @@ CgAmlWriteWalk (
 {
 
 
+    DbgPrint ("%5.5d [%d]", Node->LogicalLineNumber, Level);
     UtPrintFormattedName (Node->ParseOpcode, Level);
 
 	if (Node->ParseOpcode == NAMESEG ||
-		Node->ParseOpcode == NAMESTRING)
+		Node->ParseOpcode == NAMESTRING ||
+        Node->ParseOpcode == METHODCALL)
 	{
-		DbgPrint ("%4.4s      ", Node->Value.String);
+		DbgPrint ("%10.32s      ", Node->ExternalName);
 	}
 
 	else
 	{
-		DbgPrint ("          ");
+		DbgPrint ("                ");
 	}
 
-    DbgPrint ("Value-%08X ParseOp-0x%04X AmlOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X ParentSubLen-%04X Node-%08X Chld-%08X Paren-%08X\n",
+    DbgPrint ("Val-%08X POp-%04X AOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X PSubLen-%04X Node-%08X Chld-%08X Paren-%08X\n",
                 Node->Value.Integer32,
                 Node->ParseOpcode,
                 Node->AmlOpcode,
@@ -457,6 +466,11 @@ CgWriteTableHeader (
     TableHeader.AslCompilerRevision = CompilerCreatorRevision;
 
 
+    /* Table length.  Checksum zero for now, will rewrite later */
+
+    TableHeader.Length   = Gbl_TableLength;
+    TableHeader.Checksum = 0;
+
     CgLocalWriteAmlData (&TableHeader, sizeof (ACPI_TABLE_HEADER));
 }
 
@@ -480,13 +494,6 @@ CgCloseTable (void)
     UINT8               FileByte;
 
 
-    TableHeader.Length = Gbl_TableLength;
-    TableHeader.Checksum = 0;
-
-    /* Write the header at the start of the file */
-
-    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
-    CgLocalWriteAmlData (&TableHeader, sizeof (ACPI_TABLE_HEADER));
 
     /* Calculate the checksum over the entire file */
 
@@ -529,7 +536,10 @@ CgWriteNode (
 
     /* TEMP FIX: always check for DEFAULT_ARG */
 
-    if (Node->ParseOpcode == DEFAULT_ARG)
+    if ((Node->ParseOpcode == DEFAULT_ARG)  ||
+        (Node->ParseOpcode == EXTERNAL)     || 
+        (Node->ParseOpcode == INCLUDE)      || 
+        (Node->ParseOpcode == INCLUDE_END))
     {
         return;
     }
@@ -578,6 +588,7 @@ CgWriteNode (
 
     case NAMESEG:
     case NAMESTRING:
+    case METHODCALL:
         CgLocalWriteAmlData (Node->Value.String, Node->AmlLength);
         break;
 

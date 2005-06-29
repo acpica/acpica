@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.23 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -217,74 +217,86 @@ typedef struct asl_analysis_walk_info
 
 typedef struct asl_mapping_entry
 {
-    UINT32                  Value;
-    UINT16                  AmlOpcode;
-    UINT8                   Flags;
+    UINT32                      Value;
+    UINT16                      AmlOpcode;
+    UINT8                       Flags;
 
 } ASL_MAPPING_ENTRY;
 
 typedef union asl_node_value
 {
-    UINT64                  Integer;        /* Generic integer is largest integer */
-    UINT64                  Integer64;
-    UINT32                  Integer32;
-    UINT16                  Integer16;
-    UINT8                   Integer8;
-    void                    *Pointer;
-    char                    *String;
+    UINT64                      Integer;        /* Generic integer is largest integer */
+    UINT64                      Integer64;
+    UINT32                      Integer32;
+    UINT16                      Integer16;
+    UINT8                       Integer8;
+    void                        *Pointer;
+    char                        *String;
 
 } ASL_NODE_VALUE;
 
 typedef struct asl_parse_node
 {
-    struct asl_parse_node   *Parent;
-    struct asl_parse_node   *Peer;
-    struct asl_parse_node   *Child;
-    ACPI_NAMESPACE_NODE     *NsNode;
-    union asl_node_value    Value;
-    char                    *ExternalName;
-    char                    *Namepath;
-    UINT32                  StartLineNumber;
-    UINT32                  LineNumber;
-    UINT32                  LogicalLineNumber;
-    UINT16                  AmlOpcode;
-    UINT16                  ParseOpcode;
-    UINT32                  AmlLength;
-    UINT32                  AmlSubtreeLength;
-    UINT8                   AmlOpcodeLength;
-    UINT8                   AmlPkgLenBytes;
-    UINT8                   Flags;
-    char                    ParseOpName[12];
-    char                    AmlOpName[12];
+    struct asl_parse_node       *Parent;
+    struct asl_parse_node       *Peer;
+    struct asl_parse_node       *Child;
+    ACPI_NAMESPACE_NODE         *NsNode;
+    union asl_node_value        Value;
+    char                        *ExternalName;
+    char                        *Namepath;
+    UINT32                      LineNumber;
+    UINT32                      LogicalLineNumber;
+    UINT32                      EndLine;
+    UINT32                      EndLogicalLine;
+    UINT16                      AmlOpcode;
+    UINT16                      ParseOpcode;
+    UINT32                      AmlLength;
+    UINT32                      AmlSubtreeLength;
+    UINT8                       AmlOpcodeLength;
+    UINT8                       AmlPkgLenBytes;
+    UINT8                       Flags;
+    char                        ParseOpName[12];
+    char                        AmlOpName[12];
 
 } ASL_PARSE_NODE;
 
 
 typedef struct asl_walk_info
 {
-    ASL_PARSE_NODE          **NodePtr;
-    UINT32                  *LevelPtr;
+    ASL_PARSE_NODE              **NodePtr;
+    UINT32                      *LevelPtr;
 
 } ASL_WALK_INFO;
 
 
 typedef struct asl_error_msg
 {   
-    UINT32                  LineNumber;
-    UINT32                  LogicalLineNumber;
-    UINT32                  Column;
-    char                    *Message;
-    struct asl_error_msg    *Next;
-    UINT8                   MessageId;
-    UINT8                   Level;
+    UINT32                      LineNumber;
+    UINT32                      LogicalLineNumber;
+    UINT32                      Column;
+    char                        *Message;
+    struct asl_error_msg        *Next;
+    UINT8                       MessageId;
+    UINT8                       Level;
 
 } ASL_ERROR_MSG;
 
+
+typedef struct asl_listing_node
+{
+    char                        *Filename;
+    UINT32                      LineNumber;
+    struct asl_listing_node     *Next;
+
+} ASL_LISTING_NODE;
+
+
+
 typedef
 void (*ASL_WALK_CALLBACK) (
-    ASL_PARSE_NODE          *Node,
-    UINT32                  Level,
-    void                    *Context);
+    ASL_PARSE_NODE              *Node,
+    UINT32                      Level,
+    void                        *Context);
 
 
 
@@ -339,6 +351,7 @@ EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
 
 /* Files */
 
+EXTERN char                     *Gbl_DirectoryPath;
 EXTERN char                     INIT_GLOBAL (*Gbl_NsFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_InputFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_IncludeFilename, NULL);
@@ -354,6 +367,10 @@ EXTERN FILE                     *Gbl_ListingFile;
 EXTERN FILE                     *Gbl_HexFile;
 EXTERN FILE                     *Gbl_NsFile;
 EXTERN FILE                     *Gbl_SourceOutputFile;
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HasIncludeFiles, FALSE);
+
+EXTERN char                     *Gbl_CurrentInputFilename;
+
 
 /* Statistics */
 
@@ -369,7 +386,7 @@ EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
 EXTERN ACPI_TABLE_HEADER        TableHeader;
 EXTERN UINT32                   INIT_GLOBAL (Gbl_TableLength, 0);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
-
+EXTERN char                     StringBuffer[256];
 
 
 #define ASL_ERROR               0
@@ -413,6 +430,9 @@ void
 AslCompilerSignon (
     FILE                    *Where);
 
+void
+AslCompilerFileHeader (
+    FILE                    *Where);
 
 void
 AslDoSourceOutputFile (
@@ -482,7 +502,21 @@ void
 LsWriteNodeToListing (
     ASL_PARSE_NODE          *Node);
 
+void
+LsFlushListingBuffer (void);
 
+void
+LsFinishSourceListing (void);
+
+void
+LsDoHexOutput (void);
+
+void
+LsPushNode (
+    char                    *Filename);
+
+ASL_LISTING_NODE *
+LsPopNode (void);
 
 
 
@@ -605,6 +639,11 @@ TgLinkChildren (
     ...);
 
 void
+TgSetEndLineNumber (
+    ASL_PARSE_NODE          *Node);
+
+
+void
 TgWalkTree (void);
 
 ASL_PARSE_NODE *
@@ -622,6 +661,13 @@ TgSetNodeFlags (
     ASL_PARSE_NODE          *Node,
     UINT32                  Flags);
 
+ASL_PARSE_NODE *
+TgLinkPeerNodes (
+    UINT32                  NumPeers,
+    ...);
+
+
+
 /* Analyze */
 
 void
@@ -637,12 +683,9 @@ AnSemanticAnalysisWalkEnd (
     void                        *Context);
 
 
-/* Files */
-
-#define FlOpenIncludeFile(a)        _FlOpenIncludeFile ((ASL_PARSE_NODE *)(a))
 
 void
-_FlOpenIncludeFile (
+FlOpenIncludeFile (
     ASL_PARSE_NODE          *Node);
 
 ACPI_STATUS
@@ -657,9 +700,13 @@ ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename);
 
-void
-FlDoHexOutput (void);
 
+void
+FlCloseListingFile (void);
+void
+FlCloseSourceOutputFile (void);
+void
+FlCloseHexOutputFile (void);
 
 /* Load */
 

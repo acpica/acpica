@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.22 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -116,58 +116,52 @@
  *****************************************************************************/
 
 
-#include "aslcompiler.h"
-#include "aslcompiler.y.h"
+#include "AslCompiler.h"
+#include "AslCompiler.y.h"
 #include "amlcode.h"
 
 #include "acnamesp.h"
 
-#define _COMPONENT          COMPILER
-        MODULE_NAME         ("aslopcodes")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcAmlOpcodeWalk
+ * FUNCTION:    
  *
- * PARAMETERS:  ASL_WALK_CALLBACK
+ * PARAMETERS:  
  *
- * RETURN:      None
+ * RETURN:      
  *
- * DESCRIPTION: Parse tree walk to generate both the AML opcodes and the AML
- *              operands.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 void
-OpcAmlOpcodeWalk (
-    ASL_PARSE_NODE          *Node,
-    UINT32                  Level,
-    void                    *Context)
+CgAmlOpcodeWalk (
+    ASL_PARSE_NODE              *Node,
+    UINT32                      Level,
+    void                        *Context)
 {
 
-    OpcGenerateAmlOpcode (Node);
-    OpnGenerateAmlOperands (Node);
+    CgGenerateAmlOpcode (Node);
+    CgGenerateAmlOperands (Node);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcSetOptimalIntegerSize
+ * FUNCTION:    
  *
- * PARAMETERS:  Node        - A parse tree node
+ * PARAMETERS:  
  *
- * RETURN:      Integer width, in bytes.  Also sets the node AML opcode to the
- *              optimal integer AML prefix opcode.
+ * RETURN:      
  *
- * DESCRIPTION: Determine the optimal AML encoding of an integer.  All leading
- *              zeros can be truncated to squeeze the integer into the
- *              minimal number of AML bytes.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 UINT32
-OpcSetOptimalIntegerSize (
+CgSetOptimalIntegerSize (
     ASL_PARSE_NODE          *Node)
 {
 
@@ -198,20 +192,48 @@ OpcSetOptimalIntegerSize (
 }
 
 
+
+
 /*******************************************************************************
  *
- * FUNCTION:    OpcDoAccessAs
+ * FUNCTION:    
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  
  *
- * RETURN:      None
+ * RETURN:      
  *
- * DESCRIPTION: Implement the ACCESS_AS ASL keyword.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 void
-OpcDoAccessAs (
+CgDoOffset (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *InitializerNode;
+
+    /* Entire proc unnecessary? */
+
+    Node->AmlOpcodeLength = 1;
+    InitializerNode = Node->Child;
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoAccessAs (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *Next;
@@ -224,7 +246,7 @@ OpcDoAccessAs (
 
     Next->AmlOpcode = AML_RAW_DATA_BYTE;
     Next->ParseOpcode = RAW_DATA;
-
+    
     /* Second child is the optional access attribute */
 
     Next = Next->Peer;
@@ -237,21 +259,22 @@ OpcDoAccessAs (
 }
 
 
+
+
 /*******************************************************************************
  *
- * FUNCTION:    OpcDoUnicode
+ * FUNCTION:    
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  
  *
- * RETURN:      None
+ * RETURN:      
  *
- * DESCRIPTION: Implement the UNICODE ASL "macro".  Convert the input string
- *              to a unicode buffer.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 void
-OpcDoUnicode (
+CgDoUnicode (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *InitializerNode;
@@ -282,9 +305,9 @@ OpcDoUnicode (
         UnicodeString[i] = AsciiString[i];
     }
 
-    AcpiCmFree (AsciiString);
+    free (AsciiString);
 
-    /*
+    /* 
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
@@ -293,7 +316,7 @@ OpcDoUnicode (
     BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
     BufferLengthNode->Value.Integer = Length;
 
-    OpcSetOptimalIntegerSize (BufferLengthNode);
+    CgSetOptimalIntegerSize (BufferLengthNode);
 
 
     InitializerNode->Value.Pointer  = UnicodeString;
@@ -303,26 +326,27 @@ OpcDoUnicode (
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    OpcDoEisaId
+ * FUNCTION:    CgDoEisaId
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  
  *
- * RETURN:      None
- *
+ * RETURN:      
  *
  * DESCRIPTION: Convert a string EISA ID to numeric representation
  *
  ******************************************************************************/
 
 void
-OpcDoEisaId (
+CgDoEisaId (
     ASL_PARSE_NODE          *Node)
 {
     UINT32                  id;
     UINT32                  SwappedId;
     NATIVE_CHAR             *InString;
+
 
 
     InString = Node->Value.String;
@@ -351,26 +375,24 @@ OpcDoEisaId (
     /* Node is now an integer */
 
     Node->ParseOpcode = INTEGER;
-    OpcSetOptimalIntegerSize (Node);
+    CgSetOptimalIntegerSize (Node);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcGenerateAmlOpcode
+ * FUNCTION:    
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  
  *
- * RETURN:      None
+ * RETURN:      
  *
- * DESCRIPTION: Generate the AML opcode associated with the node and its
- *              parse (lex/flex) keyword opcode.  Essentially implements
- *              a mapping between the parse opcodes and the actual AML opcodes.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 void
-OpcGenerateAmlOpcode (
+CgGenerateAmlOpcode (
     ASL_PARSE_NODE          *Node)
 {
 
@@ -380,9 +402,8 @@ OpcGenerateAmlOpcode (
     Index = Node->ParseOpcode - ASL_PARSE_OPCODE_BASE;
 
 
-    Node->AmlOpcode  = AslKeywordMapping[Index].AmlOpcode;
-    Node->AcpiBtype  = AslKeywordMapping[Index].AcpiBtype;
-    Node->Flags     |= AslKeywordMapping[Index].Flags;
+    Node->AmlOpcode = AslKeywordMapping[Index].AmlOpcode;
+    Node->Flags |= AslKeywordMapping[Index].Flags;
 
     if (!Node->Value.Integer)
     {
@@ -398,23 +419,23 @@ OpcGenerateAmlOpcode (
         /*
          * Set the opcode based on the size of the integer
          */
-        OpcSetOptimalIntegerSize (Node);
+        CgSetOptimalIntegerSize (Node);
         break;
 
     case OFFSET:
-        Node->AmlOpcodeLength = 1;
+        CgDoOffset (Node);
         break;
 
     case ACCESSAS:
-        OpcDoAccessAs (Node);
+        CgDoAccessAs (Node);
         break;
 
     case EISAID:
-        OpcDoEisaId (Node);
+        CgDoEisaId (Node);
         break;
 
     case UNICODE:
-        OpcDoUnicode (Node);
+        CgDoUnicode (Node);
         break;
 
     case INCLUDE:
@@ -430,5 +451,6 @@ OpcGenerateAmlOpcode (
 
     return;
 }
+
 
 

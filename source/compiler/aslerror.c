@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -310,11 +310,12 @@ AslCommonError (
 
     AeAddToErrorLog (Enode);
 
+    AePrintException (stderr, Enode);
     if (Gbl_DebugFlag)
     {
-        /* Print to stderr (a file) */
+        /* stderr was a file, print error on stdout also */
 
-        AePrintException (stderr, Enode);
+        AePrintException (stdout, Enode);
     }
 
 

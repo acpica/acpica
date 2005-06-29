@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.28 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -116,74 +116,152 @@
  *****************************************************************************/
 
 
+
 #define _DECLARE_GLOBALS
 
-#include "aslcompiler.h"
+#include "AslCompiler.h"
+#include "acnamesp.h"
+#include "acdebug.h"
 
-#define _COMPONENT          COMPILER
-        MODULE_NAME         ("aslmain")
+#include <time.h>
+
+FILE                    *DebugFile;
+UINT8                   AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
+ASL_ANALYSIS_WALK_INFO  AnalysisWalkInfo;
+char                    hex[] = {'0','1','2','3','4','5','6','7',
+                                 '8','9','A','B','C','D','E','F'};
 
 
 
-UINT32                   Gbl_ExceptionCount[2] = {0,0};
-char                     hex[] = {'0','1','2','3','4','5','6','7',
-                                  '8','9','A','B','C','D','E','F'};
+/*
+ * Stubs
+ */
 
+void
+AcpiTbDeleteAcpiTables (void)
+{
+}
+
+
+BOOLEAN
+AcpiTbSystemTablePointer (
+    void                    *Where)
+{
+    return FALSE;
+
+}
+
+void
+AcpiAmlDumpOperands (
+    ACPI_OPERAND_OBJECT     **Operands,
+    OPERATING_MODE          InterpreterMode,
+    NATIVE_CHAR             *Ident,
+    UINT32                  NumLevels,
+    NATIVE_CHAR             *Note,
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber)
+{
+}
+
+ACPI_STATUS
+AcpiAmlDumpOperand (
+    ACPI_OPERAND_OBJECT     *EntryDesc)
+{
+    return AE_OK;
+}
+
+
+struct tm                   *NewTime;
+time_t                      Aclock;
 
 /*******************************************************************************
  *
- * FUNCTION:    Usage
+ * FUNCTION:    Signon and FileHeader
  *
  * PARAMETERS:  None
+ *  
+ * RETURN:      None      
  *
- * RETURN:      None
- *
- * DESCRIPTION: Display help message
+ * DESCRIPTION: Display compiler signon
  *
  ******************************************************************************/
 
 void
-Usage (
-    void)
+AslCompilerSignon (
+    FILE                    *Where)
 {
-    printf ("Usage:    %s <Options> <InputFile>\n\n", CompilerName);
-    printf ("Options:  -d <p|t|b>       Create compiler debug/trace file (*.txt)\n");
-    printf ("                             Types: Parse/Tree/Both\n");
-    printf ("          -h               Create ascii hex file (*.hex)\n");
-    printf ("          -i               Ignore errors, always create AML file\n");
-    printf ("          -l               Create listing (mixed source/AML) file (*.lst)\n");
-    printf ("          -n               Create namespace file (*.nsp)\n");
-    printf ("          -o <name>        Specify filename prefix for all output files\n");
-    printf ("                             (including the .aml file)\n");
-    printf ("          -p               Parse only, no output generation\n");
-    printf ("          -s               Create combined (w/includes) ASL file (*.src)\n");
+
+    time (&Aclock);
+    NewTime = localtime (&Aclock);
+
+    fprintf (Where, "\n%s [Version %s, %s]\n\n", CompilerId, CompilerVersion, __DATE__);
+
+}
+
+void
+AslCompilerFileHeader (
+    FILE                    *Where)
+{
+
+    fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime)); 
+
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    main
+ * FUNCTION:    Usage 
  *
- * PARAMETERS:  Standard argc/argv
+ * PARAMETERS:  None
+ *  
+ * RETURN:      None      
  *
- * RETURN:      Program termination code
- *
- * DESCRIPTION: C main routine for the Asl Compiler.  Handle command line
- *              options and begin the compile.
+ * DESCRIPTION: Display help message
  *
  ******************************************************************************/
 
+void 
+Usage (
+    void)
+{
+    printf ("Usage:    %s <Options> <InputFile>\n\n", CompilerName);
+    printf ("Options:  -d               Create debug/trace output file (*.txt)\n");
+    printf ("          -h               Create ascii hex output file (*.hex)\n");
+    printf ("          -i               Ignore errors, always create AML file\n");
+    printf ("          -l               Create listing (mixed source/AML) file (*.lst)\n");
+    printf ("          -n               Create namespace file (*.nsp)\n");
+    printf ("          -o <filename>    Specify output file (override table header)\n");
+    printf ("          -s               Create combined (w/includes) ASL file (*.src)\n");
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    main    
+ *
+ * PARAMETERS:  Standard argc/argv
+ *
+ * RETURN:      Program termination code 
+ *
+ * DESCRIPTION: C main routine for the Asl Compiler
+ *
+ ******************************************************************************/
+
+
 int
 main (
-    int                 argc,
+    int                 argc, 
     char                **argv)
 {
     UINT32              j;
+    ACPI_STATUS         Status;
     UINT32              DebugLevel = AcpiDbgLevel;
     BOOLEAN             BadCommandLine = FALSE;
-    int                 Status;
 
 
+    AslGbl_ExceptionCount[0] = 0;
+    AslGbl_ExceptionCount[1] = 0;
     AcpiDbgLevel = 0;
 
     AslCompilerSignon (stdout);
@@ -199,30 +277,13 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "a:d:hilno:ps")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "dhilno:s")) != EOF) switch (j)
     {
-    case 'a':
-        AcpiDbgLevel = strtoul (optarg, NULL, 16);
-        break;
-
     case 'd':
-        switch (optarg[0])
-        {
-        case 'b':
-            AslCompilerdebug = 1; /* same as yydebug */
-            break;
-
-        case 'p':
-            AslCompilerdebug = 1; /* same as yydebug */
-            break;
-
-        case 't':
-            break;
-        }
-
         /* Produce debug output file */
 
         Gbl_DebugFlag = TRUE;
+        AslCompilerdebug = 1; /* same as yydebug */
         break;
 
     case 'h':
@@ -252,14 +313,8 @@ main (
     case 'o':
         /* Override default AML output filename */
 
-        Gbl_OutputFilenamePrefix = optarg;
+        Gbl_OutputFilename = optarg;
         Gbl_UseDefaultAmlFilename = FALSE;
-        break;
-
-    case 'p':
-        /* Parse only */
-
-        Gbl_ParseOnlyFlag = TRUE;
         break;
 
     case 's':
@@ -292,24 +347,121 @@ main (
         return -1;
     }
 
-    if ((optind + 1) < argc)
+
+
+    Status = FlOpenInputFile (Gbl_InputFilename);
+    if (ACPI_FAILURE (Status))
     {
-        printf ("Warning: extra arguments (%d) after input filename are ignored\n\n", argc - optind - 1);
+        AePrintErrorLog (stderr);
+        return -1;
     }
+    Status = FlOpenMiscOutputFiles (Gbl_InputFilename);
+    if (ACPI_FAILURE (Status))
+    {
+        AePrintErrorLog (stderr);
+        return -1;
+    }
+
+
+    /* ACPI CA subsystem initialization */
+
+    AcpiCmInitGlobals ();
+    AcpiCmMutexInitialize ();
+    AcpiNsRootInitialize ();
+
+    /* Build the parse tree */
+
+    AslCompilerparse();
+    
+
+    /* Generate AML opcodes corresponding to the parse tokens */
+
+    DbgPrint ("\nGenerating AML opcodes\n\n");
+    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, CgAmlOpcodeWalk, NULL);
+
+    /* Calculate all AML package lengths */
+
+    DbgPrint ("\nGenerating Package lengths\n\n");
+    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
+
+    /* Semantic error checking */
+
+    AnalysisWalkInfo.MethodStack = NULL;
+    
+    DbgPrint ("\nSemantic analysis\n\n");
+    TgWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin, 
+                        AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
+
+
+    /* Namespace loading */
+
+    LdLoadNamespace ();
+
+
+    /* Namespace lookup */
+
+    LkCrossReferenceNamespace ();
+
+    /* Calculate all AML package lengths */
+
+    DbgPrint ("\nGenerating Package lengths\n\n");
+    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
+    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
+
 
     /*
-     * If -o not specified, we will use the input filename as the 
-     * output filename prefix
+     * Now that the input is parsed, we can open the AML output file.
+     * Note: by default, the name of this file comes from the table descriptor 
+     * within the input file.
      */
-    if (Gbl_UseDefaultAmlFilename)
+    Status = FlOpenAmlOutputFile (Gbl_InputFilename);
+    if (ACPI_FAILURE (Status))
     {
-        Gbl_OutputFilenamePrefix = Gbl_InputFilename;
+        AePrintErrorLog (stderr);
+        return -1;
     }
 
 
-    Status = CmDoCompile ();
+    /* Code generation - emit the AML */
 
-    return (Status);
+    CgGenerateAmlOutput ();
+
+
+    AePrintErrorLog (stderr);
+    if (Gbl_DebugFlag)
+    {
+        /* Print to stdout */
+
+        AePrintErrorLog (stdout);
+    }
+
+    /* Dump the AML as hex if requested */
+
+    LsDoHexOutput ();
+
+    /* Dump the namespace to the .nsp file if requested */
+
+    LsDisplayNamespace ();
+
+
+    /* Close all open files */
+
+    FlCloseListingFile ();
+    FlCloseSourceOutputFile ();
+    FlCloseHexOutputFile ();
+
+    fclose (Gbl_OutputAmlFile);
+
+    if ((AslGbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
+    {
+        unlink (Gbl_OutputFilename);
+    }
+
+    UtDisplaySummary ();
+
+
+    return 0;
 }
+
 
 
