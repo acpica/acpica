@@ -227,52 +227,11 @@ AmlResolveEntryToValue (
 
         if (AttachedAmlPointer)
         {
-#if defined  _RPARSER
-            if (AML_PackageOp == AmlOpcode)
-            {
-                /* 
-                 * The value pointer in the name table entry
-                 * points to a package definition in the AML stream.
-                 * Convert it to an object.
-                 */
-
-                if (AE_OK != (Status = PsxObjStackPush ()))             /* ObjStack */
-                {
-                    return_ACPI_STATUS (Status);
-                }
-
-                if (AE_OK == (Status = AmlPkgPushExec (AmlPointer, 0L)) &&          /* PkgStack */
-                    AE_OK == (Status = AmlDoPkg (ACPI_TYPE_Package, IMODE_Execute)) &&
-                    AE_OK == (Status = AmlPkgPopExec ()))                           /* PkgStack */
-                {
-                    NsAttachObject ((ACPI_HANDLE) StackEntry, PsxObjStackGetValue (0),
-                                    (UINT8) ACPI_TYPE_Package);
-
-                    /* Refresh local value pointer to reflect newly set value */
-                
-                    ValDesc = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
-                    PsxObjStackPop (1);
-                }
-            
-                else
-                {
-                    PsxObjStackPop (1);
-                    return_ACPI_STATUS (Status);
-                }
-            }
-
-            else
-            {
-                /* Aml Opcode is not a package op */
-
-                DEBUG_PRINT (ACPI_ERROR, ("AmlResolveEntryToValue: Not a PackageOp opcode (%x)\n",
-                                AmlOpcode));
-                return_ACPI_STATUS (AE_AML_BAD_OPCODE);
-            }
-#else
+            /*
+             * This means that the package initialization is not parsed -- should not happen
+             */
             DEBUG_PRINT (ACPI_ERROR, ("AmlResolveEntryToValue: Unparsed Packages not supported!\n"));
             return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
-#endif
         }
         
         /* ValDesc is an internal object in all cases by the time we get here */
@@ -298,58 +257,14 @@ AmlResolveEntryToValue (
             return_ACPI_STATUS (AE_AML_NO_OPERAND);
         }
 
-
-
-       if (AttachedAmlPointer)
+        if (AttachedAmlPointer)
         {
-#if defined _RPARSER
-            if (AML_BufferOp == AmlOpcode)
-            {
-                /* 
-                 * The value pointer in the name table entry
-                 * points to a buffer definition in the AML stream.
-                 * Convert it to an object.
-                 */
-                if (AE_OK != (Status = PsxObjStackPush ()))                /* ObjStack */
-                {
-                    return_ACPI_STATUS (Status);
-                }
-
-                if (AE_OK == (Status = AmlPkgPushExec (AmlPointer, 0L)) &&          /* PkgStack */
-                    AE_OK == (Status = AmlDoPkg (ACPI_TYPE_Buffer, IMODE_Execute)) &&
-                    AE_OK == (Status = AmlPkgPopExec ()))                           /* PkgStack */
-                {
-                    NsAttachObject ((ACPI_HANDLE) StackEntry, PsxObjStackGetValue (0),
-                                    (UINT8) ACPI_TYPE_Buffer);
-                
-                    /* Refresh local value pointer to reflect newly set value */
-                
-                    ValDesc = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
-                    PsxObjStackPop (1);
-                }
-            
-                else
-                {
-                    PsxObjStackPop (1);
-                    return_ACPI_STATUS (Status);
-                }
-            }
-
-            else
-            {
-                /* Aml Opcode is not a buffer op */
-
-                DEBUG_PRINT (ACPI_ERROR, ("AmlResolveEntryToValue: Not a BufferOp opcode (%x)\n",
-                                AmlOpcode));
-                return_ACPI_STATUS (AE_AML_BAD_OPCODE);
-            }
-#else
+            /*
+             * This means that the buffer initialization is not parsed -- should not happen
+             */
             DEBUG_PRINT (ACPI_ERROR, ("AmlResolveEntryToValue: Unparsed Buffers not supported!\n"));
             return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
-#endif
         }
-
-
 
         /* ValDesc is an internal object in all cases by the time we get here */
 
@@ -364,9 +279,8 @@ AmlResolveEntryToValue (
         ObjDesc = ValDesc;
         CmAddReference (ObjDesc);
 
-        DEBUG_PRINT (TRACE_BFIELD,
-                    ("AmlResolveEntryToValue: New Buffer descriptor seq# %ld @ %p \n",
-                    ObjDesc->Buffer.Sequence, ObjDesc));
+        DEBUG_PRINT (TRACE_BFIELD, ("AmlResolveEntryToValue: New Buffer descriptor seq# %ld @ %p \n",
+                        ObjDesc->Buffer.Sequence, ObjDesc));
         break;
 
 
@@ -379,8 +293,6 @@ AmlResolveEntryToValue (
             ObjDesc = CmCreateInternalObject (ACPI_TYPE_String);
             if (!ObjDesc)
             {   
-                /* Descriptor allocation failure */
-
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
@@ -485,8 +397,6 @@ AmlResolveEntryToValue (
             ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
             if (!ObjDesc)
             {   
-                /* Descriptor allocation failure  */
-                
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
             
@@ -541,7 +451,6 @@ AmlResolveEntryToValue (
         ObjDesc = CmCreateInternalObject (ObjectType);
         if (!ObjDesc)
         {   
-            /* Descriptor allocation failure  */
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
@@ -554,7 +463,6 @@ AmlResolveEntryToValue (
             if (!ObjDesc->Buffer.Pointer)
             {   
                 CmRemoveReference(ObjDesc);
-                /* Buffer allocation failure  */
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
@@ -640,8 +548,6 @@ AmlResolveEntryToValue (
         ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
         if (!ObjDesc)
         {
-            /* Descriptor allocation failure  */
-
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
@@ -702,8 +608,6 @@ AmlResolveEntryToValue (
         ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
         if (!ObjDesc)
         {
-            /* Descriptor allocation failure  */
-
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
@@ -739,8 +643,6 @@ AmlResolveEntryToValue (
         ObjDesc = CmCreateInternalObject (ACPI_TYPE_Any);
         if (!ObjDesc)
         {
-            /* Descriptor allocation failure  */
-
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
