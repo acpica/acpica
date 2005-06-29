@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: oswindir - Windows directory access interfaces
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,7 @@
 #include <string.h>
 #include <io.h>
 
+#include <acpi.h>
 
 typedef struct ExternalFindInfo
 {
@@ -128,6 +129,7 @@ typedef struct ExternalFindInfo
     char                        *FullWildcardSpec;
     long                        FindHandle;
     char                        State;
+    char                        RequestedFileType;
 
 } EXTERNAL_FIND_INFO;
 
@@ -138,6 +140,7 @@ typedef struct ExternalFindInfo
  *
  * PARAMETERS:  DirPathname         - Full pathname to the directory
  *              WildcardSpec        - string of the form "*.c", etc.
+ *              RequestedFileType   - Either a directory or normal file
  *
  * RETURN:      A directory "handle" to be used in subsequent search operations.
  *              NULL returned on failure.
@@ -149,17 +152,18 @@ typedef struct ExternalFindInfo
 void *
 AcpiOsOpenDirectory (
     char                    *DirPathname,
-    char                    *WildcardSpec)
+    char                    *WildcardSpec,
+    char                    RequestedFileType)
 {
     long                    FindHandle;
     char                    *FullWildcardSpec;
-    EXTERNAL_FIND_INFO      *ExternalInfo;
+    EXTERNAL_FIND_INFO      *SearchInfo;
 
 
     /* Allocate the info struct that will be returned to the caller */
 
-    ExternalInfo = calloc (sizeof (EXTERNAL_FIND_INFO), 1);
-    if (!ExternalInfo)
+    SearchInfo = calloc (sizeof (EXTERNAL_FIND_INFO), 1);
+    if (!SearchInfo)
     {
         return NULL;
     }
@@ -181,19 +185,23 @@ AcpiOsOpenDirectory (
 
     /* Initialize the find functions, get first match */
 
-    FindHandle = _findfirst (FullWildcardSpec, &ExternalInfo->DosInfo);
+    FindHandle = _findfirst (FullWildcardSpec, &SearchInfo->DosInfo);
     if (FindHandle == -1)
     {
+        /* Failure means that no match was found */
+
         free (FullWildcardSpec);
+        free (SearchInfo);
         return NULL;
     }
 
     /* Save the info in the return structure */
 
-    ExternalInfo->FullWildcardSpec = FullWildcardSpec;
-    ExternalInfo->FindHandle = FindHandle;
-    ExternalInfo->State = 0;
-    return (ExternalInfo);
+    SearchInfo->RequestedFileType = RequestedFileType;
+    SearchInfo->FullWildcardSpec = FullWildcardSpec;
+    SearchInfo->FindHandle = FindHandle;
+    SearchInfo->State = 0;
+    return (SearchInfo);
 }
 
 
@@ -214,30 +222,71 @@ char *
 AcpiOsGetNextFilename (
     void                    *DirHandle)
 {
-    EXTERNAL_FIND_INFO      *ExternalInfo = DirHandle;
+    EXTERNAL_FIND_INFO      *SearchInfo = DirHandle;
     int                     Status;
+    char                    FileTypeNotMatched = 1;
 
 
-    /* On the first call, we already have the first match */
-
-    if (ExternalInfo->State == 0)
+    /*
+     * Loop while we have matched files but not found any files of
+     * the requested type.
+     */
+    while (FileTypeNotMatched)
     {
-        /* No longer the first match */
+        /* On the first call, we already have the first match */
 
-        ExternalInfo->State = 1;
-    }
-    else
-    {
-        /* Get the  next match */
-
-        Status = _findnext (ExternalInfo->FindHandle, &ExternalInfo->DosInfo);
-        if (Status != 0)
+        if (SearchInfo->State == 0)
         {
+            /* No longer the first match */
+
+            SearchInfo->State = 1;
+        }
+        else
+        {
+            /* Get the next match */
+
+            Status = _findnext (SearchInfo->FindHandle, &SearchInfo->DosInfo);
+            if (Status != 0)
+            {
+                return NULL;
+            }
+        }
+
+        /*
+         * Found a match, now check to make sure that the file type
+         * matches the requested file type (directory or normal file)
+         *
+         * NOTE: use of the attrib field saves us from doing a very
+         * expensive stat() on the file!
+         */
+        switch (SearchInfo->RequestedFileType)
+        {
+        case REQUEST_FILE_ONLY:
+
+            /* Anything other than A_SUBDIR is OK */
+
+            if (!(SearchInfo->DosInfo.attrib & _A_SUBDIR))
+            {
+                FileTypeNotMatched = 0;
+            }
+            break;
+
+        case REQUEST_DIR_ONLY:
+
+            /* Must have A_SUBDIR bit set */
+
+            if (SearchInfo->DosInfo.attrib & _A_SUBDIR)
+            {
+                FileTypeNotMatched = 0;
+            }
+            break;
+
+        default:
             return NULL;
         }
     }
 
-    return (ExternalInfo->DosInfo.name);
+    return (SearchInfo->DosInfo.name);
 }
 
 
@@ -257,13 +306,13 @@ void
 AcpiOsCloseDirectory (
     void                    *DirHandle)
 {
-    EXTERNAL_FIND_INFO      *ExternalInfo = DirHandle;
+    EXTERNAL_FIND_INFO      *SearchInfo = DirHandle;
 
 
     /* Close the directory and free allocations */
 
-    _findclose (ExternalInfo->FindHandle);
-    free (ExternalInfo->FullWildcardSpec);
+    _findclose (SearchInfo->FindHandle);
+    free (SearchInfo->FullWildcardSpec);
     free (DirHandle);
 }
 
