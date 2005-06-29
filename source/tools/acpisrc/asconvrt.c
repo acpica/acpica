@@ -1,8 +1,7 @@
 
 /******************************************************************************
- *
+ * 
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -10,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -39,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -118,41 +117,11 @@
 #include "acpisrc.h"
 
 
+
 /* Opening signature of the Intel legal header */
 
 char        *HeaderBegin = "/******************************************************************************\n *\n * 1. Copyright Notice";
 
-
-/******************************************************************************
- *
- * FUNCTION:    AsMatchExactWord
- *
- * DESCRIPTION: Check previous and next characters for whitespace
- *
- ******************************************************************************/
-
-BOOLEAN
-AsMatchExactWord (
-    char                    *Word,
-    UINT32                  WordLength)
-{
-    char                    NextChar;
-    char                    PrevChar;
-
-
-    NextChar = Word[WordLength];
-    PrevChar = * (Word -1);
-
-    if (isalnum (NextChar) ||
-        (NextChar == '_')  ||
-        isalnum (PrevChar) ||
-        (PrevChar == '_'))
-    {
-        return (FALSE);
-    }
-
-    return (TRUE);
-}
 
 
 /******************************************************************************
@@ -177,152 +146,7 @@ AsPrint (
 
 /******************************************************************************
  *
- * FUNCTION:    AsCheckAndSkipLiterals
- *
- * DESCRIPTION: Generic routine to skip comments and quoted string literals.
- *              Keeps a line count.
- *
- ******************************************************************************/
-
-char *
-AsCheckAndSkipLiterals (
-    char                    *Buffer,
-    UINT32                  *TotalLines)
-{
-    UINT32                  NewLines = 0;
-    char                    *SubBuffer = Buffer;
-    char                    *LiteralEnd;
-
-
-    /* Ignore comments */
-
-    if ((SubBuffer[0] == '/') &&
-        (SubBuffer[1] == '*'))
-    {
-        LiteralEnd = strstr (SubBuffer, "*/");
-        SubBuffer += 2;     /* Get past comment opening */
-
-        if (!LiteralEnd)
-        {
-            return SubBuffer;
-        }
-
-        while (SubBuffer < LiteralEnd)
-        {
-            if (*SubBuffer == '\n')
-            {
-                NewLines++;
-            }
-
-            SubBuffer++;
-        }
-
-        SubBuffer += 2;     /* Get past comment close */
-    }
-
-    /* Ignore quoted strings */
-
-    else if (*SubBuffer == '\"')
-    {
-        SubBuffer++;
-        LiteralEnd = AsSkipPastChar (SubBuffer, '\"');
-        if (!LiteralEnd)
-        {
-            return SubBuffer;
-        }
-    }
-
-    if (TotalLines)
-    {
-        (*TotalLines) += NewLines;
-    }
-    return SubBuffer;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AsAsCheckForBraces
- *
- * DESCRIPTION: Check for an open brace after each if statement
- *
- ******************************************************************************/
-
-void
-AsCheckForBraces (
-    char                    *Buffer,
-    char                    *Filename)
-{
-    char                    *SubBuffer = Buffer;
-    char                    *NextBrace;
-    char                    *NextSemicolon;
-    char                    *NextIf;
-    UINT32                  TotalLines = 1;
-
-
-    while (*SubBuffer)
-    {
-
-        SubBuffer = AsCheckAndSkipLiterals (SubBuffer, &TotalLines);
-
-        if (*SubBuffer == '\n')
-        {
-            TotalLines++;
-        }
-        else if (!(strncmp (" if", SubBuffer, 3)))
-        {
-            SubBuffer += 2;
-            NextBrace = strstr (SubBuffer, "{");
-            NextSemicolon = strstr (SubBuffer, ";");
-            NextIf = strstr (SubBuffer, " if");
-
-            if ((!NextBrace) ||
-               (NextSemicolon && (NextBrace > NextSemicolon)) ||
-               (NextIf && (NextBrace > NextIf)))
-            {
-                Gbl_MissingBraces++;
-                printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
-            }
-        }
-        else if (!(strncmp (" else if", SubBuffer, 8)))
-        {
-            SubBuffer += 7;
-            NextBrace = strstr (SubBuffer, "{");
-            NextSemicolon = strstr (SubBuffer, ";");
-            NextIf = strstr (SubBuffer, " if");
-
-            if ((!NextBrace) ||
-               (NextSemicolon && (NextBrace > NextSemicolon)) ||
-               (NextIf && (NextBrace > NextIf)))
-            {
-                Gbl_MissingBraces++;
-                printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
-            }
-        }
-        else if (!(strncmp (" else", SubBuffer, 5)))
-        {
-            SubBuffer += 4;
-            NextBrace = strstr (SubBuffer, "{");
-            NextSemicolon = strstr (SubBuffer, ";");
-            NextIf = strstr (SubBuffer, " if");
-
-            if ((!NextBrace) ||
-               (NextSemicolon && (NextBrace > NextSemicolon)) ||
-               (NextIf && (NextBrace > NextIf)))
-            {
-                Gbl_MissingBraces++;
-                printf ("Missing braces for <else>, line %d: %s\n", TotalLines, Filename);
-            }
-        }
-
-        SubBuffer++;
-    }
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AsTrimLines
+ * FUNCTION:    AsTrimLines  
  *
  * DESCRIPTION: Remove extra blanks from the end of source lines.  Does not
  *              check for tabs.
@@ -334,6 +158,7 @@ AsTrimLines (
     char                    *Buffer,
     char                    *Filename)
 {
+    UINT32                  Length;
     char                    *SubBuffer = Buffer;
     char                    *StartWhiteSpace = NULL;
     UINT32                  SpaceCount = 0;
@@ -358,7 +183,7 @@ AsTrimLines (
             else
             {
                 StartWhiteSpace = NULL;
-            }
+            }  
 
             SubBuffer++;
         }
@@ -367,12 +192,11 @@ AsTrimLines (
         {
             SpaceCount += (SubBuffer - StartWhiteSpace);
 
-            /* Remove the spaces */
-
-            SubBuffer = AsRemoveData (StartWhiteSpace, SubBuffer);
+            Length = strlen (SubBuffer) + 1;
+            memmove (StartWhiteSpace, SubBuffer, Length);
             StartWhiteSpace = NULL;
         }
-
+        
         SubBuffer++;
     }
 
@@ -380,8 +204,7 @@ AsTrimLines (
 Exit:
     if (SpaceCount)
     {
-        Gbl_MadeChanges = TRUE;
-        AsPrint ("Extraneous spaces removed", SpaceCount, Filename);
+        AsPrint ("Extraneous spaces Removed", SpaceCount, Filename);
     }
 }
 
@@ -404,7 +227,7 @@ AsTrimWhitespace (
 
     while (ReplaceCount)
     {
-        ReplaceCount = AsReplaceString ("\n\n\n\n", "\n\n\n", REPLACE_SUBSTRINGS, Buffer);
+        ReplaceCount = AsReplaceString ("\n\n\n\n", "\n\n\n", Buffer);
     }
 }
 
@@ -422,6 +245,8 @@ AsReplaceHeader (
     char                    *Buffer,
     char                    *NewHeader)
 {
+    UINT32                  Length;
+    UINT32                  HdrLength;
     char                    *SubBuffer;
     char                    *TokenEnd;
 
@@ -439,9 +264,17 @@ AsReplaceHeader (
     TokenEnd = strstr (SubBuffer, "*/");
     TokenEnd = AsSkipPastChar (TokenEnd, '\n');
 
-    /* Delete old header, insert new one */
+    /* Move up the rest of the buffer to delete the header */
 
-    AsReplaceData (SubBuffer, TokenEnd - SubBuffer, NewHeader, strlen (NewHeader));
+    Length = strlen (TokenEnd) + 1;
+    memmove (SubBuffer, TokenEnd, Length);
+
+    /* Insert the new header */
+
+    HdrLength = strlen (NewHeader);
+    memmove (SubBuffer + HdrLength, SubBuffer, Length);
+    memmove (SubBuffer, NewHeader, HdrLength);
+
 }
 
 
@@ -458,7 +291,6 @@ int
 AsReplaceString (
     char                    *Target,
     char                    *Replacement,
-    UINT8                   Type,
     char                    *Buffer)
 {
     char                    *SubString1;
@@ -469,69 +301,44 @@ AsReplaceString (
     int                     ReplaceCount = 0;
 
 
+
     TargetLength = strlen (Target);
     ReplacementLength = strlen (Replacement);
 
     SubBuffer = Buffer;
     SubString1 = Buffer;
 
+
     while (SubString1)
     {
         /* Find the target string */
 
         SubString1 = strstr (SubBuffer, Target);
-        if (!SubString1)
-        {
-            return ReplaceCount;
-        }
 
-        /*
+        /* 
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
 
-        SubString2 = strstr (SubBuffer, AS_START_IGNORE);
+        SubString2 = strstr (SubBuffer, "/*!");
 
         if ((SubString2) &&
             (SubString2 < SubString1))
         {
-            /* Find end of the escape block starting at "Substring2" */
-
-            SubString2 = strstr (SubString2, AS_STOP_IGNORE);
+            SubString2 = strstr (SubBuffer, "!*/");
             if (!SubString2)
             {
-                /* Didn't find terminator */
-
                 return ReplaceCount;
             }
-
-            /* Move buffer to end of escape block and continue */
 
             SubBuffer = SubString2;
         }
 
         /* Do the actual replace if the target was found */
 
-        else
+        else if (SubString1)
         {
-            if ((Type & REPLACE_MASK) == REPLACE_WHOLE_WORD)
-            {
-                if (!AsMatchExactWord (SubString1, TargetLength))
-                {
-                    SubBuffer = SubString1 + 1;
-                    continue;
-                }
-            }
-
             SubBuffer = AsReplaceData (SubString1, TargetLength, Replacement, ReplacementLength);
-/*
-            if (((Type & INDENT_MASK) == EXTRA_INDENT_C) &&
-                (Gbl_FileType == FILE_TYPE_SOURCE))
-            {
-                SubBuffer = AsReplaceData (SubBuffer, 0, "    ", 4);
-            }
-*/
-
             ReplaceCount++;
         }
     }
@@ -542,72 +349,194 @@ AsReplaceString (
 
 /******************************************************************************
  *
- * FUNCTION:    AsConvertToLineFeeds
+ * FUNCTION:    AsMixedCaseToUnderscores  
  *
- * DESCRIPTION:
+ * DESCRIPTION: Converts mixed case identifiers to underscored identifiers.
+ *              for example,
+ *
+ *              ThisUsefullyNamedIdentifier   becomes:
+ *
+ *              this_usefully_named_identifier
  *
  ******************************************************************************/
 
 void
-AsConvertToLineFeeds (
+AsMixedCaseToUnderscores (
     char                    *Buffer)
 {
+    UINT32                  Length;
+    char                    *SubBuffer = Buffer;
+    char                    *TokenEnd;
     char                    *SubString;
-    char                    *SubBuffer;
 
 
-    SubBuffer = Buffer;
-    SubString = Buffer;
-
-    while (SubString)
+    while (*SubBuffer)
     {
-        /* Find the target string */
 
-        SubString = strstr (SubBuffer, "\r\n");
-        if (!SubString)
+        /* 
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*') &&
+            (SubBuffer[2] == '!'))
         {
-            return;
+            SubBuffer = strstr (SubBuffer, "!*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
         }
 
-        SubBuffer = AsReplaceData (SubString, 1, NULL, 0);
+        /* Ignore hex constants */
+
+        if (SubBuffer[0] == '0')
+        {
+            if ((SubBuffer[1] == 'x') ||
+                (SubBuffer[1] == 'X'))
+            {
+                SubBuffer += 2;
+                while (isxdigit (*SubBuffer))
+                {
+                    SubBuffer++;
+                }
+                continue;
+            }
+
+            SubBuffer++;
+            continue;
+        }
+
+
+        /*
+         * Convert each pair of letters that matches the form:  
+         * 
+         *      <LowerCase><UpperCase> 
+         * to
+         *      <LowerCase><Underscore><LowerCase>
+         */
+
+        else if ((islower (SubBuffer[0]) || isdigit (SubBuffer[0])) &&
+                 (isupper (SubBuffer[1])))
+
+        {
+            TokenEnd = SubBuffer;
+            while ((isalnum (*TokenEnd)) || (*TokenEnd == '_'))
+            {   
+                TokenEnd++;
+            }
+
+            SubBuffer[1] = (char) tolower (SubBuffer[1]);
+
+
+
+            SubString = TokenEnd;
+            Length = 0;
+
+            while (*SubString != '\n')
+            {
+                if ((SubString[0] == ' ') &&
+                    (SubString[1] == ' '))
+                {
+                    Length = SubString - SubBuffer - 2;
+                    break;
+                }
+
+                SubString++;
+            }
+
+
+            if (!Length)
+            {
+                Length = strlen (&SubBuffer[1]);
+            }
+
+            memmove (&SubBuffer[2], &SubBuffer[1], (Length+1));
+            SubBuffer[1] = '_';
+            SubBuffer +=2;
+        }
+
+        SubBuffer++;
     }
-    return;
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AsInsertCarriageReturns
+ * FUNCTION:    AsLowerCaseIdentifiers
  *
- * DESCRIPTION:
+ * DESCRIPTION: Converts mixed case identifiers to lower case.  Leaves comments,
+ *              quoted strings, and all-upper-case macros alone.
  *
  ******************************************************************************/
 
 void
-AsInsertCarriageReturns (
+AsLowerCaseIdentifiers (
     char                    *Buffer)
 {
-    char                    *SubString;
-    char                    *SubBuffer;
+    char                    *SubBuffer = Buffer;
 
 
-    SubBuffer = Buffer;
-    SubString = Buffer;
-
-    while (SubString)
+    while (*SubBuffer)
     {
-        /* Find the target string */
+        /* 
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
 
-        SubString = strstr (SubBuffer, "\n");
-        if (!SubString)
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*') &&
+            (SubBuffer[2] == '!'))
         {
-            return;
+            SubBuffer = strstr (SubBuffer, "!*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
         }
 
-        SubBuffer = AsInsertData (SubString, "\r", 1);
-        SubBuffer += 1;
+        /* Ignore comments */
+
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*'))
+        {
+            SubBuffer = strstr (SubBuffer, "*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            SubBuffer += 2;
+        }
+
+        /* Ignore quoted strings */
+
+        if (SubBuffer[0] == '\"')
+        {
+            SubBuffer++;
+            SubBuffer = AsSkipPastChar (SubBuffer, '\"');
+            if (!SubBuffer)
+            {
+                return;
+            }
+        }
+
+
+        /* 
+         * Only lower case if we have an upper followed by a lower 
+         * This leaves the all-uppercase things (macros, etc.) intact
+         */
+
+        if ((isupper (SubBuffer[0])) &&
+            (islower (SubBuffer[1])))
+        {
+            *SubBuffer = (char) tolower (*SubBuffer);
+        }
+
+        SubBuffer++;
     }
-    return;
+
 }
 
 
@@ -629,97 +558,49 @@ AsBracesOnSameLine (
     char                    *SubBuffer = Buffer;
     char                    *Beginning;
     char                    *StartOfThisLine;
-    BOOLEAN                 BlockBegin = TRUE;
+    char                    Tmp;
 
 
     while (*SubBuffer)
     {
-        /* Ignore comments */
-
-        if ((SubBuffer[0] == '/') &&
-            (SubBuffer[1] == '*'))
-        {
-            SubBuffer = strstr (SubBuffer, "*/");
-            if (!SubBuffer)
-            {
-                return;
-            }
-
-            SubBuffer += 2;
-            continue;
-        }
-
-        /* Ignore quoted strings */
-
-        if (*SubBuffer == '\"')
-        {
-            SubBuffer++;
-            SubBuffer = AsSkipPastChar (SubBuffer, '\"');
-            if (!SubBuffer)
-            {
-                return;
-            }
-        }
-
-        if (!strncmp ("\n}", SubBuffer, 2))
-        {
-            /*
-             * A newline followed by a closing brace closes a function
-             * or struct or initializer block
-             */
-            BlockBegin = TRUE;
-        }
-
-        /* Move every standalone brace up to the previous line */
-
         if (*SubBuffer == '{')
         {
-            if (BlockBegin)
+            /* 
+             * Backup to previous non-whitespace
+             */
+
+            Beginning = SubBuffer - 1;
+            while ((*Beginning == ' ')   ||
+                   (*Beginning == '\n'))
             {
-                BlockBegin = FALSE;
+                Beginning--;
+            }
+
+            StartOfThisLine = Beginning;
+            while (*StartOfThisLine != '\n')
+            {
+                StartOfThisLine--;
+            }
+
+            Beginning++;
+            Tmp = *Beginning;
+            *Beginning = 0;
+
+            if ((strstr (StartOfThisLine, " if"))   ||
+                (strstr (StartOfThisLine, " for"))  ||
+                (strstr (StartOfThisLine, " else")) ||
+                (strstr (StartOfThisLine, " while")))
+            {
+                SubBuffer++;
+                Length = strlen (SubBuffer);
+                memmove (Beginning + 2, SubBuffer, Length+3);
+
+                memmove (Beginning, " {", 2);
+                /* memmove (Beginning, " {\n", 3); */
             }
             else
             {
-                /*
-                 * Backup to previous non-whitespace
-                 */
-                Beginning = SubBuffer - 1;
-                while ((*Beginning == ' ')   ||
-                       (*Beginning == '\n'))
-                {
-                    Beginning--;
-                }
-
-                StartOfThisLine = Beginning;
-                while (*StartOfThisLine != '\n')
-                {
-                    StartOfThisLine--;
-                }
-
-                /*
-                 * Move the brace up to the previous line, UNLESS:
-                 *
-                 * 1) There is a conditional compile on the line (starts with '#')
-                 * 2) Previous line ends with an '=' (Start of initializer block)
-                 * 3) Previous line ends with a comma (part of an init list)
-                 *
-                 */
-                if ((StartOfThisLine[1] != '#') &&
-                    (*Beginning != '=') &&
-                    (*Beginning != ','))
-                {
-                    Beginning++;
-                    SubBuffer++;
-                    Length = strlen (SubBuffer);
-
-                    Gbl_MadeChanges = TRUE;
-
-#ifdef ADD_EXTRA_WHITESPACE
-                    AsReplaceData (Beginning, SubBuffer-Beginning, " {\n", 3);
-#else
-                    AsReplaceData (Beginning, SubBuffer-Beginning, " {", 2);
-#endif
-                }
+                *Beginning = Tmp;
             }
         }
 
@@ -730,9 +611,361 @@ AsBracesOnSameLine (
 
 /******************************************************************************
  *
+ * FUNCTION:    AsRemoveStatement 
+ *
+ * DESCRIPTION: Remove all statements that contain the given keyword.
+ *              Limitations:  Removes text from the start of the line that 
+ *              contains the keyword to the next semicolon.  Currently
+ *              doesn't ignore comments.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveStatement (
+    char                    *Buffer,
+    char                    *Keyword)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    int                     StrLength;
+
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+
+    while (SubString)
+    {
+        SubString = strstr (SubBuffer, Keyword);
+
+        if (SubString)
+        {
+            SubBuffer = SubString;
+
+            /* Find start of this line */
+
+            while (*SubString != '\n')
+            {
+                SubString--;
+            }
+            SubString++;
+
+            /* Find end of this statement */
+
+            SubBuffer = AsSkipPastChar (SubBuffer, ';');
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            /* Find end of this line */
+
+            SubBuffer = AsSkipPastChar (SubBuffer, '\n');
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            /* If next line is blank, remove it too */
+
+            if (*SubBuffer == '\n')
+            {
+                SubBuffer++;
+            }
+
+            StrLength = strlen (SubBuffer);
+
+            memmove (SubString, SubBuffer, StrLength+1);
+            SubBuffer = SubString;
+        }
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveConditionalCompile
+ *
+ * DESCRIPTION: Remove a "#ifdef" statement, and all text that it encompasses.
+ *              Limitations: cannot handle nested ifdefs.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveConditionalCompile (
+    char                    *Buffer,
+    char                    *Keyword)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    char                    *IfPtr;
+    char                    *EndifPtr;
+    char                    *ElsePtr;
+    char                    *Comment;
+    int                     StrLength;
+
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+
+    while (SubString)
+    {
+        Comment = strstr (SubString, "/*");
+        SubBuffer = strstr (SubString, Keyword);
+        if (!SubBuffer)
+        {
+            return;
+        }
+
+        if ((Comment) &&
+            (Comment < SubBuffer))
+        {
+            SubString = strstr (Comment, "*/");
+            if (!SubString)
+            {
+                return;
+            }
+
+            SubString += 2;
+            continue;
+        }
+
+        SubString = SubBuffer;
+
+        /* Find start of this line */
+
+        while (*SubString != '\n' && (SubString > Buffer))
+        {
+            SubString--;
+        }
+        SubString++;
+
+
+        /* Find the "#ifxxxx" */
+
+        IfPtr = strstr (SubString, "#if");
+        if (!IfPtr)
+        {
+            return;
+        }
+
+        if (IfPtr > SubBuffer)
+        {
+            /* Not the right #if */
+
+            SubString = SubBuffer + strlen (Keyword);
+            continue;
+        }
+
+        /* Find closing #endif or #else */
+
+        EndifPtr = strstr (SubBuffer, "#endif");
+        if (!EndifPtr)
+        {
+            /* There has to be an #endif */
+
+            return;
+        }
+
+        ElsePtr = strstr (SubBuffer, "#else");
+        if ((ElsePtr) &&
+            (EndifPtr > ElsePtr))
+        {
+            /* This #ifdef contains an #else clause */
+
+            /* Find end of this line */
+
+            SubBuffer = AsSkipPastChar (ElsePtr, '\n');
+            if (!SubBuffer)
+            {
+                return;
+            }
+        
+            /* Remove the #ifdef .... #else code */
+
+            StrLength = strlen (SubBuffer);
+            memmove (SubString, SubBuffer, StrLength+1);
+
+            /* Next, we will remove the #endif statement */
+
+            EndifPtr = strstr (SubString, "#endif");
+            if (!EndifPtr)
+            {
+                /* There has to be an #endif */
+
+                return;
+            }
+
+            SubString = EndifPtr;
+        }
+
+        /* Remove the ... #endif part */
+
+        /* Find end of this line */
+
+        SubBuffer = AsSkipPastChar (EndifPtr, '\n');
+        if (!SubBuffer)
+        {
+            return;
+        }
+
+        StrLength = strlen (SubBuffer);
+
+        memmove (SubString, SubBuffer, StrLength+1);
+        SubBuffer = SubString;
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveLine
+ *
+ * DESCRIPTION: Remove every line that contains the keyword.  Does not
+ *              skip comments.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveLine (
+    char                    *Buffer,
+    char                    *Keyword)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    int                     StrLength;
+
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+
+    while (SubString)
+    {
+        SubString = strstr (SubBuffer, Keyword);
+
+        if (SubString)
+        {
+            SubBuffer = SubString;
+
+            /* Find start of this line */
+
+            while (*SubString != '\n')
+            {
+                SubString--;
+            }
+            SubString++;
+
+            /* Find end of this line */
+
+            SubBuffer = AsSkipPastChar (SubBuffer, '\n');
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            StrLength = strlen (SubBuffer);
+
+            memmove (SubString, SubBuffer, StrLength+1);
+            SubBuffer = SubString;
+        }
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveEmptyBlocks
+ *
+ * DESCRIPTION: Remove any C blocks (e.g., if {}) that contain no code.  This
+ *              can happen as a result of removing lines such as DEBUG_PRINT.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveEmptyBlocks (
+    char                    *Buffer,
+    char                    *Filename)
+{
+    char                    *SubBuffer;
+    char                    *BlockStart;
+    BOOLEAN                 EmptyBlock = TRUE;
+    BOOLEAN                 AnotherPassRequired = TRUE;
+    UINT32                  BlockCount = 0;
+
+
+    while (AnotherPassRequired)
+    {
+        SubBuffer = Buffer;
+        AnotherPassRequired = FALSE;
+
+        while (*SubBuffer)
+        {
+            if (*SubBuffer == '{')
+            {
+                BlockStart = SubBuffer;
+                EmptyBlock = TRUE;
+
+                SubBuffer++;
+                while (*SubBuffer != '}')
+                {
+                    if ((*SubBuffer != ' ') &&
+                        (*SubBuffer != '\n'))
+                    {
+                        EmptyBlock = FALSE;
+                        break;
+                    }
+                    SubBuffer++;
+                }
+
+                if (EmptyBlock)
+                {
+                    /* Find start of the first line of the block */
+
+                    while (*BlockStart != '\n')
+                    {
+                        BlockStart--;
+                    }
+
+                    /* Find end of the last line of the block */
+
+                    SubBuffer = AsSkipUntilChar (SubBuffer, '\n');
+                    if (!SubBuffer)
+                    {
+                        break;
+                    }
+
+                    memmove (BlockStart, SubBuffer, strlen (SubBuffer) +1);
+
+                    SubBuffer = BlockStart;
+                    BlockCount++;
+                    AnotherPassRequired = TRUE;
+                    continue;
+                }
+
+            }
+
+            SubBuffer++;
+        }
+    }
+
+
+    if (BlockCount)
+    {
+        AsPrint ("Code blocks deleted", BlockCount, Filename);
+    }
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AsTabify4
  *
- * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is
+ * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is 
  *              preserved.
  *
  ******************************************************************************/
@@ -747,30 +980,18 @@ AsTabify4 (
     UINT32                  Column = 0;
 
 
+
+
     while (*SubBuffer)
     {
         if (*SubBuffer == '\n')
         {
             Column = 0;
         }
+
         else
         {
             Column++;
-        }
-
-        /* Ignore comments */
-
-        if ((SubBuffer[0] == '/') &&
-            (SubBuffer[1] == '*'))
-        {
-            SubBuffer = strstr (SubBuffer, "*/");
-            if (!SubBuffer)
-            {
-                return;
-            }
-
-            SubBuffer += 2;
-            continue;
         }
 
         /* Ignore quoted strings */
@@ -796,11 +1017,10 @@ AsTabify4 (
 
                 NewSubBuffer = (SubBuffer + 1) - 4;
                 *NewSubBuffer = '\t';
-                NewSubBuffer++;
 
-                /* Remove the spaces */
-
-                SubBuffer = AsRemoveData (NewSubBuffer, SubBuffer + 1);
+                SubBuffer++;
+                memmove ((NewSubBuffer + 1), SubBuffer, strlen (SubBuffer) + 1);
+                SubBuffer = NewSubBuffer;
             }
 
             if ((Column % 4) == 0)
@@ -808,6 +1028,7 @@ AsTabify4 (
                 SpaceCount = 0;
             }
         }
+
         else
         {
             SpaceCount = 0;
@@ -822,7 +1043,7 @@ AsTabify4 (
  *
  * FUNCTION:    AsTabify8
  *
- * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is
+ * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is 
  *              preserved.
  *
  ******************************************************************************/
@@ -833,141 +1054,30 @@ AsTabify8 (
 {
     char                    *SubBuffer = Buffer;
     char                    *NewSubBuffer;
-    char                    *CommentEnd = NULL;
     UINT32                  SpaceCount = 0;
     UINT32                  Column = 0;
     UINT32                  TabCount = 0;
     UINT32                  LastLineTabCount = 0;
-    UINT32                  LastLineColumnStart = 0;
-    UINT32                  ThisColumnStart = 0;
-    UINT32                  ThisTabCount =  0;
-    char                    *FirstNonBlank = NULL;
+
 
 
     while (*SubBuffer)
     {
         if (*SubBuffer == '\n')
         {
-            /* This is a standalone blank line */
-
-            FirstNonBlank = NULL;
             Column = 0;
-            SpaceCount = 0;
+//            LastLineTabCount = 0;
             TabCount = 0;
-            SubBuffer++;
-            continue;
         }
 
-        if (!FirstNonBlank)
+        else
         {
-            /* Find the first non-blank character on this line */
-
-            FirstNonBlank = SubBuffer;
-            while (*FirstNonBlank == ' ')
-            {
-                FirstNonBlank++;
-            }
-
-            /*
-             * This mechanism limits the difference in tab counts from
-             * line to line.  It helps avoid the situation where a second
-             * continuation line (which was indented correctly for tabs=4) would
-             * get indented off the screen if we just blindly converted to tabs.
-             */
-            ThisColumnStart = FirstNonBlank - SubBuffer;
-
-            if (LastLineTabCount == 0)
-            {
-                ThisTabCount = 0;
-            }
-            else if (ThisColumnStart == LastLineColumnStart)
-            {
-                ThisTabCount = LastLineTabCount -1;
-            }
-            else
-            {
-                ThisTabCount = LastLineTabCount + 1;
-            }
+            Column++;
         }
 
-        Column++;
-
-        /* Check if we are in a comment */
-
-        if ((SubBuffer[0] == '*') &&
-            (SubBuffer[1] == '/'))
-        {
-            SpaceCount = 0;
-            SubBuffer += 2;
-
-            if (*SubBuffer == '\n')
-            {
-                if (TabCount > 0)
-                {
-                    LastLineTabCount = TabCount;
-                    TabCount = 0;
-                }
-                FirstNonBlank = NULL;
-                LastLineColumnStart = ThisColumnStart;
-                SubBuffer++;
-            }
-
-            continue;
-        }
-
-        /* Check for comment open */
-
-        if ((SubBuffer[0] == '/') &&
-            (SubBuffer[1] == '*'))
-        {
-            /* Find the end of the comment, it must exist */
-
-            CommentEnd = strstr (SubBuffer, "*/");
-            if (!CommentEnd)
-            {
-                return;
-            }
-
-            /* Toss the rest of this line or single-line comment */
-
-            while ((SubBuffer < CommentEnd) &&
-                   (*SubBuffer != '\n'))
-            {
-                SubBuffer++;
-            }
-
-            if (*SubBuffer == '\n')
-            {
-                if (TabCount > 0)
-                {
-                    LastLineTabCount = TabCount;
-                    TabCount = 0;
-                }
-                FirstNonBlank = NULL;
-                LastLineColumnStart = ThisColumnStart;
-            }
-
-            SpaceCount = 0;
-            continue;
-        }
-
-        /* Ignore quoted strings */
-
-        if ((!CommentEnd) && (*SubBuffer == '\"'))
-        {
-            SubBuffer++;
-            SubBuffer = AsSkipPastChar (SubBuffer, '\"');
-            if (!SubBuffer)
-            {
-                return;
-            }
-            SpaceCount = 0;
-        }
 
         if (*SubBuffer != ' ')
         {
-            /* Not a space, skip to end of line */
-
             SubBuffer = AsSkipUntilChar (SubBuffer, '\n');
             if (!SubBuffer)
             {
@@ -976,45 +1086,67 @@ AsTabify8 (
             if (TabCount > 0)
             {
                 LastLineTabCount = TabCount;
-                TabCount = 0;
             }
-
-            FirstNonBlank = NULL;
-            LastLineColumnStart = ThisColumnStart;
+            
+            TabCount = 0;
             Column = 0;
             SpaceCount = 0;
+            SubBuffer++;
+            continue;
         }
-        else
+
+
+        SpaceCount++;
+
+        if (SpaceCount >= 4)
         {
-            /* Another space */
+            SpaceCount = 0;
 
-            SpaceCount++;
+            NewSubBuffer = SubBuffer - 4;
 
-            if (SpaceCount >= 4)
+            if (TabCount <= LastLineTabCount ? (LastLineTabCount + 1) : 0)
             {
-                /* Replace this group of spaces with a tab character */
-
-                SpaceCount = 0;
-
-                NewSubBuffer = SubBuffer - 3;
-
-                if (TabCount <= ThisTabCount ? (ThisTabCount +1) : 0)
-                {
-                    *NewSubBuffer = '\t';
-                    NewSubBuffer++;
-                    SubBuffer++;
-                    TabCount++;
-                }
-
-                /* Remove the spaces */
-
-                SubBuffer = AsRemoveData (NewSubBuffer, SubBuffer);
-                continue;
+                NewSubBuffer++;
+                *NewSubBuffer = '\t';
+                SubBuffer++;
+                TabCount++;
             }
+
+            memmove ((NewSubBuffer + 1), SubBuffer, strlen (SubBuffer) + 1);
+            SubBuffer = NewSubBuffer;
         }
 
         SubBuffer++;
+
     }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveDebugMacros 
+ *
+ * DESCRIPTION: Remove all "Debug" macros -- macros that produce debug output.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveDebugMacros (
+    char                    *Buffer)
+{
+
+
+    AsRemoveStatement (Buffer, "DEBUG_PRINT");
+    AsRemoveStatement (Buffer, "DEBUG_EXEC");
+    AsRemoveStatement (Buffer, "FUNCTION_TRACE");
+    AsRemoveStatement (Buffer, "DUMP_");
+
+    AsReplaceString ("return_VOID",         "return", Buffer);
+    AsReplaceString ("return_PTR",          "return", Buffer);
+    AsReplaceString ("return_ACPI_STATUS",  "return", Buffer);
+    AsReplaceString ("return_VALUE",        "return", Buffer);
+
+    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG");
 }
 
 
@@ -1031,7 +1163,7 @@ UINT32
 AsCountLines (
     char                    *Buffer,
     char                    *Filename)
-{
+{   
     char                    *SubBuffer = Buffer;
     char                    *EndOfLine;
     UINT32                  LineCount = 0;
@@ -1050,12 +1182,12 @@ AsCountLines (
         if ((EndOfLine - SubBuffer) > 80)
         {
             LongLineCount++;
-            VERBOSE_PRINT (("long: %.80s\n", SubBuffer));
         }
 
         LineCount++;
         SubBuffer = EndOfLine + 1;
     }
+
 
     if (LongLineCount)
     {
@@ -1080,7 +1212,7 @@ void
 AsCountTabs (
     char                    *Buffer,
     char                    *Filename)
-{
+{   
     UINT32                  i;
     UINT32                  TabCount = 0;
 
@@ -1116,7 +1248,7 @@ void
 AsCountNonAnsiComments (
     char                    *Buffer,
     char                    *Filename)
-{
+{   
     char                    *SubBuffer = Buffer;
     UINT32                  CommentCount = 0;
 
@@ -1138,12 +1270,11 @@ AsCountNonAnsiComments (
     }
 }
 
-
 /******************************************************************************
  *
  * FUNCTION:    AsCountSourceLines
  *
- * DESCRIPTION: Count the number of C source lines.  Defined by 1) not a
+ * DESCRIPTION: Count the number of C source lines.  Defined by 1) not a 
  *              comment, and 2) not a blank line.
  *
  ******************************************************************************/
@@ -1152,7 +1283,7 @@ void
 AsCountSourceLines (
     char                    *Buffer,
     char                    *Filename)
-{
+{   
     char                    *SubBuffer = Buffer;
     UINT32                  LineCount = 0;
     UINT32                  WhiteCount = 0;
@@ -1169,8 +1300,7 @@ AsCountSourceLines (
             CommentCount++;
             SubBuffer += 2;
 
-            while (SubBuffer[0] && SubBuffer[1] &&
-                    !(((SubBuffer[0] == '*') &&
+            while (!(((SubBuffer[0] == '*') &&
                       (SubBuffer[1] == '/'))))
             {
                 if (SubBuffer[0] == '\n')
@@ -1179,13 +1309,13 @@ AsCountSourceLines (
                 }
 
                 SubBuffer++;
-            }
+            } 
         }
 
         /* A linefeed followed by a non-linefeed is a valid source line */
 
         else if ((SubBuffer[0] == '\n') &&
-                 (SubBuffer[1] != '\n'))
+                 (SubBuffer[1] != '\n')) 
         {
             LineCount++;
         }
@@ -1193,7 +1323,7 @@ AsCountSourceLines (
         /* Two back-to-back linefeeds indicate a whitespace line */
 
         else if ((SubBuffer[0] == '\n') &&
-                 (SubBuffer[1] == '\n'))
+                 (SubBuffer[1] == '\n')) 
         {
             WhiteCount++;
         }
@@ -1205,234 +1335,96 @@ AsCountSourceLines (
 
     CommentCount -= LINES_IN_LEGAL_HEADER;
 
+
     Gbl_SourceLines += LineCount;
     Gbl_WhiteLines += WhiteCount;
     Gbl_CommentLines += CommentCount;
 
-    VERBOSE_PRINT (("%d Comment %d White %d Code %d Lines in %s\n",
+    VERBOSE_PRINT (("%d Comment %d White %d Code %d Lines in %s\n", 
                 CommentCount, WhiteCount, LineCount, LineCount+WhiteCount+CommentCount, Filename));
 }
 
 
+
 /******************************************************************************
  *
- * FUNCTION:    AsInsertPrefix
+ * FUNCTION:    AsUppercaseTokens
  *
- * DESCRIPTION: Insert struct or union prefixes
+ * DESCRIPTION: Force to uppercase all tokens that begin with the prefix string.
+ *              used to convert mixed-case macros and constants to uppercase.
  *
  ******************************************************************************/
 
 void
-AsInsertPrefix (
+AsUppercaseTokens (
     char                    *Buffer,
-    char                    *Keyword,
-    UINT8                   Type)
+    char                    *PrefixString)
 {
-    char                    *SubString;
     char                    *SubBuffer;
-    char                    *EndKeyword;
-    int                     StrLength;
-    int                     InsertLength;
-    char                    *InsertString;
-    int                     TrailingSpaces;
-    char                    LowerKeyword[128];
-    int                     KeywordLength;
+    char                    *TokenEnd;
+    char                    *SubString;
+    int                     i;
+    UINT32                  Length;
 
 
-    switch (Type)
-    {
-    case SRC_TYPE_STRUCT:
-        InsertString = "struct ";
-        break;
-
-    case SRC_TYPE_UNION:
-        InsertString = "union ";
-        break;
-
-    default:
-        return;
-    }
-
-    strcpy (LowerKeyword, Keyword);
-    strlwr (LowerKeyword);
 
     SubBuffer = Buffer;
-    SubString = Buffer;
-    InsertLength = strlen (InsertString);
-    KeywordLength = strlen (Keyword);
 
-
-    while (SubString)
+    while (SubBuffer)
     {
-        /* Find an instance of the keyword */
-
-        SubString = strstr (SubBuffer, LowerKeyword);
-
-        if (!SubString)
+        SubBuffer = strstr (SubBuffer, PrefixString);
+        if (SubBuffer)
         {
-            return;
-        }
+            TokenEnd = SubBuffer;
+            while ((isalnum (*TokenEnd)) || (*TokenEnd == '_'))
+            {   
+                TokenEnd++;
+            }
 
-        SubBuffer = SubString;
 
-        /* Must be standalone word, not a substring */
-
-        if (AsMatchExactWord (SubString, KeywordLength))
-        {
-            /* Make sure the keyword isn't already prefixed with the insert */
-
-            if (!strncmp (SubString - InsertLength, InsertString, InsertLength))
+            for (i = 0; i < (TokenEnd - SubBuffer); i++)
             {
-                /* Add spaces if not already at the end-of-line */
+                if ((islower (SubBuffer[i])) &&
+                    (isupper (SubBuffer[i+1])))
 
-                if (*(SubBuffer + KeywordLength) != '\n')
                 {
-                    /* Already present, add spaces after to align structure members */
 
-                    AsInsertData (SubBuffer + KeywordLength, "        ", 8);
+                    SubString = TokenEnd;
+                    Length = 0;
+
+                    while (*SubString != '\n')
+                    {
+                        if ((SubString[0] == ' ') &&
+                            (SubString[1] == ' '))
+                        {
+                            Length = SubString - &SubBuffer[i] - 2;
+                            break;
+                        }
+
+                        SubString++;
+                    }
+
+
+                    if (!Length)
+                    {
+                        Length = strlen (&SubBuffer[i+1]);
+                    }
+
+                    memmove (&SubBuffer[i+2], &SubBuffer[i+1], (Length+1));
+                    SubBuffer[i+1] = '_';
+                    i +=2;
+                    TokenEnd++;
                 }
-                goto Next;
             }
 
-            /* Make sure the keyword isn't at the end of a struct/union */
-            /* Note: This code depends on a single space after the brace */
-
-            if (*(SubString - 2) == '}')
+            for (i = 0; i < (TokenEnd - SubBuffer); i++)
             {
-                goto Next;
+                SubBuffer[i] = (char) toupper (SubBuffer[i]);
             }
 
-            /* Prefix the keyword with the insert string */
-
-            Gbl_MadeChanges = TRUE;
-            StrLength = strlen (SubString);
-
-            /* Is there room for insertion */
-
-            EndKeyword = SubString + strlen (LowerKeyword);
-
-            TrailingSpaces = 0;
-            while (EndKeyword[TrailingSpaces] == ' ')
-            {
-                TrailingSpaces++;
-            }
-
-            /*
-             * Use "if (TrailingSpaces > 1)" if we want to ignore casts
-             */
-            SubBuffer = SubString + InsertLength;
-
-            if (TrailingSpaces > InsertLength)
-            {
-                /* Insert the keyword */
-
-                memmove (SubBuffer, SubString, KeywordLength);
-
-                /* Insert the keyword */
-
-                memmove (SubString, InsertString, InsertLength);
-            }
-            else
-            {
-                AsInsertData (SubString, InsertString, InsertLength);
-            }
+            SubBuffer = TokenEnd;
         }
-
-Next:
-        SubBuffer += KeywordLength;
     }
 }
-
-#ifdef ACPI_FUTURE_IMPLEMENTATION
-/******************************************************************************
- *
- * FUNCTION:    AsTrimComments
- *
- * DESCRIPTION: Finds 3-line comments with only a single line of text
- *
- ******************************************************************************/
-
-void
-AsTrimComments (
-    char                    *Buffer,
-    char                    *Filename)
-{
-    char                    *SubBuffer = Buffer;
-    char                    *Ptr1;
-    char                    *Ptr2;
-    UINT32                  LineCount;
-    UINT32                  ShortCommentCount = 0;
-
-
-    while (1)
-    {
-        /* Find comment open, within procedure level */
-
-        SubBuffer = strstr (SubBuffer, "    /*");
-        if (!SubBuffer)
-        {
-            goto Exit;
-        }
-
-        /* Find comment terminator */
-
-        Ptr1 = strstr (SubBuffer, "*/");
-        if (!Ptr1)
-        {
-            goto Exit;
-        }
-
-        /* Find next EOL (from original buffer) */
-
-        Ptr2 = strstr (SubBuffer, "\n");
-        if (!Ptr2)
-        {
-            goto Exit;
-        }
-
-        /* Ignore one-line comments */
-
-        if (Ptr1 < Ptr2)
-        {
-            /* Normal comment, ignore and continue; */
-
-            SubBuffer = Ptr2;
-            continue;
-        }
-
-        /* Examine multi-line comment */
-
-        LineCount = 1;
-        while (Ptr1 > Ptr2)
-        {
-            /* Find next EOL */
-
-            Ptr2++;
-            Ptr2 = strstr (Ptr2, "\n");
-            if (!Ptr2)
-            {
-                goto Exit;
-            }
-
-            LineCount++;
-        }
-
-        SubBuffer = Ptr1;
-
-        if (LineCount <= 3)
-        {
-            ShortCommentCount++;
-        }
-    }
-
-
-Exit:
-
-    if (ShortCommentCount)
-    {
-        AsPrint ("Short Comments found", ShortCommentCount, Filename);
-    }
-}
-#endif
 
 
