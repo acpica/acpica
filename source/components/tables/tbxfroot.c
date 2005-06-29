@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -531,14 +531,19 @@ AcpiTbScanMemoryForRsdp (
             /* Checksum valid, we have found a valid RSDP */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                "RSDP located at physical address %p\n",MemRover));
+                "RSDP located at physical address %p\n", MemRover));
             return_PTR (MemRover);
         }
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Found an RSDP at physical address %p, but it has a bad checksum\n",
+            MemRover));
     }
 
     /* Searched entire block, no RSDP was found */
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,"Searched entire block, no RSDP was found.\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "Searched entire block, no valid RSDP was found.\n"));
     return_PTR (NULL);
 }
 
