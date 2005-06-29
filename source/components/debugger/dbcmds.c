@@ -211,7 +211,7 @@ AcpiDbWalkForReferences (
 
 void
 AcpiDbFindReferences (
-    char                    *ObjectArg)
+    INT8                    *ObjectArg)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
 
@@ -239,7 +239,7 @@ AcpiDbFindReferences (
 
 void
 AcpiDbDisplayTableInfo (
-    char                    *TableArg)
+    INT8                    *TableArg)
 {
     UINT32                  i;
 
@@ -269,8 +269,8 @@ AcpiDbDisplayTableInfo (
 
 void
 AcpiDbUnloadAcpiTable (
-    char                    *TableArg,
-    char                    *InstanceArg)
+    INT8                    *TableArg,
+    INT8                    *InstanceArg)
 {
     UINT32                  i;
     ACPI_STATUS             Status;
@@ -314,7 +314,7 @@ AcpiDbUnloadAcpiTable (
 
 void
 AcpiDbSetMethodBreakpoint (
-    char                    *Location,
+    INT8                    *Location,
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op)
 {
@@ -389,7 +389,7 @@ AcpiDbSetMethodCallBreakpoint (
 
 void
 AcpiDbDisassembleAml (
-    char                    *Statements,
+    INT8                    *Statements,
     ACPI_GENERIC_OP         *Op)
 {
     UINT32                  NumStatements = 8;
@@ -425,8 +425,8 @@ AcpiDbDisassembleAml (
 
 void
 AcpiDbDumpNamespace (
-    char                    *StartArg,
-    char                    *DepthArg)
+    INT8                    *StartArg,
+    INT8                    *DepthArg)
 {
     ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootObject;
     UINT32                  MaxDepth = ACPI_UINT32_MAX;
@@ -503,8 +503,8 @@ AcpiDbDumpNamespace (
 
 void
 AcpiDbDumpNamespaceByOwner (
-    char                    *OwnerArg,
-    char                    *DepthArg)
+    INT8                    *OwnerArg,
+    INT8                    *DepthArg)
 {
     ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootObject;
     UINT32                  MaxDepth = ACPI_UINT32_MAX;
@@ -547,7 +547,7 @@ AcpiDbDumpNamespaceByOwner (
 
 void
 AcpiDbSendNotify (
-    char                    *Name,
+    INT8                    *Name,
     UINT32                  Value)
 {
     ACPI_NAMED_OBJECT       *Entry;
@@ -595,11 +595,11 @@ AcpiDbSendNotify (
 
 void
 AcpiDbSetMethodData (
-    char                    *TypeArg,
-    char                    *IndexArg,
-    char                    *ValueArg)
+    INT8                    *TypeArg,
+    INT8                    *IndexArg,
+    INT8                    *ValueArg)
 {
-    char                    Type;
+    INT8                    Type;
     UINT32                  Index;
     UINT32                  Value;
     ACPI_WALK_STATE         *WalkState;
@@ -697,7 +697,7 @@ AcpiDbWalkForSpecificObjects (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
     UINT32                  BufSize;
-    char                    buffer[64];
+    INT8                    buffer[64];
 
 
     ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
@@ -763,8 +763,8 @@ AcpiDbWalkForSpecificObjects (
 
 ACPI_STATUS
 AcpiDbDisplayObjects (
-    char                    *ObjTypeArg,
-    char                    *DisplayCountArg)
+    INT8                    *ObjTypeArg,
+    INT8                    *DisplayCountArg)
 {
     UINT32                  DisplayCount;
     OBJECT_TYPE_INTERNAL    Type;
@@ -823,10 +823,10 @@ AcpiDbWalkAndMatchName (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
-    char                    *RequestedName = (char *) Context;
+    INT8                    *RequestedName = (INT8 *) Context;
     UINT32                  i;
     UINT32                  BufSize;
-    char                    Buffer[96];
+    INT8                    Buffer[96];
 
 
     ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
@@ -839,7 +839,7 @@ AcpiDbWalkAndMatchName (
         /* Wildcard support */
 
         if ((RequestedName[i] != '?') &&
-            (RequestedName[i] != ((char *)(&((ACPI_NAMED_OBJECT*)ObjHandle)->Name))[i]))
+            (RequestedName[i] != ((INT8 *)(&((ACPI_NAMED_OBJECT*)ObjHandle)->Name))[i]))
         {
             /* No match, just exit */
 
@@ -881,7 +881,7 @@ AcpiDbWalkAndMatchName (
 
 ACPI_STATUS
 AcpiDbFindNameInNamespace (
-    char                    *NameArg)
+    INT8                    *NameArg)
 {
 
     if (STRLEN (NameArg) > 4)
@@ -913,7 +913,7 @@ AcpiDbFindNameInNamespace (
 
 void
 AcpiDbSetScope (
-    char                    *Name)
+    INT8                    *Name)
 {
 
     if (!Name || Name[0] == 0)

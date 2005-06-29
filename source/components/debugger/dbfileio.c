@@ -151,7 +151,7 @@ FILE                    *DebugFile = NULL;
 
 OBJECT_TYPE_INTERNAL
 AcpiDbMatchArgument (
-    char                    *UserArgument,
+    INT8                    *UserArgument,
     ARGUMENT_INFO           *Arguments)
 {
     UINT32                  i;
@@ -221,7 +221,7 @@ AcpiDbCloseDebugFile (
 
 void
 AcpiDbOpenDebugFile (
-    char                    *Name)
+    INT8                    *Name)
 {
 
 #ifdef ACPI_APPLICATION
@@ -255,11 +255,11 @@ AcpiDbOpenDebugFile (
 ACPI_STATUS
 AcpiDbLoadTable(
     FILE                    *fp,
-    char                    **TablePtr,
+    INT8                    **TablePtr,
     UINT32                  *TableLength)
 {
     ACPI_TABLE_HEADER       TableHeader;
-    char                    *AmlPtr;
+    INT8                    *AmlPtr;
     UINT32                  AmlLength;
 
 
@@ -282,7 +282,7 @@ AcpiDbLoadTable(
 
     /* Allocate a buffer for the table */
 
-    *TablePtr = (char *) malloc ((size_t) *TableLength);
+    *TablePtr = (INT8 *) malloc ((size_t) *TableLength);
     if (!*TablePtr)
     {
         AcpiOsPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
@@ -328,12 +328,12 @@ AcpiDbLoadTable(
 
 ACPI_STATUS
 AcpiDbLoadAcpiTable (
-    char                    *Filename)
+    INT8                    *Filename)
 {
 #ifdef ACPI_APPLICATION
     FILE                    *fp;
     ACPI_STATUS             Status;
-    char                    *TablePtr;
+    INT8                    *TablePtr;
     UINT32                  TableLength;
     ACPI_TABLE_DESC         TableInfo;
 
