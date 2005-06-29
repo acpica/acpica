@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.157 $
+ *              $Revision: 1.158 $
  *
  ******************************************************************************/
 
@@ -217,7 +217,7 @@ AcpiNsRootInitialize (void)
             switch (InitVal->Type)
             {
             case ACPI_TYPE_METHOD:
-                ObjDesc->Method.ParamCount = 
+                ObjDesc->Method.ParamCount =
                         (UINT8) ACPI_STRTOUL (InitVal->Val, NULL, 10);
                 ObjDesc->Common.Flags |= AOPOBJ_DATA_VALID;
 
@@ -662,7 +662,7 @@ AcpiNsLookup (
             }
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "Setting current scope to [%4.4s] (%p)\n", 
+                "Setting current scope to [%4.4s] (%p)\n",
                 ThisNode->Name.Ascii, ThisNode));
         }
     }
