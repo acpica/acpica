@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -187,12 +187,10 @@ NsGetType (
         /*  Handle invalid  */
 
         REPORT_WARNING ("NsGetType: Null handle");
-        FUNCTION_EXIT;
-        return TYPE_Any;
+        return_VALUE (TYPE_Any);
     }
 
-    FUNCTION_EXIT;
-    return ((NAME_TABLE_ENTRY *) handle)->Type;
+    return_VALUE (((NAME_TABLE_ENTRY *) handle)->Type);
 }
 
 
@@ -218,12 +216,10 @@ NsGetValue (
         /* handle invalid */
 
         REPORT_WARNING ("NsGetValue: Null handle");
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
-    FUNCTION_EXIT;
-    return ((NAME_TABLE_ENTRY *) handle)->Value;
+    return (((NAME_TABLE_ENTRY *) handle)->Value);
 }
 
 
@@ -249,8 +245,7 @@ IsNsValue (
 
     RetHandle = NsFindValue (ObjDesc, NS_ALL, ACPI_INT_MAX);
 
-    FUNCTION_EXIT;
-    return (RetHandle != (ACPI_HANDLE) 0);
+    return_VALUE ((RetHandle != (ACPI_HANDLE) 0));
 }
 
 
@@ -277,12 +272,10 @@ NsLocal (
         /*  type code out of range  */
 
         REPORT_WARNING ("NsLocal: Type code out of range");
-        FUNCTION_EXIT;
-        return 0;
+        return_VALUE (0);
     }
 
-    FUNCTION_EXIT;
-    return NsProperties[Type] & LOCAL;
+    return_VALUE (NsProperties[Type] & LOCAL);
 }
 
 
@@ -308,8 +301,9 @@ NsInternalizeName (
 {
     char                    *Result = NULL;
     char                    *InternalName;
-    ACPI_SIZE               i;
+    ACPI_SIZE               NumSegments;
     BOOLEAN                 FullyQualified = FALSE;
+    UINT32                  Length;
 
 
     FUNCTION_TRACE ("NsInternalizeName");
@@ -317,8 +311,7 @@ NsInternalizeName (
 
     if (!DottedName || !ConvertedName)
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
 
@@ -336,13 +329,32 @@ NsInternalizeName (
         DottedName++;
     }
 
-    i = (strlen (DottedName) + 1) / PATH_SEGMENT_LENGTH;    /* i = number of NameSegs in the path */
+    Length = strlen (DottedName);
+    NumSegments = (Length + 1) / PATH_SEGMENT_LENGTH;    /* Number of NameSegs in the path */
 
-    InternalName = CmCallocate ((ACPI_NAME_SIZE * i) + 4);
+    /* Name must be at least 4 characters */
+
+    if (Length < 4)
+    {
+        return_ACPI_STATUS (AE_BAD_PATHNAME);
+    }
+
+    /* Pathname must be an exact multiple of segments */
+
+    if (Length > 4)
+    {
+        if ((Length + 1) % PATH_SEGMENT_LENGTH)
+        {
+            return_ACPI_STATUS (AE_BAD_PATHNAME);
+        }
+    }
+
+    /* We need a segment to store the internal version of the name */
+
+    InternalName = CmCallocate ((ACPI_NAME_SIZE * NumSegments) + 4);
     if (!InternalName)
     {
-        FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-        return AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
 
@@ -352,20 +364,20 @@ NsInternalizeName (
     {
         InternalName[0] = '\\';
         InternalName[1] = AML_MultiNamePrefixOp;
-        InternalName[2] = i;
+        InternalName[2] = NumSegments;
         Result = &InternalName[3];
     }
     else
     {
         InternalName[0] = AML_MultiNamePrefixOp;
-        InternalName[1] = i;
+        InternalName[1] = NumSegments;
         Result = &InternalName[2];
     }
 
 
     /* Build the name (minus path separators) */
 
-    for (; i; i--)
+    for (; NumSegments; NumSegments--)
     {
         strncpy (Result, DottedName, ACPI_NAME_SIZE);
         Result += ACPI_NAME_SIZE;
@@ -390,8 +402,7 @@ NsInternalizeName (
                                 InternalName, &InternalName[2])); 
     }
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -436,4 +447,45 @@ NsConvertHandleToEntry (
 
     return (NAME_TABLE_ENTRY *) Handle;
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    NsTerminate
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: free memory allocated for table storage.
+ *
+ ******************************************************************************/
+
+void
+NsTerminate (void)
+{
+    FUNCTION_TRACE ("NsTerminate");
+
+
+    /*
+     * 1) Free the entire namespace -- all objects and all tables
+     */
+
+    NsDeleteNamespace ();
+
+    DEBUG_PRINT (ACPI_INFO, ("NsTerminate: Namespace freed\n"));
+
+
+    /* 
+     * 2) Now we can delete the ACPI tables 
+     */
+
+    NsDeleteAcpiTables ();
+
+    DEBUG_PRINT (ACPI_INFO, ("NsTerminate: ACPI Tables freed\n"));
+
+	return_VOID;
+}
+
+ 
 

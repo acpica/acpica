@@ -149,6 +149,8 @@ NsDumpPathname (
     UINT32                  Component)
 {
     char                    *Buffer;
+    UINT32                  Length;
+
     
     FUNCTION_TRACE ("NsDumpPathname");
 
@@ -156,27 +158,26 @@ NsDumpPathname (
 
     if (!(DebugLevel & Level) || !(DebugLayer & Component))
     {
-        FUNCTION_EXIT;
-        return AE_OK;
+        return_ACPI_STATUS (AE_OK);
     }
 
     Buffer = CmAllocate (PATHNAME_MAX);
     if (!Buffer)
     {
-        FUNCTION_EXIT;
-        return AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Convert handle to a full pathname and print it (with supplied message) */
 
-    if (ACPI_SUCCESS (NsHandleToPathname (Handle, PATHNAME_MAX, Buffer)))
+    Length = PATHNAME_MAX;
+    if (ACPI_SUCCESS (NsHandleToPathname (Handle, &Length, Buffer)))
     {
         OsdPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
     }
 
     CmFree (Buffer);
-	FUNCTION_EXIT;
-    return AE_OK;
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -481,8 +482,7 @@ NsDumpTables (
          * there is nothing to dump.
          */
         DEBUG_PRINT (TRACE_TABLES, ("NsDumpTables: name space not initialized!\n"));
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
 
     if (NS_ALL == SearchBase)
@@ -495,7 +495,7 @@ NsDumpTables (
 
 
     NsDumpObjects (TYPE_Any, MaxDepth, SearchHandle);
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -520,7 +520,7 @@ NsDumpEntry (
     NsDumpOneObject (Handle, 1, NULL);
     
     DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpEntry %p\n", Handle));
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 

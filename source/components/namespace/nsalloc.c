@@ -170,8 +170,7 @@ NsAllocateNameTable (
 
     DEBUG_PRINT (TRACE_EXEC, ("NsAllocateNameTable: NameTable=%p\n", NameTable));
 
-    FUNCTION_EXIT;
-    return NameTable;
+    return_VALUE (NameTable);
 }
 
 
@@ -267,8 +266,7 @@ NsDeleteNamespace (void)
     REPORT_SUCCESS ("Entire namespace and objects deleted");
     RootObject->Scope = NULL;
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK; 
+    return_ACPI_STATUS (AE_OK); 
 }
 
 
@@ -292,15 +290,14 @@ NsDeleteValue (
 {
     NAME_TABLE_ENTRY        *Entry = Object;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    void                    *ObjPointer = NULL;
+
     
     FUNCTION_TRACE ("NsDeleteValue");
 
     ObjDesc = Entry->Value;
     if (!ObjDesc)
     {
-    	FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
 
     /* Found a valid value */
@@ -314,68 +311,35 @@ NsDeleteValue (
         !IS_NS_HANDLE                   (ObjDesc))*/
     {
 
-        /* Object was allocated, there may be some sub objects that must be deleted */
-
         switch (Entry->Type)
         {
-        case TYPE_DefField:
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Field found %p, container %p (not freeing)\n", 
-                                    ObjDesc, ObjDesc->Field.Container));
-            break;
-
-        case TYPE_String:
-            ObjPointer = ObjDesc->String.Pointer;
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** String found %p, ptr %p\n", 
-                                    ObjDesc, ObjDesc->String.Pointer));
-            break;
-
-        case TYPE_Buffer:
-            ObjPointer = ObjDesc->Buffer.Pointer;
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Buffer found %p, ptr %p\n", 
-                                    ObjDesc, ObjDesc->Buffer.Pointer));
-            break;
-
-        case TYPE_Package:
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Package of count %d\n", 
-                                    ObjDesc->Package.Count));
-            break;
-    
-        case TYPE_Method:
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Method found %p\n", 
-                                    ObjDesc));
-            break;
-
         case TYPE_Lvalue:
-            ObjPointer = ObjDesc->Lvalue.Object;
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Lvalue: %p\n", 
-                                    ObjPointer));
+        case TYPE_String:
+        case TYPE_Buffer:
+            /* 
+             * Object was allocated, and there may be some sub objects that must be deleted.
+             * We don't expect a package object to be in a value field, just delete
+             * the simple object.
+             */
+
+            CmDeleteInternalSimpleObject (ObjDesc);
             break;
 
         default:
+
+            /*
+             * Everything else, just delete the thing.
+             */
+            CmFree (ObjDesc);
             break;
         }
-
-        if (ObjPointer)
-        {
-            if (!AmlIsInPCodeBlock ((UINT8 *)    ObjPointer))
-            {
-                DEBUG_PRINT (ACPI_INFO, ("Deleting Object Pointer %p \n", ObjPointer));
-    
-                CmFree (ObjPointer);
-            }
-        }
-
-
-        DEBUG_PRINT (ACPI_INFO, ("Deleting Object %p \n", ObjDesc));
-    
-        CmFree (ObjDesc);
     }
 
     /* Clear the entry in all cases */
 
     Entry->Value = NULL;
     
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -405,8 +369,7 @@ NsDeleteScope (
 
     if (!Scope)
     {
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
 
     ThisTable = (NAME_TABLE_ENTRY *) Scope;
@@ -433,7 +396,7 @@ NsDeleteScope (
 
     } while (ThisTable);
     
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -489,8 +452,7 @@ NsDeleteAcpiTable (
 
     if (Type > ACPI_TABLE_MAX)
     {
-    	FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
 
 
@@ -542,7 +504,7 @@ NsDeleteAcpiTable (
         break;
     }
 
-	FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -596,8 +558,6 @@ NsFreeAcpiTable (
     TableInfo->Allocation = ACPI_MEM_NOT_ALLOCATED;
     TableInfo->Length     = 0;
 
-    FUNCTION_EXIT;
+    return_VOID;
 }
-
-
 

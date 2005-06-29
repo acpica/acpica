@@ -159,8 +159,7 @@ NsSetup (void)
 
     if (RootObject->Scope)
     {
-        FUNCTION_STATUS_EXIT (AE_OK);
-        return AE_OK;
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* Allocate a root scope table */
@@ -171,8 +170,7 @@ NsSetup (void)
         /*  root name table allocation failure  */
 
         REPORT_ERROR ("Root name table allocation failure");
-        FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-        return AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* 
@@ -208,8 +206,7 @@ NsSetup (void)
             ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
-                FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-                return AE_NO_MEMORY;
+                return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
             else
@@ -240,8 +237,7 @@ NsSetup (void)
                     if (!ObjDesc->String.Pointer)
                     {
                         REPORT_ERROR ("Initial value string allocation failure");
-                        FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-                        return AE_NO_MEMORY;
+                        return_ACPI_STATUS (AE_NO_MEMORY);
                     }
                     else
                     {
@@ -263,8 +259,7 @@ NsSetup (void)
         }
     }
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -309,8 +304,7 @@ NsLookup (
 
     if (!RetEntry)
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     *RetEntry = ENTRY_NOT_FOUND;
@@ -327,14 +321,12 @@ NsLookup (
         {
             if ((Status = NsSetup ()) != AE_OK)
             {
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
+                return_ACPI_STATUS (Status);
             }
         }
         else
         {
-            FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-            return AE_NOT_FOUND;
+            return_ACPI_STATUS (AE_NOT_FOUND);
         }
     }
 
@@ -421,8 +413,7 @@ NsLookup (
                 
                     REPORT_ERROR ("NsLookup: Too many parent prefixes or scope has no parent");
 
-                    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-                    return AE_NOT_FOUND;
+                    return_ACPI_STATUS (AE_NOT_FOUND);
                 }
             }
         }
@@ -493,8 +484,7 @@ NsLookup (
                 }
             }
 
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
+            return_ACPI_STATUS (Status);
         }
 
         if (NumSegments         == 0  &&                    /* If last segment                  */
@@ -539,8 +529,7 @@ NsLookup (
 
                 if (!ThisEntry->Scope)
                 {
-                    FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-                    return AE_NO_MEMORY;
+                    return_ACPI_STATUS (AE_NO_MEMORY);
                 }
             }
 
@@ -553,14 +542,12 @@ NsLookup (
                 if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
                 {
                     REPORT_ERROR ("Name Table allocation failure");
-                    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-                    return AE_NOT_FOUND;
+                    return_ACPI_STATUS (AE_NOT_FOUND);
                 }
 
                 REPORT_ERROR ("Name not found");
 
-                FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-                return AE_NOT_FOUND;
+                return_ACPI_STATUS (AE_NOT_FOUND);
             }
 
 
@@ -601,7 +588,6 @@ NsLookup (
     }
 
     *RetEntry = ThisEntry;
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 

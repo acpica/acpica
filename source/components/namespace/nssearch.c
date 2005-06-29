@@ -238,8 +238,7 @@ NsSearchOnly (
                             EntryName, NameTable[Position].Type, &NameTable[Position]));
             
             *RetEntry = &NameTable[Position];
-            FUNCTION_STATUS_EXIT (AE_OK);
-            return AE_OK;
+            return_ACPI_STATUS (AE_OK);
         }
 
         if (RetInfo)
@@ -288,8 +287,7 @@ NsSearchOnly (
         RetInfo->NameTable  = NameTable;
     }
 
-    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-    return AE_NOT_FOUND;
+    return_ACPI_STATUS (AE_NOT_FOUND);
 }
 
 
@@ -356,8 +354,7 @@ NsSearchParentTree (
             Status = NsSearchOnly (EntryName, ParentScope, TYPE_Any, RetEntry, NULL);
             if (Status == AE_OK)
             {
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
+                return_ACPI_STATUS (Status);
             }
 
             /* Not found here, go up another level (until we reach the root) */
@@ -386,8 +383,7 @@ NsSearchParentTree (
         }
     }
 
-    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-    return AE_NOT_FOUND;
+    return_ACPI_STATUS (AE_NOT_FOUND);
 }
 
 
@@ -464,8 +460,7 @@ NsCreateAndLinkNewTable (
                 NewTable, ParentScope, NameTable->Scope));
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -600,7 +595,7 @@ NsInitializeEntry (
     DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %.4s added to %p at %p\n", 
                                 EntryName, NameTable, NewEntry));
     
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -649,8 +644,7 @@ NsSearchAndEnter (
     if (!NameTable || !EntryName || !RetEntry)
     {
         REPORT_ERROR ("NsSearchAndEnter: bad parameter");
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
 
@@ -664,8 +658,7 @@ NsSearchAndEnter (
         DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** bad name %08lx *** \n", 
                                     *(UINT32 *) EntryName));
 
-        FUNCTION_STATUS_EXIT (AE_BAD_CHARACTER);
-        return AE_BAD_CHARACTER;
+        return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
 
 
@@ -677,8 +670,7 @@ NsSearchAndEnter (
     {
         /* Either found it or there was an error -- finished either way */
 
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
 
@@ -698,8 +690,7 @@ NsSearchAndEnter (
         Status = NsSearchParentTree (EntryName, NameTable, Type, RetEntry);
         if (Status == AE_OK)
         {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
+            return_ACPI_STATUS (Status);
         }
     }
 
@@ -713,8 +704,7 @@ NsSearchAndEnter (
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %.4s Not found in %p [Not adding]\n", 
                                     EntryName, NameTable));
     
-        FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-        return AE_NOT_FOUND;
+        return_ACPI_STATUS (AE_NOT_FOUND);
     }
 
 
@@ -736,8 +726,7 @@ NsSearchAndEnter (
         Status = NsCreateAndLinkNewTable (NameTable);
         if (Status != AE_OK)
         {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
+            return_ACPI_STATUS (Status);
         }
 
         /* Point to the first slot in the new table */
@@ -756,7 +745,6 @@ NsSearchAndEnter (
                         SearchInfo.PreviousEntry);
     *RetEntry = &NameTable[Position];
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
