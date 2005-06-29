@@ -319,12 +319,15 @@ typedef struct /* EVENT */
 } ACPI_OBJECT_Event;
 
 
+#define INFINITE_CONCURRENCY        0xFF
+
 typedef struct /* METHOD */
 {
     ACPI_OBJECT_COMMON
 
-    UINT16                  ParamCount;
     UINT8                   MethodFlags;
+    UINT8                   ParamCount;
+    UINT8                   Concurrency;
     UINT8                   Fill1;
     UINT32                  PcodeLength;
     UINT32                  TableLength;
