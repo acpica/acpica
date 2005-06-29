@@ -155,7 +155,7 @@ AcpiInstallAddressSpaceHandler (
     ACPI_OBJECT_INTERNAL    *HandlerObj;
     NAME_TABLE_ENTRY        *ObjEntry;
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OBJECT_TYPE        Type;
+    OBJECT_TYPE_INTERNAL    Type;
     UINT16                  Flags = 0;
 
 
