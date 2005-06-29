@@ -186,7 +186,7 @@ PsxLoadTable (
 BREAKPOINT3;
 
     CmAcquireMutex (MTX_NAMESPACE);
-    Status = PsParseTable (PcodeAddr, PcodeLength, PsxLoadBeginOp, PsxLoadEndOp, NULL);
+    Status = PsParseTable (PcodeAddr, PcodeLength, PsxLoad2BeginOp, PsxLoad2EndOp, NULL);
     CmReleaseMutex (MTX_NAMESPACE);
 
 
