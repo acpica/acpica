@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.45 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,10 @@
 
 #include "aslcompiler.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#endif
+
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslmain")
 
@@ -149,6 +153,7 @@ Options (
     printf ("Options:\n");
     printf ("    -a               Create AML in a assembler source code file (*.asm)\n");
     printf ("    -c               Create AML in a C source code file (*.c)\n");
+    printf ("    -d               Disassemble AML file\n");
     printf ("    -h               Additional help and compiler debug options\n");
     printf ("    -l               Create listing file (mixed ASL source and AML) (*.lst)\n");
     printf ("    -n               Create namespace file (*.nsp)\n");
@@ -188,7 +193,7 @@ HelpMessage (
     Options ();
 
     printf ("\nCompiler Debug Options:\n");
-    printf ("    -d <p|t|b>       Create compiler debug/trace file (*.txt)\n");
+    printf ("    -b <p|t|b>       Create compiler debug/trace file (*.txt)\n");
     printf ("                             Types: Parse/Tree/Both\n");
     printf ("    -i               Ignore errors, always create AML output file(s)\n");
     printf ("    -p               Parse only, no output generation\n");
@@ -236,6 +241,10 @@ AslInitialize (void)
 {
     UINT32              i;
 
+
+#ifdef _DEBUG
+    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CrtSetDbgFlag(0));
+#endif
 
     AcpiDbgLevel = 0;
 
@@ -289,7 +298,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "acd:hilno:pst:vx")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "ab:cdhilno:pst:vx")) != EOF) switch (j)
     {
     case 'a':
 
@@ -298,14 +307,7 @@ main (
         Gbl_AsmOutputFlag = TRUE;
         break;
 
-    case 'c':
-
-        /* Produce C hex output file */
-
-        Gbl_C_OutputFlag = TRUE;
-        break;
-
-    case 'd':
+    case 'b':
 
         switch (optarg[0])
         {
@@ -329,6 +331,19 @@ main (
 
         Gbl_DebugFlag = TRUE;
         break;
+
+    case 'c':
+
+        /* Produce C hex output file */
+
+        Gbl_C_OutputFlag = TRUE;
+        break;
+
+    case 'd':
+        printf ("AML Disassembly not yet supported\n");
+        return (0);
+        break;
+
 
     case 'h':
 
