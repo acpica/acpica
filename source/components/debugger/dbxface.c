@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.29 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -154,6 +154,7 @@ AcpiDbSingleStep (
     ACPI_PARSE_OBJECT       *Next;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  OriginalDebugLevel;
+    ACPI_PARSE_OBJECT       *DisplayOp;
 
 
     /* Is there a breakpoint set? */
@@ -166,7 +167,7 @@ AcpiDbSingleStep (
         {
             /* Hit the breakpoint, resume single step, reset breakpoint */
 
-            AcpiOsPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
+            AcpiOsPrintf ("***Break*** at AML offset %X\n", Op->AmlOffset);
             AcpiGbl_CmSingleStep = TRUE;
             AcpiGbl_StepToNextCall = FALSE;
             WalkState->MethodBreakpoint = 0;
@@ -230,9 +231,20 @@ AcpiDbSingleStep (
         Next = Op->Next;
         Op->Next = NULL;
 
+
+        DisplayOp = Op;
+        if (Op->Parent)
+        {
+            if ((Op->Parent->Opcode == AML_IF_OP) ||
+                (Op->Parent->Opcode == AML_WHILE_OP))
+            {
+                DisplayOp = Op->Parent;
+            }
+        }
+
         /* Now we can display it */
 
-        AcpiDbDisplayOp (Op, ACPI_UINT32_MAX);
+        AcpiDbDisplayOp (WalkState, DisplayOp, ACPI_UINT32_MAX);
 
         if ((Op->Opcode == AML_IF_OP) ||
             (Op->Opcode == AML_WHILE_OP))
@@ -249,6 +261,7 @@ AcpiDbSingleStep (
 
         else if (Op->Opcode == AML_ELSE_OP)
         {
+            /* TBD */
         }
 
 
@@ -301,7 +314,7 @@ AcpiDbSingleStep (
 
         /* TBD: [Future] don't kill the user breakpoint! */
 
-        WalkState->MethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
+        WalkState->MethodBreakpoint = /* Op->AmlOffset + */ 1;  /* Must be non-zero! */
     }
 
 

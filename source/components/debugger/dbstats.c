@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.33 $
+ *              $Revision: 1.35 $
  *
  ******************************************************************************/
 
@@ -168,12 +168,12 @@ UINT32                      SizeOfAcpiObjects;
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbEnumerateObject
- *  
+ *
  * PARAMETERS:  ObjDesc             - Object to be counted
  *
  * RETURN:      None
  *
- * DESCRIPTION: Add this object to the global counts, by object type.  
+ * DESCRIPTION: Add this object to the global counts, by object type.
  *              Recursively handles subobjects and packages.
  *
  *              [TBD] Restructure - remove recursion.
@@ -297,7 +297,6 @@ AcpiDbClassifyOneObject (
     return AE_OK;
 
 
-
     /* TBD: These need to be counted during the initial parsing phase */
     /*
     if (AcpiPsIsNamedOp (Op->Opcode))
@@ -320,7 +319,6 @@ AcpiDbClassifyOneObject (
 
     */
 }
-
 
 
 /*******************************************************************************
@@ -405,7 +403,7 @@ AcpiDbDisplayStatistics (
 
     AcpiDbCountNamespaceObjects ();
 #endif
-    
+
 
     switch (Type)
     {
@@ -420,7 +418,7 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("ACPI Table Information:\n\n");
         if (AcpiGbl_DSDT)
         {
-            AcpiOsPrintf ("DSDT Length:................% 7ld (0x%X)\n", AcpiGbl_DSDT->Length, AcpiGbl_DSDT->Length);
+            AcpiOsPrintf ("DSDT Length:................% 7ld (%X)\n", AcpiGbl_DSDT->Length, AcpiGbl_DSDT->Length);
         }
         break;
 
@@ -432,13 +430,13 @@ AcpiDbDisplayStatistics (
 
         for (i = 0; i < INTERNAL_TYPE_NODE_MAX; i++)
         {
-            AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", AcpiCmGetTypeName (i), 
+            AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", AcpiCmGetTypeName (i),
                 AcpiGbl_NodeTypeCount [i], AcpiGbl_ObjTypeCount [i]);
         }
-        AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", "Misc/Unknown", 
+        AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", "Misc/Unknown",
             AcpiGbl_NodeTypeCountMisc, AcpiGbl_ObjTypeCountMisc);
 
-        AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", "TOTALS:", 
+        AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", "TOTALS:",
             NumNodes, NumObjects);
 
 

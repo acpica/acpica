@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.47 $
+ *              $Revision: 1.52 $
  *
  ******************************************************************************/
 
@@ -155,10 +155,10 @@ BOOLEAN                 opt_parse_jit   = FALSE;
 BOOLEAN                 opt_verbose     = TRUE;
 
 
-/* 
+/*
  * Top-level debugger commands.
  *
- * This list of commands must match the string table below it 
+ * This list of commands must match the string table below it
  */
 
 enum AcpiAmlDebuggerCommands
@@ -379,7 +379,7 @@ AcpiDbDisplayHelp (
  * PARAMETERS:  String          - Command buffer
  *              Next            - Return value, end of next token
  *
- * RETURN:      Pointer to the start of the next token. 
+ * RETURN:      Pointer to the start of the next token.
  *
  * DESCRIPTION: Command line parsing.  Get the next token on the command line
  *
@@ -488,7 +488,9 @@ AcpiDbGetLine (
 
     Count = i;
     if (Count)
+    {
         Count--;  /* Number of args only */
+    }
 
     return (Count);
 }
@@ -539,7 +541,7 @@ AcpiDbMatchCommand (
  * PARAMETERS:  InputBuffer         - Command line buffer
  *              WalkState           - Current walk
  *              Op                  - Current (executing) parse op
- *  
+ *
  * RETURN:      Status
  *
  * DESCRIPTION: Command dispatcher.  Called from two places:
@@ -624,7 +626,7 @@ AcpiDbCommandDispatch (
         Status = AcpiEnable();
         if (ACPI_FAILURE(Status))
         {
-            AcpiOsPrintf("AcpiEnable failed (0x%x)\n", Status);
+            AcpiOsPrintf("AcpiEnable failed (Status=%X)\n", Status);
             return (Status);
         }
         break;
@@ -720,15 +722,6 @@ AcpiDbCommandDispatch (
 
     case CMD_LOAD:
         Status = AcpiDbLoadAcpiTable (Args[1]);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-
-        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-        Status = AcpiLoadNamespace ();
-        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
-
         if (ACPI_FAILURE (Status))
         {
             return (Status);

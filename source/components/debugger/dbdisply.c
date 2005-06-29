@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.33 $
+ *              $Revision: 1.36 $
  *
  ******************************************************************************/
 
@@ -367,7 +367,7 @@ DumpNte:
 
     if (Node->Object)
     {
-        AcpiOsPrintf ("\nAttached Object (0x%p):\n", Node->Object);
+        AcpiOsPrintf ("\nAttached Object (%p):\n", Node->Object);
         if (!AcpiOsReadable (Node->Object, sizeof (ACPI_OPERAND_OBJECT)))
         {
             AcpiOsPrintf ("Invalid internal ACPI Object at address %p\n", Node->Object);
@@ -407,7 +407,7 @@ AcpiDbDecodeInternalObject (
     switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_NUMBER:
-        AcpiOsPrintf ("0x%.8X", ObjDesc->Number.Value);
+        AcpiOsPrintf ("%.8X", ObjDesc->Number.Value);
         break;
 
     case ACPI_TYPE_STRING:
@@ -456,7 +456,7 @@ AcpiDbDisplayInternalObject (
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
     {
-        AcpiOsPrintf ("<Named>             Name %4.4s Type %s", &((ACPI_NAMESPACE_NODE *)ObjDesc)->Name,
+        AcpiOsPrintf ("<Node>            Name %4.4s Type %s", &((ACPI_NAMESPACE_NODE *)ObjDesc)->Name,
             AcpiCmGetTypeName (((ACPI_NAMESPACE_NODE *) ObjDesc)->Type));
     }
 
@@ -478,15 +478,15 @@ AcpiDbDisplayInternalObject (
             switch (ObjDesc->Reference.OpCode)
             {
             case AML_ZERO_OP:
-                AcpiOsPrintf ("[Const]     Number 0x%.8X", 0);
+                AcpiOsPrintf ("[Const]     Number %.8X", 0);
                 break;
 
             case AML_ONES_OP:
-                AcpiOsPrintf ("[Const]     Number 0x%.8X", ACPI_UINT32_MAX);
+                AcpiOsPrintf ("[Const]     Number %.8X", ACPI_UINT32_MAX);
                 break;
 
             case AML_ONE_OP:
-                AcpiOsPrintf ("[Const]     Number 0x%.8X", 1);
+                AcpiOsPrintf ("[Const]     Number %.8X", 1);
                 break;
 
             case AML_LOCAL_OP:
@@ -579,13 +579,13 @@ AcpiDbDisplayMethodInfo (
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Node = WalkState->Origin->Node;
+    Node = WalkState->MethodNode;
 
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
     AcpiOsPrintf ("Currently executing control method is [%4.4s]\n", &Node->Name);
-    AcpiOsPrintf ("%d arguments, max concurrency = %d\n", NumArgs, Concurrency);
+    AcpiOsPrintf ("%X arguments, max concurrency = %X\n", NumArgs, Concurrency);
 
 
     RootOp = StartOp;
@@ -649,10 +649,10 @@ AcpiDbDisplayMethodInfo (
         Op = AcpiPsGetDepthNext (StartOp, Op);
     }
 
-    AcpiOsPrintf ("Method contains:       %d AML Opcodes - %d Operators, %d Operands\n",
+    AcpiOsPrintf ("Method contains:       %X AML Opcodes - %X Operators, %X Operands\n",
                 NumOps, NumOperators, NumOperands);
 
-    AcpiOsPrintf ("Remaining to execute:  %d AML Opcodes - %d Operators, %d Operands\n",
+    AcpiOsPrintf ("Remaining to execute:  %X AML Opcodes - %X Operators, %X Operands\n",
                 NumRemainingOps, NumRemainingOperators, NumRemainingOperands);
 }
 
@@ -686,7 +686,7 @@ AcpiDbDisplayLocals (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Node = WalkState->Origin->Node;
+    Node = WalkState->MethodNode;
 
 
     AcpiOsPrintf ("Local Variables for method [%4.4s]:\n", &Node->Name);
@@ -736,7 +736,7 @@ AcpiDbDisplayArguments (void)
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
-    AcpiOsPrintf ("Method [%4.4s] has %d arguments, max concurrency = %d\n", &Node->Name, NumArgs, Concurrency);
+    AcpiOsPrintf ("Method [%4.4s] has %X arguments, max concurrency = %X\n", &Node->Name, NumArgs, Concurrency);
 
     for (i = 0; i < NumArgs; i++)
     {
@@ -780,7 +780,7 @@ AcpiDbDisplayResults (void)
     Node = WalkState->MethodNode;
     NumResults = WalkState->NumResults - WalkState->CurrentResult;
 
-    AcpiOsPrintf ("Method [%4.4s] has %d stacked result objects\n", &Node->Name, NumResults);
+    AcpiOsPrintf ("Method [%4.4s] has %X stacked result objects\n", &Node->Name, NumResults);
 
     for (i = WalkState->CurrentResult; i < WalkState->NumResults; i++)
     {
@@ -820,14 +820,14 @@ AcpiDbDisplayCallingTree (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Node = WalkState->Origin->Node;
+    Node = WalkState->MethodNode;
 
     AcpiOsPrintf ("Current Control Method Call Tree\n");
 
     for (i = 0; WalkState; i++)
     {
         ObjDesc = WalkState->MethodDesc;
-        Node = WalkState->Origin->Node;
+        Node = WalkState->MethodNode;
 
         AcpiOsPrintf ("    [%4.4s]\n", &Node->Name);
 

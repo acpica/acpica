@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.25 $
+ *              $Revision: 1.34 $
  *
  ******************************************************************************/
 
@@ -137,9 +137,9 @@ FILE                        *DebugFile = NULL;
 #endif
 
 
-/* 
- * NOTE: this is here for lack of a better place.  It is used in all 
- *  flavors of the debugger, need LCD file 
+/*
+ * NOTE: this is here for lack of a better place.  It is used in all
+ *  flavors of the debugger, need LCD file
  */
 
 /*******************************************************************************
@@ -269,31 +269,48 @@ AcpiDbLoadTable(
     ACPI_TABLE_HEADER       TableHeader;
     UINT8                   *AmlPtr;
     UINT32                  AmlLength;
+    UINT32                  Actual;
+    ACPI_STATUS             Status;
 
 
     /* Read the table header */
 
-    if (fread (&TableHeader, 1, sizeof (TableHeader), fp) != sizeof (TableHeader))
+    if (fread (&TableHeader, 1, sizeof (TableHeader), fp) != sizeof (ACPI_TABLE_HEADER))
     {
         AcpiOsPrintf ("Couldn't read the table header\n");
         return (AE_BAD_SIGNATURE);
     }
 
-    /* Get and validate the table length */
 
-    *TableLength = TableHeader.Length;
-    if (!*TableLength)
+    /* Validate the table header/length */
+
+    Status = AcpiTbValidateTableHeader (&TableHeader);
+    if ((ACPI_FAILURE (Status)) ||
+        (TableHeader.Length > (1024 * 1024)))
     {
-        AcpiOsPrintf ("Found a table length of zero!\n");
+        AcpiOsPrintf ("Table header is invalid!\n");
+        return (AE_ERROR);
+    }
+
+
+    /* We only support a limited number of table types */
+
+    if (STRNCMP ((char *) TableHeader.Signature, DSDT_SIG, 4) &&
+        STRNCMP ((char *) TableHeader.Signature, PSDT_SIG, 4) &&
+        STRNCMP ((char *) TableHeader.Signature, SSDT_SIG, 4))
+    {
+        AcpiOsPrintf ("Table signature is invalid\n");
+        DUMP_BUFFER (&TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_ERROR);
     }
 
     /* Allocate a buffer for the table */
 
-    *TablePtr = (ACPI_TABLE_HEADER *) malloc ((size_t) *TableLength);
+    *TableLength = TableHeader.Length;
+    *TablePtr = (ACPI_TABLE_HEADER *) AcpiCmAllocate ((size_t) *TableLength);
     if (!*TablePtr)
     {
-        AcpiOsPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
+        AcpiOsPrintf ("Could not allocate memory for the table (size=%X)\n", TableHeader.Length);
         return (AE_NO_MEMORY);
     }
 
@@ -307,19 +324,89 @@ AcpiDbLoadTable(
 
     /* Get the rest of the table */
 
-    if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
+    Actual = fread (AmlPtr, 1, (size_t) AmlLength, fp);
+    if (Actual == AmlLength)
     {
         return (AE_OK);
     }
 
-    AcpiOsPrintf ("Error reading the table\n");
-    free (*TablePtr);
+    if (Actual > 0)
+    {
+        AcpiOsPrintf ("Warning - reading table, asked for %X got %X\n", AmlLength, Actual);
+       return (AE_OK);
+    }
+
+
+    AcpiOsPrintf ("Error - could not read the table file\n");
+    AcpiCmFree (*TablePtr);
     *TablePtr = NULL;
     *TableLength = 0;
 
     return (AE_ERROR);
 }
 #endif
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AeLocalLoadTable
+ *
+ * PARAMETERS:  TablePtr        - pointer to a buffer containing the entire
+ *                                table to be loaded
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This function is called to load a table from the caller's
+ *              buffer.  The buffer must contain an entire ACPI Table including
+ *              a valid header.  The header fields will be verified, and if it
+ *              is determined that the table is invalid, the call will fail.
+ *
+ *              If the call fails an appropriate status will be returned.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AeLocalLoadTable (
+    ACPI_TABLE_HEADER       *TablePtr)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_DESC         TableInfo;
+
+
+    FUNCTION_TRACE ("AeLocalLoadTable");
+
+    if (!TablePtr)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Install the new table into the local data structures */
+
+    TableInfo.Pointer = TablePtr;
+
+    Status = AcpiTbInstallTable (NULL, &TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Free table allocated by AcpiTbGetTable */
+
+        AcpiTbDeleteSingleTable (&TableInfo);
+        return_ACPI_STATUS (Status);
+    }
+
+
+#ifndef PARSER_ONLY
+    Status = AcpiNsLoadTable (TableInfo.InstalledDesc, AcpiGbl_RootNode);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Uninstall table and free the buffer */
+
+        AcpiTbUninstallTable (TableInfo.InstalledDesc);
+        return_ACPI_STATUS (Status);
+    }
+#endif
+
+    return_ACPI_STATUS (Status);
+}
 
 
 /*******************************************************************************
@@ -343,8 +430,9 @@ AcpiDbLoadAcpiTable (
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       *TablePtr;
     UINT32                  TableLength;
-    ACPI_TABLE_DESC         TableInfo;
 
+
+    /* Open the file */
 
     fp = fopen (Filename, "rb");
     if (!fp)
@@ -352,6 +440,9 @@ AcpiDbLoadAcpiTable (
         AcpiOsPrintf ("Could not open file %s\n", Filename);
         return (AE_ERROR);
     }
+
+
+    /* Get the entire file */
 
     AcpiOsPrintf ("Loading Acpi table from file %s\n", Filename);
     Status = AcpiDbLoadTable (fp, &TablePtr, &TableLength);
@@ -365,26 +456,26 @@ AcpiDbLoadAcpiTable (
 
 
     /* Attempt to recognize and install the table */
+    Status = AeLocalLoadTable (TablePtr);
 
-    TableInfo.Pointer = TablePtr;
-    Status = AcpiTbInstallTable (TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_EXIST)
         {
-            AcpiOsPrintf ("Table is already installed/loaded\n");
+            AcpiOsPrintf ("Table %4.4s is already installed\n",
+                            &TablePtr->Signature);
         }
         else
         {
-            AcpiOsPrintf ("Could not install table, %s\n", AcpiCmFormatException (Status));
+            AcpiOsPrintf ("Could not install table, %s\n",
+                            AcpiCmFormatException (Status));
         }
-        free (TablePtr);
+        AcpiCmFree (TablePtr);
         return (Status);
     }
 
-
-    AcpiOsPrintf ("%s successfully loaded and installed at %p\n",
-                                AcpiGbl_AcpiTableData[TableInfo.Type].Name, TablePtr);
+    AcpiOsPrintf ("%4.4s at %p successfully installed and loaded\n",
+                                &TablePtr->Signature, TablePtr);
 
     AcpiGbl_AcpiHardwarePresent = FALSE;
 

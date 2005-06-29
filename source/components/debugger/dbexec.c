@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.16 $
+ *              $Revision: 1.19 $
  *
  ******************************************************************************/
 
@@ -291,18 +291,21 @@ AcpiDbExecute (
     UINT32                  Flags)
 {
     ACPI_STATUS             Status;
+    ACPI_BUFFER             ReturnObj;
+
+
+#ifdef ACPI_DEBUG
     UINT32                  PreviousAllocations;
     UINT32                  PreviousSize;
     UINT32                  Allocations;
     UINT32                  Size;
-    ACPI_BUFFER             ReturnObj;
 
 
     /* Memory allocation tracking */
 
     PreviousAllocations = AcpiGbl_CurrentAllocCount;
     PreviousSize = AcpiGbl_CurrentAllocSize;
-
+#endif
 
     Info.Name = Name;
     Info.Args = Args;
@@ -311,6 +314,8 @@ AcpiDbExecute (
     AcpiDbExecuteSetup (&Info);
     Status = AcpiDbExecuteMethod (&Info, &ReturnObj);
 
+
+#ifdef ACPI_DEBUG
 
     /* Memory allocation tracking */
 
@@ -324,7 +329,7 @@ AcpiDbExecute (
         AcpiOsPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
                         Allocations, Size);
     }
-
+#endif
 
     if (ACPI_FAILURE (Status))
     {
@@ -423,7 +428,7 @@ AcpiDbCreateExecutionThreads (
 
     if (!NumThreads || !NumLoops)
     {
-        AcpiOsPrintf ("Bad argument: Threads %d, Loops %d\n", NumThreads, NumLoops);
+        AcpiOsPrintf ("Bad argument: Threads %X, Loops %X\n", NumThreads, NumLoops);
         return;
     }
 
@@ -450,7 +455,7 @@ AcpiDbCreateExecutionThreads (
 
     /* Create the threads */
 
-    AcpiOsPrintf ("Creating %d threads to execute %d times each\n", NumThreads, NumLoops);
+    AcpiOsPrintf ("Creating %X threads to execute %X times each\n", NumThreads, NumLoops);
 
     for (i = 0; i < (NumThreads); i++)
     {
@@ -472,7 +477,7 @@ AcpiDbCreateExecutionThreads (
     AcpiOsDeleteSemaphore (ThreadGate);
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    AcpiOsPrintf ("All threads (%d) have completed\n", NumThreads);
+    AcpiOsPrintf ("All threads (%X) have completed\n", NumThreads);
     AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 

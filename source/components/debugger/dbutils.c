@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.29 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -132,7 +132,6 @@
         MODULE_NAME         ("dbutils")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbSetOutputDestination
@@ -184,7 +183,7 @@ AcpiDbDumpBuffer (
     UINT32                  Address)
 {
 
-    AcpiOsPrintf ("\nLocation 0x%X:\n", Address);
+    AcpiOsPrintf ("\nLocation %X:\n", Address);
 
     AcpiDbgLevel |= TRACE_TABLES;
     AcpiCmDumpBuffer ((UINT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
@@ -232,7 +231,7 @@ AcpiDbDumpObject (
 
 
     case ACPI_TYPE_NUMBER:
-        AcpiOsPrintf ("[Number]  Value: %ld (0x%lX)\n", ObjDesc->Number.Value, ObjDesc->Number.Value);
+        AcpiOsPrintf ("[Number]  Value: %ld (%lX)\n", ObjDesc->Number.Value, ObjDesc->Number.Value);
         break;
 
 
@@ -265,9 +264,21 @@ AcpiDbDumpObject (
         break;
 
 
+    case INTERNAL_TYPE_REFERENCE:
+        AcpiOsPrintf ("[Object Reference]  Value: %p\n", ObjDesc->Reference.Handle);
+        break;
+
+    case ACPI_TYPE_PROCESSOR:
+        AcpiOsPrintf ("[Processor]\n");
+        break;
+
+    case ACPI_TYPE_POWER:
+        AcpiOsPrintf ("[Power Resource]\n");
+        break;
+
     default:
 
-        AcpiOsPrintf ("[Unknown Type] 0x%X \n", ObjDesc->Type);
+        AcpiOsPrintf ("[Unknown Type] %X \n", ObjDesc->Type);
         break;
     }
 }
@@ -329,13 +340,13 @@ AcpiDbPrepNamestring (
 
 /*******************************************************************************
  *
- * FUNCTION:    AdSecondPassParse
+ * FUNCTION:    AcpiDbSecondPassParse
  *
  * PARAMETERS:  Root            - Root of the parse tree
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Second pass parse of the ACPI tables.  We need to wait until 
+ * DESCRIPTION: Second pass parse of the ACPI tables.  We need to wait until
  *              second pass to parse the control methods
  *
  ******************************************************************************/
