@@ -211,6 +211,16 @@ typedef struct ArgumentInfo
 
 
 void
+DbDisplayTableInfo (
+    char                    *TableArg);
+
+void
+DbUnloadAcpiTable (
+    char                    *TableArg,
+    char                    *InstanceArg);
+
+
+void
 DbGenerateStatistics (
     void);
 
