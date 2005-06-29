@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,8 +114,8 @@
  *****************************************************************************/
 
 
-#include <acpi.h>
-#include <parser.h>
+#include "acpi.h"
+#include "parser.h"
 #include "amlcode.h"
 
 #define _COMPONENT          PARSER
@@ -126,11 +126,11 @@
 #define PARSEOP_NAMED       2
 #define PARSEOP_DEFERRED    3
 #define PARSEOP_BYTELIST    4
-        
+
 
 /*******************************************************************************
  *
- * FUNCTION:    PsInitOp
+ * FUNCTION:    AcpiPsInitOp
  *
  * PARAMETERS:  Op              - A newly allocated Op object
  *              Opcode          - Opcode to store in the Op
@@ -142,22 +142,20 @@
  ******************************************************************************/
 
 void
-PsInitOp (
+AcpiPsInitOp (
     ACPI_GENERIC_OP         *Op,
     UINT16                  Opcode)
 {
     ACPI_OP_INFO             *AmlOp;
 
 
-    Op->DataType = DESC_TYPE_PARSER;
+    Op->DataType = ACPI_DESC_TYPE_PARSER;
     Op->Opcode = Opcode;
 
 
-    AmlOp = PsGetOpcodeInfo (Opcode);
+    AmlOp = AcpiPsGetOpcodeInfo (Opcode);
     if (AmlOp)
     {
-        /* Debug only! */
-
         DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, AmlOp->Name, sizeof (Op->OpName)));
     }
 }
@@ -165,7 +163,7 @@ PsInitOp (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsAllocOp
+ * FUNCTION:    AcpiPsAllocOp
  *
  * PARAMETERS:  Opcode          - Opcode that will be stored in the new Op
  *
@@ -178,7 +176,7 @@ PsInitOp (
  ******************************************************************************/
 
 ACPI_GENERIC_OP*
-PsAllocOp (
+AcpiPsAllocOp (
     UINT16                  Opcode)
 {
     ACPI_GENERIC_OP         *Op = NULL;
@@ -188,19 +186,19 @@ PsAllocOp (
 
     /* Allocate the minimum required size object */
 
-    if (PsIsDeferredOp (Opcode))
+    if (AcpiPsIsDeferredOp (Opcode))
     {
         Size = sizeof (ACPI_DEFERRED_OP);
         Flags = PARSEOP_DEFERRED;
     }
 
-    else if (PsIsNamedOp (Opcode))
+    else if (AcpiPsIsNamedOp (Opcode))
     {
         Size = sizeof (ACPI_NAMED_OP);
         Flags = PARSEOP_NAMED;
     }
-    
-    else if (PsIsBytelistOp (Opcode))
+
+    else if (AcpiPsIsBytelistOp (Opcode))
     {
         Size = sizeof (ACPI_BYTELIST_OP);
         Flags = PARSEOP_BYTELIST;
@@ -212,42 +210,42 @@ PsAllocOp (
         Flags = PARSEOP_GENERIC;
 
         /*
-         * The generic op is by far the most common (16 to 1), and therefore the op cache is 
+         * The generic op is by far the most common (16 to 1), and therefore the op cache is
          * implemented with this type.
          *
          * Check if there is an Op already available in the cache
          */
 
-        CmAcquireMutex (MTX_CACHES);
-        Gbl_ParseCacheRequests++;
-        if (Gbl_ParseCache)
+        AcpiCmAcquireMutex (ACPI_MTX_CACHES);
+        AcpiGbl_ParseCacheRequests++;
+        if (AcpiGbl_ParseCache)
         {
             /* Extract an op from the front of the cache list */
 
-            Gbl_ParseCacheDepth--;
-            Gbl_ParseCacheHits++;
-            
-            Op = Gbl_ParseCache;
-            Gbl_ParseCache = Op->Next;
+            AcpiGbl_ParseCacheDepth--;
+            AcpiGbl_ParseCacheHits++;
+
+            Op = AcpiGbl_ParseCache;
+            AcpiGbl_ParseCache = Op->Next;
 
             /* Clear the previously used Op */
 
             MEMSET (Op, 0, sizeof (ACPI_GENERIC_OP));
         }
-        CmReleaseMutex (MTX_CACHES);
+        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
     }
 
     /* Allocate a new Op if necessary */
-    
+
     if (!Op)
     {
-        Op = CmCallocate (Size);
+        Op = AcpiCmCallocate (Size);
     }
 
     /* Initialize the Op */
     if (Op)
     {
-        PsInitOp (Op, Opcode);
+        AcpiPsInitOp (Op, Opcode);
         Op->Flags = Flags;
     }
 
@@ -255,10 +253,9 @@ PsAllocOp (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    PsFreeOp
+ * FUNCTION:    AcpiPsFreeOp
  *
  * PARAMETERS:  Op              - Op to be freed
  *
@@ -270,7 +267,7 @@ PsAllocOp (
  ******************************************************************************/
 
 void
-PsFreeOp (
+AcpiPsFreeOp (
     ACPI_GENERIC_OP         *Op)
 {
 
@@ -279,33 +276,32 @@ PsFreeOp (
     {
         /* Is the cache full? */
 
-        if (Gbl_ParseCacheDepth < MAX_PARSE_CACHE_DEPTH)
+        if (AcpiGbl_ParseCacheDepth < MAX_PARSE_CACHE_DEPTH)
         {
             /* Put a GENERIC_OP back into the cache */
 
-            CmAcquireMutex (MTX_CACHES);
-            Gbl_ParseCacheDepth++;
+            AcpiCmAcquireMutex (ACPI_MTX_CACHES);
+            AcpiGbl_ParseCacheDepth++;
 
-            Op->Next = Gbl_ParseCache;
-            Gbl_ParseCache = Op;
+            Op->Next = AcpiGbl_ParseCache;
+            AcpiGbl_ParseCache = Op;
 
-            CmReleaseMutex (MTX_CACHES);
+            AcpiCmReleaseMutex (ACPI_MTX_CACHES);
             return;
         }
     }
 
     /*
-     * Not a GENERIC OP, or the cache is full, just free the Op 
+     * Not a GENERIC OP, or the cache is full, just free the Op
      */
 
-    CmFree (Op);
+    AcpiCmFree (Op);
 }
-
 
 
 /*******************************************************************************
  *
- * FUNCTION:    PsDeleteParseCache
+ * FUNCTION:    AcpiPsDeleteParseCache
  *
  * PARAMETERS:  None
  *
@@ -316,7 +312,7 @@ PsFreeOp (
  ******************************************************************************/
 
 void
-PsDeleteParseCache (
+AcpiPsDeleteParseCache (
     void)
 {
     ACPI_GENERIC_OP         *Next;
@@ -327,20 +323,17 @@ PsDeleteParseCache (
 
     /* Traverse the global cache list */
 
-    while (Gbl_ParseCache)
+    while (AcpiGbl_ParseCache)
     {
         /* Delete one cached state object */
 
-        Next = Gbl_ParseCache->Next;
-        CmFree (Gbl_ParseCache);
-        Gbl_ParseCache = Next;
+        Next = AcpiGbl_ParseCache->Next;
+        AcpiCmFree (AcpiGbl_ParseCache);
+        AcpiGbl_ParseCache = Next;
     }
 
     return_VOID;
 }
-
-
-
 
 
 /*******************************************************************************
@@ -356,14 +349,13 @@ PsDeleteParseCache (
  ******************************************************************************/
 
 
-
 /*
  * Is "c" a namestring lead character?
  */
 
 
 BOOLEAN
-PsIsLeadingChar (
+AcpiPsIsLeadingChar (
     INT32                   c)
 {
     return ((BOOLEAN) (c == '_' || (c >= 'A' && c <= 'Z')));
@@ -374,7 +366,7 @@ PsIsLeadingChar (
  * Is "c" a namestring prefix character?
  */
 BOOLEAN
-PsIsPrefixChar (
+AcpiPsIsPrefixChar (
     INT32                   c)
 {
     return ((BOOLEAN) (c == '\\' || c == '^'));
@@ -382,57 +374,55 @@ PsIsPrefixChar (
 
 
 BOOLEAN
-PsIsNamespaceObjectOp (
+AcpiPsIsNamespaceObjectOp (
     UINT16                  Opcode)
 {
-    return ((BOOLEAN) 
-           (Opcode == AML_ScopeOp           || 
-            Opcode == AML_DeviceOp          || 
-            Opcode == AML_ThermalZoneOp     || 
-            Opcode == AML_MethodOp          || 
-            Opcode == AML_PowerResOp        || 
-            Opcode == AML_ProcessorOp       || 
-            Opcode == AML_DefFieldOp        || 
-            Opcode == AML_IndexFieldOp      || 
-            Opcode == AML_BankFieldOp       || 
-            Opcode == AML_NAMEDFIELD_OP     || 
-            Opcode == AML_NameOp            || 
-            Opcode == AML_AliasOp           || 
-            Opcode == AML_MutexOp           || 
-            Opcode == AML_EventOp           || 
-            Opcode == AML_RegionOp          ||
-            Opcode == AML_CreateFieldOp     ||
-            Opcode == AML_BitFieldOp        ||
-            Opcode == AML_ByteFieldOp       ||
-            Opcode == AML_WordFieldOp       ||
-            Opcode == AML_DWordFieldOp      ||
+    return ((BOOLEAN)
+           (Opcode == AML_SCOPE_OP          ||
+            Opcode == AML_DEVICE_OP         ||
+            Opcode == AML_THERMAL_ZONE_OP   ||
+            Opcode == AML_METHOD_OP         ||
+            Opcode == AML_POWER_RES_OP      ||
+            Opcode == AML_PROCESSOR_OP      ||
+            Opcode == AML_DEF_FIELD_OP      ||
+            Opcode == AML_INDEX_FIELD_OP    ||
+            Opcode == AML_BANK_FIELD_OP     ||
+            Opcode == AML_NAMEDFIELD_OP     ||
+            Opcode == AML_NAME_OP           ||
+            Opcode == AML_ALIAS_OP          ||
+            Opcode == AML_MUTEX_OP          ||
+            Opcode == AML_EVENT_OP          ||
+            Opcode == AML_REGION_OP         ||
+            Opcode == AML_CREATE_FIELD_OP   ||
+            Opcode == AML_BIT_FIELD_OP      ||
+            Opcode == AML_BYTE_FIELD_OP     ||
+            Opcode == AML_WORD_FIELD_OP     ||
+            Opcode == AML_DWORD_FIELD_OP    ||
             Opcode == AML_METHODCALL_OP     ||
             Opcode == AML_NAMEPATH_OP));
 }
 
 BOOLEAN
-PsIsNamespaceOp (
+AcpiPsIsNamespaceOp (
     UINT16                  Opcode)
 {
-    return ((BOOLEAN) 
-           (Opcode == AML_ScopeOp           ||
-            Opcode == AML_DeviceOp          ||
-            Opcode == AML_ThermalZoneOp     ||
-            Opcode == AML_MethodOp          ||
-            Opcode == AML_PowerResOp        ||
-            Opcode == AML_ProcessorOp       ||
-            Opcode == AML_DefFieldOp        ||
-            Opcode == AML_IndexFieldOp      || 
-            Opcode == AML_BankFieldOp       ||
-            Opcode == AML_NameOp            ||
-            Opcode == AML_AliasOp           ||
-            Opcode == AML_MutexOp           ||
-            Opcode == AML_EventOp           ||
-            Opcode == AML_RegionOp          ||
-            Opcode == AML_NAMEDFIELD_OP)); 
+    return ((BOOLEAN)
+           (Opcode == AML_SCOPE_OP          ||
+            Opcode == AML_DEVICE_OP         ||
+            Opcode == AML_THERMAL_ZONE_OP   ||
+            Opcode == AML_METHOD_OP         ||
+            Opcode == AML_POWER_RES_OP      ||
+            Opcode == AML_PROCESSOR_OP      ||
+            Opcode == AML_DEF_FIELD_OP      ||
+            Opcode == AML_INDEX_FIELD_OP    ||
+            Opcode == AML_BANK_FIELD_OP     ||
+            Opcode == AML_NAME_OP           ||
+            Opcode == AML_ALIAS_OP          ||
+            Opcode == AML_MUTEX_OP          ||
+            Opcode == AML_EVENT_OP          ||
+            Opcode == AML_REGION_OP         ||
+            Opcode == AML_NAMEDFIELD_OP));
 }
-
-
 
 
 /*
@@ -442,29 +432,29 @@ PsIsNamespaceOp (
  * TBD: [Restructure] Need a better way than this brute force approach!
  */
 BOOLEAN
-PsIsNamedObjectOp (
+AcpiPsIsNamedObjectOp (
     UINT16                  Opcode)
 {
-    return ((BOOLEAN) 
-           (Opcode == AML_ScopeOp           || 
-            Opcode == AML_DeviceOp          || 
-            Opcode == AML_ThermalZoneOp     || 
-            Opcode == AML_MethodOp          || 
-            Opcode == AML_PowerResOp        || 
-            Opcode == AML_ProcessorOp       || 
-            Opcode == AML_NAMEDFIELD_OP     || 
-            Opcode == AML_NameOp            || 
-            Opcode == AML_AliasOp           || 
-            Opcode == AML_MutexOp           || 
-            Opcode == AML_EventOp           || 
-            Opcode == AML_RegionOp          ||
+    return ((BOOLEAN)
+           (Opcode == AML_SCOPE_OP          ||
+            Opcode == AML_DEVICE_OP         ||
+            Opcode == AML_THERMAL_ZONE_OP   ||
+            Opcode == AML_METHOD_OP         ||
+            Opcode == AML_POWER_RES_OP      ||
+            Opcode == AML_PROCESSOR_OP      ||
+            Opcode == AML_NAMEDFIELD_OP     ||
+            Opcode == AML_NAME_OP           ||
+            Opcode == AML_ALIAS_OP          ||
+            Opcode == AML_MUTEX_OP          ||
+            Opcode == AML_EVENT_OP          ||
+            Opcode == AML_REGION_OP         ||
 
 
-            Opcode == AML_CreateFieldOp     ||
-            Opcode == AML_BitFieldOp        ||
-            Opcode == AML_ByteFieldOp       ||
-            Opcode == AML_WordFieldOp       ||
-            Opcode == AML_DWordFieldOp      ||
+            Opcode == AML_CREATE_FIELD_OP   ||
+            Opcode == AML_BIT_FIELD_OP      ||
+            Opcode == AML_BYTE_FIELD_OP     ||
+            Opcode == AML_WORD_FIELD_OP     ||
+            Opcode == AML_DWORD_FIELD_OP    ||
             Opcode == AML_METHODCALL_OP     ||
             Opcode == AML_NAMEPATH_OP));
 }
@@ -474,32 +464,32 @@ PsIsNamedObjectOp (
  * Is opcode for a named Op?
  */
 BOOLEAN
-PsIsNamedOp (
+AcpiPsIsNamedOp (
     UINT16                  Opcode)
 {
-    return ((BOOLEAN) 
-           (Opcode == AML_ScopeOp           ||
-            Opcode == AML_DeviceOp          ||
-            Opcode == AML_ThermalZoneOp     ||
-            Opcode == AML_MethodOp          ||
-            Opcode == AML_PowerResOp        ||
-            Opcode == AML_ProcessorOp       ||
-            Opcode == AML_NameOp            ||
-            Opcode == AML_AliasOp           ||
-            Opcode == AML_MutexOp           ||
-            Opcode == AML_EventOp           ||
-            Opcode == AML_RegionOp          ||
-            Opcode == AML_NAMEDFIELD_OP)); 
+    return ((BOOLEAN)
+           (Opcode == AML_SCOPE_OP          ||
+            Opcode == AML_DEVICE_OP         ||
+            Opcode == AML_THERMAL_ZONE_OP   ||
+            Opcode == AML_METHOD_OP         ||
+            Opcode == AML_POWER_RES_OP      ||
+            Opcode == AML_PROCESSOR_OP      ||
+            Opcode == AML_NAME_OP           ||
+            Opcode == AML_ALIAS_OP          ||
+            Opcode == AML_MUTEX_OP          ||
+            Opcode == AML_EVENT_OP          ||
+            Opcode == AML_REGION_OP         ||
+            Opcode == AML_NAMEDFIELD_OP));
 }
 
 
 BOOLEAN
-PsIsDeferredOp (
+AcpiPsIsDeferredOp (
     UINT16                  Opcode)
 {
-    return ((BOOLEAN) 
-           (Opcode == AML_MethodOp ||
-            Opcode == AML_RegionOp));
+    return ((BOOLEAN)
+           (Opcode == AML_METHOD_OP ||
+            Opcode == AML_REGION_OP));
 }
 
 
@@ -507,7 +497,7 @@ PsIsDeferredOp (
  * Is opcode for a bytelist?
  */
 BOOLEAN
-PsIsBytelistOp (
+AcpiPsIsBytelistOp (
     UINT16                  Opcode)
 {
     return ((BOOLEAN) (Opcode == AML_BYTELIST_OP));
@@ -518,14 +508,30 @@ PsIsBytelistOp (
  * Is opcode for a Field, IndexField, or BankField
  */
 BOOLEAN
-PsIsFieldOp (
+AcpiPsIsFieldOp (
     UINT16                  Opcode)
 {
-    return ((BOOLEAN) 
-              (Opcode == AML_CreateFieldOp
-            || Opcode == AML_DefFieldOp
-            || Opcode == AML_IndexFieldOp
-            || Opcode == AML_BankFieldOp));
+    return ((BOOLEAN)
+              (Opcode == AML_CREATE_FIELD_OP
+            || Opcode == AML_DEF_FIELD_OP
+            || Opcode == AML_INDEX_FIELD_OP
+            || Opcode == AML_BANK_FIELD_OP));
+}
+
+
+/*
+ * Is field creation op
+ */
+BOOLEAN
+AcpiPsIsCreateFieldOp (
+    UINT16                  Opcode)
+{
+    return ((BOOLEAN)
+           (Opcode == AML_CREATE_FIELD_OP   ||
+            Opcode == AML_BIT_FIELD_OP      ||
+            Opcode == AML_BYTE_FIELD_OP     ||
+            Opcode == AML_WORD_FIELD_OP     ||
+            Opcode == AML_DWORD_FIELD_OP));
 }
 
 
@@ -533,10 +539,10 @@ PsIsFieldOp (
  * Cast an acpi_op to an acpi_deferred_op if possible
  */
 ACPI_DEFERRED_OP *
-PsToDeferredOp (
+AcpiPsToDeferredOp (
     ACPI_GENERIC_OP         *Op)
 {
-    return (PsIsDeferredOp (Op->Opcode)
+    return (AcpiPsIsDeferredOp (Op->Opcode)
             ? ( (ACPI_DEFERRED_OP *) Op) : NULL);
 }
 
@@ -545,10 +551,10 @@ PsToDeferredOp (
  * Cast an acpi_op to an acpi_named_op if possible
  */
 ACPI_NAMED_OP*
-PsToNamedOp (
+AcpiPsToNamedOp (
     ACPI_GENERIC_OP         *Op)
 {
-    return (PsIsNamedOp (Op->Opcode)
+    return (AcpiPsIsNamedOp (Op->Opcode)
             ? ( (ACPI_NAMED_OP *) Op) : NULL);
 }
 
@@ -557,10 +563,10 @@ PsToNamedOp (
  * Cast an acpi_op to an acpi_bytelist_op if possible
  */
 ACPI_BYTELIST_OP*
-PsToBytelistOp (
+AcpiPsToBytelistOp (
     ACPI_GENERIC_OP         *Op)
 {
-    return (PsIsBytelistOp (Op->Opcode)
+    return (AcpiPsIsBytelistOp (Op->Opcode)
             ? ( (ACPI_BYTELIST_OP*) Op) : NULL);
 }
 
@@ -569,10 +575,10 @@ PsToBytelistOp (
  * Get op's name (4-byte name segment) or 0 if unnamed
  */
 UINT32
-PsGetName (
+AcpiPsGetName (
     ACPI_GENERIC_OP         *Op)
 {
-    ACPI_NAMED_OP               *Named = PsToNamedOp (Op);
+    ACPI_NAMED_OP               *Named = AcpiPsToNamedOp (Op);
 
     return (Named ? Named->Name : 0);
 }
@@ -582,11 +588,11 @@ PsGetName (
  * Set op's name
  */
 void
-PsSetName (
-    ACPI_GENERIC_OP         *Op, 
+AcpiPsSetName (
+    ACPI_GENERIC_OP         *Op,
     UINT32                  name)
 {
-    ACPI_NAMED_OP           *Named = PsToNamedOp (Op);
+    ACPI_NAMED_OP           *Named = AcpiPsToNamedOp (Op);
 
     if (Named)
     {
