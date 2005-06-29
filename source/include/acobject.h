@@ -382,8 +382,8 @@ typedef struct /* POWER RESOURCE - has Handle and notification handler/context*/
 {
     ACPI_OBJECT_COMMON
 
-    UINT32                  Reserved1;
-    UINT32                  Reserved2;
+    UINT32                  SystemLevel;
+    UINT32                  ResourceOrder;
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
@@ -400,9 +400,9 @@ typedef struct /* PROCESSOR - has Handle and notification handler/context*/
 {
     ACPI_OBJECT_COMMON
 
-    UINT32                  Reserved1;
-    UINT32                  Reserved2;
-    UINT32                  Reserved3;
+    UINT32                  ProcId;
+    UINT32                  PBLKAddress;
+    UINT32                  PBLKLength;
     UINT32                  Reserved4;
 
     ACPI_HANDLE             Handle;
