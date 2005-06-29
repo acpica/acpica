@@ -705,10 +705,6 @@ SOURCE=..\..\Subsystem\Include\hardware.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\hwapi.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Include\internal.h
 # End Source File
 # Begin Source File
