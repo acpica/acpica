@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -144,11 +144,31 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
 {
     UINT8                   Type;           /* See definition of NsType for values */
 
+
+    /* 
+     * Fields that are common across all objects 
+     */
+
+    struct
+    {
+        UINT8                   Type;           /* See definition of NsType for values */
+        UINT8                   _Reserved1;
+        UINT16                  _Reserved2;
+        UINT32                  ReferenceCount; /* For object deletion management */
+    } Common;
+
+
+    /*
+     * Unique object structures (includes common area again)
+     */
+
     struct /* NUMBER - has value */
     {
         UINT8                   Type;
         UINT8                   Reserved1;
         UINT16                  Reserved2;
+        UINT32                  ReferenceCount;
+
         UINT32                  Value;
         UINT32                  Reserved3;
         void                    *Reserved_p1;
@@ -163,11 +183,11 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT8                   Type;
         UINT8                   Reserved1;
         UINT16                  Length;         /* # of bytes in string, excluding trailing null */
+        UINT32                  ReferenceCount;
+
         UINT32                  Reserved2;
         UINT32                  Reserved3;
-        UINT8                   *Pointer;        /* points to the string value in the AML stream
-                                                 * or in allocated space
-                                                 */
+        UINT8                   *Pointer;       /* String value in AML stream or in allocated space */
         void                    *Reserved_p2;
         void                    *Reserved_p3;
 
@@ -179,6 +199,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT8                   Type;
         UINT8                   Reserved1;
         UINT16                  Length;         /* # of bytes in buffer */
+        UINT32                  ReferenceCount;
+
         UINT32                  Reserved2;
         UINT32                  Sequence;       /* Sequential count of buffers created */
         UINT8                   *Pointer;       /* points to the buffer in allocated space */
@@ -193,6 +215,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT8                   Type;
         UINT8                   Reserved1;
         UINT16                  Count;          /* # of elements in package */
+        UINT32                  ReferenceCount;
+
         UINT32                  Reserved2;
         UINT32                  Reserved3;
         union AcpiObjInternal   **Elements;     /* Addr of an allocated array of pointers
@@ -210,8 +234,7 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         /* Using WORD_BIT instead of BYTE_BIT here because the Length field
          * is larger than a UINT8.  It is possible that some implementations
          * may map this in an unexpected way -- see code and comments in
-         * amlexec.c:iPrep*FieldValue() -- but it works properly in IC386
-         * and in MS Visual C++
+         * Prep*FieldValue() -- but it works properly in IC386 & MS Visual C
          */
         UINT16_BIT              Type        : 8;
         UINT16_BIT              Access      : 4;
@@ -220,6 +243,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT16_BIT              Reserved1   : 1;
         UINT16_BIT              Length      :13;    /* # of bits in buffer */
         UINT16_BIT              BitOffset   : 3;
+        UINT32                  ReferenceCount;
+
         UINT32                  Offset;             /* Byte offset within containing object */
         UINT32                  Sequence;           /* Container's sequence number */
         union AcpiObjInternal   *Container;         /* Containing object (Buffer) */
@@ -234,6 +259,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT8                   Type;
         UINT8                   Reserved1;
         UINT16                  Reserved2;
+        UINT32                  ReferenceCount;
+
         UINT32                  Reserved3;
         UINT32                  Reserved4;
         ACPI_HANDLE             Handle;
@@ -248,6 +275,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT8                   Type;
         UINT8                   Reserved1;
         UINT16                  SignalCount;
+        UINT32                  ReferenceCount;
+
         UINT32                  Semaphore;
         UINT16                  LockCount;
         UINT16                  ThreadId;
@@ -263,7 +292,9 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT8                   Type;
         UINT8                   ParamCount;
         UINT16                  Length;
-        UINT32                  AmlOffset;
+        UINT32                  ReferenceCount;
+
+        UINT32                  Offset;
         UINT32                  Reserved3;
         UINT8                   *AmlBase;
         void                    *Reserved4;
@@ -276,6 +307,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT8                   Type;
         UINT8                   SyncLevel;
         UINT16                  Reserved2;
+        UINT32                  ReferenceCount;
+
         UINT32                  Semaphore;
         UINT16                  LockCount;
         UINT16                  ThreadId;
@@ -294,9 +327,11 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
                                                  * 0 => Address & Length have not been set,
                                                  *        and should be obtained via AdrLoc
                                                  */
+        UINT32                  ReferenceCount;
+
         UINT32                  Address;
         UINT32                  Length;
-        METHOD_INFO             AddressLocation;/* Loc of 1st (address) OpCode in AML stream */
+        union AcpiObjInternal   *AddressLocation;/* Loc of 1st (address) OpCode in AML stream */
 
     } Region;
 
@@ -306,6 +341,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT8                   Type;
         UINT8                   Reserved1;
         UINT16                  Reserved2;
+        UINT32                  ReferenceCount;
+
         UINT32                  Reserved3;
         UINT32                  Reserved4;
         ACPI_HANDLE             Handle;
@@ -320,6 +357,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT8                   Type;
         UINT8                   Reserved1;
         UINT16                  Reserved2;
+        UINT32                  ReferenceCount;
+
         UINT32                  Reserved3;
         UINT32                  Reserved4;
         ACPI_HANDLE             Handle;
@@ -334,6 +373,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT8                   Type;
         UINT8                   Reserved1;
         UINT16                  Reserved2;
+        UINT32                  ReferenceCount;
+
         UINT32                  Reserved3;
         UINT32                  Reserved4;
         ACPI_HANDLE             Handle;
@@ -354,6 +395,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT16_BIT              Reserved1   : 1;
         UINT16_BIT              Length      :13;    /* # of bits in buffer */
         UINT16_BIT              BitOffset   : 3;
+        UINT32                  ReferenceCount;
+
         UINT32                  Offset;             /* Byte offset within containing object */
         UINT32                  Reserved2;
         union AcpiObjInternal   *Container;         /* Containing object */
@@ -374,6 +417,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT16_BIT              Reserved1   : 1;
         UINT16_BIT              Length      :13;    /* # of bits in buffer */
         UINT16_BIT              BitOffset   : 3;
+        UINT32                  ReferenceCount;
+
         UINT32                  Offset;             /* Byte offset within containing object */
         UINT32                  Value;              /* Value to store into BankSelect */
         union AcpiObjInternal   *Container;         /* Containing object */
@@ -394,6 +439,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
         UINT16_BIT              Reserved1   : 1;
         UINT16_BIT              Length      :13;    /* # of bits in buffer */
         UINT16_BIT              BitOffset   : 3;
+        UINT32                  ReferenceCount;
+
         UINT32                  Value;              /* Value to store into Index register */
         UINT32                  Reserved2;          /* No container pointer needed since the index
                                                      * and data register definitions will define
@@ -413,6 +460,8 @@ typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
                                                      * ZeroOp, OneOp, OnesOp, Debug1 => DebugOp
                                                      */
         UINT16                  Reserved1;
+        UINT32                  ReferenceCount;
+
         UINT32                  Reserved2;
         UINT32                  Reserved3;
         void                    *Object;            /* OpCode   Use of Object field
