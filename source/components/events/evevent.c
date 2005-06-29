@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -132,9 +132,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ensures that the system control interrupt (SCI) is properly
- *              configured, disables SCI event sources, installs the SCI
- *              handler
+ * DESCRIPTION: Initialize data structures for events.
  *
  ******************************************************************************/
 
@@ -174,6 +172,32 @@ AcpiEvInitialize (
         ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, "Unable to initialize general purpose events.\n"));
         return_ACPI_STATUS (Status);
     }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvHandlerInitialize
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install handlers for the SCI, Global Lock, and GPEs.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvHandlerInitialize (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("EvInitialize");
+
 
     /* Install the SCI handler */
 
