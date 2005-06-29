@@ -206,28 +206,27 @@ ErrorExit:
  *
  * FUNCTION:    AcpiNameToHandle
  *
- * PARAMETERS:  Name            - Pointer to an ascii string containing the name
- *              Scope           - Handle for a search scope.
+ * PARAMETERS:  Parent          - Object to search under (search scope).
+ *              Name            - Pointer to an ascii string containing the name
  *              RetHandle       - Where the return handle is placed
  *
  * RETURN:      Status
  *
  * DESCRIPTION: This routine will search for a caller specified name in the
  *              name space.  The caller can restrict the search region by
- *              specifying a non NULL scope.  The Scope value is itself a namespace
- *              handle.  If the scope value is NULL or the NsName specified is
- *              fully qualified, teh Scope value is ignored.
+ *              specifying a non NULL parent.  The parent value is itself a 
+ *              namespace handle. 
  *
  ******************************************************************************/
 
 ACPI_STATUS 
 AcpiNameToHandle (
+    ACPI_HANDLE             Parent, 
     ACPI_NAME               Name, 
-    ACPI_HANDLE             Scope, 
     ACPI_HANDLE             *RetHandle)
 {
     NAME_TABLE_ENTRY        *ThisEntry;
-    ACPI_HANDLE             LocalScope = Scope;
+    ACPI_HANDLE             LocalParent = Parent;
 
 
     if (!RetHandle)
@@ -243,21 +242,25 @@ AcpiNameToHandle (
         return AE_OK;
     }
 
-    /* Null scope means root scope */
+    /* Null parent means root object */
 
-    if (!Scope)
+    if (!Parent)
     {
-        LocalScope = RootObject->Scope;
+        LocalParent = RootObject;
     }
 
-    /* Validate the scope handle */
+    /* Validate the Parent handle */
 
-    if (!(ThisEntry = NsConvertHandleToEntry (LocalScope)))
+    if (!(ThisEntry = NsConvertHandleToEntry (LocalParent)))
     {
         return AE_BAD_PARAMETER;
     }
     
-    /* Search for the name within this scope */
+    /* It is the scope that we are really after */
+
+    ThisEntry = ThisEntry->Scope;
+
+    /* Search for the name within this Parent */
 
     while (ThisEntry)
     {
