@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.24 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -138,17 +138,11 @@
 #include <process.h>
 #include <time.h>
 
-#undef LOWORD
-#undef HIWORD
-#undef LOBYTE
-#undef HIBYTE
-
-
 #include "acpi.h"
 #include "acdebug.h"
 
 #define _COMPONENT          ACPI_OS_SERVICES
-        MODULE_NAME         ("oswinxf")
+        ACPI_MODULE_NAME    ("oswinxf")
 
 
 UINT32                      AcpiGbl_NextSemaphore = 0;
@@ -169,7 +163,7 @@ extern FILE                 *AcpiGbl_DebugFile;
 ACPI_STATUS
 AeLocalGetRootPointer (
     UINT32                  Flags,
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress);
+    ACPI_POINTER            *Address);
 
 
 /******************************************************************************
@@ -209,10 +203,10 @@ AcpiOsTerminate (void)
 ACPI_STATUS
 AcpiOsGetRootPointer (
     UINT32                  Flags,
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+    ACPI_POINTER           *Address)
 {
 
-    return (AeLocalGetRootPointer (Flags, RsdpPhysicalAddress));
+    return (AeLocalGetRootPointer (Flags, Address));
 }
 
 
@@ -295,27 +289,26 @@ AcpiOsWritable (
  *
  * PARAMETERS:  fmt, ...            Standard printf format
  *
- * RETURN:      Actual bytes written
+ * RETURN:      None
  *
  * DESCRIPTION: Formatted output
  *
  *****************************************************************************/
 
-INT32
+void ACPI_INTERNAL_VAR_XFACE
 AcpiOsPrintf (
     const char              *Fmt,
     ...)
 {
-    INT32                   Count;
     va_list                 Args;
 
 
     va_start (Args, Fmt);
 
-    Count = AcpiOsVprintf (Fmt, Args);
+    AcpiOsVprintf (Fmt, Args);
 
     va_end (Args);
-    return Count;
+    return;
 }
 
 
@@ -326,13 +319,13 @@ AcpiOsPrintf (
  * PARAMETERS:  fmt                 Standard printf format
  *              args                Argument list
  *
- * RETURN:      Actual bytes written
+ * RETURN:      None
  *
  * DESCRIPTION: Formatted output with argument list pointer
  *
  *****************************************************************************/
 
-INT32
+void
 AcpiOsVprintf (
     const char              *Fmt,
     va_list                 Args)
@@ -342,7 +335,7 @@ AcpiOsVprintf (
 
 
     Flags = AcpiGbl_DbOutputFlags;
-    if (Flags & DB_REDIRECTABLE_OUTPUT)
+    if (Flags & ACPI_DB_REDIRECTABLE_OUTPUT)
     {
         /* Output is directable to either a file (if open) or the console */
 
@@ -356,16 +349,16 @@ AcpiOsVprintf (
         {
             /* No redirection, send output to console (once only!) */
 
-            Flags |= DB_CONSOLE_OUTPUT;
+            Flags |= ACPI_DB_CONSOLE_OUTPUT;
         }
     }
 
-    if (Flags & DB_CONSOLE_OUTPUT)
+    if (Flags & ACPI_DB_CONSOLE_OUTPUT)
     {
         Count = vprintf (Fmt, Args);
     }
 
-    return Count;
+    return;
 }
 
 
@@ -530,7 +523,7 @@ AcpiOsCreateSemaphore (
 #ifdef _MULTI_THREADED
     void                *Mutex;
 
-    PROC_NAME ("OsCreateSemaphore");
+    ACPI_FUNCTION_NAME ("OsCreateSemaphore");
 #endif
 
 
@@ -638,7 +631,7 @@ AcpiOsWaitSemaphore (
     UINT32              WaitStatus;
 
 
-    PROC_NAME ("OsWaitSemaphore");
+    ACPI_FUNCTION_NAME ("OsWaitSemaphore");
 
 
     if ((Index >= NUM_SEMAPHORES) ||
@@ -709,7 +702,7 @@ AcpiOsSignalSemaphore (
 
     UINT32              Index = (UINT32) Handle;
 
-    PROC_NAME ("OsSignalSemaphore");
+    ACPI_FUNCTION_NAME ("OsSignalSemaphore");
 
 
     if ((Index >= NUM_SEMAPHORES) ||
