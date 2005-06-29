@@ -1,15 +1,27 @@
-Microsoft Developer Studio Workspace File, Format Version 6.00
+Microsoft Developer Studio Workspace File, Format Version 5.00
 # WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
 
 ###############################################################################
 
-Project: "Subsystem"=.\Subsystem\Subsystem.dsp - Package Owner=<4>
+Project: "AcpiDump"=.\AcpiDump.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Subsystem"=.\Subsystem.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
     "$/Acpi Components/Subsystem", CQBAAAAA
-    ..\..\subsystem
+    .
     end source code control
 }}}
 
@@ -19,13 +31,29 @@ Package=<4>
 
 ###############################################################################
 
-Project: "app"=..\..\Test\App\Wdm\app.dsp - Package Owner=<4>
+Project: "SubsystemRecursive"=.\SubsystemRecursive.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/Test/app", GECAAAAA
-    ..\..\test\app
+    "$/Acpi Components/Subsystem", CQBAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "app"=..\..\App\WDM\app.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/Test/App", GECAAAAA
+    ..\..\app
     end source code control
 }}}
 
@@ -38,13 +66,29 @@ Package=<4>
 
 ###############################################################################
 
-Project: "wdm"=..\..\TEST\DRIVER\wdm\wdm.dsp - Package Owner=<4>
+Project: "wdmdrv"=..\..\OsDependent\wdm\wdmDrv.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/OsDependent/wdm", DBDAAAAA
-    ..\..\test\driver\wdm
+    "$/Acpi Components/OsDependent/Wdm", DBDAAAAA
+    ..\..\osdependent\wdm
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "wdmlib"=..\..\App\WDM\wdmlib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/Test/App/Wdm", DICAAAAA
+    ..\..\app\wdm
     end source code control
 }}}
 
