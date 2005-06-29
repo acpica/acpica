@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.101 $
+ *       $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -194,33 +194,23 @@ ACPI_STATUS
 AcpiExExtractFromField (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
-    UINT32                  BufferLength,
-    UINT32                  ByteLength,
-    UINT32                  DatumLength,
-    UINT32                  BitGranularity,
-    UINT32                  ByteGranularity);
+    UINT32                  BufferLength);
 
 ACPI_STATUS
 AcpiExInsertIntoField (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
-    UINT32                  BufferLength,
-    UINT32                  ByteLength,
-    UINT32                  DatumLength,
-    UINT32                  BitGranularity,
-    UINT32                  ByteGranularity);
+    UINT32                  BufferLength);
 
 ACPI_STATUS
 AcpiExSetupField (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     *RgnDesc,
-    UINT32                  FieldBitWidth);
+    UINT32                  FieldByteOffset);
 
 ACPI_STATUS
 AcpiExReadFieldDatum (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  FieldByteOffset,
-    UINT32                  FieldBitWidth,
     UINT32                  *Value);
 
 ACPI_STATUS

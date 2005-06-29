@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.69 $
+ *       $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -285,8 +285,24 @@
 #define ROUND_PTR_UP_TO_8(a,b)          ((b *)(((NATIVE_UINT)(a) + 7) & ~7))
 
 #define ROUND_BITS_UP_TO_BYTES(a)       DIV_8((a) + 7)
+#define ROUND_BITS_DOWN_TO_BYTES(a)     DIV_8((a))
 
 #define ROUND_UP_TO_1K(a)               (((a) + 1023) >> 10)
+
+/* Generic (non-power-of-two) rounding */
+
+#define ROUND_UP_TO(value,boundary)     (((value) + ((boundary)-1)) / (boundary))
+
+/* 
+ * Bitmask creation
+ * Bit positions start at zero.
+ * MASK_BITS_ABOVE creates a mask starting AT the position and above
+ * MASK_BITS_BELOW creates a mask starting one bit BELOW the position
+ */
+
+
+#define MASK_BITS_ABOVE(position)       (~(((UINT32)(-1)) << ((UINT32) (position))))
+#define MASK_BITS_BELOW(position)       (((UINT32)(-1)) << ((UINT32) (position)))
 
 #ifdef DEBUG_ASSERT
 #undef DEBUG_ASSERT
@@ -463,6 +479,7 @@
  * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
  */
 
+#define PROC_NAME(a)                    char * _ProcName = a;
 #define FUNCTION_TRACE(a)               char * _ProcName = a;\
                                         FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define FUNCTION_TRACE_PTR(a,b)         char * _ProcName = a;\
@@ -533,6 +550,12 @@
                                             DebugPrintRaw PARAM_LIST(fp);\
                                             BREAK_ON_ERROR(lvl);}
 
+#define DEBUG_PRINTP(lvl,fp)            TEST_DEBUG_SWITCH(lvl) {\
+                                            DebugPrintPrefix (_THIS_MODULE,__LINE__);\
+                                            DebugPrintRaw ("%s: ",_ProcName);\
+                                            DebugPrintRaw PARAM_LIST(fp);\
+                                            BREAK_ON_ERROR(lvl);}
+
 #define DEBUG_PRINT_RAW(lvl,fp)         TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintRaw PARAM_LIST(fp);}
 
@@ -560,6 +583,7 @@
 
 #define DEBUG_DEFINE(a)
 #define DEBUG_ONLY_MEMBERS(a)
+#define PROC_NAME(a)
 #define FUNCTION_TRACE(a)
 #define FUNCTION_TRACE_PTR(a,b)
 #define FUNCTION_TRACE_U32(a,b)
@@ -574,6 +598,7 @@
 #define DUMP_PATHNAME(a,b,c,d)
 #define DUMP_RESOURCE_LIST(a)
 #define DEBUG_PRINT(l,f)
+#define DEBUG_PRINTP(l,f)
 #define DEBUG_PRINT_RAW(l,f)
 #define BREAK_MSG(a)
 

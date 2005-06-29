@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.119 $
+ *       $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -227,6 +227,13 @@ typedef UINT16                          ACPI_OWNER_ID;
 #define TABLE_ID_DSDT                   (ACPI_OWNER_ID) 0x8000
 
 
+/* Field access granularities */
+
+#define ACPI_FIELD_BYTE_GRANULARITY     1
+#define ACPI_FIELD_WORD_GRANULARITY     2
+#define ACPI_FIELD_DWORD_GRANULARITY    4
+#define ACPI_FIELD_QWORD_GRANULARITY    8
+
 /*****************************************************************************
  *
  * Namespace typedefs and structs
@@ -339,6 +346,20 @@ typedef struct
 
 #define ACPI_COPY_TYPE_SIMPLE           0
 #define ACPI_COPY_TYPE_PACKAGE          1
+
+/* Info structure used to convert external<->internal namestrings */
+
+typedef struct acpi_namestring_info
+{
+    NATIVE_CHAR             *ExternalName;
+    NATIVE_CHAR             *NextExternalChar;
+    NATIVE_CHAR             *InternalName;
+    UINT32                  Length;
+    UINT32                  NumSegments;
+    UINT32                  NumCarats;
+    BOOLEAN                 FullyQualified;
+
+} ACPI_NAMESTRING_INFO;
 
 
 /*****************************************************************************
