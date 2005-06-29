@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -165,6 +165,11 @@ char                        *AslMessages [] = {
     "Splitting long input line",
     "Recursive method call",
     "Not a parameter, used as local only",
+    "Could not open file",
+    "Could not read file",
+    "Could not write file",
+    "Could not seek file",
+    "Could not close file",
 };
 
 
@@ -256,7 +261,7 @@ AeAddToErrorLog (
 
 void
 AePrintException (
-    FILE                    *Where,
+    UINT32                  FileId,
     ASL_ERROR_MSG           *Enode)
 {
     UINT8                   SourceByte;
@@ -272,27 +277,26 @@ AePrintException (
 
     if (Enode->Filename)
     {
-        fprintf (Where, "%6s", Enode->Filename);
+        FlPrintFile (FileId, "%6s", Enode->Filename);
 
         if (Enode->LineNumber)
         {
-            fprintf (Where, "%6d: ", Enode->LineNumber);
+            FlPrintFile (FileId, "%6d: ", Enode->LineNumber);
 
             /*
              * Seek to the offset in the combined source file, read the source
              * line, and write it to the output.
              */
-            fseek (Gbl_SourceOutputFile, Enode->LogicalByteOffset, SEEK_SET);
+            FlSeekFile (ASL_FILE_SOURCE_OUTPUT, Enode->LogicalByteOffset);
 
-
-            Actual = fread (&SourceByte, 1, 1, Gbl_SourceOutputFile);
+            Actual = fread (&SourceByte, 1, 1, Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle);
             while (Actual && SourceByte && (SourceByte != '\n'))
             {
-                fwrite (&SourceByte, 1, 1, Where);
-                Actual = fread (&SourceByte, 1, 1, Gbl_SourceOutputFile);
+                FlWriteFile (FileId, &SourceByte, 1);
+                Actual = fread (&SourceByte, 1, 1, Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle);
             }
 
-            fprintf (Where, "\n");
+            FlPrintFile (FileId, "\n");
         }
     }
 
@@ -301,15 +305,14 @@ AePrintException (
 
     if (Enode->MessageId == 0)
     {
-        fprintf (Where, "%s\n",
-                    Enode->Message);
+        FlPrintFile (FileId, "%s\n", Enode->Message);
     }
 
     /* Decode the message ID */
 
     else
     {
-        fprintf (Where, "%s %04.4d -",
+        FlPrintFile (FileId, "%s %04.4d -",
                     AslErrorLevel[Enode->Level],
                     Enode->MessageId + ((Enode->Level+1) * 1000));
 
@@ -335,21 +338,21 @@ AePrintException (
             {
                 if ((MsgLength + ErrorColumn) < (SourceColumn - 1))
                 {
-                    fprintf (Where, "%*s%s",
+                    FlPrintFile (FileId, "%*s%s",
                         (SourceColumn - 1) - ErrorColumn,
                         MainMessage, " ^ ");
                 }
 
                 else
                 {
-                    fprintf (Where, "%*s %s",
+                    FlPrintFile (FileId, "%*s %s",
                         (SourceColumn - ErrorColumn) + 1, "^",
                         MainMessage);
                 }
             }
             else
             {
-                fprintf (Where, " ^ %s   %s\n\n",
+                FlPrintFile (FileId, " ^ %s   %s\n\n",
                             MainMessage,
                             ExtraMessage);
             }
@@ -358,15 +361,15 @@ AePrintException (
 
             if (ExtraMessage)
             {
-                fprintf (Where, " (%s)", ExtraMessage);
+                FlPrintFile (FileId, " (%s)", ExtraMessage);
             }
 
-            fprintf (Where, "\n\n");
+            FlPrintFile (FileId, "\n\n");
         }
 
         else
         {
-            fprintf (Where, " %s %s\n\n",
+            FlPrintFile (FileId, " %s %s\n\n",
                         MainMessage,
                         ExtraMessage);
         }
@@ -388,14 +391,14 @@ AePrintException (
 
 void
 AePrintErrorLog (
-    FILE                    *Where)
+    UINT32                  FileId)
 {
     ASL_ERROR_MSG           *Enode = Gbl_ErrorLog;
 
 
     while (Enode)
     {
-        AePrintException (Where, Enode);
+        AePrintException (FileId, Enode);
         Enode = Enode->Next;
     }
 }
@@ -482,7 +485,7 @@ AslCommonError (
     {
         /* stderr is a file, send error to it immediately */
 
-        AePrintException (stderr, Enode);
+        AePrintException (ASL_FILE_STDERR, Enode);
     }
 
 
@@ -491,12 +494,12 @@ AslCommonError (
     if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
     {
 
-        AePrintErrorLog (stdout);
+        AePrintErrorLog (ASL_FILE_STDOUT);
         if (Gbl_DebugFlag)
         {
             /* Print error summary to the debug file */
 
-            AePrintErrorLog (stderr);
+            AePrintErrorLog (ASL_FILE_STDERR);
         }
         printf ("\nMaximum error count (%d) exceeded.\n", ASL_MAX_ERROR_COUNT);
         CmCleanupAndExit ();

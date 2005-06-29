@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.16 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -148,7 +148,7 @@ LsPushNode (
     ASL_LISTING_NODE        *Lnode;
 
 
-    if (!Gbl_ListingOutputFile)
+    if (!Gbl_ListingFlag)
     {
         return;
     }
@@ -189,7 +189,7 @@ LsPopNode (void)
     ASL_LISTING_NODE        *Lnode;
 
 
-    if (!Gbl_ListingOutputFile)
+    if (!Gbl_ListingFlag)
     {
         return Gbl_ListingNode;
     }
@@ -246,14 +246,14 @@ LsCheckException (
     while (Gbl_NextError &&
           (LineNumber >= Gbl_NextError->LogicalLineNumber))
     {
-        fprintf (Gbl_ListingOutputFile, "\n[****AslException****]\n");
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n[****AslException****]\n");
 
-        AePrintException (Gbl_ListingOutputFile, Gbl_NextError);
+        AePrintException (ASL_FILE_LISTING_OUTPUT, Gbl_NextError);
 
         Gbl_NextError = Gbl_NextError->Next;
     }
 
-    fprintf (Gbl_ListingOutputFile, "\n");
+    FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n");
 }
 
 
@@ -287,17 +287,17 @@ LsFlushListingBuffer (void)
 
     for (i = 0; i < Gbl_CurrentHexColumn; i++)
     {
-        fwrite (&hex[Gbl_AmlBuffer[i] >> 4], 1, 1, Gbl_ListingOutputFile);
-        fwrite (&hex[Gbl_AmlBuffer[i] & 0xF], 1, 1, Gbl_ListingOutputFile);
-        fprintf (Gbl_ListingOutputFile, " ");
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, &hex[Gbl_AmlBuffer[i] >> 4], 1);
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, &hex[Gbl_AmlBuffer[i] & 0xF], 1);
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, " ", 1);
     }
 
     for (i = 0; i < ((16 - Gbl_CurrentHexColumn) * 3); i++)
     {
-        fprintf (Gbl_ListingOutputFile, ".");
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, ".", 1);
     }
 
-    fprintf (Gbl_ListingOutputFile, "    ");
+    FlWriteFile (ASL_FILE_LISTING_OUTPUT, "    ", 4);
 
 
     /* Write the ASCII character associated with each of the bytes */
@@ -309,16 +309,16 @@ LsFlushListingBuffer (void)
             (BufChar > 0x2F && BufChar < 0x61) ||
             (BufChar > 0x60 && BufChar < 0x7F))
         {
-            fprintf (Gbl_ListingOutputFile, "%c", BufChar);
+            FlPrintFile (ASL_FILE_LISTING_OUTPUT,"%c", BufChar);
         }
         else
         {
-            fprintf (Gbl_ListingOutputFile, ".");
+            FlWriteFile (ASL_FILE_LISTING_OUTPUT, ".", 1);
         }
     }
 
 
-    fprintf (Gbl_ListingOutputFile, "\n");
+    FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n");
     Gbl_CurrentHexColumn = 0;
     Gbl_HexBytesWereWritten = TRUE;
 }
@@ -365,10 +365,10 @@ LsWriteListingHexBytes (
         {
             if (Gbl_HasIncludeFiles)
             {
-                fprintf (Gbl_ListingOutputFile, "%*s", 10, " ");
+                FlPrintFile (ASL_FILE_LISTING_OUTPUT, "%*s", 10, " ");
             }
 
-            fprintf (Gbl_ListingOutputFile, "%8.8X....", Gbl_CurrentAmlOffset);
+            FlPrintFile (ASL_FILE_LISTING_OUTPUT, "%8.8X....", Gbl_CurrentAmlOffset);
         }
 
         /* Transfer AML byte and update counts */
@@ -419,22 +419,22 @@ LsWriteOneSourceLine (void)
          * filename and line number within the current file
          */
 
-        fprintf (Gbl_ListingOutputFile, "%12s %5d....",
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "%12s %5d....",
                     Gbl_ListingNode->Filename, Gbl_ListingNode->LineNumber);
     }
     else
     {
         /* No include files, just print the line number */
 
-        fprintf (Gbl_ListingOutputFile, "%8d....", Gbl_SourceLine);
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "%8d....", Gbl_SourceLine);
     }
 
 
     /* Read one line (up to a newline or EOF) */
 
-    while (fread (&FileByte, 1, 1, Gbl_SourceOutputFile))
+    while (FlReadFile (ASL_FILE_SOURCE_OUTPUT, &FileByte, 1) == AE_OK)
     {
-        fwrite (&FileByte, 1, 1, Gbl_ListingOutputFile);
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, &FileByte, 1);
         DbgPrint (ASL_PARSE_OUTPUT, "%c", FileByte);
 
         if (FileByte == '\n')
@@ -531,7 +531,7 @@ LsWriteSourceLines (
 
         if (Gbl_HexBytesWereWritten)
         {
-            fprintf (Gbl_ListingOutputFile, "\n");
+            FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n");
             Gbl_HexBytesWereWritten = FALSE;
         }
 
@@ -543,7 +543,7 @@ LsWriteSourceLines (
         { ; }
 
 
-        fprintf (Gbl_ListingOutputFile, "\n");
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n");
     }
 }
 
@@ -644,8 +644,8 @@ LsWriteNodeToListing (
 
         /* For fields, we want to dump all the AML after the entire definition */
 
+        case AML_FIELD_OP:
         case AML_INDEX_FIELD_OP:
-        case AML_DEF_FIELD_OP:
         case AML_BANK_FIELD_OP:
         case AML_NAME_OP:
 
@@ -700,12 +700,12 @@ LsDoHexOutput (void)
 
     /* Start at the beginning of the AML file */
 
-    fseek (Gbl_AmlOutputFile, 0, SEEK_SET);
+    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
 
     /* Process all AML bytes in the AML file */
 
     j = 0;
-    while (fread (&FileByte[j], 1, 1, Gbl_AmlOutputFile))
+    while (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte[j], 1) == AE_OK)
     {
         /*
          * Convert each AML byte to hex
@@ -713,8 +713,8 @@ LsDoHexOutput (void)
 
         UtConvertByteToHex (FileByte[j], Buffer);
 
-        fwrite (Buffer, 4, 1, Gbl_HexOutputFile);
-        fprintf (Gbl_HexOutputFile, ",");
+        FlWriteFile (ASL_FILE_HEX_OUTPUT, Buffer, 4);
+        FlPrintFile (ASL_FILE_HEX_OUTPUT, ",");
 
         /* An occasional linefeed improves readability */
 
@@ -722,7 +722,7 @@ LsDoHexOutput (void)
         if (j >= HEX_CHARS_PER_LINE)
         {
 
-            fprintf  (Gbl_HexOutputFile, "  /*  ");
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "  /*  ");
 
             /* Write the ASCII character associated with each of the bytes */
 
@@ -733,22 +733,22 @@ LsDoHexOutput (void)
                     (BufChar > 0x2F && BufChar < 0x61) ||
                     (BufChar > 0x60 && BufChar < 0x7F))
                 {
-                    fprintf (Gbl_HexOutputFile, "%c", BufChar);
+                    FlPrintFile (ASL_FILE_HEX_OUTPUT, "%c", BufChar);
                 }
                 else
                 {
-                    fprintf (Gbl_HexOutputFile, ".");
+                    FlPrintFile (ASL_FILE_HEX_OUTPUT, ".");
                 }
             }
 
 
-            fprintf  (Gbl_HexOutputFile, "  */\n");
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "  */\n");
             j = 0;
         }
     }
 
-    fprintf  (Gbl_HexOutputFile, "\n");
-    fclose (Gbl_HexOutputFile);
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "\n");
+    FlCloseFile (ASL_FILE_HEX_OUTPUT);
 }
 
 

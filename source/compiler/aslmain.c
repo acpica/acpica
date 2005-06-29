@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -160,6 +160,41 @@ Usage (
 }
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslInitialize
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Initialize compiler globals
+ *
+ ******************************************************************************/
+
+void
+AslInitialize (void)
+{
+    UINT32              i;
+
+
+    AcpiDbgLevel = 0;
+
+    for (i = 0; i < ASL_NUM_FILES; i++)
+    {
+        Gbl_Files[i].Handle = NULL;
+        Gbl_Files[i].Filename = NULL;
+    }
+
+    Gbl_Files[ASL_FILE_STDOUT].Handle   = stdout;
+    Gbl_Files[ASL_FILE_STDOUT].Filename = "STDOUT";
+
+    Gbl_Files[ASL_FILE_STDERR].Handle   = stderr;
+    Gbl_Files[ASL_FILE_STDERR].Filename = "STDERR";
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    main
@@ -184,9 +219,9 @@ main (
     int                 Status;
 
 
-    AcpiDbgLevel = 0;
 
-    AslCompilerSignon (stdout);
+    AslInitialize ();
+    AslCompilerSignon (ASL_FILE_STDOUT);
 
     /* Minimum command line contains at least the input file */
 
@@ -195,6 +230,7 @@ main (
         Usage ();
         return 0;
     }
+
 
 
     /* Get the command line options */

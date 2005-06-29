@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.23 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -154,7 +154,7 @@ LsDoOneNamespaceObject (
 
     Gbl_NumNamespaceObjects++;
 
-    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s",
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "%5d  [%d]  %*s %4.4s - %s",
                         Gbl_NumNamespaceObjects, Level, (Level * 3), " ",
                         &Node->Name,
                         AcpiCmGetTypeName (Node->Type));
@@ -181,12 +181,12 @@ LsDoOneNamespaceObject (
 
             if (Pnode->Value.Integer64 > ACPI_UINT32_MAX)
             {
-                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X%X]",
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X%X]",
                             HIDWORD (Pnode->Value.Integer64), Pnode->Value.Integer32);
             }
             else
             {
-                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X]",
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X]",
                             Pnode->Value.Integer32);
             }
             break;
@@ -199,19 +199,19 @@ LsDoOneNamespaceObject (
                 Pnode = Pnode->Peer;
             }
 
-            fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = \"%s\"]",
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = \"%s\"]",
                         Pnode->Value.String);
 
             break;
 
 
-        case INTERNAL_TYPE_DEF_FIELD:
+        case INTERNAL_TYPE_REGION_FIELD:
             if ((Pnode->ParseOpcode == NAMESEG)  ||
                 (Pnode->ParseOpcode == NAMESTRING))
             {
                 Pnode = Pnode->Child;
             }
-            fprintf (Gbl_NamespaceOutputFile, "    [Length = 0x%02X]",
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Length = 0x%02X]",
                         Pnode->Value.Integer32);
 
             break;
@@ -220,7 +220,7 @@ LsDoOneNamespaceObject (
 
     }
 
-    fprintf (Gbl_NamespaceOutputFile, "\n");
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "\n");
 
     return (AE_OK);
 }
@@ -253,8 +253,8 @@ LsDisplayNamespace (void)
 
     /* File header */
 
-    fprintf (Gbl_NamespaceOutputFile, "Contents of ACPI Namespace\n\n");
-    fprintf (Gbl_NamespaceOutputFile, "Count  Depth    Name - Type\n\n");
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "Contents of ACPI Namespace\n\n");
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "Count  Depth    Name - Type\n\n");
 
     /* Walk entire namespace from the supplied root */
 
