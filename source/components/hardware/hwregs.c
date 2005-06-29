@@ -537,7 +537,7 @@ HwRegisterIO (
             DEBUG_PRINT (TRACE_IO, ("PM1a control: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm1aCntBlk));
         }
 
-        if (FACP->Pm1bEvtBlk && RegisterId != (INT32) SLP_TYPa)
+        if (FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
         {
             RegisterValue |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bCntBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1b control: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm1bCntBlk));
@@ -605,7 +605,7 @@ HwRegisterIO (
                 }
             }
                 
-            if (FACP->Pm1bEvtBlk && RegisterId != (INT32) SLP_TYPa)
+            if (FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
             {
                 OsdOut16 ((UINT16) FACP->Pm1bCntBlk, (UINT16) RegisterValue);
             }
