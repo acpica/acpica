@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.50 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,6 @@
 #define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsfield")
 
-   
 
 /*******************************************************************************
  *
@@ -139,10 +138,10 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute the CreateField operators: 
+ * DESCRIPTION: Execute the CreateField operators:
  *              CreateBitFieldOp,
- *              CreateByteFieldOp, 
- *              CreateWordFieldOp, 
+ *              CreateByteFieldOp,
+ *              CreateWordFieldOp,
  *              CreateDWordFieldOp,
  *              CreateQWordFieldOp,
  *              CreateFieldOp       (all of which define fields in buffers)
@@ -183,7 +182,7 @@ AcpiDsCreateBufferField (
     }
 
     /*
-     * During the load phase, we want to enter the name of the field into 
+     * During the load phase, we want to enter the name of the field into
      * the namespace.  During the execute phase (when we evaluate the size
      * operand), we want to lookup the name
      */
@@ -276,7 +275,6 @@ Cleanup:
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsGetFieldNames
@@ -331,9 +329,10 @@ AcpiDsGetFieldNames (
             /*
              * Get a new AccessType and AccessAttribute for all
              * entries (until end or another AccessAs keyword)
+             * Preserve flag bits other than the ACCESS_TYPE bits
              */
-            Info->FieldFlags  = (UINT8) ((Info->FieldFlags & FIELD_ACCESS_TYPE_MASK) ||
-                                        ((UINT8) (Arg->Value.Integer >> 8)));
+            Info->FieldFlags  = (UINT8) ((Info->FieldFlags & FIELD_ACCESS_TYPE_MASK) |
+                                            ((UINT8) (Arg->Value.Integer >> 8)));
             break;
 
 
@@ -449,7 +448,6 @@ AcpiDsCreateField (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsInitFieldObjects
@@ -532,7 +530,6 @@ AcpiDsInitFieldObjects (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*******************************************************************************
