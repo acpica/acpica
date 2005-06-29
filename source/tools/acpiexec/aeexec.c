@@ -118,6 +118,7 @@
 #include <parser.h>
 #include <amlcode.h>
 #include <namesp.h>
+#include <debugger.h>
 #include "aecommon.h"
 
 #include <stdio.h>
@@ -255,8 +256,10 @@ AeInstallHandlers (void)
         printf ("Could not install a global notify handler\n");
     }
 
-
-    Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, 0x22, RegionHandler, NULL);
+    /* Install handler at the root object. 
+     * TBD: all default handlers should be installed here!
+     */
+    Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, 0x1, RegionHandler, NULL);
     if (ACPI_FAILURE (Status))
     {
         printf ("Could not install an OpRegion handler\n");
@@ -328,60 +331,6 @@ TbSystemTablePointer (
     return (FALSE);
 }
 
-
-
-/******************************************************************************
- * 
- * FUNCTION:    AdLoadDsdt
- *
- * PARAMETERS:  
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Load the DSDT from the file pointer
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AdLoadDsdt(
-    FILE                    *fp, 
-    UINT8                   **DsdtPtr, 
-    UINT32                  *DsdtLength)
-{
-    ACPI_TABLE_HEADER       dsdt_hdr;
-    UINT8                   *AmlPtr;
-    UINT32                   AmlLength;
-
-
-    if (fread(&dsdt_hdr, 1, sizeof (dsdt_hdr), fp) == sizeof (dsdt_hdr))
-    {
-        *DsdtLength = dsdt_hdr.Length;
-
-        if (*DsdtLength)
-        {
-            *DsdtPtr = (UINT8*) malloc ((size_t) *DsdtLength);
-
-            if (*DsdtPtr)
-            {
-                AmlPtr = *DsdtPtr + sizeof (dsdt_hdr);
-                AmlLength = *DsdtLength - sizeof (dsdt_hdr);
-
-                memcpy (*DsdtPtr, &dsdt_hdr, sizeof (dsdt_hdr));
-                if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
-                {
-                    return AE_OK;
-                }
-
-                free(*DsdtPtr);
-            }
-        }
-    }
-
-    *DsdtPtr = NULL;
-    *DsdtLength = 0;
-
-    return AE_AML_ERROR;
-}
 
 
 
@@ -468,44 +417,10 @@ ACPI_STATUS
 AdGetTables (
     char                    *Filename)
 {
-    FILE                    *fp;
     ACPI_STATUS             Status;
 
 
-    if (Filename)
-    {
-        printf ("Loading DSDT from file %s\n", Filename);
-        fp = fopen (Filename, "rb");
-        if (!fp)
-        {
-            printf ("Couldn't open %s\n", Filename);
-            return AE_ERROR;
-        }
-
-        Status = AdLoadDsdt (fp, &DsdtPtr, &DsdtLength);
-        if (fp != stdin)
-        {
-            fclose(fp);
-        }
-
-        /* TBD: set real Dsdt ptr here.  BUT FIX this */
-
-        Gbl_DSDT = (ACPI_TABLE_HEADER *) DsdtPtr;
-    }
-
-
-    else
-    {
-#ifdef IA16
-        printf ("Scanning for DSDT\n");
-
-        Status = AdFindDsdt (&DsdtPtr, &DsdtLength);
-        AdDumpTables ();
-#else
-        printf ("Must supply filename for ACPI tables, cannot scan memory\n");
-        Status = AE_NO_ACPI_TABLES;
-#endif
-    }
+    Status = DbLoadAcpiTable (Filename);
 
     return Status;
 }
