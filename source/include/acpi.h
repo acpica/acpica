@@ -122,20 +122,20 @@
  * We put them here because we don't want to duplicate them
  * in the rest of the source code again and again.
  */
-#include "config.h"         /* Configuration constants */
+#include "acconfig.h"       /* Configuration constants */
 #include "acenv.h"          /* Target environment specific items */
 #include "actypes.h"        /* Fundamental data types */
 #include "acexcep.h"        /* Local exception codes */
-#include "macros.h"         /* C macros */
-#include "actables.h"       /* Acpi table definitions */
-#include "internal.h"       /* Internal data types */
-#include "output.h"         /* Error output and Debug macros */
+#include "acmacros.h"       /* C macros */
+#include "actbl.h"          /* Acpi table definitions */
+#include "aclocal.h"        /* Internal data types */
+#include "acoutput.h"       /* Error output and Debug macros */
 #include "acpiosxf.h"       /* Interfaces to the Acpi-to-OS layer*/
 #include "acpixf.h"         /* Acpi core external interfaces */
 #include "acobject.h"       /* Acpi internal object */
-#include "globals.h"        /* All global variables */
-#include "hardware.h"       /* Hardware defines and interfaces */
-#include "common.h"         /* Common (global) interfaces */
+#include "acglobal.h"       /* All global variables */
+#include "achware.h"        /* Hardware defines and interfaces */
+#include "accommon.h"       /* Common (global) interfaces */
 
 
 #endif /* __ACPI_H__ */
