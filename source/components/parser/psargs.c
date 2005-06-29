@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.76 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -138,7 +138,7 @@
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiPsGetNextPackageLength (
     ACPI_PARSE_STATE        *ParserState)
 {
@@ -367,8 +367,10 @@ AcpiPsGetNextNamepath (
          * parent tree, but don't open a new scope -- we just want to lookup the
          * object  (MUST BE mode EXECUTE to perform upsearch)
          */
-        Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-                    ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
+        Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY,
+                    ACPI_IMODE_EXECUTE,
+                    ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE,
+                    NULL, &Node);
         if (ACPI_SUCCESS (Status) && MethodCall)
         {
             if (Node->Type == ACPI_TYPE_METHOD)
@@ -575,7 +577,7 @@ AcpiPsGetNextSimpleArg (
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT *
+static ACPI_PARSE_OBJECT *
 AcpiPsGetNextField (
     ACPI_PARSE_STATE        *ParserState)
 {
