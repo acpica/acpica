@@ -146,7 +146,6 @@ NsDumpPathname (
 
     /* Convert handle to a full pathname and print it (with supplied message) */
 
-BREAKPOINT3;
     if (ACPI_SUCCESS (NsHandleToPathname (Handle, PATHNAME_MAX, Buffer)))
     {
         OsdPrintf (NULL, "%s %s (%p)\n", Msg, Buffer, Handle);
@@ -182,7 +181,7 @@ NsDumpOneObject (
     UINT32                  WhichBit;
     NAME_TABLE_ENTRY        *Appendage = NULL;
     NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) ObjHandle;
-    size_t                  Size = 0;
+    ACPI_SIZE               Size = 0;
 
 
     LevelTmp    = Level;
@@ -422,7 +421,7 @@ NsDumpRootDevices (void)
     AcpiNameToHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
-    AcpiWalkNamespace (TYPE_Device, SysBusHandle, INT_MAX, NsDumpOneDevice, NULL, NULL);
+    AcpiWalkNamespace (TYPE_Device, SysBusHandle, ACPI_INT_MAX, NsDumpOneDevice, NULL, NULL);
 }
 
 
