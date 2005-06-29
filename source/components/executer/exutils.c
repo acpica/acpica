@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.56 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -128,24 +128,6 @@
         MODULE_NAME         ("amutils")
 
 
-typedef struct Internal_Search_st
-{
-    ACPI_OPERAND_OBJECT         *DestObj;
-    UINT32                      Index;
-    ACPI_OPERAND_OBJECT         *SourceObj;
-
-} INTERNAL_PKG_SEARCH_INFO;
-
-
-/* Used to traverse nested packages when copying*/
-
-INTERNAL_PKG_SEARCH_INFO        CopyLevel[MAX_PACKAGE_DEPTH];
-
-
-static NATIVE_CHAR          hex[] =
-    {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlEnterInterpreter
@@ -153,18 +135,20 @@ static NATIVE_CHAR          hex[] =
  * PARAMETERS:  None
  *
  * DESCRIPTION: Enter the interpreter execution region
+ *              TBD: should be a macro
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AcpiAmlEnterInterpreter (void)
 {
+    ACPI_STATUS             Status;
+
     FUNCTION_TRACE ("AmlEnterInterpreter");
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_EXECUTE);
-
-    return_VOID;
+    Status = AcpiCmAcquireMutex (ACPI_MTX_EXECUTE);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -185,6 +169,8 @@ AcpiAmlEnterInterpreter (void)
  *      6) Method blocked to execute a serialized control method that is
  *          already executing
  *      7) About to invoke a user-installed opregion handler
+ *
+ *              TBD: should be a macro
  *
  ******************************************************************************/
 
@@ -227,24 +213,45 @@ AcpiAmlValidateObjectType (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlBufSeq
+ * FUNCTION:    AcpiAmlTruncateFor32bitTable
  *
- * RETURN:      The next buffer descriptor sequence number
+ * PARAMETERS:  ObjDesc         - Object to be truncated
+ *              WalkState       - Current walk state
+ *                                (A method must be executing)
  *
- * DESCRIPTION: Provide a unique sequence number for each Buffer descriptor
- *              allocated during the interpreter's existence.  These numbers
- *              are used to relate FieldUnit descriptors to the Buffers
- *              within which the fields are defined.
+ * RETURN:      none
  *
- *              Just increment the global counter and return it.
+ * DESCRIPTION: Truncate a number to 32-bits if the currently executing method
+ *              belongs to a 32-bit ACPI table.
  *
  ******************************************************************************/
 
-UINT32
-AcpiAmlBufSeq (void)
+void
+AcpiAmlTruncateFor32bitTable (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
 
-    return (++AcpiGbl_BufSeq);
+    /*
+     * Object must be a valid number and we must be executing
+     * a control method
+     */
+
+    if ((!ObjDesc) ||
+        (ObjDesc->Common.Type != ACPI_TYPE_INTEGER) ||
+        (!WalkState->MethodNode))
+    {
+        return;
+    }
+
+    if (WalkState->MethodNode->Flags & ANOBJ_DATA_WIDTH_32)
+    {
+        /*
+         * We are running a method that exists in a 32-bit ACPI table.
+         * Truncate the value to 32 bits by zeroing out the upper 32-bit field
+         */
+        ObjDesc->Integer.Value &= (ACPI_INTEGER) ACPI_UINT32_MAX;
+    }
 }
 
 
@@ -273,19 +280,21 @@ AcpiAmlAcquireGlobalLock (
     FUNCTION_TRACE ("AmlAcquireGlobalLock");
 
 
-    /*  Only attempt lock if the Rule says so */
+    /* Only attempt lock if the Rule says so */
 
     if (Rule == (UINT32) GLOCK_ALWAYS_LOCK)
     {
-        /*  OK to get the lock   */
+        /* We should attempt to get the lock */
 
         Status = AcpiEvAcquireGlobalLock ();
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Get Global Lock Failed!!\n"));
+            DEBUG_PRINT (ACPI_ERROR, 
+                ("Could not acquire Global Lock, %s\n",
+                AcpiCmFormatException (Status)));
         }
 
-        if (ACPI_SUCCESS (Status))
+        else
         {
             AcpiGbl_GlobalLockSet = TRUE;
             Locked = TRUE;
@@ -371,7 +380,7 @@ AcpiAmlDigitsNeeded (
 
     else
     {
-        for (NumDigits = 1 + (val < 0) ; val /= base ; ++NumDigits)
+        for (NumDigits = 1 + (val < 0); (val = ACPI_DIVIDE (val,base)); ++NumDigits)
         { ; }
     }
 
@@ -389,7 +398,7 @@ AcpiAmlDigitsNeeded (
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 _ntohl (
     UINT32                  Value)
 {
@@ -442,10 +451,10 @@ AcpiAmlEisaIdToString (
     OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
     OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
     OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
-    OutString[3] = hex[(id >> 12) & 0xf];
-    OutString[4] = hex[(id >> 8) & 0xf];
-    OutString[5] = hex[(id >> 4) & 0xf];
-    OutString[6] = hex[id & 0xf];
+    OutString[3] = AcpiGbl_HexToAscii[(id >> 12) & 0xf];
+    OutString[4] = AcpiGbl_HexToAscii[(id >> 8) & 0xf];
+    OutString[5] = AcpiGbl_HexToAscii[(id >> 4) & 0xf];
+    OutString[6] = AcpiGbl_HexToAscii[id & 0xf];
     OutString[7] = 0;
 
     return (AE_OK);
@@ -478,175 +487,11 @@ AcpiAmlUnsignedIntegerToString (
 
     for (Count = DigitsNeeded; Count > 0; Count--)
     {
-        OutString[Count-1] = (NATIVE_CHAR) ('0' + (Value % 10));
-        Value /= 10;
+        OutString[Count-1] = (NATIVE_CHAR) ('0' + (ACPI_MODULO (Value, 10)));
+        Value = ACPI_DIVIDE (Value, 10);
     }
 
     return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlBuildCopyInternalPackageObject
- *
- * PARAMETERS:  *SourceObj      - Pointer to the source package object
- *              *DestObj        - Where the internal object is returned
- *
- * RETURN:      Status          - the status of the call
- *
- * DESCRIPTION: This function is called to copy an internal package object
- *              into another internal package object.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiAmlBuildCopyInternalPackageObject (
-    ACPI_OPERAND_OBJECT     *SourceObj,
-    ACPI_OPERAND_OBJECT     *DestObj,
-    ACPI_WALK_STATE         *WalkState)
-{
-    UINT32                      CurrentDepth = 0;
-    ACPI_STATUS                 Status = AE_OK;
-    UINT32                      Length = 0;
-    UINT32                      ThisIndex;
-    UINT32                      ObjectSpace = 0;
-    ACPI_OPERAND_OBJECT         *ThisDestObj;
-    ACPI_OPERAND_OBJECT         *ThisSourceObj;
-    INTERNAL_PKG_SEARCH_INFO    *LevelPtr;
-
-
-    FUNCTION_TRACE ("AmlBuildCopyInternalPackageObject");
-
-
-    /*
-     * Initialize the working variables
-     */
-
-    MEMSET ((void *) CopyLevel, 0, sizeof(CopyLevel));
-
-    CopyLevel[0].DestObj    = DestObj;
-    CopyLevel[0].SourceObj  = SourceObj;
-    LevelPtr                = &CopyLevel[0];
-    CurrentDepth            = 0;
-
-    DestObj->Common.Type        = SourceObj->Common.Type;
-    DestObj->Package.Count      = SourceObj->Package.Count;
-
-
-    /*
-     * Build an array of ACPI_OBJECTS in the buffer
-     * and move the free space past it
-     */
-
-    DestObj->Package.Elements   = AcpiCmCallocate (
-                                        (DestObj->Package.Count + 1) *
-                                        sizeof (void *));
-    if (!DestObj->Package.Elements)
-    {
-        /* Package vector allocation failure   */
-
-        REPORT_ERROR (("AmlBuildCopyInternalPackageObject: Package vector allocation failure\n"));
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    DestObj->Package.NextElement = DestObj->Package.Elements;
-
-
-    while (1)
-    {
-        ThisIndex       = LevelPtr->Index;
-        ThisDestObj     = (ACPI_OPERAND_OBJECT  *) LevelPtr->DestObj->Package.Elements[ThisIndex];
-        ThisSourceObj   = (ACPI_OPERAND_OBJECT  *) LevelPtr->SourceObj->Package.Elements[ThisIndex];
-
-        if (IS_THIS_OBJECT_TYPE (ThisSourceObj, ACPI_TYPE_PACKAGE))
-        {
-            /*
-             * If this object is a package then we go one deeper
-             */
-            if (CurrentDepth >= MAX_PACKAGE_DEPTH-1)
-            {
-                /*
-                 * Too many nested levels of packages for us to handle
-                 */
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlBuildCopyInternalPackageObject: Pkg nested too deep (max %d)\n",
-                    MAX_PACKAGE_DEPTH));
-                return_ACPI_STATUS (AE_LIMIT);
-            }
-
-            /*
-             * Build the package object
-             */
-            ThisDestObj = AcpiCmCreateInternalObject (ACPI_TYPE_PACKAGE);
-            LevelPtr->DestObj->Package.Elements[ThisIndex] = ThisDestObj;
-
-
-            ThisDestObj->Common.Type        = ACPI_TYPE_PACKAGE;
-            ThisDestObj->Package.Count      = ThisDestObj->Package.Count;
-
-            /*
-             * Save space for the array of objects (Package elements)
-             * update the buffer length counter
-             */
-            ObjectSpace             = ThisDestObj->Package.Count *
-                                        sizeof (ACPI_OPERAND_OBJECT);
-            Length                  += ObjectSpace;
-            CurrentDepth++;
-            LevelPtr                = &CopyLevel[CurrentDepth];
-            LevelPtr->DestObj       = ThisDestObj;
-            LevelPtr->SourceObj     = ThisSourceObj;
-            LevelPtr->Index         = 0;
-
-        }   /* if object is a package */
-
-        else
-        {
-
-            ThisDestObj = AcpiCmCreateInternalObject (
-                                ThisSourceObj->Common.Type);
-            LevelPtr->DestObj->Package.Elements[ThisIndex] = ThisDestObj;
-
-            Status = AcpiAmlStoreObjectToObject(ThisSourceObj, ThisDestObj, WalkState);
-
-            if (ACPI_FAILURE (Status))
-            {
-                /*
-                 * Failure get out
-                 */
-                return_ACPI_STATUS (Status);
-            }
-
-            Length      +=ObjectSpace;
-
-            LevelPtr->Index++;
-            while (LevelPtr->Index >= LevelPtr->DestObj->Package.Count)
-            {
-                /*
-                 * We've handled all of the objects at this level,  This means
-                 * that we have just completed a package.  That package may
-                 * have contained one or more packages itself
-                 */
-                if (CurrentDepth == 0)
-                {
-                    /*
-                     * We have handled all of the objects in the top level
-                     * package just add the length of the package objects
-                     * and exit
-                     */
-                    return_ACPI_STATUS (AE_OK);
-                }
-
-                /*
-                 * Go back up a level and move the index past the just
-                 * completed package object.
-                 */
-                CurrentDepth--;
-                LevelPtr = &CopyLevel[CurrentDepth];
-                LevelPtr->Index++;
-            }
-        }   /* else object is NOT a package */
-    }   /* while (1)  */
 }
 
 

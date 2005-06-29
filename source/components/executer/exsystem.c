@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amsystem - Interface to OS services
- *              $Revision: 1.56 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,6 @@
         MODULE_NAME         ("amsystem")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlSystemWaitSemaphore
@@ -167,13 +166,19 @@ AcpiAmlSystemWaitSemaphore (
 
         Status = AcpiOsWaitSemaphore (Semaphore, 1, Timeout);
 
+        DEBUG_PRINT (TRACE_EXEC,
+            ("*** Thread awake after blocking, %s\n",
+            AcpiCmFormatException (Status)));
+
         /* Reacquire the interpreter */
 
-        AcpiAmlEnterInterpreter ();
+        Status = AcpiAmlEnterInterpreter ();
+        if (ACPI_SUCCESS (Status))
+        {
+            /* Restore the timeout exception */
 
-        DEBUG_PRINT (TRACE_EXEC,
-            ("*** Thread awake and inside interpreter after blocking, %s\n",
-            AcpiCmFormatException (Status)));
+            Status = AE_TIME; 
+        }
     }
 
     return_ACPI_STATUS (Status);
