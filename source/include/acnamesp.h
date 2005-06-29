@@ -132,12 +132,12 @@
  * Valid NsType values must not include any character acceptable in a name.
  */
 
-#define IsNsHandle(h)           (NcOK ((INT32) * (char *) (h)))
+#define IS_NS_HANDLE(h)         (AmlGoodChar((INT32) * (char *) (h)))
 
 
 /* To search the entire name space, pass this as SearchBase */
 
-#define  NS_ALL                 ((NsHandle)0)
+#define NS_ALL                  ((NsHandle)0)
 
 
 #define NUM_NS_TYPES            37
