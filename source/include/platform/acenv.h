@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.90 $
+ *       $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -276,17 +276,20 @@
 #define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
 #define ACPI_STRLEN(s)          (ACPI_SIZE) strlen((s))
 #define ACPI_STRCPY(d,s)        (void) strcpy((d), (s))
-#define ACPI_STRNCPY(d,s,n)     (void) strncpy((d), (s), (NATIVE_UINT)(n))
-#define ACPI_STRNCMP(d,s,n)     strncmp((d), (s), (NATIVE_UINT)(n))
+#define ACPI_STRNCPY(d,s,n)     (void) strncpy((d), (s), (ACPI_SIZE)(n))
+#define ACPI_STRNCMP(d,s,n)     strncmp((d), (s), (ACPI_SIZE)(n))
 #define ACPI_STRCMP(d,s)        strcmp((d), (s))
 #define ACPI_STRCAT(d,s)        (void) strcat((d), (s))
-#define ACPI_STRNCAT(d,s,n)     strncat((d), (s), (NATIVE_UINT)(n))
-#define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (NATIVE_UINT)(n))
-#define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (NATIVE_UINT)(n))
-#define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (NATIVE_UINT)(n))
+#define ACPI_STRNCAT(d,s,n)     strncat((d), (s), (ACPI_SIZE)(n))
+#define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (ACPI_SIZE)(n))
 #define ACPI_TOUPPER            toupper
 #define ACPI_TOLOWER            tolower
 #define ACPI_IS_XDIGIT          isxdigit
+#define ACPI_IS_DIGIT           isdigit
+#define ACPI_IS_SPACE           isspace
+#define ACPI_IS_UPPER           isupper
 
 /******************************************************************************
  *
@@ -332,14 +335,14 @@ typedef char *va_list;
 #define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
 #define ACPI_STRLEN(s)          (ACPI_SIZE) AcpiUtStrlen  ((s))
 #define ACPI_STRCPY(d,s)        (void) AcpiUtStrcpy  ((d), (s))
-#define ACPI_STRNCPY(d,s,n)     (void) AcpiUtStrncpy ((d), (s), (NATIVE_UINT)(n))
-#define ACPI_STRNCMP(d,s,n)     AcpiUtStrncmp ((d), (s), (NATIVE_UINT)(n))
+#define ACPI_STRNCPY(d,s,n)     (void) AcpiUtStrncpy ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_STRNCMP(d,s,n)     AcpiUtStrncmp ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_STRCMP(d,s)        AcpiUtStrcmp  ((d), (s))
 #define ACPI_STRCAT(d,s)        (void) AcpiUtStrcat  ((d), (s))
-#define ACPI_STRNCAT(d,s,n)     AcpiUtStrncat ((d), (s), (NATIVE_UINT)(n))
-#define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s), (NATIVE_UINT)(n))
-#define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy  ((d), (s), (NATIVE_UINT)(n))
-#define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset  ((d), (v), (NATIVE_UINT)(n))
+#define ACPI_STRNCAT(d,s,n)     AcpiUtStrncat ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy  ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset  ((d), (v), (ACPI_SIZE)(n))
 #define ACPI_TOUPPER            AcpiUtToUpper
 #define ACPI_TOLOWER            AcpiUtToLower
 
