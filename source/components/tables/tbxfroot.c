@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,6 @@
         MODULE_NAME         ("tbxfroot")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiFindRootPointer
@@ -197,7 +196,7 @@ AcpiTbScanMemoryForRsdp (
 
         /* The signature and checksum must both be correct */
 
-        if (STRNCMP ((NATIVE_CHAR *) MemRover, 
+        if (STRNCMP ((NATIVE_CHAR *) MemRover,
                         RSDP_SIG, sizeof (RSDP_SIG)-1) == 0 &&
             AcpiTbChecksum (MemRover,
                         sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER)) == 0)
@@ -270,15 +269,15 @@ AcpiTbFindRsdp (
 
     if (MemRover)
     {
-        /* Found it, return pointer to PHYSICAL */
-        PhysAddr = LO_RSDP_WINDOW_BASE;
-	PhysAddr += (MemRover - TablePtr);
+        /* Found it, return the physical address */
 
-        TableInfo->Pointer      = (ACPI_TABLE_HEADER *) PhysAddr;
+        PhysAddr = LO_RSDP_WINDOW_BASE;
+        PhysAddr += (MemRover - TablePtr);
+
+        TableInfo->Pointer = (ACPI_TABLE_HEADER *) PhysAddr;
 
         return_ACPI_STATUS (AE_OK);
     }
-
 
 
     /*
@@ -299,14 +298,14 @@ AcpiTbFindRsdp (
 
     AcpiOsUnmapMemory (TablePtr, HI_RSDP_WINDOW_SIZE);
 
-
     if (MemRover)
     {
-        /* Found it, return pointer to PHYSICAL */
-        PhysAddr = HI_RSDP_WINDOW_BASE;
-	PhysAddr += (MemRover - TablePtr);
+        /* Found it, return the physical address */
 
-        TableInfo->Pointer      = (ACPI_TABLE_HEADER *) PhysAddr;
+        PhysAddr = HI_RSDP_WINDOW_BASE;
+        PhysAddr += (MemRover - TablePtr);
+
+        TableInfo->Pointer = (ACPI_TABLE_HEADER *) PhysAddr;
 
         return_ACPI_STATUS (AE_OK);
     }
