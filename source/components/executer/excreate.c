@@ -854,7 +854,7 @@ Cleanup:
          *  TBD: Is there anything we can or could do when this fails?
          *          We need to do something useful with a failure.
          */
-        (void *) EvInitializeRegion (ObjDescRegion);
+        (void *) EvInitializeRegion (ObjDescRegion, TRUE);  /* Namespace IS locked */
     }
 
     return_ACPI_STATUS (Status);
