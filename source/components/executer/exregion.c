@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.66 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -190,7 +190,6 @@ AcpiExSystemMemorySpaceHandler (
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid SystemMemory width %d\n",
             BitWidth));
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
-        break;
     }
 
 
@@ -550,7 +549,7 @@ AcpiExDataTableSpaceHandler (
     FUNCTION_TRACE ("ExDataTableSpaceHandler");
 
 
-    LogicalAddrPtr = (char *) (ACPI_SIZE) Address;
+    LogicalAddrPtr = ACPI_PHYSADDR_TO_PTR (Address);
 
 
    /* Perform the memory read or write */
@@ -568,7 +567,6 @@ AcpiExDataTableSpaceHandler (
     case ACPI_WRITE:
 
         return_ACPI_STATUS (AE_SUPPORT);
-        break;
     }
 
     return_ACPI_STATUS (Status);
