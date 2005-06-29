@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.92 $
+ *       $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -296,6 +296,31 @@ AcpiAmlExecCreateMethod (
     UINT32                  AcpiAmlLength,
     UINT32                  MethodFlags,
     ACPI_HANDLE             Method);
+
+
+/*
+ * ammutex - mutex support
+ */
+
+ACPI_STATUS
+AcpiAmlAcquireMutex (
+    ACPI_OPERAND_OBJECT     *TimeDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiAmlReleaseMutex (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiAmlReleaseAllMutexes (
+    ACPI_OPERAND_OBJECT     *MutexList);
+
+void
+AcpiAmlUnlinkMutex (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
 
 
 /*

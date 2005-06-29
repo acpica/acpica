@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.104 $
+ *       $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -430,9 +430,11 @@ typedef struct
 #define CONTROL_PREDICATE_TRUE                0xC4
 
 
-/* Forward declaration */
+/* Forward declarations */
 struct acpi_walk_state;
-struct acpi_parse_obj ;
+struct acpi_walk_list;
+struct acpi_parse_obj;
+struct acpi_obj_mutex;
 
 
 #define ACPI_STATE_COMMON                  /* Two 32-bit fields and a pointer */\
@@ -595,7 +597,7 @@ typedef struct acpi_opcode_info
 typedef union acpi_parse_val
 {
     UINT32                  Integer;        /* integer constant */
-    UINT32                  Size;           /* bytelist or field size */
+    NATIVE_UINT             Size;           /* bytelist or field size */
     NATIVE_CHAR             *String;        /* NULL terminated string */
     UINT8                   *Buffer;        /* buffer or string */
     NATIVE_CHAR             *Name;          /* NULL terminated string */
@@ -608,7 +610,7 @@ typedef union acpi_parse_val
     UINT8                   DataType;       /* To differentiate various internal objs */\
     UINT8                   Flags;          /* Type of Op */\
     UINT16                  Opcode;         /* AML opcode */\
-    UINT32                  AmlOffset;      /* offset of declaration in AML */\
+    ACPI_PTRDIFF            AmlOffset;      /* offset of declaration in AML */\
     struct acpi_parse_obj   *Parent;        /* parent op */\
     struct acpi_parse_obj   *Next;          /* next op */\
     DEBUG_ONLY_MEMBERS (\
@@ -635,7 +637,7 @@ typedef struct acpi_parse2_obj
 {
     ACPI_PARSE_COMMON
     UINT8                   *Data;          /* AML body or bytelist data */
-    UINT32                  Length;         /* AML length */
+    NATIVE_UINT             Length;         /* AML length */
     UINT32                  Name;           /* 4-byte name or zero if no name */
 
 } ACPI_PARSE2_OBJECT;
@@ -660,129 +662,6 @@ typedef struct acpi_parse_state
 
 } ACPI_PARSE_STATE;
 
-
-/*****************************************************************************
- *
- * Tree walking typedefs and structs
- *
- ****************************************************************************/
-
-
-/*
- * Walk state - current state of a parse tree walk.  Used for both a leisurely stroll through
- * the tree (for whatever reason), and for control method execution.
- */
-
-#define NEXT_OP_DOWNWARD    1
-#define NEXT_OP_UPWARD      2
-
-#define WALK_NON_METHOD     0
-#define WALK_METHOD         1
-#define WALK_METHOD_RESTART 2
-
-typedef struct acpi_walk_state
-{
-    UINT8                   DataType;                           /* To differentiate various internal objs */\
-    ACPI_OWNER_ID           OwnerId;                            /* Owner of objects created during the walk */
-    BOOLEAN                 LastPredicate;                      /* Result of last predicate */
-    UINT8                   NextOpInfo;                         /* Info about NextOp */
-    UINT8                   NumOperands;                        /* Stack pointer for Operands[] array */
-    UINT8                   CurrentResult;                      /* */
-
-    struct acpi_walk_state  *Next;                              /* Next WalkState in list */
-    ACPI_PARSE_OBJECT       *Origin;                            /* Start of walk [Obsolete] */
-
-/* TBD: Obsolete with removal of WALK procedure ? */
-    ACPI_PARSE_OBJECT       *PrevOp;                            /* Last op that was processed */
-    ACPI_PARSE_OBJECT       *NextOp;                            /* next op to be processed */
-
-
-    ACPI_GENERIC_STATE      *Results;                           /* Stack of accumulated results */
-    ACPI_GENERIC_STATE      *ControlState;                      /* List of control states (nested IFs) */
-    ACPI_GENERIC_STATE      *ScopeInfo;                         /* Stack of nested scopes */
-    ACPI_PARSE_STATE        *ParserState;                       /* Current state of parser */
-    UINT8                   *AmlLastWhile;
-    ACPI_OPCODE_INFO        *OpInfo;                            /* Info on current opcode */
-    ACPI_PARSE_DOWNWARDS    DescendingCallback;
-    ACPI_PARSE_UPWARDS      AscendingCallback;
-
-    union acpi_operand_obj  *ReturnDesc;                        /* Return object, if any */
-    union acpi_operand_obj  *MethodDesc;                        /* Method descriptor if running a method */
-    struct acpi_node        *MethodNode;                        /* Method Node if running a method */
-    ACPI_PARSE_OBJECT       *MethodCallOp;                      /* MethodCall Op if running a method */
-    struct acpi_node        *MethodCallNode;                    /* Called method Node*/
-    union acpi_operand_obj  *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
-    struct acpi_node        Arguments[MTH_NUM_ARGS];            /* Control method arguments */
-    struct acpi_node        LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
-    UINT32                  ParseFlags;
-    UINT8                   WalkType;
-    UINT8                   ReturnUsed;
-    UINT16                  Opcode;                             /* Current AML opcode */
-    UINT32                  PrevArgTypes;
-
-    /* Debug support */
-
-    UINT32                  MethodBreakpoint;
-
-
-} ACPI_WALK_STATE;
-
-
-/*
- * Walk list - head of a tree of walk states.  Multiple walk states are created when there
- * are nested control methods executing.
- */
-typedef struct acpi_walk_list
-{
-
-    ACPI_WALK_STATE         *WalkState;
-
-} ACPI_WALK_LIST;
-
-
-/* Info used by AcpiPsInitObjects */
-
-typedef struct acpi_init_walk_info
-{
-    UINT16                  MethodCount;
-    UINT16                  OpRegionCount;
-    UINT16                  FieldCount;
-    UINT16                  OpRegionInit;
-    UINT16                  FieldInit;
-    UINT16                  ObjectCount;
-    ACPI_TABLE_DESC         *TableDesc;
-
-} ACPI_INIT_WALK_INFO;
-
-
-/* Info used by TBD */
-
-typedef struct acpi_device_walk_info
-{
-    UINT16                  DeviceCount;
-    UINT16                  Num_STA;
-    UINT16                  Num_INI;
-    ACPI_TABLE_DESC         *TableDesc;
-
-} ACPI_DEVICE_WALK_INFO;
-
-
-/* TBD: [Restructure] Merge with struct above */
-
-typedef struct acpi_walk_info
-{
-    UINT32                  DebugLevel;
-    UINT32                  OwnerId;
-
-} ACPI_WALK_INFO;
-
-typedef struct acpi_get_devices_info
-{
-    WALK_CALLBACK           UserFunction;
-    void                    *Context;
-    NATIVE_CHAR             *Hid;
-
-} ACPI_GET_DEVICES_INFO;
 
 
 /*****************************************************************************
