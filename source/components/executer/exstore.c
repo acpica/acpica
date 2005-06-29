@@ -107,11 +107,6 @@
 #define _COMPONENT          INTERPRETER
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "AmlExecStore: Descriptor Allocation Failure", "AmlExecStore: Descriptor Allocation Failure"},
-    {NULL, 'I', NULL, NULL}
-};
-
 
 /******************************************************************************
  * 
@@ -271,7 +266,7 @@ AmlExecStore (
         /* Dest is an ACPI_HANDLE */
 
         TempHandle = (ACPI_HANDLE) DestDesc;
-        DestDesc = AllocateObjectDesc (&KDT[0]);
+        DestDesc = AllocateObjectDesc ();
         if (!DestDesc)
         {   
             /*  allocation failure  */

@@ -106,11 +106,6 @@
 #define _THIS_MODULE        "ievalue.c"
 #define _COMPONENT          INTERPRETER
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "AmlGetRvalue: Descriptor Allocation Failure", "AmlGetRvalue: Descriptor Allocation Failure"},
-    {NULL, 'I', NULL, NULL}
-};
-
 
 
 /*****************************************************************************
@@ -415,7 +410,7 @@ AmlGetRvalue (
         break;
 
     case TYPE_FieldUnit:
-        ObjDesc = AllocateObjectDesc (&KDT[0]);
+        ObjDesc = AllocateObjectDesc ();
         if (!ObjDesc)
         {   
             /*  descriptor allocation failure   */
@@ -435,7 +430,7 @@ AmlGetRvalue (
         return Status;
 
     case TYPE_BankField:
-        ObjDesc = AllocateObjectDesc (&KDT[0]);
+        ObjDesc = AllocateObjectDesc ();
         if (!ObjDesc)
         {   
             /*  descriptor allocation failure   */
@@ -541,7 +536,7 @@ AmlGetRvalue (
                 return AE_AML_ERROR;
             }
 
-            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {   
                 /*  descriptor allocation failure   */
@@ -564,7 +559,7 @@ AmlGetRvalue (
                 return AE_AML_ERROR;
             }
 
-            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {   
                 /*  descriptor allocation failure   */
@@ -626,7 +621,7 @@ AmlGetRvalue (
                 return AE_AML_ERROR;
             }
 
-            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {   
                 /*  descriptor allocation failure   */
@@ -659,7 +654,7 @@ AmlGetRvalue (
 
             if (TYPE_Number == ValDesc->ValType)
             {
-                ObjDesc = AllocateObjectDesc (&KDT[0]);
+                ObjDesc = AllocateObjectDesc ();
                 if (!ObjDesc)
                 {   
                     /*  descriptor allocation failure   */
@@ -684,7 +679,7 @@ AmlGetRvalue (
                     return AE_AML_ERROR;
                 }
 
-                ObjDesc = AllocateObjectDesc (&KDT[0]);
+                ObjDesc = AllocateObjectDesc ();
                 if (!ObjDesc)
                 {   
                     /*  descriptor allocation failure   */
@@ -751,7 +746,7 @@ AmlGetRvalue (
                 return AE_AML_ERROR;
             }
 
-            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {   
                 /*  descriptor allocation failure   */
@@ -813,7 +808,7 @@ AmlGetRvalue (
                 return AE_AML_ERROR;
             }
 
-            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
                 /*  descriptor allocation failure   */
@@ -873,7 +868,7 @@ AmlGetRvalue (
                 return AE_AML_ERROR;
             }
 
-            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
                 /*  descriptor allocation failure   */
@@ -907,7 +902,7 @@ AmlGetRvalue (
                 break;
             }
 
-            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
                 /*  descriptor allocation failure   */
@@ -951,7 +946,7 @@ AmlGetRvalue (
                         ("** AmlGetRvalue: Fetch from [%s] not implemented, using value 0\n",
                         NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
             
-            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
                 /*  descriptor allocation failure   */
