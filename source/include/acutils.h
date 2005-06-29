@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.87 $
+ *       $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -617,10 +617,23 @@ AcpiCmCreateUpdateState (
     ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action);
 
+ACPI_GENERIC_STATE *
+AcpiCmCreateCopyState (
+    ACPI_OPERAND_OBJECT     *InternalObject,
+    ACPI_OBJECT             *ExternalObject,
+    UINT16                  Index);
+
 ACPI_STATUS
 AcpiCmCreateUpdateStateAndPush (
     ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action,
+    ACPI_GENERIC_STATE      **StateList);
+
+ACPI_STATUS
+AcpiCmCreateCopyStateAndPush (
+    ACPI_OPERAND_OBJECT     *InternalObject,
+    ACPI_OBJECT             *ExternalObject,
+    UINT16                  Index,
     ACPI_GENERIC_STATE      **StateList);
 
 ACPI_GENERIC_STATE *
