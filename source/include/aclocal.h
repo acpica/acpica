@@ -120,17 +120,19 @@
 #include <config.h>
 
 
-#define WAIT_FOREVER        ((UINT32) -1)
+#define WAIT_FOREVER            ((UINT32) -1)
 
-typedef void*               ACPI_MUTEX;
-typedef UINT32              ACPI_MUTEX_HANDLE;
+typedef void*                   ACPI_MUTEX;
+typedef UINT32                  ACPI_MUTEX_HANDLE;
 
 
 /* Object descriptor types */
 
-#define DESC_TYPE_NTE       0xEE
-#define DESC_TYPE_ACPI_OBJ  0xAA
-#define DESC_TYPE_PARSER    0xBB
+#define DESC_TYPE_ACPI_OBJ      0xAA
+#define DESC_TYPE_PARSER        0xBB
+#define DESC_TYPE_STATE         0xCC
+#define DESC_TYPE_WALK          0xDD
+#define DESC_TYPE_NTE           0xEE
 
 
 
@@ -147,19 +149,19 @@ typedef UINT32              ACPI_MUTEX_HANDLE;
  * NOTE: any changes here must be reflected in the Gbl_MutexNames table also!
  */
 
-#define MTX_MEMORY          0
-#define MTX_TABLES          1
-#define MTX_DISPATCHER      2
-#define MTX_INTERPRETER     3
-#define MTX_EXECUTE         4
-#define MTX_NAMESPACE       5
-#define MTX_EVENTS          6
-#define MTX_OP_REGIONS      7
-#define MTX_DEBUG_COMMAND   8
-#define MTX_DEBUGGER        9
+#define MTX_MEMORY              0
+#define MTX_TABLES              1
+#define MTX_DISPATCHER          2
+#define MTX_INTERPRETER         3
+#define MTX_EXECUTE             4
+#define MTX_NAMESPACE           5
+#define MTX_EVENTS              6
+#define MTX_OP_REGIONS          7
+#define MTX_DEBUG_COMMAND       8
+#define MTX_DEBUGGER            9
 
-#define MAX_MTX             9
-#define NUM_MTX             MAX_MTX+1
+#define MAX_MTX                 9
+#define NUM_MTX                 MAX_MTX+1
 
 
 /* Table for the global mutexes */
@@ -557,7 +559,7 @@ typedef struct acpi_parse_scope
 
 /*****************************************************************************
  * 
- * Tree walking typedefs and structs
+ * Generic "state" object for stacks
  *
  ****************************************************************************/
 
@@ -570,19 +572,58 @@ typedef struct acpi_parse_scope
 
 
 
+#define ACPI_STATE_COMMON                  /* Two 32-bit fields and a pointer */\
+    UINT8                   DataType;           /* To differentiate various internal objs */\
+    UINT8                   Flags; \
+    UINT16                  Value; \
+    UINT16                  State; \
+    UINT16                  Eval;  \
+    void                    *Next; \
+
+typedef struct acpi_common_state
+{
+    ACPI_STATE_COMMON
+} ACPI_COMMON_STATE;
+
+
+/*
+ * Update state - used to traverse complex objects such as packages
+ */
+typedef struct acpi_update_state
+{
+    ACPI_STATE_COMMON
+    union AcpiObjInternal   *Object;
+
+} ACPI_UPDATE_STATE;
+
 /*
  * Control state - one per if/else and while constructs.
  * Allows nesting of these constructs 
  */
-typedef struct acpi_ctrl_state
+typedef struct acpi_control_state
 {
-    UINT8                   Exec;           /* Execution state */
-    BOOLEAN                 Predicate;      /* Result of predicate evaluation */
+    ACPI_STATE_COMMON
     ACPI_GENERIC_OP         *PredicateOp;   /* Start of if/while predicate */
-    struct acpi_ctrl_state  *Next;
 
-} ACPI_CTRL_STATE;
+} ACPI_CONTROL_STATE;
 
+
+typedef union acpi_gen_state
+{
+    ACPI_COMMON_STATE       Common;
+    ACPI_CONTROL_STATE      Control;
+    ACPI_UPDATE_STATE       Update;
+
+} ACPI_GENERIC_STATE;
+
+
+
+
+/*****************************************************************************
+ * 
+ * Tree walking typedefs and structs
+ *
+ ****************************************************************************/
 
 
 /*
@@ -598,7 +639,7 @@ typedef struct acpi_walk_state
     ACPI_GENERIC_OP         *Origin;                            /* Start of walk */
     ACPI_GENERIC_OP         *PrevOp;                            /* Last op that was processed */
     ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
-    ACPI_CTRL_STATE         *ControlState;                      /* List of control states (nested IFs) */
+    ACPI_GENERIC_STATE      *ControlState;                      /* List of control states (nested IFs) */
 	SCOPE_STACK				*ScopeInfo;							/* Stack of nested scopes */
     struct NameTableEntry   Arguments[MTH_NUM_ARGS];            /* Control method arguments */
     struct NameTableEntry   LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
