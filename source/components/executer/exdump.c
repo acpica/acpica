@@ -844,7 +844,7 @@ AmlDumpObjectDescriptor (
 	    OsdPrintf ("%20s : %x\n", "DataValid", Object->Region.DataValid);
 	    OsdPrintf ("%20s : %x\n", "Address", Object->Region.Address);
 	    OsdPrintf ("%20s : %x\n", "Length", Object->Region.Length);
-	    OsdPrintf ("%20s : %x\n", "AddressLocation", Object->Region.AddressLocation);
+	    OsdPrintf ("%20s : %x\n", "Method", Object->Region.Method);
 	    OsdPrintf ("%20s : %x\n", "AddrHandler", Object->Region.AddrHandler);
 	    OsdPrintf ("%20s : %x\n", "Link", Object->Region.Link);
  	    break;

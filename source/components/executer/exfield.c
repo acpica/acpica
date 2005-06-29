@@ -221,13 +221,13 @@ BREAKPOINT3;
                  * Point to Address opcode in AML stream
                  */
 
-                if (!RgnDesc->Region.AddressLocation)
+                if (!RgnDesc->Region.Method)
                 {
                     REPORT_ERROR ("AmlSetupField: Region Method subobject does not exist");
                     return_ACPI_STATUS (AE_EXIST);
                 }
 
-                AmlSetCurrentLocation (RgnDesc->Region.AddressLocation);
+                AmlSetCurrentLocation (RgnDesc->Region.Method);
 
                 /* Evaluate the Address opcode */
 
