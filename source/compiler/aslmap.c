@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.32 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -119,10 +119,54 @@
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
 #include "amlcode.h"
+#include "acdispat.h"
+#include "acparser.h"
 
 
 #define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslmap")
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslMapNamedOpcodeToDataType
+ *
+ * PARAMETERS:  Opcode              - The Named AML opcode to map
+ *
+ * RETURN:      The ACPI type associated with the named opcode
+ *
+ * DESCRIPTION: Convert a raw Named AML opcode to the associated data type.
+ *              Named opcodes are a subset of the AML opcodes.
+ *
+ ******************************************************************************/
+
+ACPI_OBJECT_TYPE8
+AslMapNamedOpcodeToDataType (
+    UINT16                  Opcode)
+{
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    /*
+     * There are some differences from the opcode table types, we 
+     * catch them here.
+     */
+    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
+
+    if (OpInfo->Flags & AML_NSOBJECT)
+    {
+        if (Opcode == AML_INT_NAMEPATH_OP)
+        {
+            return (ACPI_TYPE_ANY);
+        }
+
+        return (OpInfo->ObjectType);
+    }
+
+    return (ACPI_TYPE_ANY);
+}
 
 
 /*******************************************************************************
@@ -142,7 +186,7 @@
  *
  ******************************************************************************/
 
-ASL_RESERVED_INFO               ReservedMethods[] = {
+const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_AC0",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AC1",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AC2",     0,      ASL_RSVD_RETURN_VALUE},
@@ -287,22 +331,22 @@ ASL_RESERVED_INFO               ReservedMethods[] = {
  *
  ******************************************************************************/
 
-ASL_MAPPING_ENTRY AslKeywordMapping [] =
+const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 {
 
 /* ACCESSAS */                  OP_TABLE_ENTRY (AML_INT_ACCESSFIELD_OP,     0,                  0,                  0),
-/* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BLOCK_ACC,   0,                  0),
-/* ACCESSATTRIB_BYTE */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
-/* ACCESSATTRIB_CALL */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
-/* ACCESSATTRIB_QUICK */        OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
-/* ACCESSATTRIB_SND_RCV */      OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
-/* ACCESSATTRIB_WORD */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
-/* ACCESSTYPE_ANY */            OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_ANY_ACC,     0,                  0),
-/* ACCESSTYPE_BUF */            OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_ANY_ACC,     0,                  0),
-/* ACCESSTYPE_BYTE */           OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
-/* ACCESSTYPE_DWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_DWORD_ACC,   0,                  0),
-/* ACCESSTYPE_QWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_DWORD_ACC,   0,                  0),
-/* ACCESSTYPE_WORD */           OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_WORD_ACC,    0,                  0),
+/* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BLOCK,   0,        0),
+/* ACCESSATTRIB_BYTE */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BYTE,    0,        0),
+/* ACCESSATTRIB_CALL */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_CALL,    0,        0),
+/* ACCESSATTRIB_QUICK */        OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_QUICK,   0,        0),
+/* ACCESSATTRIB_SND_RCV */      OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_SEND_RCV,0,        0),
+/* ACCESSATTRIB_WORD */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_WORD,    0,        0),
+/* ACCESSTYPE_ANY */            OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ACCESS_ANY,         0,        0),
+/* ACCESSTYPE_BUF */            OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ACCESS_BUFFER,      0,        0),
+/* ACCESSTYPE_BYTE */           OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ACCESS_BYTE,        0,        0),
+/* ACCESSTYPE_DWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ACCESS_DWORD,       0,        0),
+/* ACCESSTYPE_QWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ACCESS_QWORD,       0,        0),
+/* ACCESSTYPE_WORD */           OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ACCESS_WORD,        0,        0),
 /* ACQUIRE */                   OP_TABLE_ENTRY (AML_ACQUIRE_OP,             0,                  0,                  ACPI_BTYPE_INTEGER),
 /* ADD */                       OP_TABLE_ENTRY (AML_ADD_OP,                 0,                  0,                  ACPI_BTYPE_INTEGER),
 /* ADDRESSSPACE_FFIXEDHW */     OP_TABLE_ENTRY (AML_BYTE_OP,                REGION_FIXED_HW,    0,                  0),
@@ -339,7 +383,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* CREATEQWORDFIELD */          OP_TABLE_ENTRY (AML_CREATE_QWORD_FIELD_OP,  0,                  0,                  0),
 /* CREATEWORDFIELD */           OP_TABLE_ENTRY (AML_CREATE_WORD_FIELD_OP,   0,                  0,                  0),
 /* DATATABLEREGION */           OP_TABLE_ENTRY (AML_DATA_REGION_OP,         0,                  0,                  0),
-/* DEBUG */                     OP_TABLE_ENTRY (AML_DEBUG_OP,               0,                  0,                  0),
+/* DEBUG */                     OP_TABLE_ENTRY (AML_DEBUG_OP,               0,                  0,                  ACPI_BTYPE_DEBUG_OBJECT),
 /* DECODETYPE_POS */            OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0),
 /* DECODETYPE_SUB */            OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0,                  0),
 /* DECREMENT */                 OP_TABLE_ENTRY (AML_DECREMENT_OP,           0,                  0,                  ACPI_BTYPE_INTEGER),
@@ -357,7 +401,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* DWORDCONST */                OP_TABLE_ENTRY (AML_RAW_DATA_DWORD,         0,                  0,                  ACPI_BTYPE_INTEGER),
 /* DWORDIO */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
 /* DWORDMEMORY */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
-/* EISAID */                    OP_TABLE_ENTRY (AML_DWORD_OP,               0,                  0,                  0),
+/* EISAID */                    OP_TABLE_ENTRY (AML_DWORD_OP,               0,                  0,                  ACPI_BTYPE_INTEGER),
 /* ELSE */                      OP_TABLE_ENTRY (AML_ELSE_OP,                0,                  NODE_AML_PACKAGE,   0),
 /* ELSEIF */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  NODE_AML_PACKAGE,   0),
 /* ENDDEPENDENTFN */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
@@ -406,8 +450,8 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* LOCAL5 */                    OP_TABLE_ENTRY (AML_LOCAL5,                 0,                  0,                  ACPI_BTYPE_OBJECTS_AND_REFS),
 /* LOCAL6 */                    OP_TABLE_ENTRY (AML_LOCAL6,                 0,                  0,                  ACPI_BTYPE_OBJECTS_AND_REFS),
 /* LOCAL7 */                    OP_TABLE_ENTRY (AML_LOCAL7,                 0,                  0,                  ACPI_BTYPE_OBJECTS_AND_REFS),
-/* LOCKRULE_LOCK */             OP_TABLE_ENTRY (AML_BYTE_OP,                GLOCK_ALWAYS_LOCK,  0,                  0),
-/* LOCKRULE_NOLOCK */           OP_TABLE_ENTRY (AML_BYTE_OP,                GLOCK_NEVER_LOCK,   0,                  0),
+/* LOCKRULE_LOCK */             OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_LOCK_ALWAYS,  0,                  0),
+/* LOCKRULE_NOLOCK */           OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_LOCK_NEVER,   0,                  0),
 /* LOR */                       OP_TABLE_ENTRY (AML_LOR_OP,                 0,                  0,                  ACPI_BTYPE_INTEGER),
 /* MATCH */                     OP_TABLE_ENTRY (AML_MATCH_OP,               0,                  0,                  ACPI_BTYPE_INTEGER),
 /* MATCHTYPE_MEQ */             OP_TABLE_ENTRY (AML_RAW_DATA_BYTE,          MATCH_MEQ,          0,                  ACPI_BTYPE_INTEGER),
@@ -487,11 +531,11 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* RELEASE */                   OP_TABLE_ENTRY (AML_RELEASE_OP,             0,                  0,                  0),
 /* RESERVED_BYTES */            OP_TABLE_ENTRY (AML_INT_RESERVEDFIELD_OP,   0,                  0,                  0),
 /* RESET */                     OP_TABLE_ENTRY (AML_RESET_OP,               0,                  0,                  0),
-/* RESOURCETEMPLATE */          OP_TABLE_ENTRY (AML_BUFFER_OP,              0,                  0,                  0),
+/* RESOURCETEMPLATE */          OP_TABLE_ENTRY (AML_BUFFER_OP,              0,                  0,                  ACPI_BTYPE_BUFFER),
 /* RESOURCETYPE_CONSUMER */     OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0,                  0),
 /* RESOURCETYPE_PRODUCER */     OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0),
 /* RETURN */                    OP_TABLE_ENTRY (AML_RETURN_OP,              0,                  0,                  0),
-/* REVISION */                  OP_TABLE_ENTRY (AML_REVISION_OP,            0,                  0,                  0),
+/* REVISION */                  OP_TABLE_ENTRY (AML_REVISION_OP,            0,                  0,                  ACPI_BTYPE_INTEGER),
 /* SCOPE */                     OP_TABLE_ENTRY (AML_SCOPE_OP,               0,                  NODE_AML_PACKAGE,   0),
 /* SERIALIZERULE_NOTSERIAL */   OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0),
 /* SERIALIZERULE_SERIAL */      OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0,                  0),
@@ -522,9 +566,10 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* TYPE_TRANSLATION */          OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0,                  0),
 /* UNICODE */                   OP_TABLE_ENTRY (AML_BUFFER_OP,              0,                  0,                  0),
 /* UNLOAD */                    OP_TABLE_ENTRY (AML_UNLOAD_OP,              0,                  0,                  0),
-/* UPDATERULE_ONES */           OP_TABLE_ENTRY (AML_BYTE_OP,                UPDATE_WRITE_AS_ONES,   0,              0),
-/* UPDATERULE_PRESERVE */       OP_TABLE_ENTRY (AML_BYTE_OP,                UPDATE_PRESERVE,        0,              0),
-/* UPDATERULE_ZEROS */          OP_TABLE_ENTRY (AML_BYTE_OP,                UPDATE_WRITE_AS_ZEROS,  0,              0),
+/* UPDATERULE_ONES */           OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_UPDATE_WRITE_AS_ONES,   0,              0),
+/* UPDATERULE_PRESERVE */       OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_UPDATE_PRESERVE,        0,              0),
+/* UPDATERULE_ZEROS */          OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_UPDATE_WRITE_AS_ZEROS,  0,              0),
+/* VAR_PACKAGE */               OP_TABLE_ENTRY (AML_VAR_PACKAGE_OP,         0,                  NODE_AML_PACKAGE,   ACPI_BTYPE_PACKAGE),
 /* VENDORLONG */                OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0),
 /* VENDORSHORT */               OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0),
 /* WAIT */                      OP_TABLE_ENTRY (AML_WAIT_OP,                0,                  0,                  ACPI_BTYPE_INTEGER),
@@ -541,20 +586,16 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 };
 
 
-#include "amlcode.h"
-#include "acdispat.h"
-#include "acparser.h"
-
 /*
  * TBD:
  *
- * These are here temporarily until they are segregated out into separate
+ * This function is here temporarily until it is segregated out into separate
  * modules in the main subsystem source.
  */
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlValidateObjectType
+ * FUNCTION:    AcpiExValidateObjectType
  *
  * PARAMETERS:  Type            Object type to validate
  *
@@ -563,7 +604,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
  ******************************************************************************/
 
 BOOLEAN
-AcpiAmlValidateObjectType (
+AcpiExValidateObjectType (
     ACPI_OBJECT_TYPE        Type)
 {
 
@@ -577,261 +618,5 @@ AcpiAmlValidateObjectType (
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDsMapOpcodeToDataType
- *
- * PARAMETERS:  Opcode          - AML opcode to map
- *              OutFlags        - Additional info about the opcode
- *
- * RETURN:      The ACPI type associated with the opcode
- *
- * DESCRIPTION: Convert a raw AML opcode to the associated ACPI data type,
- *              if any.  If the opcode returns a value as part of the
- *              intepreter execution, a flag is returned in OutFlags.
- *
- ******************************************************************************/
-
-ACPI_OBJECT_TYPE8
-AcpiDsMapOpcodeToDataType (
-    UINT16                  Opcode,
-    UINT32                  *OutFlags)
-{
-    ACPI_OBJECT_TYPE8       DataType = INTERNAL_TYPE_INVALID;
-    ACPI_OPCODE_INFO        *OpInfo;
-    UINT32                  Flags = 0;
-
-
-    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
-    {
-        /* Unknown opcode */
-
-        DEBUG_PRINT (ACPI_ERROR,
-            ("MapOpcode: Unknown AML opcode: %x\n",
-            Opcode));
-
-        return (DataType);
-    }
-
-    switch (ACPI_GET_OP_CLASS (OpInfo))
-    {
-
-    case OPTYPE_LITERAL:
-
-        switch (Opcode)
-        {
-        case AML_BYTE_OP:
-        case AML_WORD_OP:
-        case AML_DWORD_OP:
-
-            DataType = ACPI_TYPE_INTEGER;
-            break;
-
-
-        case AML_STRING_OP:
-
-            DataType = ACPI_TYPE_STRING;
-            break;
-
-        case AML_INT_NAMEPATH_OP:
-            DataType = INTERNAL_TYPE_REFERENCE;
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR,
-                ("MapOpcode: Unknown (type LITERAL) AML opcode: %x\n",
-                Opcode));
-            break;
-        }
-        break;
-
-
-    case OPTYPE_DATA_TERM:
-
-        switch (Opcode)
-        {
-        case AML_BUFFER_OP:
-
-            DataType = ACPI_TYPE_BUFFER;
-            break;
-
-        case AML_PACKAGE_OP:
-
-            DataType = ACPI_TYPE_PACKAGE;
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR,
-                ("MapOpcode: Unknown (type DATA_TERM) AML opcode: %x\n",
-                Opcode));
-            break;
-        }
-        break;
-
-
-    case OPTYPE_CONSTANT:
-    case OPTYPE_METHOD_ARGUMENT:
-    case OPTYPE_LOCAL_VARIABLE:
-
-        DataType = INTERNAL_TYPE_REFERENCE;
-        break;
-
-
-    case OPTYPE_MONADIC2:
-    case OPTYPE_MONADIC2R:
-    case OPTYPE_DYADIC2:
-    case OPTYPE_DYADIC2R:
-    case OPTYPE_DYADIC2S:
-    case OPTYPE_INDEX:
-    case OPTYPE_MATCH:
-    case OPTYPE_RETURN:
-
-        Flags = OP_HAS_RETURN_VALUE;
-        DataType = ACPI_TYPE_ANY;
-        break;
-
-    case OPTYPE_METHOD_CALL:
-
-        Flags = OP_HAS_RETURN_VALUE;
-        DataType = ACPI_TYPE_METHOD;
-        break;
-
-
-    case OPTYPE_NAMED_OBJECT:
-
-        DataType = AcpiDsMapNamedOpcodeToDataType (Opcode);
-        break;
-
-
-    case OPTYPE_DYADIC1:
-    case OPTYPE_CONTROL:
-
-        /* No mapping needed at this time */
-
-        break;
-
-
-    default:
-
-        DEBUG_PRINT (ACPI_ERROR,
-            ("MapOpcode: Unimplemented data type opcode: %x\n",
-            Opcode));
-        break;
-    }
-
-    /* Return flags to caller if requested */
-
-    if (OutFlags)
-    {
-        *OutFlags = Flags;
-    }
-
-    return (DataType);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDsMapNamedOpcodeToDataType
- *
- * PARAMETERS:  Opcode              - The Named AML opcode to map
- *
- * RETURN:      The ACPI type associated with the named opcode
- *
- * DESCRIPTION: Convert a raw Named AML opcode to the associated data type.
- *              Named opcodes are a subset of the AML opcodes.
- *
- ******************************************************************************/
-
-ACPI_OBJECT_TYPE8
-AcpiDsMapNamedOpcodeToDataType (
-    UINT16                  Opcode)
-{
-    ACPI_OBJECT_TYPE8       DataType;
-
-
-    /* Decode Opcode */
-
-    switch (Opcode)
-    {
-    case AML_SCOPE_OP:
-        DataType = INTERNAL_TYPE_SCOPE;
-        break;
-
-    case AML_DEVICE_OP:
-        DataType = ACPI_TYPE_DEVICE;
-        break;
-
-    case AML_THERMAL_ZONE_OP:
-        DataType = ACPI_TYPE_THERMAL;
-        break;
-
-    case AML_METHOD_OP:
-        DataType = ACPI_TYPE_METHOD;
-        break;
-
-    case AML_POWER_RES_OP:
-        DataType = ACPI_TYPE_POWER;
-        break;
-
-    case AML_PROCESSOR_OP:
-        DataType = ACPI_TYPE_PROCESSOR;
-        break;
-
-    case AML_FIELD_OP:                              /* DefFieldOp */
-        DataType = INTERNAL_TYPE_FIELD_DEFN;
-        break;
-
-    case AML_INDEX_FIELD_OP:                        /* IndexFieldOp */
-        DataType = INTERNAL_TYPE_INDEX_FIELD_DEFN;
-        break;
-
-    case AML_BANK_FIELD_OP:                         /* BankFieldOp */
-        DataType = INTERNAL_TYPE_BANK_FIELD_DEFN;
-        break;
-
-    case AML_INT_NAMEDFIELD_OP:                      /* NO CASE IN ORIGINAL  */
-        DataType = ACPI_TYPE_ANY;
-        break;
-
-    case AML_NAME_OP:                               /* NameOp - special code in original */
-    case AML_INT_NAMEPATH_OP:
-        DataType = ACPI_TYPE_ANY;
-        break;
-
-    case AML_ALIAS_OP:
-        DataType = INTERNAL_TYPE_ALIAS;
-        break;
-
-    case AML_MUTEX_OP:
-        DataType = ACPI_TYPE_MUTEX;
-        break;
-
-    case AML_EVENT_OP:
-        DataType = ACPI_TYPE_EVENT;
-        break;
-
-    case AML_REGION_OP:
-        DataType = ACPI_TYPE_REGION;
-        break;
-
-    case AML_CREATE_FIELD_OP:
-    case AML_CREATE_DWORD_FIELD_OP:
-    case AML_CREATE_WORD_FIELD_OP:
-    case AML_CREATE_BYTE_FIELD_OP:
-    case AML_CREATE_BIT_FIELD_OP:
-    case AML_CREATE_QWORD_FIELD_OP:
-        DataType = ACPI_TYPE_BUFFER_FIELD;
-        break;
-
-    default:
-        DataType = ACPI_TYPE_ANY;
-        break;
-
-    }
-
-    return (DataType);
-}
 
 
