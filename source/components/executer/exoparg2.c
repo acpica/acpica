@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -278,7 +278,8 @@ AcpiExOpcode_2A_2T_1R (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_2T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_2T_1R",
+        AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /*
@@ -385,7 +386,8 @@ AcpiExOpcode_2A_1T_1R (
     ACPI_SIZE               Length;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_1T_1R",
+        AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /*
@@ -431,7 +433,8 @@ AcpiExOpcode_2A_1T_1R (
 
     case AML_CONCAT_OP:             /* Concatenate (Data1, Data2, Result) */
 
-        Status = AcpiExDoConcatenate (Operand[0], Operand[1], &ReturnDesc, WalkState);
+        Status = AcpiExDoConcatenate (Operand[0], Operand[1],
+                    &ReturnDesc, WalkState);
         break;
 
 
@@ -447,6 +450,9 @@ AcpiExOpcode_2A_1T_1R (
          * 1) Length of the input buffer
          * 2) Max length as specified in the ToString operator
          * 3) Length of input buffer up to a zero byte (null terminator)
+         *
+         * NOTE: A length of zero is ok, and will create a zero-length, null 
+         *       terminated string.
          */
         Length = 0;
         while ((Length < Operand[0]->Buffer.Length) &&
@@ -614,7 +620,8 @@ AcpiExOpcode_2A_0T_1R (
     BOOLEAN                 LogicalResult = FALSE;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_0T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_0T_1R",
+        AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /* Create the internal return object */
