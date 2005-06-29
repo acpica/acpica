@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -158,11 +158,11 @@ TrAmlGetNextTempName (
 
     if (*TempCount < 10)    /* 0-9 */
     {
-        TempName[3] = (char) (*TempCount + 0x30);
+        TempName[3] = (char) (*TempCount + '0');
     }
     else                    /* 10-35: A-Z */
     {
-        TempName[3] = (char) (*TempCount + (0x61 - 10));
+        TempName[3] = (char) (*TempCount + ('A' - 10));
     }
     (*TempCount)++;
 
