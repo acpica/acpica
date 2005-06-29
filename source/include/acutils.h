@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.171 $
+ *       $Revision: 1.172 $
  *
  *****************************************************************************/
 
@@ -273,10 +273,6 @@ char *
 AcpiUtStrstr (
     char                    *String1,
     char                    *String2);
-
-char *
-AcpiUtStrupr (
-    char                    *SrcString);
 
 void *
 AcpiUtMemcpy (
@@ -670,6 +666,10 @@ AcpiUtWalkPackageTree (
     void                    *TargetObject,
     ACPI_PKG_CALLBACK       WalkCallback,
     void                    *Context);
+
+char *
+AcpiUtStrupr (
+    char                    *SrcString);
 
 void
 AcpiUtPrintString (
