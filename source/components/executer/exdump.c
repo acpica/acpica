@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.156 $
+ *              $Revision: 1.157 $
  *
  *****************************************************************************/
 
@@ -684,14 +684,14 @@ AcpiExDumpObjectDescriptor (
     {
         if (!((ACPI_LV_OBJECTS & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
         {
-            return;
+            return_VOID;
         }
     }
 
     if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND)
     {
         AcpiOsPrintf ("ExDumpObjectDescriptor: %p is not a valid ACPI object\n", ObjDesc);
-        return;
+        return_VOID;
     }
 
     /* Common Fields */
