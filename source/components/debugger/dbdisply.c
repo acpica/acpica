@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.72 $
+ *              $Revision: 1.74 $
  *
  ******************************************************************************/
 
@@ -150,7 +150,7 @@ AcpiDbGetPointer (
     void                    *ObjPtr;
 
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
 #include <stdio.h>
 
     /* Have to handle 16-bit pointers of the form segment:offset */
@@ -516,7 +516,7 @@ AcpiDbDisplayInternalObject (
         Type = ObjDesc->Common.Type;
         if (Type > INTERNAL_TYPE_MAX)
         {
-            AcpiOsPrintf (" Type %X [Invalid Type]", Type);
+            AcpiOsPrintf (" Type %hX [Invalid Type]", Type);
             return;
         }
 
@@ -527,22 +527,6 @@ AcpiDbDisplayInternalObject (
         case INTERNAL_TYPE_REFERENCE:
             switch (ObjDesc->Reference.Opcode)
             {
-            case AML_ZERO_OP:
-                AcpiOsPrintf ("[Const]           Zero (0) [Null Target]", 0);
-                break;
-
-            case AML_ONES_OP:
-                AcpiOsPrintf ("[Const]           Ones (0xFFFFFFFFFFFFFFFF) [No Limit]");
-                break;
-
-            case AML_ONE_OP:
-                AcpiOsPrintf ("[Const]           One (1)");
-                break;
-
-            case AML_REVISION_OP:
-                AcpiOsPrintf ("[Const]           Revision (%X)", ACPI_CA_SUPPORT_LEVEL);
-                break;
-
             case AML_LOCAL_OP:
                 AcpiOsPrintf ("[Local%d] ", ObjDesc->Reference.Offset);
                 if (WalkState)
@@ -573,6 +557,8 @@ AcpiDbDisplayInternalObject (
                 break;
 
             default:
+                AcpiOsPrintf ("Unknown Reference opcode %X\n", 
+                    ObjDesc->Reference.Opcode);
                 break;
 
             }
