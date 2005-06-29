@@ -166,9 +166,10 @@
 #define TRACE_OBJECTS               0x00080000
 #define TRACE_IO                    0x00100000
 #define TRACE_ALLOCATIONS           0x00200000
+#define TRACE_RESOURCES				0x00400000
 #define TRACE_INTERRUPTS            0x00800000
 #define TRACE_USER_REQUESTS         0x01000000
-#define TRACE_ALL                   0x002FFF00
+#define TRACE_ALL                   0x00FFFF00
 
 /* Exceptionally verbose output -- used in the global "DebugLevel"  */
 
