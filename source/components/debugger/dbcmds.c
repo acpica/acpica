@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  ******************************************************************************/
 
@@ -1293,7 +1293,7 @@ AcpiDbGenerateGpe (
     BlockNumber = ACPI_STRTOUL (BlockArg, NULL, 10);
 
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber);
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, NULL);
     if (!GpeEventInfo)
     {
         AcpiOsPrintf ("Invalid GPE\n");
