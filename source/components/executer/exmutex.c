@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -347,7 +347,7 @@ AcpiExReleaseMutex (
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    /* 
+    /*
      * The Mutex is owned, but this thread must be the owner.
      * Special case for Global Lock, any thread can release
      */
