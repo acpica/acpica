@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -303,13 +303,6 @@ AcpiInstallAddressSpaceHandler (
         {
             AcpiCmRemoveReference (ObjDesc);
             goto UnlockAndExit;
-        }
-
-        /* TBD: [Investigate] Will this always be of type DEVICE? */
-
-        if (Type == ACPI_TYPE_DEVICE)
-        {
-            ObjDesc->Device.Handle = Device;
         }
     }
 
