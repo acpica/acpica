@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.136 $
+ *       $Revision: 1.139 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -203,14 +203,62 @@
  * Otherwise, we have to move one byte at a time.
  */
 
-#ifdef _HW_ALIGNMENT_SUPPORT
+#ifdef ACPI_BIG_ENDIAN
+/*
+ * Macros for big-endian machines
+ */
+
+/* This macro sets a buffer index, starting from the end of the buffer */
+
+#define ACPI_BUFFER_INDEX(BufLen,BufOffset,ByteGran)  ((BufLen) - (((BufOffset)+1) * (ByteGran)))
+
+/* These macros reverse the bytes during the move */
+
+#define ACPI_MOVE_UNALIGNED16_TO_16(d,s)    {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[1];\
+                                             ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[0];}
+
+#define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    {(*(UINT32*)(void *)(d)) = 0;\
+                                             ((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[1];\
+                                             ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[0];}
+
+#define ACPI_MOVE_UNALIGNED32_TO_16(d,s)    {((UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[3];\
+                                             ((UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[2];}
+
+#define ACPI_MOVE_UNALIGNED32_TO_32(d,s)    {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[3];\
+                                             ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[2];\
+                                             ((UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[1];\
+                                             ((UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[0];}
+
+#define ACPI_MOVE_UNALIGNED64_TO_64(d,s)    {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[7];\
+                                             ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[6];\
+                                             ((UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[5];\
+                                             ((UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[4];\
+                                             ((UINT8 *)(void *)(d))[4] = ((UINT8 *)(void *)(s))[3];\
+                                             ((UINT8 *)(void *)(d))[5] = ((UINT8 *)(void *)(s))[2];\
+                                             ((UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[1];\
+                                             ((UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[0];}
+#else
+/*
+ * Macros for little-endian machines
+ */
+
+/* This macro sets a buffer index, starting from the beginning of the buffer */
+
+#define ACPI_BUFFER_INDEX(BufLen,BufOffset,ByteGran)  (BufOffset)
+
+#ifdef ACPI_MISALIGNED_TRANSFERS
 
 /* The hardware supports unaligned transfers, just do the move */
 
 #define ACPI_MOVE_UNALIGNED16_TO_16(d,s)    *(UINT16 *)(void *)(d) = *(UINT16 *)(void *)(s)
-#define ACPI_MOVE_UNALIGNED32_TO_32(d,s)    *(UINT32 *)(void *)(d) = *(UINT32 *)(void *)(s)
 #define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    *(UINT32 *)(void *)(d) = *(UINT16 *)(void *)(s)
+
+#define ACPI_MOVE_UNALIGNED32_TO_16(d,s)    ACPI_MOVE_UNALIGNED16_TO_16(d,s)
+#define ACPI_MOVE_UNALIGNED32_TO_32(d,s)    *(UINT32 *)(void *)(d) = *(UINT32 *)(void *)(s)
+
 #define ACPI_MOVE_UNALIGNED64_TO_64(d,s)    *(UINT64 *)(void *)(d) = *(UINT64 *)(void *)(s)
+
+#define ACPI_MOVE_UNALIGNED_SIZE_TO_16(d,s) ACPI_MOVE_UNALIGNED16_TO_16(d,s)
 
 #else
 /*
@@ -222,12 +270,14 @@
 #define ACPI_MOVE_UNALIGNED16_TO_16(d,s)    {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];\
                                              ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[1];}
 
+#define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    {(*(UINT32*)(void *)(d)) = 0; ACPI_MOVE_UNALIGNED16_TO_16(d,s);}
+
+#define ACPI_MOVE_UNALIGNED32_TO_16(d,s)    ACPI_MOVE_UNALIGNED16_TO_16(d,s)
+
 #define ACPI_MOVE_UNALIGNED32_TO_32(d,s)    {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];\
                                              ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[1];\
                                              ((UINT8 *)(void *)(d))[2] = ((UINT8 *)(void *)(s))[2];\
                                              ((UINT8 *)(void *)(d))[3] = ((UINT8 *)(void *)(s))[3];}
-
-#define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    {(*(UINT32*)(void *)(d)) = 0; ACPI_MOVE_UNALIGNED16_TO_16(d,s);}
 
 #define ACPI_MOVE_UNALIGNED64_TO_64(d,s)    {((UINT8 *)(void *)(d))[0] = ((UINT8 *)(void *)(s))[0];\
                                              ((UINT8 *)(void *)(d))[1] = ((UINT8 *)(void *)(s))[1];\
@@ -237,7 +287,7 @@
                                              ((UINT8 *)(void *)(d))[5] = ((UINT8 *)(void *)(s))[5];\
                                              ((UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[6];\
                                              ((UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[7];}
-
+#endif
 #endif
 
 
