@@ -1,9 +1,8 @@
-
 /******************************************************************************
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.22 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -125,7 +124,7 @@
 
 
 #define _COMPONENT          TABLE_MANAGER
-        MODULE_NAME         ("tbxface");
+        MODULE_NAME         ("tbxface")
 
 
 /*******************************************************************************
@@ -270,7 +269,7 @@ AcpiUnloadTable (
     ListHead = &AcpiGbl_AcpiTables[TableType];
     do
     {
-        /* 
+        /*
          * Delete all namespace entries owned by this table.  Note that these
          * entries can appear anywhere in the namespace by virtue of the AML
          * "Scope" operator.  Thus, we need to track ownership by an ID, not
@@ -408,12 +407,11 @@ AcpiGetTable (
     FUNCTION_TRACE ("AcpiGetTable");
 
     /*
-     *  Must have a buffer
+     *  If we have a buffer, we must have a length too
      */
     if ((Instance == 0)                 ||
         (!RetBuffer)                    ||
-        (!RetBuffer->Pointer)           ||
-        (!RetBuffer->Length))
+        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -437,7 +435,7 @@ AcpiGetTable (
     }
 
     /*
-     * AcpiTbGetTablePtr will return a NULL pointer if the 
+     * AcpiTbGetTablePtr will return a NULL pointer if the
      *  table is not loaded.
      */
     if (TblPtr == NULL)
