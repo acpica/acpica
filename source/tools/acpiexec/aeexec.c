@@ -1,7 +1,6 @@
 /******************************************************************************
- *
- * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.85 $
+ * 
+ * Module Name: aeexec - Top level parse and execute routines
  *
  *****************************************************************************/
 
@@ -9,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,606 +113,47 @@
  *
  *****************************************************************************/
 
+
+#include <acpi.h>
+#include <parser.h>
+#include <amlcode.h>
+#include <namesp.h>
 #include "aecommon.h"
 
-#define _COMPONENT          ACPI_TOOLS
-        ACPI_MODULE_NAME    ("aeexec")
+#include <stdio.h>
 
 
-ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
-ACPI_PARSE_OBJECT           *root;
-UINT8                       *AmlStart;
+
+#define _COMPONENT          PARSER
+        MODULE_NAME         ("aeexec");
+
+
+
+ACPI_GENERIC_OP             *Gbl_ParsedNamespaceRoot;
+ACPI_GENERIC_OP             *root;
+UINT8                       *AmlPtr;
 UINT32                      AmlLength;
 UINT8                       *DsdtPtr;
-UINT32                      AcpiDsdtLength;
+UINT32                      DsdtLength;
 
-DEBUG_REGIONS               AeRegions;
-RSDP_DESCRIPTOR             LocalRsdp;
-
-/*
- * Misc ACPI tables to be installed
- */
-unsigned char Ssdt1Code[] =
-{
-    0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "SSDT0..." */
-    0x01,0xB8,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
-    0x4D,0x61,0x6E,0x79,0x00,0x00,0x00,0x00,  /* 00000010    "Many...." */
-    0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
-    0x24,0x04,0x03,0x20,0x14,0x0B,0x5F,0x54,  /* 00000020    "$.. .._T" */
-    0x39,0x38,0x00,0x70,0x0A,0x04,0x60,0xA4,  /* 00000028    "98.p..`." */
-};
-
-unsigned char Ssdt2Code[] =
-{
-    0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "SSDT0..." */
-    0x01,0xB7,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
-    0x4D,0x61,0x6E,0x79,0x00,0x00,0x00,0x00,  /* 00000010    "Many...." */
-    0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
-    0x24,0x04,0x03,0x20,0x14,0x0B,0x5F,0x54,  /* 00000020    "$.. .._T" */
-    0x39,0x39,0x00,0x70,0x0A,0x04,0x60,0xA4,  /* 00000028    "99.p..`." */
-};
-
-unsigned char Oem1Code[] =
-{
-    0x4F,0x45,0x4D,0x31,0x38,0x00,0x00,0x00,  /* 00000000    "OEM18..." */
-    0x01,0x4B,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    ".KIntel." */
-    0x4D,0x61,0x6E,0x79,0x00,0x00,0x00,0x00,  /* 00000010    "Many...." */
-    0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
-    0x18,0x09,0x03,0x20,0x08,0x5F,0x58,0x54,  /* 00000020    "... ._XT" */
-    0x32,0x0A,0x04,0x14,0x0C,0x5F,0x58,0x54,  /* 00000028    "2...._XT" */
-    0x31,0x00,0x70,0x01,0x5F,0x58,0x54,0x32,  /* 00000030    "1.p._XT2" */
-
-};
-
-/*
- * We need a local FADT so that the hardware subcomponent will function,
- * even though the underlying OSD HW access functions don't do
- * anything.
- */
-RSDP_DESCRIPTOR             LocalRSDP;
-FADT_DESCRIPTOR_REV1        LocalFADT;
-FACS_DESCRIPTOR_REV1        LocalFACS;
-ACPI_TABLE_HEADER           LocalDSDT;
-ACPI_TABLE_HEADER           LocalTEST;
-ACPI_TABLE_HEADER           LocalBADTABLE;
-
-RSDT_DESCRIPTOR_REV1        *LocalRSDT;
-
-#define RSDT_TABLES         7
-#define RSDT_SIZE           (sizeof (RSDT_DESCRIPTOR_REV1) + ((RSDT_TABLES -1) * sizeof (UINT32)))
 
 
 /******************************************************************************
- *
- * FUNCTION:    AeCtrlCHandler
- *
- * PARAMETERS:  Sig 
- *
- * RETURN:      none
- *
- * DESCRIPTION: Control-C handler.  Abort running control method if any.
- *
- *****************************************************************************/
-
-void __cdecl
-AeCtrlCHandler (
-    int                     Sig)
-{
-
-    signal (SIGINT, SIG_IGN);
-
-    AcpiOsPrintf ("Caught a ctrl-c\n\n");
-
-    if (AcpiGbl_MethodExecuting)
-    {
-        AcpiGbl_AbortMethod = TRUE;
-        signal (SIGINT, AeCtrlCHandler);
-    }
-    else
-    {
-        exit (0);
-    }
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AeBuildLocalTables
- *
- * PARAMETERS:
- *
- * RETURN:      Status
- *
- * DESCRIPTION:
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AeBuildLocalTables (
-    ACPI_TABLE_HEADER       *UserTable)
-{
-
-
-    /* Build an RSDT */
-
-    LocalRSDT = AcpiOsAllocate (RSDT_SIZE);
-    if (!LocalRSDT)
-    {
-        return AE_NO_MEMORY;
-    }
-
-    ACPI_MEMSET (LocalRSDT, 0, RSDT_SIZE);
-    ACPI_STRNCPY (LocalRSDT->Signature, RSDT_SIG, 4);
-    LocalRSDT->Length = RSDT_SIZE;
-
-    LocalRSDT->TableOffsetEntry[0] = ACPI_PTR_TO_PHYSADDR (&LocalTEST);
-    LocalRSDT->TableOffsetEntry[1] = ACPI_PTR_TO_PHYSADDR (&LocalBADTABLE);
-    LocalRSDT->TableOffsetEntry[2] = ACPI_PTR_TO_PHYSADDR (&LocalFADT);
-    LocalRSDT->TableOffsetEntry[3] = ACPI_PTR_TO_PHYSADDR (&LocalTEST);  /* Just a placeholder for a user SSDT */
-
-    /* Install two SSDTs to test multiple table support */
-
-    LocalRSDT->TableOffsetEntry[4] = ACPI_PTR_TO_PHYSADDR (&Ssdt1Code);
-    LocalRSDT->TableOffsetEntry[5] = ACPI_PTR_TO_PHYSADDR (&Ssdt2Code);
-
-    /* Install the OEM1 table to test LoadTable */
-
-    LocalRSDT->TableOffsetEntry[6] = ACPI_PTR_TO_PHYSADDR (&Oem1Code);
-
-    /* Build an RSDP */
-
-    ACPI_MEMSET (&LocalRSDP, 0, sizeof (RSDP_DESCRIPTOR));
-    ACPI_STRNCPY (LocalRSDP.Signature, RSDP_SIG, 8);
-    LocalRSDP.Revision            = 1;
-    LocalRSDP.RsdtPhysicalAddress = ACPI_PTR_TO_PHYSADDR (LocalRSDT);
-
-    AcpiGbl_RSDP = &LocalRSDP;
-
-    /*
-     * Examine the incoming user table.  At this point, it has been verified
-     * to be either a DSDT, SSDT, or a PSDT, but they must be handled differently
-     */
-    if (!ACPI_STRNCMP ((char *) UserTable->Signature, DSDT_SIG, 4))
-    {
-        /* User DSDT is installed directly into the FADT */
-
-        AcpiGbl_DSDT = UserTable;
-    }
-    else
-    {
-        /* Build a local DSDT because incoming table is an SSDT or PSDT */
-
-        ACPI_MEMSET (&LocalDSDT, 0, sizeof (ACPI_TABLE_HEADER));
-        ACPI_STRNCPY (LocalDSDT.Signature, DSDT_SIG, 4);
-        LocalDSDT.Revision   = 1;
-        LocalDSDT.Length     = sizeof (ACPI_TABLE_HEADER);
-        LocalDSDT.Checksum   = (UINT8) (0 - AcpiTbChecksum (&LocalDSDT, LocalDSDT.Length));
-
-        AcpiGbl_DSDT = &LocalDSDT;
-
-        /* Install incoming table (SSDT or PSDT) directly into the RSDT */
-
-        LocalRSDT->TableOffsetEntry[3] = ACPI_PTR_TO_PHYSADDR (UserTable);
-    }
-
-    /* Set checksums for both RSDT and RSDP */
-
-    LocalRSDT->Checksum = (UINT8) (0 - AcpiTbChecksum (LocalRSDT, LocalRSDT->Length));
-    LocalRSDP.Checksum  = (UINT8) (0 - AcpiTbChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
-
-    /* Build a FADT so we can test the hardware/event init */
-
-    ACPI_MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
-    ACPI_STRNCPY (LocalFADT.Signature, FADT_SIG, 4);
-
-    LocalFADT.FirmwareCtrl      = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
-    LocalFADT.Dsdt              = ACPI_PTR_TO_PHYSADDR (AcpiGbl_DSDT);
-    LocalFADT.Revision          = 1;
-    LocalFADT.Length            = sizeof (FADT_DESCRIPTOR_REV1);
-    LocalFADT.Gpe0BlkLen        = 16;
-    LocalFADT.Gpe1BlkLen        = 6;
-    LocalFADT.Gpe1Base          = 96;
-
-    LocalFADT.Pm1EvtLen         = 4;
-    LocalFADT.Pm1CntLen         = 4;
-    LocalFADT.PmTmLen           = 8;
-
-    LocalFADT.Gpe0Blk           = 0x12340000;
-    LocalFADT.Gpe1Blk           = 0x56780000;
-
-    LocalFADT.Pm1aEvtBlk        = 0x1aaa0000;
-    LocalFADT.Pm1bEvtBlk        = 0;
-    LocalFADT.PmTmrBlk          = 0xA0;
-    LocalFADT.Pm1aCntBlk        = 0xB0;
-
-    /* Complete the FADT with the checksum */
-
-    LocalFADT.Checksum = (UINT8) (0 - AcpiTbChecksum (&LocalFADT, LocalFADT.Length));
-
-    /* Build a FACS */
-
-    ACPI_MEMSET (&LocalFACS, 0, sizeof (FACS_DESCRIPTOR_REV1));
-    ACPI_STRNCPY (LocalFACS.Signature, FACS_SIG, 4);
-    LocalFACS.Length = sizeof (FACS_DESCRIPTOR_REV1);
-    LocalFACS.GlobalLock = 0x11AA0011;
-
-    /* Build a fake table so that we make sure that the CA core ignores it */
-
-    ACPI_MEMSET (&LocalTEST, 0, sizeof (ACPI_TABLE_HEADER));
-    ACPI_STRNCPY (LocalTEST.Signature, "TEST", 4);
-
-    LocalTEST.Revision   = 1;
-    LocalTEST.Length     = sizeof (ACPI_TABLE_HEADER);
-
-    /* Build a fake table with a bad signature so that we make sure that the CA core ignores it */
-
-    ACPI_MEMSET (&LocalBADTABLE, 0, sizeof (ACPI_TABLE_HEADER));
-    ACPI_STRNCPY (LocalBADTABLE.Signature, "BAD!", 4);
-
-    LocalBADTABLE.Revision   = 1;
-    LocalBADTABLE.Length     = sizeof (ACPI_TABLE_HEADER);
-
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AeInstallTables
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Install the various ACPI tables
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AeInstallTables (void)
-{
-    ACPI_STATUS             Status;
-
-
-    Status = AcpiLoadTables ();
-
-#if 0
-    Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFADT);
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("**** Could not load local FADT, %s\n", AcpiFormatException (Status));
-        return (Status);
-    }
-
-    Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFACS);
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("**** Could not load local FACS, %s\n", AcpiFormatException (Status));
-        return (Status);
-    }
-#endif
-
-    return (Status);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AeLocalGetRootPointer
- *
- * PARAMETERS:  Flags       - not used
- *              Address     - Where the root pointer is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Return a local RSDP, used to dynamically load tables via the
- *              standard ACPI mechanism.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AeLocalGetRootPointer (
-    UINT32                  Flags,
-    ACPI_POINTER            *Address)
-{
-
-    Address->PointerType     = ACPI_LOGICAL_POINTER;
-    Address->Pointer.Logical = &LocalRSDP;
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AeRegionHandler
- *
- * PARAMETERS:  Standard region handler parameters
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Test handler - Handles some dummy regions via memory that can
- *              be manipulated in Ring 3.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AeRegionHandler (
-    UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  BitWidth,
-    ACPI_INTEGER            *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext)
-{
-
-    ACPI_OPERAND_OBJECT     *RegionObject = (ACPI_OPERAND_OBJECT*) RegionContext;
-    ACPI_PHYSICAL_ADDRESS   BaseAddress;
-    ACPI_SIZE               Length;
-    BOOLEAN                 BufferExists;
-    REGION                  *RegionElement;
-    void                    *BufferValue;
-    UINT32                  ByteWidth;
-    UINT32                  i;
-
-
-    ACPI_FUNCTION_NAME ("AeRegionHandler");
-
-    /*
-     * If the object is not a region, simply return
-     */
-    if (RegionObject->Region.Type != ACPI_TYPE_REGION)
-    {
-        return AE_OK;
-    }
-
-    /*
-     * Find the region's address space and length before searching
-     * the linked list.
-     */
-    BaseAddress = RegionObject->Region.Address;
-    Length = (ACPI_SIZE) RegionObject->Region.Length;
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION, "Operation Region request on %s at 0x%X\n",
-            AcpiUtGetRegionName (RegionObject->Region.SpaceId),
-            (UINT32) Address));
-
-    if (RegionObject->Region.SpaceId == ACPI_ADR_SPACE_SMBUS)
-    {
-        Length = 0;
-
-        switch (Function & ACPI_IO_MASK)
-        {
-        case ACPI_READ:
-            switch (Function >> 16)
-            {
-            case AML_FIELD_ATTRIB_SMB_QUICK:
-            case AML_FIELD_ATTRIB_SMB_SEND_RCV:
-            case AML_FIELD_ATTRIB_SMB_BYTE:
-                Length = 1;
-                break;
-
-            case AML_FIELD_ATTRIB_SMB_WORD:
-            case AML_FIELD_ATTRIB_SMB_WORD_CALL:
-                Length = 2;
-                break;
-
-            case AML_FIELD_ATTRIB_SMB_BLOCK:
-            case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
-                Length = 32;
-                break;
-
-            default:
-                break;
-            }
-            break;
-
-        case ACPI_WRITE:
-            switch (Function >> 16)
-            {
-            case AML_FIELD_ATTRIB_SMB_QUICK:
-            case AML_FIELD_ATTRIB_SMB_SEND_RCV:
-            case AML_FIELD_ATTRIB_SMB_BYTE:
-            case AML_FIELD_ATTRIB_SMB_WORD:
-            case AML_FIELD_ATTRIB_SMB_BLOCK:
-                Length = 0;
-                break;
-
-            case AML_FIELD_ATTRIB_SMB_WORD_CALL:
-                Length = 2;
-                break;
-
-            case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
-                Length = 32;
-                break;
-
-            default:
-                break;
-            }
-            break;
-
-        default:
-            break;
-        }
-
-        for (i = 0; i < Length; i++)
-        {
-            ((UINT8 *) Value)[i+2] = (UINT8) (0xA0 + i);
-        }
-
-        ((UINT8 *) Value)[0] = 0x7A;
-        ((UINT8 *) Value)[1] = (UINT8) Length;
-
-        return AE_OK;
-    }
-
-    /*
-     * Search through the linked list for this region's buffer
-     */
-    BufferExists = FALSE;
-    RegionElement = AeRegions.RegionList;
-
-    if (AeRegions.NumberOfRegions)
-    {
-        while (!BufferExists && RegionElement)
-        {
-            if (RegionElement->Address == BaseAddress &&
-                RegionElement->Length == Length)
-            {
-                BufferExists = TRUE;
-            }
-            else
-            {
-                RegionElement = RegionElement->NextRegion;
-            }
-        }
-    }
-
-    /*
-     * If the Region buffer does not exist, create it now
-     */
-    if (!BufferExists)
-    {
-        /*
-         * Do the memory allocations first
-         */
-        RegionElement = AcpiOsAllocate (sizeof (REGION));
-        if (!RegionElement)
-        {
-            return AE_NO_MEMORY;
-        }
-
-        RegionElement->Buffer = AcpiOsAllocate (Length);
-        if (!RegionElement->Buffer)
-        {
-            AcpiOsFree (RegionElement);
-            return AE_NO_MEMORY;
-        }
-
-        ACPI_MEMSET (RegionElement->Buffer, 0, Length);
-        RegionElement->Address      = BaseAddress;
-        RegionElement->Length       = Length;
-        RegionElement->NextRegion   = NULL;
-
-        /*
-         * Increment the number of regions and put this one
-         *  at the head of the list as it will probably get accessed
-         *  more often anyway.
-         */
-        AeRegions.NumberOfRegions += 1;
-
-        if (NULL != AeRegions.RegionList)
-        {
-            RegionElement->NextRegion = AeRegions.RegionList->NextRegion;
-        }
-
-        AeRegions.RegionList = RegionElement;
-    }
-
-    /*
-     * Calculate the size of the memory copy
-     */
-    ByteWidth = (BitWidth / 8);
-
-    if (BitWidth % 8)
-    {
-        ByteWidth += 1;
-    }
-
-    /*
-     * The buffer exists and is pointed to by RegionElement.
-     * We now need to verify the request is valid and perform the operation.
-     *
-     * NOTE: RegionElement->Length is in bytes, therefore it we compare against
-     * ByteWidth (see above)
-     */
-    if (((ACPI_INTEGER) Address + ByteWidth) >
-        ((ACPI_INTEGER)(RegionElement->Address) + RegionElement->Length))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, 
-            "Request on [%4.4s] is beyond region limit Req-%X+%X, Base=%X, Len-%X\n",
-            (RegionObject->Region.Node)->Name.Ascii, (UINT32) Address,
-            ByteWidth, (UINT32)(RegionElement->Address),
-            RegionElement->Length));
-
-        return AE_AML_REGION_LIMIT;
-    }
-
-    /*
-     * Get BufferValue to point to the "address" in the buffer
-     */
-    BufferValue = ((UINT8 *) RegionElement->Buffer +
-                    ((ACPI_INTEGER) Address - (ACPI_INTEGER) RegionElement->Address));
-
-    /*
-     * Perform a read or write to the buffer space
-     */
-    switch (Function)
-    {
-    case ACPI_READ:
-        /*
-         * Set the pointer Value to whatever is in the buffer
-         */
-        ACPI_MEMCPY (Value, BufferValue, ByteWidth);
-        break;
-
-    case ACPI_WRITE:
-        /*
-         * Write the contents of Value to the buffer
-         */
-        ACPI_MEMCPY (BufferValue, Value, ByteWidth);
-        break;
-
-    default:
-        return AE_BAD_PARAMETER;
-    }
-    return AE_OK;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AeRegionInit
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Opregion init function.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AeRegionInit (
-    ACPI_HANDLE                 RegionHandle,
-    UINT32                      Function,
-    void                        *HandlerContext,
-    void                        **RegionContext)
-{
-    /*
-     * Real simple, set the RegionContext to the RegionHandle
-     */
-    *RegionContext = RegionHandle;
-
-    return AE_OK;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AeNotifyHandler
+ * 
+ * FUNCTION:    NotifyHandler 
  *
  * PARAMETERS:  Standard notify handler parameters
  *
  * RETURN:      Status
  *
  * DESCRIPTION: System notify handler for AcpiExec utility.  Used by the ASL
- *              test suite(s) to communicate errors and other information to
+ *              test suite(s) to communicate errors and other information to  
  *              this utility via the Notify() operator.
  *
  *****************************************************************************/
 
-void
-AeNotifyHandler (
+void 
+NotifyHandler (
     ACPI_HANDLE                 Device,
     UINT32                      Value,
     void                        *Context)
@@ -721,41 +161,38 @@ AeNotifyHandler (
 
     switch (Value)
     {
-#if 0
     case 0:
-        printf ("**** Method Error 0x%X: Results not equal\n", Value);
-        if (AcpiGbl_DebugFile)
+        printf ("**** Method Error: Results not equal\n");
+        if (DebugFile)
         {
-            AcpiOsPrintf ("**** Method Error: Results not equal\n");
+            OsdPrintf ("**** Method Error: Results not equal\n");
         }
         break;
 
 
     case 1:
         printf ("**** Method Error: Incorrect numeric result\n");
-        if (AcpiGbl_DebugFile)
+        if (DebugFile)
         {
-            AcpiOsPrintf ("**** Method Error: Incorrect numeric result\n");
+            OsdPrintf ("**** Method Error: Incorrect numeric result\n");
         }
         break;
 
 
     case 2:
         printf ("**** Method Error: An operand was overwritten\n");
-        if (AcpiGbl_DebugFile)
+        if (DebugFile)
         {
-            AcpiOsPrintf ("**** Method Error: An operand was overwritten\n");
+            OsdPrintf ("**** Method Error: An operand was overwritten\n");
         }
         break;
-
-#endif
+    
 
     default:
-        printf ("**** Received a Notify on Device [%4.4s] %p value 0x%X\n",
-            AcpiUtGetNodeName (Device), Device, Value);
-        if (AcpiGbl_DebugFile)
+        printf ("**** Unknown notify value=%d\n", Value);
+        if (DebugFile)
         {
-            AcpiOsPrintf ("**** Received a notify, value 0x%X\n", Value);
+            OsdPrintf ("**** Unknown notify value=%d\n", Value);
         }
         break;
     }
@@ -763,75 +200,9 @@ AeNotifyHandler (
 }
 
 
-/******************************************************************************
- *
- * FUNCTION:    AeExceptionHandler
- *
- * PARAMETERS:  Standard exception handler parameters
- *
- * RETURN:      Status
- *
- * DESCRIPTION: System exception handler for AcpiExec utility.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AeExceptionHandler (
-    ACPI_STATUS             AmlStatus,
-    ACPI_NAME               Name,
-    UINT16                  Opcode,
-    UINT32                  AmlOffset,
-    void                    *Context)
-{
-    ACPI_STATUS             Status;
-    ACPI_BUFFER             ReturnObj;
-    ACPI_OBJECT_LIST        ArgList;
-    ACPI_OBJECT             Arg[2];
-    const char              *Exception;
-
-
-    Exception = AcpiFormatException (AmlStatus);
-    AcpiOsPrintf (
-        "**** AcpiExec Exception: %s during execution of method [%4.4s] Opcode [%s] @%X\n",
-        Exception, (char *) &Name, AcpiPsGetOpcodeName (Opcode), AmlOffset);
-
-    /*
-     * Invoke the _ERR method if present
-     *
-     * Setup parameter object
-     */
-    ArgList.Count = 2;
-    ArgList.Pointer = Arg;
-
-    Arg[0].Type = ACPI_TYPE_INTEGER;
-    Arg[0].Integer.Value = AmlStatus;
-
-    Arg[1].Type = ACPI_TYPE_STRING;
-    Arg[1].String.Pointer = (char *) Exception;
-    Arg[1].String.Length = ACPI_STRLEN (Exception);
-
-    /* Setup return buffer */
-
-    ReturnObj.Pointer = NULL;
-    ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
-
-    Status = AcpiEvaluateObject (NULL, "\\_ERR", &ArgList, &ReturnObj);
-    if (ACPI_SUCCESS (Status) &&
-        ReturnObj.Pointer)
-    {
-        /* Override original status */
-
-        AmlStatus = (ACPI_STATUS)
-            ((ACPI_OBJECT *) ReturnObj.Pointer)->Integer.Value;
-
-        AcpiOsFree (ReturnObj.Pointer);
-    }
-    return (AmlStatus);
-}
-
 
 /******************************************************************************
- *
+ * 
  * FUNCTION:    AeInstallHandlers
  *
  * PARAMETERS:  None
@@ -843,101 +214,318 @@ AeExceptionHandler (
  *
  *****************************************************************************/
 
-ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 4, 0x80};
-#define AEXEC_NUM_REGIONS   6
-
 ACPI_STATUS
 AeInstallHandlers (void)
 {
     ACPI_STATUS             Status;
-    UINT32                  i;
-    ACPI_HANDLE             Handle;
 
 
-    ACPI_FUNCTION_NAME ("AeInstallHandlers");
-
-
-    Status = AcpiInstallExceptionHandler (AeExceptionHandler);
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("Could not install exception handler, %s\n",
-            AcpiFormatException (Status));
-    }
 
     Status = AcpiInstallNotifyHandler (ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
-                                        AeNotifyHandler, NULL);
+                                        NotifyHandler, NULL);
+
+
     if (ACPI_FAILURE (Status))
     {
-        printf ("Could not install a global notify handler, %s\n",
-            AcpiFormatException (Status));
+        printf ("Could not install a global notify handler\n");
     }
-
-    Status = AcpiGetHandle (NULL, "\\_SB_", &Handle);
-    if (ACPI_SUCCESS (Status))
-    {
-        Status = AcpiInstallNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
-                                            AeNotifyHandler, NULL);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("Could not install a notify handler, %s\n",
-                AcpiFormatException (Status));
-        }
-
-        Status = AcpiRemoveNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
-                                            AeNotifyHandler);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("Could not remove a notify handler, %s\n",
-                AcpiFormatException (Status));
-        }
-
-        Status = AcpiInstallNotifyHandler (Handle, ACPI_ALL_NOTIFY,
-                                            AeNotifyHandler, NULL);
-        Status = AcpiRemoveNotifyHandler (Handle, ACPI_ALL_NOTIFY,
-                                            AeNotifyHandler);
-        Status = AcpiInstallNotifyHandler (Handle, ACPI_ALL_NOTIFY,
-                                            AeNotifyHandler, NULL);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("Could not install a notify handler, %s\n",
-                AcpiFormatException (Status));
-        }
-
-    }
-
-    for (i = 0; i < AEXEC_NUM_REGIONS; i++)
-    {
-        if (i == 2)
-        {
-            continue;
-        }
-
-        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode,
-                        SpaceId[i], AeRegionHandler);
-
-        /* Install handler at the root object.
-         * TBD: all default handlers should be installed here!
-         */
-        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
-                        SpaceId[i], AeRegionHandler, AeRegionInit, NULL);
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Could not install an OpRegion handler for %s space(%d), %s\n",
-                AcpiUtGetRegionName((UINT8) SpaceId[i]), SpaceId[i],
-                AcpiFormatException (Status)));
-            return (Status);
-        }
-    }
-
-    /*
-     * Initialize the global Region Handler space
-     * MCW 3/23/00
-     */
-    AeRegions.NumberOfRegions = 0;
-    AeRegions.RegionList = NULL;
 
     return Status;
 }
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    TbDeleteAcpiTables
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Placeholder, required for linking
+ *
+ ***************************************************************************/
+
+void
+TbDeleteAcpiTables (void)
+{
+
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    TbSystemTablePointer
+ *
+ * PARAMETERS:  *Where              - Pointer to be examined
+ *
+ * RETURN:      TRUE if Where is within the AML stream (in one of the ACPI
+ *              system tables such as the DSDT or an SSDT.)
+ *              FALSE otherwise
+ *
+ ****************************************************************************/
+
+BOOLEAN
+TbSystemTablePointer (
+    void                    *Where)
+{
+
+
+    /* No function trace, called too often! */
+
+
+    /* Ignore null pointer */
+
+    if (!Where)
+    {
+        return (FALSE);
+    }
+
+
+    /* Check for a pointer within the DSDT */
+
+    if (IS_IN_ACPI_TABLE (Where, Gbl_DSDT))
+    {
+        return (TRUE);
+    }
+
+
+
+
+    return (FALSE);
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AdLoadDsdt
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Load the DSDT from the file pointer
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AdLoadDsdt(
+    FILE                    *fp, 
+    UINT8                   **DsdtPtr, 
+    UINT32                  *DsdtLength)
+{
+    ACPI_TABLE_HEADER       dsdt_hdr;
+    UINT8                   *AmlPtr;
+    UINT32                   AmlLength;
+
+
+    if (fread(&dsdt_hdr, 1, sizeof (dsdt_hdr), fp) == sizeof (dsdt_hdr))
+    {
+        *DsdtLength = dsdt_hdr.Length;
+
+        if (*DsdtLength)
+        {
+            *DsdtPtr = (UINT8*) malloc ((size_t) *DsdtLength);
+
+            if (*DsdtPtr)
+            {
+                AmlPtr = *DsdtPtr + sizeof (dsdt_hdr);
+                AmlLength = *DsdtLength - sizeof (dsdt_hdr);
+
+                memcpy (*DsdtPtr, &dsdt_hdr, sizeof (dsdt_hdr));
+                if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
+                {
+                    return AE_OK;
+                }
+
+                free(*DsdtPtr);
+            }
+        }
+    }
+
+    *DsdtPtr = NULL;
+    *DsdtLength = 0;
+
+    return AE_AML_ERROR;
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AdSecondPassParse
+ *
+ * PARAMETERS:  Root            - Root of the parse tree
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Need to wait until second pass to parse the control methods
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AdSecondPassParse (
+    ACPI_GENERIC_OP         *Root)
+{
+    ACPI_GENERIC_OP         *Op = Root;
+    ACPI_DEFERRED_OP        *Method;
+    ACPI_GENERIC_OP         *SearchOp;
+    ACPI_GENERIC_OP         *StartOp;
+    ACPI_STATUS             Status = AE_OK;
+    UINT32                  BaseAmlOffset;
+
+
+    printf ("Pass two parse ....\n");
+
+    while (Op)
+    {
+        if (Op->Opcode == AML_MethodOp)
+        {
+            Method = (ACPI_DEFERRED_OP *) Op;
+            Status = PsParseAml (Op, Method->Body, Method->BodyLength);
+
+          
+            BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
+            StartOp = (Method->Value.Arg)->Next;
+            SearchOp = StartOp;
+
+            while (SearchOp)
+            {
+                SearchOp->AmlOffset += BaseAmlOffset;
+                SearchOp = PsGetDepthNext (StartOp, SearchOp);
+            }
+
+        }
+
+        if (Op->Opcode == AML_RegionOp)
+        {
+            /* TBD: this isn't quite the right thing to do! */
+
+            // Method = (ACPI_DEFERRED_OP *) Op;
+            // Status = PsParseAml (Op, Method->Body, Method->BodyLength);
+        }
+
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
+
+        Op = PsGetDepthNext (Root, Op);
+    }
+
+    return Status;
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AdGetTables
+ *
+ * PARAMETERS:  Filename        - Optional filename
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Get the ACPI tables from either memory or a file
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AdGetTables (
+    char                    *Filename)
+{
+    FILE                    *fp;
+    ACPI_STATUS             Status;
+
+
+    if (Filename)
+    {
+        printf ("Loading DSDT from file %s\n", Filename);
+        fp = fopen (Filename, "rb");
+        if (!fp)
+        {
+            printf ("Couldn't open %s\n", Filename);
+            return AE_ERROR;
+        }
+
+        Status = AdLoadDsdt (fp, &DsdtPtr, &DsdtLength);
+        if (fp != stdin)
+        {
+            fclose(fp);
+        }
+
+        /* TBD: set real Dsdt ptr here.  BUT FIX this */
+
+        Gbl_DSDT = (ACPI_TABLE_HEADER *) DsdtPtr;
+    }
+
+
+    else
+    {
+#ifdef IA16
+        printf ("Scanning for DSDT\n");
+
+        Status = AdFindDsdt (&DsdtPtr, &DsdtLength);
+        AdDumpTables ();
+#else
+        printf ("Must supply filename for ACPI tables, cannot scan memory\n");
+        Status = AE_NO_ACPI_TABLES;
+#endif
+    }
+
+    return Status;
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AdParseTable
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Parse all supported tables
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AdParseTables (void)
+{
+    ACPI_STATUS             Status;
+
+
+    if (!DsdtPtr)
+    {
+        return AE_NOT_EXIST;
+    }
+
+
+    AmlPtr = DsdtPtr + sizeof (ACPI_TABLE_HEADER);
+    AmlLength = DsdtLength - sizeof (ACPI_TABLE_HEADER);
+
+
+//    Status = PsParseTable (PcodeAddr, PcodeLength, PsxLoadBeginOp, PsxLoadEndOp, NULL);
+
+//    Status = PsParseTable (AmlPtr, AmlLength, PsxLoadBeginOp, PsxLoadEndOp, &root);
+
+
+    Status = NsSetup ();
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+
+    Status = PsxLoadTable (AmlPtr, AmlLength);
+    if (ACPI_SUCCESS (Status))
+    {
+        Status = AdSecondPassParse (root);
+    }
+
+    return Status;
+}
+
 
 
