@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: psargs - Parse AML opcode arguments
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,10 +115,10 @@
 
 #define __PSARGS_C__
 
-#include <acpi.h>
-#include <parser.h>
-#include <amlcode.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "parser.h"
+#include "amlcode.h"
+#include "namesp.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psargs");
@@ -126,11 +126,11 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    PsGetNextPackageLength
+ * FUNCTION:    AcpiPsGetNextPackageLength
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *
- * RETURN:      Decoded package length.  On completion, the AML pointer points 
+ * RETURN:      Decoded package length.  On completion, the AML pointer points
  *              past the length byte or bytes.
  *
  * DESCRIPTION: Decode and return a package length field
@@ -138,7 +138,7 @@
  ******************************************************************************/
 
 UINT32
-PsGetNextPackageLength (
+AcpiPsGetNextPackageLength (
     ACPI_PARSE_STATE        *ParserState)
 {
     INT32                   EncodedLength;
@@ -192,19 +192,19 @@ PsGetNextPackageLength (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsGetNextPackageEnd
+ * FUNCTION:    AcpiPsGetNextPackageEnd
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *
  * RETURN:      Pointer to end-of-package +1
  *
- * DESCRIPTION: Get next package length and return a pointer past the end of 
+ * DESCRIPTION: Get next package length and return a pointer past the end of
  *              the package.  Consumes the package length field
  *
  ******************************************************************************/
 
 UINT8 *
-PsGetNextPackageEnd (
+AcpiPsGetNextPackageEnd (
     ACPI_PARSE_STATE        *ParserState)
 {
     UINT8                   *Start = ParserState->Aml;
@@ -214,7 +214,7 @@ PsGetNextPackageEnd (
     FUNCTION_TRACE ("PsGetNextPackageEnd");
 
 
-    Length = (NATIVE_UINT) PsGetNextPackageLength (ParserState);
+    Length = (NATIVE_UINT) AcpiPsGetNextPackageLength (ParserState);
 
     return_PTR (Start + Length); /* end of package */
 }
@@ -222,21 +222,21 @@ PsGetNextPackageEnd (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsGetNextNamestring
+ * FUNCTION:    AcpiPsGetNextNamestring
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *
  * RETURN:      Pointer to the start of the name string (pointer points into
  *              the AML.
  *
- * DESCRIPTION: Get next raw namestring within the AML stream.  Handles all name 
+ * DESCRIPTION: Get next raw namestring within the AML stream.  Handles all name
  *              prefix characters.  Set parser state to point past the string.
  *              (Name is consumed from the AML.)
  *
  ******************************************************************************/
 
 char *
-PsGetNextNamestring (
+AcpiPsGetNextNamestring (
     ACPI_PARSE_STATE        *ParserState)
 {
     char                    *Start = (char *) ParserState->Aml;
@@ -249,7 +249,7 @@ PsGetNextNamestring (
 
     /* Handle multiple prefix characters */
 
-    while (PsIsPrefixChar (GET8 (End)))
+    while (AcpiPsIsPrefixChar (GET8 (End)))
     {
         /* include prefix '\\' or '^' */
 
@@ -261,7 +261,7 @@ PsGetNextNamestring (
     switch (GET8 (End))
     {
     case 0:
-        
+
         /* NullName */
 
         if (End == Start)
@@ -272,7 +272,7 @@ PsGetNextNamestring (
         break;
 
 
-    case AML_DualNamePrefix:
+    case AML_DUAL_NAME_PREFIX:
 
         /* two name segments */
 
@@ -280,7 +280,7 @@ PsGetNextNamestring (
         break;
 
 
-    case AML_MultiNamePrefixOp:
+    case AML_MULTI_NAME_PREFIX_OP:
 
         /* multiple name segments */
 
@@ -292,7 +292,7 @@ PsGetNextNamestring (
     default:
 
         /* single name segment */
-        /* assert (PsIsLead (GET8 (End))); */
+        /* assert (AcpiPsIsLead (GET8 (End))); */
 
         End += 4;
         break;
@@ -306,7 +306,7 @@ PsGetNextNamestring (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsGetNextNamepath
+ * FUNCTION:    AcpiPsGetNextNamepath
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              Arg                 - Where the namepath will be stored
@@ -318,7 +318,7 @@ PsGetNextNamestring (
  * RETURN:      None
  *
  * DESCRIPTION: Get next name (if method call, push appropriate # args).  Names
- *              are looked up in either the parsed or internal namespace to 
+ *              are looked up in either the parsed or internal namespace to
  *              determine if the name represents a control method.  If a method
  *              is found, the number of arguments to the method is returned.  This
  *              information is critical for parsing to continue correctly.
@@ -329,7 +329,7 @@ PsGetNextNamestring (
 #ifdef PARSER_ONLY
 
 void
-PsGetNextNamepath (
+AcpiPsGetNextNamepath (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_GENERIC_OP         *Arg,
     UINT32                  *ArgCount,
@@ -345,32 +345,32 @@ PsGetNextNamepath (
     FUNCTION_TRACE ("PsGetNextNamepath");
 
 
-    Path = PsGetNextNamestring (ParserState);
+    Path = AcpiPsGetNextNamestring (ParserState);
     if (!Path || !MethodCall)
     {
         /* Null name case, create a null namepath object */
 
-        PsInitOp (Arg, AML_NAMEPATH_OP);        
+        AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
         Arg->Value.Name = Path;
         return_VOID;
     }
 
 
-    if (Gbl_ParsedNamespaceRoot)
+    if (AcpiGbl_ParsedNamespaceRoot)
     {
         /*
-         * Lookup the name in the parsed namespace 
+         * Lookup the name in the parsed namespace
          */
 
         Op = NULL;
         if (MethodCall)
         {
-            Op = PsFind (PsGetParentScope (ParserState), Path, AML_MethodOp, 0);
+            Op = AcpiPsFind (AcpiPsGetParentScope (ParserState), Path, AML_METHOD_OP, 0);
         }
 
         if (Op)
         {
-            if (Op->Opcode == AML_MethodOp)
+            if (Op->Opcode == AML_METHOD_OP)
             {
                 /*
                  * The name refers to a control method, so this namepath is a method invocation.
@@ -378,20 +378,20 @@ PsGetNextNamepath (
                  * 2) Change the NAMEPATH object into a METHODCALL object.
                  */
 
-                Count = PsGetArg (Op, 0);
-                if (Count && Count->Opcode == AML_ByteOp)
+                Count = AcpiPsGetArg (Op, 0);
+                if (Count && Count->Opcode == AML_BYTE_OP)
                 {
-                    Name = PsAllocOp (AML_NAMEPATH_OP);
+                    Name = AcpiPsAllocOp (AML_NAMEPATH_OP);
                     if (Name)
                     {
                         /* Change arg into a METHOD CALL and attach the name to it */
 
-                        PsInitOp (Arg, AML_METHODCALL_OP);
+                        AcpiPsInitOp (Arg, AML_METHODCALL_OP);
 
                         Name->Value.Name        = Path;
                         Name->NameTableEntry    = Op;          /* Point METHODCALL/NAME to the METHOD NTE */
-                        PsAppendArg (Arg, Name);
-                    
+                        AcpiPsAppendArg (Arg, Name);
+
                         *ArgCount = Count->Value.Integer & METHOD_FLAGS_ARG_COUNT;
                     }
                 }
@@ -413,7 +413,7 @@ PsGetNextNamepath (
      * other than a control method.  Just initialize the Op with the pathname
      */
 
-    PsInitOp (Arg, AML_NAMEPATH_OP);        
+    AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
     Arg->Value.Name = Path;
 
 
@@ -425,7 +425,7 @@ PsGetNextNamepath (
 
 
 void
-PsGetNextNamepath (
+AcpiPsGetNextNamepath (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_GENERIC_OP         *Arg,
     UINT32                  *ArgCount,
@@ -443,12 +443,12 @@ PsGetNextNamepath (
     FUNCTION_TRACE ("PsGetNextNamepath");
 
 
-    Path = PsGetNextNamestring (ParserState);
+    Path = AcpiPsGetNextNamestring (ParserState);
     if (!Path || !MethodCall)
     {
         /* Null name case, create a null namepath object */
 
-        PsInitOp (Arg, AML_NAMEPATH_OP);        
+        AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
         Arg->Value.Name = Path;
         return_VOID;
     }
@@ -456,7 +456,7 @@ PsGetNextNamepath (
 
     if (MethodCall)
     {
-        /* 
+        /*
          * Lookup the name in the internal namespace
          */
         ScopeInfo.Scope.Entry = NULL;
@@ -466,35 +466,35 @@ PsGetNextNamepath (
             ScopeInfo.Scope.Entry = Nte->Scope;
         }
 
-        /* 
+        /*
          * Lookup object.  We don't want to add anything new to the namespace here, however.
          * So we use MODE_EXECUTE.  Allow searching of the parent tree, but don't open a new
          * scope -- we just want to lookup the object
          */
 
-        Status = NsLookup (&ScopeInfo, Path, ACPI_TYPE_Any, IMODE_Execute, /* MUST BE mode EXECUTE to perform upsearch */ 
+        Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY, IMODE_EXECUTE, /* MUST BE mode EXECUTE to perform upsearch */
                                 NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, &Nte);
         if (ACPI_SUCCESS (Status))
         {
-            if (Nte->Type == ACPI_TYPE_Method)
+            if (Nte->Type == ACPI_TYPE_METHOD)
             {
                 Method = Nte;
                 DEBUG_PRINT (TRACE_PARSE, ("PsGetNextNamepath: method - %p Path=%p\n", Method, Path));
 
-                Name = PsAllocOp (AML_NAMEPATH_OP);
+                Name = AcpiPsAllocOp (AML_NAMEPATH_OP);
                 if (Name)
                 {
                     /* Change arg into a METHOD CALL and attach the name to it */
 
-                    PsInitOp (Arg, AML_METHODCALL_OP);
+                    AcpiPsInitOp (Arg, AML_METHODCALL_OP);
 
                     Name->Value.Name        = Path;
                     Name->NameTableEntry    = Method;           /* Point METHODCALL/NAME to the METHOD NTE */
-                    PsAppendArg (Arg, Name);
+                    AcpiPsAppendArg (Arg, Name);
 
                     *ArgCount = ((ACPI_OBJECT_INTERNAL *) Method->Object)->Method.ParamCount;
                 }
-        
+
                 return_VOID;
             }
 
@@ -511,7 +511,7 @@ PsGetNextNamepath (
      * other than a control method.  Just initialize the Op with the pathname
      */
 
-    PsInitOp (Arg, AML_NAMEPATH_OP);        
+    AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
     Arg->Value.Name = Path;
 
 
@@ -522,7 +522,7 @@ PsGetNextNamepath (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsGetNextSimpleArg 
+ * FUNCTION:    AcpiPsGetNextSimpleArg
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              ArgType             - The argument type (AML_*_ARG)
@@ -535,7 +535,7 @@ PsGetNextNamepath (
  ******************************************************************************/
 
 void
-PsGetNextSimpleArg (
+AcpiPsGetNextSimpleArg (
     ACPI_PARSE_STATE        *ParserState,
     INT32                   ArgType,
     ACPI_GENERIC_OP         *Arg)
@@ -550,7 +550,7 @@ PsGetNextSimpleArg (
 
     case ARGP_BYTEDATA:
 
-        PsInitOp (Arg, AML_ByteOp);
+        AcpiPsInitOp (Arg, AML_BYTE_OP);
         Arg->Value.Integer = (UINT32) GET8 (ParserState->Aml);
         ParserState->Aml++;
         break;
@@ -558,7 +558,7 @@ PsGetNextSimpleArg (
 
     case ARGP_WORDDATA:
 
-        PsInitOp (Arg, AML_WordOp);
+        AcpiPsInitOp (Arg, AML_WORD_OP);
 
         /* Get 2 bytes from the AML stream */
 
@@ -569,7 +569,7 @@ PsGetNextSimpleArg (
 
     case ARGP_DWORDDATA:
 
-        PsInitOp (Arg, AML_DWordOp);
+        AcpiPsInitOp (Arg, AML_DWORD_OP);
 
         /* Get 4 bytes from the AML stream */
 
@@ -580,7 +580,7 @@ PsGetNextSimpleArg (
 
     case ARGP_CHARLIST:
 
-        PsInitOp (Arg, AML_StringOp);
+        AcpiPsInitOp (Arg, AML_STRING_OP);
         Arg->Value.String = (char*) ParserState->Aml;
 
         while (GET8 (ParserState->Aml) != '\0')
@@ -594,8 +594,8 @@ PsGetNextSimpleArg (
     case ARGP_NAME:
     case ARGP_NAMESTRING:
 
-        PsInitOp (Arg, AML_NAMEPATH_OP);
-        Arg->Value.Name = PsGetNextNamestring (ParserState);
+        AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
+        Arg->Value.Name = AcpiPsGetNextNamestring (ParserState);
         break;
     }
 
@@ -605,7 +605,7 @@ PsGetNextSimpleArg (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsGetNextField
+ * FUNCTION:    AcpiPsGetNextField
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *
@@ -616,7 +616,7 @@ PsGetNextSimpleArg (
  ******************************************************************************/
 
 ACPI_GENERIC_OP *
-PsGetNextField (
+AcpiPsGetNextField (
     ACPI_PARSE_STATE        *ParserState)
 {
     ACPI_PTRDIFF            AmlOffset = ParserState->Aml - ParserState->AmlStart;
@@ -656,7 +656,7 @@ PsGetNextField (
 
     /* Allocate a new field op */
 
-    Field = PsAllocOp (Opcode);
+    Field = AcpiPsAllocOp (Opcode);
     if (Field)
     {
         Field->AmlOffset = AmlOffset;
@@ -670,12 +670,12 @@ PsGetNextField (
             /* Get the 4-character name */
 
             STORE32TO32 (&Name, ParserState->Aml);
-            PsSetName (Field, Name);
+            AcpiPsSetName (Field, Name);
             ParserState->Aml += 4;
 
             /* Get the length which is encoded as a package length */
 
-            Field->Value.Size = PsGetNextPackageLength (ParserState);
+            Field->Value.Size = AcpiPsGetNextPackageLength (ParserState);
             break;
 
 
@@ -683,7 +683,7 @@ PsGetNextField (
 
             /* Get the length which is encoded as a package length */
 
-            Field->Value.Size = PsGetNextPackageLength (ParserState);
+            Field->Value.Size = AcpiPsGetNextPackageLength (ParserState);
             break;
 
 
@@ -691,7 +691,7 @@ PsGetNextField (
 
             /* Get the AccessType and AccessAtrib and merge them into the field Op */
 
-            Field->Value.Integer = ((GET8 (ParserState->Aml) << 8) | 
+            Field->Value.Integer = ((GET8 (ParserState->Aml) << 8) |
                                      GET8 (ParserState->Aml));
             ParserState->Aml += 2;
             break;
@@ -704,7 +704,7 @@ PsGetNextField (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsGetNextArg
+ * FUNCTION:    AcpiPsGetNextArg
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              ArgType             - The argument type (AML_*_ARG)
@@ -719,9 +719,9 @@ PsGetNextField (
  ******************************************************************************/
 
 ACPI_GENERIC_OP *
-PsGetNextArg (
-    ACPI_PARSE_STATE        *ParserState, 
-    INT32                   ArgType, 
+AcpiPsGetNextArg (
+    ACPI_PARSE_STATE        *ParserState,
+    INT32                   ArgType,
     UINT32                  *ArgCount)
 {
     ACPI_GENERIC_OP         *Arg = NULL;
@@ -745,10 +745,10 @@ PsGetNextArg (
 
         /* constants, strings, and namestrings are all the same size */
 
-        Arg = PsAllocOp (AML_ByteOp);
+        Arg = AcpiPsAllocOp (AML_BYTE_OP);
         if (Arg)
         {
-            PsGetNextSimpleArg (ParserState, ArgType, Arg);
+            AcpiPsGetNextSimpleArg (ParserState, ArgType, Arg);
         }
         break;
 
@@ -757,7 +757,7 @@ PsGetNextArg (
 
         /* package length, nothing returned */
 
-        ParserState->PkgEnd = PsGetNextPackageEnd (ParserState);
+        ParserState->PkgEnd = AcpiPsGetNextPackageEnd (ParserState);
         break;
 
 
@@ -769,7 +769,7 @@ PsGetNextArg (
 
             while (ParserState->Aml < ParserState->PkgEnd)
             {
-                Field = PsGetNextField (ParserState);
+                Field = AcpiPsGetNextField (ParserState);
                 if (!Field)
                 {
                     break;
@@ -801,13 +801,13 @@ PsGetNextArg (
         {
             /* non-empty list */
 
-            Arg = PsAllocOp (AML_BYTELIST_OP);
+            Arg = AcpiPsAllocOp (AML_BYTELIST_OP);
             if (Arg)
             {
                 /* fill in bytelist data */
 
                 Arg->Value.Size = (ParserState->PkgEnd - ParserState->Aml);
-                PsToBytelistOp (Arg)->Data = ParserState->Aml;
+                AcpiPsToBytelistOp (Arg)->Data = ParserState->Aml;
             }
 
             /* skip to End of byte data */
@@ -820,17 +820,17 @@ PsGetNextArg (
     case ARGP_TARGET:
     case ARGP_SUPERNAME:
         {
-            Subop = PsPeekOpcode (ParserState);
-            if (Subop == 0              || 
-                PsIsLeadingChar (Subop) || 
-                PsIsPrefixChar (Subop))
+            Subop = AcpiPsPeekOpcode (ParserState);
+            if (Subop == 0              ||
+                AcpiPsIsLeadingChar (Subop) ||
+                AcpiPsIsPrefixChar (Subop))
             {
                 /* NullName or NameString */
 
-                Arg = PsAllocOp (AML_NAMEPATH_OP);
+                Arg = AcpiPsAllocOp (AML_NAMEPATH_OP);
                 if (Arg)
                 {
-                    PsGetNextNamepath (ParserState, Arg, ArgCount, 0);
+                    AcpiPsGetNextNamepath (ParserState, Arg, ArgCount, 0);
                 }
             }
 
@@ -842,7 +842,7 @@ PsGetNextArg (
             }
         }
         break;
-            
+
 
     case ARGP_DATAOBJ:
     case ARGP_TERMARG:

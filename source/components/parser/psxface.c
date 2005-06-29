@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: psapi - Parser external interfaces
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,105 +116,30 @@
 
 #define __PSAPI_C__
 
-#include <acpi.h>
-#include <interpreter.h>
-#include <amlcode.h>
-#include <namespace.h>
+#include "acpi.h"
+#include "parser.h"
+#include "dispatch.h"
+#include "interp.h"
+#include "amlcode.h"
+#include "namesp.h"
 
-#include <parser.h>
-#include <psopcode.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psapi");
 
 
-char    *Gbl_ParserId = "Non-recursive AML Parser";
+char    *AcpiGbl_ParserId = "Non-recursive AML Parser";
 
-
-/*****************************************************************************
- *
- * FUNCTION:    PsxLoadTable
- *
- * PARAMETERS:  *PcodeAddr          - Address of pcode block
- *              PcodeLength         - Length of pcode block
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Mainline of the AML load/dump subsystem. Sets up the
- *              input engine, calls handler for outermost object type.
- *
- *
- ****************************************************************************/
-
-ACPI_STATUS
-PsxLoadTable (
-    UINT8                   *PcodeAddr, 
-    INT32                   PcodeLength)
-{
-    ACPI_STATUS             Status = AE_OK;
-    UINT8                   Continue = TRUE;
-
-
-    FUNCTION_TRACE ("PsxLoadTable");
-
-
-    if (!PcodeAddr)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxLoadTable: Null AML pointer\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
-    }
-
-    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: AML block at %p\n", PcodeAddr));
-
-
-    if (!PcodeLength)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxLoadTable: Zero-length AML block\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
-    }
-
-
-    /*
-     * Parse the table and load the namespace with all named objects found within.  
-     * Control methods are NOT parsed at this time.  In fact, the control methods 
-     * cannot be parsed until the entire namespace is loaded, because if a control 
-     * method makes a forward reference (call) to another control method, we can't 
-     * continue parsing because we don't know how many arguments to parse next!
-     */
-
-    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Begin Namespace Load ****\n"));
-BREAKPOINT3;
-
-    Status = PsParseTable (PcodeAddr, PcodeLength, PsxLoadBeginOp, PsxLoadEndOp, NULL);
-
-BREAKPOINT3;
-
-
-    /* TBD: Check if we should parse all methods here, or parse late */
-/*
-   if (Gbl_MethodParsing = PARSE_EARLY)
-   {
-*/
-
-    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Begin Method Parsing ****\n"));
-
-    Status = PsxParseAllMethods ();
-
-    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Completed Method Parsing ****\n"));
-BREAKPOINT3;
-
-    return_ACPI_STATUS (Status);
-}
 
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxExecute
+ * FUNCTION:    AcpiPsxExecute
  *
- * PARAMETERS:  MthDesc             - A method object containing both the AML
+ * PARAMETERS:  ObjDesc             - A method object containing both the AML
  *                                    address and length.
- *              **Params            - List of parameters to pass to method, 
- *                                    terminated by NULL. Params itself may be 
+ *              **Params            - List of parameters to pass to method,
+ *                                    terminated by NULL. Params itself may be
  *                                    NULL if no parameters are being passed.
  *
  * RETURN:      Status
@@ -224,100 +149,86 @@ BREAKPOINT3;
  ****************************************************************************/
 
 ACPI_STATUS
-PsxExecute (
-    ACPI_OBJECT_INTERNAL    *MthDesc,
-    ACPI_OBJECT_INTERNAL    **Params)
+AcpiPsxExecute (
+    NAME_TABLE_ENTRY        *MethodEntry,
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
     ACPI_STATUS             Status;
-    void                    *StackTopEntry;
-    UINT8                   *Pcode;
-    UINT32                  PcodeLength;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    UINT32                  i;
 
 
     FUNCTION_TRACE ("PsxExecute");
 
-    Pcode = MthDesc->Method.Pcode;
-    PcodeLength = MthDesc->Method.PcodeLength;
 
-    /* Push new frame on Method stack */
-    
-    Status = AmlMthStackPush (Params);
+    /* Validate the NTE and get the attached object */
+
+    if (!MethodEntry)
+    {
+        return_ACPI_STATUS (AE_NULL_ENTRY);
+    }
+
+    ObjDesc = AcpiNsGetAttachedObject (MethodEntry);
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_NULL_OBJECT);
+    }
+
+    /* Parse method if necessary, wait on concurrency semaphore */
+
+    Status = AcpiDsBeginMethodExecution (MethodEntry, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxExecute: Could not push Method Stack\n"));
+        return_ACPI_STATUS (Status);
+    }
 
-        /* TBD: do we need to pop the package stack here? */
+    if (Params)
+    {
+        /* The caller "owns" the parameters, so give them an extra reference */
 
-        goto Cleanup;
+        for (i = 0; Params[i]; i++)
+        {
+            AcpiCmAddReference (Params[i]);
+        }
+    }
+
+    /*
+     * Method is parsed and ready to execute
+     * The walk of the parse tree is where we actually execute the method
+     */
+
+    DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
+                    MethodEntry, ObjDesc));
+
+    Status = AcpiPsWalkParsedAml (ObjDesc->Method.ParserOp, ObjDesc->Method.ParserOp, ObjDesc, MethodEntry->Scope, Params,
+                                ReturnObjDesc, ObjDesc->Method.OwningId, AcpiDsExecBeginOp, AcpiDsExecEndOp);
+
+    if (Params)
+    {
+        /* Take away the extra reference that we gave the parameters above */
+
+        for (i = 0; Params[i]; i++)
+        {
+            AcpiCmUpdateObjectReference (Params[i], REF_DECREMENT);
+        }
     }
 
 
-    StackTopEntry = AmlObjStackGetValue (STACK_TOP);
-
-    /* This is where we really execute the method */
-
-    DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Execution **** code=%p len=%X\n",
-                    Pcode, PcodeLength));
-
-BREAKPOINT3;
-
-/* if method not parsed, must parse it first !! */
-/*
-    Status = PsParseAml (MthDesc->Method.ParserOp, Pcode, PcodeLength, 
-                            AmlBeginScopeForExecution, AmlEndScopeForExecution);
-*/
-
-    Status = PsWalkParsedAml (MthDesc->Method.ParserOp, PsxExecBeginOp, PsxExecEndOp);
-    /* 
+    /*
      * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
      * or with Status == AE_PENDING at end of AML block (end of Method code)
      */
 
-    if (AE_RETURN_VALUE == Status)
+    if (*ReturnObjDesc)
     {
-        DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
-        DUMP_STACK_ENTRY (AmlObjStackGetValue (STACK_TOP));
-        DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", AmlObjStackLevel()));
-    }
+        DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n", *ReturnObjDesc));
+        DUMP_STACK_ENTRY (*ReturnObjDesc);
 
-    else
-    {
-        /*
-         * TBD:
-         * Check if there is an extraneous object left on the stack.  This can happen from 
-         * the execution of an numeric operator.  It is not clear who should delete the result
-         * object if it is not to be returned.  Needs more investigation.
-         */
-/*
-        if (StackTopEntry != AmlObjStackGetValue (STACK_TOP))
-        {
-            DEBUG_PRINT (ACPI_INFO, ("PsxExecute: *** Deleting internal return value %p\n"));
-            AmlObjStackDeleteValue (STACK_TOP);
-        }
-*/
-
-        /* Map PENDING (normal exit, no return value) to OK */
-
-        if (AE_PENDING == Status)
-        {
-            Status = AE_OK;
-        }
+        Status = AE_CTRL_RETURN_VALUE;
     }
 
 
-    /* Stack cleanup */
-
-    AmlMthStackPop ();      /* pop our frame off method stack */
-
-
-    if (AmlObjStackLevel())
-    {
-        DEBUG_PRINT (ACPI_INFO, ("PsxExecute: Obj TOS at exit=%d\n",
-                        AmlObjStackLevel()));
-    }
-
-
-Cleanup:
     return_ACPI_STATUS (Status);
 }
 
