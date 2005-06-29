@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -180,7 +180,7 @@ AcpiPsxExecute (
         return_ACPI_STATUS (Status);
     }
 
-    if (Info && 
+    if (Info &&
        (Info->ParameterType == ACPI_PARAM_ARGS) &&
        (Info->Parameters))
     {
@@ -228,7 +228,7 @@ AcpiPsxExecute (
         goto Cleanup2;
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, Op, Info->Node, 
+    Status = AcpiDsInitAmlWalk (WalkState, Op, Info->Node,
                     ObjDesc->Method.AmlStart,
                     ObjDesc->Method.AmlLength, NULL, 1);
     if (ACPI_FAILURE (Status))
@@ -275,7 +275,7 @@ AcpiPsxExecute (
         goto Cleanup2;
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, Op, Info->Node, 
+    Status = AcpiDsInitAmlWalk (WalkState, Op, Info->Node,
                     ObjDesc->Method.AmlStart,
                     ObjDesc->Method.AmlLength, Info, 3);
     if (ACPI_FAILURE (Status))
