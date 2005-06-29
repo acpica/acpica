@@ -179,7 +179,6 @@ extern UINT32                   SizeOfAcpiObjects;
 #define DB_DUPLICATE_OUTPUT     0x03
 
 
-
 typedef struct CommandInfo
 {
     char                    *Name;          /* Command Name */
@@ -195,13 +194,12 @@ typedef struct ArgumentInfo
 } ARGUMENT_INFO;
 
 
-
 #define PARAM_LIST(pl)                  pl
 
 #define DBTEST_OUTPUT_LEVEL(lvl)        if (opt_verbose)
 
 #define VERBOSE_PRINT(fp)               DBTEST_OUTPUT_LEVEL(lvl) {\
-                                            AcpiOsdPrintf PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 
 #define EX_NO_SINGLE_STEP       1
 #define EX_SINGLE_STEP          2
@@ -311,7 +309,6 @@ AcpiDbDisplayOpcode (
     ACPI_GENERIC_OP         *Op);
 
 
-
 /*
  * dbdisply - debug display commands
  */
@@ -376,7 +373,6 @@ AcpiDbCreateExecutionThreads (
     char                    *MethodNameArg);
 
 
-
 /*
  * dbfileio - Debugger file I/O commands
  */
@@ -436,8 +432,6 @@ AcpiDbUserCommands (
     ACPI_GENERIC_OP         *Op);
 
 
-
-
 /*
  * dbstats - Generation and display of ACPI table statistics
  */
@@ -451,7 +445,6 @@ AcpiDbGenerateStatistics (
 ACPI_STATUS
 AcpiDbDisplayStatistics (
     char                    *TypeArg);
-
 
 
 /*
@@ -483,8 +476,6 @@ AcpiDbSecondPassParse (
 NAME_TABLE_ENTRY *
 AcpiDbLocalNsLookup (
     char                    *Name);
-
-
 
 
 #endif  /* __DEBUGGER_H__ */
