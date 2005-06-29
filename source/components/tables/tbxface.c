@@ -176,7 +176,7 @@ AcpiLoadFirmwareTables (void)
 
 
 ErrorExit:    
-    DEBUG_PRINT (ACPI_ERROR, ("Failure during ACPI Table initialization: %x\n", Status));
+    DEBUG_PRINT (ACPI_ERROR, ("Failure during ACPI Table Init: %s\n", CmFormatException (Status)));
     
     return_ACPI_STATUS (Status);
 }
