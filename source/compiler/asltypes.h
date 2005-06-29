@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -158,6 +158,8 @@ typedef struct asl_method_info
     UINT8                   NumArguments;
     UINT8                   LocalInitialized[ACPI_METHOD_NUM_LOCALS];
     UINT8                   ArgInitialized[ACPI_METHOD_NUM_ARGS];
+    UINT32                  ValidArgTypes[ACPI_METHOD_NUM_ARGS];
+    UINT32                  ValidReturnTypes;
     UINT32                  NumReturnNoValue;
     UINT32                  NumReturnWithValue;
     ACPI_PARSE_OBJECT       *Op;
@@ -390,7 +392,8 @@ typedef enum
     ASL_MSG_NON_ASCII,
     ASL_MSG_INVALID_TIME,
     ASL_MSG_DUPLICATE_CASE,
-    ASL_MSG_NO_CASES
+    ASL_MSG_NO_CASES,
+    ASL_MSG_INVALID_UUID
 
 } ASL_MESSAGE_IDS;
 
@@ -482,7 +485,9 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_NON_ASCII */                  "Invalid characters found in file",
 /*    ASL_MSG_INVALID_TIME */               "Time parameter too long (255 max)",
 /*    ASL_MSG_DUPLICATE_CASE */             "Case value already specified",
-/*    ASL_MSG_NO_CASES */                   "No Case() statements under Switch()"
+/*    ASL_MSG_NO_CASES */                   "No Case() statements under Switch()",
+/*    ASL_MSG_INVALID_UUID */               "UUID string must be of the form \"aabbccdd-eeff-gghh-iijj-kkllmmnnoopp\""
+
 
 
 };
