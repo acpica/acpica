@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -354,7 +354,7 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     "FIND_CONTEXT",
     "NS_SEARCH_DATA",
     "OPERATING_MODE",
-    "PCI_ROUTING_TABLE",
+    "ACPI_PCI_ROUTING_TABLE",
     "PREDEFINED_NAMES",
     "UINT64_OVERLAY",
     "UINT64_STRUCT",
