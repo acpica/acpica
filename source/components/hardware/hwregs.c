@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.161 $
+ *              $Revision: 1.162 $
  *
  ******************************************************************************/
 
@@ -853,7 +853,7 @@ AcpiHwLowLevelRead (
     *Value = 0;
 
     /*
-     * Two address spaces supported: Memory or IO. 
+     * Two address spaces supported: Memory or IO.
      * PCI_Config is not supported here because the GAS struct is insufficient
      */
     switch (Reg->AddressSpaceId)
@@ -934,7 +934,7 @@ AcpiHwLowLevelWrite (
     }
 
     /*
-     * Two address spaces supported: Memory or IO. 
+     * Two address spaces supported: Memory or IO.
      * PCI_Config is not supported here because the GAS struct is insufficient
      */
     switch (Reg->AddressSpaceId)
