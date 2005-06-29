@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -135,7 +135,7 @@
  *
  * FUNCTION:    AcpiExGetBufferFieldValue
  *
- * PARAMETERS:  *ObjDesc          - Pointer to a BufferField
+ * PARAMETERS:  *ObjDesc            - Pointer to a BufferField
  *              *ResultDesc         - Pointer to an empty descriptor which will
  *                                    become an Integer with the field's value
  *
