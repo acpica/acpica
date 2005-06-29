@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  ******************************************************************************/
 
@@ -223,6 +223,7 @@ AcpiNsDeleteNode (
 }
 
 
+#ifdef ACPI_ALPHABETIC_NAMESPACE
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsCompareNames 
@@ -273,6 +274,7 @@ AcpiNsCompareNames (
 
     return (*(int *) ReversedName1 - *(int *) ReversedName2);
 }
+#endif
 
 
 /*******************************************************************************
@@ -305,7 +307,10 @@ AcpiNsInstallNode (
 {
     UINT16                  OwnerId = TABLE_ID_DSDT;
     ACPI_NAMESPACE_NODE     *ChildNode;
+#ifdef ACPI_ALPHABETIC_NAMESPACE
+
     ACPI_NAMESPACE_NODE     *PreviousChildNode;
+#endif
 
 
     ACPI_FUNCTION_TRACE ("NsInstallNode");
@@ -332,6 +337,7 @@ AcpiNsInstallNode (
     }
     else
     {
+#ifdef ACPI_ALPHABETIC_NAMESPACE
         /*
          * Walk the list whilst searching for the the correct
          * alphabetic placement.
@@ -385,6 +391,20 @@ AcpiNsInstallNode (
                 ParentNode->Child = Node;
             }
         }
+#else
+        while (!(ChildNode->Flags & ANOBJ_END_OF_PEER_LIST))
+        {
+            ChildNode = ChildNode->Peer;
+        }
+
+        ChildNode->Peer = Node;
+
+        /* Clear end-of-list flag */
+
+        ChildNode->Flags &= ~ANOBJ_END_OF_PEER_LIST;
+        Node->Flags     |= ANOBJ_END_OF_PEER_LIST;
+        Node->Peer = ParentNode;
+#endif
     }
 
     /* Init the new entry */
