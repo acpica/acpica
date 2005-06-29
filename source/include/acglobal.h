@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.155 $
+ *       $Revision: 1.156 $
  *
  *****************************************************************************/
 
@@ -167,7 +167,7 @@ extern      UINT32                      AcpiGbl_NestingLevel;
  * interpreter strictly follows the ACPI specification.  Setting to TRUE
  * allows the interpreter to forgive certain bad AML constructs.
  */
-ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_EnableInterpeterSlack, FALSE);
+ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_EnableInterpreterSlack, FALSE);
 
 /*
  * Automatically serialize ALL control methods? Default is FALSE, meaning
