@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.17 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -157,7 +157,7 @@ AcpiEvNotifyDispatch (
 
 
     DEBUG_PRINT (ACPI_INFO,
-        ("Dispatching Notify(%d) on device %p\n", NotifyValue, Device));
+        ("Dispatching Notify(%X) on device %p\n", NotifyValue, Device));
 
     switch (NotifyValue)
     {
@@ -268,7 +268,7 @@ AcpiEvNotifyDispatch (
  *
  **************************************************************************/
 
-void
+static void
 AcpiEvGlobalLockThread (
     void                    *Context)
 {
@@ -297,7 +297,7 @@ AcpiEvGlobalLockThread (
  *
  **************************************************************************/
 
-UINT32
+static UINT32
 AcpiEvGlobalLockHandler (
     void                    *Context)
 {
@@ -348,8 +348,22 @@ AcpiEvInitGlobalLockHandler (void)
     FUNCTION_TRACE ("EvInitGlobalLockHandler");
 
 
+    AcpiGbl_GlobalLockPresent = TRUE;
     Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL,
                                             AcpiEvGlobalLockHandler, NULL);
+
+    /*
+     * If the global lock does not exist on this platform, the attempt
+     * to enable GBL_STS will fail (the GBL_EN bit will not stick)
+     * Map to AE_OK, but mark global lock as not present.
+     * Any attempt to actually use the global lock will be flagged
+     * with an error.
+     */
+    if (Status == AE_NO_HARDWARE_RESPONSE)
+    {
+        AcpiGbl_GlobalLockPresent = FALSE;
+        Status = AE_OK;
+    }
 
     return_ACPI_STATUS (Status);
 }
@@ -375,6 +389,12 @@ AcpiEvAcquireGlobalLock(void)
 
     FUNCTION_TRACE ("EvAcquireGlobalLock");
 
+    /* Make sure that we actually have a global lock */
+
+    if (!AcpiGbl_GlobalLockPresent)
+    {
+        return_ACPI_STATUS (AE_NO_GLOBAL_LOCK);
+    }
 
     /* One more thread wants the global lock */
 
@@ -404,7 +424,7 @@ AcpiEvAcquireGlobalLock(void)
     {
        /* We got the lock */
 
-        DEBUG_PRINT (ACPI_INFO, ("Acquired the HW Global Lock\n"));
+        DEBUG_PRINT (ACPI_INFO, ("Acquired the Global Lock\n"));
 
         AcpiGbl_GlobalLockAcquired = TRUE;
 
@@ -450,7 +470,7 @@ AcpiEvReleaseGlobalLock (void)
 
     if (!AcpiGbl_GlobalLockThreadCount)
     {
-        REPORT_WARNING(("Releasing a non-acquired Global Lock\n"));
+        REPORT_WARNING(("Global Lock has not be acquired, cannot release\n"));
         return_VOID;
     }
 
@@ -477,8 +497,8 @@ AcpiEvReleaseGlobalLock (void)
          */
         if (Pending)
         {
-            AcpiHwRegisterWrite (ACPI_MTX_LOCK,
-                                    PM1_CONTROL | GBL_RLS, 1);
+            AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK,
+                                    GBL_RLS, 1);
         }
     }
 
