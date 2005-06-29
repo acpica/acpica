@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.17 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -189,7 +189,7 @@ RsCreateBitField (
 
     Node->ExternalName      = Name;
     Node->Value.Integer32   = (ByteOffset * 8) + BitOffset;
-    Node->Flags             |= NODE_IS_RESOURCE_FIELD;
+    Node->Flags             |= (NODE_IS_RESOURCE_FIELD | NODE_IS_BIT_OFFSET);
 }
 
 
@@ -551,7 +551,7 @@ RsDoResourceTemplate (
     Rnode = RsAllocateResourceNode (sizeof (ASL_END_TAG_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Et.DescriptorType = RESOURCE_DESC_END_TAG | 
+    Descriptor->Et.DescriptorType = RESOURCE_DESC_END_TAG |
                                         ASL_RDESC_END_TAG_SIZE;
     Descriptor->Et.Checksum = 0;
 
