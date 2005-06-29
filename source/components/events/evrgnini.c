@@ -287,7 +287,7 @@ AcpiEvPciConfigRegionSetup (
 
     /* Create a new context */
 
-    PciContext = AcpiCmAllocate (sizeof(PCI_HANDLER_CONTEXT));
+    PciContext = AcpiCmCallocate (sizeof(PCI_HANDLER_CONTEXT));
     if (!PciContext)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
