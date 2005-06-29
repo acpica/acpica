@@ -156,14 +156,14 @@ AcpiDbBlockType (
     switch (Op->Opcode)
     {
     case AML_METHOD_OP:
-        return BLOCK_BRACE;
+        return (BLOCK_BRACE);
         break;
 
     default:
         break;
     }
 
-    return BLOCK_PAREN;
+    return (BLOCK_PAREN);
 
 }
 
@@ -216,7 +216,7 @@ AcpiPsDisplayObjectPathname (
     }
 
     AcpiOsPrintf (")");
-    return AE_OK;
+    return (AE_OK);
 }
 
 #else
@@ -243,7 +243,7 @@ AcpiPsDisplayObjectPathname (
          * is not in the namespace.  This can happen during single
          * stepping where a dynamic named object is *about* to be created.
          */
-        return AE_OK;
+        return (AE_OK);
     }
 
     /* Convert NTE/handle to a full pathname */
@@ -252,11 +252,11 @@ AcpiPsDisplayObjectPathname (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("****Could not get pathname****)");
-        return Status;
+        return (Status);
     }
 
     AcpiOsPrintf ("%s)", Buffer);
-    return AE_OK;
+    return (AE_OK);
 }
 
 #endif
