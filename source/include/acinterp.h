@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.129 $
+ *       $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -295,21 +295,6 @@ AcpiExDoMathOp (
     ACPI_INTEGER            Operand1);
 
 ACPI_STATUS
-AcpiExLoadOp (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     *Target,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiExLoadTableOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-ACPI_STATUS
-AcpiExUnloadTable (
-    ACPI_OPERAND_OBJECT     *DdbHandle);
-
-ACPI_STATUS
 AcpiExCreateMutex (
     ACPI_WALK_STATE         *WalkState);
 
@@ -345,6 +330,32 @@ AcpiExCreateMethod (
     UINT8                   *AmlStart,
     UINT32                  AmlLength,
     ACPI_WALK_STATE         *WalkState);
+
+
+/*
+ * exconfig - dynamic table load/unload
+ */
+
+ACPI_STATUS
+AcpiExAddTable (
+    ACPI_TABLE_HEADER       *Table,
+    ACPI_NAMESPACE_NODE     *ParentNode,
+    ACPI_OPERAND_OBJECT     **DdbHandle);
+
+ACPI_STATUS
+AcpiExLoadOp (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *Target,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiExLoadTableOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OPERAND_OBJECT     **ReturnDesc);
+
+ACPI_STATUS
+AcpiExUnloadTable (
+    ACPI_OPERAND_OBJECT     *DdbHandle);
 
 
 /*
