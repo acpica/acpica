@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.28 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "amlcode.h"
 #include "acparser.h"
 
-#define _COMPONENT          COMPILER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslcodegen")
 
 
@@ -146,22 +146,17 @@ CgGenerateAmlOutput (void)
 
     DbgPrint (ASL_DEBUG_OUTPUT, "\nWriting AML\n\n");
 
-//    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
-//    {
-        fseek (Gbl_SourceOutputFile, 0, SEEK_SET);
-//    }
-
+    FlSeekFile (ASL_FILE_SOURCE_OUTPUT, 0);
     Gbl_SourceLine = 0;
     LsPushNode (Gbl_InputFilename);
     Gbl_NextError = Gbl_ErrorLog;
 
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
 
-
     if (Gbl_ListingFlag)
     {
         LsFinishSourceListing ();
-        fprintf (Gbl_ListingOutputFile, "\n\nTable header with final checksum:\n\n");
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\nTable header with final checksum:\n\n");
     }
 
     CgCloseTable ();
@@ -250,9 +245,10 @@ CgLocalWriteAmlData (
     UINT32                  Length)
 {
 
+
     /* Write the raw data to the AML file */
 
-    fwrite ((char *) Buffer, Length, 1, Gbl_AmlOutputFile);
+    FlWriteFile (ASL_FILE_AML_OUTPUT, Buffer, Length);
 
     /* Write the hex bytes to the listing file (if requested) */
 
@@ -308,14 +304,14 @@ CgWriteAmlOpcode (
         return;
         break;
 
-    case AML_RESERVEDFIELD_OP:
+    case AML_INT_RESERVEDFIELD_OP:
 
         /* Special opcodes for within a field definition */
 
         Aml.Opcode = 0x00;
         break;
 
-    case AML_ACCESSFIELD_OP:
+    case AML_INT_ACCESSFIELD_OP:
 
         Aml.Opcode = 0x01;
         break;
@@ -373,8 +369,8 @@ CgWriteAmlOpcode (
              * The low-order nybble of the length is in the bottom 4 bits
              */
 
-            PkgLenFirstByte = ((Node->AmlPkgLenBytes - 1) << 6) |
-                                (PkgLen.LenBytes[0] & 0x0F);
+            PkgLenFirstByte = (UINT8) (((Node->AmlPkgLenBytes - 1) << 6) |
+                                        (PkgLen.LenBytes[0] & 0x0F));
 
             CgLocalWriteAmlData (&PkgLenFirstByte, 1);
 
@@ -504,19 +500,19 @@ CgCloseTable (void)
 
     /* Calculate the checksum over the entire file */
 
-    fseek (Gbl_AmlOutputFile, 0, SEEK_SET);
-
+    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
     Sum = 0;
-    while (fread (&FileByte, 1, 1, Gbl_AmlOutputFile))
+
+    while (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1) == AE_OK)
     {
-        Sum += FileByte;
+        Sum = (signed char) (Sum + FileByte);
     }
 
     /* Re-write the table header with the checksum */
 
-    TableHeader.Checksum = (0 - Sum);
+    TableHeader.Checksum = (UINT8) (0 - Sum);
 
-    fseek (Gbl_AmlOutputFile, 0, SEEK_SET);
+    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
     CgLocalWriteAmlData (&TableHeader, sizeof (ACPI_TABLE_HEADER));
 }
 

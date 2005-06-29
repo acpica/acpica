@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.31 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,7 @@ YYSTYPE AslCompilerlval;
  * -i: Scanner must be case-insensitive
  */
 
-#define _COMPONENT          COMPILER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslscan")
 void
 comment (void);
@@ -241,7 +241,7 @@ NamePathTail                [.]{NameSeg}
 "Concatenate"               { count (3); return (CONCATENATE); }
 "ConcatenateResTemplate"    { count (3); return (CONCATENATERESTEMPLATE); }
 "CondRefOf"                 { count (3); return (CONDREFOF); }
-"Copy"                      { count (3); return (COPY); }
+"CopyObject"                { count (3); return (COPYOBJECT); }
 "Decrement"                 { count (3); return (DECREMENT); }
 "DeRefOf"                   { count (3); return (DEREFOF); }
 "Divide"                    { count (3); return (DIVIDE); }
@@ -509,60 +509,6 @@ ASL_FILE_NODE               *InputStack = NULL;
 
 /*******************************************************************************
  *
- * FUNCTION:    copy
- *
- * PARAMETERS:  none
- *
- * RETURN:      none
- *
- * DESCRIPTION: copy the entire contents of yytext (a null-terminated string)
- *              to the combined source output file (if option is in effect).
- *
- ******************************************************************************/
-
-void
-xxxcopy (void)
-{
-    UINT32          KeywordLength;
-
-
-    KeywordLength = strlen (yytext);
-
-    if (Gbl_SourceOutputFile)
-    {
-//       fwrite (yytext, KeywordLength, 1, Gbl_SourceOutputFile);
-    }
-
-//    Gbl_InputByteCount += KeywordLength;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    copy_one
- *
- * PARAMETERS:  c           - Lone character to write
- *
- * RETURN:      none
- *
- * DESCRIPTION: copy the character to the combined source output file
- *              (if option is in effect).
- *
- ******************************************************************************/
-
-void
-xxcopy_one (int c)
-{
-
-    if (Gbl_SourceOutputFile)
-    {
-       fwrite (&c, 1, 1, Gbl_SourceOutputFile);
-    }
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AslPopInputFileStack
  *
  * PARAMETERS:  None
@@ -691,10 +637,10 @@ ResetCurrentLineBuffer (
     void)
 {
 
-    if (Gbl_SourceOutputFile)
+    if (Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle)
     {
-       fwrite (Gbl_CurrentLineBuffer, Gbl_LineBufPtr - Gbl_CurrentLineBuffer,
-                1, Gbl_SourceOutputFile);
+        FlWriteFile (ASL_FILE_SOURCE_OUTPUT, Gbl_CurrentLineBuffer, 
+            Gbl_LineBufPtr - Gbl_CurrentLineBuffer);
     }
 
     Gbl_InputByteCount++; /* Account for the CR/linefeed */
@@ -749,7 +695,7 @@ InsertLineBuffer (
 
         /* Insert the character into the line buffer */
 
-        *Gbl_LineBufPtr = SourceChar;
+        *Gbl_LineBufPtr = (UINT8) SourceChar;
         Gbl_LineBufPtr++;
 
         if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
@@ -873,7 +819,7 @@ loop:
 
     /* Eat chars until end-of-comment */
 
-    while ((c = input()) != '*' && c != EOF)
+    while ((c = (char) input()) != '*' && c != EOF)
     {
         DoOneChar (c);
         c1 = c;
@@ -895,7 +841,7 @@ loop:
 
     DoOneChar (c);
 
-    if ((c1 = input()) != '/' && c1 != EOF)
+    if ((c1 = (char) input()) != '/' && c1 != EOF)
     {
         unput(c1);
         goto loop;
@@ -925,7 +871,7 @@ comment2 (void)
     DoOneChar ('/');
     DoOneChar ('/');
 
-    while ((c = input()) != '\n' && c != EOF)
+    while ((c = (char) input()) != '\n' && c != EOF)
     {
         DoOneChar (c);
     }

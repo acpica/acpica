@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.49 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <errno.h>
 
 
 #include "acpi.h"
@@ -137,11 +138,11 @@
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2015"
-#define CompilerCreatorRevision     0x02002015  /* Acpi 2.0, Version# */
+#define CompilerVersion             "X2017"
+#define CompilerCreatorRevision     0x02002017  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
-#define CompilerCopyright           "Copyright (C) 2000 Intel Corporation"
+#define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
 #define CompilerCompliance          "ACPI 2.0"
 #define CompilerName                "iasl"
 #define CompilerCreatorId           "INTL"
@@ -195,6 +196,13 @@
 #define FILE_SUFFIX_NAMESPACE       "nsp"
 
 
+#ifdef WIN32
+
+/* warn : named type definition in parentheses */
+#pragma warning(disable:4115)
+
+#endif
+
 /*******************************************************************************
  *
  * Compiler prototypes
@@ -234,11 +242,11 @@ ResetCurrentLineBuffer (
 
 void
 AslCompilerSignon (
-    FILE                    *Where);
+    UINT32                  FileId);
 
 void
 AslCompilerFileHeader (
-    FILE                    *Where);
+    UINT32                  FileId);
 
 void
 AslDoSourceOutputFile (
@@ -306,12 +314,12 @@ AslCommonError (
 
 void
 AePrintException (
-    FILE                    *Where,
+    UINT32                  FileId,
     ASL_ERROR_MSG           *Enode);
 
 void
 AePrintErrorLog (
-    FILE                    *Where);
+    UINT32                  FileId);
 
 
 /* asllisting */
@@ -505,37 +513,37 @@ TrLinkPeerNodes (
 
 /* Analyze */
 
-void
+ACPI_STATUS
 AnSemanticAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnSemanticAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodTypingWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodTypingWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -545,6 +553,40 @@ AnMethodTypingWalkEnd (
 /*
  * aslfiles - File I/O support
  */
+
+FILE *
+FlOpenFile (
+    UINT32                  FileId,
+    char                    *Filename,
+    char                    *Mode);
+
+ACPI_STATUS
+FlReadFile (
+    UINT32                  FileId,
+    void                    *Buffer,
+    UINT32                  Length);
+
+ACPI_STATUS
+FlWriteFile (
+    UINT32                  FileId,
+    void                    *Buffer,
+    UINT32                  Length);
+
+ACPI_STATUS 
+FlSeekFile (
+    UINT32                  FileId,
+    UINT32                  Offset);
+
+ACPI_STATUS 
+FlCloseFile (
+    UINT32                  FileId);
+
+void
+FlPrintFile (
+    UINT32                  FileId,
+    char                    *Format,
+    ...);
+
 
 void
 FlOpenIncludeFile (
@@ -562,14 +604,6 @@ ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename);
 
-void
-FlCloseListingFile (void);
-
-void
-FlCloseSourceOutputFile (void);
-
-void
-FlCloseHexOutputFile (void);
 
 
 /* Load */
@@ -625,7 +659,7 @@ UtPrintFormattedName (
 
 void
 UtDisplaySummary (
-    FILE                    *Where);
+    UINT32                  FileId);
 
 UINT8
 UtHexCharToValue (
