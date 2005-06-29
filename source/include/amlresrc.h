@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource.h - ASL resource descriptors
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -160,7 +160,7 @@ typedef struct asl_irq_format_desc
 {
     UINT8                       DescriptorType;
     UINT16                      IrqMask;
-    UINT8                       Information;
+    UINT8                       Flags;
 
 } ASL_IRQ_FORMAT_DESC;
 
@@ -179,7 +179,7 @@ typedef struct asl_dma_format_desc
 typedef struct asl_start_dependent_desc
 {
     UINT8                       DescriptorType;
-    UINT8                       Priority;
+    UINT8                       Flags;
 
 } ASL_START_DEPENDENT_DESC;
 
@@ -392,6 +392,7 @@ typedef union asl_resource_desc
 } ASL_RESOURCE_DESC;
 
 
+#define NEXT_RESOURCE_DESC(a,b)     (ASL_RESOURCE_DESC *) (((char *) (a)) + sizeof(b))
 
 #define DEFAULT_RESOURCE_DESC_SIZE  (sizeof (ASL_RESOURCE_DESC) + sizeof (ASL_END_TAG_DESC))
 
