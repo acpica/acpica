@@ -187,7 +187,8 @@ DsInitOneObject (
     case ACPI_TYPE_Method:
 
         Info->MethodCount++;
-        OsdPrintf (".");
+
+        DEBUG_PRINT_RAW (ACPI_OK, ("."));
 
 
         /* Always parse methods to detect errors, we may delete the parse tree below */
@@ -206,7 +207,10 @@ DsInitOneObject (
         /* Keep the parse tree only if we are parsing all methods at init time (versus just-in-time) */
 
         if (Gbl_WhenToParseMethods != METHOD_PARSE_AT_INIT)
-        {
+        {                
+            
+            NsDeleteNamespaceSubtree (ObjHandle);
+
             ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object; 
             PsDeleteParseTree (ObjDesc->Method.ParserOp);
             ObjDesc->Method.ParserOp = NULL;
@@ -251,9 +255,9 @@ DsInitializeObjects (
     FUNCTION_TRACE ("DsInitializeObjects");
 
 
-    OsdPrintf ("Parsing Methods:");
-
     DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: **** Starting initialization of namespace objects ****\n"));
+    DEBUG_PRINT_RAW (ACPI_OK, ("Parsing Methods:"));
+
 
     Info.MethodCount = 0;
     Info.OpRegionCount = 0;
@@ -269,7 +273,7 @@ DsInitializeObjects (
         DEBUG_PRINT (ACPI_ERROR, ("DsInitializeObjects: WalkNamespace failed! %x\n", Status));
     }
 
-    OsdPrintf ("\n%d Control Methods found and parsed\n", Info.MethodCount);
+    DEBUG_PRINT_RAW (ACPI_OK, ("\n%d Control Methods found and parsed\n", Info.MethodCount));
     DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
     DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
 
