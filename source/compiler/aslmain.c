@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.38 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -154,12 +154,13 @@ Usage (
     printf ("          -o <name>        Specify filename prefix for all output files\n");
     printf ("                             (including the .aml file)\n");
     printf ("          -s               Create combined (w/includes) ASL file (*.src)\n");
+    printf ("          -t [a|c]         Create hex table in ASM or C (*.hex)\n");
     printf ("\nCompiler Debug Options:\n");
-    printf ("          -v <trace level> Set debug level for trace output\n");
     printf ("          -d <p|t|b>       Create compiler debug/trace file (*.txt)\n");
     printf ("                             Types: Parse/Tree/Both\n");
     printf ("          -p               Parse only, no output generation\n");
-    printf ("          -t               Display compile times\n");
+    printf ("          -x               Display compile times\n");
+    printf ("          -v <trace level> Set debug level for trace output\n");
 }
 
 
@@ -231,10 +232,9 @@ main (
         return 0;
     }
 
-
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "acd:ilno:pstv:")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "acd:ilno:pstvx:")) != EOF) switch (j)
     {
     case 'a':
         /* Produce assembly code output file */
@@ -245,7 +245,7 @@ main (
     case 'c':
         /* Produce C hex output file */
 
-        Gbl_HexOutputFlag = TRUE;
+        Gbl_C_OutputFlag = TRUE;
         break;
 
     case 'd':
@@ -306,6 +306,12 @@ main (
         break;
 
     case 't':
+        /* Produce hex table output file */
+
+        Gbl_HexOutputFlag = TRUE;
+        break;
+
+    case 'x':
         /* Display compile time(s) */
 
         Gbl_CompileTimesFlag = TRUE;
@@ -319,7 +325,6 @@ main (
         BadCommandLine = TRUE;
         break;
     }
-
 
     /* Next parameter must be the input filename */
 
@@ -353,9 +358,7 @@ main (
         Gbl_OutputFilenamePrefix = Gbl_Files[ASL_FILE_INPUT].Filename;
     }
 
-
     Status = CmDoCompile ();
-
     return (Status);
 }
 

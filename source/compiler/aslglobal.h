@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -174,6 +174,7 @@ EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_UseDefaultAmlFilename, TRUE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_NsOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_DebugFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_AsmOutputFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_C_OutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HexOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
