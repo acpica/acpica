@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.54 $
+ *       $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -185,6 +185,8 @@
 
 #ifdef _LINUX
 
+#define ACPI_OS_NAME                "Linux"
+
 #include <linux/config.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
@@ -208,6 +210,8 @@ strupr(char *str);
 
 #ifdef _AED_EFI
 
+#define ACPI_OS_NAME                "AED EFI"
+
 #include <efi.h>
 #include <efistdarg.h>
 #include <efilib.h>
@@ -216,6 +220,8 @@ strupr(char *str);
 
 #ifdef WIN32
 
+#define ACPI_OS_NAME                "Windows"
+
 /* MS-VC++ */
 
 #define strupr              _strupr
@@ -223,10 +229,53 @@ strupr(char *str);
 
 #else
 
+#ifdef __FreeBSD__
+
+#define ACPI_OS_NAME                "FreeBSD"
+
+#ifdef _KERNEL
+#include <sys/ctype.h>
+#include <sys/param.h>
+#include <sys/systm.h>
+#include <sys/libkern.h>
+#include <stdarg.h>
+
+#define asm		__asm
+#define __cli()		disable_intr()
+#define __sti()		enable_intr()
+
+#else
+
+/* Not building kernel code, so use libc */
+#define ACPI_USE_STANDARD_HEADERS
+#endif
+
+/* Always use FreeBSD code over our local versions */
+#define ACPI_USE_SYSTEM_CLIBRARY
+
+/* FreeBSD doesn't have strupr, fix that. */
+static __inline char *
+strupr(char *str)
+{
+    char *c = str;
+    while(*c) {
+	*c = toupper(*c);
+	c++;
+    }
+    return(str);
+}
+
+#else
+
 /* All other environments */
 
 #define ACPI_USE_STANDARD_HEADERS
 
+/* Name of host operating system (returned by the _OS_ namespace object) */
+
+#define ACPI_OS_NAME         "Intel ACPI/CA Core Subsystem"
+
+#endif
 #endif
 #endif
 #endif
