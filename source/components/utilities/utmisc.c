@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  ******************************************************************************/
 
@@ -128,6 +128,49 @@
 
 #define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("utmisc")
+
+
+#ifdef ACPI_DEBUG
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtDisplayInitPathname
+ *
+ * PARAMETERS:  ObjHandle           - Handle whose pathname will be displayed
+ *              Path                - Additional path string to be appended
+ *
+ * RETURN:      ACPI_STATUS
+ *
+ * DESCRIPTION: Display full pathnbame of an object, DEBUG ONLY
+ *
+ ******************************************************************************/
+
+void
+AcpiUtDisplayInitPathname (
+    ACPI_HANDLE             ObjHandle,
+    char                    *Path)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Length = 128;
+    char                    Buffer[128];
+
+
+    PROC_NAME ("UtDisplayInitPathname");
+
+
+    Status = AcpiNsHandleToPathname (ObjHandle, &Length, Buffer);
+    if (ACPI_SUCCESS (Status))
+    {
+        if (Path)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s.%s\n", Buffer, Path));
+        }
+        else
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", Buffer));
+        }
+    }
+}
+#endif
 
 
 /*******************************************************************************
@@ -970,6 +1013,74 @@ AcpiUtDeleteGenericStateCache (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiUtResolveReference
+ *
+ * PARAMETERS:  ACPI_PKG_CALLBACK
+ *
+ * RETURN:      Status          - the status of the call
+ *
+ * DESCRIPTION: Resolve a reference object to an actual value
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUtResolveReference (
+    UINT8                   ObjectType,
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    ACPI_GENERIC_STATE      *State,
+    void                    *Context)
+{
+    ACPI_PKG_INFO           *Info = (ACPI_PKG_INFO *) Context;
+
+
+    switch (ObjectType)
+    {
+    case ACPI_COPY_TYPE_SIMPLE:
+
+        /*
+         * Simple object - check for a reference
+         */
+        if (SourceObject->Common.Type == INTERNAL_TYPE_REFERENCE)
+        {
+            switch (SourceObject->Reference.Opcode)
+            {
+            case AML_ZERO_OP:
+
+                SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
+                SourceObject->Integer.Value = 0;
+                break;
+
+            case AML_ONE_OP:
+
+                SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
+                SourceObject->Integer.Value = 1;
+                break;
+
+            case AML_ONES_OP:
+
+                SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
+                SourceObject->Integer.Value = ACPI_INTEGER_MAX;
+                break;
+            }
+        }
+        break;
+
+
+    case ACPI_COPY_TYPE_PACKAGE:
+
+        /* Package object - nothing much to do here, let the walk handle it */
+
+        Info->NumPackages++;
+        State->Pkg.ThisTargetObj = NULL;
+        break;
+    }
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiUtResolvePackageReferences
  *
  * PARAMETERS:  ObjDesc         - The Package object on which to resolve refs
@@ -984,8 +1095,8 @@ ACPI_STATUS
 AcpiUtResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    UINT32                  Count;
-    ACPI_OPERAND_OBJECT     *SubObject;
+    ACPI_PKG_INFO           Info;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("UtResolvePackageReferences");
@@ -995,84 +1106,20 @@ AcpiUtResolvePackageReferences (
     {
         /* The object must be a package */
 
-        REPORT_ERROR (("Must resolve Package Refs on a Package\n"));
-        return_ACPI_STATUS(AE_ERROR);
+        REPORT_ERROR (("Expecting a Package object\n"));
+        return_ACPI_STATUS (AE_TYPE);
     }
 
-    /*
-     * TBD: what about nested packages? */
+    Info.Length      = 0;
+    Info.ObjectSpace = 0;
+    Info.NumPackages = 1;
 
-    for (Count = 0; Count < ObjDesc->Package.Count; Count++)
-    {
-        SubObject = ObjDesc->Package.Elements[Count];
+    Status = AcpiUtWalkPackageTree (ObjDesc, NULL,
+                            AcpiUtResolveReference, &Info);
 
-        if (SubObject->Common.Type == INTERNAL_TYPE_REFERENCE)
-        {
-            if (SubObject->Reference.Opcode == AML_ZERO_OP)
-            {
-                SubObject->Common.Type  = ACPI_TYPE_INTEGER;
-                SubObject->Integer.Value = 0;
-            }
-
-            else if (SubObject->Reference.Opcode == AML_ONE_OP)
-            {
-                SubObject->Common.Type  = ACPI_TYPE_INTEGER;
-                SubObject->Integer.Value = 1;
-            }
-
-            else if (SubObject->Reference.Opcode == AML_ONES_OP)
-            {
-                SubObject->Common.Type  = ACPI_TYPE_INTEGER;
-                SubObject->Integer.Value = ACPI_INTEGER_MAX;
-            }
-        }
-    }
-
-    return_ACPI_STATUS(AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
-#ifdef ACPI_DEBUG
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiUtDisplayInitPathname
- *
- * PARAMETERS:  ObjHandle           - Handle whose pathname will be displayed
- *              Path                - Additional path string to be appended
- *
- * RETURN:      ACPI_STATUS
- *
- * DESCRIPTION: Display full pathnbame of an object, DEBUG ONLY
- *
- ******************************************************************************/
-
-void
-AcpiUtDisplayInitPathname (
-    ACPI_HANDLE             ObjHandle,
-    char                    *Path)
-{
-    ACPI_STATUS             Status;
-    UINT32                  Length = 128;
-    char                    Buffer[128];
-
-
-    PROC_NAME ("UtDisplayInitPathname");
-
-
-    Status = AcpiNsHandleToPathname (ObjHandle, &Length, Buffer);
-    if (ACPI_SUCCESS (Status))
-    {
-        if (Path)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s.%s\n", Buffer, Path));
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", Buffer));
-        }
-    }
-}
-#endif
 
 /*******************************************************************************
  *
