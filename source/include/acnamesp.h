@@ -184,7 +184,7 @@ AcpiUnloadNameSpace (
     void);
 
 void
-AcpiCleanup (
+AcpiLocalCleanup (
     void);
 
 NsType
@@ -383,10 +383,6 @@ AcpiSetFirmwareWakingVector (
 INT32
 AcpiGetFirmwareWakingVector (
     UINT32              *PhysicalAddress);
-
-void
-AcpiCleanup (
-    void);
 
 /* functions private to the library */
 
