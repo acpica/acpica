@@ -2,7 +2,7 @@
 /******************************************************************************
  * 
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -233,10 +233,14 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "INT16",            "s16",
     "INT8",             "s8", 
 
-    /* Put back anything we broke (such as anything with _INT32_ in it) */
+    /* Put back anything we broke (such as anything with _INTxx_ in it) */
 
     "_s32_",            "_INT32_",
     "_u32_",            "_UINT32_",
+    "_s16_",            "_INT16_",
+    "_u16_",            "_UINT16_",
+    "_s8_",             "_INT8_",
+    "_u8_",             "_UINT8_",
     NULL,               NULL
 };
 
