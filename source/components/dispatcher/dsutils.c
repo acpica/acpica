@@ -200,14 +200,24 @@ PsxDeleteResultIfNotUsed (
     }
 
 
+    /* Never delete the return value associated with a return opcode */
+
+    if (Op->Opcode == AML_ReturnOp)
+    {
+        DEBUG_PRINT (TRACE_PARSE, ("PsxDeleteResultIfNotUsed: No delete, [RETURN] opcode=%X Op=%X\n",
+                        Op->Opcode, Op));
+        return_VOID;
+    }
+
+
     /*
      * Decide what to do with the result based on the parent.  If the parent opcode
      * will not use the result, delete the object.  Otherwise leave it as is, it will
      * be deleted when it is used as an operand later.
      */
+
     switch (ParentInfo->Type)
     {
-
     /*
      * In these cases, the parent will never use the return object, so delete it 
      * here and now.
