@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.71 $
+ *       $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -149,9 +149,7 @@
  */
 
 
-
-
-#define ACPI_OBJECT_COMMON_HEADER           /* Two 32-bit fields, one pointer, 8-bit flag */\
+#define ACPI_OBJECT_COMMON_HEADER           /* 32-bits plus 8-bit flag */\
     UINT8                       DataType;           /* To differentiate various internal objs */\
     UINT8                       Type;               /* ACPI_OBJECT_TYPE */\
     UINT16                      ReferenceCount;     /* For object deletion management */\
@@ -167,7 +165,7 @@
 /*
  * Common bitfield for the field objects
  */
-#define ACPI_COMMON_FIELD_INFO              /* Three 32-bit values */\
+#define ACPI_COMMON_FIELD_INFO              /* Three 32-bit values plus 8*/\
     UINT8                       Granularity;\
     UINT16                      Length; \
     UINT32                      Offset;             /* Byte offset within containing object */\
@@ -204,21 +202,19 @@ typedef struct /* NUMBER - has value */
 {
     ACPI_OBJECT_COMMON_HEADER
 
-    UINT32                      Value;
+    ACPI_INTEGER                Value;
 
 } ACPI_OBJECT_NUMBER;
-
 
 
 typedef struct /* STRING - has length and pointer */
 {
     ACPI_OBJECT_COMMON_HEADER
 
-    UINT32                      Length; 
+    UINT32                      Length;
     NATIVE_CHAR                 *Pointer;       /* String value in AML stream or in allocated space */
 
 } ACPI_OBJECT_STRING;
-
 
 
 typedef struct /* BUFFER - has length, sequence, and pointer */
@@ -233,7 +229,6 @@ typedef struct /* BUFFER - has length, sequence, and pointer */
 } ACPI_OBJECT_BUFFER;
 
 
-
 typedef struct /* PACKAGE - has count, elements, next element */
 {
     ACPI_OBJECT_COMMON_HEADER
@@ -246,18 +241,17 @@ typedef struct /* PACKAGE - has count, elements, next element */
 } ACPI_OBJECT_PACKAGE;
 
 
-
 typedef struct /* FIELD UNIT */
 {
     ACPI_OBJECT_COMMON_HEADER
 
     ACPI_COMMON_FIELD_INFO
-    UINT32                      Sequence;           /* Container's sequence number */
 
+    union acpi_operand_obj      *Extra;             /* Pointer to executable AML (in field definition) */
+    ACPI_NAMESPACE_NODE         *Node;              /* containing object */
     union acpi_operand_obj      *Container;         /* Containing object (Buffer) */
 
 } ACPI_OBJECT_FIELD_UNIT;
-
 
 
 typedef struct /* DEVICE - has handle and notification handler/context */
@@ -271,7 +265,6 @@ typedef struct /* DEVICE - has handle and notification handler/context */
 } ACPI_OBJECT_DEVICE;
 
 
-
 typedef struct /* EVENT */
 {
     ACPI_OBJECT_COMMON_HEADER
@@ -279,7 +272,6 @@ typedef struct /* EVENT */
     void                        *Semaphore;
 
 } ACPI_OBJECT_EVENT;
-
 
 
 #define INFINITE_CONCURRENCY        0xFF
@@ -302,7 +294,6 @@ typedef struct /* METHOD */
 } ACPI_OBJECT_METHOD;
 
 
-
 typedef struct /* MUTEX */
 {
     ACPI_OBJECT_COMMON_HEADER
@@ -313,29 +304,20 @@ typedef struct /* MUTEX */
 } ACPI_OBJECT_MUTEX;
 
 
-
-
 typedef struct /* REGION */
 {
     ACPI_OBJECT_COMMON_HEADER
 
     UINT8                       SpaceId;
-    UINT32                      Length; 
-    UINT32                      Address;
-    void                        *RegionContext;     /* Region Specific data (Handler->Context
-                                                        optional things like PCI _ADR) */
-
-    /* TBD: [Restructure] This field can go away when Pass3 is implemented */
-    union acpi_operand_obj      *Method;            /* Associated control method */
-
+    UINT32                      Length;
+    ACPI_INTEGER                Address;
+    union acpi_operand_obj      *Extra;             /* Pointer to executable AML (in region definition) */
 
     union acpi_operand_obj      *AddrHandler;       /* Handler for system notifies */
-    ACPI_NAMESPACE_NODE         *REGMethod;         /* _REG method for this region (if any) */
     ACPI_NAMESPACE_NODE         *Node;              /* containing object */
     union acpi_operand_obj      *Next;
 
 } ACPI_OBJECT_REGION;
-
 
 
 typedef struct /* POWER RESOURCE - has Handle and notification handler/context*/
@@ -351,13 +333,12 @@ typedef struct /* POWER RESOURCE - has Handle and notification handler/context*/
 } ACPI_OBJECT_POWER_RESOURCE;
 
 
-
 typedef struct /* PROCESSOR - has Handle and notification handler/context*/
 {
     ACPI_OBJECT_COMMON_HEADER
 
     UINT32                      ProcId;
-    UINT32                      Length; 
+    UINT32                      Length;
     ACPI_IO_ADDRESS             Address;
 
     union acpi_operand_obj      *SysHandler;        /* Handler for system notifies */
@@ -365,7 +346,6 @@ typedef struct /* PROCESSOR - has Handle and notification handler/context*/
     union acpi_operand_obj      *AddrHandler;       /* Handler for Address space */
 
 } ACPI_OBJECT_PROCESSOR;
-
 
 
 typedef struct /* THERMAL ZONE - has Handle and Handler/Context */
@@ -377,7 +357,6 @@ typedef struct /* THERMAL ZONE - has Handle and Handler/Context */
     union acpi_operand_obj      *AddrHandler;       /* Handler for Address space */
 
 } ACPI_OBJECT_THERMAL_ZONE;
-
 
 
 /*
@@ -396,7 +375,6 @@ typedef struct /* FIELD */
 } ACPI_OBJECT_FIELD;
 
 
-
 typedef struct /* BANK FIELD */
 {
     ACPI_OBJECT_COMMON_HEADER
@@ -408,7 +386,6 @@ typedef struct /* BANK FIELD */
     union acpi_operand_obj      *Container;         /* Containing object */
 
 } ACPI_OBJECT_BANK_FIELD;
-
 
 
 typedef struct /* INDEX FIELD */
@@ -428,7 +405,6 @@ typedef struct /* INDEX FIELD */
 } ACPI_OBJECT_INDEX_FIELD;
 
 
-
 typedef struct /* NOTIFY HANDLER */
 {
     ACPI_OBJECT_COMMON_HEADER
@@ -438,8 +414,6 @@ typedef struct /* NOTIFY HANDLER */
     void                        *Context;
 
 } ACPI_OBJECT_NOTIFY_HANDLER;
-
-
 
 
 /* Flags for address handler */
@@ -464,7 +438,6 @@ typedef struct /* ADDRESS HANDLER */
 } ACPI_OBJECT_ADDR_HANDLER;
 
 
-
 /*
  * The Reference object type is used for these opcodes:
  * Arg[0-6], Local[0-7], IndexOp, NameOp, ZeroOp, OneOp, OnesOp, DebugOp
@@ -485,6 +458,25 @@ typedef struct /* Reference - Local object type */
 } ACPI_OBJECT_REFERENCE;
 
 
+/*
+ * Extra object is used as additional storage for types that
+ * have AML code in their declarations (TermArgs) that must be
+ * evaluated at run time.
+ *
+ * Currently: Region and FieldUnit types
+ */
+
+typedef struct /* EXTRA */
+{
+    ACPI_OBJECT_COMMON_HEADER
+    UINT8                       ByteFill1;
+    UINT16                      WordFill1;
+    UINT32                      PcodeLength;
+    UINT8                       *Pcode;
+    ACPI_NAMESPACE_NODE         *Method_REG;        /* _REG method for this region (if any) */
+    void                        *RegionContext;     /* Region-specific data */
+
+} ACPI_OBJECT_EXTRA;
 
 
 /******************************************************************************
@@ -516,6 +508,7 @@ typedef union acpi_operand_obj
     ACPI_OBJECT_REFERENCE       Reference;
     ACPI_OBJECT_NOTIFY_HANDLER  NotifyHandler;
     ACPI_OBJECT_ADDR_HANDLER    AddrHandler;
+    ACPI_OBJECT_EXTRA           Extra;
 
 } ACPI_OPERAND_OBJECT;
 
