@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.97 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -221,8 +221,9 @@ AcpiExSetupRegion (
              */
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Field [%4.4s] access width (%d bytes) too large for region [%4.4s] (length %X)\n",
-                ObjDesc->CommonField.Node->Name.Ascii, ObjDesc->CommonField.AccessByteWidth,
-                RgnDesc->Region.Node->Name.Ascii, RgnDesc->Region.Length));
+                AcpiUtGetNodeName (ObjDesc->CommonField.Node),
+                ObjDesc->CommonField.AccessByteWidth,
+                AcpiUtGetNodeName (RgnDesc->Region.Node), RgnDesc->Region.Length));
         }
 
         /*
@@ -231,9 +232,10 @@ AcpiExSetupRegion (
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Field [%4.4s] Base+Offset+Width %X+%X+%X is beyond end of region [%4.4s] (length %X)\n",
-            ObjDesc->CommonField.Node->Name.Ascii, ObjDesc->CommonField.BaseByteOffset,
+            AcpiUtGetNodeName (ObjDesc->CommonField.Node),
+            ObjDesc->CommonField.BaseByteOffset,
             FieldDatumByteOffset, ObjDesc->CommonField.AccessByteWidth,
-            RgnDesc->Region.Node->Name.Ascii, RgnDesc->Region.Length));
+            AcpiUtGetNodeName (RgnDesc->Region.Node), RgnDesc->Region.Length));
 
         return_ACPI_STATUS (AE_AML_REGION_LIMIT);
     }
@@ -313,7 +315,7 @@ AcpiExAccessRegion (
         ObjDesc->CommonField.AccessByteWidth,
         ObjDesc->CommonField.BaseByteOffset,
         FieldDatumByteOffset,
-        ACPI_HIDWORD (Address), ACPI_LODWORD (Address)));
+        ACPI_FORMAT_UINT64 (Address)));
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
@@ -586,13 +588,13 @@ AcpiExFieldDatumIo (
         if (ReadWrite == ACPI_READ)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Value Read %8.8X%8.8X, Width %d\n",
-                                ACPI_HIDWORD (*Value), ACPI_LODWORD (*Value),
+                                ACPI_FORMAT_UINT64 (*Value),
                                 ObjDesc->CommonField.AccessByteWidth));
         }
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Value Written %8.8X%8.8X, Width %d\n",
-                                ACPI_HIDWORD (*Value), ACPI_LODWORD (*Value),
+                                ACPI_FORMAT_UINT64 (*Value),
                                 ObjDesc->CommonField.AccessByteWidth));
         }
     }
@@ -689,11 +691,11 @@ AcpiExWriteWithUpdateRule (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "Mask %8.8X%8.8X, DatumOffset %X, Width %X, Value %8.8X%8.8X, MergedValue %8.8X%8.8X\n",
-        ACPI_HIDWORD (Mask), ACPI_LODWORD (Mask),
+        ACPI_FORMAT_UINT64 (Mask),
         FieldDatumByteOffset,
         ObjDesc->CommonField.AccessByteWidth,
-        ACPI_HIDWORD (FieldValue), ACPI_LODWORD (FieldValue),
-        ACPI_HIDWORD (MergedValue),ACPI_LODWORD (MergedValue)));
+        ACPI_FORMAT_UINT64 (FieldValue),
+        ACPI_FORMAT_UINT64 (MergedValue)));
 
     /* Write the merged value */
 
@@ -863,12 +865,13 @@ AcpiExExtractFromField (
 {
     ACPI_STATUS             Status;
     UINT32                  FieldDatumByteOffset;
-    UINT32                  DatumOffset;
-    ACPI_INTEGER            PreviousRawDatum;
+    UINT32                  BufferDatumOffset;
+    ACPI_INTEGER            PreviousRawDatum = 0;
     ACPI_INTEGER            ThisRawDatum = 0;
     ACPI_INTEGER            MergedDatum = 0;
     UINT32                  ByteFieldLength;
     UINT32                  DatumCount;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE ("ExExtractFromField");
@@ -892,83 +895,80 @@ AcpiExExtractFromField (
     DatumCount = ACPI_ROUND_UP_TO (ByteFieldLength,
                               ObjDesc->CommonField.AccessByteWidth);
 
+    /*
+     * If the field is not aligned on a datum boundary and does not
+     * fit within a single datum, we must read an extra datum.
+     *
+     * We could just split the aligned and non-aligned cases since the
+     * aligned case is so very simple, but this would require more code.
+     */
+    if ((ObjDesc->CommonField.EndFieldValidBits != 0)         &&
+        (!(ObjDesc->CommonField.Flags & AOPOBJ_SINGLE_DATUM)))
+    {
+        DatumCount++;
+    }
+
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "ByteLen %X, DatumLen %X, ByteGran %X\n",
         ByteFieldLength, DatumCount,ObjDesc->CommonField.AccessByteWidth));
 
     /*
      * Clear the caller's buffer (the whole buffer length as given)
-     * This is very important, especially in the cases where a byte is read,
-     * but the buffer is really a UINT32 (4 bytes).
+     * This is very important, especially in the cases where the buffer
+     * is longer than the size of the field.
      */
     ACPI_MEMSET (Buffer, 0, BufferLength);
 
-    /* Read the first raw datum to prime the loop */
-
     FieldDatumByteOffset = 0;
-    DatumOffset= 0;
+    BufferDatumOffset= 0;
 
-    Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset,
-                    &PreviousRawDatum, ACPI_READ);
-    if (ACPI_FAILURE (Status))
+    /* Read the entire field */
+
+    for (i = 0; i < DatumCount; i++)
     {
-        return_ACPI_STATUS (Status);
-    }
-
-
-    /* We might actually be done if the request fits in one datum */
-
-    if ((DatumCount == 1) &&
-        (ObjDesc->CommonField.Flags & AOPOBJ_SINGLE_DATUM))
-    {
-        /* 1) Shift the valid data bits down to start at bit 0 */
-
-        MergedDatum = (PreviousRawDatum >> ObjDesc->CommonField.StartFieldBitOffset);
-
-        /* 2) Mask off any upper unused bits (bits not part of the field) */
-
-        if (ObjDesc->CommonField.EndBufferValidBits)
+        Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset,
+                        &ThisRawDatum, ACPI_READ);
+        if (ACPI_FAILURE (Status))
         {
-            MergedDatum &= ACPI_MASK_BITS_ABOVE (ObjDesc->CommonField.EndBufferValidBits);
+            return_ACPI_STATUS (Status);
         }
 
-        /* Store the datum to the caller buffer */
+        /* We might actually be done if the request fits in one datum */
 
-        AcpiExSetBufferDatum (MergedDatum, Buffer, BufferLength,
-                ObjDesc->CommonField.AccessByteWidth, DatumOffset);
+        if ((DatumCount == 1) &&
+            (ObjDesc->CommonField.Flags & AOPOBJ_SINGLE_DATUM))
+        {
+            /* 1) Shift the valid data bits down to start at bit 0 */
 
-        return_ACPI_STATUS (AE_OK);
-    }
+            MergedDatum = (ThisRawDatum >> ObjDesc->CommonField.StartFieldBitOffset);
 
+            /* 2) Mask off any upper unused bits (bits not part of the field) */
 
-    /* We need to get more raw data to complete one or more field data */
+            if (ObjDesc->CommonField.EndBufferValidBits)
+            {
+                MergedDatum &= ACPI_MASK_BITS_ABOVE (ObjDesc->CommonField.EndBufferValidBits);
+            }
 
-    while (DatumOffset < DatumCount)
-    {
-        FieldDatumByteOffset += ObjDesc->CommonField.AccessByteWidth;
+            /* Store the datum to the caller buffer */
 
-        /*
-         * If the field is aligned on a byte boundary, we don't want
-         * to perform a final read, since this would potentially read
-         * past the end of the region.
-         *
-         * We could just split the aligned and non-aligned cases since the
-         * aligned case is so very simple, but this would require more code.
-         */
-        if ((ObjDesc->CommonField.StartFieldBitOffset != 0)  ||
-            ((ObjDesc->CommonField.StartFieldBitOffset == 0) &&
-            (DatumOffset < (DatumCount -1))))
+            AcpiExSetBufferDatum (MergedDatum, Buffer, BufferLength,
+                    ObjDesc->CommonField.AccessByteWidth, BufferDatumOffset);
+
+            return_ACPI_STATUS (AE_OK);
+        }
+
+        /* Special handling for the last datum to ignore extra bits */
+
+        if ((i >= (DatumCount -1))           &&
+            (ObjDesc->CommonField.EndFieldValidBits))
         {
             /*
-             * Get the next raw datum, it contains some or all bits
-             * of the current field datum
+             * This is the last iteration of the loop.  We need to clear
+             * any unused bits (bits that are not part of this field) before 
+             * we store the final merged datum into the caller buffer.
              */
-            Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset,
-                            &ThisRawDatum, ACPI_READ);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
+            ThisRawDatum &=
+                ACPI_MASK_BITS_ABOVE (ObjDesc->CommonField.EndFieldValidBits);
         }
 
         /*
@@ -978,51 +978,51 @@ AcpiExExtractFromField (
         {
             /* Field is not skewed and we can just copy the datum */
 
-            MergedDatum = PreviousRawDatum;
+            AcpiExSetBufferDatum (ThisRawDatum, Buffer, BufferLength,
+                    ObjDesc->CommonField.AccessByteWidth, BufferDatumOffset);
+            BufferDatumOffset++;
         }
         else
         {
-            /*
-             * Put together the appropriate bits of the two raw data to make a
-             * single complete field datum
-             *
-             * 1) Normalize the first datum down to bit 0
-             */
-            MergedDatum = (PreviousRawDatum >> ObjDesc->CommonField.StartFieldBitOffset);
+            /* Not aligned -- on the first iteration, just save the datum */
 
-            /* 2) Insert the second datum "above" the first datum */
-
-            MergedDatum |= (ThisRawDatum << ObjDesc->CommonField.DatumValidBits);
-
-            if ((DatumOffset >= (DatumCount -1)))
+            if (i != 0)
             {
                 /*
-                 * This is the last iteration of the loop.  We need to clear
-                 * any unused bits (bits that are not part of this field) that
-                 * came from the last raw datum before we store the final
-                 * merged datum into the caller buffer.
+                 * Put together the appropriate bits of the two raw data to make a
+                 * single complete field datum
+                 *
+                 * 1) Normalize the first datum down to bit 0
                  */
-                if (ObjDesc->CommonField.EndBufferValidBits)
-                {
-                    MergedDatum &=
-                        ACPI_MASK_BITS_ABOVE (ObjDesc->CommonField.EndBufferValidBits);
-                }
+                MergedDatum = (PreviousRawDatum >> ObjDesc->CommonField.StartFieldBitOffset);
+
+                /* 2) Insert the second datum "above" the first datum */
+
+                MergedDatum |= (ThisRawDatum << ObjDesc->CommonField.DatumValidBits);
+
+                AcpiExSetBufferDatum (MergedDatum, Buffer, BufferLength,
+                        ObjDesc->CommonField.AccessByteWidth, BufferDatumOffset);
+                BufferDatumOffset++;
             }
+
+            /*
+             * Save the raw datum that was just acquired since it may contain bits
+             * of the *next* field datum
+             */
+            PreviousRawDatum = ThisRawDatum;
         }
 
-        /*
-         * Store the merged field datum in the caller's buffer, according to
-         * the granularity of the field (size of each datum).
-         */
-        AcpiExSetBufferDatum (MergedDatum, Buffer, BufferLength,
-                ObjDesc->CommonField.AccessByteWidth, DatumOffset);
+        FieldDatumByteOffset += ObjDesc->CommonField.AccessByteWidth;
+    }
 
-        /*
-         * Save the raw datum that was just acquired since it may contain bits
-         * of the *next* field datum.  Update offsets
-         */
-        PreviousRawDatum = ThisRawDatum;
-        DatumOffset++;
+    /* For non-aligned case, there is one last datum to insert */
+
+    if (ObjDesc->CommonField.StartFieldBitOffset != 0)
+    {
+        MergedDatum = (ThisRawDatum >> ObjDesc->CommonField.StartFieldBitOffset);
+
+        AcpiExSetBufferDatum (MergedDatum, Buffer, BufferLength,
+                ObjDesc->CommonField.AccessByteWidth, BufferDatumOffset);
     }
 
     return_ACPI_STATUS (AE_OK);
