@@ -64,18 +64,19 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "bin"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Gz /MT /W3 /Gm /GX /ZI /Od /D "_TRACE" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_DEBUG" /D "DEBUG" /FAs /FR /FD /GZ /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /Gz /MT /W3 /GX /Z7 /Od /I "..\..\Subsystem\include" /I "\98ddk\inc\win98" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_DEBUG" /D "FLAT_MODEL" /FAcs /FR /FD /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
-# ADD RSC /l 0x409 /d "_DEBUG"
+# ADD RSC /l 0x409
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"bin/acpilib.lib"
+# ADD LIB32 /nologo /out:"bin\acpilib.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
+PreLink_Desc=deleting old library
+PreLink_Cmds=del ..\..\libraries\acpilib.lib
 PostBuild_Desc=Coping built library
 PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
 # End Special Build Tool
@@ -314,5 +315,9 @@ SOURCE=..\..\Subsystem\Include\output.h
 SOURCE=..\..\Subsystem\Include\pnp.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\Subsystem.plg
+# End Source File
 # End Target
 # End Project
