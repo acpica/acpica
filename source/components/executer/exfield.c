@@ -26,7 +26,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -193,7 +193,7 @@ AmlSetupField (
             (FieldBitWidth != 16) && 
             (FieldBitWidth != 32))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: internal error - bad width %d\n", FieldBitWidth));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - bad width %d\n", FieldBitWidth));
             Status = AE_AML_ERROR;
         }
     }
@@ -221,12 +221,23 @@ AmlSetupField (
                  * Point to Address opcode in AML stream
                  */
 
-                AmlSetCurrentLocation (&RgnDesc->Region.AddressLocation);
+                if (!RgnDesc->Region.AddressLocation)
+                {
+                    RgnDesc->Region.AddressLocation = 
+                        CmCreateInternalObject (TYPE_Method);
+
+                    if (!RgnDesc->Region.AddressLocation)
+                    {
+                        return_ACPI_STATUS (AE_NO_MEMORY);
+                    }
+                }
+
+                AmlSetCurrentLocation (RgnDesc->Region.AddressLocation);
 
                 /* Evaluate the Address opcode */
 
                 if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK && 
-                    (Status = AmlGetRvalue (AmlObjGetStackTopPtr ())) == AE_OK)
+                    (Status = AmlGetRvalue (AmlObjStackGetTopPtr ())) == AE_OK)
                 {
                     /* Pull the address off the stack */
 
@@ -250,7 +261,7 @@ AmlSetupField (
 
                     /* Free ObjValDesc, it was allocated by AmlDoOpcode */
 
-                    CmFree (ObjValDesc);
+                    CmDeleteInternalObject (ObjValDesc);
                 }
 
                 if (AE_OK == Status)
@@ -258,7 +269,7 @@ AmlSetupField (
                     /* Evaluate the Length opcode */
 
                     if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK &&
-                        (Status = AmlGetRvalue (AmlObjGetStackTopPtr ())) == AE_OK)
+                        (Status = AmlGetRvalue (AmlObjStackGetTopPtr ())) == AE_OK)
                     {
                         /* Pull the length off the stack */
 
@@ -287,7 +298,7 @@ AmlSetupField (
 
                         /* Free ObjValDesc, it was allocated by AmlDoOpcode */
 
-                        CmFree (ObjValDesc);
+                        CmDeleteInternalObject (ObjValDesc);
                     }
                 }
             }
@@ -327,8 +338,7 @@ AmlSetupField (
         }
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -359,14 +369,6 @@ AmlReadField (
     UINT32                  LocalValue = 0;
     INT32                   FieldByteWidth;
     
-    /* These aren't used right now...
-    void *                  PhysicalAddrPtr = NULL;
-    UINT8                   PciBus = 0;
-    UINT8                  DevFunc = 0;
-    UINT8                   PciReg = 0;
-    UINT8                   PciExcep = 0;
-	*/
-
 
     FUNCTION_TRACE ("AmlReadField");
 
@@ -383,8 +385,7 @@ AmlReadField (
     Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
     if (AE_OK != Status)
     {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
     /* SetupField validated RgnDesc and FieldBitWidth  */
@@ -437,8 +438,7 @@ AmlReadField (
 
     DEBUG_PRINT (TRACE_OPREGION, ("AmlReadField: Returned value=%08lx \n", *Value));
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -467,13 +467,6 @@ AmlWriteField (
     UINT32                  Address;
     INT32                   FieldByteWidth;
 
-	/* These aren't used right now...
-    void                    *PhysicalAddrPtr = NULL;
-    UINT8                   PciBus = 0;
-    UINT8                   DevFunc = 0;
-    UINT8                   PciReg = 0;
-    UINT8                   PciExcep = 0;
-	*/
 
     FUNCTION_TRACE ("AmlWriteField");
 
@@ -489,8 +482,7 @@ AmlWriteField (
     Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
     if (AE_OK != Status)
     {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
     Address = RgnDesc->Region.Address
@@ -526,8 +518,7 @@ AmlWriteField (
                         RgnDesc->Region.SpaceId));
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -565,7 +556,7 @@ AmlAccessNamedField (
 
     FUNCTION_TRACE ("AmlAccessNamedField");
 
-    ObjDesc = NsGetValue (NamedField);
+    ObjDesc = NsGetAttachedObject (NamedField);
     if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Internal error - null value pointer\n"));
@@ -764,8 +755,7 @@ AmlAccessNamedField (
 
     AmlReleaseGlobalLock (Locked);
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -795,15 +785,14 @@ AmlSetNamedFieldValue (
 
     if (!NamedField)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlSetNamedFieldValue: internal error - null handle\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSetNamedFieldValue: Internal error - null handle\n"));
     }
     else
     {
         Status = AmlAccessNamedField (ACPI_WRITE, NamedField, &Value);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -834,12 +823,12 @@ AmlGetNamedFieldValue (
 
     if (!NamedField)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: internal error - null handle\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: Internal error - null handle\n"));
     }
 
     else if (!Value)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: internal error - null pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: Internal error - null pointer\n"));
     }
 
     else
@@ -847,9 +836,6 @@ AmlGetNamedFieldValue (
         Status = AmlAccessNamedField (ACPI_READ, NamedField, Value);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
-
-
   
