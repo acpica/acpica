@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.30 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -152,7 +152,7 @@ AcpiDsLoad1BeginOp (
 {
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
     NATIVE_CHAR             *Path;
 
 
@@ -258,7 +258,7 @@ AcpiDsLoad1EndOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
 {
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -329,7 +329,7 @@ AcpiDsLoad2BeginOp (
 {
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
     NATIVE_CHAR             *BufferPtr;
     void                    *Original = NULL;
 
@@ -341,7 +341,7 @@ AcpiDsLoad2BeginOp (
     /* We only care about Namespace opcodes here */
 
     if (!AcpiPsIsNamespaceOp (Opcode) &&
-        Opcode != AML_NAMEPATH_OP)
+        Opcode != AML_INT_NAMEPATH_OP)
     {
         return (AE_OK);
     }
@@ -359,7 +359,7 @@ AcpiDsLoad2BeginOp (
         /*
          * Get the name we are going to enter or lookup in the namespace
          */
-        if (Opcode == AML_NAMEPATH_OP)
+        if (Opcode == AML_INT_NAMEPATH_OP)
         {
             /* For Namepath op, get the path string */
 
@@ -394,7 +394,7 @@ AcpiDsLoad2BeginOp (
         ("Load2BeginOp: State=%p Op=%p Type=%x\n", WalkState, Op, DataType));
 
 
-    if (Opcode == AML_DEF_FIELD_OP      ||
+    if (Opcode == AML_FIELD_OP          ||
         Opcode == AML_BANK_FIELD_OP     ||
         Opcode == AML_INDEX_FIELD_OP)
     {
@@ -402,7 +402,7 @@ AcpiDsLoad2BeginOp (
         Status = AE_OK;
     }
 
-    else if (Opcode == AML_NAMEPATH_OP)
+    else if (Opcode == AML_INT_NAMEPATH_OP)
     {
         /*
          * The NamePath is an object reference to an existing object.  Don't enter the
@@ -510,13 +510,13 @@ AcpiDsLoad2EndOp (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status = AE_OK;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8      DataType;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_PARSE_OBJECT       *Arg;
     ACPI_NAMESPACE_NODE     *NewNode;
 
 
-    DEBUG_PRINT (TRACE_DISPATCH, 
+    DEBUG_PRINT (TRACE_DISPATCH,
         ("Load2EndOp: Op=%p State=%p\n", Op, WalkState));
 
     if (!AcpiPsIsNamespaceObjectOp (Op->Opcode))
@@ -590,6 +590,7 @@ AcpiDsLoad2EndOp (
      * AML_CREATEBYTEFIELD
      * AML_CREATEWORDFIELD
      * AML_CREATEDWORDFIELD
+     * AML_CREATEQWORDFIELD
      * AML_METHODCALL
      */
 
@@ -602,10 +603,11 @@ AcpiDsLoad2EndOp (
     {
 
     case AML_CREATE_FIELD_OP:
-    case AML_BIT_FIELD_OP:
-    case AML_BYTE_FIELD_OP:
-    case AML_WORD_FIELD_OP:
-    case AML_DWORD_FIELD_OP:
+    case AML_CREATE_BIT_FIELD_OP:
+    case AML_CREATE_BYTE_FIELD_OP:
+    case AML_CREATE_WORD_FIELD_OP:
+    case AML_CREATE_DWORD_FIELD_OP:
+    case AML_CREATE_QWORD_FIELD_OP:
 
         /*
          * Create the field object, but the field buffer and index must
@@ -664,14 +666,14 @@ AcpiDsLoad2EndOp (
              * The Field definition is not fully parsed at this time.
              * (We must save the address of the AML for the buffer and index operands)
              */
-            Status = AcpiAmlExecCreateField (((ACPI_PARSE2_OBJECT *) Op)->Data,
-                                            ((ACPI_PARSE2_OBJECT *) Op)->Length,
-                                            NewNode, WalkState);
+            Status = AcpiAmlCreateBufferField (((ACPI_PARSE2_OBJECT *) Op)->Data,
+                                               ((ACPI_PARSE2_OBJECT *) Op)->Length,
+                                                NewNode, WalkState);
         }
         break;
 
 
-    case AML_METHODCALL_OP:
+    case AML_INT_METHODCALL_OP:
 
         DEBUG_PRINT (TRACE_DISPATCH,
             ("RESOLVING-MethodCall: State=%p Op=%p NamedObj=%p\n",
@@ -755,7 +757,7 @@ AcpiDsLoad2EndOp (
         break;
 
 
-    case AML_DEF_FIELD_OP:
+    case AML_FIELD_OP:
 
         DEBUG_PRINT (TRACE_DISPATCH,
             ("LOADING-Field: State=%p Op=%p NamedObj=%p\n",
@@ -858,7 +860,7 @@ AcpiDsLoad2EndOp (
 
         Status = AcpiAmlExecCreateRegion (((ACPI_PARSE2_OBJECT *) Op)->Data,
                                         ((ACPI_PARSE2_OBJECT *) Op)->Length,
-                                        (ACPI_ADDRESS_SPACE_TYPE) Arg->Value.Integer,
+                                        (ACPI_ADR_SPACE_TYPE) Arg->Value.Integer,
                                         WalkState);
 
         DEBUG_PRINT (TRACE_DISPATCH,
@@ -903,7 +905,7 @@ AcpiDsLoad2EndOp (
         break;
 
 
-    case AML_NAMEPATH_OP:
+    case AML_INT_NAMEPATH_OP:
 
         DEBUG_PRINT (TRACE_DISPATCH,
             ("LOADING-NamePath object: State=%p Op=%p NamedObj=%p\n",
