@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.54 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -361,7 +361,6 @@ AcpiEvFixedEventDispatch (
 
     default:
         return 0;
-        break;
     }
 
     AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, RegisterId, 1);
@@ -828,7 +827,6 @@ AcpiEvAsynchExecuteGpeMethod (
      * Enable the GPE.
      */
     AcpiHwEnableGpe (GpeNumber);
-
     return_VOID;
 }
 
@@ -875,7 +873,6 @@ AcpiEvGpeDispatch (
      * Disable the GPE.
      */
     AcpiHwDisableGpe (GpeNumber);
-
     GpeInfo = AcpiGbl_GpeInfo [GpeNumber];
 
     /*
@@ -888,12 +885,13 @@ AcpiEvGpeDispatch (
     {
         AcpiHwClearGpe (GpeNumber);
     }
-        /*
-         * Function Handler (e.g. EC)?
-         */
+
+    /*
+     * Function Handler (e.g. EC)?
+     */
     if (GpeInfo.Handler)
     {
-        /* Invoke function handler (at interrupt level). */
+        /* Invoke function handler (at interrupt level) */
 
         GpeInfo.Handler (GpeInfo.Context);
 
@@ -914,8 +912,8 @@ AcpiEvGpeDispatch (
      */
     else if (GpeInfo.MethodHandle)
     {
-        if (ACPI_FAILURE(AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
-            AcpiEvAsynchExecuteGpeMethod, (void*) GpeNumber)))
+        if (ACPI_FAILURE (AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
+            AcpiEvAsynchExecuteGpeMethod, ACPI_TO_POINTER (GpeNumber))))
         {
             /*
              * Shoudn't occur, but if it does report an error. Note that
