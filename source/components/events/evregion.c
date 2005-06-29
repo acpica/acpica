@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -375,8 +375,9 @@ AcpiEvAddressSpaceDispatch (
     Handler = HandlerDesc->AddrHandler.Handler;
 
     DEBUG_PRINTP ((TRACE_OPREGION | VERBOSE_INFO),
-        ("Addrhandler %p (%p), Address %p\n",
-        &RegionObj->Region.AddrHandler->AddrHandler, Handler, Address));
+        ("Addrhandler %p (%p), Address %8.8lX%8.8lX\n",
+        &RegionObj->Region.AddrHandler->AddrHandler, Handler, HIDWORD(Address),
+        LODWORD(Address)));
 
     if (!(HandlerDesc->AddrHandler.Flags & ADDR_HANDLER_DEFAULT_INSTALLED))
     {
