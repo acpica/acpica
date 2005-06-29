@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.54 $
+ *              $Revision: 1.56 $
  *
  ******************************************************************************/
 
@@ -329,8 +329,8 @@ AcpiDbExecutionWalk (
 
     Status = AcpiEvaluateObject (Node, NULL, NULL, &ReturnObj);
 
-    AcpiOsPrintf ("[%4.4s] returned %s\n", Node->Name.Ascii,
-        AcpiFormatException (Status));
+    AcpiOsPrintf ("[%4.4s] returned %s\n", AcpiUtGetNodeName (Node),
+            AcpiFormatException (Status));
     AcpiGbl_MethodExecuting = FALSE;
 
     return (AE_OK);
@@ -408,7 +408,7 @@ AcpiDbExecute (
 
     if (Allocations > 0)
     {
-        AcpiOsPrintf ("Outstanding: %ld allocations after execution\n",
+        AcpiOsPrintf ("Outstanding: %u allocations after execution\n",
                         Allocations);
     }
 #endif

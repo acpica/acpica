@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.96 $
+ *              $Revision: 1.99 $
  *
  ******************************************************************************/
 
@@ -433,8 +433,10 @@ AcpiDbDisplayMethodInfo (
     NumArgs     = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
-    AcpiOsPrintf ("Currently executing control method is [%4.4s]\n", Node->Name.Ascii);
-    AcpiOsPrintf ("%X arguments, max concurrency = %X\n", NumArgs, Concurrency);
+    AcpiOsPrintf ("Currently executing control method is [%4.4s]\n",
+            AcpiUtGetNodeName (Node));
+    AcpiOsPrintf ("%X arguments, max concurrency = %X\n",
+            NumArgs, Concurrency);
 
 
     RootOp = StartOp;
@@ -594,7 +596,7 @@ AcpiDbDisplayResults (void)
     }
 
     AcpiOsPrintf ("Method [%4.4s] has %X stacked result objects\n",
-        Node->Name.Ascii, NumResults);
+            AcpiUtGetNodeName (Node), NumResults);
 
     for (i = 0; i < NumResults; i++)
     {
@@ -638,7 +640,7 @@ AcpiDbDisplayCallingTree (void)
     {
         Node = WalkState->MethodNode;
 
-        AcpiOsPrintf ("    [%4.4s]\n", Node->Name.Ascii);
+        AcpiOsPrintf ("    [%4.4s]\n", AcpiUtGetNodeName (Node));
 
         WalkState = WalkState->Next;
     }
@@ -676,15 +678,15 @@ AcpiDbDisplayObjectType (
     {
         Info = Buffer.Pointer;
         AcpiOsPrintf ("HID: %s, ADR: %8.8X%8.8X, Status %8.8X\n",
-                        &Info->HardwareId,
-                        ACPI_HIDWORD (Info->Address), ACPI_LODWORD (Info->Address),
+                        Info->HardwareId.Value,
+                        ACPI_FORMAT_UINT64 (Info->Address),
                         Info->CurrentStatus);
 
         if (Info->Valid & ACPI_VALID_CID)
         {
             for (i = 0; i < Info->CompatibilityId.Count; i++)
             {
-                AcpiOsPrintf ("CID #%d: %s\n", i, &Info->CompatibilityId.Id[i]);
+                AcpiOsPrintf ("CID #%d: %s\n", (UINT32) i, Info->CompatibilityId.Id[i].Value);
             }
         }
 
