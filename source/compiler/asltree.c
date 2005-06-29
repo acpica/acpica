@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -408,7 +408,6 @@ TrCreateNode (
                 Node->LineNumber, Node, NumChildren, UtGetOpName(ParseOpcode));
     RootNode = Node;
 
-
     /* Some extra debug output based on the parse opcode */
 
     switch (ParseOpcode)
@@ -530,7 +529,6 @@ TrLinkChildren (
                 Node->LineNumber,
                 Node, NumChildren, UtGetOpName(Node->ParseOpcode));
     RootNode = Node;
-
 
     switch (Node->ParseOpcode)
     {

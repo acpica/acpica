@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -320,8 +320,8 @@ UtDisplaySummary (
                 Gbl_ExceptionCount[ASL_ERROR],
                 Gbl_ExceptionCount[ASL_WARNING]);
 
-    printf ("ASL Input: %d lines, %d bytes, %d keywords\n",
-                Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
+    printf ("ASL Input: %s - %d lines, %d bytes, %d keywords\n",
+                Gbl_InputFilename, Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
 
     if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
