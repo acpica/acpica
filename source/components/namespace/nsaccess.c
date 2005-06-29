@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.172 $
+ *              $Revision: 1.173 $
  *
  ******************************************************************************/
 
@@ -632,7 +632,7 @@ AcpiNsLookup (
 
         /* Extract one ACPI name from the front of the pathname */
 
-        ACPI_MOVE_UNALIGNED32_TO_32 (&SimpleName, Path);
+        ACPI_MOVE_32_TO_32 (&SimpleName, Path);
 
         /* Try to find the single (4 character) ACPI name */
 
