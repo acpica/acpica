@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.181 $
+ *       $Revision: 1.182 $
  *
  *****************************************************************************/
 
@@ -587,7 +587,7 @@ typedef struct acpi_thread_state
 typedef struct acpi_result_values
 {
     ACPI_STATE_COMMON
-    union acpi_operand_obj  *ObjDesc [OBJ_NUM_OPERANDS];
+    union acpi_operand_obj  *ObjDesc [ACPI_OBJ_NUM_OPERANDS];
     UINT8                   NumResults;
     UINT8                   LastInsert;
 
