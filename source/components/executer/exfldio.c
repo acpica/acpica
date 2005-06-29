@@ -116,12 +116,12 @@
 
 #define __IEFREAD_C__
 
-#include <acpi.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <namesp.h>
-#include <hardware.h>
-#include <events.h>
+#include "acpi.h"
+#include "interp.h"
+#include "amlcode.h"
+#include "namesp.h"
+#include "hardware.h"
+#include "events.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -130,7 +130,7 @@
 
 /*****************************************************************************
  * 
- * FUNCTION:    AmlReadFieldData
+ * FUNCTION:    AcpiAmlReadFieldData
  *
  * PARAMETERS:  *ObjDesc            - Field to be read
  *              *Value              - Where to store value
@@ -143,7 +143,7 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AmlReadFieldData (
+AcpiAmlReadFieldData (
     ACPI_OBJECT_INTERNAL    *ObjDesc, 
     UINT32                  FieldByteOffset,
     UINT32                  FieldBitWidth,
@@ -168,7 +168,7 @@ AmlReadFieldData (
 
 
     FieldByteWidth = DIV_8 (FieldBitWidth);
-    Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
+    Status = AcpiAmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
     if (AE_OK != Status)
     {
         return_ACPI_STATUS (Status);
@@ -202,19 +202,19 @@ AmlReadFieldData (
     {
         DEBUG_PRINT (TRACE_OPREGION,
                     ("AmlReadFieldData: OpRegion %s at %08lx width %d\n",
-                    Gbl_RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
+                    Acpi_GblRegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
-    Status = EvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ, 
+    Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ, 
                                         Address, FieldBitWidth, Value);
 
     if (Status == AE_NOT_IMPLEMENTED)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadFieldData: **** OpRegion type %s not implemented\n",
-                Gbl_RegionTypes[RgnDesc->Region.SpaceId]));
+                Acpi_GblRegionTypes[RgnDesc->Region.SpaceId]));
     }
 
     else if (Status == AE_EXIST)
@@ -231,7 +231,7 @@ AmlReadFieldData (
 
 /*****************************************************************************
  * 
- * FUNCTION:    AmlReadField
+ * FUNCTION:    AcpiAmlReadField
  *
  * PARAMETERS:  *ObjDesc            - Field to be read
  *              *Value              - Where to store value
@@ -244,7 +244,7 @@ AmlReadFieldData (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlReadField (
+AcpiAmlReadField (
     ACPI_OBJECT_INTERNAL    *ObjDesc, 
     void                    *Buffer,
     UINT32                  BufferLength,
@@ -279,7 +279,7 @@ AmlReadField (
     ThisFieldByteOffset = 0;
     ThisFieldDatumOffset= 0;
 
-    Status = AmlReadFieldData (ObjDesc, ThisFieldByteOffset, BitGranularity, &PreviousRawDatum);
+    Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset, BitGranularity, &PreviousRawDatum);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -329,7 +329,7 @@ AmlReadField (
         {
             /* Get the next raw datum, it contains bits of the current field datum... */
 
-            Status = AmlReadFieldData (ObjDesc, ThisFieldByteOffset + ByteGranularity, 
+            Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset + ByteGranularity, 
                                         BitGranularity, &ThisRawDatum);
             if (ACPI_FAILURE (Status))
             {
