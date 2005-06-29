@@ -326,7 +326,7 @@ typedef struct /* METHOD */
     UINT8                   MethodFlags;
     UINT8                   ParamCount;
     UINT8                   Concurrency;
-    UINT8                   Fill1;
+    UINT8                   ThreadCount;
     UINT32                  PcodeLength;
     UINT32                  TableLength;
     ACPI_OWNER_ID           OwningId;
