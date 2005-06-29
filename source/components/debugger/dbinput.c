@@ -284,7 +284,7 @@ DbDisplayHelp (void)
     OsdPrintf ("Debug <Namepath> [Arguments]        Single Step a control method\n");
     OsdPrintf ("Dump <Address>|<Namepath>\n");
     OsdPrintf ("     [Byte|Word|Dword|Qword]        Display ACPI objects or memory\n");
-    OsdPrintf ("EnableAcpi                          Initialize and Enable the ACPI CA subsystem\n");
+    OsdPrintf ("EnableAcpi                          Enable the ACPI CA subsystem\n");
     OsdPrintf ("Event <F|G> <Value>                 Generate Event (Fixed/GPE)\n");
     OsdPrintf ("Execute <Namepath> [Arguments]      Execute control method\n");
     OsdPrintf ("Find <Name>   (? is wildcard)       Find ACPI name(s) with wildcards\n");
@@ -575,27 +575,6 @@ DbCommandDispatch (
         break;
 
 	case CMD_ENABLEACPI:
-		Status = AcpiInitialize(NULL);
-		if (ACPI_FAILURE(Status))
-		{
-			OsdPrintf("AcpiInitialize failed (0x%x)\n", Status);
-			return Status;
-		}
-
-		Status = AcpiLoadFirmwareTables();
-		if (ACPI_FAILURE(Status))
-		{
-			OsdPrintf("AcpiLoadFirmwareTables failed (0x%x)\n", Status);
-			return Status;
-		}
-
-		Status = AcpiLoadNamespace();
-		if (ACPI_FAILURE(Status))
-		{
-			OsdPrintf("AcpiLoadNamespace failed (0x%x)\n", Status);
-			return Status;
-		}
-
 		Status = AcpiEnable();
 		if (ACPI_FAILURE(Status))
 		{
