@@ -125,6 +125,63 @@
 
 #define GO_NO_FURTHER       (void *) 0xffffffff
 
+/**************************************************************************
+ *
+ * FUNCTION:    EvInstallDefaultAddressSpaceHandlers
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Installs the core subsystem address space handlers.
+ *
+ *************************************************************************/
+
+ACPI_STATUS
+EvInstallDefaultAddressSpaceHandlers (
+    void)
+{
+    ACPI_STATUS Status;
+    ACPI_HANDLE BusHandle;
+    
+    FUNCTION_TRACE ("EvInstallDefaultAddressSpaceHandlers");
+
+    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemMemory, ACPI_DEFAULT_HANDLER, NULL);
+    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemIO, ACPI_DEFAULT_HANDLER, NULL);
+
+    /*
+    Can't be any defaults till a device appears.
+
+    AcpiInstallAddressSpaceHandler (REGION_EmbeddedControl, AmlEmbeddedControllerSpaceHandler, NULL);
+    AcpiInstallAddressSpaceHandler (REGION_SMBus, AmlSmBusSpaceHandler, NULL);
+    */
+
+
+    Status = AcpiPathnameToHandle("\\_SB_.PCI0", &BusHandle);
+    if(Status == AE_OK)
+    {
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)0);
+    }
+    Status = AcpiPathnameToHandle("\\_SB_.PCI0.PCI3", &BusHandle);
+    if(Status == AE_OK)
+    {
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)3);
+    }
+    Status = AcpiPathnameToHandle("\\_SB_.PCI1", &BusHandle);
+    if(Status == AE_OK)
+    {
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)1);
+    }
+    Status = AcpiPathnameToHandle("\\_SB_.PCI2", &BusHandle);
+    if(Status == AE_OK)
+    {
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)2);
+    }
+
+    return_ACPI_STATUS (Status);
+
+}
+
 
 /**************************************************************************
  *
