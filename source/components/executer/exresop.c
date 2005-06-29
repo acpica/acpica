@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.54 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,6 @@
 #include "amlcode.h"
 #include "acparser.h"
 #include "acinterp.h"
-#include "acnamesp.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -201,8 +200,8 @@ AcpiExCheckObjectType (
  *              target operator.
  *
  *      Each 5-bit group in ArgTypes represents one required
- *      operand and indicates the required Type. The corresponding operand 
- *      will be converted to the required type if possible, otherwise we 
+ *      operand and indicates the required Type. The corresponding operand
+ *      will be converted to the required type if possible, otherwise we
  *      abort with an exception.
  *
  ******************************************************************************/
@@ -583,11 +582,12 @@ AcpiExResolveOperands (
         case ARGI_DATAOBJECT:
             /*
              * ARGI_DATAOBJECT is only used by the SizeOf operator.
-             * Need a buffer, string, package, or Node reference.
+             * Need a buffer, string, package, or RefOf reference.
              *
              * The only reference allowed here is a direct reference to
              * a namespace node.
              */
+#if 0
             if (ACPI_GET_OBJECT_TYPE (*StackPtr) == INTERNAL_TYPE_REFERENCE)
             {
                 if (!(*StackPtr)->Reference.Node)
@@ -620,7 +620,7 @@ AcpiExResolveOperands (
                 AcpiUtRemoveReference (*StackPtr);
                 (*StackPtr) = TempNode;
             }
-
+#endif
             /* Need a buffer, string, package */
 
             switch (ACPI_GET_OBJECT_TYPE (*StackPtr))
@@ -628,6 +628,7 @@ AcpiExResolveOperands (
             case ACPI_TYPE_PACKAGE:
             case ACPI_TYPE_STRING:
             case ACPI_TYPE_BUFFER:
+            case INTERNAL_TYPE_REFERENCE:
 
                 /* Valid operand */
                 break;

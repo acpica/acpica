@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.168 $
+ *              $Revision: 1.171 $
  *
  *****************************************************************************/
 
@@ -186,7 +186,7 @@ AcpiExStore (
     /* Destination object must be a Reference or a Constant object */
 
     switch (ACPI_GET_OBJECT_TYPE (DestDesc))
-    {  
+    {
     case INTERNAL_TYPE_REFERENCE:
         break;
 
@@ -199,7 +199,7 @@ AcpiExStore (
             return_ACPI_STATUS (AE_OK);
         }
 
-        /*lint: -fallthrough */
+        /*lint -fallthrough */
 
     default:
 
@@ -387,6 +387,13 @@ AcpiExStoreObjectToIndex (
         {
             AcpiUtRemoveReference (ObjDesc);
             *(IndexDesc->Reference.Where) = NewDesc;
+
+            /* If same as the original source, add a reference */
+
+            if (NewDesc == SourceDesc)
+            {
+                AcpiUtAddReference (NewDesc);
+            }
         }
         break;
 
