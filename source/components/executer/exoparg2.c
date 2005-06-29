@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdyadic - ACPI AML (p-code) execution for dyadic operators
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -380,7 +380,7 @@ AcpiAmlExecDyadic1 (
             case ACPI_TYPE_DEVICE:
             case ACPI_TYPE_THERMAL:
 
-                /* 
+                /*
                  * Dispatch the notify to the appropriate handler
                  * NOTE: the request is queued for execution after this method
                  * completes.  The notify handlers are NOT invoked synchronously
@@ -388,7 +388,7 @@ AcpiAmlExecDyadic1 (
                  * control methods.
                  */
 
-                Status = AcpiEvQueueNotifyRequest (Node, 
+                Status = AcpiEvQueueNotifyRequest (Node,
                                         (UINT32) ValDesc->Integer.Value);
                 break;
 
