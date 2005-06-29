@@ -20,15 +20,18 @@
  | These interfaces must be implemented by the OS-dependent front-end
  | to the ACPI subsystem.
  |
- | $Revision: 1.12 $
- | $Date: 2005/06/29 19:59:48 $
+ | $Revision: 1.13 $
+ | $Date: 2005/06/29 19:59:49 $
  | $Log: acpiosxf.h,v $
- | Revision 1.12  2005/06/29 19:59:48  aystarik
- |
+ | Revision 1.13  2005/06/29 19:59:49  aystarik
+ | Small hack to get the osd part compiling.
  |
  | 
- | date	99.04.05.22.08.00;	author grsmith1;	state Exp;
+ | date	99.04.06.16.42.00;	author grsmith1;	state Exp;
  |
+ * 
+ * 13    4/06/99 9:42a Grsmith1
+ * Small hack to get the osd part compiling.
  * 
  * 11    4/02/99 9:53a Rmoore1
  * 
@@ -50,6 +53,7 @@
 
 /* File I/O */
 
+#define LogHandle void*
 
 OSD_FILE *
 OsdOpen (
