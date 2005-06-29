@@ -150,6 +150,7 @@ DbSingleStep (
 {
     ACPI_GENERIC_OP         *Next;
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  OriginalDebugLevel;
 
 
     /* Is there a breakpoint set? */
@@ -189,10 +190,11 @@ DbSingleStep (
     case OPTYPE_NAMED_OBJECT:
         switch (Op->Opcode)
         {
-
+/*
         case AML_MethodOp:
             return (AE_OK);
             break;
+*/
         }
     }
 
@@ -212,13 +214,25 @@ DbSingleStep (
         }
 
         /* 
-         * Display this op (and only this op - zero out the NEXT field temporarily)
+         * Display this op (and only this op - zero out the NEXT field temporarily,
+         * and disable parser trace output for the duration of the display because
+         * we don't want the extraneous debug output)
          */
+
+        OriginalDebugLevel = DebugLevel;
+        DebugLevel &= ~(TRACE_PARSE | TRACE_FUNCTIONS);
         Next = Op->Next;
         Op->Next = NULL;
+
+        /* Now we can display it */
+
         DbDisplayOp (Op, ACPI_UINT32_MAX);
+
+        /* Restore everything */
+
         Op->Next = Next;
         OsdPrintf ("\n");
+        DebugLevel = OriginalDebugLevel;
    }
 
 
@@ -263,7 +277,7 @@ DbSingleStep (
 
         /* TBD: don't kill the user breakpoint! */
 
-        Gbl_MethodBreakpoint = Op->AmlOffset;
+        Gbl_MethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
         Gbl_BreakpointWalk = WalkState;
     }
 
