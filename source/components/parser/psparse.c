@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -1053,19 +1053,18 @@ CloseThisOp:
 
             } while (Op);
 
+
+            /*
+             * TBD: Cleanup parse ops on error
+             */
 #if 0
             if (Op == NULL)
             {
                 AcpiPsPopScope (ParserState, &Op, &WalkState->ArgTypes, &WalkState->ArgCount);
             }
 #endif
-
             WalkState->PrevOp = Op;
             WalkState->PrevArgTypes = WalkState->ArgTypes;
-
-            /*
-             * TBD: TEMP:
-             */
             return_ACPI_STATUS (Status);
         }
 
@@ -1189,8 +1188,9 @@ AcpiPsParseAml (
     WalkState->Thread = Thread;
     AcpiDsPushWalkState (WalkState, Thread);
 
-
-    /* TBD: [Restructure] TEMP until we pass WalkState to the interpreter
+    /* 
+     * This global allows the AML debugger to get a handle to the currently
+     * executing control method.
      */
     AcpiGbl_CurrentWalkList = Thread;
 
