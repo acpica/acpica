@@ -508,7 +508,6 @@ PsWalkParsedAml (
      */
 
     DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: Entering walk loop at Op=%X State=%X\n", Op, WalkState));
-    BREAKPOINT3;
 
     while (WalkState)
     {
