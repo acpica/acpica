@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.97 $
+ *       $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -306,17 +306,15 @@
 #define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (ACPI_SIZE)(n))
 
-/* Parentheses force function invocation verus macro */
-
-#define ACPI_TOUPPER            (toupper)
-#define ACPI_TOLOWER            (tolower)
-#define ACPI_IS_XDIGIT          (isxdigit)
-#define ACPI_IS_DIGIT           (isdigit)
-#define ACPI_IS_SPACE           (isspace)
-#define ACPI_IS_UPPER           (isupper)
-#define ACPI_IS_PRINT           (isprint)
-#define ACPI_IS_ALPHA           (isalpha)
-#define ACPI_IS_ASCII           (isascii)
+#define ACPI_TOUPPER            toupper
+#define ACPI_TOLOWER            tolower
+#define ACPI_IS_XDIGIT          isxdigit
+#define ACPI_IS_DIGIT           isdigit
+#define ACPI_IS_SPACE           isspace
+#define ACPI_IS_UPPER           isupper
+#define ACPI_IS_PRINT           isprint
+#define ACPI_IS_ALPHA           isalpha
+#define ACPI_IS_ASCII           isascii
 
 /******************************************************************************
  *
