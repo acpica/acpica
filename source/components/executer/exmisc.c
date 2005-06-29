@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -216,10 +216,107 @@ Cleanup:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExDoConcatenate
+ * FUNCTION:    AcpiExConcatTemplate
  *
  * PARAMETERS:  *ObjDesc            - Object to be converted.  Must be an
  *                                    Integer, Buffer, or String
+ *              WalkState           - Current walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Concatenate two resource templates
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExConcatTemplate (
+    ACPI_OPERAND_OBJECT     *ObjDesc1,
+    ACPI_OPERAND_OBJECT     *ObjDesc2,
+    ACPI_OPERAND_OBJECT     **ActualReturnDesc,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     *ReturnDesc;
+    NATIVE_CHAR             *NewBuf;
+    UINT8                   *EndTag1;
+    UINT8                   *EndTag2;
+    NATIVE_UINT             Length1;
+    NATIVE_UINT             Length2;
+
+
+    FUNCTION_TRACE ("ExConcatTemplate");
+
+
+
+    /* Find the EndTags in each resource template */
+
+    EndTag1 = AcpiUtGetResourceEndTag (ObjDesc1);
+    EndTag2 = AcpiUtGetResourceEndTag (ObjDesc2);
+    if (!EndTag1 || !EndTag2)
+    {
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+    }
+
+    /* Create a new buffer object for the result */
+
+    ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+    if (!ReturnDesc)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* Allocate a new buffer for the result */
+
+    Length1 = POINTER_DIFF (EndTag1, ObjDesc1->Buffer.Pointer);
+    Length2 = POINTER_DIFF (EndTag2, ObjDesc2->Buffer.Pointer) +
+                            2; /* Size of END_TAG */
+
+    NewBuf = ACPI_MEM_ALLOCATE (Length1 + Length2);
+    if (!NewBuf)
+    {
+        REPORT_ERROR
+            (("ExConcatTemplate: Buffer allocation failure\n"));
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+    }
+
+    /* Copy the templates to the new descriptor */
+
+    MEMCPY (NewBuf, ObjDesc1->Buffer.Pointer, Length1);
+    MEMCPY (NewBuf + Length1, ObjDesc2->Buffer.Pointer, Length2);
+
+    /*
+     * Point the return object to the new buffer
+     */
+    ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
+    ReturnDesc->Buffer.Length  = Length1 + Length2;
+
+    /* Compute the new checksum */
+
+    NewBuf[ReturnDesc->Buffer.Length - 1] = 
+            AcpiUtGenerateChecksum (ReturnDesc->Buffer.Pointer, 
+                                    (ReturnDesc->Buffer.Length - 1));
+
+    /* Return the completed template descriptor */
+
+    *ActualReturnDesc = ReturnDesc;
+    return_ACPI_STATUS (AE_OK);
+
+
+Cleanup:
+
+    AcpiUtRemoveReference (ReturnDesc);
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExDoConcatenate
+ *
+ * PARAMETERS:  ObjDesc1            - First source object
+ *              ObjDesc2            - Second source object
+ *              ActualReturnDesc    - Where to place the return object
  *              WalkState           - Current walk state
  *
  * RETURN:      Status
@@ -230,7 +327,7 @@ Cleanup:
 
 ACPI_STATUS
 AcpiExDoConcatenate (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc1,
     ACPI_OPERAND_OBJECT     *ObjDesc2,
     ACPI_OPERAND_OBJECT     **ActualReturnDesc,
     ACPI_WALK_STATE         *WalkState)
@@ -252,7 +349,7 @@ AcpiExDoConcatenate (
      * 2) Two Strings concatenated to produce a string
      * 3) Two Buffers concatenated to produce a buffer
      */
-    switch (ObjDesc->Common.Type)
+    switch (ObjDesc1->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
 
@@ -292,7 +389,7 @@ AcpiExDoConcatenate (
 
         /* Convert the first integer */
 
-        ThisInteger = ObjDesc->Integer.Value;
+        ThisInteger = ObjDesc1->Integer.Value;
         for (i = 0; i < IntegerSize; i++)
         {
             NewBuf[i] = (UINT8) ThisInteger;
@@ -321,7 +418,7 @@ AcpiExDoConcatenate (
 
         /* Operand0 is string  */
 
-        NewBuf = ACPI_MEM_ALLOCATE (ObjDesc->String.Length +
+        NewBuf = ACPI_MEM_ALLOCATE (ObjDesc1->String.Length +
                                     ObjDesc2->String.Length + 1);
         if (!NewBuf)
         {
@@ -331,15 +428,15 @@ AcpiExDoConcatenate (
             goto Cleanup;
         }
 
-        STRCPY (NewBuf, ObjDesc->String.Pointer);
-        STRCPY (NewBuf + ObjDesc->String.Length,
-                        ObjDesc2->String.Pointer);
+        STRCPY (NewBuf, ObjDesc1->String.Pointer);
+        STRCPY (NewBuf + ObjDesc1->String.Length,
+                         ObjDesc2->String.Pointer);
 
         /* Point the return object to the new string */
 
         ReturnDesc->String.Pointer = NewBuf;
-        ReturnDesc->String.Length = ObjDesc->String.Length +=
-                                 ObjDesc2->String.Length;
+        ReturnDesc->String.Length  = ObjDesc1->String.Length +
+                                     ObjDesc2->String.Length;
         break;
 
 
@@ -353,7 +450,7 @@ AcpiExDoConcatenate (
             return (AE_NO_MEMORY);
         }
 
-        NewBuf = ACPI_MEM_ALLOCATE (ObjDesc->Buffer.Length +
+        NewBuf = ACPI_MEM_ALLOCATE (ObjDesc1->Buffer.Length +
                                     ObjDesc2->Buffer.Length);
         if (!NewBuf)
         {
@@ -363,18 +460,18 @@ AcpiExDoConcatenate (
             goto Cleanup;
         }
 
-        MEMCPY (NewBuf, ObjDesc->Buffer.Pointer,
-                        ObjDesc->Buffer.Length);
-        MEMCPY (NewBuf + ObjDesc->Buffer.Length, ObjDesc2->Buffer.Pointer,
+        MEMCPY (NewBuf, ObjDesc1->Buffer.Pointer,
+                        ObjDesc1->Buffer.Length);
+        MEMCPY (NewBuf + ObjDesc1->Buffer.Length, ObjDesc2->Buffer.Pointer,
                          ObjDesc2->Buffer.Length);
 
         /*
          * Point the return object to the new buffer
          */
 
-        ReturnDesc->Buffer.Pointer     = (UINT8 *) NewBuf;
-        ReturnDesc->Buffer.Length      = ObjDesc->Buffer.Length +
-                                      ObjDesc2->Buffer.Length;
+        ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
+        ReturnDesc->Buffer.Length = ObjDesc1->Buffer.Length +
+                                    ObjDesc2->Buffer.Length;
         break;
 
 
@@ -382,7 +479,6 @@ AcpiExDoConcatenate (
         Status = AE_AML_INTERNAL;
         ReturnDesc = NULL;
     }
-
 
     *ActualReturnDesc = ReturnDesc;
     return (AE_OK);
@@ -401,7 +497,7 @@ Cleanup:
  *
  * PARAMETERS:  Opcode              - AML opcode
  *              Operand0            - Integer operand #0
- *              Operand0            - Integer operand #1
+ *              Operand1            - Integer operand #1
  *
  * RETURN:      Integer result of the operation
  *
@@ -483,7 +579,7 @@ AcpiExDoMathOp (
  *
  * PARAMETERS:  Opcode              - AML opcode
  *              Operand0            - Integer operand #0
- *              Operand0            - Integer operand #1
+ *              Operand1            - Integer operand #1
  *
  * RETURN:      TRUE/FALSE result of the operation
  *
