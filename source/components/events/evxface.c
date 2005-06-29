@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.126 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -118,15 +118,12 @@
 #define __EVXFACE_C__
 
 #include "acpi.h"
-#include "achware.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "amlcode.h"
 #include "acinterp.h"
 
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evxface")
-
 
 
 /*******************************************************************************
@@ -177,7 +174,6 @@ AcpiInstallFixedEventHandler (
         Status = AE_ALREADY_EXISTS;
         goto Cleanup;
     }
-
 
     /* Install the handler before enabling the event */
 
@@ -414,7 +410,7 @@ AcpiInstallNotifyHandler (
 
         /* Install the handler */
 
-        NotifyObj = AcpiUtCreateInternalObject (INTERNAL_TYPE_NOTIFY);
+        NotifyObj = AcpiUtCreateInternalObject (ACPI_TYPE_LOCAL_NOTIFY);
         if (!NotifyObj)
         {
             Status = AE_NO_MEMORY;
@@ -655,8 +651,13 @@ AcpiInstallGpeHandler (
 
     /* Clear the GPE (of stale events), the enable it */
 
-    AcpiHwClearGpe (GpeNumber);
-    AcpiHwEnableGpe (GpeNumber);
+    Status = AcpiHwClearGpe (GpeNumber);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+
+    Status = AcpiHwEnableGpe (GpeNumber);
 
 
 Cleanup:
@@ -707,7 +708,11 @@ AcpiRemoveGpeHandler (
 
     /* Disable the GPE before removing the handler */
 
-    AcpiHwDisableGpe (GpeNumber);
+    Status = AcpiHwDisableGpe (GpeNumber);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
     if (ACPI_FAILURE (Status))
@@ -719,7 +724,7 @@ AcpiRemoveGpeHandler (
 
     if (AcpiGbl_GpeNumberInfo[GpeNumberIndex].Handler != Handler)
     {
-        AcpiHwEnableGpe (GpeNumber);
+        (void) AcpiHwEnableGpe (GpeNumber);
         Status = AE_BAD_PARAMETER;
         goto Cleanup;
     }
@@ -797,14 +802,16 @@ ACPI_STATUS
 AcpiReleaseGlobalLock (
     UINT32                  Handle)
 {
+    ACPI_STATUS             Status;
+
 
     if (Handle != AcpiGbl_GlobalLockHandle)
     {
         return (AE_NOT_ACQUIRED);
     }
 
-    AcpiEvReleaseGlobalLock ();
-    return (AE_OK);
+    Status = AcpiEvReleaseGlobalLock ();
+    return (Status);
 }
 
 
