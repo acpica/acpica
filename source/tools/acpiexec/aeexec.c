@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.75 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -318,9 +318,9 @@ AeBuildLocalTables (
     LocalFADT.Dsdt              = ACPI_PTR_TO_PHYSADDR (AcpiGbl_DSDT);
     LocalFADT.Revision          = 1;
     LocalFADT.Length            = sizeof (FADT_DESCRIPTOR_REV1);
-    LocalFADT.Gpe0BlkLen        = 4;
+    LocalFADT.Gpe0BlkLen        = 16;
     LocalFADT.Gpe1BlkLen        = 6;
-    LocalFADT.Gpe1Base          = 61;
+    LocalFADT.Gpe1Base          = 96;
 
     LocalFADT.Pm1EvtLen         = 4;
     LocalFADT.Pm1CntLen         = 4;
