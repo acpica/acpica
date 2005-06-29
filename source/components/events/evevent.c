@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -900,7 +900,7 @@ AcpiEvGpeDispatch (
     GpeNumberIndex = AcpiEvGetGpeNumberIndex (GpeNumber);
     if (GpeNumberIndex == ACPI_GPE_INVALID)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid GPE bit [%X].\n", GpeNumber));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid event, GPE[%X].\n", GpeNumber));
         return_VALUE (INTERRUPT_NOT_HANDLED);
     }
 
@@ -922,6 +922,9 @@ AcpiEvGpeDispatch (
     /*
      * Dispatch the GPE to either an installed handler, or the control
      * method associated with this GPE (_Lxx or _Exx).
+     * If a handler exists, we invoke it and do not attempt to run the method.
+     * If there is neither a handler nor a method, we disable the level to
+     * prevent further events from coming in here.
      */
     if (GpeInfo->Handler)
     {
@@ -938,7 +941,7 @@ AcpiEvGpeDispatch (
                                 AcpiEvAsynchExecuteGpeMethod, 
                                 ACPI_TO_POINTER (GpeNumber))))
         {
-            REPORT_ERROR (("AcpiEvGpeDispatch: Unable to queue handler for GPE bit [%X]\n", GpeNumber));
+            REPORT_ERROR (("AcpiEvGpeDispatch: Unable to queue handler for GPE[%X], disabling event\n", GpeNumber));
 
             /*
              * Disable the GPE on error.  The GPE will remain disabled until the ACPI
@@ -951,7 +954,7 @@ AcpiEvGpeDispatch (
     {
         /* No handler or method to run! */
 
-        REPORT_ERROR (("AcpiEvGpeDispatch: No installed handler for GPE [%X]\n", GpeNumber));
+        REPORT_ERROR (("AcpiEvGpeDispatch: No handler or method for GPE[%X], disabling event\n", GpeNumber));
 
         /*
          * Disable the GPE.  The GPE will remain disabled until the ACPI
