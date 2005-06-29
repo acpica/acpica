@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -129,14 +129,23 @@
 #define ACPI_MEM_ALLOCATED      1
 #define ACPI_MEM_MAPPED         2
 
-typedef struct AcpiTableInfo
-{
-    char                Name[4];           /* signature */
-    void                *Pointer;
-    UINT32              Length;
-    UINT32              Allocation;
+#define ACPI_TABLE_SINGLE       0
+#define ACPI_TABLE_MULTIPLE     1
 
-} ACPI_TABLE_INFO;
+
+/*
+ * ACPI Table Descriptor.  One per ACPI table
+ */
+typedef struct AcpiTableDesc
+{
+    struct AcpiTableDesc    *Prev;
+    struct AcpiTableDesc    *Next;
+    void                    *Pointer;
+    UINT32                  Length;
+    UINT32                  Allocation;
+    UINT32                  Count;
+
+} ACPI_TABLE_DESC;
 
 
 /* Operational mode of AML scanner */
@@ -178,7 +187,7 @@ typedef struct NAME_TABLE_ENTRY
     struct NAME_TABLE_ENTRY *NextEntry;     /* Next within this scope */
     struct NAME_TABLE_ENTRY *PrevEntry;     /* Previous within this scope */
     ACPI_OBJECT_TYPE        Type;           /* Type associated with this name */
-    void                    *Value;         /* Pointer to value associated with this name */
+    void                    *Object;        /* Pointer to attached ACPI object */
 
 } NAME_TABLE_ENTRY;
 
@@ -186,6 +195,18 @@ typedef struct NAME_TABLE_ENTRY
 #define INVALID_HANDLE      0
 #define NULL_HANDLE         INVALID_HANDLE
 
+
+/* 
+ * Stack of currently executing control methods 
+ * Contains the arguments and local variables for each nested method.
+ */
+
+typedef struct
+{
+    union AcpiObjInternal   *Arguments[MTH_NUM_ARGS];
+    union AcpiObjInternal   *LocalVariables[MTH_NUM_LOCALS];
+
+} METHOD_STACK;
 
 
 /* Stack of currently-open scopes, and pointer to top of that stack */
