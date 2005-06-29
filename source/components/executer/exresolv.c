@@ -749,7 +749,7 @@ AmlGetRvalueFromEntry (
             /* Init the internal object */
 
             ObjDesc->String.Pointer = AmlPointer;
-            ObjDesc->String.Length = strlen (AmlPointer);
+            ObjDesc->String.Length = STRLEN (AmlPointer);
         }
 
         else
