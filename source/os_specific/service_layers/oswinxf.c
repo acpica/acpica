@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -184,7 +184,7 @@ FILE                        *AcpiGbl_OutputFile = stdout;
 
 ACPI_TABLE_HEADER *
 OsGetTable (
-    void )
+    char                *TableName)
 {
     HKEY                Handle;
     CHAR                s[500];
@@ -199,12 +199,15 @@ OsGetTable (
 
     /* Get a handle to the DSDT key */
 
-    Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "HARDWARE\\ACPI\\DSDT",
+    ACPI_STRCPY (s, "HARDWARE\\ACPI\\");
+    ACPI_STRCAT (s, TableName);
+
+    Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, s,
                 0L, KEY_ALL_ACCESS, &Handle);
 
     if (Status != ERROR_SUCCESS) 
     {
-        AcpiOsPrintf ("Could not find DSDT in registry\n");
+        AcpiOsPrintf ("Could not find %s in registry at %s\n", TableName, s);
         return (NULL);
     }
 
@@ -222,7 +225,7 @@ OsGetTable (
         Status = RegOpenKey (Handle, s, &SubKey);
         if (Status != ERROR_SUCCESS) 
         {
-            AcpiOsPrintf ("Could not Open DSDT entry\n");
+            AcpiOsPrintf ("Could not open %s entry\n", TableName);
             return (NULL);
         }
 
@@ -240,7 +243,7 @@ OsGetTable (
                     NULL, &Type, NULL, 0 );
         if (Status != ERROR_SUCCESS) 
         {
-            AcpiOsPrintf ("Could not get DSDT registry entry\n");
+            AcpiOsPrintf ("Could not get %s registry entry\n", TableName);
             return (NULL);
         }
 
@@ -256,7 +259,7 @@ OsGetTable (
     Status = RegQueryValueEx (Handle, s, NULL, NULL, NULL, &DataSize);
     if (Status != ERROR_SUCCESS) 
     {
-        AcpiOsPrintf ("Could not read the DSDT size\n");
+        AcpiOsPrintf ("Could not read the %s table size\n", TableName);
         return (NULL);
     }
 
@@ -273,7 +276,7 @@ OsGetTable (
     Status = RegQueryValueEx (Handle, s, NULL, NULL, (UCHAR *) Buffer, &DataSize);
     if (Status != ERROR_SUCCESS) 
     {
-        AcpiOsPrintf ("Could not read DSDT data\n");
+        AcpiOsPrintf ("Could not read %s data\n", TableName);
         return (NULL);
     }
 
@@ -361,6 +364,10 @@ AcpiOsTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
     ACPI_TABLE_HEADER       **NewTable)
 {
+#ifndef _ACPI_EXEC_APP
+    char                    TableName[ACPI_NAME_SIZE + 1];
+#endif
+
 
     if (!ExistingTable || !NewTable)
     {
@@ -383,11 +390,20 @@ AcpiOsTableOverride (
 
 #else
 
-    AcpiOsPrintf ("Reading DSDT from registry\n");
-    *NewTable = OsGetTable ();
+    /* Construct a null-terminated string from table signature */
+
+    TableName[ACPI_NAME_SIZE] = 0;
+    ACPI_STRNCPY (TableName, ExistingTable->Signature, ACPI_NAME_SIZE);
+
+    *NewTable = OsGetTable (TableName);
     if (*NewTable)
     {
-        AcpiOsPrintf ("DSDT obtained from registry, %d bytes\n", (*NewTable)->Length);
+        AcpiOsPrintf ("%s obtained from registry, %d bytes\n", 
+            TableName, (*NewTable)->Length);
+    }
+    else
+    {
+        AcpiOsPrintf ("Could not read %s from registry\n", TableName);
     }
 #endif
 
