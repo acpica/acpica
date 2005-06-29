@@ -32,7 +32,7 @@ CFLAGS+= -Wall -Wno-unused -Wstrict-prototypes -D_LINUX -D_ACPI_ASL_COMPILER -I.
 #YACC=	yacc
 YACC=	bison
 YFLAGS+= -v -d
-LEX=	lex
+LEX=	flex
 LFLAGS+= -i
 
 #.if $(YACC) == "bison"
