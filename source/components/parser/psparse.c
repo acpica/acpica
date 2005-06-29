@@ -792,19 +792,17 @@ PsParseAml (
 
     /* Initialize a new walk list */
 
-
     WalkList.WalkState = NULL;
 
-    WalkState = DsCreateWalkState (NULL, NULL, &WalkList);
+    WalkState = DsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
     if (!WalkState)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
     }
 
-    /* TBD: move to createWalkSTate */
 
-    WalkState->OwnerId = 0xD1D1; // MAKE THIS A PARAMETER: OwnerId;
+    /* Setup the current scope */
 
     Nte = ParserState->StartOp->NameTableEntry;
     if (Nte)
