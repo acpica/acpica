@@ -124,6 +124,7 @@ UINT32                      DebugLevel = NORMAL_DEFAULT;
     /* Debug switch - layer (component) mask */
 
 UINT32                      DebugLayer = ALL_COMPONENTS;
+UINT32                      NestingLevel = 0;
 
 
 
@@ -420,12 +421,6 @@ InitAcpiLibGlobals (void)
     RootObject->PrevEntry       = NULL;
     RootObject->Type            = TYPE_Any;
     RootObject->Value           = NULL;
-
-
-    /* Debug */
-
-    NestingLevel            = 0;
-
 
     FUNCTION_EXIT;
 }   
