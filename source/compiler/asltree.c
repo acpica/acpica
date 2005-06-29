@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.5 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -141,16 +141,10 @@ TgAllocateNode (
     ASL_PARSE_NODE          *Node;
 
 
-    Node = calloc (sizeof (ASL_PARSE_NODE), 1);
-    if (!Node)
-    {
-        fprintf (stderr, "Memory allocation failure while building parse tree\n");
-        printf ("Memory allocation failure while building parse tree\n");
-        exit (0);
-    }
-
-
+    Node = UtLocalCalloc (sizeof (ASL_PARSE_NODE));
     Node->ParseOpcode = ParseOpcode;
+    Node->LineNumber = Gbl_CurrentLineNumber;
+    Node->LogicalLineNumber = Gbl_LogicalLineNumber;
 
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
     
@@ -171,19 +165,24 @@ TgAllocateNode (
  *
  ******************************************************************************/
 
-char *
-_TgUpdateNode (
+ASL_PARSE_NODE *
+TgUpdateNode (
     UINT32                  ParseOpcode,
     ASL_PARSE_NODE          *Node)
 {
 
+
+    if (!Node)
+    {
+        return NULL;
+    }
 
     DbgPrint ("\nUpdateNode: Old - %s, New - %s\n\n",
                 UtGetOpName (Node->ParseOpcode),
                 UtGetOpName (ParseOpcode));
 
     Node->ParseOpcode = ParseOpcode;
-    return (char *) Node;
+    return Node;
 }
 
 
@@ -199,7 +198,39 @@ _TgUpdateNode (
  *
  ******************************************************************************/
 
-char *
+ASL_PARSE_NODE *
+TgSetNodeFlags (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Flags)
+{
+
+
+    DbgPrint ("\nSetNodeFlags: Node %p, %d\n\n", Node, Flags);
+
+    if (!Node)
+    {
+        return NULL;
+    }
+
+    Node->Flags |= Flags;
+
+    return Node;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE *
 TgCreateNode (
     UINT32                  ParseOpcode,
     UINT32                  NumChildren,
@@ -218,8 +249,8 @@ TgCreateNode (
 
     Node = TgAllocateNode (ParseOpcode);
 
-    DbgPrint ("\nCreateNode  NewParent %p Child %d Op %s  ", 
-                Node, NumChildren, UtGetOpName(ParseOpcode));
+    DbgPrint ("\nCreateNode  Line %d NewParent %p Child %d Op %s  ", 
+                Node->LineNumber, Node, NumChildren, UtGetOpName(ParseOpcode));
     RootNode = Node;
 
 
@@ -299,7 +330,7 @@ TgCreateNode (
     DbgPrint ("\n\n");
 
 
-    return (char *) Node;
+    return Node;
 }
 
 
@@ -316,8 +347,126 @@ TgCreateNode (
  *
  ******************************************************************************/
 
-char *
-TgCreateLeafNode (
+ASL_PARSE_NODE *
+TgLinkChildren (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  NumChildren,
+    ...)
+{
+    ASL_PARSE_NODE          *Child;
+    ASL_PARSE_NODE          *PrevChild;
+    va_list                 ap;
+    UINT32                  i;
+    BOOLEAN                 FirstChild;
+
+
+
+    va_start (ap, NumChildren);
+
+
+
+    DbgPrint ("\nLinkChildren  Line %d NewParent %p Child %d Op %s  ", 
+                Node->LineNumber,
+                Node, NumChildren, UtGetOpName(Node->ParseOpcode));
+    RootNode = Node;
+
+
+    switch (Node->ParseOpcode)
+    {
+    case DEFINITIONBLOCK:
+        DbgPrint ("DEFINITION_BLOCK (Tree Completed)->");
+        break;
+
+    case OPERATIONREGION:
+        DbgPrint ("OPREGION->"); 
+        break;
+
+    case OR:
+        DbgPrint ("OR->");
+        break;
+    }
+
+
+    /* Link the new node to it's children */
+
+    PrevChild = NULL;
+    FirstChild = TRUE;
+    for (i = 0; i < NumChildren; i++)
+    {
+        Child = va_arg (ap, ASL_PARSE_NODE *);
+        DbgPrint ("%p, ", Child);
+
+
+        /* 
+         * If child is NULL, this means that an optional argument
+         * was omitted.  We must create a placeholder with a special
+         * opcode (DEFAULT_ARG) so that the code generator will know
+         * that it must emit the correct default for this argument
+         */
+
+        if (!Child)
+        {
+            Child = TgAllocateNode (DEFAULT_ARG);
+        }
+
+        /* Link first child to parent */
+
+        if (FirstChild)
+        {
+            FirstChild = FALSE;
+            Node->Child = Child;
+        }
+
+
+        /* Point all children to parent */
+
+        Child->Parent = Node;
+
+        /* Link children in a peer list */
+
+        if (PrevChild)
+        {
+            PrevChild->Peer = Child;
+        };
+
+        /* 
+         * This child might be a list, point all nodes in the list
+         * to the same parent
+         */
+
+        while (Child->Peer)
+        {
+            Child = Child->Peer;
+            Child->Parent = Node;
+        }
+
+        PrevChild = Child;
+    }
+    va_end(ap);
+
+    DbgPrint ("\n\n");
+
+
+    return Node;
+}
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE *
+TgCreateValuedLeafNode (
     UINT32                  ParseOpcode,
     void                    *Value)
 {
@@ -326,8 +475,8 @@ TgCreateLeafNode (
 
     Node = TgAllocateNode (ParseOpcode);
 
-    DbgPrint ("\nCreateLeafNode  NewNode %p  Op %s  Value %X  ", 
-                Node, UtGetOpName(ParseOpcode), Value);
+    DbgPrint ("\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %X  ", 
+                Node->LineNumber, Node, UtGetOpName(ParseOpcode), Value);
     Node->Value.Pointer = Value;
 
     switch (ParseOpcode)
@@ -348,13 +497,17 @@ TgCreateLeafNode (
         DbgPrint ("EISAID->%s", Value);
         break;
 
+    case METHOD:
+        DbgPrint ("METHOD");
+        break;
+
     default: 
         break;
     }
 
     DbgPrint ("\n\n");
 
-    return (char *) Node;
+    return Node;
 }
 
 
@@ -371,7 +524,35 @@ TgCreateLeafNode (
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-_TgLinkPeerNode (
+TgCreateLeafNode (
+    UINT32                  ParseOpcode)
+{
+    ASL_PARSE_NODE          *Node;
+
+
+    Node = TgAllocateNode (ParseOpcode);
+
+    DbgPrint ("\nCreateLeafNode  Line %d NewNode %p  Op %s\n\n", 
+                Node->LineNumber, Node, UtGetOpName(ParseOpcode));
+
+    return Node;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE *
+TgLinkPeerNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2)
 {
@@ -381,13 +562,34 @@ _TgLinkPeerNode (
         Node1, Node1 ? UtGetOpName(Node1->ParseOpcode) : NULL, 
         Node2, Node2 ? UtGetOpName(Node2->ParseOpcode) : NULL);
 
-    if (!Node1 || !Node2)
+
+    if ((!Node1) && (!Node2))
+    {
+        DbgPrint ("\nTwo Null nodes!\n");
+        return Node1;
+    }
+
+    /* If one of the nodes is null, just return the non-null node */
+
+    if (!Node2)
     {
         return Node1;
     }
 
-    Node1->Parent = Node2->Parent;
+    if (!Node1)
+    {
+        return Node2;
+    }
 
+
+    if (Node1 == Node2)
+    {
+        DbgPrint ("\n\n************* Internal error, linking node to itself %p\n\n\n", Node1);
+        printf ("Internal error, linking node to itself\n");
+        return Node1;
+    }
+
+    Node1->Parent = Node2->Parent;
     
     /* 
      * Node 1 may already have a peer list (such as an IF/ELSE pair),
@@ -420,7 +622,7 @@ _TgLinkPeerNode (
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-_TgLinkChildNode (
+TgLinkChildNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2)
 {
@@ -467,13 +669,14 @@ _TgLinkChildNode (
 
 void
 TgWalkParseTree (
-    UINT32                      Visitation,
-    ASL_WALK_CALLBACK           Callback,
-    void                        *Context)
+    UINT32                  Visitation,
+    ASL_WALK_CALLBACK       DescendingCallback,
+    ASL_WALK_CALLBACK       AscendingCallback,
+    void                    *Context)
 {
-    ASL_PARSE_NODE              *Node;
-    UINT32                      Level;
-    BOOLEAN                     NodePreviouslyVisited;
+    ASL_PARSE_NODE          *Node;
+    UINT32                  Level;
+    BOOLEAN                 NodePreviouslyVisited;
 
     
     if (!RootNode)
@@ -498,7 +701,7 @@ TgWalkParseTree (
                 /*
                  * Let the callback process the node.  
                  */
-                Callback (Node, Level, Context);
+                DescendingCallback (Node, Level, Context);
 
                 /* Visit children first, once */
 
@@ -548,7 +751,7 @@ TgWalkParseTree (
                  * Let the callback process the node.  
                  *
                  */
-                Callback (Node, Level, Context);
+                AscendingCallback (Node, Level, Context);
             }
 
             /* Visit children first, once */
@@ -584,8 +787,54 @@ TgWalkParseTree (
         break;
 
      case ASL_WALK_VISIT_TWICE:
-         break;  /* Not implemented */
 
+        while (Node)
+        {
+
+            if (NodePreviouslyVisited)
+            {
+                AscendingCallback (Node, Level, Context);
+            }
+
+            else
+            {
+                /*
+                 * Let the callback process the node.  
+                 */
+                DescendingCallback (Node, Level, Context);
+
+                /* Visit children first, once */
+
+                if (Node->Child)
+                {
+                    Level++;
+                    Node = Node->Child;
+                    continue;
+                }
+            }
+
+            /* No more children, visit peers */
+
+            if (Node->Peer)
+            {
+                Node = Node->Peer;
+                NodePreviouslyVisited = FALSE;
+            }
+
+            /* No children or peers, re-visit parent */
+
+            else
+            {
+                if (Level != 0 )
+                {
+                    Level--;
+                }
+                Node = Node->Parent;
+                NodePreviouslyVisited = TRUE;
+            }
+        }
+
+        break;
     }
 }
 
