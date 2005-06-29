@@ -178,16 +178,24 @@ AmlExecFatal (
     CodeDesc = Operands[-1];
     TypeDesc = Operands[-2];
 
-    DEBUG_PRINT (ACPI_INFO,
-                ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
-                TypeDesc->Number.Value, CodeDesc->Number.Value,
-                ArgDesc->Number.Value));
+    DEBUG_PRINT (ACPI_INFO, ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+                    TypeDesc->Number.Value, CodeDesc->Number.Value, ArgDesc->Number.Value));
 
 
     /* TBD: call OSD interface to notify OS of fatal error requiring shutdown! */
 
+
+    /* Free the operands */
+
+    CmDeleteOperand (&Operands[0]);
+    CmDeleteOperand (&Operands[-1]);
+    CmDeleteOperand (&Operands[-2]);
+
+
+    /* If we get back from the OS call, we might as well keep going. */
+
     DEBUG_PRINT (ACPI_ERROR, ("AmlExecFatal: FatalOp executed\n"));
-    return_ACPI_STATUS (AE_AML_ERROR);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -218,16 +226,25 @@ AmlExecIndex (
     ACPI_OBJECT_INTERNAL    **Operands,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *PkgDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *IdxDesc;
     ACPI_OBJECT_INTERNAL    *ResDesc;
+    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *TmpDesc;
     ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlExecIndex");
 
 
+    /* First operand can be either a package or a buffer */
+
     Status = AmlPrepOperands ("lnp", Operands);
+
+    if (Status == AE_TYPE)
+    {
+        Status = AmlPrepOperands ("lnb", Operands);
+    }
 
     if (Status != AE_OK)
     {
@@ -241,35 +258,96 @@ AmlExecIndex (
 
     ResDesc = Operands[0];
     IdxDesc = Operands[-1];
-    PkgDesc = Operands[-2];
+    ObjDesc = Operands[-2];
 
-    if (IdxDesc->Number.Value < 0 || 
-        IdxDesc->Number.Value >= (UINT32) PkgDesc->Package.Count)
+
+    RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
+    if (!RetDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecIndex: Index value out of range\n"));
-        Status = AE_AML_ERROR;
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
     }
 
-    else
+
+    /*
+     * At this point, the ObjDesc operand is either a Package or a Buffer
+     */
+
+    if (ObjDesc->Common.Type == ACPI_TYPE_Package)
     {
+        /* Object to be indexed is a Package */
+
+        if (IdxDesc->Number.Value < 0 || 
+            IdxDesc->Number.Value >= (UINT32) ObjDesc->Package.Count)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecIndex: Index value out of range\n"));
+            Status = AE_AML_ERROR;
+            goto Cleanup;
+        }
+
         /* 
          * TBD - possible dangling reference: if the package vector changes
          * TBD - before this pointer is used, the results may be surprising.
          */
-        PkgDesc->Lvalue.Object  = (void *) &PkgDesc->Package.Elements[IdxDesc->Number.Value];
-        PkgDesc->Common.Type    = (UINT8) INTERNAL_TYPE_Lvalue;
-        PkgDesc->Lvalue.OpCode  = AML_IndexOp;
 
-        Status = AmlExecStore (PkgDesc, ResDesc);
+        /* 
+         * Each element of the package is an internal object.  Get the one
+         * we are after.
+         */
+
+        TmpDesc                      = ObjDesc->Package.Elements[IdxDesc->Number.Value];
+        RetDesc->Lvalue.OpCode       = AML_IndexOp;
+        RetDesc->Lvalue.TargetType   = TmpDesc->Common.Type;
+        RetDesc->Lvalue.Object       = TmpDesc;
+
+        Status = AmlExecStore (RetDesc, ResDesc);
     }
 
-    if (AE_OK == Status)
+    else
     {
-        CmDeleteInternalObject (IdxDesc);
+        /* Object to be indexed is a Buffer */
+
+        if (IdxDesc->Number.Value < 0 || 
+            IdxDesc->Number.Value >= ObjDesc->Buffer.Length)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecIndex: Index value out of range\n"));
+            Status = AE_AML_ERROR;
+            goto Cleanup;
+        }
+
+        /* 
+         * TBD - possible dangling reference: if the package vector changes
+         * TBD - before this pointer is used, the results may be surprising.
+         */
+        RetDesc->Lvalue.OpCode       = AML_IndexOp;
+        RetDesc->Lvalue.TargetType   = ACPI_TYPE_Buffer;
+        RetDesc->Lvalue.Object       = ObjDesc;
+        RetDesc->Lvalue.Offset       = IdxDesc->Number.Value;
+
+        Status = AmlExecStore (RetDesc, ResDesc);
     }
 
-    *ReturnDesc = PkgDesc;
 
+Cleanup:
+
+    /* Always delete operands */
+
+    CmDeleteOperand (&Operands[-1]);
+    CmDeleteOperand (&Operands[-2]);
+
+    /* Delete return object on error */
+
+    if (ACPI_FAILURE (Status) &&
+        (RetDesc))
+    {
+        CmDeleteInternalObject (RetDesc);
+        RetDesc = NULL;
+    }
+
+
+    /* Set the return object and exit */
+
+    *ReturnDesc = RetDesc;
     return_ACPI_STATUS (Status);
 }
 
@@ -309,6 +387,7 @@ AmlExecMatch (
     ACPI_OBJECT_INTERNAL    *Op2Desc;
     ACPI_OBJECT_INTERNAL    *V2Desc;
     ACPI_OBJECT_INTERNAL    *StartDesc;
+    ACPI_OBJECT_INTERNAL    *RetDesc;
     ACPI_STATUS             Status;
     UINT32                  Index;
     UINT32                  MatchValue = (UINT32) -1;
@@ -341,18 +420,28 @@ AmlExecMatch (
 
     /* Validate match comparison sub-opcodes */
     
-    if (Op1Desc->Number.Value < 0 || Op1Desc->Number.Value > 5 || 
-        Op2Desc->Number.Value < 0 || Op2Desc->Number.Value > 5)
+    if (Op1Desc->Number.Value < 0 || Op1Desc->Number.Value > MAX_MATCH_OPERATOR || 
+        Op2Desc->Number.Value < 0 || Op2Desc->Number.Value > MAX_MATCH_OPERATOR)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: operation encoding out of range\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        Status = AE_AML_ERROR;
+        goto Cleanup;
     }
 
     Index = StartDesc->Number.Value;
     if (Index < 0 || Index >= (UINT32) PkgDesc->Package.Count)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: start position value out of range\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        Status = AE_AML_ERROR;
+        goto Cleanup;
+    }
+
+    RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+    if (!RetDesc)
+    {
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+
     }
 
     /* 
@@ -365,7 +454,7 @@ AmlExecMatch (
      * returned as a Number, this will produce the Ones value as specified.
      */
 
-    for ( ; Index < (UINT32) PkgDesc->Package.Count ; ++Index)
+    for ( ; Index < (UINT32) PkgDesc->Package.Count; ++Index)
     {
         /* 
          * Treat any NULL or non-numeric elements as non-matching.
@@ -516,22 +605,34 @@ AmlExecMatch (
         break;
     }
 
-    PkgDesc->Common.Type  = (UINT8) ACPI_TYPE_Number;
-    PkgDesc->Number.Value = MatchValue;
+    /* MatchValue is the return value */
+
+    RetDesc->Number.Value = MatchValue;
+
+
+Cleanup:
 
     /* Free the operands */
 
-    CmDeleteInternalObject (StartDesc);
-    CmDeleteInternalObject (V2Desc);
-    CmDeleteInternalObject (Op2Desc);
-    CmDeleteInternalObject (V1Desc);
-    CmDeleteInternalObject (Op1Desc);
+    CmDeleteOperand (&Operands[0]);
+    CmDeleteOperand (&Operands[-1]);
+    CmDeleteOperand (&Operands[-2]);
+    CmDeleteOperand (&Operands[-3]);
+    CmDeleteOperand (&Operands[-4]);
+    CmDeleteOperand (&Operands[-5]);
     
-    /* Remove operands from the object stack */
+    /* Delete return object on error */
 
-/*     AmlObjStackPop (5);  */         
+    if (ACPI_FAILURE (Status) &&
+        (RetDesc))
+    {
+        CmDeleteInternalObject (RetDesc);
+        RetDesc = NULL;
+    }
 
-    *ReturnDesc = PkgDesc;
 
-    return_ACPI_STATUS (AE_OK);
+    /* Set the return object and exit */
+
+    *ReturnDesc = RetDesc;
+    return_ACPI_STATUS (Status);
 }
