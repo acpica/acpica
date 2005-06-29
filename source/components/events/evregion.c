@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.123 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,7 +124,7 @@
 #include "amlcode.h"
 
 #define _COMPONENT          ACPI_EVENTS
-        MODULE_NAME         ("evregion")
+        ACPI_MODULE_NAME    ("evregion")
 
 
 /*******************************************************************************
@@ -146,7 +146,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("EvInstallDefaultAddressSpaceHandlers");
+    ACPI_FUNCTION_TRACE ("EvInstallDefaultAddressSpaceHandlers");
 
 
     /*
@@ -228,7 +228,7 @@ AcpiEvExecuteRegMethod (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("EvExecuteRegMethod");
+    ACPI_FUNCTION_TRACE ("EvExecuteRegMethod");
 
 
     RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
@@ -274,7 +274,7 @@ AcpiEvExecuteRegMethod (
     /*
      *  Execute the method, no return value
      */
-    DEBUG_EXEC(AcpiUtDisplayInitPathname (RegionObj2->Extra.Method_REG, "  [Method]"));
+    ACPI_DEBUG_EXEC(AcpiUtDisplayInitPathname (RegionObj2->Extra.Method_REG, "  [Method]"));
     Status = AcpiNsEvaluateByHandle (RegionObj2->Extra.Method_REG, Params, NULL);
 
     AcpiUtRemoveReference (Params[1]);
@@ -320,7 +320,7 @@ AcpiEvAddressSpaceDispatch (
     void                    *RegionContext = NULL;
 
 
-    FUNCTION_TRACE ("EvAddressSpaceDispatch");
+    ACPI_FUNCTION_TRACE ("EvAddressSpaceDispatch");
 
 
     RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
@@ -401,10 +401,10 @@ AcpiEvAddressSpaceDispatch (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
         "Addrhandler %p (%p), Address %8.8X%8.8X\n",
-        &RegionObj->Region.AddrHandler->AddrHandler, Handler, HIDWORD(Address),
-        LODWORD(Address)));
+        &RegionObj->Region.AddrHandler->AddrHandler, Handler, 
+        ACPI_HIDWORD (Address), ACPI_LODWORD (Address)));
 
-    if (!(HandlerDesc->AddrHandler.Flags & ADDR_HANDLER_DEFAULT_INSTALLED))
+    if (!(HandlerDesc->AddrHandler.Flags & ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
     {
         /*
          *  For handlers other than the default (supplied) handlers, we must
@@ -423,12 +423,12 @@ AcpiEvAddressSpaceDispatch (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Region handler: %s [%s]\n",
-            AcpiFormatException (Status),
-            AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
+        ACPI_REPORT_ERROR (("Handler for [%s] returned %s\n",
+            AcpiUtGetRegionName (RegionObj->Region.SpaceId),
+            AcpiFormatException (Status)));
     }
 
-    if (!(HandlerDesc->AddrHandler.Flags & ADDR_HANDLER_DEFAULT_INSTALLED))
+    if (!(HandlerDesc->AddrHandler.Flags & ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
     {
         /*
          * We just returned from a non-default handler, we must re-enter the
@@ -468,7 +468,7 @@ AcpiEvDisassociateRegionFromHandler(
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("EvDisassociateRegionFromHandler");
+    ACPI_FUNCTION_TRACE ("EvDisassociateRegionFromHandler");
 
 
     RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
@@ -515,7 +515,11 @@ AcpiEvDisassociateRegionFromHandler(
 
             if (AcpiNsIsLocked)
             {
-                AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+                Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return_VOID;
+                }
             }
 
             /*
@@ -525,7 +529,11 @@ AcpiEvDisassociateRegionFromHandler(
 
             if (AcpiNsIsLocked)
             {
-                AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+                Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return_VOID;
+                }
             }
 
             /*
@@ -605,7 +613,7 @@ AcpiEvAssociateRegionAndHandler (
     ACPI_STATUS     Status;
 
 
-    FUNCTION_TRACE ("EvAssociateRegionAndHandler");
+    ACPI_FUNCTION_TRACE ("EvAssociateRegionAndHandler");
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
@@ -637,7 +645,7 @@ AcpiEvAssociateRegionAndHandler (
 
     if (AcpiNsIsLocked)
     {
-        AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+        (void) AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     }
 
     return_ACPI_STATUS (Status);
@@ -677,7 +685,7 @@ AcpiEvAddrHandlerHelper (
     ACPI_STATUS             Status;
 
 
-    PROC_NAME ("EvAddrHandlerHelper");
+    ACPI_FUNCTION_NAME ("EvAddrHandlerHelper");
 
 
     HandlerObj = (ACPI_OPERAND_OBJECT  *) Context;
