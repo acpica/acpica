@@ -172,34 +172,35 @@ BOOLEAN					opt_verbose     = TRUE;
 #define CMD_EVENT           10
 #define CMD_EXECUTE         11
 #define CMD_EXIT            12
-#define CMD_GO              13
-#define CMD_HELP            14
-#define CMD_HELP2           15
-#define CMD_HISTORY         16
-#define CMD_HISTORY_EXE     17
-#define CMD_INFORMATION     18
-#define CMD_INTO            19
-#define CMD_LEVEL           20
-#define CMD_LIST            21
-#define CMD_LOAD            22
-#define CMD_LOCALS          23
-#define CMD_METHODS         24
-#define CMD_NAMESPACE       25
-#define CMD_NOTIFY          26
-#define CMD_OBJECT          27
-#define CMD_OPEN            28
-#define CMD_PREFIX          29
-#define CMD_QUIT            30
-#define CMD_RESULTS         31
-#define CMD_SET             32
-#define CMD_STATS           33
-#define CMD_STOP            34
-#define CMD_TERMINATE       35
-#define CMD_TREE            36
-#define CMD_UNLOAD          37
+#define CMD_FIND            13
+#define CMD_GO              14
+#define CMD_HELP            15
+#define CMD_HELP2           16
+#define CMD_HISTORY         17
+#define CMD_HISTORY_EXE     18
+#define CMD_INFORMATION     19
+#define CMD_INTO            20
+#define CMD_LEVEL           21
+#define CMD_LIST            22
+#define CMD_LOAD            23
+#define CMD_LOCALS          24
+#define CMD_METHODS         25
+#define CMD_NAMESPACE       26
+#define CMD_NOTIFY          27
+#define CMD_OBJECT          28
+#define CMD_OPEN            29
+#define CMD_PREFIX          30
+#define CMD_QUIT            31
+#define CMD_RESULTS         32
+#define CMD_SET             33
+#define CMD_STATS           34
+#define CMD_STOP            35
+#define CMD_TERMINATE       36
+#define CMD_TREE            37
+#define CMD_UNLOAD          38
 
 #define CMD_FIRST_VALID     2
-#define CMD_NUM_COMMANDS    38
+#define CMD_NUM_COMMANDS    39
 
 
 typedef struct CommandInfo
@@ -223,6 +224,7 @@ COMMAND_INFO            Commands[CMD_NUM_COMMANDS] = {
                             "EVENT",        1,
                             "EXECUTE",      1,
                             "EXIT",         0,
+                            "FIND",         1,
                             "GO",           0,
                             "HELP",         0,
                             "?",            0,
@@ -418,13 +420,14 @@ DbDisplayHelp (void)
     OsdPrintf ("     [Byte|Word|Dword|Qword]        Display ACPI objects or memory\n");
     OsdPrintf ("Event <F|G> <Value>                 Generate Event (Fixed/GPE)\n");
     OsdPrintf ("Execute <Namepath> [Arguments]      Execute control method\n");
+    OsdPrintf ("Find <Name>                         Find all instances of an ACPI name\n");
     OsdPrintf ("Help                                This help screen\n");
     OsdPrintf ("History                             Display command history buffer\n");
     OsdPrintf ("Level [<DebugLevel>] [console]      Get/Set debug level for file or console\n");
     OsdPrintf ("Method                              Display list of loaded control methods\n");
     OsdPrintf ("Namespace [<Address>|<Namepath>]    Display loaded namespace tree or subtree\n");
     OsdPrintf ("Notify <NamePath> <Value>           Send a notification\n");
-    OsdPrintf ("Object <Address>|<Namepath>         Synonym for Dump\n");
+    OsdPrintf ("Objects <ObjectType>                Display all objects of the given type\n");
     OsdPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
     OsdPrintf ("Quit or Exit                        Exit this command\n");
     OsdPrintf ("Stats                               Display namespace and memory statistics\n");
@@ -690,7 +693,6 @@ DbCommandDispatch (
         break;
 
     case CMD_DUMP:
-    case CMD_OBJECT:
         DbDecodeAndDisplayObject (Args[1], Args[2]);
         break;
 
@@ -700,6 +702,10 @@ DbCommandDispatch (
 
     case CMD_EXECUTE:
         DbExecute (Args[1], &Args[2], EX_NO_SINGLE_STEP);
+        break;
+
+    case CMD_FIND:
+        DbFindNameInNamespace (Args[1]);
         break;
 
     case CMD_GO:
@@ -774,7 +780,7 @@ DbCommandDispatch (
         break;
     
     case CMD_METHODS:
-        DbDisplayAllMethods (Args[1]);
+        DbDisplayObjects ("Methods", Args[1]);
         break;
 
     case CMD_NAMESPACE:
@@ -784,6 +790,10 @@ DbCommandDispatch (
     case CMD_NOTIFY:
         Temp = STRTOUL (Args[2], NULL, 0);
         DbSendNotify (Args[1], Temp);
+        break;
+
+    case CMD_OBJECT:
+        DbDisplayObjects (Args[1], Args[2]);
         break;
 
     case CMD_OPEN:
