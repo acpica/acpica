@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.53 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,17 +119,54 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acnamesp.h"
-#include "acparser.h"
-#include "acevents.h"
-#include "acinterp.h"
 #include "acdebug.h"
 #include "acdispat.h"
 
 
-#ifdef ENABLE_DEBUGGER
+#ifdef ACPI_DEBUGGER
 
-#define _COMPONENT          ACPI_DEBUGGER
+#define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbutils")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbMatchArgument
+ *
+ * PARAMETERS:  UserArgument            - User command line
+ *              Arguments               - Array of commands to match against
+ *
+ * RETURN:      Index into command array or ACPI_TYPE_NOT_FOUND if not found
+ *
+ * DESCRIPTION: Search command array for a command match
+ *
+ ******************************************************************************/
+
+ACPI_OBJECT_TYPE
+AcpiDbMatchArgument (
+    char                    *UserArgument,
+    ARGUMENT_INFO           *Arguments)
+{
+    UINT32                  i;
+
+
+    if (!UserArgument || UserArgument[0] == 0)
+    {
+        return (ACPI_TYPE_NOT_FOUND);
+    }
+
+    for (i = 0; Arguments[i].Name; i++)
+    {
+        if (ACPI_STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
+        {
+            return (i);
+        }
+    }
+
+    /* Argument not recognized */
+
+    return (ACPI_TYPE_NOT_FOUND);
+}
 
 
 /*******************************************************************************
@@ -249,7 +286,14 @@ AcpiDbDumpObject (
     case ACPI_TYPE_BUFFER:
 
         AcpiOsPrintf ("[Buffer] Length %.2X = ", ObjDesc->Buffer.Length);
-        AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        if (ObjDesc->Buffer.Length)
+        {
+            AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        }
+        else
+        {
+            AcpiOsPrintf ("\n");
+        }
         break;
 
 
@@ -264,7 +308,7 @@ AcpiDbDumpObject (
         break;
 
 
-    case INTERNAL_TYPE_REFERENCE:
+    case ACPI_TYPE_LOCAL_REFERENCE:
 
         AcpiOsPrintf ("[Object Reference] = %p\n", ObjDesc->Reference.Handle);
         break;
@@ -304,7 +348,7 @@ AcpiDbDumpObject (
 
 void
 AcpiDbPrepNamestring (
-    NATIVE_CHAR             *Name)
+    char                    *Name)
 {
 
 
@@ -375,12 +419,13 @@ AcpiDbSecondPassParse (
 
     AcpiOsPrintf ("Pass two parse ....\n");
 
-
     while (Op)
     {
         if (Op->Common.AmlOpcode == AML_METHOD_OP)
         {
             Method = Op;
+
+            /* Create a new walk state for the parse */
 
             WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
                                             NULL, NULL, NULL);
@@ -389,6 +434,7 @@ AcpiDbSecondPassParse (
                 return (AE_NO_MEMORY);
             }
 
+            /* Init the Walk State */
 
             WalkState->ParserState.Aml          =
             WalkState->ParserState.AmlStart     = Method->Named.Data;
@@ -399,9 +445,9 @@ AcpiDbSecondPassParse (
             WalkState->DescendingCallback       = AcpiDsLoad1BeginOp;
             WalkState->AscendingCallback        = AcpiDsLoad1EndOp;
 
+            /* Perform the AML parse */
 
             Status = AcpiPsParseAml (WalkState);
-
 
             BaseAmlOffset = (Method->Common.Value.Arg)->Common.AmlOffset + 1;
             StartOp = (Method->Common.Value.Arg)->Common.Next;
@@ -412,7 +458,6 @@ AcpiDbSecondPassParse (
                 SearchOp->Common.AmlOffset += BaseAmlOffset;
                 SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
             }
-
         }
 
         if (Op->Common.AmlOpcode == AML_REGION_OP)
@@ -454,9 +499,9 @@ AcpiDbSecondPassParse (
 
 ACPI_NAMESPACE_NODE *
 AcpiDbLocalNsLookup (
-    NATIVE_CHAR             *Name)
+    char                    *Name)
 {
-    NATIVE_CHAR             *InternalPath;
+    char                    *InternalPath;
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node = NULL;
 
@@ -488,6 +533,6 @@ AcpiDbLocalNsLookup (
 }
 
 
-#endif /* ENABLE_DEBUGGER */
+#endif /* ACPI_DEBUGGER */
 
 

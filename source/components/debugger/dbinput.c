@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.92 $
+ *              $Revision: 1.94 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -700,7 +700,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_LOAD:
-        Status = AcpiDbLoadAcpiTable (AcpiGbl_DbArgs[1]);
+        Status = AcpiDbGetTableFromFile (AcpiGbl_DbArgs[1], NULL);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
