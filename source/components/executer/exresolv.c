@@ -158,31 +158,31 @@ AmlGetFieldUnitValue (
 
     if (!FieldDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - null field pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - null field pointer\n"));
     }
 
     else if (!FieldDesc->FieldUnit.Container)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - null container pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - null container pointer\n"));
     }
 
-    else if (TYPE_Buffer != FieldDesc->FieldUnit.Container->Common.Type)
+    else if (ACPI_TYPE_Buffer != FieldDesc->FieldUnit.Container->Common.Type)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - container is not a Buffer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - container is not a Buffer\n"));
     }
 
     else if (FieldDesc->FieldUnit.Sequence
                 != FieldDesc->FieldUnit.Container->Buffer.Sequence)
     {
         DEBUG_PRINT (ACPI_ERROR, (
-                "AmlGetFieldUnitValue: internal error - stale Buffer [%lx != %lx]\n",
+                "AmlGetFieldUnitValue: Internal error - stale Buffer [%lx != %lx]\n",
                 FieldDesc->FieldUnit.Sequence,
                 FieldDesc->FieldUnit.Container->Buffer.Sequence));
     }
 
     else if (!ResultDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - null result pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - null result pointer\n"));
     }
 
     else 
@@ -218,7 +218,7 @@ AmlGetFieldUnitValue (
     
         Mask = ((UINT32) 1 << FieldDesc->FieldUnit.Length) - (UINT32) 1;
 
-        ResultDesc->Number.Type = (UINT8) TYPE_Number;
+        ResultDesc->Number.Type = (UINT8) ACPI_TYPE_Number;
 
         /* Shift the word containing the field, and mask the value */
     
@@ -243,6 +243,908 @@ AmlGetFieldUnitValue (
 }
 
 
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlGetRvalueFromObject
+ *
+ * PARAMETERS:  StackPtr        - Pointer to a stack location that contains a
+ *                                ptr to an internal object.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Retrieve the value from an internal object.  The Lvalue type
+ *              uses the associated AML opcode to determine the value.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AmlGetRvalueFromObject (
+    ACPI_OBJECT_INTERNAL    **StackPtr)
+{
+    ACPI_OBJECT_INTERNAL    *StackDesc;
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_HANDLE             TempHandle = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    UINT16                  Opcode;
+    UINT8				    MvIndex = 0;
+
+
+    FUNCTION_TRACE ("AmlGetRvalueFromObject");
+
+
+    StackDesc = *StackPtr;
+
+    /* This is an ACPI_OBJECT_INTERNAL */
+
+    switch (StackDesc->Common.Type)
+    {
+
+    case INTERNAL_TYPE_Lvalue:
+
+        Opcode = StackDesc->Lvalue.OpCode;
+
+        switch (Opcode)
+        {
+
+        case AML_NameOp:
+        
+            /* 
+             * Convert indirect name ptr to a direct name ptr.
+             * Then, AmlGetRvalueFromEntry can be used to get the value
+             */
+        
+            TempHandle = StackDesc->Lvalue.Object;
+            CmDeleteInternalObject (StackDesc);
+
+            /* Put direct name pointer onto stack and exit */
+
+            (*StackPtr) = TempHandle;
+            Status = AE_OK;
+            break;
+
+
+        case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
+        case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
+
+            MvIndex = Opcode - AML_Local0;
+
+            DEBUG_PRINT (ACPI_INFO,
+                            ("AmlGetRvalueFromObject: [Local%d] before AmlMthStackGetValue %p %p %08lx \n",
+                            MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
+
+            Status = AmlMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackDesc);
+
+            DEBUG_PRINT (ACPI_INFO,
+                        ("AmlGetRvalueFromObject: [Local%d] after MSGV Status=%s %p %p %08lx \n",
+                            MvIndex, Gbl_ExceptionNames[Status], StackPtr, StackDesc,
+                            *(UINT32 *) StackDesc));
+        
+            if (ACPI_TYPE_Number == StackDesc->Common.Type)
+            {
+                /* Value is a Number */
+            
+                DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] value is [0x%X] \n", 
+                                            MvIndex, StackDesc->Number.Value));
+            }
+
+            break;
+
+
+        case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
+        case AML_Arg4: case AML_Arg5: case AML_Arg6:
+
+            MvIndex = Opcode - AML_Arg0;
+
+            DEBUG_PRINT (TRACE_EXEC,
+                            ("AmlGetRvalueFromObject: [Arg%d] before AmlMthStackGetValue %p %p %08lx \n",
+                            MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
+
+            Status = AmlMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackDesc);
+    
+            DEBUG_PRINT (TRACE_EXEC,
+                            ("AmlGetRvalueFromObject: [Arg%d] MSGV returned %s %p %p %08lx \n",
+                            MvIndex, Gbl_ExceptionNames[Status], StackPtr, StackDesc,
+                            *(UINT32 *) StackDesc));
+
+            if (ACPI_TYPE_Number == StackDesc->Common.Type)
+            {
+                /* Value is a Number */
+            
+                DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Arg%d] value is [0x%X] \n", 
+                                            MvIndex, StackDesc->Number.Value));
+            }
+
+            break;
+
+
+        case AML_ZeroOp:
+
+            StackDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
+            StackDesc->Number.Value = 0;
+            Status = AE_OK;
+            break;
+
+
+        case AML_OneOp:
+
+            StackDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
+            StackDesc->Number.Value = 1;
+            Status = AE_OK;
+            break;
+
+
+        case AML_OnesOp:
+
+            StackDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
+            StackDesc->Number.Value = 0xFFFFFFFF;
+            Status = AE_OK;
+            break;
+
+
+        case AML_IndexOp:
+
+            ObjDesc = StackDesc->Lvalue.Object;
+            if (ObjDesc)
+            {
+                /*
+                 * Valid obj descriptor, copy pointer to return value
+                 */
+                *StackPtr = ObjDesc;
+                Status = AE_OK;
+            }
+
+            else
+            {
+                /* Invalid obj descriptor */
+
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromObject: Null IndexOp value ptr\n"));
+                Status = AE_AML_ERROR;
+            }
+
+            break;
+
+
+        default:
+
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromObject: Unknown Lvalue subtype %02x\n",
+                            Opcode));
+            Status = AE_AML_ERROR;
+
+        }   /* switch (Opcode) */
+
+
+        if (AE_OK != Status)
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        break; /* case INTERNAL_TYPE_Lvalue */
+
+
+    case ACPI_TYPE_FieldUnit:
+
+        ObjDesc = CmCreateInternalObject (ACPI_TYPE_Any);
+        if (!ObjDesc)
+        {   
+            /* Descriptor allocation failure  */
+        
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        if ((Status = AmlGetFieldUnitValue (StackDesc, ObjDesc)) != AE_OK)
+        {
+            CmDeleteInternalObject (ObjDesc);
+            ObjDesc = NULL;
+        }
+    
+        *StackPtr = (void *) ObjDesc;
+        return_ACPI_STATUS (Status);
+
+
+    case INTERNAL_TYPE_BankField:
+
+        ObjDesc = CmCreateInternalObject (ACPI_TYPE_Any);
+        if (!ObjDesc)
+        {   
+            /* Descriptor allocation failure */
+        
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        if ((Status = AmlGetFieldUnitValue (StackDesc, ObjDesc)) != AE_OK)
+        {
+            CmDeleteInternalObject (ObjDesc);
+            ObjDesc = NULL;
+        }
+
+        *StackPtr = (void *) ObjDesc;
+        return_ACPI_STATUS (Status);
+        break;
+
+
+    /* TBD: - may need to handle IndexField, and DefField someday */
+
+    default:
+
+        break;
+
+    }   /* switch (StackDesc->Common.Type) */
+
+
+    return Status;
+}
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlGetRvalueFromEntry
+ *
+ * PARAMETERS:  StackPtr        - Pointer to a location on a stack that contains
+ *                                a ptr to an NTE
+ *                                  
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create an Rvalue from a NAME_TABLE_ENTRY (nte, A.K.A. a "direct
+ *              name pointer")
+ *
+ * Note: for some of the data types, the pointer attached to the NTE can be
+ * either a pointer to an actual internal object or a pointer into the AML
+ * stream itself.  These types are currently:
+ *
+ *      ACPI_TYPE_Number
+ *      ACPI_TYPE_String
+ *      ACPI_TYPE_Buffer
+ *      ACPI_TYPE_Mutex
+ *      ACPI_TYPE_Package
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AmlGetRvalueFromEntry (
+    NAME_TABLE_ENTRY        **StackPtr)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_OBJECT_INTERNAL    *ValDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    NAME_TABLE_ENTRY        *StackEntry;
+    UINT8                   *AmlPointer;
+    ACPI_OBJECT_TYPE        EntryType;
+    BOOLEAN                 Locked;
+    BOOLEAN                 AttachedAmlPointer = FALSE;
+    UINT8                   AmlOpcode;
+    UINT32                  TempVal;
+
+
+    FUNCTION_TRACE ("AmlGetRvalueFromEntry");
+
+    StackEntry = *StackPtr;
+
+
+    /* 
+     * The stack pointer is a "Direct name ptr", and points to a
+     * a NAME_TABLE_ENTRY (nte).  Get the pointer that is attached to
+     * the nte.
+     */
+
+    ValDesc     = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
+    EntryType   = NsGetType ((ACPI_HANDLE) StackEntry);
+
+    DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: Entry=%p ValDesc=%p Type=%d\n", 
+                    StackEntry, ValDesc, EntryType));
+
+
+    /*
+     * The ValDesc attached to the NTE can be either:
+     * 1) An internal ACPI object 
+     * 2) A pointer into the AML stream (into one of the ACPI system tables)
+     */
+
+    if (NsIsInSystemTable (ValDesc))
+    {
+        AttachedAmlPointer = TRUE;
+        AmlOpcode = *((UINT8 *) ValDesc);
+        AmlPointer = ((UINT8 *) ValDesc) + 1;
+    }
+
+
+    /*
+     * Action is based on the type of the NTE, which indicates the type
+     * of the attached object or pointer
+     */
+    switch (EntryType)
+    {
+
+    case ACPI_TYPE_Package:
+
+        /* 
+         * ValDesc should point to either an ACPI_OBJECT_INTERNAL of
+         * type Package, or an initialization in the AML stream.
+         */
+        if (!ValDesc)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null ValDesc\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        if (AttachedAmlPointer)
+        {
+            if (AML_PackageOp == AmlOpcode)
+            {
+                /* 
+                 * The value pointer in the name table entry
+                 * points to a package definition in the AML stream.
+                 * Convert it to an object.
+                 */
+
+                if (AE_OK != (Status = AmlObjStackPush ()))             /* ObjStack */
+                {
+                    return_ACPI_STATUS (Status);
+                }
+
+                if (AE_OK == (Status = AmlPkgPushExec (AmlPointer, 0L)) &&          /* PkgStack */
+                    AE_OK == (Status = AmlDoPkg (ACPI_TYPE_Package, IMODE_Execute)) &&
+                    AE_OK == (Status = AmlPkgPopExec ()))                           /* PkgStack */
+                {
+                    NsAttachObject ((ACPI_HANDLE) StackEntry, AmlObjStackGetValue (0),
+                                    (UINT8) ACPI_TYPE_Package);
+
+                    /* Refresh local value pointer to reflect newly set value */
+                
+                    ValDesc = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
+                    AmlObjStackPop (1);
+                }
+            
+                else
+                {
+                    AmlObjStackPop (1);
+                    return_ACPI_STATUS (Status);
+                }
+            }
+
+            else
+            {
+                /* Aml Opcode is not a package op */
+
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Not a PackageOp opcode (%x)\n",
+                                AmlOpcode));
+                return_ACPI_STATUS (AE_AML_ERROR);
+            }
+        }
+
+        
+        /* ValDesc is an internal object in all cases by the time we get here */
+
+        if (!ValDesc || (ACPI_TYPE_Package != ValDesc->Common.Type))
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - Bad package value\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        ObjDesc = CmAllocateObjectDesc ();
+        if (!ObjDesc)
+        {   
+            /* Descriptor allocation failure */
+            
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        /* Copy object to the newly allocated descriptor */
+
+        Status = CmCopyInternalObject (ValDesc, ObjDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            CmDeleteInternalObject (ObjDesc);
+            return_ACPI_STATUS (Status);
+        }
+
+        break;
+
+
+    case ACPI_TYPE_Buffer:
+
+        if (!ValDesc)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null Buffer ValuePtr\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        if (AttachedAmlPointer)
+        {
+            if (AML_BufferOp == AmlOpcode)
+            {
+                /* 
+                 * The value pointer in the name table entry
+                 * points to a buffer definition in the AML stream.
+                 * Convert it to an object.
+                 */
+                if (AE_OK != (Status = AmlObjStackPush ()))                /* ObjStack */
+                {
+                    return_ACPI_STATUS (Status);
+                }
+
+                if (AE_OK == (Status = AmlPkgPushExec (AmlPointer, 0L)) &&          /* PkgStack */
+                    AE_OK == (Status = AmlDoPkg (ACPI_TYPE_Buffer, IMODE_Execute)) &&
+                    AE_OK == (Status = AmlPkgPopExec ()))                           /* PkgStack */
+                {
+                    NsAttachObject ((ACPI_HANDLE) StackEntry, AmlObjStackGetValue (0),
+                                    (UINT8) ACPI_TYPE_Buffer);
+                
+                    /* Refresh local value pointer to reflect newly set value */
+                
+                    ValDesc = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
+                    AmlObjStackPop (1);
+                }
+            
+                else
+                {
+                    AmlObjStackPop (1);
+                    return_ACPI_STATUS (Status);
+                }
+            }
+
+            else
+            {
+                /* Aml Opcode is not a buffer op */
+
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Not a BufferOp opcode (%x)\n",
+                                AmlOpcode));
+                return_ACPI_STATUS (AE_AML_ERROR);
+            }
+        }
+
+        
+        /* ValDesc is an internal object in all cases by the time we get here */
+
+        if (!ValDesc || (ACPI_TYPE_Buffer != ValDesc->Common.Type))
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Bad buffer value\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        ObjDesc = CmAllocateObjectDesc ();
+        if (!ObjDesc)
+        {   
+            /* Descriptor allocation failure */
+            
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        /* Copy object to the newly allocated descriptor */
+
+        Status = CmCopyInternalObject (ValDesc, ObjDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            CmDeleteInternalObject (ObjDesc);
+            return_ACPI_STATUS (Status);
+        }
+
+        /* Assign a new sequence number */
+        
+        ObjDesc->Buffer.Sequence = AmlBufSeq();
+        
+        DEBUG_PRINT (TRACE_BFIELD,
+                    ("AmlGetRvalueFromEntry: New Buffer descriptor seq# %ld @ %p \n",
+                    ObjDesc->Buffer.Sequence, ObjDesc));
+
+        break;
+
+
+    case ACPI_TYPE_String:
+      
+        if (AttachedAmlPointer)
+        {
+            /* Allocate a new string object */
+
+            ObjDesc = CmCreateInternalObject (ACPI_TYPE_String);
+            if (!ObjDesc)
+            {   
+                /* Descriptor allocation failure */
+
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            /* Init the internal object */
+
+            ObjDesc->String.Pointer = AmlPointer;
+            ObjDesc->String.Length = strlen (AmlPointer);
+        }
+
+        else
+        {
+            if (ACPI_TYPE_String != ValDesc->Common.Type)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - Bad string value\n"));
+                return_ACPI_STATUS (AE_AML_ERROR);
+            }
+
+            ObjDesc = CmAllocateObjectDesc ();
+            if (!ObjDesc)
+            {   
+                /* Descriptor allocation failure */
+
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            /* Copy object to the newly allocated descriptor */
+
+            Status = CmCopyInternalObject (ValDesc, ObjDesc);
+            if (ACPI_FAILURE (Status))
+            {
+                CmDeleteInternalObject (ObjDesc);
+                return_ACPI_STATUS (Status);
+            }
+        }
+
+        break;
+
+
+    case ACPI_TYPE_Number:
+
+        DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: case Number \n"));
+
+        if (!ValDesc)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null Number ValuePtr\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        
+        /*
+         * A ACPI_TYPE_Number can be either an object or an AML pointer
+         */
+
+        if (AttachedAmlPointer)
+        {
+            /* 
+             * The attachment points into the AML stream, get the number from there.
+             * The actual number is based upon the AML opcode
+             * Note: WordOp and DWordOp will not work properly if the
+             *       processor's endianness does not match the AML's.
+             */
+
+            switch (AmlOpcode)
+            {
+
+            case AML_ZeroOp:
+
+                TempVal = 0;
+                break;
+
+
+            case AML_OneOp:
+
+                TempVal = 1;
+                break;
+
+
+            case AML_OnesOp:
+
+                TempVal = 0xFFFFFFFF;
+                break;
+
+
+            case AML_ByteOp:
+
+                TempVal = (UINT32) ((UINT8 *) ValDesc)[1];
+                break;
+
+
+            case AML_WordOp:
+
+                TempVal = (UINT32) *(UINT16 *)&((UINT8 *) ValDesc)[1];
+                break;
+
+
+            case AML_DWordOp:
+
+                TempVal = *(UINT32 *)&((UINT8 *) ValDesc)[1];
+                break;
+
+
+            default:
+
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlGetRvalue/Number: Internal error - expected AML number, found %02x\n",
+                        AmlOpcode));
+
+                return_ACPI_STATUS (AE_AML_ERROR);
+
+            } /* switch */
+
+            
+            /* Create and initialize a new object */
+
+            ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+            if (!ObjDesc)
+            {   
+                /* Descriptor allocation failure  */
+                
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+            
+            ObjDesc->Number.Value = TempVal;
+        }
+        
+        else
+        {
+            /* The NTE has an attached internal object, make sure it's a number */
+
+            if (ACPI_TYPE_Number != ValDesc->Common.Type)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue/Number: Internal error - not a Number\n"));
+                return_ACPI_STATUS (AE_AML_ERROR);
+            }
+
+            ObjDesc = CmAllocateObjectDesc ();
+            if (!ObjDesc)
+            {   
+                /* Descriptor allocation failure  */
+            
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+        
+            /* Copy object to the newly allocated descriptor */
+
+            Status = CmCopyInternalObject (ValDesc, ObjDesc);
+            if (ACPI_FAILURE (Status))
+            {
+                CmDeleteInternalObject (ObjDesc);
+                return_ACPI_STATUS (Status);
+            }
+        }
+
+        break;
+
+
+    case INTERNAL_TYPE_DefField:
+
+        /* 
+         * XXX - Implementation limitation: Fields are implemented as type
+         * XXX - Number, but they really are supposed to be type Buffer.
+         * XXX - The two are interchangeable only for lengths <= 32 bits.
+         */
+        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) StackEntry, &TempVal);
+        if (AE_OK != Status)
+        {
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+BREAKPOINT3;
+        ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        if (!ObjDesc)
+        {   
+            /* Descriptor allocation failure  */
+            
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        ObjDesc->Number.Value = TempVal;
+        break;
+
+
+    case INTERNAL_TYPE_BankField:
+
+        if (!ValDesc)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null BankField ValuePtr\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        if (AttachedAmlPointer)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - BankField cannot be an Aml ptr\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        if (INTERNAL_TYPE_BankField != ValDesc->Common.Type)
+        {
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlGetRvalue/BankField:Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                    &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), INTERNAL_TYPE_BankField, ValDesc->Common.Type, ValDesc));
+            
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+
+        /* Get the global lock if needed */
+
+        ObjDesc = (ACPI_OBJECT_INTERNAL *) *StackPtr;
+        Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
+        {
+
+            /* Set Index value to select proper Data register */
+            /* perform the update */
+        
+            Status = AmlSetNamedFieldValue (ValDesc->BankField.BankSelect,
+                                            ValDesc->BankField.Value);
+        }
+        AmlReleaseGlobalLock (Locked);
+
+
+        if (AE_OK != Status)
+        {
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+        
+        /* Read Data value */
+        
+        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) ValDesc->BankField.Container, &TempVal);
+        if (AE_OK != Status)
+        {
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        if (!ObjDesc)
+        {
+            /* Descriptor allocation failure  */
+
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        ObjDesc->Number.Value = TempVal;
+        break;
+
+
+    case INTERNAL_TYPE_IndexField:
+
+        if (!ValDesc)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null IndexField ValuePtr\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        if (AttachedAmlPointer)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - IndexField cannot be an Aml ptr\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        if (INTERNAL_TYPE_IndexField != ValDesc->Common.Type)
+        {
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlGetRvalue/IndexField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                    &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), INTERNAL_TYPE_IndexField, ValDesc->Common.Type, ValDesc));
+            
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+
+        /* Set Index value to select proper Data register */
+        /* Get the global lock if needed */
+
+        ObjDesc = (ACPI_OBJECT_INTERNAL *) *StackPtr;
+        Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
+        {
+            /* Perform the update */
+            
+            Status = AmlSetNamedFieldValue (ValDesc->IndexField.Index,
+                                            ValDesc->IndexField.Value);
+        }
+        AmlReleaseGlobalLock (Locked);
+
+        if (AE_OK != Status)
+        {
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        /* Read Data value */
+        
+        Status = AmlGetNamedFieldValue (ValDesc->IndexField.Data, &TempVal);
+        if (AE_OK != Status)
+        {
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        if (!ObjDesc)
+        {
+            /* Descriptor allocation failure  */
+
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        ObjDesc->Number.Value = TempVal;
+        break;
+
+
+    case ACPI_TYPE_FieldUnit:
+
+        if (!ValDesc)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null FieldUnit ValuePtr\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        if (AttachedAmlPointer)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - FieldUnit cannot be an Aml ptr\n"));
+            return_ACPI_STATUS (AE_AML_ERROR);
+        }
+
+        if (ValDesc->Common.Type != (UINT8) EntryType)
+        {
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlGetRvalue/FieldUnit: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                      &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), EntryType,
+                      ValDesc->Common.Type, ValDesc));
+            
+            return_ACPI_STATUS (AE_AML_ERROR);
+            break;
+        }
+
+        ObjDesc = CmCreateInternalObject (ACPI_TYPE_Any);
+        if (!ObjDesc)
+        {
+            /* Descriptor allocation failure  */
+
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        if ((Status = AmlGetFieldUnitValue (ValDesc, ObjDesc)) != AE_OK)
+        {
+            CmDeleteInternalObject (ObjDesc);
+            return_ACPI_STATUS (Status);
+        }
+
+        break;
+
+
+    /* Cases which just return the name as the rvalue */
+    
+    case ACPI_TYPE_Device:
+
+        return_ACPI_STATUS (AE_OK);
+        break;
+
+
+
+    /* TBD: Unimplemented cases */
+
+    case ACPI_TYPE_Method:        /* XXX - unimplemented, handled elsewhere */
+    case ACPI_TYPE_Power:         /* XXX - unimplemented, may not be needed */
+    case ACPI_TYPE_Processor:     /* XXX - unimplemented, may not be needed */
+    case ACPI_TYPE_Thermal:       /* XXX - unimplemented, may not be needed */
+    case ACPI_TYPE_Event:         /* XXX - unimplemented, may not be needed */
+    case ACPI_TYPE_Mutex:         /* XXX - unimplemented, may not be needed */
+    case ACPI_TYPE_Region:        /* XXX - unimplemented, may not be needed */
+
+    case ACPI_TYPE_Any:
+
+        DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: case %s \n", 
+                        Gbl_NsTypeNames[EntryType]));
+      
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Type [%s] is not implemented!\n",
+                        Gbl_NsTypeNames[EntryType]));
+        
+        return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
+
+
+    /* Default case is for unknown types */
+
+    default:
+
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Unknown object type %d\n",
+                        EntryType));
+        
+        return_ACPI_STATUS (AE_AML_ERROR);
+    
+    } /* switch (EntryType) */
+
+
+
+
+    /* Put the object descriptor on the stack */
+
+    *StackPtr = (void *) ObjDesc;
+
+    return Status;
+}
+
+
 /*****************************************************************************
  * 
  * FUNCTION:    AmlGetRvalue
@@ -261,13 +1163,7 @@ ACPI_STATUS
 AmlGetRvalue (
     ACPI_OBJECT_INTERNAL    **StackPtr)
 {
-    ACPI_HANDLE             TempHandle = NULL;
-    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *ValDesc = NULL;
-    ACPI_STATUS             Status = AE_OK;
-    UINT32                  TempVal;
-    UINT8				    MvIndex = 0;
-    BOOLEAN                 Locked;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlGetRvalue");
@@ -279,698 +1175,33 @@ AmlGetRvalue (
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    switch ((*StackPtr)->Common.Type)
-    {
-    case TYPE_Lvalue:
-
-        switch ((*StackPtr)->Lvalue.OpCode)
-        {
-
-        case AML_NameOp:
-            
-            /* Convert indirect name ptr to direct name ptr */
-            
-            TempHandle = (*StackPtr)->Lvalue.Object;
-            CmDeleteInternalObject (*StackPtr);
-            (*StackPtr) = TempHandle;
-            Status = AE_OK;
-            break;
-
-
-        case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
-        case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
-
-            MvIndex = (*StackPtr)->Lvalue.OpCode - AML_Local0;
-
-            DEBUG_PRINT (ACPI_INFO,
-                            ("AmlGetRvalue: [Local%d] before AmlMthStackGetValue %p %p %08lx \n",
-                            MvIndex, StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
-
-            Status = AmlMthStackGetValue (MTH_TYPE_LOCAL, ((*StackPtr)->Lvalue.OpCode - AML_Local0),
-                                            *StackPtr);
-
-            DEBUG_PRINT (ACPI_INFO,
-                        ("AmlGetRvalue: [Local%d] after MSGV Status=%s %p %p %08lx \n",
-                            MvIndex, Gbl_ExceptionNames[Status], StackPtr, *StackPtr,
-                            *(UINT32 *)* StackPtr));
-            
-            if (TYPE_Number == (*StackPtr)->Common.Type)
-            {
-                /* Value is a Number */
-                
-                DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalue: [Local%d] value is [0x%X] \n", 
-                                            MvIndex, (*StackPtr)->Number.Value));
-            }
-            break;
-
-
-        case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
-        case AML_Arg4: case AML_Arg5: case AML_Arg6:
-
-            DEBUG_PRINT (TRACE_EXEC,
-                            ("AmlGetRvalue: [Arg%d] before AmlMthStackGetValue %p %p %08lx \n",
-                            MvIndex = (*StackPtr)->Lvalue.OpCode - AML_Arg0,
-                            StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
-
-            Status = AmlMthStackGetValue (MTH_TYPE_ARG, ((*StackPtr)->Lvalue.OpCode - AML_Arg0),
-                                            *StackPtr);
-        
-            DEBUG_PRINT (TRACE_EXEC,
-                            ("AmlGetRvalue: [Arg%d] MSGV returned %s %p %p %08lx \n",
-                            MvIndex, Gbl_ExceptionNames[Status], StackPtr, *StackPtr,
-                            *(UINT32 *)* StackPtr));
-
-            if (TYPE_Number == (*StackPtr)->Common.Type)
-            {
-                /* Value is a Number */
-                
-                DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalue: [Arg%d] value is [0x%X] \n", 
-                                            MvIndex, (*StackPtr)->Number.Value));
-            }
-
-            break;
-
-
-        case AML_ZeroOp:
-
-            (*StackPtr)->Common.Type = (UINT8) TYPE_Number;
-            (*StackPtr)->Number.Value = 0;
-            Status = AE_OK;
-            break;
-
-
-        case AML_OneOp:
-
-            (*StackPtr)->Common.Type = (UINT8) TYPE_Number;
-            (*StackPtr)->Number.Value = 1;
-            Status = AE_OK;
-            break;
-
-
-        case AML_OnesOp:
-
-            (*StackPtr)->Common.Type = (UINT8) TYPE_Number;
-            (*StackPtr)->Number.Value = 0xFFFFFFFF;
-            Status = AE_OK;
-            break;
-
-
-        default:
-
-            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Unknown Lvalue subtype %02x\n",
-                            (*StackPtr)->Lvalue.OpCode));
-            Status = AE_AML_ERROR;
-
-        }   /* switch ((*StackPtr)->Lvalue.OpCode) */
-
-        if (AE_OK != Status)
-        {
-            return_ACPI_STATUS (Status);
-        }
-
-        break;
-
-
-    case TYPE_FieldUnit:
-
-        ObjDesc = CmCreateInternalObject (TYPE_Any);
-        if (!ObjDesc)
-        {   
-            /* Descriptor allocation failure  */
-            
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        if ((Status = AmlGetFieldUnitValue (*StackPtr, ObjDesc)) != AE_OK)
-        {
-            CmDeleteInternalObject (ObjDesc);
-            ObjDesc = NULL;
-        }
-        
-        *StackPtr = (void *) ObjDesc;
-        return_ACPI_STATUS (Status);
-
-
-    case TYPE_BankField:
-
-        ObjDesc = CmCreateInternalObject (TYPE_Any);
-        if (!ObjDesc)
-        {   
-            /* Descriptor allocation failure */
-            
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        if ((Status = AmlGetFieldUnitValue (*StackPtr, ObjDesc)) != AE_OK)
-        {
-            CmDeleteInternalObject (ObjDesc);
-            ObjDesc = NULL;
-        }
-
-        *StackPtr = (void *) ObjDesc;
-        return_ACPI_STATUS (Status);
-        break;
-
-
-    /* TBD: - may need to handle IndexField, and DefField someday */
-
-    default:
-
-        break;
-
-    }   /* switch ((*StackPtr)->Common.Type) */
-
-
-
-    if (IS_NS_HANDLE (*StackPtr))       /* Direct name ptr */
-    {
-
-        DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue: found direct name ptr \n"));
-
-        ValDesc = (ACPI_OBJECT_INTERNAL *) NsGetAttachedObject ((ACPI_HANDLE)* StackPtr);
-
-        DEBUG_PRINT (TRACE_EXEC,
-                    ("AmlGetRvalue: NsGetAttachedObject(%p) returned Val=%p\n", *StackPtr, ValDesc));
-
-        switch (NsGetType ((ACPI_HANDLE)* StackPtr))
-        {
-
-        case TYPE_Package:
-
-            /* 
-             * ValDesc should point to either an ACPI_OBJECT_INTERNAL of
-             * type Package, or an initialization in the AML stream.
-             */
-            if (!ValDesc)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue/Package: internal error - null ValuePtr\n"));
-                DEBUG_PRINT (TRACE_EXEC,
-                            ("leave AmlGetRvalue: NULL Package ValuePtr ==> AE_AML_ERROR\n"));
-
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            if (AML_PackageOp == *(UINT8 *) ValDesc)
-            {
-                /* 
-                 * The value pointer in the name table entry
-                 * points to a package definition in the AML stream.
-                 * Convert it to an object.
-                 */
-
-                if (AE_OK != (Status = AmlObjStackPush ()))             /* ObjStack */
-                {
-                    return_ACPI_STATUS (Status);
-                }
-
-                if (AE_OK == (Status = AmlPkgPushExec ((UINT8 *) ValDesc + 1, 0L)) && /*PkgStack*/
-                    AE_OK == (Status = AmlDoPkg (TYPE_Package, IMODE_Execute)) &&
-                    AE_OK == (Status = AmlPkgPopExec ()))                 /* PkgStack */
-                {
-                    NsAttachObject ((ACPI_HANDLE) *StackPtr, AmlObjStackGetValue (0),
-                                    (UINT8) TYPE_Package);
-
-                    /* Refresh local value pointer to reflect newly set value */
-                    
-                    ValDesc = (ACPI_OBJECT_INTERNAL *) NsGetAttachedObject ((ACPI_HANDLE)* StackPtr);
-                    AmlObjStackPop (1);
-                }
-                
-                else
-                {
-                    AmlObjStackPop (1);
-                    return_ACPI_STATUS (Status);
-                }
-            }
-            
-            if (!ValDesc || (TYPE_Package != ValDesc->Common.Type))
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue:internal error - Bad package value\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            ObjDesc = CmAllocateObjectDesc ();
-            if (!ObjDesc)
-            {   
-                /* Descriptor allocation failure */
-                
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            /* Copy object to the newly allocated descriptor */
-
-            Status = CmCopyInternalObject (ValDesc, ObjDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-
-            break;
-
-
-        case TYPE_String:
-
-            /* TBD: - Is there a problem here if the nte points to an AML definition? */
-            
-            if (TYPE_String != ValDesc->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - Bad string value\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            ObjDesc = CmAllocateObjectDesc ();
-            if (!ObjDesc)
-            {   
-                /* Descriptor allocation failure */
-
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            /* Copy object to the newly allocated descriptor */
-
-            Status = CmCopyInternalObject (ValDesc, ObjDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-
-            break;
-
-
-        case TYPE_Buffer:
-
-            if (!ValDesc)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null Buffer ValuePtr\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            if (AML_BufferOp == *(UINT8 *) ValDesc)
-            {
-                /* 
-                 * The value pointer in the name table entry
-                 * points to a buffer definition in the AML stream.
-                 * Convert it to an object.
-                 */
-                if (AE_OK != (Status = AmlObjStackPush ()))                /* ObjStack */
-                {
-                    return_ACPI_STATUS (Status);
-                }
-
-                if (AE_OK == (Status = AmlPkgPushExec ((UINT8 *) ValDesc + 1, 0L)) &&   /*PkgStack*/
-                    AE_OK == (Status = AmlDoPkg (TYPE_Buffer, IMODE_Execute)) &&
-                    AE_OK == (Status = AmlPkgPopExec ()))                     /* PkgStack */
-                {
-                    NsAttachObject ((ACPI_HANDLE) *StackPtr, AmlObjStackGetValue (0),
-                                    (UINT8) TYPE_Buffer);
-                    
-                    /* Refresh local value pointer to reflect newly set value */
-                    
-                    ValDesc = (ACPI_OBJECT_INTERNAL *) NsGetAttachedObject ((ACPI_HANDLE)* StackPtr);
-                    AmlObjStackPop (1);
-                }
-                
-                else
-                {
-                    AmlObjStackPop (1);
-                    return_ACPI_STATUS (Status);
-                }
-            }
-            
-            if (!ValDesc || (TYPE_Buffer != ValDesc->Common.Type))
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Bad buffer value\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            ObjDesc = CmAllocateObjectDesc ();
-            if (!ObjDesc)
-            {   
-                /* Descriptor allocation failure */
-                
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            /* Copy object to the newly allocated descriptor */
-
-            Status = CmCopyInternalObject (ValDesc, ObjDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-
-            /* Assign a new sequence number */
-            
-            ObjDesc->Buffer.Sequence = AmlBufSeq();
-            
-            DEBUG_PRINT (TRACE_BFIELD,
-                        ("AmlGetRvalue: new Buffer descriptor seq %ld @ %p \n",
-                        ObjDesc->Buffer.Sequence, ObjDesc));
-
-            break;
-
-
-        case TYPE_Number:
-
-            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue: case Number \n"));
-
-            if (!ValDesc)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null Number ValuePtr\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            if (TYPE_Number == ValDesc->Common.Type)
-            {
-                ObjDesc = CmAllocateObjectDesc ();
-                if (!ObjDesc)
-                {   
-                    /* Descriptor allocation failure  */
-                    
-                    return_ACPI_STATUS (AE_NO_MEMORY);
-                }
-                
-                /* Copy object to the newly allocated descriptor */
-
-                Status = CmCopyInternalObject (ValDesc, ObjDesc);
-                if (ACPI_FAILURE (Status))
-                {
-                    return_ACPI_STATUS (Status);
-                }
-            }
-            
-            else
-            {
-                /* 
-                 * The NTE type is TYPE_Number, but it does not point to a Number,
-                 * so it had better point to a Literal in the AML stream.
-                 */
-                if (!NsIsInSystemTable (ValDesc))
-                {
-                    DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue/Number: internal error - not a Number\n"));
-                    return_ACPI_STATUS (AE_AML_ERROR);
-                }
-
-                ObjDesc = CmCreateInternalObject (TYPE_Number);
-                if (!ObjDesc)
-                {   
-                    /* Descriptor allocation failure  */
-                    
-                    return_ACPI_STATUS (AE_NO_MEMORY);
-                }
-                
-                switch (*(UINT8 *) ValDesc)
-                {
-                case AML_ZeroOp:
-
-                    ObjDesc->Number.Value = 0;
-                    break;
-
-
-                case AML_OneOp:
-
-                    ObjDesc->Number.Value = 1;
-                    break;
-
-
-                case AML_OnesOp:
-
-                    ObjDesc->Number.Value = 0xFFFFFFFF;
-                    break;
-
-
-                case AML_ByteOp:
-
-                    ObjDesc->Number.Value = (UINT32)((UINT8 *) ValDesc)[1];
-                    break;
-
-
-                /* 
-                 *  XXX - WordOp and DWordOp will not work properly if the
-                 *  XXX - processor's endianness does not match the AML's.
-                 */
-                case AML_WordOp:
-
-                    ObjDesc->Number.Value = (UINT32)*(UINT16 *)&((UINT8 *) ValDesc)[1];
-                    break;
-
-
-                case AML_DWordOp:
-
-                    ObjDesc->Number.Value = *(UINT32 *)&((UINT8 *) ValDesc)[1];
-                    break;
-
-
-                default:
-
-                    DEBUG_PRINT (ACPI_ERROR, (
-                            "AmlGetRvalue/Number: internal error - expected AML number, found %02x\n",
-                            *(UINT8 *) ValDesc));
-
-                    CmDeleteInternalObject (ObjDesc);
-                    return_ACPI_STATUS (AE_AML_ERROR);
-
-                }   /* switch */
-            }
-
-            break;
-
-
-        case TYPE_DefField:
-
-            /* 
-             * XXX - Implementation limitation: Fields are implemented as type
-             * XXX - Number, but they really are supposed to be type Buffer.
-             * XXX - The two are interchangeable only for lengths <= 32 bits.
-             */
-            Status = AmlGetNamedFieldValue ((ACPI_HANDLE)* StackPtr, &TempVal);
-            if (AE_OK != Status)
-            {
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
 
 BREAKPOINT3;
-            ObjDesc = CmCreateInternalObject (TYPE_Number);
-            if (!ObjDesc)
-            {   
-                /* Descriptor allocation failure  */
-                
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
+    /* 
+     * The entity pointed to by the StackPtr can be either
+     * 1) A valid ACPI_OBJECT_INTERNAL, or
+     * 2) A NAME_TABLE_ENTRY (nte)
+     */
 
-            ObjDesc->Number.Value = TempVal;
-            break;
+    if (!IS_NS_HANDLE (*StackPtr))       
+    {
 
-
-        case TYPE_BankField:
-
-            if (!ValDesc)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null BankField ValuePtr\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            if (TYPE_BankField != ValDesc->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlGetRvalue/BankField:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), TYPE_BankField, ValDesc->Common.Type, ValDesc));
-                
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-
-            /* Get the global lock if needed */
-
-            ObjDesc = *StackPtr;
-            Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
-            {
-
-                /* Set Index value to select proper Data register */
-                /* perform the update */
-            
-                Status = AmlSetNamedFieldValue (ValDesc->BankField.BankSelect,
-                                               ValDesc->BankField.Value);
-            }
-            AmlReleaseGlobalLock (Locked);
-
-
-            if (AE_OK != Status)
-            {
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-            
-            /* Read Data value */
-            
-            Status = AmlGetNamedFieldValue ((ACPI_HANDLE) ValDesc->BankField.Container, &TempVal);
-            if (AE_OK != Status)
-            {
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            ObjDesc = CmCreateInternalObject (TYPE_Number);
-            if (!ObjDesc)
-            {
-                /* Descriptor allocation failure  */
-
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            ObjDesc->Number.Value = TempVal;
-            break;
-
-
-        case TYPE_IndexField:
-
-            if (!ValDesc)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null IndexField ValuePtr\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            if (TYPE_IndexField != ValDesc->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlGetRvalue/IndexField: internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), TYPE_IndexField, ValDesc->Common.Type, ValDesc));
-                
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-
-            /* Set Index value to select proper Data register */
-            /* Get the global lock if needed */
-
-            ObjDesc = *StackPtr;
-            Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
-            {
-                /* Perform the update */
-                
-                Status = AmlSetNamedFieldValue (ValDesc->IndexField.Index,
-                                                ValDesc->IndexField.Value);
-            }
-            AmlReleaseGlobalLock (Locked);
-
-            if (AE_OK != Status)
-            {
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            /* Read Data value */
-            
-            Status = AmlGetNamedFieldValue (ValDesc->IndexField.Data, &TempVal);
-            if (AE_OK != Status)
-            {
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            ObjDesc = CmCreateInternalObject (TYPE_Number);
-            if (!ObjDesc)
-            {
-                /* Descriptor allocation failure  */
-
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            ObjDesc->Number.Value = TempVal;
-            break;
-
-
-        case TYPE_FieldUnit:
-
-            if (!ValDesc)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null FieldUnit ValuePtr\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
-            }
-
-            if (ValDesc->Common.Type != (UINT8) NsGetType ((ACPI_HANDLE)* StackPtr))
-            {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlGetRvalue/FieldUnit:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                          &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), NsGetType ((ACPI_HANDLE)* StackPtr),
-                          ValDesc->Common.Type, ValDesc));
-                
-                return_ACPI_STATUS (AE_AML_ERROR);
-                break;
-            }
-
-            ObjDesc = CmCreateInternalObject (TYPE_Any);
-            if (!ObjDesc)
-            {
-                /* Descriptor allocation failure  */
-
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            if ((Status = AmlGetFieldUnitValue (ValDesc, ObjDesc)) != AE_OK)
-            {
-                CmDeleteInternalObject (ObjDesc);
-                return_ACPI_STATUS (Status);
-            }
-
-            break;
-
-
-        /* Cases which just return the name as the rvalue */
-        
-        case TYPE_Device:
-
-            return_ACPI_STATUS (AE_OK);
-            break;
-
-
-
-        case TYPE_Method:        /* XXX - unimplemented, handled elsewhere */
-        case TYPE_Power:         /* XXX - unimplemented, may not be needed */
-        case TYPE_Processor:     /* XXX - unimplemented, may not be needed */
-        case TYPE_Thermal:       /* XXX - unimplemented, may not be needed */
-        case TYPE_Event:         /* XXX - unimplemented, may not be needed */
-        case TYPE_Mutex:         /* XXX - unimplemented, may not be needed */
-        case TYPE_Region:        /* XXX - unimplemented, may not be needed */
-
-        case TYPE_Any:
-
-            DEBUG_PRINT (TRACE_EXEC, ("case %s \n",
-                        Gbl_NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
-          
-#ifdef FETCH_OVERRIDE
-            DEBUG_PRINT (ACPI_WARN,
-                        ("** AmlGetRvalue: Fetch from [%s] not implemented, using value 0\n",
-                        Gbl_NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
-            
-            ObjDesc = CmCreateInternalObject (TYPE_Number);
-            if (!ObjDesc)
-            {
-                /* Descriptor allocation failure  */
-                
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            ObjDesc->Number.Value = 0x0;
-            break;
-#else
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlGetRvalue: Fetch from [%s] not implemented\n",
-                    Gbl_NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
-            
-            return_ACPI_STATUS (AE_AML_ERROR);
-#endif /* HACK */
-
-        default:
-
-            DEBUG_PRINT (TRACE_EXEC, 
-                        ("AmlGetRvalue: case default handle type unexpected: AE_AML_ERROR \n"));
-
-            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Unknown NsType %d\n",
-                            NsGetType ((ACPI_HANDLE)* StackPtr)));
-            
-            return_ACPI_STATUS (AE_AML_ERROR);
-        }
-
-        *StackPtr = (void *) ObjDesc;
+        Status = AmlGetRvalueFromObject (StackPtr);
     }
 
-    return_ACPI_STATUS (AE_OK);
+    /* 
+     * Object on the stack may have changed if AmlGetRvalueFromObject() was called
+     * (i.e., we can't use an _else_ here.)
+     */
+
+    if (IS_NS_HANDLE (*StackPtr))       
+    {
+        Status = AmlGetRvalueFromEntry ((NAME_TABLE_ENTRY **) StackPtr);
+    }
+
+
+
+
+    return_ACPI_STATUS (Status);
 }
     
