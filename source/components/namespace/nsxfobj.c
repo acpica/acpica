@@ -476,7 +476,7 @@ AcpiGetNextObject (
             return AE_NOT_FOUND;
         }
 
-        *RetHandle = ThisEntry;
+        *RetHandle = NsConvertEntryToHandle(ThisEntry);
         return AE_OK;
     }
 
@@ -596,7 +596,7 @@ AcpiGetParent (
    
     /* Get the parent entry */
 
-    *RetHandle = Object->ParentEntry;
+    *RetHandle = NsConvertEntryToHandle(Object->ParentEntry);
 
     /* Return exeption if parent is null */
 
@@ -658,7 +658,7 @@ AcpiWalkNamespace (
 
     /* Parameter validation */
 
-    if ((Type > ACPI_TABLE_MAX) ||
+    if ((Type > ACPI_TYPE_MAX) ||
         (!MaxDepth)             || 
         (!UserFunction))
     {
@@ -777,88 +777,6 @@ AcpiGetObject (
 
     *RetHandle = Gbl_RootObject->Scope;
     return AE_OK;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetParentHandle
- *
- * PARAMETERS:  ChildHandle     - the handle of the object for which the 
- *                                parent is to be found
- *
- * RETURN:      Parent handle
- *
- * DESCRIPTION: This routine returns the handle for the parent of an object.
- *
- ******************************************************************************/
-
-ACPI_HANDLE 
-AcpiGetParentHandle (
-    ACPI_HANDLE             ChildHandle)
-{
-
-    return ((ACPI_HANDLE) NULL);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiCurrentScopeName
- *
- * PARAMETERS:  none
- *
- * RETURN:      pointer to an ascii string with the absolute name of the scope
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-char * 
-AcpiCurrentScopeName (void)
-{
-    return ((char *) NULL);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiIsNamespaceHandle
- *
- * PARAMETERS:  QueryHandle     - handle to be verified
- *
- * RETURN:      BOOLEAN -   TRUE if QueryHandle is a NameSpace handle
- *                          FALSE otherwise
- *
- * DESCRIPTION: This routine verifies the validity of a namespace handle
- *
- ******************************************************************************/
-
-BOOLEAN 
-AcpiIsNamesaceHandle (
-    ACPI_HANDLE             QueryHandle)
-{
-    return (TRUE);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiIsNamesaceValue
- *
- * PARAMETERS:  Value
- *
- * RETURN:      TRUE if the value is a valid NS vakue, FALSE otherwise
- *
- * DESCRIPTION: This routine verifies the value is valid for ACPI_OBJECT_TYPE  what is the utility of this? RLM
- *
- ******************************************************************************/
-
-BOOLEAN 
-AcpiIsNamesaceValue (
-    ACPI_OBJECT_TYPE        Value)
-{
-    return (TRUE);
 }
 
 
