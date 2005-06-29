@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  ******************************************************************************/
 
@@ -328,7 +328,7 @@ AcpiNsDetachObject (
 
     Node->Type = ACPI_TYPE_ANY;
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Node %p [%4.4s] Object %p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Node %p [%4.4s] Object %p\n",
         Node, (char *) &Node->Name, ObjDesc));
 
     /* Remove one reference on the object (and all subobjects) */
