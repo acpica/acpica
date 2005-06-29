@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -352,6 +352,7 @@ AeRegionHandler (
     REGION                  *RegionElement;
     void                    *BufferValue;
     UINT32                  ByteWidth;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_NAME ("AeRegionHandler");
@@ -364,16 +365,85 @@ AeRegionHandler (
         return AE_OK;
     }
 
+    /*
+     * Find the region's address space and length before searching
+     * the linked list.
+     */
+    BaseAddress = RegionObject->Region.Address;
+    Length = (ACPI_SIZE) RegionObject->Region.Length;
+
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION, "Operation Region request on %s at 0x%X\n",
             AcpiUtGetRegionName (RegionObject->Region.SpaceId),
             Address));
 
-    /*
-     * Find the region's address space and length before searching
-     *  the linked list.
-     */
-    BaseAddress = RegionObject->Region.Address;
-    Length = (ACPI_SIZE) RegionObject->Region.Length;
+    if (RegionObject->Region.SpaceId == ACPI_ADR_SPACE_SMBUS)
+    {
+        Length = 0;
+
+        switch (Function & ACPI_IO_MASK)
+        {
+        case ACPI_READ:
+            switch (Function >> 16)
+            {
+            case AML_FIELD_ATTRIB_SMB_QUICK:
+            case AML_FIELD_ATTRIB_SMB_SEND_RCV:
+            case AML_FIELD_ATTRIB_SMB_BYTE:
+                Length = 1;
+                break;
+
+            case AML_FIELD_ATTRIB_SMB_WORD:
+            case AML_FIELD_ATTRIB_SMB_WORD_CALL:
+                Length = 2;
+                break;
+
+            case AML_FIELD_ATTRIB_SMB_BLOCK:
+            case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
+                Length = 32;
+                break;
+
+            default:
+                break;
+            }
+            break;
+
+        case ACPI_WRITE:
+            switch (Function >> 16)
+            {
+            case AML_FIELD_ATTRIB_SMB_QUICK:
+            case AML_FIELD_ATTRIB_SMB_SEND_RCV:
+            case AML_FIELD_ATTRIB_SMB_BYTE:
+            case AML_FIELD_ATTRIB_SMB_WORD:
+            case AML_FIELD_ATTRIB_SMB_BLOCK:
+                Length = 0;
+                break;
+
+            case AML_FIELD_ATTRIB_SMB_WORD_CALL:
+                Length = 2;
+                break;
+
+            case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
+                Length = 32;
+                break;
+
+            default:
+                break;
+            }
+            break;
+
+        default:
+            break;
+        }
+
+        for (i = 0; i < Length; i++)
+        {
+            ((UINT8 *) Value)[i+2] = (UINT8) (0xA0 + i);
+        }
+
+        ((UINT8 *) Value)[0] = 0x7A;
+        ((UINT8 *) Value)[1] = (UINT8) Length;
+
+        return AE_OK;
+    }
 
     /*
      * Search through the linked list for this region's buffer
@@ -600,8 +670,8 @@ AeNotifyHandler (
  *
  *****************************************************************************/
 
-ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 0x80};
-#define AEXEC_NUM_REGIONS   5
+ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 4, 0x80};
+#define AEXEC_NUM_REGIONS   6
 
 ACPI_STATUS
 AeInstallHandlers (void)
