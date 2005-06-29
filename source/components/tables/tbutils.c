@@ -257,6 +257,8 @@ ACPI_STATUS
 TbValidateTableHeader (
     ACPI_TABLE_HEADER       *TableHeader)
 {
+    ACPI_NAME               Signature;
+
 
     /* Verify that this is a valid address */
 
@@ -269,20 +271,27 @@ TbValidateTableHeader (
 
     /* Ensure that the signature is 4 ASCII characters */
 
-    if (!CmValidAcpiName (*(UINT32 *) TableHeader->Signature))
+    STORE32 (&Signature, &TableHeader->Signature);
+    if (!CmValidAcpiName (Signature))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Table signature [%X] contains one or more invalid characters\n", *(UINT32 *) TableHeader->Signature));
+        DEBUG_PRINT (ACPI_ERROR, ("Table signature at %p [%X] has invalid characters\n", 
+                        TableHeader, &Signature));
+
         REPORT_WARNING ("Invalid table signature found");
+        DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return AE_BAD_SIGNATURE;
     }
 
 
     /* Validate the table length */
 
-    if (TableHeader->Length < (UINT32) sizeof (ACPI_TABLE_HEADER))
+    if (TableHeader->Length < sizeof (ACPI_TABLE_HEADER))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Invalid length in header at %08lXh name %4.4s\n", TableHeader, &TableHeader->Signature));
+        DEBUG_PRINT (ACPI_ERROR, ("Invalid length in table header %p name %4.4s\n", 
+                        TableHeader, &Signature));
+
         REPORT_WARNING ("Invalid table header length found");
+        DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return AE_BAD_HEADER;
     }
 
@@ -321,35 +330,43 @@ TbMapAcpiTable (
 
     /* If size is zero, look at the table header to get the actual size */
 
-    if (!*Size)
+    if ((*Size) == 0)
     {
         /* Get the table header so we can extract the table length */
 
-        Status = OsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER), &Table);
+        Status = OsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER), (void **)&Table);
 		if (ACPI_FAILURE (Status))
 		{
 			return Status;
 		}
 
-        /* Validate the header */
-
-        Status = TbValidateTableHeader (Table);
-        if (ACPI_FAILURE (Status))
-        {
-            OsdUnMapMemory (Table, sizeof (ACPI_TABLE_HEADER));
-            return Status;
-        }
-
-        /* Now we know how large to make the mapping (table + header) */
+        /* Extract the full table length before we delete the mapping */
 
         TableSize = Table->Length;
+
+        /* 
+         * Validate the header and delete the mapping.
+         * We will create a mapping for the full table below.
+         */
+
+        Status = TbValidateTableHeader (Table);
+
+        /* Always unmap the memory for the header */
+
         OsdUnMapMemory (Table, sizeof (ACPI_TABLE_HEADER));
+
+        /* Exit if header invalid */
+
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
     }
 
 
     /* Map the physical memory for the correct length */
 
-    Status = OsdMapMemory (PhysicalAddress, TableSize, &Table);
+    Status = OsdMapMemory (PhysicalAddress, TableSize, (void **)&Table);
 	if (ACPI_FAILURE (Status))
 	{
 		return Status;
@@ -380,7 +397,7 @@ TbMapAcpiTable (
 
 ACPI_STATUS
 TbVerifyTableChecksum (
-    void                    *TableHeader)
+    ACPI_TABLE_HEADER       *TableHeader)
 {
     UINT8                   CheckSum;
     ACPI_STATUS             Status = AE_OK;
@@ -391,15 +408,15 @@ TbVerifyTableChecksum (
 
     /* Compute the checksum on the table */
 
-    CheckSum = TbChecksum (TableHeader,
-                        (ACPI_SIZE) ((ACPI_TABLE_HEADER *) TableHeader)->Length);
+    CheckSum = TbChecksum (TableHeader, TableHeader->Length);
 
     /* Return the appropriate exception */
 
     if (CheckSum)
     {
         REPORT_ERROR ("Invalid ACPI table checksum");
-        DEBUG_PRINT (ACPI_INFO, ("TbVerifyTableChecksum: Invalid checksum (%X)\n", CheckSum));
+        DEBUG_PRINT (ACPI_INFO, ("TbVerifyTableChecksum: Invalid checksum (%X) in %4.4s\n", 
+                                    CheckSum, &TableHeader->Signature));
 
         Status = AE_BAD_CHECKSUM;
     }

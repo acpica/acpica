@@ -245,6 +245,7 @@ TbRecognizeTable (
             TableType       = i;
             Status          = Gbl_AcpiTableData[i].Status;  /* AE_SUPPORT or AE_OK */
 
+            DEBUG_PRINT (ACPI_INFO, ("TbRecognizeTable: Found %4.4s\n", Gbl_AcpiTableData[i].Signature));
             break;
         }
     }
@@ -378,6 +379,7 @@ TbInitTableDescriptor (
     /* Common initialization of the table descriptor */
 
     TableDesc->Pointer              = TableInfo->Pointer;
+    TableDesc->BasePointer          = TableInfo->BasePointer;  
     TableDesc->Length               = TableInfo->Length;
     TableDesc->Allocation           = TableInfo->Allocation;
     TableDesc->AmlPointer           = (UINT8 *) (TableDesc->Pointer + 1),
