@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.148 $
+ *              $Revision: 1.149 $
  *
  *****************************************************************************/
 
@@ -377,14 +377,14 @@ ACPI_TABLE_DESC             AcpiGbl_AcpiTables[NUM_ACPI_TABLES];
 
 ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
 {
-    /***********    Name,   Signature, Global typed pointer     Signature size,      How many allowed?,   */
+    /***********    Name,   Signature, Global typed pointer     Signature size,      How many allowed?,    Contains valid AML? */
 
     /* RSDP 0 */ {RSDP_NAME, RSDP_SIG, NULL,                    sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE},
-    /* DSDT 1 */ {DSDT_SIG,  DSDT_SIG, (void **) &AcpiGbl_DSDT, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE},
+    /* DSDT 1 */ {DSDT_SIG,  DSDT_SIG, (void **) &AcpiGbl_DSDT, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE   | ACPI_TABLE_EXECUTABLE},
     /* FADT 2 */ {FADT_SIG,  FADT_SIG, (void **) &AcpiGbl_FADT, sizeof (FADT_SIG)-1, ACPI_TABLE_SINGLE},
     /* FACS 3 */ {FACS_SIG,  FACS_SIG, (void **) &AcpiGbl_FACS, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE},
-    /* PSDT 4 */ {PSDT_SIG,  PSDT_SIG, NULL,                    sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE},
-    /* SSDT 5 */ {SSDT_SIG,  SSDT_SIG, NULL,                    sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE},
+    /* PSDT 4 */ {PSDT_SIG,  PSDT_SIG, NULL,                    sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE | ACPI_TABLE_EXECUTABLE},
+    /* SSDT 5 */ {SSDT_SIG,  SSDT_SIG, NULL,                    sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE | ACPI_TABLE_EXECUTABLE},
     /* XSDT 6 */ {XSDT_SIG,  XSDT_SIG, NULL,                    sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE},
 };
 
