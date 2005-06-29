@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -294,14 +294,14 @@ AeRegionHandler (
      */
     switch (Function)
     {
-    case ACPI_READ_ADR_SPACE:
+    case ACPI_READ:
         /*
          * Set the pointer Value to whatever is in the buffer
          */
         MEMCPY (Value, BufferValue, ByteWidth);
         break;
 
-    case ACPI_WRITE_ADR_SPACE:
+    case ACPI_WRITE:
         /*
          * Write the contents of Value to the buffer
          */
