@@ -624,6 +624,7 @@ NsSearchAndEnter (
     NAME_TABLE_ENTRY        *NameTable,
     OPERATING_MODE          LoadMode, 
     ACPI_OBJECT_TYPE        Type, 
+    UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry)
 {
     UINT32                  Position;       /* position in table */
@@ -681,7 +682,8 @@ NsSearchAndEnter (
      * and during the execution phase.
      */
 
-    if (LoadMode != MODE_Load1)
+    if ((LoadMode != MODE_Load1) &&
+        (Flags == NS_SEARCH_PARENT))
     {
         /* Not found in table - search parent tree according to ACPI specification */
 
