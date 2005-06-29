@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.98 $
+ *       $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -369,7 +369,6 @@ ACPI_STATUS
 AcpiAmlPrepCommonFieldObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
     UINT32                  FieldLength);
 
@@ -378,7 +377,6 @@ AcpiAmlPrepRegionFieldValue (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_HANDLE             Region,
     UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
     UINT32                  FieldLength);
 
@@ -389,7 +387,6 @@ AcpiAmlPrepBankFieldValue (
     ACPI_NAMESPACE_NODE     *BankRegisterNode,
     UINT32                  BankVal,
     UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
     UINT32                  FieldLength);
 
@@ -399,7 +396,6 @@ AcpiAmlPrepIndexFieldValue (
     ACPI_NAMESPACE_NODE     *IndexReg,
     ACPI_NAMESPACE_NODE     *DataReg,
     UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
     UINT32                  FieldLength);
 
