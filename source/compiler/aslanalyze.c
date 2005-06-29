@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -799,8 +799,11 @@ AnMethodAnalysisWalkBegin (
         /*
          * Otherwise, this is a reference, check if the local
          * has been previously initialized.
+         *
+         * The only operator that accepts an uninitialized value is ObjectType()
          */
-        else if (!MethodInfo->LocalInitialized[RegisterNumber])
+        else if ((!MethodInfo->LocalInitialized[RegisterNumber]) &&
+                 (Op->Asl.Parent->Asl.ParseOpcode != PARSEOP_OBJECTTYPE))
         {
             LocalName[strlen (LocalName) -1] = (char) (RegisterNumber + 0x30);
             AslError (ASL_ERROR, ASL_MSG_LOCAL_INIT, Op, LocalName);
@@ -839,8 +842,11 @@ AnMethodAnalysisWalkBegin (
         /*
          * Otherwise, this is a reference, check if the Arg
          * has been previously initialized.
+         *
+         * The only operator that accepts an uninitialized value is ObjectType()
          */
-        else if (!MethodInfo->ArgInitialized[RegisterNumber])
+        else if ((!MethodInfo->ArgInitialized[RegisterNumber]) &&
+                 (Op->Asl.Parent->Asl.ParseOpcode != PARSEOP_OBJECTTYPE))
         {
             AslError (ASL_ERROR, ASL_MSG_ARG_INIT, Op, ArgName);
         }
