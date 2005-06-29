@@ -413,7 +413,7 @@ NsLookup (
 
                 /*  Backup to the parent's scope  */
             
-                EntryToSearch = EntryToSearch->ParentScope;
+                EntryToSearch = EntryToSearch->ParentEntry;
                 if (!EntryToSearch)
                 {
                     /* Current scope has no parent scope */
@@ -422,6 +422,8 @@ NsLookup (
 
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
+
+                EntryToSearch = EntryToSearch->Scope;
             }
         }
 
