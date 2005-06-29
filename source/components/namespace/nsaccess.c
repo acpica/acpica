@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  ******************************************************************************/
 
@@ -362,7 +362,8 @@ AcpiNsLookup (
     BOOLEAN                 NullNamePath = FALSE;
     OBJECT_TYPE_INTERNAL    TypeToCheckFor;
     OBJECT_TYPE_INTERNAL    ThisSearchType;
-    DEBUG_EXEC              (UINT32 i)
+    
+    DEBUG_ONLY_MEMBERS      (UINT32 i)
 
 
     FUNCTION_TRACE ("NsLookup");
