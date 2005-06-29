@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -765,7 +765,7 @@ AcpiDbWalkForSpecificObjects (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
-    UINT32                  BufSize;
+    ACPI_SIZE               BufSize;
     NATIVE_CHAR             Buffer[64];
 
 
@@ -890,7 +890,7 @@ AcpiDbWalkAndMatchName (
     ACPI_STATUS             Status;
     NATIVE_CHAR             *RequestedName = (NATIVE_CHAR *) Context;
     UINT32                  i;
-    UINT32                  BufSize;
+    ACPI_SIZE               BufSize;
     NATIVE_CHAR             Buffer[96];
 
 
