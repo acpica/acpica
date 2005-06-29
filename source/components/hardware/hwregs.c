@@ -118,8 +118,8 @@
 #define __HWREGS_C__
 
 #include "acpi.h"
-#include "hardware.h"
-#include "namesp.h"
+#include "achware.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          HARDWARE
         MODULE_NAME         ("hwregs");

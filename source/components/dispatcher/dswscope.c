@@ -117,8 +117,8 @@
 #define __DSWSCOPE_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "dispatch.h"
+#include "acinterp.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -153,7 +153,8 @@ AcpiDsScopeStackClear (
         ScopeInfo = WalkState->ScopeInfo;
         WalkState->ScopeInfo = ScopeInfo->Scope.Next;
 
-        DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+        DEBUG_PRINT (TRACE_EXEC,
+            ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
         AcpiCmDeleteGenericState (ScopeInfo);
     }
 }
@@ -256,7 +257,8 @@ AcpiDsScopeStackPop (
         return_ACPI_STATUS (AE_STACK_UNDERFLOW);
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+    DEBUG_PRINT (TRACE_EXEC,
+        ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
 
     AcpiCmDeleteGenericState (ScopeInfo);
 

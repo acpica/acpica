@@ -118,13 +118,13 @@
 #define __DSOPCODE_C__
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "dispatch.h"
-#include "interp.h"
-#include "namesp.h"
-#include "events.h"
-#include "tables.h"
+#include "acdispat.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "acevents.h"
+#include "actables.h"
 
 #define _COMPONENT          DISPATCHER
         MODULE_NAME         ("dsopcode");
@@ -168,7 +168,10 @@ AcpiDsGetRegionArguments (
     Entry = RgnDesc->Region.Nte;
 
 
-    /* Allocate a new parser op to be the root of the parsed OpRegion tree */
+    /*
+     * Allocate a new parser op to be the root of the parsed
+     * OpRegion tree
+     */
 
     Op = AcpiPsAllocOp (AML_REGION_OP);
     if (!Op)
@@ -190,7 +193,8 @@ AcpiDsGetRegionArguments (
 
     /* Parse the entire OpRegion declaration, creating a parse tree */
 
-    Status = AcpiPsParseAml (Op, MethodDesc->Method.Pcode, MethodDesc->Method.PcodeLength, 0);
+    Status = AcpiPsParseAml (Op, MethodDesc->Method.Pcode,
+                                MethodDesc->Method.PcodeLength, 0);
     if (ACPI_SUCCESS (Status))
     {
         /* Get and init the actual RegionOp created above */
@@ -200,7 +204,9 @@ AcpiDsGetRegionArguments (
 
         /* AcpiEvaluate the address and length arguments for the OpRegion */
 
-        AcpiPsWalkParsedAml (RegionOp, RegionOp, NULL, NULL, NULL, NULL, TableDesc->TableId, AcpiDsExecBeginOp, AcpiDsExecEndOp);
+        AcpiPsWalkParsedAml (RegionOp, RegionOp, NULL, NULL, NULL,
+                                NULL, TableDesc->TableId,
+                                AcpiDsExecBeginOp, AcpiDsExecEndOp);
     }
 
     /* All done with the parse tree, delete it */
@@ -232,7 +238,10 @@ AcpiDsInitializeRegion (
 
 
     ObjDesc = AcpiNsGetAttachedObject (ObjHandle);
-    Status = AcpiEvInitializeRegion (ObjDesc, FALSE);       /* Namespace is NOT locked */
+
+    /* Namespace is NOT locked */
+
+    Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
 
     return Status;
 }
@@ -272,8 +281,11 @@ AcpiDsEvalRegionOperands (
 
     Entry =  Op->AcpiNamedObject;
 
-    NextOp = Op->Value.Arg;     /* NextOp points to the op that holds the SpaceID */
-    NextOp = NextOp->Next;      /* NextOp points to address op */
+    /* NextOp points to the op that holds the SpaceID */
+    NextOp = Op->Value.Arg;
+
+    /* NextOp points to address op */
+    NextOp = NextOp->Next;
 
     /* AcpiEvaluate/create the address and length operands */
 
@@ -291,21 +303,24 @@ AcpiDsEvalRegionOperands (
 
     /* Get the length and save it */
 
-    ObjDesc = WalkState->Operands[WalkState->NumOperands -1];       /* Top of stack */
+    /* Top of stack */
+    ObjDesc = WalkState->Operands[WalkState->NumOperands - 1];
 
     RegionDesc->Region.Length = ObjDesc->Number.Value;
     AcpiCmRemoveReference (ObjDesc);
 
     /* Get the address and save it */
 
-    ObjDesc = WalkState->Operands[WalkState->NumOperands -2];       /* Top of stack -1 */
+    /* Top of stack - 1 */
+    ObjDesc = WalkState->Operands[WalkState->NumOperands - 2];
 
     RegionDesc->Region.Address = ObjDesc->Number.Value;
     AcpiCmRemoveReference (ObjDesc);
 
 
-    DEBUG_PRINT (TRACE_EXEC, ("DsEvalRegionOperands: RgnObj %p Addr %X Len %X\n",
-                    RegionDesc, RegionDesc->Region.Address, RegionDesc->Region.Length));
+    DEBUG_PRINT (TRACE_EXEC,
+        ("DsEvalRegionOperands: RgnObj %p Addr %X Len %X\n",
+        RegionDesc, RegionDesc->Region.Address, RegionDesc->Region.Length));
 
     /* Now the address and length are valid for this opregion */
 
@@ -338,7 +353,9 @@ AcpiDsExecBeginControlOp (
     ACPI_GENERIC_STATE      *ControlState;
 
 
-    DEBUG_PRINT (TRACE_DISPATCH, ("BeginControlOp: Op=%p Opcode=%2.2X State=%p\n", Op, Op->Opcode, WalkState));
+    DEBUG_PRINT (TRACE_DISPATCH,
+        ("BeginControlOp: Op=%p Opcode=%2.2X State=%p\n", Op,
+        Op->Opcode, WalkState));
 
     switch (Op->Opcode)
     {
@@ -346,8 +363,9 @@ AcpiDsExecBeginControlOp (
     case AML_WHILE_OP:
 
         /*
-         * IF/WHILE: Create a new control state to manage these constructs.
-         * We need to manage these as a stack, in order to handle nesting.
+         * IF/WHILE: Create a new control state to manage these
+         * constructs. We need to manage these as a stack, in order
+         * to handle nesting.
          */
 
         ControlState = AcpiCmCreateControlState ();
@@ -415,15 +433,25 @@ AcpiDsExecEndControlOp (
     {
     case AML_IF_OP:
 
-        DEBUG_PRINT (TRACE_DISPATCH, ("EndControlOp: [IF_OP] Op=%p\n", Op));
+        DEBUG_PRINT (TRACE_DISPATCH,
+            ("EndControlOp: [IF_OP] Op=%p\n", Op));
 
-        /* Save the result of the predicate in case there is an ELSE to come */
+        /*
+         * Save the result of the predicate in case there is an
+         * ELSE to come
+         */
 
-        WalkState->LastPredicate = (BOOLEAN) WalkState->ControlState->Common.Value;
+        WalkState->LastPredicate =
+                (BOOLEAN) WalkState->ControlState->Common.Value;
 
-        /* Pop the control state that was created at the start of the IF and free it */
+        /*
+         * Pop the control state that was created at the start
+         * of the IF and free it
+         */
 
-        ControlState = AcpiCmPopGenericState (&WalkState->ControlState);
+        ControlState =
+                AcpiCmPopGenericState (&WalkState->ControlState);
+
         AcpiCmDeleteGenericState (ControlState);
 
         break;
@@ -436,7 +464,8 @@ AcpiDsExecEndControlOp (
 
     case AML_WHILE_OP:
 
-        DEBUG_PRINT (TRACE_DISPATCH, ("EndControlOp: [WHILE_OP] Op=%p\n", Op));
+        DEBUG_PRINT (TRACE_DISPATCH,
+            ("EndControlOp: [WHILE_OP] Op=%p\n", Op));
 
         if (WalkState->ControlState->Common.Value)
         {
@@ -447,11 +476,13 @@ AcpiDsExecEndControlOp (
 
         else
         {
-            DEBUG_PRINT (TRACE_DISPATCH, ("EndControlOp: [WHILE_OP] termination! Op=%p\n", Op));
+            DEBUG_PRINT (TRACE_DISPATCH,
+                ("EndControlOp: [WHILE_OP] termination! Op=%p\n", Op));
 
             /* Pop this control state and free it */
 
-            ControlState = AcpiCmPopGenericState (&WalkState->ControlState);
+            ControlState =
+                    AcpiCmPopGenericState (&WalkState->ControlState);
             AcpiCmDeleteGenericState (ControlState);
         }
 
@@ -460,7 +491,8 @@ AcpiDsExecEndControlOp (
 
     case AML_RETURN_OP:
 
-        DEBUG_PRINT (TRACE_DISPATCH, ("EndControlOp: [RETURN_OP] Op=%p Arg=%p\n",Op, Op->Value.Arg));
+        DEBUG_PRINT (TRACE_DISPATCH,
+            ("EndControlOp: [RETURN_OP] Op=%p Arg=%p\n",Op, Op->Value.Arg));
 
 
         /* One optional operand -- the return value */
@@ -473,11 +505,15 @@ AcpiDsExecEndControlOp (
                 return Status;
             }
 
-            /* TBD: [Restructure] Just check for NULL arg to signify no return value??? */
+            /*
+             * TBD: [Restructure] Just check for NULL arg
+             * to signify no return value???
+             */
 
             /*
-             * If value being returned is a Reference (such as an arg or local),
-             * resolve it now because it may cease to exist at the end of the method.
+             * If value being returned is a Reference (such as
+             * an arg or local), resolve it now because it may
+             * cease to exist at the end of the method.
              */
 
             Status = AcpiAmlResolveToValue (&WalkState->Operands [0]);
@@ -487,9 +523,10 @@ AcpiDsExecEndControlOp (
             }
 
             /*
-             * Get the return value and save as the last result value
-             * This is the only place where WalkState->ReturnDesc is set to anything other
-             * than zero!
+             * Get the return value and save as the last result
+             * value
+             * This is the only place where WalkState->ReturnDesc
+             * is set to anything other than zero!
              */
 
             WalkState->ReturnDesc = WalkState->Operands[0];
@@ -507,9 +544,12 @@ AcpiDsExecEndControlOp (
         }
 
 
-        DEBUG_PRINT (TRACE_DISPATCH, ("EndControlOp: Completed RETURN_OP State=%p, RetVal=%p\n", WalkState, WalkState->ReturnDesc));
+        DEBUG_PRINT (TRACE_DISPATCH,
+            ("EndControlOp: Completed RETURN_OP State=%p, RetVal=%p\n",
+            WalkState, WalkState->ReturnDesc));
 
-        Status = AE_CTRL_TERMINATE;      /* End the control method execution right now */
+        /* End the control method execution right now */
+        Status = AE_CTRL_TERMINATE;
         break;
 
 
@@ -532,16 +572,19 @@ AcpiDsExecEndControlOp (
 
     case AML_BREAK_OP:
 
-        DEBUG_PRINT (ACPI_INFO, ("EndControlOp: Break to end of current package, Op=%p\n", Op));
+        DEBUG_PRINT (ACPI_INFO,
+            ("EndControlOp: Break to end of current package, Op=%p\n", Op));
 
         /*
          * As per the ACPI specification:
-         *      "The break operation causes the current package execution to complete"
-         *      "Break -- Stop executing the current code package at this point"
+         *      "The break operation causes the current package
+         *          execution to complete"
+         *      "Break -- Stop executing the current code package
+         *          at this point"
          *
-         * Returning AE_FALSE here will cause termination of the current package,
-         * and execution will continue one level up, starting with the completion of
-         * the parent Op.
+         * Returning AE_FALSE here will cause termination of
+         * the current package, and execution will continue one
+         * level up, starting with the completion of the parent Op.
          */
 
         Status = AE_CTRL_FALSE;
@@ -550,7 +593,9 @@ AcpiDsExecEndControlOp (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, ("EndControlOp: Unknown control opcode=%X Op=%p\n", Op->Opcode, Op));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("EndControlOp: Unknown control opcode=%X Op=%p\n",
+            Op->Opcode, Op));
 
         Status = AE_AML_BAD_OPCODE;
         break;
