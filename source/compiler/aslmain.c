@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.47 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,7 @@
 #define _DECLARE_GLOBALS
 
 #include "aslcompiler.h"
+#include "acparser.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -127,10 +128,12 @@
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslmain")
 
+int                     optind;
+NATIVE_CHAR             *optarg;
 
-UINT32                   Gbl_ExceptionCount[2] = {0,0};
-char                     hex[] = {'0','1','2','3','4','5','6','7',
-                                  '8','9','A','B','C','D','E','F'};
+UINT32                  Gbl_ExceptionCount[2] = {0,0};
+char                    hex[] = {'0','1','2','3','4','5','6','7',
+                                 '8','9','A','B','C','D','E','F'};
 
 
 /*******************************************************************************
@@ -154,11 +157,15 @@ Options (
     printf ("    -a               Create AML in a assembler source code file (*.asm)\n");
     printf ("    -c               Create AML in a C source code file (*.c)\n");
     printf ("    -d               Disassemble AML file\n");
+    printf ("    -e               Less verbose errors and warnings for IDE\n");
+    printf ("    -f               Disable constant folding\n");
     printf ("    -h               Additional help and compiler debug options\n");
     printf ("    -l               Create listing file (mixed ASL source and AML) (*.lst)\n");
     printf ("    -n               Create namespace file (*.nsp)\n");
     printf ("    -o <name>        Specify filename prefix for all output files\n");
     printf ("                             (including the .aml file)\n");
+    printf ("    -qc              Display operators allowed in constant expressions\n");
+    printf ("    -qr              Display ACPI reserved method names\n");
     printf ("    -s               Create combined (w/includes) ASL file (*.src)\n");
     printf ("    -t <a|c>         Create AML hex table in assembler or C (*.hex)\n");
 }
@@ -298,7 +305,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "ab:cdhilno:pst:vx")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "ab:cdefhilno:pq:st:vx")) != EOF) switch (j)
     {
     case 'a':
 
@@ -344,6 +351,19 @@ main (
         return (0);
         break;
 
+    case 'e':
+
+        /* Less verbose error messages */
+
+        Gbl_VerboseErrors = FALSE;
+        break;
+
+    case 'f':
+
+        /* Disable folding on "normal" expressions */
+
+        Gbl_FoldConstants = FALSE;
+        break;
 
     case 'h':
 
@@ -385,6 +405,25 @@ main (
 
         Gbl_ParseOnlyFlag = TRUE;
         break;
+
+    case 'q':
+
+        switch (optarg[0])
+        {
+        case 'c':
+            UtDisplayConstantOpcodes ();
+            return (0);
+
+        case 'r':
+            /* reserved names */
+
+            MpDisplayReservedNames ();
+            return (0);
+
+        default:
+            printf ("Unknown option: -q%s\n", optarg);
+            BadCommandLine = TRUE;
+        }
 
     case 's':
 
