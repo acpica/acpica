@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.125 $
+ *       $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -379,6 +379,7 @@ typedef struct acpi_namestring_info
 /* Status bits. */
 
 #define ACPI_STATUS_PMTIMER             0x0001
+#define ACPI_STATUS_BUSMASTER           0x0010
 #define ACPI_STATUS_GLOBAL              0x0020
 #define ACPI_STATUS_POWER_BUTTON        0x0100
 #define ACPI_STATUS_SLEEP_BUTTON        0x0200
