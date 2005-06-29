@@ -125,6 +125,23 @@ INT32                       DebugLevel = NORMAL_DEFAULT;
 INT32                       DebugLayer = ALL_COMPONENTS;
 
 
+
+/* 
+ * Human-readable decode of rv values, mostly for debugging
+ * These need to match the corresponding defines
+ * Note that S_FAILURE is not an error, but indicates
+ * that other alternatives should be checked.
+ */
+char            *ExceptionNames[] = 
+{ 
+    "AE_OK", 
+    "AE_PENDING", 
+    "AE_AML_ERROR",
+    "AE_RETURN_VALUE" 
+};
+
+
+
 /****************************************************************************
  *
  * FUNCTION:    InitAcpiLibGlobals
@@ -169,10 +186,10 @@ InitAcpiLibGlobals (void)
     NameString              = NULL;
     NameStringSize          = 0;
 
-    /*  global to track allocation failures */
+    /* Interpreter */
 
-    OutOfMemory             = FALSE;
-
+    BufSeq                  = 0;
+    NamedObjectErr          = FALSE;
 
     /* Hardware oriented */
 
@@ -180,6 +197,8 @@ InitAcpiLibGlobals (void)
     Gpe1EnableRegisterSave  = NULL;
     OriginalMode            = -1;   /*  original ACPI/legacy mode   */
     SciHandle				= 0;
+
+
 
     AcpiHook                = 0;
     AcpiLibInitStatus       = 0;
