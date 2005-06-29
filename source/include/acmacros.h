@@ -261,6 +261,9 @@
 
 #ifdef ACPI_DEBUG
 
+
+#define MODULE_NAME(name)               static char *_THIS_MODULE = name
+
 /* 
  * Function entry tracing. 
  * The first parameter should be the procedure name as a quoted string.  This is declared
@@ -300,10 +303,11 @@
 #define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
 
+//MsgAcpiErrorBreak
 #define ERROR_BREAK
 #ifdef  ERROR_BREAK
 #define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) {\
-                                            DebugPrintRaw ("*** Break on ACPI_ERROR ***\n");\
+                                            DebugPrintRaw (MsgAcpiErrorBreak);\
                                             BREAKPOINT3;}
 #else
 #define BREAK_ON_ERROR(lvl) 
@@ -317,7 +321,7 @@
  *
  */
 
-#define PARAM_LIST(PL) PL
+#define PARAM_LIST(pl)                  pl
 
 #define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & DebugLevel) && (_COMPONENT & DebugLayer))
 
@@ -337,6 +341,7 @@
  * leaving no executable debug code!
  */
 
+#define MODULE_NAME(name) 
 #define DEBUG_EXEC(a)  
 #define DEBUG_DEFINE(a)                     
 #define FUNCTION_TRACE(a)
