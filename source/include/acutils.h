@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.74 $
+ *       $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -683,6 +683,8 @@ AcpiCmInitStaticObject (
 #define DECREMENT_OBJECT_METRICS(a)
 #define INCREMENT_OBJECT_METRICS(a)
 #define INITIALIZE_ALLOCATION_METRICS()
+#define DECREMENT_NAME_TABLE_METRICS(a)
+#define INCREMENT_NAME_TABLE_METRICS(a)
 
 #else
 
