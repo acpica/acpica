@@ -214,32 +214,31 @@ DsResultStackPop (
 
     /* Check for stack underflow */
 
-    if ((WalkState->NumResults == 0) ||
-        (WalkState->CurrentResult >= WalkState->NumResults))
+    if (WalkState->NumResults == 0)
     {
         DEBUG_PRINT (ACPI_ERROR, ("DsResultStackPop: Underflow! State=%p Cur=%X Num=%X\n", 
                         WalkState, WalkState->CurrentResult, WalkState->NumResults));
-        return AE_STACK_UNDERFLOW;
+        return AE_AML_NO_OPERAND;
     }
 
-    /* Get an object from the bottom of the stack, move up stack pointer */
 
-    *Object = WalkState->Results [WalkState->CurrentResult];
-    WalkState->Results [WalkState->CurrentResult] = NULL;
-    WalkState->CurrentResult++;
+    /* Pop the stack */
 
-    /* If the lower stack pointer now equals the upper stack pointer, the stack is empty */
+    WalkState->NumResults--;
 
-    if (WalkState->CurrentResult == WalkState->NumResults)
+    /* Check for a valid result object */
+
+    if (!WalkState->Results [WalkState->NumResults])
     {
-        /* Reset the stack pointers */
-
-        WalkState->CurrentResult = 0;
-        WalkState->NumResults = 0;
-
-        DEBUG_PRINT (TRACE_EXEC, ("DsResultStackPop: Stack is now empty.  State=%X Next=%X\n", 
-                        WalkState, WalkState->CurrentResult));
+        DEBUG_PRINT (ACPI_ERROR, ("DsResultStackPop: Null operand! State=%p #Ops=%X\n", 
+                        WalkState, WalkState->NumResults));
+        return AE_AML_NO_OPERAND;
     }
+
+
+    *Object = WalkState->Results [WalkState->NumResults];   
+    WalkState->Results [WalkState->NumResults] = NULL;
+
 
     DEBUG_PRINT (TRACE_EXEC, ("DsResultStackPop: Obj=%p State=%p Num=%X Cur=%X\n", 
                     *Object, WalkState, WalkState->NumResults, WalkState->CurrentResult));
@@ -327,6 +326,62 @@ DsObjStackPush (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    DsObjStackPopObject
+ *
+ * PARAMETERS:  PopCount            - Number of objects/entries to pop
+ *              WalkState           - Current Walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Pop this walk's object stack.  Objects on the stack are NOT
+ *              deleted by this routine.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+DsObjStackPopObject (
+    ACPI_OBJECT_INTERNAL    **Object,
+    ACPI_WALK_STATE         *WalkState)
+{
+
+
+    /* Check for stack underflow */
+
+    if (WalkState->NumOperands == 0)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("DsObjStackPop: Missing operand/stack empty! State=%p #Ops=%X\n", 
+                        WalkState, WalkState->NumOperands));
+        return AE_AML_NO_OPERAND;
+    }
+
+
+    /* Pop the stack */
+
+    WalkState->NumOperands--;
+
+    /* Check for a valid operand */
+
+    if (!WalkState->Operands [WalkState->NumOperands])
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("DsObjStackPop: Null operand! State=%p #Ops=%X\n", 
+                        WalkState, WalkState->NumOperands));
+        return AE_AML_NO_OPERAND;
+    }
+
+    /* Get operand and set stack entry to null */
+
+    *Object = WalkState->Operands [WalkState->NumOperands];
+    WalkState->Operands [WalkState->NumOperands] = NULL;
+
+    DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPopObject: State=%p #Ops=%X\n", 
+                    WalkState, WalkState->NumOperands));
+
+    return AE_OK;
+}
+
+        
 /*******************************************************************************
  *
  * FUNCTION:    DsObjStackPop 
