@@ -214,7 +214,7 @@ extern INT32                    ObjStackTop;
 /* Method stack - contains arguments and locals */
 /* TBD: Split into parallel arg stack and local stack */
 
-extern ACPI_OBJECT              *MethodStack[AML_METHOD_MAX_NEST][MTH_ENTRY_SIZE];
+extern ACPI_OBJECT_INTERNAL     *MethodStack[AML_METHOD_MAX_NEST][MTH_ENTRY_SIZE];
 extern INT32                    MethodStackTop;
 
 /* Base of AML block, and pointer to current location in it */
