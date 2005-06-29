@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.44 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -141,8 +141,8 @@
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2011"
-#define CompilerCreatorRevision     0x02002011  /* Acpi 2.0, Version# */
+#define CompilerVersion             "X2014"
+#define CompilerCreatorRevision     0x02002014  /* Acpi 2.0, Version# */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000 Intel Corporation"
@@ -203,19 +203,26 @@ end_stmt (void);
 /* parser */
 
 int
-AslCompilerparse( void);
+AslCompilerparse(
+    void);
 
 ASL_PARSE_NODE *
-AslDoError (void);
+AslDoError (
+    void);
 
 int
-AslCompilererror(char* s);
+AslCompilererror(
+    char                    *s);
 
 int
 AslCompilerlex();
 
 char
 *AslCompilertext;
+
+void
+ResetCurrentLineBuffer (
+    void);
 
 /* aslmain */
 
@@ -245,7 +252,6 @@ AslCompilererror(char *s);
 #define ASL_DEBUG_OUTPUT    0
 #define ASL_PARSE_OUTPUT    1
 #define ASL_TREE_OUTPUT     2
-
 
 
 int
