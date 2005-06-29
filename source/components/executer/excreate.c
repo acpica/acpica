@@ -328,7 +328,7 @@ AmlExecCreateField (
 
         /* An additional reference for SrcDesc */
 
-        CmUpdateObjectReference (SrcDesc, REF_INCREMENT);
+        CmAddReference (SrcDesc);
 
         break;
 
@@ -488,7 +488,7 @@ AmlExecCreateAlias (
 
     /* Add an additional reference to the object */
 
-    CmUpdateObjectReference (SrcEntry->Object, REF_INCREMENT);
+    CmAddReference (SrcEntry->Object);
 
     /* 
      * Attach the original source NTE to the new Alias NTE.
