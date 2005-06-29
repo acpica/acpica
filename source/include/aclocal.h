@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.146 $
+ *       $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -543,6 +543,8 @@ typedef struct acpi_control_state
     ACPI_STATE_COMMON
     struct acpi_parse_obj   *PredicateOp;
     UINT8                   *AmlPredicateStart;     /* Start of if/while predicate */
+    UINT8                   *PackageEnd;            /* End of if/while block */
+    UINT16                  Opcode;
 
 } ACPI_CONTROL_STATE;
 
