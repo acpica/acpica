@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -840,13 +840,14 @@ AcpiEvAsynchExecuteGpeMethod (
  * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
  *
  * DESCRIPTION: Handle and dispatch a General Purpose AcpiEvent.
- *              Clears the status bit for the requested event.
+ *              Clears the status bit for the requested event, handling the
+ *              edge vs. level triggered cases.
  *
- * TBD: [Investigate] is this still valid or necessary:
- * The Gpe handler differs from the fixed events in that it clears the enable
- * bit rather than the status bit to clear the interrupt.  This allows
- * software outside of interrupt context to determine what caused the SCI and
- * dispatch the correct AML.
+ * Note: Installed GPE handlers are invoked directly (here) from interrupt
+ *       level, therefore they cannot do much more than queue something for
+ *       execution later.  GPE methods (_Lxx or _Exx) are queued for execution
+ *       later, since we do not want to run the interpreter in the context of
+ *       an interrupt handler.
  *
  ******************************************************************************/
 
