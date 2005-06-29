@@ -120,12 +120,13 @@
 
 #include <acpi.h>
 #include <amlcode.h>
+#include <parser.h>
 #include <interpreter.h>
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "nseval.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nseval");
 
 
 
@@ -184,7 +185,7 @@ NsEvaluateRelative (
 
     /* Lookup the name in the namespace */
 
-    Status = NsLookup (RelObjEntry->Scope, InternalPath, TYPE_Any, IMODE_Execute, 
+    Status = NsLookup (RelObjEntry->Scope, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
                                 NS_NO_UPSEARCH, &ObjEntry);
     if (Status != AE_OK)
     {
@@ -264,7 +265,7 @@ NsEvaluateByName (
 
     /* Lookup the name in the namespace */
 
-    Status = NsLookup (NULL, InternalPath, TYPE_Any, IMODE_Execute, 
+    Status = NsLookup (NULL, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
                                 NS_NO_UPSEARCH, &ObjEntry);
     if (Status != AE_OK)
     {
@@ -325,6 +326,7 @@ NsEvaluateByHandle (
     ACPI_OBJECT_INTERNAL    *ReturnObject)
 {
     ACPI_STATUS             Status;
+    ACPI_OBJECT_INTERNAL    *LocalReturnObject;
 
 
     FUNCTION_TRACE ("NsEvaluateByHandle");
@@ -352,8 +354,8 @@ NsEvaluateByHandle (
     {
         /* Initialize the return value to an invalid object */
 
-        memset (ReturnObject, 0, sizeof (ACPI_OBJECT_INTERNAL));
-        ReturnObject->Common.Type = TYPE_Invalid;
+        CmInitStaticObject (ReturnObject);
+        ReturnObject->Common.Type = INTERNAL_TYPE_Invalid;
     }
 
 
@@ -363,18 +365,18 @@ NsEvaluateByHandle (
      * 2) The object is not a method -- just return it's current value
      */
 
-    if (NsGetType (ObjEntry) == TYPE_Method)
+    if (NsGetType (ObjEntry) == ACPI_TYPE_Method)
     {
         /* Case 1) We have an actual control method to execute */
 
-        Status = NsExecuteControlMethod (ObjEntry, Params);
+        Status = NsExecuteControlMethod (ObjEntry, Params, &LocalReturnObject);
     }
 
     else
     {
         /* Case 2) Object is NOT a method, just return its current value */
     
-        Status = NsGetObjectValue (ObjEntry);
+        Status = NsGetObjectValue (ObjEntry, &LocalReturnObject);
     }
 
 
@@ -382,7 +384,7 @@ NsEvaluateByHandle (
      * Check if there is a return value on the stack that must be dealt with 
      */
 
-    if (AE_RETURN_VALUE == Status)
+    if (Status == AE_RETURN_VALUE)
     {
 BREAKPOINT3;
         /* 
@@ -395,32 +397,49 @@ BREAKPOINT3;
         {
             /* Valid return object, copy the returned object that is on the stack */
 
-            Status = CmCopyInternalObject (AmlObjStackGetValue (STACK_TOP), ReturnObject);
+            Status = CmCopyInternalObject (LocalReturnObject, ReturnObject);
         }
 
+
+        CmDeleteInternalObject (LocalReturnObject);
+
+#if defined _RPARSER
         /* 
          * Now that the return value (object) has been copied, we must purge the stack 
          * of the return value by deleting the object and popping the stack!
          *
          * TBD: There a difference between what is returned by NsExecuteControlMethod and
-         * NsGetObjectValue:  The AmlObjStackLevel() is one vs. zero (respectively).  
+         * NsGetObjectValue:  The PsxObjStackLevel() is one vs. zero (respectively).  
          * What is the real reason for this??
          */
 
-        AmlObjStackDeleteValue (STACK_TOP);
-        if (AmlObjStackLevel ())
+        PsxObjStackSetValue (STACK_TOP, NULL);
+        if (PsxObjStackLevel ())
         {
             DEBUG_PRINT (ACPI_ERROR, ("NsEvaluateByHandle: Object stack not empty: TOS=%d\n",
-                            AmlObjStackLevel ()));
+                            PsxObjStackLevel ()));
 
             /* In all cases, clear the object stack! */
 
-            AmlObjStackClearAll ();
+            PsxObjStackClearAll ();
         }
+#endif
 
         /* Map AE_RETURN_VALUE to AE_OK, we are done with it */
 
-        Status = AE_OK;
+        if (Status == AE_RETURN_VALUE)
+        {
+            Status = AE_OK;
+        }
+    }
+
+    else
+    {
+#if defined _RPARSER
+        /* There could be an internal return value on the stack */
+
+        PsxObjStackDeleteValue (STACK_TOP);
+#endif
     }
 
     return_ACPI_STATUS (Status);
@@ -445,10 +464,11 @@ BREAKPOINT3;
 ACPI_STATUS
 NsExecuteControlMethod (
     NAME_TABLE_ENTRY        *MethodEntry, 
-    ACPI_OBJECT_INTERNAL    **Params)
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
     ACPI_STATUS             Status;
-    UINT32                  i;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
     FUNCTION_TRACE ("NsExecuteControlMethod");
@@ -456,7 +476,7 @@ NsExecuteControlMethod (
 
     /* Verify that there is a method associated with this object */
 
-    if (!MethodEntry->Object)
+    if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) MethodEntry)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Control method is undefined (nil value)\n"));
         return_ACPI_STATUS (AE_ERROR);
@@ -466,69 +486,78 @@ NsExecuteControlMethod (
      * Valid method, Set the current scope to that of the Method, and execute it.
      */
 
-    DEBUG_PRINT (ACPI_INFO,
-                ("Control method at Offset %x Length %lx]\n",
-                ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Pcode + 1,
-                ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.PcodeLength - 1));
+    DEBUG_PRINT (ACPI_INFO, ("Control method at Offset %x Length %lx]\n",
+                    ObjDesc->Method.Pcode + 1,
+                    ObjDesc->Method.PcodeLength - 1));
 
-    NsDumpPathname (MethodEntry->Scope, "NsExecuteControlMethod: Setting scope to", 
+    DUMP_PATHNAME (MethodEntry->Scope, "NsExecuteControlMethod: Setting scope to", 
                     TRACE_NAMES, _COMPONENT);
 
     /* Reset the current scope to the beginning of scope stack */
 
-    Gbl_CurrentScope = &Gbl_ScopeStack[0];
+    NsScopeStackClear ();
 
     /* Push current scope on scope stack and make Method->Scope current  */
 
-    NsPushCurrentScope (MethodEntry->Scope, TYPE_Method);
+    Status = NsScopeStackPush (MethodEntry->Scope, ACPI_TYPE_Method);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
-    NsDumpPathname (MethodEntry, "NsExecuteControlMethod: Executing", 
+    DUMP_PATHNAME (MethodEntry, "NsExecuteControlMethod: Executing", 
                     TRACE_NAMES, _COMPONENT);
 
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
-                      ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Pcode + 1));
+                      ObjDesc->Method.Pcode + 1));
 
     /* Clear both the package and object stacks */
 
-    AmlClearPkgStack ();
-    AmlObjStackClearAll ();
+    RPARSER_ONLY ((AmlClearPkgStack ()));     /* Recursive parser only */
+    RPARSER_ONLY (PsxObjStackClearAll ());
     
     /* 
      * Excecute the method via the interpreter
      */
-    Status = AmlExecuteMethod (((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Pcode + 1,
-                               ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.PcodeLength - 1,
-                               Params);
+    Status = AmlExecuteMethod (ObjDesc, Params, ReturnObjDesc);
 
-    if (AmlPkgStackLevel ())
+
+    /* TBD: remove vestiges of old parser */
+
+#ifdef _RPARSER
     {
-        /* Package stack not empty at method exit and should be */
 
-        REPORT_ERROR ("Package stack not empty at method exit");
-    }
+        UINT32                  i;
 
-    if (AmlMthStackLevel () > -1)
-    {
-        /* Method stack not empty at method exit and should be */
 
-        REPORT_ERROR ("Method stack not empty at method exit");
-    }
-
-    if ((AmlObjStackLevel ()) &&
-        (Status != AE_RETURN_VALUE))
-    {
-        /* Object stack is not empty at method exit and should be */
-
-        REPORT_ERROR ("Object stack not empty at method exit");
-        DEBUG_PRINT (ACPI_ERROR, ("%d Remaining: \n", AmlObjStackLevel ()));
-
-        for (i = 0; i < (UINT32) AmlObjStackLevel (); i++)
+        if (AmlPkgStackLevel ())
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Object Stack [-%d]: %p\n", i, AmlObjStackGetValue (i)));
+            /* Package stack not empty at method exit and should be */
+
+            REPORT_ERROR ("Package stack not empty at method exit");
         }
 
-        AmlDumpObjStack (IMODE_Execute, "Remaining Object Stack entries", -1, "");
+        /* If this was a nested method call, the method stack won't be empty */
+
+        /* Check the object stack */
+
+        if ((PsxObjStackLevel ()) &&
+            (Status != AE_RETURN_VALUE))
+        {
+            /* Object stack is not empty at method exit and should be */
+
+            REPORT_ERROR ("Object stack not empty at method exit");
+            DEBUG_PRINT (ACPI_ERROR, ("%d Remaining: \n", PsxObjStackLevel ()));
+
+            for (i = 0; i < (UINT32) PsxObjStackLevel (); i++)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("Object Stack [-%d]: %p\n", i, PsxObjStackGetValue (i)));
+            }
+
+            DUMP_OPERANDS (PsxObjStackGetTopPtr(), IMODE_Execute, "Remaining Object Stack entries", -1, "");
+        }
     }
+#endif
 
     return_ACPI_STATUS (Status);
 }
@@ -548,7 +577,8 @@ NsExecuteControlMethod (
 
 ACPI_STATUS
 NsGetObjectValue (
-    NAME_TABLE_ENTRY        *ObjectEntry)
+    NAME_TABLE_ENTRY        *ObjectEntry,
+    ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -557,7 +587,7 @@ NsGetObjectValue (
     FUNCTION_TRACE ("NsGetObjectValue");
 
 
-    ObjDesc = CmCreateInternalObject (TYPE_Lvalue);
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
     if (!ObjDesc)
     {
         /* Descriptor allocation failure */
@@ -570,19 +600,12 @@ NsGetObjectValue (
     ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
     ObjDesc->Lvalue.Object  = (void *) ObjectEntry;
 
-
     /* 
-     * Put the ObjDesc on the stack, and use AmlGetRvalue() to get 
-     * the associated value.  Note that the object stack top points to the 
-     * top valid entry, not to the first unused position.
+     * use AmlGetRvalue() to get the associated value.  The call to AmlGetRvalue causes 
+     * ObjDesc (allocated above) to always be deleted 
      */
 
-    AmlObjStackDeleteValue (STACK_TOP);
-    AmlObjStackSetValue (STACK_TOP, ObjDesc);
-
-    /* Call to AmlGetRvalue causes ObjDesc (allocated above) to always be deleted */
-
-    Status = AmlGetRvalue (AmlObjStackGetTopPtr ());
+    Status = AmlGetRvalue (ReturnObjDesc);
 
     /* 
      * If AmlGetRvalue() succeeded, treat the top stack entry as
@@ -593,7 +616,7 @@ NsGetObjectValue (
     {
         Status = AE_RETURN_VALUE;
         DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning obj %p\n", 
-                            AmlObjStackGetValue (STACK_TOP)));
+                            *ReturnObjDesc));
     }
 
 

@@ -128,6 +128,8 @@
 
 
 
+#ifdef ACPI_DEBUG
+
 /****************************************************************************
  *
  * FUNCTION:    NsDumpPathname   
@@ -630,5 +632,5 @@ NsDumpEntry (
     return_VOID;
 }
 
-
+#endif
  
