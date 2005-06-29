@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.100 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -226,7 +226,6 @@ AcpiUtDebugPrint (
         return;
     }
 
-
     /*
      * Thread tracking and context switch notification
      */
@@ -247,15 +246,14 @@ AcpiUtDebugPrint (
      * Display the module name, current line number, thread ID (if requested),
      * current procedure nesting level, and the current procedure name
      */
-    AcpiOsPrintf ("%8s-%04d ", DbgInfo->ModuleName, LineNumber);
+    AcpiOsPrintf ("%8s-%04ld ", DbgInfo->ModuleName, LineNumber);
 
     if (ACPI_LV_THREADS & AcpiDbgLevel)
     {
-        AcpiOsPrintf ("[%04X] ", ThreadId, AcpiGbl_NestingLevel, DbgInfo->ProcName);
+        AcpiOsPrintf ("[%04lX] ", ThreadId, AcpiGbl_NestingLevel, DbgInfo->ProcName);
     }
 
-    AcpiOsPrintf ("[%02d] %-22.22s: ", AcpiGbl_NestingLevel, DbgInfo->ProcName);
-
+    AcpiOsPrintf ("[%02ld] %-22.22s: ", AcpiGbl_NestingLevel, DbgInfo->ProcName);
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
@@ -300,7 +298,6 @@ AcpiUtDebugPrintRaw (
     }
 
     va_start (args, Format);
-
     AcpiOsVprintf (Format, args);
 }
 
@@ -625,7 +622,6 @@ AcpiUtDumpBuffer (
 
         AcpiOsPrintf ("%05X    ", i);
 
-
         /* Print 16 hex chars */
 
         for (j = 0; j < 16;)
@@ -682,12 +678,10 @@ AcpiUtDumpBuffer (
             }
         }
 
-
         /*
          * Print the ASCII equivalent characters
          * But watch out for the bad unprintable ones...
          */
-
         for (j = 0; j < 16; j++)
         {
             if (i + j >= Count)
