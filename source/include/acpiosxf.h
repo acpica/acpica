@@ -102,7 +102,8 @@
 #include <environment.h>
 #include <datatypes.h>
 #include <acpiasm.h>
-
+#include <excep.h>
+#include <output.h>
 
 
 /* Priorities for OsdQueueForExecution */
@@ -194,6 +195,7 @@ UINT8
 OsdIn8 (
     UINT16                  InPort);
 
+
 UINT16
 OsdIn16 (
     UINT16                  InPort);
@@ -222,47 +224,47 @@ OsdOut32 (
  * Standard access to PCI configuration space
  */
 
-UINT8 
+ACPI_STATUS 
 OsdReadPciCfgByte (
-    INT32                   Bus, 
-    INT32                   DeviceFunction, 
-    INT32                   Register, 
-    UINT8                   *Value);
+    UINT32                  Bus, 
+    UINT32                  DeviceFunction, 
+    UINT32                  Register, 
+    void                    *Value);
 
-UINT8 
+ACPI_STATUS 
 OsdReadPciCfgWord (
-    INT32                   Bus, 
-    INT32                   DeviceFunction, 
-    INT32                   Register, 
-    UINT16                  *Value);
+    UINT32                  Bus, 
+    UINT32                  DeviceFunction, 
+    UINT32                  Register, 
+    void                    *Value);
 
-UINT8 
+ACPI_STATUS 
 OsdReadPciCfgDword (
-    INT32                   Bus, 
-    INT32                   DeviceFunction, 
-    INT32                   Register, 
-    UINT32                  *Value);
+    UINT32                  Bus, 
+    UINT32                  DeviceFunction, 
+    UINT32                  Register, 
+    void                    *Value);
 
-UINT8 
+ACPI_STATUS 
 OsdWritePciCfgByte (
-    INT32                   Bus, 
-    INT32                   DeviceFunction, 
-    INT32                   Register, 
-    UINT8                   Value);
+    UINT32                  Bus, 
+    UINT32                  DeviceFunction, 
+    UINT32                  Register, 
+    void                    Value);
 
-UINT8 
+ACPI_STATUS 
 OsdWritePciCfgWord (
-    INT32                   Bus, 
-    INT32                   DeviceFunction, 
-    INT32                   Register, 
-    UINT16                  Value);
+    UINT32                  Bus, 
+    UINT32                  DeviceFunction, 
+    UINT32                  Register, 
+    void                    Value);
 
-UINT8 
+ACPI_STATUS 
 OsdWritePciCfgDword (
-    INT32                   Bus, 
-    INT32                   DeviceFunction, 
-    INT32                   Register, 
-    UINT32                  Value);
+    UINT32                  Bus, 
+    UINT32                  DeviceFunction, 
+    UINT32                  Register, 
+    void                    Value);
 
 
 /*
