@@ -271,13 +271,13 @@ NsInternalizeName (
     {
         InternalName[0] = '\\';
         InternalName[1] = AML_MultiNamePrefixOp;
-        InternalName[2] = NumSegments;
+        InternalName[2] = (char) NumSegments;
         Result = &InternalName[3];
     }
     else
     {
         InternalName[0] = AML_MultiNamePrefixOp;
-        InternalName[1] = NumSegments;
+        InternalName[1] = (char) NumSegments;
         Result = &InternalName[2];
     }
 
