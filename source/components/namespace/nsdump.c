@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.131 $
+ *              $Revision: 1.162 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,8 +125,8 @@
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsdump")
 
-#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
 
+#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
 /*******************************************************************************
  *
@@ -152,7 +152,7 @@ AcpiNsPrintPathname (
         return;
     }
 
-        /* Print the entire name */
+    /* Print the entire name */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "["));
 
@@ -186,16 +186,13 @@ AcpiNsPrintPathname (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiNsDumpPathname (
     ACPI_HANDLE             Handle,
-    NATIVE_CHAR             *Msg,
+    char                    *Msg,
     UINT32                  Level,
     UINT32                  Component)
 {
-    ACPI_BUFFER             Buffer;
-    ACPI_STATUS             Status;
-
 
     ACPI_FUNCTION_TRACE ("NsDumpPathname");
 
@@ -204,21 +201,14 @@ AcpiNsDumpPathname (
 
     if (!(AcpiDbgLevel & Level) || !(AcpiDbgLayer & Component))
     {
-        return_ACPI_STATUS (AE_OK);
+        return_VOID;
     }
 
     /* Convert handle to a full pathname and print it (with supplied message) */
 
-    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-
-    Status = AcpiNsHandleToPathname (Handle, &Buffer);
-    if (ACPI_SUCCESS (Status))
-    {
-        AcpiOsPrintf ("%s %s (Node %p)\n", Msg, Buffer.Pointer, Handle);
-        ACPI_MEM_FREE (Buffer.Pointer);
-    }
-
-    return_ACPI_STATUS (Status);
+    AcpiNsPrintNodePathname (Handle, Msg);
+    AcpiOsPrintf ("\n");
+    return_VOID;
 }
 
 
@@ -248,22 +238,14 @@ AcpiNsDumpOneObject (
     ACPI_OBJECT_TYPE        ObjType;
     ACPI_OBJECT_TYPE        Type;
     UINT32                  BytesToDump;
-    UINT32                  DownstreamSiblingMask = 0;
-    UINT32                  LevelTmp;
-    UINT32                  WhichBit;
-    UINT32                  i;
     UINT32                  DbgLevel;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_NAME ("NsDumpOneObject");
 
 
-    ThisNode = AcpiNsMapHandleToNode (ObjHandle);
-
-    LevelTmp    = Level;
-    Type        = ThisNode->Type;
-    WhichBit    = 1;
-
+    /* Is output enabled? */
 
     if (!(AcpiDbgLevel & Info->DebugLevel))
     {
@@ -276,6 +258,9 @@ AcpiNsDumpOneObject (
         return (AE_OK);
     }
 
+    ThisNode = AcpiNsMapHandleToNode (ObjHandle);
+    Type = ThisNode->Type;
+
     /* Check if the owner matches */
 
     if ((Info->OwnerId != ACPI_UINT32_MAX) &&
@@ -286,68 +271,26 @@ AcpiNsDumpOneObject (
 
     /* Indent the object according to the level */
 
-    while (LevelTmp--)
+    AcpiOsPrintf ("%2d%*s", (UINT32) Level - 1, (int) Level * 2, " ");
+
+    /* Check the node type and name */
+
+    if (Type > ACPI_TYPE_LOCAL_MAX)
     {
-        /* Print appropriate characters to form tree structure */
-
-        if (LevelTmp)
-        {
-            if (DownstreamSiblingMask & WhichBit)
-            {
-                AcpiOsPrintf ("|");
-            }
-            else
-            {
-                AcpiOsPrintf (" ");
-            }
-
-            WhichBit <<= 1;
-        }
-        else
-        {
-            if (AcpiNsExistDownstreamSibling (ThisNode + 1))
-            {
-                DownstreamSiblingMask |= (1 << (Level - 1));
-                AcpiOsPrintf ("+");
-            }
-            else
-            {
-                DownstreamSiblingMask &= ACPI_UINT32_MAX ^ (1 << (Level - 1));
-                AcpiOsPrintf ("+");
-            }
-
-            if (ThisNode->Child == NULL)
-            {
-                AcpiOsPrintf ("-");
-            }
-            else if (AcpiNsExistDownstreamSibling (ThisNode->Child))
-            {
-                AcpiOsPrintf ("+");
-            }
-            else
-            {
-                AcpiOsPrintf ("-");
-            }
-        }
-    }
-
-    /* Check the integrity of our data */
-
-    if (Type > INTERNAL_TYPE_MAX)
-    {
-        Type = INTERNAL_TYPE_DEF_ANY;  /* prints as *ERROR* */
+        ACPI_REPORT_WARNING (("Invalid ACPI Type %08X\n", Type));
     }
 
     if (!AcpiUtValidAcpiName (ThisNode->Name.Integer))
     {
-        ACPI_REPORT_WARNING (("Invalid ACPI Name %08X\n", ThisNode->Name.Integer));
+        ACPI_REPORT_WARNING (("Invalid ACPI Name %08X\n",
+            ThisNode->Name.Integer));
     }
 
     /*
      * Now we can print out the pertinent information
      */
-    AcpiOsPrintf (" %4.4s %-12s %p",
-            ThisNode->Name.Ascii, AcpiUtGetTypeName (Type), ThisNode);
+    AcpiOsPrintf ("%4.4s %-12s %p ",
+            AcpiUtGetNodeName (ThisNode), AcpiUtGetTypeName (Type), ThisNode);
 
     DbgLevel = AcpiDbgLevel;
     AcpiDbgLevel = 0;
@@ -369,34 +312,31 @@ AcpiNsDumpOneObject (
         switch (Type)
         {
         case ACPI_TYPE_PROCESSOR:
-            
-            AcpiOsPrintf (" ID %d Addr %.4X Len %.4X\n",
-                        ObjDesc->Processor.ProcId,
-                        ObjDesc->Processor.Address,
-                        ObjDesc->Processor.Length);
+
+            AcpiOsPrintf ("ID %X Len %.4X Addr %p\n",
+                ObjDesc->Processor.ProcId, ObjDesc->Processor.Length,
+                (char *) ObjDesc->Processor.Address);
             break;
 
 
         case ACPI_TYPE_DEVICE:
-            
-            AcpiOsPrintf (" Notification object: %p", ObjDesc);
+
+            AcpiOsPrintf ("Notify Object: %p\n", ObjDesc);
             break;
 
 
         case ACPI_TYPE_METHOD:
-            
-            AcpiOsPrintf (" Args %d Len %.4X Aml %p \n",
-                        ObjDesc->Method.ParamCount,
-                        ObjDesc->Method.AmlLength,
-                        ObjDesc->Method.AmlStart);
+
+            AcpiOsPrintf ("Args %X Len %.4X Aml %p\n",
+                (UINT32) ObjDesc->Method.ParamCount,
+                ObjDesc->Method.AmlLength, ObjDesc->Method.AmlStart);
             break;
 
 
         case ACPI_TYPE_INTEGER:
-            
-            AcpiOsPrintf (" = %8.8X%8.8X\n",
-                        ACPI_HIDWORD (ObjDesc->Integer.Value),
-                        ACPI_LODWORD (ObjDesc->Integer.Value));
+
+            AcpiOsPrintf ("= %8.8X%8.8X\n",
+                ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
             break;
 
 
@@ -404,12 +344,12 @@ AcpiNsDumpOneObject (
 
             if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
             {
-                AcpiOsPrintf (" Elements %.2X\n",
-                            ObjDesc->Package.Count);
+                AcpiOsPrintf ("Elements %.2X\n",
+                    ObjDesc->Package.Count);
             }
             else
             {
-                AcpiOsPrintf (" [Length not yet evaluated]\n");
+                AcpiOsPrintf ("[Length not yet evaluated]\n");
             }
             break;
 
@@ -418,7 +358,7 @@ AcpiNsDumpOneObject (
 
             if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
             {
-                AcpiOsPrintf (" Len %.2X",
+                AcpiOsPrintf ("Len %.2X",
                             ObjDesc->Buffer.Length);
 
                 /* Dump some of the buffer */
@@ -428,43 +368,35 @@ AcpiNsDumpOneObject (
                     AcpiOsPrintf (" =");
                     for (i = 0; (i < ObjDesc->Buffer.Length && i < 12); i++)
                     {
-                        AcpiOsPrintf (" %.2X", ObjDesc->Buffer.Pointer[i]);
+                        AcpiOsPrintf (" %.2hX", ObjDesc->Buffer.Pointer[i]);
                     }
                 }
                 AcpiOsPrintf ("\n");
             }
             else
             {
-                AcpiOsPrintf (" [Length not yet evaluated]\n");
+                AcpiOsPrintf ("[Length not yet evaluated]\n");
             }
             break;
 
 
         case ACPI_TYPE_STRING:
-            
-            AcpiOsPrintf (" Len %.2X", ObjDesc->String.Length);
 
-            if (ObjDesc->String.Length > 0)
-            {
-                AcpiOsPrintf (" = \"%.32s\"", ObjDesc->String.Pointer);
-                if (ObjDesc->String.Length > 32)
-                {
-                    AcpiOsPrintf ("...");
-                }
-            }
+            AcpiOsPrintf ("Len %.2X ", ObjDesc->String.Length);
+            AcpiUtPrintString (ObjDesc->String.Pointer, 32);
             AcpiOsPrintf ("\n");
             break;
 
 
         case ACPI_TYPE_REGION:
-            
-            AcpiOsPrintf (" [%s]", AcpiUtGetRegionName (ObjDesc->Region.SpaceId));
+
+            AcpiOsPrintf ("[%s]",
+                AcpiUtGetRegionName (ObjDesc->Region.SpaceId));
             if (ObjDesc->Region.Flags & AOPOBJ_DATA_VALID)
             {
                 AcpiOsPrintf (" Addr %8.8X%8.8X Len %.4X\n",
-                            ACPI_HIDWORD (ObjDesc->Region.Address),
-                            ACPI_LODWORD (ObjDesc->Region.Address),
-                            ObjDesc->Region.Length);
+                    ACPI_FORMAT_UINT64 (ObjDesc->Region.Address),
+                    ObjDesc->Region.Length);
             }
             else
             {
@@ -473,50 +405,57 @@ AcpiNsDumpOneObject (
             break;
 
 
-        case INTERNAL_TYPE_REFERENCE:
-            
-            AcpiOsPrintf (" [%s]\n",
-                    AcpiPsGetOpcodeName (ObjDesc->Reference.Opcode));
+        case ACPI_TYPE_LOCAL_REFERENCE:
+
+            AcpiOsPrintf ("[%s]\n",
+                AcpiPsGetOpcodeName (ObjDesc->Reference.Opcode));
             break;
 
 
         case ACPI_TYPE_BUFFER_FIELD:
-            
+
             if (ObjDesc->BufferField.BufferObj &&
                 ObjDesc->BufferField.BufferObj->Buffer.Node)
             {
-                AcpiOsPrintf (" Buf [%4.4s]",
-                        ObjDesc->BufferField.BufferObj->Buffer.Node->Name.Ascii);
+                AcpiOsPrintf ("Buf [%4.4s]",
+                    AcpiUtGetNodeName (ObjDesc->BufferField.BufferObj->Buffer.Node));
             }
             break;
 
 
-        case INTERNAL_TYPE_REGION_FIELD:
-            
-            AcpiOsPrintf (" Rgn [%4.4s]",
-                    ObjDesc->CommonField.RegionObj->Region.Node->Name.Ascii);
+        case ACPI_TYPE_LOCAL_REGION_FIELD:
+
+            AcpiOsPrintf ("Rgn [%4.4s]",
+                AcpiUtGetNodeName (ObjDesc->CommonField.RegionObj->Region.Node));
             break;
 
 
-        case INTERNAL_TYPE_BANK_FIELD:
-            
-            AcpiOsPrintf (" Rgn [%4.4s] Bnk [%4.4s]",
-                    ObjDesc->CommonField.RegionObj->Region.Node->Name.Ascii,
-                    ObjDesc->BankField.BankObj->CommonField.Node->Name.Ascii);
+        case ACPI_TYPE_LOCAL_BANK_FIELD:
+
+            AcpiOsPrintf ("Rgn [%4.4s] Bnk [%4.4s]",
+                AcpiUtGetNodeName (ObjDesc->CommonField.RegionObj->Region.Node),
+                AcpiUtGetNodeName (ObjDesc->BankField.BankObj->CommonField.Node));
             break;
 
 
-        case INTERNAL_TYPE_INDEX_FIELD:
-            
-            AcpiOsPrintf (" Idx [%4.4s] Dat [%4.4s]",
-                    ObjDesc->IndexField.IndexObj->CommonField.Node->Name.Ascii,
-                    ObjDesc->IndexField.DataObj->CommonField.Node->Name.Ascii);
+        case ACPI_TYPE_LOCAL_INDEX_FIELD:
+
+            AcpiOsPrintf ("Idx [%4.4s] Dat [%4.4s]",
+                AcpiUtGetNodeName (ObjDesc->IndexField.IndexObj->CommonField.Node),
+                AcpiUtGetNodeName (ObjDesc->IndexField.DataObj->CommonField.Node));
             break;
 
+
+        case ACPI_TYPE_LOCAL_ALIAS:
+        case ACPI_TYPE_LOCAL_METHOD_ALIAS:
+
+            AcpiOsPrintf ("Target %4.4s (%p)\n",
+                AcpiUtGetNodeName (ObjDesc), ObjDesc);
+            break;
 
         default:
-            
-            AcpiOsPrintf (" Object %p\n", ObjDesc);
+
+            AcpiOsPrintf ("Object %p\n", ObjDesc);
             break;
         }
 
@@ -525,16 +464,17 @@ AcpiNsDumpOneObject (
         switch (Type)
         {
         case ACPI_TYPE_BUFFER_FIELD:
-        case INTERNAL_TYPE_REGION_FIELD:
-        case INTERNAL_TYPE_BANK_FIELD:
-        case INTERNAL_TYPE_INDEX_FIELD:
-            AcpiOsPrintf (" Off %.2X Len %.2X Acc %.2d\n",
-                    (ObjDesc->CommonField.BaseByteOffset * 8)
-                        + ObjDesc->CommonField.StartFieldBitOffset,
-                    ObjDesc->CommonField.BitLength,
-                    ObjDesc->CommonField.AccessByteWidth);
+        case ACPI_TYPE_LOCAL_REGION_FIELD:
+        case ACPI_TYPE_LOCAL_BANK_FIELD:
+        case ACPI_TYPE_LOCAL_INDEX_FIELD:
+
+            AcpiOsPrintf (" Off %.3X Len %.2X Acc %.2hd\n",
+                (ObjDesc->CommonField.BaseByteOffset * 8)
+                    + ObjDesc->CommonField.StartFieldBitOffset,
+                ObjDesc->CommonField.BitLength,
+                ObjDesc->CommonField.AccessByteWidth);
             break;
-        
+
         default:
             break;
         }
@@ -543,9 +483,7 @@ AcpiNsDumpOneObject (
 
     case ACPI_DISPLAY_OBJECTS:
 
-        AcpiOsPrintf ("%p O:%p",
-                ThisNode, ObjDesc);
-
+        AcpiOsPrintf ("O:%p", ObjDesc);
         if (!ObjDesc)
         {
             /* No attached object, we are done */
@@ -569,8 +507,8 @@ AcpiNsDumpOneObject (
 
         case ACPI_TYPE_INTEGER:
 
-            AcpiOsPrintf (" N:%X%X\n", ACPI_HIDWORD(ObjDesc->Integer.Value),
-                                       ACPI_LODWORD(ObjDesc->Integer.Value));
+            AcpiOsPrintf (" I:%8.8X8.8%X\n",
+                    ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
             break;
 
         case ACPI_TYPE_STRING:
@@ -608,16 +546,16 @@ AcpiNsDumpOneObject (
 
     /* If there is an attached object, display it */
 
-    DbgLevel = AcpiDbgLevel;
+    DbgLevel     = AcpiDbgLevel;
     AcpiDbgLevel = 0;
-    ObjDesc = AcpiNsGetAttachedObject (ThisNode);
+    ObjDesc      = AcpiNsGetAttachedObject (ThisNode);
     AcpiDbgLevel = DbgLevel;
 
     /* Dump attached objects */
 
     while (ObjDesc)
     {
-        ObjType = INTERNAL_TYPE_INVALID;
+        ObjType = ACPI_TYPE_INVALID;
         AcpiOsPrintf ("        Attached Object %p: ", ObjDesc);
 
         /* Decode the type of attached object and dump the contents */
@@ -633,17 +571,18 @@ AcpiNsDumpOneObject (
 
         case ACPI_DESC_TYPE_OPERAND:
 
-            ObjType = ObjDesc->Common.Type;
+            ObjType = ACPI_GET_OBJECT_TYPE (ObjDesc);
 
-            if (ObjType > INTERNAL_TYPE_MAX)
+            if (ObjType > ACPI_TYPE_LOCAL_MAX)
             {
-                AcpiOsPrintf ("(Ptr to ACPI Object type %X [UNKNOWN])\n", ObjType);
+                AcpiOsPrintf ("(Ptr to ACPI Object type %X [UNKNOWN])\n",
+                    ObjType);
                 BytesToDump = 32;
             }
             else
             {
-                AcpiOsPrintf ("(Ptr to ACPI Object type %2.2X [%s])\n",
-                                    ObjType, AcpiUtGetTypeName (ObjType));
+                AcpiOsPrintf ("(Ptr to ACPI Object type %s, %X)\n",
+                    AcpiUtGetTypeName (ObjType), ObjType);
                 BytesToDump = sizeof (ACPI_OPERAND_OBJECT);
             }
             break;
@@ -651,7 +590,9 @@ AcpiNsDumpOneObject (
 
         default:
 
-            AcpiOsPrintf ("(String or Buffer ptr - not an object descriptor)\n");
+            AcpiOsPrintf (
+                "(String or Buffer ptr - not an object descriptor) [%s]\n",
+                AcpiUtGetDescriptorName (ObjDesc));
             BytesToDump = 16;
             break;
         }
@@ -690,15 +631,15 @@ AcpiNsDumpOneObject (
             ObjDesc = (void *) ObjDesc->Method.AmlStart;
             break;
 
-        case INTERNAL_TYPE_REGION_FIELD:
+        case ACPI_TYPE_LOCAL_REGION_FIELD:
             ObjDesc = (void *) ObjDesc->Field.RegionObj;
             break;
 
-        case INTERNAL_TYPE_BANK_FIELD:
+        case ACPI_TYPE_LOCAL_BANK_FIELD:
             ObjDesc = (void *) ObjDesc->BankField.RegionObj;
             break;
 
-        case INTERNAL_TYPE_INDEX_FIELD:
+        case ACPI_TYPE_LOCAL_INDEX_FIELD:
             ObjDesc = (void *) ObjDesc->IndexField.IndexObj;
             break;
 
@@ -706,7 +647,7 @@ AcpiNsDumpOneObject (
             goto Cleanup;
         }
 
-        ObjType = INTERNAL_TYPE_INVALID;   /* Terminate loop after next pass */
+        ObjType = ACPI_TYPE_INVALID;   /* Terminate loop after next pass */
     }
 
 Cleanup:
@@ -720,7 +661,7 @@ Cleanup:
  * FUNCTION:    AcpiNsDumpObjects
  *
  * PARAMETERS:  Type                - Object type to be dumped
- *              MaxDepth            - Maximum depth of dump.  Use ACPI_UINT32_MAX
+ *              MaxDepth            - Maximum depth of dump. Use ACPI_UINT32_MAX
  *                                    for an effectively unlimited depth.
  *              OwnerId             - Dump only objects owned by this ID.  Use
  *                                    ACPI_UINT32_MAX to match all owners.
@@ -749,150 +690,9 @@ AcpiNsDumpObjects (
     Info.OwnerId = OwnerId;
     Info.DisplayType = DisplayType;
 
-
-    (void) AcpiNsWalkNamespace (Type, StartHandle, MaxDepth, 
+    (void) AcpiNsWalkNamespace (Type, StartHandle, MaxDepth,
                 ACPI_NS_WALK_NO_UNLOCK, AcpiNsDumpOneObject,
                 (void *) &Info, NULL);
-}
-
-
-#ifndef _ACPI_ASL_COMPILER
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsDumpOneDevice
- *
- * PARAMETERS:  Handle              - Node to be dumped
- *              Level               - Nesting level of the handle
- *              Context             - Passed into WalkNamespace
- *
- * DESCRIPTION: Dump a single Node that represents a device
- *              This procedure is a UserFunction called by AcpiNsWalkNamespace.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiNsDumpOneDevice (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue)
-{
-    ACPI_DEVICE_INFO        Info;
-    ACPI_STATUS             Status;
-    UINT32                  i;
-
-
-    ACPI_FUNCTION_NAME ("NsDumpOneDevice");
-
-
-    Status = AcpiNsDumpOneObject (ObjHandle, Level, Context, ReturnValue);
-
-    Status = AcpiGetObjectInfo (ObjHandle, &Info);
-    if (ACPI_SUCCESS (Status))
-    {
-        for (i = 0; i < Level; i++)
-        {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " "));
-        }
-
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "    HID: %s, ADR: %8.8X%8.8X, Status: %x\n",
-                        Info.HardwareId,
-                        ACPI_HIDWORD (Info.Address), ACPI_LODWORD (Info.Address),
-                        Info.CurrentStatus));
-    }
-
-    return (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsDumpRootDevices
- *
- * PARAMETERS:  None
- *
- * DESCRIPTION: Dump all objects of type "device"
- *
- ******************************************************************************/
-
-void
-AcpiNsDumpRootDevices (void)
-{
-    ACPI_HANDLE             SysBusHandle;
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_NAME ("NsDumpRootDevices");
-
-
-    /* Only dump the table if tracing is enabled */
-
-    if (!(ACPI_LV_TABLES & AcpiDbgLevel))
-    {
-        return;
-    }
-
-    Status = AcpiGetHandle (0, ACPI_NS_SYSTEM_BUS, &SysBusHandle);
-    if (ACPI_FAILURE (Status))
-    {
-        return;
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "Display of all devices in the namespace:\n"));
-
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, 
-                ACPI_UINT32_MAX, ACPI_NS_WALK_NO_UNLOCK,
-                AcpiNsDumpOneDevice, NULL, NULL);
-}
-
-#endif
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsDumpTables
- *
- * PARAMETERS:  SearchBase          - Root of subtree to be dumped, or
- *                                    NS_ALL to dump the entire namespace
- *              MaxDepth            - Maximum depth of dump.  Use INT_MAX
- *                                    for an effectively unlimited depth.
- *
- * DESCRIPTION: Dump the name space, or a portion of it.
- *
- ******************************************************************************/
-
-void
-AcpiNsDumpTables (
-    ACPI_HANDLE             SearchBase,
-    UINT32                  MaxDepth)
-{
-    ACPI_HANDLE             SearchHandle = SearchBase;
-
-
-    ACPI_FUNCTION_TRACE ("NsDumpTables");
-
-
-    if (!AcpiGbl_RootNode)
-    {
-        /*
-         * If the name space has not been initialized,
-         * there is nothing to dump.
-         */
-        ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "name space not initialized!\n"));
-        return_VOID;
-    }
-
-    if (ACPI_NS_ALL == SearchBase)
-    {
-        /*  entire namespace    */
-
-        SearchHandle = AcpiGbl_RootNode;
-        ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "\\\n"));
-    }
-
-
-    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_OBJECTS, MaxDepth,
-            ACPI_UINT32_MAX, SearchHandle);
-    return_VOID;
 }
 
 
@@ -925,5 +725,54 @@ AcpiNsDumpEntry (
     (void) AcpiNsDumpOneObject (Handle, 1, &Info, NULL);
 }
 
+
+#ifdef _ACPI_ASL_COMPILER
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsDumpTables
+ *
+ * PARAMETERS:  SearchBase          - Root of subtree to be dumped, or
+ *                                    NS_ALL to dump the entire namespace
+ *              MaxDepth            - Maximum depth of dump.  Use INT_MAX
+ *                                    for an effectively unlimited depth.
+ *
+ * DESCRIPTION: Dump the name space, or a portion of it.
+ *
+ ******************************************************************************/
+
+void
+AcpiNsDumpTables (
+    ACPI_HANDLE             SearchBase,
+    UINT32                  MaxDepth)
+{
+    ACPI_HANDLE             SearchHandle = SearchBase;
+
+
+    ACPI_FUNCTION_TRACE ("NsDumpTables");
+
+
+    if (!AcpiGbl_RootNode)
+    {
+        /*
+         * If the name space has not been initialized,
+         * there is nothing to dump.
+         */
+        ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "namespace not initialized!\n"));
+        return_VOID;
+    }
+
+    if (ACPI_NS_ALL == SearchBase)
+    {
+        /*  entire namespace    */
+
+        SearchHandle = AcpiGbl_RootNode;
+        ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "\\\n"));
+    }
+
+    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_OBJECTS, MaxDepth,
+            ACPI_UINT32_MAX, SearchHandle);
+    return_VOID;
+}
+#endif
 #endif
 

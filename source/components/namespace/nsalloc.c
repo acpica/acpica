@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.88 $
+ *              $Revision: 1.90 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -359,7 +359,8 @@ AcpiNsInstallNode (
          * alphabetic placement.
          */
         PreviousChildNode = NULL;
-        while (AcpiNsCompareNames (AcpiUtGetNodeName (ChildNode), AcpiUtGetNodeName (Node)) < 0)
+        while (AcpiNsCompareNames (AcpiUtGetNodeName (ChildNode),
+                                            AcpiUtGetNodeName (Node)) < 0)
         {
             if (ChildNode->Flags & ANOBJ_END_OF_PEER_LIST)
             {
@@ -530,7 +531,8 @@ AcpiNsDeleteChildren (
 
         if (ChildNode->ReferenceCount != 1)
         {
-            ACPI_REPORT_WARNING (("Existing references (%d) on node being deleted (%p)\n",
+            ACPI_REPORT_WARNING ((
+                "Existing references (%d) on node being deleted (%p)\n",
                 ChildNode->ReferenceCount, ChildNode));
         }
 
@@ -654,7 +656,7 @@ AcpiNsDeleteNamespaceSubtree (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiNsRemoveReference (
     ACPI_NAMESPACE_NODE     *Node)
 {

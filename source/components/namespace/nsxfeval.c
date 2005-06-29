@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.17 $
+ *              $Revision: 1.16 $
  *
  ******************************************************************************/
 
@@ -132,11 +132,11 @@
  * FUNCTION:    AcpiEvaluateObjectTyped
  *
  * PARAMETERS:  Handle              - Object handle (optional)
- *              Pathname            - Object pathname (optional)
- *              ExternalParams      - List of parameters to pass to method,
+ *              *Pathname           - Object pathname (optional)
+ *              **ExternalParams    - List of parameters to pass to method,
  *                                    terminated by NULL.  May be NULL
  *                                    if no parameters are being passed.
- *              ReturnBuffer        - Where to put method's return value (if
+ *              *ReturnBuffer       - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
  *              ReturnType          - Expected type of return object
  *

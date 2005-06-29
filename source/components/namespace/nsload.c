@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -238,7 +238,7 @@ AcpiNsLoadTable (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiNsLoadTableByType (
     ACPI_TABLE_TYPE         TableType)
 {
@@ -412,6 +412,7 @@ AcpiNsLoadNamespace (
 }
 
 
+#ifdef ACPI_FUTURE_IMPLEMENTATION
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsDeleteSubtree
@@ -428,7 +429,7 @@ AcpiNsLoadNamespace (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiNsDeleteSubtree (
     ACPI_HANDLE             StartHandle)
 {
@@ -549,6 +550,6 @@ AcpiNsUnloadNamespace (
 
     return_ACPI_STATUS (Status);
 }
-
+#endif
 #endif
 
