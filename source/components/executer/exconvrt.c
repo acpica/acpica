@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -641,7 +641,7 @@ AcpiExConvertToString (
 
         NewBuf [Index-1] = 0;
         RetDesc->Buffer.Pointer = NewBuf;
-        RetDesc->String.Length = ACPI_STRLEN ((char *) NewBuf);
+        RetDesc->String.Length = (UINT32) ACPI_STRLEN ((char *) NewBuf);
 
         /* Return the new buffer descriptor */
 
@@ -724,7 +724,7 @@ AcpiExConvertToTargetType (
 
         switch (DestinationType)
         {
-        case INTERNAL_TYPE_REGION_FIELD:
+        case ACPI_TYPE_LOCAL_REGION_FIELD:
             /*
              * Named field can always handle conversions
              */
@@ -751,8 +751,8 @@ AcpiExConvertToTargetType (
         {
         case ACPI_TYPE_INTEGER:
         case ACPI_TYPE_BUFFER_FIELD:
-        case INTERNAL_TYPE_BANK_FIELD:
-        case INTERNAL_TYPE_INDEX_FIELD:
+        case ACPI_TYPE_LOCAL_BANK_FIELD:
+        case ACPI_TYPE_LOCAL_INDEX_FIELD:
             /*
              * These types require an Integer operand.  We can convert
              * a Buffer or a String to an Integer if necessary.
