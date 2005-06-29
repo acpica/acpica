@@ -130,6 +130,7 @@
 
 
 #define STACK_TOP               0
+#define STACK_BOTTOM            (UINT32) -1
 
 /*
  * iefield - ACPI AML (p-code) execution - field manipulation
@@ -242,7 +243,7 @@ UINT32
 AmlObjStackLevel (
      void);
 void
-AmlClearObjStack (
+AmlObjStackClearAll (
     void);
 
 ACPI_STATUS
@@ -250,8 +251,12 @@ AmlPrepObjStack (
     char                    *Types);
 
 ACPI_STATUS
-AmlObjPushIfExec (
+AmlObjStackPushIfExec (
     OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlObjStackPush (
+    void);
 
 void *
 AmlObjStackPopValue (
@@ -261,25 +266,40 @@ ACPI_STATUS
 AmlObjStackPop (
     UINT32                  StackEntries);
 
+ACPI_OBJECT_INTERNAL **
+AmlObjStackGetPtr (
+    UINT32                  OffsetFromStackTop);
+
 void *
 AmlObjStackGetValue (
     UINT32                  OffsetFromStackTop);
 
 void
 AmlObjStackSetValue (
+    UINT32                  OffsetFromStackTop,
     void                    *StackEntry);
-
-ACPI_OBJECT_INTERNAL **
-AmlObjGetStackTopPtr (
-    void);
-
-void
-AmlObjClearStackTop (
-    void);
 
 void *
 AmlObjStackRemoveValue (
     UINT32                  OffsetFromStackTop);
+
+void
+AmlObjStackDeleteValue (
+    UINT32                  OffsetFromStackTop);
+
+ACPI_STATUS
+AmlObjStackClearUntil (
+    ACPI_OBJECT_TYPE        Type);
+
+
+ACPI_OBJECT_INTERNAL **
+AmlObjStackGetTopPtr (
+    void);
+
+void
+AmlObjStackClearTop (
+    void);
+
 
 
 /*
