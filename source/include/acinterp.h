@@ -118,8 +118,8 @@
 #define __INTERPRETER_H__
 
 
-#include <acpitypes.h>
-#include <acpiobj.h>
+#include <actypes.h>
+#include <acobject.h>
 
 
 /* Interpreter constants */
@@ -234,6 +234,11 @@ ACPI_STATUS
 AmlExecCreateMutex (
     OPERATING_MODE          InterpreterMode,
     ACPI_OBJECT_INTERNAL    **Operands);
+
+ACPI_STATUS
+AmlExecCreateProcessor (
+    ACPI_GENERIC_OP         *Op,
+    ACPI_HANDLE             ProcessorNTE);
 
 ACPI_STATUS
 AmlExecCreateRegion (
