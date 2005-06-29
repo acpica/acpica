@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.175 $
+ *       $Revision: 1.176 $
  *
  *****************************************************************************/
 
@@ -380,14 +380,14 @@ AcpiUtTrackStackPtr (
 void
 AcpiUtTrace (
     UINT32                  LineNumber,
-    char                    *ProcName,
+    char                    *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId);
 
 void
 AcpiUtTracePtr (
     UINT32                  LineNumber,
-    char                    *ProcName,
+    char                    *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     void                    *Pointer);
@@ -395,7 +395,7 @@ AcpiUtTracePtr (
 void
 AcpiUtTraceU32 (
     UINT32                  LineNumber,
-    char                    *ProcName,
+    char                    *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     UINT32                  Integer);
@@ -403,7 +403,7 @@ AcpiUtTraceU32 (
 void
 AcpiUtTraceStr (
     UINT32                  LineNumber,
-    char                    *ProcName,
+    char                    *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     char                    *String);
@@ -411,14 +411,14 @@ AcpiUtTraceStr (
 void
 AcpiUtExit (
     UINT32                  LineNumber,
-    char                    *ProcName,
+    char                    *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId);
 
 void
 AcpiUtStatusExit (
     UINT32                  LineNumber,
-    char                    *ProcName,
+    char                    *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     ACPI_STATUS             Status);
@@ -426,7 +426,7 @@ AcpiUtStatusExit (
 void
 AcpiUtValueExit (
     UINT32                  LineNumber,
-    char                    *ProcName,
+    char                    *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     ACPI_INTEGER            Value);
@@ -434,7 +434,7 @@ AcpiUtValueExit (
 void
 AcpiUtPtrExit (
     UINT32                  LineNumber,
-    char                    *ProcName,
+    char                    *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     UINT8                   *Ptr);
@@ -468,7 +468,7 @@ void ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrint (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
-    char                    *ProcName,
+    char                    *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     char                    *Format,
@@ -478,7 +478,7 @@ void ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrintRaw (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
-    char                    *ProcName,
+    char                    *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     char                    *Format,
