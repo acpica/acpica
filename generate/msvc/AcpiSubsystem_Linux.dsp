@@ -213,10 +213,6 @@ SOURCE=..\..\source_linux\components\interpreter\executer\exdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\executer\exdyadic.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source_linux\components\interpreter\executer\exfield.c
 # End Source File
 # Begin Source File
@@ -229,15 +225,27 @@ SOURCE=..\..\source_linux\components\interpreter\executer\exmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\interpreter\executer\exmonad.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source_linux\components\interpreter\executer\exmutex.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source_linux\components\interpreter\executer\exnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg3.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg6.c
 # End Source File
 # Begin Source File
 
