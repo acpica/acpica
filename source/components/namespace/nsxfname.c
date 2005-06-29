@@ -338,7 +338,7 @@ AcpiGetName (
 
         /* Just copy the ACPI name from the NTE and zero terminate it */
 
-        STRNCPY (RetPathPtr->Pointer, (char *) ObjEntry->Name, ACPI_NAME_SIZE);
+        STRNCPY (RetPathPtr->Pointer, (char *) &ObjEntry->Name, ACPI_NAME_SIZE);
         ((char *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
         Status = AE_OK;
     }
