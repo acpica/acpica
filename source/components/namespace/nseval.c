@@ -484,6 +484,8 @@ UnlockAndExit:
  *              **Params            - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
+ *              **ReturnObjDesc     - List of result objects to be returned
+ *                                    from the method.
  *
  * RETURN:      Status
  *

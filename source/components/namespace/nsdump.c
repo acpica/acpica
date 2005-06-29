@@ -224,13 +224,13 @@ AcpiNsDumpOneObject (
 
     if (!(AcpiDbgLevel & Info->DebugLevel))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     if (!ObjHandle)
     {
         DEBUG_PRINT (ACPI_INFO, ("Null object handle\n"));
-        return AE_OK;
+        return (AE_OK);
     }
 
     /* Check if the owner matches */
@@ -238,7 +238,7 @@ AcpiNsDumpOneObject (
     if ((Info->OwnerId != ACPI_UINT32_MAX) &&
         (Info->OwnerId != ThisEntry->OwnerId))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -321,7 +321,7 @@ AcpiNsDumpOneObject (
         /* No attached object, we are done */
 
         DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
-        return AE_OK;
+        return (AE_OK);
     }
 
     switch (Type)
@@ -371,7 +371,7 @@ AcpiNsDumpOneObject (
 
     if (!(AcpiDbgLevel & TRACE_VALUES))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -483,7 +483,7 @@ AcpiNsDumpOneObject (
 
 Cleanup:
     DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -561,7 +561,7 @@ AcpiNsDumpOneDevice (
 
     }
 
-    return Status;
+    return (Status);
 }
 
 
