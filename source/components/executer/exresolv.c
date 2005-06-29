@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.128 $
+ *              $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -173,6 +173,12 @@ AcpiExResolveToValue (
         {
             return_ACPI_STATUS (Status);
         }
+
+        if (!*StackPtr)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null pointer\n"));
+            return_ACPI_STATUS (AE_AML_NO_OPERAND);
+        }
     }
 
     /*
@@ -210,7 +216,7 @@ AcpiExResolveToValue (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiExResolveObjectToValue (
     ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState)
@@ -351,7 +357,8 @@ AcpiExResolveObjectToValue (
 
         default:
 
-            ACPI_REPORT_ERROR (("During resolve, Unknown Reference opcode %X (%s) in %p\n",
+            ACPI_REPORT_ERROR ((
+                "During resolve, Unknown Reference opcode %X (%s) in %p\n",
                 Opcode, AcpiPsGetOpcodeName (Opcode), StackDesc));
             Status = AE_AML_INTERNAL;
             break;
@@ -481,8 +488,9 @@ AcpiExResolveMultiple (
 
             if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
             {
-                ACPI_REPORT_ERROR (("AcpiExResolveMultiple: Not a NS node %p [%s]\n",
-                        Node, AcpiUtGetDescriptorName (Node)));
+                ACPI_REPORT_ERROR ((
+                    "AcpiExResolveMultiple: Not a NS node %p [%s]\n",
+                    Node, AcpiUtGetDescriptorName (Node)));
                 return_ACPI_STATUS (AE_AML_INTERNAL);
             }
 
@@ -544,8 +552,9 @@ AcpiExResolveMultiple (
 
             if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
             {
-                ACPI_REPORT_ERROR (("AcpiExResolveMultiple: Not a NS node %p [%s]\n",
-                        Node, AcpiUtGetDescriptorName (Node)));
+                ACPI_REPORT_ERROR ((
+                    "AcpiExResolveMultiple: Not a NS node %p [%s]\n",
+                    Node, AcpiUtGetDescriptorName (Node)));
                return_ACPI_STATUS (AE_AML_INTERNAL);
             }
 
@@ -575,7 +584,7 @@ AcpiExResolveMultiple (
             if (ReturnDesc)
             {
                 Status = AcpiDsMethodDataGetValue (ObjDesc->Reference.Opcode,
-                                ObjDesc->Reference.Offset, WalkState, &ObjDesc);
+                            ObjDesc->Reference.Offset, WalkState, &ObjDesc);
                 if (ACPI_FAILURE (Status))
                 {
                     return_ACPI_STATUS (Status);
@@ -611,7 +620,8 @@ AcpiExResolveMultiple (
 
         default:
 
-            ACPI_REPORT_ERROR (("AcpiExResolveMultiple: Unknown Reference subtype %X\n",
+            ACPI_REPORT_ERROR ((
+                "AcpiExResolveMultiple: Unknown Reference subtype %X\n",
                 ObjDesc->Reference.Opcode));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
