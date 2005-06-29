@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -167,6 +167,7 @@ usage (void)
     printf ("        -?                  Display this message\n");
     printf ("        -i                  Do not run INI methods\n");
     printf ("        -l DebugLevel       Specify debug output level\n");
+    printf ("        -v                  Verbose init output\n");
 }
 
 
@@ -211,7 +212,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "?dgijl:o:s")) != EOF) switch(j)
+    while ((j = getopt (argc, argv, "?dgijl:o:sv")) != EOF) switch(j)
     {
     case 'd':
         opt_disasm = TRUE;
@@ -242,6 +243,10 @@ main (
 
     case 's':
         opt_stats = TRUE;
+        break;
+
+    case 'v':
+        AcpiDbgLevel |= TRACE_INIT;
         break;
 
     case '?':
