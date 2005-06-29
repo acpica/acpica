@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.50 $
+ *              $Revision: 1.53 $
  *
  ******************************************************************************/
 
@@ -144,7 +144,7 @@
  * NOTES:       WalkState fields are initialized to zero by the
  *              ACPI_MEM_CALLOCATE().
  *
- *              A pseudo-Namespace Node is assigned to each argument and local 
+ *              A pseudo-Namespace Node is assigned to each argument and local
  *              so that RefOf() can return a pointer to the Node.
  *
  ******************************************************************************/
@@ -217,7 +217,7 @@ AcpiDsMethodDataDeleteAll (
     {
         if (WalkState->LocalVariables[Index].Object)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Deleting Local%d=%p\n", 
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Deleting Local%d=%p\n",
                     Index, WalkState->LocalVariables[Index].Object));
 
             /* Detach object (if present) and remove a reference */
@@ -232,7 +232,7 @@ AcpiDsMethodDataDeleteAll (
     {
         if (WalkState->Arguments[Index].Object)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Deleting Arg%d=%p\n", 
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Deleting Arg%d=%p\n",
                     Index, WalkState->Arguments[Index].Object));
 
             /* Detach object (if present) and remove a reference */
@@ -288,7 +288,7 @@ AcpiDsMethodDataInitArgs (
          * A valid parameter.
          * Store the argument in the method/walk descriptor
          */
-        Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Index, Params[Index], 
+        Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Index, Params[Index],
                                             WalkState);
         if (ACPI_FAILURE (Status))
         {
@@ -454,7 +454,7 @@ AcpiDsMethodDataGetType (
 
     /* Get the object */
 
-    Object = Node->Object;
+    Object = AcpiNsGetAttachedObject (Node);
     if (!Object)
     {
         /* Uninitialized local/arg, return TYPE_ANY */
@@ -602,7 +602,7 @@ AcpiDsMethodDataDeleteValue (
 
     /* Get the associated object */
 
-    Object = Node->Object;
+    Object = AcpiNsGetAttachedObject (Node);
 
     /*
      * Undefine the Arg or Local by setting its descriptor
@@ -652,6 +652,7 @@ AcpiDsStoreObjectToLocal (
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *CurrentObjDesc;
 
 
     FUNCTION_TRACE ("DsStoreObjectToLocal");
@@ -674,7 +675,8 @@ AcpiDsStoreObjectToLocal (
         return_ACPI_STATUS (Status);
     }
 
-    if (Node->Object == ObjDesc)
+    CurrentObjDesc = AcpiNsGetAttachedObject (Node);
+    if (CurrentObjDesc == ObjDesc)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p already installed!\n", ObjDesc));
         return_ACPI_STATUS (Status);
@@ -686,7 +688,7 @@ AcpiDsStoreObjectToLocal (
      * is an object reference stored there, we have to do
      * an indirect store!
      */
-    if (Node->Object)
+    if (CurrentObjDesc)
     {
         /*
          * Check for an indirect store if an argument
@@ -705,21 +707,22 @@ AcpiDsStoreObjectToLocal (
          * Weird, but true.
          */
         if ((Opcode == AML_ARG_OP) &&
-            (VALID_DESCRIPTOR_TYPE (Node->Object, ACPI_DESC_TYPE_NAMED)))
+            (VALID_DESCRIPTOR_TYPE (CurrentObjDesc, ACPI_DESC_TYPE_NAMED)))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                "Arg (%p) is an ObjRef(Node), storing in %p\n",
-                ObjDesc, Node->Object));
+                "Arg (%p) is an ObjRef(Node), storing in node %p\n",
+                ObjDesc, CurrentObjDesc));
 
             /* Detach an existing object from the Node */
 
-            AcpiNsDetachObject (Node);
+            AcpiNsDetachObject ((ACPI_NAMESPACE_NODE *) CurrentObjDesc);
 
             /*
              * Store this object into the Node
              * (perform the indirect store)
              */
-            Status = AcpiNsAttachObject (Node, ObjDesc, ObjDesc->Common.Type);
+            Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) CurrentObjDesc, 
+                            ObjDesc, ObjDesc->Common.Type);
             return_ACPI_STATUS (Status);
         }
 
@@ -739,6 +742,5 @@ AcpiDsStoreObjectToLocal (
     Status = AcpiDsMethodDataSetValue (Opcode, Index, ObjDesc, WalkState);
     return_ACPI_STATUS (Status);
 }
-
 
 
