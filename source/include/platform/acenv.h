@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.64 $
+ *       $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -364,17 +364,6 @@ typedef char *va_list;
 
 /* this has been moved to compiler-specific headers, which are included from the
    platform header. */
-
-
-/* TBD: move this elsewhere! */
-
-#ifdef __ia64__
-/* Look at interim FADT to determine IO or memory mapped */
-#define IoAddressSpace(flag)    (AcpiGbl_FADT->AddressSpace & flag)
-#else
-/* always IO space */
-#define IoAddressSpace(flag)    (1)
-#endif
 
 
 #endif /* __ACENV_H__ */
