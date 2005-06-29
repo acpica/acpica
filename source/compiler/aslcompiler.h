@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.51 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,12 +119,39 @@
 #ifndef __ASLCOMPILER_H
 #define __ASLCOMPILER_H
 
+
+/* Microsoft-specific */
+
+#if (defined WIN32 || defined WIN64)
+
+/* warn : used #pragma pack */
 #pragma warning(disable:4103)
+
+/* warn : named type definition in parentheses */
+#pragma warning(disable:4115)
+
+/* MS doesn't have getopt, but we implement it */
+int
+getopt (
+    int                     argc,
+    char                    **argv,
+    char                    *opts);
+
+#endif
+
+#ifdef _LINUX
+
+/* includes native getopt definition */
+#include <unistd.h>
+
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <errno.h>
+#include <ctype.h>
 
 
 #include "acpi.h"
@@ -137,11 +164,11 @@
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2017"
-#define CompilerCreatorRevision     0x02002017  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2036"
+#define CompilerCreatorRevision     0x02002036  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
-#define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
+#define CompilerCopyright           "Copyright (C) 2000 - 2002 Intel Corporation"
 #define CompilerCompliance          "ACPI 2.0"
 #define CompilerName                "iasl"
 #define CompilerCreatorId           "INTL"
@@ -150,6 +177,8 @@
 /* Configuration constants */
 
 #define ASL_MAX_ERROR_COUNT         200
+#define ASL_NODE_CACHE_SIZE         1024
+#define ASL_STRING_CACHE_SIZE       32768
 
 /*
  * Macros
@@ -180,11 +209,6 @@
 #define AML_DEFAULT_ARG_OP          (UINT16) 0xDDDD
 
 
-/* TBD: Is this a real opcode? */
-
-#define AML_CONCAT_TPL_OP           (UINT16) 0x00FE
-
-
 /* filename suffixes for output files */
 
 #define FILE_SUFFIX_AML_CODE        "aml"
@@ -193,7 +217,13 @@
 #define FILE_SUFFIX_DEBUG           "txt"
 #define FILE_SUFFIX_SOURCE          "src"
 #define FILE_SUFFIX_NAMESPACE       "nsp"
+#define FILE_SUFFIX_ASM_SOURCE      "asm"
+#define FILE_SUFFIX_C_SOURCE        "c"
 
+
+/* Misc */
+
+#define ASL_EXTERNAL_METHOD         255
 
 /*******************************************************************************
  *
@@ -221,7 +251,8 @@ AslCompilererror(
     char                    *s);
 
 int
-AslCompilerlex();
+AslCompilerlex(
+    void);
 
 char
 *AslCompilertext;
@@ -265,12 +296,6 @@ DbgPrint (
     UINT32                  Type,
     char                    *Format,
     ...);
-
-int
-getopt (
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
 
 void
 ErrorContext (void);
@@ -319,20 +344,36 @@ AePrintErrorLog (
 void
 LsWriteListingHexBytes (
     char                    *Buffer,
-    UINT32                  Length);
+    UINT32                  Length,
+    UINT32                  FileId);
 
 void
 LsWriteNodeToListing (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  FileId);
+
+void
+LsWriteNodeToAsmListing (
     ASL_PARSE_NODE          *Node);
 
 void
-LsFlushListingBuffer (void);
+LsWriteNode (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  FileId);
 
 void
-LsFinishSourceListing (void);
+LsFinishSourceListing (
+    UINT32                  FileId);
+
+void
+LsFlushListingBuffer (
+    UINT32                  FileId);
 
 void
 LsDoHexOutput (void);
+
+void
+LsDoAsmOutput (void);
 
 void
 LsPushNode (
@@ -347,7 +388,7 @@ LsPopNode (void);
  */
 
 
-void
+ACPI_STATUS
 OpcAmlOpcodeWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -382,6 +423,14 @@ RsDoResourceTemplate (
 
 void
 CgGenerateAmlOutput (void);
+
+void
+CgGenerateListing (
+    UINT32                  FileId);
+
+void
+LsDoListings (void);
+
 void
 CgGenerateAmlLengths (
     ASL_PARSE_NODE          *Node);
@@ -393,25 +442,24 @@ CgOpenOutputFile (
 
 /* asllength */
 
-void
+ACPI_STATUS
 LnPackageLengthWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 LnInitLengthsWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
 
-void
+ACPI_STATUS
 CgAmlWriteWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
-
 
 void
 CgGenerateOutput(
@@ -423,6 +471,41 @@ CgCloseTable (void);
 
 void
 CgWriteNode (
+    ASL_PARSE_NODE          *Node);
+
+/*
+ * aslmap
+ */
+
+ACPI_OBJECT_TYPE
+AslMapNamedOpcodeToDataType (
+    UINT16                  Opcode);
+
+/*
+ * asltransform - parse tree transformations
+ */
+
+ACPI_STATUS
+TrAmlTransformWalk (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+
+void
+TrTransformSubtree (
+    ASL_PARSE_NODE          *Node);
+
+void
+TrDoSwitch (
+    ASL_PARSE_NODE          *Node);
+
+void
+TrDoDefinitionBlock (
+    ASL_PARSE_NODE          *Node);
+
+void
+TrDoElseif (
     ASL_PARSE_NODE          *Node);
 
 
@@ -502,40 +585,55 @@ TrLinkPeerNodes (
     UINT32                  NumPeers,
     ...);
 
+void
+TrReleaseNode (
+    ASL_PARSE_NODE          *Node);
 
 /* Analyze */
 
-void
-AnSemanticAnalysisWalkBegin (
+ACPI_STATUS
+AnOtherSemanticAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
-AnSemanticAnalysisWalkEnd (
+ACPI_STATUS
+AnOtherSemanticAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
+AnOperandTypecheckWalkBegin (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+ACPI_STATUS
+AnOperandTypecheckWalkEnd (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+ACPI_STATUS
 AnMethodAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodTypingWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodTypingWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -564,12 +662,12 @@ FlWriteFile (
     void                    *Buffer,
     UINT32                  Length);
 
-ACPI_STATUS 
+ACPI_STATUS
 FlSeekFile (
     UINT32                  FileId,
-    UINT32                  Offset);
+    long                    Offset);
 
-ACPI_STATUS 
+ACPI_STATUS
 FlCloseFile (
     UINT32                  FileId);
 
@@ -595,7 +693,6 @@ FlOpenAmlOutputFile (
 ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename);
-
 
 
 /* Load */
@@ -640,6 +737,15 @@ LsDisplayNamespace (void);
 
 /* Utils */
 
+void
+UtBeginEvent (
+    UINT32                  Event,
+    char                    *Name);
+
+void
+UtEndEvent (
+    UINT32                  Event);
+
 void *
 UtLocalCalloc (
     UINT32                  Size);
@@ -662,6 +768,11 @@ UtConvertByteToHex (
     UINT8                   RawByte,
     UINT8                   *Buffer);
 
+void
+UtConvertByteToAsmHex (
+    UINT8                   RawByte,
+    UINT8                   *Buffer);
+
 char *
 UtGetOpName (
     UINT32                  ParseOpcode);
@@ -670,6 +781,15 @@ ASL_PARSE_NODE  *
 UtGetArg (
     ASL_PARSE_NODE          *Op,
     UINT32                  Argn);
+
+NATIVE_CHAR *
+UtGetStringBuffer (
+    UINT32                  Length);
+
+ACPI_STATUS
+UtInternalizeName (
+    NATIVE_CHAR             *ExternalName,
+    NATIVE_CHAR             **ConvertedName);
 
 void
 UtAttachNamepathToOwner (

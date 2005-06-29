@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.33 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,6 +126,8 @@
         MODULE_NAME         ("aslcodegen")
 
 
+
+
 /*******************************************************************************
  *
  * FUNCTION:    CgGenerateAmlOutput
@@ -143,24 +145,18 @@ void
 CgGenerateAmlOutput (void)
 {
 
-
     DbgPrint (ASL_DEBUG_OUTPUT, "\nWriting AML\n\n");
+
+    /* Generate the AML output file */
 
     FlSeekFile (ASL_FILE_SOURCE_OUTPUT, 0);
     Gbl_SourceLine = 0;
-    LsPushNode (Gbl_Files[ASL_FILE_INPUT].Filename);
     Gbl_NextError = Gbl_ErrorLog;
 
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
-
-    if (Gbl_ListingFlag)
-    {
-        LsFinishSourceListing ();
-        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\nTable header with final checksum:\n\n");
-    }
-
     CgCloseTable ();
 }
+
 
 
 /*******************************************************************************
@@ -175,7 +171,7 @@ CgGenerateAmlOutput (void)
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 CgAmlWriteWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -194,7 +190,6 @@ CgAmlWriteWalk (
         DbgPrint (ASL_TREE_OUTPUT,
             "%10.32s      ", Node->ExternalName);
     }
-
     else
     {
         DbgPrint (ASL_TREE_OUTPUT, "                ");
@@ -219,10 +214,8 @@ CgAmlWriteWalk (
                 Node->LineNumber);
 
 
-    LsWriteNodeToListing (Node);
-
     CgWriteNode (Node);
-
+    return (AE_OK);
 }
 
 
@@ -241,6 +234,7 @@ CgAmlWriteWalk (
 
 void
 CgLocalWriteAmlData (
+    ASL_PARSE_NODE          *Node,
     void                    *Buffer,
     UINT32                  Length)
 {
@@ -250,9 +244,12 @@ CgLocalWriteAmlData (
 
     FlWriteFile (ASL_FILE_AML_OUTPUT, Buffer, Length);
 
-    /* Write the hex bytes to the listing file (if requested) */
+    /* Update the final AML length for this node (used for listings) */
 
-    LsWriteListingHexBytes (Buffer, Length);
+    if (Node)
+    {
+        Node->FinalAmlLength += Length;
+    }
 }
 
 
@@ -292,7 +289,6 @@ CgWriteAmlOpcode (
         return;
     }
 
-
     switch (Node->AmlOpcode)
     {
     case AML_UNASSIGNED_OPCODE:
@@ -302,7 +298,6 @@ CgWriteAmlOpcode (
         printf ("Found a node with an unassigned AML opcode\n");
         fprintf (stderr, "Found a node with an unassigned AML opcode\n");
         return;
-        break;
 
     case AML_INT_RESERVEDFIELD_OP:
 
@@ -339,10 +334,10 @@ CgWriteAmlOpcode (
         {
             /* Write the high byte first */
 
-            CgLocalWriteAmlData (&Aml.OpcodeBytes[1], 1);
+            CgLocalWriteAmlData (Node, &Aml.OpcodeBytes[1], 1);
         }
 
-        CgLocalWriteAmlData (&Aml.OpcodeBytes[0], 1);
+        CgLocalWriteAmlData (Node, &Aml.OpcodeBytes[0], 1);
 
         /* Subtreelength doesn't include length of package length bytes */
 
@@ -359,7 +354,7 @@ CgWriteAmlOpcode (
         {
             /* Simplest case -- no bytes to follow, just write the count */
 
-            CgLocalWriteAmlData(&PkgLen.LenBytes[0], 1);
+            CgLocalWriteAmlData (Node, &PkgLen.LenBytes[0], 1);
         }
 
         else
@@ -368,11 +363,10 @@ CgWriteAmlOpcode (
              * Encode the "bytes to follow" in the first byte, top two bits.
              * The low-order nybble of the length is in the bottom 4 bits
              */
-
             PkgLenFirstByte = (UINT8) (((Node->AmlPkgLenBytes - 1) << 6) |
                                         (PkgLen.LenBytes[0] & 0x0F));
 
-            CgLocalWriteAmlData (&PkgLenFirstByte, 1);
+            CgLocalWriteAmlData (Node, &PkgLenFirstByte, 1);
 
             /* Shift the length over by the 4 bits we just stuffed in the first byte */
 
@@ -382,7 +376,7 @@ CgWriteAmlOpcode (
 
             for (i = 0; i < (UINT32) (Node->AmlPkgLenBytes - 1); i++)
             {
-                CgLocalWriteAmlData (&PkgLen.LenBytes[i], 1);
+                CgLocalWriteAmlData (Node, &PkgLen.LenBytes[i], 1);
             }
         }
     }
@@ -390,23 +384,23 @@ CgWriteAmlOpcode (
     switch (Aml.Opcode)
     {
     case AML_BYTE_OP:
-        CgLocalWriteAmlData (&Node->Value.Integer8, 1);
+        CgLocalWriteAmlData (Node, &Node->Value.Integer8, 1);
         break;
 
     case AML_WORD_OP:
-        CgLocalWriteAmlData (&Node->Value.Integer16, 2);
+        CgLocalWriteAmlData (Node, &Node->Value.Integer16, 2);
        break;
 
     case AML_DWORD_OP:
-        CgLocalWriteAmlData (&Node->Value.Integer32, 4);
+        CgLocalWriteAmlData (Node, &Node->Value.Integer32, 4);
         break;
 
     case AML_QWORD_OP:
-        CgLocalWriteAmlData (&Node->Value.Integer64, 8);
+        CgLocalWriteAmlData (Node, &Node->Value.Integer64, 8);
         break;
 
     case AML_STRING_OP:
-        CgLocalWriteAmlData (Node->Value.String, Node->AmlLength);
+        CgLocalWriteAmlData (Node, Node->Value.String, Node->AmlLength);
     }
 }
 
@@ -468,13 +462,12 @@ CgWriteTableHeader (
 
     TableHeader.AslCompilerRevision = CompilerCreatorRevision;
 
-
     /* Table length.  Checksum zero for now, will rewrite later */
 
     TableHeader.Length   = Gbl_TableLength;
     TableHeader.Checksum = 0;
 
-    CgLocalWriteAmlData (&TableHeader, sizeof (ACPI_TABLE_HEADER));
+    CgLocalWriteAmlData (Node, &TableHeader, sizeof (ACPI_TABLE_HEADER));
 }
 
 
@@ -513,7 +506,7 @@ CgCloseTable (void)
     TableHeader.Checksum = (UINT8) (0 - Sum);
 
     FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
-    CgLocalWriteAmlData (&TableHeader, sizeof (ACPI_TABLE_HEADER));
+    CgLocalWriteAmlData (NULL, &TableHeader, sizeof (ACPI_TABLE_HEADER));
 }
 
 
@@ -536,6 +529,8 @@ CgWriteNode (
     ASL_RESOURCE_NODE       *Rnode;
 
 
+    Node->FinalAmlLength = 0;
+
     /* Always check for DEFAULT_ARG and other "Noop" nodes */
     /* TBD: this may not be the best place for this check */
 
@@ -547,7 +542,6 @@ CgWriteNode (
         return;
     }
 
-
     switch (Node->AmlOpcode)
     {
     case AML_RAW_DATA_BYTE:
@@ -555,13 +549,13 @@ CgWriteNode (
     case AML_RAW_DATA_DWORD:
     case AML_RAW_DATA_QWORD:
 
-        CgLocalWriteAmlData (&Node->Value.Integer, Node->AmlLength);
+        CgLocalWriteAmlData (Node, &Node->Value.Integer, Node->AmlLength);
         return;
 
 
     case AML_RAW_DATA_BUFFER:
 
-        CgLocalWriteAmlData (Node->Value.Pointer, Node->AmlLength);
+        CgLocalWriteAmlData (Node, Node->Value.Pointer, Node->AmlLength);
         return;
 
 
@@ -570,12 +564,11 @@ CgWriteNode (
         Rnode = Node->Value.Pointer;
         while (Rnode)
         {
-            CgLocalWriteAmlData (Rnode->Buffer, Rnode->BufferLength);
+            CgLocalWriteAmlData (Node, Rnode->Buffer, Rnode->BufferLength);
             Rnode = Rnode->Next;
         }
         return;
     }
-
 
     switch (Node->ParseOpcode)
     {
@@ -589,7 +582,7 @@ CgWriteNode (
     case NAMESEG:
     case NAMESTRING:
     case METHODCALL:
-        CgLocalWriteAmlData (Node->Value.String, Node->AmlLength);
+        CgLocalWriteAmlData (Node, Node->Value.String, Node->AmlLength);
         break;
 
     default:
