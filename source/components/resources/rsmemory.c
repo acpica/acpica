@@ -6,7 +6,7 @@
  *                        AcpiRsFixedMemory32Resource
  *                        AcpiRsMemory32RangeStream
  *                        AcpiRsFixedMemory32Stream
- *              $Revision: 1.8 $
+ *              $Revision: 1.10 $
  *
  ******************************************************************************/
 
@@ -122,10 +122,10 @@
 #define __RSMEMORY_C__
 
 #include "acpi.h"
+#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rsmemory")
-
 
 
 /*******************************************************************************

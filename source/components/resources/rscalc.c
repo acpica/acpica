@@ -2,7 +2,7 @@
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.10 $
+ *              $Revision: 1.14 $
  *
  ******************************************************************************/
 
@@ -118,10 +118,10 @@
 #define __RSCALC_C__
 
 #include "acpi.h"
+#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rscalc")
-
 
 
 /*******************************************************************************
@@ -894,7 +894,6 @@ AcpiRsCalculatePciRoutingTableLength (
     UINT32                  TableIndex;
 
 
-
     FUNCTION_TRACE ("AcpiRsCalculatePciRoutingTableLength");
 
 
@@ -974,15 +973,19 @@ AcpiRsCalculatePciRoutingTableLength (
             TempSizeNeeded += sizeof(UINT32);
         }
 
+
+        /* Round up the size since each element must be aligned */
+
+        TempSizeNeeded = ROUND_UP_TO_32BITS (TempSizeNeeded);
+
         /*
          * Point to the next ACPI_OPERAND_OBJECT
          */
         TopObjectList++;
     }
 
-    /* Align the count before returning it */
 
-    *BufferSizeNeeded = ROUND_UP_TO_32BITS (TempSizeNeeded);
+    *BufferSizeNeeded = TempSizeNeeded;
 
     return_ACPI_STATUS (AE_OK);
 }

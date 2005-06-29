@@ -4,7 +4,7 @@
  *                       AcpiRsAddress16Stream
  *                       AcpiRsAddress32Resource
  *                       AcpiRsAddress32Stream
- *              $Revision: 1.10 $
+ *              $Revision: 1.12 $
  *
  ******************************************************************************/
 
@@ -120,10 +120,10 @@
 #define __RSADDR_C__
 
 #include "acpi.h"
+#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rsaddr")
-
 
 
 /*******************************************************************************

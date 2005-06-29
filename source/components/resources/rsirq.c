@@ -4,7 +4,7 @@
  *                      AcpiRsIrqStream
  *                      AcpiRsExtendedIrqResource
  *                      AcpiRsExtendedIrqStream
- *              $Revision: 1.9 $
+ *              $Revision: 1.11 $
  *
  ******************************************************************************/
 
@@ -120,10 +120,10 @@
 #define __RSIRQ_C__
 
 #include "acpi.h"
+#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rsirq")
-
 
 
 /*******************************************************************************
@@ -563,7 +563,7 @@ AcpiRsExtendedIrqResource (
 
 
 /*******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiRsExtendedIrqStream
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list

@@ -6,7 +6,7 @@
  *                     AcpiRsFixedIoStream
  *                     AcpiRsDmaResource
  *                     AcpiRsDmaStream
- *              $Revision: 1.8 $
+ *              $Revision: 1.10 $
  *
  ******************************************************************************/
 
@@ -122,10 +122,10 @@
 #define __RSIO_C__
 
 #include "acpi.h"
+#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rsio")
-
 
 
 /*******************************************************************************
@@ -564,7 +564,7 @@ AcpiRsDmaResource (
 
 
 /*******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiRsDmaStream
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list

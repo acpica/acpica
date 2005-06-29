@@ -8,7 +8,7 @@
  *                       AcpiRsEndDependentFunctionsResource
  *                       AcpiRsStartDependentFunctionsStream
  *                       AcpiRsEndDependentFunctionsStream
- *              $Revision: 1.8 $
+ *              $Revision: 1.10 $
  *
  ******************************************************************************/
 
@@ -124,10 +124,10 @@
 #define __RSMISC_C__
 
 #include "acpi.h"
+#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rsmisc")
-
 
 
 /*******************************************************************************
