@@ -1054,7 +1054,10 @@ AmlExecCreateMethod (
     
     /* 
      * Get the concurrency count
-     * TBD:  for APCI 2.0, this will be a value, not just a flag.
+     * If required, a semaphore will be created for this method when it is parsed.
+     *
+     * TBD:  for APCI 2.0, there will be a SyncLevel value, not just a flag
+     * Concurrency = SyncLevel + 1;.
      */
     if (MethodFlags & METHOD_FLAGS_SERIALIZED)
     {
@@ -1063,13 +1066,6 @@ AmlExecCreateMethod (
     else
     {
         ObjDesc->Method.Concurrency = INFINITE_CONCURRENCY;
-    }
-
-
-    /* If there is a concurrency limit, TBD: DO SOMETHING */
-
-    if (ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY)
-    {
     }
 
     /* Mark the Method as not parsed yet */
