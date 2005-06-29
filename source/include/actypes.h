@@ -523,10 +523,11 @@ ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
 #define ACPI_DEFAULT_HANDLE     ((ADDRESS_SPACE_HANDLER) NULL)
 
 typedef
-void * (*WALK_CALLBACK) (
+ACPI_STATUS (*WALK_CALLBACK) (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
-    void                    *Context);
+    void                    *Context,
+    void                    **ReturnValue);
 
 /* Interrupt handler return values (must be unique bits) */
 
