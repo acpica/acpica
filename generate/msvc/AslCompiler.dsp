@@ -261,6 +261,10 @@ SOURCE=..\..\source\compiler\aslrestype2.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\asltransform.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\asltree.c
 # End Source File
 # Begin Source File
