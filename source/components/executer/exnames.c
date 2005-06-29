@@ -117,9 +117,9 @@
 #define __AMNAMES_C__
 
 #include "acpi.h"
-#include "interp.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("amnames");
@@ -149,13 +149,13 @@
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiAmlAllocateNameString (
     UINT32                  PrefixCount,
     UINT32                  NumNameSegs)
 {
-    char                    *TempPtr;
-    char                    *NameString;
+    INT8                    *TempPtr;
+    INT8                    *NameString;
     UINT32                   SizeNeeded;
 
     FUNCTION_TRACE ("AmlAllocateNameString");
@@ -235,59 +235,6 @@ AcpiAmlAllocateNameString (
     return_PTR (NameString);
 }
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlDecodePackageLength
- *
- * PARAMETERS:  LastPkgLen          - latest value decoded by DoPkgLength() for
- *                                    most recently examined package or field
- *
- * RETURN:      Number of bytes contained in package length encoding
- *
- * DESCRIPTION: Decodes the Package Length. Upper 2 bits are are used to
- *              tell if type 1, 2, 3, or 4.
- *                  0x3F        = Max 1 byte encoding,
- *                  0xFFF       = Max 2 byte encoding,
- *                  0xFFFFF     = Max 3 Byte encoding,
- *                  0xFFFFFFFFF = Max 4 Byte encoding.
- *
- ******************************************************************************/
-
-UINT32
-AcpiAmlDecodePackageLength (
-    UINT32                  LastPkgLen)
-{
-    UINT32                  NumBytes = 0;
-
-
-    FUNCTION_TRACE ("AmlDecodePackageLength");
-
-
-    if (LastPkgLen < ACPI_AML_PACKAGE_TYPE1)
-    {
-        NumBytes = 1;
-    }
-
-    else if (LastPkgLen < ACPI_AML_PACKAGE_TYPE2)
-    {
-        NumBytes = 2;
-    }
-
-    else if (LastPkgLen < ACPI_AML_PACKAGE_TYPE3)
-    {
-        NumBytes = 3;
-    }
-
-    else if (LastPkgLen < ACPI_AML_PACKAGE_TYPE4)
-    {
-        NumBytes = 4;
-    }
-
-    return_VALUE (NumBytes);
-}
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlExecNameSegment
@@ -303,12 +250,12 @@ AcpiAmlDecodePackageLength (
 ACPI_STATUS
 AcpiAmlExecNameSegment (
     UINT8                   **InAmlAddress,
-    char                    *NameString)
+    INT8                    *NameString)
 {
     UINT8                   *AmlAddress = *InAmlAddress;
     ACPI_STATUS             Status = AE_OK;
     INT32                   Index;
-    char                    CharBuf[5];
+    INT8                    CharBuf[5];
 
 
     FUNCTION_TRACE ("AmlExecNameSegment");
@@ -368,7 +315,7 @@ AcpiAmlExecNameSegment (
          * so we are looking at something other than a name.
          */
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlExecNameSegment: Leading char not alpha: %02Xh (not a name)\n",
+            ("AmlExecNameSegment: Leading INT8 not alpha: %02Xh (not a name)\n",
             CharBuf[0]));
         Status = AE_CTRL_PENDING;
     }
@@ -379,7 +326,7 @@ AcpiAmlExecNameSegment (
 
         Status = AE_AML_BAD_NAME;
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecNameSegment: Bad char %02x in name, at %p\n",
+            ("AmlExecNameSegment: Bad INT8 %02x in name, at %p\n",
             *AmlAddress, AmlAddress));
     }
 
@@ -409,15 +356,16 @@ ACPI_STATUS
 AcpiAmlGetNameString (
     OBJECT_TYPE_INTERNAL    DataType,
     UINT8                   *InAmlAddress,
-    char                    **OutNameString,
+    INT8                    **OutNameString,
     UINT32                  *OutNameLength)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT8                   *AmlAddress = InAmlAddress;
-    char                    *NameString = NULL;
+    INT8                    *NameString = NULL;
     INT32                   NumSegments;
     INT32                   PrefixCount = 0;
     UINT8                   Prefix = 0;
+    BOOLEAN                 HasPrefix = FALSE;
 
 
     FUNCTION_TRACE_PTR ("AmlGetNameString", AmlAddress);
@@ -460,6 +408,7 @@ AcpiAmlGetNameString (
              * see comment in AcpiAmlAllocateNameString()
              */
             PrefixCount = -1;
+            HasPrefix = TRUE;
             break;
 
 
@@ -475,7 +424,7 @@ AcpiAmlGetNameString (
                 ++PrefixCount;
 
             } while (*AmlAddress == AML_PARENT_PREFIX);
-
+            HasPrefix = TRUE;
             break;
 
 
@@ -502,9 +451,8 @@ AcpiAmlGetNameString (
                 break;
             }
 
-            /* Ensure PrefixCount != 0 to remember processing a prefix */
-
-            PrefixCount += 2;
+            /* Indicate that we processed a prefix */
+            HasPrefix = TRUE;
 
             Status = AcpiAmlExecNameSegment (&AmlAddress, NameString);
             if (ACPI_SUCCESS (Status))
@@ -530,9 +478,8 @@ AcpiAmlGetNameString (
                 break;
             }
 
-            /* Ensure PrefixCount != 0 to remember processing a prefix */
-
-            PrefixCount += 2;
+            /* Indicate that we processed a prefix */
+            HasPrefix = TRUE;
 
             while (NumSegments &&
                     (Status = AcpiAmlExecNameSegment (&AmlAddress, NameString)) == AE_OK)
@@ -584,7 +531,7 @@ AcpiAmlGetNameString (
     }
 
 
-    if (AE_CTRL_PENDING == Status && PrefixCount != 0)
+    if (AE_CTRL_PENDING == Status && HasPrefix)
     {
         /* Ran out of segments after processing a prefix */
 
