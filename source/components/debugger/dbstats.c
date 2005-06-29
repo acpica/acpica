@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.44 $
+ *              $Revision: 1.46 $
  *
  ******************************************************************************/
 
@@ -137,6 +137,7 @@ ARGUMENT_INFO               AcpiDbStatTypes [] =
     {"MISC"},
     {"TABLES"},
     {"SIZES"},
+    {"STACK"},
     {NULL}           /* Must be null terminated */
 };
 
@@ -146,7 +147,7 @@ ARGUMENT_INFO               AcpiDbStatTypes [] =
 #define CMD_MISC            3
 #define CMD_TABLES          4
 #define CMD_SIZES           5
-
+#define CMD_STACK           6
 
 
 /*******************************************************************************
@@ -449,21 +450,21 @@ AcpiDbDisplayStatistics (
 
             if (AcpiGbl_MemoryLists[i].MaxCacheDepth > 0)
             {
-                AcpiOsPrintf ("    Cache: [Depth Max Avail Size]         % 7d % 7d % 7d % 7d B\n", 
+                AcpiOsPrintf ("    Cache: [Depth Max Avail Size]         % 7d % 7d % 7d % 7d B\n",
                         AcpiGbl_MemoryLists[i].CacheDepth,
-                        AcpiGbl_MemoryLists[i].MaxCacheDepth, 
+                        AcpiGbl_MemoryLists[i].MaxCacheDepth,
                         AcpiGbl_MemoryLists[i].MaxCacheDepth - AcpiGbl_MemoryLists[i].CacheDepth,
                         (AcpiGbl_MemoryLists[i].CacheDepth * AcpiGbl_MemoryLists[i].ObjectSize));
 
-                AcpiOsPrintf ("    Cache: [Requests Hits Misses ObjSize] % 7d % 7d % 7d % 7d B\n", 
+                AcpiOsPrintf ("    Cache: [Requests Hits Misses ObjSize] % 7d % 7d % 7d % 7d B\n",
                         AcpiGbl_MemoryLists[i].CacheRequests,
-                        AcpiGbl_MemoryLists[i].CacheHits, 
+                        AcpiGbl_MemoryLists[i].CacheHits,
                         AcpiGbl_MemoryLists[i].CacheRequests - AcpiGbl_MemoryLists[i].CacheHits,
-                        AcpiGbl_MemoryLists[i].ObjectSize); 
+                        AcpiGbl_MemoryLists[i].ObjectSize);
             }
 
-            Outstanding = AcpiGbl_MemoryLists[i].TotalAllocated - 
-                            AcpiGbl_MemoryLists[i].TotalFreed - 
+            Outstanding = AcpiGbl_MemoryLists[i].TotalAllocated -
+                            AcpiGbl_MemoryLists[i].TotalFreed -
                             AcpiGbl_MemoryLists[i].CacheDepth;
 
             if (AcpiGbl_MemoryLists[i].ObjectSize)
@@ -475,7 +476,7 @@ AcpiDbDisplayStatistics (
                 Size = ROUND_UP_TO_1K (AcpiGbl_MemoryLists[i].CurrentTotalSize);
             }
 
-            AcpiOsPrintf ("    Mem:   [Alloc Free Outstanding Size]  % 7d % 7d % 7d % 7d Kb\n", 
+            AcpiOsPrintf ("    Mem:   [Alloc Free Outstanding Size]  % 7d % 7d % 7d % 7d Kb\n",
                     AcpiGbl_MemoryLists[i].TotalAllocated,
                     AcpiGbl_MemoryLists[i].TotalFreed,
                     Outstanding, Size);
@@ -535,6 +536,17 @@ AcpiDbDisplayStatistics (
 
         break;
 
+
+    case CMD_STACK:
+
+        Size = AcpiGbl_EntryStackPointer - AcpiGbl_LowestStackPointer;
+
+        AcpiOsPrintf ("\nSubsystem Stack Usage:\n\n");
+        AcpiOsPrintf ("Entry Stack Pointer          %X\n", AcpiGbl_EntryStackPointer);
+        AcpiOsPrintf ("Lowest Stack Pointer         %X\n", AcpiGbl_LowestStackPointer);
+        AcpiOsPrintf ("Stack Use                    %X (%d)\n", Size, Size);
+        AcpiOsPrintf ("Deepest Procedure Nesting    %d\n", AcpiGbl_DeepestNesting);
+        break;
     }
 
     AcpiOsPrintf ("\n");

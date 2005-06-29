@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.45 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -205,7 +205,6 @@ AcpiPsDisplayObjectPathname (
          * (such as _OS_).  Rather than worry about looking up all
          * the predefined names, just display the name as given
          */
-
         AcpiOsPrintf ("  **** Path not found in parse tree");
     }
 
@@ -522,7 +521,7 @@ AcpiDbDisplayPath (
     UINT32                  Name;
     BOOLEAN                 DoDot = FALSE;
     ACPI_PARSE_OBJECT       *NamePath;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     /* We are only interested in named objects */
@@ -645,7 +644,7 @@ AcpiDbDisplayOpcode (
     UINT8                   *ByteData;
     UINT32                  ByteCount;
     UINT32                  i;
-    ACPI_OPCODE_INFO        *OpInfo = NULL;
+    const ACPI_OPCODE_INFO  *OpInfo = NULL;
     UINT32                  Name;
 
 
@@ -709,13 +708,13 @@ AcpiDbDisplayOpcode (
 
         if (AcpiGbl_DbOpt_verbose)
         {
-            AcpiOsPrintf ("(UINT64) 0x%8.8X%8.8X", Op->Value.Integer64.Hi, 
+            AcpiOsPrintf ("(UINT64) 0x%8.8X%8.8X", Op->Value.Integer64.Hi,
                                                    Op->Value.Integer64.Lo);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%8.8X%8.8X", Op->Value.Integer64.Hi, 
+            AcpiOsPrintf ("0x%8.8X%8.8X", Op->Value.Integer64.Hi,
                                           Op->Value.Integer64.Lo);
         }
 
@@ -819,7 +818,6 @@ AcpiDbDisplayOpcode (
         break;
     }
 
-
     if (!OpInfo)
     {
         /* If there is another element in the list, add a comma */
@@ -830,11 +828,9 @@ AcpiDbDisplayOpcode (
         }
     }
 
-
     /*
      * If this is a named opcode, print the associated name value
      */
-
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
     if (Op && (OpInfo->Flags & AML_NAMED))
     {

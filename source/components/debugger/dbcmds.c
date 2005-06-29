@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -326,7 +326,7 @@ AcpiDbUnloadAcpiTable (
 
     for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
-        if (!STRNCMP (TableArg, AcpiGbl_AcpiTableData[i].Signature, 
+        if (!STRNCMP (TableArg, AcpiGbl_AcpiTableData[i].Signature,
                 AcpiGbl_AcpiTableData[i].SigLength))
         {
             /* Found the table, unload it */
@@ -338,7 +338,7 @@ AcpiDbUnloadAcpiTable (
             }
             else
             {
-                AcpiOsPrintf ("%s, while unloading [%s]\n", 
+                AcpiOsPrintf ("%s, while unloading [%s]\n",
                     AcpiFormatException (Status), TableArg);
             }
 

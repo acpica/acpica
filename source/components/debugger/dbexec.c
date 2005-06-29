@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.32 $
+ *              $Revision: 1.34 $
  *
  ******************************************************************************/
 
@@ -277,12 +277,13 @@ AcpiDbGetOutstandingAllocations (void)
     UINT32                  i;
     UINT32                  Outstanding = 0;
 
+
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 
     for (i = ACPI_MEM_LIST_FIRST_CACHE_LIST; i < ACPI_NUM_MEM_LISTS; i++)
     {
-        Outstanding += (AcpiGbl_MemoryLists[i].TotalAllocated - 
-                        AcpiGbl_MemoryLists[i].TotalFreed - 
+        Outstanding += (AcpiGbl_MemoryLists[i].TotalAllocated -
+                        AcpiGbl_MemoryLists[i].TotalFreed -
                         AcpiGbl_MemoryLists[i].CacheDepth);
     }
 #endif
@@ -357,7 +358,7 @@ AcpiDbExecute (
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Execution of %s failed with status %s\n", 
+        AcpiOsPrintf ("Execution of %s failed with status %s\n",
             AcpiGbl_DbMethodInfo.Pathname, AcpiFormatException (Status));
     }
 
@@ -413,7 +414,6 @@ AcpiDbMethodThread (
             }
         }
     }
-
 
     /* Signal our completion */
 
