@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -304,7 +304,7 @@ AcpiEvPciConfigRegionSetup (
             Status = AcpiUtExecute_HID (PciRootNode, &ObjectHID);
             if (ACPI_SUCCESS (Status))
             {
-                /* 
+                /*
                  * Got a valid _HID string, check if this is a PCI root.
                  * New for ACPI 3.0: check for a PCI Express root also.
                  */
