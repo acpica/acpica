@@ -171,10 +171,11 @@ AmlValidateObjectType (
  ****************************************************************************/
 
 void
-AmlAppendOperandDiag(
+AmlAppendOperandDiag (
     char                    *FileName, 
     INT32                   LineNum, 
     UINT16                  OpCode, 
+    ACPI_OBJECT_INTERNAL    **Operands,
     INT32                   NumOperands)
 {
 /* TBD:    ACPI_OBJECT_INTERNAL    MthDesc; */
@@ -187,7 +188,7 @@ AmlAppendOperandDiag(
 
     if (GetDebugLevel () > 0)
     {
-        DUMP_STACK (IMODE_Execute, PsGetOpcodeName (OpCode),
+        DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (OpCode),
                       NumOperands, "after PrepStack failed");
     }
 }
