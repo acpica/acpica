@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.60 $
+ *       $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -497,6 +497,18 @@ typedef enum
 
 } AML_ACCESS_TYPE;
 
+/* Field Access Attributes (for AccessAs) */
+
+typedef enum
+{
+    ATTRIB_SMB_QUICK                = 0x02,
+    ATTRIB_SMB_SEND_RCV             = 0x04,
+    ATTRIB_SMB_BYTE                 = 0x06,
+    ATTRIB_SMB_WORD                 = 0x08,
+    ATTRIB_SMB_BLOCK                = 0x0A,
+    ATTRIB_SMB_CALL                 = 0x0E,
+
+} AML_ACCESS_ATTRIBUTE;
 
 /* Field Lock Rules */
 
