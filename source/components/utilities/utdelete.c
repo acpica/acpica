@@ -424,7 +424,7 @@ CmDeleteInternalObj (
     }
 
 
-    /* Only delete the object when the reference count reaches zero */
+    /* Only delete the object when the reference count reaches  zero */
 
     if (Object->Common.ReferenceCount > 0)
     {
@@ -716,7 +716,12 @@ CmRemoveReference (
 
     /* Now attempt to delete the object and all sub-objects */
 
-    CmDeleteInternalObj (Object);
+    /* Only delete the object when the reference count reaches zero */
+
+    if (Object->Common.ReferenceCount == 0)
+    {
+        CmDeleteInternalObj (Object);
+    }
 
     return_VOID;
 }
