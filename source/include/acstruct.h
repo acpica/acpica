@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.14 $
+ *       $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,18 +125,17 @@
  ****************************************************************************/
 
 
-
 /*
  * Walk state - current state of a parse tree walk.  Used for both a leisurely stroll through
  * the tree (for whatever reason), and for control method execution.
  */
 
-#define NEXT_OP_DOWNWARD    1
-#define NEXT_OP_UPWARD      2
+#define ACPI_NEXT_OP_DOWNWARD    1
+#define ACPI_NEXT_OP_UPWARD      2
 
-#define WALK_NON_METHOD     0
-#define WALK_METHOD         1
-#define WALK_METHOD_RESTART 2
+#define ACPI_WALK_NON_METHOD     0
+#define ACPI_WALK_METHOD         1
+#define ACPI_WALK_METHOD_RESTART 2
 
 typedef struct acpi_walk_state
 {
@@ -187,7 +186,6 @@ typedef struct acpi_walk_state
 
 
 } ACPI_WALK_STATE;
-
 
 
 /* Info used by AcpiPsInitObjects */
