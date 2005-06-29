@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  ******************************************************************************/
 
@@ -312,7 +312,8 @@ AcpiUtSetIntegerWidth (
 
 void
 AcpiUtDisplayInitPathname (
-    ACPI_HANDLE             ObjHandle,
+    UINT8                   Type,
+    ACPI_NAMESPACE_NODE     *ObjHandle,
     char                    *Path)
 {
     ACPI_STATUS             Status;
@@ -329,22 +330,41 @@ AcpiUtDisplayInitPathname (
         return;
     }
 
+    /* Get the full pathname to the node */
+
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-
     Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
-    if (ACPI_SUCCESS (Status))
+    if (ACPI_FAILURE (Status))
     {
-        if (Path)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT_NAMES, "%s.%s\n", (char *) Buffer.Pointer, Path));
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT_NAMES, "%s\n", (char *) Buffer.Pointer));
-        }
-
-        ACPI_MEM_FREE (Buffer.Pointer);
+        return;
     }
+
+    /* Print what we're doing */
+
+    switch (Type)
+    {
+    case ACPI_TYPE_METHOD:
+        AcpiOsPrintf ("Executing    ");
+        break;
+
+    default:
+        AcpiOsPrintf ("Initializing ");
+        break;
+    }
+
+    /* Print the object type and pathname */
+
+    AcpiOsPrintf ("%-12s  %s", AcpiUtGetTypeName (Type), (char *) Buffer.Pointer);
+
+    /* Extra path is used to append names like _STA, _INI, etc. */
+
+    if (Path)
+    {
+        AcpiOsPrintf (".%s", Path);
+    }
+    AcpiOsPrintf ("\n");
+
+    ACPI_MEM_FREE (Buffer.Pointer);
 }
 #endif
 
