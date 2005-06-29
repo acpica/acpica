@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -521,7 +521,7 @@ AnCheckForReservedMethod (
 
     for (i = 0; ReservedMethods[i].Name; i++)
     {
-        if (!STRCMP (Node->ExternalName, ReservedMethods[i].Name))
+        if (!ACPI_STRCMP (Node->ExternalName, ReservedMethods[i].Name))
         {
             Gbl_ReservedMethods++;
 
