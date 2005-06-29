@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
@@ -122,7 +121,10 @@
 /*
  * Data types - Fixed across all compilation models
  *
- * BOOLEAN      Logical Boolean. 1 byte value containing a 0 for FALSE or a 1 for TRUE.  Other values are undefined.
+ * BOOLEAN      Logical Boolean.
+ *              1 byte value containing a 0 for FALSE or a 1 for TRUE.
+ *              Other values are undefined.
+ *
  * INT8         8-bit  (1 byte) signed value
  * UINT8        8-bit  (1 byte) unsigned value
  * INT16        16-bit (2 byte) signed value
@@ -136,11 +138,16 @@
  * UCHAR        Character. 1 byte unsigned value.
  */
 
+#ifdef __ia64__
+#define _IA64
+#endif
+
 #ifdef _IA64
 /*
  * 64-bit type definitions
  */
 typedef unsigned char                   UINT8;
+typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UCHAR;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
@@ -164,6 +171,7 @@ typedef UINT64                          ACPI_IO_ADDRESS;
  * 16-bit type definitions
  */
 typedef unsigned char                   UINT8;
+typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UCHAR;
 typedef unsigned int                    UINT16;
 typedef long                            INT32;
@@ -184,6 +192,7 @@ typedef UINT32                          ACPI_IO_ADDRESS;
  * 32-bit type definitions (default)
  */
 typedef unsigned char                   UINT8;
+typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UCHAR;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
@@ -198,16 +207,12 @@ typedef UINT32                          ACPI_IO_ADDRESS;
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000004
 #define _HW_ALIGNMENT_SUPPORT
 
-
 #endif
-
-
 
 /*
  * Miscellaneous common types
  */
 
-typedef UINT8                           BOOLEAN;
 typedef UINT32                          UINT32_BIT;
 typedef NATIVE_UINT                     ACPI_PTRDIFF;
 typedef char                            NATIVE_CHAR;                
@@ -230,7 +235,6 @@ typedef UINT8                           u8;
 typedef UINT16                          u16;
 typedef UINT32                          u32;
 #endif
-
 /*! [End] no source code translation !*/
 
 
@@ -260,7 +264,7 @@ typedef UINT32                          u32;
 typedef UINT32                          ACPI_STATUS;    /* All ACPI Exceptions */
 typedef UINT32                          ACPI_NAME;      /* 4-INT8 ACPI name */
 typedef char*                           ACPI_STRING;    /* Null terminated ASCII string */
-typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an NTE */
+typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an Named Object */
 
 
 /*
@@ -305,10 +309,12 @@ typedef UINT32                          ACPI_TABLE_TYPE;
 
 /*
  * Types associated with names.  The first group of
- * values correspond to the definition of the ACPI ObjectType operator (See the ACPI Spec).
- * Therefore, only add to the first group if the spec changes!
+ * values correspond to the definition of the ACPI
+ * ObjectType operator (See the ACPI Spec).  Therefore,
+ * only add to the first group if the spec changes!
  *
- * Types must be kept in sync with the AcpiNsProperties and AcpiNsTypeNames arrays
+ * Types must be kept in sync with the AcpiNsProperties
+ * and AcpiNsTypeNames arrays
  */
 
 typedef UINT32                          ACPI_OBJECT_TYPE;
@@ -672,13 +678,11 @@ ACPI_STATUS (*WALK_CALLBACK) (
 
 
 #define ACPI_COMMON_OBJ_INFO \
-    ACPI_OBJECT_TYPE            Type;           /* ACPI object type */\
-    ACPI_NAME                   Name;           /* ACPI object Name */\
-    /*\
-     *  TBD: [Restructure] Do we want or need these next two??\
-     */\
-    ACPI_HANDLE                 Parent;         /* Parent object */\
-    ACPI_HANDLE                 Children;       /* Linked list of children */\
+    ACPI_OBJECT_TYPE            Type;           /* ACPI object type */ \
+    ACPI_NAME                   Name;           /* ACPI object Name */ \
+    /*  TBD: [Restructure] Do we want or need these next two??*/ \
+    ACPI_HANDLE                 Parent;         /* Parent object */ \
+    ACPI_HANDLE                 Children;       /* Linked list of children */ \
     UINT32                      Valid           /* ?????    */
 
 typedef struct
@@ -938,7 +942,7 @@ typedef struct
     UINT32                      AddressLength;
     UINT32                      ResourceSourceIndex;
     UINT32                      ResourceSourceStringLength;
-    UINT8                       ResourceSource[1];
+    NATIVE_CHAR                 ResourceSource[1];
 
 } ADDRESS16_RESOURCE;
 
@@ -957,7 +961,7 @@ typedef struct
     UINT32                      AddressLength;
     UINT32                      ResourceSourceIndex;
     UINT32                      ResourceSourceStringLength;
-    UINT8                       ResourceSource[1];
+    NATIVE_CHAR                 ResourceSource[1];
 
 } ADDRESS32_RESOURCE;
 
@@ -971,7 +975,7 @@ typedef struct
     UINT32                      Interrupts[1];
     UINT32                      ResourceSourceIndex;
     UINT32                      ResourceSourceStringLength;
-    UINT8                       ResourceSource[1];
+    NATIVE_CHAR                 ResourceSource[1];
 
 } EXTENDED_IRQ_RESOURCE;
 
@@ -1031,7 +1035,7 @@ typedef struct
     UINT32                      Address;
     UINT32                      Pin;
     UINT32                      SourceIndex;
-    UINT8                       Source[1];
+    NATIVE_CHAR                 Source[1];
 
 } PRT_ENTRY;
 

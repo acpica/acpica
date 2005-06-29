@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
@@ -531,14 +530,14 @@ AcpiCmReleaseMutex (
  * AcpiCmObject - internal object create/delete/cache routines
  */
 
-#define AcpiCmCreateInternalObject(t)   _CmCreateInternalObject(_THIS_MODULE,__LINE__,_COMPONENT,t)
-#define AcpiCmAllocateObjectDesc()      _CmAllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
-
 void *
 _CmAllocateObjectDesc (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId);
+
+#define AcpiCmCreateInternalObject(t)   _CmCreateInternalObject(_THIS_MODULE,__LINE__,_COMPONENT,t)
+#define AcpiCmAllocateObjectDesc()      _CmAllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
 
 void
 AcpiCmDeleteObjectDesc (
@@ -698,7 +697,11 @@ AcpiCmInitStaticObject (
     AcpiGbl_RunningAllocSize = 0; \
     AcpiGbl_RunningAllocCount = 0; \
     AcpiGbl_MaxConcurrentAllocSize = 0; \
-    AcpiGbl_MaxConcurrentAllocCount = 0
+    AcpiGbl_MaxConcurrentAllocCount = 0; \
+    AcpiGbl_CurrentNamedObjectCount = 0; \
+    AcpiGbl_CurrentNamedObjectSize = 0; \
+    AcpiGbl_MaxConcurrentNamedObjectCount = 0
+
 
 #define DECREMENT_OBJECT_METRICS(a) \
     AcpiGbl_CurrentObjectCount--; \
@@ -717,6 +720,19 @@ AcpiCmInitStaticObject (
     { \
         AcpiGbl_MaxConcurrentObjectSize = AcpiGbl_CurrentObjectSize; \
     }
+
+#define DECREMENT_NAME_TABLE_METRICS(a) \
+    AcpiGbl_CurrentNamedObjectCount--; \
+    AcpiGbl_CurrentNamedObjectSize -= (a)
+
+#define INCREMENT_NAME_TABLE_METRICS(a) \
+    AcpiGbl_CurrentNamedObjectCount++; \
+    AcpiGbl_CurrentNamedObjectSize+= (a); \
+    if (AcpiGbl_MaxConcurrentNamedObjectCount < AcpiGbl_CurrentNamedObjectCount) \
+    { \
+        AcpiGbl_MaxConcurrentNamedObjectCount = AcpiGbl_CurrentNamedObjectCount; \
+    } \
+
 
 
 void

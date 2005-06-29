@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification

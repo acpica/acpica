@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
@@ -304,7 +303,7 @@
 #define ARGI_STRING                 0x06
 #define ARGI_BUFFER                 0x07
 #define ARGI_PACKAGE                0x08
-#define ARGI_DATAOBJECT             0x09     /* Buffer, string, package or NTE reference - Used only by SizeOf operator*/
+#define ARGI_DATAOBJECT             0x09     /* Buffer, string, package or reference to a Named Object - Used only by SizeOf operator*/
 #define ARGI_COMPLEXOBJ             0x0A     /* Buffer or package */
 #define ARGI_MUTEX                  0x0B
 #define ARGI_EVENT                  0x0C
