@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -251,23 +251,46 @@ AcpiAmlExecStore (
         /*
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see ACPI Specification
-         *
          */
         DEBUG_PRINT (ACPI_INFO, ("**** Write to Debug Object: ****: \n"));
 
-        if (ValDesc->Common.Type != ACPI_TYPE_STRING)
-        {
-            /* TBD: print known object types "prettier". */
+        DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("[ACPI Debug] %s: ",
+                        AcpiCmGetTypeName (ValDesc->Common.Type)));
 
-            DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("Debug Object: %s 0x%X\n",
-                            AcpiCmGetTypeName (ValDesc->Common.Type),
-                            ValDesc));
-            DUMP_STACK_ENTRY (ValDesc);
-        }
-
-        else
+        switch (ValDesc->Common.Type)
         {
+        case ACPI_TYPE_INTEGER:
+
+            DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("0x%X (%d)\n", 
+                (UINT32) ValDesc->Integer.Value, (UINT32) ValDesc->Integer.Value));
+            break;
+
+
+        case ACPI_TYPE_BUFFER:
+
+            DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("Length 0x%X\n", 
+                (UINT32) ValDesc->Buffer.Length));
+            break;
+
+
+        case ACPI_TYPE_STRING:
+
             DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("%s\n", ValDesc->String.Pointer));
+            break;
+
+
+        case ACPI_TYPE_PACKAGE:
+
+            DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("Elements - 0x%X\n", 
+                (UINT32) ValDesc->Package.Elements));
+            break;
+
+
+
+        default:
+
+            DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("@0x%p\n", ValDesc));
+            break;
         }
 
         break;
