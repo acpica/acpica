@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -467,9 +467,9 @@ AcpiExOpcode_2A_1T_1R (
             }
         }
 
-        /* Allocate a new string (Length + 1 for null terminator) */
+        /* Allocate a new string object */
 
-        ReturnDesc = AcpiUtCreateStringObject (Length + 1);
+        ReturnDesc = AcpiUtCreateStringObject (Length);
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
