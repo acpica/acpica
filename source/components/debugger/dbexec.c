@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -163,37 +163,38 @@ AcpiDbExecuteMethod (
     {
         for (i = 0; Info->Args[i] && i < ACPI_METHOD_NUM_ARGS; i++)
         {
-            Params[i].Type              = ACPI_TYPE_INTEGER;
-            Params[i].Integer.Value     = ACPI_STRTOUL (Info->Args[i], NULL, 16);
+            Params[i].Type          = ACPI_TYPE_INTEGER;
+            Params[i].Integer.Value = ACPI_STRTOUL (Info->Args[i], NULL, 16);
         }
 
-        ParamObjects.Pointer        = Params;
-        ParamObjects.Count          = i;
+        ParamObjects.Pointer = Params;
+        ParamObjects.Count   = i;
     }
     else
     {
         /* Setup default parameters */
 
-        Params[0].Type              = ACPI_TYPE_INTEGER;
-        Params[0].Integer.Value     = 0x01020304;
+        Params[0].Type           = ACPI_TYPE_INTEGER;
+        Params[0].Integer.Value  = 0x01020304;
 
-        Params[1].Type              = ACPI_TYPE_STRING;
-        Params[1].String.Length     = 12;
-        Params[1].String.Pointer    = "AML Debugger";
+        Params[1].Type           = ACPI_TYPE_STRING;
+        Params[1].String.Length  = 12;
+        Params[1].String.Pointer = "AML Debugger";
 
-        ParamObjects.Pointer        = Params;
-        ParamObjects.Count          = 2;
+        ParamObjects.Pointer     = Params;
+        ParamObjects.Count       = 2;
     }
 
     /* Prepare for a return object of arbitrary size */
 
-    ReturnObj->Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj->Length            = ACPI_DEBUG_BUFFER_SIZE;
+    ReturnObj->Pointer = AcpiGbl_DbBuffer;
+    ReturnObj->Length  = ACPI_DEBUG_BUFFER_SIZE;
 
     /* Do the actual method execution */
 
     AcpiGbl_MethodExecuting = TRUE;
-    Status = AcpiEvaluateObject (NULL, Info->Pathname, &ParamObjects, ReturnObj);
+    Status = AcpiEvaluateObject (NULL,
+                Info->Pathname, &ParamObjects, ReturnObj);
 
     AcpiGbl_CmSingleStep = FALSE;
     AcpiGbl_MethodExecuting = FALSE;
@@ -208,7 +209,7 @@ AcpiDbExecuteMethod (
  *
  * PARAMETERS:  Info            - Valid method info
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Setup info segment prior to method execution
  *
@@ -345,7 +346,7 @@ AcpiDbExecutionWalk (
  *              Args                - Parameters to the method
  *              Flags               - single step/no single step
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Execute a control method.  Name is relative to the current
  *              scope.
@@ -418,7 +419,6 @@ AcpiDbExecute (
         AcpiOsPrintf ("Execution of %s failed with status %s\n",
             AcpiGbl_DbMethodInfo.Pathname, AcpiFormatException (Status));
     }
-
     else
     {
         /* Display a return object, if any */
@@ -600,7 +600,6 @@ AcpiDbCreateExecutionThreads (
     AcpiOsPrintf ("All threads (%X) have completed\n", NumThreads);
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 }
-
 
 #endif /* ACPI_DEBUGGER */
 

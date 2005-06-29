@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  ******************************************************************************/
 
@@ -331,7 +331,6 @@ AcpiDbPrepNamestring (
     char                    *Name)
 {
 
-
     if (!Name)
     {
         return;
@@ -374,7 +373,7 @@ AcpiDbPrepNamestring (
  *
  * PARAMETERS:  Name            - Name to lookup
  *
- * RETURN:      Pointer to a namespace node
+ * RETURN:      Pointer to a namespace node, null on failure
  *
  * DESCRIPTION: Lookup a name in the ACPI namespace
  *
@@ -471,7 +470,8 @@ AcpiDbSecondPassParse (
             WalkState->ParserState.Aml          =
             WalkState->ParserState.AmlStart     = Method->Named.Data;
             WalkState->ParserState.AmlEnd       =
-            WalkState->ParserState.PkgEnd       = Method->Named.Data + Method->Named.Length;
+            WalkState->ParserState.PkgEnd       = Method->Named.Data +
+                                                  Method->Named.Length;
             WalkState->ParserState.StartScope   = Op;
 
             WalkState->DescendingCallback       = AcpiDsLoad1BeginOp;

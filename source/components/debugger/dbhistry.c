@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbhistry - debugger HISTORY command
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -239,7 +239,7 @@ AcpiDbDisplayHistory (
  * PARAMETERS:  CommandNumArg           - String containing the number of the
  *                                        command to be retrieved
  *
- * RETURN:      None
+ * RETURN:      Pointer to the retrieved command. Null on error.
  *
  * DESCRIPTION: Get a command from the history buffer
  *
@@ -287,7 +287,6 @@ AcpiDbGetFromHistory (
     AcpiOsPrintf ("Invalid history number: %d\n", HistoryIndex);
     return (NULL);
 }
-
 
 #endif /* ACPI_DEBUGGER */
 

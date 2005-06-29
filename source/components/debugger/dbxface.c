@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  ******************************************************************************/
 
@@ -132,6 +132,7 @@
  * FUNCTION:    AcpiDbStartCommand
  *
  * PARAMETERS:  WalkState       - Current walk
+ *              Op              - Current executing Op, from AML interpreter
  *
  * RETURN:      Status
  *
@@ -147,7 +148,7 @@ AcpiDbStartCommand (
     ACPI_STATUS             Status;
 
 
-    /* TBD: [Investigate] what are the namespace locking issues here */
+    /* TBD: [Investigate] are there namespace locking issues here? */
 
     /* AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE); */
 
@@ -211,7 +212,7 @@ AcpiDbStartCommand (
  * FUNCTION:    AcpiDbSingleStep
  *
  * PARAMETERS:  WalkState       - Current walk
- *              Op              - Current executing op
+ *              Op              - Current executing op (from aml interpreter)
  *              OpcodeClass     - Class of the current AML Opcode
  *
  * RETURN:      Status
@@ -319,7 +320,8 @@ AcpiDbSingleStep (
         if (ParentOp)
         {
             if ((WalkState->ControlState) &&
-                (WalkState->ControlState->Common.State == ACPI_CONTROL_PREDICATE_EXECUTING))
+                (WalkState->ControlState->Common.State ==
+                    ACPI_CONTROL_PREDICATE_EXECUTING))
             {
                 /*
                  * We are executing the predicate of an IF or WHILE statement
@@ -419,7 +421,9 @@ AcpiDbSingleStep (
      */
     if (Op->Common.AmlOpcode == AML_INT_METHODCALL_OP)
     {
-        AcpiGbl_CmSingleStep = FALSE;  /* No more single step while executing called method */
+        /* Force no more single stepping while executing called method */
+
+        AcpiGbl_CmSingleStep = FALSE;
 
         /*
          * Set the breakpoint on/before the call, it will stop execution
@@ -534,7 +538,7 @@ AcpiDbInitialize (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Stop debugger
  *
@@ -565,7 +569,7 @@ AcpiDbTerminate (
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Called at method termination
  *
  ******************************************************************************/
 

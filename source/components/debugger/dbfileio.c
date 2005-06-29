@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -144,7 +144,7 @@ FILE                        *AcpiGbl_DebugFile = NULL;
  *
  * PARAMETERS:  None
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: If open, close the current debug output file
  *
@@ -174,7 +174,7 @@ AcpiDbCloseDebugFile (
  *
  * PARAMETERS:  Name                - Filename to open
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Open a file where debug output will be directed.
  *
@@ -309,7 +309,8 @@ AcpiDbReadTable (
 
     /* Read the table header */
 
-    if (fread (&TableHeader, 1, sizeof (TableHeader), fp) != sizeof (ACPI_TABLE_HEADER))
+    if (fread (&TableHeader, 1, sizeof (TableHeader), fp) !=
+            sizeof (ACPI_TABLE_HEADER))
     {
         AcpiOsPrintf ("Couldn't read the table header\n");
         return (AE_BAD_SIGNATURE);
@@ -342,8 +343,9 @@ AcpiDbReadTable (
     *Table = AcpiOsAllocate ((size_t) (FileSize));
     if (!*Table)
     {
-        AcpiOsPrintf ("Could not allocate memory for ACPI table %4.4s (size=%X)\n",
-                    TableHeader.Signature, TableHeader.Length);
+        AcpiOsPrintf (
+            "Could not allocate memory for ACPI table %4.4s (size=%X)\n",
+            TableHeader.Signature, TableHeader.Length);
         return (AE_NO_MEMORY);
     }
 
@@ -380,7 +382,6 @@ AcpiDbReadTable (
 
     return (AE_ERROR);
 }
-#endif
 
 
 /*******************************************************************************
@@ -449,7 +450,6 @@ AeLocalLoadTable (
 }
 
 
-#ifdef ACPI_APPLICATION
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbReadTableFromFile
@@ -503,8 +503,8 @@ AcpiDbReadTableFromFile (
  *
  * FUNCTION:    AcpiDbGetTableFromFile
  *
- * PARAMETERS:  Filename         - File where table is located
- *              Table            - Where a pointer to the table is returned
+ * PARAMETERS:  Filename        - File where table is located
+ *              ReturnTable     - Where a pointer to the table is returned
  *
  * RETURN:      Status
  *

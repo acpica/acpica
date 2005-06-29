@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  ******************************************************************************/
 
@@ -131,7 +131,7 @@
         ACPI_MODULE_NAME    ("dbdisply")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbGetPointer
  *
@@ -141,7 +141,7 @@
  *
  * DESCRIPTION: Convert an ascii pointer value to a real value
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 static void *
 AcpiDbGetPointer (
@@ -289,7 +289,7 @@ AcpiDbDecodeAndDisplayObject (
             }
 
             Node = ObjPtr;
-            goto DumpNte;
+            goto DumpNode;
 
 
         case ACPI_DESC_TYPE_OPERAND:
@@ -354,8 +354,8 @@ AcpiDbDecodeAndDisplayObject (
     }
 
 
-DumpNte:
-    /* Now dump the Named obj */
+DumpNode:
+    /* Now dump the NS node */
 
     Status = AcpiGetName (Node, ACPI_FULL_PATHNAME, &RetBuf);
     if (ACPI_FAILURE (Status))
@@ -833,18 +833,23 @@ AcpiDbDisplayGpes (
             }
 
             AcpiOsPrintf ("\nBlock %d - Info %p  DeviceNode %p [%s]\n",
-                    Block, GpeBlock, GpeBlock->Node, Buffer);
+                Block, GpeBlock, GpeBlock->Node, Buffer);
+
             AcpiOsPrintf ("    Registers:    %u (%u GPEs) \n",
-                    GpeBlock->RegisterCount,
-                    ACPI_MUL_8 (GpeBlock->RegisterCount));
+                GpeBlock->RegisterCount,
+                ACPI_MUL_8 (GpeBlock->RegisterCount));
+
             AcpiOsPrintf ("    GPE range:    0x%X to 0x%X\n",
-                    GpeBlock->BlockBaseNumber,
-                    GpeBlock->BlockBaseNumber +
-                        (GpeBlock->RegisterCount * 8) -1);
-            AcpiOsPrintf ("    RegisterInfo: %p  Status %8.8X%8.8X Enable %8.8X%8.8X\n",
-                    GpeBlock->RegisterInfo,
-                    ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeBlock->RegisterInfo->StatusAddress.Address)),
-                    ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeBlock->RegisterInfo->EnableAddress.Address)));
+                GpeBlock->BlockBaseNumber,
+                GpeBlock->BlockBaseNumber +
+                    (GpeBlock->RegisterCount * 8) -1);
+
+            AcpiOsPrintf (
+                "    RegisterInfo: %p  Status %8.8X%8.8X Enable %8.8X%8.8X\n",
+                GpeBlock->RegisterInfo,
+                ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeBlock->RegisterInfo->StatusAddress.Address)),
+                ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeBlock->RegisterInfo->EnableAddress.Address)));
+
             AcpiOsPrintf ("    EventInfo:    %p\n", GpeBlock->EventInfo);
 
             /* Examine each GPE Register within the block */
@@ -854,11 +859,11 @@ AcpiDbDisplayGpes (
                 GpeRegisterInfo = &GpeBlock->RegisterInfo[i];
 
                 AcpiOsPrintf (
-                        "    Reg %u:  WakeEnable %2.2X, RunEnable %2.2X  Status %8.8X%8.8X Enable %8.8X%8.8X\n",
-                        i, GpeRegisterInfo->EnableForWake,
-                        GpeRegisterInfo->EnableForRun,
-                        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeRegisterInfo->StatusAddress.Address)),
-                        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeRegisterInfo->EnableAddress.Address)));
+                    "    Reg %u:  WakeEnable %2.2X, RunEnable %2.2X  Status %8.8X%8.8X Enable %8.8X%8.8X\n",
+                    i, GpeRegisterInfo->EnableForWake,
+                    GpeRegisterInfo->EnableForRun,
+                    ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeRegisterInfo->StatusAddress.Address)),
+                    ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeRegisterInfo->EnableAddress.Address)));
 
                 /* Now look at the individual GPEs in this byte register */
 
@@ -875,10 +880,10 @@ AcpiDbDisplayGpes (
                     }
 
                     AcpiOsPrintf (
-                            "        GPE %.3X: %p  Bit %2.2X  Flags %2.2X: ",
-                            GpeBlock->BlockBaseNumber + GpeIndex,
-                            GpeEventInfo, GpeEventInfo->RegisterBit,
-                            GpeEventInfo->Flags);
+                        "        GPE %.3X: %p  Bit %2.2X  Flags %2.2X: ",
+                        GpeBlock->BlockBaseNumber + GpeIndex,
+                        GpeEventInfo, GpeEventInfo->RegisterBit,
+                        GpeEventInfo->Flags);
 
                     if (GpeEventInfo->Flags & ACPI_GPE_LEVEL_TRIGGERED)
                     {

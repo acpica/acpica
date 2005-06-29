@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  ******************************************************************************/
 
@@ -296,7 +296,8 @@ AcpiDbFindReferences (
  ******************************************************************************/
 
 void
-AcpiDbDisplayLocks (void)
+AcpiDbDisplayLocks (
+    void)
 {
     UINT32                  i;
 
@@ -523,7 +524,7 @@ AcpiDbDisassembleAml (
  *
  * FUNCTION:    AcpiDbDisassembleMethod
  *
- * PARAMETERS:  Method              - Name of control method
+ * PARAMETERS:  Name            - Name of control method
  *
  * RETURN:      None
  *
@@ -1388,7 +1389,8 @@ AcpiDbIntegrityWalk (
  ******************************************************************************/
 
 void
-AcpiDbCheckIntegrity (void)
+AcpiDbCheckIntegrity (
+    void)
 {
     ACPI_INTEGRITY_INFO     Info = {0,0};
 
@@ -1406,7 +1408,9 @@ AcpiDbCheckIntegrity (void)
  *
  * FUNCTION:    AcpiDbGenerateGpe
  *
- * PARAMETERS:  None
+ * PARAMETERS:  GpeArg          - Raw GPE number, ascii string
+ *              BlockArg        - GPE block number, ascii string
+ *                                0 or 1 for FADT GPE blocks
  *
  * RETURN:      None
  *
