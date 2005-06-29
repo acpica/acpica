@@ -116,6 +116,7 @@
 #include <acpi.h>
 #include <events.h>
 #include <namespace.h>
+#include <interpreter.h>
 #include <amlcode.h>
 #include <methods.h>
 
@@ -157,15 +158,15 @@ EvExecuteRegMethod (
         return_ACPI_STATUS (AE_OK);
     }
 
-/*
- *  _REG method has two arguments
- *	Arg0: 	Integer: Operation region space ID
- *      Same value as RegionObj->Region.SpaceId
- *	Arg1: 	Integer: connection status
- *        1 for connecting the handler,
- *        0 for disconnecting the handler
- *      Passed as a parameter
- */
+    /*
+     *  _REG method has two arguments
+     *  Arg0:   Integer: Operation region space ID
+     *          Same value as RegionObj->Region.SpaceId
+     *  Arg1:   Integer: connection status
+     *          1 for connecting the handler,
+     *          0 for disconnecting the handler
+     *          Passed as a parameter
+     */
 
     memset ((void *) &SpaceID_Obj, 0, sizeof (SpaceID_Obj));
     memset ((void *) &Function_Obj, 0, sizeof (Function_Obj));
@@ -372,8 +373,8 @@ EvDisassociateRegionFromHandler(
         ("Cannot remove region 0x%X from address handler 0x%X\n",
             RegionObj, HandlerObj));
 
-	return_VOID;
-	
+    return_VOID;
+    
 }  /* EvDisassociateRegionAndHandler */
 
 
@@ -471,23 +472,20 @@ EvAddrHandlerHelper (
     NAME_TABLE_ENTRY        *ObjEntry;
 
 
-    FUNCTION_TRACE ("EvAddrHandlerHelper");
-
-
     HandlerObj = (ACPI_OBJECT_INTERNAL *) Context;
 
     /* Parameter validation */
 
     if (!HandlerObj)
     {
-        return_ACPI_STATUS (AE_OK);
+        return (AE_OK);
     }
 
     /* Convert and validate the device handle */
 
     if (!(ObjEntry = NsConvertHandleToEntry (ObjHandle)))
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        return (AE_BAD_PARAMETER);
     }
 
     /*
@@ -499,7 +497,7 @@ EvAddrHandlerHelper (
         (ObjEntry->Type != ACPI_TYPE_Region) &&
         (ObjEntry != Gbl_RootObject))
     {
-        return_ACPI_STATUS (AE_OK);
+        return (AE_OK);
     }
 
     /* Check for an existing internal object */
@@ -510,13 +508,13 @@ EvAddrHandlerHelper (
         /*
          *  The object DNE, we don't care about it
          */
-        return_ACPI_STATUS (AE_OK);
+        return (AE_OK);
     }
 
     /*
      *  Devices are handled different than regions
      */
-    if (ObjDesc->Common.Type == ACPI_TYPE_Device)
+    if (VALID_OBJECT_TYPE (ObjDesc, ACPI_TYPE_Device))
     {
         /*
          *  See if this guy has any handlers
@@ -545,7 +543,7 @@ EvAddrHandlerHelper (
                  *  bail out telling the walk routine to not traverse this
                  *  branch.  This preserves the scoping rule for handlers.
                  */
-                return_ACPI_STATUS (AE_DEPTH);
+                return (AE_DEPTH);
             }
 
             /*
@@ -559,7 +557,7 @@ EvAddrHandlerHelper (
          *  space we don't care about it.  We just ignore it and
          *  proceed.
          */
-        return_ACPI_STATUS (AE_OK);
+        return (AE_OK);
     }
 
     /*
@@ -573,7 +571,7 @@ EvAddrHandlerHelper (
          *  This region is for a different address space
          *  ignore it
          */
-        return_ACPI_STATUS (AE_OK);
+        return (AE_OK);
     }
 
     /*
@@ -589,7 +587,7 @@ EvAddrHandlerHelper (
      */
     EvAssociateRegionAndHander (HandlerObj, ObjDesc);
 
-    return_ACPI_STATUS (AE_OK);
+    return (AE_OK);
 }
 
 
