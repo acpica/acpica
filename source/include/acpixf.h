@@ -270,7 +270,6 @@ INT32
 AcpiModeCapabilities (
     void);
 
-
 /*
  * Event / System interfaces
  */
