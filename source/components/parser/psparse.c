@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.80 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -363,7 +363,7 @@ AcpiPsCompleteThisOp (
         (OpcodeClass != OPTYPE_LOCAL_VARIABLE)  &&
         (OpcodeClass != OPTYPE_METHOD_ARGUMENT) &&
         (OpcodeClass != OPTYPE_DATA_TERM)       &&
-        (Op->Opcode  != AML_NAMEPATH_OP))
+        (Op->Opcode  != AML_INT_NAMEPATH_OP))
     {
         /* Make sure that we only delete this subtree */
 
@@ -388,15 +388,15 @@ AcpiPsCompleteThisOp (
                  * op must be replace by a placeholder return op
                  */
 
-                if ((Op->Parent->Opcode == AML_REGION_OP)       ||
-                    (Op->Parent->Opcode == AML_CREATE_FIELD_OP) ||
-                    (Op->Parent->Opcode == AML_BIT_FIELD_OP)    ||
-                    (Op->Parent->Opcode == AML_BYTE_FIELD_OP)   ||
-                    (Op->Parent->Opcode == AML_WORD_FIELD_OP)   ||
-                    (Op->Parent->Opcode == AML_DWORD_FIELD_OP)  ||
-                    (Op->Parent->Opcode == AML_QWORD_FIELD_OP))
+                if ((Op->Parent->Opcode == AML_REGION_OP)               ||
+                    (Op->Parent->Opcode == AML_CREATE_FIELD_OP)         ||
+                    (Op->Parent->Opcode == AML_CREATE_BIT_FIELD_OP)     ||
+                    (Op->Parent->Opcode == AML_CREATE_BYTE_FIELD_OP)    ||
+                    (Op->Parent->Opcode == AML_CREATE_WORD_FIELD_OP)    ||
+                    (Op->Parent->Opcode == AML_CREATE_DWORD_FIELD_OP)   ||
+                    (Op->Parent->Opcode == AML_CREATE_QWORD_FIELD_OP))
                 {
-                    ReplacementOp = AcpiPsAllocOp (AML_RETURN_VALUE_OP);
+                    ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
                     if (!ReplacementOp)
                     {
                         return_VALUE (FALSE);
@@ -406,7 +406,7 @@ AcpiPsCompleteThisOp (
                 break;
 
             default:
-                ReplacementOp = AcpiPsAllocOp (AML_RETURN_VALUE_OP);
+                ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
                 if (!ReplacementOp)
                 {
                     return_VALUE (FALSE);
@@ -730,7 +730,7 @@ AcpiPsParseLoop (
                  * string.  Convert the bare name string to a namepath.
                  */
 
-                Opcode = AML_NAMEPATH_OP;
+                Opcode = AML_INT_NAMEPATH_OP;
                 ArgTypes = ARGP_NAMESTRING;
                 break;
 
@@ -836,11 +836,12 @@ AcpiPsParseLoop (
                 }
 
 
-                if ((Op->Opcode == AML_CREATE_FIELD_OP) ||
-                    (Op->Opcode == AML_BIT_FIELD_OP)    ||
-                    (Op->Opcode == AML_BYTE_FIELD_OP)   ||
-                    (Op->Opcode == AML_WORD_FIELD_OP)   ||
-                    (Op->Opcode == AML_DWORD_FIELD_OP))
+                if ((Op->Opcode == AML_CREATE_FIELD_OP)        ||
+                    (Op->Opcode == AML_CREATE_BIT_FIELD_OP)    ||
+                    (Op->Opcode == AML_CREATE_BYTE_FIELD_OP)   ||
+                    (Op->Opcode == AML_CREATE_WORD_FIELD_OP)   ||
+                    (Op->Opcode == AML_CREATE_DWORD_FIELD_OP)  ||
+                    (Op->Opcode == AML_CREATE_QWORD_FIELD_OP))
                  {
                     /*
                      * Backup to beginning of CreateXXXfield declaration
@@ -908,7 +909,7 @@ AcpiPsParseLoop (
                                         GET_CURRENT_ARG_TYPE (ArgTypes), Op);
                 break;
 
-            case AML_NAMEPATH_OP:   /* AML_NAMESTRING_ARG */
+            case AML_INT_NAMEPATH_OP:   /* AML_NAMESTRING_ARG */
 
                 AcpiPsGetNextNamepath (ParserState, Op, &ArgCount, 1);
                 ArgTypes = 0;
@@ -1001,12 +1002,12 @@ AcpiPsParseLoop (
                 }
             }
 
-            if ((Op->Opcode == AML_CREATE_FIELD_OP) ||
-                (Op->Opcode == AML_BIT_FIELD_OP)    ||
-                (Op->Opcode == AML_BYTE_FIELD_OP)   ||
-                (Op->Opcode == AML_WORD_FIELD_OP)   ||
-                (Op->Opcode == AML_DWORD_FIELD_OP)  ||
-                (Op->Opcode == AML_QWORD_FIELD_OP))
+            if ((Op->Opcode == AML_CREATE_FIELD_OP)         ||
+                (Op->Opcode == AML_CREATE_BIT_FIELD_OP)     ||
+                (Op->Opcode == AML_CREATE_BYTE_FIELD_OP)    ||
+                (Op->Opcode == AML_CREATE_WORD_FIELD_OP)    ||
+                (Op->Opcode == AML_CREATE_DWORD_FIELD_OP)   ||
+                (Op->Opcode == AML_CREATE_QWORD_FIELD_OP))
             {
                 /*
                  * Backup to beginning of CreateXXXfield declaration (1 for
@@ -1015,7 +1016,7 @@ AcpiPsParseLoop (
                  * BodyLength is unknown until we parse the body
                  */
                 DeferredOp = (ACPI_PARSE2_OBJECT *) Op;
-                DeferredOp->Length = (UINT32) (ParserState->Aml - 
+                DeferredOp->Length = (UINT32) (ParserState->Aml -
                                                DeferredOp->Data);
             }
 
