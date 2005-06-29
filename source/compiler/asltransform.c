@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.6 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,20 +120,19 @@
 #include "aslcompiler.y.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("asltransform")
-
-
+        ACPI_MODULE_NAME    ("asltransform")
 
 
 /*******************************************************************************
  *
  * FUNCTION:    TrAmlGetNextTempName
  *
- * PARAMETERS:  
+ * PARAMETERS:  NamePath        - Where a pointer to the temp name is returned
  *
- * RETURN:      None
+ * RETURN:      A pointer to the second character of the name
  *
- * DESCRIPTION: +
+ * DESCRIPTION: Generate an ACPI name of the form _Txx.  These names are
+ *              reserved for use by the ASL compiler.
  *
  ******************************************************************************/
 
@@ -171,11 +170,12 @@ TrAmlGetNextTempName (
  *
  * FUNCTION:    TrAmlInitLineNumbers
  *
- * PARAMETERS:  
+ * PARAMETERS:  Node            - Node to be initialized
+ *              Neighbor        - Node used for initialization values
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Initialized the various line numbers for a parse node.
  *
  ******************************************************************************/
 
@@ -197,11 +197,12 @@ TrAmlInitLineNumbers (
  *
  * FUNCTION:    TrAmlInitNode
  *
- * PARAMETERS:  
+ * PARAMETERS:  Node            - Node to be initialized
+ *              ParseOpcode     - Opcode for this node
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Initialize a node with the parse opcode and opcode name.
  *
  ******************************************************************************/
 
@@ -213,20 +214,19 @@ TrAmlInitNode (
 
     Node->ParseOpcode = ParseOpcode;
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
-
 }
-
 
 
 /*******************************************************************************
  *
  * FUNCTION:    TrAmlSetSubtreeParent
  *
- * PARAMETERS:  
+ * PARAMETERS:  Node            - First node in a list of peer nodes
+ *              Parent          - Parent of the subtree
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Set the parent for all peer nodes in a subtree
  *
  ******************************************************************************/
 
@@ -237,6 +237,7 @@ TrAmlSetSubtreeParent (
 {
     ASL_PARSE_NODE          *Next;
 
+
     Next = Node;
     while (Next)
     {
@@ -246,16 +247,16 @@ TrAmlSetSubtreeParent (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    TrAmlInsertPeer
  *
- * PARAMETERS:  
+ * PARAMETERS:  Node            - First node in a list of peer nodes
+ *              NewPeer         - Peer node to insert
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Insert a new peer node into a list of peers.
  *
  ******************************************************************************/
 
@@ -268,7 +269,6 @@ TrAmlInsertPeer (
     NewPeer->Peer   = Node->Peer;
     Node->Peer      = NewPeer;
 }
-
 
 
 /*******************************************************************************
@@ -291,12 +291,9 @@ TrAmlTransformWalk (
     void                    *Context)
 {
 
-
     TrTransformSubtree (Node);
     return (AE_OK);
 }
-
-
 
 
 /*******************************************************************************
@@ -318,12 +315,10 @@ TrTransformSubtree (
     ASL_PARSE_NODE              *Node)
 {
 
-
     if (Node->AmlOpcode == AML_RAW_DATA_BYTE)
     {
         return;
     }
-
 
     switch (Node->ParseOpcode)
     {
@@ -370,8 +365,6 @@ TrDoDefinitionBlock (
         Next = Next->Peer;
     }
 
-    
-
     Gbl_FirstLevelInsertionNode = Next;
 }
 
@@ -395,7 +388,6 @@ TrDoElseif (
     ASL_PARSE_NODE          *IfNode;
 
 
-
     /* Change the ELSEIF into an ELSE */
 
     TrAmlInitNode (Node, ELSE);
@@ -405,7 +397,6 @@ TrDoElseif (
     IfNode              = TrCreateLeafNode (IF);
     IfNode->Parent      = Node;
     TrAmlInitLineNumbers (IfNode, Node);
-
 
     /* Insert the the IF node first in the ELSE child list */
 
@@ -425,7 +416,8 @@ TrDoElseif (
  * RETURN:      None
  *
  *
- * DESCRIPTION: Translate switch to if/else pairs
+ * DESCRIPTION: Translate ASL SWITCH statement to if/else pairs.  There is
+ *              no actual AML opcode for SWITCH -- it must be simulated.
  *
  ******************************************************************************/
 
@@ -483,18 +475,17 @@ TrDoSwitch (
             CaseBlock = Case->Child->Peer;
             Conditional->Child->Peer = NULL;
 
-            /* 
+            /*
              * change Case() to:  If (PredicateValue == CaseValue) {...}
              * Case->Child is the case value
              * Case->Child->Peer is the beginning of the case block
              */
-            NewNode = TrCreateValuedLeafNode (NAMESTRING, 
+            NewNode = TrCreateValuedLeafNode (NAMESTRING,
                             ACPI_TO_INTEGER (PredicateValuePath));
 
             Predicate = Case->Child;
             Predicate->Peer = NewNode;
             TrAmlInitLineNumbers (NewNode, Predicate);
-
 
             NewNode2            = TrCreateLeafNode (LEQUAL);
             NewNode2->Parent    = Conditional;
@@ -527,8 +518,8 @@ TrDoSwitch (
             }
             else
             {
-                /* 
-                 * The IF is a child of previous IF/ELSE.  It 
+                /*
+                 * The IF is a child of previous IF/ELSE.  It
                  * is therefore without peer.
                  */
                 CurrentParentNode->Child = Conditional;
@@ -536,7 +527,6 @@ TrDoSwitch (
                 Conditional->Peer        = NULL;
             }
         }
-
         else if (Next->ParseOpcode == DEFAULT)
         {
             if (Default)
@@ -548,14 +538,13 @@ TrDoSwitch (
 
             Default = Next;
         }
-
         else
         {
             /* Unkown peer opcode */
-            printf ("Unknown switch opcode\n");
+            printf ("Unknown parse opcode for switch statement: %s (%d)\n", 
+                        Next->ParseOpName, Next->ParseOpcode);
         }
     }
-
 
     /*
      * Add the default at the end of the if/else construct
@@ -578,12 +567,12 @@ TrDoSwitch (
     }
 
     /*
-     * Add a NAME node for the temp integer 
+     * Add a NAME node for the temp integer
      */
     NewNode             = TrCreateLeafNode (NAME);
     NewNode->Parent     = Gbl_FirstLevelInsertionNode->Parent;
 
-    NewNode2            = TrCreateValuedLeafNode (NAMESTRING, 
+    NewNode2            = TrCreateValuedLeafNode (NAMESTRING,
                                 ACPI_TO_INTEGER (PredicateValueName));
     NewNode->Child      = NewNode2;
     NewNode2->Peer      = TrCreateValuedLeafNode (INTEGER, 0);
@@ -597,7 +586,6 @@ TrDoSwitch (
     TrAmlInitLineNumbers (NewNode2, Gbl_FirstLevelInsertionNode);
     TrAmlInitLineNumbers (NewNode2->Peer, Gbl_FirstLevelInsertionNode);
 
-
     /*
      * Change the SWITCH node to a STORE (predicate value, _Txx)
      */
@@ -606,11 +594,10 @@ TrDoSwitch (
     Predicate               = StartNode->Child;
     Predicate->Child        = NULL;
 
-    NewNode                 = TrCreateValuedLeafNode (NAMESTRING, 
+    NewNode                 = TrCreateValuedLeafNode (NAMESTRING,
                                     ACPI_TO_INTEGER (PredicateValuePath));
     NewNode->Parent         = StartNode;
     Predicate->Peer         = NewNode;
 }
-
 
 
