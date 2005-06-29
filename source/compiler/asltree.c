@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -364,6 +364,8 @@ TgLinkChildren (
     va_start (ap, NumChildren);
 
 
+    Node->EndLine = Gbl_CurrentLineNumber;
+    Node->EndLogicalLine = Gbl_LogicalLineNumber;
 
     DbgPrint ("\nLinkChildren  Line %d NewParent %p Child %d Op %s  ", 
                 Node->LineNumber,
