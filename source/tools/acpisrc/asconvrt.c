@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -502,9 +502,9 @@ AsReplaceString (
                 NextChar = SubString1[TargetLength];
                 PrevChar = SubString1[-1];
 
-                if (isalpha (NextChar) ||
+                if (isalnum (NextChar) ||
                     (NextChar == '_')  ||
-                    isalpha (PrevChar) ||
+                    isalnum (PrevChar) ||
                     (PrevChar == '_'))
                 {
                     SubBuffer = SubString1 + 1;
