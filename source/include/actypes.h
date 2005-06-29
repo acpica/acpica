@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.208 $
+ *       $Revision: 1.210 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -387,7 +387,7 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_D_STATE_COUNT              4
 
 #define ACPI_STATE_C0                   (UINT8) 0
-#define ACPI_STATE_C1                   (UNIT8) 1
+#define ACPI_STATE_C1                   (UINT8) 1
 #define ACPI_STATE_C2                   (UINT8) 2
 #define ACPI_STATE_C3                   (UINT8) 3
 #define ACPI_C_STATES_MAX               ACPI_STATE_C3
@@ -1155,7 +1155,6 @@ typedef struct
     UINT32                      Interrupts[1];
 
 } ACPI_RESOURCE_EXT_IRQ;
-
 
 
 /* ACPI_RESOURCE_TYPEs */
