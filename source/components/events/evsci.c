@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.70 $
+ *              $Revision: 1.75 $
  *
  ******************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          EVENT_HANDLING
+#define _COMPONENT          ACPI_EVENTS
         MODULE_NAME         ("evsci")
 
 
@@ -203,22 +203,19 @@ AcpiEvSciHandler (void *Context)
 UINT32
 AcpiEvInstallSciHandler (void)
 {
-    UINT32                  Except = AE_OK;
+    UINT32                  Status = AE_OK;
 
 
     FUNCTION_TRACE ("EvInstallSciHandler");
 
 
-    Except = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
-                                            AcpiEvSciHandler,
-                                            NULL);
-
-    return_ACPI_STATUS (Except);
+    Status = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
+                        AcpiEvSciHandler, NULL);
+    return_ACPI_STATUS (Status);
 }
 
 
 /******************************************************************************
-
  *
  * FUNCTION:    AcpiEvRemoveSciHandler
  *
@@ -227,8 +224,13 @@ AcpiEvInstallSciHandler (void)
  * RETURN:      E_OK if handler uninstalled OK, E_ERROR if handler was not
  *              installed to begin with
  *
- * DESCRIPTION: Restores original status of all fixed event enable bits and
- *              removes SCI handler.
+ * DESCRIPTION: Remove the SCI interrupt handler.  No further SCIs will be
+ *              taken.
+ *
+ * Note:  It doesn't seem important to disable all events or set the event
+ *        enable registers to their original values.  The OS should disable
+ *        the SCI interrupt level when the handler is removed, so no more
+ *        events will come in.
  *
  ******************************************************************************/
 
@@ -237,37 +239,8 @@ AcpiEvRemoveSciHandler (void)
 {
     FUNCTION_TRACE ("EvRemoveSciHandler");
 
-#if 0
-    /* TBD:[Investigate] Figure this out!!  Disable all events first ???  */
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (TMR_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (TMR_FIXED_EVENT);
-    }
-
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (GBL_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (GBL_FIXED_EVENT);
-    }
-
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (PWR_BTN_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
-    }
-
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (SLP_BTN_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
-    }
-
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (RTC_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (RTC_FIXED_EVENT);
-    }
-
-    OriginalFixedEnableBitStatus = 0;
-
-#endif
+    /* Just let the OS remove the handler and disable the level */
 
     AcpiOsRemoveInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
                                     AcpiEvSciHandler);
@@ -375,15 +348,14 @@ AcpiEvTerminate (void)
     /*
      * Free global tables, etc.
      */
-
     if (AcpiGbl_GpeRegisters)
     {
-        AcpiCmFree (AcpiGbl_GpeRegisters);
+        ACPI_MEM_FREE (AcpiGbl_GpeRegisters);
     }
 
     if (AcpiGbl_GpeInfo)
     {
-        AcpiCmFree (AcpiGbl_GpeInfo);
+        ACPI_MEM_FREE (AcpiGbl_GpeInfo);
     }
 
     return_VOID;
