@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -666,6 +666,7 @@ AcpiPsNextParseState (
 }
 
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiPsParseLoop
@@ -1060,14 +1061,8 @@ CloseThisOp:
 
             /*
              * Finished one argument of the containing scope
-             *
-             * Don't allow ArgCount to go below zero.  This allows for
-             * methods to be restarted
              */
-            if (ParserState->Scope->ParseScope.ArgCount)
-            {
-                ParserState->Scope->ParseScope.ArgCount--;
-            }
+            ParserState->Scope->ParseScope.ArgCount--;
 
             /* Close this Op (may result in parse subtree deletion) */
 
