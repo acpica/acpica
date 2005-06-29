@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  ******************************************************************************/
 
@@ -521,7 +521,7 @@ AcpiDsCreateOperand (
                  * a missing or null operand!
                  */
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("DsCreateOperand: Could not pop result\n"));
+                    ("DsCreateOperand: Missing or null operand, %s\n", AcpiCmFormatException (Status)));
                 return_ACPI_STATUS (Status);
             }
 

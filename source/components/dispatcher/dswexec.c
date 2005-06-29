@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.40 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,137 @@
 
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dswexec");
+        MODULE_NAME         ("dswexec")
+
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiDsGetPredicateValue
+ *
+ * PARAMETERS:  WalkState       - Current state of the parse tree walk
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiDsGetPredicateValue (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  HasResultObj)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+
+
+    FUNCTION_TRACE_PTR ("DsGetPredicateValue", WalkState);
+
+
+    WalkState->ControlState->Common.State = 0;
+
+    if (HasResultObj)
+    {
+        Status = AcpiDsResultStackPop (&ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            DEBUG_PRINT (ACPI_ERROR,
+                ("DsGetPredicateValue: Missing or null operand, %s\n", 
+                AcpiCmFormatException (Status)));
+
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    else
+    {
+        Status = AcpiDsCreateOperand (WalkState, Op);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        Status = AcpiAmlResolveToValue (&WalkState->Operands [0], WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        ObjDesc = WalkState->Operands [0];
+    }
+
+    if (!ObjDesc)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("ExecEndOp: No predicate ObjDesc=%X State=%X\n",
+            ObjDesc, WalkState));
+
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
+    }
+
+
+    /* 
+     * Result of predicate evaluation currently must
+     * be a number
+     */
+
+    if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("ExecEndOp: Bad predicate (not a number) ObjDesc=%X State=%X Type=%X\n",
+            ObjDesc, WalkState, ObjDesc->Common.Type));
+
+        Status = AE_AML_OPERAND_TYPE;
+        goto Cleanup;
+    }
+
+
+    /* 
+     * Save the result of the predicate evaluation on
+     * the control stack 
+     */
+
+    if (ObjDesc->Number.Value)
+    {
+        WalkState->ControlState->Common.Value = TRUE;
+    }
+
+    else
+    {
+        /* 
+         * Predicate is FALSE, we will just toss the
+         * rest of the package 
+         */
+
+        WalkState->ControlState->Common.Value = FALSE;
+        Status = AE_CTRL_FALSE;
+    }
+
+
+
+Cleanup:
+
+    DEBUG_PRINT (TRACE_EXEC,
+        ("ExecEndOp: Completed a predicate eval=%X Op=%X\n",
+        WalkState->ControlState->Common.Value, Op));
+
+     /* Break to debugger to display result */
+
+    DEBUGGER_EXEC (AcpiDbDisplayResultObject (ObjDesc, WalkState));
+
+    /* 
+     * Delete the predicate result object (we know that
+     * we don't need it anymore)
+     */
+
+    AcpiCmRemoveReference (ObjDesc);
+
+    WalkState->ControlState->Common.State = CONTROL_NORMAL;
+
+    return_ACPI_STATUS (Status);
+}
 
 
 /*****************************************************************************
@@ -149,11 +279,11 @@
 ACPI_STATUS
 AcpiDsExecBeginOp (
     UINT16                  Opcode,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         **OutOp)
+    ACPI_PARSE_OBJECT       **OutOp)
 {
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_OPCODE_INFO        *OpInfo;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -270,17 +400,16 @@ AcpiDsExecBeginOp (
 ACPI_STATUS
 AcpiDsExecEndOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT16                  Opcode;
     UINT8                   Optype;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_GENERIC_OP         *NextOp;
-    ACPI_NAMED_OBJECT       *NameDesc;
-    ACPI_GENERIC_OP         *FirstArg;
-    ACPI_OBJECT_INTERNAL    *ResultObj = NULL;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_PARSE_OBJECT       *NextOp;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_PARSE_OBJECT       *FirstArg;
+    ACPI_OPERAND_OBJECT     *ResultObj = NULL;
+    ACPI_OPCODE_INFO        *OpInfo;
     UINT32                  OperandIndex;
 
 
@@ -352,7 +481,6 @@ AcpiDsExecEndOp (
     case OPTYPE_RECONFIGURATION:
     case OPTYPE_INDEX:
     case OPTYPE_MATCH:
-    case OPTYPE_CREATE_FIELD:
     case OPTYPE_FATAL:
 
 
@@ -463,14 +591,6 @@ AcpiDsExecEndOp (
             break;
 
 
-        case OPTYPE_CREATE_FIELD:
-
-            /* 3 or 4 Operands, 0 ExternalResult, 0 InternalResult */
-
-            Status = AcpiAmlExecCreateField (Opcode, WalkState);
-            break;
-
-
         case OPTYPE_FATAL:
 
             /* 3 Operands, 0 ExternalResult, 0 InternalResult */
@@ -523,21 +643,21 @@ AcpiDsExecEndOp (
             ("ExecEndOp: Method invocation, Op=%X\n", Op));
 
         /*
-         * (AML_METHODCALL) Op->Value->Arg->AcpiNamedObject contains
-         * the method Named Object pointer
+         * (AML_METHODCALL) Op->Value->Arg->Node contains
+         * the method Node pointer
          */
         /* NextOp points to the op that holds the method name */
+
         NextOp = FirstArg;
-        NameDesc = NextOp->AcpiNamedObject;
+        Node = NextOp->Node;
 
         /* NextOp points to first argument op */
-        NextOp = NextOp->Next;
 
+        NextOp = NextOp->Next;
 
         /*
          * Get the method's arguments and put them on the operand stack
          */
-
         Status = AcpiDsCreateOperands (WalkState, NextOp);
         if (ACPI_FAILURE (Status))
         {
@@ -557,48 +677,43 @@ AcpiDsExecEndOp (
             break;
         }
 
-        /* Open new scope on the scope stack */
-/*
-        Status = AcpiNsScopeStackPushEntry (NameDesc);
-        if (ACPI_FAILURE (Status))
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("ExecEndOp: Could not push Scope Stack\n"));
-            break;
-        }
-*/
-
-        /* Tell the walk loop to preempt this running method and
-        execute the new method */
-
+        /*
+         * Tell the walk loop to preempt this running method and
+         * execute the new method
+         */
         Status = AE_CTRL_TRANSFER;
 
-        /* Return now; we don't want to disturb anything,
-        especially the operand count! */
-
+        /*
+         * Return now; we don't want to disturb anything,
+         * especially the operand count!
+         */
         return_ACPI_STATUS (Status);
         break;
 
 
-    case OPTYPE_NAMED_OBJECT:
+    case OPTYPE_CREATE_FIELD:
 
+        DEBUG_PRINT (TRACE_EXEC,
+            ("ExecEndOp: Executing CreateField Buffer/Index Op=%X\n",
+            Op));
 
         Status = AcpiDsLoad2EndOp (WalkState, Op);
         if (ACPI_FAILURE (Status))
         {
             break;
         }
-/*
-        if ((WalkState->Origin->Opcode == AML_METHOD_OP) &&
-            (WalkState->Origin != Op))
+
+        Status = AcpiDsEvalFieldUnitOperands (WalkState, Op);
+        break;
+
+
+    case OPTYPE_NAMED_OBJECT:
+
+        Status = AcpiDsLoad2EndOp (WalkState, Op);
+        if (ACPI_FAILURE (Status))
         {
-            Status = AcpiDsLoad2EndOp (WalkState, Op);
-            if (ACPI_FAILURE (Status))
-            {
-                break;
-            }
+            break;
         }
-*/
 
         switch (Op->Opcode)
         {
@@ -655,86 +770,9 @@ AcpiDsExecEndOp (
             CONTROL_PREDICATE_EXECUTING) &&
         (WalkState->ControlState->Control.PredicateOp == Op))
     {
-        /* Completed the predicate, the result must be a number */
 
-        WalkState->ControlState->Common.State = 0;
-
-        if (ResultObj)
-        {
-            Status = AcpiDsResultStackPop (&ObjDesc, WalkState);
-            if (ACPI_FAILURE (Status))
-            {
-                goto Cleanup;
-            }
-        }
-
-        else
-        {
-            Status = AcpiDsCreateOperand (WalkState, Op);
-            if (ACPI_FAILURE (Status))
-            {
-                goto Cleanup;
-            }
-
-            Status = AcpiAmlResolveToValue (&WalkState->Operands [0], WalkState);
-            if (ACPI_FAILURE (Status))
-            {
-                goto Cleanup;
-            }
-
-            ObjDesc = WalkState->Operands [0];
-        }
-
-        if (!ObjDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("ExecEndOp: No predicate ObjDesc=%X State=%X\n",
-                ObjDesc, WalkState));
-
-            Status = AE_AML_NO_OPERAND;
-            goto Cleanup;
-        }
-
-        if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("ExecEndOp: Bad predicate (not a number) ObjDesc=%X State=%X Type=%X\n",
-                ObjDesc, WalkState, ObjDesc->Common.Type));
-
-            Status = AE_AML_OPERAND_TYPE;
-            goto Cleanup;
-        }
-        /* Save the result of the predicate evaluation on
-        the control stack */
-
-        if (ObjDesc->Number.Value)
-        {
-            WalkState->ControlState->Common.Value = TRUE;
-        }
-        else
-        {
-            /* Predicate is FALSE, we will just toss the
-            rest of the package */
-
-            WalkState->ControlState->Common.Value = FALSE;
-            Status = AE_CTRL_FALSE;
-        }
-
-        DEBUG_PRINT (TRACE_EXEC,
-            ("ExecEndOp: Completed a predicate eval=%X Op=%X\n",
-            WalkState->ControlState->Common.Value, Op));
-
-         /* Break to debugger to display result */
-
-        DEBUGGER_EXEC (AcpiDbDisplayResultObject (ObjDesc, WalkState));
-
-        /* Delete the predicate result object (we know that
-        we don't need it anymore) and cleanup the stack */
-
-        AcpiCmRemoveReference (ObjDesc);
+        Status = AcpiDsGetPredicateValue (WalkState, Op, (UINT32) ResultObj);
         ResultObj = NULL;
-
-        WalkState->ControlState->Common.State = CONTROL_NORMAL;
     }
 
 
