@@ -14,15 +14,18 @@
  | FILENAME: acpi.h - Publics and external data for ACPI.LIB
  |__________________________________________________________________________
  |
- | $Revision: 1.3 $
- | $Date: 2005/06/29 19:58:19 $
+ | $Revision: 1.4 $
+ | $Date: 2005/06/29 19:58:20 $
  | $Log: acpi.h,v $
- | Revision 1.3  2005/06/29 19:58:19  aystarik
- | First BeOS compatible check-in.
+ | Revision 1.4  2005/06/29 19:58:20  aystarik
+ | Cleanup.  Support for tables up to 48K.
  |
  | 
- | date	99.01.13.18.50.00;	author grsmith1;	state Exp;
+ | date	99.02.03.00.01.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 4     2/02/99 4:01p Rmoore1
+ * Cleanup.  Support for tables up to 48K.
  * 
  * 3     1/13/99 10:50a Grsmith1
  * First BeOS compatible check-in.
@@ -83,6 +86,16 @@
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
+
+/*
+ * This is used to generate the physical to logical mappings.
+ * TBD: Probably not a good idea.
+ */
+
+#define MAX_ACPI_TABLE_SIZE         49152
+
+
+
 #ifndef ACPILIB_GEN
     #include <amlpub.h>
     #include <amlscan.h>
@@ -103,33 +116,37 @@
     #include "acpitype.h"
 #endif  
 
+
 #ifdef DEFINE_ACPI_GLOBALS
     #define ACPI_EXTERN
-    #ifndef RMX
-        #pragma message ("ACPI_EXTERN variables defined in this module.")
-    #endif
+    #pragma message ("ACPI_EXTERN variables defined in this module.")
 #else
     #define ACPI_EXTERN extern
 #endif
 
-/* global data, DEFINE_ACPI_GLOBALS is defined in ACPIPRIV.C,
-    Initialization of all variables occurs in iAcpiInit */
 
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER  * pRSDP;
+/* 
+ * global data, DEFINE_ACPI_GLOBALS is defined in ACPIPRIV.C,
+ * Initialization of all variables occurs in iAcpiInit 
+ */
+
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      * pRSDP;
 ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       * pRSDT;
-ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE * pFACS;
+ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     * pFACS;
 ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        * pFACP;
-ACPI_EXTERN APIC_TABLE                              * pMAPIC;
-ACPI_EXTERN ACPI_TABLE_HEADER                       * pDSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                       * pPSDT;
-/* TBD - There may be multiple SSDTs so a single pointer is not sufficient to
-            tag them all.  An array or linked list of SSDT pointers will be
-            necessary. */
-ACPI_EXTERN ACPI_TABLE_HEADER                       * pSSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                       * pSBDT;
+ACPI_EXTERN APIC_TABLE                          * pMAPIC;
+ACPI_EXTERN ACPI_TABLE_HEADER                   * pDSDT;
+ACPI_EXTERN ACPI_TABLE_HEADER                   * pPSDT;
 
 
+/* 
+ * TBD - There may be multiple SSDTs so a single pointer is not sufficient 
+ * to tag them all.  An array or linked list of SSDT pointers will be
+ * necessary. 
+ */
 
-#define MAX_ACPI_TABLE_SIZE         16384
+ACPI_EXTERN ACPI_TABLE_HEADER                   * pSSDT;
+ACPI_EXTERN ACPI_TABLE_HEADER                   * pSBDT;
+
 
 #endif /* __ACPI_H__ */
