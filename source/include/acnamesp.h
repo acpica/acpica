@@ -14,15 +14,17 @@
  | FILENAME: acpinmsp.h - prototypes for accessing namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.7 $
- | $Date: 2005/06/29 19:49:33 $
+ | $Revision: 1.8 $
+ | $Date: 2005/06/29 19:49:34 $
  | $Log: acnamesp.h,v $
- | Revision 1.7  2005/06/29 19:49:33  aystarik
+ | Revision 1.8  2005/06/29 19:49:34  aystarik
  |
  |
  | 
- | date	99.02.16.18.15.00;	author rmosgrov;	state Exp;
+ | date	99.02.16.23.04.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 8     2/16/99 3:04p Rmosgrov
  * 
  * 7     2/16/99 10:15a Rmosgrov
  * 
@@ -231,20 +233,20 @@ AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR **ReturnValue,
         OBJECT_DESCRIPTOR **Params);
 
 
-/****************************************************************************
- * FUNCTION:    AcpiLoadNameSpace
+/******************************************************************************
  *
- * PARAMETERS:  none
+ * FUNCTION:    int AcpiLoadNameSpace
  *
- * RETURN:      E_OK or E_ERROR
+ * PARAMETERS:  DisplayAmlDuringLoad
  *
- * DESCRIPTION: Expands namespace, typically in response to a docking event
+ * RETURN:      none
  *
- ****************************************************************************/
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
 
 int
-AcpiLoadNameSpace (void);
-
+AcpiLoadNameSpace (int DisplayAmlDuringLoad);
 
 /****************************************************************************
  * FUNCTION:    AcpiUnloadNameSpace 
@@ -259,7 +261,7 @@ AcpiLoadNameSpace (void);
  ****************************************************************************/
 
 int
-AcipUnloadNameSpace (void);
+AcipUnloadNameSpace(void);
 
 
 /****************************************************************************
