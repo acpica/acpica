@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.208 $
+ *       $Revision: 1.209 $
  *
  *****************************************************************************/
 
@@ -1067,24 +1067,18 @@ typedef struct acpi_debug_mem_block
 
 #define ACPI_MEM_LIST_GLOBAL            0
 #define ACPI_MEM_LIST_NSNODE            1
-
-#define ACPI_MEM_LIST_FIRST_CACHE_LIST  2
-#define ACPI_MEM_LIST_STATE             2
-#define ACPI_MEM_LIST_PSNODE            3
-#define ACPI_MEM_LIST_PSNODE_EXT        4
-#define ACPI_MEM_LIST_OPERAND           5
-#define ACPI_MEM_LIST_WALK              6
-#define ACPI_MEM_LIST_MAX               6
-#define ACPI_NUM_MEM_LISTS              7
+#define ACPI_MEM_LIST_MAX               1
+#define ACPI_NUM_MEM_LISTS              2
 
 
 typedef struct acpi_memory_list
 {
+    char                        *ListName;
     void                        *ListHead;
-    UINT16                      LinkOffset;
-    UINT16                      MaxCacheDepth;
-    UINT16                      CacheDepth;
     UINT16                      ObjectSize;
+    UINT16                      MaxDepth;
+    UINT16                      CurrentDepth;
+    UINT16                      LinkOffset;
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 
@@ -1093,9 +1087,8 @@ typedef struct acpi_memory_list
     UINT32                      TotalAllocated;
     UINT32                      TotalFreed;
     UINT32                      CurrentTotalSize;
-    UINT32                      CacheRequests;
-    UINT32                      CacheHits;
-    char                        *ListName;
+    UINT32                      Requests;
+    UINT32                      Hits;
 #endif
 
 } ACPI_MEMORY_LIST;
