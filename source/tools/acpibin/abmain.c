@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abmain - Main module for the acpi binary utility
- *              $Revision: 1.5 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -135,6 +135,7 @@ AbDisplayUsage (void)
     printf ("Usage: acpibin [-cd] <File1> [<File2>]\n\n");
     printf ("Options:  -c               Compare AML files\n");
     printf ("          -d               Dump AML file\n");
+    printf ("          -s               Compute checksum for ACPI table\n");
     printf ("          -t               Terse mode\n");
     printf ("\n");
     return;
@@ -149,7 +150,7 @@ AbDisplayUsage (void)
  *
  ******************************************************************************/
 
-int
+int ACPI_SYSTEM_XFACE
 main (
     NATIVE_UINT             argc,
     char                    *argv[])
@@ -168,7 +169,7 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "cdt")) != EOF) switch(j)
+    while ((j = getopt (argc, argv, "cdst")) != EOF) switch(j)
     {
     case 'c':
         /* Compare Files */
@@ -180,6 +181,11 @@ main (
 
         Gbl_DumpMode = TRUE;
         break;
+
+    case 's':
+
+        AbComputeChecksum (argv[optind]);
+        return (0);
 
     case 't':
 

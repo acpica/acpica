@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -145,6 +145,121 @@ AbValidateHeader (
     }
 
     return TRUE;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbChecksum
+ *
+ * PARAMETERS:  Buffer              - Buffer to checksum
+ *              Length              - Size of the buffer
+ *
+ * RETURNS      8 bit checksum of buffer
+ *
+ * DESCRIPTION: Computes an 8 bit checksum of the buffer(length) and returns it.
+ *
+ ******************************************************************************/
+
+UINT8
+AcpiTbChecksum (
+    void                    *Buffer,
+    UINT32                  Length)
+{
+    const UINT8             *limit;
+    const UINT8             *rover;
+    UINT8                   sum = 0;
+
+
+    if (Buffer && Length)
+    {
+        /*  Buffer and Length are valid   */
+
+        limit = (UINT8 *) Buffer + Length;
+
+        for (rover = Buffer; rover < limit; rover++)
+        {
+            sum = (UINT8) (sum + *rover);
+        }
+    }
+    return (sum);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AbComputeChecksum
+ *
+ * DESCRIPTION: Compute proper checksum for an ACPI table
+ *
+ ******************************************************************************/
+
+void
+AbComputeChecksum (
+    char                    *File1Path)
+{
+    UINT32                  Actual1;
+    ACPI_TABLE_HEADER       *Table;
+    UINT8                   Checksum;
+
+
+    File1 = fopen (File1Path, "rb");
+    if (!File1)
+    {
+        printf ("Could not open file %s\n", File1Path);
+        return;
+    }
+
+    Actual1 = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
+    {
+        printf ("File %s does not contain an ACPI table header\n", File1Path);
+        return;
+    }
+
+    if (!AbValidateHeader (&Header1))
+    {
+        return;
+    }
+
+    if (!Gbl_TerseMode)
+    {
+        /* Display header information */
+
+        printf ("Signature         : %8.4s\n",    Header1.Signature);
+        printf ("Length            : %8.8X\n",    Header1.Length);
+        printf ("Revision          : % 8.2X\n",  Header1.Revision);
+        printf ("Checksum          : % 8.2X\n",  Header1.Checksum);
+        printf ("OEM ID            : %8.6s\n",    Header1.OemId);
+        printf ("OEM Table ID      : %8.8s\n",    Header1.OemTableId);
+        printf ("OEM Revision      : %8.8X\n",    Header1.OemRevision);
+        printf ("ASL Compiler ID   : %8.4s\n",    Header1.AslCompilerId);
+        printf ("Compiler Revision : %8.8X\n",    Header1.AslCompilerRevision);
+        printf ("\n");
+    }
+
+
+    Table = AcpiOsAllocate (Header1.Length);
+    if (!Table)
+    {
+        printf ("could not allocate\n");
+        return;
+    }
+
+    fseek (File1, 0, SEEK_SET);
+    Actual1 = fread (Table, 1, Header1.Length, File1);
+    if (Actual1 < Header1.Length)
+    {
+        printf ("could not read table\n");
+        return;
+    }
+
+    Table->Checksum = 0;
+
+    Checksum     = (UINT8) (0 - AcpiTbChecksum (Table, Table->Length));
+
+
+    printf ("Computed checksum: 0x%X\n\n", Checksum);
 }
 
 
