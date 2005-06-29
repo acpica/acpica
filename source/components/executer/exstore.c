@@ -14,15 +14,18 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.15 $
- | $Date: 2005/06/29 17:51:02 $
+ | $Revision: 1.16 $
+ | $Date: 2005/06/29 17:51:04 $
  | $Log: exstore.c,v $
- | Revision 1.15  2005/06/29 17:51:02  aystarik
- |
+ | Revision 1.16  2005/06/29 17:51:04  aystarik
+ | Major header file consolidation
  |
  | 
- | date	99.04.06.20.40.00;	author rmoore1;	state Exp;
+ | date	99.04.07.22.34.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 16    4/07/99 3:34p Rmoore1
+ * Major header file consolidation
  * 
  * 15    4/06/99 1:40p Rmoore1
  * 
@@ -76,10 +79,10 @@
 #define __AMLEXEC_C__
 
 #include <acpi.h>
-#include <acpirio.h>
-#include <aml.h>
-#include <amldsio.h>
-#include <amlopsys.h>
+#include <devices.h>
+#include <amlcode.h>
+#include <interpreter.h>
+#include <namespace.h>
 
 #include <string.h>
 #include <limits.h>
