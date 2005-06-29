@@ -338,7 +338,7 @@ PsxRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    *ReturnDesc)
 {
-    ACPI_GENERIC_OP         *MethodCallOp;
+    ACPI_GENERIC_OP         *MethodCallOp = NULL;
 
 
     FUNCTION_TRACE_PTR ("PsxRestartControlMethod", WalkState);
@@ -346,20 +346,7 @@ PsxRestartControlMethod (
 
     /* Get the return value (if any) from the previous method.  NULL if no return value */
 
-    if (ReturnDesc)
-    {
-        /* Find the METHOD_CALL Op. It is either the previous op or its parent */
-
-        MethodCallOp = WalkState->PrevOp;
-        while (MethodCallOp->Opcode != AML_METHODCALL)
-        {
-            MethodCallOp = MethodCallOp->Parent;
-        }
-
-        /* Store the return value in the METHOD_CALL op for use by the invoking method */
-
-        MethodCallOp->ResultObj = ReturnDesc;
-    }
+    PsxResultStackPush (ReturnDesc, WalkState);
 
     DEBUG_PRINT (TRACE_PARSE, ("PsxRestart: Method=%p Return=%p State=%p\n", 
                         MethodCallOp, ReturnDesc, WalkState));
