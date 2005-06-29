@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -176,7 +176,7 @@ AcpiExOpcode_1A_0T_0R (
     FUNCTION_TRACE_STR ("ExOpcode_1A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
-    /* Examine the opcode */
+    /* Examine the AML opcode */
 
     switch (WalkState->Opcode)
     {
@@ -252,9 +252,10 @@ AcpiExOpcode_1A_1T_0R (
     FUNCTION_TRACE_STR ("ExOpcode_1A_1T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
+    /* Examine the AML opcode */
+
     switch (WalkState->Opcode)
     {
-
     case AML_LOAD_OP:
 
         Status = AcpiExLoadOp (Operand[0], Operand[1]);
@@ -326,6 +327,7 @@ AcpiExOpcode_1A_1T_1R (
         break;
     }
 
+    /* Examine the AML opcode */
 
     switch (WalkState->Opcode)
     {
@@ -337,7 +339,6 @@ AcpiExOpcode_1A_1T_1R (
 
 
     case AML_FIND_SET_LEFT_BIT_OP:  /* FindSetLeftBit (Operand, Result) */
-
 
         ReturnDesc->Integer.Value = Operand[0]->Integer.Value;
 
@@ -355,7 +356,6 @@ AcpiExOpcode_1A_1T_1R (
 
 
     case AML_FIND_SET_RIGHT_BIT_OP: /* FindSetRightBit (Operand, Result)  */
-
 
         ReturnDesc->Integer.Value = Operand[0]->Integer.Value;
 
@@ -542,13 +542,12 @@ AcpiExOpcode_1A_1T_1R (
         break;
 
 
-    /*
-     * These are two obsolete opcodes
-     */
     case AML_SHIFT_LEFT_BIT_OP:     /*  ShiftLeftBit (Source, BitNum)  */
     case AML_SHIFT_RIGHT_BIT_OP:    /*  ShiftRightBit (Source, BitNum) */
 
-
+        /*
+         * These are two obsolete opcodes
+         */
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s is obsolete and not implemented\n",
                         AcpiPsGetOpcodeName (WalkState->Opcode)));
         Status = AE_SUPPORT;
@@ -563,7 +562,6 @@ AcpiExOpcode_1A_1T_1R (
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
-
 
     /*
      * Store the return value computed above into the target object
@@ -613,11 +611,10 @@ AcpiExOpcode_1A_0T_1R (
     FUNCTION_TRACE_STR ("ExOpcode_1A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
-    /* Get the operand and decode the opcode */
+    /* Examine the AML opcode */
 
     switch (WalkState->Opcode)
     {
-
     case AML_LNOT_OP:               /* LNot (Operand) */
 
         ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
@@ -701,7 +698,7 @@ AcpiExOpcode_1A_0T_1R (
 
             case AML_DEBUG_OP:
 
-                /* Per 1.0b spec, Debug object is of type "DebugObject" */
+                /* The Debug Object is of type "DebugObject" */
 
                 Type = ACPI_TYPE_DEBUG_OBJECT;
                 break;
@@ -721,7 +718,6 @@ AcpiExOpcode_1A_0T_1R (
                      */
                     Type = (*(Operand[0]->Reference.Where))->Common.Type;
                 }
-
                 break;
 
 
@@ -741,7 +737,6 @@ AcpiExOpcode_1A_0T_1R (
                 goto Cleanup;
             }
         }
-
         else
         {
             /*
@@ -787,7 +782,6 @@ AcpiExOpcode_1A_0T_1R (
         {
             Value = 0;
         }
-
         else
         {
             switch (TempDesc->Common.Type)
@@ -855,10 +849,10 @@ AcpiExOpcode_1A_0T_1R (
              */
             switch (Operand[0]->Reference.Opcode)
             {
-            /* Set Operand[0] to the value of the local/arg */
-
             case AML_LOCAL_OP:
             case AML_ARG_OP:
+
+                /* Set Operand[0] to the value of the local/arg */
 
                 AcpiDsMethodDataGetValue (Operand[0]->Reference.Opcode,
                         Operand[0]->Reference.Offset, WalkState, &TempDesc);
@@ -873,11 +867,10 @@ AcpiExOpcode_1A_0T_1R (
 
             default:
 
-                /* Index op - handled below */
+                /* Must be an Index op - handled below */
                 break;
             }
         }
-
 
         /* Operand[0] may have changed from the code above */
 
@@ -891,35 +884,23 @@ AcpiExOpcode_1A_0T_1R (
 
             AcpiUtAddReference (ReturnDesc);
         }
-
         else
         {
             /*
-             * This must be a reference object produced by the Index
-             * ASL operation -- check internal opcode
+             * This must be a reference produced by either the Index() or 
+             * RefOf() operator
              */
-            if ((Operand[0]->Reference.Opcode != AML_INDEX_OP) &&
-                (Operand[0]->Reference.Opcode != AML_REF_OF_OP))
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown opcode in ref(%p) - %X\n",
-                    Operand[0], Operand[0]->Reference.Opcode));
-
-                Status = AE_TYPE;
-                goto Cleanup;
-            }
-
-
             switch (Operand[0]->Reference.Opcode)
             {
             case AML_INDEX_OP:
 
                 /*
-                 * Supported target types for the Index operator are
-                 * 1) A Buffer
-                 * 2) A Package
+                 * The target type for the Index operator must be
+                 * either a Buffer or a Package
                  */
-                if (Operand[0]->Reference.TargetType == ACPI_TYPE_BUFFER_FIELD)
+                switch (Operand[0]->Reference.TargetType)
                 {
+                case ACPI_TYPE_BUFFER_FIELD:
                     /*
                      * The target is a buffer, we must create a new object that
                      * contains one element of the buffer, the element pointed
@@ -936,17 +917,19 @@ AcpiExOpcode_1A_0T_1R (
                         goto Cleanup;
                     }
 
+                    /* 
+                     * Since we are returning the value of the buffer at the
+                     * indexed location, we don't need to add an additional
+                     * reference to the buffer itself.
+                     */
                     TempDesc = Operand[0]->Reference.Object;
                     ReturnDesc->Integer.Value =
                         TempDesc->Buffer.Pointer[Operand[0]->Reference.Offset];
+                    break;
+                
 
-                    /* TBD: [Investigate] (see below) Don't add an additional
-                     * ref!
-                     */
-                }
+                case ACPI_TYPE_PACKAGE:
 
-                else if (Operand[0]->Reference.TargetType == ACPI_TYPE_PACKAGE)
-                {
                     /*
                      * The target is a package, we want to return the referenced
                      * element of the package.  We must add another reference to
@@ -960,7 +943,6 @@ AcpiExOpcode_1A_0T_1R (
                          * an uninitialized package element and is thus a
                          * severe error.
                          */
-
                         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "NULL package element obj %p\n",
                             Operand[0]));
                         Status = AE_AML_UNINITIALIZED_ELEMENT;
@@ -968,16 +950,16 @@ AcpiExOpcode_1A_0T_1R (
                     }
 
                     AcpiUtAddReference (ReturnDesc);
-                }
+                    break;
 
-                else
-                {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown TargetType %X in obj %p\n",
+
+                default:
+
+                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Index TargetType %X in obj %p\n",
                         Operand[0]->Reference.TargetType, Operand[0]));
                     Status = AE_AML_OPERAND_TYPE;
                     goto Cleanup;
                 }
-
                 break;
 
 
@@ -989,9 +971,17 @@ AcpiExOpcode_1A_0T_1R (
 
                 AcpiUtAddReference (ReturnDesc);
                 break;
+
+
+            default:
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown opcode in ref(%p) - %X\n",
+                    Operand[0], Operand[0]->Reference.Opcode));
+
+                Status = AE_TYPE;
+                goto Cleanup;
+                break;
             }
         }
-
         break;
 
 
