@@ -210,7 +210,9 @@ AcpiTerminate (void)
     /* Terminate the AML Debuger if present */
 
     AcpiGbl_DbTerminateThreads = TRUE;
-    AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
+
+    /* TBD: [Investigate] This is no longer needed?*/
+/*    AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY); */
 
 
     /* Shutdown and free all resources */
