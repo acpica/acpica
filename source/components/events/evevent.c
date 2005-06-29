@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,6 @@
 #include "achware.h"
 #include "acevents.h"
 #include "acnamesp.h"
-#include "accommon.h"
 
 #define _COMPONENT          ACPI_EVENTS
         MODULE_NAME         ("evevent")
@@ -462,7 +461,7 @@ AcpiEvGpeInitialize (void)
      * Allocate the Gpe information block
      */
 
-    AcpiGbl_GpeRegisters = AcpiCmCallocate (AcpiGbl_GpeRegisterCount *
+    AcpiGbl_GpeRegisters = AcpiUtCallocate (AcpiGbl_GpeRegisterCount *
                             sizeof (ACPI_GPE_REGISTERS));
     if (!AcpiGbl_GpeRegisters)
     {
@@ -477,11 +476,11 @@ AcpiEvGpeInitialize (void)
      * Initialization to zeros is sufficient
      */
 
-    AcpiGbl_GpeInfo = AcpiCmCallocate (MUL_8 (AcpiGbl_GpeRegisterCount) *
+    AcpiGbl_GpeInfo = AcpiUtCallocate (MUL_8 (AcpiGbl_GpeRegisterCount) *
                                         sizeof (ACPI_GPE_LEVEL_INFO));
     if (!AcpiGbl_GpeInfo)
     {
-        AcpiCmFree (AcpiGbl_GpeRegisters);
+        AcpiUtFree (AcpiGbl_GpeRegisters);
         DEBUG_PRINT (ACPI_ERROR, ("Could not allocate the GpeInfo block\n"));
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
@@ -815,9 +814,9 @@ AcpiEvAsynchExecuteGpeMethod (
     /*
      * Take a snapshot of the GPE info for this level
      */
-    AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
+    AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
     GpeInfo = AcpiGbl_GpeInfo [GpeNumber];
-    AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
+    AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
 
     /*
      * Method Handler (_Lxx, _Exx):

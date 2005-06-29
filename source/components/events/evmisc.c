@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -227,7 +227,7 @@ AcpiEvQueueNotifyRequest (
         HandlerObj)
     {
 
-        NotifyInfo = AcpiCmCreateGenericState ();
+        NotifyInfo = AcpiUtCreateGenericState ();
         if (!NotifyInfo)
         {
             return (AE_NO_MEMORY);
@@ -241,7 +241,7 @@ AcpiEvQueueNotifyRequest (
                         AcpiEvNotifyDispatch, NotifyInfo);
         if (ACPI_FAILURE (Status))
         {
-            AcpiCmDeleteGenericState (NotifyInfo);
+            AcpiUtDeleteGenericState (NotifyInfo);
         }
     }
 
@@ -328,7 +328,7 @@ AcpiEvNotifyDispatch (
 
     /* All done with the info object */
 
-    AcpiCmDeleteGenericState (NotifyInfo);
+    AcpiUtDeleteGenericState (NotifyInfo);
 }
 
 
@@ -520,7 +520,7 @@ AcpiEvAcquireGlobalLock(void)
       * Since this wait will block, we must release the interpreter
       */
 
-    Status = AcpiAmlSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
+    Status = AcpiExSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
                                             ACPI_UINT32_MAX);
 
     return_ACPI_STATUS (Status);

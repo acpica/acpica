@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  ******************************************************************************/
 
@@ -378,12 +378,12 @@ AcpiEvTerminate (void)
 
     if (AcpiGbl_GpeRegisters)
     {
-        AcpiCmFree (AcpiGbl_GpeRegisters);
+        AcpiUtFree (AcpiGbl_GpeRegisters);
     }
 
     if (AcpiGbl_GpeInfo)
     {
-        AcpiCmFree (AcpiGbl_GpeInfo);
+        AcpiUtFree (AcpiGbl_GpeInfo);
     }
 
     return_VOID;

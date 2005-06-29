@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -163,7 +163,7 @@ AcpiInstallFixedEventHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
+    AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
 
     /* Don't allow two handlers. */
 
@@ -198,7 +198,7 @@ AcpiInstallFixedEventHandler (
 
 
 Cleanup:
-    AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
+    AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -234,7 +234,7 @@ AcpiRemoveFixedEventHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
+    AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
 
     /* Disable the event before removing the handler - just in case... */
 
@@ -257,7 +257,7 @@ AcpiRemoveFixedEventHandler (
         DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %X.\n", Event));
     }
 
-    AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
+    AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -303,7 +303,7 @@ AcpiInstallNotifyHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Convert and validate the device handle */
 
@@ -391,7 +391,7 @@ AcpiInstallNotifyHandler (
         {
             /* Create a new object */
 
-            ObjDesc = AcpiCmCreateInternalObject (DeviceNode->Type);
+            ObjDesc = AcpiUtCreateInternalObject (DeviceNode->Type);
             if (!ObjDesc)
             {
                 Status = AE_NO_MEMORY;
@@ -409,7 +409,7 @@ AcpiInstallNotifyHandler (
 
         /* Install the handler */
 
-        NotifyObj = AcpiCmCreateInternalObject (INTERNAL_TYPE_NOTIFY);
+        NotifyObj = AcpiUtCreateInternalObject (INTERNAL_TYPE_NOTIFY);
         if (!NotifyObj)
         {
             Status = AE_NO_MEMORY;
@@ -433,7 +433,7 @@ AcpiInstallNotifyHandler (
     }
 
 UnlockAndExit:
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -476,7 +476,7 @@ AcpiRemoveNotifyHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Convert and validate the device handle */
 
@@ -571,12 +571,12 @@ AcpiRemoveNotifyHandler (
             ObjDesc->Device.DrvHandler = NULL;
         }
 
-        AcpiCmRemoveReference (NotifyObj);
+        AcpiUtRemoveReference (NotifyObj);
     }
 
 
 UnlockAndExit:
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -625,7 +625,7 @@ AcpiInstallGpeHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
+    AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
 
     /* Make sure that there isn't a handler there already */
 
@@ -647,7 +647,7 @@ AcpiInstallGpeHandler (
     AcpiHwEnableGpe (GpeNumber);
 
 Cleanup:
-    AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
+    AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -694,7 +694,7 @@ AcpiRemoveGpeHandler (
 
     AcpiHwDisableGpe (GpeNumber);
 
-    AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
+    AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
 
     /* Make sure that the installed handler is the same */
 
@@ -711,7 +711,7 @@ AcpiRemoveGpeHandler (
     AcpiGbl_GpeInfo[GpeNumber].Context = NULL;
 
 Cleanup:
-    AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
+    AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -735,7 +735,7 @@ AcpiAcquireGlobalLock (
     ACPI_STATUS             Status;
 
 
-    Status = AcpiAmlEnterInterpreter ();
+    Status = AcpiExEnterInterpreter ();
     if (ACPI_FAILURE (Status))
     {
         return (Status);
@@ -747,7 +747,7 @@ AcpiAcquireGlobalLock (
      */
 
     Status = AcpiEvAcquireGlobalLock ();
-    AcpiAmlExitInterpreter ();
+    AcpiExExitInterpreter ();
 
     return (Status);
 }

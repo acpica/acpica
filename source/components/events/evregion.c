@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -240,8 +240,8 @@ AcpiEvExecuteRegMethod (
      *          Passed as a parameter
      */
 
-    AcpiCmInitStaticObject (&SpaceIdDesc);
-    AcpiCmInitStaticObject (&FunctionDesc);
+    AcpiUtInitStaticObject (&SpaceIdDesc);
+    AcpiUtInitStaticObject (&FunctionDesc);
 
     /*
      *  Method requires two parameters.
@@ -262,7 +262,7 @@ AcpiEvExecuteRegMethod (
     /*
      *  Execute the method, no return value
      */
-    DEBUG_EXEC(AcpiCmDisplayInitPathname (RegionObj->Region.Extra->Extra.Method_REG, "  [Method]"));
+    DEBUG_EXEC(AcpiUtDisplayInitPathname (RegionObj->Region.Extra->Extra.Method_REG, "  [Method]"));
     Status = AcpiNsEvaluateByHandle (RegionObj->Region.Extra->Extra.Method_REG, Params, NULL);
     return_ACPI_STATUS (Status);
 }
@@ -312,7 +312,7 @@ AcpiEvAddressSpaceDispatch (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("EvAddressSpaceDispatch: no handler for region(%p) [%s]\n",
-            RegionObj, AcpiCmGetRegionName (RegionObj->Region.SpaceId)));
+            RegionObj, AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
         return_ACPI_STATUS(AE_NOT_EXIST);
     }
@@ -334,7 +334,7 @@ AcpiEvAddressSpaceDispatch (
              */
             DEBUG_PRINT (ACPI_ERROR,
                 ("EvAddressSpaceDispatch: No init routine for region(%p) [%s]\n",
-                RegionObj, AcpiCmGetRegionName (RegionObj->Region.SpaceId)));
+                RegionObj, AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
             return_ACPI_STATUS (AE_UNKNOWN_STATUS);
         }
 
@@ -342,7 +342,7 @@ AcpiEvAddressSpaceDispatch (
          * We must exit the interpreter because the region setup will potentially
          * execute control methods
          */
-        AcpiAmlExitInterpreter ();
+        AcpiExExitInterpreter ();
 
         Status = RegionSetup (RegionObj, ACPI_REGION_ACTIVATE,
                               HandlerDesc->AddrHandler.Context,
@@ -350,7 +350,7 @@ AcpiEvAddressSpaceDispatch (
 
         /* Re-enter the interpreter */
 
-        AcpiAmlEnterInterpreter ();
+        AcpiExEnterInterpreter ();
 
         /*
          *  Init routine may fail
@@ -359,8 +359,8 @@ AcpiEvAddressSpaceDispatch (
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("EvAddressSpaceDispatch: Region Init: %s [%s]\n",
-                AcpiCmFormatException (Status),
-                AcpiCmGetRegionName (RegionObj->Region.SpaceId)));
+                AcpiUtFormatException (Status),
+                AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
             return_ACPI_STATUS(Status);
         }
 
@@ -389,7 +389,7 @@ AcpiEvAddressSpaceDispatch (
          *  exit the interpreter because the handler *might* block -- we don't
          *  know what it will do, so we can't hold the lock on the intepreter.
          */
-        AcpiAmlExitInterpreter();
+        AcpiExExitInterpreter();
     }
 
     /*
@@ -403,8 +403,8 @@ AcpiEvAddressSpaceDispatch (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("EvAddressSpaceDispatch: Region handler: %s [%s]\n",
-            AcpiCmFormatException (Status),
-            AcpiCmGetRegionName (RegionObj->Region.SpaceId)));
+            AcpiUtFormatException (Status),
+            AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
     }
 
     if (!(HandlerDesc->AddrHandler.Flags & ADDR_HANDLER_DEFAULT_INSTALLED))
@@ -412,7 +412,7 @@ AcpiEvAddressSpaceDispatch (
         /* We just returned from a non-default handler, we must re-enter the
         interpreter */
 
-        AcpiAmlEnterInterpreter ();
+        AcpiExEnterInterpreter ();
     }
 
     return_ACPI_STATUS (Status);
@@ -488,7 +488,7 @@ AcpiEvDisassociateRegionFromHandler(
 
             if (AcpiNsIsLocked)
             {
-                AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+                AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
             }
 
             /*
@@ -498,7 +498,7 @@ AcpiEvDisassociateRegionFromHandler(
 
             if (AcpiNsIsLocked)
             {
-                AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+                AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
             }
 
             /*
@@ -516,8 +516,8 @@ AcpiEvDisassociateRegionFromHandler(
             {
                 DEBUG_PRINT (ACPI_ERROR,
                     ("EvDisassociateRegionFromHandler: %s from region init, [%s]\n",
-                    AcpiCmFormatException (Status),
-                    AcpiCmGetRegionName (RegionObj->Region.SpaceId)));
+                    AcpiUtFormatException (Status),
+                    AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
             }
 
             RegionObj->Region.Flags &= ~(AOPOBJ_INITIALIZED);
@@ -587,7 +587,7 @@ AcpiEvAssociateRegionAndHandler (
 
     DEBUG_PRINT (TRACE_OPREGION, ("Adding Region %p to address handler %p [%s]\n",
                     RegionObj, HandlerObj,
-                    AcpiCmGetRegionName (RegionObj->Region.SpaceId)));
+                    AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
     ACPI_ASSERT (RegionObj->Region.SpaceId == HandlerObj->AddrHandler.SpaceId);
     ACPI_ASSERT (RegionObj->Region.AddrHandler == 0);
@@ -615,14 +615,14 @@ AcpiEvAssociateRegionAndHandler (
      */
     if (AcpiNsIsLocked)
     {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     }
 
     Status = AcpiEvExecuteRegMethod (RegionObj, 1);
 
     if (AcpiNsIsLocked)
     {
-        AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+        AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     }
 
     return_ACPI_STATUS (Status);
@@ -723,7 +723,7 @@ AcpiEvAddrHandlerHelper (
                  */
                 DEBUG_PRINT (TRACE_OPREGION,
                     ("Found handler for region [%s] in device %p(%p) handler %p\n",
-                    AcpiCmGetRegionName (HandlerObj->AddrHandler.SpaceId),
+                    AcpiUtGetRegionName (HandlerObj->AddrHandler.SpaceId),
                     ObjDesc, TmpObj, HandlerObj));
 
                 /*

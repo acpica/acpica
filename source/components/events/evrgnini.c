@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.37 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -156,7 +156,7 @@ AcpiEvSystemMemoryRegionSetup (
     {
         if (*RegionContext)
         {
-            AcpiCmFree (*RegionContext);
+            AcpiUtFree (*RegionContext);
             *RegionContext = NULL;
         }
         return_ACPI_STATUS (AE_OK);
@@ -165,7 +165,7 @@ AcpiEvSystemMemoryRegionSetup (
 
     /* Activate.  Create a new context */
 
-    *RegionContext = AcpiCmCallocate (sizeof (ACPI_MEM_SPACE_CONTEXT));
+    *RegionContext = AcpiUtCallocate (sizeof (ACPI_MEM_SPACE_CONTEXT));
     if (!(*RegionContext))
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -265,7 +265,7 @@ AcpiEvPciConfigRegionSetup (
     {
         if (PciContext)
         {
-            AcpiCmFree (PciContext);
+            AcpiUtFree (PciContext);
             *RegionContext = NULL;
         }
 
@@ -275,7 +275,7 @@ AcpiEvPciConfigRegionSetup (
 
     /* Create a new context */
 
-    PciContext = AcpiCmCallocate (sizeof (ACPI_PCI_SPACE_CONTEXT));
+    PciContext = AcpiUtCallocate (sizeof (ACPI_PCI_SPACE_CONTEXT));
     if (!PciContext)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -297,8 +297,8 @@ AcpiEvPciConfigRegionSetup (
 
     /* AcpiEvaluate the _ADR object */
 
-    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__ADR, Node, &Temp);
- 
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR, Node, &Temp);
+
     /*
      *  The default is zero, since the allocation above zeroed the data, just
      *  do nothing on failures.
@@ -328,7 +328,7 @@ AcpiEvPciConfigRegionSetup (
          */
         while (Node != AcpiGbl_RootNode)
         {
-            Status = AcpiCmExecute_HID (Node, &ObjectHID);
+            Status = AcpiUtExecute_HID (Node, &ObjectHID);
             if (ACPI_SUCCESS (Status))
             {
                 if (!(STRNCMP (ObjectHID.Buffer, PCI_ROOT_HID_STRING,
@@ -349,13 +349,13 @@ AcpiEvPciConfigRegionSetup (
         Node = HandlerObj->AddrHandler.Node;
     }
 
-    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__SEG, Node, &Temp);
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__SEG, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         PciContext->Seg = (UINT32) Temp;
     }
 
-    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__BBN, Node, &Temp);
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__BBN, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         PciContext->Bus = (UINT32) Temp;
@@ -543,7 +543,7 @@ AcpiEvInitializeRegion (
      */
     DEBUG_PRINT (TRACE_OPREGION,
         ("No handler for RegionType %s(%X) (RegionObj %p)\n",
-            AcpiCmGetRegionName (SpaceId), SpaceId, RegionObj));
+            AcpiUtGetRegionName (SpaceId), SpaceId, RegionObj));
 
     return_ACPI_STATUS (AE_NOT_EXIST);
 }

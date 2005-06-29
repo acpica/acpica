@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -246,7 +246,7 @@ AcpiHwInitialize (
             /* GPE0 specified in FADT  */
 
             AcpiGbl_Gpe0EnableRegisterSave =
-                AcpiCmAllocate (DIV_2 (AcpiGbl_FADT->Gpe0BlkLen));
+                AcpiUtAllocate (DIV_2 (AcpiGbl_FADT->Gpe0BlkLen));
             if (!AcpiGbl_Gpe0EnableRegisterSave)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -272,7 +272,7 @@ AcpiHwInitialize (
             /* GPE1 defined */
 
             AcpiGbl_Gpe1EnableRegisterSave =
-                AcpiCmAllocate (DIV_2 (AcpiGbl_FADT->Gpe1BlkLen));
+                AcpiUtAllocate (DIV_2 (AcpiGbl_FADT->Gpe1BlkLen));
             if (!AcpiGbl_Gpe1EnableRegisterSave)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
