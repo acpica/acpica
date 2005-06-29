@@ -98,19 +98,12 @@
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
-/*
- * Standard C library headers.
- * We want to keep these to a minimum.
- */
-#include <stdio.h>
-#include <limits.h>
-
-
 /* 
  * Common includes for all ACPI driver files
  * We put them here because we don't want to duplicate them
  * in the rest of the source code again and again.
  */
+#include <environment.h>    /* Target environment specific items */
 #include <datatypes.h>      /* Fundamental data types */
 #include <excep.h>          /* Local exception codes */
 #include <config.h>         /* Configuration constants */
@@ -121,7 +114,6 @@
 #include <acpisubsys.h>     /* External interfaces to this part */
 #include <globals.h>        /* All global variables */
 #include <common.h>         /* Common (global) interfaces */
-
 
 
 /* Version string */

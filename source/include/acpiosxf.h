@@ -97,57 +97,16 @@
  *****************************************************************************/
 
 
+#include <environment.h>
 #include <datatypes.h>
 #include <acpiasm.h>
-#include <stdarg.h>
 
 
 
-/* File I/O */
 
-//#define LogHandle void*
-
-OSD_FILE *
-OsdOpen (
-    const char      *filename, 
-    const char      *mode);
-
-INT32 
-OsdClose (
-    OSD_FILE        *stream);
-
-UINT32 
-OsdRead (
-    void            *buffer, 
-    UINT32          size, 
-    UINT32          count, 
-    OSD_FILE        *stream);
-
-UINT32 
-OsdWrite (
-    const void      *buffer, 
-    UINT32          size, 
-    UINT32          count, 
-    OSD_FILE        *stream); 
-
-INT32 
-OsdPrintf (
-    OSD_FILE        *stream, 
-    const char      *format, 
-    ...);
-
-INT32
-OsdVprintf (
-    OSD_FILE        *stream, 
-    const char      *format, 
-    va_list         args);
-
-INT32 
-OsdFlushall (
-    void);
-
-
-/* Memory allocation */
+/* 
+ * Memory allocation and mapping 
+ */
 
 void *
 OsdAllocate (
@@ -161,9 +120,6 @@ void
 OsdFree (
     void *          mem);
 
-
-/* Memory mapping */
-
 char *
 OsdMapMemory (
     UINT32          where,
@@ -175,8 +131,9 @@ OsdUnMapMemory (
     UINT32          length);
 
 
-
-/* Interrupt handlers */
+/* 
+ * Interrupt handlers 
+ */
 
 UINT32
 OsdInstallInterruptHandler (
@@ -189,7 +146,9 @@ OsdRemoveInterruptHandler (
     UINT32          Handle);
 
 
-/* Scheduling */
+/* 
+ * Scheduling 
+ */
 
 void
 OsdSleep (
@@ -199,7 +158,6 @@ OsdSleep (
 void
 OsdSleepUsec (
     UINT32          microseconds);
-
 
 
 /*
@@ -280,6 +238,53 @@ OsdWritePciCfgDword (
     INT32           Register, 
     UINT32          Value);
 
+
+/*
+ * Debug print routines 
+ */
+
+INT32 
+OsdPrintf (
+    OSD_FILE        *stream, 
+    const char      *format, 
+    ...);
+
+INT32
+OsdVprintf (
+    OSD_FILE        *stream, 
+    const char      *format, 
+    va_list         args);
+
+
+/* 
+ * File I/O 
+ * TBD: These may be removed completely since it is not always
+ * possible to do file I/O from a kernel mode driver, especially
+ * during system initialization!
+ */
+
+OSD_FILE *
+OsdOpen (
+    const char      *filename, 
+    const char      *mode);
+
+INT32 
+OsdClose (
+    OSD_FILE        *stream);
+
+UINT32 
+OsdRead (
+    void            *buffer, 
+    UINT32          size, 
+    UINT32          count, 
+    OSD_FILE        *stream);
+
+UINT32 
+OsdWrite (
+    const void      *buffer, 
+    UINT32          size, 
+    UINT32          count, 
+    OSD_FILE        *stream); 
 
 
 
