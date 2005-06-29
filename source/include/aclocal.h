@@ -276,5 +276,24 @@ typedef struct
 } GPE_LEVEL_INFO;
 
 
+/* Entry for a memory allocation (debug only) */
+
+
+#define MEM_MALLOC          0
+#define MEM_CALLOC          1
+
+typedef struct AllocationInfo 
+{
+    void                    *Address;
+    UINT32                  Size;
+    UINT8                   AllocType;
+    UINT32                  Component;
+    char                    Module[32];
+    INT32                   Line;
+    struct AllocationInfo   *Previous;
+    struct AllocationInfo   *Next;
+
+} ALLOCATION_INFO;
+
 
 #endif
