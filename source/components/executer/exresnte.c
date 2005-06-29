@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.44 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -128,7 +128,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exresnte")
+        ACPI_MODULE_NAME    ("exresnte")
 
 
 /*******************************************************************************
@@ -136,7 +136,7 @@
  * FUNCTION:    AcpiExResolveNodeToValue
  *
  * PARAMETERS:  ObjectPtr       - Pointer to a location that contains
- *                                a pointer to a NS node, and will recieve a
+ *                                a pointer to a NS node, and will receive a
  *                                pointer to the resolved object.
  *              WalkState       - Current state.  Valid only if executing AML
  *                                code.  NULL if simply resolving an object
@@ -167,11 +167,11 @@ AcpiExResolveNodeToValue (
     ACPI_OPERAND_OBJECT     *SourceDesc;
     ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_OBJECT_TYPE8       EntryType;
+    ACPI_OBJECT_TYPE        EntryType;
     ACPI_INTEGER            TempVal;
 
 
-    FUNCTION_TRACE ("ExResolveNodeToValue");
+    ACPI_FUNCTION_TRACE ("ExResolveNodeToValue");
 
 
     /*
@@ -310,7 +310,6 @@ AcpiExResolveNodeToValue (
             Node));
 
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);  /* Cannot be AE_TYPE */
-        break;
 
 
     /*
@@ -360,7 +359,7 @@ AcpiExResolveNodeToValue (
 
         ObjDesc->Integer.Value = TempVal;
 
-        /* 
+        /*
          * Truncate value if we are executing from a 32-bit ACPI table
          * AND actually executing AML code.  If we are resolving
          * an object in the namespace via an external call to the
