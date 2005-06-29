@@ -170,6 +170,10 @@ InstallInterruptHandler (
 INT32
 RemoveInterruptHandler (UINT32 Handle);
 
+void
+RestoreAcpiState (
+    void);
+
 
 
 #endif  /*  __EVENTS_H__   */
