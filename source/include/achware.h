@@ -251,22 +251,6 @@ ACPI_STATUS
 HwShutdown();
 
 ACPI_STATUS
-HwShutdownErrataHandling();
-
-ACPI_STATUS
-HwInitErrataHandling();
-
-ACPI_STATUS
-HwGetInstalledHandler(ACPI_ERRATA_HANDLER *Handler,
-                 ACPI_FUNCTION Function);
-
-ACPI_STATUS
-HwInstallHandler(ACPI_ERRATA_HANDLER *NewHandler);
-
-ACPI_STATUS
-HwInstallErrata(ACPI_ERRATA_HANDLER *HandlerList);
-
-ACPI_STATUS
 HwInitializeSystemInfo();
 
 ACPI_STATUS
@@ -320,6 +304,30 @@ HwObtainSleepTypeRegisterData (
     UINT8                   *Slp_TypA,
     UINT8                   *Slp_TypB);
 
+
+/* Throttling Prototypes */
+
+void 
+HwEnableThrottling (ACPI_IO_ADDRESS PBlkAddress);
+
+void 
+HwDisableThrottling (ACPI_IO_ADDRESS PBlkAddress);
+
+UINT32
+HwGetDutyCycle (
+    UINT8 DutyOffset,
+    NATIVE_UINT PBlkAddress,
+    UINT32 NumThrottleStates);
+
+void
+HwProgramDutyCycle (
+    UINT8 DutyOffset,
+    UINT32 DutyCycle,
+    NATIVE_UINT PBlkAddress,
+    UINT32 NumThrottleStates);
+
+NATIVE_UINT
+HwLocalPow(NATIVE_UINT x,NATIVE_UINT y);
 
 /* ACPI Timer prototypes */
 
