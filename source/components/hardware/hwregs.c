@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  ******************************************************************************/
 
@@ -516,7 +516,6 @@ AcpiHwRegisterBitAccess (
             break;
         }
 
-
         /*
          * Read the PM1 Control register.
          * Note that at this level, the fact that there are actually TWO
@@ -649,6 +648,7 @@ AcpiHwRegisterBitAccess (
              */
             ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %04X\n",
                 RegisterValue, RegisterId));
+
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId,
                 (UINT8) RegisterValue);
             RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
@@ -668,7 +668,8 @@ AcpiHwRegisterBitAccess (
         break;
     }
 
-    if (ACPI_MTX_LOCK == UseLock) {
+    if (ACPI_MTX_LOCK == UseLock) 
+    {
         AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     }
 
@@ -825,7 +826,6 @@ AcpiHwRegisterWrite (
         AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
     }
 
-
     switch (REGISTER_BLOCK_ID (RegisterId))
     {
     case PM1_STS: /* 16-bit access */
@@ -904,8 +904,7 @@ AcpiHwRegisterWrite (
 
     case SMI_CMD_BLOCK: /* 8bit */
 
-        /* For 2.0, SMI_CMD is always in IO space */
-        /* TBD: what about 1.0? 0.71? */
+        /* SMI_CMD is currently always in IO space */
 
         AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, Value, 8);
         break;
