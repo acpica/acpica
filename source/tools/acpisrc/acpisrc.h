@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 #include "acpi.h"
 
 
-/* Fixups for non-Win32 compilation
+/* Fixups for non-Win32 compilation */
 #ifndef WIN32
 
 static inline int
