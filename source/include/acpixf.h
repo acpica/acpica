@@ -122,7 +122,7 @@
 #include "actbl.h"
 
 
-/*
+ /*
  * Global interfaces
  */
 
@@ -154,10 +154,9 @@ ACPI_STATUS
 AcpiGetSystemInfo (
     ACPI_BUFFER             *RetBuffer);
 
-ACPI_STATUS
+const char *
 AcpiFormatException (
-    ACPI_STATUS             Exception,
-    ACPI_BUFFER             *OutBuffer);
+    ACPI_STATUS             Exception);
 
 
 /*
