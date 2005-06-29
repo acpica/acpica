@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: acxface.h - External interfaces to the ACPI subsystem
+ * Name: acpixf.h - External interfaces to the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -161,11 +161,11 @@ AcpiFormatException (
 
 ACPI_STATUS
 AcpiFindRootPointer (
-    UINT64                  *RsdpPhysicalAddress);
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress);
 
 ACPI_STATUS
 AcpiLoadTables (
-    UINT64                  RsdpPhysicalAddress);
+    ACPI_PHYSICAL_ADDRESS   RsdpPhysicalAddress);
 
 ACPI_STATUS
 AcpiLoadTable (
@@ -200,7 +200,6 @@ AcpiWalkNamespace (
     WALK_CALLBACK           UserFunction,
     void                    *Context,
     void *                  *ReturnValue);
-
 
 ACPI_STATUS
 AcpiGetDevices (
@@ -370,11 +369,15 @@ AcpiGetIrqRoutingTable  (
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
-    UINT64                  PhysicalAddress);
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress);
 
 ACPI_STATUS
 AcpiGetFirmwareWakingVector (
-    UINT64                  *PhysicalAddress);
+    ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
+
+ACPI_STATUS
+AcpiEnterSleepState (
+    UINT8 SleepState);
 
 ACPI_STATUS
 AcpiGetProcessorThrottlingInfo (
