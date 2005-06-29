@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -278,7 +278,8 @@ AcpiExTruncateFor32bitTable (
  *
  * FUNCTION:    AcpiExAcquireGlobalLock
  *
- * PARAMETERS:  Rule            - Lock rule: AlwaysLock, NeverLock
+ * PARAMETERS:  FieldFlags            - Flags with Lock rule: 
+ *                                      AlwaysLock or NeverLock
  *
  * RETURN:      TRUE/FALSE indicating whether the lock was actually acquired
  *
@@ -290,7 +291,7 @@ AcpiExTruncateFor32bitTable (
 
 BOOLEAN
 AcpiExAcquireGlobalLock (
-    UINT32                  Rule)
+    UINT32                  FieldFlags)
 {
     BOOLEAN                 Locked = FALSE;
     ACPI_STATUS             Status;
@@ -299,9 +300,9 @@ AcpiExAcquireGlobalLock (
     FUNCTION_TRACE ("ExAcquireGlobalLock");
 
 
-    /* Only attempt lock if the Rule says so */
+    /* Only attempt lock if the AlwaysLock bit is set */
 
-    if (Rule == (UINT32) GLOCK_ALWAYS_LOCK)
+    if (FieldFlags & AML_FIELD_LOCK_RULE_MASK)
     {
         /* We should attempt to get the lock */
 
