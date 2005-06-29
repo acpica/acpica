@@ -338,7 +338,7 @@ NsInternalizeName (
 
     i = (strlen (DottedName) + 1) / PATH_SEGMENT_LENGTH;    /* i = number of NameSegs in the path */
 
-    InternalName = LocalCallocate ((ACPI_NAME_SIZE * i) + 4);
+    InternalName = CmCallocate ((ACPI_NAME_SIZE * i) + 4);
     if (!InternalName)
     {
         FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
@@ -436,4 +436,46 @@ NsConvertHandleToEntry (
 
     return (NAME_TABLE_ENTRY *) Handle;
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    NsTerminate
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: free memory allocated for table storage.
+ *
+ ******************************************************************************/
+
+void
+NsTerminate (void)
+{
+    FUNCTION_TRACE ("NsTerminate");
+
+
+    /*
+     * 1) Free the entire namespace -- all objects and all tables
+     */
+
+    NsDeleteNamespace ();
+
+    DEBUG_PRINT (ACPI_INFO, ("NsTerminate: Namespace freed\n"));
+
+
+    /* 
+     * 2) Now we can delete the ACPI tables 
+     */
+
+    NsDeleteAcpiTables ();
+
+    DEBUG_PRINT (ACPI_INFO, ("NsTerminate: ACPI Tables freed\n"));
+
+
+    FUNCTION_EXIT;
+}
+
+ 
 
