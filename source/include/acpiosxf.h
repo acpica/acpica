@@ -239,8 +239,8 @@ AcpiOsReleaseLock (
     ACPI_HANDLE             Handle,
     UINT32                  Flags);
 
-#define ACPI_NON_HANDLER    1
-#define ACPI_HANDLER        0
+#define ACPI_NOT_ISR        1
+#define ACPI_ISR            0
 
 
 /*
