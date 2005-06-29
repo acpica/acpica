@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
+ * 
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,101 +116,193 @@
 
 #define __TBUTILS_C__
 
-#include "acpi.h"
-#include "actables.h"
+#include <acpi.h>
+#include <tables.h>
 
 
-#define _COMPONENT          ACPI_TABLES
-        ACPI_MODULE_NAME    ("tbutils")
+#define _COMPONENT          TABLE_MANAGER
+        MODULE_NAME         ("tbutils");
 
-/* Local prototypes */
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
+/*****************************************************************************
+ * 
+ * FUNCTION:    TbSystemTablePointer
+ *
+ * PARAMETERS:  *Where              - Pointer to be examined
+ *
+ * RETURN:      TRUE if Where is within the AML stream (in one of the ACPI
+ *              system tables such as the DSDT or an SSDT.)
+ *              FALSE otherwise
+ *
+ ****************************************************************************/
+
 ACPI_STATUS
-AcpiTbHandleToObject (
+TbHandleToObject (
     UINT16                  TableId,
-    ACPI_TABLE_DESC         **TableDesc);
-#endif
+    ACPI_TABLE_DESC         **TableDesc)
+{
+    UINT32                  i;
+    ACPI_TABLE_DESC         *ListHead;
 
 
-/*******************************************************************************
+    for (i = 0; i < ACPI_TABLE_MAX; i++)
+    {
+        ListHead = &Gbl_AcpiTables[i];
+        do
+        {
+            if (ListHead->TableId == TableId)
+            {
+                *TableDesc = ListHead;
+                return AE_OK;
+            }
+
+            ListHead = ListHead->Next;
+
+        } while (ListHead != &Gbl_AcpiTables[i]);
+    }
+
+
+    DEBUG_PRINT (ACPI_ERROR, ("TableId=0x%X does not exist\n", TableId));
+    return AE_BAD_PARAMETER;
+
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    TbSystemTablePointer
  *
- * FUNCTION:    AcpiTbValidateTableHeader
+ * PARAMETERS:  *Where              - Pointer to be examined
  *
- * PARAMETERS:  TableHeader         - Logical pointer to the table
+ * RETURN:      TRUE if Where is within the AML stream (in one of the ACPI
+ *              system tables such as the DSDT or an SSDT.)
+ *              FALSE otherwise
  *
- * RETURN:      Status
+ ****************************************************************************/
+
+BOOLEAN
+TbSystemTablePointer (
+    void                    *Where)
+{
+    UINT32                  i;
+    ACPI_TABLE_DESC         *TableDesc;
+    ACPI_TABLE_HEADER       *Table;
+
+
+    /* No function trace, called too often! */
+
+
+    /* Ignore null pointer */
+
+    if (!Where)
+    {
+        return (FALSE);
+    }
+
+
+    /* Check for a pointer within the DSDT */
+
+    if (IS_IN_ACPI_TABLE (Where, Gbl_DSDT))
+    {
+        return (TRUE);
+    }
+
+
+    /* Check each of the loaded SSDTs (if any)*/
+
+    TableDesc = &Gbl_AcpiTables[TABLE_SSDT];
+
+    for (i = 0; i < Gbl_AcpiTables[TABLE_SSDT].Count; i++)
+    {
+        Table = TableDesc->Pointer;
+
+        if (IS_IN_ACPI_TABLE (Where, Table))
+        {
+            return (TRUE);
+        }
+
+        TableDesc = TableDesc->Next;
+    }
+
+
+    /* TBD: Need to check the PSDTs? */
+
+
+    return (FALSE);
+}
+
+
+
+/******************************************************************************
  *
- * DESCRIPTION: Check an ACPI table header for validity
+ * FUNCTION:    TbMapAcpiTable
  *
- * NOTE:  Table pointers are validated as follows:
- *          1) Table pointer must point to valid physical memory
- *          2) Signature must be 4 ASCII chars, even if we don't recognize the
- *             name
- *          3) Table must be readable for length specified in the header
- *          4) Table checksum must be valid (with the exception of the FACS
- *              which has no checksum because it contains variable fields)
+ * PARAMETERS:  PhysicalAddress         - Physical address of table to map
+ *              *Size                   - Size of the table.  If zero, the size
+ *                                        from the table header is used.  Actual
+ *                                        size is returned here.
+ *				**LogicalAddress		- Logical address of mapped table
+ *
+ * RETURN:      Logical address of the mapped table.
+ *
+ * DESCRIPTION: Maps the physical address of table into a logical address
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiTbValidateTableHeader (
-    ACPI_TABLE_HEADER       *TableHeader)
+TbMapAcpiTable (
+    void                    *PhysicalAddress,
+    UINT32                  *Size,
+	void					**LogicalAddress)
 {
-    ACPI_NAME               Signature;
+    ACPI_TABLE_HEADER       *Table;
+    UINT32                  TableSize = *Size;
+	ACPI_STATUS				Status = AE_OK;
 
 
-    ACPI_FUNCTION_NAME ("TbValidateTableHeader");
 
+    /* If size is zero, look at the table header to get the actual size */
 
-    /* Verify that this is a valid address */
-
-    if (!AcpiOsReadable (TableHeader, sizeof (ACPI_TABLE_HEADER)))
+    if (!*Size)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Cannot read table header at %p\n", TableHeader));
+        /* Get the table header so we can extract the table length */
 
-        return (AE_BAD_ADDRESS);
+        Status = OsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER), &Table);
+
+		if (ACPI_FAILURE (Status))
+		{
+			return Status;
+		}
+
+        /* Now we know how large to make the mapping (table + header) */
+
+        TableSize = Table->Length;
+        OsdUnMapMemory (Table, sizeof (ACPI_TABLE_HEADER));
     }
 
-    /* Ensure that the signature is 4 ASCII characters */
 
-    ACPI_MOVE_32_TO_32 (&Signature, TableHeader->Signature);
-    if (!AcpiUtValidAcpiName (Signature))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Table signature at %p [%p] has invalid characters\n",
-            TableHeader, &Signature));
+    /* Map the physical memory for the correct length */
 
-        ACPI_REPORT_WARNING (("Invalid table signature found: [%4.4s]\n",
-            (char *) &Signature));
+    Status = OsdMapMemory (PhysicalAddress, TableSize, &Table);
 
-        ACPI_DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
-        return (AE_BAD_SIGNATURE);
-    }
+	if (ACPI_FAILURE (Status))
+	{
+		return Status;
+	}
 
-    /* Validate the table length */
+	DEBUG_PRINT (ACPI_INFO, ("Mapped memory for ACPI table, length=%d(0x%X) at %p\n",
+                    TableSize, TableSize, Table));
 
-    if (TableHeader->Length < sizeof (ACPI_TABLE_HEADER))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Invalid length in table header %p name %4.4s\n",
-            TableHeader, (char *) &Signature));
+    *Size = TableSize;
+	*LogicalAddress = Table;
 
-        ACPI_REPORT_WARNING (("Invalid table header length (0x%X) found\n",
-            (UINT32) TableHeader->Length));
-
-        ACPI_DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
-        return (AE_BAD_HEADER);
-    }
-
-    return (AE_OK);
+	return Status;
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AcpiTbVerifyTableChecksum
+ * FUNCTION:    TbVerifyTableChecksum
  *
  * PARAMETERS:  *TableHeader            - ACPI table to verify
  *
@@ -222,62 +314,63 @@ AcpiTbValidateTableHeader (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiTbVerifyTableChecksum (
-    ACPI_TABLE_HEADER       *TableHeader)
+TbVerifyTableChecksum (
+    void                    *TableHeader)
 {
-    UINT8                   Checksum;
+    UINT8                   CheckSum;
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("TbVerifyTableChecksum");
+    FUNCTION_TRACE ("TbVerifyTableChecksum");
 
 
     /* Compute the checksum on the table */
 
-    Checksum = AcpiTbChecksum (TableHeader, TableHeader->Length);
+    CheckSum = TbChecksum (TableHeader,
+                        (ACPI_SIZE) ((ACPI_TABLE_HEADER *) TableHeader)->Length);
 
     /* Return the appropriate exception */
 
-    if (Checksum)
+    if (CheckSum)
     {
-        ACPI_REPORT_WARNING ((
-            "Invalid checksum in table [%4.4s] (%02X, sum %02X is not zero)\n",
-            TableHeader->Signature, (UINT32) TableHeader->Checksum,
-            (UINT32) Checksum));
+        REPORT_ERROR ("Invalid ACPI table checksum");
+        DEBUG_PRINT (ACPI_INFO, ("TbVerifyTableChecksum: Invalid checksum (%X)\n", CheckSum));
 
         Status = AE_BAD_CHECKSUM;
     }
+
+
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AcpiTbChecksum
+ * FUNCTION:    TbChecksum
  *
  * PARAMETERS:  Buffer              - Buffer to checksum
  *              Length              - Size of the buffer
  *
- * RETURN:      8 bit checksum of buffer
+ * RETURNS      8 bit checksum of buffer
  *
- * DESCRIPTION: Computes an 8 bit checksum of the buffer(length) and returns it.
+ * DESCRIPTION: Computes an 8 bit checksum of the buffer(length) and returns it. 
  *
  ******************************************************************************/
 
 UINT8
-AcpiTbChecksum (
-    void                    *Buffer,
+TbChecksum (
+    void                    *Buffer, 
     UINT32                  Length)
 {
-    const UINT8             *limit;
-    const UINT8             *rover;
+    UINT8                   *limit;
+    UINT8                   *rover;
     UINT8                   sum = 0;
 
 
     if (Buffer && Length)
-    {
+    {   
         /*  Buffer and Length are valid   */
-
+        
         limit = (UINT8 *) Buffer + Length;
 
         for (rover = Buffer; rover < limit; rover++)
@@ -285,54 +378,10 @@ AcpiTbChecksum (
             sum = (UINT8) (sum + *rover);
         }
     }
-    return (sum);
+
+    return sum;
 }
 
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-/*******************************************************************************
- *
- * FUNCTION:    AcpiTbHandleToObject
- *
- * PARAMETERS:  TableId             - Id for which the function is searching
- *              TableDesc           - Pointer to return the matching table
- *                                      descriptor.
- *
- * RETURN:      Search the tables to find one with a matching TableId and
- *              return a pointer to that table descriptor.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiTbHandleToObject (
-    UINT16                  TableId,
-    ACPI_TABLE_DESC         **ReturnTableDesc)
-{
-    UINT32                  i;
-    ACPI_TABLE_DESC         *TableDesc;
-
-
-    ACPI_FUNCTION_NAME ("TbHandleToObject");
-
-
-    for (i = 0; i < ACPI_TABLE_MAX; i++)
-    {
-        TableDesc = AcpiGbl_TableLists[i].Next;
-        while (TableDesc)
-        {
-            if (TableDesc->TableId == TableId)
-            {
-                *ReturnTableDesc = TableDesc;
-                return (AE_OK);
-            }
-
-            TableDesc = TableDesc->Next;
-        }
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "TableId=%X does not exist\n", TableId));
-    return (AE_BAD_PARAMETER);
-}
-#endif
 
 
