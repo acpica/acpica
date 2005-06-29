@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.153 $
+ *              $Revision: 1.154 $
  *
  *****************************************************************************/
 
@@ -636,7 +636,14 @@ AcpiExOpcode_1A_0T_1R (
             goto Cleanup;
         }
 
-        ReturnDesc->Integer.Value = !Operand[0]->Integer.Value;
+        /*
+         * Set result to ONES (TRUE) if Value == 0.  Note:
+         * ReturnDesc->Integer.Value is initially == 0 (FALSE) from above.
+         */
+        if (!Operand[0]->Integer.Value)
+        {
+            ReturnDesc->Integer.Value = ACPI_INTEGER_MAX;
+        }
         break;
 
 
