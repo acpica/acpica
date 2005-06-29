@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -137,6 +137,8 @@ char                        *AslErrors [] = {
     "Package length too long to encode",
     "Local variable is not initialized",
     "Method argument does not exist",
+    "Invalid priority value",
+    "Invalid performace/robustness value",
 };
 
 
