@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.42 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -180,7 +180,7 @@ AcpiExDumpOperand (
  *
  * FUNCTION:    AslCompilerSignon
  *
- * PARAMETERS:  None
+ * PARAMETERS:  FileId      - ID of the output file
  *
  * RETURN:      None
  *
@@ -195,19 +195,39 @@ AslCompilerSignon (
     char                    *Prefix = "";
 
 
+    /*
+     * Set line prefix depending on the destination file type
+     */
     switch (FileId)
     {
     case ASL_FILE_ASM_SOURCE_OUTPUT:
+
         Prefix = "; ";
         break;
 
     case ASL_FILE_HEX_OUTPUT:
+
+        if (Gbl_HexOutputFlag == HEX_OUTPUT_ASM)
+        {
+            Prefix = "; ";
+        }
+        else if (Gbl_HexOutputFlag == HEX_OUTPUT_C)
+        {
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "/*\n");
+            Prefix = " * ";
+        }
+        break;
+
+    case ASL_FILE_C_SOURCE_OUTPUT:
+
         Prefix = " * ";
         break;
-   }
+    }
+
+    /* Compiler signon with copyright */
 
     FlPrintFile (FileId,
-        "%s\n%s%s %s [%s]\n%sACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0\n%s\n",
+        "%s\n%s%s %s [%s]\n%sIncludes ACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0\n%s\n",
         Prefix,
         Prefix, CompilerId, CompilerVersion, __DATE__,
         Prefix, ACPI_CA_VERSION,
@@ -221,7 +241,7 @@ AslCompilerSignon (
  *
  * FUNCTION:    AslCompilerFileHeader
  *
- * PARAMETERS:  None
+ * PARAMETERS:  FileId      - ID of the output file
  *
  * RETURN:      None
  *
@@ -238,16 +258,35 @@ AslCompilerFileHeader (
     char                    *Prefix = "";
 
 
+    /*
+     * Set line prefix depending on the destination file type
+     */
     switch (FileId)
     {
     case ASL_FILE_ASM_SOURCE_OUTPUT:
+
         Prefix = "; ";
         break;
 
     case ASL_FILE_HEX_OUTPUT:
+
+        if (Gbl_HexOutputFlag == HEX_OUTPUT_ASM)
+        {
+            Prefix = "; ";
+        }
+        else if (Gbl_HexOutputFlag == HEX_OUTPUT_C)
+        {
+            Prefix = " * ";
+        }
+        break;
+
+    case ASL_FILE_C_SOURCE_OUTPUT:
+
         Prefix = " * ";
         break;
     }
+
+    /* Compilation header with timestamp */
 
     time (&Aclock);
     NewTime = localtime (&Aclock);
@@ -281,7 +320,6 @@ CmDoCompile (void)
     UtBeginEvent (12, "Total Compile time");
     UtBeginEvent (i, "Initialize");
 
-
     /* Open the required input and output files */
 
     Status = FlOpenInputFile (Gbl_Files[ASL_FILE_INPUT].Filename);
@@ -298,14 +336,12 @@ CmDoCompile (void)
         return -1;
     }
 
-
     /* ACPI CA subsystem initialization */
 
     AcpiUtInitGlobals ();
     AcpiUtMutexInitialize ();
     AcpiNsRootInitialize ();
     UtEndEvent (i++);
-
 
     /* Build the parse tree */
 
@@ -325,14 +361,12 @@ CmDoCompile (void)
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
     UtEndEvent (i++);
 
-
     /* Calculate all AML package lengths */
 
     UtBeginEvent (i, "Generate AML package lengths");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating Package lengths\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
     UtEndEvent (i++);
-
 
     if (Gbl_ParseOnlyFlag)
     {
@@ -348,7 +382,6 @@ CmDoCompile (void)
         return 0;
     }
 
-
     /*
      * Create an internal namespace and use it as a symbol table
      */
@@ -359,13 +392,11 @@ CmDoCompile (void)
     LdLoadNamespace ();
     UtEndEvent (i++);
 
-
     /* Namespace lookup */
 
     UtBeginEvent (i, "Cross reference parse tree and Namespace");
     LkCrossReferenceNamespace ();
     UtEndEvent (i++);
-
 
     /*
      * Semantic analysis.  This can happen only after the
@@ -380,7 +411,6 @@ CmDoCompile (void)
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnMethodAnalysisWalkBegin,
                         AnMethodAnalysisWalkEnd, &AnalysisWalkInfo);
     UtEndEvent (i++);
-
 
     /* Semantic error checking part two - typing of method returns */
 
@@ -414,7 +444,6 @@ CmDoCompile (void)
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
     UtEndEvent (i++);
 
-
     /*
      * Now that the input is parsed, we can open the AML output file.
      * Note: by default, the name of this file comes from the table descriptor
@@ -433,19 +462,17 @@ CmDoCompile (void)
     CgGenerateAmlOutput ();
     UtEndEvent (i++);
 
-
     UtBeginEvent (i, "Write optional output files");
 
-    /* Dump the AML as hex if requested */
+    /* Create listings and hex files */
 
+    LsDoListings ();
     LsDoHexOutput ();
-    LsDoAsmOutput ();
 
     /* Dump the namespace to the .nsp file if requested */
 
     LsDisplayNamespace ();
     UtEndEvent (i++);
-
 
     UtEndEvent (13);
     CmCleanupAndExit ();
@@ -521,21 +548,6 @@ CmCleanupAndExit (void)
         DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Time per search",
                         ((AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) * 1000) /
                         Gbl_NsLookupCount);
-    }
-
-    if (Gbl_ListingFlag)
-    {
-        /* Flush any final AML in the buffer */
-
-        LsFlushListingBuffer ();
-
-        /* Print a summary of the compile exceptions */
-
-        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\nSummary of errors and warnings\n\n");
-        AePrintErrorLog (ASL_FILE_LISTING_OUTPUT);
-        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\n");
-        UtDisplaySummary (ASL_FILE_LISTING_OUTPUT);
-        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\n");
     }
 
     /* Close all open files */
