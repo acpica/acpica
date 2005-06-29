@@ -123,6 +123,7 @@
 #include <amlcode.h>
 #include <namesp.h>
 #include <events.h>
+#include <tables.h>
 #include <dispatch.h>
 
 
@@ -151,10 +152,11 @@ AmlExecLoadTable (
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *TableDesc = NULL;
-    ACPI_TABLE_HEADER       TableHeader;
-    UINT32                  i;
     char                    *TablePtr;
     char                    *TableDataPtr;
+    ACPI_TABLE_HEADER       TableHeader;
+    ACPI_TABLE_DESC         TableInfo;
+    UINT32                  i;
 
 
     FUNCTION_TRACE ("AmlExecLoadTable");
@@ -222,23 +224,35 @@ AmlExecLoadTable (
     }
 
 
-    /* Install the table */
+    /* Install the new table into the local data structures */
 
-    Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) TablePtr);
+    TableInfo.Pointer      = (ACPI_TABLE_HEADER *) TablePtr;
+    TableInfo.Length       = TableHeader.Length;
+    TableInfo.Allocation   = ACPI_MEM_ALLOCATED;
+    TableInfo.BasePointer  = TablePtr;
+
+    Status = TbInstallTable (NULL, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
     }
 
-
     /* Add the table to the namespace */
+
+    Status = AcpiLoadNamespace ();
+    if (ACPI_FAILURE (Status))
+    {
+        /* TBD: Unload the table on failure ? */
+
+        goto Cleanup;
+    }
 
     /* TBD: we need a pointer to the table desc */
 
     /* Init the table handle */
 
     TableDesc->Reference.OpCode = AML_LoadOp;
-    TableDesc->Reference.Object = TablePtr;
+    TableDesc->Reference.Object = TableInfo.InstalledDesc;
 
     *DdbHandle = TableDesc;
 
@@ -273,12 +287,15 @@ AmlExecUnloadTable (
     ACPI_HANDLE             DdbHandle)
 {
     ACPI_STATUS             Status = AE_NOT_IMPLEMENTED;
+    ACPI_OBJECT_INTERNAL    *TableDesc = (ACPI_OBJECT_INTERNAL *) DdbHandle;
+    ACPI_TABLE_DESC         *TableInfo;
 
 
     FUNCTION_TRACE ("AmlExecUnloadTable");
 
 
     /* Validate the handle */
+    /* TBD: Wasn't this done earlier? */
 
     if ((!DdbHandle) ||
         (!VALID_DESCRIPTOR_TYPE (DdbHandle, DESC_TYPE_ACPI_OBJ)) ||
@@ -288,7 +305,28 @@ AmlExecUnloadTable (
     }
 
 
-    CmRemoveReference ((ACPI_OBJECT_INTERNAL *) DdbHandle);
+    /* Get the actual table descriptor from the DdbHandle */
+
+    TableInfo = (ACPI_TABLE_DESC *) TableDesc->Reference.Object;
+
+    /* 
+     * Delete the entire namespace under this table NTE 
+     * (Offset contains the TableId)
+     */
+
+    Status = NsDeleteNamespaceByOwner (TableInfo->TableId);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Delete the table itself */
+
+    TbDeleteSingleTable (TableInfo->InstalledDesc);
+
+    /* Delete the table descriptor (DdbHandle) */
+
+    CmRemoveReference (TableDesc);
 
     return_ACPI_STATUS (Status);
 }
