@@ -139,6 +139,119 @@
 #define MTH_TYPE_ARG        1
 
 
+
+/* New interfaces */
+
+ACPI_STATUS
+AmlExecCreateMutex (
+    OPERATING_MODE          InterpreterMode);
+
+ACPI_STATUS
+AmlExecCreateRegion (
+    UINT8                   *AmlPtr,
+    UINT32                  AmlLength,
+    OPERATING_MODE          InterpreterMode);
+
+ACPI_STATUS
+AmlExecCreateEvent (void);
+
+
+ACPI_STATUS
+AmlReadField (
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    void                    *Buffer,
+    UINT32                  BufferLength,
+    UINT32                  ByteLength,
+    UINT32                  DatumLength,
+    UINT32                  BitGranularity,
+    UINT32                  ByteGranularity);
+
+ACPI_STATUS
+AmlWriteField (
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    void                    *Buffer,
+    UINT32                  BufferLength,
+    UINT32                  ByteLength,
+    UINT32                  DatumLength,
+    UINT32                  BitGranularity,
+    UINT32                  ByteGranularity);
+
+ACPI_STATUS
+AmlSetupField (
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *RgnDesc, 
+    INT32                   FieldBitWidth);
+
+ACPI_STATUS
+AmlReadFieldData (
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    UINT32                  FieldByteOffset,
+    UINT32                  FieldBitWidth,
+    UINT32                  *Value);
+
+
+
+#include <parser.h> /* Temp */
+
+ACPI_STATUS
+AmlBeginScopeForPass1 (
+    UINT8                   *PcodeAddr, 
+    ACPI_PARSE_STATE        *state,
+    ACPI_GENERIC_OP         *op);
+
+ACPI_STATUS
+AmlEndScopeForPass1 (
+    UINT8                    *PcodeAddr, 
+    ACPI_PARSE_STATE        *state,
+    ACPI_GENERIC_OP         *op);
+
+ACPI_STATUS
+AmlBeginScopeForPass2 (
+    UINT8                   *PcodeAddr, 
+    ACPI_PARSE_STATE        *state,
+    ACPI_GENERIC_OP         *op);
+
+ACPI_STATUS
+AmlEndScopeForPass2 (
+    UINT8                   *PcodeAddr, 
+    ACPI_PARSE_STATE        *state,
+    ACPI_GENERIC_OP         *op);
+
+ACPI_STATUS
+AmlBeginScopeForExecution (
+    UINT8                   *PcodeAddr, 
+    ACPI_PARSE_STATE        *state,
+    ACPI_GENERIC_OP         *op);
+
+ACPI_STATUS
+AmlEndScopeForExecution (
+    UINT8                   *PcodeAddr, 
+    ACPI_PARSE_STATE        *state,
+    ACPI_GENERIC_OP         *op);
+
+
+
+ACPI_STATUS
+AmlCreateOperands (
+    ACPI_PARSE_STATE        *state,
+    ACPI_GENERIC_OP         *op);
+
+
+ACPI_OBJECT_TYPE
+AmlMapDataOpcodeToDataType (
+    UINT32                  Opcode);
+
+ACPI_OBJECT_TYPE 
+PsMapOpcodeToDataType (
+    UINT32                  Opcode);
+
+void
+AmlEnterOperandsIntoNamespace (
+    ACPI_PARSE_STATE        *state,
+    ACPI_GENERIC_OP         *op,
+    ACPI_HANDLE             Region);
+
+
 /*
  * iapi - External interpreter interfaces
  */
@@ -163,7 +276,7 @@ ACPI_STATUS
 AmlAccessNamedField (
     INT32                   Mode, 
     ACPI_HANDLE             NamedField, 
-    UINT8                   *Buffer,
+    void                    *Buffer,
     UINT32                  Length);
 
 ACPI_STATUS
