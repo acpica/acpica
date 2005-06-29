@@ -206,14 +206,14 @@ NsDumpOneObject (
 {
     UINT32                  DownstreamSiblingMask = 0;
     INT32                   LevelTmp;
-    ACPI_OBJECT_TYPE        Type;
     UINT32                  WhichBit;
     NAME_TABLE_ENTRY        *Appendage = NULL;
     NAME_TABLE_ENTRY        *ThisEntry;
-    ACPI_SIZE               Size = 0;
+    UINT32                  Size = 0;
     UINT8                   *Value;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_OBJECT_TYPE        ObjType;
+    ACPI_OBJECT_TYPE        Type;
     UINT32                  DbLevel = (UINT32) Context;
     UINT32                  BytesToDump;
 
