@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -160,7 +160,7 @@ AcpiDsMethodDataInit (
 
     /* Init the method arguments */
 
-    for (i = 0; i < MTH_NUM_ARGS; i++)
+    for (i = 0; i < ACPI_METHOD_NUM_ARGS; i++)
     {
         ACPI_MOVE_UNALIGNED32_TO_32 (&WalkState->Arguments[i].Name,
                                 NAMEOF_ARG_NTE);
@@ -172,7 +172,7 @@ AcpiDsMethodDataInit (
 
     /* Init the method locals */
 
-    for (i = 0; i < MTH_NUM_LOCALS; i++)
+    for (i = 0; i < ACPI_METHOD_NUM_LOCALS; i++)
     {
         ACPI_MOVE_UNALIGNED32_TO_32 (&WalkState->LocalVariables[i].Name,
                                 NAMEOF_LOCAL_NTE);
@@ -212,7 +212,7 @@ AcpiDsMethodDataDeleteAll (
 
     /* Detach the locals */
 
-    for (Index = 0; Index < MTH_NUM_LOCALS; Index++)
+    for (Index = 0; Index < ACPI_METHOD_NUM_LOCALS; Index++)
     {
         if (WalkState->LocalVariables[Index].Object)
         {
@@ -227,7 +227,7 @@ AcpiDsMethodDataDeleteAll (
 
     /* Detach the arguments */
 
-    for (Index = 0; Index < MTH_NUM_ARGS; Index++)
+    for (Index = 0; Index < ACPI_METHOD_NUM_ARGS; Index++)
     {
         if (WalkState->Arguments[Index].Object)
         {
@@ -281,7 +281,7 @@ AcpiDsMethodDataInitArgs (
 
     /* Copy passed parameters into the new method stack frame  */
 
-    while ((Index < MTH_NUM_ARGS) && (Index < MaxParamCount) && Params[Index])
+    while ((Index < ACPI_METHOD_NUM_ARGS) && (Index < MaxParamCount) && Params[Index])
     {
         /*
          * A valid parameter.
@@ -332,10 +332,10 @@ AcpiDsMethodDataGetNode (
     {
     case AML_LOCAL_OP:
 
-        if (Index > MTH_MAX_LOCAL)
+        if (Index > ACPI_METHOD_MAX_LOCAL)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Local index %d is invalid (max %d)\n",
-                Index, MTH_MAX_LOCAL));
+                Index, ACPI_METHOD_MAX_LOCAL));
             return_ACPI_STATUS (AE_AML_INVALID_INDEX);
         }
 
@@ -346,10 +346,10 @@ AcpiDsMethodDataGetNode (
 
     case AML_ARG_OP:
 
-        if (Index > MTH_MAX_ARG)
+        if (Index > ACPI_METHOD_MAX_ARG)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Arg index %d is invalid (max %d)\n",
-                Index, MTH_MAX_ARG));
+                Index, ACPI_METHOD_MAX_ARG));
             return_ACPI_STATUS (AE_AML_INVALID_INDEX);
         }
 
