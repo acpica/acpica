@@ -149,6 +149,9 @@ AcpiInitialize (void)
 
 
     FUNCTION_TRACE ("AcpiInitialize");
+
+    DEBUG_PRINT (ACPI_INFO, ("ACPI Subsystem version %s using the %s\n", 
+                                Gbl_AcpiCaVersion, Gbl_ParserId));
     DEBUG_PRINT (ACPI_INFO, ("Initializing ACPI Subsystem...\n"));
 
 
