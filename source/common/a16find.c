@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.15 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -292,7 +292,7 @@ AfFindRsdp (RSDP_DESCRIPTOR **RSDP)
 
     PTR_OVL_BUILD_PTR (Rove, 0, 0);
 
-    
+
     /* Scan low memory */
 
     do
@@ -309,7 +309,7 @@ AfFindRsdp (RSDP_DESCRIPTOR **RSDP)
             *RSDP = Rove.ptr;
             return (TRUE);
         }
-  
+
         Rove.ovl.base++;
     }
     while (Rove.ovl.base < 0x3F);
@@ -325,7 +325,7 @@ AfFindRsdp (RSDP_DESCRIPTOR **RSDP)
             *RSDP = Rove.ptr;
             return (TRUE);
         }
-  
+
         Rove.ovl.base++;
     }
     while (Rove.ovl.base < 0xFFFF);
@@ -376,11 +376,11 @@ AfRecognizeTable (
     Status = AE_SUPPORT;
     for (i = 1; i < NUM_ACPI_TABLES; i++)       /* Start at one -> Skip RSDP */
     {
-        if (!ACPI_STRNCMP (TableHeader->Signature, 
-                    AcpiGbl_AcpiTableData[i].Signature, 
+        if (!ACPI_STRNCMP (TableHeader->Signature,
+                    AcpiGbl_AcpiTableData[i].Signature,
                     AcpiGbl_AcpiTableData[i].SigLength))
         {
-            AcpiOsPrintf ("Found table [%s] Length 0x%X\n", 
+            AcpiOsPrintf ("Found table [%s] Length 0x%X\n",
                 AcpiGbl_AcpiTableData[i].Signature, (UINT32) TableHeader->Length);
 
             TableType       = i;
@@ -401,7 +401,7 @@ AfRecognizeTable (
      */
     if (Status == AE_SUPPORT)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
             "Unsupported table %s (Type %d) was found and discarded\n",
             AcpiGbl_AcpiTableData[TableType].Name, (UINT32) TableType));
 
@@ -430,7 +430,6 @@ AfRecognizeTable (
     }
 
     TableInfo->Pointer      = *TableGlobalPtr;
-    TableInfo->BasePointer  = *TableGlobalPtr;
 
     CopyExtendedToReal (*TableGlobalPtr, PhysAddr, AcpiTblHeader.Length);
 
@@ -504,7 +503,7 @@ AfGetAllTables (
         TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
         TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Table pointer: %X\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Table pointer: %X\n",
             (UINT32) ACPI_GET_ADDRESS (AcpiGbl_XSDT->TableOffsetEntry[Index])));
 
         Status = AfRecognizeTable (NULL, ACPI_GET_ADDRESS (AcpiGbl_XSDT->TableOffsetEntry[Index]), &TableInfo);
@@ -544,7 +543,7 @@ AfGetAllTables (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "FACS at %p (Phys %8.8X) length %X FADT at%p\n",
                     AcpiGbl_FACS, (UINT32) ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl),
-                    (UINT32) AcpiTblHeader.Length, AcpiGbl_FADT));      
+                    (UINT32) AcpiTblHeader.Length, AcpiGbl_FADT));
     if (AcpiGbl_DbOpt_verbose)
     {
         AcpiUtDumpBuffer ((char *) AcpiGbl_FADT, sizeof (ACPI_TABLE_HEADER), 0, 0);
@@ -581,12 +580,11 @@ AfGetAllTables (
                     (UINT32) AcpiTblHeader.Length, AcpiGbl_FADT);
     if (AcpiGbl_DbOpt_verbose)
     {
-        AcpiUtDumpBuffer ((char *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), 0, 0); 
+        AcpiUtDumpBuffer ((char *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), 0, 0);
     }
 
     TableInfo.Type          = ACPI_TABLE_DSDT;
     TableInfo.Pointer       = (void *) AcpiGbl_DSDT;
-    TableInfo.BasePointer   = (void *) AcpiGbl_DSDT;
     TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
     TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
 
@@ -621,7 +619,7 @@ AfFindDsdt(
     UINT32                  SignatureLength;
     char                    *TableSignature;
 
- 
+
     ACPI_FUNCTION_TRACE ("AfFindDsdt");
 
 
@@ -641,7 +639,7 @@ AfFindDsdt(
         PhysicalAddress = AcpiGbl_RSDP->RsdtPhysicalAddress;
         TableSignature = RSDT_SIG;
         SignatureLength = sizeof (RSDT_SIG) -1;
-  
+
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found ACPI 1.0 RSDP\n"));
     }
     else
@@ -665,7 +663,7 @@ AfFindDsdt(
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RSDT/XSDT at %8.8X\n", (UINT32) PhysicalAddress));
     if (AcpiGbl_DbOpt_verbose)
     {
-        AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, ACPI_UINT32_MAX);   
+        AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, ACPI_UINT32_MAX);
     }
 
     /* Validate the table header */
@@ -684,7 +682,7 @@ AfFindDsdt(
     AcpiGbl_XSDT = (void *) malloc ((size_t) AcpiTblHeader.Length);
     if (!AcpiGbl_XSDT)
     {
-        AcpiOsPrintf ("Could not allocate buffer for RSDT length 0x%X\n", 
+        AcpiOsPrintf ("Could not allocate buffer for RSDT length 0x%X\n",
             (UINT32) AcpiTblHeader.Length);
         return AE_NO_MEMORY;
     }
@@ -692,9 +690,9 @@ AfFindDsdt(
     /* Get the entire RSDT/XSDT */
 
     CopyExtendedToReal (AcpiGbl_XSDT, PhysicalAddress, AcpiTblHeader.Length);
-    AcpiOsPrintf ("%s at %p (Phys %8.8X)\n", 
-        TableSignature, AcpiGbl_XSDT, (UINT32) PhysicalAddress);   
-        
+    AcpiOsPrintf ("%s at %p (Phys %8.8X)\n",
+        TableSignature, AcpiGbl_XSDT, (UINT32) PhysicalAddress);
+   
     if (AcpiGbl_DbOpt_verbose)
     {
         AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, 0);
@@ -705,10 +703,9 @@ AfFindDsdt(
     TableInfo.Pointer       = (ACPI_TABLE_HEADER *) AcpiGbl_XSDT;
     TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
     TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
-    TableInfo.BasePointer   = AcpiGbl_XSDT;
-   
+
     AcpiGbl_RsdtTableCount = AcpiTbGetTableCount (AcpiGbl_RSDP, TableInfo.Pointer);
-   
+
     Status = AcpiTbConvertToXsdt (&TableInfo);
     if (ACPI_FAILURE (Status))
     {
@@ -737,10 +734,10 @@ AfFindDsdt(
 
 ErrorExit:
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Failure during ACPI Table initialization: %s\n", 
+    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Failure during ACPI Table initialization: %s\n",
             AcpiFormatException (Status)));
     return (Status);
 }
 
- 
+
 #endif /* IA16 */
