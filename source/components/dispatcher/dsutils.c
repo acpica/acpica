@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.61 $
+ *              $Revision: 1.63 $
  *
  ******************************************************************************/
 
@@ -528,7 +528,7 @@ AcpiDsCreateOperand (
                  * a missing or null operand!
                  */
                 DEBUG_PRINTP (ACPI_ERROR, ("Missing or null operand, %s\n", 
-                    AcpiUtFormatException (Status)));
+                    AcpiFormatException (Status)));
                 return_ACPI_STATUS (Status);
             }
 
@@ -629,7 +629,7 @@ Cleanup:
     AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
 
     DEBUG_PRINTP (ACPI_ERROR, ("While creating Arg %d - %s\n",
-        (ArgCount + 1), AcpiUtFormatException (Status)));
+        (ArgCount + 1), AcpiFormatException (Status)));
     return_ACPI_STATUS (Status);
 }
 
@@ -729,6 +729,7 @@ AcpiDsMapOpcodeToDataType (
         case AML_BYTE_OP:
         case AML_WORD_OP:
         case AML_DWORD_OP:
+        case AML_QWORD_OP:
 
             DataType = ACPI_TYPE_INTEGER;
             break;
