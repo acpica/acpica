@@ -227,6 +227,7 @@ typedef char                            NATIVE_CHAR;
 #define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
 
 
+#ifdef DEFINE_ALTERNATE_TYPES
 /*
  * Types used only in translated source
  */
@@ -234,7 +235,7 @@ typedef INT32                           s32;
 typedef UINT8                           u8;
 typedef UINT16                          u16;
 typedef UINT32                          u32;
-
+#endif
 /*! [End] no source code translation !*/
 
 
