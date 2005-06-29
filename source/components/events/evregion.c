@@ -177,10 +177,10 @@ EvExecuteRegMethod (
     /*
      *  Set up the parameter objects
      */
-    SpaceID_Obj.Common.Type    = TYPE_Number;
+    SpaceID_Obj.Common.Type    = ACPI_TYPE_Number;
     SpaceID_Obj.Number.Value   = RegionObj->Region.SpaceId;
 
-    Function_Obj.Common.Type   = TYPE_Number;
+    Function_Obj.Common.Type   = ACPI_TYPE_Number;
     Function_Obj.Number.Value  = Function;
 
     /*
@@ -475,8 +475,8 @@ EvAddrHandlerHelper (
      *  that can have address handlers
      */
 
-    if ((ObjEntry->Type != TYPE_Device) &&
-        (ObjEntry->Type != TYPE_Region) &&
+    if ((ObjEntry->Type != ACPI_TYPE_Device) &&
+        (ObjEntry->Type != ACPI_TYPE_Region) &&
         (ObjEntry != Gbl_RootObject))
     {
         return_VALUE ((void *) AE_OK);
@@ -496,7 +496,7 @@ EvAddrHandlerHelper (
     /*
      *  Devices are handled different than regions
      */
-    if (ObjDesc->Common.Type == TYPE_Device)
+    if (ObjDesc->Common.Type == ACPI_TYPE_Device)
     {
         /*
          *  See if this guy has any handlers
@@ -541,7 +541,7 @@ EvAddrHandlerHelper (
     /*
      *  Only here if it was a region
      */
-    ACPI_ASSERT(ObjDesc->Common.Type == TYPE_Region);
+    ACPI_ASSERT(ObjDesc->Common.Type == ACPI_TYPE_Region);
 
     if (ObjDesc->Region.SpaceId != HandlerObj->AddrHandler.SpaceId)
     {
@@ -654,7 +654,7 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
     /*
      *  Find any "_REG" associated with this region definition
      */
-    Status = NsSearchOnly (*RegNamePtr, Nte->Scope, TYPE_Method, &RegEntry, NULL);
+    Status = NsSearchOnly (*RegNamePtr, Nte->Scope, ACPI_TYPE_Method, &RegEntry, NULL);
     if (Status == AE_OK)
     {
         /*
@@ -682,17 +682,17 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
              */
             switch (Nte->Type)
             {
-            case TYPE_Device:
+            case ACPI_TYPE_Device:
 
                 HandlerObj = TmpObj->Device.AddrHandler;
                 break;
 
-            case TYPE_Processor:
+            case ACPI_TYPE_Processor:
 
                 HandlerObj = TmpObj->Processor.AddrHandler;
                 break;
 
-            case TYPE_Thermal:
+            case ACPI_TYPE_Thermal:
 
                 HandlerObj = TmpObj->ThermalZone.AddrHandler;
                 break;
