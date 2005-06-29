@@ -243,13 +243,11 @@ AmlExecStore (
     ACPI_OBJECT_INTERNAL    *DestDesc)
 {
     ACPI_HANDLE             TempHandle;
-    ACPI_STATUS             Status = AE_AML_ERROR;
-    INT32                   Stacked = FALSE;
+    ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 Locked = FALSE;
     ACPI_OBJECT_INTERNAL    *DeleteDestDesc = NULL;
     UINT8                   *Location=NULL;
     UINT32                  Mask;
-
 
 
 
@@ -258,14 +256,20 @@ AmlExecStore (
     DEBUG_PRINT (ACPI_INFO, ("entered AmlExecStore: Val=%p, Dest=%p\n", 
                     ValDesc, DestDesc));
 
+
+    /* Validate parameters */
+
     if (!ValDesc || !DestDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: internal error - null pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Internal error - null pointer\n"));
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    else if (IS_NS_HANDLE (DestDesc))
+    /* Examine the datatype of the DestDesc */
+
+    if (IS_NS_HANDLE (DestDesc))
     {
-        /* Dest is an ACPI_HANDLE */
+        /* Dest is an ACPI_HANDLE, create a new object */
 
         TempHandle = (ACPI_HANDLE) DestDesc;
         DestDesc = CmCreateInternalObject (TYPE_Lvalue);
@@ -275,67 +279,44 @@ AmlExecStore (
             
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
-        else
-        {
-            /* DestDesc is valid */
 
-            DestDesc->Lvalue.OpCode = AML_NameOp;
-            DestDesc->Lvalue.Object = TempHandle;
+        /* Build a new Lvalue wrapper around the handle */
 
-            /* 
-             * Push the descriptor on the object stack temporarily
-             * to protect it from garbage collection
-             */
-
-            Status = AmlObjStackPush ();
-            if (AE_OK != Status)
-            {
-                CmDeleteInternalObject (DestDesc);
-                DestDesc = NULL;
-            }
-            else
-            {
-                AmlObjStackSetValue (STACK_TOP, DestDesc);
-                Stacked = TRUE;
-            }
-        }
+        DestDesc->Lvalue.OpCode = AML_NameOp;
+        DestDesc->Lvalue.Object = TempHandle;
     }
 
     else
     {
         /* DestDesc is not an ACPI_HANDLE  */
 
-        DEBUG_PRINT (ACPI_INFO, 
-                        ("AmlExecStore: Dest is object (not handle) - may be deleted!\n", 
+        DEBUG_PRINT (ACPI_INFO, ("AmlExecStore: Dest is object (not handle) - may be deleted!\n", 
                         DestDesc));
-        Status = AE_OK;
     }
 
-    if ((AE_OK == Status) && 
-        (DestDesc->Type != TYPE_Lvalue))
-    {   
-        /* Store target is not an Lvalue */
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Store target is not an Lvalue [%s]\n",
+    /* Destination object must be of type Lvalue */
+
+    if (DestDesc->Type != TYPE_Lvalue)
+    {   
+        /* Destination is not an Lvalue */
+
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Destination is not an Lvalue [%s]\n",
                         NsTypeNames[DestDesc->Type]));
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
         DUMP_STACK (IMODE_Execute, "AmlExecStore", 2, "target not Lvalue");
 
-        Status = AE_AML_ERROR;
-    }
-
-    if (AE_OK != Status)
-    {
-        return_ACPI_STATUS (Status);   /* TBD: temporary hack */
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
 
-    /* Now examine the opcode */
+    /* Examine the Lvalue opcode */
 
     switch (DestDesc->Lvalue.OpCode)
     {
+
     case AML_NameOp:
 
         /* Storing into a Name */
@@ -347,14 +328,10 @@ AmlExecStore (
 
         case TYPE_Alias:
 
-            DEBUG_PRINT (ACPI_WARN,
-                        ("AmlExecStore/NameOp: Store into %s not implemented\n",
-                        NsTypeNames[NsGetType(TempHandle)]));
-#if 1
-            Status = AE_AML_ERROR;
-#else
-            Status = AE_OK;
-#endif
+            DEBUG_PRINT (ACPI_WARN, ("AmlExecStore/NameOp: Store into %s not implemented\n",
+                            NsTypeNames[NsGetType (TempHandle)]));
+            
+            Status = AE_NOT_IMPLEMENTED;
             DeleteDestDesc = DestDesc;
             break;
 
@@ -390,17 +367,11 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
-                if (Stacked)
-                {
-                    /* Must clear the top of the stack or it will get deleted twice */
-
-                    AmlObjStackClearTop ();
-                }
 
                 DestDesc = NsGetAttachedObject (TempHandle);
                 if (!DestDesc)
                 {
-                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/BankField: internal error: null old-value pointer\n"));
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/BankField: Internal error - null old-value pointer\n"));
                     Status = AE_AML_ERROR;
                 }
             }
@@ -410,7 +381,7 @@ AmlExecStore (
                 (TYPE_BankField != DestDesc->Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        "AmlExecStore/BankField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
 
                 Status = AE_AML_ERROR;
@@ -461,8 +432,8 @@ AmlExecStore (
 
             else if (ValDesc->Type != TYPE_Number)
             {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore/DefField: Value assigned to Field must be Number, not %d\n",
+                DEBUG_PRINT (ACPI_ERROR, 
+                        ("AmlExecStore/DefField: Value assigned to Field must be Number, not %d\n",
                         ValDesc->Type));
 
                 DeleteDestDesc = DestDesc;
@@ -477,17 +448,11 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
-                if (Stacked)
-                {
-                    /* Must clear the top of the stack or it will get deleted twice */
-
-                    AmlObjStackClearTop ();
-                }
 
                 DestDesc = NsGetAttachedObject (TempHandle);
                 if (!DestDesc)
                 {
-                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/DefField: internal error: null old-value pointer\n"));
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/DefField: Internal error - null old-value pointer\n"));
                     Status = AE_AML_ERROR;
                 }
             }
@@ -496,7 +461,7 @@ AmlExecStore (
                 (TYPE_DefField != DestDesc->Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        "AmlExecStore/DefField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
 
                 Status = AE_AML_ERROR;
@@ -547,17 +512,12 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
-                if (Stacked)
-                {
-                    /* Must clear the top of the stack or it will get deleted twice */
-
-                    AmlObjStackClearTop ();
-                }
 
                 DestDesc = NsGetAttachedObject (TempHandle);
                 if (!DestDesc)
                 {
-                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/IndexField: internal error: null old-value pointer\n"));
+                    DEBUG_PRINT (ACPI_ERROR, 
+                        ("AmlExecStore/IndexField: Internal error - null old-value pointer\n"));
                     Status = AE_AML_ERROR;
                 }
             }
@@ -565,8 +525,8 @@ AmlExecStore (
             if ((AE_OK == Status) &&
                 (TYPE_IndexField != DestDesc->Type))
             {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                DEBUG_PRINT (ACPI_ERROR, 
+                        ("AmlExecStore/IndexField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
 
                 Status = AE_AML_ERROR;
@@ -631,17 +591,11 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
-                if (Stacked)
-                {
-                    /* Must clear the top of the stack or it will get deleted twice */
-
-                    AmlObjStackClearTop ();
-                }
 
                 DestDesc = NsGetAttachedObject (TempHandle);
                 if (!DestDesc)
                 {
-                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: internal error: null old-value pointer\n"));
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: Internal error - null old-value pointer\n"));
                     Status = AE_AML_ERROR;
                 }
 
@@ -696,7 +650,7 @@ AmlExecStore (
             if ((AE_OK == Status) &&
                 (DestDesc->FieldUnit.Length + DestDesc->FieldUnit.BitOffset > 32))
             {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: implementation limitation: Field exceeds UINT32\n"));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: Implementation limitation - Field exceeds UINT32\n"));
                 Status = AE_AML_ERROR;
             }
             
@@ -762,15 +716,6 @@ AmlExecStore (
 
 
             NsAttachObject (TempHandle, DestDesc, DestDesc->Type);
-
-            if (Stacked)
-            {
-                NsDumpPathname (TempHandle, "AmlExecStore: set ", ACPI_INFO, _COMPONENT);
-
-                DUMP_ENTRY (TempHandle);
-                DUMP_STACK_ENTRY (DestDesc);
-            }
-
             break;
         }
 
@@ -792,7 +737,7 @@ AmlExecStore (
     case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
         Status = AmlMthStackSetValue (MTH_TYPE_LOCAL, (DestDesc->Lvalue.OpCode - AML_Local0),
-                    ValDesc, DestDesc);
+                                        ValDesc, DestDesc);
         break;
 
 
@@ -800,7 +745,7 @@ AmlExecStore (
     case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
         Status = AmlMthStackSetValue (MTH_TYPE_ARG, (DestDesc->Lvalue.OpCode - AML_Arg0), 
-                    ValDesc, DestDesc);
+                                        ValDesc, DestDesc);
         break;
 
 
@@ -823,7 +768,7 @@ AmlExecStore (
 
     default:
         DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlExecStore:internal error: Unknown Lvalue subtype %02x\n",
+                    ("AmlExecStore: Internal error - Unknown Lvalue subtype %02x\n",
                     DestDesc->Lvalue.OpCode));
         
         /* TBD:  use object dump routine !! */
@@ -845,23 +790,6 @@ AmlExecStore (
     if (DeleteDestDesc)
     {
         CmDeleteInternalObject (DeleteDestDesc);
-        if (AmlObjStackGetValue (STACK_TOP) == DeleteDestDesc)
-        {
-            /* 
-             * Clear the object from the stack entry so that it won't be used
-             * again -- but don't actually pop the stack!
-             */
-
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore - Deleted desc was at stack top %p (idx %d)\n",
-                            AmlObjStackGetTopPtr (), AmlObjStackLevel ()));
-            
-            AmlObjStackClearTop ();
-        }
-    }
-
-    if (Stacked)
-    {
-        AmlObjStackPop (1);
     }
 
     return_ACPI_STATUS (Status);
