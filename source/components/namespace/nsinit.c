@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -479,7 +479,7 @@ AcpiNsInitOneDevice (
         {
             /* Ignore error and move on to next device */
 
-    #ifdef ACPI_DEBUG
+    #ifdef ACPI_DEBUG_OUTPUT
             NATIVE_CHAR *ScopeName = AcpiNsGetExternalPathname (ObjHandle);
 
             ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
