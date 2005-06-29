@@ -147,7 +147,7 @@ AcpiEnable (void)
         /* TBD: verify input file specified */
 
         DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported!\n"));
-        FUNCTION_EXIT;;
+        FUNCTION_EXIT;
         return AE_ERROR;
     }
 
@@ -158,9 +158,20 @@ AcpiEnable (void)
         /* Unable to install SCI handler */
 
         DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler"));
-        FUNCTION_EXIT;;
+        FUNCTION_EXIT;
         return AE_ERROR;
     }
+    
+    if (EvGpeInitialize () != AE_OK)
+    {
+        /* Unable to initialize GPEs. */
+        
+        DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize general purpose events.\n"));
+        FUNCTION_EXIT;
+        return AE_ERROR;
+    }
+    
+    EvInitGpeControlMethods ();
 
     /*  SCI Interrupt Handler installed properly    */
 
