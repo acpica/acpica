@@ -128,8 +128,8 @@
         MODULE_NAME         ("aeexec")
 
 
-ACPI_GENERIC_OP             *AcpiGbl_ParsedNamespaceRoot;
-ACPI_GENERIC_OP             *root;
+ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
+ACPI_PARSE_OBJECT           *root;
 UINT8                       *AmlPtr;
 UINT32                      AcpiAmlLength;
 UINT8                       *DsdtPtr;
@@ -198,7 +198,7 @@ RegionHandler (
     void                        *RegionContext)
 {
 
-    ACPI_OBJECT_INTERNAL    *RegionObject = (ACPI_OBJECT_INTERNAL *)RegionContext;
+    ACPI_OPERAND_OBJECT     *RegionObject = (ACPI_OPERAND_OBJECT*)RegionContext;
     UINT32                  BaseAddress;
     UINT32                  Length;
     BOOLEAN                 BufferExists;
@@ -467,12 +467,12 @@ AeInstallHandlers (void)
 
     for (i = 0; i < 3; i++)
     {
-        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootObject, i, RegionHandler);
+        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode, i, RegionHandler);
 
         /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
-        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootObject, i, RegionHandler, RegionInit, NULL);
+        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode, i, RegionHandler, RegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");
@@ -504,12 +504,12 @@ AeInstallHandlers (void)
 
 ACPI_STATUS
 AdSecondPassParse (
-    ACPI_GENERIC_OP         *Root)
+    ACPI_PARSE_OBJECT       *Root)
 {
-    ACPI_GENERIC_OP         *Op = Root;
-    ACPI_EXTENDED_OP        *Method;
-    ACPI_GENERIC_OP         *SearchOp;
-    ACPI_GENERIC_OP         *StartOp;
+    ACPI_PARSE_OBJECT       *Op = Root;
+    ACPI_PARSE2_OBJECT      *Method;
+    ACPI_PARSE_OBJECT       *SearchOp;
+    ACPI_PARSE_OBJECT       *StartOp;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  BaseAmlOffset;
 
@@ -522,7 +522,7 @@ AdSecondPassParse (
 
         if (Op->Opcode == AML_METHOD_OP)
         {
-            Method = (ACPI_EXTENDED_OP *) Op;
+            Method = (ACPI_PARSE2_OBJECT *) Op;
             Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
                         NULL, NULL, NULL, NULL, NULL);
 
@@ -543,7 +543,7 @@ AdSecondPassParse (
         {
             /* TBD: this isn't quite the right thing to do! */
 
-            // Method = (ACPI_EXTENDED_OP *) Op;
+            // Method = (ACPI_PARSE2_OBJECT *) Op;
             // Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength);
         }
 
