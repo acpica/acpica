@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.151 $
+ *       $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -436,24 +436,6 @@
 #define ACPI_MASK_BITS_BELOW(position)       ((ACPI_INTEGER_MAX) << ((UINT32) (position)))
 
 #define ACPI_IS_OCTAL_DIGIT(d)               (((char)(d) >= '0') && ((char)(d) <= '7'))
-
-/* Macros for GAS addressing */
-
-#if ACPI_MACHINE_WIDTH != 16
-
-#define ACPI_PCI_DEVICE(a)              (UINT16) ((ACPI_HIDWORD ((a))) & 0x0000FFFF)
-#define ACPI_PCI_FUNCTION(a)            (UINT16) ((ACPI_LODWORD ((a))) >> 16)
-#define ACPI_PCI_REGISTER(a)            (UINT16) ((ACPI_LODWORD ((a))) & 0x0000FFFF)
-
-#else
-
-/* No support for GAS and PCI IDs in 16-bit mode  */
-
-#define ACPI_PCI_FUNCTION(a)            (UINT16) ((a) & 0xFFFF0000)
-#define ACPI_PCI_DEVICE(a)              (UINT16) ((a) & 0x0000FFFF)
-#define ACPI_PCI_REGISTER(a)            (UINT16) ((a) & 0x0000FFFF)
-
-#endif
 
 
 /* Bitfields within ACPI registers */
