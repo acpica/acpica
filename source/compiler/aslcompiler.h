@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -202,6 +202,7 @@ typedef struct asl_analysis_walk_info
 #define NODE_IS_RESOURCE_FIELD      0x10
 #define NODE_HAS_NO_EXIT            0x20
 #define NODE_IF_HAS_NO_EXIT         0x40
+#define NODE_NAME_INTERNALIZED      0x80
 
 #define ASL_WALK_VISIT_DOWNWARD     0x01
 #define ASL_WALK_VISIT_UPWARD       0x02
@@ -243,6 +244,7 @@ typedef struct asl_parse_node
     union asl_node_value    Value;
     char                    *ExternalName;
     char                    *Namepath;
+    UINT32                  StartLineNumber;
     UINT32                  LineNumber;
     UINT32                  LogicalLineNumber;
     UINT16                  AmlOpcode;
@@ -265,6 +267,18 @@ typedef struct asl_walk_info
 
 } ASL_WALK_INFO;
 
+
+typedef struct asl_error_msg
+{   
+    UINT32                  LineNumber;
+    UINT32                  LogicalLineNumber;
+    UINT32                  Column;
+    char                    *Message;
+    struct asl_error_msg    *Next;
+    UINT8                   MessageId;
+    UINT8                   Level;
+
+} ASL_ERROR_MSG;
 
 typedef
 void (*ASL_WALK_CALLBACK) (
@@ -307,6 +321,12 @@ EXTERN int                      INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
 EXTERN char                     Gbl_CurrentLineBuffer[ASL_LINE_BUFFER_SIZE];
 EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
 
+/* Exception reporting */
+
+EXTERN ASL_ERROR_MSG            INIT_GLOBAL (*AslGbl_ErrorLog,NULL);
+EXTERN ASL_ERROR_MSG            INIT_GLOBAL (*AslGbl_NextError,NULL);
+UINT32                          AslGbl_ExceptionCount[2];
+
 /* Option flags */
 
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_UseDefaultAmlFilename, TRUE);
@@ -341,8 +361,6 @@ EXTERN UINT32                   INIT_GLOBAL (Gbl_InputByteCount, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
-EXTERN UINT32                   INIT_GLOBAL (ErrorCount, 0);
-EXTERN UINT32                   INIT_GLOBAL (WarningCount, 0);
 
 /* Misc */
 
@@ -354,42 +372,45 @@ EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
 
 
 
-#define ASL_ERROR_PREFIX        1000
-#define ASL_WARNING_PREFIX      2000
+#define ASL_ERROR               0
+#define ASL_WARNING             1
+
+
 
 typedef enum 
 {
-    ASL_WARNING_BUFFER_LENGTH = 0,
-    ASL_WARNING_PACKAGE_LENGTH,
-    ASL_WARNING_RETURN_TYPES,
-    ASL_WARNING_NOT_FOUND,
-    ASL_WARNING_NESTED_COMMENT,
-    ASL_WARNING_RESERVED_ARG_COUNT,
-    ASL_WARNING_RESERVED_RETURN_VALUE
+    ASL_MSG_MEMORY_ALLOCATION = 0,
+    ASL_MSG_INPUT_FILE_OPEN,
+    ASL_MSG_OUTPUT_FILENAME,
+    ASL_MSG_OUTPUT_FILE_OPEN,
+    ASL_MSG_LISTING_FILENAME,
+    ASL_MSG_LISTING_FILE_OPEN,
+    ASL_MSG_DEBUG_FILENAME,
+    ASL_MSG_DEBUG_FILE_OPEN,
+    ASL_MSG_INCLUDE_FILE_OPEN,
+    ASL_MSG_ENCODING_LENGTH,
+    ASL_MSG_INVALID_PRIORITY,
+    ASL_MSG_INVALID_PERFORMANCE,
+    ASL_MSG_LOCAL_INIT,
+    ASL_MSG_ARG_INVALID,
+    ASL_MSG_UNSUPPORTED,
+    ASL_MSG_RESERVED_WORD,
+    ASL_MSG_BUFFER_LENGTH,
+    ASL_MSG_PACKAGE_LENGTH,
+    ASL_MSG_RETURN_TYPES,
+    ASL_MSG_NOT_FOUND,
+    ASL_MSG_NESTED_COMMENT,
+    ASL_MSG_RESERVED_ARG_COUNT,
+    ASL_MSG_RESERVED_RETURN_VALUE,
 
-} ASL_WARNING_IDS;
+} ASL_MESSAGE_IDS;
 
-typedef enum 
-{
-    ASL_ERROR_MEMORY_ALLOCATION = 0,
-    ASL_ERROR_INPUT_FILE_OPEN,
-    ASL_ERROR_OUTPUT_FILENAME,
-    ASL_ERROR_OUTPUT_FILE_OPEN,
-    ASL_ERROR_LISTING_FILENAME,
-    ASL_ERROR_LISTING_FILE_OPEN,
-    ASL_ERROR_DEBUG_FILENAME,
-    ASL_ERROR_DEBUG_FILE_OPEN,
-    ASL_ERROR_INCLUDE_FILE_OPEN,
-    ASL_ERROR_ENCODING_LENGTH,
-    ASL_ERROR_INVALID_PRIORITY,
-    ASL_ERROR_INVALID_PERFORMANCE,
-    ASL_ERROR_LOCAL_INIT,
-    ASL_ERROR_ARG_INVALID,
-    ASL_ERROR_UNSUPPORTED,
-    ASL_ERROR_RESERVED_WORD,
 
-} ASL_ERROR_IDS;
+/* aslmain */
 
+void
+AslCompilerSignon (
+    FILE                    *Where);
 
 
 void
@@ -422,27 +443,34 @@ void
 ErrorContext (void);
 
 
-void
-AslWarning (
-    UINT32                  WarningId,
-    UINT32                  LineNumber);
-
-void
-AslWarningMsg (
-    UINT32                  WarningId,
-    UINT32                  LineNumber,
-    char                    *Message);
+/* aslerror */
 
 void
 AslError (
-    UINT32                  ErrorId,
-    UINT32                  LineNumber);
+    UINT8                   Level,
+    UINT8                   MessageId,
+    ASL_PARSE_NODE          *Node,
+    char                    *ExtraMessage);
 
 void
-AslErrorMsg (
-    UINT32                  ErrorId,
-    UINT32                  LineNumber,
-    char                    *Message);
+AslCommonError (
+    UINT8                   Level,
+    UINT8                   MessageId,
+    UINT32                  CurrentLineNumber,
+    UINT32                  LogicalLineNumber,
+    char                    *ExtraMessage);
+
+void
+AePrintException (
+    FILE                    *Where,
+    ASL_ERROR_MSG           *Enode);
+
+void
+AePrintErrorLog (
+    FILE                    *Where);
+
+
+
 
 UINT32
 CgSetOptimalIntegerSize (
@@ -516,6 +544,10 @@ CgDoResourceTemplate (
     ASL_PARSE_NODE          *Node);
 
 
+
+
+/* asltree */
+
 void
 TgWalkParseTree (
     UINT32                  Visitation,
@@ -529,42 +561,46 @@ TgAddNode (
     void                    *Thing);
 
 ASL_PARSE_NODE *
-_TgUpdateNode (
+TgUpdateNode (
     UINT32                  ParseOpcode,
     ASL_PARSE_NODE          *Node);
 
-char *
+ASL_PARSE_NODE *
 TgCreateNode (
     UINT32                  ParseOpcode,
     UINT32                  NumChildren,
     ...);
 
-char *
-TgCreateLeafNode (  
+ASL_PARSE_NODE *
+TgCreateLeafNode (
+    UINT32                  ParseOpcode);
+
+ASL_PARSE_NODE *
+TgCreateValuedLeafNode (
     UINT32                  ParseOpcode,
     void                    *Value);
+
+ASL_PARSE_NODE *
+TgLinkChildren (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  NumChildren,
+    ...);
 
 void
 TgWalkTree (void);
 
-
-#define TgLinkPeerNode(a,b)      (char *)_TgLinkPeerNode ((ASL_PARSE_NODE *)(a),(ASL_PARSE_NODE *)(b))
-#define TgLinkChildNode(a,b)     (char *)_TgLinkChildNode ((ASL_PARSE_NODE *)(a),(ASL_PARSE_NODE *)(b))
-#define TgUpdateNode(a,b)        (char *)_TgUpdateNode (a,(ASL_PARSE_NODE *)(b))
-#define TgSetNodeFlags(a,b)      (char *)_TgSetNodeFlags ((ASL_PARSE_NODE *)(a),(b))
-
 ASL_PARSE_NODE *
-_TgLinkPeerNode (
+TgLinkPeerNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2);
 
 ASL_PARSE_NODE *
-_TgLinkChildNode (
+TgLinkChildNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2);
 
 ASL_PARSE_NODE *
-_TgSetNodeFlags (
+TgSetNodeFlags (
     ASL_PARSE_NODE          *Node,
     UINT32                  Flags);
 

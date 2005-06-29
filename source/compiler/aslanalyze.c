@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -298,12 +298,12 @@ AnCheckForReservedMethod (
 
             if (MethodInfo->NumArguments != ReservedMethods[i].NumArguments)
             {
-                sprintf (MsgBuffer, "%s(%d) not %d", 
+                sprintf (MsgBuffer, "\n%32s requires %d arg(s) not %d", 
                             ReservedMethods[i].Name,
                             ReservedMethods[i].NumArguments, 
                             MethodInfo->NumArguments);
 
-                AslWarningMsg (ASL_WARNING_RESERVED_ARG_COUNT, Node->LineNumber, MsgBuffer);
+                AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT, Node, MsgBuffer);
             }
 
             if (MethodInfo->NumReturnNoValue &&
@@ -312,7 +312,7 @@ AnCheckForReservedMethod (
                 sprintf (MsgBuffer, "%s", 
                             ReservedMethods[i].Name);
 
-                AslWarningMsg (ASL_WARNING_RESERVED_RETURN_VALUE, Node->LineNumber, MsgBuffer);
+                AslError (ASL_WARNING, ASL_MSG_RESERVED_RETURN_VALUE, Node, MsgBuffer);
             }
 
             return;
@@ -339,12 +339,12 @@ AnCheckForReservedMethod (
             (isxdigit (Node->ExternalName[3])) &&
             (MethodInfo->NumArguments != 0))
         {
-            sprintf (MsgBuffer, "%s(%d) not %d", 
+            sprintf (MsgBuffer, "\n%32s requires %d arg(s) not %d", 
                         Node->ExternalName,
                         0, 
                         MethodInfo->NumArguments);
 
-            AslWarningMsg (ASL_WARNING_RESERVED_ARG_COUNT, Node->LineNumber, MsgBuffer);
+            AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT, Node, MsgBuffer);
         }
 
         return;
@@ -356,7 +356,7 @@ AnCheckForReservedMethod (
     if ((Node->ExternalName[1] == 'T') &&
         (Node->ExternalName[2] == '_'))
     {
-        AslErrorMsg (ASL_ERROR_RESERVED_WORD, Node->LineNumber, Node->ExternalName);
+        AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Node, Node->ExternalName);
     }
 }
 
@@ -438,7 +438,7 @@ AnSemanticAnalysisWalkBegin (
             if (!MethodInfo->LocalInitialized[RegisterNumber])
             {
                 LocalName[strlen (LocalName) -1] = RegisterNumber + 0x30;
-                AslErrorMsg (ASL_ERROR_LOCAL_INIT, Node->LineNumber, LocalName);
+                AslError (ASL_ERROR, ASL_MSG_LOCAL_INIT, Node, LocalName);
             }
         }
         break;
@@ -457,7 +457,7 @@ AnSemanticAnalysisWalkBegin (
         if (RegisterNumber >= MethodInfo->NumArguments)
         {
             ArgName[strlen (ArgName) -1] = RegisterNumber + 0x30;
-            AslErrorMsg (ASL_ERROR_ARG_INVALID, Node->LineNumber, ArgName);
+            AslError (ASL_ERROR, ASL_MSG_ARG_INVALID, Node, ArgName);
         }
         if (Node->Flags & NODE_IS_TARGET)
         {
@@ -598,7 +598,7 @@ AnSemanticAnalysisWalkEnd (
         if (MethodInfo->NumReturnNoValue &&
             MethodInfo->NumReturnWithValue)
         {
-            AslWarningMsg (ASL_WARNING_RETURN_TYPES, Node->LineNumber, Node->ExternalName);
+            AslError (ASL_WARNING, ASL_MSG_RETURN_TYPES, Node, Node->ExternalName);
         }
 
 

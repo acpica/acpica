@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.10 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -117,8 +117,7 @@
  *****************************************************************************/
 
 #define YYDEBUG 1
-#define YYERROR_VERBOSE
-
+#define YYERROR_VERBOSE 1
 
 /*
  * State stack - compiler will fault if it overflows.   (Default was 200)
@@ -140,6 +139,25 @@ extern char     *AslCompilertext;
  * we can access some of the parser tables from other modules
  */
 #define static
+#undef alloca
+#define alloca      AslLocalAllocate
+#define YYERROR_VERBOSE     1
+
+void *
+AslLocalAllocate (unsigned int Size);
+
+/*
+ * The windows version of bison defines this incorrectly as "32768" (Not negative).
+ * Using a custom (edited binary) version of bison that defines YYFLAG as YYFBAD
+ * instead (#define	YYFBAD		32768), so we can define it correctly here.
+ *
+ * The problem is that if YYFLAG is positive, the extended syntax error messages
+ * are disabled.
+ */
+
+#define YYFLAG              0
+
+
 %}
 
 
@@ -151,7 +169,7 @@ extern char     *AslCompilertext;
 	int             i;
 	long            l;
 	char            *s;
-	char            *n;
+	ASL_PARSE_NODE  *n;
 }
 
 /*
@@ -190,7 +208,6 @@ extern char     *AslCompilertext;
 %token <i> BANKFIELD
 %token <i> BREAK
 %token <i> BREAKPOINT
-%token <i> BUFF
 %token <i> BUFFER
 %token <i> BUSMASTERTYPE_MASTER
 %token <i> BUSMASTERTYPE_NOTMASTER
@@ -212,7 +229,6 @@ extern char     *AslCompilertext;
 %token <i> DECODETYPE_POS
 %token <i> DECODETYPE_SUB
 %token <i> DECREMENT
-%token <i> DECSTR
 %token <i> DEFAULT
 %token <i> DEFAULT_ARG
 %token <i> DEFINITIONBLOCK
@@ -239,13 +255,12 @@ extern char     *AslCompilertext;
 %token <i> FINDSETRIGHTBIT
 %token <i> FIXEDIO
 %token <i> FROMBCD
-%token <i> HEXSTR
 %token <i> IF
 %token <i> INCLUDE
+%token <i> INCLUDE_CSTYLE
 %token <i> INCREMENT
 %token <i> INDEX
 %token <i> INDEXFIELD
-%token <i> INT
 %token <i> INTEGER
 %token <i> INTERRUPT
 %token <i> INTLEVEL_ACTIVEHIGH
@@ -379,6 +394,10 @@ extern char     *AslCompilertext;
 %token <i> SWITCH
 %token <i> THERMALZONE
 %token <i> TOBCD
+%token <i> TOBUFFER
+%token <i> TODECIMALSTRING
+%token <i> TOHEXSTRING
+%token <i> TOINTEGER
 %token <i> TRANSLATIONTYPE_DENSE
 %token <i> TRANSLATIONTYPE_SPARSE
 %token <i> TYPE_STATIC
@@ -419,7 +438,7 @@ extern char     *AslCompilertext;
 %type <n> BufferData
 %type <n> PackageData
 %type <n> IntegerData
-%type <s> StringData
+%type <n> StringData
 %type <n> NamedObject
 %type <n> NameSpaceModifier
 %type <n> UserTerm
@@ -437,6 +456,7 @@ extern char     *AslCompilertext;
 
 
 %type <n> IncludeTerm
+%type <n> IncludeCStyleTerm
 %type <n> ExternalTerm
 
 %type <n> FieldUnitList
@@ -510,23 +530,19 @@ extern char     *AslCompilertext;
 %type <n> AcquireTerm
 %type <n> AddTerm
 %type <n> AndTerm
-%type <n> BuffTerm
 %type <n> ConcatTerm
 %type <n> ConcatResTerm
 %type <n> CondRefOfTerm
 %type <n> CopyTerm
 %type <n> CopyTarget
 %type <n> DecTerm
-%type <n> DecStrTerm
 %type <n> DerefOfTerm
 %type <n> DivideTerm
 %type <n> FindSetLeftBitTerm
 %type <n> FindSetRightBitTerm
 %type <n> FromBCDTerm
-%type <n> HexStrTerm
 %type <n> IncTerm
 %type <n> IndexTerm
-%type <n> IntTerm
 %type <n> LAndTerm
 %type <n> LEqualTerm
 %type <n> LGreaterTerm
@@ -554,6 +570,10 @@ extern char     *AslCompilertext;
 %type <n> StringTerm
 %type <n> SubtractTerm
 %type <n> ToBCDTerm
+%type <n> ToBufferTerm
+%type <n> ToDecimalStringTerm
+%type <n> ToHexStringTerm
+%type <n> ToIntegerTerm
 %type <n> WaitTerm
 %type <n> XOrTerm
 
@@ -663,8 +683,8 @@ extern char     *AslCompilertext;
 %type <n> DDBHandle
 
 
-%type <s> NameString
-%type <s> NameSeg
+%type <n> NameString
+%type <n> NameSeg
 
 
 /* Local types that help construct the AML, not in ACPI spec */
@@ -686,6 +706,7 @@ extern char     *AslCompilertext;
 %type <n> OptionalTranslationType
 %type <n> OptionalStringData 
 %type <n> OptionalNameString 
+%type <n> OptionalNameString_First 
 %type <n> OptionalAddressRange
 
 %%
@@ -712,7 +733,7 @@ ASLCode
     ;
 
 DefinitionBlockTerm
-    : DEFINITIONBLOCK '(' 
+    : DEFINITIONBLOCK '('       {$$ = TgCreateLeafNode (DEFINITIONBLOCK)}
         String ','
         String ','
         ByteConst ','
@@ -720,12 +741,12 @@ DefinitionBlockTerm
         String ','
         DwordConst
         ')' '{' TermList '}' 
-                                {$$ = TgCreateNode (DEFINITIONBLOCK,7,$3,$5,$7,$9,$11,$13,$16);}
+                                {$$ = TgLinkChildren ($<n>3,7,$4,$6,$8,$10,$12,$14,$17)}
     ;
 
 TermList
     :                           {$$ = NULL}
-    | Term TermList             {$$ = TgLinkPeerNode ($1,$2);}
+    | Term TermList             {$$ = TgLinkPeerNode ($1,$2)}
     ;
 
 Term
@@ -737,12 +758,13 @@ Term
 
 CompilerDirective
     : IncludeTerm               {}
+    | IncludeCStyleTerm         {$$= NULL}
     | ExternalTerm              {}
     ;
 
 ObjectList
     :                           {$$ = NULL}
-    | Object ObjectList         {$$ = TgLinkPeerNode ($1,$2);}
+    | Object ObjectList         {$$ = TgLinkPeerNode ($1,$2)}
     ;
 
 Object
@@ -819,18 +841,18 @@ NameSpaceModifier
 
 UserTerm
     : NameString '(' 
-        ArgList ')'             {$$ = TgLinkChildNode ($1,$3);}
+        ArgList ')'             {$$ = TgLinkChildNode ($1,$3)}
     ;
 
 ArgList
     :                           {$$ = NULL}
-    | TermArg ArgListTail       {$$ = TgLinkPeerNode ($1,$2);}
+    | TermArg ArgListTail       {$$ = TgLinkPeerNode ($1,$2)}
     ;
 
 ArgListTail
     :                           {$$ = NULL}
     | ','                       {$$ = NULL}   /* Allows a trailing comma at list end */
-    | ',' TermArg ArgListTail   {$$ = TgLinkPeerNode ($2,$3);}
+    | ',' TermArg ArgListTail   {$$ = TgLinkPeerNode ($2,$3)}
     ;
 
 TermArg
@@ -842,9 +864,10 @@ TermArg
     ;
 
 Target 
-    :                           {$$ = TgCreateLeafNode (ZERO, NULL);}       /* Placeholder is a ZeroOp object */
-    | ','                       {$$ = TgCreateLeafNode (ZERO, NULL);}       /* Placeholder is a ZeroOp object */
-    | ',' SuperName             {$$ = TgSetNodeFlags ($2, NODE_IS_TARGET);}
+    :                           {$$ = TgCreateLeafNode (ZERO)}       /* Placeholder is a ZeroOp object */
+    | ','                       {$$ = TgCreateLeafNode (ZERO)}       /* Placeholder is a ZeroOp object */
+    | ',' SuperName             {$$ = TgSetNodeFlags ($2, NODE_IS_TARGET)}
+    | error                     {$$= NULL}
     ;
 
 
@@ -874,22 +897,18 @@ Type2Opcode
     : AcquireTerm               {}
     | AddTerm                   {}
     | AndTerm                   {}
-    | BuffTerm                  {}
     | ConcatTerm                {}
     | ConcatResTerm             {}
     | CondRefOfTerm             {}
     | CopyTerm                  {}
     | DecTerm                   {}
-    | DecStrTerm                {}
     | DerefOfTerm               {}
     | DivideTerm                {}
     | FindSetLeftBitTerm        {}
     | FindSetRightBitTerm       {}
     | FromBCDTerm               {}
-    | HexStrTerm                {}
     | IncTerm                   {}
     | IndexTerm                 {}
-    | IntTerm                   {}
     | LAndTerm                  {}
     | LEqualTerm                {}
     | LGreaterTerm              {}
@@ -917,6 +936,10 @@ Type2Opcode
     | StringTerm                {}
     | SubtractTerm              {}
     | ToBCDTerm                 {}
+    | ToBufferTerm              {}
+    | ToDecimalStringTerm       {}
+    | ToHexStringTerm           {}
+    | ToIntegerTerm             {}
     | WaitTerm                  {}
     | XOrTerm                   {}
     | UserTerm                  {}
@@ -938,7 +961,6 @@ Type3Opcode
     | FromBCDTerm               {}
     | IncTerm                   {}
     | IndexTerm                 {}
-    | IntTerm                   {}
     | LAndTerm                  {}
     | LEqualTerm                {}
     | LGreaterTerm              {}
@@ -959,19 +981,20 @@ Type3Opcode
     | ShiftRightTerm            {} 
     | SubtractTerm              {}
     | ToBCDTerm                 {}
+    | ToIntegerTerm             {}
     | XOrTerm                   {}
     ;
 
 Type4Opcode
     : ConcatTerm                {}
-    | DecStrTerm                {}
-    | HexStrTerm                {}
+    | ToDecimalStringTerm       {}
+    | ToHexStringTerm           {}
     | MidTerm                   {}
     | StringTerm                {}
     ;
 
 Type5Opcode
-    : BuffTerm                  {}
+    : ToBufferTerm              {}
     | ConcatTerm                {}
     | ConcatResTerm             {}
     | MidTerm                   {}
@@ -988,14 +1011,21 @@ Type6Opcode
 
 IncludeTerm
     : INCLUDE '(' 
-        String ')'              {}
+        String                  {FlOpenIncludeFile ($3)}
+        ')'
+        TermList                {$$ = $6}                     
+    ;
+
+IncludeCStyleTerm
+    : INCLUDE_CSTYLE
+        String                  {FlOpenIncludeFile ($2)}
     ;
 
 ExternalTerm
     : EXTERNAL '('
         String ','
         ObjectTypeKeyword
-        ')'                     {}
+        ')'                     {$$ = TgCreateNode (EXTERNAL,2,$3,$5)}
     ;
 
 
@@ -1004,7 +1034,7 @@ ExternalTerm
 
 
 BankFieldTerm
-    : BANKFIELD '('
+    : BANKFIELD '('             {$$ = TgCreateLeafNode (BANKFIELD)}
         NameString ','
         NameString ','
         TermArg ','
@@ -1013,20 +1043,20 @@ BankFieldTerm
         UpdateRuleKeyword
         ')' '{' 
             FieldUnitList '}'
-                                {$$ = TgCreateNode (BANKFIELD,7,$3,$5,$7,$9,$11,$13,$16);}
+                                {$$ = TgLinkChildren ($<n>3,7,$4,$6,$8,$10,$12,$14,$17)}
     ;
 
 FieldUnitList
     :                           {$$ = NULL}
     | FieldUnit 
-        FieldUnitListTail       {$$ = TgLinkPeerNode ($1,$2);}
+        FieldUnitListTail       {$$ = TgLinkPeerNode ($1,$2)}
     ;
 
 FieldUnitListTail
     :                           {$$ = NULL}
     | ','                       {$$ = NULL}  /* Allows a trailing comma at list end */
     | ',' FieldUnit 
-            FieldUnitListTail   {$$ = TgLinkPeerNode ($2,$3);}
+            FieldUnitListTail   {$$ = TgLinkPeerNode ($2,$3)}
     ;
 
 FieldUnit
@@ -1036,109 +1066,109 @@ FieldUnit
     ;
 
 FieldUnitEntry
-    : ',' AmlPackageLengthTerm  {$$ = TgCreateNode (RESERVED_BYTES,1,$2);}
+    : ',' AmlPackageLengthTerm  {$$ = TgCreateNode (RESERVED_BYTES,1,$2)}
     | NameSeg ',' 
-        AmlPackageLengthTerm    {$$ = TgLinkChildNode ($1,$3);}
+        AmlPackageLengthTerm    {$$ = TgLinkChildNode ($1,$3)}
     ;
 
 OffsetTerm
     : OFFSET '('
         AmlPackageLengthTerm
-        ')'                     {$$ = TgCreateNode (OFFSET,1,$3);}
+        ')'                     {$$ = TgCreateNode (OFFSET,1,$3)}
     ;
 
 AccessAsTerm
     : ACCESSAS '('
         AccessTypeKeyword
         OptionalAccessAttribTerm
-        ')'                     {$$ = TgCreateNode (ACCESSAS,2,$3,$4);}
+        ')'                     {$$ = TgCreateNode (ACCESSAS,2,$3,$4)}
     ;
 
 CreateBitFieldTerm
-    : CREATEBITFIELD '('
+    : CREATEBITFIELD '('        {$$ = TgCreateLeafNode (CREATEBITFIELD)}
         TermArg ','
         TermArg ','
         NameString 
-        ')'                     {$$ = TgCreateNode (CREATEBITFIELD,3,$3,$5,$7);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$8)}
     ;
 
 CreateByteFieldTerm
-    : CREATEBYTEFIELD '('
+    : CREATEBYTEFIELD '('       {$$ = TgCreateLeafNode (CREATEBYTEFIELD)}
         TermArg ','
         TermArg ','
         NameString 
-        ')'                     {$$ = TgCreateNode (CREATEBYTEFIELD,3,$3,$5,$7);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$8)}
     ;
 
 CreateDWordFieldTerm
-    : CREATEDWORDFIELD '('
+    : CREATEDWORDFIELD '('      {$$ = TgCreateLeafNode (CREATEDWORDFIELD)}
         TermArg ','
         TermArg ','
         NameString 
-        ')'                     {$$ = TgCreateNode (CREATEDWORDFIELD,3,$3,$5,$7);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$8)}
     ;
 
 CreateFieldTerm
-    : CREATEFIELD '('
+    : CREATEFIELD '('           {$$ = TgCreateLeafNode (CREATEFIELD)}
         TermArg ','
         TermArg ','
         TermArg ','
         NameString 
-        ')'                     {$$ = TgCreateNode (CREATEFIELD,4,$3,$5,$7,$9);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,4,$4,$6,$8,$10)}
     ;
 
 CreateQWordFieldTerm
-    : CREATEQWORDFIELD '('
+    : CREATEQWORDFIELD '('      {$$ = TgCreateLeafNode (CREATEQWORDFIELD)}
         TermArg ','
         TermArg ','
         NameString 
-        ')'                     {$$ = TgCreateNode (CREATEQWORDFIELD,3,$3,$5,$7);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$8)}
     ;
 
 CreateWordFieldTerm
-    : CREATEWORDFIELD '('
+    : CREATEWORDFIELD '('       {$$ = TgCreateLeafNode (CREATEWORDFIELD)}
         TermArg ','
         TermArg ','
         NameString 
-        ')'                     {$$ = TgCreateNode (CREATEWORDFIELD,3,$3,$5,$7);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$8)}
     ;
 
 DataRegionTerm
-    : DATATABLEREGION '('
+    : DATATABLEREGION '('       {$$ = TgCreateLeafNode (DATATABLEREGION)}
         NameString ','
         TermArg ','
         TermArg ','
         TermArg 
-        ')'                     {$$ = TgCreateNode (DATATABLEREGION,4,$3,$5,$7,$9);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,4,$4,$6,$8,$10)}
     ;
 
 DeviceTerm
-    : DEVICE '('
+    : DEVICE '('                {$$ = TgCreateLeafNode (DEVICE)}
         NameString
         ')' '{' 
             ObjectList '}' 
-                                {$$ = TgCreateNode (DEVICE,2,$3,$6);}
+                                {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
 
 EventTerm
-    : EVENT '('
+    : EVENT '('                 {$$ = TgCreateLeafNode (EVENT)}
         NameString
-        ')'                     {$$ = TgCreateNode (EVENT,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 FieldTerm
-    : FIELD '('
+    : FIELD '('                 {$$ = TgCreateLeafNode (FIELD)}
         NameString ','
         AccessTypeKeyword ','
         LockRuleKeyword ','
         UpdateRuleKeyword
         ')' '{' 
             FieldUnitList '}' 
-                                {$$ = TgCreateNode (FIELD,5,$3,$5,$7,$9,$12);}
+                                {$$ = TgLinkChildren ($<n>3,5,$4,$6,$8,$10,$13)}
     ;
 
 IndexFieldTerm
-    : INDEXFIELD '('
+    : INDEXFIELD '('            {$$ = TgCreateLeafNode (INDEXFIELD)}
         NameString ','
         NameString ','
         AccessTypeKeyword ','
@@ -1146,33 +1176,33 @@ IndexFieldTerm
         UpdateRuleKeyword
         ')' '{' 
             FieldUnitList '}' 
-                                {$$ = TgCreateNode (INDEXFIELD,6,$3,$5,$7,$9,$11,$14);}
+                                {$$ = TgLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$15)}
     ;
 
 MethodTerm
-    : METHOD '('
+    : METHOD  '('               {$$ = TgCreateLeafNode (METHOD)}
         NameString
         OptionalByteConstExpr
         OptionalSerializeRuleKeyword
         OptionalByteConstExpr
         ')' '{' 
-            TermList '}'        {$$ = TgCreateNode (METHOD,5,$3,$4,$5,$6,$9);}
+            TermList '}'        {$$ = TgLinkChildren ($<n>3,5,$4,$5,$6,$7,$10)}
     ;
 
 MutexTerm
-    : MUTEX '('
+    : MUTEX '('                 {$$ = TgCreateLeafNode (MUTEX)}
         NameString ','
         ByteConstExpr
-        ')'                     {$$ = TgCreateNode (MUTEX,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 OpRegionTerm
-    : OPERATIONREGION '(' 
+    : OPERATIONREGION '('       {$$ = TgCreateLeafNode (OPERATIONREGION)}
         NameString ',' 
         OpRegionSpaceIdTerm ',' 
         TermArg ',' 
         TermArg 
-        ')'                     {$$ = TgCreateNode (OPERATIONREGION,4,$3,$5,$7,$9);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,4,$4,$6,$8,$10)}
     ;
 
 OpRegionSpaceIdTerm
@@ -1181,29 +1211,29 @@ OpRegionSpaceIdTerm
     ;
 
 PowerResTerm
-    : POWERRESOURCE '('
+    : POWERRESOURCE '('         {$$ = TgCreateLeafNode (POWERRESOURCE)}
         NameString ','
         ByteConstExpr ','
         WordConstExpr
         ')' '{' 
-            ObjectList '}'      {$$ = TgCreateNode (POWERRESOURCE,4,$3,$5,$7,$10);}
+            ObjectList '}'      {$$ = TgLinkChildren ($<n>3,4,$4,$6,$8,$11)}
     ;
 
 ProcessorTerm
-    : PROCESSOR '('
+    : PROCESSOR '('             {$$ = TgCreateLeafNode (PROCESSOR)}
         NameString ','
         ByteConstExpr
         OptionalDWordConstExpr
         OptionalByteConstExpr
         ')' '{' 
-            ObjectList '}'      {$$ = TgCreateNode (PROCESSOR,5,$3,$5,$6,$7,$10);}
+            ObjectList '}'      {$$ = TgLinkChildren ($<n>3,5,$4,$6,$7,$8,$11)}
     ;
 
 ThermalZoneTerm
-    : THERMALZONE '('
+    : THERMALZONE '('           {$$ = TgCreateLeafNode (THERMALZONE)}
         NameString
         ')' '{' 
-            ObjectList '}'      {$$ = TgCreateNode (THERMALZONE,2,$3,$6);}
+            ObjectList '}'      {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
 
 
@@ -1212,24 +1242,24 @@ ThermalZoneTerm
 
 
 AliasTerm
-    : ALIAS '('
+    : ALIAS '('                 {$$ = TgCreateLeafNode (ALIAS)}
         NameString ','
         NameString 
-        ')'                     {$$ = TgCreateNode (ALIAS,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 NameTerm
-    : NAME '('
+    : NAME '('                  {$$ = TgCreateLeafNode (NAME)}
         NameString ','
         DataRefObject 
-        ')'                     {$$ = TgCreateNode (NAME,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 ScopeTerm
-    : SCOPE '('
+    : SCOPE '('                 {$$ = TgCreateLeafNode (SCOPE)}
         NameString
         ')' '{' 
-            ObjectList '}'      {$$ = TgCreateNode (SCOPE,2,$3,$6);}
+            ObjectList '}'      {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
 
 
@@ -1238,107 +1268,108 @@ ScopeTerm
 
 
 BreakTerm
-    : BREAK                     {$$ = TgCreateNode (BREAK, 0);}
+    : BREAK                     {$$ = TgCreateNode (BREAK, 0)}
     ;
 
 BreakPointTerm
-    : BREAKPOINT                {$$ = TgCreateNode (BREAKPOINT, 0);}
+    : BREAKPOINT                {$$ = TgCreateNode (BREAKPOINT, 0)}
     ;
 
 ContinueTerm
-    : CONTINUE                  {$$ = TgCreateNode (CONTINUE, 0);}
+    : CONTINUE                  {$$ = TgCreateNode (CONTINUE, 0)}
     ;
 
 FatalTerm
-    : FATAL '('
+    : FATAL '('                 {$$ = TgCreateLeafNode (FATAL)}
         ByteConstExpr ','
         DWordConstExpr ','
         TermArg
-        ')'                     {$$ = TgCreateNode (FATAL,3,$3,$5,$7);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$8)}
     ;
 
 IfElseTerm
-    : IfTerm ElseTerm           {$$ = TgLinkPeerNode ($1,$2);}
+    : IfTerm ElseTerm           {$$ = TgLinkPeerNode ($1,$2)}
     ;
 
 IfTerm 
-    : IF '('
+    : IF '('                    {$$ = TgCreateLeafNode (IF)}
         TermArg
         ')' '{' 
             TermList '}' 
-                                {$$ = TgCreateNode (IF,2,$3,$6);}
+                                {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
 
 ElseTerm
     :                           {$$ = NULL}
-    | ELSE '{' 
+    | ELSE '{'                  {$$ = TgCreateLeafNode (ELSE)}
         TermList '}' 
-                                {$$ = TgCreateNode (ELSE,1,$3);}
-    | ELSEIF '{' 
+                                {$$ = TgLinkChildren ($<n>3,1,$4)}
+
+    | ELSEIF '{'                {$$ = TgCreateLeafNode (ELSEIF)}
         TermList '}' 
         ElseTerm 
-                                {$$ = TgCreateNode (ELSEIF,1,$3);}
+                                {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 LoadTerm
-    : LOAD '('
+    : LOAD '('                  {$$ = TgCreateLeafNode (LOAD)}
         NameString ','
         SuperName 
-        ')'                     {$$ = TgCreateNode (LOAD,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 NoOpTerm
-    : NOOP                      {$$ = TgCreateNode (NOOP, 0);}
+    : NOOP                      {$$ = TgCreateNode (NOOP, 0)}
     ;
 
 NotifyTerm 
-    : NOTIFY '('
+    : NOTIFY '('                {$$ = TgCreateLeafNode (NOTIFY)}
         SuperName ','
         TermArg
-        ')'                     {$$ = TgCreateNode (NOTIFY,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 ReleaseTerm
-    : RELEASE '('
+    : RELEASE '('               {$$ = TgCreateLeafNode (RELEASE)}
         SuperName
-        ')'                     {$$ = TgCreateNode (RELEASE,1,$3);}
-    ;
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
+    
 
 ResetTerm
-    : RESET '('
+    : RESET '('                 {$$ = TgCreateLeafNode (RESET)}
         SuperName
-        ')'                     {$$ = TgCreateNode (RESET,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 ReturnTerm
-    : RETURN '('
-        TermArg
-        ')'                     {$$ = TgCreateNode (RETURN,1,$3);}
+    : RETURN '('                {$$ = TgCreateLeafNode (RETURN)}
+        OptionalTermArg
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 SignalTerm
-    : SIGNAL '('
+    : SIGNAL '('                {$$ = TgCreateLeafNode (SIGNAL)}
         SuperName
-        ')'                     {$$ = TgCreateNode (SIGNAL,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 SleepTerm
-    : SLEEP '('
+    : SLEEP '('                 {$$ = TgCreateLeafNode (SLEEP)}
         TermArg
-        ')'                     {$$ = TgCreateNode (SLEEP,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 StallTerm
-    : STALL '('
+    : STALL '('                 {$$ = TgCreateLeafNode (STALL)}
         TermArg
-        ')'                     {$$ = TgCreateNode (STALL,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 SwitchTerm
-    : SWITCH '('
+    : SWITCH '('                {$$ = TgCreateLeafNode (SWITCH)}
         TermArg
         ')' '{' 
             CaseTermList '}' 
-                                {$$ = TgCreateNode (SWITCH,2,$3,$6);}
+                                {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
 
 CaseTermList
@@ -1358,93 +1389,85 @@ DefaultTermList
     ;
 
 CaseTerm
-    : CASE '('
+    : CASE '('                  {$$ = TgCreateLeafNode (CASE)}
         DataObject
         ')' '{' 
             TermList '}' 
-                                {$$ = TgCreateNode (CASE,2,$3,$6);}
+                                {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
 
 DefaultTerm
-    : DEFAULT 
-        '{' 
+    : DEFAULT '{'               {$$ = TgCreateLeafNode (DEFAULT)}  
         TermList '}' 
-                                {$$ = TgCreateNode (DEFAULT,1,$3);}
+                                {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 UnloadTerm
-    : UNLOAD '('
+    : UNLOAD '('                {$$ = TgCreateLeafNode (UNLOAD)}  
         SuperName
-        ')'                     {$$ = TgCreateNode (UNLOAD,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 WhileTerm
-    : WHILE '('
+    : WHILE '('                 {$$ = TgCreateLeafNode (WHILE)}  
         TermArg
         ')' '{' TermList '}' 
-                                {$$ = TgCreateNode (WHILE,2,$3,$6);}
+                                {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
 
 
 /******* Type 2 opcodes *******************************************************/
 
 AcquireTerm
-    : ACQUIRE '('
+    : ACQUIRE '('               {$$ = TgCreateLeafNode (ACQUIRE)}  
         SuperName ','
         WordConstExpr
-        ')'                     {$$ = TgCreateNode (ACQUIRE,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
 
 AddTerm
-    : ADD '(' 
+    : ADD '('                   {$$ = TgCreateLeafNode (ADD)}  
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (ADD,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 AndTerm
-    : AND '(' 
+    : AND '('                   {$$ = TgCreateLeafNode (AND)}  
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (AND,3,$3,$5,$6);}
-    ;
-
-BuffTerm
-    : BUFF '(' 
-        TermArg
-        Target
-        ')'                     {$$ = TgCreateNode (BUFF,2,$3,$4);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 ConcatTerm
-    : CONCATENATE '(' 
+    : CONCATENATE '('           {$$ = TgCreateLeafNode (CONCATENATE)}  
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (CONCATENATE,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 ConcatResTerm
-    : CONCATENATERESTEMPLATE '(' 
+    : CONCATENATERESTEMPLATE '('    {$$ = TgCreateLeafNode (CONCATENATERESTEMPLATE)}  
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (CONCATENATERESTEMPLATE,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 CondRefOfTerm
-    : CONDREFOF '(' 
+    : CONDREFOF '('             {$$ = TgCreateLeafNode (CONDREFOF)}  
         SuperName
         Target
-        ')'                     {$$ = TgCreateNode (CONDREFOF,2,$3,$4);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$5)}
     ;
 
 CopyTerm
-    : COPY '(' 
+    : COPY '('                  {$$ = TgCreateLeafNode (COPY)}  
         TermArg ','
         CopyTarget
-        ')'                     {$$ = TgCreateNode (COPY,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 CopyTarget
@@ -1454,299 +1477,310 @@ CopyTarget
     ;
 
 DecTerm
-    : DECREMENT '(' 
+    : DECREMENT '('             {$$ = TgCreateLeafNode (DECREMENT)}  
         SuperName
-        ')'                     {$$ = TgCreateNode (DECREMENT,1,$3);}
-    ;
-
-DecStrTerm
-    : DECSTR '(' 
-        TermArg
-        Target
-        ')'                     {$$ = TgCreateNode (DECSTR,2,$3,$4);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 DerefOfTerm
-    : DEREFOF '(' 
+    : DEREFOF '('               {$$ = TgCreateLeafNode (DEREFOF)}  
         TermArg
-        ')'                     {$$ = TgCreateNode (DEREFOF,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 DivideTerm
-    : DIVIDE '(' 
+    : DIVIDE '('                {$$ = TgCreateLeafNode (DIVIDE)}  
         TermArg ','
         TermArg
         Target
         Target
-        ')'                     {$$ = TgCreateNode (DIVIDE,4,$3,$5,$6,$7);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,4,$4,$6,$7,$8)}
     ;
 
 FindSetLeftBitTerm
-    : FINDSETLEFTBIT '(' 
+    : FINDSETLEFTBIT '('        {$$ = TgCreateLeafNode (FINDSETLEFTBIT)}  
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (FINDSETLEFTBIT,2,$3,$4);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$5)}
     ;
 
 FindSetRightBitTerm
-    : FINDSETRIGHTBIT '(' 
+    : FINDSETRIGHTBIT '('       {$$ = TgCreateLeafNode (FINDSETRIGHTBIT)}  
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (FINDSETRIGHTBIT,2,$3,$4);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$5)}
     ;
 
 FromBCDTerm
-    : FROMBCD '(' 
+    : FROMBCD '('               {$$ = TgCreateLeafNode (FROMBCD)}  
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (FROMBCD,2,$3,$4);}
-    ;
-
-HexStrTerm
-    : HEXSTR '(' 
-        TermArg
-        Target
-        ')'                     {$$ = TgCreateNode (HEXSTR,2,$3,$4);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$5)}
     ;
 
 IncTerm
-    : INCREMENT '(' 
+    : INCREMENT '('             {$$ = TgCreateLeafNode (INCREMENT)}  
         SuperName
-        ')'                     {$$ = TgCreateNode (INCREMENT,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 IndexTerm
-    : INDEX '(' 
+    : INDEX '('                 {$$ = TgCreateLeafNode (INDEX)}  
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (INDEX,3,$3,$5,$6);}
-    ;
-
-IntTerm
-    : INT '(' 
-        TermArg
-        Target
-        ')'                     {$$ = TgCreateNode (INT,2,$3,$4);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 LAndTerm
-    : LAND '(' 
+    : LAND '('                  {$$ = TgCreateLeafNode (LAND)}  
         TermArg ','
         TermArg
-        ')'                     {$$ = TgCreateNode (LAND,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 LEqualTerm
-    : LEQUAL '(' 
+    : LEQUAL '('                {$$ = TgCreateLeafNode (LEQUAL)}
         TermArg ','
         TermArg
-        ')'                     {$$ = TgCreateNode (LEQUAL,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 LGreaterTerm
-    : LGREATER '(' 
+    : LGREATER '('              {$$ = TgCreateLeafNode (LGREATER)}
         TermArg ','
         TermArg
-        ')'                     {$$ = TgCreateNode (LGREATER,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 LGreaterEqualTerm
-    : LGREATEREQUAL '(' 
+    : LGREATEREQUAL '('         {$$ = TgCreateLeafNode (LGREATEREQUAL)}
         TermArg ','
         TermArg
-        ')'                     {$$ = TgCreateNode (LGREATEREQUAL,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 LLessTerm
-    : LLESS '(' 
+    : LLESS '('                 {$$ = TgCreateLeafNode (LLESS)}
         TermArg ','
         TermArg
-        ')'                     {$$ = TgCreateNode (LLESS,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 LLessEqualTerm
-    : LLESSEQUAL '(' 
+    : LLESSEQUAL '('            {$$ = TgCreateLeafNode (LLESSEQUAL)}
         TermArg ','
         TermArg
-        ')'                     {$$ = TgCreateNode (LLESSEQUAL,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 LNotTerm
-    : LNOT '(' 
+    : LNOT '('                  {$$ = TgCreateLeafNode (LNOT)}
         TermArg
-        ')'                     {$$ = TgCreateNode (LNOT ,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 LNotEqualTerm
-    : LNOTEQUAL '(' 
+    : LNOTEQUAL '('             {$$ = TgCreateLeafNode (LNOTEQUAL)}
         TermArg ','
         TermArg
-        ')'                     {$$ = TgCreateNode (LNOTEQUAL,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 LoadTableTerm
-    : LOADTABLE '('
+    : LOADTABLE '('             {$$ = TgCreateLeafNode (LOADTABLE)}
         TermArg ','
         TermArg ','
         TermArg
         OptionalListTermArg
         OptionalListTermArg
         OptionalListTermArg
-        ')'                     {$$ = TgCreateNode (LOADTABLE,6,$3,$5,$7,$8,$9,$10);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,6,$4,$6,$8,$9,$10,$11)}
     ;
 
 LOrTerm
-    : LOR '(' 
+    : LOR '('                   {$$ = TgCreateLeafNode (LOR)}
         TermArg ','
         TermArg
-        ')'                     {$$ = TgCreateNode (LOR,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 MatchTerm
-    : MATCH '('
+    : MATCH '('                 {$$ = TgCreateLeafNode (MATCH)}
         TermArg ','
         MatchOpKeyword ','
         TermArg ','
         MatchOpKeyword ','
         TermArg ','
         TermArg
-        ')'                     {$$ = TgCreateNode (MATCH,6,$3,$5,$7,$9,$11,$13);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$14)}
     ;
 
 MidTerm
-    : MID '(' 
+    : MID '('                   {$$ = TgCreateLeafNode (MID)}
         TermArg ','
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (MID,4,$3,$5,$7,$8);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,4,$4,$6,$8,$9)}
     ;
 
 ModTerm
-    : MOD '(' 
+    : MOD '('                   {$$ = TgCreateLeafNode (MOD)}
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (MOD,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 MultiplyTerm
-    : MULTIPLY '(' 
+    : MULTIPLY '('              {$$ = TgCreateLeafNode (MULTIPLY)}
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (MULTIPLY,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 NAndTerm
-    : NAND '(' 
+    : NAND '('                  {$$ = TgCreateLeafNode (NAND)}
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (NAND,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 NOrTerm
-    : NOR '(' 
+    : NOR '('                   {$$ = TgCreateLeafNode (NOR)}
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (NOR,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 NotTerm
-    : NOT '(' 
+    : NOT '('                   {$$ = TgCreateLeafNode (NOT)}
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (NOT,2,$3,$4);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$5)}
     ;
 
 ObjectTypeTerm
-    : OBJECTTYPE '(' 
+    : OBJECTTYPE '('            {$$ = TgCreateLeafNode (OBJECTTYPE)}
         SuperName
-        ')'                     {$$ = TgCreateNode (OBJECTTYPE,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 OrTerm
-    : OR '(' 
+    : OR '('                    {$$ = TgCreateLeafNode (OR)}
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (OR,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
+/*
+ * In RefOf, the node isn't really a target, but we can't keep track of it after
+ * we've taken a pointer to it. (hard to tell if a local becomes initialized this way.)
+ */
 RefOfTerm
-    : REFOF '(' 
+    : REFOF '('                 {$$ = TgCreateLeafNode (REFOF)}
         SuperName
-        ')'                     {$$ = TgCreateNode (REFOF,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,TgSetNodeFlags ($4, NODE_IS_TARGET))}
     ;
 
 ShiftLeftTerm
-    : SHIFTLEFT '(' 
+    : SHIFTLEFT '('             {$$ = TgCreateLeafNode (SHIFTLEFT)}
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (SHIFTLEFT,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 ShiftRightTerm
-    : SHIFTRIGHT '(' 
+    : SHIFTRIGHT '('            {$$ = TgCreateLeafNode (SHIFTRIGHT)}
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (SHIFTRIGHT,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 SizeOfTerm
-    : SIZEOF '(' 
+    : SIZEOF '('                {$$ = TgCreateLeafNode (SIZEOF)}
         SuperName
-        ')'                     {$$ = TgCreateNode (SIZEOF,1,$3);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,1,$4)}
     ;
 
 StoreTerm
-    : STORE '(' 
+    : STORE '('                 {$$ = TgCreateLeafNode (STORE)}
         TermArg ','
         SuperName
-        ')'                     {$$ = TgCreateNode (STORE,2,$3,TgSetNodeFlags ($5, NODE_IS_TARGET));}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,TgSetNodeFlags ($6, NODE_IS_TARGET))}
     ;
 
 StringTerm
-    : STRING '(' 
+    : STRING '('                {$$ = TgCreateLeafNode (STRING)}
         TermArg
         OptionalListTermArg
         Target
-        ')'                     {$$ = TgCreateNode (STRING,3,$3,$4,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$5,$6)}
     ;
 
 SubtractTerm
-    : SUBTRACT '(' 
+    : SUBTRACT '('              {$$ = TgCreateLeafNode (SUBTRACT)}
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (SUBTRACT,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 ToBCDTerm
-    : TOBCD '(' 
+    : TOBCD '('                 {$$ = TgCreateLeafNode (TOBCD)}
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (TOBCD,2,$3,$4);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$5)}
+    ;
+
+ToBufferTerm
+    : TOBUFFER '('              {$$ = TgCreateLeafNode (TOBUFFER)}
+        TermArg
+        Target
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$5)}
+    ;
+
+ToDecimalStringTerm
+    : TODECIMALSTRING '('       {$$ = TgCreateLeafNode (TODECIMALSTRING)}
+        TermArg
+        Target
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$5)}
+    ;
+
+ToHexStringTerm
+    : TOHEXSTRING '('           {$$ = TgCreateLeafNode (TOHEXSTRING)}
+        TermArg
+        Target
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$5)}
+    ;
+
+ToIntegerTerm
+    : TOINTEGER '('             {$$ = TgCreateLeafNode (TOINTEGER)}
+        TermArg
+        Target
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$5)}
     ;
 
 WaitTerm
-    : WAIT '(' 
+    : WAIT '('                  {$$ = TgCreateLeafNode (WAIT)}
         SuperName ','
         TermArg
-        ')'                     {$$ = TgCreateNode (WAIT,2,$3,$5);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 XOrTerm
-    : XOR '(' 
+    : XOR '('                   {$$ = TgCreateLeafNode (XOR)}
         TermArg ','
         TermArg
         Target
-        ')'                     {$$ = TgCreateNode (XOR,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 
@@ -1755,66 +1789,73 @@ XOrTerm
 
 
 ObjectTypeKeyword
-    : OBJECTTYPE_UNK            {$$ = TgCreateLeafNode (OBJECTTYPE_UNK, NULL);}
-    | OBJECTTYPE_INT            {$$ = TgCreateLeafNode (OBJECTTYPE_INT, NULL);}
-    | OBJECTTYPE_STR            {$$ = TgCreateLeafNode (OBJECTTYPE_STR, NULL);}
-    | OBJECTTYPE_BUF            {$$ = TgCreateLeafNode (OBJECTTYPE_BUF, NULL);}
-    | OBJECTTYPE_PKG            {$$ = TgCreateLeafNode (OBJECTTYPE_PKG, NULL);}
-    | OBJECTTYPE_FLD            {$$ = TgCreateLeafNode (OBJECTTYPE_FLD, NULL);}
-    | OBJECTTYPE_DEV            {$$ = TgCreateLeafNode (OBJECTTYPE_DEV, NULL);}
-    | OBJECTTYPE_EVT            {$$ = TgCreateLeafNode (OBJECTTYPE_EVT, NULL);}
-    | OBJECTTYPE_MTH            {$$ = TgCreateLeafNode (OBJECTTYPE_MTH, NULL);}
-    | OBJECTTYPE_MTX            {$$ = TgCreateLeafNode (OBJECTTYPE_MTX, NULL);}
-    | OBJECTTYPE_OPR            {$$ = TgCreateLeafNode (OBJECTTYPE_OPR, NULL);}
-    | OBJECTTYPE_POW            {$$ = TgCreateLeafNode (OBJECTTYPE_POW, NULL);}
-    | OBJECTTYPE_THZ            {$$ = TgCreateLeafNode (OBJECTTYPE_THZ, NULL);}
-    | OBJECTTYPE_BFF            {$$ = TgCreateLeafNode (OBJECTTYPE_BFF, NULL);}
-    | OBJECTTYPE_DDB            {$$ = TgCreateLeafNode (OBJECTTYPE_DDB, NULL);}
+    : OBJECTTYPE_UNK            {$$ = TgCreateLeafNode (OBJECTTYPE_UNK)}
+    | OBJECTTYPE_INT            {$$ = TgCreateLeafNode (OBJECTTYPE_INT)}
+    | OBJECTTYPE_STR            {$$ = TgCreateLeafNode (OBJECTTYPE_STR)}
+    | OBJECTTYPE_BUF            {$$ = TgCreateLeafNode (OBJECTTYPE_BUF)}
+    | OBJECTTYPE_PKG            {$$ = TgCreateLeafNode (OBJECTTYPE_PKG)}
+    | OBJECTTYPE_FLD            {$$ = TgCreateLeafNode (OBJECTTYPE_FLD)}
+    | OBJECTTYPE_DEV            {$$ = TgCreateLeafNode (OBJECTTYPE_DEV)}
+    | OBJECTTYPE_EVT            {$$ = TgCreateLeafNode (OBJECTTYPE_EVT)}
+    | OBJECTTYPE_MTH            {$$ = TgCreateLeafNode (OBJECTTYPE_MTH)}
+    | OBJECTTYPE_MTX            {$$ = TgCreateLeafNode (OBJECTTYPE_MTX)}
+    | OBJECTTYPE_OPR            {$$ = TgCreateLeafNode (OBJECTTYPE_OPR)}
+    | OBJECTTYPE_POW            {$$ = TgCreateLeafNode (OBJECTTYPE_POW)}
+    | OBJECTTYPE_THZ            {$$ = TgCreateLeafNode (OBJECTTYPE_THZ)}
+    | OBJECTTYPE_BFF            {$$ = TgCreateLeafNode (OBJECTTYPE_BFF)}
+    | OBJECTTYPE_DDB            {$$ = TgCreateLeafNode (OBJECTTYPE_DDB)}
+    | error                     {$$= NULL}
     ;
 
 AccessTypeKeyword
-    : ACCESSTYPE_ANY            {$$ = TgCreateLeafNode (ACCESSTYPE_ANY, NULL);}
-    | ACCESSTYPE_BYTE           {$$ = TgCreateLeafNode (ACCESSTYPE_BYTE, NULL);}
-    | ACCESSTYPE_WORD           {$$ = TgCreateLeafNode (ACCESSTYPE_WORD, NULL);}
-    | ACCESSTYPE_DWORD          {$$ = TgCreateLeafNode (ACCESSTYPE_DWORD, NULL);}
-    | ACCESSTYPE_QWORD          {$$ = TgCreateLeafNode (ACCESSTYPE_QWORD, NULL);}
-    | ACCESSTYPE_BUF            {$$ = TgCreateLeafNode (ACCESSTYPE_BUF, NULL);}
+    : ACCESSTYPE_ANY            {$$ = TgCreateLeafNode (ACCESSTYPE_ANY)}
+    | ACCESSTYPE_BYTE           {$$ = TgCreateLeafNode (ACCESSTYPE_BYTE)}
+    | ACCESSTYPE_WORD           {$$ = TgCreateLeafNode (ACCESSTYPE_WORD)}
+    | ACCESSTYPE_DWORD          {$$ = TgCreateLeafNode (ACCESSTYPE_DWORD)}
+    | ACCESSTYPE_QWORD          {$$ = TgCreateLeafNode (ACCESSTYPE_QWORD)}
+    | ACCESSTYPE_BUF            {$$ = TgCreateLeafNode (ACCESSTYPE_BUF)}
+    | error                     {$$= NULL}
     ;
 
 AccessAttribKeyword
-    : ACCESSATTRIB_QUICK        {$$ = TgCreateLeafNode (ACCESSATTRIB_QUICK , NULL);}
-    | ACCESSATTRIB_SND_RCV      {$$ = TgCreateLeafNode (ACCESSATTRIB_SND_RCV, NULL);}
-    | ACCESSATTRIB_BYTE         {$$ = TgCreateLeafNode (ACCESSATTRIB_BYTE, NULL);}
-    | ACCESSATTRIB_WORD         {$$ = TgCreateLeafNode (ACCESSATTRIB_WORD, NULL);}
-    | ACCESSATTRIB_BLOCK        {$$ = TgCreateLeafNode (ACCESSATTRIB_BLOCK, NULL);}
-    | ACCESSATTRIB_CALL         {$$ = TgCreateLeafNode (ACCESSATTRIB_CALL, NULL);}
+    : ACCESSATTRIB_QUICK        {$$ = TgCreateLeafNode (ACCESSATTRIB_QUICK )}
+    | ACCESSATTRIB_SND_RCV      {$$ = TgCreateLeafNode (ACCESSATTRIB_SND_RCV)}
+    | ACCESSATTRIB_BYTE         {$$ = TgCreateLeafNode (ACCESSATTRIB_BYTE)}
+    | ACCESSATTRIB_WORD         {$$ = TgCreateLeafNode (ACCESSATTRIB_WORD)}
+    | ACCESSATTRIB_BLOCK        {$$ = TgCreateLeafNode (ACCESSATTRIB_BLOCK)}
+    | ACCESSATTRIB_CALL         {$$ = TgCreateLeafNode (ACCESSATTRIB_CALL)}
+    | error                     {$$= NULL}
     ;
 
 LockRuleKeyword
-    : LOCKRULE_LOCK             {$$ = TgCreateLeafNode (LOCKRULE_LOCK, NULL);}
-    | LOCKRULE_NOLOCK           {$$ = TgCreateLeafNode (LOCKRULE_NOLOCK, NULL);}
+    : LOCKRULE_LOCK             {$$ = TgCreateLeafNode (LOCKRULE_LOCK)}
+    | LOCKRULE_NOLOCK           {$$ = TgCreateLeafNode (LOCKRULE_NOLOCK)}
+    | error                     {$$= NULL}
     ;
 
 UpdateRuleKeyword
-    : UPDATERULE_PRESERVE       {$$ = TgCreateLeafNode (UPDATERULE_PRESERVE, NULL);}
-    | UPDATERULE_ONES           {$$ = TgCreateLeafNode (UPDATERULE_ONES, NULL);}
-    | UPDATERULE_ZEROS          {$$ = TgCreateLeafNode (UPDATERULE_ZEROS, NULL);}
+    : UPDATERULE_PRESERVE       {$$ = TgCreateLeafNode (UPDATERULE_PRESERVE)}
+    | UPDATERULE_ONES           {$$ = TgCreateLeafNode (UPDATERULE_ONES)}
+    | UPDATERULE_ZEROS          {$$ = TgCreateLeafNode (UPDATERULE_ZEROS)}
+    | error                     {$$= NULL}
     ;
 
 RegionSpaceKeyword
     : UserDefRegionSpace        {}
-    | REGIONSPACE_IO            {$$ = TgCreateLeafNode (REGIONSPACE_IO, NULL);}
-    | REGIONSPACE_MEM           {$$ = TgCreateLeafNode (REGIONSPACE_MEM, NULL);}
-    | REGIONSPACE_PCI           {$$ = TgCreateLeafNode (REGIONSPACE_PCI, NULL);}
-    | REGIONSPACE_EC            {$$ = TgCreateLeafNode (REGIONSPACE_EC, NULL);}
-    | REGIONSPACE_SMBUS         {$$ = TgCreateLeafNode (REGIONSPACE_SMBUS, NULL);}
-    | REGIONSPACE_CMOS          {$$ = TgCreateLeafNode (REGIONSPACE_CMOS, NULL);}
-    | REGIONSPACE_PCIBAR        {$$ = TgCreateLeafNode (REGIONSPACE_PCIBAR, NULL);}
+    | REGIONSPACE_IO            {$$ = TgCreateLeafNode (REGIONSPACE_IO)}
+    | REGIONSPACE_MEM           {$$ = TgCreateLeafNode (REGIONSPACE_MEM)}
+    | REGIONSPACE_PCI           {$$ = TgCreateLeafNode (REGIONSPACE_PCI)}
+    | REGIONSPACE_EC            {$$ = TgCreateLeafNode (REGIONSPACE_EC)}
+    | REGIONSPACE_SMBUS         {$$ = TgCreateLeafNode (REGIONSPACE_SMBUS)}
+    | REGIONSPACE_CMOS          {$$ = TgCreateLeafNode (REGIONSPACE_CMOS)}
+    | REGIONSPACE_PCIBAR        {$$ = TgCreateLeafNode (REGIONSPACE_PCIBAR)}
+    | error                     {$$= NULL}
     ;
 
 AddressSpaceKeyword
     : RegionSpaceKeyword        {}
-    | ADDRESSSPACE_FFIXEDHW     {$$ = TgCreateLeafNode (ADDRESSSPACE_FFIXEDHW, NULL);}
+    | ADDRESSSPACE_FFIXEDHW     {$$ = TgCreateLeafNode (ADDRESSSPACE_FFIXEDHW)}
+    | error                     {$$= NULL}
     ;
 
 UserDefRegionSpace
@@ -1822,110 +1863,129 @@ UserDefRegionSpace
     ;
 
 SerializeRuleKeyword
-    : SERIALIZERULE_SERIAL      {$$ = TgCreateLeafNode (SERIALIZERULE_SERIAL, NULL);}
-    | SERIALIZERULE_NOTSERIAL   {$$ = TgCreateLeafNode (SERIALIZERULE_NOTSERIAL, NULL);}
+    : SERIALIZERULE_SERIAL      {$$ = TgCreateLeafNode (SERIALIZERULE_SERIAL)}
+    | SERIALIZERULE_NOTSERIAL   {$$ = TgCreateLeafNode (SERIALIZERULE_NOTSERIAL)}
+    | error                     {$$= NULL}
     ;
 
 MatchOpKeyword
-    : MATCHTYPE_MTR             {$$ = TgCreateLeafNode (MATCHTYPE_MTR, NULL);}
-    | MATCHTYPE_MEQ             {$$ = TgCreateLeafNode (MATCHTYPE_MEQ, NULL);}
-    | MATCHTYPE_MLE             {$$ = TgCreateLeafNode (MATCHTYPE_MLE, NULL);}
-    | MATCHTYPE_MLT             {$$ = TgCreateLeafNode (MATCHTYPE_MLT, NULL);}
-    | MATCHTYPE_MGE             {$$ = TgCreateLeafNode (MATCHTYPE_MGE, NULL);}
-    | MATCHTYPE_MGT             {$$ = TgCreateLeafNode (MATCHTYPE_MGT, NULL);}
+    : MATCHTYPE_MTR             {$$ = TgCreateLeafNode (MATCHTYPE_MTR)}
+    | MATCHTYPE_MEQ             {$$ = TgCreateLeafNode (MATCHTYPE_MEQ)}
+    | MATCHTYPE_MLE             {$$ = TgCreateLeafNode (MATCHTYPE_MLE)}
+    | MATCHTYPE_MLT             {$$ = TgCreateLeafNode (MATCHTYPE_MLT)}
+    | MATCHTYPE_MGE             {$$ = TgCreateLeafNode (MATCHTYPE_MGE)}
+    | MATCHTYPE_MGT             {$$ = TgCreateLeafNode (MATCHTYPE_MGT)}
+    | error                     {$$= NULL}
     ;
 
 DMATypeKeyword
-    : DMATYPE_A                 {$$ = TgCreateLeafNode (DMATYPE_A, NULL);}
-    | DMATYPE_COMPATIBILITY     {$$ = TgCreateLeafNode (DMATYPE_COMPATIBILITY, NULL);}
-    | DMATYPE_B                 {$$ = TgCreateLeafNode (DMATYPE_B, NULL);}
-    | DMATYPE_F                 {$$ = TgCreateLeafNode (DMATYPE_F, NULL);}
+    : DMATYPE_A                 {$$ = TgCreateLeafNode (DMATYPE_A)}
+    | DMATYPE_COMPATIBILITY     {$$ = TgCreateLeafNode (DMATYPE_COMPATIBILITY)}
+    | DMATYPE_B                 {$$ = TgCreateLeafNode (DMATYPE_B)}
+    | DMATYPE_F                 {$$ = TgCreateLeafNode (DMATYPE_F)}
+    | error                     {$$= NULL}
     ;
 
 BusMasterKeyword
-    : BUSMASTERTYPE_MASTER      {$$ = TgCreateLeafNode (BUSMASTERTYPE_MASTER, NULL);}
-    | BUSMASTERTYPE_NOTMASTER   {$$ = TgCreateLeafNode (BUSMASTERTYPE_NOTMASTER, NULL);}
+    : BUSMASTERTYPE_MASTER      {$$ = TgCreateLeafNode (BUSMASTERTYPE_MASTER)}
+    | BUSMASTERTYPE_NOTMASTER   {$$ = TgCreateLeafNode (BUSMASTERTYPE_NOTMASTER)}
+    | error                     {$$= NULL}
     ;
 
 XferTypeKeyword
-    : XFERTYPE_8                {$$ = TgCreateLeafNode (XFERTYPE_8, NULL);}
-    | XFERTYPE_8_16             {$$ = TgCreateLeafNode (XFERTYPE_8_16, NULL);}
-    | XFERTYPE_16               {$$ = TgCreateLeafNode (XFERTYPE_16, NULL);}
+    : XFERTYPE_8                {$$ = TgCreateLeafNode (XFERTYPE_8)}
+    | XFERTYPE_8_16             {$$ = TgCreateLeafNode (XFERTYPE_8_16)}
+    | XFERTYPE_16               {$$ = TgCreateLeafNode (XFERTYPE_16)}
+    | error                     {$$= NULL}
     ;
 
 ResourceTypeKeyword
-    : RESOURCETYPE_CONSUMER     {$$ = TgCreateLeafNode (RESOURCETYPE_CONSUMER, NULL);}
-    | RESOURCETYPE_PRODUCER     {$$ = TgCreateLeafNode (RESOURCETYPE_PRODUCER, NULL);}
+    : RESOURCETYPE_CONSUMER     {$$ = TgCreateLeafNode (RESOURCETYPE_CONSUMER)}
+    | RESOURCETYPE_PRODUCER     {$$ = TgCreateLeafNode (RESOURCETYPE_PRODUCER)}
+    | error                     {$$= NULL}
     ;
 
 MinKeyword
-    : MINTYPE_FIXED             {$$ = TgCreateLeafNode (MINTYPE_FIXED, NULL);}
-    | MINTYPE_NOTFIXED          {$$ = TgCreateLeafNode (MINTYPE_NOTFIXED, NULL);}
+    : MINTYPE_FIXED             {$$ = TgCreateLeafNode (MINTYPE_FIXED)}
+    | MINTYPE_NOTFIXED          {$$ = TgCreateLeafNode (MINTYPE_NOTFIXED)}
+    | error                     {$$= NULL}
     ;
 
 MaxKeyword
-    : MAXTYPE_FIXED             {$$ = TgCreateLeafNode (MAXTYPE_FIXED, NULL);}
-    | MAXTYPE_NOTFIXED          {$$ = TgCreateLeafNode (MAXTYPE_NOTFIXED, NULL);}
+    : MAXTYPE_FIXED             {$$ = TgCreateLeafNode (MAXTYPE_FIXED)}
+    | MAXTYPE_NOTFIXED          {$$ = TgCreateLeafNode (MAXTYPE_NOTFIXED)}
+    | error                     {$$= NULL}
     ;
 
 DecodeKeyword
-    : DECODETYPE_POS            {$$ = TgCreateLeafNode (DECODETYPE_POS, NULL);}
-    | DECODETYPE_SUB            {$$ = TgCreateLeafNode (DECODETYPE_SUB, NULL);}
+    : DECODETYPE_POS            {$$ = TgCreateLeafNode (DECODETYPE_POS)}
+    | DECODETYPE_SUB            {$$ = TgCreateLeafNode (DECODETYPE_SUB)}
+    | error                     {$$= NULL}
     ;
 
 RangeTypeKeyword
-    : RANGETYPE_ISAONLY         {$$ = TgCreateLeafNode (RANGETYPE_ISAONLY, NULL);}
-    | RANGETYPE_NONISAONLY      {$$ = TgCreateLeafNode (RANGETYPE_NONISAONLY, NULL);}
-    | RANGETYPE_ENTIRE          {$$ = TgCreateLeafNode (RANGETYPE_ENTIRE, NULL);}
+    : RANGETYPE_ISAONLY         {$$ = TgCreateLeafNode (RANGETYPE_ISAONLY)}
+    | RANGETYPE_NONISAONLY      {$$ = TgCreateLeafNode (RANGETYPE_NONISAONLY)}
+    | RANGETYPE_ENTIRE          {$$ = TgCreateLeafNode (RANGETYPE_ENTIRE)}
+    | error                     {$$= NULL}
     ;
 
 MemTypeKeyword
-    : MEMTYPE_CACHEABLE         {$$ = TgCreateLeafNode (MEMTYPE_CACHEABLE, NULL);}
-    | MEMTYPE_WRITECOMBINING    {$$ = TgCreateLeafNode (MEMTYPE_WRITECOMBINING, NULL);}
-    | MEMTYPE_PREFETCHABLE      {$$ = TgCreateLeafNode (MEMTYPE_PREFETCHABLE, NULL);}
-    | MEMTYPE_NONCACHEABLE      {$$ = TgCreateLeafNode (MEMTYPE_NONCACHEABLE, NULL);}
+    : MEMTYPE_CACHEABLE         {$$ = TgCreateLeafNode (MEMTYPE_CACHEABLE)}
+    | MEMTYPE_WRITECOMBINING    {$$ = TgCreateLeafNode (MEMTYPE_WRITECOMBINING)}
+    | MEMTYPE_PREFETCHABLE      {$$ = TgCreateLeafNode (MEMTYPE_PREFETCHABLE)}
+    | MEMTYPE_NONCACHEABLE      {$$ = TgCreateLeafNode (MEMTYPE_NONCACHEABLE)}
+    | error                     {$$= NULL}
     ;
 
 ReadWriteKeyword
-    : READWRITETYPE_BOTH        {$$ = TgCreateLeafNode (READWRITETYPE_BOTH, NULL);}
-    | READWRITETYPE_READONLY    {$$ = TgCreateLeafNode (READWRITETYPE_READONLY, NULL);}
+    : READWRITETYPE_BOTH        {$$ = TgCreateLeafNode (READWRITETYPE_BOTH)}
+    | READWRITETYPE_READONLY    {$$ = TgCreateLeafNode (READWRITETYPE_READONLY)}
+    | error                     {$$= NULL}
     ;
 
 InterruptTypeKeyword
-    : INTTYPE_EDGE              {$$ = TgCreateLeafNode (INTTYPE_EDGE, NULL);}
-    | INTTYPE_LEVEL             {$$ = TgCreateLeafNode (INTTYPE_LEVEL, NULL);}
+    : INTTYPE_EDGE              {$$ = TgCreateLeafNode (INTTYPE_EDGE)}
+    | INTTYPE_LEVEL             {$$ = TgCreateLeafNode (INTTYPE_LEVEL)}
+    | error                     {$$= NULL}
     ;
 
 InterruptLevel
-    : INTLEVEL_ACTIVEHIGH       {$$ = TgCreateLeafNode (INTLEVEL_ACTIVEHIGH, NULL);}
-    | INTLEVEL_ACTIVELOW        {$$ = TgCreateLeafNode (INTLEVEL_ACTIVELOW, NULL);}
+    : INTLEVEL_ACTIVEHIGH       {$$ = TgCreateLeafNode (INTLEVEL_ACTIVEHIGH)}
+    | INTLEVEL_ACTIVELOW        {$$ = TgCreateLeafNode (INTLEVEL_ACTIVELOW)}
+    | error                     {$$= NULL}
     ;
 
 ShareTypeKeyword
-    : SHARETYPE_SHARED          {$$ = TgCreateLeafNode (SHARETYPE_SHARED, NULL);}
-    | SHARETYPE_EXCLUSIVE       {$$ = TgCreateLeafNode (SHARETYPE_EXCLUSIVE, NULL);}
+    : SHARETYPE_SHARED          {$$ = TgCreateLeafNode (SHARETYPE_SHARED)}
+    | SHARETYPE_EXCLUSIVE       {$$ = TgCreateLeafNode (SHARETYPE_EXCLUSIVE)}
+    | error                     {$$= NULL}
     ;
 
 IODecodeKeyword
-    : IODECODETYPE_16           {$$ = TgCreateLeafNode (IODECODETYPE_16, NULL);}
-    | IODECODETYPE_10           {$$ = TgCreateLeafNode (IODECODETYPE_10, NULL);}
+    : IODECODETYPE_16           {$$ = TgCreateLeafNode (IODECODETYPE_16)}
+    | IODECODETYPE_10           {$$ = TgCreateLeafNode (IODECODETYPE_10)}
+    | error                     {$$= NULL}
     ;
 
 TypeKeyword
-    : TYPE_TRANSLATION          {$$ = TgCreateLeafNode (TYPE_TRANSLATION, NULL);}
-    | TYPE_STATIC               {$$ = TgCreateLeafNode (TYPE_STATIC, NULL);}
+    : TYPE_TRANSLATION          {$$ = TgCreateLeafNode (TYPE_TRANSLATION)}
+    | TYPE_STATIC               {$$ = TgCreateLeafNode (TYPE_STATIC)}
+    | error                     {$$= NULL}
     ;
 
 TranslationKeyword
-    : TRANSLATIONTYPE_SPARSE    {$$ = TgCreateLeafNode (TRANSLATIONTYPE_SPARSE, NULL);}
-    | TRANSLATIONTYPE_DENSE     {$$ = TgCreateLeafNode (TRANSLATIONTYPE_DENSE, NULL);}
+    : TRANSLATIONTYPE_SPARSE    {$$ = TgCreateLeafNode (TRANSLATIONTYPE_SPARSE)}
+    | TRANSLATIONTYPE_DENSE     {$$ = TgCreateLeafNode (TRANSLATIONTYPE_DENSE)}
+    | error                     {$$= NULL}
     ;
 
 AddressKeyword
-    : ADDRESSTYPE_MEMORY        {$$ = TgCreateLeafNode (ADDRESSTYPE_MEMORY, NULL);}
-    | ADDRESSTYPE_RESERVED      {$$ = TgCreateLeafNode (ADDRESSTYPE_RESERVED, NULL);}
-    | ADDRESSTYPE_NVS           {$$ = TgCreateLeafNode (ADDRESSTYPE_NVS, NULL);}
-    | ADDRESSTYPE_ACPI          {$$ = TgCreateLeafNode (ADDRESSTYPE_ACPI, NULL);}
+    : ADDRESSTYPE_MEMORY        {$$ = TgCreateLeafNode (ADDRESSTYPE_MEMORY)}
+    | ADDRESSTYPE_RESERVED      {$$ = TgCreateLeafNode (ADDRESSTYPE_RESERVED)}
+    | ADDRESSTYPE_NVS           {$$ = TgCreateLeafNode (ADDRESSTYPE_NVS)}
+    | ADDRESSTYPE_ACPI          {$$ = TgCreateLeafNode (ADDRESSTYPE_ACPI)}
+    | error                     {$$= NULL}
     ;
 
    
@@ -1944,53 +2004,57 @@ SuperName
     ;
 
 ArgTerm
-    : ARG0                      {$$ = TgCreateLeafNode (ARG0, NULL);}
-    | ARG1                      {$$ = TgCreateLeafNode (ARG1, NULL);}
-    | ARG2                      {$$ = TgCreateLeafNode (ARG2, NULL);}
-    | ARG3                      {$$ = TgCreateLeafNode (ARG3, NULL);}
-    | ARG4                      {$$ = TgCreateLeafNode (ARG3, NULL);}
-    | ARG5                      {$$ = TgCreateLeafNode (ARG4, NULL);}
-    | ARG5                      {$$ = TgCreateLeafNode (ARG5, NULL);}
-    | ARG6                      {$$ = TgCreateLeafNode (ARG6, NULL);}
+    : ARG0                      {$$ = TgCreateLeafNode (ARG0)}
+    | ARG1                      {$$ = TgCreateLeafNode (ARG1)}
+    | ARG2                      {$$ = TgCreateLeafNode (ARG2)}
+    | ARG3                      {$$ = TgCreateLeafNode (ARG3)}
+    | ARG4                      {$$ = TgCreateLeafNode (ARG4)}
+    | ARG5                      {$$ = TgCreateLeafNode (ARG5)}
+    | ARG6                      {$$ = TgCreateLeafNode (ARG6)}
+    | error                     {$$= NULL}
     ;
 
 LocalTerm
-    : LOCAL0                    {$$ = TgCreateLeafNode (LOCAL0, NULL);}
-    | LOCAL1                    {$$ = TgCreateLeafNode (LOCAL1, NULL);}
-    | LOCAL2                    {$$ = TgCreateLeafNode (LOCAL2, NULL);}
-    | LOCAL3                    {$$ = TgCreateLeafNode (LOCAL3, NULL);}
-    | LOCAL4                    {$$ = TgCreateLeafNode (LOCAL4, NULL);}
-    | LOCAL5                    {$$ = TgCreateLeafNode (LOCAL5, NULL);}
-    | LOCAL6                    {$$ = TgCreateLeafNode (LOCAL6, NULL);}
-    | LOCAL7                    {$$ = TgCreateLeafNode (LOCAL7, NULL);}
+    : LOCAL0                    {$$ = TgCreateLeafNode (LOCAL0)}
+    | LOCAL1                    {$$ = TgCreateLeafNode (LOCAL1)}
+    | LOCAL2                    {$$ = TgCreateLeafNode (LOCAL2)}
+    | LOCAL3                    {$$ = TgCreateLeafNode (LOCAL3)}
+    | LOCAL4                    {$$ = TgCreateLeafNode (LOCAL4)}
+    | LOCAL5                    {$$ = TgCreateLeafNode (LOCAL5)}
+    | LOCAL6                    {$$ = TgCreateLeafNode (LOCAL6)}
+    | LOCAL7                    {$$ = TgCreateLeafNode (LOCAL7)}
+    | error                     {$$= NULL}
     ;
 
 DebugTerm
-    : DEBUG                     {$$ = TgCreateLeafNode (DEBUG, NULL);}
+    : DEBUG                     {$$ = TgCreateLeafNode (DEBUG)}
+    | error                     {$$= NULL}
     ;
 
 Integer
-    : INTEGER                   {$$ = TgCreateLeafNode (INTEGER, (void *) AslCompilerlval.i);}
+    : INTEGER                   {$$ = TgCreateValuedLeafNode (INTEGER, (void *) AslCompilerlval.i)}
+    | error                     {$$= NULL}
     ;
 
 ByteConst
-    : Integer                   {$$ = TgUpdateNode (BYTECONST, $1);}
+    : Integer                   {$$ = TgUpdateNode (BYTECONST, $1)}
     ;
 
 WordConst
-    : Integer                   {$$ = TgUpdateNode (WORDCONST, $1);}
+    : Integer                   {$$ = TgUpdateNode (WORDCONST, $1)}
     ;
 
 DwordConst
-    : Integer                   {$$ = TgUpdateNode (DWORDCONST, $1);}
+    : Integer                   {$$ = TgUpdateNode (DWORDCONST, $1)}
     ;
 
 QwordConst
-    : Integer                   {$$ = TgUpdateNode (QWORDCONST, $1);}
+    : Integer                   {$$ = TgUpdateNode (QWORDCONST, $1)}
     ;
 
 String
-    : STRING_LITERAL            {$$ = TgCreateLeafNode (STRING_LITERAL, AslCompilerlval.s);}
+    : STRING_LITERAL            {$$ = TgCreateValuedLeafNode (STRING_LITERAL, AslCompilerlval.s)}
+    | error                     {$$= NULL}
     ;
 
 /* 
@@ -1998,85 +2062,87 @@ String
  */
 
 ConstTerm
-    : ZERO                      {$$ = TgCreateLeafNode (ZERO, NULL);}
-    | ONE                       {$$ = TgCreateLeafNode (ONE, NULL);}
-    | ONES                      {$$ = TgCreateLeafNode (ONES, NULL);}
+    : ZERO                      {$$ = TgCreateLeafNode (ZERO)}
+    | ONE                       {$$ = TgCreateLeafNode (ONE)}
+    | ONES                      {$$ = TgCreateLeafNode (ONES)}
+    | error                     {$$= NULL}
     ;
 
 ByteConstExpr
-    : Type3Opcode               {$$ = TgUpdateNode (BYTECONST, $1);}
-    | ConstExprTerm             {$$ = TgUpdateNode (BYTECONST, $1);}
-    | Integer                   {$$ = TgUpdateNode (BYTECONST, $1);}
+    : Type3Opcode               {$$ = TgUpdateNode (BYTECONST, $1)}
+    | ConstExprTerm             {$$ = TgUpdateNode (BYTECONST, $1)}
+    | Integer                   {$$ = TgUpdateNode (BYTECONST, $1)}
     ;
 
 
 WordConstExpr
-    : Type3Opcode               {$$ = TgUpdateNode (WORDCONST, $1);}
-    | ConstExprTerm             {$$ = TgUpdateNode (WORDCONST, $1);}
-    | Integer                   {$$ = TgUpdateNode (WORDCONST, $1);}
+    : Type3Opcode               {$$ = TgUpdateNode (WORDCONST, $1)}
+    | ConstExprTerm             {$$ = TgUpdateNode (WORDCONST, $1)}
+    | Integer                   {$$ = TgUpdateNode (WORDCONST, $1)}
     ;
 
 DWordConstExpr
-    : Type3Opcode               {$$ = TgUpdateNode (DWORDCONST, $1);}
-    | ConstExprTerm             {$$ = TgUpdateNode (DWORDCONST, $1);}
-    | Integer                   {$$ = TgUpdateNode (DWORDCONST, $1);}
+    : Type3Opcode               {$$ = TgUpdateNode (DWORDCONST, $1)}
+    | ConstExprTerm             {$$ = TgUpdateNode (DWORDCONST, $1)}
+    | Integer                   {$$ = TgUpdateNode (DWORDCONST, $1)}
     ;
 
 QWordConstExpr
-    : Type3Opcode               {$$ = TgUpdateNode (QWORDCONST, $1);}
-    | ConstExprTerm             {$$ = TgUpdateNode (QWORDCONST, $1);}
-    | Integer                   {$$ = TgUpdateNode (QWORDCONST, $1);}
+    : Type3Opcode               {$$ = TgUpdateNode (QWORDCONST, $1)}
+    | ConstExprTerm             {$$ = TgUpdateNode (QWORDCONST, $1)}
+    | Integer                   {$$ = TgUpdateNode (QWORDCONST, $1)}
     ;
 
 ConstExprTerm
-    : ZERO                      {$$ = TgCreateLeafNode (ZERO, NULL);}
-    | ONE                       {$$ = TgCreateLeafNode (ONE, NULL);}
-    | ONES                      {$$ = TgCreateLeafNode (ONES, NULL);}
+    : ZERO                      {$$ = TgCreateLeafNode (ZERO)}
+    | ONE                       {$$ = TgCreateLeafNode (ONE)}
+    | ONES                      {$$ = TgCreateLeafNode (ONES)}
+    | error                     {$$= NULL}
     ;
 
 BufferTerm
-    : BUFFER '(' 
+    : BUFFER '('                {$$ = TgCreateLeafNode (BUFFER)}
         OptionalTermArg
         ')' '{' 
-            BufferData '}'      {$$ = TgCreateNode (BUFFER,2,$3,$6);}
+            BufferData '}'      {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
 
 BufferData
-    : ByteList {}
-    | StringData {}
+    : ByteList                  {}
+    | StringData                {}
     ;
 
 ByteList
     : {$$ = NULL}
     | ByteConstExpr 
-        ByteListTail            {$$ = TgLinkPeerNode ($1,$2);}
+        ByteListTail            {$$ = TgLinkPeerNode ($1,$2)}
     ;
 
 ByteListTail
     :                           {$$ = NULL}
     | ','                       {$$ = NULL}   /* Allows a trailing comma at list end */
     | ',' ByteConstExpr 
-        ByteListTail            {$$ = TgLinkPeerNode ($2,$3);}
+        ByteListTail            {$$ = TgLinkPeerNode ($2,$3)}
     ;
 
 DWordList
     :                           {$$ = NULL}
     | DWordConstExpr 
-        DWordListTail           {$$ = TgLinkPeerNode ($1,$2);}
+        DWordListTail           {$$ = TgLinkPeerNode ($1,$2)}
     ;
 
 DWordListTail
     :                           {$$ = NULL}
     | ','                       {$$ = NULL}   /* Allows a trailing comma at list end */
     | ',' DWordConstExpr 
-        DWordListTail           {$$ = TgLinkPeerNode ($2,$3);}
+        DWordListTail           {$$ = TgLinkPeerNode ($2,$3)}
     ;
 
 PackageTerm
-    : PACKAGE '(' 
+    : PACKAGE '('               {$$ = TgCreateLeafNode (PACKAGE)}
         PackageLengthTerm
         ')' '{' 
-            PackageList '}'     {$$ = TgCreateNode (PACKAGE,2,$3,$6);}
+            PackageList '}'     {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
 
 PackageLengthTerm
@@ -2088,14 +2154,14 @@ PackageLengthTerm
 PackageList
     :                           {$$ = NULL}
     | PackageElement 
-        PackageListTail         {$$ = TgLinkPeerNode ($1,$2);}
+        PackageListTail         {$$ = TgLinkPeerNode ($1,$2)}
     ;
 
 PackageListTail
     :                           {$$ = NULL}
     | ','                       {$$ = NULL}   /* Allows a trailing comma at list end */
     | ',' PackageElement 
-        PackageListTail         {$$ = TgLinkPeerNode ($2,$3);}
+        PackageListTail         {$$ = TgLinkPeerNode ($2,$3)}
     ;
 
 PackageElement
@@ -2105,7 +2171,7 @@ PackageElement
 
 EISAIDTerm
     : EISAID '(' 
-        StringData ')'          {$$ = TgUpdateNode (EISAID, $3);}
+        StringData ')'          {$$ = TgUpdateNode (EISAID, $3)}
     ;
 
 
@@ -2117,20 +2183,20 @@ ResourceTemplateTerm
     : RESOURCETEMPLATE '(' ')'
         '{' 
         ResourceMacroList '}'   {$$ = TgCreateNode (RESOURCETEMPLATE,3,
-                                        TgCreateLeafNode (DEFAULT_ARG, NULL),
-                                        TgCreateLeafNode (DEFAULT_ARG, NULL),$5);}
+                                        TgCreateLeafNode (DEFAULT_ARG),
+                                        TgCreateLeafNode (DEFAULT_ARG),$5)}
     ;
 
 UnicodeTerm
     : UNICODE '('
         StringData
-        ')'                     {$$ = TgUpdateNode (UNICODE, $3);}
+        ')'                     {$$ = TgUpdateNode (UNICODE, $3)}
     ;
 
 ResourceMacroList
     :                           {$$ = NULL}
     | ResourceMacroTerm 
-        ResourceMacroList       {$$ = TgLinkPeerNode ($1,$2);}
+        ResourceMacroList       {$$ = TgLinkPeerNode ($1,$2)}
     ;
 
 ResourceMacroTerm
@@ -2158,17 +2224,17 @@ ResourceMacroTerm
     ;
 
 DMATerm
-    : DMA '('
+    : DMA '('                   {$$ = TgCreateLeafNode (DMA)}
         DMATypeKeyword ','
         BusMasterKeyword ','
         XferTypeKeyword
         OptionalNameString
         ')' '{'
-            ByteList '}'        {$$ = TgCreateNode (DMA,5,$3,$5,$7,$8,$11);}
+            ByteList '}'        {$$ = TgLinkChildren ($<n>3,5,$4,$6,$8,$9,$12)}
     ;
 
 DWordIOTerm
-    : DWORDIO '('
+    : DWORDIO '('               {$$ = TgCreateLeafNode (DWORDIO)}
         OptionalResourceType
         OptionalMinType
         OptionalMaxType
@@ -2184,11 +2250,11 @@ DWordIOTerm
         OptionalNameString
         OptionalType
         OptionalTranslationType
-        ')'                     {$$ = TgCreateNode (DWORDIO,15,$3,$4,$5,$6,$7,$8,$10,$12,$14,$16,$17,$18,$19,$20,$21);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,15,$4,$5,$6,$7,$8,$9,$11,$13,$15,$17,$18,$19,$20,$21,$22)}
     ;
 
 DWordMemoryTerm
-    : DWORDMEMORY '('
+    : DWORDMEMORY '('           {$$ = TgCreateLeafNode (DWORDMEMORY)}
         OptionalResourceType
         OptionalDecodeType
         OptionalMinType
@@ -2205,24 +2271,24 @@ DWordMemoryTerm
         OptionalNameString
         OptionalAddressRange
         OptionalType
-        ')'                     {$$ = TgCreateNode (DWORDMEMORY,16,$3,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$19,$20,$21,$22,$23);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,16,$4,$5,$6,$7,$8,$9,$11,$13,$15,$17,$19,$20,$21,$22,$23,$24)}
     ;
 
 EndDependentFnTerm
     : ENDDEPENDENTFN '(' 
-        ')'                     {$$ = TgCreateLeafNode (ENDDEPENDENTFN, NULL);}
+        ')'                     {$$ = TgCreateLeafNode (ENDDEPENDENTFN)}
     ;
 
 FixedIOTerm
-    : FIXEDIO '(' 
+    : FIXEDIO '('               {$$ = TgCreateLeafNode (FIXEDIO)}
         WordConstExpr ','
         ByteConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (FIXEDIO,3,$3,$5,$6);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,3,$4,$6,$7)}
     ;
 
 InterruptTerm
-    : INTERRUPT '('
+    : INTERRUPT '('             {$$ = TgCreateLeafNode (INTERRUPT)}
         OptionalResourceType
         InterruptTypeKeyword ','
         InterruptLevel
@@ -2231,70 +2297,70 @@ InterruptTerm
         OptionalStringData
         OptionalNameString
         ')' '{'
-            DWordList '}'       {$$ = TgCreateNode (INTERRUPT,8,$3,$4,$6,$7,$8,$9,$10,$13);}
+            DWordList '}'       {$$ = TgLinkChildren ($<n>3,8,$4,$5,$7,$8,$9,$10,$11,$14)}
     ;
 
 IOTerm
-    : IO '('
+    : IO '('                    {$$ = TgCreateLeafNode (IO)}
         IODecodeKeyword ','
         WordConstExpr ','
         WordConstExpr ','
         ByteConstExpr ','
         ByteConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (IO,6,$3,$5,$7,$9,$11,$12);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$13)}
     ;
 
 IRQNoFlagsTerm
-    : IRQNOFLAGS '('
-        OptionalNameString
+    : IRQNOFLAGS '('            {$$ = TgCreateLeafNode (IRQNOFLAGS)}
+        OptionalNameString_First
         ')' '{' 
-            ByteList '}'        {$$ = TgCreateNode (IRQNOFLAGS,2,$3,$6);}
+            ByteList '}'        {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
 
 IRQTerm
-    : IRQ '('
+    : IRQ '('                   {$$ = TgCreateLeafNode (IRQ)}
         InterruptTypeKeyword ','
         InterruptLevel
         OptionalShareType     
         OptionalNameString
         ')' '{' 
-            ByteList '}'        {$$ = TgCreateNode (IRQ,5,$3,$5,$6,$7,$10);}
+            ByteList '}'        {$$ = TgLinkChildren ($<n>3,5,$4,$6,$7,$8,$11)}
     ;
 
 Memory24Term
-    : MEMORY24 '('
+    : MEMORY24 '('              {$$ = TgCreateLeafNode (MEMORY24)}
         ReadWriteKeyword ','
         WordConstExpr ','
         WordConstExpr ','
         WordConstExpr ','
         WordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY24,6,$3,$5,$7,$9,$11,$12);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$13)}
     ;
 
 Memory32FixedTerm
-    : MEMORY32FIXED '('
+    : MEMORY32FIXED '('         {$$ = TgCreateLeafNode (MEMORY32FIXED)}
         ReadWriteKeyword ','
         DWordConstExpr ','
         DWordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY32FIXED,4,$3,$5,$7,$8);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,4,$4,$6,$8,$9)}
     ;
 
 Memory32Term
-    : MEMORY32 '('
+    : MEMORY32 '('              {$$ = TgCreateLeafNode (MEMORY32)}
         ReadWriteKeyword ','
         DWordConstExpr ','
         DWordConstExpr ','
         DWordConstExpr ','
         DWordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY32,6,$3,$5,$7,$9,$11,$12);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$13)}
     ;
 
 QWordIOTerm
-    : QWORDIO '('
+    : QWORDIO '('               {$$ = TgCreateLeafNode (QWORDIO)}
         OptionalResourceType
         OptionalMinType
         OptionalMaxType
@@ -2310,11 +2376,11 @@ QWordIOTerm
         OptionalNameString
         OptionalType
         OptionalTranslationType
-        ')'                     {$$ = TgCreateNode (QWORDIO,15,$3,$4,$5,$6,$7,$8,$10,$12,$14,$16,$17,$18,$19,$20,$21);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,15,$4,$5,$6,$7,$8,$9,$11,$13,$15,$17,$18,$19,$20,$21,$22)}
     ;
 
 QWordMemoryTerm
-    : QWORDMEMORY '('
+    : QWORDMEMORY '('           {$$ = TgCreateLeafNode (QWORDMEMORY)}
         OptionalResourceType
         OptionalDecodeType
         OptionalMinType
@@ -2331,48 +2397,48 @@ QWordMemoryTerm
         OptionalNameString
         OptionalAddressRange
         OptionalType
-        ')'                     {$$ = TgCreateNode (QWORDMEMORY,16,$3,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$19,$20,$21,$22,$23);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,16,$4,$5,$6,$7,$8,$9,$11,$13,$15,$17,$19,$20,$21,$22,$23,$24)}
     ;
 
 RegisterTerm
-    : REGISTER '('
+    : REGISTER '('              {$$ = TgCreateLeafNode (REGISTER)}
         AddressKeyword ','
         ByteConstExpr ','
         ByteConstExpr ','
         QWordConstExpr
-        ')'                     {$$ = TgCreateNode (REGISTER,4,$3,$5,$7,$9);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,4,$4,$6,$8,$10)}
     ;
 
 StartDependentFnTerm
-    : STARTDEPENDENTFN '('
+    : STARTDEPENDENTFN '('      {$$ = TgCreateLeafNode (STARTDEPENDENTFN)}
         ByteConstExpr ','
         ByteConstExpr
         ')' '{' 
-        ResourceMacroList '}'   {$$ = TgCreateNode (STARTDEPENDENTFN,3,$3,$5,$8);}
+        ResourceMacroList '}'   {$$ = TgLinkChildren ($<n>3,3,$4,$6,$9)}
     ;
                 
 StartDependentFnNoPriTerm
-    : STARTDEPENDENTFN_NOPRI '('
+    : STARTDEPENDENTFN_NOPRI '(' {$$ = TgCreateLeafNode (STARTDEPENDENTFN_NOPRI)}
         ')' '{' 
-        ResourceMacroList '}'   {$$ = TgCreateNode (STARTDEPENDENTFN_NOPRI,1,$5);}
+        ResourceMacroList '}'   {$$ = TgLinkChildren ($<n>3,1,$6)}
     ;
                
 VendorLongTerm
-    : VENDORLONG '('
-        OptionalNameString
+    : VENDORLONG '('            {$$ = TgCreateLeafNode (VENDORLONG)}
+        OptionalNameString_First
         ')' '{' 
-            ByteList '}'        {$$ = TgCreateNode (VENDORLONG,2,$3,$6);}
+            ByteList '}'        {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
         
 VendorShortTerm
-    : VENDORSHORT '('
-        OptionalNameString
+    : VENDORSHORT '('           {$$ = TgCreateLeafNode (VENDORSHORT)}
+        OptionalNameString_First
         ')' '{' 
-            ByteList '}'        {$$ = TgCreateNode (VENDORSHORT,2,$3,$6);}
+            ByteList '}'        {$$ = TgLinkChildren ($<n>3,2,$4,$7)}
     ;
         
 WordBusNumberTerm
-    : WORDBUSNUMBER '('
+    : WORDBUSNUMBER '('         {$$ = TgCreateLeafNode (WORDBUSNUMBER)}
         OptionalResourceType
         OptionalMinType
         OptionalMaxType
@@ -2385,11 +2451,11 @@ WordBusNumberTerm
         OptionalByteConstExpr
         OptionalStringData
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (WORDBUSNUMBER,12,$3,$4,$5,$6,$7,$9,$11,$13,$15,$16,$17,$18);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,12,$4,$5,$6,$7,$8,$10,$12,$14,$16,$17,$18,$19)}
     ;
 
 WordIOTerm
-    : WORDIO '('
+    : WORDIO '('                {$$ = TgCreateLeafNode (WORDIO)}
         OptionalResourceType
         OptionalMinType
         OptionalMaxType
@@ -2405,7 +2471,7 @@ WordIOTerm
         OptionalNameString
         OptionalType
         OptionalTranslationType
-        ')'                     {$$ = TgCreateNode (WORDIO,15,$3,$4,$5,$6,$7,$8,$10,$12,$14,$16,$17,$18,$19,$20,$21);}
+        ')'                     {$$ = TgLinkChildren ($<n>3,15,$4,$5,$6,$7,$8,$9,$11,$13,$15,$17,$18,$19,$20,$21,$22)}
     ;
 
 
@@ -2416,11 +2482,11 @@ WordIOTerm
 
 NameString
     : NameSeg                   {}
-    | NAMESTRING                {$$ = TgCreateLeafNode (NAMESTRING, AslCompilerlval.s);}
+    | NAMESTRING                {$$ = TgCreateValuedLeafNode (NAMESTRING, AslCompilerlval.s)}
     ;
 
 NameSeg 
-    : NAMESEG                   {$$ = TgCreateLeafNode (NAMESEG, AslCompilerlval.s);}
+    : NAMESEG                   {$$ = TgCreateValuedLeafNode (NAMESEG, AslCompilerlval.s)}
     ;
 
 
@@ -2442,7 +2508,7 @@ DDBHandle
 
 
 AmlPackageLengthTerm
-    : Integer                   {$$ = TgUpdateNode (PACKAGE_LENGTH,(ASL_PARSE_NODE *) $1);}
+    : Integer                   {$$ = TgUpdateNode (PACKAGE_LENGTH,(ASL_PARSE_NODE *) $1)}
     ;
 
 
@@ -2505,6 +2571,12 @@ OptionalNameString
     | ',' NameString            {$$ = $2}
     ;
 
+OptionalNameString_First
+    :                           {$$ = NULL}
+    | NameString                {$$ = $1}
+    ;
+
+
 OptionalAddressRange
     :                           {$$ = NULL}
     | ','                       {$$ = NULL}
@@ -2542,9 +2614,9 @@ OptionalRangeType
     ;
 
 OptionalShareType
-    : ','                       {$$ = NULL}
-    | ShareTypeKeyword ','      {$$ = $1}
-    | ShareTypeKeyword          {$$ = $1}
+    :                           {$$ = NULL}
+    | ','                       {$$ = NULL}
+    | ',' ShareTypeKeyword      {$$ = $2}
     ;
 
 OptionalType
@@ -2571,6 +2643,25 @@ int
 AslCompilerwrap()
 {
   return 1;
+}
+
+void *
+AslLocalAllocate (unsigned int Size)
+{
+    void                *Mem;
+
+
+    DbgPrint ("\nAslLocalAllocate: Expanding Stack to %d\n\n", Size);
+
+    Mem = _CmCallocate (Size, 0, "", 0);
+    if (!Mem)
+    {
+        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION, Gbl_CurrentLineNumber,
+                    Gbl_LogicalLineNumber, NULL);
+        exit (1);
+    }
+
+    return (Mem);
 }
 
 
