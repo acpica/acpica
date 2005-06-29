@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.123 $
+ *       $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -739,5 +739,14 @@ AcpiExSmBusSpaceHandler (
     void                    *HandlerContext,
     void                    *RegionContext);
 
+
+ACPI_STATUS
+AcpiExDataTableSpaceHandler (
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    ACPI_INTEGER            *Value,
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 #endif /* __INTERP_H__ */
