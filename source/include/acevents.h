@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.67 $
+ *       $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@ AcpiEvInitialize (
 
 
 /*
- * AcpiEvfixed - Fixed event handling
+ * Evfixed - Fixed event handling
  */
 
 ACPI_STATUS
@@ -141,12 +141,12 @@ AcpiEvFixedEventDispatch (
 
 
 /*
- * AcpiEvglock - Global Lock support
+ * Evglock - Global Lock support
  */
 
 ACPI_STATUS
 AcpiEvAcquireGlobalLock(
-    void);
+    UINT32                  Timeout);
 
 void
 AcpiEvReleaseGlobalLock(
@@ -158,7 +158,7 @@ AcpiEvInitGlobalLockHandler (
 
 
 /*
- * AcpiEvgpe - GPE handling and dispatch
+ * Evgpe - GPE handling and dispatch
  */
 
 ACPI_STATUS
@@ -179,7 +179,7 @@ AcpiEvGpeDetect (
 
 
 /*
- * AcpiEvnotify - Device Notify handling and dispatch
+ * Evnotify - Device Notify handling and dispatch
  */
 
 ACPI_STATUS
@@ -192,7 +192,7 @@ AcpiEvNotifyDispatch (
     void                    *Context);
 
 /*
- * AcpiEvregion - Address Space handling
+ * Evregion - Address Space handling
  */
 
 ACPI_STATUS
@@ -227,7 +227,7 @@ AcpiEvAssociateRegionAndHandler (
 
 
 /*
- * AcpiEvregini - Region initialization and setup
+ * Evregini - Region initialization and setup
  */
 
 ACPI_STATUS
