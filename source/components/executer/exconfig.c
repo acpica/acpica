@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -259,7 +259,7 @@ AcpiExLoadTableOp (
             return_ACPI_STATUS (Status);
         }
 
-        /* Not found, return an Integer=0 and AE_OK */
+        /* Table not found, return an Integer=0 and AE_OK */
 
         DdbHandle = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!DdbHandle)
@@ -338,9 +338,11 @@ AcpiExLoadTableOp (
         if (ACPI_FAILURE (Status))
         {
             (void) AcpiExUnloadTable (DdbHandle);
+            return_ACPI_STATUS (Status);
         }
     }
 
+    *ReturnDesc = DdbHandle;
     return_ACPI_STATUS  (Status);
 }
 
