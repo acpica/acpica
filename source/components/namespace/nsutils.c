@@ -127,6 +127,49 @@
         MODULE_NAME         ("nsutils");
 
 
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsValidRootPrefix
+ *
+ * PARAMETERS:  Prefix          - Character to be checked
+ *
+ * RETURN:      TRUE if a valid prefix
+ *
+ * DESCRIPTION: Check if a character is a valid ACPI Root prefix
+ *
+ ***************************************************************************/
+
+BOOLEAN
+NsValidRootPrefix (
+    char                    Prefix)
+{
+
+    return ((BOOLEAN) (Prefix == '\\'));
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsValidPathSeparator
+ *
+ * PARAMETERS:  Sep              - Character to be checked
+ *
+ * RETURN:      TRUE if a valid path separator
+ *
+ * DESCRIPTION: Check if a character is a valid ACPI path separator
+ *
+ ***************************************************************************/
+
+BOOLEAN
+NsValidPathSeparator (
+    char                    Sep)
+{
+
+    return ((BOOLEAN) (Sep == '.'));
+}
+
+
 /****************************************************************************
  *
  * FUNCTION:    NsGetType
@@ -174,23 +217,25 @@ NsLocal (
     FUNCTION_TRACE ("NsLocal");
 
 
-    if (Type > INTERNAL_TYPE_MAX)
+    if (!CmValidObjectType (Type))
     {
         /*  type code out of range  */
 
-        REPORT_WARNING ("NsLocal: Type code out of range");
-        return_VALUE (0);
+        REPORT_WARNING ("NsLocal: Invalid Object Type");
+        return_VALUE (NSP_NORMAL);
     }
 
     return_VALUE ((INT32) Gbl_NsProperties[Type] & NSP_LOCAL);
 }
 
 
+
+
 /****************************************************************************
  *
  * FUNCTION:    NsInternalizeName
  *
- * PARAMETERS:  *DottedName             - External representation of name
+ * PARAMETERS:  *ExternalName             - External representation of name
  *              **Converted Name        - Where to return the resulting
  *                                        internal represention of the name
  *
@@ -203,20 +248,22 @@ NsLocal (
 
 ACPI_STATUS
 NsInternalizeName (
-    char                    *DottedName,
+    char                    *ExternalName,
     char                    **ConvertedName)
 {
     char                    *Result = NULL;
     char                    *InternalName;
     ACPI_SIZE               NumSegments;
     BOOLEAN                 FullyQualified = FALSE;
-    UINT32                  Length;
+    UINT32                  i;
 
 
     FUNCTION_TRACE ("NsInternalizeName");
 
 
-    if (!DottedName || !ConvertedName)
+    if ((!ExternalName)      || 
+        (*ExternalName == 0) ||
+        (!ConvertedName))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -230,31 +277,29 @@ NsInternalizeName (
      * strlen() + 1 covers the first NameSeg, which has no path separator
      */
 
-    if (DottedName[0] == '\\')
+    if (NsValidRootPrefix (ExternalName[0]))
     {
         FullyQualified = TRUE;
-        DottedName++;
+        ExternalName++;
     }
 
-    Length = STRLEN (DottedName);
-    NumSegments = (Length + 1) / PATH_SEGMENT_LENGTH;    /* Number of NameSegs in the path */
 
-    /* Name must be at least 4 characters */
+    /* 
+     * Determine the number of ACPI name "segments" by counting the number
+     * of path separators within the string.  Start with one segment since
+     * the segment count is (# separators) + 1, and zero separators is ok.
+     */
 
-    if (Length < 4)
+    NumSegments = 1;    
+    for (i = 0; ExternalName[i]; i++)
     {
-        return_ACPI_STATUS (AE_BAD_PATHNAME);
-    }
-
-    /* Pathname must be an exact multiple of segments */
-
-    if (Length > 4)
-    {
-        if ((Length + 1) % PATH_SEGMENT_LENGTH)
+        if (NsValidPathSeparator (ExternalName[i]))
         {
-            return_ACPI_STATUS (AE_BAD_PATHNAME);
+            NumSegments++;
         }
     }
+
+
 
     /* We need a segment to store the internal version of the name */
 
@@ -286,15 +331,45 @@ NsInternalizeName (
 
     for (; NumSegments; NumSegments--)
     {
-        STRNCPY (Result, DottedName, ACPI_NAME_SIZE);
+        for (i = 0; i < ACPI_NAME_SIZE; i++) //STRNCPY (Result, ExternalName, ACPI_NAME_SIZE);
+        {
+            if (NsValidPathSeparator (*ExternalName) ||
+               (*ExternalName == 0))
+            {
+                /* Pad the segment with underscore(s) if segment is short */
+
+                Result[i] = '_';
+            }
+
+            else
+            {
+                /* Convert char to uppercase and save it */
+
+                Result[i] = (char) TOUPPER (*ExternalName);
+                ExternalName++;
+            }
+
+        }
+
+        /* Now we must have a path separator, or the pathname is bad */
+
+        if (!NsValidPathSeparator (*ExternalName) &&
+            (*ExternalName != 0))
+        {
+            CmFree (InternalName);
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+        }
+
+        /* Move on the next segment */
+
+        ExternalName++;
         Result += ACPI_NAME_SIZE;
-        DottedName += PATH_SEGMENT_LENGTH;
     }
 
     
     /* Return the completed name */
 
-    *Result = '\0';                     /* Terminate the string! */
+    *Result = 0;                     /* Terminate the string! */
     *ConvertedName = InternalName;
 
 
@@ -382,25 +457,33 @@ NsExternalizeName (
     {
         switch (InternalName[PrefixLength])
         {
+
         /* <count> 4-byte names */
+
         case AML_MultiNamePrefixOp:
             NamesIndex = PrefixLength + 2;
             NamesCount = (UINT32) InternalName[PrefixLength + 1];
             break;
 
+
         /* two 4-byte names */
+
         case AML_DualNamePrefix:
             NamesIndex = PrefixLength + 1;
             NamesCount = 2;
             break;
 
+
         /* NullName */
+
         case 0:
             NamesIndex = 0;
             NamesCount = 0;
             break;
 
+
         /* one 4-byte name */
+
         default:
             NamesIndex = PrefixLength;
             NamesCount = 1;
@@ -496,14 +579,12 @@ NsConvertHandleToEntry (
     }
 
 
-/* TBD: No longer needed ???
+    /* We can at least attempt to verify the handle */
 
-    if (Handle == ACPI_ROOT_SCOPE)
+    if (!VALID_DESCRIPTOR_TYPE (Handle, DESC_TYPE_NTE))
     {
-        return (NAME_TABLE_ENTRY *) Gbl_RootObject->Scope;
+        return NULL;
     }
-
-*/
 
     return (NAME_TABLE_ENTRY *) Handle;
 }
