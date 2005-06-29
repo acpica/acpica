@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.151 $
+ *              $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -722,7 +722,7 @@ AcpiExDumpObjectDescriptor (
     {
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf ("%20s : %X%8.8X\n", "Value",
+        AcpiOsPrintf ("%20s : %8.8X%8.8X\n", "Value",
                         ACPI_HIDWORD (ObjDesc->Integer.Value),
                         ACPI_LODWORD (ObjDesc->Integer.Value));
         break;
