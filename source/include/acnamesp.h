@@ -14,15 +14,18 @@
  | FILENAME: acpinmsp.h - prototypes for accessing namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.9 $
- | $Date: 2005/06/29 19:49:35 $
+ | $Revision: 1.10 $
+ | $Date: 2005/06/29 19:49:36 $
  | $Log: acnamesp.h,v $
- | Revision 1.9  2005/06/29 19:49:35  aystarik
- |
+ | Revision 1.10  2005/06/29 19:49:36  aystarik
+ | 16/32/64-bit common data types
  |
  | 
- | date	99.02.16.23.36.00;	author rmosgrov;	state Exp;
+ | date	99.03.10.00.04.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 10    3/09/99 4:04p Rmoore1
+ * 16/32/64-bit common data types
  * 
  * 9     2/16/99 3:36p Rmosgrov
  * 
@@ -61,9 +64,9 @@
 //   Changed vNsPopCurrent() to NsPopCurrent(), returning the number of frames
 //     popped (or an error indication).
 //   Changed empty formal parameter lists to "(void)".
-//   Changed meth.Offset, and other values which are offsets, from (int) to
+//   Changed meth.Offset, and other values which are offsets, from (INT32) to
 //     (ptrdiff_t).
-//   Replaced "int iLoading" parameter of NsEnter() with "OpMode iLE".
+//   Replaced "INT32 iLoading" parameter of NsEnter() with "OpMode iLE".
 // Removed vReporter() parameter from several functions.
 //   Removed iExistDownstreamSibling() which is now static.
 // 
@@ -153,11 +156,11 @@
  *
  * The first byte of an nte is a character of the name segment, which will
  * be accepted by NcOK().  The first byte of an OBJECT_DESCRIPTOR is the
- * ValTyp field, whose (BYTE) value comes from the NsType enumeration.
+ * ValTyp field, whose (UINT8) value comes from the NsType enumeration.
  * Valid NsType values must not include any character acceptable in a name.
  */
 
-#define IsNsHandle(h) (NcOK((int)*(char *)(h)))
+#define IsNsHandle(h) (NcOK((INT32)*(char *)(h)))
 
 
 /* To search the entire name space, pass this as SearchBase */
@@ -190,373 +193,74 @@ extern char BadType[];
 extern char *NsTypeNames[];
 
 
-/****************************************************************************
- * FUNCTION:    PriUnloadNameSpace 
- *
- * PARAMETERS:  none
- *
- * RETURN:      E_OK or E_ERROR
- *
- * DESCRIPTION: Contracts namespace, typically in response to an undocking
- *              event
- *
- ****************************************************************************/
+/* Prototypes */
 
-int
-PriUnloadNameSpace(void);
-
-/****************************************************************************
- * FUNCTION:    NsPushMethodScope
- *
- * PARAMETERS:  NsHandle nNewScope,             name to be made current
- *
- * DESCRIPTION: Push the current scope on the scope stack, and make the
- *              passed nte current.
- *
- ***************************************************************************/
+INT32
+PriUnloadNameSpace (void);
 
 void
-NsPushMethodScope(NsHandle nNewScope);
+NsPushMethodScope (NsHandle nNewScope);
 
-
-/****************************************************************************
- * FUNCTION:    AcpiExecuteMethod
- *
- * PARAMETERS:  char *MethodName              name of method to execute
- *
- *              OBJECT_DESCRIPTOR **ReturnValue  where to put method's return
- *                                              value (if any).
- *                                              ReturnValue must not be
- *                                              passed in as NULL because
- *                                              *ReturnValue will always
- *                                              be set (to NULL if there is
- *                                              no return value).
- *
- *              OBJECT_DESCRIPTOR **Params   list of parameters to pass to
- *                                              method, terminated by NULL.
- *                                              Params itself may be NULL
- *                                              if no parameters are being
- *                                              passed.
- *
- * RETURN:      E_OK or E_ERROR
- *
- * DESCRIPTION: Find and execute the requested method passing the given
- *              parameters
- *
- ****************************************************************************/
-
-int
+INT32
 AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR **ReturnValue,
         OBJECT_DESCRIPTOR **Params);
 
+INT32
+AcpiLoadNameSpace  (INT32 DisplayAmlDuringLoad);
 
-/******************************************************************************
- *
- * FUNCTION:    int AcpiLoadNameSpace
- *
- * PARAMETERS:  DisplayAmlDuringLoad
- *
- * RETURN:      none
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
+INT32
+AcpiUnloadNameSpace (void);
 
-int
-AcpiLoadNameSpace (int DisplayAmlDuringLoad);
-
-/****************************************************************************
- * FUNCTION:    AcpiUnloadNameSpace 
- *
- * PARAMETERS:  none
- *
- * RETURN:      E_OK or E_ERROR
- *
- * DESCRIPTION: Contracts namespace, typically in response to an undocking
- *              event
- *
- ****************************************************************************/
-
-int
-AcpiUnloadNameSpace(void);
-
-/******************************************************************************
- * FUNCTION:        void AcpiCleanup (void)
- *
- * PARAMETERS:      none
- *
- * RETURN:          none
- *
- * DESCRIPTION: Exit function registered by AcpiInit().  This function will
- *                          free memory allocated for table storage.
- *
- ******************************************************************************/
 void
 AcpiCleanup (void);
 
-/****************************************************************************
- * FUNCTION:    NsValType
- *
- * PARAMETERS:  NsHandle h      Handle of nte to be examined
- *
- * RETURN:      Type field from nte whose handle is passed
- *
- ***************************************************************************/
-
 NsType
-NsValType(NsHandle h);
-
-
-/****************************************************************************
- * FUNCTION:    NsValPtr
- *
- * PARAMETERS:  NsHandle h      Handle of nte to be examined
- *
- * RETURN:      Val field from nte whose handle is passed
- *
- ***************************************************************************/
+NsValType (NsHandle h);
 
 void *
-NsValPtr(NsHandle h);
-
-
-/****************************************************************************
- * FUNCTION:    NsSetup
- *
- * PARAMETERS:  none
- *
- * DESCRIPTION: Allocate and initialize the root name table
- *
- ***************************************************************************/
+NsValPtr (NsHandle h);
 
 void
-NsSetup(void);
+NsSetup (void);
 
-
-/****************************************************************************
- * FUNCTION:    NsPopCurrent
- *
- * PARAMETERS:  NsType Type    The type of frame to be found
- *
- * DESCRIPTION: Pop the scope stack until a frame of the requested type
- *              is found.
- *
- * RETURN:      Count of frames popped.  If no frame of the requested type
- *              was found, the count is returned as a negative number and
- *              the scope stack is emptied (which sets the current scope
- *              to the root).  If the scope stack was empty at entry, the
- *              function is a no-op and returns 0.
- *
- ***************************************************************************/
-
-int
-NsPopCurrent(NsType Type);
-
-
-/****************************************************************************
-* FUNCTION:     NsEnter
- *
- * PARAMETERS:  char  *Name   name to be entered, in internal format
- *                              as represented in the AML stream
- *              NsType Type    type associated with name
- *              OpMode iLE      Load => add name if not found
- *
- * RETURN:      Handle to the nte for the passed name
- *
- * DESCRIPTION: Find or enter the passed name in the name space.
- *
- ***************************************************************************/
+INT32
+NsPopCurrent (NsType Type);
 
 NsHandle
-NsEnter(char *Name, NsType Type, OpMode iLE);
-
-
-/****************************************************************************
- * FUNCTION:    GetParentHandle
- *
- * PARAMETERS:  NsHandle Look - Handle whose parent is to be returned
- *
- * RETURN:      Parent of parameter.    NOTFOUND if Look is invalid
- *              or Look refers to the root.
- *
- ***************************************************************************/
+NsEnter (char *Name, NsType Type, OpMode iLE);
 
 NsHandle 
-GetParentHandle(NsHandle Look);
-
-
-/****************************************************************************
- * FUNCTION:    NsNameOfCurrentScope
- *
- * PARAMETERS:  none
- *
- * RETURN:      pointer to storage containing the name of the current scope
- *
- * DESCRIPTION:
- *
- ***************************************************************************/
+GetParentHandle (NsHandle Look);
 
 char *
-NsNameOfCurrentScope(void);
-
-
-/****************************************************************************
- * FUNCTION:    NsFullyQualifiedName
- *
- * PARAMETERS:  NsHandle Look      handle of nte whose name is to be found
- *
- * RETURN:      pointer to storage containing the name, in external format
- *
- * DESCRIPTION:
- *
- ***************************************************************************/
+NsNameOfCurrentScope (void);
 
 char *
-NsFullyQualifiedName(NsHandle Look);
-
-
-/****************************************************************************
- * FUNCTION:    NsSetMethod
- *
- * PARAMETERS:  NsHandle        h           handle of nte to be set
- *              ptrdiff_t       Offset     value to be set
- *              long            Length     length associated with value
- *
- * DESCRIPTION: Record the given offset and p-code length of the method
- *              whose handle is passed
- *
- ***************************************************************************/
+NsFullyQualifiedName (NsHandle Look);
 
 void
-NsSetMethod(NsHandle h, ptrdiff_t Offset, long Length);
-
-
-/****************************************************************************
- * FUNCTION:    NsSetValue
- *
- * PARAMETERS:  NsHandle            h          handle of nte to be set
- *              ACPI_OBJECT_HANDLE  v          value to be set
- *              BYTE                ValTyp     type of value,
- *                                              or Any if not known
- *
- * DESCRIPTION: Record the given object as the value associated with the
- *              name whose NsHandle is passed
- *
- ***************************************************************************/
+NsSetMethod (NsHandle h, ptrdiff_t Offset, INT32 Length);
 
 void
-NsSetValue(NsHandle h, ACPI_OBJECT_HANDLE v, BYTE ValTyp);
-
-
-/****************************************************************************
- * FUNCTION:    NsDumpTables
- *
- * PARAMETERS:  int DisplayBitFlags        See definitions of OUTPUT_DATA
- *                                          and related symbols in display.h
- *              int UseGraphicCharSet      1 => use graphic character set to
- *                                          draw links in name space tree
- *                                          0 => use +, -, and | to draw links
- *              NsHandle SearchBase        Root of subtree to be dumped, or
- *                                          NS_ALL to dump the entire namespace
- *              int     MaxDepth           Maximum depth of dump.  Use INT_MAX
- *                                          for an effectively unlimited depth.
- *
- * DESCRIPTION: Dump the name space, or a portion of it.
- *
- ***************************************************************************/
+NsSetValue (NsHandle h, ACPI_OBJECT_HANDLE v, UINT8 ValTyp);
 
 void
-NsDumpTables(int DisplayBitFlags, int UseGraphicCharSet,
-                NsHandle SearchBase, int MaxDepth);
-
-
-/****************************************************************************
- * FUNCTION:    NsDumpEntry
- *
- * PARAMETERS:  NsHandle h      Entry to be dumped
- *
- * DESCRIPTION: Dump a single nte
- *
- ***************************************************************************/
+NsDumpTables (INT32 DisplayBitFlags, INT32 UseGraphicCharSet,
+                NsHandle SearchBase, INT32 MaxDepth);
 
 void
-NsDumpEntry(NsHandle h, int DisplayBitFlags);
-
-
-/****************************************************************************
- * FUNCTION:    NsFindNames
- *
- * PARAMETERS:  char        *SearchFor    pattern to be found.
- *                                          4 bytes, ? matches any character.
- *                                          If NULL, "????" will be used.
- *              NsHandle    SearchBase     Root of subtree to be searched, or
- *                                          NS_ALL to search the entire namespace
- *              int         MaxDepth       Maximum depth of search.  Use INT_MAX
- *                                          for an effectively unlimited depth.
- *
- * DESCRIPTION: Traverse the name space finding names which match a search
- *              pattern, and return an array of handles.  The end of the
- *              array is marked by the value (NsHandle)0.  A return value
- *              of (NsHandle *)0 indicates that no matching names were
- *              found or that space for the list could not be allocated.
- *              if SearchBase is NS_ALL (null) search from the root,
- *              else it is a handle whose children are to be searched.
- *
- ***************************************************************************/
+NsDumpEntry (NsHandle h, INT32 DisplayBitFlags);
 
 NsHandle *
-NsFindNames(char *SearchFor, NsHandle SearchBase, int MaxDepth);
-
-
-/****************************************************************************
- * FUNCTION:    NsGetHandle
- *
- * PARAMETERS:  char        *Name     Name to be found, in external (ASL)
- *                                      format.  The \ and ^ prefixes, and the
- *                                      . to separate segments, are supported.
- *
- *              NsHandle    Scope      Root of subtree to be searched, or
- *                                      NS_ALL for the root of the name space.
- *                                      If Name is fully qualified (first char
- *                                      is '\'), the passed value of Scope will
- *                                      not be accessed.
- *
- * DESCRIPTION: Look up a name relative to a given scope and return the
- *              corresponding handle, or (NsHandle)NOTFOUND.
- *
- ***************************************************************************/
+NsFindNames (char *SearchFor, NsHandle SearchBase, INT32 MaxDepth);
 
 NsHandle
-NsGetHandle(char *Name, NsHandle Scope);
+NsGetHandle (char *Name, NsHandle Scope);
 
+INT32
+IsNsValue (OBJECT_DESCRIPTOR *pOD);
 
-/*****************************************************************************
- * FUNCTION:    IsNsValue
- *
- * PARAMETERS:  OBJECT_DESCRIPTOR *pOD
- *
- * RETURN:      TRUE if the passed descriptor is the value of a Name in
- *              the name space, else FALSE
- *
- ****************************************************************************/
-
-int
-IsNsValue(OBJECT_DESCRIPTOR *pOD);
-
-
-/****************************************************************************
- * FUNCTION:    NsMarkNS
- *
- * PARAMETERS:  none
- *
- * DESCRIPTION: If compiled with bu_plumr.h, traverse the name space
- *              "marking" all name tables and reachable values.
- *
- * RETURN:      The number of blocks marked
- *
- ***************************************************************************/
-
-int
+INT32
 NsMarkNS(void);
 
 
@@ -569,32 +273,11 @@ NsMarkNS(void);
 
 #else
 
-/****************************************************************************
- * FUNCTION:    RegisterStaticBlockPtr
- *
- * PARAMETERS:  void    **BP         Addr of static pointer to be registered
- *
- * DESCRIPTION: If compiled with bu_plumr.h, add the pointer whose address
- *              is passed to the registry.  MarkStaticBlocks() will then
- *              "mark" each block pointed to by a registered pointer.
- *
- ***************************************************************************/
+void
+RegisterStaticBlockPtr (void **BP);
 
 void
-RegisterStaticBlockPtr(void **BP);
-
-
-/****************************************************************************
- * FUNCTION:    MarkStaticBlocks
- *
- * PARAMETERS:  int *Count        Count of blocks marked
- *
- * DESCRIPTION: "Mark" all blocks pointed to by registered static pointers
- *
- ***************************************************************************/
-void
-MarkStaticBlocks(int *Count)
-;
+MarkStaticBlocks (INT32 *Count);
 
 #endif /* PLUMBER */
 
