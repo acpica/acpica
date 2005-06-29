@@ -479,7 +479,7 @@ CmAllocateOwnerId (
     FUNCTION_TRACE ("CmAllocateOwnerId");
 
 
-    CmAcquireMutex (MTX_MEMORY);
+    CmAcquireMutex (MTX_CACHES);
 
     switch (IdType)
     {
@@ -508,7 +508,7 @@ CmAllocateOwnerId (
     }
 
 
-    CmReleaseMutex (MTX_MEMORY);
+    CmReleaseMutex (MTX_CACHES);
 
     return_VALUE (OwnerId);
 }
@@ -627,6 +627,11 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_ObjectCacheDepth        = 0;
     Gbl_ObjectCacheRequests     = 0;
     Gbl_ObjectCacheHits         = 0;
+
+    Gbl_WalkStateCache          = NULL;
+    Gbl_WalkStateCacheDepth     = 0;
+    Gbl_WalkStateCacheRequests  = 0;
+    Gbl_WalkStateCacheHits      = 0;
 
     /* Interpreter */
 
