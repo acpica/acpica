@@ -14,15 +14,17 @@
  | Functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.7 $
- | $Date: 2005/06/29 18:15:29 $
+ | $Revision: 1.8 $
+ | $Date: 2005/06/29 18:15:31 $
  | $Log: nsaccess.c,v $
- | Revision 1.7  2005/06/29 18:15:29  aystarik
- | Polish Conversion Complete - Compiles
+ | Revision 1.8  2005/06/29 18:15:31  aystarik
+ |
  |
  | 
- | date	99.02.16.17.05.00;	author rmosgrov;	state Exp;
+ | date	99.02.16.23.36.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 8     2/16/99 3:36p Rmosgrov
  * 
  * 7     2/16/99 9:05a Rmosgrov
  * Polish Conversion Complete - Compiles 
@@ -860,6 +862,32 @@ InternalizeName (char *DottedName)
     return pcIN;
 }
 
+/****************************************************************************
+ *
+ *  FUNCTION:       int PriUnloadNameSpace (void)
+ *
+ *  PARAMETERS:     none
+ *
+ *  RETURN:         E_OK or E_ERROR
+ *
+ *  DESCRIPTION:    Contracts namespace, typically in response to an undocking
+ *                      event
+ *
+ ****************************************************************************/
+
+int
+PriUnloadNameSpace (void)
+{
+    FUNCTION_TRACE ("PriUnloadNameSpace");
+
+
+    if ((nte *)0 == Root)
+    {
+        return E_ERROR;
+    }
+    
+    return (E_OK);
+}
 
 /****************************************************************************
  *
@@ -1130,38 +1158,10 @@ BREAKPOINT3;
 int
 AcpiLoadTableInNameSpace (void)
 {
-    FUNCTION_TRACE ("AcpiLoadNameSpace");
+    FUNCTION_TRACE ("AcpiLoadTableInNameSpace");
 
 
     if ((nte *) 0 == Root)
-    {
-        return E_ERROR;
-    }
-    
-    return (E_OK);
-}
-
-
-/****************************************************************************
- *
- *  FUNCTION:       int AcpiUnloadNameSpace (void)
- *
- *  PARAMETERS:     none
- *
- *  RETURN:         E_OK or E_ERROR
- *
- *  DESCRIPTION:    Contracts namespace, typically in response to an undocking
- *                      event
- *
- ****************************************************************************/
-
-int
-AcipUnloadNameSpace (void)
-{
-    FUNCTION_TRACE ("AcipUnloadNameSpace");
-
-
-    if ((nte *)0 == Root)
     {
         return E_ERROR;
     }
