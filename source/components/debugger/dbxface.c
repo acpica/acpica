@@ -251,7 +251,7 @@ DbSingleStep (
 
     if (Gbl_StepToNextCall)
     {
-        if (Op->Opcode != AML_METHODCALL)
+        if (Op->Opcode != AML_METHODCALL_OP)
         {
             /* Not a method call, just keep executing */
 
@@ -269,7 +269,7 @@ DbSingleStep (
      * by default.
      */
 
-    if (Op->Opcode == AML_METHODCALL)
+    if (Op->Opcode == AML_METHODCALL_OP)
     {
         Gbl_CmSingleStep = FALSE;  /* No more single step while executing called method */
 
