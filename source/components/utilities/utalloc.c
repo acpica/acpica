@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.94 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -201,7 +201,7 @@ AcpiUtAcquireFromCache (
     void                    *Object;
 
 
-    PROC_NAME ("AcpiUtAcquireFromCache");
+    PROC_NAME ("UtAcquireFromCache");
 
     CacheInfo = &AcpiGbl_MemoryLists[ListId];
     AcpiUtAcquireMutex (ACPI_MTX_CACHES);
@@ -219,7 +219,7 @@ AcpiUtAcquireFromCache (
         ACPI_MEM_TRACKING (CacheInfo->CacheHits++);
         CacheInfo->CacheDepth--;
 
-        DEBUG_PRINTP (TRACE_EXEC, ("Object %p from cache %d\n", Object, ListId));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Object %p from cache %d\n", Object, ListId));
 
         AcpiUtReleaseMutex (ACPI_MTX_CACHES);
 
@@ -391,7 +391,7 @@ AcpiUtAddElementToAllocList (
         REPORT_ERROR (("UtAddElementToAllocList: Address already present in list! (%p)\n",
             Address));
 
-        DEBUG_PRINTP (ACPI_ERROR, ("Element %p Address %p\n", Element, Address));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Element %p Address %p\n", Element, Address));
 
         goto UnlockAndExit;
     }
@@ -493,7 +493,7 @@ AcpiUtDeleteElementFromAllocList (
 
     MEMSET (&Address->UserSpace, 0xEA, Address->Size);
 
-    DEBUG_PRINTP (TRACE_ALLOCATIONS, ("Freeing size %X\n", Address->Size));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "Freeing size %X\n", Address->Size));
 
     AcpiUtReleaseMutex (ACPI_MTX_MEMORY);
     return_ACPI_STATUS (AE_OK);
@@ -523,34 +523,34 @@ AcpiUtDumpAllocationInfo (
     FUNCTION_TRACE ("UtDumpAllocationInfo");
 
 /*
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+    ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("%30s: %4d (%3d Kb)\n", "Current allocations",
                     MemList->CurrentCount,
                     ROUND_UP_TO_1K (MemList->CurrentSize)));
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+    ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("%30s: %4d (%3d Kb)\n", "Max concurrent allocations",
                     MemList->MaxConcurrentCount,
                     ROUND_UP_TO_1K (MemList->MaxConcurrentSize)));
 
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+    ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("%30s: %4d (%3d Kb)\n", "Total (all) internal objects",
                     RunningObjectCount,
                     ROUND_UP_TO_1K (RunningObjectSize)));
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+    ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("%30s: %4d (%3d Kb)\n", "Total (all) allocations",
                     RunningAllocCount,
                     ROUND_UP_TO_1K (RunningAllocSize)));
 
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+    ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("%30s: %4d (%3d Kb)\n", "Current Nodes",
                     AcpiGbl_CurrentNodeCount,
                     ROUND_UP_TO_1K (AcpiGbl_CurrentNodeSize)));
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+    ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("%30s: %4d (%3d Kb)\n", "Max Nodes",
                     AcpiGbl_MaxConcurrentNodeCount,
                     ROUND_UP_TO_1K ((AcpiGbl_MaxConcurrentNodeCount * sizeof (ACPI_NAMESPACE_NODE)))));
@@ -587,8 +587,8 @@ AcpiUtDumpCurrentAllocations (
 
     if (Element == NULL)
     {
-        DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                ("No outstanding allocations.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+                "No outstanding allocations.\n"));
         return_VOID;
     }
 
@@ -598,16 +598,16 @@ AcpiUtDumpCurrentAllocations (
      */
     AcpiUtAcquireMutex (ACPI_MTX_MEMORY);
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-        ("Outstanding allocations:\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+        "Outstanding allocations:\n"));
 
     for (i = 1; ; i++)  /* Just a counter */
     {
         if ((Element->Component & Component) &&
             ((Module == NULL) || (0 == STRCMP (Module, Element->Module))))
         {
-            DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                        ("%p Len %04lX %9.9s-%ld",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+                        "%p Len %04lX %9.9s-%ld",
                         &Element->UserSpace, Element->Size, Element->Module,
                         Element->Line));
 
@@ -617,30 +617,30 @@ AcpiUtDumpCurrentAllocations (
                 (&Element->UserSpace))->Common.DataType)
             {
             case ACPI_DESC_TYPE_INTERNAL:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
-                        (" ObjType %s",
+                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ALLOCATIONS,
+                        " ObjType %s",
                         AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT  *)(&Element->UserSpace))->Common.Type)));
                 break;
 
             case ACPI_DESC_TYPE_PARSER:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
-                        (" ParseObj Opcode %04X",
+                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ALLOCATIONS,
+                        " ParseObj Opcode %04X",
                         ((ACPI_PARSE_OBJECT *)(&Element->UserSpace))->Opcode));
                 break;
 
             case ACPI_DESC_TYPE_NAMED:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
-                        (" Node %4.4s",
+                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ALLOCATIONS,
+                        " Node %4.4s",
                         &((ACPI_NAMESPACE_NODE *)(&Element->UserSpace))->Name));
                 break;
 
             case ACPI_DESC_TYPE_STATE:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
-                        (" StateObj"));
+                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ALLOCATIONS,
+                        " StateObj"));
                 break;
             }
 
-            DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, ("\n"));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ALLOCATIONS, "\n"));
         }
 
         if (Element->Next == NULL)
@@ -653,8 +653,8 @@ AcpiUtDumpCurrentAllocations (
 
     AcpiUtReleaseMutex (ACPI_MTX_MEMORY);
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-        ("Total number of unfreed allocations = %d(%X)\n", i,i));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+        "Total number of unfreed allocations = %d(%X)\n", i,i));
 
 
     return_VOID;
@@ -688,7 +688,7 @@ AcpiUtAllocate (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_U32 ("AcpiUtAllocate", Size);
+    FUNCTION_TRACE_U32 ("UtAllocate", Size);
 
 
     /* Check for an inadvertent size of zero bytes */
@@ -722,7 +722,7 @@ AcpiUtAllocate (
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].TotalAllocated++;
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].CurrentTotalSize += Size;
 
-    DEBUG_PRINTP (TRACE_ALLOCATIONS, ("%p Size %X\n", Address, Size));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "%p Size %X\n", Address, Size));
 
     return_PTR ((void *) &Address->UserSpace);
 }
@@ -754,7 +754,7 @@ AcpiUtCallocate (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_U32 ("AcpiUtCallocate", Size);
+    FUNCTION_TRACE_U32 ("UtCallocate", Size);
 
 
     /* Check for an inadvertent size of zero bytes */
@@ -788,7 +788,7 @@ AcpiUtCallocate (
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].TotalAllocated++;
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].CurrentTotalSize += Size;
 
-    DEBUG_PRINTP (TRACE_ALLOCATIONS, ("%p Size %X\n", Address, Size));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "%p Size %X\n", Address, Size));
     return_PTR ((void *) &Address->UserSpace);
 }
 
@@ -818,7 +818,7 @@ AcpiUtFree (
     ACPI_DEBUG_MEM_BLOCK    *DebugBlock;
 
 
-    FUNCTION_TRACE_PTR ("AcpiUtFree", Address);
+    FUNCTION_TRACE_PTR ("UtFree", Address);
 
 
     if (NULL == Address)
@@ -839,7 +839,7 @@ AcpiUtFree (
             Component, Module, Line);
     AcpiOsFree (DebugBlock);
 
-    DEBUG_PRINTP (TRACE_ALLOCATIONS, ("%p freed\n", Address));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "%p freed\n", Address));
 
     return_VOID;
 }
