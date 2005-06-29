@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -303,7 +303,11 @@ AcpiNsInitOneObject (
                             AcpiCmFormatException (Status), &Node->Name));
         }
 
-        DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        if (!(AcpiDbgLevel & TRACE_INIT))
+        {
+            DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        }
+
         break;
 
 
@@ -323,7 +327,11 @@ AcpiNsInitOneObject (
             DEBUG_PRINT (ACPI_ERROR, ("%s while getting field arguments [%4.4s]\n",
                             AcpiCmFormatException (Status), &Node->Name));
         }
-        DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        if (!(AcpiDbgLevel & TRACE_INIT))
+        {
+            DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        }
+
 
         break;
 
@@ -343,7 +351,7 @@ AcpiNsInitOneObject (
  *
  * FUNCTION:    AcpiNsInitOneDevice
  *
- * PARAMETERS:  The usual "I'm a namespace callback" stuff
+ * PARAMETERS:  WALK_CALLBACK
  *
  * RETURN:      ACPI_STATUS
  *
@@ -369,7 +377,11 @@ AcpiNsInitOneDevice (
     FUNCTION_TRACE ("AcpiNsInitOneDevice");
 
 
-    DEBUG_PRINT_RAW (ACPI_OK, ("."));
+    if (!(AcpiDbgLevel & TRACE_INIT))
+    {
+        DEBUG_PRINT_RAW (ACPI_OK, ("."));
+    }
+
     Info->DeviceCount++;
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -387,6 +399,7 @@ AcpiNsInitOneDevice (
      * Run _STA to determine if we can run _INI on the device.
      */
 
+    AcpiCmDisplayInitPathname (Node, "_STA  [Method]");
     Status = AcpiCmExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
     {
@@ -403,10 +416,13 @@ AcpiNsInitOneDevice (
         return_ACPI_STATUS(AE_CTRL_DEPTH);
     }
 
+
+
     /*
      * The device is present. Run _INI.
      */
 
+    AcpiCmDisplayInitPathname (ObjHandle, "_INI  [Method]");
     Status = AcpiNsEvaluateRelative (ObjHandle, "_INI", NULL, NULL);
     if (AE_NOT_FOUND == Status)
     {
