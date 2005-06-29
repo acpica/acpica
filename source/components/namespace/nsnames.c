@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.73 $
+ *              $Revision: 1.76 $
  *
  ******************************************************************************/
 
@@ -118,12 +118,11 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsnames")
+        ACPI_MODULE_NAME    ("nsnames")
 
 
 /*******************************************************************************
@@ -147,11 +146,11 @@ AcpiNsBuildExternalPath (
     ACPI_SIZE               Size,
     NATIVE_CHAR             *NameBuffer)
 {
-    UINT32                  Index;
+    ACPI_SIZE               Index;
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    PROC_NAME ("NsBuildExternalPath");
+    ACPI_FUNCTION_NAME ("NsBuildExternalPath");
 
 
     /* Special case for root */
@@ -175,7 +174,7 @@ AcpiNsBuildExternalPath (
 
         /* Put the name into the buffer */
 
-        MOVE_UNALIGNED32_TO_32 ((NameBuffer + Index), &ParentNode->Name);
+        ACPI_MOVE_UNALIGNED32_TO_32 ((NameBuffer + Index), &ParentNode->Name);
         ParentNode = AcpiNsGetParentNode (ParentNode);
 
         /* Prefix name with the path separator */
@@ -222,7 +221,7 @@ AcpiNsGetExternalPathname (
     ACPI_SIZE               Size;
 
 
-    FUNCTION_TRACE_PTR ("NsGetExternalPathname", Node);
+    ACPI_FUNCTION_TRACE_PTR ("NsGetExternalPathname", Node);
 
 
     /* Calculate required buffer size based on depth below root */
@@ -234,7 +233,7 @@ AcpiNsGetExternalPathname (
     NameBuffer = ACPI_MEM_CALLOCATE (Size);
     if (!NameBuffer)
     {
-        REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
+        ACPI_REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
         return_PTR (NULL);
     }
 
@@ -266,7 +265,7 @@ AcpiNsGetPathnameLength (
     ACPI_NAMESPACE_NODE     *NextNode;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*
@@ -310,7 +309,7 @@ AcpiNsHandleToPathname (
     ACPI_SIZE               RequiredSize;
 
 
-    FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
+    ACPI_FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
 
     Node = AcpiNsMapHandleToNode (TargetHandle);
