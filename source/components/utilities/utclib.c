@@ -120,8 +120,8 @@
 #include <acpi.h>
 #include <events.h>
 #include <hardware.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include <namesp.h>
+#include <interp.h>
 #include <amlcode.h>
 
 /*
@@ -132,6 +132,12 @@
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cmclib");
+
+
+#ifdef _MSC_VER                 /* disable some level-4 warnings for VC++ */
+#pragma warning(disable:4706)   /* warning C4706: assignment within conditional expression */
+#endif
+
 
 
 /*******************************************************************************
@@ -652,6 +658,86 @@ ToLower (INT32 c)
 
 /*******************************************************************************
  *
+ * FUNCTION:    strupr
+ *
+ * PARAMETERS:  SrcString       - The source string to convert to 
+ *
+ * RETURN:      SrcString
+ *
+ * DESCRIPTION: Convert string to uppercase
+ *
+ ******************************************************************************/
+
+char *
+_strupr (
+    char                    *SrcString)
+{
+    char                    *String;
+
+
+
+    /* Walk entire string, uppercasing the letters */
+
+    for (String = SrcString; *String; )
+    {
+        *String = (char) ToUpper (*String);
+        String++;
+    }
+
+
+    return SrcString;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    strstr
+ *
+ * PARAMETERS:  String1       - 
+ *              String2
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: Checks if String2 occurs in String1. This is not really a
+ *              full implementation of strstr, only sufficient for command
+ *              matching
+ *
+ ******************************************************************************/
+
+char *
+_strstr (
+    char                    *String1,
+    char                    *String2)
+{
+    char                    *String;
+
+
+
+    if (_strlen (String2) > _strlen (String1))
+    {
+        return NULL;
+    }
+
+    /* Walk entire string, uppercasing the letters */
+
+    for (String = String1; *String2; )
+    {
+        if (*String2 != *String)
+        {
+            return NULL;
+        }
+        
+        String2++;
+        String++;
+    }
+
+
+    return String1;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    strtoul 
  *
  * PARAMETERS:  String          - Null terminated string
@@ -793,7 +879,7 @@ _strtoul (
          * Check to see if value is out of range:
          */
 
-        if (ReturnValue > ((ACPI_UINT_MAX - (UINT32) index) /
+        if (ReturnValue > ((ACPI_UINT32_MAX - (UINT32) index) /
                             (UINT32) Base)) 
         {
             Status = AE_ERROR;
@@ -830,7 +916,7 @@ done:
 
     if (Status == AE_ERROR)
     {
-        ReturnValue = ACPI_UINT_MAX;
+        ReturnValue = ACPI_UINT32_MAX;
     }
 
     /*
@@ -838,7 +924,7 @@ done:
      */
     if (sign == NEGATIVE) 
     {
-        ReturnValue = (ACPI_UINT_MAX - ReturnValue) + 1;
+        ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
     }
 
     return (ReturnValue);
