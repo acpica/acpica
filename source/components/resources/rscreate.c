@@ -1,16 +1,17 @@
-/*******************************************************************************
+/******************************************************************************
  *
- * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.67 $
+ * Module Name: rscreate - AcpiRsCreateResourceList
+ *                         AcpiRsCreatePciRoutingTable
+ *                         AcpiRsCreateByteStream
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -119,19 +120,19 @@
 
 #include "acpi.h"
 #include "acresrc.h"
-#include "amlcode.h"
-#include "acnamesp.h"
 
-#define _COMPONENT          ACPI_RESOURCES
-        ACPI_MODULE_NAME    ("rscreate")
+#define _COMPONENT          RESOURCE_MANAGER
+        MODULE_NAME         ("rscreate");
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiRsCreateResourceList
  *
- * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource byte stream
+ * PARAMETERS:
+ *              ByteStreamBuffer        - Pointer to the resource byte stream
  *              OutputBuffer            - Pointer to the user's buffer
+ *              OutputBufferLength      - Pointer to the size of OutputBuffer
  *
  * RETURN:      Status  - AE_OK if okay, else a valid ACPI_STATUS code
  *              If OutputBuffer is not large enough, OutputBufferLength
@@ -146,25 +147,31 @@
 
 ACPI_STATUS
 AcpiRsCreateResourceList (
-    ACPI_OPERAND_OBJECT     *ByteStreamBuffer,
-    ACPI_BUFFER             *OutputBuffer)
+    ACPI_OBJECT_INTERNAL    *ByteStreamBuffer,
+    UINT8                   *OutputBuffer,
+    UINT32                  *OutputBufferLength)
 {
 
-    ACPI_STATUS             Status;
-    UINT8                   *ByteStreamStart;
-    ACPI_SIZE               ListSizeNeeded = 0;
-    UINT32                  ByteStreamBufferLength;
+    ACPI_STATUS             Status = AE_UNKNOWN_STATUS;
+    UINT8                   *ByteStreamStart = NULL;
+    UINT32                  ListSizeNeeded = 0;
+    UINT32                  ByteStreamBufferLength = 0;
 
 
-    ACPI_FUNCTION_TRACE ("RsCreateResourceList");
+    FUNCTION_TRACE ("RsCreateResourceList");
 
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "ByteStreamBuffer = %p\n",
-        ByteStreamBuffer));
+    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateResourceList: ByteStreamBuffer = %p\n",
+                 ByteStreamBuffer));
 
     /*
-     * Params already validated, so we don't re-validate here
+     * Validate parameters:
      */
+    if (!ByteStreamBuffer ||
+       (!OutputBuffer && 0 != *OutputBufferLength))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
     ByteStreamBufferLength = ByteStreamBuffer->Buffer.Length;
     ByteStreamStart = ByteStreamBuffer->Buffer.Pointer;
 
@@ -172,36 +179,59 @@ AcpiRsCreateResourceList (
      * Pass the ByteStreamBuffer into a module that can calculate
      * the buffer size needed for the linked list
      */
-    Status = AcpiRsGetListLength (ByteStreamStart, ByteStreamBufferLength,
-                &ListSizeNeeded);
+    Status = AcpiRsCalculateListLength (ByteStreamStart,
+                                        ByteStreamBufferLength,
+                                        &ListSizeNeeded);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Status=%X ListSizeNeeded=%X\n",
-        Status, (UINT32) ListSizeNeeded));
-    if (ACPI_FAILURE (Status))
+    DEBUG_PRINT (VERBOSE_INFO,
+        ("RsCreateResourceList: Status=%d ListSizeNeeded=%d\n",
+        Status, ListSizeNeeded));
+
+    /*
+     * Exit with the error passed back
+     */
+    if (AE_OK != Status)
     {
         return_ACPI_STATUS (Status);
     }
 
-    /* Validate/Allocate/Clear caller buffer */
+    /*
+     * If the linked list will fit into the available buffer
+     * call to fill in the list
+     */
 
-    Status = AcpiUtInitializeBuffer (OutputBuffer, ListSizeNeeded);
-    if (ACPI_FAILURE (Status))
+    if (ListSizeNeeded <= *OutputBufferLength)
     {
-        return_ACPI_STATUS (Status);
+        /*
+         * Zero out the return buffer before proceeding
+         */
+        MEMSET (OutputBuffer, 0x00, *OutputBufferLength);
+
+        Status = AcpiRsByteStreamToList (ByteStreamStart,
+                                         ByteStreamBufferLength,
+                                         &OutputBuffer);
+
+        /*
+         * Exit with the error passed back
+         */
+        if (AE_OK != Status)
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        DEBUG_PRINT (VERBOSE_INFO, ("RsByteStreamToList: OutputBuffer = %p\n",
+                                     OutputBuffer));
     }
 
-    /* Do the conversion */
-
-    Status = AcpiRsByteStreamToList (ByteStreamStart, ByteStreamBufferLength,
-                    OutputBuffer->Pointer);
-    if (ACPI_FAILURE (Status))
+    else
     {
-        return_ACPI_STATUS (Status);
+        *OutputBufferLength = ListSizeNeeded;
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer %p Length %X\n",
-            OutputBuffer->Pointer, (UINT32) OutputBuffer->Length));
+    *OutputBufferLength = ListSizeNeeded;
     return_ACPI_STATUS (AE_OK);
+
 }
 
 
@@ -209,243 +239,305 @@ AcpiRsCreateResourceList (
  *
  * FUNCTION:    AcpiRsCreatePciRoutingTable
  *
- * PARAMETERS:  PackageObject           - Pointer to an ACPI_OPERAND_OBJECT
- *                                        package
+ * PARAMETERS:
+ *              PackageObject           - Pointer to an ACPI_OBJECT_INTERNAL
+ *                                          package
  *              OutputBuffer            - Pointer to the user's buffer
+ *              OutputBufferLength      - Size of OutputBuffer
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code.
  *              If the OutputBuffer is too small, the error will be
- *              AE_BUFFER_OVERFLOW and OutputBuffer->Length will point
+ *              AE_BUFFER_OVERFLOW and OutputBufferLength will point
  *              to the size buffer needed.
  *
- * DESCRIPTION: Takes the ACPI_OPERAND_OBJECT  package and creates a
+ * DESCRIPTION: Takes the ACPI_OBJECT_INTERNAL package and creates a
  *              linked list of PCI interrupt descriptions
- *
- * NOTE: It is the caller's responsibility to ensure that the start of the
- * output buffer is aligned properly (if necessary).
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsCreatePciRoutingTable (
-    ACPI_OPERAND_OBJECT     *PackageObject,
-    ACPI_BUFFER             *OutputBuffer)
+    ACPI_OBJECT_INTERNAL    *PackageObject,
+    UINT8                   *OutputBuffer,
+    UINT32                  *OutputBufferLength)
 {
-    UINT8                   *Buffer;
-    ACPI_OPERAND_OBJECT     **TopObjectList;
-    ACPI_OPERAND_OBJECT     **SubObjectList;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_SIZE               BufferSizeNeeded = 0;
-    UINT32                  NumberOfElements;
-    UINT32                  Index;
-    ACPI_PCI_ROUTING_TABLE  *UserPrt;
-    ACPI_NAMESPACE_NODE     *Node;
-    ACPI_STATUS             Status;
-    ACPI_BUFFER             PathBuffer;
+    UINT8                   *Buffer = OutputBuffer;
+    ACPI_OBJECT_INTERNAL    **TopObjectList = NULL;
+    ACPI_OBJECT_INTERNAL    **SubObjectList = NULL;
+    ACPI_OBJECT_INTERNAL    *PackageElement = NULL;
+    UINT32                  BufferSizeNeeded = 0;
+    UINT32                  NumberOfElements = 0;
+    UINT32                  Index = 0;
+    UINT8                   TableIndex = 0;
+    BOOLEAN                 NameFound = FALSE;
+    PCI_ROUTING_TABLE       *UserPrt = NULL;
 
 
-    ACPI_FUNCTION_TRACE ("RsCreatePciRoutingTable");
-
-
-    /* Params already validated, so we don't re-validate here */
+    FUNCTION_TRACE ("RsCreatePciRoutingTable");
 
     /*
-     * Get the required buffer length
+     * Validate parameters:
      */
-    Status = AcpiRsGetPciRoutingTableLength (PackageObject,
-                &BufferSizeNeeded);
-    if (ACPI_FAILURE (Status))
+    if (!PackageObject ||
+       (!OutputBuffer && 0 != *OutputBufferLength))
     {
-        return_ACPI_STATUS (Status);
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "BufferSizeNeeded = %X\n",
-        (UINT32) BufferSizeNeeded));
-
-    /* Validate/Allocate/Clear caller buffer */
-
-    Status = AcpiUtInitializeBuffer (OutputBuffer, BufferSizeNeeded);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /*
-     * Loop through the ACPI_INTERNAL_OBJECTS - Each object
-     * should be a package that in turn contains an
-     * ACPI_INTEGER Address, a UINT8 Pin, a Name and a UINT8 SourceIndex.
+     * Calculate the buffer size needed for the routing table.
      */
-    TopObjectList    = PackageObject->Package.Elements;
     NumberOfElements = PackageObject->Package.Count;
-    Buffer           = OutputBuffer->Pointer;
-    UserPrt          = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
+
+    /*
+     * Calculate the size of the return buffer.
+     * The base size is the number of elements * the sizes of the
+     * structures.  Additional space for the strings is added below.
+     * The minus one is to subtract the size of the UINT8 Source[1]
+     * member because it is added below.
+     *
+     * NOTE: The NumberOfElements is incremented by one to add an end
+     * table structure that is essentially a structure of zeros.
+     */
+    BufferSizeNeeded = (NumberOfElements + 1) *
+                       (sizeof (PCI_ROUTING_TABLE) - 1);
+
+    /*
+     * But each PRT_ENTRY structure has a pointer to a string and
+     * the size of that string must be found.
+     */
+    TopObjectList = PackageObject->Package.Elements;
 
     for (Index = 0; Index < NumberOfElements; Index++)
     {
         /*
-         * Point UserPrt past this current structure
-         *
-         * NOTE: On the first iteration, UserPrt->Length will
-         * be zero because we cleared the return buffer earlier
+         * Dereference the sub-package
          */
-        Buffer += UserPrt->Length;
-        UserPrt = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
+        PackageElement = *TopObjectList;
 
         /*
-         * Fill in the Length field with the information we have at this point.
-         * The minus four is to subtract the size of the UINT8 Source[4] member
-         * because it is added below.
+         * The SubObjectList will now point to an array of the
+         * four IRQ elements: Address, Pin, Source and SourceIndex
          */
-        UserPrt->Length = (sizeof (ACPI_PCI_ROUTING_TABLE) - 4);
+        SubObjectList = PackageElement->Package.Elements;
 
         /*
-         * Each element of the top-level package must also be a package
+         * Scan the IrqTableElements for the Source Name String
          */
-        if (ACPI_GET_OBJECT_TYPE (*TopObjectList) != ACPI_TYPE_PACKAGE)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "(PRT[%X]) Need sub-package, found %s\n",
-                Index, AcpiUtGetObjectTypeName (*TopObjectList)));
-            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-        }
+        NameFound = FALSE;
 
-        /* Each sub-package must be of length 4 */
-
-        if ((*TopObjectList)->Package.Count != 4)
+        for (TableIndex = 0; TableIndex < 4 && !NameFound; TableIndex++)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "(PRT[%X]) Need package of length 4, found length %d\n",
-                Index, (*TopObjectList)->Package.Count));
-            return_ACPI_STATUS (AE_AML_PACKAGE_LIMIT);
-        }
-
-        /*
-         * Dereference the sub-package.
-         * The SubObjectList will now point to an array of the four IRQ
-         * elements: [Address, Pin, Source, SourceIndex]
-         */
-        SubObjectList = (*TopObjectList)->Package.Elements;
-
-        /*
-         * 1) First subobject: Dereference the PRT.Address
-         */
-        ObjDesc = SubObjectList[0];
-        if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
-        {
-            UserPrt->Address = ObjDesc->Integer.Value;
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "(PRT[%X].Address) Need Integer, found %s\n",
-                Index, AcpiUtGetObjectTypeName (ObjDesc)));
-            return_ACPI_STATUS (AE_BAD_DATA);
-        }
-
-        /*
-         * 2) Second subobject: Dereference the PRT.Pin
-         */
-        ObjDesc = SubObjectList[1];
-        if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
-        {
-            UserPrt->Pin = (UINT32) ObjDesc->Integer.Value;
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "(PRT[%X].Pin) Need Integer, found %s\n",
-                Index, AcpiUtGetObjectTypeName (ObjDesc)));
-            return_ACPI_STATUS (AE_BAD_DATA);
-        }
-
-        /*
-         * 3) Third subobject: Dereference the PRT.SourceName
-         */
-        ObjDesc = SubObjectList[2];
-        switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
-        {
-        case ACPI_TYPE_LOCAL_REFERENCE:
-
-            if (ObjDesc->Reference.Opcode != AML_INT_NAMEPATH_OP)
+            if (ACPI_TYPE_STRING == (*SubObjectList)->Common.Type)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "(PRT[%X].Source) Need name, found reference op %X\n",
-                    Index, ObjDesc->Reference.Opcode));
-                return_ACPI_STATUS (AE_BAD_DATA);
+                NameFound = TRUE;
             }
 
-            Node = ObjDesc->Reference.Node;
-
-            /* Use *remaining* length of the buffer as max for pathname */
-
-            PathBuffer.Length = OutputBuffer->Length -
-                                (UINT32) ((UINT8 *) UserPrt->Source -
-                                (UINT8 *) OutputBuffer->Pointer);
-            PathBuffer.Pointer = UserPrt->Source;
-
-            Status = AcpiNsHandleToPathname ((ACPI_HANDLE) Node, &PathBuffer);
-
-            UserPrt->Length += (UINT32) ACPI_STRLEN (UserPrt->Source) + 1; /* include null terminator */
-            break;
-
-
-        case ACPI_TYPE_STRING:
-
-            ACPI_STRCPY (UserPrt->Source, ObjDesc->String.Pointer);
-
-            /* Add to the Length field the length of the string (add 1 for terminator) */
-
-            UserPrt->Length += ObjDesc->String.Length + 1;
-            break;
-
-
-        case ACPI_TYPE_INTEGER:
-            /*
-             * If this is a number, then the Source Name is NULL, since the
-             * entire buffer was zeroed out, we can leave this alone.
-             *
-             * Add to the Length field the length of the UINT32 NULL
-             */
-            UserPrt->Length += sizeof (UINT32);
-            break;
-
-
-        default:
-
-           ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-               "(PRT[%X].Source) Need Ref/String/Integer, found %s\n",
-                Index, AcpiUtGetObjectTypeName (ObjDesc)));
-           return_ACPI_STATUS (AE_BAD_DATA);
+            else
+            {
+                /*
+                 * Look at the next element
+                 */
+                SubObjectList++;
+            }
         }
-
-        /* Now align the current length */
-
-        UserPrt->Length = (UINT32) ACPI_ROUND_UP_TO_64BITS (UserPrt->Length);
 
         /*
-         * 4) Fourth subobject: Dereference the PRT.SourceIndex
+         * Was a String type found?
          */
-        ObjDesc = SubObjectList[3];
-        if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
+        if (TRUE == NameFound)
         {
-            UserPrt->SourceIndex = (UINT32) ObjDesc->Integer.Value;
+            /*
+             * The length String.Length field includes the
+             * terminating NULL
+             */
+            BufferSizeNeeded += (*SubObjectList)->String.Length;
+            BufferSizeNeeded = ROUND_UP_TO_32BITS (BufferSizeNeeded);
         }
+
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "(PRT[%X].SourceIndex) Need Integer, found %s\n",
-                Index, AcpiUtGetObjectTypeName (ObjDesc)));
-            return_ACPI_STATUS (AE_BAD_DATA);
+            /*
+             * If no name was found, then this is a NULL, which is
+             *  translated as a UINT32 zero.
+             */
+            BufferSizeNeeded += sizeof(UINT32);
         }
 
-        /* Point to the next ACPI_OPERAND_OBJECT in the top level package */
-
+        /*
+         * Point to the next ACPI_OBJECT_INTERNAL
+         */
         TopObjectList++;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer %p Length %X\n",
-            OutputBuffer->Pointer, (UINT32) OutputBuffer->Length));
+    DEBUG_PRINT (VERBOSE_INFO,
+        ("RsCreatePciRoutingTable: BufferSizeNeeded = %d\n",
+        BufferSizeNeeded));
+
+    /*
+     * If the data will fit into the available buffer
+     * call to fill in the list
+     */
+    if (BufferSizeNeeded <= *OutputBufferLength)
+    {
+        /*
+         * Zero out the return buffer before proceeding
+         */
+        MEMSET (OutputBuffer, 0x00, *OutputBufferLength);
+
+        /*
+         * Loop through the ACPI_INTERNAL_OBJECTS - Each object should
+         * contain a UINT32 Address, a UINT8 Pin, a Name and a UINT8
+         * SourceIndex.
+         */
+        TopObjectList = PackageObject->Package.Elements;
+
+        NumberOfElements = PackageObject->Package.Count;
+
+        UserPrt = (PCI_ROUTING_TABLE *) Buffer;
+
+        for (Index = 0; Index < NumberOfElements; Index++)
+        {
+            /*
+             * Point UserPrt past this current structure
+             *
+             * NOTE: On the first iteration, UserPrt->Length will
+             * be zero because we cleared the return buffer earlier
+             */
+            Buffer += UserPrt->Length;
+            UserPrt = (PCI_ROUTING_TABLE *) Buffer;
+
+            /*
+             * Fill in the Length field with the information we
+             * have at this point.
+             * The minus one is to subtract the size of the
+             * UINT8 Source[1] member because it is added below.
+             */
+            UserPrt->Length = (sizeof (PCI_ROUTING_TABLE) - 1);
+
+            /*
+             * Dereference the sub-package
+             */
+            PackageElement = *TopObjectList;
+
+            /*
+             * The SubObjectList will now point to an array of
+             * the four IRQ elements: Address, Pin, Source and
+             * SourceIndex
+             */
+            SubObjectList = PackageElement->Package.Elements;
+
+            /*
+             * Dereference the Address
+             */
+            if (ACPI_TYPE_NUMBER == (*SubObjectList)->Common.Type)
+            {
+                UserPrt->Data.Address =
+                        (*SubObjectList)->Number.Value;
+            }
+
+            else
+            {
+                return_ACPI_STATUS (AE_BAD_DATA);
+            }
+
+            /*
+             * Dereference the Pin
+             */
+            SubObjectList++;
+
+            if (ACPI_TYPE_NUMBER == (*SubObjectList)->Common.Type)
+            {
+                UserPrt->Data.Pin =
+                        (*SubObjectList)->Number.Value;
+            }
+
+            else
+            {
+                return_ACPI_STATUS (AE_BAD_DATA);
+            }
+
+            /*
+             * Dereference the Source Name
+             */
+            SubObjectList++;
+
+            if (ACPI_TYPE_STRING == (*SubObjectList)->Common.Type)
+            {
+                STRCPY (UserPrt->Data.Source,
+                      (*SubObjectList)->String.Pointer);
+
+                /*
+                 * Add to the Length field the length of the string
+                 */
+                UserPrt->Length += (*SubObjectList)->String.Length;
+                UserPrt->Length =
+                    ROUND_UP_TO_32BITS (UserPrt->Length);
+            }
+
+            else
+            {
+                /*
+                 * If this is a number, then the Source Name
+                 * is NULL, since the entire buffer was zeroed
+                 * out, we can leave this alone.
+                 */
+                if (ACPI_TYPE_NUMBER == (*SubObjectList)->Common.Type)
+                {
+                    /*
+                     * Add to the Length field the length of
+                     * the UINT32 NULL
+                     */
+                    UserPrt->Length += sizeof (UINT32);
+                }
+
+                else
+                {
+                    return_ACPI_STATUS (AE_BAD_DATA);
+                }
+            }
+
+            /*
+             * Dereference the Source Index
+             */
+            SubObjectList++;
+
+            if (ACPI_TYPE_NUMBER == (*SubObjectList)->Common.Type)
+            {
+                UserPrt->Data.SourceIndex =
+                        (*SubObjectList)->Number.Value;
+            }
+
+            else
+            {
+                return_ACPI_STATUS (AE_BAD_DATA);
+            }
+
+            /*
+             * Point to the next ACPI_OBJECT_INTERNAL
+             */
+            TopObjectList++;
+        }
+
+        DEBUG_PRINT (VERBOSE_INFO,
+            ("RsCreatePciRoutingTable: OutputBuffer = %p\n",
+            OutputBuffer));
+    }
+
+    else
+    {
+        *OutputBufferLength = BufferSizeNeeded;
+
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
+    }
+
+    /*
+     * Report the amount of buffer used
+     */
+    *OutputBufferLength = BufferSizeNeeded;
+
     return_ACPI_STATUS (AE_OK);
+
 }
 
 
@@ -453,12 +545,14 @@ AcpiRsCreatePciRoutingTable (
  *
  * FUNCTION:    AcpiRsCreateByteStream
  *
- * PARAMETERS:  LinkedListBuffer        - Pointer to the resource linked list
+ * PARAMETERS:
+ *              LinkedListBuffer        - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's buffer
+ *              OutputBufferLength      - Size of OutputBuffer
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code.
  *              If the OutputBuffer is too small, the error will be
- *              AE_BUFFER_OVERFLOW and OutputBuffer->Length will point
+ *              AE_BUFFER_OVERFLOW and OutputBufferLength will point
  *              to the size buffer needed.
  *
  * DESCRIPTION: Takes the linked list of device resources and
@@ -469,54 +563,84 @@ AcpiRsCreatePciRoutingTable (
 
 ACPI_STATUS
 AcpiRsCreateByteStream (
-    ACPI_RESOURCE           *LinkedListBuffer,
-    ACPI_BUFFER             *OutputBuffer)
+    RESOURCE                *LinkedListBuffer,
+    UINT8                   *OutputBuffer,
+    UINT32                  *OutputBufferLength)
 {
-    ACPI_STATUS             Status;
-    ACPI_SIZE               ByteStreamSizeNeeded = 0;
+    ACPI_STATUS             Status = AE_UNKNOWN_STATUS;
+    UINT32                  ByteStreamSizeNeeded = 0;
 
 
-    ACPI_FUNCTION_TRACE ("RsCreateByteStream");
+    FUNCTION_TRACE ("RsCreateByteStream");
 
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "LinkedListBuffer = %p\n",
+    DEBUG_PRINT (VERBOSE_INFO,
+        ("RsCreateByteStream: LinkedListBuffer = %p\n",
         LinkedListBuffer));
 
     /*
-     * Params already validated, so we don't re-validate here
-     *
-     * Pass the LinkedListBuffer into a module that calculates
+     * Validate parameters:
+     */
+    if (!LinkedListBuffer ||
+       (!OutputBuffer && 0 != *OutputBufferLength))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /*
+     * Pass the LinkedListBuffer into a module that can calculate
      * the buffer size needed for the byte stream.
      */
-    Status = AcpiRsGetByteStreamLength (LinkedListBuffer,
-                &ByteStreamSizeNeeded);
+    Status = AcpiRsCalculateByteStreamLength (LinkedListBuffer,
+                                              &ByteStreamSizeNeeded);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "ByteStreamSizeNeeded=%X, %s\n",
-        (UINT32) ByteStreamSizeNeeded, AcpiFormatException (Status)));
-    if (ACPI_FAILURE (Status))
+    DEBUG_PRINT (VERBOSE_INFO,
+        ("RsCreateByteStream: ByteStreamSizeNeeded=%d, %s\n",
+        ByteStreamSizeNeeded,
+        AcpiCmFormatException (Status)));
+
+    /*
+     * Exit with the error passed back
+     */
+    if (AE_OK != Status)
     {
         return_ACPI_STATUS (Status);
     }
 
-    /* Validate/Allocate/Clear caller buffer */
+    /*
+     * If the linked list will fit into the available buffer
+     * call to fill in the list
+     */
 
-    Status = AcpiUtInitializeBuffer (OutputBuffer, ByteStreamSizeNeeded);
-    if (ACPI_FAILURE (Status))
+    if (ByteStreamSizeNeeded <= *OutputBufferLength)
     {
-        return_ACPI_STATUS (Status);
+        /*
+         * Zero out the return buffer before proceeding
+         */
+        MEMSET (OutputBuffer, 0x00, *OutputBufferLength);
+
+        Status = AcpiRsListToByteStream (LinkedListBuffer,
+                                         ByteStreamSizeNeeded,
+                                         &OutputBuffer);
+
+        /*
+         * Exit with the error passed back
+         */
+        if (AE_OK != Status)
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        DEBUG_PRINT (VERBOSE_INFO,
+            ("RsListToByteStream: OutputBuffer = %p\n",
+            OutputBuffer));
+    }
+    else
+    {
+        *OutputBufferLength = ByteStreamSizeNeeded;
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
 
-    /* Do the conversion */
-
-    Status = AcpiRsListToByteStream (LinkedListBuffer, ByteStreamSizeNeeded,
-                    OutputBuffer->Pointer);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer %p Length %X\n",
-            OutputBuffer->Pointer, (UINT32) OutputBuffer->Length));
     return_ACPI_STATUS (AE_OK);
+
 }
 

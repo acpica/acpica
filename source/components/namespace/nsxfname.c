@@ -2,7 +2,6 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -165,10 +164,12 @@ AcpiLoadNamespace (
     /* Init the hardware */
 
     /*
-     * With the advent of a 3-pass parser, we need to be
-     *  prepared to execute on initialized HW before the
-     *  namespace has completed its load.
+     * TBD: [Restructure] Should this should be moved elsewhere,
+     * like AcpiEnable! ??
      */
+
+    /* we need to be able to call this interface repeatedly! */
+    /* Does H/W require init before loading the namespace? */
 
     Status = AcpiCmHardwareInitialize ();
     if (ACPI_FAILURE (Status))
@@ -240,7 +241,7 @@ AcpiGetHandle (
 
     if (!RetHandle || !Pathname)
     {
-        return (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
     if (Parent)
@@ -251,7 +252,7 @@ AcpiGetHandle (
         if (!ThisEntry)
         {
             AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-            return (AE_BAD_PARAMETER);
+            return AE_BAD_PARAMETER;
         }
 
         Scope = ThisEntry->ChildTable;
@@ -264,7 +265,7 @@ AcpiGetHandle (
     if (STRCMP (Pathname, NS_ROOT_PATH) == 0)
     {
         *RetHandle = AcpiNsConvertEntryToHandle (AcpiGbl_RootObject);
-        return (AE_OK);
+        return AE_OK;
     }
 
     /*
@@ -273,11 +274,7 @@ AcpiGetHandle (
     ThisEntry = NULL;
     Status = AcpiNsGetNamedObject (Pathname, Scope, &ThisEntry);
 
-    *RetHandle = NULL;
-    if(ACPI_SUCCESS(Status))
-    {
-        *RetHandle = AcpiNsConvertEntryToHandle (ThisEntry);
-    }
+   *RetHandle = AcpiNsConvertEntryToHandle (ThisEntry);
 
     return (Status);
 }
@@ -313,7 +310,7 @@ AcpiGetName (
 
     if (!RetPathPtr || (NameType > ACPI_NAME_TYPE_MAX))
     {
-        return (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
     /* Allow length to be zero and ignore the pointer */
@@ -321,7 +318,7 @@ AcpiGetName (
     if ((RetPathPtr->Length) &&
        (!RetPathPtr->Pointer))
     {
-        return (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
     if (NameType == ACPI_FULL_PATHNAME)
@@ -330,7 +327,7 @@ AcpiGetName (
 
         Status = AcpiNsHandleToPathname (Handle, &RetPathPtr->Length,
                                         RetPathPtr->Pointer);
-        return (Status);
+        return Status;
     }
 
     /*
@@ -357,16 +354,16 @@ AcpiGetName (
 
     /* Just copy the ACPI name from the NTE and zero terminate it */
 
-    STRNCPY (RetPathPtr->Pointer, (UINT8 *) &ObjEntry->Name,
+    STRNCPY (RetPathPtr->Pointer, (char *) &ObjEntry->Name,
                 ACPI_NAME_SIZE);
-    ((NATIVE_CHAR *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
+    ((char *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
     Status = AE_OK;
 
 
 UnlockAndExit:
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-    return (Status);
+    return Status;
 }
 
 
@@ -401,7 +398,7 @@ AcpiGetObjectInfo (
 
     if (!Device || !Info)
     {
-        return (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -410,7 +407,7 @@ AcpiGetObjectInfo (
     if (!DeviceEntry)
     {
         AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-        return (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
     Info->Type      = DeviceEntry->Type;
@@ -425,7 +422,7 @@ AcpiGetObjectInfo (
      */
     if (Info->Type != ACPI_TYPE_DEVICE)
     {
-        return (AE_OK);
+        return AE_OK;
     }
 
 
@@ -493,6 +490,6 @@ AcpiGetObjectInfo (
         Info->Valid |= ACPI_VALID_ADR;
     }
 
-    return (AE_OK);
+    return AE_OK;
 }
 

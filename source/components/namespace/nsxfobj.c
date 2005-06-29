@@ -3,7 +3,6 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -183,6 +182,7 @@ AcpiEvaluateObject (
         /*
          * Allocate a new parameter block for the internal objects
          * Add 1 to count to allow for null terminated internal list
+         * TBD: [Restructure] merge into single allocation!
          */
 
         Count           = ParamObjects->Count;
@@ -438,7 +438,7 @@ AcpiGetNextObject (
 
     if (Type > ACPI_TYPE_MAX)
     {
-        return (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -491,7 +491,7 @@ AcpiGetNextObject (
 UnlockAndExit:
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-    return (Status);
+    return Status;
 }
 
 
@@ -520,7 +520,7 @@ AcpiGetType (
 
     if (!RetType)
     {
-        return (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
     /*
@@ -531,7 +531,7 @@ AcpiGetType (
     if (Handle == ACPI_ROOT_OBJECT)
     {
         *RetType = ACPI_TYPE_ANY;
-        return (AE_OK);
+        return AE_OK;
     }
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -542,14 +542,14 @@ AcpiGetType (
     if (!Object)
     {
         AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-        return (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
     *RetType = Object->Type;
 
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-    return (AE_OK);
+    return AE_OK;
 }
 
 
@@ -581,14 +581,14 @@ AcpiGetParent (
 
     if (!RetHandle)
     {
-        return (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
     /* Special case for the predefined Root Object (no parent) */
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
-        return (AE_NULL_ENTRY);
+        return AE_NULL_ENTRY;
     }
 
 
@@ -620,7 +620,7 @@ AcpiGetParent (
 UnlockAndExit:
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-    return (Status);
+    return AE_OK;
 }
 
 

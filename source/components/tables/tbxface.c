@@ -1,8 +1,8 @@
+
 /******************************************************************************
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -119,98 +119,63 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 #include "actables.h"
 
 
-#define _COMPONENT          ACPI_TABLES
-        ACPI_MODULE_NAME    ("tbxface")
+#define _COMPONENT          TABLE_MANAGER
+        MODULE_NAME         ("tbxface");
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiLoadTables
+ * FUNCTION:    AcpiLoadFirmwareTables
  *
  * PARAMETERS:  None
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This function is called to load the ACPI tables from the
- *              provided RSDT
+ * DESCRIPTION: This function is called to load the ACPI tables from BIOS
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiLoadTables (void)
+AcpiLoadFirmwareTables (void)
 {
-    ACPI_POINTER            RsdpAddress;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
+    UINT32                  NumberOfTables = 0;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiLoadTables");
+    FUNCTION_TRACE ("AcpiLoadFirmwareTables");
 
 
-    /* Get the RSDP */
+    /* Get the RSDT first */
 
-    Status = AcpiOsGetRootPointer (ACPI_LOGICAL_ADDRESSING,
-                    &RsdpAddress);
-    if (ACPI_FAILURE (Status))
+    Status = AcpiTbGetTableRsdt (&NumberOfTables);
+    if (Status != AE_OK)
     {
-        ACPI_REPORT_ERROR (("AcpiLoadTables: Could not get RSDP, %s\n",
-                        AcpiFormatException (Status)));
         goto ErrorExit;
     }
 
-    /* Map and validate the RSDP */
 
-    AcpiGbl_TableFlags = RsdpAddress.PointerType;
+    /* Now get the rest of the tables */
 
-    Status = AcpiTbVerifyRsdp (&RsdpAddress);
-    if (ACPI_FAILURE (Status))
+    Status = AcpiTbGetAllTables (NumberOfTables, NULL);
+    if (Status != AE_OK)
     {
-        ACPI_REPORT_ERROR (("AcpiLoadTables: RSDP Failed validation: %s\n",
-                        AcpiFormatException (Status)));
         goto ErrorExit;
     }
 
-    /* Get the RSDT via the RSDP */
 
-    Status = AcpiTbGetTableRsdt ();
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_REPORT_ERROR (("AcpiLoadTables: Could not load RSDT: %s\n",
-                        AcpiFormatException (Status)));
-        goto ErrorExit;
-    }
-
-    /* Now get the tables needed by this subsystem (FADT, DSDT, etc.) */
-
-    Status = AcpiTbGetRequiredTables ();
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_REPORT_ERROR (("AcpiLoadTables: Error getting required tables (DSDT/FADT/FACS): %s\n",
-                        AcpiFormatException (Status)));
-        goto ErrorExit;
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "ACPI Tables successfully acquired\n"));
-
-
-    /* Load the namespace from the tables */
-
-    Status = AcpiNsLoadNamespace ();
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_REPORT_ERROR (("AcpiLoadTables: Could not load namespace: %s\n",
-                        AcpiFormatException (Status)));
-        goto ErrorExit;
-    }
+    DEBUG_PRINT (ACPI_OK, ("ACPI Tables successfully loaded\n"));
 
     return_ACPI_STATUS (AE_OK);
 
 
 ErrorExit:
-    ACPI_REPORT_ERROR (("AcpiLoadTables: Could not load tables: %s\n",
-                    AcpiFormatException (Status)));
+    DEBUG_PRINT (ACPI_ERROR,
+        ("Failure during ACPI Table Init: %s\n",
+        AcpiCmFormatException (Status)));
 
     return_ACPI_STATUS (Status);
 }
@@ -230,6 +195,8 @@ ErrorExit:
  *              a valid header.  The header fields will be verified, and if it
  *              is determined that the table is invalid, the call will fail.
  *
+ *              If the call fails an appropriate status will be returned.
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -238,23 +205,18 @@ AcpiLoadTable (
 {
     ACPI_STATUS             Status;
     ACPI_TABLE_DESC         TableInfo;
-    ACPI_POINTER            Address;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiLoadTable");
-
+    FUNCTION_TRACE ("AcpiLoadTable");
 
     if (!TablePtr)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
     /* Copy the table to a local buffer */
 
-    Address.PointerType     = ACPI_LOGICAL_POINTER | ACPI_LOGICAL_ADDRESSING;
-    Address.Pointer.Logical = TablePtr;
-
-    Status = AcpiTbGetTableBody (&Address, TablePtr, &TableInfo);
+    Status = AcpiTbGetTable (NULL, ((char *) TablePtr), &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -262,41 +224,10 @@ AcpiLoadTable (
 
     /* Install the new table into the local data structures */
 
-    Status = AcpiTbInstallTable (&TableInfo);
+    Status = AcpiTbInstallTable (NULL, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
-        /* Free table allocated by AcpiTbGetTableBody */
-
-        AcpiTbDeleteSingleTable (&TableInfo);
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Convert the table to common format if necessary */
-
-    switch (TableInfo.Type)
-    {
-    case ACPI_TABLE_FADT:
-
-        Status = AcpiTbConvertTableFadt ();
-        break;
-
-    case ACPI_TABLE_FACS:
-
-        Status = AcpiTbBuildCommonFacs (&TableInfo);
-        break;
-
-    default:
-        /* Load table into namespace if it contains executable AML */
-
-        Status = AcpiNsLoadTable (TableInfo.InstalledDesc, AcpiGbl_RootNode);
-        break;
-    }
-
-    if (ACPI_FAILURE (Status))
-    {
-        /* Uninstall table and free the buffer */
-
-        (void) AcpiTbUninstallTable (TableInfo.InstalledDesc);
+        /* TBD: [Errors] must free table allocated by AcpiTbGetTable */
     }
 
     return_ACPI_STATUS (Status);
@@ -319,10 +250,10 @@ ACPI_STATUS
 AcpiUnloadTable (
     ACPI_TABLE_TYPE         TableType)
 {
-    ACPI_TABLE_DESC         *TableDesc;
+    ACPI_TABLE_DESC         *ListHead;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiUnloadTable");
+    FUNCTION_TRACE ("AcpiUnloadTable");
 
 
     /* Parameter validation */
@@ -335,23 +266,19 @@ AcpiUnloadTable (
 
     /* Find all tables of the requested type */
 
-    TableDesc = AcpiGbl_TableLists[TableType].Next;
-    while (TableDesc)
+    ListHead = &AcpiGbl_AcpiTables[TableType];
+    do
     {
-        /*
-         * Delete all namespace entries owned by this table.  Note that these
-         * entries can appear anywhere in the namespace by virtue of the AML
-         * "Scope" operator.  Thus, we need to track ownership by an ID, not
-         * simply a position within the hierarchy
-         */
-        AcpiNsDeleteNamespaceByOwner (TableDesc->TableId);
+        /* Delete the entire namespace under this table NTE */
 
-        TableDesc = TableDesc->Next;
-    }
+        AcpiNsDeleteNamespaceByOwner (ListHead->TableId);
 
-    /* Delete (or unmap) all tables of this type */
+        /* Delete (or unmap) the actual table */
 
-    AcpiTbDeleteTablesByType (TableType);
+        AcpiTbDeleteAcpiTable (TableType);
+
+    } while (ListHead != &AcpiGbl_AcpiTables[TableType]);
+
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -375,6 +302,9 @@ AcpiUnloadTable (
  *              function is not valid for the RSD PTR table since it does not
  *              have a standard header and is fixed length.
  *
+ *              If the operation fails for any reason an appropriate status will
+ *              be returned and the contents of OutTableHeader are undefined.
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -387,8 +317,9 @@ AcpiGetTableHeader (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetTableHeader");
+    FUNCTION_TRACE ("AcpiGetTableHeader");
 
+    Status = AE_OK;
 
     if ((Instance == 0)                 ||
         (TableType == ACPI_TABLE_RSDP)  ||
@@ -400,7 +331,7 @@ AcpiGetTableHeader (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (ACPI_IS_SINGLE_TABLE (AcpiGbl_TableData[TableType].Flags) &&
+        (AcpiGbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -410,7 +341,7 @@ AcpiGetTableHeader (
     /* Get a pointer to the entire table */
 
     Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
-    if (ACPI_FAILURE (Status))
+    if (Status != AE_OK)
     {
         return_ACPI_STATUS (Status);
     }
@@ -426,7 +357,7 @@ AcpiGetTableHeader (
     /*
      * Copy the header to the caller's buffer
      */
-    ACPI_MEMCPY ((void *) OutTableHeader, (void *) TblPtr,
+    MEMCPY ((void *) OutTableHeader, (void *) TblPtr,
                 sizeof (ACPI_TABLE_HEADER));
 
     return_ACPI_STATUS (Status);
@@ -454,6 +385,9 @@ AcpiGetTableHeader (
  *              copied into the OutBuffer->BufPtr buffer.  This table will be
  *              a complete table including the header.
  *
+ *              If the operation fails an appropriate status will be returned
+ *              and the contents of OutBuffer are undefined.
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -464,29 +398,28 @@ AcpiGetTable (
 {
     ACPI_TABLE_HEADER       *TblPtr;
     ACPI_STATUS             Status;
-    ACPI_SIZE               TableLength;
+    UINT32                  RetBufLen;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetTable");
+    FUNCTION_TRACE ("AcpiGetTable");
 
+    Status = AE_OK;
 
-    /* Parameter validation */
-
-    if (Instance == 0)
+    /*
+     *  Must have a buffer
+     */
+    if ((Instance == 0)                 ||
+        (!RetBuffer)                    ||
+        (!RetBuffer->Pointer)           ||
+        (!RetBuffer->Length))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = AcpiUtValidateBuffer (RetBuffer);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
     }
 
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (ACPI_IS_SINGLE_TABLE (AcpiGbl_TableData[TableType].Flags) &&
+        (AcpiGbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -496,46 +429,47 @@ AcpiGetTable (
     /* Get a pointer to the entire table */
 
     Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
-    if (ACPI_FAILURE (Status))
+    if (Status != AE_OK)
     {
         return_ACPI_STATUS (Status);
     }
 
     /*
-     * AcpiTbGetTablePtr will return a NULL pointer if the
-     * table is not loaded.
+     * The function will return a NULL pointer if the table is not loaded
      */
     if (TblPtr == NULL)
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
-    /* Get the table length */
-
+    /*
+     * Got a table ptr, assume it's ok and copy it to the user's buffer
+     */
     if (TableType == ACPI_TABLE_RSDP)
     {
         /*
          *  RSD PTR is the only "table" without a header
          */
-        TableLength = sizeof (RSDP_DESCRIPTOR);
+        RetBufLen = sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER);
     }
     else
     {
-        TableLength = (ACPI_SIZE) TblPtr->Length;
+        RetBufLen = TblPtr->Length;
     }
 
-    /* Validate/Allocate/Clear caller buffer */
-
-    Status = AcpiUtInitializeBuffer (RetBuffer, TableLength);
-    if (ACPI_FAILURE (Status))
+    /*
+     * Verify we have space in the caller's buffer for the table
+     */
+    if (RetBuffer->Length < RetBufLen)
     {
-        return_ACPI_STATUS (Status);
+        RetBuffer->Length = RetBufLen;
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
 
-    /* Copy the table to the buffer */
+    RetBuffer->Length = RetBufLen;
 
-    ACPI_MEMCPY ((void *) RetBuffer->Pointer, (void *) TblPtr, TableLength);
+    MEMCPY ((void *) RetBuffer->Pointer, (void *) TblPtr, RetBufLen);
+
     return_ACPI_STATUS (AE_OK);
 }
-
 
