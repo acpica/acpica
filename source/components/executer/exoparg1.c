@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -784,6 +784,11 @@ AcpiExOpcode_1A_0T_1R (
         }
         else
         {
+            /*
+             * Type is guaranteed to be a buffer, string, or package at this
+             * point (even if the original operand was an object reference, it
+             * will be resolved and typechecked during operand resolution.)
+             */
             switch (TempDesc->Common.Type)
             {
             case ACPI_TYPE_BUFFER:
@@ -798,16 +803,9 @@ AcpiExOpcode_1A_0T_1R (
                 Value = TempDesc->Package.Count;
                 break;
 
-            case INTERNAL_TYPE_REFERENCE:
-
-                /* TBD: this must be a reference to a buf/str/pkg?? */
-
-                Value = 4;
-                break;
-
             default:
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Not Buf/Str/Pkg - found type %X\n",
-                    TempDesc->Common.Type));
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "SizeOf, Not Buf/Str/Pkg - found type %s\n",
+                    AcpiUtGetTypeName (TempDesc->Common.Type)));
                 Status = AE_AML_OPERAND_TYPE;
                 goto Cleanup;
             }
