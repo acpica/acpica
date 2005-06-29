@@ -164,7 +164,7 @@ AmlStoreObjectToObject (
     ACPI_STATUS             Status = AE_OK;
     UINT8                   *Buffer = NULL;
     UINT32                  Length = 0;
-    ACPI_OBJECT_TYPE        DestinationType = DestDesc->Common.Type;
+    OBJECT_TYPE_INTERNAL    DestinationType = DestDesc->Common.Type;
 
 
     FUNCTION_TRACE ("AmlStoreObjectToObject");

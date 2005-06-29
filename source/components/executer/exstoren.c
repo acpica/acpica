@@ -166,10 +166,11 @@ AmlStoreObjectToNte (
     UINT8                   *Buffer = NULL;
     UINT32                  Length = 0;
     UINT32                  Mask;
+    UINT32                  NewValue;
     BOOLEAN                 Locked = FALSE;
     UINT8                   *Location=NULL;
     ACPI_OBJECT_INTERNAL    *DestDesc;
-    ACPI_OBJECT_TYPE        DestinationType = ACPI_TYPE_Any;
+    OBJECT_TYPE_INTERNAL    DestinationType = ACPI_TYPE_Any;
 
 
     FUNCTION_TRACE ("AmlStoreObjectToNte");
@@ -610,18 +611,22 @@ AmlStoreObjectToNte (
                         DestDesc->FieldUnit.Offset, DestDesc->FieldUnit.BitOffset,
                         DestDesc->FieldUnit.Length,Location, Mask));
 
-        /* zero out the field in the buffer */
+        /* Zero out the field in the buffer */
         
-        *(UINT32 *) Location &= ~Mask;
+        STORE32TO32 (&NewValue, Location);
+        NewValue &= ~Mask;
 
         /* 
          * Shift and mask the new value into position,
          * and or it into the buffer.
          */
-        *(UINT32 *) Location |= (ValDesc->Number.Value << DestDesc->FieldUnit.BitOffset) & Mask;
+        NewValue |= (ValDesc->Number.Value << DestDesc->FieldUnit.BitOffset) & Mask;
         
-        DEBUG_PRINT (TRACE_EXEC,
-                    (" val %08lx\n", *(UINT32 *) Location));
+        /* Store back the value */
+
+        STORE32TO32 (Location, &NewValue);
+
+        DEBUG_PRINT (TRACE_EXEC, ("New Field value %08lx\n", NewValue));
         break;
 
 
