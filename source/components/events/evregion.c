@@ -182,6 +182,8 @@ EvInstallDefaultAddressSpaceHandlers (
 }
 
 
+/* TBD: Move to the methods directory */
+
 /**************************************************************************
  *
  * FUNCTION:    EvExecuteRegMethod
@@ -224,8 +226,8 @@ EvExecuteRegMethod (
      *          Passed as a parameter
      */
 
-    MEMSET ((void *) &SpaceID_Obj, 0, sizeof (SpaceID_Obj));
-    MEMSET ((void *) &Function_Obj, 0, sizeof (Function_Obj));
+    CmInitStaticObject (&SpaceID_Obj);
+    CmInitStaticObject (&Function_Obj);
 
     /*
      *  Method requires two parameters.
@@ -530,6 +532,7 @@ EvAddrHandlerHelper (
     ACPI_OBJECT_INTERNAL    *TmpObj;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_STATUS             Status;
 
 
     HandlerObj = (ACPI_OBJECT_INTERNAL *) Context;
@@ -645,9 +648,9 @@ EvAddrHandlerHelper (
     /*
      *  Then connect the region to the new handler
      */
-    EvAssociateRegionAndHandler (HandlerObj, ObjDesc);
+    Status = EvAssociateRegionAndHandler (HandlerObj, ObjDesc);
 
-    return (AE_OK);
+    return (Status);
 }
 
 
