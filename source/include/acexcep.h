@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.56 $
+ *       $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -188,8 +188,9 @@
 #define AE_BAD_HEADER                   (ACPI_STATUS) (0x0002 | AE_CODE_ACPI_TABLES)
 #define AE_BAD_CHECKSUM                 (ACPI_STATUS) (0x0003 | AE_CODE_ACPI_TABLES)
 #define AE_BAD_VALUE                    (ACPI_STATUS) (0x0004 | AE_CODE_ACPI_TABLES)
+#define AE_TABLE_NOT_SUPPORTED          (ACPI_STATUS) (0x0005 | AE_CODE_ACPI_TABLES)
 
-#define AE_CODE_TBL_MAX                 0x0004
+#define AE_CODE_TBL_MAX                 0x0005
 
 
 /*
@@ -278,7 +279,7 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Env[] =
     "AE_NOT_ACQUIRED",
     "AE_ALREADY_ACQUIRED",
     "AE_NO_HARDWARE_RESPONSE",
-    "AE_NO_GLOBAL_LOCK",
+    "AE_NO_GLOBAL_LOCK"
 };
 
 NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Pgm[] =
@@ -288,7 +289,7 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Pgm[] =
     "AE_BAD_PATHNAME",
     "AE_BAD_DATA",
     "AE_BAD_ADDRESS",
-    "AE_ALIGNMENT",
+    "AE_ALIGNMENT"
 };
 
 NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Tbl[] =
@@ -297,6 +298,7 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Tbl[] =
     "AE_BAD_HEADER",
     "AE_BAD_CHECKSUM",
     "AE_BAD_VALUE",
+    "AE_TABLE_NOT_SUPPORTED"
 };
 
 NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Aml[] =
@@ -328,7 +330,7 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Aml[] =
     "AE_AML_INVALID_RESOURCE_TYPE",
     "AE_AML_INVALID_INDEX",
     "AE_AML_REGISTER_LIMIT",
-    "AE_AML_NO_WHILE",
+    "AE_AML_NO_WHILE"
 };
 
 NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Ctrl[] =
@@ -342,7 +344,7 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Ctrl[] =
     "AE_CTRL_END",
     "AE_CTRL_TRANSFER",
     "AE_CTRL_BREAK",
-    "AE_CTRL_CONTINUE",
+    "AE_CTRL_CONTINUE"
 };
 
 #endif /* ACPI GLOBALS */
