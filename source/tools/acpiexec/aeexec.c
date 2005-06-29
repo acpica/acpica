@@ -481,7 +481,8 @@ AdSecondPassParse (
         if (Op->Opcode == AML_METHOD_OP)
         {
             Method = (ACPI_DEFERRED_OP *) Op;
-            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0);
+            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0,
+                        NULL, NULL);
 
 
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
@@ -511,31 +512,6 @@ AdSecondPassParse (
 
         Op = AcpiPsGetDepthNext (Root, Op);
     }
-
-    return Status;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AdGetTables
- *
- * PARAMETERS:  Filename        - Optional filename
- *
- * RETURN:      None
- *
- * DESCRIPTION: Get the ACPI tables from either memory or a file
- *
- *****************************************************************************/
-
-ACPI_STATUS
-xxxAdGetTables (
-    char                    *Filename)
-{
-    ACPI_STATUS             Status;
-
-
-    Status = AcpiDbLoadAcpiTable (Filename);
 
     return Status;
 }
