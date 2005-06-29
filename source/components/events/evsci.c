@@ -521,7 +521,7 @@ AcpiEnable ()
 		return AE_ERROR;
 	}
 
-    OriginalMode = AcpiModeStatus ();
+    OriginalMode = AcpiGetMode();
 
     if (InstallSciHandler () != AE_OK)
     {   
@@ -621,7 +621,7 @@ RestoreAcpiState (void)
             }
         }
         
-        if (AcpiModeStatus() != OriginalMode)
+        if (AcpiGetMode() != OriginalMode)
         {
             AcpiSetMode (OriginalMode);
         }
