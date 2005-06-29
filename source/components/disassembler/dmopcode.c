@@ -204,48 +204,55 @@ DbDumpBuffer (
 
 void
 DbDumpObject (
-    char                    *MethodName,
-    ACPI_BUFFER             *ReturnObj)
+    ACPI_OBJECT             *ObjDesc,
+    UINT32                  Level)
 {
-    ACPI_OBJECT             *ObjDesc;
+    UINT32                  i;
 
 
-    if (!ReturnObj->Length)
+    if (!ObjDesc)
     {
         return;
     }
 
-    ObjDesc = (ACPI_OBJECT *) ReturnObj->Pointer;   
-
-    OsdPrintf ("Execution of %s returned object of type ", MethodName);
+    for (i = 0; i < Level; i++)
+    {
+        OsdPrintf ("  ");
+    }
 
     switch (ObjDesc->Type)
     {
+    case ACPI_TYPE_Any:
+        OsdPrintf ("[Object Reference]  Value: %p\n", ObjDesc->Reference.Handle);
+        break;
+
     case ACPI_TYPE_Number:
-        OsdPrintf ("[Number]\n");
-        OsdPrintf ("Value: %ld (0x%lX)\n", ObjDesc->Number.Value, ObjDesc->Number.Value);
+        OsdPrintf ("[Number]  Value: %ld (0x%lX)\n", ObjDesc->Number.Value, ObjDesc->Number.Value);
         break;
 
     case ACPI_TYPE_String:
-        OsdPrintf ("[String]\n");
-        OsdPrintf ("String Value: %s\n", ObjDesc->String.Pointer);
+        OsdPrintf ("[String]  Value: %s\n", ObjDesc->String.Pointer);
         break;
 
     case ACPI_TYPE_Buffer:
-        OsdPrintf ("[Buffer]\n");
+        OsdPrintf ("[Buffer]  Value: ");
         CmDumpBuffer ((char *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, _COMPONENT);
         break;
 
     case ACPI_TYPE_Package:
-        OsdPrintf ("[Package]\n");
+        OsdPrintf ("[Package]  Contains %d Elements: \n", ObjDesc->Package.Count);
+
+        for (i = 0; i < ObjDesc->Package.Count; i++)
+        {
+            DbDumpObject (&ObjDesc->Package.Elements[i], Level+1);
+        }
         break;
 
     default:
+        OsdPrintf ("[Unknown Type] 0x%X \n", ObjDesc->Type);
         break;
     }
 }
-
-
 
 
 /*****************************************************************************
@@ -470,9 +477,13 @@ DbBlockType (
  *
  ******************************************************************************/
 
+#define DB_NO_OP_INFO       "            [%2.2d]  "
+#define DB_FULL_OP_INFO     "%5.5X #%4.4X [%2.2d]  "
+
 void
 DbDisplayOp (
-    ACPI_GENERIC_OP         *origin)
+    ACPI_GENERIC_OP         *origin,
+    UINT32                  NumOpcodes)
 {
     static char             buffer[MAX_SHOW_ENTRY];
     ACPI_GENERIC_OP         *Op = origin;
@@ -521,7 +532,7 @@ DbDisplayOp (
 
 			if (DepthCount > LastDepth)
 			{
-				VERBOSE_PRINT (("           [%2.2d]  ", LastDepth));
+				VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth));
 				for (i = 0; i < LastDepth; i++)
 				{
 					OsdPrintf (INDENT_STRING);
@@ -539,7 +550,7 @@ DbDisplayOp (
 			{
 				for (j = 0; j < (LastDepth - DepthCount); j++)
 				{
-					VERBOSE_PRINT (("           [%2.2d]  ", LastDepth - j));
+                    VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth - j));
 					for (i = 0; i < (LastDepth - j - 1); i++)
 					{
 						OsdPrintf (INDENT_STRING);
@@ -554,8 +565,7 @@ DbDisplayOp (
 
             /* In verbose mode, print the AML offset, opcode and depth count */
 
-			VERBOSE_PRINT (("%5.5X:%4.4X ", (unsigned) Op->AmlOffset, Op->Opcode));
-			VERBOSE_PRINT (("[%2.2d]  ", DepthCount));
+			VERBOSE_PRINT ((DB_FULL_OP_INFO, (unsigned) Op->AmlOffset, Op->Opcode, DepthCount));
 
 
             /* Indent the output according to the depth count */
@@ -612,6 +622,12 @@ DbDisplayOp (
 
             Op = PsGetDepthNext (origin, Op);
             LastDepth = DepthCount;
+
+            NumOpcodes--;
+            if (!NumOpcodes)
+            {
+                Op = NULL;
+            }
         }
 
         /* Close the last block(s) */
@@ -619,7 +635,7 @@ DbDisplayOp (
         DepthCount = LastDepth -1;
         for (i = 0; i < LastDepth; i++)
         {
-			VERBOSE_PRINT (("           [%2.2d]  ", LastDepth - i));
+			VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth - i));
 			for (j = 0; j < DepthCount; j++)
 			{
 				OsdPrintf (INDENT_STRING);
