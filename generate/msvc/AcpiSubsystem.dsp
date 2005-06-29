@@ -184,6 +184,10 @@ SOURCE=..\..\Subsystem\Events\evsci.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Hardware\hw32Cx.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Hardware\hw32thrt.c
 # End Source File
 # Begin Source File
