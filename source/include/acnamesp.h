@@ -159,18 +159,18 @@ static struct InitVal {
     NsType      Type;
     char        *Val;
 } PreDefinedNames[] = {
-    {"_GPE",    DefAny},
-    {"_PR_",    DefAny},
-    {"_SB_",    DefAny},
-    {"_SI_",    DefAny},
-    {"_TZ_",    DefAny},
-    {"_REV",    Number, "2"},
-    {"_OS_",    String, "Intel AML interpreter"},
-    {"_GL_",    Mutex},
+    {"_GPE",    TYPE_DefAny},
+    {"_PR_",    TYPE_DefAny},
+    {"_SB_",    TYPE_DefAny},
+    {"_SI_",    TYPE_DefAny},
+    {"_TZ_",    TYPE_DefAny},
+    {"_REV",    TYPE_Number, "2"},
+    {"_OS_",    TYPE_String, "Intel AML interpreter"},
+    {"_GL_",    TYPE_Mutex},
 
     /* Table terminator */
 
-    {(char *)0, Any}
+    {(char *)0, TYPE_Any}
 };
 
 
