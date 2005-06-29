@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser opcode information table
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -686,7 +686,7 @@ static const ACPI_OPCODE_INFO    AmlOpInfo[] =
  * index into the table above
  */
 
-static UINT8 AmlShortOpInfoIndex[256] =
+static const UINT8 AmlShortOpInfoIndex[256] =
 {
 /*              0     1     2     3     4     5     6     7  */
 /*              8     9     A     B     C     D     E     F  */
@@ -725,7 +725,7 @@ static UINT8 AmlShortOpInfoIndex[256] =
 };
 
 
-static UINT8 AmlLongOpInfoIndex[NUM_EXTENDED_OPCODE] =
+static const UINT8 AmlLongOpInfoIndex[NUM_EXTENDED_OPCODE] =
 {
 /*              0     1     2     3     4     5     6     7  */
 /*              8     9     A     B     C     D     E     F  */
@@ -764,11 +764,11 @@ static UINT8 AmlLongOpInfoIndex[NUM_EXTENDED_OPCODE] =
  *
  ******************************************************************************/
 
-ACPI_OPCODE_INFO *
+const ACPI_OPCODE_INFO *
 AcpiPsGetOpcodeInfo (
     UINT16                  Opcode)
 {
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
     UINT8                   UpperOpcode;
     UINT8                   LowerOpcode;
 
@@ -783,7 +783,7 @@ AcpiPsGetOpcodeInfo (
 
     /* Default is "unknown opcode" */
 
-    OpInfo = (ACPI_OPCODE_INFO *) &AmlOpInfo [_UNK];
+    OpInfo = &AmlOpInfo [_UNK];
 
 
     /*
@@ -796,7 +796,7 @@ AcpiPsGetOpcodeInfo (
 
         /* Simple (8-bit) opcode: 0-255, can't index beyond table  */
 
-        OpInfo = (ACPI_OPCODE_INFO *) &AmlOpInfo [AmlShortOpInfoIndex [LowerOpcode]];
+        OpInfo = &AmlOpInfo [AmlShortOpInfoIndex [LowerOpcode]];
         break;
 
 
@@ -806,7 +806,7 @@ AcpiPsGetOpcodeInfo (
 
         if (LowerOpcode <= MAX_EXTENDED_OPCODE)
         {
-            OpInfo = (ACPI_OPCODE_INFO *) &AmlOpInfo [AmlLongOpInfoIndex [LowerOpcode]];
+            OpInfo = &AmlOpInfo [AmlLongOpInfoIndex [LowerOpcode]];
         }
         break;
 
@@ -850,7 +850,7 @@ NATIVE_CHAR *
 AcpiPsGetOpcodeName (
     UINT16                  Opcode)
 {
-    ACPI_OPCODE_INFO             *Op;
+    const ACPI_OPCODE_INFO  *Op;
 
 
     Op = AcpiPsGetOpcodeInfo (Opcode);

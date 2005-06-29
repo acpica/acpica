@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@ AcpiPsInitOp (
     ACPI_PARSE_OBJECT       *Op,
     UINT16                  Opcode)
 {
-    ACPI_OPCODE_INFO        *AmlOp;
+    const ACPI_OPCODE_INFO  *AmlOp;
 
 
     Op->DataType = ACPI_DESC_TYPE_PARSER;
@@ -183,7 +183,7 @@ AcpiPsAllocOp (
     ACPI_PARSE_OBJECT       *Op = NULL;
     UINT32                  Size;
     UINT8                   Flags;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);

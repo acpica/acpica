@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.90 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -293,11 +293,13 @@ AcpiPsFindObject (
     ACPI_PARSE_OBJECT       **OutOp)
 {
     NATIVE_CHAR             *Path;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     /* We are only interested in opcodes that have an associated name */
 
-    if (!AcpiPsIsNamedOp (Opcode))
+    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
+    if (!(OpInfo->Flags & AML_NAMED))
     {
         *OutOp = Op;
         return (AE_OK);
@@ -342,8 +344,8 @@ AcpiPsCompleteThisOp (
 #ifndef PARSER_ONLY
     ACPI_PARSE_OBJECT       *Prev;
     ACPI_PARSE_OBJECT       *Next;
-    ACPI_OPCODE_INFO        *OpInfo;
-    ACPI_OPCODE_INFO        *ParentInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
+    const ACPI_OPCODE_INFO  *ParentInfo;
     UINT32                  OpcodeClass;
     ACPI_PARSE_OBJECT       *ReplacementOp = NULL;
 
@@ -617,7 +619,7 @@ AcpiPsParseLoop (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_PARSE_OBJECT       *Op = NULL;     /* current op */
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
     ACPI_PARSE_OBJECT       *Arg = NULL;
     ACPI_PARSE2_OBJECT      *DeferredOp;
     UINT32                  ArgCount;       /* push for fixed or var args */
@@ -834,13 +836,8 @@ AcpiPsParseLoop (
                 }
 
 
-                if ((Op->Opcode == AML_CREATE_FIELD_OP)        ||
-                    (Op->Opcode == AML_CREATE_BIT_FIELD_OP)    ||
-                    (Op->Opcode == AML_CREATE_BYTE_FIELD_OP)   ||
-                    (Op->Opcode == AML_CREATE_WORD_FIELD_OP)   ||
-                    (Op->Opcode == AML_CREATE_DWORD_FIELD_OP)  ||
-                    (Op->Opcode == AML_CREATE_QWORD_FIELD_OP))
-                 {
+                if (OpInfo->Flags & AML_CREATE)
+                {
                     /*
                      * Backup to beginning of CreateXXXfield declaration
                      * BodyLength is unknown until we parse the body
@@ -997,12 +994,7 @@ AcpiPsParseLoop (
                 }
             }
 
-            if ((Op->Opcode == AML_CREATE_FIELD_OP)         ||
-                (Op->Opcode == AML_CREATE_BIT_FIELD_OP)     ||
-                (Op->Opcode == AML_CREATE_BYTE_FIELD_OP)    ||
-                (Op->Opcode == AML_CREATE_WORD_FIELD_OP)    ||
-                (Op->Opcode == AML_CREATE_DWORD_FIELD_OP)   ||
-                (Op->Opcode == AML_CREATE_QWORD_FIELD_OP))
+            if (OpInfo->Flags & AML_CREATE)
             {
                 /*
                  * Backup to beginning of CreateXXXfield declaration (1 for
