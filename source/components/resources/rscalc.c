@@ -2,7 +2,7 @@
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  ******************************************************************************/
 
@@ -827,7 +827,7 @@ AcpiRsCalculateListLength (
                  */
                 BytesConsumed = 2;
                 StructureSize = RESOURCE_LENGTH;
-	        ByteStreamBufferLength = BytesParsed;
+                ByteStreamBufferLength = BytesParsed;
                 break;
 
 
