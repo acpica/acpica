@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.5 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,7 @@
 #include "AslCompiler.y.h"
 #include "amlcode.h"
 
-
+#include "acnamesp.h"
 
 /*******************************************************************************
  *
@@ -160,22 +160,34 @@ CgAmlOpcodeWalk (
  *
  ******************************************************************************/
 
-void
+UINT32
 CgSetOptimalIntegerSize (
     ASL_PARSE_NODE          *Node)
 {
 
-    if (Node->Value.Integer <= 0xFF)
+
+    if (Node->Value.Integer <= ACPI_UINT8_MAX)
     {
         Node->AmlOpcode = AML_BYTE_OP;
+        return 1;
     }
-    else if (Node->Value.Integer <= 0xFFFF)
+
+    else if (Node->Value.Integer <= ACPI_UINT16_MAX)
     {
         Node->AmlOpcode = AML_WORD_OP;
+        return 2;
     }
-    else
+
+    else if (Node->Value.Integer <= ACPI_UINT32_MAX)
     {
         Node->AmlOpcode = AML_DWORD_OP;
+        return 4;
+    }
+
+    else
+    {
+        Node->AmlOpcode = AML_QWORD_OP;
+        return 8;
     }
 }
 
@@ -232,7 +244,7 @@ CgDoMethod (
         Next->ParseOpcode = DEFAULT_ARG;
     }
 
-    /* Concurrency Flag */
+    /* Concurrency value (0-15 valid) */
 
     Next = Next->Peer;
     if (Next->ParseOpcode != DEFAULT_ARG)
@@ -322,7 +334,7 @@ CgDoFieldCommon (
 
         case OFFSET:
             PkgLengthNode = Next->Child;
-            NewBitOffset = PkgLengthNode->Value.Integer * 8;
+            NewBitOffset = PkgLengthNode->Value.Integer32 * 8;
             if (NewBitOffset < CurrentBitOffset)
             {
                 DbgPrint ("Offset less than current offset\n");
@@ -335,7 +347,7 @@ CgDoFieldCommon (
         case NAMESEG:
         case RESERVED_BYTES:
             PkgLengthNode = Next->Child;
-            NewBitOffset = PkgLengthNode->Value.Integer;
+            NewBitOffset = PkgLengthNode->Value.Integer32;
             CurrentBitOffset += NewBitOffset;
             break;
 
@@ -483,45 +495,84 @@ CgDoBuffer (
     BufferLengthNode = Node->Child;
     InitializerNode = BufferLengthNode->Peer;
 
+    /* 
+     * If the BufferLength is not an INTEGER or was not specified in the ASL
+     * (DEFAULT_ARG), it is a TermArg that is
+     * evaluated at run-time, and we are therefore finished.
+     */
+    if ((BufferLengthNode->ParseOpcode != INTEGER) &&
+        (BufferLengthNode->ParseOpcode != DEFAULT_ARG))
+    {
+        return;
+    }
+
     /*
-     * We always count the number of items in the initializer list, because if
+     * We want to count the number of items in the initializer list, because if
      * it is larger than the buffer length, we will define the buffer size
      * to be the size of the initializer list (Per ACPI Spec)
      */
-    if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+    switch (InitializerNode->ParseOpcode)
     {
+
+    case INTEGER:
+    case BYTECONST:
+    case WORDCONST:
+    case DWORDCONST:
+
         /* The peer list contains the byte list (if any...) */
 
         while (InitializerNode)
         {
             /* For buffers, this is a list of raw bytes */
 
-            InitializerNode->AmlOpcode = AML_RAW_DATA_BYTE;
-            InitializerNode->AmlLength = 1;
-            InitializerNode->ParseOpcode = RAW_DATA;
+            InitializerNode->AmlOpcode      = AML_RAW_DATA_BYTE;
+            InitializerNode->AmlLength      = 1;
+            InitializerNode->ParseOpcode    = RAW_DATA;
 
             BufferLength++;
-            InitializerNode = InitializerNode->Peer;
+            InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
         }
+        break;
+
+
+    case STRING_LITERAL:
+
+        /* 
+         * Only one initializer, the string.  Buffer must be big enough to hold
+         * the string plus the null termination byte
+         */
+
+        BufferLength = strlen (InitializerNode->Value.String) + 1;
+
+        InitializerNode->AmlOpcode      = AML_RAW_DATA_BUFFER;
+        InitializerNode->AmlLength      = BufferLength;
+        InitializerNode->ParseOpcode    = RAW_DATA;
+        break;
+
+
+    case DEFAULT_ARG:
+        break;
+
+
+    default:
+        printf ("Unknown buffer initializer opcode [%s]\n", 
+                        UtGetOpName (InitializerNode->ParseOpcode));
+        return;
     }
 
 
     /* Check if initializer list is longer than the buffer length */
 
-    if (BufferLengthNode->ParseOpcode == INTEGER)
+    if (BufferLengthNode->Value.Integer > BufferLength)
     {
-        if (BufferLengthNode->Value.Integer > BufferLength)
-        {
-            BufferLength = BufferLengthNode->Value.Integer;
-        }
+        BufferLength = BufferLengthNode->Value.Integer32;
     }
-
 
     if (!BufferLength)
     {
         /* No length AND no items -- issue a warning */
 
-        AslWarning (ASL_WARNING_BUFFER_LENGTH);
+        AslWarning (ASL_WARNING_BUFFER_LENGTH, BufferLengthNode->LineNumber);
 
         /* But go ahead and put the buffer length of zero into the AML */
     }
@@ -532,14 +583,15 @@ CgDoBuffer (
      * of whether it was previously an integer or a default_arg placeholder
      */
 
-    BufferLengthNode->ParseOpcode = INTEGER;
-    BufferLengthNode->AmlOpcode = AML_DWORD_OP;
+    BufferLengthNode->ParseOpcode   = INTEGER;
+    BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
     BufferLengthNode->Value.Integer = BufferLength;
 
     CgSetOptimalIntegerSize (BufferLengthNode);
 
     /* Remaining nodes are handled via the tree walk */
 }
+
 
 
 /*******************************************************************************
@@ -595,7 +647,7 @@ CgDoPackage (
     {
         if (PackageLengthNode->Value.Integer > PackageLength)
         {
-            PackageLength = PackageLengthNode->Value.Integer;
+            PackageLength = PackageLengthNode->Value.Integer32;
         }
     }
 
@@ -604,7 +656,7 @@ CgDoPackage (
     {
         /* No length AND no items -- issue a warning */
 
-        AslWarning (ASL_WARNING_PACKAGE_LENGTH);
+        AslWarning (ASL_WARNING_PACKAGE_LENGTH, PackageLengthNode->LineNumber);
 
         /* But go ahead and put the buffer length of zero into the AML */
     }
@@ -721,6 +773,10 @@ CgDoDefinitionBlock (
     /* AML filename */
 
     Child = Node->Child;
+    if ((Child->Value.Pointer) && (Gbl_UseDefaultAmlFilename))
+    {
+        Gbl_OutputFilename = Child->Value.Pointer;
+    }
     Child->ParseOpcode = DEFAULT_ARG;
 
     /* Signature */
@@ -748,6 +804,132 @@ CgDoDefinitionBlock (
     Child = Child->Peer;
     Child->ParseOpcode = DEFAULT_ARG;
 }
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetArg
+ *
+ * PARAMETERS:  Op              - Get an argument for this op
+ *              Argn            - Nth argument to get
+ *
+ * RETURN:      The argument (as an Op object).  NULL if argument does not exist
+ *
+ * DESCRIPTION: Get the specified op's argument.
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE  *
+UtGetArg (
+    ASL_PARSE_NODE          *Op,
+    UINT32                  Argn)
+{
+    ASL_PARSE_NODE          *Arg = NULL;
+
+
+
+    /* Get the requested argument object */
+
+    Arg = Op->Child;
+    while (Arg && Argn)
+    {
+        Argn--;
+        Arg = Arg->Peer;
+    }
+
+    return (Arg);
+}
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgAttachNameToNode (
+    ASL_PARSE_NODE          *PsNode)
+{
+    ASL_PARSE_NODE          *Child = NULL;
+    ACPI_STATUS             Status;
+
+
+    switch (PsNode->AmlOpcode)
+    {
+
+    case AML_DATA_REGION_OP:
+    case AML_DEVICE_OP:
+    case AML_EVENT_OP:
+    case AML_METHOD_OP:
+    case AML_MUTEX_OP:
+    case AML_REGION_OP:
+    case AML_POWER_RES_OP:
+    case AML_PROCESSOR_OP:
+    case AML_THERMAL_ZONE_OP:
+    case AML_NAME_OP:
+    case AML_SCOPE_OP:
+
+        Child = UtGetArg (PsNode, 0);
+        break;
+
+
+    case AML_ALIAS_OP:
+
+        Child = UtGetArg (PsNode, 1);
+        break;
+
+
+    case AML_BIT_FIELD_OP:
+    case AML_BYTE_FIELD_OP:
+    case AML_WORD_FIELD_OP:
+    case AML_DWORD_FIELD_OP:
+    case AML_QWORD_FIELD_OP:
+        
+        Child = UtGetArg (PsNode, 2);
+        break;
+
+
+    case AML_CREATE_FIELD_OP:
+       
+        Child = UtGetArg (PsNode, 3);
+        break;
+
+
+    case AML_BANK_FIELD_OP:
+    case AML_INDEX_FIELD_OP:
+    case AML_DEF_FIELD_OP:
+
+        return;
+        break;
+
+
+    default:
+        return;
+        break;
+    }
+
+
+    if (Child)
+    {
+        PsNode->ExternalName = Child->Value.String;
+        Status = AcpiNsInternalizeName (Child->Value.String, &PsNode->Namepath);
+        if (ACPI_FAILURE (Status))
+        {
+        }
+    }
+}
+
 
 
 /*******************************************************************************
@@ -804,6 +986,10 @@ CgGenerateAmlOperands (
         CgDoPackage (Node);
         break;
 
+    case RESOURCETEMPLATE:
+        CgDoResourceTemplate (Node);
+        break;
+
     case NAMESEG:
     case NAMESTRING:
     case STRING_LITERAL:
@@ -812,7 +998,17 @@ CgGenerateAmlOperands (
     default:
         break;
     }
+
+
+
+
+    /* TBD: move */
+
+    CgAttachNameToNode (Node);
 }
+
+
+
 
 /*******************************************************************************
  *
@@ -858,6 +1054,11 @@ CgDoEisaId (
     SwappedId |= (id >> 24) & 0xFF;
 
     Node->Value.Integer32 = SwappedId;
+
+    /* Node is now an integer */
+
+    Node->ParseOpcode = INTEGER;
+    CgSetOptimalIntegerSize (Node);
 }
 
 
