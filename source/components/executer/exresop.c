@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.80 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,14 @@
 
 #define _COMPONENT          ACPI_EXECUTER
         ACPI_MODULE_NAME    ("exresop")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiExCheckObjectType (
+    ACPI_OBJECT_TYPE        TypeNeeded,
+    ACPI_OBJECT_TYPE        ThisType,
+    void                    *Object);
 
 
 /*******************************************************************************
@@ -309,6 +317,8 @@ AcpiExResolveOperands (
                 {
                 case AML_DEBUG_OP:
                     TargetOp = AML_DEBUG_OP;
+
+                    /*lint -fallthrough */
 
                 case AML_NAME_OP:
                 case AML_INDEX_OP:
