@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -181,17 +181,18 @@ AcpiEvValidGpeEvent (
  * FUNCTION:    AcpiEvWalkGpeList
  *
  * PARAMETERS:  GpeWalkCallback     - Routine called for each GPE block
+ *              Flags               - ACPI_NOT_ISR or ACPI_ISR
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Walk the GPE lists.
- *              FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiEvWalkGpeList (
-    ACPI_GPE_CALLBACK       GpeWalkCallback)
+    ACPI_GPE_CALLBACK       GpeWalkCallback,
+    UINT32                  Flags)
 {
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
@@ -201,7 +202,7 @@ AcpiEvWalkGpeList (
     ACPI_FUNCTION_TRACE ("EvWalkGpeList");
 
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_ISR);
+    AcpiOsAcquireLock (AcpiGbl_GpeLock, Flags);
 
     /* Walk the interrupt level descriptor list */
 
@@ -228,7 +229,7 @@ AcpiEvWalkGpeList (
     }
 
 UnlockAndExit:
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_ISR);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
     return_ACPI_STATUS (Status);
 }
 
