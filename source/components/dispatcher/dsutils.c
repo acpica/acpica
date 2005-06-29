@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.73 $
+ *              $Revision: 1.76 $
  *
  ******************************************************************************/
 
@@ -179,7 +179,7 @@ AcpiDsIsResultUsed (
      */
 
     ParentInfo = AcpiPsGetOpcodeInfo (Op->Parent->Opcode);
-    if (ACPI_GET_OP_TYPE (ParentInfo) != ACPI_OP_TYPE_OPCODE)
+    if (ACPI_GET_OP_CLASS (ParentInfo) == AML_CLASS_UNKNOWN)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown parent opcode. Op=%X\n", Op));
         return_VALUE (FALSE);
@@ -197,7 +197,7 @@ AcpiDsIsResultUsed (
     /*
      * In these cases, the parent will never use the return object
      */
-    case OPTYPE_CONTROL:        /* IF, ELSE, WHILE only */
+    case AML_CLASS_CONTROL:        /* IF, ELSE, WHILE only */
 
         switch (Op->Parent->Opcode)
         {
@@ -233,7 +233,8 @@ AcpiDsIsResultUsed (
         /* Fall through to not used case below */
 
 
-    case OPTYPE_NAMED_OBJECT:   /* Scope, method, etc. */
+    case AML_CLASS_NAMED_OBJECT:   /* Scope, method, etc. */
+    case AML_CLASS_CREATE:
 
         /*
          * These opcodes allow TermArg(s) as operands and therefore
@@ -448,6 +449,11 @@ AcpiDsCreateOperand (
                  * very serious error at this point
                  */
                 Status = AE_AML_NAME_NOT_FOUND;
+
+                /* TBD: Externalize NameString and print */
+
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                        "Object name was not found in namespace\n"));
             }
         }
 
@@ -706,7 +712,7 @@ AcpiDsMapOpcodeToDataType (
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+    if (ACPI_GET_OP_CLASS (OpInfo) == AML_CLASS_UNKNOWN)
     {
         /* Unknown opcode */
 
@@ -714,10 +720,10 @@ AcpiDsMapOpcodeToDataType (
         return (DataType);
     }
 
-    switch (ACPI_GET_OP_CLASS (OpInfo))
+    switch (ACPI_GET_OP_TYPE (OpInfo))
     {
 
-    case OPTYPE_LITERAL:
+    case AML_TYPE_LITERAL:
 
         switch (Opcode)
         {
@@ -747,7 +753,7 @@ AcpiDsMapOpcodeToDataType (
         break;
 
 
-    case OPTYPE_DATA_TERM:
+    case AML_TYPE_DATA_TERM:
 
         switch (Opcode)
         {
@@ -770,44 +776,43 @@ AcpiDsMapOpcodeToDataType (
         break;
 
 
-    case OPTYPE_CONSTANT:
-    case OPTYPE_METHOD_ARGUMENT:
-    case OPTYPE_LOCAL_VARIABLE:
+    case AML_TYPE_CONSTANT:
+    case AML_TYPE_METHOD_ARGUMENT:
+    case AML_TYPE_LOCAL_VARIABLE:
 
         DataType = INTERNAL_TYPE_REFERENCE;
         break;
 
 
-    case OPTYPE_MONADIC2:
-    case OPTYPE_MONADIC2R:
-    case OPTYPE_DYADIC2:
-    case OPTYPE_DYADIC2R:
-    case OPTYPE_DYADIC2S:
-    case OPTYPE_TRIADIC:
-    case OPTYPE_QUADRADIC:
-    case OPTYPE_HEXADIC:
-    case OPTYPE_RETURN:
+    case AML_TYPE_EX_1A_0T_1R:
+    case AML_TYPE_EX_1A_1T_1R:
+    case AML_TYPE_EX_2A_0T_1R:
+    case AML_TYPE_EX_2A_1T_1R:
+    case AML_TYPE_EX_2A_2T_1R:
+    case AML_TYPE_EX_3A_0T_0R:
+    case AML_TYPE_EX_6A_0T_1R:
+    case AML_TYPE_RETURN:
 
         Flags = OP_HAS_RETURN_VALUE;
         DataType = ACPI_TYPE_ANY;
         break;
 
 
-    case OPTYPE_METHOD_CALL:
+    case AML_TYPE_METHOD_CALL:
 
         Flags = OP_HAS_RETURN_VALUE;
         DataType = ACPI_TYPE_METHOD;
         break;
 
 
-    case OPTYPE_NAMED_OBJECT:
+    case AML_TYPE_NAMED_OBJECT:
 
         DataType = AcpiDsMapNamedOpcodeToDataType (Opcode);
         break;
 
 
-    case OPTYPE_DYADIC1:
-    case OPTYPE_CONTROL:
+    case AML_TYPE_EX_2A_0T_0R:
+    case AML_TYPE_CONTROL:
 
         /* No mapping needed at this time */
 
