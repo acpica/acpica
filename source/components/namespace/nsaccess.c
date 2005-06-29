@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.184 $
+ *              $Revision: 1.185 $
  *
  ******************************************************************************/
 
@@ -239,8 +239,7 @@ AcpiNsRootInitialize (void)
             switch (InitVal->Type)
             {
             case ACPI_TYPE_METHOD:
-                ObjDesc->Method.ParamCount = (UINT8) ACPI_STRTOUL
-                                                        (Val, NULL, 10);
+                ObjDesc->Method.ParamCount = (UINT8) ACPI_TO_INTEGER (Val);
                 ObjDesc->Common.Flags |= AOPOBJ_DATA_VALID;
 
 #if defined (_ACPI_ASL_COMPILER) || defined (_ACPI_DUMP_APP)
@@ -260,8 +259,7 @@ AcpiNsRootInitialize (void)
 
             case ACPI_TYPE_INTEGER:
 
-                ObjDesc->Integer.Value =
-                        (ACPI_INTEGER) ACPI_STRTOUL (Val, NULL, 10);
+                ObjDesc->Integer.Value = ACPI_TO_INTEGER (Val);
                 break;
 
 
@@ -279,8 +277,7 @@ AcpiNsRootInitialize (void)
             case ACPI_TYPE_MUTEX:
 
                 ObjDesc->Mutex.Node = NewNode;
-                ObjDesc->Mutex.SyncLevel = (UINT8) ACPI_STRTOUL
-                                                        (Val, NULL, 10);
+                ObjDesc->Mutex.SyncLevel = (UINT8) ACPI_TO_INTEGER (Val);
 
                 if (ACPI_STRCMP (InitVal->Name, "_GL_") == 0)
                 {
