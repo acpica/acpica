@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -375,9 +375,9 @@ main (
         /* Build a FADT so we can test the hardware/event init */
 
         MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
-        MEMCPY (&LocalFADT.header.Signature, FADT_SIG, 4);
-        LocalFADT.header.Revision = 1;
-        LocalFADT.header.Length = sizeof (FADT_DESCRIPTOR_REV1);
+        MEMCPY (&LocalFADT.Header.Signature, FADT_SIG, 4);
+        LocalFADT.Header.Revision = 1;
+        LocalFADT.Header.Length = sizeof (FADT_DESCRIPTOR_REV1);
         LocalFADT.Gpe0BlkLen    = 8;
         LocalFADT.Gpe1BlkLen    = 12;
         LocalFADT.Gpe1Base      = 64;
@@ -396,7 +396,7 @@ main (
 
         /* Complete the FADT with the checksum */
 
-        LocalFADT.header.Checksum = AcpiTbChecksum (&LocalFADT, LocalFADT.header.Length);
+        LocalFADT.Header.Checksum = AcpiTbChecksum (&LocalFADT, LocalFADT.Header.Length);
 
         Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFADT);
         if (ACPI_FAILURE (Status))
