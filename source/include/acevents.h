@@ -106,6 +106,13 @@
 #define STATUS_POWER_BUTTON             256
 #define STATUS_SLEEP_BUTTON             512
 
+/* Enable bits. */
+
+#define ENABLE_PMTIMER                  1
+#define ENABLE_GLOBAL                   32
+#define ENABLE_POWER_BUTTON             256
+#define ENABLE_SLEEP_BUTTON             512
+
 /* Interrupt handler return values (must be unique bits) */
 
 #define INTERRUPT_HANDLED               0x01
