@@ -252,9 +252,8 @@ ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_SysNotify;
 #define NUM_NS_TYPES                    INTERNAL_TYPE_Invalid+1
 #define NUM_PREDEFINED_NAMES            9
 
-/* Scope stack */
+/* Scope stack head */
 
-ACPI_EXTERN SCOPE_STACK                 Gbl_ScopeStack[MAX_SCOPE_NESTING];
 ACPI_EXTERN SCOPE_STACK                *Gbl_CurrentScope;
 
 ACPI_EXTERN NAME_TABLE_ENTRY            Gbl_RootObjStruct;
@@ -262,7 +261,7 @@ ACPI_EXTERN NAME_TABLE_ENTRY           *Gbl_RootObject;
 
 extern      char                        Gbl_BadType[];
 extern      char                       *Gbl_NsTypeNames[NUM_NS_TYPES];
-extern      INT32                       Gbl_NsProperties[NUM_NS_TYPES];
+extern      UINT8                       Gbl_NsProperties[NUM_NS_TYPES];
 extern      PREDEFINED_NAMES            Gbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
 
 
@@ -281,24 +280,28 @@ ACPI_EXTERN	ALLOCATION_INFO	           *Gbl_TailAllocPtr;
  *
  ****************************************************************************/
 
+#ifdef _RPARSER
+
 /* 
  * Package stack.  used for keeping track of nested AML packages.
  * Grows upwards. 
  */
 
-ACPI_EXTERN INT32                       Gbl_PkgStackLevel;
-ACPI_EXTERN INT32                       Gbl_PkgStack_Len[AML_PKG_MAX_NEST];
-ACPI_EXTERN UINT8                      *Gbl_PkgStack_Code[AML_PKG_MAX_NEST];
+extern      INT32                       Gbl_PkgStackLevel;
+extern      INT32                       Gbl_PkgStack_Len[AML_PKG_MAX_NEST];
+extern      UINT8                      *Gbl_PkgStack_Code[AML_PKG_MAX_NEST];
+
+#endif
+
+/* Method stack - contains arguments and locals */
+
+ACPI_EXTERN	INT32                       Gbl_MethodStackTop;
+ACPI_EXTERN	METHOD_STACK                *Gbl_MthStackHead;
 
 /* Object stack */
 
 ACPI_EXTERN void                       *Gbl_ObjStack[AML_EXPR_MAX_NEST];
 ACPI_EXTERN INT32                       Gbl_ObjStackTop;
-
-/* Method stack - contains arguments and locals */
-
-ACPI_EXTERN METHOD_STACK                Gbl_MethodStack[AML_METHOD_MAX_NEST];
-ACPI_EXTERN INT32                       Gbl_MethodStackTop;
 
 /* Base of AML block, and pointer to current location in it */
 
