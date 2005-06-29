@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -149,14 +149,6 @@ AcpiTbDeleteAcpiTables (void)
 {
 }
 
-
-BOOLEAN
-AcpiTbSystemTablePointer (
-    void                    *Where)
-{
-    return FALSE;
-
-}
 
 void
 AcpiExDumpOperands (
