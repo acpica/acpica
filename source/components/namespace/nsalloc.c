@@ -147,41 +147,36 @@ NsIsInSystemTable (
     ACPI_TABLE_HEADER       *Table;
 
 
-    FUNCTION_TRACE ("NsIsInSystemTable");
+    /* No function trace, called too often! */
 
 
     /* Ignore null pointer */
 
     if (!Where)
     {
-        return_VALUE (FALSE);
+        return (FALSE);
     }
 
 
     /* Check for a pointer within the DSDT */
 
-    if (IS_IN_ACPI_TABLE (Where, DSDT))
+    if (IS_IN_ACPI_TABLE (Where, Gbl_DSDT))
     {
-        return_VALUE (TRUE);
+        return (TRUE);
     }
 
 
     /* Check each of the loaded SSDTs (if any)*/
 
-    TableDesc = &AcpiTables[TABLE_SSDT];
+    TableDesc = &Gbl_AcpiTables[TABLE_SSDT];
 
-    for (i = 0; i < AcpiTables[TABLE_SSDT].Count; i++)
+    for (i = 0; i < Gbl_AcpiTables[TABLE_SSDT].Count; i++)
     {
         Table = TableDesc->Pointer;
 
-
-//        if ((Where >= (void *) (Table + 1)) &&
-//            (Where < (void *) (Table + Table->Length)))
-
-
         if (IS_IN_ACPI_TABLE (Where, Table))
         {
-            return_VALUE (TRUE);
+            return (TRUE);
         }
 
         TableDesc = TableDesc->Next;
@@ -191,7 +186,7 @@ NsIsInSystemTable (
     /* TBD: Need to check the PSDTs? */
 
 
-    return_VALUE (FALSE);
+    return (FALSE);
 }
 
 
@@ -269,7 +264,7 @@ NsDeleteNamespace (void)
 
     /* Begin deletion walk at the root object */
 
-    ParentHandle    = RootObject;
+    ParentHandle    = Gbl_RootObject;
     ChildHandle     = 0;
     Level           = 1;
 
@@ -332,7 +327,7 @@ NsDeleteNamespace (void)
 
 
     REPORT_SUCCESS ("Entire namespace and objects deleted");
-    RootObject->Scope = NULL;
+    Gbl_RootObject->Scope = NULL;
 
     return_ACPI_STATUS (AE_OK); 
 }
@@ -453,7 +448,7 @@ NsDeleteAcpiTable (
 
     /* Free the table */
 
-    NsFreeAcpiTable (&AcpiTables[Type]);
+    NsFreeAcpiTable (&Gbl_AcpiTables[Type]);
 
 
     /* Clear the appropriate "typed" global table pointer */
@@ -461,37 +456,37 @@ NsDeleteAcpiTable (
     switch (Type)
     {
     case TABLE_RSDP:
-        RSDP = NULL;
+        Gbl_RSDP = NULL;
         break;
 
     case TABLE_APIC:
-        APIC = NULL;
+        Gbl_APIC = NULL;
         break;
 
     case TABLE_DSDT:
-        DSDT = NULL;
+        Gbl_DSDT = NULL;
         break;
 
     case TABLE_FACP:
-        FACP = NULL;
+        Gbl_FACP = NULL;
         break;
 
     case TABLE_FACS:
-        FACS = NULL;
+        Gbl_FACS = NULL;
         break;
 
     case TABLE_PSDT:
         break;
 
     case TABLE_RSDT:
-        RSDT = NULL;
+        Gbl_RSDT = NULL;
         break;
 
     case TABLE_SSDT:
         break;
 
     case TABLE_SBST:
-        SBST = NULL;
+        Gbl_SBST = NULL;
 
     default:
         break;
@@ -610,10 +605,10 @@ NsInstallAcpiTable (
     FUNCTION_TRACE ("NsInstallAcpiTable");
 
 
-    ListHead    = &AcpiTables[TableType];
+    ListHead    = &Gbl_AcpiTables[TableType];
     TableDesc   = ListHead;
    
-    if (AcpiTableFlags[TableType] == ACPI_TABLE_SINGLE)
+    if (Gbl_AcpiTableFlags[TableType] == ACPI_TABLE_SINGLE)
     {
         if (ListHead->Pointer)
         {
