@@ -165,7 +165,7 @@ AmlGetObjectReference (
 
         /* 
          * Not a Name -- an indirect name pointer would have
-         * been converted to a direct name pointer in AmlPrepOperands
+         * been converted to a direct name pointer in AmlResolveOperands
          */
         switch (ObjDesc->Lvalue.OpCode)
         {
@@ -238,50 +238,23 @@ AmlExecMonadic1 (
     FUNCTION_TRACE_PTR ("AmlExecMonadic1", Operands);
 
 
-    if ((AML_SleepOp == Opcode) || 
-        (AML_StallOp == Opcode))
-    {
-        Status = AmlPrepOperands ("n", Operands);                 /* Operand should be a Number */
-    }
-
-    else
-    {
-        Status = AmlPrepOperands ("l", Operands);                 /* Operand should be an Lvalue */
-    }
-
+    Status = AmlResolveOperands (Opcode, Operands); 
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
-
-        if (Status == AE_TYPE)
-        {
-            Status = AE_AML_OPERAND_TYPE;
-        }
         goto Cleanup;
     }
 
 
     /* Get the operand from the stack */
 
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlPrepOperands");
+    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlResolveOperands");
     ObjDesc = Operands[0];
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
-    /* ObjDesc can be an NTE - extract the object from the NTE */
-
-    if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
-    {
-        ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjDesc);
-        if (!ObjDesc)
-        {
-            /* No object, just exit */
-
-            return_ACPI_STATUS (AE_OK);
-        }
-    }
 
 
     /* Examine the opcode */
@@ -293,14 +266,6 @@ AmlExecMonadic1 (
 
     case AML_ReleaseOp:
 
-        if (ACPI_TYPE_Mutex != ObjDesc->Common.Type)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
-                            ObjDesc->Common.Type));
-            Status = AE_AML_OPERAND_TYPE;
-            goto Cleanup;
-        }
-
         Status = OsReleaseMutex (ObjDesc);
         break;
 
@@ -308,13 +273,6 @@ AmlExecMonadic1 (
     /*  DefReset    :=  ResetOp     EventObject */
 
     case AML_ResetOp:
-
-        if (ACPI_TYPE_Event != ObjDesc->Common.Type)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1/ResetOp: Needed Event, found %d\n", 
-                            ObjDesc->Common.Type));
-            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-        }
 
         Status = OsResetEvent (ObjDesc);
         break;
@@ -324,19 +282,11 @@ AmlExecMonadic1 (
     
     case AML_SignalOp:
 
-        if (ACPI_TYPE_Event != ObjDesc->Common.Type)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1/SignalOp: Needed Event, found %d\n", 
-                            ObjDesc->Common.Type));
-            Status = AE_AML_OPERAND_TYPE;
-            goto Cleanup;
-        }
-
         Status = OsSignalEvent (ObjDesc);
         break;
 
 
-    /*  DefSleep    :=  SleepOp MsecTime    */
+    /*  DefSleep    :=  SleepOp     MsecTime    */
     
     case AML_SleepOp:
 
@@ -344,7 +294,7 @@ AmlExecMonadic1 (
         break;
 
 
-    /*  DefStall    :=  StallOp UsecTime    */
+    /*  DefStall    :=  StallOp     UsecTime    */
     
     case AML_StallOp:
 
@@ -413,73 +363,10 @@ AmlExecMonadic2R (
      * Resolve operands based upon the opcode
      */
 
-    switch (Opcode)
-    {
-    case AML_BitNotOp:
-    case AML_FindSetLeftBitOp:
-    case AML_FindSetRightBitOp:
-    case AML_FromBCDOp:
-    case AML_ToBCDOp:
-
-        /* Lvalue returning a Number */
-
-        Status = AmlPrepOperands ("ln", Operands);
-        if (Status == AE_TYPE)
-        {
-            /* Try Package, returning a Number (Local0 = _PRT package) */
-
-            Status = AmlPrepOperands ("pn", Operands);
-        }
-        break;
-
-    case AML_CondRefOfOp:
-    case AML_DebugOp:
-    
-        /* Lvalue, returning an Lvalue */
-
-        Status = AmlPrepOperands ("ll", Operands);
-        break;
-    
-
-    case AML_StoreOp:
-    default:
-
-        /* Try Lvalue returning a Number */
-
-        Status = AmlPrepOperands ("ln", Operands);
-
-        if (Status == AE_TYPE)
-        {
-            /* Try Lvalue, returning a string or buffer */
-
-            Status = AmlPrepOperands ("ls", Operands);
-        }
-
-        if (Status == AE_TYPE)
-        {
-            /* Try Lvalue, returning a Lvalue */
-
-            Status = AmlPrepOperands ("ll", Operands);
-        }
-
-        if (Status == AE_TYPE)
-        {
-            /* Try Package, returning a Number (Local0 = _PRT package) */
-
-            Status = AmlPrepOperands ("pn", Operands);
-        }
-        break;
-    }
-
-    /* If everything failed above, exit */
-
+    Status = AmlResolveOperands (Opcode, Operands);
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 2);
-        if (Status == AE_TYPE)
-        {
-            Status = AE_AML_OPERAND_TYPE;
-        }
         goto Cleanup;
     }
 
@@ -487,7 +374,7 @@ AmlExecMonadic2R (
      * Stack was prepped successfully
      */
 
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlPrepOperands");
+    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
 
     ResDesc = Operands[0];
     ObjDesc = Operands[-1];
@@ -596,20 +483,6 @@ AmlExecMonadic2R (
         break;
 
 
-    /*  DefShiftLeftBit     :=  ShiftLeftBitOp      Source          BitNum  */
-    /*  DefShiftRightBit    :=  ShiftRightBitOp     Source          BitNum  */
-    /*  TBD: OBSOLETE OPCODES? */
-
-    case AML_ShiftLeftBitOp:
-    case AML_ShiftRightBitOp:
-        
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n", 
-                        PsGetOpcodeName (Opcode)));
-        Status = AE_SUPPORT;
-        goto Cleanup;
-        break;
-
-
     /*  DefCondRefOf        :=  CondRefOfOp         SourceObject    Result  */
 
     case AML_CondRefOfOp:
@@ -657,6 +530,11 @@ AmlExecMonadic2R (
 
     case AML_StoreOp:
 
+        /*
+         * A store operand is typically a number, string, buffer or lvalue
+         * TBD: What about a store to a package?
+         */
+
         /* 
          * Do the store, and be careful about deleting the source object,
          * since the object itself may have been stored.
@@ -675,6 +553,32 @@ AmlExecMonadic2R (
         *ReturnDesc = ObjDesc;
         return_ACPI_STATUS (Status);
 
+        break;
+
+
+    case AML_DebugOp:
+    
+        /* Lvalue, returning an Lvalue */
+
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: DebugOp should never get here!\n"));
+        return_ACPI_STATUS (AE_OK);
+        break;
+
+
+    /*
+     * These are obsolete opcodes 
+     */
+
+    /*  DefShiftLeftBit     :=  ShiftLeftBitOp      Source          BitNum  */
+    /*  DefShiftRightBit    :=  ShiftRightBitOp     Source          BitNum  */
+
+    case AML_ShiftLeftBitOp:
+    case AML_ShiftRightBitOp:
+        
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n", 
+                        PsGetOpcodeName (Opcode)));
+        Status = AE_SUPPORT;
+        goto Cleanup;
         break;
 
 
@@ -753,26 +657,14 @@ AmlExecMonadic2 (
     FUNCTION_TRACE_PTR ("AmlExecMonadic2", Operands);
 
 
-    if (AML_LNotOp == Opcode)
-    {
-        Status = AmlPrepOperands ("n", Operands);
-    }
-    else
-    {
-        Status = AmlPrepOperands ("l", Operands);
-    }
-
+    Status = AmlResolveOperands (Opcode, Operands);
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
-        if (Status == AE_TYPE)
-        {
-            Status = AE_AML_OPERAND_TYPE;
-        }
         goto Cleanup;
     }
 
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlPrepOperands");
+    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlResolveOperands");
 
 
     /* Get the operand and decode the opcode */
@@ -811,13 +703,13 @@ AmlExecMonadic2 (
          * is expected!! 10/99
          */
 
-        if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
-        {
-            RetDesc = ObjDesc;
-        }
+       if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+       {
+           RetDesc = ObjDesc;
+       }
 
-        else
-        {
+       else
+       {
             /* 
              * Duplicate the Lvalue in a new object so that we can resolve it
              * without destroying the original Lvalue object
@@ -826,8 +718,8 @@ AmlExecMonadic2 (
             RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
             if (!RetDesc)
             {
-                Status = AE_NO_MEMORY;
-                goto Cleanup;
+              Status = AE_NO_MEMORY;
+               goto Cleanup;
             }
 
             RetDesc->Lvalue.OpCode = ObjDesc->Lvalue.OpCode;
@@ -840,15 +732,11 @@ AmlExecMonadic2 (
          * Convert the RetDesc Lvalue to a Number
          * (This deletes the original RetDesc)
          */
-        
-        Status = AmlPrepOperands ("n", &RetDesc);
+    
+        Status = AmlResolveOperands (AML_LNotOp, &RetDesc);
         if (Status != AE_OK)
         {
             AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
-            if (Status == AE_TYPE)
-            {
-                Status = AE_AML_OPERAND_TYPE;
-            }
             goto Cleanup;
         }
 
@@ -882,7 +770,7 @@ AmlExecMonadic2 (
         {
             /* 
              * Not a Name -- an indirect name pointer would have
-             * been converted to a direct name pointer in AmlPrepOperands
+             * been converted to a direct name pointer in AmlResolveOperands
              */
             switch (ObjDesc->Lvalue.OpCode)
             {
@@ -936,7 +824,7 @@ AmlExecMonadic2 (
         else
         {
             /* 
-             * Since we passed AmlPrepOperands("l") and it's not an Lvalue,
+             * Since we passed AmlResolveOperands("l") and it's not an Lvalue,
              * it must be a direct name pointer. 
              */
             Type = NsGetType ((ACPI_HANDLE) ObjDesc);
