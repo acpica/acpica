@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -1007,9 +1007,9 @@ DoCharacter:
                 /*
                  * Check for a NULL, this terminates the string
                  */
-                if (*s == 0)
+                if ((*s == 0) || (*s > ACPI_ASCII_MAX))
                 {
-                    AslCommonError (ASL_WARNING, ASL_MSG_STRING_TERMINATION,
+                    AslCommonError (ASL_WARNING, ASL_MSG_INVALID_STRING,
                                     Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                                     Gbl_CurrentLineOffset, Gbl_CurrentColumn,
                                     Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
@@ -1045,9 +1045,9 @@ DoCharacter:
                 /*
                  * Check for a NULL, this terminates the string
                  */
-                if (*s == 0)
+                if ((*s == 0) || (*s > ACPI_ASCII_MAX))
                 {
-                    AslCommonError (ASL_WARNING, ASL_MSG_STRING_TERMINATION,
+                    AslCommonError (ASL_WARNING, ASL_MSG_INVALID_STRING,
                                     Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                                     Gbl_CurrentLineOffset, Gbl_CurrentColumn,
                                     Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
