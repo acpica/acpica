@@ -1,6 +1,6 @@
- 
+
 /******************************************************************************
- * 
+ *
  * Module Name: cmdelete - object deletion utilities
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -132,9 +132,9 @@
  * FUNCTION:    AcpiCmDeleteInternalObj
  *
  * PARAMETERS:  *Object        - Pointer to the list to be deleted
- * 
+ *
  * RETURN:      None
- * 
+ *
  * DESCRIPTION: Low level object deletion, after reference counts have been
  *              updated (All reference counts, including sub-objects!)
  *
@@ -155,7 +155,7 @@ AcpiCmDeleteInternalObj (
         return_VOID;
     }
 
-    /* 
+    /*
      * Must delete or free any pointers within the object that are not
      * actual ACPI objects (for example, a raw buffer pointer).
      */
@@ -165,7 +165,7 @@ AcpiCmDeleteInternalObj (
 
     case ACPI_TYPE_STRING:
 
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** String %p, ptr %p\n", 
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** String %p, ptr %p\n",
                                 Object, Object->String.Pointer));
 
         /* Free the actual string buffer */
@@ -175,8 +175,8 @@ AcpiCmDeleteInternalObj (
 
 
     case ACPI_TYPE_BUFFER:
-        
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Buffer %p, ptr %p\n", 
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Buffer %p, ptr %p\n",
                                 Object, Object->Buffer.Pointer));
 
         /* Free the actual buffer */
@@ -186,8 +186,8 @@ AcpiCmDeleteInternalObj (
 
 
     case ACPI_TYPE_PACKAGE:
-        
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Package of count %d\n", 
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Package of count %d\n",
                                 Object->Package.Count));
 
         /* Elements of the package are not handled here, they are deleted separately */
@@ -200,7 +200,7 @@ AcpiCmDeleteInternalObj (
 
     case ACPI_TYPE_MUTEX:
 
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Mutex %p, Semaphore %p\n", 
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Mutex %p, Semaphore %p\n",
                                 Object, Object->Mutex.Semaphore));
 
         AcpiOsdDeleteSemaphore (Object->Mutex.Semaphore);
@@ -209,7 +209,7 @@ AcpiCmDeleteInternalObj (
 
     case ACPI_TYPE_EVENT:
 
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** AcpiEvent %p, Semaphore %p\n", 
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** AcpiEvent %p, Semaphore %p\n",
                                 Object, Object->Event.Semaphore));
 
         AcpiOsdDeleteSemaphore (Object->Event.Semaphore);
@@ -219,7 +219,7 @@ AcpiCmDeleteInternalObj (
 
     case ACPI_TYPE_METHOD:
 
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Method %p, ParserOp %p\n", 
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Method %p, ParserOp %p\n",
                                 Object, Object->Method.ParserOp));
 
         /* Delete parse tree if it exists */
@@ -247,21 +247,21 @@ AcpiCmDeleteInternalObj (
 
 
     /*
-     * Delete any allocated memory found above 
+     * Delete any allocated memory found above
      */
 
     if (ObjPointer)
     {
         if (!AcpiTbSystemTablePointer (ObjPointer))
         {
-            DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj Ptr %p \n", 
+            DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj Ptr %p \n",
                                     ObjPointer));
 
             AcpiCmFree (ObjPointer);
         }
     }
 
-    
+
     /* Only delete the object if it was dynamically allocated */
 
     if (Object->Common.Flags & AO_STATIC_ALLOCATION)
@@ -276,7 +276,7 @@ AcpiCmDeleteInternalObj (
                                 Object, AcpiCmGetTypeName (Object->Common.Type)));
 
         AcpiCmDeleteObjectDesc (Object);
-        
+
     }
 
     return_VOID;
@@ -291,9 +291,9 @@ AcpiCmDeleteInternalObj (
  * FUNCTION:    AcpiCmDeleteInternalObjectList
  *
  * PARAMETERS:  *ObjList        - Pointer to the list to be deleted
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
+ *
  * DESCRIPTION: This function deletes an internal object list, including both
  *              simple objects and package objects
  *
@@ -304,8 +304,8 @@ AcpiCmDeleteInternalObjectList (
     ACPI_OBJECT_INTERNAL    **ObjList)
 {
     ACPI_OBJECT_INTERNAL    **InternalObj;
+
  
-    
     FUNCTION_TRACE ("CmDeleteInternalObjectList");
 
 
@@ -313,7 +313,7 @@ AcpiCmDeleteInternalObjectList (
 
     for (InternalObj = ObjList; *InternalObj; InternalObj++)
     {
-        /* 
+        /*
          * Check for a package
          * Simple objects are simply stored in the array and do not
          * need to be deleted separately.
@@ -322,7 +322,7 @@ AcpiCmDeleteInternalObjectList (
         if (IS_THIS_OBJECT_TYPE ((*InternalObj), ACPI_TYPE_PACKAGE))
         {
             /* Delete the package */
-            
+
             /*
              * TBD: [Investigate] This might not be the right thing to do, depending
              * on how the internal package object was allocated!!!

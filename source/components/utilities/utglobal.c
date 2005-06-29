@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -134,8 +134,8 @@
  *
  ******************************************************************************/
 
-/* 
- * We want the debug switches statically initialized so they 
+/*
+ * We want the debug switches statically initialized so they
  * are already set when the debugger is entered.
  */
 
@@ -173,14 +173,14 @@ BOOLEAN                     Acpi_GblShutdown = TRUE;        /* System starts uni
  ******************************************************************************/
 
 
-/* 
+/*
  * Names built-in to the interpreter
  *
  * Initial values are currently supported only for types String and Number.
  * To avoid type punning, both are specified as strings in this table.
  */
 
-PREDEFINED_NAMES            Acpi_GblPreDefinedNames[] = 
+PREDEFINED_NAMES            Acpi_GblPreDefinedNames[] =
 {
     {"_GPE",    INTERNAL_TYPE_DEF_ANY},
     {"_PR_",    INTERNAL_TYPE_DEF_ANY},
@@ -197,14 +197,14 @@ PREDEFINED_NAMES            Acpi_GblPreDefinedNames[] =
 };
 
 
-/* 
+/*
  * Properties of the ACPI Object Types, both internal and external.
- * 
+ *
  * Elements of AcpiNsProperties are bit significant
  * and the table is indexed by values of ACPI_OBJECT_TYPE
  */
 
-UINT8                       Acpi_GblNsProperties[] = 
+UINT8                       Acpi_GblNsProperties[] =
 {
     NSP_NORMAL,                 /* 00 Any              */
     NSP_NORMAL,                 /* 01 Number           */
@@ -292,13 +292,13 @@ char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n"
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmGetMutexName
  *
  * PARAMETERS:  None.
  *
  * RETURN:      Status
- * 
+ *
  * DESCRIPTION: Translate a mutex ID into a name string (Debug only)
  *
  ****************************************************************************/
@@ -317,12 +317,12 @@ AcpiCmGetMutexName (
 }
 
 
-/* 
+/*
  * Elements of Acpi_GblNsTypeNames below must match
  * one-to-one with values of ACPI_OBJECT_TYPE
  *
- * The type ACPI_TYPE_ANY (Untyped) is used as a "don't care" when searching; when 
- * stored in a table it really means that we have thus far seen no evidence to 
+ * The type ACPI_TYPE_ANY (Untyped) is used as a "don't care" when searching; when
+ * stored in a table it really means that we have thus far seen no evidence to
  * indicatewhat type is actually going to be stored for this entry.
  */
 
@@ -346,15 +346,15 @@ static char                 *Acpi_GblNsTypeNames[] =    /* printable names of AC
     "Processor",
     "Thermal",
     "BufferFld",
-    "DdbHandle", 
-     Acpi_GblBadType, 
-     Acpi_GblBadType, 
-     Acpi_GblBadType, 
+    "DdbHandle",
      Acpi_GblBadType,
-     Acpi_GblBadType, 
-     Acpi_GblBadType, 
-     Acpi_GblBadType, 
-     Acpi_GblBadType, 
+     Acpi_GblBadType,
+     Acpi_GblBadType,
+     Acpi_GblBadType,
+     Acpi_GblBadType,
+     Acpi_GblBadType,
+     Acpi_GblBadType,
+     Acpi_GblBadType,
      Acpi_GblBadType,
     "DefField",
     "BnkField",
@@ -369,21 +369,21 @@ static char                 *Acpi_GblNsTypeNames[] =    /* printable names of AC
     "DefAny",
     "Reference",
     "Alias",
-    "Notify", 
-    "AddrHndlr", 
+    "Notify",
+    "AddrHndlr",
     "Invalid"
 };
 
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmGetTypeName
  *
  * PARAMETERS:  None.
  *
  * RETURN:      Status
- * 
+ *
  * DESCRIPTION: Translate a Type ID into a name string (Debug only)
  *
  ****************************************************************************/
@@ -406,13 +406,13 @@ AcpiCmGetTypeName (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmValidObjectType
  *
  * PARAMETERS:  None.
  *
  * RETURN:      TRUE if valid object type
- * 
+ *
  * DESCRIPTION: Validate an object type
  *
  ****************************************************************************/
@@ -421,7 +421,7 @@ BOOLEAN
 AcpiCmValidObjectType (
     UINT32                  Type)
 {
-    
+
     if (Type > ACPI_TYPE_MAX)
     {
         if ((Type < INTERNAL_TYPE_BEGIN) ||
@@ -437,7 +437,7 @@ AcpiCmValidObjectType (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmFormatException
  *
  * PARAMETERS:  Status              - Acpi status to be formatted
@@ -528,7 +528,7 @@ AcpiCmAllocateOwnerId (
  *
  ***************************************************************************/
 
-void 
+void
 AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
 {
     UINT32                  i;
@@ -539,9 +539,9 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
     if (InitData)
     {
         MEMCPY (&Acpi_GblAcpiInitData, InitData, sizeof (ACPI_INIT_DATA));
-    } 
+    }
 
-    else 
+    else
     {
         MEMSET (&Acpi_GblAcpiInitData, 0, sizeof (ACPI_INIT_DATA));
     }
@@ -557,7 +557,7 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
         Acpi_GblAcpiTables[i].Allocation    = ACPI_MEM_NOT_ALLOCATED;
         Acpi_GblAcpiTables[i].Count         = 0;
     }
-      
+
 
     /* Address Space handler array */
 
@@ -666,12 +666,12 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
     Acpi_GblRootObject->NextEntry   = NULL;
     Acpi_GblRootObject->PrevEntry   = NULL;
     Acpi_GblRootObject->Object      = NULL;
-    
+
     /* Memory allocation metrics - compiled out in non-debug mode. */
 
     INITIALIZE_ALLOCATION_METRICS();
 
     return_VOID;
-}   
+}
 
 

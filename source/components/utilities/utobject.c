@@ -1,6 +1,6 @@
- 
+
 /******************************************************************************
- * 
+ *
  * Module Name: cmobject - ACPI object create/delete/cache routines
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -135,11 +135,11 @@
  *              Module              - Source file name of caller
  *              Line                - Line number of caller
  *              Type                - ACPI Type of the new object
- * 
+ *
  * RETURN:      Object              - The new object.  Null on failure
- * 
+ *
  * DESCRIPTION: Create and initialize a new internal object.
- * 
+ *
  * NOTE:
  *      We always allocate the worst-case object descriptor because these
  *      objects are cached, and we want them to be one-size-satisifies-any-request.
@@ -150,8 +150,8 @@
 
 ACPI_OBJECT_INTERNAL *
 _CmCreateInternalObject (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
     INT32                   ComponentId,
     OBJECT_TYPE_INTERNAL    Type)
 {
@@ -165,7 +165,7 @@ _CmCreateInternalObject (
 
     Object = _CmAllocateObjectDesc (ModuleName, LineNumber, ComponentId);
     if (!Object)
-    {   
+    {
         /* Allocation failure */
 
         return_VALUE (NULL);
@@ -181,7 +181,7 @@ _CmCreateInternalObject (
     Object->Common.ReferenceCount = 1;
 
     /* Any per-type initialization should go here */
-    
+
 
     /* Memory allocation metrics - compiled out in non debug mode. */
 
@@ -193,7 +193,7 @@ _CmCreateInternalObject (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmValidInternalObject
  *
  * PARAMETERS:  Operand             - Object to be validated
@@ -259,7 +259,7 @@ AcpiCmValidInternalObject (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    _CmAllocateObjectDesc
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -276,12 +276,12 @@ AcpiCmValidInternalObject (
 
 void *
 _CmAllocateObjectDesc (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
     INT32                   ComponentId)
 {
     ACPI_OBJECT_INTERNAL    *Object;
-    
+
 
     FUNCTION_TRACE ("_AllocateObjectDesc");
 
@@ -316,12 +316,12 @@ _CmAllocateObjectDesc (
 
         Object = _CmCallocate (sizeof (ACPI_OBJECT_INTERNAL), ComponentId,
                                     ModuleName, LineNumber);
-        
+
         if (!Object)
         {
             /* Allocation failed */
-        
-            _REPORT_ERROR (ModuleName, LineNumber, ComponentId, 
+
+            _REPORT_ERROR (ModuleName, LineNumber, ComponentId,
                             "Could not allocate Object Descriptor");
 
             return_PTR (NULL);
@@ -341,7 +341,7 @@ _CmAllocateObjectDesc (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmDeleteObjectDesc
  *
  * PARAMETERS:  Object          - Acpi internal object to be deleted
@@ -379,7 +379,7 @@ AcpiCmDeleteObjectDesc (
 
     if (Acpi_GblObjectCacheDepth >= MAX_OBJECT_CACHE_DEPTH)
     {
-        /* 
+        /*
          * Memory allocation metrics.  Call the macro here since we only
          * care about dynamically allocated objects.
          */
@@ -413,9 +413,9 @@ AcpiCmDeleteObjectDesc (
  * FUNCTION:    AcpiCmDeleteObjectCache
  *
  * PARAMETERS:  None
- * 
+ *
  * RETURN:      Status
- * 
+ *
  * DESCRIPTION: Purge the global state object cache.  Used during subsystem
  *              termination.
  *
@@ -440,22 +440,22 @@ AcpiCmDeleteObjectCache (
         Next = Acpi_GblObjectCache->Common.Next;
         Acpi_GblObjectCache->Common.Next = NULL;
 
-        /* 
+        /*
          * Memory allocation metrics.  Call the macro here since we only
          * care about dynamically allocated objects.
          */
         DECREMENT_OBJECT_METRICS (Acpi_GblObjectCache->Common.Size);
-        
+
         AcpiCmFree (Acpi_GblObjectCache);
         Acpi_GblObjectCache = Next;
     }
 
     return_VOID;
 }
- 
+
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmInitStaticObject
  *
  * PARAMETERS:  ObjDesc             - Pointer to a "static" object - on stack
@@ -483,7 +483,7 @@ AcpiCmInitStaticObject (
 
 
     /*
-     * Clear the entire descriptor 
+     * Clear the entire descriptor
      */
     MEMSET ((void *) ObjDesc, 0, sizeof (ACPI_OBJECT_INTERNAL));
 
@@ -492,7 +492,7 @@ AcpiCmInitStaticObject (
      * Initialize the header fields
      * 1) This is an ACPI_OBJECT_INTERNAL descriptor
      * 2) The size is the full object (worst case)
-     * 3) The flags field indicates static allocation 
+     * 3) The flags field indicates static allocation
      * 4) Reference count starts at one (not really necessary since the
      *    object can't be deleted, but keeps everything sane)
      */

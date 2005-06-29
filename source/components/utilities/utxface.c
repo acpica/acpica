@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: cmapi - External interfaces for "global" ACPI functions
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -233,17 +233,17 @@ AcpiTerminate (void)
  *
  * FUNCTION:    AcpiGetSystemInfo
  *
- * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the 
+ * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the
  *                                resources for the device
  *              BufferLength    - the number of bytes available in the buffer
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
- * DESCRIPTION: This function is called to get information about the current 
+ *
+ * DESCRIPTION: This function is called to get information about the current
  *              state of the ACPI subsystem.  It will return system information
  *              in the OutBuffer.
  *
- *              If the function fails an appropriate status will be returned 
+ *              If the function fails an appropriate status will be returned
  *              and the value of OutBuffer is undefined.
  *
  ******************************************************************************/
@@ -268,7 +268,7 @@ AcpiGetSystemInfo (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    if (OutBuffer->Length < sizeof (ACPI_SYSTEM_INFO)) 
+    if (OutBuffer->Length < sizeof (ACPI_SYSTEM_INFO))
     {
         /*
          *  Caller's buffer is too small
@@ -292,7 +292,7 @@ AcpiGetSystemInfo (
     InfoPtr->Flags              = Acpi_GblSystemFlags;
 
     /* Timer resolution - 24 or 32 bits  */
-    
+
     InfoPtr->TimerResolution    = AcpiHwPmtResolution ();
 
     /* Clear the reserved fields */
@@ -321,11 +321,11 @@ AcpiGetSystemInfo (
  *
  * FUNCTION:    AcpiFormatException
  *
- * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the 
+ * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the
  *                                exception name
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
+ *
  * DESCRIPTION: This function translates an ACPI exception into an ASCII string.
  *
  ******************************************************************************/

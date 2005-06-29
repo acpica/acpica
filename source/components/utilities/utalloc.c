@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: cmalloc - local memory allocation routines
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -137,7 +137,7 @@
 #ifdef ACPI_DEBUG
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmSearchAllocList
  *
  * PARAMETERS:  Address             - Address of allocated memory
@@ -163,19 +163,19 @@ AcpiCmSearchAllocList (
         {
             return NULL;
         }
-        
+
         if (Element->Address == Address)
         {
             return Element;
         }
 
-        Element = Element->Next; 
+        Element = Element->Next;
     }
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmAddElementToAllocList
  *
  * PARAMETERS:  Address             - Address of allocated memory
@@ -206,10 +206,10 @@ AcpiCmAddElementToAllocList (
 
 
     FUNCTION_TRACE_PTR ("CmAddElementToAllocList", Address);
-    
+
 
     AcpiCmAcquireMutex (MTX_MEMORY);
-    
+
     /* Keep track of the running total of all allocations. */
 
     Acpi_GblCurrentAllocCount++;
@@ -219,7 +219,7 @@ AcpiCmAddElementToAllocList (
     {
         Acpi_GblMaxConcurrentAllocCount = Acpi_GblCurrentAllocCount;
     }
-    
+
     Acpi_GblCurrentAllocSize += Size;
     Acpi_GblRunningAllocSize += Size;
 
@@ -227,7 +227,7 @@ AcpiCmAddElementToAllocList (
     {
         Acpi_GblMaxConcurrentAllocSize = Acpi_GblCurrentAllocSize;
     }
-    
+
     /* If the head pointer is null, create the first element and fill it in. */
 
     if (NULL == Acpi_GblHeadAllocPtr)
@@ -252,14 +252,14 @@ AcpiCmAddElementToAllocList (
             Status = AE_NO_MEMORY;
             goto UnlockAndExit;
         }
-        
+
         /* error check */
-        
+
         Acpi_GblTailAllocPtr->Next->Previous = Acpi_GblTailAllocPtr;
         Acpi_GblTailAllocPtr = Acpi_GblTailAllocPtr->Next;
     }
 
-    /* 
+    /*
      * Search list for this address to make sure it is not already on the list.
      * This will catch several kinds of problems.
      */
@@ -273,7 +273,7 @@ AcpiCmAddElementToAllocList (
         BREAKPOINT3;
     }
 
-    /* Fill in the instance data. */    
+    /* Fill in the instance data. */
     
     Acpi_GblTailAllocPtr->Address   = Address;
     Acpi_GblTailAllocPtr->Size      = Size;
@@ -291,7 +291,7 @@ UnlockAndExit:
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmDeleteElementFromAllocList
  *
  * PARAMETERS:  Address             - Address of allocated memory
@@ -299,7 +299,7 @@ UnlockAndExit:
  *              Module              - Source file name of caller
  *              Line                - Line number of caller
  *
- * RETURN:      
+ * RETURN:
  *
  * DESCRIPTION: Inserts an element into the global allocation tracking list.
  *
@@ -317,7 +317,7 @@ AcpiCmDeleteElementFromAllocList (
     UINT32                  DwordLen;
     UINT32                  Size;
     UINT32                  i;
-    
+
 
     FUNCTION_TRACE ("CmDeleteElementFromAllocList");
 
@@ -328,38 +328,38 @@ AcpiCmDeleteElementFromAllocList (
         /* Boy we got problems. */
 
         _REPORT_ERROR (Module, Line, Component, "CmDeleteElementFromAllocList: Empty allocation list, nothing to free!");
-        
+
         return_VOID;
     }
 
-    
+
     AcpiCmAcquireMutex (MTX_MEMORY);
-    
+
     /* Keep track of the amount of memory allocated. */
 
     Size = 0;
     Acpi_GblCurrentAllocCount--;
 
     if (Acpi_GblHeadAllocPtr == Acpi_GblTailAllocPtr)
-    {   
+    {
         if (Address != Acpi_GblHeadAllocPtr->Address)
         {
             _REPORT_ERROR (Module, Line, Component, "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
 
             goto Cleanup;
         }
-        
+
         Size = Acpi_GblHeadAllocPtr->Size;
-        
+
         AcpiOsdFree (Acpi_GblHeadAllocPtr);
         Acpi_GblHeadAllocPtr = NULL;
         Acpi_GblTailAllocPtr = NULL;
-        
+
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("_CmFree: Allocation list deleted.  There are no outstanding allocations.\n"));
-    
+
         goto Cleanup;
     }
-    
+
 
     /* Search list for this address */
 
@@ -387,8 +387,8 @@ AcpiCmDeleteElementFromAllocList (
                 Element->Previous->Next = Element->Next;
                 Element->Next->Previous = Element->Previous;
             }
-        }       
-        
+        }
+       
 
         /* Mark the segment as deleted */
 
@@ -416,7 +416,7 @@ AcpiCmDeleteElementFromAllocList (
         MEMSET (Element, 0xEA, sizeof (ALLOCATION_INFO));
         AcpiOsdFree (Element);
     }
-            
+
     else
     {
         _REPORT_ERROR (Module, Line, Component, "_CmFree: Entry not found in list");
@@ -425,7 +425,7 @@ AcpiCmDeleteElementFromAllocList (
 
 
 Cleanup:
-    
+
     Acpi_GblCurrentAllocSize -= Size;
     AcpiCmReleaseMutex (MTX_MEMORY);
 
@@ -434,12 +434,12 @@ Cleanup:
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmDumpAllocationInfo
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      None  
+ * RETURN:      None
  *
  * DESCRIPTION: Print some info about the outstanding allocations.
  *
@@ -450,7 +450,7 @@ AcpiCmDumpAllocationInfo (
     void)
 {
     FUNCTION_TRACE ("CmDumpAllocationInfo");
-    
+
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Current outstanding allocations: %d (%d b, %d Kb)\n",
@@ -481,13 +481,13 @@ AcpiCmDumpAllocationInfo (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiCmDumpCurrentAllocations
  *
  * PARAMETERS:  Component           - Component(s) to dump info for.
  *              Module              - Module to dump info for.  NULL means all.
  *
- * RETURN:      None  
+ * RETURN:      None
  *
  * DESCRIPTION: Print a list of all outstanding allocations.
  *
@@ -500,10 +500,10 @@ AcpiCmDumpCurrentAllocations (
 {
     ALLOCATION_INFO         *Element = Acpi_GblHeadAllocPtr;
     UINT32                  i;
-    
+
 
     FUNCTION_TRACE ("CmDumpCurrentAllocations");
-    
+
 
     if (Element == NULL)
     {
@@ -533,17 +533,17 @@ AcpiCmDumpCurrentAllocations (
             switch (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType)
             {
             case DESC_TYPE_ACPI_OBJ:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ObjType %s", 
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ObjType %s",
                                     AcpiCmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
                 break;
 
             case DESC_TYPE_PARSER:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ParseObj Opcode %04X", 
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ParseObj Opcode %04X",
                                     ((ACPI_GENERIC_OP *)(Element->Address))->Opcode));
                 break;
 
             case DESC_TYPE_NTE:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" NTE Name %4.4s", 
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" NTE Name %4.4s",
                                     &((NAME_TABLE_ENTRY *)(Element->Address))->Name));
                 break;
 
@@ -552,29 +552,29 @@ AcpiCmDumpCurrentAllocations (
                 break;
             }
 
-            DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, ("\n")); 
+            DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, ("\n"));
         }
-        
+
         if (Element->Next == NULL)
         {
             break;
         }
-        
+
         Element = Element->Next;
     }
 
     AcpiCmReleaseMutex (MTX_MEMORY);
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("Total number of unfreed allocations = %d\n", i));
-   
+
     return_VOID;
-}   
+}
 
 #endif  /* Debug routines for memory leak detection */
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    _CmAllocate
  *
  * PARAMETERS:  Size                - Size of the allocation
@@ -596,11 +596,12 @@ _CmAllocate (
     INT32                   Line)
 {
     void                    *Address = NULL;
-    ACPI_STATUS             Status;
+    DEBUG_EXEC (\
+    ACPI_STATUS             Status);
 
 
     FUNCTION_TRACE_U32 ("_CmAllocate", Size);
-    
+
 
     /* Check for an inadvertent size of zero bytes */
 
@@ -624,7 +625,8 @@ _CmAllocate (
 
         return_VALUE (NULL);
     }
-    
+
+#ifdef ACPI_DEBUG
     Status = AcpiCmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
@@ -633,13 +635,14 @@ _CmAllocate (
     }
 
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %p Size 0x%x\n", Address, Size));
+#endif
 
     return_PTR (Address);
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    _CmCallocate
  *
  * PARAMETERS:  Size                - Size of the allocation
@@ -661,11 +664,13 @@ _CmCallocate (
     INT32                   Line)
 {
     void                    *Address = NULL;
-    ACPI_STATUS             Status;
+    DEBUG_EXEC (\
+    ACPI_STATUS             Status);
+
 
 
     FUNCTION_TRACE_U32 ("_CmCallocate", Size);
- 
+
     /* Check for an inadvertent size of zero bytes */
 
     if (!Size)
@@ -678,7 +683,7 @@ _CmCallocate (
 
 
     Address = AcpiOsdCallocate (Size);
-    
+
     if (!Address)
     {
         /* Report allocation error */
@@ -691,13 +696,15 @@ _CmCallocate (
         return_VALUE (NULL);
     }
 
+#ifdef ACPI_DEBUG
     Status = AcpiCmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsdFree (Address);
         return_PTR (NULL);
     }
-    
+#endif
+
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %p Size 0x%x\n", Address, Size));
 
     return_PTR (Address);
@@ -705,7 +712,7 @@ _CmCallocate (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    _CmFree
  *
  * PARAMETERS:  Address             - Address of the memory to deallocate
@@ -727,7 +734,7 @@ _CmFree (
     INT32                   Line)
 {
     FUNCTION_TRACE_PTR ("_CmFree", Address);
-    
+
 
     if (NULL == Address)
     {
@@ -735,11 +742,11 @@ _CmFree (
             "_CmFree: Trying to delete a NULL address.");
 
         return_VOID;
-    }   
-    
+    }
+   
     AcpiCmDeleteElementFromAllocList (Address, Component, Module, Line);
     AcpiOsdFree (Address);
-    
+
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %p freed\n", Address));
 
     return_VOID;

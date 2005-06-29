@@ -1,6 +1,6 @@
- 
+
 /******************************************************************************
- * 
+ *
  * Module Name: cmcopy - Internal to external object translation utilities
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -125,7 +125,7 @@
         MODULE_NAME         ("cmcopy");
 
 
-typedef struct Search_st 
+typedef struct Search_st
 {
     ACPI_OBJECT_INTERNAL        *InternalObj;
     UINT32                      Index;
@@ -145,13 +145,13 @@ PKG_SEARCH_INFO                 Level[MAX_PACKAGE_DEPTH];
  * PARAMETERS:  *InternalObj    - Pointer to the object we are examining
  *              *Buffer         - Where the object is returned
  *              *SpaceUsed      - Where the data length is returned
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
+ *
  * DESCRIPTION: This function is called to place a simple object in a user buffer.
  *
  *              The buffer is assumed to have sufficient space for the object.
- * 
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -215,7 +215,7 @@ AcpiCmBuildExternalSimpleObject (
 
     case INTERNAL_TYPE_REFERENCE:
 
-        /* 
+        /*
          * This is an object reference.  We use the object type of "Any" to
          * indicate a reference object containing a handle to an ACPI
          * named object.
@@ -257,7 +257,7 @@ AcpiCmBuildExternalSimpleObject (
 
 
     *BufferSpaceUsed = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
-    
+
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -269,22 +269,22 @@ AcpiCmBuildExternalSimpleObject (
  * PARAMETERS:  *InternalObj    - Pointer to the object we are returning
  *              *Buffer         - Where the object is returned
  *              *SpaceUsed      - Where the object length is returned
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
+ *
  * DESCRIPTION: This function is called to place a package object in a user
  *              buffer.  A package object by definition contains other objects.
  *
  *              The buffer is assumed to have sufficient space for the object.
  *              The caller must have verified the buffer length needed using the
  *              AcpiCmGetObjectSize function before calling this function.
- * 
+ *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmBuildExternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *InternalObj, 
-    UINT8                   *Buffer, 
+    ACPI_OBJECT_INTERNAL    *InternalObj,
+    UINT8                   *Buffer,
     UINT32                  *SpaceUsed)
 {
     UINT8                   *FreeSpace;
@@ -297,7 +297,7 @@ AcpiCmBuildExternalPackageObject (
     ACPI_OBJECT_INTERNAL    *ThisInternalObj;
     ACPI_OBJECT             *ThisExternalObj;
     PKG_SEARCH_INFO         *LevelPtr;
-    
+
 
     FUNCTION_TRACE ("CmBuildExternalPackageObject");
 
@@ -346,7 +346,7 @@ AcpiCmBuildExternalPackageObject (
 
 
 
-        /* 
+        /*
          * Check for 1) Null object -- OK, this can happen if package element never initialized
          *           2) Not an internal object - can be an NTE instead
          *           3) Any internal object other than a package.
@@ -359,11 +359,11 @@ AcpiCmBuildExternalPackageObject (
             (!IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_PACKAGE)))
         {
             /*
-             * This is a simple or null object -- get the size 
+             * This is a simple or null object -- get the size
              */
 
             Status = AcpiCmBuildExternalSimpleObject (ThisInternalObj, ThisExternalObj, FreeSpace, &ObjectSpace);
-            if (ACPI_FAILURE (Status)) 
+            if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
@@ -448,9 +448,9 @@ AcpiCmBuildExternalPackageObject (
  *
  * PARAMETERS:  *InternalObj    - The internal object to be converted
  *              *BufferPtr      - Where the object is returned
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
+ *
  * DESCRIPTION: This function is called to build an API object to be returned to
  *              the caller.
  *
@@ -458,7 +458,7 @@ AcpiCmBuildExternalPackageObject (
 
 ACPI_STATUS
 AcpiCmBuildExternalObject (
-    ACPI_OBJECT_INTERNAL    *InternalObj, 
+    ACPI_OBJECT_INTERNAL    *InternalObj,
     ACPI_BUFFER             *RetBuffer)
 {
     ACPI_STATUS             Status;
@@ -500,9 +500,9 @@ AcpiCmBuildExternalObject (
  *
  * PARAMETERS:  *ExternalObj    - The external object to be converted
  *              *InternalObj    - Where the internal object is returned
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
+ *
  * DESCRIPTION: This function copies an external object to an internal one.
  *              NOTE: Pointers can be copied, we don't need to copy data.
  *              (The pointers have to be valid in our address space no matter
@@ -563,22 +563,22 @@ AcpiCmBuildInternalSimpleObject (
  * PARAMETERS:  *InternalObj    - Pointer to the object we are returning
  *              *Buffer         - Where the object is returned
  *              *SpaceUsed      - Where the length of the object is returned
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
+ *
  * DESCRIPTION: This function is called to place a package object in a user
  *              buffer.  A package object by definition contains other objects.
  *
  *              The buffer is assumed to have sufficient space for the object.
  *              The caller must have verified the buffer length needed using the
  *              AcpiCmGetObjectSize function before calling this function.
- * 
+ *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmBuildInternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *InternalObj, 
-    UINT8                   *Buffer, 
+    ACPI_OBJECT_INTERNAL    *InternalObj,
+    UINT8                   *Buffer,
     UINT32                  *SpaceUsed)
 {
     UINT8                   *FreeSpace;
@@ -591,9 +591,9 @@ AcpiCmBuildInternalPackageObject (
     ACPI_OBJECT_INTERNAL    *ThisInternalObj;
     ACPI_OBJECT             *ThisExternalObj;
     PKG_SEARCH_INFO         *LevelPtr;
-    
 
-    
+
+   
     FUNCTION_TRACE ("CmBuildInternalPackageObject");
 
 
@@ -611,7 +611,7 @@ AcpiCmBuildInternalPackageObject (
     /*
      * Initialize the working variables
      */
-    
+
     MEMSET ((void *) Level, 0, sizeof(Level));
 
     Level[0].InternalObj    = InternalObj;
@@ -675,12 +675,12 @@ AcpiCmBuildInternalPackageObject (
             LevelPtr->Index         = 0;
 
         }   /* if object is a package */
-        
+
         else
         {
 /*            Status = AcpiCmBuildSimpleObject(ThisInternalObj, ThisExternalObj, FreeSpace, &ObjectSpace);
 */
-            if (Status != AE_OK) 
+            if (Status != AE_OK)
             {
                 /*
                  * Failure get out
@@ -734,16 +734,16 @@ AcpiCmBuildInternalPackageObject (
  *
  * PARAMETERS:  *InternalObj    - The external object to be converted
  *              *BufferPtr      - Where the internal object is returned
- * 
+ *
  * RETURN:      Status          - the status of the call
- * 
+ *
  * DESCRIPTION: Converts an external object to an internal object.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmBuildInternalObject (
-    ACPI_OBJECT             *ExternalObj, 
+    ACPI_OBJECT             *ExternalObj,
     ACPI_OBJECT_INTERNAL    *InternalObj)
 {
     ACPI_STATUS             Status;
@@ -763,7 +763,7 @@ AcpiCmBuildInternalObject (
                         &RetBuffer->Length);
 */
         DEBUG_PRINT (ACPI_ERROR, ("CmBuildInternalObject: Packages as parameters not implemented!\n"));
-        
+
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
     }
 
