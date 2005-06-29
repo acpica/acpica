@@ -125,6 +125,10 @@
  *
  */
 
+/* Name of operating system (returned by _OS_) */
+
+#define ACPI_OS_NAME                "Intel ACPI/CA Core Subsystem"
+
 /* String size constants */
 
 #define MAX_STRING_LENGTH           512
@@ -185,6 +189,11 @@
 /* Maximum count for a semaphore object */
 
 #define MAX_SEMAPHORE_COUNT         256 
+
+
+/* Max reference count (for debug only) */
+
+#define MAX_REFERENCE_COUNT         48
 
 #endif /* _CONFIG_H */
 
