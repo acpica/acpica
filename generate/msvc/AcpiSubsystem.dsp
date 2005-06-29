@@ -52,8 +52,8 @@ LIB32=link.exe -lib
 # ADD LIB32 /nologo /out:"Release\acpilib.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Desc=Copying built library [Release Version]
-PostBuild_Cmds=copy release\acpilib.lib ..\..\libraries\acpilib.lib
+PostBuild_Desc=Copy Library
+PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
@@ -82,8 +82,8 @@ LIB32=link.exe -lib
 SOURCE="$(InputPath)"
 PreLink_Desc=deleting old library
 PreLink_Cmds=mkdir ..\..\libraries	del ..\..\libraries\acpilib.lib
-PostBuild_Desc=mkdir ..\..\libraries
-PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib	mkdir ..\..\libraries\i386	mkdir ..\..\libraries\i386\Checked	mkdir ..\..\libraries\i386\Free
+PostBuild_Desc=Copy Library
+PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
 # End Special Build Tool
 
 !ENDIF 
