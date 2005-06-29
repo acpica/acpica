@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.42 $
+ *              $Revision: 1.46 $
  *
  ******************************************************************************/
 
@@ -118,9 +118,9 @@
 #include "acpi.h"
 #include "acdebug.h"
 
-#ifdef ENABLE_DEBUGGER
+#ifdef ACPI_DEBUGGER
 
-#define _COMPONENT          ACPI_DEBUGGER
+#define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbexec")
 
 
@@ -308,7 +308,7 @@ AcpiDbExecute (
     ACPI_BUFFER             ReturnObj;
 
 
-#ifdef ACPI_DEBUG
+#ifdef ACPI_DEBUG_OUTPUT
     UINT32                  PreviousAllocations;
     UINT32                  Allocations;
 
@@ -335,7 +335,7 @@ AcpiDbExecute (
     AcpiOsSleep (0, 10);
 
 
-#ifdef ACPI_DEBUG
+#ifdef ACPI_DEBUG_OUTPUT
 
     /* Memory allocation tracking */
 
@@ -363,12 +363,13 @@ AcpiDbExecute (
         if (ReturnObj.Length)
         {
             AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n",
-                AcpiGbl_DbMethodInfo.Pathname, ReturnObj.Pointer, ReturnObj.Length);
+                AcpiGbl_DbMethodInfo.Pathname, ReturnObj.Pointer, 
+                (UINT32) ReturnObj.Length);
             AcpiDbDumpObject (ReturnObj.Pointer, 1);
         }
         else
         {
-            AcpiOsPrintf ("No return object from execution of %s\n", 
+            AcpiOsPrintf ("No return object from execution of %s\n",
                 AcpiGbl_DbMethodInfo.Pathname);
         }
     }
@@ -408,7 +409,7 @@ AcpiDbMethodThread (
             if (ReturnObj.Length)
             {
                 AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n",
-                    Info->Pathname, ReturnObj.Pointer, ReturnObj.Length);
+                    Info->Pathname, ReturnObj.Pointer, (UINT32) ReturnObj.Length);
                 AcpiDbDumpObject (ReturnObj.Pointer, 1);
             }
         }
@@ -499,7 +500,7 @@ AcpiDbCreateExecutionThreads (
     i = NumThreads;
     while (i)   /* Brain damage for OSD implementations that only support wait of 1 unit */
     {
-        Status = AcpiOsWaitSemaphore (ThreadGate, 1, WAIT_FOREVER);
+        Status = AcpiOsWaitSemaphore (ThreadGate, 1, ACPI_WAIT_FOREVER);
         i--;
     }
 
@@ -513,6 +514,6 @@ AcpiDbCreateExecutionThreads (
 }
 
 
-#endif /* ENABLE_DEBUGGER */
+#endif /* ACPI_DEBUGGER */
 
 
