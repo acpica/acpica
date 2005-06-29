@@ -323,7 +323,11 @@
 #define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
 
-//MsgAcpiErrorBreak
+
+/*
+ * Generate INT3 on ACPI_ERROR (Debug only!)
+ */
+
 #define ERROR_BREAK
 #ifdef  ERROR_BREAK
 #define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) {\
