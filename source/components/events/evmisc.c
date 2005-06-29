@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.68 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -171,6 +171,20 @@ AcpiEvIsNotifyObject (
  *
  ******************************************************************************/
 
+#ifdef ACPI_DEBUG_OUTPUT
+static const char        *AcpiNotifyValueNames[] =
+{
+    "Bus Check",
+    "Device Check",
+    "Device Wake",
+    "Eject request",
+    "Device Check Light",
+    "Frequency Mismatch",
+    "Bus Mode Mismatch",
+    "Power Fault"
+};
+#endif
+
 ACPI_STATUS
 AcpiEvQueueNotifyRequest (
     ACPI_NAMESPACE_NODE     *Node,
@@ -186,7 +200,7 @@ AcpiEvQueueNotifyRequest (
 
 
     /*
-     * For value 1 (Ejection Request), some device method may need to be run.
+     * For value 3 (Ejection Request), some device method may need to be run.
      * For value 2 (Device Wake) if _PRW exists, the _PS0 method may need to be run.
      * For value 0x80 (Status Change) on the power button or sleep button,
      * initiate soft-off or sleep operation?
@@ -194,27 +208,15 @@ AcpiEvQueueNotifyRequest (
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "Dispatching Notify(%X) on node %p\n", NotifyValue, Node));
 
-    switch (NotifyValue)
+    if (NotifyValue <= 7)
     {
-    case 0:
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Notify value: Re-enumerate Devices\n"));
-        break;
-
-    case 1:
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Notify value: Ejection Request\n"));
-        break;
-
-    case 2:
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Notify value: Device Wake\n"));
-        break;
-
-    case 0x80:
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Notify value: Status Change\n"));
-        break;
-
-    default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Unknown Notify Value: %X \n", NotifyValue));
-        break;
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Notify value: %s\n", 
+                AcpiNotifyValueNames[NotifyValue]));
+    }
+    else
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Notify value: 0x2.2X **Device Specific**\n",
+                NotifyValue));
     }
 
     /*
@@ -278,7 +280,8 @@ AcpiEvQueueNotifyRequest (
         /* There is no per-device notify handler for this device */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "No notify handler for [%4.4s] node %p\n", Node->Name.Ascii, Node));
+            "No notify handler for [%4.4s] node %p\n",
+            AcpiUtGetNodeName (Node), Node));
     }
 
     return (Status);
