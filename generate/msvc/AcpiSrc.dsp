@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /W4 /GX /O2 /I "..\..\components\Include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "_IA32" /FD /c
+# ADD CPP /nologo /W4 /GX /O2 /I "..\..\source\Include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "_IA32" /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -74,7 +74,7 @@ PostBuild_Cmds=copy bin\acpisrc.exe ..\..\libraries\acpisrc.exe	dir ..\..\librar
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /W4 /Gm /GX /ZI /Od /I "..\..\components\Include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "_IA32" /FR /FD /GZ /c
+# ADD CPP /nologo /W4 /Gm /GX /ZI /Od /I "..\..\source\Include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "_IA32" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -106,19 +106,19 @@ PostBuild_Cmds=copy bin\acpisrc.exe ..\..\libraries\acpisrc.exe	dir ..\..\librar
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\components\tools\AcpiSrc\asconvrt.c
+SOURCE=..\..\source\tools\AcpiSrc\asconvrt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\tools\AcpiSrc\asfile.c
+SOURCE=..\..\source\tools\AcpiSrc\asfile.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\tools\AcpiSrc\asmain.c
+SOURCE=..\..\source\tools\AcpiSrc\asmain.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\tools\AcpiSrc\asutils.c
+SOURCE=..\..\source\tools\AcpiSrc\asutils.c
 # End Source File
 # End Group
 # Begin Group "Common"
@@ -126,7 +126,7 @@ SOURCE=..\..\components\tools\AcpiSrc\asutils.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\components\common\getopt.c
+SOURCE=..\..\source\common\getopt.c
 # End Source File
 # End Group
 # End Group
@@ -135,7 +135,7 @@ SOURCE=..\..\components\common\getopt.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\..\components\tools\AcpiSrc\acpisrc.h
+SOURCE=..\..\source\tools\AcpiSrc\acpisrc.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
