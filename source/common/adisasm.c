@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -925,7 +925,9 @@ AdGetLocalTables (
             AdWriteTable (NewTable, NewTable->Length,
                 FADT_SIG, NewTable->OemTableId);
 
-            FacsSuffix = &AcpiGbl_FADT->OemTableId;
+            /* Use the FADT tableID for the FACS, since FACS has no ID */
+
+            FacsSuffix = AcpiGbl_FADT->OemTableId;
         }
         AcpiOsPrintf ("\n");
 
