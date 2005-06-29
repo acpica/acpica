@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -485,7 +485,7 @@ OptOptimizeNamePath (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Flags,
     ACPI_WALK_STATE         *WalkState,
-    NATIVE_CHAR             *AmlNameString,
+    char                    *AmlNameString,
     ACPI_NAMESPACE_NODE     *TargetNode);
 
 
@@ -905,14 +905,14 @@ UtGetArg (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Argn);
 
-NATIVE_CHAR *
+char *
 UtGetStringBuffer (
     UINT32                  Length);
 
 ACPI_STATUS
 UtInternalizeName (
-    NATIVE_CHAR             *ExternalName,
-    NATIVE_CHAR             **ConvertedName);
+    char                    *ExternalName,
+    char                    **ConvertedName);
 
 void
 UtAttachNamepathToOwner (
@@ -927,13 +927,13 @@ UtCheckIntegerRange (
 
 ACPI_STATUS
 UtStrtoul64 (
-    NATIVE_CHAR             *String,
+    char                    *String,
     UINT32                  Base,
     ACPI_INTEGER            *RetInteger);
 
 ACPI_INTEGER
 UtDoConstant (
-    NATIVE_CHAR             *String);
+    char                    *String);
 
 
 /* Find */
