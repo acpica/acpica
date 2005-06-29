@@ -117,11 +117,11 @@
 #define __EVXFACE_C__
 
 #include "acpi.h"
-#include "hardware.h"
-#include "namesp.h"
-#include "events.h"
+#include "achware.h"
+#include "acnamesp.h"
+#include "acevents.h"
 #include "amlcode.h"
-#include "interp.h"
+#include "acinterp.h"
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evxface");
@@ -162,7 +162,7 @@ AcpiInstallFixedEventHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (MTX_EVENTS);
+    AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
 
     /* Don't allow two handlers. */
 
@@ -178,9 +178,11 @@ AcpiInstallFixedEventHandler (
     AcpiGbl_FixedEventHandlers[Event].Handler = Handler;
     AcpiGbl_FixedEventHandlers[Event].Context = Context;
 
-    if (1 != AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, Event + TMR_EN, 1))
+    if (1 != AcpiHwRegisterAccess (ACPI_WRITE,
+                                   ACPI_MTX_LOCK, Event + TMR_EN, 1))
     {
-        DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
+        DEBUG_PRINT (ACPI_WARN,
+            ("Could not write to fixed event enable register.\n"));
 
         /* Remove the handler */
 
@@ -191,11 +193,12 @@ AcpiInstallFixedEventHandler (
         goto Cleanup;
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("Enabled fixed event %d.  Handler: %x\n", Event, Handler));
+    DEBUG_PRINT (ACPI_INFO,
+        ("Enabled fixed event %d.  Handler: %x\n", Event, Handler));
 
 
 Cleanup:
-    AcpiCmReleaseMutex (MTX_EVENTS);
+    AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -231,13 +234,15 @@ AcpiRemoveFixedEventHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (MTX_EVENTS);
+    AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
 
     /* Disable the event before removing the handler - just in case... */
 
-    if (0 != AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, Event + TMR_EN, 0))
+    if (0 != AcpiHwRegisterAccess (ACPI_WRITE,
+                                   ACPI_MTX_LOCK, Event + TMR_EN, 0))
     {
-        DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
+        DEBUG_PRINT (ACPI_WARN,
+            ("Could not write to fixed event enable register.\n"));
         Status = AE_ERROR;
         goto Cleanup;
     }
@@ -250,7 +255,7 @@ AcpiRemoveFixedEventHandler (
     DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %d.\n", Event));
 
 Cleanup:
-    AcpiCmReleaseMutex (MTX_EVENTS);
+    AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -281,7 +286,7 @@ AcpiInstallNotifyHandler (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *NotifyObj;
-    NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_NAMED_OBJECT       *ObjEntry;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -298,7 +303,7 @@ AcpiInstallNotifyHandler (
 
     /* Convert and validate the device handle */
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     ObjEntry = AcpiNsConvertHandleToEntry (Device);
     if (!ObjEntry)
@@ -319,8 +324,10 @@ AcpiInstallNotifyHandler (
          *  Make sure the handler is not already installed.
          */
 
-        if (((HandlerType == ACPI_SYSTEM_NOTIFY) && AcpiGbl_SysNotify.Handler) ||
-            ((HandlerType == ACPI_DEVICE_NOTIFY) && AcpiGbl_DrvNotify.Handler))
+        if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
+              AcpiGbl_SysNotify.Handler) ||
+            ((HandlerType == ACPI_DEVICE_NOTIFY) &&
+              AcpiGbl_DrvNotify.Handler))
         {
             Status = AE_EXIST;
             goto UnlockAndExit;
@@ -370,8 +377,10 @@ AcpiInstallNotifyHandler (
          *  Make sure the handler is not already installed.
          */
 
-        if (((HandlerType == ACPI_SYSTEM_NOTIFY) && ObjDesc->Device.SysHandler) ||
-            ((HandlerType == ACPI_DEVICE_NOTIFY) && ObjDesc->Device.DrvHandler))
+        if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
+              ObjDesc->Device.SysHandler) ||
+            ((HandlerType == ACPI_DEVICE_NOTIFY) &&
+              ObjDesc->Device.DrvHandler))
         {
             Status = AE_EXIST;
             goto UnlockAndExit;
@@ -428,7 +437,7 @@ AcpiInstallNotifyHandler (
 
 
 UnlockAndExit:
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -456,7 +465,7 @@ AcpiRemoveNotifyHandler (
 {
     ACPI_OBJECT_INTERNAL    *NotifyObj;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_NAMED_OBJECT       *ObjEntry;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -471,7 +480,7 @@ AcpiRemoveNotifyHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Convert and validate the device handle */
 
@@ -541,7 +550,7 @@ AcpiRemoveNotifyHandler (
     AcpiCmRemoveReference (NotifyObj);
 
 UnlockAndExit:
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -582,12 +591,12 @@ AcpiInstallGpeHandler (
 
     /* Ensure that we have a valid GPE number */
 
-    if (AcpiGbl_GpeValid[GpeNumber] == GPE_INVALID)
+    if (AcpiGbl_GpeValid[GpeNumber] == ACPI_GPE_INVALID)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (MTX_EVENTS);
+    AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
 
     /* Make sure that there isn't a handler there already */
 
@@ -609,7 +618,7 @@ AcpiInstallGpeHandler (
     AcpiHwEnableGpe (GpeNumber);
 
 Cleanup:
-    AcpiCmReleaseMutex (MTX_EVENTS);
+    AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -647,7 +656,7 @@ AcpiRemoveGpeHandler (
 
     /* Ensure that we have a valid GPE number */
 
-    if (AcpiGbl_GpeValid[GpeNumber] == GPE_INVALID)
+    if (AcpiGbl_GpeValid[GpeNumber] == ACPI_GPE_INVALID)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -656,7 +665,7 @@ AcpiRemoveGpeHandler (
 
     AcpiHwDisableGpe (GpeNumber);
 
-    AcpiCmAcquireMutex (MTX_EVENTS);
+    AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
 
     /* Make sure that the installed handler is the same */
 
@@ -673,7 +682,7 @@ AcpiRemoveGpeHandler (
     AcpiGbl_GpeInfo[GpeNumber].Context = NULL;
 
 Cleanup:
-    AcpiCmReleaseMutex (MTX_EVENTS);
+    AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -701,8 +710,10 @@ AcpiAcquireGlobalLock (
 
     AcpiAmlEnterInterpreter ();
 
-    /* TBD: [Restructure] add timeout param to internal interface, and perhaps INTERPRETER_LOCKED */
-
+    /*
+     * TBD: [Restructure] add timeout param to internal interface, and
+     * perhaps INTERPRETER_LOCKED
+     */
 
     Status = AcpiEvAcquireGlobalLock ();
     AcpiAmlExitInterpreter ();

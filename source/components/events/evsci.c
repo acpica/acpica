@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: evsci - System Control Interrupt configuration and
@@ -117,9 +116,9 @@
  *****************************************************************************/
 
 #include "acpi.h"
-#include "namesp.h"
-#include "hardware.h"
-#include "events.h"
+#include "acnamesp.h"
+#include "achware.h"
+#include "acevents.h"
 
 
 #define _COMPONENT          EVENT_HANDLING
@@ -164,7 +163,7 @@ AcpiEvSciHandler (void *Context)
      * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
      * required to treat the SCI interrupt as sharable, level, active low.
      */
-    if (!AcpiHwRegisterAccess (ACPI_READ, MTX_DO_NOT_LOCK, (INT32)SCI_EN))
+    if (!AcpiHwRegisterAccess (ACPI_READ, ACPI_MTX_DO_NOT_LOCK, (INT32)SCI_EN))
     {
         REPORT_ERROR ("Received and SCI but ACPI is not enabled.");
         return_VALUE (INTERRUPT_NOT_HANDLED);
@@ -207,7 +206,7 @@ AcpiEvInstallSciHandler (void)
 
     FUNCTION_TRACE ("EvInstallSciHandler");
 
-    Except = AcpiOsdInstallInterruptHandler (
+    Except = AcpiOsInstallInterruptHandler (
         (UINT32) AcpiGbl_FACP->SciInt,
         AcpiEvSciHandler,
         NULL);
@@ -237,38 +236,38 @@ AcpiEvRemoveSciHandler (void)
     FUNCTION_TRACE ("EvRemoveSciHandler");
 
 #if 0
-        /* TBD:[Investigate] Figure this out!!  Disable all events first ???  */
+    /* TBD:[Investigate] Figure this out!!  Disable all events first ???  */
 
-        if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (TMR_FIXED_EVENT))
-        {
-            AcpiEventDisableEvent (TMR_FIXED_EVENT);
-        }
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (TMR_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (TMR_FIXED_EVENT);
+    }
 
-        if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (GBL_FIXED_EVENT))
-        {
-            AcpiEventDisableEvent (GBL_FIXED_EVENT);
-        }
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (GBL_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (GBL_FIXED_EVENT);
+    }
 
-        if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (PWR_BTN_FIXED_EVENT))
-        {
-            AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
-        }
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (PWR_BTN_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
+    }
 
-        if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (SLP_BTN_FIXED_EVENT))
-        {
-            AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
-        }
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (SLP_BTN_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
+    }
 
-        if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (RTC_FIXED_EVENT))
-        {
-            AcpiEventDisableEvent (RTC_FIXED_EVENT);
-        }
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (RTC_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (RTC_FIXED_EVENT);
+    }
 
-        OriginalFixedEnableBitStatus = 0;
+    OriginalFixedEnableBitStatus = 0;
 
 #endif
 
-    AcpiOsdRemoveInterruptHandler (
+    AcpiOsRemoveInterruptHandler (
         (UINT32) AcpiGbl_FACP->SciInt,
         AcpiEvSciHandler);
 
@@ -349,16 +348,20 @@ AcpiEvRestoreAcpiState (void)
     {
         /* Restore the fixed events */
 
-        if (AcpiOsdIn16 (AcpiGbl_FACP->Pm1aEvtBlk + 2) != AcpiGbl_Pm1EnableRegisterSave)
+        if (AcpiOsIn16 (AcpiGbl_FACP->Pm1aEvtBlk + 2) !=
+            AcpiGbl_Pm1EnableRegisterSave)
         {
-            AcpiOsdOut16 ((AcpiGbl_FACP->Pm1aEvtBlk + 2), AcpiGbl_Pm1EnableRegisterSave);
+            AcpiOsOut16 ((AcpiGbl_FACP->Pm1aEvtBlk + 2),
+                          AcpiGbl_Pm1EnableRegisterSave);
         }
 
         if (AcpiGbl_FACP->Pm1bEvtBlk)
         {
-            if (AcpiOsdIn16 (AcpiGbl_FACP->Pm1bEvtBlk + 2) != AcpiGbl_Pm1EnableRegisterSave)
+            if (AcpiOsIn16 (AcpiGbl_FACP->Pm1bEvtBlk + 2) !=
+                AcpiGbl_Pm1EnableRegisterSave)
             {
-                AcpiOsdOut16 ((AcpiGbl_FACP->Pm1bEvtBlk + 2), AcpiGbl_Pm1EnableRegisterSave);
+                AcpiOsOut16 ((AcpiGbl_FACP->Pm1bEvtBlk + 2),
+                              AcpiGbl_Pm1EnableRegisterSave);
             }
         }
 
@@ -372,9 +375,13 @@ AcpiEvRestoreAcpiState (void)
 
         for (Index = 0; Index < DIV_2 (AcpiGbl_FACP->Gpe0BlkLen); Index++)
         {
-            if (AcpiOsdIn8 (AcpiGbl_FACP->Gpe0Blk + DIV_2 (AcpiGbl_FACP->Gpe0BlkLen)) != AcpiGbl_Gpe0EnableRegisterSave[Index])
+            if (AcpiOsIn8 (AcpiGbl_FACP->Gpe0Blk +
+                DIV_2 (AcpiGbl_FACP->Gpe0BlkLen)) !=
+                AcpiGbl_Gpe0EnableRegisterSave[Index])
             {
-                AcpiOsdOut8 ((AcpiGbl_FACP->Gpe0Blk + DIV_2 (AcpiGbl_FACP->Gpe0BlkLen)), AcpiGbl_Gpe0EnableRegisterSave[Index]);
+                AcpiOsOut8 ((AcpiGbl_FACP->Gpe0Blk +
+                             DIV_2 (AcpiGbl_FACP->Gpe0BlkLen)),
+                             AcpiGbl_Gpe0EnableRegisterSave[Index]);
             }
         }
 
@@ -382,9 +389,13 @@ AcpiEvRestoreAcpiState (void)
         {
             for (Index = 0; Index < DIV_2 (AcpiGbl_FACP->Gpe1BlkLen); Index++)
             {
-                if (AcpiOsdIn8 (AcpiGbl_FACP->Gpe1Blk + DIV_2 (AcpiGbl_FACP->Gpe1BlkLen)) != AcpiGbl_Gpe1EnableRegisterSave[Index])
+                if (AcpiOsIn8 (AcpiGbl_FACP->Gpe1Blk +
+                    DIV_2 (AcpiGbl_FACP->Gpe1BlkLen)) !=
+                    AcpiGbl_Gpe1EnableRegisterSave[Index])
                 {
-                    AcpiOsdOut8 ((AcpiGbl_FACP->Gpe1Blk + DIV_2 (AcpiGbl_FACP->Gpe1BlkLen)), AcpiGbl_Gpe1EnableRegisterSave[Index]);
+                    AcpiOsOut8 ((AcpiGbl_FACP->Gpe1Blk +
+                                 DIV_2 (AcpiGbl_FACP->Gpe1BlkLen)),
+                                 AcpiGbl_Gpe1EnableRegisterSave[Index]);
                 }
             }
         }
@@ -417,9 +428,9 @@ AcpiEvTerminate (void)
 
     FUNCTION_TRACE ("EvTerminate");
 
-
-    /* Free global tables, etc. */
-
+    /*
+     * Free global tables, etc.
+     */
 
     if (AcpiGbl_GpeRegisters)
     {

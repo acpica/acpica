@@ -115,13 +115,13 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "parser.h"
-#include "events.h"
-#include "interp.h"
-#include "debugger.h"
+#include "acnamesp.h"
+#include "acparser.h"
+#include "acevents.h"
+#include "acinterp.h"
+#include "acdebug.h"
 
 
 #ifdef ENABLE_DEBUGGER
@@ -402,13 +402,13 @@ AcpiDbSecondPassParse (
  *
  *****************************************************************************/
 
-NAME_TABLE_ENTRY *
+ACPI_NAMED_OBJECT*
 AcpiDbLocalNsLookup (
     char                    *Name)
 {
     char                    *InternalPath;
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *Entry = NULL;
+    ACPI_NAMED_OBJECT       *Entry = NULL;
 
 
     AcpiDbPrepNamestring (Name);

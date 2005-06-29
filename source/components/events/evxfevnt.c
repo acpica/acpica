@@ -117,11 +117,11 @@
 #define __EVXFEVNT_C__
 
 #include "acpi.h"
-#include "hardware.h"
-#include "namesp.h"
-#include "events.h"
+#include "achware.h"
+#include "acnamesp.h"
+#include "acevents.h"
 #include "amlcode.h"
-#include "interp.h"
+#include "acinterp.h"
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evxfevnt");
@@ -182,7 +182,8 @@ AcpiEnable (void)
 
     if (ACPI_FAILURE (AcpiEvGpeInitialize()))
     {
-        DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize general purpose events.\n"));
+        DEBUG_PRINT (ACPI_FATAL,
+            ("Unable to initialize general purpose events.\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
@@ -190,7 +191,8 @@ AcpiEnable (void)
 
     if (ACPI_FAILURE (AcpiEvInstallSciHandler ()))
     {
-        DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler\n"));
+        DEBUG_PRINT (ACPI_FATAL,
+            ("Unable to install System Control Interrupt Handler\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
@@ -281,29 +283,29 @@ AcpiEnableEvent (
     switch (Type)
     {
 
-    case EVENT_FIXED:
+    case ACPI_EVENT_FIXED:
 
         /* Decode the Fixed AcpiEvent */
 
         switch (Event)
         {
-        case EVENT_PMTIMER:
+        case ACPI_EVENT_PMTIMER:
             RegisterId = TMR_EN;
             break;
 
-        case EVENT_GLOBAL:
+        case ACPI_EVENT_GLOBAL:
             RegisterId = GBL_EN;
             break;
 
-        case EVENT_POWER_BUTTON:
+        case ACPI_EVENT_POWER_BUTTON:
             RegisterId = PWRBTN_EN;
             break;
 
-        case EVENT_SLEEP_BUTTON:
+        case ACPI_EVENT_SLEEP_BUTTON:
             RegisterId = SLPBTN_EN;
             break;
 
-        case EVENT_RTC:
+        case ACPI_EVENT_RTC:
             RegisterId = RTC_EN;
             break;
 
@@ -312,18 +314,21 @@ AcpiEnableEvent (
             break;
         }
 
-        /* Enable the requested fixed event (by writing a one to the enable register bit) */
+        /*
+         * Enable the requested fixed event (by writing a one to the
+         * enable register bit)
+         */
 
         AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
         break;
 
 
-    case EVENT_GPE:
+    case ACPI_EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -375,29 +380,29 @@ AcpiDisableEvent (
     switch (Type)
     {
 
-    case EVENT_FIXED:
+    case ACPI_EVENT_FIXED:
 
         /* Decode the Fixed AcpiEvent */
 
         switch (Event)
         {
-        case EVENT_PMTIMER:
+        case ACPI_EVENT_PMTIMER:
             RegisterId = TMR_EN;
             break;
 
-        case EVENT_GLOBAL:
+        case ACPI_EVENT_GLOBAL:
             RegisterId = GBL_EN;
             break;
 
-        case EVENT_POWER_BUTTON:
+        case ACPI_EVENT_POWER_BUTTON:
             RegisterId = PWRBTN_EN;
             break;
 
-        case EVENT_SLEEP_BUTTON:
+        case ACPI_EVENT_SLEEP_BUTTON:
             RegisterId = SLPBTN_EN;
             break;
 
-        case EVENT_RTC:
+        case ACPI_EVENT_RTC:
             RegisterId = RTC_EN;
             break;
 
@@ -406,18 +411,21 @@ AcpiDisableEvent (
             break;
         }
 
-        /* Disable the requested fixed event (by writing a zero to the enable register bit) */
+        /*
+         * Disable the requested fixed event (by writing a zero to the
+         * enable register bit)
+         */
 
         AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 0);
         break;
 
 
-    case EVENT_GPE:
+    case ACPI_EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -466,29 +474,29 @@ AcpiClearEvent (
     switch (Type)
     {
 
-    case EVENT_FIXED:
+    case ACPI_EVENT_FIXED:
 
         /* Decode the Fixed AcpiEvent */
 
         switch (Event)
         {
-        case EVENT_PMTIMER:
+        case ACPI_EVENT_PMTIMER:
             RegisterId = TMR_STS;
             break;
 
-        case EVENT_GLOBAL:
+        case ACPI_EVENT_GLOBAL:
             RegisterId = GBL_STS;
             break;
 
-        case EVENT_POWER_BUTTON:
+        case ACPI_EVENT_POWER_BUTTON:
             RegisterId = PWRBTN_STS;
             break;
 
-        case EVENT_SLEEP_BUTTON:
+        case ACPI_EVENT_SLEEP_BUTTON:
             RegisterId = SLPBTN_STS;
             break;
 
-        case EVENT_RTC:
+        case ACPI_EVENT_RTC:
             RegisterId = RTC_STS;
             break;
 
@@ -497,18 +505,21 @@ AcpiClearEvent (
             break;
         }
 
-        /* Clear the requested fixed event (By writing a one to the status register bit) */
+        /*
+         * Clear the requested fixed event (By writing a one to the
+         * status register bit)
+         */
 
         AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
         break;
 
 
-    case EVENT_GPE:
+    case ACPI_EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -567,29 +578,29 @@ AcpiGetEventStatus (
     switch (Type)
     {
 
-    case EVENT_FIXED:
+    case ACPI_EVENT_FIXED:
 
         /* Decode the Fixed AcpiEvent */
 
         switch (Event)
         {
-        case EVENT_PMTIMER:
+        case ACPI_EVENT_PMTIMER:
             RegisterId = TMR_STS;
             break;
 
-        case EVENT_GLOBAL:
+        case ACPI_EVENT_GLOBAL:
             RegisterId = GBL_STS;
             break;
 
-        case EVENT_POWER_BUTTON:
+        case ACPI_EVENT_POWER_BUTTON:
             RegisterId = PWRBTN_STS;
             break;
 
-        case EVENT_SLEEP_BUTTON:
+        case ACPI_EVENT_SLEEP_BUTTON:
             RegisterId = SLPBTN_STS;
             break;
 
-        case EVENT_RTC:
+        case ACPI_EVENT_RTC:
             RegisterId = RTC_STS;
             break;
 
@@ -604,12 +615,12 @@ AcpiGetEventStatus (
         break;
 
 
-    case EVENT_GPE:
+    case ACPI_EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }

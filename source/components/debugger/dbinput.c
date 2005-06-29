@@ -115,11 +115,11 @@
 
 
 #include "acpi.h"
-#include "parser.h"
-#include "tables.h"
-#include "namesp.h"
-#include "interp.h"
-#include "debugger.h"
+#include "acparser.h"
+#include "actables.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "acdebug.h"
 
 
 #ifdef ENABLE_DEBUGGER
@@ -194,6 +194,7 @@ enum AcpiAmlDebuggerCommands
     CMD_OWNER,
     CMD_PREFIX,
     CMD_QUIT,
+    CMD_REFERENCES,
     CMD_RESULTS,
     CMD_SET,
     CMD_STATS,
@@ -245,6 +246,7 @@ COMMAND_INFO                Commands[] =
     {"OWNER",        1},
     {"PREFIX",       0},
     {"QUIT",         0},
+    {"REFERENCES",   1},
     {"RESULTS",      0},
     {"SET",          3},
     {"STATS",        0},
@@ -330,6 +332,7 @@ AcpiDbDisplayHelp (
         AcpiOsPrintf ("Objects <ObjectType>                Display all objects of the given type\n");
         AcpiOsPrintf ("Owner <OwnerId> [Depth]             Display loaded namespace by object owner\n");
         AcpiOsPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
+        AcpiOsPrintf ("References <Addr>                   Find all references to object at addr\n");
         AcpiOsPrintf ("Terminate                           Delete namespace and all internal objects\n");
         AcpiOsPrintf ("Thread <Threads><Loops><NamePath>   Spawn threads to execute method(s)\n");
         return;
@@ -756,6 +759,10 @@ AcpiDbCommandDispatch (
         AcpiDbSetScope (Args[1]);
         break;
 
+    case CMD_REFERENCES:
+        AcpiDbFindReferences (Args[1]);
+        break;
+
     case CMD_RESULTS:
         AcpiDbDisplayResults ();
         break;
@@ -856,9 +863,9 @@ AcpiDbExecuteThread (
         AcpiGbl_MethodExecuting = FALSE;
         AcpiGbl_StepToNextCall = FALSE;
 
-        AcpiCmAcquireMutex (MTX_DEBUG_CMD_READY);
+        AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
         Status = AcpiDbCommandDispatch (LineBuf, NULL, NULL);
-        AcpiCmReleaseMutex (MTX_DEBUG_CMD_COMPLETE);
+        AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
     }
 }
 
@@ -944,8 +951,8 @@ AcpiDbUserCommands (
              * and wait for the command to complete.
              */
 
-            AcpiCmReleaseMutex (MTX_DEBUG_CMD_READY);
-            AcpiCmAcquireMutex (MTX_DEBUG_CMD_COMPLETE);
+            AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
+            AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
         }
 
         else

@@ -115,10 +115,10 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "debugger.h"
+#include "acnamesp.h"
+#include "acdebug.h"
 
 
 #ifdef ENABLE_DEBUGGER
@@ -226,7 +226,7 @@ AcpiPsDisplayObjectPathname (
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *Nte;
+    ACPI_NAMED_OBJECT       *Nte;
     char                    Buffer[MAX_SHOW_ENTRY];
     UINT32                  BufferSize = MAX_SHOW_ENTRY;
 
@@ -235,7 +235,7 @@ AcpiPsDisplayObjectPathname (
 
     /* Just get the NTE out of the Op object */
 
-    Nte = Op->NameTableEntry;
+    Nte = Op->AcpiNamedObject;
     if (!Nte)
     {
         /*

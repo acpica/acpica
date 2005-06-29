@@ -115,9 +115,9 @@
 
 
 #include "acpi.h"
-#include "debugger.h"
+#include "acdebug.h"
 #include "amlcode.h"
-#include "parser.h"
+#include "acparser.h"
 
 #ifdef ENABLE_DEBUGGER
 
@@ -396,7 +396,7 @@ AcpiDbGenerateStatistics (
 
     SizeOfParseTree             = (NumGrammarElements - NumMethodElements) * (UINT32) sizeof (ACPI_GENERIC_OP);
     SizeOfMethodTrees           = NumMethodElements * (UINT32) sizeof (ACPI_GENERIC_OP);
-    SizeOfNameTableEntries      = NumNamedObjects * (UINT32) sizeof (NAME_TABLE_ENTRY);
+    SizeOfNameTableEntries      = NumNamedObjects * (UINT32) sizeof (ACPI_NAMED_OBJECT);
     SizeOfAcpiObjects           = NumNamedObjects * (UINT32) sizeof (ACPI_OBJECT_INTERNAL);
 
 }

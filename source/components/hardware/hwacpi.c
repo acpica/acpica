@@ -117,7 +117,7 @@
 #define __HWACPI_C__
 
 #include "acpi.h"
-#include "hardware.h"
+#include "achware.h"
 
 
 #define _COMPONENT          HARDWARE
@@ -151,7 +151,7 @@ AcpiHwSetMode (
     {
         /* BIOS should have disabled ALL fixed and GP events */
 
-        AcpiOsdOut8 (AcpiGbl_FACP->SmiCmd, AcpiGbl_FACP->AcpiEnable);
+        AcpiOsOut8 (AcpiGbl_FACP->SmiCmd, AcpiGbl_FACP->AcpiEnable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable ACPI mode\n"));
     }
 
@@ -162,8 +162,9 @@ AcpiHwSetMode (
          * enable bits to default
          */
 
-        AcpiOsdOut8 (AcpiGbl_FACP->SmiCmd, AcpiGbl_FACP->AcpiDisable);
-        DEBUG_PRINT (ACPI_INFO, ("Attempting to enable Legacy (non-ACPI) mode\n"));
+        AcpiOsOut8 (AcpiGbl_FACP->SmiCmd, AcpiGbl_FACP->AcpiDisable);
+        DEBUG_PRINT (ACPI_INFO,
+                    ("Attempting to enable Legacy (non-ACPI) mode\n"));
     }
 
     if (AcpiHwGetMode () == Mode)
@@ -197,7 +198,7 @@ AcpiHwGetMode (void)
     FUNCTION_TRACE ("HwGetMode");
 
 
-    if (AcpiHwRegisterAccess (ACPI_READ, MTX_LOCK, (INT32)SCI_EN))
+    if (AcpiHwRegisterAccess (ACPI_READ, ACPI_MTX_LOCK, (INT32)SCI_EN))
     {
         return_VALUE (SYS_MODE_ACPI);
     }
@@ -232,10 +233,10 @@ AcpiHwGetModeCapabilities (void)
         if (AcpiHwGetMode () == SYS_MODE_LEGACY)
         {
             /*
-             * Assume that if this call is being made, AcpiInit has been called and
-             * ACPI support has been established by the presence of the tables.
-             * Therefore since we're in SYS_MODE_LEGACY, the system must support both
-             * modes
+             * Assume that if this call is being made, AcpiInit has been called
+             * and ACPI support has been established by the presence of the
+             * tables.  Therefore since we're in SYS_MODE_LEGACY, the system
+             * must support both modes
              */
 
             AcpiGbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
@@ -290,7 +291,7 @@ AcpiHwPmtTicks (void)
 
     FUNCTION_TRACE ("AcpiPmtTicks");
 
-    Ticks = AcpiOsdIn32 (AcpiGbl_FACP->PmTmrBlk);
+    Ticks = AcpiOsIn32 (AcpiGbl_FACP->PmTmrBlk);
 
     return_VALUE (Ticks);
 }

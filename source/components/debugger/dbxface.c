@@ -115,13 +115,13 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "parser.h"
-#include "events.h"
-#include "interp.h"
-#include "debugger.h"
+#include "acnamesp.h"
+#include "acparser.h"
+#include "acevents.h"
+#include "acinterp.h"
+#include "acdebug.h"
 
 
 #ifdef ENABLE_DEBUGGER
@@ -286,7 +286,7 @@ AcpiDbSingleStep (
     }
 
 
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /* Go into the command loop and await next user command */
 
@@ -298,8 +298,8 @@ AcpiDbSingleStep (
         {
             /* Handshake with the front-end that gets user command lines */
 
-            AcpiCmReleaseMutex (MTX_DEBUG_CMD_COMPLETE);
-            AcpiCmAcquireMutex (MTX_DEBUG_CMD_READY);
+            AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+            AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
         }
 
         else
@@ -329,7 +329,7 @@ AcpiDbSingleStep (
         Status = AcpiDbCommandDispatch (LineBuf, WalkState, Op);
     }
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
 
     /* User commands complete, continue execution of the interrupted method */
@@ -375,8 +375,8 @@ AcpiDbInitialize (void)
     {
         /* These were created with one unit, grab it */
 
-        AcpiCmAcquireMutex (MTX_DEBUG_CMD_COMPLETE);
-        AcpiCmAcquireMutex (MTX_DEBUG_CMD_READY);
+        AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+        AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
 
         /* Create the debug execution thread to execute commands */
 

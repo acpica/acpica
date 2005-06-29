@@ -116,11 +116,11 @@
 
 
 #include "acpi.h"
-#include "debugger.h"
-#include "namesp.h"
-#include "parser.h"
-#include "events.h"
-#include "tables.h"
+#include "acdebug.h"
+#include "acnamesp.h"
+#include "acparser.h"
+#include "acevents.h"
+#include "actables.h"
 
 #ifdef ENABLE_DEBUGGER
 
