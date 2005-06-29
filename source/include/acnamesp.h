@@ -123,9 +123,6 @@
 #include <pnp.h>
 
 
-#define ACPILIB_DATA_FILE_VERSION "ADF-001"
-
-
 /* To search the entire name space, pass this as SearchBase */
 
 #define NS_ALL                  ((ACPI_HANDLE)0)
@@ -146,11 +143,6 @@
 /* Char * definitions of common namespace names */
 
 #define NS_ROOT_PATH            "/"
-
-
-/* Used in NsMapAcpiTable for size parameter if table header is to be used */
-
-#define SIZE_IN_HEADER          0
 
 
 /* Flags for NsLookup, NsSearchAndEnter */
@@ -182,10 +174,6 @@ NsLookup (
  * Table allocation/deallocation - nsalloc
  */
 
-BOOLEAN
-NsIsInSystemTable (
-    void                    *Where);
-
 NAME_TABLE_ENTRY *
 NsAllocateNameTable (
     INT32                   NteEntries);
@@ -201,27 +189,6 @@ NsDetachObject (
 void
 NsDeleteScope (
     ACPI_HANDLE             Scope);
-
-void
-NsDeleteAcpiTables (
-    void);
-
-void
-NsDeleteAcpiTable (
-    ACPI_TABLE_TYPE         Type);
-
-void
-NsFreeAcpiTable (
-    ACPI_TABLE_DESC         *TableInfo);
-
-ACPI_STATUS
-NsInstallAcpiTable (
-    ACPI_TABLE_TYPE         TableType,
-    ACPI_TABLE_DESC         *TableInfo);
-
-void
-NsDeleteSingleTable (
-    ACPI_TABLE_DESC         *TableDesc);
 
 
 /*
@@ -443,44 +410,8 @@ NsPopCurrent (
 
 
 /*
- * ACPI Table functions - nstables
- */
-
-ACPI_STATUS
-NsGetTablePtr (
-    ACPI_TABLE_TYPE         TableType, 
-    UINT32                  Instance,
-    ACPI_TABLE_HEADER       **TablePtrLoc);
-
-ACPI_STATUS
-NsFindRsdp (
-    char                    *BufferPtr,
-    ACPI_TABLE_DESC         *TableInfo);
-
-ACPI_STATUS
-NsVerifyTableChecksum (
-    void                    *TableHeader); 
-
-ACPI_STATUS
-NsGetTable (
-    void                    *PhysicalAddress, 
-    char                    *BufferPtr,
-    ACPI_TABLE_DESC         *TableInfo);
-
-ACPI_STATUS
-NsGetTableFacs (
-    char                    *BufferPtr,
-    ACPI_TABLE_DESC         *TableInfo);
-
-
-/*
  * Utility functions - nsutils
  */
-
-UINT8
-NsChecksum (
-    void                    *Buffer,
-    UINT32                  Length);
 
 ACPI_OBJECT_TYPE
 NsGetType (
