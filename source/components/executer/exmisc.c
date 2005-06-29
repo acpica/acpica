@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -134,9 +134,7 @@
  *
  * FUNCTION:    AcpiExTriadic
  *
- * PARAMETERS:  Opcode              - The opcode to be executed
- *              WalkState           - Current walk state
- *              ReturnDesc          - Where to store the return object
+ * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
@@ -148,9 +146,7 @@
 
 ACPI_STATUS
 AcpiExTriadic (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_OPERAND_OBJECT     *RetDesc = NULL;
@@ -167,7 +163,7 @@ AcpiExTriadic (
 #define ResDesc             Operand[2]
 
 
-    switch (Opcode)
+    switch (WalkState->Opcode)
     {
 
     case AML_FATAL_OP:
@@ -314,7 +310,7 @@ Cleanup:
 
     /* Set the return object and exit */
 
-    *ReturnDesc = RetDesc;
+    WalkState->ResultObj = RetDesc;
     return_ACPI_STATUS (Status);
 }
 
@@ -323,9 +319,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiExHexadic
  *
- * PARAMETERS:  Opcode              - The opcode to be executed
- *              WalkState           - Current walk state
- *              ReturnDesc          - Where to store the return object
+ * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
@@ -335,9 +329,7 @@ Cleanup:
 
 ACPI_STATUS
 AcpiExHexadic (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_OPERAND_OBJECT     *RetDesc = NULL;
@@ -357,7 +349,7 @@ AcpiExHexadic (
 
 
 
-    switch (Opcode)
+    switch (WalkState->Opcode)
     {
 
         case AML_MATCH_OP:
@@ -581,6 +573,6 @@ Cleanup:
 
     /* Set the return object and exit */
 
-    *ReturnDesc = RetDesc;
+    WalkState->ResultObj = RetDesc;
     return_ACPI_STATUS (Status);
 }
