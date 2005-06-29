@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.103 $
+ *       $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -395,12 +395,6 @@ AcpiNsPatternMatch (
     ACPI_NAMESPACE_NODE     *ObjNode,
     NATIVE_CHAR             *SearchFor);
 
-ACPI_STATUS
-AcpiNsNameCompare (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
 
 ACPI_STATUS
 AcpiNsGetNode (
@@ -422,13 +416,6 @@ AcpiNsAttachObject (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_OPERAND_OBJECT     *Object,
     OBJECT_TYPE_INTERNAL    Type);
-
-
-void *
-AcpiNsCompareValue (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *ObjDesc);
 
 
 /*
@@ -474,11 +461,11 @@ AcpiNsValidPathSeparator (
 
 OBJECT_TYPE_INTERNAL
 AcpiNsGetType (
-    ACPI_HANDLE             ObjHandle);
+    ACPI_NAMESPACE_NODE     *Node);
 
 void *
 AcpiNsGetAttachedObject (
-    ACPI_HANDLE             ObjHandle);
+    ACPI_NAMESPACE_NODE     *Node);
 
 UINT32
 AcpiNsLocal (
