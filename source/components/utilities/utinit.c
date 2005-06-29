@@ -724,7 +724,7 @@ InitAcpiRegisters (void)
             break;
 
         case (ACPI_MODE | LEGACY_MODE):
-            (AcpiModeStatus () == ACPI_MODE) ? (OriginalMode = ACPI_MODE) : (OriginalMode = LEGACY_MODE);
+            (AcpiGetMode () == ACPI_MODE) ? (OriginalMode = ACPI_MODE) : (OriginalMode = LEGACY_MODE);
 
             DEBUG_PRINT (ACPI_INFO,
                         ("System supports both ACPI and LEGACY modes.\n"));
