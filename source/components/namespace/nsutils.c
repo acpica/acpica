@@ -187,7 +187,7 @@ BREAKPOINT3;
         {
             /* Found an object - process by calling the user function */
 
-            if (UserReturnVal = UserFunction (ObjHandle, Level, Context))
+            if ((UserReturnVal = UserFunction (ObjHandle, Level, Context)) != 0)
             {
                 /* Non-zero from user function means "exit now" */
 
