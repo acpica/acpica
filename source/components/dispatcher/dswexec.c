@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -774,7 +774,9 @@ Cleanup:
         AcpiGbl_ExceptionHandler &&
         !(Status & AE_CODE_CONTROL))
     {
+        AcpiExExitInterpreter ();
         Status = AcpiGbl_ExceptionHandler (Status);
+        AcpiExEnterInterpreter ();
     }
 
     if (WalkState->ResultObj)
