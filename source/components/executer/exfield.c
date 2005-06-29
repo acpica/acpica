@@ -298,7 +298,6 @@ AmlSetupField (
         }
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlSetupField: %s\n", ExceptionNames[Status]));
     FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
