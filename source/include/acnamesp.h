@@ -145,9 +145,9 @@
 
 /* Flags for NsLookup, NsSearchAndEnter */
 
-#define NS_SEARCH_PARENT        1
 #define NS_NO_UPSEARCH          0
-
+#define NS_SEARCH_PARENT        0x01
+#define NS_DONT_OPEN_SCOPE      0x02
 
 /*
  * Top-level namespace access - nsaccess
@@ -160,11 +160,12 @@ NsSetup (
 
 ACPI_STATUS
 NsLookup (
-    NAME_TABLE_ENTRY        *PrefixEntry,
+    SCOPE_STACK             *ScopeInfo,
     char                    *Name, 
     ACPI_OBJECT_TYPE        Type, 
-    OPERATING_MODE          LoadMode,
-    UINT32                  Flags,
+    OPERATING_MODE          InterpreterMode,
+	UINT32					Flags,
+    ACPI_WALK_STATE			*WalkState,
     NAME_TABLE_ENTRY        **RetEntry);
 
 
@@ -298,7 +299,7 @@ NsNameOfScope (
 
 char *
 NsNameOfCurrentScope (
-    void);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 NsHandleToPathname (
@@ -403,23 +404,29 @@ NsSearchOnly (
 ACPI_STATUS
 NsScopeStackPush (
     NAME_TABLE_ENTRY        *NewScope, 
-    ACPI_OBJECT_TYPE        Type);
+    ACPI_OBJECT_TYPE        Type,
+	ACPI_WALK_STATE			*WalkState);
+
 
 ACPI_STATUS
-NsScopeStackPushEntry (
-    ACPI_HANDLE             NewScope);
-
-INT32
 NsScopeStackPop (
-    ACPI_OBJECT_TYPE        Type);
+	ACPI_WALK_STATE			*WalkState);
 
 void
 NsScopeStackClear (
-    void);
+	ACPI_WALK_STATE			*WalkState);
 
 /*
  * Utility functions - nsutils
  */
+
+BOOLEAN
+NsValidRootPrefix (
+    char                    Prefix);
+
+BOOLEAN
+NsValidPathSeparator (
+    char                    Sep);
 
 ACPI_OBJECT_TYPE
 NsGetType (
