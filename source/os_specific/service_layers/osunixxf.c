@@ -139,7 +139,7 @@
         MODULE_NAME         ("osunixxf")
 
 
-extern FILE                    *DebugFile;
+extern FILE                    *AcpiGbl_DebugFile;
 
 
 /******************************************************************************
@@ -271,11 +271,11 @@ AcpiOsVprintf (
     {
         /* Output is directable to either a file (if open) or the console */
 
-        if (DebugFile)
+        if (AcpiGbl_DebugFile)
         {
             /* Output file is open, send the output there */
 
-            Count = vfprintf (DebugFile, Fmt, Args);
+            Count = vfprintf (AcpiGbl_DebugFile, Fmt, Args);
         }
         else
         {

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.5 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -125,10 +125,12 @@
 #pragma warning(disable:4115)   /* warning C4115: named type definition in parentheses (caused by rpcasync.h> */
 
 #include <windows.h>
+#include <winbase.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <process.h>
+#include <time.h>
 
 #undef LOWORD
 #undef HIWORD
@@ -143,7 +145,7 @@
         MODULE_NAME         ("oswinxf")
 
 
-UINT32                      NextSemaphoreHandle = 0;
+UINT32                      AcpiGbl_NextSemaphore = 0;
 #define NUM_SEMAPHORES      128
 
 typedef struct semaphore_entry
@@ -154,11 +156,12 @@ typedef struct semaphore_entry
 } SEMAPHORE_ENTRY;
 
 
-SEMAPHORE_ENTRY             SemaphoreTable[NUM_SEMAPHORES];
+SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
 
 
 
-extern FILE                 *DebugFile;
+extern FILE                 *AcpiGbl_DebugFile;
+
 
 
 /******************************************************************************
@@ -182,7 +185,7 @@ AcpiOsInitialize (void)
 
     for (i = 0; i < NUM_SEMAPHORES; i++)
     {
-        SemaphoreTable[i].OsHandle = NULL;
+        AcpiGbl_Semaphores[i].OsHandle = NULL;
     }
 
     return AE_OK;
@@ -193,6 +196,43 @@ ACPI_STATUS
 AcpiOsTerminate (void)
 {
     return AE_OK;
+}
+
+
+ACPI_STATUS
+AcpiOsGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+{
+
+    return (AE_NO_ACPI_TABLES);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetTimer
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Current time in milliseconds
+ *
+ * DESCRIPTION: Get the current system time (in milliseconds).
+ *
+ *****************************************************************************/
+
+UINT32
+AcpiOsGetTimer (void)
+{
+    SYSTEMTIME              SysTime;
+
+
+    GetSystemTime (&SysTime);
+
+    return ((SysTime.wMinute * 60000) +
+        (SysTime.wSecond * 1000) +
+        SysTime.wMilliseconds);
+
 }
 
 
@@ -299,11 +339,11 @@ AcpiOsVprintf (
     {
         /* Output is directable to either a file (if open) or the console */
 
-        if (DebugFile)
+        if (AcpiGbl_DebugFile)
         {
             /* Output file is open, send the output there */
 
-            Count = vfprintf (DebugFile, Fmt, Args);
+            Count = vfprintf (AcpiGbl_DebugFile, Fmt, Args);
         }
         else
         {
@@ -507,7 +547,11 @@ AcpiOsCreateSemaphore (
 {
 #ifdef _MULTI_THREADED
     void                *Mutex;
+
+    PROC_NAME ("OsCreateSemaphore");
 #endif
+
+
 
 
     if (MaxUnits == ACPI_UINT32_MAX)
@@ -533,21 +577,21 @@ AcpiOsCreateSemaphore (
     Mutex = CreateSemaphore (NULL, InitialUnits, MaxUnits, NULL);
     if (!Mutex)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("CreateSemaphore: could not create!\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "CreateSemaphore: could not create!\n"));
 
         return AE_NO_MEMORY;
     }
 
 
-    SemaphoreTable[NextSemaphoreHandle].MaxUnits = (UINT16) MaxUnits;
-    SemaphoreTable[NextSemaphoreHandle].CurrentUnits = (UINT16) InitialUnits;
-    SemaphoreTable[NextSemaphoreHandle].OsHandle = Mutex;
+    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].MaxUnits = (UINT16) MaxUnits;
+    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].CurrentUnits = (UINT16) InitialUnits;
+    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].OsHandle = Mutex;
 
-    DEBUG_PRINT (ACPI_INFO, ("Created semaphore: Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
-            NextSemaphoreHandle, MaxUnits, InitialUnits, Mutex));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
+            AcpiGbl_NextSemaphore, MaxUnits, InitialUnits, Mutex));
 
-    *OutHandle = (void *) NextSemaphoreHandle;
-    NextSemaphoreHandle++;
+    *OutHandle = (void *) AcpiGbl_NextSemaphore;
+    AcpiGbl_NextSemaphore++;
 #endif
 
     return AE_OK;
@@ -573,7 +617,7 @@ AcpiOsDeleteSemaphore (
 
 
     if ((Index >= NUM_SEMAPHORES) ||
-        !SemaphoreTable[Index].OsHandle)
+        !AcpiGbl_Semaphores[Index].OsHandle)
     {
         return AE_BAD_PARAMETER;
     }
@@ -581,8 +625,8 @@ AcpiOsDeleteSemaphore (
 
 #ifdef _MULTI_THREADED
 
-    CloseHandle (SemaphoreTable[Index].OsHandle);
-    SemaphoreTable[Index].OsHandle = NULL;
+    CloseHandle (AcpiGbl_Semaphores[Index].OsHandle);
+    AcpiGbl_Semaphores[Index].OsHandle = NULL;
 #endif
 
     return AE_OK;
@@ -614,8 +658,11 @@ AcpiOsWaitSemaphore (
     UINT32              WaitStatus;
 
 
+    PROC_NAME ("OsWaitSemaphore");
+
+
     if ((Index >= NUM_SEMAPHORES) ||
-        !SemaphoreTable[Index].OsHandle)
+        !AcpiGbl_Semaphores[Index].OsHandle)
     {
         return AE_BAD_PARAMETER;
     }
@@ -635,25 +682,25 @@ AcpiOsWaitSemaphore (
         Timeout = 400000;
 */
 
-    WaitStatus = WaitForSingleObject (SemaphoreTable[Index].OsHandle, Timeout);
+    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, Timeout);
     if (WaitStatus == WAIT_TIMEOUT)
     {
 /* Make optional -- wait of 0 is used to detect if unit is available 
-        DEBUG_PRINT (ACPI_ERROR, ("WaitSemaphore [%d]: *** Timeout on semaphore %d\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WaitSemaphore [%d]: *** Timeout on semaphore %d\n",
                     Handle));
 */
         return AE_TIME;
     }
 
-    if (SemaphoreTable[Index].CurrentUnits == 0)
+    if (AcpiGbl_Semaphores[Index].CurrentUnits == 0)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("WaitSemaphore [%d]: No units, Timeout %X, Status 0x%X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "[%d] No units, Timeout %X, Status 0x%X\n",
                     Index, Timeout, WaitStatus));
 
         return AE_OK;
     }
 
-    SemaphoreTable[Index].CurrentUnits--;
+    AcpiGbl_Semaphores[Index].CurrentUnits--;
 #endif
 
 
@@ -683,9 +730,11 @@ AcpiOsSignalSemaphore (
 
     UINT32              Index = (UINT32) Handle;
 
+    PROC_NAME ("OsSignalSemaphore");
+
 
     if ((Index >= NUM_SEMAPHORES) ||
-        !SemaphoreTable[Index].OsHandle)
+        !AcpiGbl_Semaphores[Index].OsHandle)
     {
         return AE_BAD_PARAMETER;
     }
@@ -698,18 +747,18 @@ AcpiOsSignalSemaphore (
     }
 
 
-    if ((SemaphoreTable[Index].CurrentUnits + 1) > 
-        SemaphoreTable[Index].MaxUnits)
+    if ((AcpiGbl_Semaphores[Index].CurrentUnits + 1) > 
+        AcpiGbl_Semaphores[Index].MaxUnits)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Signal: Oversignalled semaphore[%d]! Current %d Max %d\n", 
-            Index, SemaphoreTable[Index].CurrentUnits, SemaphoreTable[Index].MaxUnits));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Oversignalled semaphore[%d]! Current %d Max %d\n", 
+            Index, AcpiGbl_Semaphores[Index].CurrentUnits, AcpiGbl_Semaphores[Index].MaxUnits));
 
         return (AE_LIMIT);
     }
 
-    ReleaseSemaphore (SemaphoreTable[Index].OsHandle, Units, NULL);
+    ReleaseSemaphore (AcpiGbl_Semaphores[Index].OsHandle, Units, NULL);
 
-    SemaphoreTable[Index].CurrentUnits++;
+    AcpiGbl_Semaphores[Index].CurrentUnits++;
 #endif
     
 
@@ -818,42 +867,10 @@ AcpiOsQueueForExecution (
 }
 
 
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsBreakpoint
- *
- * PARAMETERS:  Msg                 Message to print
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Print a message and break to the debugger.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsBreakpoint (
-    char                    *Msg)
-{
-
-    /* Print the message and do an INT 3 */
-
-    if (Msg)
-    {
-        AcpiOsPrintf ("AcpiOsBreakpoint: %s ****\n", Msg);
-    }
-    else
-    {
-        AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
-    }
-
-
-    return AE_OK;
-}
-
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsSleepUsec
+ * FUNCTION:    AcpiOsStall
  *
  * PARAMETERS:  microseconds        To sleep
  *
@@ -864,7 +881,7 @@ AcpiOsBreakpoint (
  *****************************************************************************/
 
 void
-AcpiOsSleepUsec (
+AcpiOsStall (
     UINT32                  microseconds)
 {
 
@@ -899,459 +916,229 @@ AcpiOsSleep (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsReadPciCfgByte
+ * FUNCTION:    AcpiOsReadPciConfiguration
  *
- * PARAMETERS:  Bus                 Bus ID
- *              Function            Device Function
+ * PARAMETERS:  PciId               Seg/Bus/Dev
  *              Register            Device Register
  *              Value               Buffer where value is placed
+ *              Width               Number of bits
  *
- * RETURN:      Error status.  Zero is OK.
+ * RETURN:      Status
  *
- * DESCRIPTION: Read a byte (8 bits) from PCI configuration space
+ * DESCRIPTION: Read data from PCI configuration space
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AcpiOsReadPciCfgByte (
-    UINT32                  Bus,
-    UINT32                  Function,
+AcpiOsReadPciConfiguration (
+    ACPI_PCI_ID             *PciId,
     UINT32                  Register,
-    UINT8                   *Value)
+    void                    *Value,
+    UINT32                  Width)
 {
 
-    return 0;
+    return (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsReadPciCfgWord
+ * FUNCTION:    AcpiOsWritePciConfiguration
  *
- * PARAMETERS:  Bus                 Bus ID
- *              Function            Device Function
- *              Register            Device Register
- *              Value               Buffer where value is placed
- *
- * RETURN:      Error status.  Zero is OK.
- *
- * DESCRIPTION: Read a word (16 bits) from PCI configuration space
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsReadPciCfgWord (
-    UINT32                  Bus,
-    UINT32                  Function,
-    UINT32                  Register,
-    UINT16                  *Value)
-{
-
-    return 0;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsReadPciCfgDword
- *
- * PARAMETERS:  Bus                 Bus ID
- *              Function            Device Function
- *              Register            Device Register
- *              Value               Buffer where value is placed
- *
- * RETURN:      Error status.  Zero is OK.
- *
- * DESCRIPTION: Read a dword (32 bits) from PCI configuration space
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsReadPciCfgDword (
-    UINT32                  Bus,
-    UINT32                  Function,
-    UINT32                  Register,
-    UINT32                  *Value)
-{
-
-    *Value = (UINT32) 0xA7; // Just a random number
-    return 0;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsWritePciCfgByte
- *
- * PARAMETERS:  Bus                 Bus ID
- *              Function            Device Function
+ * PARAMETERS:  PciId               Seg/Bus/Dev
  *              Register            Device Register
  *              Value               Value to be written
+ *              Width               Number of bits
  *
- * RETURN:      Error status.  Zero is OK.
+ * RETURN:      Status.
  *
- * DESCRIPTION: Write a byte (8 bits) to PCI configuration space
+ * DESCRIPTION: Write data to PCI configuration space
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AcpiOsWritePciCfgByte (
-    UINT32                  Bus,
-    UINT32                  Function,
+AcpiOsWritePciConfiguration (
+    ACPI_PCI_ID             *PciId,
     UINT32                  Register,
-    UINT8                   Value)
+    NATIVE_UINT             Value,
+    UINT32                  Width)
 {
 
-    return 0;
+    return (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsWritePciCfgWord
+ * FUNCTION:    AcpiOsReadPort
  *
- * PARAMETERS:  Bus                 Bus ID
- *              Function            Device Function
- *              Register            Device Register
- *              Value               Value to be written
- *
- * RETURN:      Error status.  Zero is OK.
- *
- * DESCRIPTION: Write a word (16 bits) to PCI configuration space
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsWritePciCfgWord (
-    UINT32                  Bus,
-    UINT32                  Function,
-    UINT32                  Register,
-    UINT16                  Value)
-{
-
-    return 0;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsWritePciCfgDword
- *
- * PARAMETERS:  Bus                 Bus ID
- *              Function            Device Function
- *              Register            Device Register
- *              Value               Value to be written
- *
- * RETURN:      Error status.  Zero is OK.
- *
- * DESCRIPTION: Write a dword (32 bits) to PCI configuration space
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsWritePciCfgDword (
-    UINT32                  Bus,
-    UINT32                  Function,
-    UINT32                  Register,
-    UINT32                  Value)
-{
-    return 0;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsIn8
- *
- * PARAMETERS:  Port                Address of I/O port/register to read
+ * PARAMETERS:  Address             Address of I/O port/register to read
+ *              Value               Where value is placed
+ *              Width               Number of bits
  *
  * RETURN:      Value read from port
  *
- * DESCRIPTION: Read a byte (8 bits) from an I/O port or register
+ * DESCRIPTION: Read data from an I/O port or register
  *
  *****************************************************************************/
 
-UINT8
-AcpiOsIn8 (
-    ACPI_IO_ADDRESS         Port)
+ACPI_STATUS
+AcpiOsReadPort (
+    ACPI_IO_ADDRESS         Address,
+    void                    *Value,
+    UINT32                  Width)
 {
 
-    return ((UINT8) 0);
+    switch (Width)
+    {
+    case 8:
+        *((UINT8 *) Value) = 0;
+        break;
+
+    case 16:
+        *((UINT16 *) Value) = 0;
+        break;
+
+    case 32: 
+        *((UINT32 *) Value) = 0;
+        break;
+    }
+
+    return (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsIn16
+ * FUNCTION:    AcpiOsWritePort
  *
- * PARAMETERS:  Port                Address of I/O port/register to read
- *
- * RETURN:      Value read from port
- *
- * DESCRIPTION: Read a word (16 bits) from an I/O port or register
- *
- *****************************************************************************/
-
-UINT16
-AcpiOsIn16 (
-    ACPI_IO_ADDRESS         Port)
-{
-
-    return ((UINT16) 0);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsIn32
- *
- * PARAMETERS:  Port                Address of I/O port/register to read
- *
- * RETURN:      Value read from port
- *
- * DESCRIPTION: Read a dword (32 bits) from an I/O port or register
- *
- *****************************************************************************/
-
-UINT32
-AcpiOsIn32 (
-    ACPI_IO_ADDRESS         Port)
-{
-
-    return ((UINT32) 0);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsOut8
- *
- * PARAMETERS:  Port                Address of I/O port/register to write
+ * PARAMETERS:  Address             Address of I/O port/register to write
  *              Value               Value to write
+ *              Width               Number of bits
  *
  * RETURN:      None
  *
- * DESCRIPTION: Write a byte (8 bits) to an I/O port or register
+ * DESCRIPTION: Write data to an I/O port or register
  *
  *****************************************************************************/
 
-void
-AcpiOsOut8 (
-    ACPI_IO_ADDRESS         Port,
-    UINT8                   Value)
+ACPI_STATUS
+AcpiOsWritePort (
+    ACPI_IO_ADDRESS         Address,
+    NATIVE_UINT             Value,
+    UINT32                  Width)
 {
 
+    return (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsOut16
+ * FUNCTION:    AcpiOsReadMemory
  *
- * PARAMETERS:  Port                Address of I/O port/register to write
- *              Value               Value to write
- *
- * RETURN:      None
- *
- * DESCRIPTION: Write a word (16 bits) to an I/O port or register
- *
- *****************************************************************************/
-
-void
-AcpiOsOut16 (
-    ACPI_IO_ADDRESS         Port,
-    UINT16                  Value)
-{
-
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsOut32
- *
- * PARAMETERS:  Port                Address of I/O port/register to write
- *              Value               Value to write
- *
- * RETURN:      None
- *
- * DESCRIPTION: Write a dword (32 bits) to an I/O port or register
- *
- *****************************************************************************/
-
-void
-AcpiOsOut32 (
-    ACPI_IO_ADDRESS         Port,
-    UINT32                  Value)
-{
-
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsMemIn8
- *
- * PARAMETERS:  PhysAddr        Physical Memory Address to read
+ * PARAMETERS:  Address             Physical Memory Address to read
+ *              Value               Where value is placed
+ *              Width               Number of bits
  *
  * RETURN:      Value read from physical memory address
  *
- * DESCRIPTION: Read a byte (8 bits) from a physical memory address
+ * DESCRIPTION: Read data from a physical memory address
  *
  *****************************************************************************/
 
-UINT8
-AcpiOsMemIn8 (
-    ACPI_PHYSICAL_ADDRESS   PhysAddr)
+ACPI_STATUS
+AcpiOsReadMemory (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    void                    *Value,
+    UINT32                  Width)
 {
 
-    return ((UINT8) 0);
+    switch (Width)
+    {
+    case 8:
+        *((UINT8 *) Value) = 0;
+        break;
+
+    case 16:
+        *((UINT16 *) Value) = 0;
+        break;
+
+    case 32: 
+        *((UINT32 *) Value) = 0;
+        break;
+    }
+    return (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsMemIn16
+ * FUNCTION:    AcpiOsWriteMemory
  *
- * PARAMETERS:  PhysAddr        Physical Memory Address to read
- *
- * RETURN:      Value read from physical memory address
- *
- * DESCRIPTION: Read a word (16 bits) from a physical memory address
- *
- *****************************************************************************/
-
-UINT16
-AcpiOsMemIn16 (
-    ACPI_PHYSICAL_ADDRESS   PhysAddr)
-{
-
-    return ((UINT16) 0);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsMemIn32
- *
- * PARAMETERS:  PhysAddr        Physical Memory Address to read
- *
- * RETURN:      Value read from physical memory address
- *
- * DESCRIPTION: Read a dword (32 bits) from a physical memory address
- *
- *****************************************************************************/
-
-UINT32
-AcpiOsMemIn32 (
-    ACPI_PHYSICAL_ADDRESS   PhysAddr)
-{
-
-    return ((UINT32) 0);
-}
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsMemOut8
- *
- * PARAMETERS:  PhysAddr        Physical Memory Address to write
- *              Value           Value to write
+ * PARAMETERS:  Address             Physical Memory Address to write
+ *              Value               Value to write
+ *              Width               Number of bits
  *
  * RETURN:      None
  *
- * DESCRIPTION: Write a byte (8 bits) to a physical memory address
+ * DESCRIPTION: Write data to a physical memory address
  *
  *****************************************************************************/
 
-void
-AcpiOsMemOut8 (
-    ACPI_PHYSICAL_ADDRESS   PhysAddr,
-    UINT8                   Value)
+ACPI_STATUS
+AcpiOsWriteMemory (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    NATIVE_UINT             Value,
+    UINT32                  Width)
 {
-    return;
+
+    return (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsMemOut16
+ * FUNCTION:    AcpiOsSignal
  *
- * PARAMETERS:  PhysAddr        Physical Memory Address to write
- *              Value           Value to write
+ * PARAMETERS:  Function            ACPI CA signal function code
+ *              Info                Pointer to function-dependent structure
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Write a word (16 bits) to a physical memory address
+ * DESCRIPTION: Miscellaneous functions
  *
  *****************************************************************************/
 
-void
-AcpiOsMemOut16 (
-    ACPI_PHYSICAL_ADDRESS   PhysAddr,
-    UINT16                  Value)
+ACPI_STATUS
+AcpiOsSignal (
+    UINT32                  Function,
+    void                    *Info)
 {
-    return;
+
+    switch (Function)
+    {
+    case ACPI_SIGNAL_FATAL:
+        break;
+
+    case ACPI_SIGNAL_BREAKPOINT:
+
+        if (Info)
+        {
+            AcpiOsPrintf ("AcpiOsBreakpoint: %s ****\n", Info);
+        }
+        else
+        {
+            AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
+        }
+
+        break;
+    }
+
+
+    return (AE_OK);
 }
 
 
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsMemOut32
- *
- * PARAMETERS:  PhysAddr        Physical Memory Address to write
- *              Value           Value to write
- *
- * RETURN:      None
- *
- * DESCRIPTION: Write a dword (32 bits) to a physical memory address
- *
- *****************************************************************************/
-
-void
-AcpiOsMemOut32 (
-    ACPI_PHYSICAL_ADDRESS   PhysAddr,
-    UINT32                  Value)
-{
-    return;
-}
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsDbgTrap
- *
- * PARAMETERS:  pTrapCause      - pointer to char array that contains description
- *                                of cause of trap.
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Trap. Causes execution to halt after logging message.
- *
- *****************************************************************************/
-
-void
-AcpiOsDbgTrap (char *pTrapCause)
-{
-} // Debug_TRAP
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsDbgTrap
- *
- * PARAMETERS:  This should not be called directly. Use DEBUG_ASSERT macro.
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Assertion routine.
- *
- *****************************************************************************/
-
-void
-AcpiOsDbgAssert(void *FailedAssertion, void *FileName, UINT32 LineNumber,
-             char *Message)
-{
-
-//    return 0;
-} // Debug_Assert
 
 
