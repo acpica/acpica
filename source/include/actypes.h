@@ -200,6 +200,10 @@ typedef unsigned long   UINT32_BIT;
  * Local datatypes 
  */
 
+/* Types specific to the OS-independent subsystem interfaces */
+
+typedef INT32           ACPI_STATUS;
+
 /* Types specific to the OS-dependent interface */
 
 typedef void            OSD_FILE;
@@ -325,7 +329,8 @@ typedef struct nte
     void            *Value;         /* Pointer to value associated with this name */
 } nte;
 
-#define NOTFOUND    (nte *)0
+#define NOTFOUND            (nte *)0
+#define INVALID_HANDLE      0
 
 
 /* Stack of currently-open scopes, and pointer to top of that stack */
