@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.38 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -124,9 +124,8 @@
 #include "acnamesp.h"
 #include "acinterp.h"
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dswstate")
-
 
 
 /*******************************************************************************
@@ -800,14 +799,14 @@ AcpiDsObjStackGetValue (
 
     if (WalkState->NumOperands == 0)
     {
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     /* or if the index is past the top of the stack */
 
     if (Index > (WalkState->NumOperands - (UINT32) 1))
     {
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
 
@@ -978,7 +977,7 @@ AcpiDsCreateWalkState (
         WalkState = AcpiCmCallocate (sizeof (ACPI_WALK_STATE));
         if (!WalkState)
         {
-            return_VALUE (NULL);
+            return_PTR (NULL);
         }
     }
 
@@ -986,6 +985,7 @@ AcpiDsCreateWalkState (
     WalkState->OwnerId          = OwnerId;
     WalkState->Origin           = Origin;
     WalkState->MethodDesc       = MthDesc;
+    WalkState->WalkList         = WalkList;
 
     /* Init the method args/local */
 
@@ -998,7 +998,7 @@ AcpiDsCreateWalkState (
     Status = AcpiDsResultStackPush (WalkState);
     if (ACPI_FAILURE (Status))
     {
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
 

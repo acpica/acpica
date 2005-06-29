@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dswexec")
 
 
@@ -442,11 +442,9 @@ AcpiDsExecEndOp (
     UINT16                  Opcode;
     UINT8                   Optype;
     ACPI_PARSE_OBJECT       *NextOp;
-    ACPI_NAMESPACE_NODE     *Node;
     ACPI_PARSE_OBJECT       *FirstArg;
     ACPI_OPERAND_OBJECT     *ResultObj = NULL;
     ACPI_OPCODE_INFO        *OpInfo;
-    UINT32                  OperandIndex;
 
 
     FUNCTION_TRACE_PTR ("DsExecEndOp", Op);
@@ -529,9 +527,6 @@ AcpiDsExecEndOp (
         {
             goto Cleanup;
         }
-
-        OperandIndex = WalkState->NumOperands - 1;
-
 
         /* Done with this result state (Now that operand stack is built) */
 
@@ -666,7 +661,6 @@ AcpiDsExecEndOp (
         /* NextOp points to the op that holds the method name */
 
         NextOp = FirstArg;
-        Node = NextOp->Node;
 
         /* NextOp points to first argument op */
 
