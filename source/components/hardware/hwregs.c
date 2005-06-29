@@ -530,7 +530,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
 
 /******************************************************************************
  *
- * FUNCTION:    ClearAllAcpiChipsetStatusBits
+ * FUNCTION:    HwClearAcpiStatus
  *
  * PARAMETERS:  none
  *
@@ -541,13 +541,13 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
  ******************************************************************************/
 
 void 
-ClearAllAcpiChipsetStatusBits (void)
+HwClearAcpiStatus (void)
 {
     UINT16      GpeLength;
     UINT16      Index;
 
 
-    FUNCTION_TRACE ("ClearAllAcpiChipsetStatusBits");
+    FUNCTION_TRACE ("HwClearAcpiStatus");
 
 
     DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", 
