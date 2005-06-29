@@ -329,24 +329,22 @@ AmlGetRvalue (
             MvIndex = (*StackPtr)->Lvalue.OpCode - AML_Local0;
 
             DEBUG_PRINT (ACPI_INFO,
-                        ("AmlGetRvalue:Lcl%d: before AmlGetMethodValue %p %p %08lx \n",
-                        MvIndex,
-                        StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
+                            ("AmlGetRvalue:Lcl%d: before AmlMthStackGetValue %p %p %08lx \n",
+                            MvIndex,StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
 
-            Status = AmlGetMethodValue (LCLBASE + (*StackPtr)->Lvalue.OpCode - AML_Local0,
-                                    *StackPtr);
+            Status = AmlMthStackGetValue (LCLBASE + (*StackPtr)->Lvalue.OpCode - AML_Local0,
+                                            *StackPtr);
 
             DEBUG_PRINT (ACPI_INFO,
                         ("AmlGetRvalue:Lcl%d: iGMV Status=%s %p %p %08lx \n",
-                        MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
-                        *(UINT32 *)* StackPtr));
+                            MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
+                            *(UINT32 *)* StackPtr));
             
             if (TYPE_Number == (*StackPtr)->ValType)
             {
                 /* Value is a Number */
                 
-                DEBUG_PRINT (ACPI_INFO,
-                            ("[%ld] \n", (*StackPtr)->Number.Number));
+                DEBUG_PRINT (ACPI_INFO, ("[%ld] \n", (*StackPtr)->Number.Number));
             }
             break;
 
@@ -354,24 +352,23 @@ AmlGetRvalue (
         case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
             DEBUG_PRINT (TRACE_EXEC,
-                        ("AmlGetRvalue:Arg%d: before AmlGetMethodValue %p %p %08lx \n",
-                        MvIndex = (*StackPtr)->Lvalue.OpCode - AML_Arg0,
-                        StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
+                            ("AmlGetRvalue:Arg%d: before AmlMthStackGetValue %p %p %08lx \n",
+                            MvIndex = (*StackPtr)->Lvalue.OpCode - AML_Arg0,
+                            StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
 
-            Status = AmlGetMethodValue (ARGBASE + (*StackPtr)->Lvalue.OpCode - AML_Arg0,
-                                    *StackPtr);
+            Status = AmlMthStackGetValue (ARGBASE + (*StackPtr)->Lvalue.OpCode - AML_Arg0,
+                                            *StackPtr);
         
             DEBUG_PRINT (TRACE_EXEC,
-                        ("AmlGetRvalue:Arg%d: iGMV returned %s %p %p %08lx \n",
-                        MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
-                        *(UINT32 *)* StackPtr));
+                            ("AmlGetRvalue:Arg%d: iGMV returned %s %p %p %08lx \n",
+                            MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
+                            *(UINT32 *)* StackPtr));
 
             if (TYPE_Number == (*StackPtr)->ValType)
             {
                 /* Value is a Number */
                 
-                DEBUG_PRINT (ACPI_INFO,
-                            ("[%ld] \n", (*StackPtr)->Number.Number));
+                DEBUG_PRINT (ACPI_INFO, ("[%ld] \n", (*StackPtr)->Number.Number));
             }
 
             break;
@@ -465,8 +462,7 @@ AmlGetRvalue (
                 
             
 
-        DEBUG_PRINT (TRACE_EXEC,
-                    ("AmlGetRvalue: found direct name ptr \n"));
+        DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue: found direct name ptr \n"));
 
         ValDesc = (ACPI_OBJECT *) NsGetValue ((ACPI_HANDLE)* StackPtr);
 
@@ -501,18 +497,17 @@ AmlGetRvalue (
                  * Convert it to an object.
                  */
 
-                if (AE_OK != (Status = AmlPushIfExec (MODE_Exec)))             /* ObjStack */
+                if (AE_OK != (Status = AmlObjPushIfExec (MODE_Exec)))             /* ObjStack */
                 {
                     FUNCTION_STATUS_EXIT (Status);
                     return Status;
                 }
 
-                if (AE_OK == (Status = AmlPushExec ((UINT8 *) ValDesc + 1, 0L)) && /*PkgStack*/
+                if (AE_OK == (Status = AmlPkgPushExec ((UINT8 *) ValDesc + 1, 0L)) && /*PkgStack*/
                     AE_OK == (Status = AmlDoPkg (TYPE_Package, MODE_Exec)) &&
-                    AE_OK == (Status = AmlPopExec ()))                 /* PkgStack */
+                    AE_OK == (Status = AmlPkgPopExec ()))                 /* PkgStack */
                 {
-                    NsSetValue ((ACPI_HANDLE)* StackPtr,
-                                    ObjStack[ObjStackTop],
+                    NsSetValue ((ACPI_HANDLE)* StackPtr, ObjStack[ObjStackTop],
                                     (UINT8) TYPE_Package);
 
                     /* Refresh local value pointer to reflect newly set value */
@@ -586,18 +581,17 @@ AmlGetRvalue (
                  * points to a buffer definition in the AML stream.
                  * Convert it to an object.
                  */
-                if (AE_OK != (Status = AmlPushIfExec (MODE_Exec)))                /* ObjStack */
+                if (AE_OK != (Status = AmlObjPushIfExec (MODE_Exec)))                /* ObjStack */
                 {
                     FUNCTION_STATUS_EXIT (Status);
                     return Status;
                 }
 
-                if (AE_OK == (Status = AmlPushExec ((UINT8 *) ValDesc + 1, 0L)) &&   /*PkgStack*/
+                if (AE_OK == (Status = AmlPkgPushExec ((UINT8 *) ValDesc + 1, 0L)) &&   /*PkgStack*/
                     AE_OK == (Status = AmlDoPkg (TYPE_Buffer, MODE_Exec)) &&
-                    AE_OK == (Status = AmlPopExec ()))                     /* PkgStack */
+                    AE_OK == (Status = AmlPkgPopExec ()))                     /* PkgStack */
                 {
-                    NsSetValue ((ACPI_HANDLE) *StackPtr,
-                                    ObjStack[ObjStackTop],
+                    NsSetValue ((ACPI_HANDLE) *StackPtr, ObjStack[ObjStackTop],
                                     (UINT8) TYPE_Buffer);
                     
                     /* Refresh local value pointer to reflect newly set value */
@@ -987,3 +981,4 @@ AmlGetRvalue (
 }
 
 
+    

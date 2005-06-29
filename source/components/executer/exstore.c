@@ -158,7 +158,7 @@ AmlExecuteMethod (
     
         for (i1 = 0; (i1 < NUMLCL) && (Status == AE_OK); ++i1)
         {
-            Status = AmlSetMethodValue (i1 + LCLBASE, NULL, NULL);
+            Status = AmlMthStackSetValue (i1 + LCLBASE, NULL, NULL);
         }
 
         if (AE_OK == Status)
@@ -172,13 +172,13 @@ AmlExecuteMethod (
                     /*  parameter/argument specified    */
                     /*  define ppsParams[i2++] argument object descriptor   */
                     
-                    Status = AmlSetMethodValue (i1 + ARGBASE, Params[i2++], NULL);
+                    Status = AmlMthStackSetValue (i1 + ARGBASE, Params[i2++], NULL);
                 }
                 else    
                 {
                     /*  no parameter/argument object descriptor definition  */
                     
-                    Status = AmlSetMethodValue (i1 + ARGBASE, NULL, NULL);
+                    Status = AmlMthStackSetValue (i1 + ARGBASE, NULL, NULL);
                 }
             }
         }
@@ -197,7 +197,7 @@ AmlExecuteMethod (
 
         if (AE_PENDING == Status)
         {
-            Status = AmlPopExec ();            /* package stack -- inverse of AmlPrepExec() */
+            Status = AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
         }
 
         else
@@ -209,7 +209,7 @@ AmlExecuteMethod (
                 DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", ObjStackTop));
             }
 
-            AmlPopExec ();            /* package stack -- inverse of AmlPrepExec() */
+            AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
         }
 
         MethodStackTop--;          /* pop our frame off method stack */
@@ -294,7 +294,7 @@ AmlExecStore (
              * to protect it from garbage collection
              */
 
-            Status = AmlPushIfExec (MODE_Exec);
+            Status = AmlObjPushIfExec (MODE_Exec);
             if (AE_OK != Status)
             {
                 OsdFree (DestDesc);
@@ -758,14 +758,14 @@ AmlExecStore (
     case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
     case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-        Status = AmlSetMethodValue (LCLBASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
+        Status = AmlMthStackSetValue (LCLBASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
         break;
 
 
     case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
     case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-        Status = AmlSetMethodValue (ARGBASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
+        Status = AmlMthStackSetValue (ARGBASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
         break;
 
 
