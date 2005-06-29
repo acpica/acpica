@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.74 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -828,7 +828,6 @@ AcpiNsGetNode (
     FUNCTION_TRACE_PTR ("NsGetNode", Pathname);
 
 
-
     /* Ensure that the namespace has been initialized */
 
     if (!AcpiGbl_RootNode)
@@ -933,7 +932,7 @@ AcpiNsFindParentName (
 }
 
 
-#ifdef ACPI_DEBUG
+#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
 
 /****************************************************************************
  *
