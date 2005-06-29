@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.63 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -234,7 +234,7 @@ AcpiExResolveOperands (
     ArgTypes = OpInfo->RuntimeArgs;
     if (ArgTypes == ARGI_INVALID_OPCODE)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - %X is not a valid AML opcode\n",
+        ACPI_REPORT_ERROR (("ResolveOperands: %X is not a valid AML opcode\n",
             Opcode));
 
         return_ACPI_STATUS (AE_AML_INTERNAL);
@@ -254,7 +254,7 @@ AcpiExResolveOperands (
     {
         if (!StackPtr || !*StackPtr)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null stack entry at %p\n",
+            ACPI_REPORT_ERROR (("ResolveOperands: Null stack entry at %p\n",
                 StackPtr));
 
             return_ACPI_STATUS (AE_AML_INTERNAL);
@@ -334,8 +334,8 @@ AcpiExResolveOperands (
             /* Invalid descriptor */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Bad descriptor type %X in Obj %p\n",
-                ACPI_GET_DESCRIPTOR_TYPE (ObjDesc), ObjDesc));
+                    "Invalid descriptor %p [%s]\n",
+                    ObjDesc, AcpiUtGetDescriptorName (ObjDesc)));
 
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
@@ -475,6 +475,13 @@ AcpiExResolveOperands (
             TypeNeeded = ACPI_TYPE_ANY;
             break;
 
+        case ARGI_DDBHANDLE:
+
+            /* Need an operand of type ACPI_TYPE_DDB_HANDLE */
+
+            TypeNeeded = ACPI_TYPE_LOCAL_REFERENCE;
+            break;
+
 
         /*
          * The more complex cases allow multiple resolved object types
@@ -486,7 +493,8 @@ AcpiExResolveOperands (
              * But we can implicitly convert from a STRING or BUFFER
              * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToInteger (ObjDesc, StackPtr, WalkState);
+            Status = AcpiExConvertToInteger (ObjDesc, StackPtr,
+                        WalkState->Opcode);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
@@ -510,7 +518,8 @@ AcpiExResolveOperands (
              * But we can implicitly convert from a STRING or INTEGER
              * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToBuffer (ObjDesc, StackPtr, WalkState);
+            Status = AcpiExConvertToBuffer (ObjDesc, StackPtr,
+                        WalkState->Opcode);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
@@ -534,7 +543,8 @@ AcpiExResolveOperands (
              * But we can implicitly convert from a BUFFER or INTEGER
              * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToString (ObjDesc, StackPtr, 16, ACPI_UINT32_MAX, WalkState);
+            Status = AcpiExConvertToString (ObjDesc, StackPtr,
+                        ACPI_IMPLICIT_CONVERT_HEX, WalkState->Opcode);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
@@ -590,7 +600,8 @@ AcpiExResolveOperands (
 
                 /* Highest priority conversion is to type Buffer */
 
-                Status = AcpiExConvertToBuffer (ObjDesc, StackPtr, WalkState);
+                Status = AcpiExConvertToBuffer (ObjDesc, StackPtr,
+                            WalkState->Opcode);
                 if (ACPI_FAILURE (Status))
                 {
                     return_ACPI_STATUS (Status);
