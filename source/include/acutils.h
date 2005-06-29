@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.109 $
+ *       $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -367,64 +367,48 @@ SetDebugLevel (
 
 void
 AcpiUtTrace (
-    NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName);
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo);
 
 void
 AcpiUtTracePtr (
-    NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     void                    *Pointer);
 
 void
 AcpiUtTraceU32 (
-    NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     UINT32                  Integer);
 
 void
 AcpiUtTraceStr (
-    NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     NATIVE_CHAR             *String);
 
 void
 AcpiUtExit (
-    NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName);
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo);
 
 void
 AcpiUtStatusExit (
-    NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     ACPI_STATUS             Status);
 
 void
 AcpiUtValueExit (
-    NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     ACPI_INTEGER            Value);
 
 void
 AcpiUtPtrExit (
-    NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     UINT8                   *Ptr);
 
 void
@@ -471,6 +455,23 @@ AcpiUtDebugPrintRaw (
     UINT32                  LineNumber,
     char                    *Format,
     ...);
+
+void
+AcpiUtDebugPrint2 (
+    UINT32                  RequestedDebugLevel,
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+    char                    *Format,
+    ...);
+
+void
+AcpiUtDebugPrintRaw2 (
+    UINT32                  RequestedDebugLevel,
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+    char                    *Format,
+    ...);
+
 
 /*
  * UtDelete - Object deletion
