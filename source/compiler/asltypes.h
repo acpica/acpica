@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.24 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -130,56 +130,9 @@
  ******************************************************************************/
 
 
-/* Value union for the parse node */
-
-typedef union asl_node_value
-{
-    UINT64                      Integer;        /* Generic integer is largest integer */
-    UINT64                      Integer64;
-    UINT32                      Integer32;
-    UINT16                      Integer16;
-    UINT8                       Integer8;
-    void                        *Pointer;
-    char                        *String;
-
-} ASL_NODE_VALUE;
 
 
-/* The parse node is the fundamental element of the parse tree */
-
-typedef struct asl_parse_node
-{
-    struct asl_parse_node       *Parent;
-    struct asl_parse_node       *Peer;
-    struct asl_parse_node       *Child;
-    struct asl_parse_node       *ParentMethod;
-    ACPI_NAMESPACE_NODE         *NsNode;
-    char                        *Filename;
-    char                        *ExternalName;
-    char                        *Namepath;
-    union asl_node_value        Value;
-    UINT32                      ExtraValue;
-    UINT32                      Column;
-    UINT32                      LineNumber;
-    UINT32                      LogicalLineNumber;
-    UINT32                      LogicalByteOffset;
-    UINT32                      EndLine;
-    UINT32                      EndLogicalLine;
-    UINT16                      AmlOpcode;
-    UINT16                      ParseOpcode;
-    UINT32                      AcpiBtype;
-    UINT32                      AmlLength;
-    UINT32                      AmlSubtreeLength;
-    UINT8                       AmlOpcodeLength;
-    UINT8                       AmlPkgLenBytes;
-    UINT16                      Flags;
-    UINT8                       Extra;
-    char                        ParseOpName[12];
-    char                        AmlOpName[12];
-
-} ASL_PARSE_NODE;
-
-/* Node flags for the ASL_PARSE_NODE */
+/* Op flags for the ACPI_PARSE_OBJECT */
 
 #define NODE_VISITED                0x0001
 #define NODE_AML_PACKAGE            0x0002
@@ -194,6 +147,9 @@ typedef struct asl_parse_node
 #define NODE_RESULT_NOT_USED        0x0400
 #define NODE_METHOD_TYPED           0x0800
 #define NODE_IS_BIT_OFFSET          0x1000
+#define NODE_COMPILE_TIME_CONST     0x2000
+#define NODE_IS_TERM_ARG            0x4000
+#define NODE_WAS_ONES_OP            0x8000
 
 /* Keeps information about individual control methods */
 
@@ -204,7 +160,7 @@ typedef struct asl_method_info
     UINT8                   ArgInitialized[MTH_NUM_ARGS];
     UINT32                  NumReturnNoValue;
     UINT32                  NumReturnWithValue;
-    ASL_PARSE_NODE          *Node;
+    ACPI_PARSE_OBJECT       *Op;
     struct asl_method_info  *Next;
     UINT8                   HasBeenTyped;
 
@@ -235,6 +191,8 @@ typedef struct asl_mapping_entry
 /* An entry in the Reserved Name information table */
 
 #define ASL_RSVD_RETURN_VALUE   0x01
+#define ASL_RSVD_RESOURCE_NAME  0x02
+#define ASL_RSVD_SCOPE          0x04
 
 typedef struct
 {
@@ -249,7 +207,7 @@ typedef struct
 
 typedef struct asl_walk_info
 {
-    ASL_PARSE_NODE              **NodePtr;
+    ACPI_PARSE_OBJECT           **NodePtr;
     UINT32                      *LevelPtr;
 
 } ASL_WALK_INFO;
@@ -278,12 +236,14 @@ typedef enum
     ASL_FILE_HEX_OUTPUT,
     ASL_FILE_NAMESPACE_OUTPUT,
     ASL_FILE_DEBUG_OUTPUT,
+    ASL_FILE_ASM_SOURCE_OUTPUT,
+    ASL_FILE_C_SOURCE_OUTPUT
 
 } ASL_FILE_TYPES;
 
 
-#define ASL_MAX_FILE            8
-#define ASL_NUM_FILES           (ASL_MAX_FILE + 1)
+#define ASL_MAX_FILE_TYPE       10
+#define ASL_NUM_FILES           (ASL_MAX_FILE_TYPE + 1)
 
 
 /* An entry in the exception list, one for each error/warning */
@@ -319,7 +279,7 @@ typedef struct asl_listing_node
 
 typedef
 ACPI_STATUS (*ASL_WALK_CALLBACK) (
-    ASL_PARSE_NODE              *Node,
+    ACPI_PARSE_OBJECT           *Op,
     UINT32                      Level,
     void                        *Context);
 
@@ -337,6 +297,7 @@ typedef struct
 #define ASL_ERROR               0
 #define ASL_WARNING             1
 #define ASL_REMARK              2
+#define ASL_NUM_REPORT_LEVELS   3
 
 
 typedef enum
@@ -392,10 +353,26 @@ typedef enum
     ASL_MSG_REGION_BYTE_ACCESS,
     ASL_MSG_REGION_BUFFER_ACCESS,
     ASL_MSG_FIELD_UNIT_OFFSET,
+    ASL_MSG_FIELD_UNIT_ACCESS_WIDTH,
     ASL_MSG_RESOURCE_FIELD,
     ASL_MSG_BYTES_TO_BITS,
     ASL_MSG_BITS_TO_BYTES,
     ASL_MSG_AML_NOT_IMPLEMENTED,
+    ASL_MSG_NO_WHILE,
+    ASL_MSG_INVALID_ESCAPE,
+    ASL_MSG_INVALID_STRING,
+    ASL_MSG_TABLE_SIGNATURE,
+    ASL_MSG_RESOURCE_LIST,
+    ASL_MSG_INVALID_TARGET,
+    ASL_MSG_INVALID_CONSTANT_OP,
+    ASL_MSG_CONSTANT_EVALUATION,
+    ASL_MSG_CONSTANT_FOLDED,
+    ASL_MSG_INVALID_EISAID,
+    ASL_MSG_RESERVED_OPERAND_TYPE,
+    ASL_MSG_RESERVED_METHOD,
+    ASL_MSG_ALPHANUMERIC_STRING,
+    ASL_MSG_RESERVED_USE,
+    ASL_MSG_INVALID_OPERAND
 
 } ASL_MESSAGE_IDS;
 

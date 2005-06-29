@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -353,6 +353,9 @@ TrGetNodeFlagName (
 
     case NODE_IS_TERM_ARG:
         return ("NODE_IS_TERM_ARG");
+
+    case NODE_WAS_ONES_OP:
+        return ("NODE_WAS_ONES_OP");
 
     default:
         return ("Multiple Flags (or unknown flag) set");
