@@ -200,25 +200,21 @@ ACPI_EXTERN NAME_TABLE_ENTRY    *RootObject;
  *
  ****************************************************************************/
 
+/* Package stack */
+
 extern INT32                    PkgStackLevel;
 extern INT32                    PkgStack_Len[AML_PKG_MAX_NEST];
 extern UINT8                    *PkgStack_Code[AML_PKG_MAX_NEST];
+
+/* Object stack */
+
 extern void                     *ObjStack[AML_EXPR_MAX_NEST];
 extern INT32                    ObjStackTop;
-extern char                     *FENames[];
 
+/* Method stack - contains arguments and locals */
+/* TBD: Split into parallel arg stack and local stack */
 
-/* 
- * Method Stack, containing locals and args
- * per level, 0-7 are Local# and 8-14 are Arg#
- */
-#define LCLBASE                 0
-#define NUMLCL                  8
-#define ARGBASE                 (LCLBASE+NUMLCL)
-#define NUMARG                  7
-
-
-extern ACPI_OBJECT              *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
+extern ACPI_OBJECT              *MethodStack[AML_METHOD_MAX_NEST][MTH_ENTRY_SIZE];
 extern INT32                    MethodStackTop;
 
 /* Base of AML block, and pointer to current location in it */
@@ -237,6 +233,7 @@ ACPI_EXTERN UINT32              BufSeq;             /* Counts allocated Buffer d
 ACPI_EXTERN INT32               SkipField;
 ACPI_EXTERN INT32               LastPkgLen;
 ACPI_EXTERN UINT8               LastFieldFlag;
+extern char                     *FENames[];
 
 /* 
  * Handle to the last method found
