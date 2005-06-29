@@ -1,4 +1,4 @@
-
+ 
 /******************************************************************************
  * 
  * Module Name: cmobject - Internal to external object translation utilities
@@ -161,6 +161,9 @@ CmGetSimpleObjectSize (
     UINT32                  Length;
 
 
+    FUNCTION_TRACE ("CmGetSimpleObjectSize");
+
+
     Length = sizeof (ACPI_OBJECT);
 
     switch (Obj->Type)
@@ -190,7 +193,10 @@ CmGetSimpleObjectSize (
         break;
     }
 
+
     *ObjLength = Length;
+    
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -231,6 +237,9 @@ CmGetPackageObjectSize (
     ACPI_STATUS             Status;
     
 
+    FUNCTION_TRACE ("CmGetPackageObjectSize");
+
+
     ParentObj[0] = Obj;
 
     while (1)
@@ -260,6 +269,7 @@ CmGetPackageObjectSize (
                 
                 DEBUG_PRINT (ACPI_ERROR, ("CmGetPackageObjectSize: Pkg nested too deep (max %d)\n",
                                             MAX_OBJECT_DEPTH));
+                FUNCTION_STATUS_EXIT (AE_LIMIT);
                 return AE_LIMIT;
             }
         }   /* if object is a package */
@@ -272,6 +282,7 @@ CmGetPackageObjectSize (
                 /*
                  *  Failure get out
                  */
+                FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
@@ -293,6 +304,8 @@ CmGetPackageObjectSize (
                      */
                     Length += sizeof(ACPI_OBJECT) * PackageCount;
                     *ObjLength = Length;
+                    
+                    FUNCTION_STATUS_EXIT (AE_OK);
                     return AE_OK;
                 }
 
@@ -309,6 +322,7 @@ CmGetPackageObjectSize (
     /*
      *  We'll never get here, but the compiler whines about return value
      */
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -367,7 +381,7 @@ CmGetObjectSize(
  ******************************************************************************/
 
 ACPI_STATUS
-CmBuildExternalSimpleObject(
+CmBuildExternalSimpleObject (
     ACPI_OBJECT_INTERNAL    *Obj,
     ACPI_OBJECT             *UserObj,
     UINT8                   *DataSpace,
@@ -375,6 +389,9 @@ CmBuildExternalSimpleObject(
 {
     UINT32                  Length = 0;
     UINT8                   *SourcePtr = NULL;
+
+
+    FUNCTION_TRACE ("CmBuildExternalSimpleObject");
 
 
     UserObj->Type = Obj->Type;
@@ -407,6 +424,7 @@ CmBuildExternalSimpleObject(
 
 
     default:
+        FUNCTION_STATUS_EXIT (AE_RETURN_VALUE);
         return AE_RETURN_VALUE;
         break;
     }
@@ -420,7 +438,10 @@ CmBuildExternalSimpleObject(
         memcpy ((void *) DataSpace, (void *) SourcePtr, Length);
     }
 
+
     *BufferSpaceUsed = Length;
+    
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -463,6 +484,9 @@ CmBuildExternalPackageObject (
     ACPI_OBJECT             *ThisUObj;
     register struct Search_st  *LevelPtr;
     
+
+    FUNCTION_TRACE ("CmBuildExternalPackageObject");
+
 
     /*
      *  First package at head of the buffer
@@ -517,6 +541,7 @@ CmBuildExternalPackageObject (
                  */
                 DEBUG_PRINT (ACPI_ERROR, ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
                                             MAX_OBJECT_DEPTH));
+                FUNCTION_STATUS_EXIT (AE_LIMIT);
                 return AE_LIMIT;
             }
 
@@ -546,10 +571,12 @@ CmBuildExternalPackageObject (
         else
         {
             Status = CmBuildExternalSimpleObject (ThisObj, ThisUObj, FreeSpace, &Temp);
-            if (Status != AE_OK) {
+            if (Status != AE_OK) 
+            {
                 /*
                  *  Failure get out
                  */
+                FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
@@ -571,6 +598,7 @@ CmBuildExternalPackageObject (
                      *  just add the length of the package objects and get out
                      */
                     *SpaceUsed = Length;
+                    FUNCTION_STATUS_EXIT (AE_OK);
                     return AE_OK;
                 }
 
@@ -589,6 +617,7 @@ CmBuildExternalPackageObject (
     /*
      *  We'll never get here, but the compiler whines about return value
      */
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -613,6 +642,9 @@ CmBuildExternalObject (
     ACPI_BUFFER             *RetBuffer)
 {
     ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("CmBuildExternalObject");
 
 
     if (Obj->Type == TYPE_Package)
@@ -641,6 +673,7 @@ CmBuildExternalObject (
         RetBuffer->Length += sizeof (ACPI_OBJECT);
     }
 
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -661,10 +694,12 @@ CmBuildExternalObject (
  ******************************************************************************/
 
 ACPI_STATUS
-CmBuildInternalSimpleObject(
+CmBuildInternalSimpleObject (
     ACPI_OBJECT             *UserObj,
     ACPI_OBJECT_INTERNAL    *Obj)
 {
+
+    FUNCTION_TRACE ("CmBuildInternalSimpleObject");
 
 
     Obj->Type = UserObj->Type;
@@ -695,11 +730,13 @@ CmBuildInternalSimpleObject(
 
 
     default:
+        FUNCTION_STATUS_EXIT (AE_RETURN_VALUE);
         return AE_RETURN_VALUE;
         break;
     }
 
 
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -742,6 +779,10 @@ CmBuildInternalPackageObject (
     ACPI_OBJECT             *ThisUObj;
     register struct Search_st  *LevelPtr;
     
+
+    
+    FUNCTION_TRACE ("CmBuildInternalPackageObject");
+
 
     /*
      *  First package at head of the buffer
@@ -796,6 +837,7 @@ CmBuildInternalPackageObject (
                  */
                 DEBUG_PRINT (ACPI_ERROR, ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
                                             MAX_OBJECT_DEPTH));
+                FUNCTION_STATUS_EXIT (AE_LIMIT);
                 return AE_LIMIT;
             }
 
@@ -826,10 +868,12 @@ CmBuildInternalPackageObject (
         {
 /*            Status = CmBuildSimpleObject(ThisObj, ThisUObj, FreeSpace, &Temp);
 */
-            if (Status != AE_OK) {
+            if (Status != AE_OK) 
+            {
                 /*
                  *  Failure get out
                  */
+                FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
@@ -851,6 +895,7 @@ CmBuildInternalPackageObject (
                      *  just add the length of the package objects and get out
                      */
                     *SpaceUsed = Length;
+                    FUNCTION_STATUS_EXIT (AE_OK);
                     return AE_OK;
                 }
 
@@ -869,6 +914,7 @@ CmBuildInternalPackageObject (
     /*
      *  We'll never get here, but the compiler whines about return value
      */
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -895,6 +941,9 @@ CmBuildInternalObject (
     ACPI_STATUS             Status;
 
 
+    FUNCTION_TRACE ("CmBuildInternalObject");
+
+
     if (Obj->Type == TYPE_Package)
     {
         /*
@@ -906,6 +955,8 @@ CmBuildInternalObject (
                         &RetBuffer->Length);
 */
         DEBUG_PRINT (ACPI_ERROR, ("CmBuildInternalObject: Packages as parameters not implemented!\n"));
+        
+        FUNCTION_STATUS_EXIT (AE_NOT_IMPLEMENTED);
         return AE_NOT_IMPLEMENTED;
     }
 
@@ -921,6 +972,7 @@ CmBuildInternalObject (
          */
     }
 
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -943,6 +995,9 @@ CmDeleteInternalObjectList (
     ACPI_OBJECT_INTERNAL    **ObjList)
 {
     ACPI_OBJECT_INTERNAL    **Obj;
+ 
+    
+    FUNCTION_TRACE ("CmDeleteInternalObjectList");
 
 
     /* Walk the null-terminated internal list */
@@ -966,12 +1021,13 @@ CmDeleteInternalObjectList (
      * pointer in the parameter list.
      */
 
-    OsdFree (ObjList[0]);
+    CmFree (ObjList[0]);
 
     /* Now free the parameter pointer list */
 
-    OsdFree (ObjList);
+    CmFree (ObjList);
 
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
