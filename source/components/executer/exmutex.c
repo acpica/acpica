@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: ammutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.4 $
+ * Module Name: exmutex - ASL Mutex Acquire/Release functions
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __AMMUTEX_C__
+#define __EXMUTEX_C__
 
 #include "acpi.h"
 #include "acinterp.h"
@@ -124,12 +124,12 @@
 #include "acevents.h"
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("ammutex")
+        MODULE_NAME         ("exmutex")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlUnlinkMutex
+ * FUNCTION:    AcpiExUnlinkMutex
  *
  * PARAMETERS:  *ObjDesc            - The mutex to be unlinked
  *
@@ -140,7 +140,7 @@
  ******************************************************************************/
 
 void
-AcpiAmlUnlinkMutex (
+AcpiExUnlinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 
@@ -157,7 +157,7 @@ AcpiAmlUnlinkMutex (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlLinkMutex
+ * FUNCTION:    AcpiExLinkMutex
  *
  * PARAMETERS:  *ObjDesc            - The mutex to be linked
  *              *ListHead           - head of the "AcquiredMutex" list
@@ -169,7 +169,7 @@ AcpiAmlUnlinkMutex (
  ******************************************************************************/
 
 void
-AcpiAmlLinkMutex (
+AcpiExLinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     *ListHead)
 {
@@ -194,7 +194,7 @@ AcpiAmlLinkMutex (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlAcquireMutex
+ * FUNCTION:    AcpiExAcquireMutex
  *
  * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
  *              *ObjDesc            - The object descriptor for this op
@@ -206,7 +206,7 @@ AcpiAmlLinkMutex (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlAcquireMutex (
+AcpiExAcquireMutex (
     ACPI_OPERAND_OBJECT     *TimeDesc,
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState)
@@ -214,7 +214,7 @@ AcpiAmlAcquireMutex (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("AcpiAmlAcquireMutex", ObjDesc);
+    FUNCTION_TRACE_PTR ("ExAcquireMutex", ObjDesc);
 
     if (!ObjDesc)
     {
@@ -242,7 +242,7 @@ AcpiAmlAcquireMutex (
 
     /* Acquire the mutex, wait if necessary */
 
-    Status = AcpiAmlSystemAcquireMutex (TimeDesc, ObjDesc);
+    Status = AcpiExSystemAcquireMutex (TimeDesc, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         /* Includes failure from a timeout on TimeDesc */
@@ -258,7 +258,7 @@ AcpiAmlAcquireMutex (
 
     /* Link the mutex to the walk state for force-unlock at method exit */
 
-    AcpiAmlLinkMutex (ObjDesc, (ACPI_OPERAND_OBJECT *)
+    AcpiExLinkMutex (ObjDesc, (ACPI_OPERAND_OBJECT *)
                 &(WalkState->WalkList->AcquiredMutexList));
 
     return_ACPI_STATUS (AE_OK);
@@ -267,7 +267,7 @@ AcpiAmlAcquireMutex (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlReleaseMutex
+ * FUNCTION:    AcpiExReleaseMutex
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
@@ -278,14 +278,14 @@ AcpiAmlAcquireMutex (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlReleaseMutex (
+AcpiExReleaseMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiAmlReleaseMutex");
+    FUNCTION_TRACE ("ExReleaseMutex");
 
 
     if (!ObjDesc)
@@ -330,7 +330,7 @@ AcpiAmlReleaseMutex (
 
     /* Release the mutex */
 
-    Status = AcpiAmlSystemReleaseMutex (ObjDesc);
+    Status = AcpiExSystemReleaseMutex (ObjDesc);
 
     /* Update the mutex and walk state */
 
@@ -339,7 +339,7 @@ AcpiAmlReleaseMutex (
 
     /* Unlink the mutex from the owner's list */
 
-    AcpiAmlUnlinkMutex (ObjDesc);
+    AcpiExUnlinkMutex (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
@@ -347,7 +347,7 @@ AcpiAmlReleaseMutex (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlReleaseAllMutexes
+ * FUNCTION:    AcpiExReleaseAllMutexes
  *
  * PARAMETERS:  *MutexList            - Head of the mutex list
  *
@@ -358,7 +358,7 @@ AcpiAmlReleaseMutex (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlReleaseAllMutexes (
+AcpiExReleaseAllMutexes (
     ACPI_OPERAND_OBJECT     *ListHead)
 {
     ACPI_OPERAND_OBJECT     *Next = ListHead->Mutex.Next;
@@ -382,7 +382,7 @@ AcpiAmlReleaseAllMutexes (
 
          /* Release the mutex */
 
-        AcpiAmlSystemReleaseMutex (This);
+        AcpiExSystemReleaseMutex (This);
     }
 
     return (AE_OK);
