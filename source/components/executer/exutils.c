@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.112 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -141,14 +141,22 @@
 #define _COMPONENT          ACPI_EXECUTER
         ACPI_MODULE_NAME    ("exutils")
 
+/* Local prototypes */
+
+static UINT32
+AcpiExDigitsNeeded (
+    ACPI_INTEGER            Value,
+    UINT32                  Base);
+
 
 #ifndef ACPI_NO_METHOD_EXECUTION
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiExEnterInterpreter
  *
  * PARAMETERS:  None
+ *
+ * RETURN:      Status
  *
  * DESCRIPTION: Enter the interpreter execution region.  Failure to enter
  *              the interpreter region is a fatal system error
@@ -156,7 +164,8 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExEnterInterpreter (void)
+AcpiExEnterInterpreter (
+    void)
 {
     ACPI_STATUS             Status;
 
@@ -179,6 +188,8 @@ AcpiExEnterInterpreter (void)
  *
  * PARAMETERS:  None
  *
+ * RETURN:      None
+ *
  * DESCRIPTION: Exit the interpreter execution region
  *
  * Cases where the interpreter is unlocked:
@@ -194,7 +205,8 @@ AcpiExEnterInterpreter (void)
  ******************************************************************************/
 
 void
-AcpiExExitInterpreter (void)
+AcpiExExitInterpreter (
+    void)
 {
     ACPI_STATUS             Status;
 
@@ -293,7 +305,8 @@ AcpiExAcquireGlobalLock (
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not acquire Global Lock, %s\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Could not acquire Global Lock, %s\n",
                 AcpiFormatException (Status)));
         }
     }
@@ -309,7 +322,7 @@ AcpiExAcquireGlobalLock (
  * PARAMETERS:  LockedByMe      - Return value from corresponding call to
  *                                AcquireGlobalLock.
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Release the global lock if it is locked.
  *
@@ -352,11 +365,14 @@ AcpiExReleaseGlobalLock (
  * PARAMETERS:  Value           - Value to be represented
  *              Base            - Base of representation
  *
- * RETURN:      the number of digits needed to represent Value in Base
+ * RETURN:      The number of digits.
+ *
+ * DESCRIPTION: Calculate the number of digits needed to represent the Value
+ *              in the given Base (Radix)
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiExDigitsNeeded (
     ACPI_INTEGER            Value,
     UINT32                  Base)
@@ -397,6 +413,8 @@ AcpiExDigitsNeeded (
  * PARAMETERS:  NumericId       - EISA ID to be converted
  *              OutString       - Where to put the converted string (8 bytes)
  *
+ * RETURN:      None
+ *
  * DESCRIPTION: Convert a numeric EISA ID to string representation
  *
  ******************************************************************************/
@@ -434,7 +452,10 @@ AcpiExEisaIdToString (
  * PARAMETERS:  Value           - Value to be converted
  *              OutString       - Where to put the converted string (8 bytes)
  *
- * RETURN:      Convert a number to string representation
+ * RETURN:      None, string
+ *
+ * DESCRIPTOIN: Convert a number to string representation. Assumes string
+ *              buffer is large enough to hold the string.
  *
  ******************************************************************************/
 
