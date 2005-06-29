@@ -232,8 +232,8 @@ PsGetOpcodeName (
         return "*ERROR*";
     }
 
-    DEBUG_EXEC (return Op->Name);
-    NORMAL_EXEC (return "AE_NOT_CONFIGURED");
+    DEBUG_ONLY_MEMBERS (return Op->Name);
+    return "AE_NOT_CONFIGURED";
 }
 
 
