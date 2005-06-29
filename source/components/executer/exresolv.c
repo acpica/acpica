@@ -208,9 +208,22 @@ AmlGetFieldUnitValue (
     Location = FieldDesc->FieldUnit.Container->Buffer.Pointer
                 + FieldDesc->FieldUnit.Offset;
 
-    /* Construct Mask with as many 1 bits as the field width */
+    /* Construct Mask with as many 1 bits as the field width 
+     * 
+     * NOTE: Only the bottom 5 bits are valid for a shift operation, so
+     *  special care must be taken for any shift greater than 31 bits. 
+     *
+     * TBD: Fields greater than 32-bits will not work.
+     */
 
-    Mask = ((UINT32) 1 << FieldDesc->FieldUnit.Length) - (UINT32) 1;
+    if (FieldDesc->FieldUnit.Length < 32)
+    {
+        Mask = ((UINT32) 1 << FieldDesc->FieldUnit.Length) - (UINT32) 1;
+    }
+    else
+    {
+        Mask = 0xFFFFFFFF;
+    }
 
     ResultDesc->Number.Type = (UINT8) ACPI_TYPE_Number;
 
