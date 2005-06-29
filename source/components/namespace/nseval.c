@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  ******************************************************************************/
 
@@ -133,12 +133,12 @@
  * FUNCTION:    AcpiNsEvaluateRelative
  *
  * PARAMETERS:  Handle              - The relative containing object
- *              *Pathname           - Name of method to execute, If NULL, the
+ *              Pathname            - Name of method to execute, If NULL, the
  *                                    handle is the object to execute
- *              **Params            - List of parameters to pass to the method,
+ *              Params              - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
- *              *ReturnObject       - Where to put method's return value (if
+ *              ReturnObject        - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
  *
  * RETURN:      Status
@@ -239,9 +239,9 @@ Cleanup:
  * FUNCTION:    AcpiNsEvaluateByName
  *
  * PARAMETERS:  Pathname            - Fully qualified pathname to the object
- *              *ReturnObject       - Where to put method's return value (if
+ *              ReturnObject        - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
- *              **Params            - List of parameters to pass to the method,
+ *              Params              - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
  *
@@ -328,10 +328,10 @@ Cleanup:
  * FUNCTION:    AcpiNsEvaluateByHandle
  *
  * PARAMETERS:  Handle              - Method Node to execute
- *              **Params            - List of parameters to pass to the method,
+ *              Params              - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
- *              *ReturnObject       - Where to put method's return value (if
+ *              ReturnObject        - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
  *
  * RETURN:      Status
@@ -392,7 +392,6 @@ AcpiNsEvaluateByHandle (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     /*
      * Two major cases here:
      * 1) The object is an actual control method -- execute it.
@@ -410,7 +409,6 @@ AcpiNsEvaluateByHandle (
         Status = AcpiNsExecuteControlMethod (Node, Params,
                                             &LocalReturnObject);
     }
-
     else
     {
         /*
@@ -419,7 +417,6 @@ AcpiNsEvaluateByHandle (
          */
         Status = AcpiNsGetObjectValue (Node, &LocalReturnObject);
     }
-
 
     /*
      * Check if there is a return value on the stack that must
@@ -439,23 +436,6 @@ AcpiNsEvaluateByHandle (
              * Valid return object, copy the pointer to
              * the returned object
              */
-
-            /* 
-             * TBD: Currently, package construction does not resolve 
-             * package references, do it here.
-             */
-/*
-            if (ACPI_GET_OBJECT_TYPE (LocalReturnObject) == ACPI_TYPE_PACKAGE)
-            {
-                Status = AcpiUtResolvePackageReferences (LocalReturnObject);
-                if (ACPI_FAILURE (Status))
-                {
-                    AcpiUtRemoveReference (LocalReturnObject);
-                    return_ACPI_STATUS (Status);
-                }
-            }
-*/
-
             *ReturnObject = LocalReturnObject;
         }
 
@@ -476,11 +456,11 @@ AcpiNsEvaluateByHandle (
  *
  * FUNCTION:    AcpiNsExecuteControlMethod
  *
- * PARAMETERS:  MethodNode      - The object/method
- *              **Params            - List of parameters to pass to the method,
+ * PARAMETERS:  MethodNode          - The method to execute
+ *              Params              - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
- *              **ReturnObjDesc     - List of result objects to be returned
+ *              ReturnObjDesc       - List of result objects to be returned
  *                                    from the method.
  *
  * RETURN:      Status
@@ -555,7 +535,8 @@ AcpiNsExecuteControlMethod (
  *
  * FUNCTION:    AcpiNsGetObjectValue
  *
- * PARAMETERS:  Node         - The object
+ * PARAMETERS:  Node                - The object
+ *              ReturnObjDesc       - Where the objects value is returned
  *
  * RETURN:      Status
  *
