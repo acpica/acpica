@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.73 $
+ *       $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -311,20 +311,21 @@
 
 /* Macros for GAS addressing */
 
+
+#ifndef _IA16
+
 #define ACPI_PCI_DEVICE_MASK            (UINT64) 0x0000FFFF00000000
 #define ACPI_PCI_FUNCTION_MASK          (UINT64) 0x00000000FFFF0000
 #define ACPI_PCI_REGISTER_MASK          (UINT64) 0x000000000000FFFF
 
 #define ACPI_PCI_FUNCTION(a)            (UINT16) ((((a) & ACPI_PCI_FUNCTION_MASK) >> 16))
 #define ACPI_PCI_DEVICE(a)              (UINT16) ((((a) & ACPI_PCI_DEVICE_MASK) >> 32))
-
-#ifndef _IA16
 #define ACPI_PCI_REGISTER(a)            (UINT16) (((a) & ACPI_PCI_REGISTER_MASK))
-#define ACPI_PCI_DEVFUN(a)              (UINT16) ((ACPI_PCI_DEVICE(a) << 16) | ACPI_PCI_FUNCTION(a))
 
 #else
-#define ACPI_PCI_REGISTER(a)            (UINT16) (((a) & 0x0000FFFF))
-#define ACPI_PCI_DEVFUN(a)              (UINT16) ((((a) & 0xFFFF0000) >> 16))
+#define ACPI_PCI_FUNCTION(a)            (UINT16) ((a) & 0xFFFF0000)
+#define ACPI_PCI_DEVICE(a)              (UINT16) ((a) & 0x0000FFFF)
+#define ACPI_PCI_REGISTER(a)            (UINT16) ((a) & 0x0000FFFF)
 
 #endif
 
