@@ -541,6 +541,7 @@ CmDumpBuffer (
 {
     UINT32                  i = 0;
     UINT32                  j;
+    UINT32                  Temp32;
     UINT8                   BufChar;
 
 
@@ -579,23 +580,35 @@ CmDumpBuffer (
             /* Default is BYTE display */
 
             default:
+
                 OsdPrintf ("%02X ", *((UINT8 *) &Buffer[i + j]));
                 j += 1;
                 break;
 
+
             case DB_WORD_DISPLAY:
-                OsdPrintf ("%04X ", *((UINT16 *) &Buffer[i + j]));
+
+                STORE16TO32 (&Temp32, &Buffer[i + j]);
+                OsdPrintf ("%04X ", Temp32);
                 j += 2;
                 break;
 
+
             case DB_DWORD_DISPLAY:
-                OsdPrintf ("%08X ", *((UINT32 *) &Buffer[i + j]));
+
+                STORE32TO32 (&Temp32, &Buffer[i + j]);
+                OsdPrintf ("%08X ", Temp32);
                 j += 4;
                 break;
 
+
             case DB_QWORD_DISPLAY:
-                OsdPrintf ("%08X", *((UINT32 *) &Buffer[i + j]));
-                OsdPrintf ("%08X ", *((UINT32 *) &Buffer[i + j + 4]));
+
+                STORE32TO32 (&Temp32, &Buffer[i + j]);
+                OsdPrintf ("%08X", Temp32);
+
+                STORE32TO32 (&Temp32, &Buffer[i + j + 4]);
+                OsdPrintf ("%08X ", Temp32);
                 j += 8;
                 break;
             }
