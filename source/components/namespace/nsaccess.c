@@ -181,9 +181,11 @@ NsSetup (void)
 
     /* Push the root name table on the scope stack */
     
-    Gbl_ScopeStack[0].Scope = Gbl_RootObject->Scope;
-    Gbl_ScopeStack[0].Type = ACPI_TYPE_Any;
-    Gbl_CurrentScope = &Gbl_ScopeStack[0];
+    Status = NsScopeStackPush (Gbl_RootObject->Scope, ACPI_TYPE_Any);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Enter the pre-defined names in the name table */
     
@@ -602,7 +604,11 @@ NsLookup (
             ScopeToPush = ThisEntry->Scope;
         }
 
-        NsPushCurrentScope (ScopeToPush, Type);
+        Status = NsScopeStackPush (ScopeToPush, Type);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     *RetEntry = ThisEntry;
