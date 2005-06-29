@@ -14,15 +14,18 @@
  | FILENAME: acpitype.h - Data structures defined in ACPI specification
  |__________________________________________________________________________
  |
- | $Revision: 1.2 $
- | $Date: 2005/06/29 20:06:27 $
+ | $Revision: 1.3 $
+ | $Date: 2005/06/29 20:06:28 $
  | $Log: actbl.h,v $
- | Revision 1.2  2005/06/29 20:06:27  aystarik
- |
+ | Revision 1.3  2005/06/29 20:06:28  aystarik
+ | First BeOS compatible check-in.
  |
  | 
- | date	99.01.12.00.15.00;	author grsmith1;	state Exp;
+ | date	99.01.13.18.50.00;	author grsmith1;	state Exp;
  |
+ * 
+ * 3     1/13/99 10:50a Grsmith1
+ * First BeOS compatible check-in.
  * 
  * 2     1/11/99 4:15p Grsmith1
  * 
