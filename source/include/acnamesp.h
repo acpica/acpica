@@ -440,6 +440,11 @@ NsPopCurrent (
  */
 
 ACPI_STATUS
+NsGetTablePtr (
+    ACPI_TABLE_TYPE         TableType, 
+    ACPI_TABLE_HEADER       **TablePtrLoc);
+
+ACPI_STATUS
 NsFindRsdp (
     char                    **BufferPtr,
     ACPI_TABLE_INFO         *TableInfo);
