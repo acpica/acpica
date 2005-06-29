@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -196,8 +196,9 @@ AcpiExSetupRegion (
              * byte, and a field with Dword access specified.
              */
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Field access width (%d bytes) too large for region size (%X)\n",
-                ObjDesc->CommonField.AccessByteWidth, RgnDesc->Region.Length));
+                "Field access width (%d bytes) too large for region [%4.4s] size (%X)\n",
+                ObjDesc->CommonField.AccessByteWidth, (char *) &RgnDesc->Region.Node->Name,
+                RgnDesc->Region.Length));
         }
 
         /*
@@ -205,10 +206,10 @@ AcpiExSetupRegion (
          * exceeds region length, indicate an error
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Field Base+Offset+Width %X+%X+%X exceeds region size (%X bytes) field=%p region=%p\n",
+            "Field Base+Offset+Width %X+%X+%X exceeds region [%4.4s] length (%X bytes), Field %p\n",
             ObjDesc->CommonField.BaseByteOffset, FieldDatumByteOffset,
-            ObjDesc->CommonField.AccessByteWidth,
-            RgnDesc->Region.Length, ObjDesc, RgnDesc));
+            ObjDesc->CommonField.AccessByteWidth, (char *) &RgnDesc->Region.Node->Name,
+            RgnDesc->Region.Length, ObjDesc));
 
         return_ACPI_STATUS (AE_AML_REGION_LIMIT);
     }
