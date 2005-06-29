@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -756,8 +756,8 @@ AeNotifyHandler (
 #endif
 
     default:
-        printf ("**** Received a Notify on Device [%s] %p value 0x%X\n",
-            ((ACPI_NAMESPACE_NODE *) Device)->Name.Ascii, Device, Value);
+        printf ("**** Received a Notify on Device [%4.4s] %p value 0x%X\n",
+            AcpiUtGetNodeName (Device), Device, Value);
         if (AcpiGbl_DebugFile)
         {
             AcpiOsPrintf ("**** Received a notify, value 0x%X\n", Value);
