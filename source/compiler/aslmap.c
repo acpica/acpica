@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.51 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@
  *
  ******************************************************************************/
 
-ACPI_OBJECT_TYPE8
+ACPI_OBJECT_TYPE
 AslMapNamedOpcodeToDataType (
     UINT16                  Opcode)
 {
@@ -390,7 +390,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* DEFAULT */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
 /* DEFAULT_ARG */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
 /* DEFINITIONBLOCK */           OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
-/* DEREFOF */                   OP_TABLE_ENTRY (AML_DEREF_OF_OP,            0,                  0,                  ACPI_BTYPE_DATA_REFERENCE), /* TBD ??*/
+/* DEREFOF */                   OP_TABLE_ENTRY (AML_DEREF_OF_OP,            0,                  0,                  ACPI_BTYPE_DATA_REFERENCE | ACPI_BTYPE_STRING),
 /* DEVICE */                    OP_TABLE_ENTRY (AML_DEVICE_OP,              0,                  NODE_AML_PACKAGE,   0),
 /* DIVIDE */                    OP_TABLE_ENTRY (AML_DIVIDE_OP,              0,                  0,                  ACPI_BTYPE_INTEGER),
 /* DMA */                       OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
