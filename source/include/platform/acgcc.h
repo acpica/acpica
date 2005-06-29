@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acgcc.h - GCC specific defines, etc.
- *       $Revision: 1.2 $
+ *       $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -117,12 +117,12 @@
 #ifndef __ACGCC_H__
 #define __ACGCC_H__
 
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
 
 
 #ifdef __ia64__
 #define _IA64
 
+#define COMPILER_DEPENDENT_UINT64   unsigned long
 /* Single threaded */
 #define ACPI_APPLICATION
 
@@ -186,8 +186,7 @@
 
 
 #else /* DO IA32 */
-
-
+#define COMPILER_DEPENDENT_UINT64   unsigned long long
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)
 #define BREAKPOINT3
