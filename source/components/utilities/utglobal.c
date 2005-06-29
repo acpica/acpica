@@ -100,6 +100,7 @@
 
 #include <acpi.h>
 #include <events.h>
+#include <namespace.h>
 
 
 #define _THIS_MODULE        "cmglobal.c"
@@ -190,9 +191,74 @@ InitAcpiLibGlobals (void)
 
     /* Namespace */
 
-    Root                    = NULL;
+    RootObject                  = &RootObjStruct;
+
+    RootObject->Name            = NS_ROOT;
+    RootObject->Scope           = NULL;
+    RootObject->ParentScope     = NULL;
+    RootObject->ParentEntry     = NULL;
+    RootObject->NextEntry       = NULL;
+    RootObject->PrevEntry       = NULL;
+    RootObject->Type            = TYPE_Any;
+    RootObject->Value           = NULL;
 
 }   
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiLocalCleanup
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: free memory allocated for table storage.
+ *
+ ******************************************************************************/
+
+void
+AcpiLocalCleanup (void)
+{
+    FUNCTION_TRACE ("AcpiLocalCleanup");
+
+
+    /* 
+     * TBD: !!! MAKE OS INDEPENDENT!!
+     *
+     * iRMX does not allocate memory for the tables unless they are loaded from a
+     * file. 
+     */
+
+    if (InputFile)
+    {
+        if (InputFile && RSDP != NULL)   
+            OsdFree (RSDP);
+        
+        if (RSDT != NULL)  
+            OsdFree (RSDT);
+        
+        if (FACS != NULL)  
+            OsdFree (FACS);
+        
+        if (FACP != NULL)  
+            OsdFree (FACP);
+        
+        if (MAPIC != NULL) 
+            OsdFree (MAPIC);
+        
+        if (DSDT != NULL)  
+            OsdFree (DSDT);
+        
+        if (PSDT != NULL)  
+            OsdFree (PSDT);
+        
+        if (SSDT != NULL)  
+            OsdFree (SSDT);
+        
+        if (SBDT != NULL)  
+            OsdFree (SBDT);
+
+    }
+}
 
