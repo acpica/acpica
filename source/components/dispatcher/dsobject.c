@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -384,7 +384,64 @@ AcpiDsInitObjectFromOp (
 
     case ACPI_TYPE_INTEGER: 
 
-        ObjDesc->Integer.Value = Op->Common.Value.Integer;
+        switch (OpInfo->Type)
+        {
+        case AML_TYPE_CONSTANT:
+            /*
+             * Resolve AML Constants here - AND ONLY HERE!
+             * All constants are integers.
+             * We mark the integer with a flag that indicates that it started life
+             * as a constant -- so that stores to constants will perform as expected (noop).
+             * (ZeroOp is used as a placeholder for optional target operands.)
+             */
+            ObjDesc->Common.Flags = AOPOBJ_AML_CONSTANT;
+
+            switch (Opcode)
+            {
+            case AML_ZERO_OP:
+
+                ObjDesc->Integer.Value = 0;
+                break;
+
+            case AML_ONE_OP:
+
+                ObjDesc->Integer.Value = 1;
+                break;
+
+            case AML_ONES_OP:
+
+                ObjDesc->Integer.Value = ACPI_INTEGER_MAX;
+
+                /* Truncate value if we are executing from a 32-bit ACPI table */
+
+                AcpiExTruncateFor32bitTable (ObjDesc);
+                break;
+
+            case AML_REVISION_OP:
+
+                ObjDesc->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
+                break;
+
+            default:
+
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown constant opcode %X\n", Opcode));
+                Status = AE_AML_OPERAND_TYPE;
+                break;
+            }
+            break;
+
+
+        case AML_TYPE_LITERAL:
+
+            ObjDesc->Integer.Value = Op->Common.Value.Integer;
+            break;
+
+
+        default:
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Integer type %X\n", OpInfo->Type));
+            Status = AE_AML_OPERAND_TYPE;
+            break;
+        }
         break;
 
 
@@ -424,63 +481,6 @@ AcpiDsInitObjectFromOp (
 
             ObjDesc->Reference.Opcode = AML_ARG_OP;
             ObjDesc->Reference.Offset = Opcode - AML_ARG_OP;
-            break;
-
-
-        case AML_TYPE_CONSTANT:
-
-            /* Resolve AML Constants here - AND ONLY HERE! */
-
-            switch (Opcode)
-            {
-            case AML_ZERO_OP:
-
-                ObjDesc->Integer.Value = 0;
-                break;
-
-            case AML_ONE_OP:
-
-                ObjDesc->Integer.Value = 1;
-                break;
-
-            case AML_ONES_OP:
-
-                ObjDesc->Integer.Value = ACPI_INTEGER_MAX;
-                break;
-
-            case AML_REVISION_OP:
-
-                ObjDesc->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
-                break;
-
-            case AML_DEBUG_OP:
-
-                /* Not really a constant, just return */
-
-                /* TBD: Perhaps this op should not be of type AML_TYPE_CONSTANT */
-
-                ObjDesc->Reference.Opcode = Opcode;
-                return_ACPI_STATUS (Status);
-
-            default:
-
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown constant opcode %X\n", Opcode));
-                Status = AE_AML_OPERAND_TYPE;
-                break;
-            }
-
-            /*
-             * All constants are integers.
-             * We mark the integer with a flag that indicates that it started life
-             * as a constant -- so that stores to constants will perform as expected (noop).
-             * (ZeroOp is used as a placeholder for optional target operands.)
-             */
-            ObjDesc->Common.Type  = ACPI_TYPE_INTEGER;
-            ObjDesc->Common.Flags = AOPOBJ_AML_CONSTANT;
-
-            /* Truncate value if we are executing from a 32-bit ACPI table */
-
-            AcpiExTruncateFor32bitTable (ObjDesc);
             break;
 
 
