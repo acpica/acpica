@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -264,7 +264,7 @@ Usage (
 void
 AslInitialize (void)
 {
-    UINT32              i;
+    UINT32                  i;
 
 
 #ifdef _DEBUG
@@ -301,11 +301,11 @@ AslInitialize (void)
 
 void
 AslCommandLine (
-    int                 argc,
-    char                **argv)
+    int                     argc,
+    char                    **argv)
 {
-    BOOLEAN             BadCommandLine = FALSE;
-    NATIVE_UINT         j;
+    BOOLEAN                 BadCommandLine = FALSE;
+    NATIVE_UINT             j;
 
 
     /* Minimum command line contains at least one option or an input file */
@@ -648,10 +648,11 @@ AslCommandLine (
 
 int ACPI_SYSTEM_XFACE
 main (
-    int                 argc,
-    char                **argv)
+    int                     argc,
+    char                    **argv)
 {
-    ACPI_STATUS         Status;
+    ACPI_STATUS             Status;
+    char                    *Prefix;
 
 
     /* Init and command line */
@@ -663,13 +664,16 @@ main (
      * If -p not specified, we will use the input filename as the
      * output filename prefix
      */
+    FlSplitInputPathname (Gbl_Files[ASL_FILE_INPUT].Filename,
+        &Gbl_DirectoryPath, &Prefix);
+
     if (Gbl_UseDefaultAmlFilename)
     {
-        Gbl_OutputFilenamePrefix = Gbl_Files[ASL_FILE_INPUT].Filename;
+        Gbl_OutputFilenamePrefix = Prefix;
     }
 
     /*
-     * AML Disassembly
+     * AML Disassembly (Optional)
      */
     if (Gbl_DisasmFlag || Gbl_GetAllTables)
     {
@@ -688,9 +692,12 @@ main (
             return -1;
         }
 
+        /* This is where the disassembly happens */
+
         AcpiGbl_DbOpt_disasm = TRUE;
         Status = AdAmlDisassemble (AslToFile, 
                         Gbl_Files[ASL_FILE_INPUT].Filename,
+                        Gbl_OutputFilenamePrefix,
                         &Gbl_Files[ASL_FILE_INPUT].Filename,
                         Gbl_GetAllTables);
         if (ACPI_FAILURE (Status))
@@ -698,10 +705,10 @@ main (
             return -1;
         }
 
-        Gbl_Files[ASL_FILE_INPUT].Filename =
-            FlGenerateFilename (Gbl_Files[ASL_FILE_INPUT].Filename,
-                FILE_SUFFIX_DISASSEMBLY);
-
+        /*
+         * Gbl_Files[ASL_FILE_INPUT].Filename was replaced with the
+         * .DSL disassembly file, which can now be compiled if requested
+         */
         if (DoCompile)
         {
             AcpiOsPrintf ("\nCompiling \"%s\"\n",
@@ -710,7 +717,7 @@ main (
     }
 
     /*
-     * ASL Compilation
+     * ASL Compilation (Optional)
      */
     if (DoCompile)
     {
@@ -718,9 +725,12 @@ main (
          * If -p not specified, we will use the input filename as the
          * output filename prefix
          */
+        FlSplitInputPathname (Gbl_Files[ASL_FILE_INPUT].Filename,
+            &Gbl_DirectoryPath, &Prefix);
+
         if (Gbl_UseDefaultAmlFilename)
         {
-            Gbl_OutputFilenamePrefix = Gbl_Files[ASL_FILE_INPUT].Filename;
+            Gbl_OutputFilenamePrefix = Prefix;
         }
 
         /* ACPI CA subsystem initialization (Must be re-initialized) */
