@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -284,7 +284,7 @@ AcpiPsGetNextWalkOp (
     }
 
 
-    /* 
+    /*
      * Got all the way to the top of the tree, we must be done!
      * However, the code should have terminated in the loop above
      */
