@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.56 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -128,7 +128,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exconfig")
+        ACPI_MODULE_NAME    ("exconfig")
 
 
 /*******************************************************************************
@@ -141,7 +141,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Common function to Install and Load an ACPI table with a 
+ * DESCRIPTION: Common function to Install and Load an ACPI table with a
  *              returned table handle.
  *
  ******************************************************************************/
@@ -157,9 +157,9 @@ AcpiExAddTable (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("ExAddTable");
- 
-    
+    ACPI_FUNCTION_TRACE ("ExAddTable");
+
+
     /* Create an object to be the table handle */
 
     ObjDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
@@ -233,10 +233,10 @@ AcpiExLoadTableOp (
     ACPI_OPERAND_OBJECT     *DdbHandle;
 
 
-    FUNCTION_TRACE ("ExLoadTableOp");
+    ACPI_FUNCTION_TRACE ("ExLoadTableOp");
 
 
-    /* 
+    /*
      * Make sure that the signature does not match one of the tables that
      * is already loaded.
      */
@@ -283,12 +283,12 @@ AcpiExLoadTableOp (
 
     if (Operand[3]->String.Length > 0)
     {
-        /* 
+        /*
          * Find the node referenced by the RootPathString.  This is the
          * location within the namespace where the table will be loaded.
          */
         Status = AcpiNsGetNodeByPath (Operand[3]->String.Pointer, StartNode,
-                                        NS_SEARCH_PARENT, &ParentNode);
+                                        ACPI_NS_SEARCH_PARENT, &ParentNode);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -313,7 +313,7 @@ AcpiExLoadTableOp (
          * Find the node referenced by the ParameterPathString
          */
         Status = AcpiNsGetNodeByPath (Operand[4]->String.Pointer, StartNode,
-                                        NS_SEARCH_PARENT, &ParameterNode);
+                                        ACPI_NS_SEARCH_PARENT, &ParameterNode);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -350,7 +350,7 @@ AcpiExLoadTableOp (
  *
  * FUNCTION:    AcpiExLoadOp
  *
- * PARAMETERS:  ObjDesc         - Region or Field where the table will be 
+ * PARAMETERS:  ObjDesc         - Region or Field where the table will be
  *                                obtained
  *              Target          - Where a handle to the table will be stored
  *              WalkState       - Current state
@@ -376,7 +376,7 @@ AcpiExLoadOp (
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("ExLoadOp");
+    ACPI_FUNCTION_TRACE ("ExLoadOp");
 
 
     /* Object can be either an OpRegion or a Field */
@@ -412,7 +412,7 @@ AcpiExLoadOp (
 
         /* Copy the header to the buffer */
 
-        MEMCPY (TablePtr, &TableHeader, sizeof (ACPI_TABLE_HEADER));
+        ACPI_MEMCPY (TablePtr, &TableHeader, sizeof (ACPI_TABLE_HEADER));
         TableDataPtr = ACPI_PTR_ADD (UINT8, TablePtr, sizeof (ACPI_TABLE_HEADER));
 
         /* Get the table from the op region */
@@ -448,7 +448,7 @@ AcpiExLoadOp (
         {
             goto Cleanup;
         }
- 
+
         TablePtr = (ACPI_TABLE_HEADER *) BufferDesc->Buffer.Pointer;
         break;
 
@@ -459,10 +459,10 @@ AcpiExLoadOp (
 
     /* The table must be either an SSDT or a PSDT */
 
-    if ((!STRNCMP (TablePtr->Signature,
+    if ((!ACPI_STRNCMP (TablePtr->Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].SigLength)) &&
-        (!STRNCMP (TablePtr->Signature,
+        (!ACPI_STRNCMP (TablePtr->Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].SigLength)))
     {
@@ -527,7 +527,7 @@ AcpiExUnloadTable (
     ACPI_TABLE_DESC         *TableInfo;
 
 
-    FUNCTION_TRACE ("ExUnloadTable");
+    ACPI_FUNCTION_TRACE ("ExUnloadTable");
 
 
     /*
