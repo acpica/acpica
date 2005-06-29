@@ -270,7 +270,7 @@ AmlDumpStackEntry (
     {
         /*  EntryDesc is valid  */
 
-        DEBUG_PRINT (ACPI_INFO, ("Entry %p - ", EntryDesc));
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpStackEntry: Entry %p - ", EntryDesc));
 
         switch (EntryDesc->ValType)
         {
