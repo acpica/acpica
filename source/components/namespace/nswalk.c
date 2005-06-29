@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: nswalk - Functions for walking the APCI namespace
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -132,22 +132,22 @@
  *
  * PARAMETERS:  Type            - Type of object to be searched for
  *              Parent          - Parent object whose children we are getting
- *              LastChild       - Previous child that was found.  
+ *              LastChild       - Previous child that was found.
  *                                The NEXT child will be returned
  *              RetHandle       - Where handle to the next object is placed
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Return the next peer object within the namespace.  If Handle is
- *              valid, Scope is ignored.  Otherwise, the first object within 
+ *              valid, Scope is ignored.  Otherwise, the first object within
  *              Scope is returned.
  *
  ******************************************************************************/
 
 NAME_TABLE_ENTRY *
 AcpiNsGetNextObject (
-    OBJECT_TYPE_INTERNAL    Type, 
-    NAME_TABLE_ENTRY        *Parent, 
+    OBJECT_TYPE_INTERNAL    Type,
+    NAME_TABLE_ENTRY        *Parent,
     NAME_TABLE_ENTRY        *Child)
 {
     NAME_TABLE_ENTRY        *ThisEntry;
@@ -217,7 +217,7 @@ AcpiNsGetNextObject (
  * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
  *              StartObject         - Handle in namespace where search begins
  *              MaxDepth            - Depth to which search is to reach
- *              UnlockBeforeCallback- Whether to unlock the NS before invoking the 
+ *              UnlockBeforeCallback- Whether to unlock the NS before invoking the
  *                                    callback routine
  *              UserFunction        - Called when an object of "Type" is found
  *              Context             - Passed to user function
@@ -233,21 +233,21 @@ AcpiNsGetNextObject (
  *              value is returned to the caller.
  *
  *              The point of this procedure is to provide a generic namespace
- *              walk routine that can be called from multiple places to 
+ *              walk routine that can be called from multiple places to
  *              provide multiple services;  the User Function can be tailored
- *              to each task, whether it is a print function, a compare 
+ *              to each task, whether it is a print function, a compare
  *              function, etc.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsWalkNamespace (
-    OBJECT_TYPE_INTERNAL    Type, 
-    ACPI_HANDLE             StartObject, 
+    OBJECT_TYPE_INTERNAL    Type,
+    ACPI_HANDLE             StartObject,
     UINT32                  MaxDepth,
     BOOLEAN                 UnlockBeforeCallback,
-    WALK_CALLBACK           UserFunction, 
-    void                    *Context, 
+    WALK_CALLBACK           UserFunction,
+    void                    *Context,
     void                    **ReturnValue)
 {
     ACPI_STATUS             Status;
@@ -274,9 +274,9 @@ AcpiNsWalkNamespace (
     ChildType       = ACPI_TYPE_ANY;
     Level           = 1;
 
-    /* 
+    /*
      * Traverse the tree of objects until we bubble back up to where we
-     * started. When Level is zero, the loop is done because we have 
+     * started. When Level is zero, the loop is done because we have
      * bubbled up to (and passed) the original parent handle (StartHandle)
      */
 
@@ -328,7 +328,7 @@ AcpiNsWalkNamespace (
                 }
             }
 
-            /* 
+            /*
              * Depth first search:
              * Attempt to go down another level in the namespace if we are allowed to.
              * Don't go any further if we have reached the caller specified maximum depth
@@ -350,8 +350,8 @@ AcpiNsWalkNamespace (
 
         else
         {
-            /* 
-             * No more children in this object (AcpiNsGetNextObject failed), 
+            /*
+             * No more children in this object (AcpiNsGetNextObject failed),
              * go back upwards in the namespace tree to the object's parent.
              */
             Level--;

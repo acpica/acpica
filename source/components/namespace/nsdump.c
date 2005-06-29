@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: nsdump - table dumping routines for debug
  *
  *****************************************************************************/
@@ -39,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -132,7 +132,7 @@
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNsDumpPathname   
+ * FUNCTION:    AcpiNsDumpPathname
  *
  * PARAMETERS:  Handle              - Object
  *              Msg                 - Prefix message
@@ -146,15 +146,15 @@
 
 ACPI_STATUS
 AcpiNsDumpPathname (
-    ACPI_HANDLE             Handle, 
-    char                    *Msg, 
-    UINT32                  Level, 
+    ACPI_HANDLE             Handle,
+    char                    *Msg,
+    UINT32                  Level,
     UINT32                  Component)
 {
     char                    *Buffer;
     UINT32                  Length;
 
-    
+
     FUNCTION_TRACE ("NsDumpPathname");
 
     /* Do this only if the requested debug level and component are enabled */
@@ -186,7 +186,7 @@ AcpiNsDumpPathname (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNsDumpOneObject   
+ * FUNCTION:    AcpiNsDumpOneObject
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              Level               - Nesting level of the handle
@@ -199,8 +199,8 @@ AcpiNsDumpPathname (
 
 ACPI_STATUS
 AcpiNsDumpOneObject (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
     void                    *Context,
     void                    **ReturnValue)
 {
@@ -229,7 +229,7 @@ AcpiNsDumpOneObject (
     {
         return AE_OK;
     }
-    
+
     if (!ObjHandle)
     {
         DEBUG_PRINT (ACPI_INFO, ("Null object handle\n"));
@@ -255,7 +255,7 @@ AcpiNsDumpOneObject (
         if (LevelTmp)
         {
             if (DownstreamSiblingMask & WhichBit)
-            {    
+            {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("|"));
             }
 
@@ -263,10 +263,10 @@ AcpiNsDumpOneObject (
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, (" "));
             }
-        
+
             WhichBit <<= 1;
         }
-    
+
         else
         {
             if (AcpiNsExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
@@ -285,13 +285,13 @@ AcpiNsDumpOneObject (
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("-"));
             }
-        
+
             else if (AcpiNsExistDownstreamSibling (ThisEntry->Scope, NS_TABLE_SIZE,
                                                 NEXTSEG (ThisEntry->Scope)))
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
             }
-        
+
             else
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("-"));
@@ -306,7 +306,7 @@ AcpiNsDumpOneObject (
     {
         Type = INTERNAL_TYPE_DEF_ANY;                                /* prints as *ERROR* */
     }
-    
+
     if (!AcpiCmValidAcpiName (ThisEntry->Name))
     {
         REPORT_WARNING ("Invalid Name");
@@ -334,16 +334,16 @@ AcpiNsDumpOneObject (
     case ACPI_TYPE_METHOD:
 
         /* Name is a Method and its AML offset/length are set */
-        
+
         DEBUG_PRINT_RAW (TRACE_TABLES, (" M:%p-%X\n",
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Pcode,
-                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.PcodeLength));                
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.PcodeLength));
 
         break;
-    
+
 
     case ACPI_TYPE_NUMBER:
- 
+
         DEBUG_PRINT_RAW (TRACE_TABLES, (" N:%X\n",
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Number.Value));
         break;
@@ -370,7 +370,7 @@ AcpiNsDumpOneObject (
         DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
         break;
     }
-  
+
     /* If debug turned off, done */
 
     if (!(DebugLevel & TRACE_VALUES))
@@ -419,7 +419,7 @@ AcpiNsDumpOneObject (
 
             else
             {
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [%s])\n", 
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [%s])\n",
                                     ObjType, AcpiCmGetTypeName (ObjType)));
                 BytesToDump = ObjDesc->Common.Size;
             }
@@ -441,7 +441,7 @@ AcpiNsDumpOneObject (
             goto Cleanup;
         }
 
-        /* 
+        /*
          * Valid object, get the pointer to next level, if any
          */
         switch (ObjType)
@@ -493,7 +493,7 @@ Cleanup:
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNsDumpObjects 
+ * FUNCTION:    AcpiNsDumpObjects
  *
  * PARAMETERS:  Type                - Object type to be dumped
  *              MaxDepth            - Maximum depth of dump.  Use ACPI_UINT32_MAX
@@ -509,8 +509,8 @@ Cleanup:
 
 void
 AcpiNsDumpObjects (
-    OBJECT_TYPE_INTERNAL    Type, 
-    UINT32                  MaxDepth, 
+    OBJECT_TYPE_INTERNAL    Type,
+    UINT32                  MaxDepth,
     UINT32                  OwnerId,
     ACPI_HANDLE             StartHandle)
 {
@@ -520,14 +520,14 @@ AcpiNsDumpObjects (
     Info.DebugLevel = TRACE_TABLES;
     Info.OwnerId = OwnerId;
 
-    AcpiNsWalkNamespace (Type, StartHandle, MaxDepth, NS_WALK_NO_UNLOCK, AcpiNsDumpOneObject, 
+    AcpiNsWalkNamespace (Type, StartHandle, MaxDepth, NS_WALK_NO_UNLOCK, AcpiNsDumpOneObject,
                         (void *) &Info, NULL);
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNsDumpOneDevice   
+ * FUNCTION:    AcpiNsDumpOneDevice
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              Level               - Nesting level of the handle
@@ -540,8 +540,8 @@ AcpiNsDumpObjects (
 
 ACPI_STATUS
 AcpiNsDumpOneDevice (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
     void                    *Context,
     void                    **ReturnValue)
 {
@@ -571,7 +571,7 @@ AcpiNsDumpOneDevice (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNsDumpRootDevices   
+ * FUNCTION:    AcpiNsDumpRootDevices
  *
  * PARAMETERS:  None
  *
@@ -595,13 +595,13 @@ AcpiNsDumpRootDevices (void)
     AcpiGetHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
-    AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, ACPI_INT32_MAX, NS_WALK_NO_UNLOCK, 
+    AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, ACPI_INT32_MAX, NS_WALK_NO_UNLOCK,
                         AcpiNsDumpOneDevice, NULL, NULL);
 }
 
 
 /****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiNsDumpTables
  *
  * PARAMETERS:  SearchBase          - Root of subtree to be dumped, or
@@ -615,7 +615,7 @@ AcpiNsDumpRootDevices (void)
 
 void
 AcpiNsDumpTables (
-    ACPI_HANDLE             SearchBase, 
+    ACPI_HANDLE             SearchBase,
     INT32                   MaxDepth)
 {
     ACPI_HANDLE             SearchHandle = SearchBase;
@@ -625,8 +625,8 @@ AcpiNsDumpTables (
 
 
     if (!Acpi_GblRootObject->Scope)
-    {      
-        /* 
+    {
+        /*
          * If the name space has not been initialized,
          * there is nothing to dump.
          */
@@ -650,7 +650,7 @@ AcpiNsDumpTables (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNsDumpEntry    
+ * FUNCTION:    AcpiNsDumpEntry
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              DebugLevel          - Output level
@@ -673,10 +673,10 @@ AcpiNsDumpEntry (
     Info.OwnerId = ACPI_UINT32_MAX;
 
     AcpiNsDumpOneObject (Handle, 1, &Info, NULL);
-    
+
     DEBUG_PRINT (TRACE_EXEC, ("leave AcpiNsDumpEntry %p\n", Handle));
     return_VOID;
 }
 
 #endif
- 
+

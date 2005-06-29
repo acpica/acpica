@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
  *
@@ -39,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -88,7 +88,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -138,9 +138,9 @@
  *              *Pathname           - Name of method to execute, If NULL, the
  *                                    handle is the object to execute
  *              **Params            - List of parameters to pass to the method,
- *                                    terminated by NULL.  Params itself may be 
+ *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
- *              *ReturnObject       - Where to put method's return value (if 
+ *              *ReturnObject       - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
  *
  * RETURN:      Status
@@ -154,8 +154,8 @@
 
 ACPI_STATUS
 AcpiNsEvaluateRelative (
-    NAME_TABLE_ENTRY        *Handle, 
-    char                    *Pathname, 
+    NAME_TABLE_ENTRY        *Handle,
+    char                    *Pathname,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
@@ -172,7 +172,7 @@ AcpiNsEvaluateRelative (
     /*
      * Must have a valid object handle
      */
-    if (!Handle) 
+    if (!Handle)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -200,7 +200,7 @@ AcpiNsEvaluateRelative (
     /* Lookup the name in the namespace */
 
     ScopeInfo.Scope.Entry = RelObjEntry->Scope;
-    Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE, 
+    Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
                                 NS_NO_UPSEARCH, NULL, &ObjEntry);
     AcpiCmReleaseMutex (MTX_NAMESPACE);
 
@@ -239,12 +239,12 @@ Cleanup:
  * FUNCTION:    AcpiNsEvaluateByName
  *
  * PARAMETERS:  Pathname            - Fully qualified pathname to the object
- *              *ReturnObject       - Where to put method's return value (if 
+ *              *ReturnObject       - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
  *              **Params            - List of parameters to pass to the method,
- *                                    terminated by NULL.  Params itself may be 
+ *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
- *                                    
+ *
  * RETURN:      Status
  *
  * DESCRIPTION: Find and execute the requested method passing the given
@@ -256,7 +256,7 @@ Cleanup:
 
 ACPI_STATUS
 AcpiNsEvaluateByName (
-    char                    *Pathname, 
+    char                    *Pathname,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
@@ -264,7 +264,7 @@ AcpiNsEvaluateByName (
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
     char                    *InternalPath = NULL;
 
-    
+
     FUNCTION_TRACE ("NsEvaluateByName");
 
 
@@ -283,7 +283,7 @@ AcpiNsEvaluateByName (
 
     /* Lookup the name in the namespace */
 
-    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE, 
+    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
                                 NS_NO_UPSEARCH, NULL, &ObjEntry);
     AcpiCmReleaseMutex (MTX_NAMESPACE);
 
@@ -326,10 +326,10 @@ Cleanup:
  * FUNCTION:    AcpiNsEvaluateByHandle
  *
  * PARAMETERS:  ObjEntry            - NTE of method to execute
- *              *ReturnObject       - Where to put method's return value (if 
+ *              *ReturnObject       - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
  *              **Params            - List of parameters to pass to the method,
- *                                    terminated by NULL.  Params itself may be 
+ *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
  *
  * RETURN:      Status
@@ -342,11 +342,11 @@ Cleanup:
 
 ACPI_STATUS
 AcpiNsEvaluateByHandle (
-    NAME_TABLE_ENTRY        *Handle, 
+    NAME_TABLE_ENTRY        *Handle,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
-    NAME_TABLE_ENTRY        *ObjEntry; 
+    NAME_TABLE_ENTRY        *ObjEntry;
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *LocalReturnObject;
 
@@ -406,18 +406,18 @@ AcpiNsEvaluateByHandle (
     else
     {
         /* Case 2) Object is NOT a method, just return its current value */
-    
+
         Status = AcpiNsGetObjectValue (ObjEntry, &LocalReturnObject);
     }
 
 
     /*
-     * Check if there is a return value on the stack that must be dealt with 
+     * Check if there is a return value on the stack that must be dealt with
      */
 
     if (Status == AE_CTRL_RETURN_VALUE)
     {
-        /* 
+        /*
          * If the Method returned a value and the caller provided a place
          * to store a returned value, Copy the returned value to the object
          * descriptor provided by the caller.
@@ -457,7 +457,7 @@ UnlockAndExit:
  *
  * PARAMETERS:  MethodEntry         - The Nte of the object/method
  *              **Params            - List of parameters to pass to the method,
- *                                    terminated by NULL.  Params itself may be 
+ *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
  *
  * RETURN:      Status
@@ -470,7 +470,7 @@ UnlockAndExit:
 
 ACPI_STATUS
 AcpiNsExecuteControlMethod (
-    NAME_TABLE_ENTRY        *MethodEntry, 
+    NAME_TABLE_ENTRY        *MethodEntry,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
@@ -490,7 +490,7 @@ AcpiNsExecuteControlMethod (
         return_ACPI_STATUS (AE_ERROR);
     }
 
-    /* 
+    /*
      * Valid method, Set the current scope to that of the Method, and execute it.
      */
 
@@ -498,13 +498,13 @@ AcpiNsExecuteControlMethod (
                     ObjDesc->Method.Pcode + 1,
                     ObjDesc->Method.PcodeLength - 1));
 
-    DUMP_PATHNAME (MethodEntry, "NsExecuteControlMethod: Executing", 
+    DUMP_PATHNAME (MethodEntry, "NsExecuteControlMethod: Executing",
                     TRACE_NAMES, _COMPONENT);
 
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n", ObjDesc->Method.Pcode + 1));
 
-   
-    /* 
+
+    /*
      * Unlock the namespace before execution.  This allows namespace access
      * via the external Acpi* interfaces while a method is being executed.
      * However, any namespace deletion must acquire both the namespace and
@@ -514,7 +514,7 @@ AcpiNsExecuteControlMethod (
 
     AcpiCmReleaseMutex (MTX_NAMESPACE);
 
-    /* 
+    /*
      * Excecute the method via the interpreter
      */
     Status = AcpiAmlExecuteMethod (MethodEntry, Params, ReturnObjDesc);
@@ -555,7 +555,7 @@ AcpiNsGetObjectValue (
      */
 
     if ((ObjectEntry->Type == ACPI_TYPE_PROCESSOR) ||
-        (ObjectEntry->Type == ACPI_TYPE_POWER)) 
+        (ObjectEntry->Type == ACPI_TYPE_POWER))
     {
 
         /*
@@ -585,14 +585,14 @@ AcpiNsGetObjectValue (
 
         MEMCPY (&ObjDesc->Common.FirstNonCommonByte, &ValDesc->Common.FirstNonCommonByte,
                 (sizeof(ACPI_OBJECT_COMMON) - sizeof(ObjDesc->Common.FirstNonCommonByte)));
-    } 
-    
+    }
+ 
 
     /*
      * Other objects require a reference object wrapper which we then attempt to resolve.
      */
-    else 
-    {       
+    else
+    {
         /* Create an Reference object to contain the object */
 
         ObjDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_REFERENCE);
@@ -607,15 +607,15 @@ AcpiNsGetObjectValue (
         ObjDesc->Reference.OpCode  = (UINT8) AML_NAME_OP;
         ObjDesc->Reference.Object  = (void *) ObjectEntry;
 
-        /* 
-         * Use AcpiAmlResolveToValue() to get the associated value.  The call to AcpiAmlResolveToValue causes 
+        /*
+         * Use AcpiAmlResolveToValue() to get the associated value.  The call to AcpiAmlResolveToValue causes
          * ObjDesc (allocated above) to always be deleted.
          */
 
         Status = AcpiAmlResolveToValue (&ObjDesc);
     }
 
-    /* 
+    /*
      * If AcpiAmlResolveToValue() succeeded, the return value was placed in ObjDesc.
      */
 

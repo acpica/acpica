@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: nsutils - Utilities for accessing ACPI namespace
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -261,7 +261,7 @@ AcpiNsInternalizeName (
     FUNCTION_TRACE ("NsInternalizeName");
 
 
-    if ((!ExternalName)      || 
+    if ((!ExternalName)      ||
         (*ExternalName == 0) ||
         (!ConvertedName))
     {
@@ -269,9 +269,9 @@ AcpiNsInternalizeName (
     }
 
 
-    /* 
-     * For the internal name, the required length is 4 bytes per segment, 
-     * plus 1 each for RootPrefix, MultiNamePrefixOp, segment count, trailing null 
+    /*
+     * For the internal name, the required length is 4 bytes per segment,
+     * plus 1 each for RootPrefix, MultiNamePrefixOp, segment count, trailing null
      * (which is not really needed, but no there's harm in putting it there)
      *
      * strlen() + 1 covers the first NameSeg, which has no path separator
@@ -284,13 +284,13 @@ AcpiNsInternalizeName (
     }
 
 
-    /* 
+    /*
      * Determine the number of ACPI name "segments" by counting the number
      * of path separators within the string.  Start with one segment since
      * the segment count is (# separators) + 1, and zero separators is ok.
      */
 
-    NumSegments = 1;    
+    NumSegments = 1;
     for (i = 0; ExternalName[i]; i++)
     {
         if (AcpiNsValidPathSeparator (ExternalName[i]))
@@ -366,7 +366,7 @@ AcpiNsInternalizeName (
         Result += ACPI_NAME_SIZE;
     }
 
-    
+
     /* Return the completed name */
 
     *Result = 0;                     /* Terminate the string! */
@@ -375,13 +375,13 @@ AcpiNsInternalizeName (
 
     if (FullyQualified)
     {
-        DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (abs) \"\\%s\"\n", 
-                                InternalName, &InternalName[3])); 
+        DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (abs) \"\\%s\"\n",
+                                InternalName, &InternalName[3]));
     }
     else
     {
-        DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (rel) \"%s\"\n", 
-                                InternalName, &InternalName[2])); 
+        DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (rel) \"%s\"\n",
+                                InternalName, &InternalName[2]));
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -450,7 +450,7 @@ AcpiNsExternalizeName (
     }
 
     /*
-     * Check for object names.  Note that there could be 0-255 of these 
+     * Check for object names.  Note that there could be 0-255 of these
      * 4-byte elements.
      */
     if (PrefixLength < InternalNameLength)
@@ -491,9 +491,9 @@ AcpiNsExternalizeName (
         }
     }
 
-    /* 
+    /*
      * Calculate the length of ConvertedName, which equals the length
-     * of the prefix, length of all object names, length of any required 
+     * of the prefix, length of all object names, length of any required
      * punctuation ('.') between object names, plus the NULL terminator.
      */
     *ConvertedNameLength = PrefixLength + (4 * NamesCount) + ((NamesCount > 0) ? (NamesCount - 1) : 0) + 1;
@@ -501,14 +501,14 @@ AcpiNsExternalizeName (
     /*
      * Check to see if we're still in bounds.  If not, there's a problem
      * with InternalName (invalid format).
-     */ 
+     */
     if (*ConvertedNameLength > InternalNameLength)
     {
         REPORT_ERROR ("NsExternalizeName: Invalid internal name.\n");
         return_ACPI_STATUS (AE_BAD_PATHNAME);
     }
 
-    /* 
+    /*
      * Build ConvertedName...
      */
 
@@ -562,9 +562,9 @@ AcpiNsConvertHandleToEntry (
     ACPI_HANDLE             Handle)
 {
 
-    /* 
+    /*
      * Simple implementation for now;
-     * TBD: [Future] Real integer handles allow for more verification 
+     * TBD: [Future] Real integer handles allow for more verification
      * and keep all pointers within this subsystem!
      */
 
@@ -607,9 +607,9 @@ AcpiNsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
 {
 
 
-    /* 
+    /*
      * Simple implementation for now;
-     * TBD: [Future] Real integer handles allow for more verification 
+     * TBD: [Future] Real integer handles allow for more verification
      * and keep all pointers within this subsystem!
      */
 
@@ -617,7 +617,7 @@ AcpiNsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
 
 
 /* ---------------------------------------------------
- 
+
     if (!Nte)
     {
         return NULL;
@@ -683,8 +683,8 @@ AcpiNsTerminate (void)
     DEBUG_PRINT (ACPI_INFO, ("NsTerminate: Namespace freed\n"));
 
 
-    /* 
-     * 2) Now we can delete the ACPI tables 
+    /*
+     * 2) Now we can delete the ACPI tables
      */
 
     AcpiTbDeleteAcpiTables ();
@@ -694,5 +694,5 @@ AcpiNsTerminate (void)
     return_VOID;
 }
 
- 
+
 

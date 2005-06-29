@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: nsapinam - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
  *
@@ -39,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -175,7 +175,7 @@ AcpiLoadNamespace (
         return_ACPI_STATUS (Status);
     }
 
-    /* 
+    /*
      * Load the namespace.  The DSDT is required,
      * but the SSDT and PSDT tables are optional.
      */
@@ -192,7 +192,7 @@ AcpiLoadNamespace (
     AcpiNsLoadTableByType (TABLE_PSDT);
 
 
-    DEBUG_PRINT_RAW (ACPI_OK, ("ACPI Namespace successfully loaded at root 0x%p\n", 
+    DEBUG_PRINT_RAW (ACPI_OK, ("ACPI Namespace successfully loaded at root 0x%p\n",
                     Acpi_GblRootObject->Scope));
 
 
@@ -217,15 +217,15 @@ AcpiLoadNamespace (
  *
  * DESCRIPTION: This routine will search for a caller specified name in the
  *              name space.  The caller can restrict the search region by
- *              specifying a non NULL parent.  The parent value is itself a 
- *              namespace handle. 
+ *              specifying a non NULL parent.  The parent value is itself a
+ *              namespace handle.
  *
  ******************************************************************************/
 
-ACPI_STATUS 
+ACPI_STATUS
 AcpiGetHandle (
-    ACPI_HANDLE             Parent, 
-    ACPI_STRING             Pathname, 
+    ACPI_HANDLE             Parent,
+    ACPI_STRING             Pathname,
     ACPI_HANDLE             *RetHandle)
 {
     ACPI_STATUS             Status;
@@ -239,12 +239,12 @@ AcpiGetHandle (
     }
 
     if (Parent)
-    {   
+    {
         AcpiCmAcquireMutex (MTX_NAMESPACE);
-        
+
         ThisEntry = AcpiNsConvertHandleToEntry (Parent);
         if (!ThisEntry)
-        {   
+        {
             AcpiCmReleaseMutex (MTX_NAMESPACE);
             return AE_BAD_PARAMETER;
         }
@@ -285,14 +285,14 @@ AcpiGetHandle (
  * RETURN:      Pointer to a string containing the fully qualified Name.
  *
  * DESCRIPTION: This routine returns the fully qualified name associated with
- *              the Handle parameter.  This and the AcpiPathnameToHandle are 
+ *              the Handle parameter.  This and the AcpiPathnameToHandle are
  *              complementary functions.
  *
  ******************************************************************************/
 
-ACPI_STATUS 
+ACPI_STATUS
 AcpiGetName (
-    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             Handle,
     UINT32                  NameType,
     ACPI_BUFFER             *RetPathPtr)
 {
@@ -323,9 +323,9 @@ AcpiGetName (
         return Status;
     }
 
-    /* 
-     * Wants the single segment ACPI name.  
-     * Validate handle and convert to an NTE 
+    /*
+     * Wants the single segment ACPI name.
+     * Validate handle and convert to an NTE
      */
 
     AcpiCmAcquireMutex (MTX_NAMESPACE);
@@ -375,7 +375,7 @@ UnlockAndExit:
 
 ACPI_STATUS
 AcpiGetObjectInfo (
-    ACPI_HANDLE             Device, 
+    ACPI_HANDLE             Device,
     ACPI_DEVICE_INFO        *Info)
 {
     DEVICE_ID               Hid;
@@ -455,9 +455,9 @@ AcpiGetObjectInfo (
         Info->Valid |= ACPI_VALID_UID;
     }
 
-    /* 
+    /*
      * Execute the _STA method and save the result
-     * _STA is not always present 
+     * _STA is not always present
      */
 
     Status = AcpiCmExecute_STA (DeviceEntry, &DeviceStatus);
@@ -467,7 +467,7 @@ AcpiGetObjectInfo (
         Info->Valid |= ACPI_VALID_STA;
     }
 
-    /* 
+    /*
      * Execute the _ADR method and save result if successful
      * _ADR is not always present
      */

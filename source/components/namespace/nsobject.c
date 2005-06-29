@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: nsobject - Utilities for objects attached to namespace table entries
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -138,7 +138,7 @@
  *              Type                - Type of object, or ACPI_TYPE_ANY if not known
  *
  * DESCRIPTION: Record the given object as the value associated with the
- *              name whose ACPI_HANDLE is passed.  If Object is NULL 
+ *              name whose ACPI_HANDLE is passed.  If Object is NULL
  *              and Type is ACPI_TYPE_ANY, set the name as having no value.
  *
  * MUTEX:       Assumes namespace is locked
@@ -147,8 +147,8 @@
 
 ACPI_STATUS
 AcpiNsAttachObject (
-    ACPI_HANDLE             Handle, 
-    ACPI_HANDLE             Object, 
+    ACPI_HANDLE             Handle,
+    ACPI_HANDLE             Object,
     OBJECT_TYPE_INTERNAL    Type)
 {
     NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) Handle;
@@ -173,7 +173,7 @@ AcpiNsAttachObject (
         REPORT_ERROR ("NsAttachObject: Name space not initialized");
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
-    
+
     if (!Handle)
     {
         /* Invalid handle */
@@ -181,7 +181,7 @@ AcpiNsAttachObject (
         REPORT_ERROR ("NsAttachObject: Null name handle");
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
     if (!Object && (ACPI_TYPE_ANY != Type))
     {
         /* Null object */
@@ -189,7 +189,7 @@ AcpiNsAttachObject (
         REPORT_ERROR ("NsAttachObject: Null object, but type not ACPI_TYPE_ANY");
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
     if (!VALID_DESCRIPTOR_TYPE (Handle, DESC_TYPE_NTE))
     {
         /* Not a name handle */
@@ -204,7 +204,7 @@ AcpiNsAttachObject (
     {
         DEBUG_PRINT (TRACE_EXEC,("NsAttachObject: Obj %p already installed in NTE %p\n",
                         Object, Handle));
-    
+
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -224,14 +224,14 @@ AcpiNsAttachObject (
     }
 
     /*
-     * If the object is an NTE with an attached object, 
+     * If the object is an NTE with an attached object,
      * we will use that (attached) object
      */
 
-    else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE) && 
+    else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE) &&
             ((NAME_TABLE_ENTRY *) Object)->Object)
     {
-        /* 
+        /*
          * Value passed is a name handle and that name has a non-null value.
          * Use that name's value and type.
          */
@@ -266,7 +266,7 @@ AcpiNsAttachObject (
             ObjType = Type;
         }
 
-    
+
         /* Type is TYPE_Any, we must try to determinte the actual type of the object */
 
         /*
@@ -275,7 +275,7 @@ AcpiNsAttachObject (
         else if (AcpiTbSystemTablePointer (Object))
         {
             /* Object points into the AML stream.  Set a flag bit in the NTE to indicate this */
-    
+
             Flags |= NTE_AML_ATTACHMENT;
 
             /* The next byte (perhaps the next two bytes) will be the AML opcode */
@@ -293,12 +293,12 @@ AcpiNsAttachObject (
                 if (Opcode != AML_REVISION_OP)
                 {
                     /* OpPrefix is unrecognized unless part of RevisionOp */
-            
+
                     break;
                 }
 
                 /* Else fall through to set type as Number */
-    
+
 
             case AML_ZERO_OP: case AML_ONES_OP: case AML_ONE_OP:
             case AML_BYTE_OP: case AML_WORD_OP: case AML_DWORD_OP:
@@ -342,14 +342,14 @@ AcpiNsAttachObject (
 
         else
         {
-            /* 
+            /*
              * Cannot figure out the type -- set to DefAny which will print as an
              * error in the name table dump
              */
 
             if (GetDebugLevel () > 0)
             {
-                DUMP_PATHNAME (Handle, "NsAttachObject confused: setting bogus type for  ", 
+                DUMP_PATHNAME (Handle, "NsAttachObject confused: setting bogus type for  ",
                                 ACPI_INFO, _COMPONENT);
 
                 if (AcpiTbSystemTablePointer (Object))
@@ -357,12 +357,12 @@ AcpiNsAttachObject (
                     DEBUG_PRINT (ACPI_INFO,
                                 ("AML-stream code %02x\n", *(UINT8 *) Object));
                 }
-        
+
                 else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
                 {
                     DUMP_PATHNAME (Object, "name ", ACPI_INFO, _COMPONENT);
                 }
-        
+
                 else
                 {
                     DUMP_PATHNAME (Object, "object ", ACPI_INFO, _COMPONENT);
@@ -378,7 +378,7 @@ AcpiNsAttachObject (
 
     DEBUG_PRINT (TRACE_EXEC,("NsAttachObject: Installing obj %p into NTE %p\n",
                     ObjDesc, Handle));
-    
+
 
     /* Must increment the new value's reference count (if it is an internal object) */
 
@@ -395,8 +395,8 @@ AcpiNsAttachObject (
     ThisEntry->Flags    = Flags;
 
 
-    /* 
-     * Delete an existing attached object. 
+    /*
+     * Delete an existing attached object.
      */
 
     if (PreviousObjDesc)
@@ -426,8 +426,8 @@ AcpiNsAttachObject (
 
 ACPI_STATUS
 AcpiNsAttachMethod (
-    ACPI_HANDLE             Handle, 
-    UINT8                   *PcodeAddr, 
+    ACPI_HANDLE             Handle,
+    UINT8                   *PcodeAddr,
     UINT32                  PcodeLength)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -447,7 +447,7 @@ AcpiNsAttachMethod (
         REPORT_ERROR ("NsAttachMethod: name space uninitialized");
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
-    
+
     if (!Handle)
     {
         /* Null name handle */
@@ -456,7 +456,7 @@ AcpiNsAttachMethod (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    
+
     /* Allocate a method descriptor */
 
     ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_METHOD);
@@ -481,7 +481,7 @@ AcpiNsAttachMethod (
     ThisEntry->Object = ObjDesc;
 
 
-    /* 
+    /*
      * Delete an existing object.  Don't try to re-use in case it is shared
      */
     if (PreviousObjDesc)
@@ -520,7 +520,7 @@ AcpiNsDetachObject (
     NAME_TABLE_ENTRY        *Entry = Object;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
 
-    
+
     FUNCTION_TRACE ("NsDetachObject");
 
     ObjDesc = Entry->Object;
@@ -532,10 +532,10 @@ AcpiNsDetachObject (
     /* Clear the entry in all cases */
 
     Entry->Object = NULL;
-    
+
     /* Found a valid value */
 
-    DEBUG_PRINT (ACPI_INFO, ("NsDetachObject: Object=%p Value=%p Name %4.4s\n", 
+    DEBUG_PRINT (ACPI_INFO, ("NsDetachObject: Object=%p Value=%p Name %4.4s\n",
                             Entry, ObjDesc, &Entry->Name));
 
     /* Not every value is an object allocated via AcpiCmCallocate, must check */
@@ -581,7 +581,7 @@ AcpiNsGetAttachedObject (
 
 
 /****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiNsCompareObject
  *
  * PARAMETERS:  ObjHandle           - A namespace entry
@@ -598,8 +598,8 @@ AcpiNsGetAttachedObject (
 
 ACPI_STATUS
 AcpiNsCompareObject (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
     void                    *ObjDesc,
     void                    **ReturnValue)
 {
@@ -641,8 +641,8 @@ AcpiNsCompareObject (
 
 ACPI_HANDLE
 AcpiNsFindAttachedObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc, 
-    ACPI_HANDLE             StartHandle, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_HANDLE             StartHandle,
     INT32                   MaxDepth)
 {
     ACPI_HANDLE             RetObject;
@@ -666,7 +666,7 @@ AcpiNsFindAttachedObject (
 
     if (!Acpi_GblRootObject->Scope)
     {
-        /* 
+        /*
          * If the name space has not been initialized,
          * there surely are no matching values.
          */
@@ -677,10 +677,10 @@ AcpiNsFindAttachedObject (
     {
         StartHandle = Acpi_GblRootObject;
     }
-    
+
     else
     {
-        /* 
+        /*
          * If base is not the root and has no children,
          * there is nothing to search.
          */
@@ -688,12 +688,12 @@ AcpiNsFindAttachedObject (
     }
 
 
-    /* 
+    /*
      * Walk namespace until a match is found.
      * Either the matching object is returned, or NULL in case
      * of no match.
      */
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, StartHandle, MaxDepth, NS_WALK_NO_UNLOCK, AcpiNsCompareObject, 
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, StartHandle, MaxDepth, NS_WALK_NO_UNLOCK, AcpiNsCompareObject,
                                 ObjDesc, &RetObject);
     if (ACPI_FAILURE (Status))
     {

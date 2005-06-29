@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: nsnames - Name manipulation and search
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -126,7 +126,7 @@
         MODULE_NAME         ("nsnames");
 
 
-        
+
 /****************************************************************************
  *
  * FUNCTION:    AcpiNsNameOfScope
@@ -158,7 +158,7 @@ AcpiNsNameOfScope (
 
     if (!Acpi_GblRootObject->Scope || !EntryToSearch)
     {
-        /* 
+        /*
          * If the name space has not been initialized,
          * this function should not have been called.
          */
@@ -166,7 +166,7 @@ AcpiNsNameOfScope (
     }
 
     /* Calculate required buffer size based on depth below root NT */
-    
+
     for (Size = 1, Temp = EntryToSearch;
             Temp->ParentEntry;
             Temp = Temp->ParentEntry)
@@ -183,10 +183,10 @@ AcpiNsNameOfScope (
         REPORT_ERROR ("NsNameOfScope: allocation failure");
         return_PTR (NULL);
     }
-    
+
 
     /* Store terminator byte, then build name backwards */
-    
+
     NameBuffer[Size] = '\0';
     while ((Size > ACPI_NAME_SIZE) && EntryToSearch->ParentEntry)
     {
@@ -235,7 +235,7 @@ AcpiNsNameOfCurrentScope (
         ScopeName = AcpiNsNameOfScope (WalkState->ScopeInfo->Scope.Entry);
         return_PTR (ScopeName);
     }
-    
+
     REPORT_ERROR ("Current scope pointer is invalid");
 
     return_PTR (NULL);
@@ -247,7 +247,7 @@ AcpiNsNameOfCurrentScope (
  * FUNCTION:    AcpiNsHandleToPathname
  *
  * PARAMETERS:  TargetHandle            - Handle of nte whose name is to be found
- *              BufSize                 - Size of the buffer provided 
+ *              BufSize                 - Size of the buffer provided
  *              UserBuffer              - Where the pathname is returned
  *
  * RETURN:      Status, Buffer is filled with pathname if status == AE_OK
@@ -260,8 +260,8 @@ AcpiNsNameOfCurrentScope (
 
 ACPI_STATUS
 AcpiNsHandleToPathname (
-    ACPI_HANDLE             TargetHandle, 
-    UINT32                  *BufSize, 
+    ACPI_HANDLE             TargetHandle,
+    UINT32                  *BufSize,
     char                    *UserBuffer)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -279,7 +279,7 @@ AcpiNsHandleToPathname (
 
     if (!Acpi_GblRootObject->Scope || !TargetHandle)
     {
-        /* 
+        /*
          * If the name space has not been initialized,
          * this function should not have been called.
          */
@@ -299,7 +299,7 @@ AcpiNsHandleToPathname (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* 
+    /*
      * Compute length of pathname as 5 * number of name segments.
      * Go back up the parent tree to the root
      */
@@ -323,9 +323,9 @@ AcpiNsHandleToPathname (
         Status = AE_BUFFER_OVERFLOW;
         goto UnlockAndExit;
     }
-          
+
     /* Store null terminator */
-    
+
     UserBuffer[Size] = '\0';
     Size -= ACPI_NAME_SIZE;
 
@@ -335,22 +335,22 @@ AcpiNsHandleToPathname (
     UserBuffer[--Size] = PATH_SEPARATOR;
 
     /* Build name backwards, putting "." between segments */
-    
+
     while ((Size > ACPI_NAME_SIZE) && EntryToSearch)
     {
         Size -= ACPI_NAME_SIZE;
         Name = AcpiNsFindParentName (EntryToSearch);
         STORE32 ((UserBuffer + Size), &Name);
-        
+
         UserBuffer[--Size] = PATH_SEPARATOR;
         EntryToSearch = EntryToSearch->ParentEntry;
     }
 
     /* Overlay the "." preceding the first segment with the root name "\" */
-    
+
     UserBuffer[Size] = '\\';
 
-    DEBUG_PRINT (TRACE_EXEC, ("NsHandleToPathname: Len=%d, %s \n", 
+    DEBUG_PRINT (TRACE_EXEC, ("NsHandleToPathname: Len=%d, %s \n",
                                 PathLength, UserBuffer));
 
 
@@ -367,7 +367,7 @@ UnlockAndExit:
 
 
 /****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiNsPatternMatch
  *
  * PARAMETERS:  ObjEntry        - A namespace entry
@@ -381,7 +381,7 @@ UnlockAndExit:
 
 BOOLEAN
 AcpiNsPatternMatch (
-    NAME_TABLE_ENTRY        *ObjEntry, 
+    NAME_TABLE_ENTRY        *ObjEntry,
     char                    *SearchFor)
 {
     INT32                   i;
@@ -405,7 +405,7 @@ AcpiNsPatternMatch (
 
 
 /****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiNsNameCompare
  *
  * PARAMETERS:  ObjHandle       - A namespace entry
@@ -420,8 +420,8 @@ AcpiNsPatternMatch (
 
 ACPI_STATUS
 AcpiNsNameCompare (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
     void                    *Context,
     void                    **ReturnValue)
 {
@@ -433,7 +433,7 @@ AcpiNsNameCompare (
     if (AcpiNsPatternMatch ((NAME_TABLE_ENTRY *) ObjHandle, Find->SearchFor))
     {
         /* Name matches pattern */
-        
+
         if (Find->List)
         {
             DEBUG_PRINT (TRACE_NAMES, ("FindName: Match found: %.4s\n",
@@ -441,7 +441,7 @@ AcpiNsNameCompare (
 
             Find->List[*(Find->Count)] = ObjHandle;
         }
-        
+
         ++*(Find->Count);
     }
 
@@ -450,7 +450,7 @@ AcpiNsNameCompare (
 
 
 /****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiNsLowFindNames
  *
  * PARAMETERS:  *ThisEntry          - Table to be searched
@@ -472,10 +472,10 @@ AcpiNsNameCompare (
 
 void
 AcpiNsLowFindNames (
-    NAME_TABLE_ENTRY        *ThisEntry, 
+    NAME_TABLE_ENTRY        *ThisEntry,
     char                    *SearchFor,
-    INT32                   *Count, 
-    ACPI_HANDLE             List[], 
+    INT32                   *Count,
+    ACPI_HANDLE             List[],
     INT32                   MaxDepth)
 {
     FIND_CONTEXT            Find;
@@ -486,11 +486,11 @@ AcpiNsLowFindNames (
 
     if (0 == MaxDepth || !ThisEntry || !SearchFor || !Count)
     {
-        /* 
+        /*
          * Zero requested depth, nothing to search,
-         * nothing to search for, or count pointer bad 
+         * nothing to search for, or count pointer bad
          */
-        
+
         return_VOID;
     }
 
@@ -502,13 +502,13 @@ AcpiNsLowFindNames (
 
     /* Walk the namespace and find all matches */
 
-    AcpiNsWalkNamespace (ACPI_TYPE_ANY, (ACPI_HANDLE) ThisEntry, MaxDepth, NS_WALK_NO_UNLOCK, 
+    AcpiNsWalkNamespace (ACPI_TYPE_ANY, (ACPI_HANDLE) ThisEntry, MaxDepth, NS_WALK_NO_UNLOCK,
                         AcpiNsNameCompare, &Find, NULL);
 
     if (List)
     {
         /* null-terminate the output array */
-        
+
         List[*Count] = (ACPI_HANDLE) 0;
     }
 
@@ -541,8 +541,8 @@ AcpiNsLowFindNames (
 
 ACPI_HANDLE *
 AcpiNsFindNames (
-    char                    *SearchFor, 
-    ACPI_HANDLE             StartHandle, 
+    char                    *SearchFor,
+    ACPI_HANDLE             StartHandle,
     INT32                   MaxDepth)
 {
     ACPI_HANDLE             *List = NULL;
@@ -554,7 +554,7 @@ AcpiNsFindNames (
 
     if (!Acpi_GblRootObject->Scope)
     {
-        /* 
+        /*
          * If the name space has not been initialized,
          * there surely are no matching names.
          */
@@ -567,17 +567,17 @@ AcpiNsFindNames (
 
         StartHandle = Acpi_GblRootObject;
     }
-    
+
     else if (((NAME_TABLE_ENTRY *) StartHandle)->Scope)
     {
         /* base has children to search */
 
         StartHandle = ((NAME_TABLE_ENTRY *) StartHandle)->Scope;
     }
-    
+
     else
     {
-        /* 
+        /*
          * If base is not the root and has no children,
          * there is nothing to search.
          */
@@ -591,12 +591,12 @@ AcpiNsFindNames (
         SearchFor = "????";
     }
 
-    
+
     /* Pass 1.  Get required buffer size, don't try to build list */
-    
+
     Count = 0;
     AcpiNsLowFindNames (StartHandle, SearchFor, &Count, NULL, MaxDepth);
-    
+
     if (0 == Count)
     {
         return_PTR (NULL);

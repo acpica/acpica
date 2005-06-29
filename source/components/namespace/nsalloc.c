@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -153,18 +153,18 @@ AcpiNsAllocateNameTable (
 
     AllocSize = (ACPI_SIZE) NteCount * sizeof (NAME_TABLE_ENTRY);
 
-    
+
     /* Allow room for link to appendage */
-    
+
     AllocSize += sizeof (NAME_TABLE_ENTRY *);
 
-  
+
     NameTable = AcpiCmCallocate (AllocSize);
     if (NameTable)
     {
         /* Move past the appendage pointer */
-    
-        NameTable = (NAME_TABLE_ENTRY *) (((UINT8 *) NameTable) + 
+
+        NameTable = (NAME_TABLE_ENTRY *) (((UINT8 *) NameTable) +
                         sizeof (NAME_TABLE_ENTRY *));
     }
 
@@ -203,8 +203,8 @@ AcpiNsDeleteNamespaceSubtree (
     ChildHandle     = 0;
     Level           = 1;
 
-    /* 
-     * Traverse the tree of objects until we bubble back up 
+    /*
+     * Traverse the tree of objects until we bubble back up
      * to where we started.
      */
 
@@ -253,8 +253,8 @@ AcpiNsDeleteNamespaceSubtree (
 
         else
         {
-            /* 
-             * No more children in this object.  
+            /*
+             * No more children in this object.
              * We will move up to the grandparent.
              */
             Level--;
@@ -281,7 +281,7 @@ AcpiNsDeleteNamespaceSubtree (
     }
 
 
-    return_ACPI_STATUS (AE_OK); 
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -314,7 +314,7 @@ AcpiNsRemoveReference (
     Entry->Scope = NULL;
 
 
-    /* 
+    /*
      * Decrement the reference count(s) of all parents up to the root,
      * And delete anything with zero remaining references.
      */
@@ -382,8 +382,8 @@ AcpiNsDeleteNamespaceByOwner (
     ChildHandle     = 0;
     Level           = 1;
 
-    /* 
-     * Traverse the tree of objects until we bubble back up 
+    /*
+     * Traverse the tree of objects until we bubble back up
      * to where we started.
      */
 
@@ -425,8 +425,8 @@ AcpiNsDeleteNamespaceByOwner (
 
         else
         {
-            /* 
-             * No more children in this object.  
+            /*
+             * No more children in this object.
              * We will move up to the grandparent.
              */
             Level--;
@@ -456,7 +456,7 @@ AcpiNsDeleteNamespaceByOwner (
     }
 
 
-    return_ACPI_STATUS (AE_OK); 
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -497,7 +497,7 @@ AcpiNsDeleteScope (
      */
     do
     {
-        /* 
+        /*
          * Create the original allocated pointer (backup to before appendage ptr),
          * and get the next appendage pointer.  This ptr is null at end-of-list.
          */
@@ -506,13 +506,13 @@ AcpiNsDeleteScope (
         ThisTable = NEXTSEG (ThisTable);
 
         DEBUG_PRINT (ACPI_INFO, ("NsDeleteScope: Deleting Name Table at %p \n", AllocatedTable));
-        
+
         /* Now we can free the table */
 
-        AcpiCmFree (AllocatedTable); 
+        AcpiCmFree (AllocatedTable);
 
     } while (ThisTable);
-    
+
     return_VOID;
 }
 

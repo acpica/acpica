@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: nsload - namespace loading procedures
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -167,7 +167,7 @@ AcpiNsParseTable (
 
     /* Pass 1:  Parse everything except control method bodies */
 
-    Status = AcpiPsParseAml (Acpi_GblParsedNamespaceRoot, TableDesc->AmlPointer, TableDesc->AmlLength, 0); 
+    Status = AcpiPsParseAml (Acpi_GblParsedNamespaceRoot, TableDesc->AmlPointer, TableDesc->AmlLength, 0);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -243,10 +243,10 @@ AcpiNsLoadTable (
 
 
     /*
-     * Parse the table and load the namespace with all named objects found within.  
-     * Control methods are NOT parsed at this time.  In fact, the control methods 
-     * cannot be parsed until the entire namespace is loaded, because if a control 
-     * method makes a forward reference (call) to another control method, we can't 
+     * Parse the table and load the namespace with all named objects found within.
+     * Control methods are NOT parsed at this time.  In fact, the control methods
+     * cannot be parsed until the entire namespace is loaded, because if a control
+     * method makes a forward reference (call) to another control method, we can't
      * continue parsing because we don't know how many arguments to parse next!
      */
 
@@ -279,7 +279,7 @@ AcpiNsLoadTable (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiNsLoadTableByType
  *
  * PARAMETERS:  TableType           - Id of the table type to load
@@ -301,7 +301,7 @@ AcpiNsLoadTableByType (
     ACPI_TABLE_HEADER       *TablePtr;
     ACPI_TABLE_DESC         *TableDesc;
 
-    
+
     FUNCTION_TRACE ("NsLoadTableByType");
 
 
@@ -332,7 +332,7 @@ AcpiNsLoadTableByType (
         TableDesc->TableId = TABLE_ID_DSDT;
 
         /* Initialize the root of the namespace tree */
-    
+
         Status = AcpiNsRootInitialize ();
         if (ACPI_FAILURE (Status))
         {
