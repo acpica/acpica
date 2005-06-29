@@ -654,6 +654,10 @@ _CmAllocateObjectDesc (
 
     else
     {
+        /* Mark the descriptor type */
+
+        NewDesc->Common.DataType = DESC_TYPE_ACPI_OBJ;
+
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %x Size 0x%x\n",
                         NewDesc, sizeof (ACPI_OBJECT_INTERNAL)));
     }
