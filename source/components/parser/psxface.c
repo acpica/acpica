@@ -118,9 +118,9 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          PARSER
@@ -223,36 +223,52 @@ BREAKPOINT3;
 
 ACPI_STATUS
 PsxExecute (
-    ACPI_OBJECT_INTERNAL    *MthDesc,
+    NAME_TABLE_ENTRY        *MethodEntry,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
     ACPI_STATUS             Status;
+    ACPI_OBJECT_INTERNAL    *MthDesc;
     UINT8                   *Pcode;
     UINT32                  PcodeLength;
 
 
     FUNCTION_TRACE ("PsxExecute");
 
-    Pcode = MthDesc->Method.Pcode;
+
+    MthDesc     = MethodEntry->Object;
+    Pcode       = MthDesc->Method.Pcode;
     PcodeLength = MthDesc->Method.PcodeLength;
 
 
-    /* This is where we really execute the method */
-
-    DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Execution **** code=%p len=%X\n",
-                    Pcode, PcodeLength));
-
 BREAKPOINT3;
 
-/* TBD: if method not parsed, must parse it first !! */
-/*
-    Status = PsParseAml (MthDesc->Method.ParserOp, Pcode, PcodeLength, 
-                            AmlBeginScopeForExecution, AmlEndScopeForExecution);
-*/
+    /* If method not parsed yet, must parse it first */
 
-    Status = PsWalkParsedAml (MthDesc->Method.ParserOp, MthDesc->Method.ParserOp, Params, ReturnObjDesc,
-                                PsxExecBeginOp, PsxExecEndOp);
+    if (!MthDesc->Method.ParserOp)
+    {
+
+        DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Parsing Method **** obj=%p\n",
+                        MthDesc));
+
+        Status = PsxParseMethod (MethodEntry);
+
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+
+    DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Execution **** obj=%p code=%p len=%X\n",
+                    MthDesc, Pcode, PcodeLength));
+
+    /* Method is parsed and ready to execute */
+    /* This is where we really execute the method */
+
+    Status = PsWalkParsedAml (MthDesc->Method.ParserOp, MthDesc->Method.ParserOp, MthDesc, Params,
+                                ReturnObjDesc, PsxExecBeginOp, PsxExecEndOp);
+    
     /* 
      * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
      * or with Status == AE_PENDING at end of AML block (end of Method code)
@@ -276,6 +292,14 @@ BREAKPOINT3;
         }
     }
 
+
+    /* Delete the parse tree upon method completion if asked to */
+
+    if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
+    {
+        PsDeleteParseTree (MthDesc->Method.ParserOp);
+        MthDesc->Method.ParserOp = NULL;
+    }
 
     return_ACPI_STATUS (Status);
 }
