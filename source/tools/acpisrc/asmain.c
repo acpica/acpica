@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -209,12 +209,12 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Declarations first */
 
-    "UINT32_BIT  ",             "u32         ",             REPLACE_SUBSTRINGS,
+    "UINT32_BIT  ",             "u32         ",             REPLACE_WHOLE_WORD,
 
-    "UINT32      ",             "u32         ",             REPLACE_SUBSTRINGS,
-    "UINT16      ",             "u16         ",             REPLACE_SUBSTRINGS,
-    "UINT8       ",             "u8          ",             REPLACE_SUBSTRINGS,
-    "BOOLEAN     ",             "u8          ",             REPLACE_SUBSTRINGS,
+    "UINT32      ",             "u32         ",             REPLACE_WHOLE_WORD,
+    "UINT16      ",             "u16         ",             REPLACE_WHOLE_WORD,
+    "UINT8       ",             "u8          ",             REPLACE_WHOLE_WORD,
+    "BOOLEAN     ",             "u8          ",             REPLACE_WHOLE_WORD,
 
     /* Now do embedded typecasts */
 
@@ -223,10 +223,10 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "UINT8",                    "u8",                       REPLACE_WHOLE_WORD,
     "BOOLEAN",                  "u8",                       REPLACE_WHOLE_WORD,
 
-    "INT32  ",                  "s32    ",                  REPLACE_SUBSTRINGS,
-    "INT32",                    "s32",                      REPLACE_SUBSTRINGS,
-    "INT16  ",                  "s16    ",                  REPLACE_SUBSTRINGS,
-    "INT8   ",                  "s8     ",                  REPLACE_SUBSTRINGS,
+    "INT32  ",                  "s32    ",                  REPLACE_WHOLE_WORD,
+    "INT32",                    "s32",                      REPLACE_WHOLE_WORD,
+    "INT16  ",                  "s16    ",                  REPLACE_WHOLE_WORD,
+    "INT8   ",                  "s8     ",                  REPLACE_WHOLE_WORD,
     "INT16",                    "s16",                      REPLACE_WHOLE_WORD,
     "INT8",                     "s8",                       REPLACE_WHOLE_WORD,
 
@@ -249,16 +249,16 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     /*"NATIVE_UINT  ",            "native_uint  ",*/
     /*"NATIVE_INT  ",             "native_int  ",*/
     /*"NATIVE_CHAR  ",            "native_char  ",*/
-    "ACPI_NAME",                "acpi_name  ",                  REPLACE_WHOLE_WORD,
-    "ACPI_STRING",              "acpi_string  ",                REPLACE_WHOLE_WORD,
-    "ACPI_HANDLE",              "acpi_handle  ",                REPLACE_WHOLE_WORD,
-    "ACPI_INTEGER",             "acpi_integer  ",               REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT_TYPE",         "acpi_object_type  ",           REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT_TYPE8",        "acpi_object_type8  ",          REPLACE_WHOLE_WORD,
-    "OPERATING_MODE",           "operating_mode  ",             REPLACE_WHOLE_WORD,
-    "ACPI_EVENT_STATUS",        "acpi_event_status  ",          REPLACE_WHOLE_WORD,
-    "ACPI_OWNER_ID",            "acpi_owner_id  ",              REPLACE_WHOLE_WORD,
-    "ACPI_TABLE_TYPE",          "acpi_table_type  ",            REPLACE_WHOLE_WORD,
+    "ACPI_NAME",                "acpi_name",                  REPLACE_WHOLE_WORD,
+    "ACPI_STRING",              "acpi_string",                REPLACE_WHOLE_WORD,
+    "ACPI_HANDLE",              "acpi_handle",                REPLACE_WHOLE_WORD,
+    "ACPI_INTEGER",             "acpi_integer",               REPLACE_WHOLE_WORD,
+    "ACPI_OBJECT_TYPE",         "acpi_object_type",           REPLACE_WHOLE_WORD,
+    "ACPI_OBJECT_TYPE8",        "acpi_object_type8",          REPLACE_WHOLE_WORD,
+    "OPERATING_MODE",           "operating_mode",             REPLACE_WHOLE_WORD,
+    "ACPI_EVENT_STATUS",        "acpi_event_status",          REPLACE_WHOLE_WORD,
+    "ACPI_OWNER_ID",            "acpi_owner_id",              REPLACE_WHOLE_WORD,
+    "ACPI_TABLE_TYPE",          "acpi_table_type",            REPLACE_WHOLE_WORD,
 
     "ACPI_NAMESPACE_NODE",      "acpi_namespace_node",          REPLACE_WHOLE_WORD,
     "ACPI_OPERAND_OBJECT",      "acpi_operand_object",          REPLACE_WHOLE_WORD,
