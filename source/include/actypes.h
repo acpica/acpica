@@ -373,4 +373,55 @@ typedef struct
     char            *Val;
 } PREDEFINED_NAMES;
 
+
+/*
+ * Various handlers and callback procedures
+ */
+
+
+typedef 
+UINT32 (*FIXED_EVENT_HANDLER) (
+    void            *Context);
+
+typedef
+void (*GPE_HANDLER) (
+    void            *Context);
+
+typedef
+void (*NOTIFY_HANDLER) (
+    void            *Context);
+
+
+typedef
+void (*OPREGION_HANDLER) (
+    void            *Context);
+
+
+typedef
+void * (*WALK_CALLBACK) (
+    NsHandle        ObjHandle,
+    UINT32          NestingLevel,
+    void            *Context);
+
+
+/* Fixed event types */
+
+enum 
+{
+    EVENT_PMTIMER = 0,
+    /* 
+     * There's no bus master event so index 1 is used for IRQ's that are not
+     * handled by the SCI handler 
+     */
+    EVENT_NOT_USED,
+    EVENT_GLOBAL, 
+    EVENT_POWER_BUTTON, 
+    EVENT_SLEEP_BUTTON, 
+    EVENT_RTC, 
+    EVENT_GENERAL,
+    NUM_FIXED_EVENTS
+};
+
+
+
 #endif /* DATATYPES_H */
