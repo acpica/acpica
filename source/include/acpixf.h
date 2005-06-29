@@ -130,6 +130,10 @@ AcpiInitializeSubsystem (
     ACPI_INIT_DATA          *InitData);
 
 ACPI_STATUS
+AcpiEnableSubsystem (
+    UINT32                  Flags);
+
+ACPI_STATUS
 AcpiTerminate (
     void);
 
@@ -183,18 +187,6 @@ AcpiGetTable (
 /*
  * Namespace and name interfaces
  */
-
-ACPI_STATUS
-AcpiLoadNamespace (
-    void);
-
-ACPI_STATUS
-AcpiInitializeObjects (
-    void);
-
-ACPI_STATUS
-AcpiInitializeDevices (
-    void);
 
 ACPI_STATUS
 AcpiWalkNamespace (
@@ -355,10 +347,6 @@ AcpiGetIrqRoutingTable  (
 /*
  * Hardware (ACPI device) interfaces
  */
-
-ACPI_STATUS
-AcpiInitializeHardware (
-    void);
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
