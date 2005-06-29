@@ -102,18 +102,18 @@
 
 /* flags for use in DisplayBitFlags parameters */
 
-#define ACPI_MODE       1
-#define LEGACY_MODE     2
+#define ACPI_MODE               1
+#define LEGACY_MODE             2
 
 /* Sleep states */
 
-#define S0              "_S0_"
-#define S1              "_S1_"
-#define S2              "_S2_"
-#define S3              "_S3_"
-#define S4              "_S4_"
-#define S4BIOS          "_S4B"
-#define S5              "_S5_"
+#define S0                      "_S0_"
+#define S1                      "_S1_"
+#define S2                      "_S2_"
+#define S3                      "_S3_"
+#define S4                      "_S4_"
+#define S4BIOS                  "_S4B"
+#define S5                      "_S5_"
 
 /* 
  * The #define's and enum below establish an abstract way of identifying what
@@ -138,7 +138,7 @@ enum
 {
     /* PM1 status register ids */
     
-    TMR_STS = (PM1_EVT | 0x01),
+    TMR_STS =   (PM1_EVT        | 0x01),
     BM_STS,
     GBL_STS,
     PWRBTN_STS,
@@ -150,14 +150,14 @@ enum
     
     TMR_EN,
     /* need to skip 1 enable number since there's no bus master enable register */  
-    GBL_EN = (PM1_EVT | 0x0A),
+    GBL_EN =    (PM1_EVT        | 0x0A),
     PWRBTN_EN,
     SLPBTN_EN,
     RTC_EN,
 
     /* PM1 control register ids */
 
-    SCI_EN = (PM1_CONTROL | 0x01),
+    SCI_EN =    (PM1_CONTROL    | 0x01),
     BM_RLD,
     GBL_RLS,
     SLP_TYPa,
@@ -166,17 +166,17 @@ enum
 
     /* PM2 control register ids */
 
-    ARB_DIS = (PM2_CONTROL | 0x01),
+    ARB_DIS =   (PM2_CONTROL    | 0x01),
 
     /* PM Timer register ids */
 
-    TMR_VAL = (PM_TIMER | 0x01),
+    TMR_VAL =   (PM_TIMER       | 0x01),
 
-    GPE0_STS = (GPE0_STS_BLOCK | 0x01),
-    GPE0_EN = (GPE0_EN_BLOCK | 0x01),
+    GPE0_STS =  (GPE0_STS_BLOCK | 0x01),
+    GPE0_EN =   (GPE0_EN_BLOCK  | 0x01),
 
-    GPE1_STS = (GPE1_STS_BLOCK | 0x01),
-    GPE1_EN = (GPE0_EN_BLOCK | 0x01),
+    GPE1_STS =  (GPE1_STS_BLOCK | 0x01),
+    GPE1_EN =   (GPE0_EN_BLOCK  | 0x01),
 
     /* Last register value is one less than LAST_REG */
 
@@ -249,7 +249,7 @@ AcpiRegisterIO (
     INT32                   RegisterId, ... /* DWORD Value */);
 
 void 
-ClearAllAcpiChipsetStatusBits (
+HwClearAcpiStatus (
    void);
 
 
