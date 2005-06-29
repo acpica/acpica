@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
@@ -118,12 +117,12 @@
 #define __CMXFACE_C__
 
 #include "acpi.h"
-#include "events.h"
-#include "hardware.h"
-#include "namesp.h"
-#include "interp.h"
+#include "acevents.h"
+#include "achware.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "debugger.h"
+#include "acdebug.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -151,7 +150,8 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
 
     FUNCTION_TRACE ("AcpiInitialize");
 
-    DEBUG_PRINT_RAW (ACPI_OK, ("ACPI Subsystem version [%s]\n", ACPI_CA_VERSION));
+    DEBUG_PRINT_RAW (ACPI_OK,
+        ("ACPI Subsystem version [%s]\n", ACPI_CA_VERSION));
     DEBUG_PRINT (ACPI_INFO, ("Initializing ACPI Subsystem...\n"));
 
 
@@ -164,7 +164,8 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
     Status = AcpiOsInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("OSD failed to initialize, %s\n", AcpiCmFormatException (Status)));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("OSD failed to initialize, %s\n", AcpiCmFormatException (Status)));
         REPORT_ERROR ("OSD Initialization Failure");
         return_ACPI_STATUS (Status);
     }
@@ -174,7 +175,8 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
     Status = AcpiCmMutexInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Global mutex creation failure, %s\n", AcpiCmFormatException (Status)));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Global mutex creation failure, %s\n", AcpiCmFormatException (Status)));
         REPORT_ERROR ("Global Mutex Initialization Failure");
         return_ACPI_STATUS (Status);
     }
@@ -208,7 +210,9 @@ AcpiTerminate (void)
     /* Terminate the AML Debuger if present */
 
     AcpiGbl_DbTerminateThreads = TRUE;
-    AcpiCmReleaseMutex (MTX_DEBUG_CMD_READY);
+
+    /* TBD: [Investigate] This is no longer needed?*/
+/*    AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY); */
 
 
     /* Shutdown and free all resources */
@@ -285,7 +289,8 @@ AcpiGetSystemInfo (
     OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
-    InfoPtr->AcpiCaVersion      = 0x1234;   /* TBD [Future]: need a version number, or use the version string */
+    /* TBD [Future]: need a version number, or use the version string */
+    InfoPtr->AcpiCaVersion      = 0x1234;
 
     /* System flags (ACPI capabilities) */
 
@@ -336,7 +341,7 @@ AcpiFormatException (
     ACPI_BUFFER             *OutBuffer)
 {
     UINT32                  Length;
-    char                    *FormattedException;
+    NATIVE_CHAR             *FormattedException;
 
 
     FUNCTION_TRACE ("AcpiFormatException");
@@ -352,15 +357,7 @@ AcpiFormatException (
     }
 
 
-    /* Exception must be within range */
-
-    if (Exception > ACPI_MAX_STATUS)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    /* Convert the exception code */
+    /* Convert the exception code (Handles bad exception codes) */
 
     FormattedException = AcpiCmFormatException (Exception);
 

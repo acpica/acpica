@@ -151,9 +151,9 @@
 
 ACPI_OBJECT_INTERNAL *
 _CmCreateInternalObject (
-    INT8                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
     OBJECT_TYPE_INTERNAL    Type)
 {
     ACPI_OBJECT_INTERNAL    *Object;
@@ -213,7 +213,7 @@ AcpiCmValidInternalObject (
     {
         DEBUG_PRINT (ACPI_INFO,
             ("CmValidInternalObject: **** Null Object Ptr\n"));
-        return FALSE;
+        return (FALSE);
     }
 
     /* Check for a pointer within one of the ACPI tables */
@@ -222,7 +222,7 @@ AcpiCmValidInternalObject (
     {
         DEBUG_PRINT (ACPI_INFO,
             ("CmValidInternalObject: **** Object %p is a Pcode Ptr\n", Object));
-        return FALSE;
+        return (FALSE);
     }
 
     /* Check the descriptor type field */
@@ -252,13 +252,13 @@ AcpiCmValidInternalObject (
                 Object));
         }
 
-        return FALSE;
+        return (FALSE);
     }
 
 
     /* The object appears to be a valid ACPI_OBJECT_INTERNAL */
 
-    return TRUE;
+    return (TRUE);
 }
 
 
@@ -280,9 +280,9 @@ AcpiCmValidInternalObject (
 
 void *
 _CmAllocateObjectDesc (
-    INT8                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId)
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId)
 {
     ACPI_OBJECT_INTERNAL    *Object;
 
@@ -813,7 +813,7 @@ AcpiCmGetObjectSize(
             AcpiCmGetSimpleObjectSize (InternalObj, ObjLength);
     }
 
-    return Status;
+    return (Status);
 }
 
 
