@@ -271,14 +271,14 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
      *          associated with the address space.  For these we use the root.
      */
 
-    Status = AcpiInstallAddressSpaceHandler (Acpi_GblRootObject, ADDRESS_SPACE_SYSTEM_MEMORY,
+    Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootObject, ADDRESS_SPACE_SYSTEM_MEMORY,
                                                 ACPI_DEFAULT_HANDLER, NULL, NULL);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiInstallAddressSpaceHandler (Acpi_GblRootObject,
+    Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootObject,
                 ADDRESS_SPACE_SYSTEM_IO, ACPI_DEFAULT_HANDLER, NULL, NULL);
     if (ACPI_FAILURE (Status))
     {
@@ -737,7 +737,7 @@ AcpiEvAddrHandlerHelper (
 
     if ((ObjEntry->Type != ACPI_TYPE_DEVICE) &&
         (ObjEntry->Type != ACPI_TYPE_REGION) &&
-        (ObjEntry != Acpi_GblRootObject))
+        (ObjEntry != AcpiGbl_RootObject))
     {
         return (AE_OK);
     }
@@ -774,7 +774,7 @@ AcpiEvAddrHandlerHelper (
                  */
 
                 DEBUG_PRINT (TRACE_OPREGION, ("Found handler for %s in device 0x%p (0x%p) handler 0x%p\n",
-                                Acpi_GblRegionTypes[HandlerObj->AddrHandler.SpaceId], ObjDesc, TmpObj, HandlerObj));
+                                AcpiGbl_RegionTypes[HandlerObj->AddrHandler.SpaceId], ObjDesc, TmpObj, HandlerObj));
 
                 /*
                  *  Since the object we found it on was a device, then it

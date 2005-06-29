@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: evapirgn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial prton of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -131,7 +131,7 @@
  *
  * FUNCTION:    AcpiInstallAddressSpaceHandler
  *
- * PARAMETERS:  Device          - Handle for the device 
+ * PARAMETERS:  Device          - Handle for the device
  *              SpaceId         - The address space ID
  *              Handler         - Address of the handler
  *              Context         - Value passed to the handler on each access
@@ -145,9 +145,9 @@
 
 ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
-    ACPI_HANDLE             Device, 
-    ACPI_ADDRESS_SPACE_TYPE SpaceId, 
-    ADDRESS_SPACE_HANDLER   Handler, 
+    ACPI_HANDLE             Device,
+    ACPI_ADDRESS_SPACE_TYPE SpaceId,
+    ADDRESS_SPACE_HANDLER   Handler,
     ADDRESS_SPACE_SETUP     Setup,
     void                    *Context)
 {
@@ -190,7 +190,7 @@ AcpiInstallAddressSpaceHandler (
     if ((ObjEntry->Type != ACPI_TYPE_DEVICE)     &&
         (ObjEntry->Type != ACPI_TYPE_PROCESSOR)  &&
         (ObjEntry->Type != ACPI_TYPE_THERMAL)    &&
-        (ObjEntry != Acpi_GblRootObject))
+        (ObjEntry != AcpiGbl_RootObject))
     {
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
@@ -227,7 +227,7 @@ AcpiInstallAddressSpaceHandler (
     /*
      *  If the caller hasn't specified a setup routine, use the default
      */
-    if (!Setup) 
+    if (!Setup)
     {
         Setup = AcpiEvDefaultRegionSetup;
     }
@@ -268,7 +268,7 @@ AcpiInstallAddressSpaceHandler (
 
     else
     {
-        DEBUG_PRINT (TRACE_OPREGION, ("Creating object on Device 0x%X while installing handler\n", 
+        DEBUG_PRINT (TRACE_OPREGION, ("Creating object on Device 0x%X while installing handler\n",
                         ObjEntry));
 
         /* ObjDesc does not exist, create one */
@@ -311,10 +311,10 @@ AcpiInstallAddressSpaceHandler (
         }
     }
 
-    DEBUG_PRINT (TRACE_OPREGION, ("Installing address handler for %s on Device 0x%p (0x%p)\n", 
-                    Acpi_GblRegionTypes[SpaceId], ObjEntry, ObjDesc));
+    DEBUG_PRINT (TRACE_OPREGION, ("Installing address handler for %s on Device 0x%p (0x%p)\n",
+                    AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
-    /* 
+    /*
      *  Now we can install the handler
      *
      *  At this point we know that there is no existing handler.
@@ -349,7 +349,7 @@ AcpiInstallAddressSpaceHandler (
      *  In either case we back up and search down the remainder
      *  of the branch
      */
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Device, ACPI_INT32_MAX, NS_WALK_NO_UNLOCK, AcpiEvAddrHandlerHelper, 
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Device, ACPI_INT32_MAX, NS_WALK_NO_UNLOCK, AcpiEvAddrHandlerHelper,
                                 HandlerObj, NULL);
 
     /*
@@ -382,8 +382,8 @@ UnlockAndExit:
 
 ACPI_STATUS
 AcpiRemoveAddressSpaceHandler (
-    ACPI_HANDLE             Device, 
-    ACPI_ADDRESS_SPACE_TYPE SpaceId, 
+    ACPI_HANDLE             Device,
+    ACPI_ADDRESS_SPACE_TYPE SpaceId,
     ADDRESS_SPACE_HANDLER   Handler)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -447,8 +447,8 @@ AcpiRemoveAddressSpaceHandler (
             /*
              *  Got it, first dereference this in the Regions
              */
-            DEBUG_PRINT (TRACE_OPREGION, ("Removing address handler 0x%p (0x%p) for %s on Device 0x%p (0x%p)\n", 
-                            HandlerObj, Handler, Acpi_GblRegionTypes[SpaceId], ObjEntry, ObjDesc));
+            DEBUG_PRINT (TRACE_OPREGION, ("Removing address handler 0x%p (0x%p) for %s on Device 0x%p (0x%p)\n",
+                            HandlerObj, Handler, AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
             RegionObj = HandlerObj->AddrHandler.RegionList;
 
@@ -486,7 +486,7 @@ AcpiRemoveAddressSpaceHandler (
             AcpiCmRemoveReference (HandlerObj);
 
             goto UnlockAndExit;
-        } 
+        }
 
         /*
          *  Move through the linked list of handlers
@@ -500,8 +500,8 @@ AcpiRemoveAddressSpaceHandler (
      *  The handler does not exist
      */
     DEBUG_PRINT (TRACE_OPREGION,
-        ("Unable to remove address handler 0x%p for %s on Device nte 0x%p, obj 0x%p\n", 
-        Handler, Acpi_GblRegionTypes[SpaceId], ObjEntry, ObjDesc));
+        ("Unable to remove address handler 0x%p for %s on Device nte 0x%p, obj 0x%p\n",
+        Handler, AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
     Status = AE_NOT_EXIST;
 

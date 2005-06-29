@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: evapievt - External Interfaces, ACPI event disable/enable
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial prton of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -136,8 +136,8 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ensures that the system control interrupt (SCI) is properly 
- *              configured, disables SCI event sources, installs the SCI 
+ * DESCRIPTION: Ensures that the system control interrupt (SCI) is properly
+ *              configured, disables SCI event sources, installs the SCI
  *              handler, and transfers the system into ACPI mode.
  *
  *************************************************************************/
@@ -151,9 +151,9 @@ AcpiEnable (void)
     FUNCTION_TRACE ("AcpiEnable");
 
 
-    /* Make sure we've got ACPI tables */ 
+    /* Make sure we've got ACPI tables */
 
-    if (!Acpi_GblDSDT)
+    if (!AcpiGbl_DSDT)
     {
         DEBUG_PRINT (ACPI_WARN, ("No ACPI tables present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
@@ -162,19 +162,19 @@ AcpiEnable (void)
     /* Make sure the BIOS supports ACPI mode */
 
     if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
-    {   
+    {
         DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported!\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
-    Acpi_GblOriginalMode = AcpiHwGetMode();
+    AcpiGbl_OriginalMode = AcpiHwGetMode();
 
     /*
      * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
      * done prior to enabling SCIs to prevent interrupts from occuring
      * before handers are installed.
-     */ 
-   
+     */
+
     if (ACPI_FAILURE (AcpiEvFixedEventInitialize ()))
     {
         DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize fixed events.\n"));
@@ -190,7 +190,7 @@ AcpiEnable (void)
     /* Install the SCI handler */
 
     if (ACPI_FAILURE (AcpiEvInstallSciHandler ()))
-    {   
+    {
         DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
@@ -198,9 +198,9 @@ AcpiEnable (void)
     /* Transition to ACPI mode */
 
     if (AE_OK != AcpiHwSetMode (SYS_MODE_ACPI))
-    {   
+    {
         DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
-        return_ACPI_STATUS (AE_ERROR);    
+        return_ACPI_STATUS (AE_ERROR);
     }
 
     DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
@@ -213,7 +213,7 @@ AcpiEnable (void)
 
     return_ACPI_STATUS (Status);
 }
-    
+
 
 /**************************************************************************
  *
@@ -223,12 +223,12 @@ AcpiEnable (void)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Returns the system to original ACPI/legacy mode, and 
+ * DESCRIPTION: Returns the system to original ACPI/legacy mode, and
  *              uninstalls the SCI interrupt handler.
  *
  *************************************************************************/
 
-ACPI_STATUS     
+ACPI_STATUS
 AcpiDisable (void)
 {
 
@@ -237,17 +237,17 @@ AcpiDisable (void)
 
     /* Restore original mode  */
 
-    if (AE_OK != AcpiHwSetMode (Acpi_GblOriginalMode))
+    if (AE_OK != AcpiHwSetMode (AcpiGbl_OriginalMode))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Unable to transition to original mode"));
-        return_ACPI_STATUS (AE_ERROR);    
+        return_ACPI_STATUS (AE_ERROR);
     }
 
     /* Unload the SCI interrupt handler  */
 
     AcpiEvRemoveSciHandler ();
     AcpiEvRestoreAcpiState ();
-    
+
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -315,7 +315,7 @@ AcpiEnableEvent (
 
         /* Enable the requested fixed event (by writing a one to the enable register bit) */
 
-        AcpiHwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 1); 
+        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
         break;
 
 
@@ -324,7 +324,7 @@ AcpiEnableEvent (
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -409,7 +409,7 @@ AcpiDisableEvent (
 
         /* Disable the requested fixed event (by writing a zero to the enable register bit) */
 
-        AcpiHwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 0); 
+        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 0);
         break;
 
 
@@ -418,7 +418,7 @@ AcpiDisableEvent (
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -500,7 +500,7 @@ AcpiClearEvent (
 
         /* Clear the requested fixed event (By writing a one to the status register bit) */
 
-        AcpiHwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 1); 
+        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
         break;
 
 
@@ -509,7 +509,7 @@ AcpiClearEvent (
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -569,7 +569,7 @@ AcpiGetEventStatus (
     {
 
     case EVENT_FIXED:
-        
+
         /* Decode the Fixed AcpiEvent */
 
         switch (Event)
@@ -601,7 +601,7 @@ AcpiGetEventStatus (
 
         /* Get the status of the requested fixed event */
 
-        *EventStatus = AcpiHwRegisterIO (ACPI_READ, TRUE, RegisterId); 
+        *EventStatus = AcpiHwRegisterAccess (ACPI_READ, TRUE, RegisterId);
         break;
 
 
@@ -610,7 +610,7 @@ AcpiGetEventStatus (
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
