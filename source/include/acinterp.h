@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.81 $
+ *       $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -551,7 +551,7 @@ AcpiAmlBufSeq (
 
 UINT32
 AcpiAmlDigitsNeeded (
-    UINT32                  Value,
+    ACPI_INTEGER            Value,
     UINT32                  Base);
 
 ACPI_STATUS
@@ -560,8 +560,8 @@ AcpiAmlEisaIdToString (
     NATIVE_CHAR             *OutString);
 
 ACPI_STATUS
-AcpiUnsignedIntegerToString (
-    UINT32                  Value,
+AcpiAmlUnsignedIntegerToString (
+    ACPI_INTEGER            Value,
     NATIVE_CHAR             *OutString);
 
 ACPI_STATUS
@@ -578,7 +578,7 @@ AcpiAmlBuildCopyInternalPackageObject (
 ACPI_STATUS
 AcpiAmlSystemMemorySpaceHandler (
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_INTEGER            Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -587,7 +587,7 @@ AcpiAmlSystemMemorySpaceHandler (
 ACPI_STATUS
 AcpiAmlSystemIoSpaceHandler (
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_INTEGER            Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -596,7 +596,7 @@ AcpiAmlSystemIoSpaceHandler (
 ACPI_STATUS
 AcpiAmlPciConfigSpaceHandler (
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_INTEGER            Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -605,7 +605,7 @@ AcpiAmlPciConfigSpaceHandler (
 ACPI_STATUS
 AcpiAmlEmbeddedControllerSpaceHandler (
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_INTEGER            Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -614,7 +614,7 @@ AcpiAmlEmbeddedControllerSpaceHandler (
 ACPI_STATUS
 AcpiAmlSmBusSpaceHandler (
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_INTEGER            Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
