@@ -182,29 +182,7 @@ AmlStoreObjectToNte (
      */
     ACPI_ASSERT((Entry) && (ValDesc));
 
-    /*
-     *  Get descriptor for object attached to name
-     */
-    DestDesc = NsGetAttachedObject (Entry);
-    if (DestDesc)
-    {
-        /* There is an existing object attached to this NTE */
-
-        DestinationType = NsGetType (Entry);
-
-        /* 
-         *  Make sure the destination Object is the same as the NTE
-         */
-        if (DestDesc->Common.Type != (UINT8) DestinationType)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlStoreObjectToNte: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                            &Entry->Name, NsGetType (Entry), 
-                            DestDesc->Common.Type, DestDesc));
-            Status = AE_AML_INTERNAL;
-            goto CleanUpAndBailOut;
-        }
-    }
-
+    DestinationType = NsGetType (Entry);
 
     DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToNte: Storing %s into %s\n",
                     CmGetTypeName (ValDesc->Common.Type),
@@ -260,7 +238,6 @@ AmlStoreObjectToNte (
         }
 
         break;
-
 
     case ACPI_TYPE_String:
     case ACPI_TYPE_Buffer:
@@ -326,7 +303,6 @@ AmlStoreObjectToNte (
         break;
     }
 
-
     /* Exit now if failure above */
 
     if (Status != AE_OK)
@@ -335,10 +311,31 @@ AmlStoreObjectToNte (
     }
 
     /*
-     * Get the global lock if needed
+     *  Get descriptor for object attached to NTE
      */
-    Locked = AmlAcquireGlobalLock (DestDesc->BankField.LockRule);
+    DestDesc = NsGetAttachedObject (Entry);
+    if (!DestDesc)
+    {
+        /*
+         *  There is no existing object attached to this NTE
+         */
+        DEBUG_PRINT (ACPI_ERROR, ("AmlStoreObjectToNte: Internal error - no destination object for %4.4s type %d\n",
+                        &Entry->Name, DestinationType));
+        Status = AE_AML_INTERNAL;
+        goto CleanUpAndBailOut;
+    }
 
+    /* 
+     *  Make sure the destination Object is the same as the NTE
+     */
+    if (DestDesc->Common.Type != (UINT8) DestinationType)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlStoreObjectToNte: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                        &Entry->Name, NsGetType (Entry), 
+                        DestDesc->Common.Type, DestDesc));
+        Status = AE_AML_INTERNAL;
+        goto CleanUpAndBailOut;
+    }
 
     /*
      * Everything is ready to execute now,  We have 
@@ -350,6 +347,11 @@ AmlStoreObjectToNte (
         /* Type of Name's existing value */
 
     case INTERNAL_TYPE_BankField:
+
+        /*
+         * Get the global lock if needed
+         */
+        Locked = AmlAcquireGlobalLock (DestDesc->BankField.LockRule);
 
         /*
          *  Set Bank value to select proper Bank
@@ -374,9 +376,14 @@ AmlStoreObjectToNte (
     case INTERNAL_TYPE_DefField:
 
         /*
+         * Get the global lock if needed
+         */
+        Locked = AmlAcquireGlobalLock (ValDesc->Field.LockRule);
+
+        /*
          *  Perform the update
          */
-        
+       
         switch (ValDesc->Common.Type)
         {
         case ACPI_TYPE_Number:
@@ -511,6 +518,11 @@ AmlStoreObjectToNte (
     case INTERNAL_TYPE_IndexField:
             
         /*
+         * Get the global lock if needed
+         */
+        Locked = AmlAcquireGlobalLock (DestDesc->IndexField.LockRule);
+
+        /*
          *  Set Index value to select proper Data register
          *  perform the update (Set index)
          */
@@ -556,6 +568,11 @@ AmlStoreObjectToNte (
             Status = AE_AML_INTERNAL;
             goto CleanUpAndBailOut;
         }
+
+        /*
+         *  Get the global lock if needed
+         */
+        Locked = AmlAcquireGlobalLock (DestDesc->FieldUnit.LockRule);
 
         /*
          * TBD: REMOVE this limitation
