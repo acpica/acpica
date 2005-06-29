@@ -637,7 +637,7 @@ NsCompareObject (
             *ReturnValue = ObjHandle;
         }
 
-        return AE_TERMINATE;        /* Stop the walk */
+        return AE_CTRL_TERMINATE;        /* Stop the walk */
     }
 
     return AE_OK;   /* Not found, continue the walk */
