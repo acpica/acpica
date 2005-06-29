@@ -155,6 +155,8 @@ PsxInitOneObject (
     void                    **ReturnValue)
 {
     ACPI_OBJECT_TYPE        Type;
+    ACPI_STATUS             Status;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
     Type = NsGetType (ObjHandle);
@@ -172,9 +174,30 @@ PsxInitOneObject (
 
     case ACPI_TYPE_Method:
 
-        PsxParseMethod (ObjHandle);
-
         ((INIT_WALK_INFO *) Context)->MethodCount++;
+
+        /* Always parse methods to detect errors, we may delete the parse tree below */
+
+        Status = PsxParseMethod (ObjHandle);
+
+        /* TBD: what do we do with an error? */
+
+        if (ACPI_FAILURE (Status))
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("PsxInitOneObject: Method %p [%4.4s] parse failed! %x\n", 
+                                        ObjHandle, ((NAME_TABLE_ENTRY *)ObjHandle)->Name, Status));
+            break;
+        }
+
+        /* Keep the parse tree only if we are parsing all methods at init time (versus just-in-time) */
+
+        if (Gbl_WhenToParseMethods != METHOD_PARSE_AT_INIT)
+        {
+            ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object; 
+            PsDeleteParseTree (ObjDesc->Method.ParserOp);
+            ObjDesc->Method.ParserOp = NULL;
+        }
+
         break;
 
     default:
@@ -254,7 +277,7 @@ ACPI_STATUS
 PsxInitObjectFromOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
-    UINT32                  Opcode,
+    UINT16                  Opcode,
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_STATUS             Status;
@@ -356,7 +379,7 @@ PsxInitObjectFromOp (
 
     case INTERNAL_TYPE_Lvalue:
 
-        switch (OpInfo->Type)
+        switch (OpInfo->Flags & OP_INFO_TYPE)
         {
         case OPTYPE_LOCAL_VARIABLE:
 
@@ -419,24 +442,52 @@ PsxBuildInternalSimpleObj (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_TYPE        Type;
     ACPI_STATUS             Status;
+    char                    *NameString;
+    UINT32                  NameLength;
 
 
     FUNCTION_TRACE ("PsxBuildInternalSimpleObj");
 
 
-    Type = PsxMapOpcodeToDataType (Op->Opcode, NULL);
-
-    ObjDesc = CmCreateInternalObject (Type);
-    if (!ObjDesc)
+    if (Op->Opcode == AML_NAMEPATH)
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        /* Get the entire name string from the AML stream */
+
+        Status = AmlGetNameString (ACPI_TYPE_Any, Op->Value.Buffer, &NameString, &NameLength);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        Status = NsLookup (Gbl_CurrentScope->Scope, NameString, ACPI_TYPE_Any, IMODE_Execute, 
+                                    NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) &ObjDesc);
+
+        /* Free the namestring created above */
+
+        CmFree (NameString);
+
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
-    Status = PsxInitObjectFromOp (WalkState, Op, Op->Opcode, ObjDesc);
-    if (ACPI_FAILURE (Status))
+    else
     {
-        CmDeleteInternalObject (ObjDesc);
-        return_ACPI_STATUS (Status);
+        Type = PsxMapOpcodeToDataType (Op->Opcode, NULL);
+
+        ObjDesc = CmCreateInternalObject (Type);
+        if (!ObjDesc)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        Status = PsxInitObjectFromOp (WalkState, Op, Op->Opcode, ObjDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            CmDeleteInternalObject (ObjDesc);
+            return_ACPI_STATUS (Status);
+        }
     }
 
     *ObjDescPtr = ObjDesc;
