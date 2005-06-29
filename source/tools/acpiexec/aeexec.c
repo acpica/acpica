@@ -295,23 +295,6 @@ RegionHandler (
     }
 
     /*
-     * The buffer exists and is pointed to by RegionElement.
-     *  We now need to verify the request is valid and perform the operation.
-     *
-     * NOTE: RegionElement->Length is in bytes, therefore it is multiplied by
-     *  the bitwidth of a byte.
-     */
-    if ((Address + BitWidth) > (RegionElement->Address + (RegionElement->Length * 8)))
-    {
-        return AE_BUFFER_OVERFLOW;
-    }
-
-    /*
-     * Get BufferValue to point to the "address" in the buffer
-     */
-    BufferValue = ((UINT8 *)RegionElement->Buffer + (Address - RegionElement->Address));
-
-    /*
      * Calculate the size of the memory copy
      */
     ByteWidth = (BitWidth / 8);
@@ -320,6 +303,23 @@ RegionHandler (
     {
         ByteWidth += 1;
     }
+
+    /*
+     * The buffer exists and is pointed to by RegionElement.
+     *  We now need to verify the request is valid and perform the operation.
+     *
+     * NOTE: RegionElement->Length is in bytes, therefore it we compare against
+     *  ByteWidth (see above)
+     */
+    if ((Address + ByteWidth) > (RegionElement->Address + RegionElement->Length))
+    {
+        return AE_BUFFER_OVERFLOW;
+    }
+
+    /*
+     * Get BufferValue to point to the "address" in the buffer
+     */
+    BufferValue = ((UINT8 *)RegionElement->Buffer + (Address - RegionElement->Address));
 
     /*
      * Perform a read or write to the buffer space
