@@ -117,10 +117,6 @@
 #ifndef _OUTPUT_H
 #define _OUTPUT_H
 
-#include "acpiobj.h"
-#include "globals.h"
-#include "common.h"
-
 /*
  * Debug levels and component IDs.  These are used to control the
  * granularity of the output of the DEBUG_PRINT macro -- on a per-
@@ -134,14 +130,16 @@
 #define NAMESPACE                   0x00000004
 #define DEVICE_MANAGER              0x00000008
 #define RESOURCE_MANAGER            0x00000010
-#define EVENT_HANDLING              0x00000020
-#define MISCELLANEOUS               0x00000040
-#define OS_DEPENDENT                0x00000080
-#define OS_APP_INTERFACE            0x00000100
-#define OSPM						0x00000200
+#define TABLE_MANAGER               0x00000020
+#define EVENT_HANDLING              0x00000040
+#define MISCELLANEOUS               0x00000080
+#define OS_DEPENDENT                0x00000100
+#define OS_APP_INTERFACE            0x00001000
+#define OSPM					        0x00002000
+#define DRIVER                      0x00004000
 
 
-#define ALL_COMPONENTS              0x000002FF
+#define ALL_COMPONENTS              0x00007FFF
 
 
 /* Exception level or Trace level -- used in the global "DebugLevel" */
@@ -167,7 +165,7 @@
 #define TRACE_OBJECTS               0x00080000
 #define TRACE_IO                    0x00100000
 #define TRACE_ALLOCATIONS           0x00200000
-#define TRACE_RESOURCES				0x00400000
+#define TRACE_RESOURCES             0x00400000
 #define TRACE_INTERRUPTS            0x00800000
 #define TRACE_USER_REQUESTS         0x01000000
 #define TRACE_PACKAGE               0x02000000
