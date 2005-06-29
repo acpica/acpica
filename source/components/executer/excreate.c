@@ -339,7 +339,7 @@ AmlExecCreateField (
 
         TypeFound = SrcDesc->Common.Type;
 
-        if ((TypeFound > (UINT8) INTERNAL_TYPE_Lvalue) ||
+        if ((TypeFound > (UINT8) INTERNAL_TYPE_Reference) ||
             !CmValidObjectType (TypeFound))
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Tried to create field in invalid object type - 0x%X\n",
@@ -362,7 +362,7 @@ AmlExecCreateField (
     {
         /* Delete object descriptor unique to CreateField  */
 
-        CmDeleteInternalObject (CntDesc);
+        CmRemoveReference (CntDesc);
         CntDesc = NULL;
     }
 
@@ -397,7 +397,7 @@ AmlExecCreateField (
             DUMP_ENTRY (ResDesc, TRACE_BFIELD);
             DUMP_STACK_ENTRY (ObjDesc);
         
-            CmDeleteInternalObject (ObjDesc);
+            CmRemoveReference (ObjDesc);
             NsAttachObject (ResDesc, NULL, ACPI_TYPE_Any);
         }
         
@@ -424,7 +424,7 @@ AmlExecCreateField (
      */
     if (FieldDesc->Common.ReferenceCount <= 1)
     {
-        CmDeleteInternalObject (FieldDesc);
+        CmRemoveReference (FieldDesc);
     }
 
 
@@ -433,19 +433,19 @@ Cleanup:
 
     /* Always delete the operands */
 
-    CmDeleteInternalObject (OffDesc);
-    CmDeleteInternalObject (SrcDesc);
+    CmRemoveReference (OffDesc);
+    CmRemoveReference (SrcDesc);
 
     if (AML_CreateFieldOp == Opcode)
     {
-        CmDeleteInternalObject (CntDesc);
+        CmRemoveReference (CntDesc);
     }
 
     /* On failure, delete the result descriptor */
 
     if (ACPI_FAILURE (Status))
     {
-        CmDeleteInternalObject (ResDesc);     /* Result descriptor */
+        CmRemoveReference (ResDesc);     /* Result descriptor */
     }
 
     return_ACPI_STATUS (Status);
@@ -546,7 +546,7 @@ AmlExecCreateEvent (
     Status = OsdCreateSemaphore (1, &ObjDesc->Event.Semaphore);
     if (ACPI_FAILURE (Status))
     {
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ObjDesc);
         goto Cleanup;
     }
 
@@ -556,7 +556,7 @@ AmlExecCreateEvent (
     if (ACPI_FAILURE (Status))
     {
         OsdDeleteSemaphore (ObjDesc->Event.Semaphore);
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ObjDesc);
         goto Cleanup;
     }
 
@@ -616,7 +616,7 @@ AmlExecCreateMutex (
     Status = OsdCreateSemaphore (1, &ObjDesc->Mutex.Semaphore);
     if (ACPI_FAILURE (Status))
     {
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ObjDesc);
         goto Cleanup;
     }
 
@@ -629,7 +629,7 @@ AmlExecCreateMutex (
     if (ACPI_FAILURE (Status))
     {
         OsdDeleteSemaphore (ObjDesc->Mutex.Semaphore);
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ObjDesc);
         goto Cleanup;
     }
 
@@ -638,7 +638,7 @@ Cleanup:
 
     /* Always delete the operand */
 
-    CmDeleteInternalObject (SyncDesc);
+    CmRemoveReference (SyncDesc);
 
     return_ACPI_STATUS (Status);
 }
@@ -715,7 +715,7 @@ AmlExecCreateRegion (
     ObjDescRegion->Region.SpaceId   = (UINT16) RegionSpace;
     ObjDescRegion->Region.Address   = 0;
     ObjDescRegion->Region.Length    = 0;
-    ObjDescRegion->Region.DataValid = 0;
+    ObjDescRegion->Region.RegionFlags = 0;
 
     /* 
      * Remember location in AML stream of address & length
@@ -735,9 +735,6 @@ AmlExecCreateRegion (
         goto Cleanup;
     }
 
-
-
-
 Cleanup:
 
     if (Status != AE_OK)
@@ -746,7 +743,7 @@ Cleanup:
 
         if (ObjDescRegion)
         {
-            CmDeleteInternalObject (ObjDescRegion);     /* Deletes both objects! */
+            CmRemoveReference (ObjDescRegion);     /* Deletes both objects! */
             ObjDescRegion = NULL;
         }
     }
