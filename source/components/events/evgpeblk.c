@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,55 @@
 
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evgpeblk")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvValidGpeEvent
+ *
+ * PARAMETERS:  GpeEventInfo - Info for this GPE
+ *
+ * RETURN:      TRUE if the GpeEvent is valid
+ *
+ * DESCRIPTION: Validate a GPE event.  DO NOT CALL FROM INTERRUPT LEVEL.
+ *              Should be called only when the GPE lists are semaphore locked
+ *              and not subject to change.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiEvValidGpeEvent (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
+{
+    ACPI_GPE_XRUPT_INFO     *GpeXruptBlock;
+    ACPI_GPE_BLOCK_INFO     *GpeBlock;
+    BOOLEAN                 IsValid = FALSE;
+
+
+    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    GpeXruptBlock = AcpiGbl_GpeXruptListHead;
+    while (GpeXruptBlock)
+    {
+        GpeBlock = GpeXruptBlock->GpeBlockListHead;
+        while (GpeBlock)
+        {
+            if ((&GpeBlock->EventInfo[0] <= GpeEventInfo) &&
+                (&GpeBlock->EventInfo[GpeBlock->RegisterCount * 8] > GpeEventInfo))
+            {
+                IsValid = TRUE;
+                goto UnlockAndExit;
+            }
+
+            GpeBlock = GpeBlock->Next;
+        }
+
+        GpeXruptBlock = GpeXruptBlock->Next;
+    }
+
+UnlockAndExit:
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    return (IsValid);
+}
 
 
 /*******************************************************************************
@@ -279,7 +328,7 @@ AcpiEvSaveMethodInfo (
      */
     GpeEventInfo = &GpeBlock->EventInfo[GpeNumber - GpeBlock->BlockBaseNumber];
 
-    GpeEventInfo->Type       = Type;
+    GpeEventInfo->Flags      = Type;
     GpeEventInfo->MethodNode = (ACPI_NAMESPACE_NODE *) ObjHandle;
 
     /*
@@ -307,6 +356,8 @@ AcpiEvSaveMethodInfo (
  *
  * DESCRIPTION: Get or Create a GPE interrupt block.  There is one interrupt
  *              block per unique interrupt level used for GPEs.
+ *              Should be called only when the GPE lists are semaphore locked
+ *              and not subject to change.
  *
  ******************************************************************************/
 
@@ -319,21 +370,17 @@ AcpiEvGetGpeXruptBlock (
     ACPI_STATUS             Status;
 
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
-
     NextGpeXrupt = AcpiGbl_GpeXruptListHead;
     while (NextGpeXrupt)
     {
         if (NextGpeXrupt->InterruptLevel == InterruptLevel)
         {
-            AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
             return (NextGpeXrupt);
         }
 
         NextGpeXrupt = NextGpeXrupt->Next;
     }
 
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
 
     /* Not found, must allocate a new xrupt descriptor */
 
@@ -371,7 +418,7 @@ AcpiEvGetGpeXruptBlock (
     if (InterruptLevel != AcpiGbl_FADT->SciInt)
     {
         Status = AcpiOsInstallInterruptHandler (InterruptLevel,
-                    AcpiEvGpeXruptHandler, &GpeXrupt->GpeBlockListHead);
+                    AcpiEvGpeXruptHandler, GpeXrupt);
     }
 
     return (GpeXrupt);
@@ -576,7 +623,7 @@ ErrorExit:
         ACPI_MEM_FREE (GpeEventInfo);
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -738,6 +785,8 @@ AcpiEvGpeInitialize (void)
 
         GpeNumberMax = (RegisterCount0 * ACPI_GPE_REGISTER_WIDTH) - 1;
 
+        /* Install GPE Block 0 */
+
         Status = AcpiEvCreateGpeBlock ("\\_GPE", &AcpiGbl_FADT->XGpe0Blk,
                     RegisterCount0, 0, AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[0]);
         if (ACPI_FAILURE (Status))
@@ -772,6 +821,8 @@ AcpiEvGpeInitialize (void)
         }
         else
         {
+            /* Install GPE Block 1 */
+
             Status = AcpiEvCreateGpeBlock ("\\_GPE", &AcpiGbl_FADT->XGpe1Blk,
                         RegisterCount1, AcpiGbl_FADT->Gpe1Base, 
                         AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[1]);
