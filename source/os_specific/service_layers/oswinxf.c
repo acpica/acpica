@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -164,7 +164,7 @@ AeLocalGetRootPointer (
     UINT32                  Flags,
     ACPI_POINTER            *Address);
 
-FILE                        *AcpiGbl_OutputFile = stdout;
+FILE                        *AcpiGbl_OutputFile;
 
 
 #ifndef _ACPI_EXEC_APP
@@ -305,6 +305,8 @@ AcpiOsInitialize (void)
 {
     UINT32                  i;
 
+
+    AcpiGbl_OutputFile = stdout;
 
     for (i = 0; i < NUM_SEMAPHORES; i++)
     {
