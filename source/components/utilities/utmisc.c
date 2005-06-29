@@ -130,8 +130,6 @@
         MODULE_NAME         ("cmutils");
 
 
-
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiCmValidAcpiName
@@ -153,7 +151,6 @@ AcpiCmValidAcpiName (
 {
     char                    *NamePtr = (char *) &Name;
     UINT32                  i;
-
 
 
     for (i = 0; i < ACPI_NAME_SIZE; i++)
@@ -192,7 +189,6 @@ AcpiCmValidAcpiCharacter (
                         (Character >= 'A' && Character <= 'Z') ||
                         (Character >= '0' && Character <= '9')));
 }
-
 
 
 /*****************************************************************************
@@ -298,7 +294,7 @@ AcpiCmCreateMutex (
 
     if (!AcpiGbl_AcpiMutexInfo[MutexId].Mutex)
     {
-        Status = AcpiOsdCreateSemaphore (1, &AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
+        Status = AcpiOsCreateSemaphore (1, 1, &AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
         AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount = 0;
     }
@@ -335,7 +331,7 @@ AcpiCmDeleteMutex (
     }
 
 
-    Status = AcpiOsdDeleteSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
+    Status = AcpiOsDeleteSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
 
     AcpiGbl_AcpiMutexInfo[MutexId].Mutex = NULL;
     AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;
@@ -371,7 +367,7 @@ AcpiCmAcquireMutex (
     }
 
 
-    Status = AcpiOsdWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1, WAIT_FOREVER);
+    Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1, WAIT_FOREVER);
 
     DEBUG_PRINT (TRACE_MUTEX, ("Acquired Mutex  [%s] Status %s\n",
                     AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
@@ -415,14 +411,13 @@ AcpiCmReleaseMutex (
 
     AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;  /* Mark before unlocking */
 
-    Status = AcpiOsdSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
+    Status = AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
 
     DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex  [%s] Status %s\n",
                     AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
 
     return (Status);
 }
-
 
 
 /******************************************************************************
@@ -551,7 +546,7 @@ AcpiCmCreateGenericState (void)
     ACPI_GENERIC_STATE      *State;
 
 
-    AcpiCmAcquireMutex (MTX_CACHES);
+    AcpiCmAcquireMutex (ACPI_MTX_CACHES);
 
     AcpiGbl_StateCacheRequests++;
 
@@ -568,14 +563,14 @@ AcpiCmCreateGenericState (void)
         AcpiGbl_StateCacheHits++;
         AcpiGbl_GenericStateCacheDepth--;
 
-        AcpiCmReleaseMutex (MTX_CACHES);
+        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
     }
 
     else
     {
         /* The cache is empty, create a new object */
 
-        AcpiCmReleaseMutex (MTX_CACHES);
+        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
 
         State = AcpiCmCallocate (sizeof (ACPI_GENERIC_STATE));
     }
@@ -584,7 +579,7 @@ AcpiCmCreateGenericState (void)
 
     if (State)
     {
-        State->Common.DataType = DESC_TYPE_STATE;
+        State->Common.DataType = ACPI_DESC_TYPE_STATE;
     }
 
     return State;
@@ -704,12 +699,12 @@ AcpiCmDeleteGenericState (
 
     else
     {
-        AcpiCmAcquireMutex (MTX_CACHES);
+        AcpiCmAcquireMutex (ACPI_MTX_CACHES);
 
         /* Clear the state */
 
         MEMSET (State, 0, sizeof (ACPI_GENERIC_STATE));
-        State->Common.DataType = DESC_TYPE_STATE;
+        State->Common.DataType = ACPI_DESC_TYPE_STATE;
 
         /* Put the object at the head of the global cache list */
 
@@ -718,7 +713,7 @@ AcpiCmDeleteGenericState (
         AcpiGbl_GenericStateCacheDepth++;
 
 
-        AcpiCmReleaseMutex (MTX_CACHES);
+        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
     }
     return_VOID;
 }
@@ -760,7 +755,7 @@ AcpiCmDeleteGenericStateCache (
 
     return_VOID;
 }
- 
+
 
 /*****************************************************************************
  *
@@ -875,11 +870,5 @@ _ReportInfo (
                 "*** Info: %s\n", Message);
 
 }
-
-
-
-
-
-
 
 
