@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  ******************************************************************************/
 
@@ -132,9 +132,9 @@
         MODULE_NAME         ("dbcmds")
 
 
-/* 
+/*
  * Arguments for the Objects command
- * These object types map directly to the ACPI_TYPES 
+ * These object types map directly to the ACPI_TYPES
  */
 
 ARGUMENT_INFO               AcpiDbObjectTypes [] =
@@ -159,7 +159,6 @@ ARGUMENT_INFO               AcpiDbObjectTypes [] =
 };
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbWalkForReferences
@@ -168,7 +167,7 @@ ARGUMENT_INFO               AcpiDbObjectTypes [] =
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Check if this namespace object refers to the target object 
+ * DESCRIPTION: Check if this namespace object refers to the target object
  *              that is passed in as the context value.
  *
  ******************************************************************************/
@@ -214,7 +213,7 @@ AcpiDbWalkForReferences (
  *
  * FUNCTION:    AcpiDbFindReferences
  *
- * PARAMETERS:  ObjectArg       - String with hex value of the object 
+ * PARAMETERS:  ObjectArg       - String with hex value of the object
  *
  * RETURN:      None
  *
@@ -248,7 +247,7 @@ AcpiDbFindReferences (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display information about loaded tables.  Current 
+ * DESCRIPTION: Display information about loaded tables.  Current
  *              implementation displays all loaded tables.
  *
  ******************************************************************************/
@@ -281,7 +280,7 @@ AcpiDbDisplayTableInfo (
  *
  * RETURN:      Nonde
  *
- * DESCRIPTION: Unload an ACPI table.  
+ * DESCRIPTION: Unload an ACPI table.
  *              Instance is not implemented
  *
  ******************************************************************************/
@@ -922,7 +921,7 @@ AcpiDbWalkAndMatchName (
  *
  * FUNCTION:    AcpiDbFindNameInNamespace
  *
- * PARAMETERS:  NameArg         - The 4-character ACPI name to find.  
+ * PARAMETERS:  NameArg         - The 4-character ACPI name to find.
  *                                wildcards are supported.
  *
  * RETURN:      None
