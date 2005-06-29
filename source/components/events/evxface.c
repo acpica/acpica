@@ -258,7 +258,6 @@ AcpiDisable (void)
 
         EvRemoveSciHandler ();
         EvRestoreAcpiState ();
-        AcpiLocalCleanup ();
         
         Status = AE_OK;
         
