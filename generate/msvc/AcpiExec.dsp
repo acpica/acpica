@@ -508,6 +508,10 @@ SOURCE=..\..\subsystem\Dispatcher\dswstate.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\subsystem\Tables\tbconvrt.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Tables\tbget.c
 # End Source File
 # Begin Source File
