@@ -258,7 +258,7 @@ NsSetup (void)
 
             /* Store pointer to value descriptor in nte */
         
-            NsAttachObject (NewEntry, ObjDesc, ObjDesc->Type);
+            NsAttachObject (NewEntry, ObjDesc, ObjDesc->Common.Type);
         }
     }
 
