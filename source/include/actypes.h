@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
@@ -216,7 +215,7 @@ typedef UINT32                          ACPI_IO_ADDRESS;
 
 typedef UINT32                          UINT32_BIT;
 typedef NATIVE_UINT                     ACPI_PTRDIFF;
-typedef char                            NATIVE_CHAR;                
+typedef char                            NATIVE_CHAR;
 
 
 /*
@@ -265,7 +264,7 @@ typedef UINT32                          u32;
 typedef UINT32                          ACPI_STATUS;    /* All ACPI Exceptions */
 typedef UINT32                          ACPI_NAME;      /* 4-INT8 ACPI name */
 typedef char*                           ACPI_STRING;    /* Null terminated ASCII string */
-typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an Named Object */
+typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an Node */
 
 
 /*
@@ -327,14 +326,14 @@ typedef UINT8                           OBJECT_TYPE_INTERNAL;
 #define ACPI_TYPE_BUFFER                3  /* 0x03  */
 #define ACPI_TYPE_PACKAGE               4  /* 0x04  ByteConst, multiple DataTerm/Constant/SuperName */
 #define ACPI_TYPE_FIELD_UNIT            5  /* 0x05  */
-#define ACPI_TYPE_DEVICE                6  /* 0x06  Name, multiple NamedObject */
+#define ACPI_TYPE_DEVICE                6  /* 0x06  Name, multiple Node */
 #define ACPI_TYPE_EVENT                 7  /* 0x07  */
 #define ACPI_TYPE_METHOD                8  /* 0x08  Name, ByteConst, multiple Code */
 #define ACPI_TYPE_MUTEX                 9  /* 0x09  */
 #define ACPI_TYPE_REGION                10 /* 0x0A  */
-#define ACPI_TYPE_POWER                 11 /* 0x0B  Name,ByteConst,WordConst,multi NamedObject */
+#define ACPI_TYPE_POWER                 11 /* 0x0B  Name,ByteConst,WordConst,multi Node */
 #define ACPI_TYPE_PROCESSOR             12 /* 0x0C  Name,ByteConst,DWordConst,ByteConst,multi NmO */
-#define ACPI_TYPE_THERMAL               13 /* 0x0D  Name, multiple NamedObject */
+#define ACPI_TYPE_THERMAL               13 /* 0x0D  Name, multiple Node */
 #define ACPI_TYPE_BUFFER_FIELD          14 /* 0x0E  */
 #define ACPI_TYPE_DDB_HANDLE            15 /* 0x0F  */
 #define ACPI_TYPE_DEBUG_OBJECT          16 /* 0x10  */
@@ -357,7 +356,7 @@ typedef UINT8                           OBJECT_TYPE_INTERNAL;
 #define INTERNAL_TYPE_IF                31 /* 0x1F  OpCode, multiple Code */
 #define INTERNAL_TYPE_ELSE              32 /* 0x20  multiple Code */
 #define INTERNAL_TYPE_WHILE             33 /* 0x21  OpCode, multiple Code */
-#define INTERNAL_TYPE_SCOPE             34 /* 0x22  Name, multiple NamedObject */
+#define INTERNAL_TYPE_SCOPE             34 /* 0x22  Name, multiple Node */
 #define INTERNAL_TYPE_DEF_ANY           35 /* 0x23  type is Any, suppress search of enclosing scopes */
 #define INTERNAL_TYPE_REFERENCE         36 /* 0x24  Arg#, Local#, Name, Debug; used only in descriptors */
 #define INTERNAL_TYPE_ALIAS             37 /* 0x25  */
