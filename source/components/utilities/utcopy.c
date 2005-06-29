@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -215,7 +215,7 @@ AcpiCmCopyIsimpleToEsimple (
          * This is an object reference.  Attempt to dereference it.
          */
 
-        switch (InternalObject->Reference.OpCode)
+        switch (InternalObject->Reference.Opcode)
         {
         case AML_ZERO_OP:
             ExternalObject->Type = ACPI_TYPE_INTEGER;
