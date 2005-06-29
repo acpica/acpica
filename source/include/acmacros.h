@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.120 $
+ *       $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -188,6 +188,7 @@
 #define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **)(void *)(p))
 
 #ifdef _IA16
+#define ACPI_STORE_POINTER(d,s)         ACPI_MOVE_UNALIGNED32_TO_32(d,s)
 #define ACPI_PHYSADDR_TO_PTR(i)         (void *)(i)
 #define ACPI_PTR_TO_PHYSADDR(i)         (char *)(i)
 #else
