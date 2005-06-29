@@ -120,6 +120,7 @@
 #include <acpi.h>
 #include <events.h>
 #include <hardware.h>
+#include <namespace.h>
 #include <interpreter.h>
 #include <amlcode.h>
 
@@ -178,8 +179,6 @@ AcpiInitialize (void)
  *
  * DESCRIPTION: Shutdown the ACPI subsystem.  Release all resources.
  *
- *              TBD: free: namespace, all objects
- *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -190,16 +189,30 @@ AcpiTerminate (void)
     FUNCTION_TRACE ("AcpiTerminate");
     DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
 
+    DEBUG_MEMSTAT;
 
-    CmLocalCleanup ();
 
+    /* Close the Namespace */
+
+    NsTerminate ();
+
+    /* Close the Event Handling */
+
+    EvTerminate ();
+
+    /* Close the globals */
+
+    CmTerminate ();
+
+    /* Debug only - display leftover memory allocation, if any */
+
+    DEBUG_MEMSTAT;
     CmDumpCurrentAllocations (ACPI_UINT_MAX, NULL);
-
     BREAKPOINT3;
+
 
     FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
-
 }
 
 
