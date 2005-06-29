@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.78 $
+ *       $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -363,8 +363,8 @@ typedef char *va_list;
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)
 #define BREAKPOINT3
-#define disable()
-#define enable()
+#define acpi_disable_irqs()
+#define acpi_enable_irqs()
 #define halt()
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)
 #define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq)
