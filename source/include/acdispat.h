@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.37 $
+ *       $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -211,7 +211,7 @@ AcpiDsCreateBankField (
 ACPI_STATUS
 AcpiDsCreateIndexField (
     ACPI_PARSE_OBJECT       *Op,
-    ACPI_HANDLE             RegionNode,
+    ACPI_NAMESPACE_NODE     *RegionNode,
     ACPI_WALK_STATE         *WalkState);
 
 
