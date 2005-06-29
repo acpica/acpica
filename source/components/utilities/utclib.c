@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.39 $
+ * $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -202,7 +202,6 @@ AcpiUtStrcpy (
     /* Null terminate */
 
     *String = 0;
-
     return (DstString);
 }
 
@@ -278,7 +277,6 @@ AcpiUtStrcmp (
         }
     }
 
-
     return ((unsigned char) *String1 - (unsigned char) *String2);
 }
 
@@ -313,7 +311,7 @@ AcpiUtStrncmp (
         }
     }
 
-    return ((Count == -1) ? 0 : ((unsigned char) *String1 -
+    return ((Count == ACPI_INTEGER_MAX) ? 0 : ((unsigned char) *String1 -
         (unsigned char) *String2));
 }
 
@@ -716,7 +714,6 @@ AcpiUtStrstr (
         String++;
     }
 
-
     return (String1);
 }
 
@@ -769,13 +766,11 @@ AcpiUtStrtoul (
         sign = NEGATIVE;
         ++String;
     }
-
     else if (*String == '+')
     {
         ++String;
         sign = POSITIVE;
     }
-
     else
     {
         sign = POSITIVE;
@@ -794,19 +789,16 @@ AcpiUtStrtoul (
                 Base = 16;
                 ++String;
             }
-
             else
             {
                 Base = 8;
             }
         }
-
         else
         {
             Base = 10;
         }
     }
-
     else if (Base < 2 || Base > 36)
     {
         /*
@@ -842,7 +834,6 @@ AcpiUtStrtoul (
         {
             index = *String - '0';
         }
-
         else
         {
             index = AcpiUtToUpper (*String);
@@ -850,7 +841,6 @@ AcpiUtStrtoul (
             {
                 index = index - 'A' + 10;
             }
-
             else
             {
                 goto done;
@@ -872,7 +862,6 @@ AcpiUtStrtoul (
             Status = AE_ERROR;
             ReturnValue = 0L;           /* reset */
         }
-
         else
         {
             ReturnValue *= Base;
@@ -894,7 +883,6 @@ done:
         {
             *Terminator = (NATIVE_CHAR *) StringStart;
         }
-
         else
         {
             *Terminator = (NATIVE_CHAR *) String;
