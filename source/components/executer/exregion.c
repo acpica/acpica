@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -343,6 +343,7 @@ AcpiExSystemIoSpaceHandler (
 
     case ACPI_READ_ADR_SPACE:
 
+        *Value = 0;
         Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) Address, Value, BitWidth);
         break;
 
@@ -422,6 +423,7 @@ AcpiExPciConfigSpaceHandler (
 
     case ACPI_READ_ADR_SPACE:
 
+        *Value = 0;
         Status = AcpiOsReadPciConfiguration (PciId, PciRegister, Value, BitWidth);
         break;
 
