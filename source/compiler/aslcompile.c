@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -129,13 +129,18 @@
 #undef HIBYTE
 #undef LOBYTE
 #include <time.h>
+#ifdef WIN32
 #include <windows.h>
 #include <winbase.h>
+#endif
 
 struct tm                   *NewTime;
 time_t                      Aclock;
 
+#ifdef WIN32
 SYSTEMTIME                 SysTime;
+#endif
+
 typedef struct
 {
     time_t                  StartTime;
@@ -147,9 +152,12 @@ typedef struct
 ASL_EVENT_INFO              AslGbl_Events[20];
 
 
+#ifdef WIN32
+
 #define ASL_START_EVENT(a,b)    {AslGbl_Events[a].StartTime = AnGetTimeMs();\
                                   AslGbl_Events[a].EventName = b;}
 #define ASL_END_EVENT(a)        {AslGbl_Events[a].EndTime = AnGetTimeMs();}
+
 
 UINT32
 AnGetTimeMs (void)
@@ -160,6 +168,12 @@ AnGetTimeMs (void)
         SysTime.wMilliseconds);
 }
 
+#else
+
+#define ASL_START_EVENT(a,b)
+#define ASL_END_EVENT(a)
+
+#endif
 
 /*
  * Stubs to simplify linkage to the
