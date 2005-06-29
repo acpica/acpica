@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.64 $
+ *       $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -309,6 +309,9 @@
  * Resolved argument types for the AML Interpreter
  * Each field in the ArgTypes UINT32 is 5 bits, allowing for a maximum of 6 arguments.
  * There can be up to 31 unique argument types (0 is end-of-arg-list indicator)
+ *
+ * Note: If and when 5 bits becomes insufficient, it would probably be best
+ * to convert to a 6-byte array of argument types, allowing 8 bits per argument.
  */
 
 /* "Standard" ACPI types are 1-15 (0x0F) */
@@ -338,6 +341,7 @@
 #define ARGI_FIXED_TARGET           0x1B     /* Target, no implicit conversion */
 #define ARGI_SIMPLE_TARGET          0x1C     /* Name, Local, Arg -- no implicit conversion */
 #define ARGI_BUFFERSTRING           0x1D
+#define ARGI_REF_OR_STRING          0x1E     /* Reference or String (Used by DEREFOF op only) */
 
 #define ARGI_INVALID_OPCODE         0xFFFFFFFF
 
