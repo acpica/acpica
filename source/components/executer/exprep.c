@@ -122,7 +122,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT of type DefField and connect
+ * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type DefField and connect
  *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
  ****************************************************************************/
@@ -134,7 +134,7 @@ AmlPrepDefFieldValue (
     INT32                   FldPos, 
     INT32                   FldLen)
 {
-    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     INT32                   Type;
 
@@ -180,7 +180,7 @@ AmlPrepDefFieldValue (
              * but unexpected:  the ValType field which was defined as a UINT8 did
              * not map to the same structure offset as the one which was defined
              * as a WORD_BIT -- see comments in the definition of the FieldUnit
-             * variant of ACPI_OBJECT
+             * variant of ACPI_OBJECT_INTERNAL
              *
              * Log some evidence to facilitate porting the code.
              */
@@ -253,7 +253,7 @@ AmlPrepDefFieldValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT of type BankField and connect
+ * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type BankField and connect
  *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
  ****************************************************************************/
@@ -267,7 +267,7 @@ AmlPrepBankFieldValue (
     INT32                   FldPos, 
     INT32                   FldLen)
 {
-    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     INT32                   Type;
 
@@ -373,7 +373,7 @@ AmlPrepBankFieldValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT of type IndexField and connect
+ * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type IndexField and connect
  *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
  ****************************************************************************/
@@ -386,7 +386,7 @@ AmlPrepIndexFieldValue (
     INT32                   FldPos, 
     INT32                   FldLen)
 {
-    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
 
 

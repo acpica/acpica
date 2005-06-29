@@ -420,8 +420,6 @@ AmlDoName (
 
 BREAKPOINT3;
 
-    CheckTrash ("enter AmlDoName");
-
     if (TYPE_DefField == DataType || 
         TYPE_BankField == DataType || 
         TYPE_IndexField == DataType)
@@ -576,7 +574,7 @@ BREAKPOINT3;
     {
         /* All prefixes have been handled, and the name is in NameString */
 
-        LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
+        LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
 
         Status = NsLookup (CurrentScope->Scope, NameString, DataType, LoadExecMode, 
                                     NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) &ObjStack[ObjStackTop]);
@@ -660,7 +658,7 @@ BREAKPOINT3;
                                      */
                                     if (MODE_Exec == LoadExecMode)
                                     {
-                                        Status = AmlGetRvalue ((ACPI_OBJECT **)
+                                        Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **)
                                             &ObjStack[ObjStackTop]);
                                     }
 
@@ -679,7 +677,7 @@ BREAKPOINT3;
                             /* Execution mode  */
                             /* Mark end of arg list */
 
-                            LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
+                            LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
                             ObjStack[ObjStackTop] = NULL;
 
                             /* Establish Method's scope as current */
@@ -697,7 +695,7 @@ BREAKPOINT3;
                             
                             Status = AmlExecuteMethod (
                                         MethodPtr->Offset + 1, MethodPtr->Length - 1,
-                                        (ACPI_OBJECT **) &ObjStack[StackBeforeArgs + 1]);
+                                        (ACPI_OBJECT_INTERNAL **) &ObjStack[StackBeforeArgs + 1]);
 
                             DEBUG_PRINT (TRACE_LOAD,
                                     ("AmlExec Status=%s, StackBeforeArgs %d  ObjStackTop %d\n",
@@ -709,7 +707,7 @@ BREAKPOINT3;
 
                                 if (StackBeforeArgs < ObjStackTop)
                                 {
-                                    LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[StackBeforeArgs]);
+                                    LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[StackBeforeArgs]);
                                     ObjStack[StackBeforeArgs] = ObjStack[ObjStackTop];
                                     ObjStackTop--;
                                 }
@@ -732,7 +730,7 @@ BREAKPOINT3;
 
                         while (ObjStackTop > StackBeforeArgs)
                         {
-                            LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
+                            LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
 
                             /* Zero out the slot and move on */
 
@@ -763,8 +761,6 @@ BREAKPOINT3;
 
         Status = AE_AML_ERROR;
     }
-
-    CheckTrash ("leave AmlDoName");
 
     if (NameString)
     {

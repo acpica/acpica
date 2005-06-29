@@ -137,13 +137,13 @@
 
 ACPI_STATUS
 AmlSetupField (
-    ACPI_OBJECT         *ObjDesc, 
-    ACPI_OBJECT         *RgnDesc, 
-    INT32               FieldBitWidth)
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *RgnDesc, 
+    INT32                   FieldBitWidth)
 {
-    ACPI_OBJECT         *ObjValDesc = NULL;
-    ACPI_STATUS         Status = AE_OK;
-    INT32               FieldByteWidth;
+    ACPI_OBJECT_INTERNAL    *ObjValDesc = NULL;
+    ACPI_STATUS             Status = AE_OK;
+    INT32                   FieldByteWidth;
 
 
     FUNCTION_TRACE ("AmlSetupField");
@@ -205,7 +205,7 @@ AmlSetupField (
                 /* Evaluate the Address opcode */
 
                 if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK && 
-                    (Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop])) == AE_OK)
+                    (Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop])) == AE_OK)
                 {
                     /* Capture the address */
 
@@ -233,7 +233,7 @@ AmlSetupField (
                     /* Evaluate the Length opcode */
 
                     if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK &&
-                        (Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop])) == AE_OK)
+                        (Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop])) == AE_OK)
                     {
                         /* Capture the length */
 
@@ -319,20 +319,20 @@ AmlSetupField (
 
 ACPI_STATUS
 AmlReadField (
-    ACPI_OBJECT         *ObjDesc, 
-    UINT32              *Value, 
-    INT32               FieldBitWidth)
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    UINT32                  *Value, 
+    INT32                   FieldBitWidth)
 {
-    ACPI_OBJECT         *RgnDesc = NULL;
-    ACPI_STATUS         Status;
-    UINT32              Address;
-    UINT32              LocalValue = 0;
-    INT32               FieldByteWidth;
-    void *              PhysicalAddrPtr = NULL;
-    UINT8               PciBus = 0;
-    UINT8               DevFunc = 0;
-    UINT8               PciReg = 0;
-    UINT8               PciExcep = 0;
+    ACPI_OBJECT_INTERNAL    *RgnDesc = NULL;
+    ACPI_STATUS             Status;
+    UINT32                  Address;
+    UINT32                  LocalValue = 0;
+    INT32                   FieldByteWidth;
+    void *                  PhysicalAddrPtr = NULL;
+    UINT8                   PciBus = 0;
+    UINT8                   DevFunc = 0;
+    UINT8                   PciReg = 0;
+    UINT8                   PciExcep = 0;
 
 
     FUNCTION_TRACE ("AmlReadField");
@@ -538,11 +538,11 @@ AmlReadField (
 
 ACPI_STATUS
 AmlWriteField (
-    ACPI_OBJECT             *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
     UINT32                  Value, 
     INT32                   FieldBitWidth)
 {
-    ACPI_OBJECT             *RgnDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *RgnDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Address;
     INT32                   FieldByteWidth;
@@ -730,7 +730,7 @@ AmlAccessNamedField (
     ACPI_HANDLE             NamedField, 
     UINT32                  *Value)
 {
-    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_AML_ERROR;
     char                    *Type = NULL;
     UINT32                  Granularity = 0;
@@ -775,8 +775,8 @@ AmlAccessNamedField (
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlAccessNamedField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                     NamedField, NsGetType (NamedField), ObjDesc->ValType, ObjDesc));
-            AmlAppendBlockOwner (ObjDesc);
         }
+
         else
         {
             Status = AE_OK;

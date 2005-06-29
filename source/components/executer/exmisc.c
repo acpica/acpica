@@ -140,10 +140,10 @@ ACPI_STATUS
 AmlExecCreateField (
     UINT16                  opcode)
 {
-    ACPI_OBJECT             *ResDesc = NULL;
-    ACPI_OBJECT             *CntDesc = NULL;
-    ACPI_OBJECT             *OffDesc = NULL;
-    ACPI_OBJECT             *SrcDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ResDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *CntDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *OffDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *SrcDesc = NULL;
     ACPI_STATUS             Status;
     char                    *OpName = NULL;
     INT32                   NumOperands;
@@ -190,15 +190,15 @@ AmlExecCreateField (
 
     AmlDumpObjStack (MODE_Exec, OpName, NumOperands, "after AmlPrepObjStack");
 
-    ResDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop--];        /* result */
+    ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* result */
     
     if (AML_CreateFieldOp == opcode)
     {
-        CntDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop--];        /* count */
+        CntDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* count */
     }
 
-    OffDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop--];        /* offset */
-    SrcDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];          /* source */
+    OffDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* offset */
+    SrcDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];          /* source */
     ObjStackTop += NumOperands - 1;
 
     /* If ResDesc is a Name, it will be a direct name pointer after AmlPrepObjStack() */
@@ -383,9 +383,9 @@ AmlExecCreateField (
 ACPI_STATUS
 AmlExecFatal (void)
 {
-    ACPI_OBJECT             *TypeDesc;
-    ACPI_OBJECT             *CodeDesc;
-    ACPI_OBJECT             *ArgDesc;
+    ACPI_OBJECT_INTERNAL    *TypeDesc;
+    ACPI_OBJECT_INTERNAL    *CodeDesc;
+    ACPI_OBJECT_INTERNAL    *ArgDesc;
     ACPI_STATUS             Status;
 
 
@@ -408,9 +408,9 @@ AmlExecFatal (void)
 
     /*  DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
 
-    ArgDesc  = (ACPI_OBJECT *) ObjStack[ObjStackTop];
-    CodeDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
-    TypeDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 2];
+    ArgDesc  = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+    CodeDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
+    TypeDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
 
     DEBUG_PRINT (ACPI_INFO,
                 ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
@@ -448,9 +448,9 @@ AmlExecFatal (void)
 ACPI_STATUS
 AmlExecIndex (void)
 {
-    ACPI_OBJECT             *PkgDesc;
-    ACPI_OBJECT             *IdxDesc;
-    ACPI_OBJECT             *ResDesc;
+    ACPI_OBJECT_INTERNAL    *PkgDesc;
+    ACPI_OBJECT_INTERNAL    *IdxDesc;
+    ACPI_OBJECT_INTERNAL    *ResDesc;
     ACPI_STATUS             Status;
 
 
@@ -470,9 +470,9 @@ AmlExecIndex (void)
     {
         AmlDumpObjStack (MODE_Exec, ShortOps[AML_IndexOp], 3, "after AmlPrepObjStack");
 
-        ResDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
-        IdxDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
-        PkgDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 2];
+        ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+        IdxDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
+        PkgDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
 
         if (IdxDesc->Number.Number < 0 || 
             IdxDesc->Number.Number >= (UINT32) PkgDesc->Package.PkgCount)
@@ -534,12 +534,12 @@ AmlExecIndex (void)
 ACPI_STATUS
 AmlExecMatch (void)
 {
-    ACPI_OBJECT             *PkgDesc;
-    ACPI_OBJECT             *Op1Desc;
-    ACPI_OBJECT             *V1Desc;
-    ACPI_OBJECT             *Op2Desc;
-    ACPI_OBJECT             *V2Desc;
-    ACPI_OBJECT             *StartDesc;
+    ACPI_OBJECT_INTERNAL    *PkgDesc;
+    ACPI_OBJECT_INTERNAL    *Op1Desc;
+    ACPI_OBJECT_INTERNAL    *V1Desc;
+    ACPI_OBJECT_INTERNAL    *Op2Desc;
+    ACPI_OBJECT_INTERNAL    *V2Desc;
+    ACPI_OBJECT_INTERNAL    *StartDesc;
     ACPI_STATUS             Status;
     UINT32                  Look;
     UINT32                  MatchValue = (UINT32) -1;
@@ -561,12 +561,12 @@ AmlExecMatch (void)
 
     AmlDumpObjStack (MODE_Exec, ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
 
-    StartDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
-    V2Desc    = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
-    Op2Desc   = (ACPI_OBJECT *) ObjStack[ObjStackTop - 2];
-    V1Desc    = (ACPI_OBJECT *) ObjStack[ObjStackTop - 3];
-    Op1Desc   = (ACPI_OBJECT *) ObjStack[ObjStackTop - 4];
-    PkgDesc   = (ACPI_OBJECT *) ObjStack[ObjStackTop - 5];
+    StartDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+    V2Desc    = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
+    Op2Desc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
+    V1Desc    = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 3];
+    Op1Desc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 4];
+    PkgDesc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 5];
 
     /* Validate match comparison sub-opcodes */
     

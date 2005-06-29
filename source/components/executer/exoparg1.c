@@ -127,7 +127,7 @@ ACPI_STATUS
 AmlExecMonadic1 (
     UINT16                  opcode)
 {
-    ACPI_OBJECT             *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
 
 
@@ -152,8 +152,10 @@ AmlExecMonadic1 (
 
 
     AmlDumpObjStack (MODE_Exec, LongOps[opcode & 0x00ff], 1, "after AmlPrepObjStack");
+    ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
 
-    ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
+
+    /* Examine the opcode */
 
     switch (opcode)
     {
@@ -161,6 +163,7 @@ AmlExecMonadic1 (
     /*  DefRelease  :=  ReleaseOp   MutexObject */
 
     case AML_ReleaseOp:
+
         if (TYPE_Mutex != ObjDesc->ValType)
         {
             DEBUG_PRINT (ACPI_ERROR, (
@@ -178,6 +181,7 @@ AmlExecMonadic1 (
     /*  DefReset        :=  ResetOp     EventObject */
 
     case AML_ResetOp:
+
         if (TYPE_Event != ObjDesc->ValType)
         {
             DEBUG_PRINT (ACPI_ERROR, (
@@ -194,6 +198,7 @@ AmlExecMonadic1 (
     /*  DefSignal   :=  SignalOp        EventObject */
     
     case AML_SignalOp:
+
         if (TYPE_Event != ObjDesc->ValType)
         {
             DEBUG_PRINT (ACPI_ERROR, (
@@ -210,6 +215,7 @@ AmlExecMonadic1 (
     /*  DefSleep    :=  SleepOp MsecTime    */
     
     case AML_SleepOp:
+
         OsDoSuspend (ObjDesc->Number.Number);
         break;
 
@@ -217,6 +223,7 @@ AmlExecMonadic1 (
     /*  DefStall    :=  StallOp UsecTime    */
     
     case AML_StallOp:
+
         OsdSleepUsec (ObjDesc->Number.Number);
         break;
 
@@ -224,6 +231,7 @@ AmlExecMonadic1 (
     /*  unknown opcode  */
     
     default:
+
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1: Unknown monadic opcode %02x\n", opcode));
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
@@ -254,10 +262,12 @@ ACPI_STATUS
 AmlExecMonadic2R (
     UINT16                  opcode)
 {
-    ACPI_OBJECT             *ObjDesc;
-    ACPI_OBJECT             *ResDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *ResDesc;
     UINT32                  ResVal;
     ACPI_STATUS             Status;
+    INT32                   d0, d1, d2, d3;
+
 
 
     FUNCTION_TRACE ("AmlExecMonadic2R");
@@ -284,17 +294,15 @@ AmlExecMonadic2R (
 
     AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
 
-    ResDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
-    ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
+    ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+    ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
 
     switch (opcode)
     {
-        INT32           d0, d1, d2, d3;
-
-
     /*  DefNot  :=  NotOp   Operand Result  */
     
     case AML_BitNotOp:
+
         ObjDesc->Number.Number = ~ObjDesc->Number.Number;
         break;
 
@@ -302,6 +310,7 @@ AmlExecMonadic2R (
     /*  DefFindSetLeftBit   :=  FindSetLeftBitOp    Operand Result  */
 
     case AML_FindSetLeftBitOp:
+
         for (ResVal = 0; ObjDesc->Number.Number && ResVal < 33; ++ResVal)
         {
             ObjDesc->Number.Number >>= 1;
@@ -314,6 +323,7 @@ AmlExecMonadic2R (
     /*  DefFindSetRightBit  :=  FindSetRightBitOp   Operand Result  */
 
     case AML_FindSetRightBitOp:
+
         for (ResVal = 0; ObjDesc->Number.Number && ResVal < 33; ++ResVal)
         {
             ObjDesc->Number.Number <<= 1;
@@ -326,6 +336,7 @@ AmlExecMonadic2R (
     /*  DefFromBDC  :=  FromBCDOp   BCDValue    Result  */
 
     case AML_FromBCDOp:
+
         d0 = (INT32) (ObjDesc->Number.Number & 15);
         d1 = (INT32) (ObjDesc->Number.Number >> 4 & 15);
         d2 = (INT32) (ObjDesc->Number.Number >> 8 & 15);
@@ -347,6 +358,7 @@ AmlExecMonadic2R (
     /*  DefToBDC    :=  ToBCDOp Operand Result  */
     
     case AML_ToBCDOp:
+
         if (ObjDesc->Number.Number > 9999)
         {
             DEBUG_PRINT (ACPI_ERROR, ("iExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
@@ -377,10 +389,14 @@ AmlExecMonadic2R (
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
 
+
     case AML_StoreOp:
+
         break;
 
+
     default:
+
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: internal error: Unknown monadic opcode %02x\n",
                     opcode));
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
@@ -413,8 +429,8 @@ ACPI_STATUS
 AmlExecMonadic2 (
     UINT16                  opcode)
 {
-    ACPI_OBJECT             *ObjDesc;
-    ACPI_OBJECT             *ResDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *ResDesc;
     ACPI_STATUS             Status;
 
 
@@ -439,7 +455,7 @@ AmlExecMonadic2 (
 
     AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 1, "after AmlPrepObjStack");
 
-    ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
+    ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
 
 
     switch (opcode)
@@ -448,6 +464,7 @@ AmlExecMonadic2 (
     /*  DefLNot :=  LNotOp  Operand */
 
     case AML_LNotOp:
+
         ObjDesc->Number.Number = (!ObjDesc->Number.Number) - (UINT32) 1;
         break;
 
@@ -495,8 +512,8 @@ AmlExecMonadic2 (
 
         /* get the Number in ObjDesc and the Lvalue in ResDesc */
         
-        ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
-        ResDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
+        ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+        ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
 
         /* do the ++ or -- */
         
@@ -511,7 +528,7 @@ AmlExecMonadic2 (
 
         /* store result */
         
-        LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop - 1]);
+        LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop - 1]);
         ObjStack[ObjStackTop - 1] = (void *) ObjDesc;
         
         Status = AmlExecStore (ObjDesc, ResDesc);
@@ -543,6 +560,7 @@ AmlExecMonadic2 (
                 Status = (INT32) TYPE_Number;
                 break;
 
+
             case Debug1:
                 
                 /* Per spec, Debug object is of type Region */
@@ -550,22 +568,30 @@ AmlExecMonadic2 (
                 Status = (INT32) TYPE_Region;
                 break;
 
+
             case AML_IndexOp:
+
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2/TypeOp: determining type of Index result is not implemented\n"));
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
 
+
             case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
             case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
-                Status = (INT32) AmlMthStackGetType (LCLBASE + ObjDesc->Lvalue.OpCode - AML_Local0);
+
+                Status = (INT32) AmlMthStackGetType (MTH_LOCAL_BASE + ObjDesc->Lvalue.OpCode - AML_Local0);
                 break;
+
 
             case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
             case AML_Arg4: case AML_Arg5: case AML_Arg6:
-                Status = (INT32) AmlMthStackGetType (ARGBASE + ObjDesc->Lvalue.OpCode - AML_Arg0);
+
+                Status = (INT32) AmlMthStackGetType (MTH_ARG_BASE + ObjDesc->Lvalue.OpCode - AML_Arg0);
                 break;
 
+
             default:
+
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x\n",
                         ObjDesc->Lvalue.OpCode));
@@ -609,25 +635,33 @@ AmlExecMonadic2 (
         switch (ObjDesc->ValType)
         {
         case TYPE_Buffer:
+
             ObjDesc->Number.Number = ObjDesc->Buffer.BufLen;
             ObjDesc->ValType = (UINT8) TYPE_Number;
             break;
 
+
         case TYPE_String:
+
             ObjDesc->Number.Number = ObjDesc->String.StrLen;
             ObjDesc->ValType = (UINT8) TYPE_Number;
             break;
 
+
         case TYPE_Package:
+
             ObjDesc->Number.Number = ObjDesc->Package.PkgCount;
             ObjDesc->ValType = (UINT8) TYPE_Number;
             break;
 
+
         default:
+
            DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->ValType));
             FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
+
         }
         break;
 
@@ -637,6 +671,7 @@ AmlExecMonadic2 (
 
     case AML_RefOfOp:
     case AML_DerefOfOp:
+
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: %s unimplemented\n",
                 (opcode > ACPI_UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
         ObjStackTop++;  /*  dummy return value  */
@@ -644,7 +679,9 @@ AmlExecMonadic2 (
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
 
+
     default:
+
         DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic2:internal error: Unknown monadic opcode %02x\n",
                     opcode));

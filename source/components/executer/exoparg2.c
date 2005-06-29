@@ -126,8 +126,8 @@ ACPI_STATUS
 AmlExecDyadic1 (
     UINT16                  opcode)
 {
-    ACPI_OBJECT             *ObjDesc = NULL;
-    ACPI_OBJECT             *ValDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ValDesc = NULL;
     ACPI_STATUS             Status;
 
 
@@ -147,8 +147,8 @@ AmlExecDyadic1 (
 
     AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
 
-    ValDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
-    ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
+    ValDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+    ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
 
     switch (opcode)
     {
@@ -227,10 +227,10 @@ ACPI_STATUS
 AmlExecDyadic2R (
     UINT16                  opcode)
 {
-    ACPI_OBJECT             *ObjDesc = NULL;
-    ACPI_OBJECT             *ObjDesc2 = NULL;
-    ACPI_OBJECT             *ResDesc = NULL;
-    ACPI_OBJECT             *ResDesc2 = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc2 = NULL;
+    ACPI_OBJECT_INTERNAL    *ResDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ResDesc2 = NULL;
     ACPI_STATUS             Status;
     UINT32                  remain;
     INT32                   NumOperands;
@@ -279,12 +279,12 @@ AmlExecDyadic2R (
 
     if (AML_DivideOp == opcode)
     {
-        ResDesc2 = (ACPI_OBJECT *) ObjStack[ObjStackTop--];
+        ResDesc2 = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];
     }
 
-    ResDesc     = (ACPI_OBJECT *) ObjStack[ObjStackTop--];
-    ObjDesc2    = (ACPI_OBJECT *) ObjStack[ObjStackTop--];
-    ObjDesc     = (ACPI_OBJECT *) ObjStack[ObjStackTop];
+    ResDesc     = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];
+    ObjDesc2    = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];
+    ObjDesc     = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
     ObjStackTop += NumOperands - 1;
 
     switch (opcode)
@@ -498,9 +498,9 @@ ACPI_STATUS
 AmlExecDyadic2S (
     UINT16                  opcode)
 {
-    ACPI_OBJECT             *ObjDesc = NULL;
-    ACPI_OBJECT             *TimeDesc = NULL;
-    ACPI_OBJECT             *ResDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *TimeDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ResDesc = NULL;
     ACPI_STATUS             Status;
 
 
@@ -520,8 +520,8 @@ AmlExecDyadic2S (
     {
         AmlDumpObjStack (MODE_Exec, LongOps[opcode & 0x00ff], 2, "after AmlPrepObjStack");
 
-        TimeDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
-        ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
+        TimeDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+        ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
 
         switch (opcode)
         {
@@ -602,8 +602,8 @@ ACPI_STATUS
 AmlExecDyadic2 (
     UINT16                  opcode)
 {
-    ACPI_OBJECT             *ObjDesc;
-    ACPI_OBJECT             *ObjDesc2;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc2;
     ACPI_STATUS             Status;
 
 
@@ -623,8 +623,8 @@ AmlExecDyadic2 (
 
     AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
 
-    ObjDesc2 = (ACPI_OBJECT *) ObjStack[ObjStackTop];
-    ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
+    ObjDesc2 = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+    ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
 
     Status = AE_OK;      /* Make sure AE_OK */
     switch (opcode)
