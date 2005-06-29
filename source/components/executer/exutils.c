@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.107 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -372,7 +372,11 @@ AcpiExDigitsNeeded (
     /*
      * ACPI_INTEGER is unsigned, so we don't worry about a '-'
      */
-    CurrentValue = Value;
+    if ((CurrentValue = Value) == 0)
+    {
+	    return_VALUE (1);
+    }
+
     NumDigits = 0;
 
     while (CurrentValue)
