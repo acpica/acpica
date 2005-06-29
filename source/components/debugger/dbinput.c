@@ -165,7 +165,7 @@ enum AmlDebuggerCommands
 {
     CMD_NOT_FOUND = 0,
     CMD_NULL,
-    CMD_ALLOCATIONS,
+	CMD_ALLOCATIONS,
     CMD_ARGS,
     CMD_ARGUMENTS,
     CMD_BREAKPOINT,
@@ -173,6 +173,7 @@ enum AmlDebuggerCommands
     CMD_CLOSE,
     CMD_DEBUG,
     CMD_DUMP,
+	CMD_ENABLEACPI,
     CMD_EVENT,
     CMD_EXECUTE,
     CMD_EXIT,
@@ -223,6 +224,7 @@ COMMAND_INFO                Commands[] =
     "CLOSE",        0,
     "DEBUG",        1,
     "DUMP",         1,
+	"ENABLEACPI",   0,
     "EVENT",        1,
     "EXECUTE",      1,
     "EXIT",         0,
@@ -282,6 +284,7 @@ DbDisplayHelp (void)
     OsdPrintf ("Debug <Namepath> [Arguments]        Single Step a control method\n");
     OsdPrintf ("Dump <Address>|<Namepath>\n");
     OsdPrintf ("     [Byte|Word|Dword|Qword]        Display ACPI objects or memory\n");
+    OsdPrintf ("EnableAcpi                          Initialize and Enable the ACPI CA subsystem\n");
     OsdPrintf ("Event <F|G> <Value>                 Generate Event (Fixed/GPE)\n");
     OsdPrintf ("Execute <Namepath> [Arguments]      Execute control method\n");
     OsdPrintf ("Find <Name>   (? is wildcard)       Find ACPI name(s) with wildcards\n");
@@ -570,6 +573,36 @@ DbCommandDispatch (
     case CMD_DUMP:
         DbDecodeAndDisplayObject (Args[1], Args[2]);
         break;
+
+	case CMD_ENABLEACPI:
+		Status = AcpiInitialize(NULL);
+		if (ACPI_FAILURE(Status))
+		{
+			OsdPrintf("AcpiInitialize failed (0x%x)\n", Status);
+			return Status;
+		}
+
+		Status = AcpiLoadFirmwareTables();
+		if (ACPI_FAILURE(Status))
+		{
+			OsdPrintf("AcpiLoadFirmwareTables failed (0x%x)\n", Status);
+			return Status;
+		}
+
+		Status = AcpiLoadNamespace();
+		if (ACPI_FAILURE(Status))
+		{
+			OsdPrintf("AcpiLoadNamespace failed (0x%x)\n", Status);
+			return Status;
+		}
+
+		Status = AcpiEnable();
+		if (ACPI_FAILURE(Status))
+		{
+			OsdPrintf("AcpiEnable failed (0x%x)\n", Status);
+			return Status;
+		}
+		break;
 
     case CMD_EVENT:
         OsdPrintf ("Event command not implemented\n");
