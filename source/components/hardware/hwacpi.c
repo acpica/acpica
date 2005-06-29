@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.65 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -209,7 +209,8 @@ AcpiHwSetMode (
      */
     if (!AcpiGbl_FADT->AcpiEnable && !AcpiGbl_FADT->AcpiDisable)
     {
-        ACPI_REPORT_ERROR (("No ACPI mode transition supported in this system (enable/disable both zero)\n"));
+        ACPI_REPORT_ERROR ((
+            "No ACPI mode transition supported in this system (enable/disable both zero)\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -242,7 +243,8 @@ AcpiHwSetMode (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_ERROR (("Could not write mode change, %s\n", AcpiFormatException (Status)));
+        ACPI_REPORT_ERROR (("Could not write mode change, %s\n",
+            AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -255,7 +257,8 @@ AcpiHwSetMode (
     {
         if (AcpiHwGetMode() == Mode)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n", Mode));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n",
+                Mode));
             return_ACPI_STATUS (AE_OK);
         }
         AcpiOsStall(1000);
@@ -267,7 +270,7 @@ AcpiHwSetMode (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiHwGetMode
  *
@@ -281,7 +284,8 @@ AcpiHwSetMode (
  ******************************************************************************/
 
 UINT32
-AcpiHwGetMode (void)
+AcpiHwGetMode (
+    void)
 {
     ACPI_STATUS             Status;
     UINT32                  Value;
