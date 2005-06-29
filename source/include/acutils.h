@@ -143,7 +143,6 @@ void
 CmTerminate (
     void);
 
-
 /*
  * CmInit - miscellaneous initialization and shutdown
  */
@@ -171,6 +170,10 @@ CmGetTypeName (
 BOOLEAN
 CmValidObjectType (
     UINT32                  Type);
+
+ACPI_OWNER_ID
+CmAllocateOwnerId (
+    UINT32                  IdType);
 
 
 /* Object construction and conversion interfaces - cmobject */
@@ -252,7 +255,7 @@ CmDeleteInternalSimpleObject (
     ACPI_OBJECT_INTERNAL    *Object);
 
 void
-CmDeleteInternalObject (
+CmRemoveReference (
     ACPI_OBJECT_INTERNAL    *Object);
 
 ACPI_STATUS
