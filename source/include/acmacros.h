@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.99 $
+ *       $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -321,8 +321,8 @@
  * MASK_BITS_ABOVE creates a mask starting AT the position and above
  * MASK_BITS_BELOW creates a mask starting one bit BELOW the position
  */
-#define MASK_BITS_ABOVE(position)       (~(((UINT32)(-1)) << ((UINT32) (position))))
-#define MASK_BITS_BELOW(position)       (((UINT32)(-1)) << ((UINT32) (position)))
+#define MASK_BITS_ABOVE(position)       (~(((ACPI_INTEGER)(-1)) << ((UINT32) (position))))
+#define MASK_BITS_BELOW(position)       (((ACPI_INTEGER)(-1)) << ((UINT32) (position)))
 
 
 /* Macros for GAS addressing */
