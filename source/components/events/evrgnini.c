@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -639,6 +639,30 @@ AcpiEvInitializeRegion (
 
                     Status = AcpiEvAttachRegion (HandlerObj, RegionObj,
                                 AcpiNsLocked);
+
+                    /*
+                     * Tell all users that this region is usable by running the _REG
+                     * method
+                     */
+                    if (AcpiNsLocked)
+                    {
+                        Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+                        if (ACPI_FAILURE (Status))
+                        {
+                            return_ACPI_STATUS (Status);
+                        }
+                    }
+
+                    Status = AcpiEvExecuteRegMethod (RegionObj, 1);
+
+                    if (AcpiNsLocked)
+                    {
+                        Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+                        if (ACPI_FAILURE (Status))
+                        {
+                            return_ACPI_STATUS (Status);
+                        }
+                    }
 
                     return_ACPI_STATUS (AE_OK);
                 }
