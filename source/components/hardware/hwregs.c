@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.143 $
+ *              $Revision: 1.141 $
  *
  ******************************************************************************/
 
@@ -120,7 +120,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "acevents.h"
 
 #define _COMPONENT          ACPI_HARDWARE
         ACPI_MODULE_NAME    ("hwregs")
@@ -141,7 +140,9 @@
 ACPI_STATUS
 AcpiHwClearAcpiStatus (void)
 {
+    ACPI_NATIVE_UINT        i;
     ACPI_STATUS             Status;
+    ACPI_GPE_BLOCK_INFO     *GpeBlock;
 
 
     ACPI_FUNCTION_TRACE ("HwClearAcpiStatus");
@@ -179,7 +180,21 @@ AcpiHwClearAcpiStatus (void)
 
     /* Clear the GPE Bits in all GPE registers in all GPE blocks */
 
-    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock);
+    GpeBlock = AcpiGbl_GpeBlockListHead;
+    while (GpeBlock)
+    {
+        for (i = 0; i < GpeBlock->RegisterCount; i++)
+        {
+            Status = AcpiHwLowLevelWrite (8, 0xFF,
+                        &GpeBlock->RegisterInfo[i].StatusAddress, (UINT32) i);
+            if (ACPI_FAILURE (Status))
+            {
+                goto UnlockAndExit;
+            }
+        }
+
+        GpeBlock = GpeBlock->Next;
+    }
 
 UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
@@ -458,7 +473,7 @@ AcpiSetRegister (
 
         /*
          * Status Registers are different from the rest.  Clear by
-         * writing 1, writing 0 has no effect.  So, the only relevant
+         * writing 1, writing 0 has no effect.  So, the only relevent
          * information is the single bit we're interested in, all others should
          * be written as 0 so they will be left unchanged
          */
