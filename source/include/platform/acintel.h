@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acintel.h - VC specific defines, etc.
- *       $Revision: 1.9 $
+ *       $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -167,7 +167,7 @@
 #define ACPI_PRINTF_LIKE_FUNC
 
 /* Some compilers complain about unused variables. Sometimes we don't want to
- * use all the variables (most specifically for _THIS_MODULE). This allow us
+ * use all the variables (for example, _AcpiModuleName). This allows us
  * to to tell the compiler warning in a per-variable manner that a variable
  * is unused. However, MSVC doesn't do this.
  */
