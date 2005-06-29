@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.52 $
+ *       $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -240,6 +240,18 @@
 #endif
 
 
+/* Macros for GAS addressing */
+
+#define ACPI_PCI_DEVICE_MASK            (UINT64) 0x0000FFFF00000000
+#define ACPI_PCI_FUNCTION_MASK          (UINT64) 0x00000000FFFF0000
+#define ACPI_PCI_REGISTER_MASK          (UINT64) 0x000000000000FFFF
+
+#define ACPI_PCI_FUNCTION(a)            (UINT32) ((((a) & ACPI_PCI_FUNCTION_MASK) >> 16))
+#define ACPI_PCI_DEVICE(a)              (UINT32) ((((a) & ACPI_PCI_DEVICE_MASK) >> 32))
+#define ACPI_PCI_REGISTER(a)            (UINT32) (((a) & ACPI_PCI_REGISTER_MASK))
+#define ACPI_PCI_DEVFUN(a)              (UINT32) ((ACPI_PCI_DEVICE(a) << 16) | ACPI_PCI_FUNCTION(a))
+
+
 /*
  * An ACPI_HANDLE (which is actually an ACPI_NAMESPACE_NODE *) can appear in some contexts,
  * such as on apObjStack, where a pointer to an ACPI_OPERAND_OBJECT  can also
@@ -394,7 +406,7 @@
 
 /* Conditional execution */
 
-#define DEBUG_EXEC(a)                   a;
+#define DEBUG_EXEC(a)                   a
 #define NORMAL_EXEC(a)
 
 #define DEBUG_DEFINE(a)                 a;
@@ -499,7 +511,7 @@
  * DEBUG_PRINT stuff (set by ACPI_DEBUG) is on, or not.
  */
 #ifdef ENABLE_DEBUGGER
-#define DEBUGGER_EXEC(a)                a;
+#define DEBUGGER_EXEC(a)                a
 #else
 #define DEBUGGER_EXEC(a)
 #endif
