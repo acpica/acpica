@@ -35,13 +35,13 @@ Package=<4>
 
 ###############################################################################
 
-Project: "app"=..\..\App\WDM\app.dsp - Package Owner=<4>
+Project: "app"=..\..\TEST\app\app.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/app", GECAAAAA
-    ..\..\app
+    "$/Acpi Components/Test/app", GECAAAAA
+    ..\..\test\app
     end source code control
 }}}
 
@@ -54,13 +54,13 @@ Package=<4>
 
 ###############################################################################
 
-Project: "wdmdrv"=..\..\CADriver\wdm\wdmdrv.dsp - Package Owner=<4>
+Project: "wdmdrv"=..\..\OsDependent\Wdm\wdmdrv.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/CADriver/wdm", DBDAAAAA
-    ..\..\CADriver\wdm
+    "$/Acpi Components/OsDependent/Wdm", DBDAAAAA
+    ..\..\cadriver\wdm
     end source code control
 }}}
 
@@ -70,13 +70,13 @@ Package=<4>
 
 ###############################################################################
 
-Project: "wdmlib"=..\..\App\WDM\wdmlib.dsp - Package Owner=<4>
+Project: "wdmlib"=..\..\Test\App\Wdm\wdmlib.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/App/WDM", DICAAAAA
-    ..\..\app\wdm
+    "$/Acpi Components/Test/App/Wdm", DICAAAAA
+    ..\..\Test\App\Wdm
     end source code control
 }}}
 
