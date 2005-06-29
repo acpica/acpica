@@ -115,11 +115,10 @@
  *****************************************************************************/
 
 #include "acpi.h"
-#include "events.h"
-#include "namesp.h"
-#include "interp.h"
-#include "acpiosd.h"
-#include "hardware.h"
+#include "acevents.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "achware.h"
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evmisc");
@@ -156,7 +155,8 @@ AcpiEvNotifyDispatch (
      */
 
 
-    DEBUG_PRINT (ACPI_INFO, ("Dispatching Notify(%d) on device %p\n", NotifyValue, Device));
+    DEBUG_PRINT (ACPI_INFO,
+        ("Dispatching Notify(%d) on device %p\n", NotifyValue, Device));
 
     switch (NotifyValue)
     {
@@ -193,7 +193,8 @@ AcpiEvNotifyDispatch (
 
         if (AcpiGbl_SysNotify.Handler)
         {
-            AcpiGbl_SysNotify.Handler (Device, NotifyValue, AcpiGbl_SysNotify.Context);
+            AcpiGbl_SysNotify.Handler (Device, NotifyValue,
+                                        AcpiGbl_SysNotify.Context);
         }
     }
 
@@ -203,13 +204,14 @@ AcpiEvNotifyDispatch (
 
         if (AcpiGbl_DrvNotify.Handler)
         {
-            AcpiGbl_DrvNotify.Handler (Device, NotifyValue, AcpiGbl_DrvNotify.Context);
+            AcpiGbl_DrvNotify.Handler (Device, NotifyValue,
+                                        AcpiGbl_DrvNotify.Context);
         }
     }
 
 
     /*
-     * Get the notify object which must be attached to the device NTE
+     * Get the notify object which must be attached to the device Named Object
      */
 
     ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Device);
@@ -217,7 +219,8 @@ AcpiEvNotifyDispatch (
     {
         /* There can be no notify handler for this device */
 
-        DEBUG_PRINT (ACPI_INFO, ("No notify handler for device %p \n", Device));
+        DEBUG_PRINT (ACPI_INFO,
+            ("No notify handler for device %p \n", Device));
         return;
     }
 
@@ -239,7 +242,8 @@ AcpiEvNotifyDispatch (
     {
         /* There is no notify handler for this device */
 
-        DEBUG_PRINT (ACPI_INFO, ("No notify handler for device %p \n", Device));
+        DEBUG_PRINT (ACPI_INFO,
+            ("No notify handler for device %p \n", Device));
         return;
     }
 
@@ -274,7 +278,8 @@ AcpiEvGlobalLockThread (
     {
         /* Send sufficient units to the semaphore */
 
-        AcpiOsdSignalSemaphore (AcpiGbl_GlobalLockSemaphore, AcpiGbl_GlobalLockThreadCount);
+        AcpiOsSignalSemaphore (AcpiGbl_GlobalLockSemaphore,
+                                AcpiGbl_GlobalLockThreadCount);
     }
 }
 
@@ -315,10 +320,11 @@ AcpiEvGlobalLockHandler (
 
         /* Run the Global Lock thread which will signal all waiting threads */
 
-        AcpiOsdQueueForExecution (OSD_PRIORITY_HIGH, AcpiEvGlobalLockThread, Context);
+        AcpiOsQueueForExecution (OSD_PRIORITY_HIGH, AcpiEvGlobalLockThread,
+                                    Context);
     }
 
-    return INTERRUPT_HANDLED;
+    return (INTERRUPT_HANDLED);
 }
 
 
@@ -341,7 +347,8 @@ AcpiEvInitGlobalLockHandler (void)
     FUNCTION_TRACE ("EvInitGlobalLockHandler");
 
 
-    Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL, AcpiEvGlobalLockHandler, NULL);
+    Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL,
+                                            AcpiEvGlobalLockHandler, NULL);
 
     return_ACPI_STATUS (Status);
 }
@@ -417,7 +424,8 @@ AcpiEvAcquireGlobalLock(void)
       */
 
     AcpiAmlExitInterpreter ();
-    Status = OsLocalWaitSemaphore (AcpiGbl_GlobalLockSemaphore, ACPI_UINT32_MAX);
+    Status = AcpiAmlSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
+                                            ACPI_UINT32_MAX);
     AcpiAmlEnterInterpreter ();
 
 
@@ -457,18 +465,23 @@ AcpiEvReleaseGlobalLock (void)
 
     if (!AcpiGbl_GlobalLockThreadCount)
     {
-        /* No more threads holding lock, we can do the actual hardware release */
+        /*
+         * No more threads holding lock, we can do the actual hardware
+         * release
+         */
 
         GlobalLock = &AcpiGbl_FACS->GlobalLock;
         ACPI_RELEASE_GLOBAL_LOCK (GlobalLock, Pending);
         AcpiGbl_GlobalLockAcquired = FALSE;
 
         /*
-         * If the pending bit was set, we must write GBL_RLS to the control register
+         * If the pending bit was set, we must write GBL_RLS to the control
+         * register
          */
         if (Pending)
         {
-            AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, (INT32)PM1_CONTROL | GBL_RLS, 1);
+            AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK,
+                                    PM1_CONTROL | GBL_RLS, 1);
         }
     }
 
