@@ -151,6 +151,7 @@ TbGetTableFacs (
     void                    *TablePtr = NULL;
     UINT32                  Size;
     UINT8                   Allocation;
+	ACPI_STATUS				Status = AE_OK;
 
 
     FUNCTION_TRACE ("TbGetTableFacs");
@@ -187,11 +188,11 @@ TbGetTableFacs (
     {
         /* Just map the physical memory to our address space */
 
-        TablePtr = TbMapAcpiTable ((void *) Gbl_FACP->FirmwareCtrl, &Size);
-        if (!TablePtr)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
+        Status = TbMapAcpiTable ((void *) Gbl_FACP->FirmwareCtrl, &Size, &TablePtr);     
+		if (ACPI_FAILURE(Status))
+		{
+		    return_ACPI_STATUS (Status);
+		}
         
         /* Save allocation type */
 
@@ -201,10 +202,11 @@ TbGetTableFacs (
 
     /* Return values */
 
-    TableInfo->Pointer    = TablePtr;
-    TableInfo->Length     = Size;
-    TableInfo->Allocation = Allocation;
+    TableInfo->Pointer      = TablePtr;
+    TableInfo->Length       = Size;
+    TableInfo->Allocation   = Allocation;
+    TableInfo->BasePointer  = TablePtr;
     
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 

@@ -155,7 +155,10 @@ TbInstallTable (
     FUNCTION_TRACE ("TbInstallTable");
 
 
-    /* Check the table signature and make sure it is recognized */
+    /* 
+     * Check the table signature and make sure it is recognized
+     * Also checks the header checksum
+     */
 
     Status = TbRecognizeTable (TablePtr, TableInfo);
     if (ACPI_FAILURE (Status))
@@ -180,23 +183,10 @@ TbInstallTable (
         return_ACPI_STATUS (Status);
     }
 
-
     DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n", 
                                 Gbl_AcpiTableData[TableType].Name, TableHeader));
 
     CmReleaseMutex (MTX_TABLES);
-
-    /* Validate checksum for _most_ tables */
-
-    if (TableType != TABLE_FACS)
-    {
-        /* But don't abort if the checksum is wrong */
-        /* TBD: make this a configuration option? */
-
-        TbVerifyTableChecksum (TableHeader);
-    }
-
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -211,6 +201,13 @@ TbInstallTable (
  * RETURN:      Status
  *
  * DESCRIPTION: Check a table signature for a match against known table types
+ *
+ * NOTE:  All table pointers are validated as follows:
+ *          1) Table pointer must point to valid physical memory 
+ *          2) Signature must be 4 ASCII chars, even if we don't recognize the name
+ *          3) Table must be readable for length specified in the header
+ *          4) Table checksum must be valid (with the exception of the FACS which 
+ *              has no checksum for some odd reason…)
  *
  ******************************************************************************/
 
@@ -236,10 +233,9 @@ TbRecognizeTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     /* Search for a signature match among the known table types */
 
-    Status = AE_BAD_SIGNATURE;
+    Status = AE_SUPPORT;
     for (i = 1; i < NUM_ACPI_TABLES; i++)       /* Start at one -> Skip RSDP */
     {
         if (!STRNCMP (TableHeader->Signature, Gbl_AcpiTableData[i].Signature, Gbl_AcpiTableData[i].SigLength))
@@ -247,7 +243,7 @@ TbRecognizeTable (
             /* Found a signature match, get the pertinent info from the TableData structure */
 
             TableType       = i;
-            Status          = Gbl_AcpiTableData[i].Status;
+            Status          = Gbl_AcpiTableData[i].Status;  /* AE_SUPPORT or AE_OK */
 
             break;
         }
@@ -255,42 +251,33 @@ TbRecognizeTable (
 
     /* Return the table type and length via the info struct */
 
-    TableInfo->Type = (UINT8) TableType;
-    TableInfo->Length = TableHeader->Length;
-
-    /*
-     * Bad_Signature means that the table is bad or not one of the recognized tables
-     */
-
-    if (Status == AE_BAD_SIGNATURE)
-    {
-        /* Unknown table */
-
-        DEBUG_PRINT (ACPI_ERROR, ("Unknown table at %x in RSDT with signature '%4.4s'\n",
-                                TableHeader, TableHeader->Signature));
-        REPORT_ERROR ("Unknown table in the RSDT");
-
-        TbVerifyTableChecksum (TableHeader);
-    
-        /* 
-         * TBD: - need to be able to handle multiple unknown tables.  Error should be
-         * displayed when table is displayed,  Displaying it here for now 
-         */
-    
-        DUMP_BUFFER (TableHeader, 32);
-    }
+    TableInfo->Type     = (UINT8) TableType;
+    TableInfo->Length   = TableHeader->Length;
 
 
     /* 
-     * An AE_SUPPORT means that the table was recognized, but is not supported
+     * Validate checksum for _most_ tables,
+     * even the ones whose signature we don't recognize
      */
 
-    else if (Status == AE_SUPPORT)
+    if (TableType != TABLE_FACS)
+    {
+        /* But don't abort if the checksum is wrong */
+        /* TBD: make this a configuration option? */
+
+        TbVerifyTableChecksum (TableHeader);
+    }
+
+    /* 
+     * An AE_SUPPORT means that the table was not recognized.
+     * We basically ignore this;  just print a debug message
+     */
+
+    if (Status == AE_SUPPORT)
     {
         DEBUG_PRINT (ACPI_INFO, ("Unsupported table %s (Type %d) was found and discarded\n",
                             Gbl_AcpiTableData[TableType].Name, TableType));
     }
-
 
     return_ACPI_STATUS (Status);
 }
