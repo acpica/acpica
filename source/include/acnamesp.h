@@ -412,8 +412,8 @@ NsPopCurrent (
 
 ACPI_STATUS
 NsFindRsdp (
-    ROOT_SYSTEM_DESCRIPTOR_POINTER  ** RSDP,
-    char                    **BufferPtr);
+    char                    **BufferPtr,
+    ACPI_TABLE_INFO         *TableInfo);
 
 ACPI_STATUS
 NsVerifyTableChecksum (
@@ -423,12 +423,12 @@ ACPI_STATUS
 NsGetTable (
     void                    *PhysicalAddress, 
     char                    **BufferPtr,
-    void                    **Table);
+    ACPI_TABLE_INFO         *TableInfo);
 
 ACPI_STATUS
 NsGetTableFacs (
     char                    **BufferPtr,
-    void                    **Table);
+    ACPI_TABLE_INFO         *TableInfo);
 
 
 /*
