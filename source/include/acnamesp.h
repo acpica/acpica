@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.135 $
+ *       $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -351,33 +351,25 @@ AcpiNsDumpObjects (
 
 ACPI_STATUS
 AcpiNsEvaluateByHandle (
-    ACPI_NAMESPACE_NODE     *PrefixNode,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObject);
+    ACPI_PARAMETER_INFO     *Info);
 
 ACPI_STATUS
 AcpiNsEvaluateByName (
     char                    *Pathname,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObject);
+    ACPI_PARAMETER_INFO     *Info);
 
 ACPI_STATUS
 AcpiNsEvaluateRelative (
-    ACPI_NAMESPACE_NODE     *PrefixNode,
     char                    *Pathname,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObject);
+    ACPI_PARAMETER_INFO     *Info);
 
 ACPI_STATUS
 AcpiNsExecuteControlMethod (
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObjDesc);
+    ACPI_PARAMETER_INFO     *Info);
 
 ACPI_STATUS
 AcpiNsGetObjectValue (
-    ACPI_NAMESPACE_NODE     *ObjectNode,
-    ACPI_OPERAND_OBJECT     **ReturnObjDesc);
+    ACPI_PARAMETER_INFO     *Info);
 
 
 /*

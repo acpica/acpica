@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.192 $
+ *              $Revision: 1.204 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -251,13 +251,40 @@ BOOLEAN                     AcpiGbl_Shutdown = TRUE;
 
 const UINT8                 AcpiGbl_DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
 
-const char                  *AcpiGbl_DbSleepStates[ACPI_S_STATE_COUNT] = {
-                                "\\_S0_",
-                                "\\_S1_",
-                                "\\_S2_",
-                                "\\_S3_",
-                                "\\_S4_",
-                                "\\_S5_"};
+const char                  *AcpiGbl_SleepStateNames[ACPI_S_STATE_COUNT] =
+{
+    "\\_S0_",
+    "\\_S1_",
+    "\\_S2_",
+    "\\_S3_",
+    "\\_S4_",
+    "\\_S5_"
+};
+
+const char                  *AcpiGbl_HighestDstateNames[4] =
+{
+    "_S1D",
+    "_S2D",
+    "_S3D",
+    "_S4D"
+};
+
+/*
+ * Strings supported by the _OSI predefined (internal) method.
+ * When adding strings, be sure to update ACPI_NUM_OSI_STRINGS.
+ */
+const char                  *AcpiGbl_ValidOsiStrings[ACPI_NUM_OSI_STRINGS] =
+{
+    "Linux",
+    "Windows 2000",
+    "Windows 2001",
+    "Windows 2001.1",
+    "Windows 2001 SP0",
+    "Windows 2001 SP1",
+    "Windows 2001 SP2",
+    "Windows 2001 SP3",
+    "Windows 2001 SP4"
+};
 
 
 /******************************************************************************
@@ -270,27 +297,23 @@ const char                  *AcpiGbl_DbSleepStates[ACPI_S_STATE_COUNT] = {
 /*
  * Predefined ACPI Names (Built-in to the Interpreter)
  *
- * Initial values are currently supported only for types String and Number.
- * Both are specified as strings in this table.
- *
  * NOTES:
- * 1) _SB_ is defined to be a device to allow _SB_/_INI to be run
+ * 1) _SB_ is defined to be a device to allow \_SB_._INI to be run
  *    during the initialization sequence.
  */
-
 const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
 {
     {"_GPE",    ACPI_TYPE_LOCAL_SCOPE,      NULL},
     {"_PR_",    ACPI_TYPE_LOCAL_SCOPE,      NULL},
     {"_SB_",    ACPI_TYPE_DEVICE,           NULL},
     {"_SI_",    ACPI_TYPE_LOCAL_SCOPE,      NULL},
-    {"_TZ_",    ACPI_TYPE_LOCAL_SCOPE,      NULL},
-    {"_REV",    ACPI_TYPE_INTEGER,          "2"},
+    {"_TZ_",    ACPI_TYPE_THERMAL,          NULL},
+    {"_REV",    ACPI_TYPE_INTEGER,          (char *) ACPI_CA_SUPPORT_LEVEL},
     {"_OS_",    ACPI_TYPE_STRING,           ACPI_OS_NAME},
-    {"_GL_",    ACPI_TYPE_MUTEX,            "0"},
+    {"_GL_",    ACPI_TYPE_MUTEX,            (char *) 0},
 
-#if defined (ACPI_NO_METHOD_EXECUTION) || defined (ACPI_CONSTANT_EVAL_ONLY)
-    {"_OSI",    ACPI_TYPE_METHOD,           "1"},
+#if !defined (ACPI_NO_METHOD_EXECUTION) || defined (ACPI_CONSTANT_EVAL_ONLY)
+    {"_OSI",    ACPI_TYPE_METHOD,           (char *) 1},
 #endif
     {NULL,      ACPI_TYPE_ANY,              NULL}              /* Table terminator */
 };
@@ -300,7 +323,6 @@ const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
  * Properties of the ACPI Object Types, both internal and external.
  * The table is indexed by values of ACPI_OBJECT_TYPE
  */
-
 const UINT8                     AcpiGbl_NsProperties[] =
 {
     ACPI_NS_NORMAL,                     /* 00 Any              */
@@ -325,14 +347,15 @@ const UINT8                     AcpiGbl_NsProperties[] =
     ACPI_NS_NORMAL,                     /* 19 IndexField       */
     ACPI_NS_NORMAL,                     /* 20 Reference        */
     ACPI_NS_NORMAL,                     /* 21 Alias            */
-    ACPI_NS_NORMAL,                     /* 22 Notify           */
-    ACPI_NS_NORMAL,                     /* 23 Address Handler  */
-    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 24 Resource Desc    */
-    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 25 Resource Field   */
-    ACPI_NS_NEWSCOPE,                   /* 26 Scope            */
-    ACPI_NS_NORMAL,                     /* 27 Extra            */
-    ACPI_NS_NORMAL,                     /* 28 Data             */
-    ACPI_NS_NORMAL                      /* 29 Invalid          */
+    ACPI_NS_NORMAL,                     /* 22 MethodAlias      */
+    ACPI_NS_NORMAL,                     /* 23 Notify           */
+    ACPI_NS_NORMAL,                     /* 24 Address Handler  */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 25 Resource Desc    */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 26 Resource Field   */
+    ACPI_NS_NEWSCOPE,                   /* 27 Scope            */
+    ACPI_NS_NORMAL,                     /* 28 Extra            */
+    ACPI_NS_NORMAL,                     /* 29 Data             */
+    ACPI_NS_NORMAL                      /* 30 Invalid          */
 };
 
 
@@ -379,9 +402,7 @@ AcpiUtHexToAsciiChar (
  *
  ******************************************************************************/
 
-
 ACPI_TABLE_LIST             AcpiGbl_TableLists[NUM_ACPI_TABLE_TYPES];
-
 
 ACPI_TABLE_SUPPORT          AcpiGbl_TableData[NUM_ACPI_TABLE_TYPES] =
 {
@@ -546,9 +567,8 @@ AcpiUtGetEventName (
  *
  * The type ACPI_TYPE_ANY (Untyped) is used as a "don't care" when searching; when
  * stored in a table it really means that we have thus far seen no evidence to
- * indicatewhat type is actually going to be stored for this entry.
+ * indicate what type is actually going to be stored for this entry.
  */
-
 static const char           AcpiGbl_BadType[] = "UNDEFINED";
 #define TYPE_NAME_LENGTH    12                           /* Maximum length of each string */
 
@@ -576,14 +596,15 @@ static const char           *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 19 */ "IndexField",
     /* 20 */ "Reference",
     /* 21 */ "Alias",
-    /* 22 */ "Notify",
-    /* 23 */ "AddrHandler",
-    /* 24 */ "ResourceDesc",
-    /* 25 */ "ResourceFld",
-    /* 26 */ "Scope",
-    /* 27 */ "Extra",
-    /* 28 */ "Data",
-    /* 39 */ "Invalid"
+    /* 22 */ "MethodAlias",
+    /* 23 */ "Notify",
+    /* 24 */ "AddrHandler",
+    /* 25 */ "ResourceDesc",
+    /* 26 */ "ResourceFld",
+    /* 27 */ "Scope",
+    /* 28 */ "Extra",
+    /* 29 */ "Data",
+    /* 30 */ "Invalid"
 };
 
 
@@ -631,25 +652,39 @@ char *
 AcpiUtGetNodeName (
     void                    *Object)
 {
-    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) Object;
 
+
+    /* Must return a string of exactly 4 characters == ACPI_NAME_SIZE */
 
     if (!Object)
     {
-        return ("NULL NODE");
+        return ("NULL");
     }
 
-    Node = (ACPI_NAMESPACE_NODE *) Object;
+    /* Check for Root node */
+
+    if ((Object == ACPI_ROOT_OBJECT) ||
+        (Object == AcpiGbl_RootNode))
+    {
+        return ("\"\\\" ");
+    }
+
+    /* Descriptor must be a namespace node */
 
     if (Node->Descriptor != ACPI_DESC_TYPE_NAMED)
     {
-        return ("****");
+        return ("####");
     }
+
+    /* Name must be a valid ACPI name */
 
     if (!AcpiUtValidAcpiName (* (UINT32 *) Node->Name.Ascii))
     {
-        return ("----");
+        return ("????");
     }
+
+    /* Return the name */
 
     return (Node->Name.Ascii);
 }
@@ -853,6 +888,7 @@ AcpiUtInitGlobals (
 
     ACPI_FUNCTION_TRACE ("UtInitGlobals");
 
+
     /* Memory allocation and cache lists */
 
     ACPI_MEMSET (AcpiGbl_MemoryLists, 0, sizeof (ACPI_MEMORY_LIST) * ACPI_NUM_MEM_LISTS);
@@ -911,6 +947,7 @@ AcpiUtInitGlobals (
 
     AcpiGbl_SystemNotify.Handler        = NULL;
     AcpiGbl_DeviceNotify.Handler        = NULL;
+    AcpiGbl_ExceptionHandler            = NULL;
     AcpiGbl_InitHandler                 = NULL;
 
     /* Global "typed" ACPI table pointers */
@@ -945,6 +982,7 @@ AcpiUtInitGlobals (
     /* Hardware oriented */
 
     AcpiGbl_EventsInitialized           = FALSE;
+    AcpiGbl_SystemAwakeAndRunning       = TRUE;
 
     /* Namespace */
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.11 $
+ *       $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,6 +125,14 @@
 #define BLOCK_BRACE             2
 #define BLOCK_COMMA_LIST        4
 
+typedef struct acpi_external_list
+{
+    char                        *Path;
+    struct acpi_external_list   *Next;
+
+} ACPI_EXTERNAL_LIST;
+
+extern ACPI_EXTERNAL_LIST       *AcpiGbl_ExternalList;
 extern const char               *AcpiGbl_IoDecode[2];
 extern const char               *AcpiGbl_WordDecode[4];
 extern const char               *AcpiGbl_ConsumeDecode[2];
@@ -384,6 +392,12 @@ AcpiDmDwordDescriptor (
     UINT32                  Level);
 
 void
+AcpiDmExtendedDescriptor (
+    ASL_EXTENDED_ADDRESS_DESC  *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+void
 AcpiDmQwordDescriptor (
     ASL_QWORD_ADDRESS_DESC  *Resource,
     UINT32                  Length,
@@ -472,5 +486,13 @@ AcpiDmVendorSmallDescriptor (
     UINT32                  Length,
     UINT32                  Level);
 
+
+/*
+ * dmutils
+ */
+
+void
+AcpiDmAddToExternalList (
+    char                    *Path);
 
 #endif  /* __ACDISASM_H__ */

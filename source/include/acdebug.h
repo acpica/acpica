@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.73 $
+ *       $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -181,6 +181,10 @@ AcpiDbMethodEnd (
  * dbcmds - debug commands and output routines
  */
 
+ACPI_STATUS
+AcpiDbDisassembleMethod (
+    char                    *Name);
+
 void
 AcpiDbDisplayTableInfo (
     char                    *TableArg);
@@ -238,6 +242,10 @@ AcpiDbFindNameInNamespace (
 void
 AcpiDbSetScope (
     char                    *Name);
+
+ACPI_STATUS
+AcpiDbSleep (
+    char                    *ObjectArg);
 
 void
 AcpiDbFindReferences (

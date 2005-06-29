@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.64 $
+ *       $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -375,20 +375,6 @@ typedef struct smart_battery_table
 } SMART_BATTERY_TABLE;
 
 
-/*
- * High performance timer
- */
-typedef struct hpet_table
-{
-    ACPI_TABLE_HEADER_DEF
-    UINT32                  HardwareId;
-    UINT32                  BaseAddress [3];
-    UINT8                   HpetNumber;
-    UINT16                  ClockTick;
-    UINT8                   Attributes;
-
-} HPET_TABLE;
-
 #pragma pack()
 
 
@@ -432,5 +418,22 @@ typedef struct acpi_table_support
 #include "actbl1.h"   /* Acpi 1.0 table definitions */
 #include "actbl2.h"   /* Acpi 2.0 table definitions */
 
+
+#pragma pack(1)
+/*
+ * High performance timer
+ */
+typedef struct hpet_table
+{
+    ACPI_TABLE_HEADER_DEF
+    UINT32                  HardwareId;
+    ACPI_GENERIC_ADDRESS    BaseAddress;
+    UINT8                   HpetNumber;
+    UINT16                  ClockTick;
+    UINT8                   Attributes;
+
+} HPET_TABLE;
+
+#pragma pack()
 
 #endif /* __ACTBL_H__ */

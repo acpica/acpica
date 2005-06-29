@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.84 $
+ *              $Revision: 1.89 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -355,7 +355,7 @@ AcpiNsInstallNode (
     {
 #ifdef ACPI_ALPHABETIC_NAMESPACE
         /*
-         * Walk the list whilst searching for the the correct
+         * Walk the list whilst searching for the correct
          * alphabetic placement.
          */
         PreviousChildNode = NULL;
@@ -428,10 +428,11 @@ AcpiNsInstallNode (
     Node->OwnerId = OwnerId;
     Node->Type = (UINT8) Type;
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "%4.4s (%s) added to %4.4s (%s) %p at %p\n",
-        AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Node->Type),
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+        "%4.4s (%s) [Node %p Owner %X] added to %4.4s (%s) [Node %p]\n",
+        AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Node->Type), Node, OwnerId,
         AcpiUtGetNodeName (ParentNode), AcpiUtGetTypeName (ParentNode->Type),
-        ParentNode, Node));
+        ParentNode));
 
     /*
      * Increment the reference count(s) of all parents up to
@@ -599,15 +600,15 @@ AcpiNsDeleteNamespaceSubtree (
 
             /* Check if this node has any children */
 
-            if (AcpiNsGetNextNode (ACPI_TYPE_ANY, ChildNode, 0))
+            if (AcpiNsGetNextNode (ACPI_TYPE_ANY, ChildNode, NULL))
             {
                 /*
                  * There is at least one child of this node,
                  * visit the node
                  */
                 Level++;
-                ParentNode    = ChildNode;
-                ChildNode     = 0;
+                ParentNode = ChildNode;
+                ChildNode  = NULL;
             }
         }
         else
@@ -762,8 +763,8 @@ AcpiNsDeleteNamespaceByOwner (
                  * visit the node
                  */
                 Level++;
-                ParentNode    = ChildNode;
-                ChildNode     = NULL;
+                ParentNode = ChildNode;
+                ChildNode  = NULL;
             }
             else if (ChildNode->OwnerId == OwnerId)
             {

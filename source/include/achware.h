@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.68 $
+ *       $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -187,25 +187,13 @@ AcpiHwClearAcpiStatus (
 /* GPE support */
 
 ACPI_STATUS
-AcpiHwEnableGpe (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
-
-void
-AcpiHwEnableGpeForWakeup (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
-
-ACPI_STATUS
-AcpiHwDisableGpe (
+AcpiHwWriteGpeEnableReg (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
 AcpiHwDisableGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
     ACPI_GPE_BLOCK_INFO     *GpeBlock);
-
-void
-AcpiHwDisableGpeForWakeup (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
 AcpiHwClearGpe (
@@ -222,12 +210,26 @@ AcpiHwGetGpeStatus (
     ACPI_EVENT_STATUS       *EventStatus);
 
 ACPI_STATUS
-AcpiHwDisableNonWakeupGpes (
-    void);
+AcpiHwDisableAllGpes (
+    UINT32                  Flags);
 
 ACPI_STATUS
-AcpiHwEnableNonWakeupGpes (
-    void);
+AcpiHwEnableAllRuntimeGpes (
+    UINT32                  Flags);
+
+ACPI_STATUS
+AcpiHwEnableAllWakeupGpes (
+    UINT32                  Flags);
+
+ACPI_STATUS
+AcpiHwEnableRuntimeGpeBlock (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
+ACPI_STATUS
+AcpiHwEnableWakeupGpeBlock (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
 
 
 /* ACPI Timer prototypes */

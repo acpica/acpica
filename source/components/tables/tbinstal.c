@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.73 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -352,10 +352,11 @@ AcpiTbInitTableDescriptor (
     {
         /*
          * Only one table allowed, and a table has alread been installed
-         *  at this location, so return an error.
+         * at this location, so return an error.
          */
         if (ListHead->Next)
         {
+            ACPI_MEM_FREE (TableDesc);
             return_ACPI_STATUS (AE_ALREADY_EXISTS);
         }
 

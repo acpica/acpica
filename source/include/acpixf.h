@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -368,8 +368,17 @@ AcpiInstallGpeHandler (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
     UINT32                  Type,
-    ACPI_GPE_HANDLER        Handler,
+    ACPI_EVENT_HANDLER      Address,
     void                    *Context);
+
+ACPI_STATUS
+AcpiInstallExceptionHandler (
+    ACPI_EXCEPTION_HANDLER  Handler);
+
+
+/*
+ * Event interfaces
+ */
 
 ACPI_STATUS
 AcpiAcquireGlobalLock (
@@ -384,7 +393,7 @@ ACPI_STATUS
 AcpiRemoveGpeHandler (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    ACPI_GPE_HANDLER        Handler);
+    ACPI_EVENT_HANDLER      Address);
 
 ACPI_STATUS
 AcpiEnableEvent (
@@ -404,6 +413,12 @@ ACPI_STATUS
 AcpiGetEventStatus (
     UINT32                  Event,
     ACPI_EVENT_STATUS       *EventStatus);
+
+ACPI_STATUS
+AcpiSetGpeType (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
+    UINT8                   Type);
 
 ACPI_STATUS
 AcpiEnableGpe (

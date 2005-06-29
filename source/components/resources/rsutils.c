@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.38 $
+ *              $Revision: 1.40 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -367,6 +367,7 @@ AcpiRsSetSrsMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *InBuffer)
 {
+    ACPI_PARAMETER_INFO     Info;
     ACPI_OPERAND_OBJECT     *Params[2];
     ACPI_STATUS             Status;
     ACPI_BUFFER             Buffer;
@@ -409,10 +410,14 @@ AcpiRsSetSrsMethodData (
     Params[0]->Common.Flags   = AOPOBJ_DATA_VALID;
     Params[1] = NULL;
 
+    Info.Node = Handle;
+    Info.Parameters = Params;
+    Info.ParameterType = ACPI_PARAM_ARGS;
+
     /*
      * Execute the method, no return value
      */
-    Status = AcpiNsEvaluateRelative (Handle, "_SRS", Params, NULL);
+    Status = AcpiNsEvaluateRelative ("_SRS", &Info);
 
     /*
      * Clean up and return the status from AcpiNsEvaluateRelative
