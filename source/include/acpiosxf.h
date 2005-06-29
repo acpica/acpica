@@ -337,6 +337,18 @@ ACPI_STATUS
 OsdBreakpoint (
     char                    *Message);
 
+BOOLEAN
+OsdVerifyReadable (
+    void                    *Pointer,
+    UINT32                  Length);
+
+
+BOOLEAN
+OsdVerifyWritable (
+    void                    *Pointer,
+    UINT32                  Length);
+
+
 
 /*
  * Debug print routines 
