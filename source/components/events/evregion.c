@@ -556,7 +556,8 @@ EvAddrHandlerHelper (
 
     /* Convert and validate the device handle */
 
-    if (!(ObjEntry = NsConvertHandleToEntry (ObjHandle)))
+    ObjEntry = NsConvertHandleToEntry (ObjHandle);
+    if (!ObjEntry)
     {
         return (AE_BAD_PARAMETER);
     }
