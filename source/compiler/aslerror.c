@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -154,6 +154,7 @@ char                        *AslMessages [] = {
     "Unknown reserved name:",
     "Name already exists in scope:",
     "Invalid type:",
+    "Multiple types:",
 };
 
 

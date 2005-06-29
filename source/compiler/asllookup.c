@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -247,7 +247,7 @@ LkCrossReferenceNamespace (void)
 
     /* Walk the entire parse tree */
 
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
                         LkNamespaceLocateEnd, WalkState);
 
     return AE_OK;
@@ -286,6 +286,7 @@ LkNamespaceLocateBegin (
     NATIVE_CHAR             *Path;
     UINT8                   PassedArgs;
     ASL_PARSE_NODE          *Next;
+    ASL_PARSE_NODE          *MethodPsNode;
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -377,8 +378,10 @@ LkNamespaceLocateBegin (
          * Count the number of arguments, each appears as a child
          * under the parent node
          */
-        PassedArgs = 0;
-        Next = PsNode->Child;
+        PsNode->ParseOpcode = METHODCALL;
+        PassedArgs          = 0;
+        Next                = PsNode->Child;
+
         while (Next)
         {
             PassedArgs++;
@@ -406,14 +409,15 @@ LkNamespaceLocateBegin (
 
         /*
          * Check if the method caller expects this method to return a value and
-         * if the method in fact returns a value.
+         * if the called method in fact returns a value.
          */
 
         if (!(PsNode->Flags & NODE_RESULT_NOT_USED))
         {
-            /* 1) Result from the method is used (method is a TermArg) */
+            /* 1) The result from the method is used (the method is a TermArg) */
 
-            if (NsNode->Flags & ANOBJ_METHOD_NO_RETVAL)
+            MethodPsNode = NsNode->Object;
+            if (MethodPsNode->Flags & NODE_METHOD_NO_RETVAL)
             {
                 /*
                  * 2) Method NEVER returns a value
@@ -421,7 +425,7 @@ LkNamespaceLocateBegin (
                 AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, PsNode, PsNode->ExternalName);
             }
 
-            else if (NsNode->Flags & ANOBJ_METHOD_SOME_NO_RETVAL)
+            else if (MethodPsNode->Flags & NODE_METHOD_SOME_NO_RETVAL)
             {
                 /*
                  * 2) Method SOMETIMES returns a value, SOMETIMES not
