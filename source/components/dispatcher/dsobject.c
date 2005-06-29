@@ -460,7 +460,7 @@ PsxBuildInternalSimpleObj (
         }
 
         Status = NsLookup (Gbl_CurrentScope->Scope, NameString, ACPI_TYPE_Any, IMODE_Execute, 
-                                    NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) &ObjDesc);
+                                    NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, (NAME_TABLE_ENTRY **) &ObjDesc);
 
         /* Free the namestring created above */
 
