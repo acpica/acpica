@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  ******************************************************************************/
 
@@ -759,24 +759,23 @@ AcpiDbWalkForSpecificObjects (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
-    ACPI_SIZE               BufSize;
-    NATIVE_CHAR             Buffer[64];
+    ACPI_BUFFER             Buffer;
 
 
     ObjDesc = AcpiNsGetAttachedObject ((ACPI_NAMESPACE_NODE *) ObjHandle);
-    BufSize = sizeof (Buffer) / sizeof (*Buffer);
 
     /* Get and display the full pathname to this object */
 
-    Status = AcpiNsHandleToPathname (ObjHandle, &BufSize, Buffer);
-
+    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
+    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
         return (AE_OK);
     }
 
-    AcpiOsPrintf ("%32s", Buffer);
+    AcpiOsPrintf ("%32s", Buffer.Pointer);
+    AcpiOsFree (Buffer.Pointer);
 
 
     /* Display short information about the object */
@@ -884,8 +883,7 @@ AcpiDbWalkAndMatchName (
     ACPI_STATUS             Status;
     NATIVE_CHAR             *RequestedName = (NATIVE_CHAR *) Context;
     UINT32                  i;
-    ACPI_SIZE               BufSize;
-    NATIVE_CHAR             Buffer[96];
+    ACPI_BUFFER             Buffer;
 
 
     /* Check for a name match */
@@ -906,18 +904,17 @@ AcpiDbWalkAndMatchName (
 
     /* Get the full pathname to this object */
 
-    BufSize = sizeof (Buffer) / sizeof (*Buffer);
-
-    Status = AcpiNsHandleToPathname (ObjHandle, &BufSize, Buffer);
+    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
+    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
     }
-
     else
     {
-        AcpiOsPrintf ("%32s (%p) - %s\n", Buffer, ObjHandle,
+        AcpiOsPrintf ("%32s (%p) - %s\n", Buffer.Pointer, ObjHandle,
             AcpiUtGetTypeName (((ACPI_NAMESPACE_NODE *) ObjHandle)->Type));
+        AcpiOsFree (Buffer.Pointer);
     }
 
     return (AE_OK);
