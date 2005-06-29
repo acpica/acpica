@@ -184,7 +184,7 @@ AcpiAmlExecCreateField (
 
     /* Resolve the operands */
 
-    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS);
+    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
                     NumOperands, "after AcpiAmlResolveOperands");
 
@@ -443,7 +443,7 @@ AcpiAmlExecCreateField (
 
     /* Store constructed field descriptor in result location */
 
-    Status = AcpiAmlExecStore (FieldDesc, ResDesc);
+    Status = AcpiAmlExecStore (FieldDesc, ResDesc, WalkState);
 
     /*
      * If the field descriptor was not physically stored (or if a failure
@@ -781,10 +781,10 @@ AcpiAmlExecCreateRegion (
 
     /*
      * If we have a valid region, initialize it
+     * Namespace is NOT locked at this point.
      */
-    /* Namespace IS locked */
 
-    Status = AcpiEvInitializeRegion (ObjDescRegion, TRUE);
+    Status = AcpiEvInitializeRegion (ObjDescRegion, FALSE);
 
     if (ACPI_FAILURE (Status))
     {
