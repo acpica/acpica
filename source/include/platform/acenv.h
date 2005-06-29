@@ -225,16 +225,16 @@
  * We will be linking to the standard Clib functions
  */
 
-#define STRSTR(s1,s2)           strstr((char *) (s1), (char *) (s2))
-#define STRUPR(s)               strupr((char *) (s))
-#define STRLEN(s)               strlen((char *) (s))
-#define STRCPY(d,s)             strcpy((char *) (d), (char *) (s))
-#define STRNCPY(d,s,n)          strncpy((char *) (d), (char *) (s), (n))
-#define STRNCMP(d,s,n)          strncmp((char *) (d), (char *) (s), (n))
-#define STRCMP(d,s)             strcmp((char *) (d), (char *) (s))
-#define STRCAT(d,s)             strcat((char *) (d), (char *) (s))
-#define STRNCAT(d,s,n)          strncat((char *) (d), (char *) (s), (n))
-#define STRTOUL(d,s,n)          strtoul((char *) (d), (char **) (s), (n))
+#define STRSTR(s1,s2)           strstr((INT8 *) (s1), (INT8 *) (s2))
+#define STRUPR(s)               strupr((INT8 *) (s))
+#define STRLEN(s)               strlen((INT8 *) (s))
+#define STRCPY(d,s)             strcpy((INT8 *) (d), (INT8 *) (s))
+#define STRNCPY(d,s,n)          strncpy((INT8 *) (d), (INT8 *) (s), (n))
+#define STRNCMP(d,s,n)          strncmp((INT8 *) (d), (INT8 *) (s), (n))
+#define STRCMP(d,s)             strcmp((INT8 *) (d), (INT8 *) (s))
+#define STRCAT(d,s)             strcat((INT8 *) (d), (INT8 *) (s))
+#define STRNCAT(d,s,n)          strncat((INT8 *) (d), (INT8 *) (s), (n))
+#define STRTOUL(d,s,n)          strtoul((d), (s), (n))
 #define MEMCPY(d,s,n)           memcpy(d, s, (size_t) n)
 #define MEMSET(d,s,n)           memset(d, s, (size_t) n)
 #define TOUPPER                 toupper
@@ -277,22 +277,22 @@ typedef char *va_list;
 #define va_arg(ap, T)           (*(T *)(((ap) += ((_Bnd(T, _AUPBND))) \
                                     - (_Bnd(T, _ADNBND)))))
 #define va_end(ap)              (void)0
-#define va_start(ap, A)         (void) ((ap) = (((char *)&(A)) \
+#define va_start(ap, A)         (void) ((ap) = (((INT8 *)&(A)) \
                                     + (_Bnd(A, _AUPBND))))
 
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)           AcpiCmStrstr    ((char *) (s1), (char *) (s2))
-#define STRUPR(s)               AcpiCmStrupr    ((char *) (s))
-#define STRLEN(s)               AcpiCmStrlen    ((char *) (s))
-#define STRCPY(d,s)             AcpiCmStrcpy    ((char *) (d), (char *) (s))
-#define STRNCPY(d,s,n)          AcpiCmStrncpy   ((char *) (d), (char *) (s), (n))
-#define STRNCMP(d,s,n)          AcpiCmStrncmp   ((char *) (d), (char *) (s), (n))
-#define STRCMP(d,s)             AcpiCmStrcmp    ((char *) (d), (char *) (s))
-#define STRCAT(d,s)             AcpiCmStrcat    ((char *) (d), (char *) (s))
-#define STRNCAT(d,s,n)          AcpiCmStrncat   ((char *) (d), (char *) (s), (n))
-#define STRTOUL(d,s,n)          AcpiCmStrtoul   ((char *) (d), (char **) (s), (n))
+#define STRSTR(s1,s2)           AcpiCmStrstr    ((INT8 *) (s1), (INT8 *) (s2))
+#define STRUPR(s)               AcpiCmStrupr    ((INT8 *) (s))
+#define STRLEN(s)               AcpiCmStrlen    ((INT8 *) (s))
+#define STRCPY(d,s)             AcpiCmStrcpy    ((INT8 *) (d), (INT8 *) (s))
+#define STRNCPY(d,s,n)          AcpiCmStrncpy   ((INT8 *) (d), (INT8 *) (s), (n))
+#define STRNCMP(d,s,n)          AcpiCmStrncmp   ((INT8 *) (d), (INT8 *) (s), (n))
+#define STRCMP(d,s)             AcpiCmStrcmp    ((INT8 *) (d), (INT8 *) (s))
+#define STRCAT(d,s)             AcpiCmStrcat    ((INT8 *) (d), (INT8 *) (s))
+#define STRNCAT(d,s,n)          AcpiCmStrncat   ((INT8 *) (d), (INT8 *) (s), (n))
+#define STRTOUL(d,s,n)          AcpiCmStrtoul   ((INT8 *) (d), (INT8 **) (s), (n))
 #define MEMCPY(d,s,n)           AcpiCmMemcpy    ((void *) (d), (const void *) (s), (n))
 #define MEMSET(d,v,n)           AcpiCmMemset    ((void *) (d), (v), (n))
 #define TOUPPER                 AcpiCmToUpper
