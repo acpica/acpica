@@ -85,147 +85,147 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\NameSpace\acpiinit.c
+SOURCE=..\..\Subsystem\NameSpace\acpiinit.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Device\dvlegacy.c
+SOURCE=..\..\Subsystem\Device\dvlegacy.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Device\dvregs.c
+SOURCE=..\..\Subsystem\Device\dvregs.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Device\dvsleep.c
+SOURCE=..\..\Subsystem\Device\dvsleep.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Device\dvtimer.c
+SOURCE=..\..\Subsystem\Device\dvtimer.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Event\evregs.c
+SOURCE=..\..\Subsystem\Event\evregs.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Event\evsci.c
+SOURCE=..\..\Subsystem\Event\evsci.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Execute\excommon.c
+SOURCE=..\..\Subsystem\Execute\excommon.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Execute\exmexist.c
+SOURCE=..\..\Subsystem\Execute\exmexist.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Execute\exmpts.c
+SOURCE=..\..\Subsystem\Execute\exmpts.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Execute\exmwak.c
+SOURCE=..\..\Subsystem\Execute\exmwak.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\iefield.c
+SOURCE=..\..\Subsystem\Interpreter\iefield.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\ieopexec.c
+SOURCE=..\..\Subsystem\Interpreter\ieopexec.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\ieprep.c
+SOURCE=..\..\Subsystem\Interpreter\ieprep.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\iesystem.c
+SOURCE=..\..\Subsystem\Interpreter\iesystem.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\iexecute.c
+SOURCE=..\..\Subsystem\Interpreter\iexecute.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\isatoms.c
+SOURCE=..\..\Subsystem\Interpreter\isatoms.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\iscode.c
+SOURCE=..\..\Subsystem\Interpreter\iscode.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\isdebug.c
+SOURCE=..\..\Subsystem\Interpreter\isdebug.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\isdump.c
+SOURCE=..\..\Subsystem\Interpreter\isdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\isexprs.c
+SOURCE=..\..\Subsystem\Interpreter\isexprs.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\isidata.c
+SOURCE=..\..\Subsystem\Interpreter\isidata.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\isnames.c
+SOURCE=..\..\Subsystem\Interpreter\isnames.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\isopcode.c
+SOURCE=..\..\Subsystem\Interpreter\isopcode.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\isrdata.c
+SOURCE=..\..\Subsystem\Interpreter\isrdata.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\isstack.c
+SOURCE=..\..\Subsystem\Interpreter\isstack.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Interpreter\isutils.c
+SOURCE=..\..\Subsystem\Interpreter\isutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\NameSpace\nsaccess.c
+SOURCE=..\..\Subsystem\NameSpace\nsaccess.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\NameSpace\nsapi.c
+SOURCE=..\..\Subsystem\NameSpace\nsapi.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\NameSpace\nsdump.c
+SOURCE=..\..\Subsystem\NameSpace\nsdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\NameSpace\nsfamily.c
+SOURCE=..\..\Subsystem\NameSpace\nsfamily.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\NameSpace\nspriv.c
+SOURCE=..\..\Subsystem\NameSpace\nspriv.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\NameSpace\nsscope.c
+SOURCE=..\..\Subsystem\NameSpace\nsscope.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\NameSpace\nsstack.c
+SOURCE=..\..\Subsystem\NameSpace\nsstack.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\NameSpace\nstables.c
+SOURCE=..\..\Subsystem\NameSpace\nstables.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\NameSpace\nsutils.c
+SOURCE=..\..\Subsystem\NameSpace\nsutils.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -233,79 +233,79 @@ SOURCE=.\NameSpace\nsutils.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\Include\acpi.h
+SOURCE=..\..\Subsystem\Include\acpi.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\acpiasm.h
+SOURCE=..\..\Subsystem\Include\acpiasm.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\acpiobj.h
+SOURCE=..\..\Subsystem\Include\acpiobj.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\acpiosd.h
+SOURCE=..\..\Subsystem\Include\acpiosd.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\acpisubsys.h
+SOURCE=..\..\Subsystem\Include\acpisubsys.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\acpitables.h
+SOURCE=..\..\Subsystem\Include\acpitables.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\amlcode.h
+SOURCE=..\..\Subsystem\Include\amlcode.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\config.h
+SOURCE=..\..\Subsystem\Include\config.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\datatypes.h
+SOURCE=..\..\Subsystem\Include\datatypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\devices.h
+SOURCE=..\..\Subsystem\Include\devices.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\display.h
+SOURCE=..\..\Subsystem\Include\display.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\enumerate.h
+SOURCE=..\..\Subsystem\Include\enumerate.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\events.h
+SOURCE=..\..\Subsystem\Include\events.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\excep.h
+SOURCE=..\..\Subsystem\Include\excep.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\exmethod.h
+SOURCE=..\..\Subsystem\Include\exmethod.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\interpreter.h
+SOURCE=..\..\Subsystem\Include\interpreter.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\namespace.h
+SOURCE=..\..\Subsystem\Include\namespace.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\output.h
+SOURCE=..\..\Subsystem\Include\output.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Include\pnp.h
+SOURCE=..\..\Subsystem\Include\pnp.h
 # End Source File
 # End Group
 # End Target
