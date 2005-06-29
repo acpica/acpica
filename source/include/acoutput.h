@@ -48,7 +48,8 @@
 #define ACPI_WARN                   0x00000004
 #define ACPI_ERROR                  0x00000008
 #define ACPI_FATAL                  0x00000010
-#define ACPI_ALL                    0x0000001F
+#define ACPI_VERBOSE_INFO           0x00000020 /* Move next to ACPI_INFO! */
+#define ACPI_ALL                    0x0000002F
 
 #define TRACE_LOAD                  0x00000100
 #define TRACE_OPCODE                0x00000200
@@ -60,6 +61,7 @@
 #define TRACE_TRASH                 0x00008000
 #define TRACE_TABLES                0x00010000
 #define TRACE_FUNCTIONS             0x00020000
+#define TRACE_VALUES                0x00040000
 #define TRACE_ALL                   0x000FFF00
 
 
@@ -240,9 +242,10 @@ _LocalCallocate (
 
 #define DUMP_STACK_ENTRY(a)             DumpStackEntry(a)
 #define DUMP_STACK(a,b,c,d)             DumpStack(a,b,c,d)
-#define DUMP_ENTRY(a)                   NsDumpEntry (a, LOGFILE)
+#define DUMP_ENTRY(a)                   NsDumpEntry (a)
 #define DUMP_BUFFER(a,b,c)              DumpBuffer(a,b,c)
 #define DUMP_CODE(a)                    DumpCode(a)
+#define DUMP_TABLES(a,b)                NsDumpTables(a,b)
 
 /* 
  * Master debug print macros 
@@ -262,6 +265,8 @@ _LocalCallocate (
 #define DEBUG_PRINT_RAW(lvl,fp)         TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintRaw PARAM_LIST(fp);}
 
+#define DEBUG_EXEC(a)                   a;
+
 #else
 
 /* Non-debug case -- make everything go away */
@@ -272,9 +277,11 @@ _LocalCallocate (
 #define DUMP_ENTRY(a)
 #define DUMP_BUFFER(a,b,c)
 #define DUMP_CODE(a)
+#define DUMP_TABLES(a,b)
 
 #define DEBUG_PRINT(l,f)
-#define DEBUG_PRINT_RAW(l,f)                        
+#define DEBUG_PRINT_RAW(l,f) 
+#define DEBUG_EXEC(a)                       
 
 #endif
 
