@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -301,7 +301,7 @@ AcpiDsLoad1BeginOp (
             WalkState->ScopeInfo->Common.Value = ACPI_TYPE_ANY;
             break;
 
-       default:
+        default:
 
             /* All other types are an error */
 
@@ -628,7 +628,7 @@ AcpiDsLoad2BeginOp (
             WalkState->ScopeInfo->Common.Value = ACPI_TYPE_ANY;
             break;
 
-       default:
+        default:
 
             /* All other types are an error */
 
