@@ -704,7 +704,9 @@ EvAssociateRegionAndHandler(
     /*
      *  Last thing, tell ASL region is usable
      */
-    Status = EvExecuteRegMethod (RegionObj, 1);
+    CmReleaseMutex (MTX_NAMESPACE);
+	Status = EvExecuteRegMethod (RegionObj, 1);
+	CmAcquireMutex (MTX_NAMESPACE);
 
     return_ACPI_STATUS (Status);
 }
