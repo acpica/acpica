@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -446,33 +446,48 @@ AcpiEvGpeInitialize (void)
     AcpiGbl_GpeBlockInfo[0].BlockBaseNumber = 0;
     AcpiGbl_GpeBlockInfo[1].BlockBaseNumber = AcpiGbl_FADT->Gpe1Base;
 
+    /* Warn and exit if there are no GPE registers */
+
     AcpiGbl_GpeRegisterCount = AcpiGbl_GpeBlockInfo[0].RegisterCount +
                                AcpiGbl_GpeBlockInfo[1].RegisterCount;
     if (!AcpiGbl_GpeRegisterCount)
     {
-        ACPI_REPORT_WARNING (("Zero GPEs are defined in the FADT\n"));
+        ACPI_REPORT_WARNING (("There are no GPE blocks defined in the FADT\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Determine the maximum GPE number for this machine */
+    /* 
+     * Determine the maximum GPE number for this machine.
+     * Note: both GPE0 and GPE1 are optional, and either can exist without
+     * the other
+     */
+    if (AcpiGbl_GpeBlockInfo[0].RegisterCount)
+    {
+        /* GPE block 0 exists */
 
-    AcpiGbl_GpeNumberMax = ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[0].RegisterCount) - 1;
+        AcpiGbl_GpeNumberMax = ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[0].RegisterCount) - 1;
+    }
 
     if (AcpiGbl_GpeBlockInfo[1].RegisterCount)
     {
-        /* Check for GPE0/GPE1 overlap */
+        /* GPE block 1 exists */
 
-        if (AcpiGbl_GpeNumberMax >= AcpiGbl_FADT->Gpe1Base)
+        /* Check for GPE0/GPE1 overlap (if both banks exist) */
+
+        if ((AcpiGbl_GpeBlockInfo[0].RegisterCount) &&
+            (AcpiGbl_GpeNumberMax >= AcpiGbl_FADT->Gpe1Base))
         {
             ACPI_REPORT_ERROR ((
-                "GPE0 block (GPE  0 to %d) overlaps the GPE1 block (GPE %d to %d)\n",
+                "GPE0 block (GPE 0 to %d) overlaps the GPE1 block (GPE %d to %d)\n",
                 AcpiGbl_GpeNumberMax, AcpiGbl_FADT->Gpe1Base, 
                 AcpiGbl_FADT->Gpe1Base + (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1)));
             return_ACPI_STATUS (AE_BAD_VALUE);
         }
 
-        /* GPE0 and GPE1 do not have to be contiguous in the GPE number space */
-
+        /* 
+         * GPE0 and GPE1 do not have to be contiguous in the GPE number space,
+         * But, GPE0 always starts at zero.
+         */
         AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base + 
                                 (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1);
     }
@@ -486,9 +501,8 @@ AcpiEvGpeInitialize (void)
         return_ACPI_STATUS (AE_BAD_VALUE);
     }
 
-    /*
-     * Allocate the GPE number-to-index translation table
-     */
+    /* Allocate the GPE number-to-index translation table */
+
     AcpiGbl_GpeNumberToIndex = ACPI_MEM_CALLOCATE (
                                     sizeof (ACPI_GPE_INDEX_INFO) *
                                     ((ACPI_SIZE) AcpiGbl_GpeNumberMax + 1));
@@ -504,9 +518,8 @@ AcpiEvGpeInitialize (void)
     ACPI_MEMSET (AcpiGbl_GpeNumberToIndex, (int) ACPI_GPE_INVALID,
             sizeof (ACPI_GPE_INDEX_INFO) * ((ACPI_SIZE) AcpiGbl_GpeNumberMax + 1));
 
-    /*
-     * Allocate the GPE register information block
-     */
+    /* Allocate the GPE register information block */
+
     AcpiGbl_GpeRegisterInfo = ACPI_MEM_CALLOCATE (
                                 (ACPI_SIZE) AcpiGbl_GpeRegisterCount *
                                 sizeof (ACPI_GPE_REGISTER_INFO));
@@ -583,7 +596,6 @@ AcpiEvGpeInitialize (void)
              * are cleared by writing a '1', while enable registers are cleared
              * by writing a '0'.
              */
-
             Status = AcpiHwLowLevelWrite (8, 0x00, &GpeRegisterInfo->EnableAddress, 0);
             if (ACPI_FAILURE (Status))
             {
@@ -599,16 +611,19 @@ AcpiEvGpeInitialize (void)
             GpeRegister++;
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d: %X registers at %8.8X%8.8X\n",
-            (INT32) GpeBlock, AcpiGbl_GpeBlockInfo[0].RegisterCount,
-            ACPI_HIDWORD (ACPI_GET_ADDRESS (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address)),
-            ACPI_LODWORD (ACPI_GET_ADDRESS (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address))));
+        if (i)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d: %X registers at %8.8X%8.8X\n",
+                (INT32) GpeBlock, AcpiGbl_GpeBlockInfo[0].RegisterCount,
+                ACPI_HIDWORD (ACPI_GET_ADDRESS (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address)),
+                ACPI_LODWORD (ACPI_GET_ADDRESS (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address))));
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d Range GPE #%2.2X to GPE #%2.2X\n",
-            (INT32) GpeBlock,
-            AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber,
-            AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber +
-                ((AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount * 8) -1)));
+            ACPI_REPORT_INFO (("GPE Block%d defined as GPE%d to GPE%d\n",
+                (INT32) GpeBlock,
+                AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber,
+                AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber +
+                    ((AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount * 8) -1)));
+        }
     }
 
     return_ACPI_STATUS (AE_OK);
