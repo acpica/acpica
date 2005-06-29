@@ -3,22 +3,6 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "Device"=..\..\SUBSYSTEM\Device\Device.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-    begin source code control
-    "$/Acpi Components/Subsystem/Device", EQBAAAAA
-    ..\..\subsystem\device
-    end source code control
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "Event"=..\..\SUBSYSTEM\Event\Event.dsp - Package Owner=<4>
 
 Package=<5>
@@ -35,13 +19,13 @@ Package=<4>
 
 ###############################################################################
 
-Project: "Execute"=..\..\SUBSYSTEM\Execute\Execute.dsp - Package Owner=<4>
+Project: "Hardware"=..\..\SUBSYSTEM\Hardware\Hardware.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/SubSystem/Execute", GQBAAAAA
-    ..\..\subsystem\execute
+    "$/Acpi Components/Subsystem/Hardware", EQBAAAAA
+    ..\..\subsystem\hardware
     end source code control
 }}}
 
@@ -58,6 +42,22 @@ Package=<5>
     begin source code control
     "$/Acpi Components/SubSystem/Interpreter", IQBAAAAA
     ..\..\subsystem\interpreter
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Methods"=..\..\SUBSYSTEM\Methods\Methods.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/Subsystem/Methods", GQBAAAAA
+    ..\..\subsystem\methods
     end source code control
 }}}
 
