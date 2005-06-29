@@ -1,7 +1,7 @@
-
 /******************************************************************************
- * 
- * Name: hardware.h -- hardware specific interfaces
+ *
+ * Name: achware.h -- hardware specific interfaces
+ *       $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,151 +114,24 @@
  *
  *****************************************************************************/
 
-#ifndef __HARDWARE_H__
-#define __HARDWARE_H__
-
-/* Sleep states */
-
-#define SLWA_DEBUG_LEVEL    4
-#define GTS_CALL            0
-#define GTS_WAKE            1
-
-/* Cx States */
-
-#define MAX_CX_STATE_LATENCY 0xFFFFFFFF
-#define MAX_CX_STATES       4
-
-/* 
- * The #define's and enum below establish an abstract way of identifying what
- * register block and register is to be accessed.  Do not change any of the
- * values as they are used in switch statements and offset calculations. 
- */
-    
-#define REGISTER_BLOCK_MASK     0xFF00
-#define BIT_IN_REGISTER_MASK    0x00FF
-#define PM1_EVT                 0x0100
-#define PM1_CONTROL             0x0200
-#define PM2_CONTROL             0x0300
-#define PM_TIMER                0x0400
-#define PROCESSOR_BLOCK         0x0500
-#define GPE0_STS_BLOCK          0x0600
-#define GPE0_EN_BLOCK           0x0700
-#define GPE1_STS_BLOCK          0x0800
-#define GPE1_EN_BLOCK           0x0900
-
-enum
-{
-    /* PM1 status register ids */
-    
-    TMR_STS =   (PM1_EVT        | 0x01),
-    BM_STS,
-    GBL_STS,
-    PWRBTN_STS,
-    SLPBTN_STS,
-    RTC_STS,
-    WAK_STS,
-
-    /* PM1 enable register ids */
-    
-    TMR_EN,
-    /* need to skip 1 enable number since there's no bus master enable register */  
-    GBL_EN =    (PM1_EVT        | 0x0A),
-    PWRBTN_EN,
-    SLPBTN_EN,
-    RTC_EN,
-
-    /* PM1 control register ids */
-
-    SCI_EN =    (PM1_CONTROL    | 0x01),
-    BM_RLD,
-    GBL_RLS,
-    SLP_TYPa,
-    SLP_TYPb,
-    SLP_EN,
-
-    /* PM2 control register ids */
-
-    ARB_DIS =   (PM2_CONTROL    | 0x01),
-
-    /* PM Timer register ids */
-
-    TMR_VAL =   (PM_TIMER       | 0x01),
-
-    GPE0_STS =  (GPE0_STS_BLOCK | 0x01),
-    GPE0_EN =   (GPE0_EN_BLOCK  | 0x01),
-
-    GPE1_STS =  (GPE1_STS_BLOCK | 0x01),
-    GPE1_EN =   (GPE0_EN_BLOCK  | 0x01),
-
-    /* Last register value is one less than LAST_REG */
-
-    LAST_REG
-};
-
-
-#define TMR_STS_MASK        0x0001
-#define BM_STS_MASK         0x0010
-#define GBL_STS_MASK        0x0020
-#define PWRBTN_STS_MASK     0x0100
-#define SLPBTN_STS_MASK     0x0200
-#define RTC_STS_MASK        0x0400
-#define WAK_STS_MASK        0x8000
-
-#define ALL_FIXED_STS_BITS  (TMR_STS_MASK      |   \
-                            BM_STS_MASK        |   \
-                            GBL_STS_MASK       |   \
-                            PWRBTN_STS_MASK    |   \
-                            SLPBTN_STS_MASK    |   \
-                            RTC_STS_MASK       |   \
-                            WAK_STS_MASK)
-
-#define TMR_EN_MASK         0x0001
-#define GBL_EN_MASK         0x0020
-#define PWRBTN_EN_MASK      0x0100
-#define SLPBTN_EN_MASK      0x0200
-#define RTC_EN_MASK         0x0400
-
-#define SCI_EN_MASK         0x0001
-#define BM_RLD_MASK         0x0002
-#define GBL_RLS_MASK        0x0004
-#define SLP_TYPx_MASK       0x1C00
-#define SLP_EN_MASK         0x2000
-
-#define ARB_DIS_MASK        0x0001
-
-#define GPE0_STS_MASK
-#define GPE0_EN_MASK
-
-#define GPE1_STS_MASK
-#define GPE1_EN_MASK
-
-
-#define ACPI_READ           1
-#define ACPI_WRITE          2
-
-#define LOW_BYTE            0x00FF
-#define ONE_BYTE            0x08
-
-#ifndef SET 
-    #define SET             1
-#endif
-#ifndef CLEAR
-    #define CLEAR           0
-#endif
-
+#ifndef __ACHWARE_H__
+#define __ACHWARE_H__
 
 
 /* Prototypes */
 
 
 ACPI_STATUS
-AcpiHwInitialize();
+AcpiHwInitialize(
+    void);
 
 ACPI_STATUS
-AcpiHwShutdown();
+AcpiHwShutdown(
+    void);
 
 ACPI_STATUS
-AcpiHwInitializeSystemInfo();
+AcpiHwInitializeSystemInfo(
+    void);
 
 ACPI_STATUS
 AcpiHwSetMode (
@@ -275,12 +148,12 @@ AcpiHwGetModeCapabilities (
 /* Register I/O Prototypes */
 
 UINT32
-AcpiHwRegisterIO (
+AcpiHwRegisterAccess (
     NATIVE_UINT             ReadWrite,
-    BOOLEAN                 UseLock,    
+    BOOLEAN                 UseLock,
     UINT32                  RegisterId, ... /* DWORD Value */);
 
-void 
+void
 AcpiHwClearAcpiStatus (
    void);
 
@@ -316,55 +189,55 @@ AcpiHwObtainSleepTypeRegisterData (
 /* Cx State Prototypes */
 
 ACPI_STATUS
-AcpiHwIa32EnterC1(
-    ACPI_IO_ADDRESS         PBlkAddress,
+AcpiHwEnterC1(
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-AcpiHwIa32EnterC2(
-    ACPI_IO_ADDRESS         PBlkAddress,
+AcpiHwEnterC2(
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-AcpiHwIa32EnterC3(
-    ACPI_IO_ADDRESS         PBlkAddress,
+AcpiHwEnterC3(
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-AcpiHwIa32EnterCx (
-    ACPI_IO_ADDRESS         PBlkAddress,
+AcpiHwEnterCx (
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-AcpiHwIa32SetCx (
+AcpiHwSetCx (
     UINT32                  CxState);
 
 ACPI_STATUS
-AcpiHwIa32GetCxInfo (
-    UINT32                  CxStates[MAX_CX_STATES]);
+AcpiHwGetCxInfo (
+    UINT32                  CxStates[]);
 
 
 /* Throttling Prototypes */
 
-void 
+void
 AcpiHwEnableThrottling (
-    ACPI_IO_ADDRESS         PBlkAddress);
+    ACPI_IO_ADDRESS         PblkAddress);
 
-void 
+void
 AcpiHwDisableThrottling (
-    ACPI_IO_ADDRESS         PBlkAddress);
+    ACPI_IO_ADDRESS         PblkAddress);
 
 UINT32
 AcpiHwGetDutyCycle (
     UINT8                   DutyOffset,
-    ACPI_IO_ADDRESS         PBlkAddress,
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  NumThrottleStates);
 
 void
 AcpiHwProgramDutyCycle (
     UINT8                   DutyOffset,
     UINT32                  DutyCycle,
-    ACPI_IO_ADDRESS         PBlkAddress,
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  NumThrottleStates);
 
 NATIVE_UINT
@@ -384,4 +257,4 @@ AcpiHwPmtResolution (
     void);
 
 
-#endif /* __HARDWARE_H__ */
+#endif /* __ACHWARE_H__ */
