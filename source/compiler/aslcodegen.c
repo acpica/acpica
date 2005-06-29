@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -177,7 +177,7 @@ CgAmlWriteWalk (
      * Debug output
      */
     DbgPrint (ASL_TREE_OUTPUT,
-        "%5.5d [%d]", Op->Asl.LogicalLineNumber, Level);
+        "%5.5d [%2d]", Op->Asl.LogicalLineNumber, Level);
     UtPrintFormattedName (Op->Asl.ParseOpcode, Level);
 
     if (Op->Asl.ParseOpcode == PARSEOP_NAMESEG    ||
