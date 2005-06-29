@@ -231,65 +231,6 @@ AmlAllocateNameString (
 
 
 /*****************************************************************************
- *
- * FUNCTION:    AmlGoodName
- *
- * PARAMETERS:  Character           - The character to be examined
- *
- * RETURN:      1 if Character may appear in a name, else 0
- *
- * DESCRIPTION: Check for a printable character
- *
- ****************************************************************************/
-
-BOOLEAN 
-AmlGoodName (
-    UINT32                  Name)
-{
-    char                    *NamePtr = (char *) &Name;
-    UINT32                  i;
-
-    
-
-    for (i = 0; i < ACPI_NAME_SIZE; i++)
-    {
-        if (!((NamePtr[i] == '_') || 
-              (NamePtr[i] >= 'A' && NamePtr[i] <= 'Z') ||
-              (NamePtr[i] >= '0' && NamePtr[i] <= '9')))
-        {
-            return FALSE;
-        }
-    }
-
-
-    return TRUE;
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    AmlGoodChar
- *
- * PARAMETERS:  Character           - The character to be examined
- *
- * RETURN:      1 if Character may appear in a name, else 0
- *
- * DESCRIPTION: Check for a printable character
- *
- ****************************************************************************/
-
-INT32 
-AmlGoodChar (
-    INT32                   Character)
-{
-
-    return ((Character == '_') || 
-            (Character >= 'A' && Character <= 'Z') ||
-            (Character >= '0' && Character <= '9'));
-}
-
-
-/*****************************************************************************
  * 
  * FUNCTION:    AmlDecodePackageLength
  *
@@ -379,7 +320,7 @@ AmlExecNameSegment (
 
     DEBUG_PRINT (TRACE_LOAD, ("AmlExecNameSegment: Bytes from stream:\n"));
 
-    for (Index = 4; Index > 0 && AmlGoodChar (*AmlAddress); --Index)
+    for (Index = 4; (Index > 0) && (CmValidAcpiCharacter (*AmlAddress)); --Index)
     {
         CharBuf[4 - Index] = *AmlAddress++;
         DEBUG_PRINT (TRACE_LOAD, ("%c\n", CharBuf[4 - Index]));
@@ -584,8 +525,7 @@ AmlGetNameString (
             {
                 /* RootPrefix followed by NULL */
             
-                DEBUG_PRINT (TRACE_EXEC,
-                                ("AmlDoName: NameSeg is \"\\\" followed by NULL\n"));
+                DEBUG_PRINT (TRACE_EXEC, ("AmlDoName: NameSeg is \"\\\" followed by NULL\n"));
             }
 
             AmlAddress++;    /*  consume NULL byte   */
@@ -621,7 +561,7 @@ AmlGetNameString (
     {
         /* Ran out of segments after processing a prefix */
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Malformed Name\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Malformed Name at %p\n", NameString));
         REPORT_ERROR ("Ran out of segments after processing a prefix");
 
         Status = AE_AML_BAD_NAME;
