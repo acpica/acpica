@@ -215,6 +215,26 @@ SOURCE=..\..\Subsystem\Hardware\hwtimer.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\idoexpr.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\idoname.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\idoopcde.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\idoopty1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\idoopty2.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\idopkctl.c
 # End Source File
 # Begin Source File
@@ -223,11 +243,15 @@ SOURCE=..\..\Subsystem\Interpreter\idopkfld.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\idopkg.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\idopkobj.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\iedyadic.c
+SOURCE=..\..\Subsystem\Interpreter\iedyad.c
 # End Source File
 # Begin Source File
 
@@ -244,7 +268,7 @@ SOURCE=..\..\Subsystem\Interpreter\iefield.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\iemonadic.c
+SOURCE=..\..\Subsystem\Interpreter\iemonad.c
 # End Source File
 # Begin Source File
 
@@ -356,30 +380,6 @@ SOURCE=..\..\Subsystem\Interpreter\isdebug.c
 
 !ENDIF 
 
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\isdoexp.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\isdoname.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\isdoop.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\isdoopt1.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\isdoopt2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\isdopkg.c
 # End Source File
 # Begin Source File
 
