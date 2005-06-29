@@ -154,7 +154,6 @@ AmlPrepDefFieldValue (
     INT32                   FldLen)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    ACPI_STATUS             Status = AE_OK;
     INT32                   Type;
 
 
@@ -289,7 +288,6 @@ AmlPrepBankFieldValue (
     INT32                   FldLen)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    ACPI_STATUS             Status = AE_OK;
     INT32                   Type;
 
 
@@ -410,7 +408,6 @@ AmlPrepIndexFieldValue (
     INT32                   FldLen)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("AmlPrepIndexFieldValue");
