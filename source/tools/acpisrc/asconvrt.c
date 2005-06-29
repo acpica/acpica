@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -1181,7 +1181,8 @@ void
 AsRemoveDebugMacros (
     char                    *Buffer)
 {
-
+    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG");
+    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG_TRACK_ALLOCATIONS");
 
     AsRemoveStatement (Buffer, "DEBUG_PRINT");
     AsRemoveStatement (Buffer, "DEBUG_EXEC");
@@ -1192,9 +1193,6 @@ AsRemoveDebugMacros (
     AsReplaceString ("return_PTR",          "return", Buffer);
     AsReplaceString ("return_ACPI_STATUS",  "return", Buffer);
     AsReplaceString ("return_VALUE",        "return", Buffer);
-
-    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG");
-    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG_TRACK_ALLOCATIONS");
 }
 
 
