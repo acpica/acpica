@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -237,7 +237,7 @@ AeBuildLocalTables (
 
     AcpiGbl_RSDP = &LocalRSDP;
 
-    /* 
+    /*
      * Examine the incoming user table.  At this point, it has been verified
      * to be either a DSDT, SSDT, or a PSDT, but they must be handled differently
      */
@@ -663,7 +663,6 @@ AeRegionInit (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AeNotifyHandler
@@ -781,8 +780,6 @@ AeInstallHandlers (void)
             return (Status);
         }
     }
-
-
 
 
     /*
