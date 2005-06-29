@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -148,12 +148,24 @@ AcpiInitializeSubsystem (
     void)
 {
     ACPI_STATUS             Status;
-
+    ACPI_BUFFER             Buffer;
+    ACPI_SYSTEM_INFO        SysInfo;
 
     FUNCTION_TRACE ("AcpiInitializeSubsystem");
 
+    Buffer.Length = sizeof(SysInfo);
+    Buffer.Pointer = &SysInfo;
+
+    Status = AcpiGetSystemInfo(&Buffer);
+    if (ACPI_FAILURE (Status))
+    {
+        REPORT_ERROR (("AcpiGetSystemInfo failed, %s\n",
+            AcpiCmFormatException (Status)));
+        return_ACPI_STATUS (Status);
+    }
+
     DEBUG_PRINT_RAW (ACPI_OK,
-        ("ACPI: Core Subsystem version [%s]\n", ACPI_CA_VERSION));
+        ("ACPI: Core Subsystem version [%x]\n", SysInfo.AcpiCaVersion));
     DEBUG_PRINT (ACPI_INFO, ("Initializing ACPI Subsystem...\n"));
 
 
@@ -442,8 +454,7 @@ AcpiGetSystemInfo (
     OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
-    /* TBD [Future]: need a version number, or use the version string */
-    InfoPtr->AcpiCaVersion      = 0x1234;
+    InfoPtr->AcpiCaVersion      = ACPI_CA_VERSION;
 
     /* System flags (ACPI capabilities) */
 
