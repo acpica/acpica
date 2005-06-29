@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.50 $
+ *       $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -199,7 +199,7 @@ AcpiPsGetNextArg (
 
 /* psopcode - AML Opcode information */
 
-ACPI_OPCODE_INFO *
+const ACPI_OPCODE_INFO *
 AcpiPsGetOpcodeInfo (
     UINT16                  Opcode);
 
