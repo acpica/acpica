@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.125 $
+ *       $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -195,12 +195,16 @@ NATIVE_CHAR *
 AcpiUtGetTypeName (
     ACPI_OBJECT_TYPE        Type);
 
+#endif
+
+
 NATIVE_CHAR *
 AcpiUtGetRegionName (
     UINT8                   SpaceId);
 
-#endif
-
+NATIVE_CHAR *
+AcpiUtGetEventName (
+    UINT32                  EventId);
 
 UINT8
 AcpiUtHexToAsciiChar (

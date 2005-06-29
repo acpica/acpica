@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.212 $
+ *       $Revision: 1.213 $
  *
  *****************************************************************************/
 
@@ -543,40 +543,32 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 
 
 /*
- * AcpiEvent Types:
- * ------------
- * Fixed & general purpose...
+ * AcpiEvent Types: Fixed & General Purpose
  */
 
 typedef UINT32                          ACPI_EVENT_TYPE;
 
-#define ACPI_EVENT_FIXED                (ACPI_EVENT_TYPE) 0
-#define ACPI_EVENT_GPE                  (ACPI_EVENT_TYPE) 1
+#define ACPI_EVENT_FIXED                0
+#define ACPI_EVENT_GPE                  1
 
 /*
  * Fixed events
  */
 
-#define ACPI_EVENT_PMTIMER              (ACPI_EVENT_TYPE) 0
-    /*
-     * There's no bus master event so index 1 is used for IRQ's that are not
-     * handled by the SCI handler
-     */
-#define ACPI_EVENT_NOT_USED             (ACPI_EVENT_TYPE) 1
-#define ACPI_EVENT_GLOBAL               (ACPI_EVENT_TYPE) 2
-#define ACPI_EVENT_POWER_BUTTON         (ACPI_EVENT_TYPE) 3
-#define ACPI_EVENT_SLEEP_BUTTON         (ACPI_EVENT_TYPE) 4
-#define ACPI_EVENT_RTC                  (ACPI_EVENT_TYPE) 5
-#define ACPI_EVENT_GENERAL              (ACPI_EVENT_TYPE) 6
-#define ACPI_EVENT_MAX                  6
-#define ACPI_NUM_FIXED_EVENTS           7
+#define ACPI_EVENT_PMTIMER              0
+#define ACPI_EVENT_GLOBAL               1
+#define ACPI_EVENT_POWER_BUTTON         2
+#define ACPI_EVENT_SLEEP_BUTTON         3
+#define ACPI_EVENT_RTC                  4
+#define ACPI_EVENT_MAX                  4
+#define ACPI_NUM_FIXED_EVENTS           ACPI_EVENT_MAX + 1
 
 #define ACPI_GPE_INVALID                0xFF
 #define ACPI_GPE_MAX                    0xFF
 #define ACPI_NUM_GPE                    256
 
-#define ACPI_EVENT_LEVEL_TRIGGERED      (ACPI_EVENT_TYPE) 1
-#define ACPI_EVENT_EDGE_TRIGGERED       (ACPI_EVENT_TYPE) 2
+#define ACPI_EVENT_LEVEL_TRIGGERED      1
+#define ACPI_EVENT_EDGE_TRIGGERED       2
 
 /*
  * GPEs
