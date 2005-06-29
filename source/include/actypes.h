@@ -748,7 +748,7 @@ typedef struct
     UINT32          ResourceSourceStringLength;
     UINT8           ResourceSource[1];
     
-} ADDRESS16_DESCRIPTOR_RESOURCE;
+} ADDRESS16_RESOURCE;
 
 typedef struct  
 {
@@ -767,7 +767,7 @@ typedef struct
     UINT32          ResourceSourceStringLength;
     UINT8           ResourceSource[1];
     
-} ADDRESS32_DESCRIPTOR_RESOURCE;
+} ADDRESS32_RESOURCE;
 
 typedef struct
 {
@@ -795,8 +795,8 @@ typedef enum
     Memory24,
     Memory32,
     FixedMemory32,
-    Address16Descriptor,
-    Address32Descriptor,
+    Address16,
+    Address32,
     ExtendedIrq
 } RESOURCE_TYPE;
 
@@ -811,8 +811,8 @@ typedef union
     MEMORY24_RESOURCE                   Memory24;
     MEMORY32_RESOURCE                   Memory32;
     FIXED_MEMORY32_RESOURCE             FixedMemory32;
-    ADDRESS16_DESCRIPTOR_RESOURCE       Address16Descriptor;
-    ADDRESS32_DESCRIPTOR_RESOURCE       Address32Descriptor;
+    ADDRESS16_RESOURCE                  Address16;
+    ADDRESS32_RESOURCE                  Address32;
     EXTENDED_IRQ_RESOURCE               ExtendedIrq;
 } RESOURCE_DATA;
 
