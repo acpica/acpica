@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  ******************************************************************************/
 
@@ -432,14 +432,30 @@ AcpiDmDisplayInternalObject (
 
             case AML_INDEX_OP:
 
-                AcpiOsPrintf ("[Index]          ");
-                if (!ObjDesc->Reference.Where)
+                AcpiOsPrintf ("[Index]  ");
+                switch (ObjDesc->Reference.TargetType)
                 {
-                    AcpiOsPrintf ("Uninitialized WHERE ptr");
-                }
-                else
-                {
-                    AcpiDmDecodeInternalObject (*(ObjDesc->Reference.Where));
+                case ACPI_TYPE_BUFFER_FIELD:
+                    AcpiOsPrintf ("%p", ObjDesc->Reference.Object);
+                    AcpiDmDecodeInternalObject (ObjDesc->Reference.Object);
+                    break;
+
+                case ACPI_TYPE_PACKAGE:
+
+                    AcpiOsPrintf ("%p", ObjDesc->Reference.Where);
+                    if (!ObjDesc->Reference.Where)
+                    {
+                        AcpiOsPrintf (" Uninitialized WHERE ptr");
+                    }
+                    else
+                    {
+                        AcpiDmDecodeInternalObject (*(ObjDesc->Reference.Where));
+                    }
+                    break;
+
+                default:
+                    AcpiOsPrintf ("Unknown index target type");
+                    break;
                 }
                 break;
 
@@ -489,8 +505,7 @@ AcpiDmDisplayInternalObject (
 
         default:
 
-            AcpiOsPrintf ("<Obj> ");
-            AcpiOsPrintf ("           ");
+            AcpiOsPrintf ("<Obj>            ");
             AcpiDmDecodeInternalObject (ObjDesc);
             break;
         }
