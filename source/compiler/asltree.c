@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -120,9 +120,6 @@
 #include "AslCompiler.y.h"
 
 
-extern const char * const       yytname[];
-
-
 
 /*******************************************************************************
  *
@@ -152,7 +149,11 @@ TgAllocateNode (
         exit (0);
     }
 
+
     Node->ParseOpcode = ParseOpcode;
+
+    strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
+    
     return Node;
 }
 
