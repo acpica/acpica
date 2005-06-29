@@ -560,15 +560,11 @@ PsWalkParsedAml (
 
     WalkList.WalkState = NULL;
 
-    WalkState = DsCreateWalkState (EndOp, MthDesc, &WalkList);
+    WalkState = DsCreateWalkState (OwnerId, EndOp, MthDesc, &WalkList);
     if (!WalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
-
-    /* TBD: move to createWalkSTate */
-
-    WalkState->OwnerId = OwnerId;
 
     /* TBD:
      * TEMP until we pass WalkState to the interpreter
