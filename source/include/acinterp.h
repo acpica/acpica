@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.111 $
+ *       $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -270,11 +270,11 @@ AcpiExWriteDataToField (
  */
 
 ACPI_STATUS
-AcpiExTriadic (
+AcpiExOpcode_3A_1T_0R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiExHexadic (
+AcpiExOpcode_6A_0T_1R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
@@ -442,15 +442,15 @@ AcpiExSystemWaitSemaphore (
  */
 
 ACPI_STATUS
-AcpiExMonadic1 (
+AcpiExOpcode_1A_0T_0R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiExMonadic2 (
+AcpiExOpcode_1A_0T_1R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiExMonadic2R (
+AcpiExOpcode_1A_1T_1R (
     ACPI_WALK_STATE         *WalkState);
 
 
@@ -459,19 +459,19 @@ AcpiExMonadic2R (
  */
 
 ACPI_STATUS
-AcpiExDyadic1 (
+AcpiExOpcode_2A_0T_0R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiExDyadic2 (
+AcpiExOpcode_2A_0T_1R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiExDyadic2R (
+AcpiExOpcode_2A_1T_1R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiExDyadicType21 (
+AcpiExOpcode_2A_2T_1R (
     ACPI_WALK_STATE         *WalkState);
 
 
