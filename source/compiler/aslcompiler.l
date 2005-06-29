@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -477,7 +477,7 @@ NamePathTail                [.]{NameSeg}
                                 if (strcmp (AslCompilertext, "\\"))
                                 {
                                     strcpy (s, "____");
-                                    ACPI_STRUPR (AslCompilertext);
+                                    AcpiUtStrupr (AslCompilertext);
                                 }
                                 memcpy (s, AslCompilertext, strlen (AslCompilertext));
                                 AslCompilerlval.s = s;
@@ -487,7 +487,7 @@ NamePathTail                [.]{NameSeg}
 {NameString}                { char *s;
                                 count (0);
                                 s=malloc (strlen (AslCompilertext)+1);
-                                ACPI_STRUPR (AslCompilertext);
+                                AcpiUtStrupr (AslCompilertext);
                                 strcpy (s, AslCompilertext);
                                 s[strlen (AslCompilertext)] = 0;
                                 AslCompilerlval.s = s;
