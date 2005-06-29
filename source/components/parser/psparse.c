@@ -331,6 +331,109 @@ PsCreateState (
 }
 
 
+#ifdef PARSER_ONLY
+
+ACPI_STATUS
+PsFindObject (
+    UINT16                  Opcode,
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         **Op)
+{
+    char                    *Path;
+
+
+
+    /* Find the name in the parse tree */
+
+    Path = PsGetNextNamestring (ParserState);
+
+    *Op = PsFind (PsGetParentScope (ParserState),
+                 Path, Opcode, 1);
+
+    if (!(*Op))
+    {
+        return AE_NOT_FOUND;
+    }
+
+    return AE_OK;
+}
+#else
+
+ACPI_STATUS
+PsFindObject (
+    UINT16                  Opcode,
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         **OutOp)
+{
+    char                    *Path;
+    ACPI_GENERIC_OP         *Op;
+    ACPI_OBJECT_TYPE        DataType; 
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *Nte = NULL;
+
+
+    FUNCTION_TRACE ("PsFindInNamespace");
+
+    
+    /*
+     * The full parse tree has already been deleted -- therefore, we are parsing
+     * a control method.  We can lookup the name in the namespace instead of
+     * the parse tree!
+     */
+
+
+    Path = PsGetNextNamestring (ParserState);
+
+    /* Map the raw opcode into an internal object type */
+
+    DataType = DsMapNamedOpcodeToDataType (Opcode);
+
+    /* 
+     * Enter the object into the namespace
+     */
+
+    Status = NsLookup (WalkState->ScopeInfo, Path, DataType, IMODE_LoadPass1,    /* Create if not found */
+                            NS_NO_UPSEARCH, WalkState, &Nte);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Create a new op */
+
+    Op = PsAllocOp (Opcode);
+    if (!Op)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* Initialize */
+
+    ((ACPI_NAMED_OP *)Op)->Name = Nte->Name;
+    Op->NameTableEntry = Nte;
+
+
+    PsAppendArg (PsGetParentScope (ParserState), Op);
+
+    *OutOp = Op;
+
+
+    return_ACPI_STATUS (AE_OK);
+}
+#endif
+
+
+
+
+
+
+
+
+
+
+
 /*******************************************************************************
  *
  * FUNCTION:    PsParseLoop 
@@ -346,7 +449,8 @@ PsCreateState (
 
 ACPI_STATUS
 PsParseLoop (
-    ACPI_PARSE_STATE        *ParserState)
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_OP         *Op = NULL;            /* current op */
@@ -359,6 +463,11 @@ PsParseLoop (
     UINT16                  Opcode;
     ACPI_GENERIC_OP         PreOp;
  
+
+
+#ifndef PARSER_ONLY
+    ACPI_OBJECT_TYPE        DataType; 
+#endif
 
     FUNCTION_TRACE_PTR ("PsParseLoop", ParserState);
 
@@ -433,78 +542,8 @@ PsParseLoop (
 
                 INCREMENT_ARG_LIST (ArgTypes);
 
-
-                /* Find the name in the parse tree */
-                /* TBD: what if a control method references outside its scope? */
-                /* ie - should we be using nslookup here? */
-
-                if (Gbl_ParsedNamespaceRoot)
-                {
-                    Op = PsFind (PsGetParentScope (ParserState),
-                                 PsGetNextNamestring (ParserState), Opcode, 1);
-                }
-
-#ifndef PARSER_ONLY
-                else
-                {
-                    /*
-                     * The full parse tree has already been deleted -- therefore, we are parsing
-                     * a control method.  We can lookup the name in the namespace instead of
-                     * the parse tree!
-                     */
-
-                    NAME_TABLE_ENTRY        *Nte = NULL;
-                    ACPI_GENERIC_STATE      ScopeInfo;
-                    char                    *Path;
-                    ACPI_OBJECT_TYPE        DataType; 
-
-                    Path = PsGetNextNamestring (ParserState);
-
-                    /* Map the raw opcode into an internal object type */
-
-                    DataType = DsMapNamedOpcodeToDataType (Opcode);
-
-                    /* 
-                     * Lookup the name in the internal namespace
-                     */
-
-                    ScopeInfo.Scope.Entry = NULL;
-                    Nte = ParserState->StartOp->NameTableEntry;
-                    if (Nte)
-                    {
-                        ScopeInfo.Scope.Entry = Nte->Scope;
-                    }
-
-                    /* 
-                     * Enter the object into the namespace
-                     */
-
-                    Status = NsLookup (&ScopeInfo, Path, DataType, IMODE_LoadPass2,    /* Create if not found */
-                                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Nte);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        return_ACPI_STATUS (Status);
-                    }
-
-                    /* Create a new op */
-
-                    Op = PsAllocOp (Opcode);
-                    if (!Op)
-                    {
-                        return_ACPI_STATUS (AE_NO_MEMORY);
-                    }
-
-                    /* Initialize */
-
-                    ((ACPI_NAMED_OP *)Op)->Name = Nte->Name;
-                    Op->NameTableEntry = Nte;
-
-
-                    PsAppendArg (PsGetParentScope (ParserState), Op);
-                }
-#endif
-
-                if (!Op)
+                Status = PsFindObject (Opcode, ParserState, WalkState, &Op);
+                if (ACPI_FAILURE (Status))
                 {
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
@@ -651,7 +690,33 @@ PsParseLoop (
                         DeferredOp->BodyLength  = ParserState->Aml - DeferredOp->Body;
                     }
                 }
-             }
+            
+            
+#ifndef PARSER_ONLY
+                DataType = DsMapNamedOpcodeToDataType (Op->Opcode);
+
+                if (Op->Opcode == AML_NameOp)
+                {
+                    if (Op->Value.Arg)
+                    {
+            
+                        DataType = DsMapOpcodeToDataType ((Op->Value.Arg)->Opcode, NULL);
+                        ((NAME_TABLE_ENTRY *)Op->NameTableEntry)->Type = (UINT8) DataType;
+                    }
+                }
+
+                /* Pop the scope stack */
+
+                if (NsOpensScope (DataType))
+                {
+
+                    DEBUG_PRINT (TRACE_DISPATCH, ("AmlEndNamespaceScope/%s: Popping scope for Op %p\n",
+                                                    CmGetTypeName (DataType), Op));
+                    DsScopeStackPop (WalkState);
+                }
+#endif                
+            }
+
 
             ParserState->Scope->ArgCount--;
 
@@ -676,6 +741,7 @@ PsParseLoop (
 
     } /* while ParserState->Aml */
     
+
     return_ACPI_STATUS (Status);
 }
 
@@ -703,6 +769,9 @@ PsParseAml (
 {
     ACPI_STATUS             Status;
     ACPI_PARSE_STATE        *ParserState;
+    ACPI_WALK_STATE         *WalkState;
+    ACPI_WALK_LIST          WalkList;
+    NAME_TABLE_ENTRY        *Nte = NULL;
 
 
     FUNCTION_TRACE ("PsParseAml");
@@ -721,13 +790,46 @@ PsParseAml (
     PsInitScope (ParserState, StartScope);
 
 
+    /* Initialize a new walk list */
+
+
+    WalkList.WalkState = NULL;
+
+    WalkState = DsCreateWalkState (NULL, NULL, &WalkList);
+    if (!WalkState)
+    {
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+    }
+
+    /* TBD: move to createWalkSTate */
+
+    WalkState->OwnerId = 0xD1D1; // MAKE THIS A PARAMETER: OwnerId;
+
+    Nte = ParserState->StartOp->NameTableEntry;
+    if (Nte)
+    {
+        /* Push start scope on scope stack and make it current  */
+
+        Status = DsScopeStackPush (Nte->Scope, Nte->Type, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Cleanup;
+        }
+
+    }
+
+
     /* Create the parse tree */
 
-    Status = PsParseLoop (ParserState);
+    Status = PsParseLoop (ParserState, WalkState);
 
+
+Cleanup:
 
     /* Cleanup */
 
+    DsDeleteWalkState (WalkState);
     PsCleanupScope (ParserState);
     CmFree (ParserState);
 
