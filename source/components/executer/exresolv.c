@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.120 $
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -437,6 +437,8 @@ AcpiExResolveMultiple (
 
             if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
             {
+                ACPI_REPORT_ERROR (("AcpiExResolveMultiple: Not a NS node %p [%s]\n",
+                        Node, AcpiUtGetDescriptorName (Node)));
                 return_ACPI_STATUS (AE_AML_INTERNAL);
             }
 
@@ -491,7 +493,9 @@ AcpiExResolveMultiple (
 
             if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
             {
-                return_ACPI_STATUS (AE_AML_INTERNAL);
+                ACPI_REPORT_ERROR (("AcpiExResolveMultiple: Not a NS node %p [%s]\n",
+                        Node, AcpiUtGetDescriptorName (Node)));
+               return_ACPI_STATUS (AE_AML_INTERNAL);
             }
 
             /* Get the attached object */

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -334,8 +334,8 @@ AcpiExResolveOperands (
             /* Invalid descriptor */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Bad descriptor type %X in Obj %p\n",
-                ACPI_GET_DESCRIPTOR_TYPE (ObjDesc), ObjDesc));
+                    "Invalid descriptor %p [%s]\n",
+                    ObjDesc, AcpiUtGetDescriptorName (ObjDesc)));
 
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
