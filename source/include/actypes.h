@@ -144,7 +144,22 @@ typedef int             BIT32;
 typedef short int       BIT16;
 typedef char            BIT8;
 
-/* 
+typedef int             ptrdiff_t;
+typedef unsigned int    size_t;
+
+
+/*
+ * data type ranges
+ */
+
+#define UCHAR_MAX       0xFF
+#define INT_MAX         0x7FFFFFFF
+#define UINT_MAX        0xFFFFFFFF
+#define LONG_MAX        0x7FFFFFFF
+#define ULONG_MAX       0xFFFFFFFF
+
+ 
+ /* 
  * Data manipulation macros 
  */
 
