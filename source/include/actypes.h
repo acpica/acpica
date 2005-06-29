@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.167 $
+ *       $Revision: 1.168 $
  *
  *****************************************************************************/
 
@@ -756,8 +756,6 @@ ACPI_STATUS (*WALK_CALLBACK) (
     UINT32                      NestingLevel,
     void                        *Context,
     void                        **ReturnValue);
-
-
 
 
 /* Interrupt handler return values */

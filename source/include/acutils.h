@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.91 $
+ *       $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -118,14 +118,12 @@
 #define _ACCOMMON_H
 
 
-
 typedef
 ACPI_STATUS (*ACPI_PKG_CALLBACK) (
     UINT8                   ObjectType,
     ACPI_OPERAND_OBJECT     *SourceObject,
     ACPI_GENERIC_STATE      *State,
     void                    *Context);
-
 
 
 ACPI_STATUS
