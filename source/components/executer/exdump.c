@@ -716,7 +716,7 @@ AmlDumpNameTableEntry (
     OsdPrintf ("%20s : %4.4s\n",    "Name",             &Entry->Name);
     OsdPrintf ("%20s : %s\n",       "Type",             CmGetTypeName (Entry->Type));
     OsdPrintf ("%20s : 0x%X\n",     "Flags",            Entry->Flags);
-    OsdPrintf ("%20s : 0x%X\n",     "Owner Id",         Entry->TableId);
+    OsdPrintf ("%20s : 0x%X\n",     "Owner Id",         Entry->OwnerId);
     OsdPrintf ("%20s : 0x%X\n",     "Reference Count",  Entry->ReferenceCount);
     OsdPrintf ("%20s : 0x%p\n",     "Attached Object",  Entry->Object);
     OsdPrintf ("%20s : 0x%p\n",     "Scope",            Entry->Scope);
