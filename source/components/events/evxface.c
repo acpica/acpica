@@ -489,7 +489,7 @@ AcpiRemoveGpeHandler (
 
     /* Parameter validation */
 
-    if (!Handler || (GpeNumber >= (Gbl_GpeRegisterCount * sizeof(GPE_REGISTERS)))
+    if (!Handler || (GpeNumber >= (Gbl_GpeRegisterCount * sizeof(GPE_REGISTERS))))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
