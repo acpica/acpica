@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -173,7 +173,8 @@ char                        *AslMessages [] = {
     "Access width is greater than region size",
     "Host Operation Region requires ByteAcc access",
     "Host Operation Region requires BufferAcc access",
-    "Field unit extends beyond region limit",
+    "Field Unit extends beyond region limit",
+    "Access width of Field Unit extends beyond region limit",
     "Resource field name cannot be used as a target",
     "Invalid Byte Offset, Bit Offset required",
     "Invalid Bit Offset, Byte Offset required",

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -445,7 +445,7 @@ LkNamespaceLocateBegin (
     }
 
     ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%x\n", ObjectType));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%X\n", ObjectType));
 
     /*
      * Lookup the name in the namespace.  Name must exist at this point, or it
@@ -779,6 +779,16 @@ LkNamespaceLocateBegin (
                    (Op->Asl.ExtraValue + Op->Asl.Child->Asl.Value.Integer32))
                 {
                     AslError (ASL_ERROR, ASL_MSG_FIELD_UNIT_OFFSET, Op, NULL);
+                }
+
+                /* 
+                 * Now check that the field plus AccessWidth doesn't go beyond
+                 * the end-of-region
+                 */
+                if (Op->Asl.Parent->Asl.ExtraValue <
+                   (Op->Asl.ExtraValue + Op->Asl.Child->Asl.Value.Integer32 + Op->Asl.Child->Asl.ExtraValue))
+                {
+                    AslError (ASL_ERROR, ASL_MSG_FIELD_UNIT_ACCESS_WIDTH, Op, NULL);
                 }
             }
         }
