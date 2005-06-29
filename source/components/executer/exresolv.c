@@ -1131,6 +1131,11 @@ AmlGetRvalueFromEntry (
 
     case ACPI_TYPE_Device:
 
+    /* Method locals and arguments have a pseudo-NTE, just return it */
+
+    case INTERNAL_TYPE_MethodArgument:
+    case INTERNAL_TYPE_MethodLocalVar:
+
         return_ACPI_STATUS (AE_OK);
         break;
 
