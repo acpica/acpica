@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.52 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,11 @@
 #ifndef __ASLCOMPILER_H
 #define __ASLCOMPILER_H
 
+#ifdef WIN32
+
 #pragma warning(disable:4103)
+
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -195,6 +199,13 @@
 #define FILE_SUFFIX_SOURCE          "src"
 #define FILE_SUFFIX_NAMESPACE       "nsp"
 
+
+#ifdef WIN32
+
+/* warn : named type definition in parentheses */
+#pragma warning(disable:4115)
+
+#endif
 
 /*******************************************************************************
  *
@@ -348,7 +359,7 @@ LsPopNode (void);
  */
 
 
-void
+ACPI_STATUS
 OpcAmlOpcodeWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -394,20 +405,20 @@ CgOpenOutputFile (
 
 /* asllength */
 
-void
+ACPI_STATUS
 LnPackageLengthWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 LnInitLengthsWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
 
-void
+ACPI_STATUS
 CgAmlWriteWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -506,37 +517,37 @@ TrLinkPeerNodes (
 
 /* Analyze */
 
-void
+ACPI_STATUS
 AnSemanticAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnSemanticAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodTypingWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
-void
+ACPI_STATUS
 AnMethodTypingWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
