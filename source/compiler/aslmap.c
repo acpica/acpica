@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.62 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -265,6 +265,7 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_OFF",     0,      0},
     {"_ON_",     0,      0},
     {"_OS_",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_OSI",     1,      ASL_RSVD_RETURN_VALUE},
     {"_PCL",     0,      ASL_RSVD_RETURN_VALUE},
     {"_PCT",     0,      ASL_RSVD_RETURN_VALUE},
     {"_PIC",     1,      0},
@@ -338,10 +339,9 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
 };
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    MpDisplayReservedNames 
+ * FUNCTION:    MpDisplayReservedNames
  *
  * PARAMETERS:  None
  *
@@ -416,8 +416,9 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 
 /* ACCESSAS */                  OP_TABLE_ENTRY (AML_INT_ACCESSFIELD_OP,     0,                              0,                  0),
 /* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BLOCK,     0,                  0),
+/* ACCESSATTRIB_BLOCK_CALL */   OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BLOCK_CALL,0,                  0),
 /* ACCESSATTRIB_BYTE */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BYTE,      0,                  0),
-/* ACCESSATTRIB_CALL */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_CALL,      0,                  0),
+/* ACCESSATTRIB_WORD_CALL */    OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_WORD_CALL, 0,                  0),
 /* ACCESSATTRIB_QUICK */        OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_QUICK,     0,                  0),
 /* ACCESSATTRIB_SND_RCV */      OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_SEND_RCV,  0,                  0),
 /* ACCESSATTRIB_WORD */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_WORD,      0,                  0),
@@ -665,42 +666,5 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* ZERO */                      OP_TABLE_ENTRY (AML_ZERO_OP,                0,                              0,                  ACPI_BTYPE_INTEGER),
 
 };
-
-
-
-/*
- * TBD:
- *
- * This function is here temporarily until it is segregated out into separate
- * modules in the main subsystem source.
- */
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExValidateObjectType
- *
- * PARAMETERS:  Type            Object type to validate
- *
- * DESCRIPTION: Determine if a type is a valid ACPI object type
- *
- ******************************************************************************/
-
-#if 0
-BOOLEAN
-AcpiExValidateObjectType (
-    ACPI_OBJECT_TYPE        Type)
-{
-
-    if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
-        (Type > INTERNAL_TYPE_MAX))
-    {
-        return (FALSE);
-    }
-
-    return (TRUE);
-}
-
-
-#endif
 
 
