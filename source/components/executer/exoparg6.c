@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -162,7 +162,7 @@
  * RETURN:      TRUE if the match is successful, FALSE otherwise
  *
  * DESCRIPTION: Implements the low-level match for the ASL Match operator.
- *              Package elements will be implicitly converted to the type of 
+ *              Package elements will be implicitly converted to the type of
  *              the match object (Integer/Buffer/String).
  *
  ******************************************************************************/
@@ -189,14 +189,14 @@ AcpiExDoMatch (
      */
     switch (MatchOp)
     {
-    case MATCH_MTR: 
-        
+    case MATCH_MTR:
+
         /* Always true */
 
         break;
 
     case MATCH_MEQ:
-        
+
         /*
          * True if equal: (P[i] == M)
          * Change to:     (M == P[i])
@@ -210,7 +210,7 @@ AcpiExDoMatch (
         break;
 
     case MATCH_MLE:
-    
+
         /*
          * True if less than or equal: (P[i] <= M) (P[i] NotGreater than M)
          * Change to:                  (M >= P[i]) (M NotLess than P[i])
@@ -225,7 +225,7 @@ AcpiExDoMatch (
         break;
 
     case MATCH_MLT:
-        
+
         /*
          * True if less than: (P[i] < M)
          * Change to:         (M > P[i])
@@ -239,7 +239,7 @@ AcpiExDoMatch (
         break;
 
     case MATCH_MGE:
-        
+
         /*
          * True if greater than or equal: (P[i] >= M) (P[i] NotLess than M)
          * Change to:                     (M <= P[i]) (M NotGreater than P[i])
@@ -254,7 +254,7 @@ AcpiExDoMatch (
         break;
 
     case MATCH_MGT:
-        
+
         /*
          * True if greater than: (P[i] > M)
          * Change to:            (M < P[i])
@@ -268,7 +268,7 @@ AcpiExDoMatch (
         break;
 
     default:
-        
+
         /* Undefined */
 
         return (FALSE);
@@ -354,8 +354,8 @@ AcpiExOpcode_6A_0T_1R (
          *
          * Upon finding a match, the loop will terminate via "break" at
          * the bottom.  If it terminates "normally", MatchValue will be
-         * ACPI_INTEGER_MAX (Ones) (its initial value) indicating that no 
-         * match was found. 
+         * ACPI_INTEGER_MAX (Ones) (its initial value) indicating that no
+         * match was found.
          */
         for ( ; Index < Operand[0]->Package.Count; Index++)
         {
