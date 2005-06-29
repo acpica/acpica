@@ -173,15 +173,17 @@ DbDisplayStatistics (void)
 
     if (!Gbl_DSDT)
     {
-        OsdPrintf ("There is no DSDT loaded\n");
-        return AE_NOT_EXIST;
+        OsdPrintf ("*** Warning:  There is no DSDT loaded\n");
     }
 
 
     OsdPrintf ("\n\n");
 
     OsdPrintf ("ACPI Table Information:\n\n");
-    OsdPrintf ("DSDT Length:................% 7ld (0x%X)\n", Gbl_DSDT->Length, Gbl_DSDT->Length);
+    if (Gbl_DSDT)
+    {
+        OsdPrintf ("DSDT Length:................% 7ld (0x%X)\n", Gbl_DSDT->Length, Gbl_DSDT->Length);
+    }
     OsdPrintf ("Names:......................% 7ld\n", NumNames);
     OsdPrintf ("Events:.....................% 7ld\n", NumEvents);
     OsdPrintf ("Devices:....................% 7ld\n", NumDevices);
@@ -211,6 +213,7 @@ DbDisplayStatistics (void)
     OsdPrintf ("Control Method Parse Trees:.% 7ld\n", SizeOfMethodTrees);
     OsdPrintf ("Named Object NTEs:..........% 7ld\n", SizeOfNTEs);
     OsdPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
+    OsdPrintf ("Global State Cache.requests.% 7ld\n", Gbl_StateCacheRequests);
     OsdPrintf ("Global State Cache depth....% 7ld\n", Gbl_GenericStateCacheDepth);
     OsdPrintf ("Global State Cache..........% 7ld\n", Gbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
 
