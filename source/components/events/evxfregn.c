@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -255,7 +255,7 @@ AcpiInstallAddressSpaceHandler (
          * The attached device object already exists.
          * Make sure the handler is not already installed.
          */
-        HandlerObj = ObjDesc->Device.AddressSpace;
+        HandlerObj = ObjDesc->Device.Handler;
 
         /* Walk the handler list for this device */
 
@@ -360,13 +360,13 @@ AcpiInstallAddressSpaceHandler (
 
     /* Install at head of Device.AddressSpace list */
 
-    HandlerObj->AddressSpace.Next        = ObjDesc->Device.AddressSpace;
+    HandlerObj->AddressSpace.Next        = ObjDesc->Device.Handler;
 
     /*
      * The Device object is the first reference on the HandlerObj.
      * Each region that uses the handler adds a reference.
      */
-    ObjDesc->Device.AddressSpace = HandlerObj;
+    ObjDesc->Device.Handler = HandlerObj;
 
     /*
      * Walk the namespace finding all of the regions this
@@ -454,8 +454,8 @@ AcpiRemoveAddressSpaceHandler (
 
     /* Find the address handler the user requested */
 
-    HandlerObj = ObjDesc->Device.AddressSpace;
-    LastObjPtr = &ObjDesc->Device.AddressSpace;
+    HandlerObj = ObjDesc->Device.Handler;
+    LastObjPtr = &ObjDesc->Device.Handler;
     while (HandlerObj)
     {
         /* We have a handler, see if user requested this one */
