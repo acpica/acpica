@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acdispat.h - dispatcher (parser to interpreter interface)
+ * Name: acdispat.h - dispatcher (parser to interpreter interface)
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@ AcpiDsObjStackGetValue (
 
 ACPI_STATUS
 AcpiDsObjStackPopObject (
-    ACPI_OBJECT_INTERNAL    **Object,
+    ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState);
 
 
@@ -155,7 +155,7 @@ AcpiDsObjStackPopObject (
 
 ACPI_STATUS
 AcpiDsGetRegionArguments (
-    ACPI_OBJECT_INTERNAL    *RgnDesc);
+    ACPI_OPERAND_OBJECT     *RgnDesc);
 
 
 /* dsctrl - Parser/Interpreter interface, control stack routines */
@@ -164,12 +164,12 @@ AcpiDsGetRegionArguments (
 ACPI_STATUS
 AcpiDsExecBeginControlOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 ACPI_STATUS
 AcpiDsExecEndControlOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /* dsexec - Parser/Interpreter interface, method execution callbacks */
@@ -177,14 +177,14 @@ AcpiDsExecEndControlOp (
 ACPI_STATUS
 AcpiDsExecBeginOp (
     UINT16                  Opcode,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         **OutOp);
+    ACPI_PARSE_OBJECT       **OutOp);
 
 ACPI_STATUS
 AcpiDsExecEndOp (
     ACPI_WALK_STATE         *State,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /* dsfield - Parser/Interpreter interface for AML fields */
@@ -192,20 +192,20 @@ AcpiDsExecEndOp (
 
 ACPI_STATUS
 AcpiDsCreateField (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_NAMESPACE_NODE     *RegionNode,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsCreateBankField (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_NAMESPACE_NODE     *RegionNode,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsCreateIndexField (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_HANDLE             RegionNode,
     ACPI_WALK_STATE         *WalkState);
 
 
@@ -214,26 +214,26 @@ AcpiDsCreateIndexField (
 ACPI_STATUS
 AcpiDsLoad1BeginOp (
     UINT16                  Opcode,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         **OutOp);
+    ACPI_PARSE_OBJECT       **OutOp);
 
 ACPI_STATUS
 AcpiDsLoad1EndOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 ACPI_STATUS
 AcpiDsLoad2BeginOp (
     UINT16                  Opcode,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         **OutOp);
+    ACPI_PARSE_OBJECT       **OutOp);
 
 ACPI_STATUS
 AcpiDsLoad2EndOp (
     ACPI_WALK_STATE         *State,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /* dsmthdat - method data (locals/args) */
@@ -244,7 +244,7 @@ AcpiDsMethodDataGetEntry (
     UINT32                  Type,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    ***Entry);
+    ACPI_OPERAND_OBJECT     ***Node);
 
 ACPI_STATUS
 AcpiDsMethodDataDeleteAll (
@@ -252,7 +252,7 @@ AcpiDsMethodDataDeleteAll (
 
 BOOLEAN
 AcpiDsIsMethodValue (
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 OBJECT_TYPE_INTERNAL
 AcpiDsMethodDataGetType (
@@ -265,13 +265,13 @@ AcpiDsMethodDataGetValue (
     UINT32                  Type,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **DestDesc);
+    ACPI_OPERAND_OBJECT     **DestDesc);
 
 ACPI_STATUS
 AcpiDsMethodDataSetValue (
     UINT32                  Type,
     UINT32                  Index,
-    ACPI_OBJECT_INTERNAL    *SrcDesc,
+    ACPI_OPERAND_OBJECT     *SrcDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
@@ -282,11 +282,11 @@ AcpiDsMethodDataDeleteValue (
 
 ACPI_STATUS
 AcpiDsMethodDataInitArgs (
-    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OPERAND_OBJECT     **Params,
     UINT32                  MaxParamCount,
     ACPI_WALK_STATE         *WalkState);
 
-ACPI_NAMED_OBJECT*
+ACPI_NAMESPACE_NODE *
 AcpiDsMethodDataGetNte (
     UINT32                  Type,
     UINT32                  Index,
@@ -300,7 +300,7 @@ ACPI_STATUS
 AcpiDsMethodDataSetEntry (
     UINT32                  Type,
     UINT32                  Index,
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     ACPI_WALK_STATE         *WalkState);
 
 
@@ -314,12 +314,12 @@ ACPI_STATUS
 AcpiDsCallControlMethod (
     ACPI_WALK_LIST          *WalkList,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 ACPI_STATUS
 AcpiDsRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    *ReturnDesc);
+    ACPI_OPERAND_OBJECT     *ReturnDesc);
 
 ACPI_STATUS
 AcpiDsTerminateControlMethod (
@@ -327,8 +327,8 @@ AcpiDsTerminateControlMethod (
 
 ACPI_STATUS
 AcpiDsBeginMethodExecution (
-    ACPI_NAMED_OBJECT       *MethodEntry,
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
+    ACPI_NAMESPACE_NODE     *MethodNode,
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
 /* dsobj - Parser/Interpreter interface - object initialization and conversion */
@@ -343,32 +343,32 @@ AcpiDsInitOneObject (
 ACPI_STATUS
 AcpiDsInitializeObjects (
     ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMED_OBJECT       *StartEntry);
+    ACPI_NAMESPACE_NODE     *StartNode);
 
 ACPI_STATUS
 AcpiDsBuildInternalPackageObj (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *op,
-    ACPI_OBJECT_INTERNAL    **ObjDesc);
+    ACPI_PARSE_OBJECT       *op,
+    ACPI_OPERAND_OBJECT     **ObjDesc);
 
 ACPI_STATUS
 AcpiDsBuildInternalObject (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *op,
-    ACPI_OBJECT_INTERNAL    **ObjDescPtr);
+    ACPI_PARSE_OBJECT       *op,
+    ACPI_OPERAND_OBJECT     **ObjDescPtr);
 
 ACPI_STATUS
 AcpiDsInitObjectFromOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
+    ACPI_OPERAND_OBJECT     **ObjDesc);
 
 ACPI_STATUS
-AcpiDsCreateNamedObject (
+AcpiDsCreateNode (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMED_OBJECT       *Entry,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /* dsregn - Parser/Interpreter interface - Op Region parsing */
@@ -376,7 +376,7 @@ AcpiDsCreateNamedObject (
 ACPI_STATUS
 AcpiDsEvalRegionOperands (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 ACPI_STATUS
 AcpiDsInitializeRegion (
@@ -387,23 +387,23 @@ AcpiDsInitializeRegion (
 
 BOOLEAN
 AcpiDsIsResultUsed (
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDsDeleteResultIfNotUsed (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_OBJECT_INTERNAL    *ResultObj,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_OPERAND_OBJECT     *ResultObj,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsCreateOperand (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Arg);
+    ACPI_PARSE_OBJECT       *Arg);
 
 ACPI_STATUS
 AcpiDsCreateOperands (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *FirstArg);
+    ACPI_PARSE_OBJECT       *FirstArg);
 
 ACPI_STATUS
 AcpiDsResolveOperands (
@@ -425,7 +425,7 @@ AcpiDsMapNamedOpcodeToDataType (
 
 ACPI_STATUS
 AcpiDsScopeStackPush (
-    ACPI_NAME_TABLE         *NewScope,
+    ACPI_NAMESPACE_NODE     *Node,
     OBJECT_TYPE_INTERNAL    Type,
     ACPI_WALK_STATE         *WalkState);
 
@@ -444,8 +444,8 @@ AcpiDsScopeStackClear (
 ACPI_WALK_STATE *
 AcpiDsCreateWalkState (
     ACPI_OWNER_ID           OwnerId,
-    ACPI_GENERIC_OP         *Origin,
-    ACPI_OBJECT_INTERNAL    *MthDesc,
+    ACPI_PARSE_OBJECT       *Origin,
+    ACPI_OPERAND_OBJECT     *MthDesc,
     ACPI_WALK_LIST          *WalkList);
 
 ACPI_STATUS
@@ -467,7 +467,7 @@ AcpiDsPopWalkState (
 
 ACPI_STATUS
 AcpiDsResultStackPop (
-    ACPI_OBJECT_INTERNAL    **Object,
+    ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS

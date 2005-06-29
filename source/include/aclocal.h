@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
@@ -228,58 +227,45 @@ typedef UINT16                      ACPI_OWNER_ID;
 
 typedef enum
 {
-    IMODE_LOAD_PASS1 = 0x01,
-    IMODE_LOAD_PASS2 = 0x02,
-    IMODE_EXECUTE   = 0x0E
+    IMODE_LOAD_PASS1                = 0x01,
+    IMODE_LOAD_PASS2                = 0x02,
+    IMODE_EXECUTE                   = 0x0E
 
 } OPERATING_MODE;
 
 
 /*
- * The AcpiNamedObject describes a named object that appears in the AML
- * An AcpiNameTable is used to store AcpiNamedObjects.
+ * The Node describes a named object that appears in the AML
+ * An AcpiNode is used to store Nodes.
  *
  * DataType is used to differentiate between internal descriptors, and MUST
  * be the first byte in this structure.
  */
 
-typedef struct AcpiNamedObject
+typedef struct acpi_node
 {
     UINT8                   DataType;
     UINT8                   Type;           /* Type associated with this name */
-    UINT8                   ThisIndex;      /* Entry number */
-    UINT8                   Flags;
     UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
+    UINT16                  OwnerId;
 
 
     void                    *Object;        /* Pointer to attached ACPI object (optional) */
-    struct AcpiNameTable    *ChildTable;    /* Scope owned by this name (optional) */
-    ACPI_OWNER_ID           OwnerId;        /* ID of owner - either an ACPI table or a method */
+    struct acpi_node        *Child;         /* first child */
+    struct acpi_node        *Peer;          /* Next peer*/
     UINT16                  ReferenceCount; /* Current count of references and children */
+    UINT8                   Flags;
 
-#ifdef _IA64
-    UINT32                  Fill1;          /* 64-bit alignment */
-#endif
-
-} ACPI_NAMED_OBJECT;
+} ACPI_NAMESPACE_NODE;
 
 
-typedef struct AcpiNameTable
-{
-    struct AcpiNameTable    *NextTable;
-    struct AcpiNameTable    *ParentTable;
-    ACPI_NAMED_OBJECT       *ParentEntry;
-    ACPI_NAMED_OBJECT       Entries[1];
-
-} ACPI_NAME_TABLE;
+#define ENTRY_NOT_FOUND             NULL
 
 
-#define ENTRY_NOT_FOUND     NULL
+/* Node flags */
 
-
-/* NTE flags */
-
-#define NTE_AML_ATTACHMENT  0x1
+#define ANOBJ_AML_ATTACHMENT        0x1
+#define ANOBJ_END_OF_PEER_LIST      0x2
 
 
 /*
@@ -315,10 +301,7 @@ typedef struct
 
 typedef struct
 {
-    ACPI_NAME_TABLE        *NameTable;
-    UINT32                  Position;
-    BOOLEAN                 TableFull;
-
+    ACPI_NAMESPACE_NODE     *Node;
 } NS_SEARCH_DATA;
 
 
@@ -425,7 +408,6 @@ typedef struct
 } ACPI_FIELD_INFO;
 
 
-
 /*****************************************************************************
  *
  * Generic "state" object for stacks
@@ -442,7 +424,7 @@ typedef struct
 
 /* Forward declaration */
 struct acpi_walk_state;
-struct acpi_generic_op;
+struct acpi_parse_obj ;
 
 
 #define ACPI_STATE_COMMON                  /* Two 32-bit fields and a pointer */\
@@ -476,7 +458,7 @@ typedef struct acpi_update_state
 typedef struct acpi_control_state
 {
     ACPI_STATE_COMMON
-    struct acpi_generic_op  *PredicateOp;
+    struct acpi_parse_obj   *PredicateOp;
     UINT8                   *AmlPredicateStart;   /* Start of if/while predicate */
 
 } ACPI_CONTROL_STATE;
@@ -489,16 +471,15 @@ typedef struct acpi_control_state
 typedef struct acpi_scope_state
 {
     ACPI_STATE_COMMON
-    ACPI_NAME_TABLE         *NameTable;
+    ACPI_NAMESPACE_NODE     *Node;
 
 } ACPI_SCOPE_STATE;
-
 
 
 typedef struct acpi_pscope_state
 {
     ACPI_STATE_COMMON
-    struct acpi_generic_op  *Op;            /* current op being parsed */
+    struct acpi_parse_obj   *Op;            /* current op being parsed */
     UINT8                   *ArgEnd;        /* current argument end */
     UINT8                   *PkgEnd;        /* current package end */
     UINT32                  ArgList;        /* next argument to parse */
@@ -518,20 +499,17 @@ typedef union acpi_gen_state
 } ACPI_GENERIC_STATE;
 
 
-
-
 typedef
 ACPI_STATUS (*ACPI_PARSE_DOWNWARDS) (
     UINT16                  Opcode,
-    struct acpi_generic_op  *Op,
+    struct acpi_parse_obj   *Op,
     struct acpi_walk_state  *WalkState,
-    struct acpi_generic_op  **OutOp);
+    struct acpi_parse_obj   **OutOp);
 
 typedef
 ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
     struct acpi_walk_state  *WalkState,
-    struct acpi_generic_op  *Op);
-
+    struct acpi_parse_obj   *Op);
 
 
 /*****************************************************************************
@@ -555,11 +533,10 @@ ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
 #define ACPI_GET_OP_TYPE(a)         ((a)->Flags & ACPI_OP_TYPE_MASK)
 
 
-
 /*
  * AML opcode, name, and argument layout
  */
-typedef struct acpi_op_info
+typedef struct acpi_opcode_info
 {
     UINT8                   Flags;          /* Opcode type, HasArgs flag */
     UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
@@ -568,58 +545,56 @@ typedef struct acpi_op_info
     DEBUG_ONLY_MEMBERS (
     NATIVE_CHAR             *Name)          /* op name (debug only) */
 
-} ACPI_OP_INFO;
+} ACPI_OPCODE_INFO;
 
 
-typedef union acpi_op_value
+typedef union acpi_parse_val
 {
     UINT32                  Integer;        /* integer constant */
     UINT32                  Size;           /* bytelist or field size */
     NATIVE_CHAR             *String;        /* NULL terminated string */
     UINT8                   *Buffer;        /* buffer or string */
     NATIVE_CHAR             *Name;          /* NULL terminated string */
-    struct acpi_generic_op  *Arg;           /* arguments and contained ops */
-    ACPI_NAMED_OBJECT       *Entry;         /* entry in interpreter namespace tbl */
+    struct acpi_parse_obj   *Arg;           /* arguments and contained ops */
 
-} ACPI_OP_VALUE;
+} ACPI_PARSE_VALUE;
 
 
-#define ACPI_COMMON_OP \
+#define ACPI_PARSE_COMMON \
     UINT8                   DataType;       /* To differentiate various internal objs */\
     UINT8                   Flags;          /* Type of Op */\
     UINT16                  Opcode;         /* AML opcode */\
     UINT32                  AmlOffset;      /* offset of declaration in AML */\
-    struct acpi_generic_op  *Parent;        /* parent op */\
-    struct acpi_generic_op  *Next;          /* next op */\
+    struct acpi_parse_obj   *Parent;        /* parent op */\
+    struct acpi_parse_obj   *Next;          /* next op */\
     DEBUG_ONLY_MEMBERS (\
     NATIVE_CHAR             OpName[16])     /* op name (debug only) */\
                                             /* NON-DEBUG members below: */\
-    ACPI_NAMED_OBJECT       *AcpiNamedObject;/* for use by interpreter */\
-    ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
+    ACPI_NAMESPACE_NODE     *Node;/* for use by interpreter */\
+    ACPI_PARSE_VALUE        Value;          /* Value or args associated with the opcode */\
 
 
 /*
  * generic operation (eg. If, While, Store)
  */
-typedef struct acpi_generic_op
+typedef struct acpi_parse_obj
 {
-    ACPI_COMMON_OP
-} ACPI_GENERIC_OP;
+    ACPI_PARSE_COMMON
+} ACPI_PARSE_OBJECT;
 
 
 /*
  * Extended Op for named ops (Scope, Method, etc.), deferred ops (Methods and OpRegions),
- * and bytelists.  
+ * and bytelists.
  */
-typedef struct acpi_extended_op
+typedef struct acpi_parse2_obj
 {
-    ACPI_COMMON_OP
+    ACPI_PARSE_COMMON
     UINT8                   *Data;          /* AML body or bytelist data */
     UINT32                  Length;         /* AML length */
     UINT32                  Name;           /* 4-byte name or zero if no name */
 
-} ACPI_EXTENDED_OP;
-
+} ACPI_PARSE2_OBJECT;
 
 
 /*
@@ -634,13 +609,12 @@ typedef struct acpi_parse_state
     UINT8                   *AmlEnd;        /* (last + 1) AML byte */
     UINT8                   *PkgStart;      /* current package begin */
     UINT8                   *PkgEnd;        /* current package end */
-    ACPI_GENERIC_OP         *StartOp;       /* root of parse tree */
-    struct AcpiNamedObject  *StartEntry;
+    ACPI_PARSE_OBJECT       *StartOp;       /* root of parse tree */
+    struct acpi_node        *StartNode;
     ACPI_GENERIC_STATE      *Scope;         /* current scope */
     struct acpi_parse_state *Next;
 
 } ACPI_PARSE_STATE;
-
 
 
 /*****************************************************************************
@@ -672,11 +646,11 @@ typedef struct acpi_walk_state
     UINT8                   CurrentResult;                      /* */
 
     struct acpi_walk_state  *Next;                              /* Next WalkState in list */
-    ACPI_GENERIC_OP         *Origin;                            /* Start of walk */
+    ACPI_PARSE_OBJECT       *Origin;                            /* Start of walk */
 
 /* TBD: Obsolete with removal of WALK procedure ? */
-    ACPI_GENERIC_OP         *PrevOp;                            /* Last op that was processed */
-    ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
+    ACPI_PARSE_OBJECT       *PrevOp;                            /* Last op that was processed */
+    ACPI_PARSE_OBJECT       *NextOp;                            /* next op to be processed */
 
 
     ACPI_GENERIC_STATE      *ControlState;                      /* List of control states (nested IFs) */
@@ -688,12 +662,13 @@ typedef struct acpi_walk_state
 
     union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
     union AcpiObjInternal   *MethodDesc;                        /* Method descriptor if running a method */
-    ACPI_GENERIC_OP         *MethodCallOp;                      /* MethodCall Op if running a method */
-    struct AcpiNamedObject  *MethodEntry;
+    struct acpi_node        *MethodNode;                    /* Method Node if running a method */
+    ACPI_PARSE_OBJECT       *MethodCallOp;                      /* MethodCall Op if running a method */
+    struct acpi_node        *MethodCallNode;                /* Called method Node*/
     union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
     union AcpiObjInternal   *Results[OBJ_NUM_OPERANDS];         /* Accumulated results */
-    struct AcpiNamedObject  Arguments[MTH_NUM_ARGS];            /* Control method arguments */
-    struct AcpiNamedObject  LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
+    struct acpi_node        Arguments[MTH_NUM_ARGS];            /* Control method arguments */
+    struct acpi_node        LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
     UINT32                  ParseFlags;
     UINT8                   WalkType;
     UINT8                   ReturnUsed;

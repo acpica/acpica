@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
@@ -240,19 +239,19 @@
 
 
 /*
- * An ACPI_HANDLE (which is actually an ACPI_NAMED_OBJECT*) can appear in some contexts,
- * such as on apObjStack, where a pointer to an ACPI_OBJECT_INTERNAL can also
+ * An ACPI_HANDLE (which is actually an ACPI_NAMESPACE_NODE *) can appear in some contexts,
+ * such as on apObjStack, where a pointer to an ACPI_OPERAND_OBJECT  can also
  * appear.  This macro is used to distinguish them.
  *
  * The DataType field is the first field in both structures.
  */
 
-#define VALID_DESCRIPTOR_TYPE(d,t)      (((ACPI_NAMED_OBJECT*)d)->DataType == t)
+#define VALID_DESCRIPTOR_TYPE(d,t)      (((ACPI_NAMESPACE_NODE *)d)->DataType == t)
 
 
 /* Macro to test the object type */
 
-#define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OBJECT_INTERNAL *)d)->Common.Type == (UINT8)t)
+#define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OPERAND_OBJECT  *)d)->Common.Type == (UINT8)t)
 
 /* Macro to check the table flags for SINGLE or MULTIPLE tables are allowed */
 
@@ -351,7 +350,7 @@
 
 #ifdef ACPI_DEBUG
 
-#define MODULE_NAME(name)               static char *_THIS_MODULE = name
+#define MODULE_NAME(name)               static char *_THIS_MODULE = name;
 
 /*
  * Function entry tracing.
@@ -398,6 +397,7 @@
 #define DUMP_ENTRY(a,b)                 AcpiNsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                AcpiNsDumpTables(a,b)
 #define DUMP_PATHNAME(a,b,c,d)          AcpiNsDumpPathname(a,b,c,d)
+#define DUMP_RESOURCE_LIST(a)           AcpiRsDumpResourceList(a)
 #define BREAK_MSG(a)                    AcpiOsBreakpoint (a)
 
 /*
@@ -467,6 +467,7 @@
 #define DUMP_ENTRY(a,b)
 #define DUMP_TABLES(a,b)
 #define DUMP_PATHNAME(a,b,c,d)
+#define DUMP_RESOURCE_LIST(a)
 #define DEBUG_PRINT(l,f)
 #define DEBUG_PRINT_RAW(l,f)
 #define BREAK_MSG(a)
@@ -479,6 +480,17 @@
 #define ACPI_ASSERT(exp)
 #define DEBUG_ASSERT(msg, exp)
 
+#endif
+
+/*
+ * Some code only gets executed when the debugger is built in.
+ * Note that this is entirely independent of whether the
+ * DEBUG_PRINT stuff (set by ACPI_DEBUG) is on, or not.
+ */
+#ifdef ENABLE_DEBUGGER
+#define DEBUGGER_EXEC(a)                a;
+#else
+#define DEBUGGER_EXEC(a)
 #endif
 
 
@@ -494,12 +506,7 @@
 #endif
 
 
-#ifndef ACPI_DEBUG
-
-#define ADD_OBJECT_NAME(a,b)
-
-#else
-
+#ifdef ACPI_DEBUG
 
 /*
  * 1) Set name to blanks
@@ -509,7 +516,10 @@
 #define ADD_OBJECT_NAME(a,b)            MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
                                         STRNCPY (a->Common.Name, AcpiGbl_NsTypeNames[b], sizeof (a->Common.Name))
 
-#endif
+#else
 
+#define ADD_OBJECT_NAME(a,b)
+
+#endif
 
 #endif /* ACMACROS_H */

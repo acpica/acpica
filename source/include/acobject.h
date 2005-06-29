@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: acobject.h - Definition of ACPI_OBJECT_INTERNAL (Internal object only)
+ * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
  *
  *****************************************************************************/
 
@@ -119,12 +119,12 @@
 
 
 /*
- * The ACPI_OBJECT_INTERNAL is used to pass AML operands from the dispatcher
+ * The ACPI_OPERAND_OBJECT  is used to pass AML operands from the dispatcher
  * to the interpreter, and to keep track of the various handlers such as
  * address space handlers and notify handlers.  The object is a constant
  * size in order to allow them to be cached and reused.
  *
- * All variants of the ACPI_OBJECT_INTERNAL are defined with the same
+ * All variants of the ACPI_OPERAND_OBJECT  are defined with the same
  * sequence of field types, with fields that are not used in a particular
  * variant being named "Reserved".  This is not strictly necessary, but
  * may in some circumstances simplify understanding if these structures
@@ -328,14 +328,14 @@ typedef struct /* METHOD */
     UINT8                   Concurrency;
     UINT8                   ThreadCount;
     UINT32                  PcodeLength;
-    UINT32                  TableLength;
     ACPI_OWNER_ID           OwningId;
-    UINT16                  Reserved4;
+    UINT16                  Reserved3_16;
+    UINT32                  Reserved4;
 
     UINT8                   *Pcode;
-    UINT8                   *AcpiTable;
-    void                    *ParserOp;
     void                    *Semaphore;
+    void                    *Reserved_p3;
+    void                    *Reserved_p4;
     void                    *Reserved_p5;
 
 } ACPI_OBJECT_METHOD;
@@ -382,8 +382,8 @@ typedef struct /* REGION */
     union AcpiObjInternal  *AddrHandler;        /* Handler for system notifies */
     union AcpiObjInternal  *Link;               /* Link in list of regions */
                                                 /* list is owned by AddrHandler */
-    ACPI_NAMED_OBJECT      *REGMethod;          /* _REG method for this region (if any) */
-    ACPI_NAMED_OBJECT      *Nte;                /* containing object */
+    ACPI_NAMESPACE_NODE    *REGMethod;          /* _REG method for this region (if any) */
+    ACPI_NAMESPACE_NODE    *Node;           /* containing object */
 
 } ACPI_OBJECT_REGION;
 
@@ -508,7 +508,7 @@ typedef struct /* NOTIFY HANDLER */
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    ACPI_NAMED_OBJECT       *Nte;               /* Parent device */
+    ACPI_NAMESPACE_NODE     *Node;               /* Parent device */
     NOTIFY_HANDLER          Handler;
     void                    *Context;
     void                    *Reserved_p4;
@@ -529,7 +529,7 @@ typedef struct /* ADDRESS HANDLER */
     UINT16                  Hflags;
     ADDRESS_SPACE_HANDLER   Handler;
 
-    ACPI_NAMED_OBJECT       *Nte;               /* Parent device */
+    ACPI_NAMESPACE_NODE     *Node;               /* Parent device */
     void                    *Context;
     ADDRESS_SPACE_SETUP     Setup;
     union AcpiObjInternal   *Link;              /* Link to next handler on device */
@@ -554,8 +554,8 @@ typedef struct /* Reference - Local object type */
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    void                    *Object;            /* NameOp=>HANDLE to obj, IndexOp=>ACPI_OBJECT_INTERNAL */
-    ACPI_NAMED_OBJECT       *Nte;
+    void                    *Object;            /* NameOp=>HANDLE to obj, IndexOp=>ACPI_OPERAND_OBJECT  */
+    ACPI_NAMESPACE_NODE     *Node;
     union AcpiObjInternal   **Where;
     void                    *Reserved_p4;
     void                    *Reserved_p5;
@@ -565,7 +565,7 @@ typedef struct /* Reference - Local object type */
 
 /******************************************************************************
  *
- * ACPI_OBJECT_INTERNAL Descriptor - a giant union of all of the above
+ * ACPI_OPERAND_OBJECT  Descriptor - a giant union of all of the above
  *
  *****************************************************************************/
 
@@ -592,6 +592,6 @@ typedef union AcpiObjInternal
     ACPI_OBJECT_NOTIFY_HANDLER  NotifyHandler;
     ACPI_OBJECT_ADDR_HANDLER    AddrHandler;
 
-} ACPI_OBJECT_INTERNAL;
+} ACPI_OPERAND_OBJECT;
 
 #endif /* _ACOBJECT_H */

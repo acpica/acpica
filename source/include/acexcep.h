@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
@@ -162,7 +161,7 @@
 
 #define AE_CODE_ENV_MAX                 0x0014
 
-/* 
+/*
  * Programmer exceptions
  */
 #define AE_BAD_PARAMETER                (ACPI_STATUS) (0x0001 | AE_CODE_PROGRAMMER)
@@ -221,7 +220,6 @@
 #define AE_CTRL_TRANSFER                (ACPI_STATUS) (0x0008 | AE_CODE_CONTROL)
 
 #define AE_CODE_CTRL_MAX                0x0008
-
 
 
 #ifdef DEFINE_ACPI_GLOBALS
@@ -303,8 +301,6 @@ static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Ctrl[] =
     "AE_CTRL_END",
     "AE_CTRL_TRANSFER",
 };
-
-
 
 
 #endif /* DEFINE_ACPI_GLOBALS */
