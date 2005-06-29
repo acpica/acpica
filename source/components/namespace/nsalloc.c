@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.40 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -126,105 +126,103 @@
         MODULE_NAME         ("nsalloc")
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsCreateNamedObject
+ * FUNCTION:    AcpiNsCreateNode
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
-ACPI_NAMED_OBJECT *
-AcpiNsCreateNamedObject (
+ACPI_NAMESPACE_NODE *
+AcpiNsCreateNode (
     UINT32                  AcpiName)
 {
-    ACPI_NAMED_OBJECT       *NameDesc;
+    ACPI_NAMESPACE_NODE     *Node;
 
-    FUNCTION_TRACE ("NsCreateNamedObject");
+    FUNCTION_TRACE ("NsCreateNode");
 
 
-    NameDesc = AcpiCmCallocate (sizeof (ACPI_NAMED_OBJECT));
-    if (!NameDesc)
+    Node = AcpiCmCallocate (sizeof (ACPI_NAMESPACE_NODE));
+    if (!Node)
     {
         return_PTR (NULL);
     }
 
-    INCREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMED_OBJECT));
-    
-    NameDesc->DataType       = ACPI_DESC_TYPE_NAMED;
-    NameDesc->Name           = AcpiName;
-    NameDesc->ReferenceCount = 1;
+    INCREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMESPACE_NODE));
 
-    return_PTR (NameDesc);
+    Node->DataType       = ACPI_DESC_TYPE_NAMED;
+    Node->Name           = AcpiName;
+    Node->ReferenceCount = 1;
+
+    return_PTR (Node);
 }
-
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsDeleteNamedObject
+ * FUNCTION:    AcpiNsDeleteNode
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
 void
-AcpiNsDeleteNamedObject (
-    ACPI_NAMED_OBJECT       *NameDesc)
+AcpiNsDeleteNode (
+    ACPI_NAMESPACE_NODE     *Node)
 {
-    ACPI_NAMED_OBJECT       *ParentDesc;
-    ACPI_NAMED_OBJECT       *PrevDesc;
-    ACPI_NAMED_OBJECT       *NextDesc;
+    ACPI_NAMESPACE_NODE     *ParentNode;
+    ACPI_NAMESPACE_NODE     *PrevNode;
+    ACPI_NAMESPACE_NODE     *NextNode;
 
 
-    FUNCTION_TRACE_PTR ("NsDeleteNamedObject", NameDesc);
+    FUNCTION_TRACE_PTR ("NsDeleteNode", Node);
 
-    ParentDesc = AcpiNsGetParentObject (NameDesc);
+    ParentNode = AcpiNsGetParentObject (Node);
 
-    PrevDesc = NULL;
-    NextDesc = ParentDesc->Child;
+    PrevNode = NULL;
+    NextNode = ParentNode->Child;
 
-    while (NextDesc != NameDesc)
+    while (NextNode != Node)
     {
-        PrevDesc = NextDesc;
-        NextDesc = PrevDesc->Peer;
+        PrevNode = NextNode;
+        NextNode = PrevNode->Peer;
     }
 
-    if (PrevDesc)
+    if (PrevNode)
     {
-        PrevDesc->Peer = NextDesc->Peer;
-        if (NextDesc->Flags & ANOBJ_END_OF_PEER_LIST)
+        PrevNode->Peer = NextNode->Peer;
+        if (NextNode->Flags & ANOBJ_END_OF_PEER_LIST)
         {
-            PrevDesc->Flags |= ANOBJ_END_OF_PEER_LIST;
+            PrevNode->Flags |= ANOBJ_END_OF_PEER_LIST;
         }
     }
     else
     {
-        ParentDesc->Child = NextDesc->Peer;
+        ParentNode->Child = NextNode->Peer;
     }
 
 
-    DECREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMED_OBJECT));
+    DECREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMESPACE_NODE));
 
     /*
-     * Detach an object if there is one 
+     * Detach an object if there is one
      */
 
-    if (NameDesc->Object)
+    if (Node->Object)
     {
-        AcpiNsDetachObject (NameDesc);
+        AcpiNsDetachObject (Node);
     }
 
-    AcpiCmFree (NameDesc);
+    AcpiCmFree (Node);
 
 
     return_VOID;
@@ -233,12 +231,12 @@ AcpiNsDeleteNamedObject (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsInstallNamedObject
+ * FUNCTION:    AcpiNsInstallNode
  *
  * PARAMETERS:  WalkState       - Current state of the walk
- *              ParentDesc      - The parent of the new Named Object
- *              NameDesc        - The new Named Object to install
- *              Type            - ACPI object type of the new Named Object
+ *              ParentNode      - The parent of the new Node
+ *              Node        - The new Node to install
+ *              Type            - ACPI object type of the new Node
  *
  * RETURN:      None
  *
@@ -247,17 +245,17 @@ AcpiNsDeleteNamedObject (
  ******************************************************************************/
 
 void
-AcpiNsInstallNamedObject (
+AcpiNsInstallNode (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMED_OBJECT       *ParentDesc,    /* Parent */
-    ACPI_NAMED_OBJECT       *NameDesc,      /* New Child*/
+    ACPI_NAMESPACE_NODE     *ParentNode,    /* Parent */
+    ACPI_NAMESPACE_NODE     *Node,      /* New Child*/
     OBJECT_TYPE_INTERNAL    Type)
 {
     UINT16                  OwnerId = TABLE_ID_DSDT;
-    ACPI_NAMED_OBJECT       *ChildDesc;
+    ACPI_NAMESPACE_NODE     *ChildNode;
 
 
-    FUNCTION_TRACE ("NsInstallNamedObject");
+    FUNCTION_TRACE ("NsInstallNode");
 
 
     /*
@@ -275,31 +273,31 @@ AcpiNsInstallNamedObject (
 
     /* TBD: Could be first, last, or alphabetic */
 
-    ChildDesc = ParentDesc->Child;
-    if (!ChildDesc)
+    ChildNode = ParentNode->Child;
+    if (!ChildNode)
     {
-        ParentDesc->Child = NameDesc;
+        ParentNode->Child = Node;
     }
 
-    else 
+    else
     {
-        while (!(ChildDesc->Flags & ANOBJ_END_OF_PEER_LIST))
+        while (!(ChildNode->Flags & ANOBJ_END_OF_PEER_LIST))
         {
-            ChildDesc = ChildDesc->Peer;
+            ChildNode = ChildNode->Peer;
         }
 
-        ChildDesc->Peer = NameDesc;
+        ChildNode->Peer = Node;
 
         /* Clear end-of-list flag */
 
-        ChildDesc->Flags &= ~ANOBJ_END_OF_PEER_LIST;
+        ChildNode->Flags &= ~ANOBJ_END_OF_PEER_LIST;
     }
 
     /* Init the new entry */
 
-    NameDesc->OwnerId   = OwnerId;
-    NameDesc->Flags     |= ANOBJ_END_OF_PEER_LIST;
-    NameDesc->Peer      = ParentDesc;
+    Node->OwnerId   = OwnerId;
+    Node->Flags     |= ANOBJ_END_OF_PEER_LIST;
+    Node->Peer      = ParentNode;
 
 
     /*
@@ -319,8 +317,8 @@ AcpiNsInstallNamedObject (
          */
 
         DEBUG_PRINT (ACPI_INFO,
-            ("NsInstallNamedObject: [%4.4s] is a forward reference\n",
-            &NameDesc->Name));
+            ("NsInstallNode: [%4.4s] is a forward reference\n",
+            &Node->Name));
 
     }
 
@@ -346,21 +344,21 @@ AcpiNsInstallNamedObject (
         (Type != INTERNAL_TYPE_DEF_ANY) &&
         (Type != INTERNAL_TYPE_INDEX_FIELD_DEFN))
     {
-        NameDesc->Type = (UINT8) Type;
+        Node->Type = (UINT8) Type;
     }
 
     DEBUG_PRINT (TRACE_NAMES,
-        ("NsInstallNamedObject: %4.4s added to %p at %p\n",
-        &NameDesc->Name, ParentDesc, NameDesc));
+        ("NsInstallNode: %4.4s added to %p at %p\n",
+        &Node->Name, ParentNode, Node));
 
     /*
      * Increment the reference count(s) of all parents up to
      * the root!
      */
 
-    while ((NameDesc = AcpiNsGetParentObject (NameDesc)) != NULL)
+    while ((Node = AcpiNsGetParentObject (Node)) != NULL)
     {
-        NameDesc->ReferenceCount++;
+        Node->ReferenceCount++;
     }
 
     return_VOID;
@@ -371,7 +369,7 @@ AcpiNsInstallNamedObject (
  *
  * FUNCTION:    AcpiNsDeleteChildren
  *
- * PARAMETERS:  ParentDesc      - Delete this objects children
+ * PARAMETERS:  ParentNode      - Delete this objects children
  *
  * RETURN:      None.
  *
@@ -382,25 +380,25 @@ AcpiNsInstallNamedObject (
 
 void
 AcpiNsDeleteChildren (
-    ACPI_NAMED_OBJECT       *ParentDesc)
+    ACPI_NAMESPACE_NODE     *ParentNode)
 {
-    ACPI_NAMED_OBJECT       *ChildDesc;
-    ACPI_NAMED_OBJECT       *NextDesc;
+    ACPI_NAMESPACE_NODE     *ChildNode;
+    ACPI_NAMESPACE_NODE     *NextNode;
     UINT8                   Flags;
 
 
-    FUNCTION_TRACE_PTR ("AcpiNsDeleteChildren", ParentDesc);
+    FUNCTION_TRACE_PTR ("AcpiNsDeleteChildren", ParentNode);
 
 
-    if (!ParentDesc)
+    if (!ParentNode)
     {
         return_VOID;
     }
 
     /* If no children, all done! */
 
-    ChildDesc = ParentDesc->Child;
-    if (!ChildDesc)
+    ChildNode = ParentNode->Child;
+    if (!ChildNode)
     {
         return_VOID;
     }
@@ -412,47 +410,47 @@ AcpiNsDeleteChildren (
     {
         /* Get the things we need */
 
-        NextDesc    = ChildDesc->Peer;
-        Flags       = ChildDesc->Flags;
+        NextNode    = ChildNode->Peer;
+        Flags       = ChildNode->Flags;
 
         /* Grandchildren should have all been deleted already */
 
-        if (ChildDesc->Child)
+        if (ChildNode->Child)
         {
-            DEBUG_PRINT (ACPI_ERROR, 
+            DEBUG_PRINT (ACPI_ERROR,
                 ("NsDeleteChildren: Found a grandchild! P=%X C=%X\n",
-                ParentDesc, ChildDesc));
+                ParentNode, ChildNode));
         }
 
         /* Now we can free this child object */
 
-        DECREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMED_OBJECT));
+        DECREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMESPACE_NODE));
 
         DEBUG_PRINT (ACPI_INFO,
-            ("AcpiNsDeleteChildren: Object %p, Remaining %d\n", 
-            ChildDesc, AcpiGbl_CurrentNamedObjectCount));
+            ("AcpiNsDeleteChildren: Object %p, Remaining %X\n",
+            ChildNode, AcpiGbl_CurrentNodeCount));
 
         /*
-         * Detach an object if there is one 
+         * Detach an object if there is one
          */
 
-        if (ChildDesc->Object)
+        if (ChildNode->Object)
         {
-            AcpiNsDetachObject (ChildDesc);
+            AcpiNsDetachObject (ChildNode);
         }
 
-        AcpiCmFree (ChildDesc);
+        AcpiCmFree (ChildNode);
 
         /* And move on to the next child in the list */
 
-        ChildDesc = NextDesc;
+        ChildNode = NextNode;
 
     } while (!(Flags & ANOBJ_END_OF_PEER_LIST));
 
 
     /* Clear the parent's child pointer */
 
-    ParentDesc->Child = NULL;
+    ParentNode->Child = NULL;
 
     return_VOID;
 }
@@ -466,30 +464,30 @@ AcpiNsDeleteChildren (
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Delete a subtree of the namespace.  This includes all objects 
+ * DESCRIPTION: Delete a subtree of the namespace.  This includes all objects
  *              stored within the subtree.  Scope tables are deleted also
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsDeleteNamespaceSubtree (
-    ACPI_NAMED_OBJECT       *ParentDesc)
+    ACPI_NAMESPACE_NODE     *ParentNode)
 {
-    ACPI_NAMED_OBJECT       *ChildDesc;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_NAMESPACE_NODE     *ChildNode;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     UINT32                  Level;
 
 
     FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
 
 
-    if (!ParentDesc)
+    if (!ParentNode)
     {
         return_ACPI_STATUS (AE_OK);
     }
 
 
-    ChildDesc   = 0;
+    ChildNode   = 0;
     Level       = 1;
 
     /*
@@ -504,26 +502,26 @@ AcpiNsDeleteNamespaceSubtree (
          * Null returned if not found
          */
 
-        ChildDesc = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentDesc,
-                                            ChildDesc);
-        if (ChildDesc)
+        ChildNode = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentNode,
+                                            ChildNode);
+        if (ChildNode)
         {
             /*
              * Found an object - delete the object within
              * the Value field
              */
 
-            ObjDesc = AcpiNsGetAttachedObject (ChildDesc);
+            ObjDesc = AcpiNsGetAttachedObject (ChildNode);
             if (ObjDesc)
             {
-                AcpiNsDetachObject (ChildDesc);
+                AcpiNsDetachObject (ChildNode);
                 AcpiCmRemoveReference (ObjDesc);
             }
 
 
             /* Check if this object has any children */
 
-            if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildDesc, 0))
+            if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildNode, 0))
             {
                 /*
                  * There is at least one child of this object,
@@ -531,8 +529,8 @@ AcpiNsDeleteNamespaceSubtree (
                  */
 
                 Level++;
-                ParentDesc    = ChildDesc;
-                ChildDesc     = 0;
+                ParentNode    = ChildNode;
+                ChildNode     = 0;
             }
         }
 
@@ -548,15 +546,15 @@ AcpiNsDeleteNamespaceSubtree (
              * Now delete all of the children of this parent
              * all at the same time.
              */
-            AcpiNsDeleteChildren (ParentDesc);
+            AcpiNsDeleteChildren (ParentNode);
 
             /* New "last child" is this parent object */
 
-            ChildDesc = ParentDesc;
+            ChildNode = ParentNode;
 
             /* Now we can move up the tree to the grandparent */
 
-            ParentDesc = AcpiNsGetParentObject (ParentDesc);
+            ParentNode = AcpiNsGetParentObject (ParentNode);
         }
     }
 
@@ -569,48 +567,48 @@ AcpiNsDeleteNamespaceSubtree (
  *
  * FUNCTION:    AcpiNsRemoveReference
  *
- * PARAMETERS:  NameDesc           - Named object whose reference count is to be 
+ * PARAMETERS:  Node           - Named object whose reference count is to be
  *                                decremented
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Remove a Named Object reference.  Decrements the reference count
- *              of all parent Named Objects up to the root.  Any object along 
+ * DESCRIPTION: Remove a Node reference.  Decrements the reference count
+ *              of all parent Nodes up to the root.  Any object along
  *              the way that reaches zero references is freed.
  *
  ******************************************************************************/
 
-void
+static void
 AcpiNsRemoveReference (
-    ACPI_NAMED_OBJECT       *NameDesc)
+    ACPI_NAMESPACE_NODE     *Node)
 {
-    ACPI_NAMED_OBJECT       *CurrentDesc;
+    ACPI_NAMESPACE_NODE     *NextNode;
 
 
     /*
      * Decrement the reference count(s) of this object and all
      * objects up to the root,  Delete anything with zero remaining references.
      */
-    CurrentDesc = NameDesc;
-    while (CurrentDesc)
+    NextNode = Node;
+    while (NextNode)
     {
         /* Decrement the reference count on this object*/
 
-        CurrentDesc->ReferenceCount--;
+        NextNode->ReferenceCount--;
 
         /* Delete the object if no more references */
 
-        if (!CurrentDesc->ReferenceCount)
+        if (!NextNode->ReferenceCount)
         {
             /* Delete all children and delete the object */
 
-            AcpiNsDeleteChildren (CurrentDesc);
-            AcpiNsDeleteNamedObject (CurrentDesc);
+            AcpiNsDeleteChildren (NextNode);
+            AcpiNsDeleteNode (NextNode);
         }
 
         /* Move up to parent */
 
-        CurrentDesc = AcpiNsGetParentObject (CurrentDesc);
+        NextNode = AcpiNsGetParentObject (NextNode);
     }
 }
 
@@ -633,17 +631,17 @@ ACPI_STATUS
 AcpiNsDeleteNamespaceByOwner (
     UINT16                  OwnerId)
 {
-    ACPI_NAMED_OBJECT       *ChildDesc;
+    ACPI_NAMESPACE_NODE     *ChildNode;
     UINT32                  Level;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_NAMED_OBJECT       *ParentDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *ParentNode;
 
 
     FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
 
 
-    ParentDesc  = AcpiGbl_RootObject;
-    ChildDesc   = 0;
+    ParentNode  = AcpiGbl_RootNode;
+    ChildNode   = 0;
     Level       = 1;
 
     /*
@@ -658,29 +656,29 @@ AcpiNsDeleteNamespaceByOwner (
          * Null returned if not found
          */
 
-        ChildDesc = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentDesc,
-                                            ChildDesc);
+        ChildNode = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentNode,
+                                            ChildNode);
 
-        if (ChildDesc)
+        if (ChildNode)
         {
-            if (ChildDesc->OwnerId == OwnerId)
+            if (ChildNode->OwnerId == OwnerId)
             {
                 /*
                  * Found an object - delete the object within
                  * the Value field
                  */
 
-                ObjDesc = AcpiNsGetAttachedObject (ChildDesc);
+                ObjDesc = AcpiNsGetAttachedObject (ChildNode);
                 if (ObjDesc)
                 {
-                    AcpiNsDetachObject (ChildDesc);
+                    AcpiNsDetachObject (ChildNode);
                     AcpiCmRemoveReference (ObjDesc);
                 }
             }
 
             /* Check if this object has any children */
 
-            if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildDesc, 0))
+            if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildNode, 0))
             {
                 /*
                  * There is at least one child of this object,
@@ -688,13 +686,13 @@ AcpiNsDeleteNamespaceByOwner (
                  */
 
                 Level++;
-                ParentDesc    = ChildDesc;
-                ChildDesc     = 0;
+                ParentNode    = ChildNode;
+                ChildNode     = 0;
             }
 
-            else if (ChildDesc->OwnerId == OwnerId)
+            else if (ChildNode->OwnerId == OwnerId)
             {
-                AcpiNsRemoveReference (ChildDesc);
+                AcpiNsRemoveReference (ChildNode);
             }
         }
 
@@ -707,25 +705,24 @@ AcpiNsDeleteNamespaceByOwner (
 
             if (Level != 0)
             {
-                if (ParentDesc->OwnerId == OwnerId)
+                if (ParentNode->OwnerId == OwnerId)
                 {
-                    AcpiNsRemoveReference (ParentDesc);
+                    AcpiNsRemoveReference (ParentNode);
                 }
             }
 
             /* New "last child" is this parent object */
 
-            ChildDesc = ParentDesc;
+            ChildNode = ParentNode;
 
             /* Now we can move up the tree to the grandparent */
 
-            ParentDesc = AcpiNsGetParentObject (ParentDesc);
+            ParentNode = AcpiNsGetParentObject (ParentNode);
         }
     }
 
 
     return_ACPI_STATUS (AE_OK);
 }
-
 
 

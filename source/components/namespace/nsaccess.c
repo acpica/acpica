@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.112 $
+ *              $Revision: 1.114 $
  *
  ******************************************************************************/
 
@@ -187,8 +187,7 @@ AcpiNsRootInitialize (void)
                                 IMODE_LOAD_PASS2, NS_NO_UPSEARCH,
                                 NULL, &NewNode);
 
-        if (ACPI_FAILURE (Status) ||
-            (!NewNode))
+        if (ACPI_FAILURE (Status) || (!NewNode)) /* Must be on same line for code converter */
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("Could not create predefined name %s, %s\n",
@@ -362,7 +361,7 @@ AcpiNsLookup (
     BOOLEAN                 NullNamePath = FALSE;
     OBJECT_TYPE_INTERNAL    TypeToCheckFor;
     OBJECT_TYPE_INTERNAL    ThisSearchType;
-    
+
     DEBUG_ONLY_MEMBERS      (UINT32 i)
 
 
@@ -656,7 +655,7 @@ AcpiNsLookup (
             /* Complain about a type mismatch */
 
             REPORT_WARNING (
-                ("NsLookup: %4.4s, type 0x%X, checking for type 0x%X\n",
+                ("NsLookup: %4.4s, type %X, checking for type %X\n",
                 &SimpleName, ThisNode->Type, TypeToCheckFor));
         }
 
