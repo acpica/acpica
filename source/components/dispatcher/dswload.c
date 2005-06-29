@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.21 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -187,6 +187,12 @@ AcpiDsLoad1BeginOp (
     DEBUG_PRINT (TRACE_DISPATCH,
         ("Load1BeginOp: State=%p Op=%p Type=%x\n", WalkState, Op, DataType));
 
+
+    if (Opcode == AML_SCOPE_OP)
+    {
+        DEBUG_PRINT (TRACE_DISPATCH,
+            ("Load1BeginOp: State=%p Op=%p Type=%x\n", WalkState, Op, DataType));
+    }
 
     /*
      * Enter the named type into the internal namespace.  We enter the name
@@ -657,8 +663,6 @@ AcpiDsLoad2EndOp (
                                                 NewNode, WalkState);
             }
         }
-
-
 
 
         break;
