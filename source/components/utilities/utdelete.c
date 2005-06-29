@@ -324,7 +324,7 @@ CmDeleteInternalObjectList (
             /* Delete the package */
             
             /*
-             * TBD: This might not be the right thing to do, depending
+             * TBD: [Investigate] This might not be the right thing to do, depending
              * on how the internal package object was allocated!!!
              */
 
