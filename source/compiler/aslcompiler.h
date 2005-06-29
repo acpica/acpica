@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.5 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,8 @@
 #ifndef AslCompiler_C_INTERFACE
 #define AslCompiler_C_INTERFACE
 
+#pragma warning(disable:4103)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -126,9 +128,95 @@
 #include "acpi.h"
 
 
-#define CompilerId                  "ACPI Component Architecture ASL Compiler"
-#define CompilerName                "iasl"
-#define Version                     "X202"
+#define CompilerId                              "ACPI Component Architecture ASL Compiler"
+#define CompilerName                            "iasl"
+#define Version                                 "X202"
+
+
+
+/* ResourceType values */
+
+#define RESOURCE_TYPE_MEMORY_RANGE              0
+#define RESOURCE_TYPE_IO_RANGE                  1
+#define RESOURCE_TYPE_BUS_NUMBER_RANGE          2
+
+
+/*
+ * Small resource descriptors
+ */
+#define RESOURCE_DESC_IRQ_FORMAT                0x22
+#define RESOURCE_DESC_DMA_FORMAT                0x2A
+#define RESOURCE_DESC_START_DEPENDENT_FNS       0x30
+#define RESOURCE_DESC_END_DEPENDENT_FNS         0x38
+#define RESOURCE_DESC_IO_PORT                   0x47
+#define RESOURCE_DESC_FIXED_LOC_IO_PORT         0x4B
+#define RESOURCE_DESC_SMALL_VENDOR_DEFINED      0x70
+#define RESOURCE_DESC_END_TAG                   0x79
+
+/*
+ * Large resource descriptors
+ */
+
+#define RESOURCE_DESC_MEMORY_24                 0x81
+#define RESOURCE_DESC_GENERAL_REGISTER          0x82
+#define RESOURCE_DESC_LARGE_VENDOR_DEFINED      0x84
+#define RESOURCE_DESC_MEMORY_32                 0x85
+#define RESOURCE_DESC_FIXED_MEMORY_32           0x86
+#define RESOURCE_DESC_DWORD_ADDRESS_SPACE       0x87
+#define RESOURCE_DESC_WORD_ADDRESS_SPACE        0x88
+#define RESOURCE_DESC_EXTENDED_XRUPT            0x89
+#define RESOURCE_DESC_QWORD_ADDRESS_SPACE       0x8A
+
+
+
+
+#pragma pack(1)
+typedef struct asl_end_tag_desc
+{
+    UINT8                       DescriptorType;
+    UINT8                       Checksum;
+
+} ASL_END_TAG_DESC;
+
+#pragma pack(1)
+typedef struct asl_word_address_desc
+{
+    UINT8                       DescriptorType;
+    UINT16                      Length;
+    UINT8                       ResourceType;
+    UINT8                       Flags;
+    UINT8                       SpecificFlags;
+    UINT16                      Granularity;
+    UINT16                      AddressMin;
+    UINT16                      AddressMax;
+    UINT16                      TranslationOffset;
+    UINT16                      AddressLength;
+    UINT8                       OptionalFields[2];
+
+} ASL_WORD_ADDRESS_DESC;
+
+
+
+
+
+
+
+typedef union asl_resource_desc
+{
+    ASL_WORD_ADDRESS_DESC       Was;
+    ASL_END_TAG_DESC            Et;
+
+} ASL_RESOURCE_DESC;
+
+
+
+#define DEFAULT_RESOURCE_DESC_SIZE  (sizeof (ASL_RESOURCE_DESC) + sizeof (ASL_END_TAG_DESC))
+
+
+
+
+#define ASL_GET_CHILD_NODE(a)       (a)->Child
+#define ASL_GET_PEER_NODE(a)        (a)->Peer
 
 
 
@@ -136,31 +224,18 @@
 #define ASL_PARSE_OPCODE_BASE       ACCESSAS        /* First Lex type */   
 
 
-/* TBD: define new (2.0) opcodes  - move to amlcode.h */
-
-#define AML_BUFF_OP                 (UINT16) 0x00FE
-#define AML_CASE_OP                 (UINT16) 0x00FE
+/* TBD: Is this a real opcode? */
 #define AML_CONCAT_TPL_OP           (UINT16) 0x00FE
-#define AML_CONTINUE_OP             (UINT16) 0x00FE
-#define AML_COPY_OP                 (UINT16) 0x00FE
-#define AML_QWORD_FIELD_OP          (UINT16) 0x00FE
-#define AML_DATA_REGION_OP          (UINT16) 0x00FE
-#define AML_DEC_STR_OP              (UINT16) 0x00FE
-#define AML_DEFAULT_OP              (UINT16) 0x00FE
-#define AML_ELSEIF_OP               (UINT16) 0x00FE
-#define AML_HEXSTR_OP               (UINT16) 0x00FE
-#define AML_INT_OP                  (UINT16) 0x00FE
-#define AML_LOAD_TABLE_OP           (UINT16) 0x00FE
-#define AML_MID_OP                  (UINT16) 0x00FE
-#define AML_MOD_OP                  (UINT16) 0x00FE
-#define AML_SWITCH_OP               (UINT16) 0x00FE
-#define AML_COPY_OP                 (UINT16) 0x00FE
-#define AML_COPY_OP                 (UINT16) 0x00FE
+
+
+/* Internal opcodes */
 
 #define AML_RAW_DATA_BYTE           (UINT16) 0xAA01
 #define AML_RAW_DATA_WORD           (UINT16) 0xAA02
 #define AML_RAW_DATA_DWORD          (UINT16) 0xAA04
 #define AML_RAW_DATA_QWORD          (UINT16) 0xAA08
+#define AML_RAW_DATA_BUFFER         (UINT16) 0xAA0B
+
 #define AML_PACKAGE_LENGTH          (UINT16) 0xAA10
 
 #define AML_UNASSIGNED_OPCODE       (UINT16) 0xEEEE
@@ -172,18 +247,6 @@
 #define ASL_WALK_VISIT_DOWNWARD     0x01
 #define ASL_WALK_VISIT_UPWARD       0x02
 #define ASL_WALK_VISIT_TWICE        0x03
-
-typedef enum
-{
-    REGION_MEMORY,
-    REGION_IO,
-    REGION_PCI_CONFIG,
-    REGION_EC,
-    REGION_SMBUS,
-    REGION_CMOS,
-    REGION_PCI_BAR
-
-} AML_REGION_TYPES;
 
 
 #define OP_TABLE_ENTRY(a,b,c)        {b,a,c}
@@ -198,7 +261,8 @@ typedef struct asl_mapping_entry
 
 typedef union asl_node_value
 {
-    UINT32                  Integer;
+    UINT64                  Integer;        /* Generic integer is largest integer */
+    UINT64                  Integer64;
     UINT32                  Integer32;
     UINT16                  Integer16;
     UINT8                   Integer8;
@@ -213,7 +277,6 @@ typedef struct asl_parse_node
     struct asl_parse_node   *Peer;
     struct asl_parse_node   *Child;
     union asl_node_value    Value;
-    void                    *Valuex;
     UINT16                  AmlOpcode;
     UINT16                  ParseOpcode;
     UINT32                  AmlLength;
@@ -221,6 +284,8 @@ typedef struct asl_parse_node
     UINT8                   AmlOpcodeLength;
     UINT8                   AmlPkgLenBytes;
     UINT8                   Flags;
+    char                    ParseOpName[12];
+    char                    AmlOpName[12];
 
 } ASL_PARSE_NODE;
 
@@ -406,6 +471,11 @@ CgCloseTable (void);
 void
 CgWriteNode (
     ASL_PARSE_NODE          *Node);
+
+
+void
+CgDoResourceTemplate (
+    ASL_PARSE_NODE              *Node);
 
 
 void

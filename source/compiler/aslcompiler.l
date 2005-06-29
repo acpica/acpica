@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -383,6 +383,65 @@ NamePathTail        [.]{NameSeg}
 "MGE"                       { count (0); return (MATCHTYPE_MGE); }
 "MGT"                       { count (0); return (MATCHTYPE_MGT); }
 
+"Compatibility"             { count (0); return (DMATYPE_COMPATIBILITY); }
+"TypeA"                     { count (0); return (DMATYPE_A); }
+"TypeB"                     { count (0); return (DMATYPE_B); }
+"TypeF"                     { count (0); return (DMATYPE_F); }
+
+"BusMaster"                 { count (0); return (BUSMASTERTYPE_MASTER); }
+"NotBusMaster"              { count (0); return (BUSMASTERTYPE_NOTMASTER); }
+
+"Transfer8"                 { count (0); return (XFERTYPE_8); }
+"Transfer8_16"              { count (0); return (XFERTYPE_8_16); }
+"Transfer16"                { count (0); return (XFERTYPE_16); }
+
+"ResourceConsumer"          { count (0); return (RESOURCETYPE_CONSUMER); }
+"ResourceProducer"          { count (0); return (RESOURCETYPE_PRODUCER); }
+
+"MinFixed"                  { count (0); return (MINTYPE_FIXED); }
+"MinNotFixed"               { count (0); return (MINTYPE_NOTFIXED); }
+
+"MaxFixed"                  { count (0); return (MAXTYPE_FIXED); }
+"MaxNotFixed"               { count (0); return (MAXTYPE_NOTFIXED); }
+
+"PosDecode"                 { count (0); return (DECODETYPE_POS); }
+"SubDecode"                 { count (0); return (DECODETYPE_SUB); }
+
+"ISAOnlyRanges"             { count (0); return (RANGETYPE_ISAONLY); }
+"NonISAOnlyRanges"          { count (0); return (RANGETYPE_NONISAONLY); }
+"EntireRange"               { count (0); return (RANGETYPE_ENTIRE); }
+
+"Cacheable"                 { count (0); return (MEMTYPE_CACHEABLE); }
+"WriteCombining"            { count (0); return (MEMTYPE_WRITECOMBINING); }
+"Prefetchable"              { count (0); return (MEMTYPE_PREFETCHABLE); }
+"NonCacheable"              { count (0); return (MEMTYPE_NONCACHEABLE); }
+
+"ReadWrite"                 { count (0); return (READWRITETYPE_BOTH); }
+"ReadOnly"                  { count (0); return (READWRITETYPE_READONLY); }
+
+"Edge"                      { count (0); return (INTTYPE_EDGE); }
+"Level"                     { count (0); return (INTTYPE_LEVEL); }
+
+"ActiveHigh"                { count (0); return (INTLEVEL_ACTIVEHIGH); }
+"ActiveLow"                 { count (0); return (INTLEVEL_ACTIVELOW); }
+
+"Shared"                    { count (0); return (SHARETYPE_SHARED); }
+"Exclusive"                 { count (0); return (SHARETYPE_EXCLUSIVE); }
+
+"Decode10"                  { count (0); return (IODECODETYPE_10); }
+"Decode16"                  { count (0); return (IODECODETYPE_16); }
+
+"TypeTranslation"           { count (0); return (TYPE_TRANSLATION); }
+"TypeStatic"                { count (0); return (TYPE_STATIC); }
+
+"SparseTranslation"         { count (0); return (TRANSLATIONTYPE_SPARSE); }
+"DenseTranslation"          { count (0); return (TRANSLATIONTYPE_DENSE); }
+
+"AddressRangeMemory"        { count (0); return (ADDRESSTYPE_MEMORY); }
+"AddressRangeReserved"      { count (0); return (ADDRESSTYPE_RESERVED); }
+"AddressRangeNVS"           { count (0); return (ADDRESSTYPE_NVS); }
+"AddressRangeACPI"          { count (0); return (ADDRESSTYPE_ACPI); }
+
 
 
 "{"			                { count (0); return('{'); }
@@ -414,8 +473,6 @@ NamePathTail        [.]{NameSeg}
 			                    AslCompilerlval.s = s;
                                 DbgPrint ("NameString: %s\n", s);
                                 return (NAMESTRING); }
-
-
 
 
 

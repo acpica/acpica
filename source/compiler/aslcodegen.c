@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -158,8 +158,8 @@ CgAmlWriteWalk (
 		DbgPrint ("          ");
 	}
 
-    DbgPrint ("Value %08X ParseOp 0x%04X AmlOp %04X OpLen %01X PByts %01X Len %04X SubLen %04X ParentSubLen %04X Node %X Chld %X Paren %X\n",
-                Node->Value.Integer,
+    DbgPrint ("Value-%08X ParseOp-0x%04X AmlOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X ParentSubLen-%04X Node-%08X Chld-%08X Paren-%08X\n",
+                Node->Value.Integer32,
                 Node->ParseOpcode,
                 Node->AmlOpcode,
                 Node->AmlOpcodeLength,
@@ -251,7 +251,7 @@ CgWriteAmlOpcode (
 
         /* Value is the length to be encoded (Used in field definitions) */
 
-        PkgLen.Len = Node->Value.Integer;
+        PkgLen.Len = Node->Value.Integer32;
         break;
 
     default:
@@ -322,6 +322,10 @@ CgWriteAmlOpcode (
 
     case AML_DWORD_OP:
         fwrite (&Node->Value.Integer32, 4, 1, Gbl_OutputAmlFile);
+        break;
+
+    case AML_QWORD_OP:
+        fwrite (&Node->Value.Integer64, 8, 1, Gbl_OutputAmlFile);
         break;
 
     case AML_STRING_OP:
@@ -468,6 +472,12 @@ CgWriteNode (
         (Node->AmlOpcode == AML_RAW_DATA_QWORD))
     {
         fwrite (&Node->Value.Integer, Node->AmlLength, 1, Gbl_OutputAmlFile);
+        return;
+    }
+
+    if (Node->AmlOpcode == AML_RAW_DATA_BUFFER)
+    {
+        fwrite (Node->Value.Pointer, Node->AmlLength, 1, Gbl_OutputAmlFile);
         return;
     }
 
