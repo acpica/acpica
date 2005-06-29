@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.279 $
+ *       $Revision: 1.280 $
  *
  *****************************************************************************/
 
@@ -319,10 +319,13 @@ typedef struct acpi_pointer
 #define ACPI_LOGMODE_PHYSPTR            ACPI_LOGICAL_ADDRESSING  | ACPI_PHYSICAL_POINTER
 #define ACPI_LOGMODE_LOGPTR             ACPI_LOGICAL_ADDRESSING  | ACPI_LOGICAL_POINTER
 
-/* Types for the OS interface layer (OSL) */
-
-#ifdef ACPI_USE_LOCAL_CACHE
-#define ACPI_CACHE_T        ACPI_MEMORY_LIST
+/*
+ * If ACPI_CACHE_T was not defined in the OS-dependent header,
+ * define it now. This is typically the case where the local cache
+ * manager implementation is to be used (ACPI_USE_LOCAL_CACHE)
+ */
+#ifndef ACPI_CACHE_T
+#define ACPI_CACHE_T                    ACPI_MEMORY_LIST
 #endif
 
 /*
