@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,8 @@
  *
  * PARAMETERS:  None
  *
- * DESCRIPTION: Enter the interpreter execution region
+ * DESCRIPTION: Enter the interpreter execution region.  Failure to enter
+ *              the interpreter region is a fatal system error
  *
  ******************************************************************************/
 
@@ -164,6 +165,11 @@ AcpiExEnterInterpreter (void)
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EXECUTE);
+    if (ACPI_FAILURE (Status))
+    {
+        REPORT_ERROR (("Fatal - Could not acquire interpreter lock\n"));
+    }
+
     return_ACPI_STATUS (Status);
 }
 
