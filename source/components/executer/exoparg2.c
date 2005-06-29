@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: exdyadic - ACPI AML execution for dyadic (2-operand) operators
- *              $Revision: 1.94 $
+ * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *****************************************************************************/
 
 
-#define __EXDYADIC_C__
+#define __EXOPARG2_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -127,188 +127,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exdyadic")
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExDoConcatenate
- *
- * PARAMETERS:  *ObjDesc            - Object to be converted.  Must be an
- *                                    Integer, Buffer, or String
- *              WalkState           - Current walk state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Concatenate two objects OF THE SAME TYPE.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExDoConcatenate (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     *ObjDesc2,
-    ACPI_OPERAND_OBJECT     **ActualReturnDesc,
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_STATUS             Status;
-    UINT32                  i;
-    ACPI_INTEGER            ThisInteger;
-    ACPI_OPERAND_OBJECT     *ReturnDesc;
-    NATIVE_CHAR             *NewBuf;
-    UINT32                  IntegerSize = sizeof (ACPI_INTEGER);
-
-
-    FUNCTION_ENTRY ();
-
-
-    /*
-     * There are three cases to handle:
-     * 1) Two Integers concatenated to produce a buffer
-     * 2) Two Strings concatenated to produce a string
-     * 3) Two Buffers concatenated to produce a buffer
-     */
-    switch (ObjDesc->Common.Type)
-    {
-    case ACPI_TYPE_INTEGER:
-
-        /* Handle both ACPI 1.0 and ACPI 2.0 Integer widths */
-
-        if (WalkState->MethodNode->Flags & ANOBJ_DATA_WIDTH_32)
-        {
-            /*
-             * We are running a method that exists in a 32-bit ACPI table.
-             * Truncate the value to 32 bits by zeroing out the upper
-             * 32-bit field
-             */
-            IntegerSize = sizeof (UINT32);
-        }
-
-        /* Result of two integers is a buffer */
-
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
-        if (!ReturnDesc)
-        {
-            return (AE_NO_MEMORY);
-        }
-
-        /* Need enough space for two integers */
-
-        ReturnDesc->Buffer.Length = IntegerSize * 2;
-        NewBuf = ACPI_MEM_CALLOCATE (ReturnDesc->Buffer.Length);
-        if (!NewBuf)
-        {
-            REPORT_ERROR
-                (("ExDoConcatenate: Buffer allocation failure\n"));
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
-
-        ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
-
-        /* Convert the first integer */
-
-        ThisInteger = ObjDesc->Integer.Value;
-        for (i = 0; i < IntegerSize; i++)
-        {
-            NewBuf[i] = (UINT8) ThisInteger;
-            ThisInteger >>= 8;
-        }
-
-        /* Convert the second integer */
-
-        ThisInteger = ObjDesc2->Integer.Value;
-        for (; i < (IntegerSize * 2); i++)
-        {
-            NewBuf[i] = (UINT8) ThisInteger;
-            ThisInteger >>= 8;
-        }
-
-        break;
-
-
-    case ACPI_TYPE_STRING:
-
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_STRING);
-        if (!ReturnDesc)
-        {
-            return (AE_NO_MEMORY);
-        }
-
-        /* Operand0 is string  */
-
-        NewBuf = ACPI_MEM_ALLOCATE (ObjDesc->String.Length +
-                                    ObjDesc2->String.Length + 1);
-        if (!NewBuf)
-        {
-            REPORT_ERROR
-                (("ExDoConcatenate: String allocation failure\n"));
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
-
-        STRCPY (NewBuf, ObjDesc->String.Pointer);
-        STRCPY (NewBuf + ObjDesc->String.Length,
-                        ObjDesc2->String.Pointer);
-
-        /* Point the return object to the new string */
-
-        ReturnDesc->String.Pointer = NewBuf;
-        ReturnDesc->String.Length = ObjDesc->String.Length +=
-                                 ObjDesc2->String.Length;
-        break;
-
-
-    case ACPI_TYPE_BUFFER:
-
-        /* Operand0 is a buffer */
-
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
-        if (!ReturnDesc)
-        {
-            return (AE_NO_MEMORY);
-        }
-
-        NewBuf = ACPI_MEM_ALLOCATE (ObjDesc->Buffer.Length +
-                                    ObjDesc2->Buffer.Length);
-        if (!NewBuf)
-        {
-            REPORT_ERROR
-                (("ExDoConcatenate: Buffer allocation failure\n"));
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
-
-        MEMCPY (NewBuf, ObjDesc->Buffer.Pointer,
-                        ObjDesc->Buffer.Length);
-        MEMCPY (NewBuf + ObjDesc->Buffer.Length, ObjDesc2->Buffer.Pointer,
-                         ObjDesc2->Buffer.Length);
-
-        /*
-         * Point the return object to the new buffer
-         */
-
-        ReturnDesc->Buffer.Pointer     = (UINT8 *) NewBuf;
-        ReturnDesc->Buffer.Length      = ObjDesc->Buffer.Length +
-                                      ObjDesc2->Buffer.Length;
-        break;
-
-
-    default:
-        Status = AE_AML_INTERNAL;
-        ReturnDesc = NULL;
-    }
-
-
-    *ActualReturnDesc = ReturnDesc;
-    return (AE_OK);
-
-
-Cleanup:
-
-    AcpiUtRemoveReference (ReturnDesc);
-    return (Status);
-}
+        MODULE_NAME         ("exoparg2")
 
 
 /*******************************************************************************

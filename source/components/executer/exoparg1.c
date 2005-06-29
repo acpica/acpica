@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: exmonad - ACPI AML execution for monadic (1 operand) operators
- *              $Revision: 1.116 $
+ * Module Name: exoparg1 - AML execution - opcodes with 1 argument
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __EXMONAD_C__
+#define __EXOPARG1_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -126,87 +126,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exmonad")
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExGetObjectReference
- *
- * PARAMETERS:  ObjDesc         - Create a reference to this object
- *              ReturnDesc         - Where to store the reference
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Obtain and return a "reference" to the target object
- *              Common code for the RefOfOp and the CondRefOfOp.
- *
- ******************************************************************************/
-
-static ACPI_STATUS
-AcpiExGetObjectReference (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **ReturnDesc,
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_STATUS             Status = AE_OK;
-
-
-    FUNCTION_TRACE_PTR ("ExGetObjectReference", ObjDesc);
-
-
-    if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
-    {
-        if (ObjDesc->Common.Type != INTERNAL_TYPE_REFERENCE)
-        {
-            *ReturnDesc = NULL;
-            Status = AE_TYPE;
-            goto Cleanup;
-        }
-
-        /*
-         * Not a Name -- an indirect name pointer would have
-         * been converted to a direct name pointer in AcpiExResolveOperands
-         */
-        switch (ObjDesc->Reference.Opcode)
-        {
-        case AML_LOCAL_OP:
-        case AML_ARG_OP:
-
-            *ReturnDesc = (void *) AcpiDsMethodDataGetNode (ObjDesc->Reference.Opcode,
-                                        ObjDesc->Reference.Offset, WalkState);
-            break;
-
-        default:
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(Internal) Unknown Ref subtype %02x\n",
-                ObjDesc->Reference.Opcode));
-            *ReturnDesc = NULL;
-            Status = AE_AML_INTERNAL;
-            goto Cleanup;
-        }
-
-    }
-
-    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
-    {
-        /* Must be a named object;  Just return the Node */
-
-        *ReturnDesc = ObjDesc;
-    }
-
-    else
-    {
-        *ReturnDesc = NULL;
-        Status = AE_TYPE;
-    }
-
-
-Cleanup:
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p Ref=%p\n", ObjDesc, *ReturnDesc));
-    return_ACPI_STATUS (Status);
-}
+        MODULE_NAME         ("exoparg1")
 
 
 /*******************************************************************************
