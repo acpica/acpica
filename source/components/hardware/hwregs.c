@@ -15,15 +15,18 @@
  |                                  control and status registers.
  |__________________________________________________________________________
  |
- | $Revision: 1.3 $
- | $Date: 2005/06/29 16:54:02 $
+ | $Revision: 1.4 $
+ | $Date: 2005/06/29 16:54:03 $
  | $Log: hwregs.c,v $
- | Revision 1.3  2005/06/29 16:54:02  aystarik
- |
+ | Revision 1.4  2005/06/29 16:54:03  aystarik
+ | includes acpiasm.h
  |
  | 
- | date	99.01.13.22.39.00;	author grsmith1;	state Exp;
+ | date	99.01.13.22.53.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 4     1/13/99 2:53p Rmoore1
+ * includes acpiasm.h
  * 
  * 3     1/13/99 2:39p Grsmith1
  * 
@@ -116,6 +119,7 @@
 #include "acpirio.h"
 #include "acpitbls.h"
 #include "acpipriv.h"
+#include "acpiasm.h"
 
 #ifndef RMX
 #pragma check_stack (off)
