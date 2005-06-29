@@ -285,7 +285,7 @@ AcpiGetSystemInfo (
     OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
-    InfoPtr->AcpiCAVersion      = 0x1234;   /* TBD [Future]: need a version number, or use the version string */
+    InfoPtr->AcpiCaVersion      = 0x1234;   /* TBD [Future]: need a version number, or use the version string */
 
     /* System flags (ACPI capabilities) */
 
