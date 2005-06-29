@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.73 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -129,19 +129,21 @@
 #define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dswexec")
 
-
-ACPI_EXECUTE_OP         AcpiGbl_OpClassDispatch [] = {
-                            AcpiExMonadic1,
-                            AcpiExMonadic2,
-                            AcpiExMonadic2R,
-                            AcpiExDyadic1,
-                            AcpiExDyadic2,
-                            AcpiExDyadic2R,
-                            AcpiExDyadicType21,
-                            AcpiExTriadic,
-                            AcpiExHexadic};
-
-
+/*
+ * Dispatch tables for opcode classes 
+ */
+ACPI_EXECUTE_OP         AcpiGbl_OpTypeDispatch [] = {
+                            AcpiExOpcode_1A_0T_0R,
+                            AcpiExOpcode_1A_0T_1R,
+                            AcpiExOpcode_1A_1T_0R,
+                            AcpiExOpcode_1A_1T_1R,
+                            AcpiExOpcode_2A_0T_0R,
+                            AcpiExOpcode_2A_0T_1R,
+                            AcpiExOpcode_2A_1T_1R,
+                            AcpiExOpcode_2A_2T_1R,
+                            AcpiExOpcode_3A_0T_0R,
+                            AcpiExOpcode_3A_1T_1R,
+                            AcpiExOpcode_6A_0T_1R};
 
 /*****************************************************************************
  *
@@ -340,7 +342,7 @@ AcpiDsExecBeginOp (
     }
 
 
-    OpcodeClass = ACPI_GET_OP_CLASS (WalkState->OpInfo);
+    OpcodeClass = WalkState->OpInfo->Class;
 
     /* We want to send namepaths to the load code */
 
@@ -443,8 +445,8 @@ AcpiDsExecEndOp (
 
 
     Op      = WalkState->Op;
-    OpType  = ACPI_GET_OP_TYPE (WalkState->OpInfo);
-    OpClass = ACPI_GET_OP_CLASS (WalkState->OpInfo);
+    OpType  = WalkState->OpInfo->Type;
+    OpClass = WalkState->OpInfo->Class;
 
     if (OpClass == AML_CLASS_UNKNOWN)
     {
@@ -528,15 +530,21 @@ AcpiDsExecEndOp (
          * routine.  There is one routine per opcode "type" based upon the
          * number of opcode arguments and return type.
          */
-        Status = AcpiGbl_OpClassDispatch [OpType] (WalkState);
+        Status = AcpiGbl_OpTypeDispatch [OpType] (WalkState);
 
 
-        /* Clear the operand stack */
+        /* Delete argument objects and clear the operand stack */
 
         for (i = 0; i < WalkState->NumOperands; i++)
         {
+            /*
+             * Remove a reference to all operands, including both 
+             * "Arguments" and "Targets".
+             */
+            AcpiUtRemoveReference (WalkState->Operands[i]);
             WalkState->Operands[i] = NULL;
         }
+
         WalkState->NumOperands = 0;
 
         /*

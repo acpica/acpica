@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.45 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -131,6 +131,55 @@
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDsInitCallbacks
+ *
+ * PARAMETERS:  WalkState       - Current state of the parse tree walk
+ *              PassNumber      - 1, 2, or 3
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Init walk state callbacks
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsInitCallbacks (
+    ACPI_WALK_STATE         *WalkState,
+    UINT32                  PassNumber)
+{
+
+    switch (PassNumber)
+    {
+    case 1:
+        WalkState->ParseFlags         = ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE;
+        WalkState->DescendingCallback = AcpiDsLoad1BeginOp;
+        WalkState->AscendingCallback  = AcpiDsLoad1EndOp;
+        break;
+
+    case 2:
+        WalkState->ParseFlags         = ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE;
+        WalkState->DescendingCallback = AcpiDsLoad2BeginOp;
+        WalkState->AscendingCallback  = AcpiDsLoad2EndOp;
+        break;
+
+    case 3:
+        WalkState->ParseFlags        |= ACPI_PARSE_EXECUTE  | ACPI_PARSE_DELETE_TREE;
+        WalkState->DescendingCallback = AcpiDsExecBeginOp;
+        WalkState->AscendingCallback  = AcpiDsExecEndOp;
+        break;
+
+    default:
+        return (AE_BAD_PARAMETER);
+        break;
+    }
+
+    return (AE_OK);
+}
+
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDsLoad1BeginOp
  *
  * PARAMETERS:  WalkState       - Current state of the parse tree walk
@@ -180,7 +229,7 @@ AcpiDsLoad1BeginOp (
         }
     }
 
-    Path = AcpiPsGetNextNamestring (WalkState->ParserState);
+    Path = AcpiPsGetNextNamestring (&WalkState->ParserState);
 
     /* Map the raw opcode into an internal object type */
 
@@ -230,7 +279,7 @@ AcpiDsLoad1BeginOp (
      * can get it again quickly when this scope is closed
      */
     Op->Node = Node;
-    AcpiPsAppendArg (AcpiPsGetParentScope (WalkState->ParserState), Op);
+    AcpiPsAppendArg (AcpiPsGetParentScope (&WalkState->ParserState), Op);
 
     *OutOp = Op;
     return (Status);
@@ -380,7 +429,7 @@ AcpiDsLoad2BeginOp (
 
     else
     {
-        BufferPtr = AcpiPsGetNextNamestring (WalkState->ParserState);
+        BufferPtr = AcpiPsGetNextNamestring (&WalkState->ParserState);
     }
 
 
@@ -560,28 +609,29 @@ AcpiDsLoad2EndOp (
     /*
      * Named operations are as follows:
      *
-     * AML_SCOPE
-     * AML_DEVICE
-     * AML_THERMALZONE
-     * AML_METHOD
-     * AML_POWERRES
-     * AML_PROCESSOR
-     * AML_FIELD
-     * AML_INDEXFIELD
-     * AML_BANKFIELD
-     * AML_NAMEDFIELD
-     * AML_NAME
      * AML_ALIAS
-     * AML_MUTEX
-     * AML_EVENT
-     * AML_OPREGION
-     * AML_CREATEFIELD
+     * AML_BANKFIELD
      * AML_CREATEBITFIELD
      * AML_CREATEBYTEFIELD
-     * AML_CREATEWORDFIELD
      * AML_CREATEDWORDFIELD
+     * AML_CREATEFIELD
      * AML_CREATEQWORDFIELD
+     * AML_CREATEWORDFIELD
+     * AML_DATA_REGION
+     * AML_DEVICE
+     * AML_EVENT
+     * AML_FIELD
+     * AML_INDEXFIELD
+     * AML_METHOD
      * AML_METHODCALL
+     * AML_MUTEX
+     * AML_NAME
+     * AML_NAMEDFIELD
+     * AML_OPREGION
+     * AML_POWERRES
+     * AML_PROCESSOR
+     * AML_SCOPE
+     * AML_THERMALZONE
      */
 
 
@@ -835,7 +885,7 @@ AcpiDsLoad2EndOp (
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-            "LOADING-Opregion: Op=%p State=%p NamedObj=%p\n",
+            "LOADING-OpRegion: Op=%p State=%p NamedObj=%p\n",
             Op, WalkState, Node));
 
         /*
@@ -849,6 +899,22 @@ AcpiDsLoad2EndOp (
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
             "Completed OpRegion Init, Op=%p State=%p entry=%p\n",
             Op, WalkState, Node));
+        break;
+
+
+    case AML_DATA_REGION_OP:
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+            "LOADING-DataRegion: Op=%p State=%p NamedObj=%p\n",
+            Op, WalkState, Node));
+
+        Status = AcpiDsCreateOperands (WalkState, Arg);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Cleanup;
+        }
+
+        Status = AcpiExCreateTableRegion (WalkState);
         break;
 
 
@@ -904,7 +970,8 @@ Cleanup:
 
     /* Remove the Node pushed at the very beginning */
 
-    AcpiDsObjStackPop (1, WalkState);
+    WalkState->Operands[0] = NULL;
+    WalkState->NumOperands = 0;
     return (Status);
 }
 
