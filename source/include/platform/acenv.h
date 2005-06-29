@@ -182,10 +182,19 @@
 
 #else
 
+#ifdef _AED_EFI
+
+#include <efi.h>
+#include <efistdarg.h>
+#include <efilib.h>
+
+#else
+
 /* All other environments */
 
 #define ACPI_USE_STANDARD_HEADERS
 
+#endif
 #endif
 
 
