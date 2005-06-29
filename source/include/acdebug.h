@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.50 $
+ *       $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -397,7 +397,7 @@ AcpiDbCreateExecutionThreads (
  * dbfileio - Debugger file I/O commands
  */
 
-ACPI_OBJECT_TYPE8
+ACPI_OBJECT_TYPE
 AcpiDbMatchArgument (
     NATIVE_CHAR             *UserArgument,
     ARGUMENT_INFO           *Arguments);
