@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -296,37 +296,22 @@ AcpiExConvertToBuffer (
     case ACPI_TYPE_INTEGER:
 
         /*
-         * Create a new Buffer object
+         * Create a new Buffer object.
+         * Need enough space for one integer 
          */
-        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        RetDesc = AcpiUtCreateBufferObject (AcpiGbl_IntegerByteWidth);
         if (!RetDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        /* Need enough space for one integer */
-
-        NewBuf = ACPI_MEM_CALLOCATE (AcpiGbl_IntegerByteWidth);
-        if (!NewBuf)
-        {
-            ACPI_REPORT_ERROR
-                (("ExConvertToBuffer: Buffer allocation failure\n"));
-            AcpiUtRemoveReference (RetDesc);
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
         /* Copy the integer to the buffer */
 
+        NewBuf = RetDesc->Buffer.Pointer;
         for (i = 0; i < AcpiGbl_IntegerByteWidth; i++)
         {
             NewBuf[i] = (UINT8) (ObjDesc->Integer.Value >> (i * 8));
         }
-
-        /* Complete buffer object initialization */
-
-        RetDesc->Buffer.Flags |= AOPOBJ_DATA_VALID;
-        RetDesc->Buffer.Pointer = NewBuf;
-        RetDesc->Buffer.Length = AcpiGbl_IntegerByteWidth;
 
         /* Return the new buffer descriptor */
 
@@ -335,30 +320,22 @@ AcpiExConvertToBuffer (
 
 
     case ACPI_TYPE_STRING:
+
         /*
          * Create a new Buffer object
+         * Size will be the string length
          */
-        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        RetDesc = AcpiUtCreateBufferObject (ObjDesc->String.Length);
         if (!RetDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        /* Need enough space for one integer */
+        /* Copy the string to the buffer */
 
-        NewBuf = ACPI_MEM_CALLOCATE (ObjDesc->String.Length);
-        if (!NewBuf)
-        {
-            ACPI_REPORT_ERROR
-                (("ExConvertToBuffer: Buffer allocation failure\n"));
-            AcpiUtRemoveReference (RetDesc);
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        ACPI_STRNCPY ((char *) NewBuf, (char *) ObjDesc->String.Pointer, ObjDesc->String.Length);
-        RetDesc->Buffer.Flags |= AOPOBJ_DATA_VALID;
-        RetDesc->Buffer.Pointer = NewBuf;
-        RetDesc->Buffer.Length = ObjDesc->String.Length;
+        NewBuf = RetDesc->Buffer.Pointer;
+        ACPI_STRNCPY ((char *) NewBuf, (char *) ObjDesc->String.Pointer, 
+            ObjDesc->String.Length);
 
         /* Return the new buffer descriptor */
 
@@ -367,6 +344,9 @@ AcpiExConvertToBuffer (
 
 
     case ACPI_TYPE_BUFFER:
+
+        /* No conversion necessary */
+
         *ResultDesc = ObjDesc;
         break;
 
