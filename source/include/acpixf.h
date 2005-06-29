@@ -106,43 +106,6 @@
 #define LEGACY_MODE             2
 
 
-typedef union UserObj 
-{
-    UINT8               ValType;        /* See definition of NsType for values */
-    struct
-    {
-        UINT8           ValType;
-        UINT8           reserved[3];    /* for 32 bit alignment */
-        UINT32          Number;
-    } Number;
-
-    struct
-    {
-        UINT8           ValType;
-        UINT8           reserved;       /* for 32 bit alignment */
-        UINT16          StrLen;         /* # of bytes in string, excluding trailing null */
-        UINT8           *String;        /* points to the string value */
-    } String;
-
-    struct
-    {
-        UINT8           ValType;
-        UINT8           reserved;       /* for 32 bit alignment */
-        UINT16          BufLen;         /* # of bytes in buffer */
-        UINT8           *Buffer;        /* points to the buffer */
-    } Buffer;
-
-    struct
-    {
-        UINT8           ValType;
-        UINT8           reserved;       /* for 32 bit alignment */
-        UINT16          PkgCount;       /* # of elements in package */
-        union UserObj   *PackageElems;  /* Addr of an array of UserObjects */
-    } Package;
-
-} USER_OBJECT, *PUSER_OBJECT;
-
-
 
 /*
  * Global interfaces
@@ -161,8 +124,8 @@ ACPI_STATUS
 AcpiEvaluateObject (
     ACPI_HANDLE             Handle, 
     char                    *Pathname, 
-    ACPI_OBJECT             *ReturnObject,
-    ACPI_OBJECT             **Params);
+    ACPI_OBJECT             **Params,
+    ACPI_OBJECT             *ReturnObject);
 
 
 /*
@@ -170,7 +133,7 @@ AcpiEvaluateObject (
  */
 
 ACPI_STATUS
-AcpiLoadNameSpace (
+AcpiLoadNamespace (
     void);
 
 ACPI_STATUS
