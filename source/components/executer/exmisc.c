@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.93 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,6 @@
         MODULE_NAME         ("exmisc")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiExGetObjectReference
@@ -156,8 +155,10 @@ AcpiExGetObjectReference (
     FUNCTION_TRACE_PTR ("ExGetObjectReference", ObjDesc);
 
 
-    if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
+    switch (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc))
     {
+    case ACPI_DESC_TYPE_INTERNAL:
+
         if (ObjDesc->Common.Type != INTERNAL_TYPE_REFERENCE)
         {
             *ReturnDesc = NULL;
@@ -175,7 +176,7 @@ AcpiExGetObjectReference (
         case AML_ARG_OP:
 
             Status = AcpiDsMethodDataGetNode (ObjDesc->Reference.Opcode,
-                            ObjDesc->Reference.Offset, WalkState, 
+                            ObjDesc->Reference.Offset, WalkState,
                             (ACPI_NAMESPACE_NODE **) ReturnDesc);
             break;
 
@@ -187,20 +188,22 @@ AcpiExGetObjectReference (
             Status = AE_AML_INTERNAL;
             goto Cleanup;
         }
+        break;
 
-    }
 
-    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
-    {
+    case ACPI_DESC_TYPE_NAMED:
+
         /* Must be a named object;  Just return the Node */
 
         *ReturnDesc = ObjDesc;
-    }
+        break;
 
-    else
-    {
+
+    default:
+
         *ReturnDesc = NULL;
         Status = AE_TYPE;
+        break;
     }
 
 
@@ -474,7 +477,6 @@ AcpiExDoMathOp (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiExDoLogicalOp
@@ -554,7 +556,5 @@ AcpiExDoLogicalOp (
 
     return (FALSE);
 }
-
-
 
 
