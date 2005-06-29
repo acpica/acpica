@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -165,15 +165,15 @@ AcpiNsInitializeObjects (
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %s\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %s\n",
             AcpiFormatException (Status)));
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
         "\nInitialized %hd/%hd Regions %hd/%hd Fields %hd/%hd Buffers %hd/%hd Packages (%hd nodes)\n",
-        Info.OpRegionInit,  Info.OpRegionCount, 
-        Info.FieldInit,     Info.FieldCount, 
-        Info.BufferInit,    Info.BufferCount, 
+        Info.OpRegionInit,  Info.OpRegionCount,
+        Info.FieldInit,     Info.FieldCount,
+        Info.BufferInit,    Info.BufferCount,
         Info.PackageInit,   Info.PackageCount, Info.ObjectCount));
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
         "%hd Control Methods found\n", Info.MethodCount));
@@ -226,7 +226,7 @@ AcpiNsInitializeDevices (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %s\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %s\n",
             AcpiFormatException (Status)));
     }
 
@@ -331,7 +331,7 @@ AcpiNsInitOneObject (
 
     /*
      * Each of these types can contain executable AML code within
-     * the declaration.  
+     * the declaration.
      */
     switch (Type)
     {

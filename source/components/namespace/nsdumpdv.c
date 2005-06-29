@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -211,7 +211,7 @@ AcpiNsDumpRootDevices (void)
 
     ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "Display of all devices in the namespace:\n"));
 
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, 
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle,
                 ACPI_UINT32_MAX, ACPI_NS_WALK_NO_UNLOCK,
                 AcpiNsDumpOneDevice, NULL, NULL);
 }
