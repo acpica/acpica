@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -141,6 +141,7 @@ char                        *AslErrors [] = {
     "Invalid performace/robustness value",
     "Method variable not initialized:",
     "Method argument is invalid:",
+    "Reserved method does not return a value:",
 };
 
 
