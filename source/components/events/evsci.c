@@ -117,9 +117,6 @@
 volatile UINT32         	EventCount[NUM_EVENTS];   
 #endif
 
-UINT16                  	SciHandle;
-extern FIXED_EVENT_HANDLER 	FixedEventHandlers[NUM_EVENTS];
-
 /******************************************************************************
  *
  * FUNCTION:    FixedEventHandler
@@ -234,7 +231,7 @@ GpeEventHandler (UINT16 Index, UINT32 GpeBase, UINT16 GpeLength)
  *
  ******************************************************************************/
 
-INT32 
+UINT32 
 SciHandler (void)
 {
 	/* CHANGE: if multiple SCI's happen concurrently and only one of them
@@ -359,10 +356,10 @@ InstallSciHandler (void)
    
     if (!SciHandle)
     {
-        SciHandle = OsdInstallInterruptHandler (
+        Except = OsdInstallInterruptHandler (
                             (UINT32) FACP->SciInt,
                             SciHandler,
-                            &Except);
+                            &SciHandle);
     }
 
     return Except;
