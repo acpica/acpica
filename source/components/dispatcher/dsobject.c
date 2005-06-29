@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.80 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -218,7 +218,7 @@ AcpiDsInitOneObject (
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] - parse failure, %s\n",
-                ObjHandle, &((ACPI_NAMESPACE_NODE *)ObjHandle)->Name,
+                ObjHandle, (char*)&((ACPI_NAMESPACE_NODE *)ObjHandle)->Name,
                 AcpiFormatException (Status)));
 
             /* This parse failed, but we will continue parsing more methods */
@@ -414,7 +414,7 @@ AcpiDsInitObjectFromOp (
         {
             if (ByteList->Opcode != AML_INT_BYTELIST_OP)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Expecting bytelist, got: %x\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Expecting bytelist, got: %p\n",
                     ByteList));
                 return (AE_TYPE);
             }
@@ -531,7 +531,6 @@ AcpiDsBuildInternalSimpleObj (
     ACPI_OPERAND_OBJECT     **ObjDescPtr)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OBJECT_TYPE8       Type;
     ACPI_STATUS             Status;
     UINT32                  Length;
     char                    *Name;
@@ -543,17 +542,15 @@ AcpiDsBuildInternalSimpleObj (
     if (Op->Opcode == AML_INT_NAMEPATH_OP)
     {
         /*
-         * This is an object reference.  If The name was
-         * previously looked up in the NS, it is stored in this op.
+         * This is an object reference.  If this name was
+         * previously looked up in the namespace, it was stored in this op.
          * Otherwise, go ahead and look it up now
          */
         if (!Op->Node)
         {
-            Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            Op->Value.String, ACPI_TYPE_ANY,
-                            IMODE_EXECUTE,
-                            NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE,
-                            NULL,
+            Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Value.String, 
+                            ACPI_TYPE_ANY, IMODE_EXECUTE,
+                            NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL,
                             (ACPI_NAMESPACE_NODE **)&(Op->Node));
 
             if (ACPI_FAILURE (Status))
@@ -585,24 +582,11 @@ AcpiDsBuildInternalSimpleObj (
                 }
             }
         }
-
-        /*
-         * The reference will be a Reference
-         * TBD: [Restructure] unless we really need a separate
-         *  type of INTERNAL_TYPE_REFERENCE change
-         *  AcpiDsMapOpcodeToDataType to handle this case
-         */
-        Type = INTERNAL_TYPE_REFERENCE;
     }
-    else
-    {
-        Type = AcpiDsMapOpcodeToDataType (Op->Opcode, NULL);
-    }
-
 
     /* Create and init the internal ACPI object */
 
-    ObjDesc = AcpiUtCreateInternalObject (Type);
+    ObjDesc = AcpiUtCreateInternalObject ((AcpiPsGetOpcodeInfo (Op->Opcode))->ObjectType);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
