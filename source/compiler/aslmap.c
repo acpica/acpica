@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -374,6 +374,10 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* INDEX */                     OP_TABLE_ENTRY (AML_INDEX_OP,               0,                  0),
 /* INDEXFIELD */                OP_TABLE_ENTRY (AML_INDEX_FIELD_OP,         0,                  NODE_AML_PACKAGE),
 /* INTEGER */                   OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
+/* INTEGER_BYTE */              OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
+/* INTEGER_WORD */              OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
+/* INTEGER_DWORD */             OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
+/* INTEGER_QWORD */             OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* INTERRUPT */                 OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0),
 /* INTLEVEL_ACTIVEHIGH */       OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* INTLEVEL_ACTIVELOW */        OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0),
@@ -501,16 +505,16 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* STARTDEPENDENTFN */          OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* STARTDEPENDENTFN_NOPRI */    OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* STORE */                     OP_TABLE_ENTRY (AML_STORE_OP,               0,                  0),
-/* STRING */                    OP_TABLE_ENTRY (AML_STRING_OP,              0,                  0),
 /* STRING_LITERAL */            OP_TABLE_ENTRY (AML_STRING_OP,              0,                  0),
 /* SUBTRACT */                  OP_TABLE_ENTRY (AML_SUBTRACT_OP,            0,                  0),
 /* SWITCH */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0),
 /* THERMALZONE */               OP_TABLE_ENTRY (AML_THERMAL_ZONE_OP,        0,                  NODE_AML_PACKAGE),
 /* TOBCD */                     OP_TABLE_ENTRY (AML_TO_BCD_OP,              0,                  0),
-/* TOBUFFER */                  OP_TABLE_ENTRY (AML_BUFF_OP,                0,                  0),
-/* TODECIMALSTRING */           OP_TABLE_ENTRY (AML_DEC_STR_OP,             0,                  0),
-/* TOHEXSTRING */               OP_TABLE_ENTRY (AML_HEX_STR_OP,             0,                  0),
-/* TOINTEGER */                 OP_TABLE_ENTRY (AML_INT_OP,                 0,                  0),
+/* TOBUFFER */                  OP_TABLE_ENTRY (AML_TO_BUFFER_OP,           0,                  0),
+/* TODECIMALSTRING */           OP_TABLE_ENTRY (AML_TO_DECSTRING_OP,        0,                  0),
+/* TOHEXSTRING */               OP_TABLE_ENTRY (AML_TO_HEXSTRING_OP,        0,                  0),
+/* TOINTEGER */                 OP_TABLE_ENTRY (AML_TO_INTEGER_OP,          0,                  0),
+/* TOSTRING */                  OP_TABLE_ENTRY (AML_TO_STRING_OP,           0,                  0),
 /* TRANSLATIONTYPE_DENSE */     OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* TRANSLATIONTYPE_SPARSE */    OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0),
 /* TYPE_STATIC */               OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),

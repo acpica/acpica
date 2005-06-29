@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -251,7 +251,6 @@ LkCrossReferenceNamespace (void)
     TrWalkParseTree (ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
                         LkNamespaceLocateEnd, WalkState);
 
-
     return AE_OK;
 }
 
@@ -444,7 +443,6 @@ LkNamespaceLocateEnd (
     }
 
     return (AE_OK);
-
 }
 
 

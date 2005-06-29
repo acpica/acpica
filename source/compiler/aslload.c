@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -451,9 +451,9 @@ LdNamespace1Begin (
 
 ACPI_STATUS
 LdNamespace1End (
-    ASL_PARSE_NODE              *PsNode,
-    UINT32                      Level,
-    void                        *Context)
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  Level,
+    void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     OBJECT_TYPE_INTERNAL    DataType;
