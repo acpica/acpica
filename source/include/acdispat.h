@@ -124,7 +124,7 @@
 #define NAMEOF_ARG_NTE      "__A0"
 
 
-/* For DsMthStackSetValue */
+/* For DsMethodDataSetValue */
 
 #define MTH_TYPE_LOCAL              0
 #define MTH_TYPE_ARG                1
@@ -244,63 +244,51 @@ DsLoad2EndOp (
     ACPI_GENERIC_OP         *Op);
 
 
-/* dsmargs - method stack utilities */
+/* dsmthdat - method data (locals/args) */
 
 
 ACPI_STATUS
-DsMthStackDeleteArgs (
+DsMethodDataDeleteAll (
     ACPI_WALK_STATE         *WalkState);
 
 BOOLEAN
 DsIsMethodValue (
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
-INT32
-DsMthStackLevel (
-    void);
-
 ACPI_OBJECT_TYPE
-DsMthStackGetType (
+DsMethodDataGetType (
     UINT32                  Type,
     UINT32                  Index);
 
 ACPI_STATUS
-DsMthStackGetValue (
+DsMethodDataGetValue (
     UINT32                  Type,
     UINT32                  Index, 
     ACPI_OBJECT_INTERNAL    **ObjDesc);
 
 ACPI_STATUS
-DsMthStackSetValue (
+DsMethodDataSetValue (
     UINT32                  Type,
     UINT32                  Index, 
     ACPI_OBJECT_INTERNAL    *ObjDesc); 
 
 ACPI_STATUS
-DsMthStackPop (
-    void);
-
-ACPI_STATUS
-DsMthStackPush (
-    ACPI_OBJECT_INTERNAL    **Params);
-
-ACPI_STATUS
-DsMthStackDeleteValue (
+DsMethodDataDeleteValue (
     UINT32                  Type,
     UINT32                  Index);
 
 ACPI_STATUS
-DsMthStackInitArgs (
+DsMethodDataInitArgs (
     ACPI_OBJECT_INTERNAL    **Params,
     UINT32                  ParamCount);
 
 NAME_TABLE_ENTRY *
-DsMthStackGetNte (
+DsMethodDataGetNte (
     UINT32                  Type,
     UINT32                  Index);
 
 ACPI_STATUS
-DsMthStackInit (
+DsMethodDataInit (
     ACPI_WALK_STATE         *WalkState);
 
 
@@ -333,7 +321,8 @@ DsInitOneObject (
 
 ACPI_STATUS
 DsInitializeObjects (
-    void);
+    ACPI_TABLE_DESC         *TableDesc,
+    NAME_TABLE_ENTRY        *StartEntry);
 
 ACPI_STATUS
 DsBuildInternalPackageObj (
@@ -403,6 +392,26 @@ DsMapOpcodeToDataType (
 ACPI_OBJECT_TYPE 
 DsMapNamedOpcodeToDataType (
     UINT16                  Opcode);
+
+
+/*
+ * dswscope - Scope Stack manipulation
+ */
+
+ACPI_STATUS
+DsScopeStackPush (
+    NAME_TABLE_ENTRY        *NewScope, 
+    ACPI_OBJECT_TYPE        Type,
+	ACPI_WALK_STATE			*WalkState);
+
+
+ACPI_STATUS
+DsScopeStackPop (
+	ACPI_WALK_STATE			*WalkState);
+
+void
+DsScopeStackClear (
+	ACPI_WALK_STATE			*WalkState);
 
 
 /* Dswstate - parser WALK_STATE management routines */
