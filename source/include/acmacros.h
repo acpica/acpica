@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.77 $
+ *       $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -643,7 +643,7 @@
  * Memory allocation tracking (DEBUG ONLY)
  */
 
-#ifndef ACPI_DEBUG_TRACK_ALLOCATIONS
+#ifndef ACPI_DBG_TRACK_ALLOCATIONS
 
 /* Memory allocation */
 
@@ -717,7 +717,7 @@
     { \
         AcpiGbl_MaxConcurrentNodeCount = AcpiGbl_CurrentNodeCount; \
     }
-#endif /* ACPI_DEBUG_TRACK_ALLOCATIONS */
+#endif /* ACPI_DBG_TRACK_ALLOCATIONS */
 
 
 #endif /* ACMACROS_H */
