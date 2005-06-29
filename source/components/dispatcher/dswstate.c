@@ -521,7 +521,7 @@ DsObjStackGetValue (
     }
 
 
-    return_PTR (WalkState->Operands [(WalkState->NumOperands - 1) - Index]);
+    return_PTR (WalkState->Operands [(NATIVE_UINT) (WalkState->NumOperands - 1) - Index]);
 }
 
 
