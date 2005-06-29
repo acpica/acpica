@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
- *              $Revision: 1.90 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -165,7 +165,7 @@ AcpiAmlShowHexValue (
 
     if (!AmlPtr)
     {
-        REPORT_ERROR ("AmlShowHexValue: null pointer");
+        REPORT_ERROR (("AmlShowHexValue: null pointer\n"));
     }
 
     /*
@@ -375,7 +375,6 @@ AcpiAmlDumpOperand (
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown opcode=%X\n",
                 EntryDesc->Reference.OpCode));
-            REPORT_ERROR ("AmlDumpOperand: Unknown AML Opcode");
             break;
 
         }
@@ -545,22 +544,16 @@ AcpiAmlDumpOperand (
         }
 
         else if (ACPI_TYPE_BUFFER !=
-                EntryDesc->FieldUnit.Container->Common.Type)
+                     EntryDesc->FieldUnit.Container->Common.Type)
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("*not a Buffer* \n"));
         }
 
         else
         {
-            if (EntryDesc->FieldUnit.Sequence
-                    != EntryDesc->FieldUnit.Container->Buffer.Sequence)
-            {
-                DEBUG_PRINT_RAW (ACPI_INFO, ("[stale] %lx \n",
-                    EntryDesc->FieldUnit.Sequence));
-            }
-
             DUMP_STACK_ENTRY (EntryDesc->FieldUnit.Container);
         }
+
         break;
 
 
@@ -614,7 +607,6 @@ AcpiAmlDumpOperand (
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown Type 0x%X\n",
             EntryDesc->Common.Type));
-        REPORT_ERROR ("AmlDumpOperand: Unknown Type");
 
         /* Back up to previous entry */
 
@@ -820,7 +812,6 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : 0x%X\n", "Length", ObjDesc->FieldUnit.Length);
         AcpiOsPrintf ("%20s : 0x%X\n", "BitOffset", ObjDesc->FieldUnit.BitOffset);
         AcpiOsPrintf ("%20s : 0x%X\n", "Offset", ObjDesc->FieldUnit.Offset);
-        AcpiOsPrintf ("%20s : 0x%X\n", "Sequence", ObjDesc->FieldUnit.Sequence);
         AcpiOsPrintf ("%20s : 0x%p\n", "Container", ObjDesc->FieldUnit.Container);
         break;
 
@@ -866,7 +857,6 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : 0x%X\n", "Flags", ObjDesc->Region.Flags);
         AcpiOsPrintf ("%20s : 0x%X\n", "Address", ObjDesc->Region.Address);
         AcpiOsPrintf ("%20s : 0x%X\n", "Length", ObjDesc->Region.Length);
-        AcpiOsPrintf ("%20s : 0x%p\n", "Method", ObjDesc->Region.Method);
         AcpiOsPrintf ("%20s : 0x%p\n", "AddrHandler", ObjDesc->Region.AddrHandler);
         AcpiOsPrintf ("%20s : 0x%p\n", "Next", ObjDesc->Region.Next);
         break;
@@ -875,6 +865,8 @@ AcpiAmlDumpObjectDescriptor (
     case ACPI_TYPE_POWER:
 
         AcpiOsPrintf ("%20s : %s\n",   "Type", "PowerResource");
+        AcpiOsPrintf ("%20s : 0x%X\n", "SystemLevel", ObjDesc->PowerResource.SystemLevel);
+        AcpiOsPrintf ("%20s : 0x%X\n", "ResourceOrder", ObjDesc->PowerResource.ResourceOrder);
         AcpiOsPrintf ("%20s : 0x%p\n", "SysHandler", ObjDesc->PowerResource.SysHandler);
         AcpiOsPrintf ("%20s : 0x%p\n", "DrvHandler", ObjDesc->PowerResource.DrvHandler);
         break;
@@ -883,8 +875,12 @@ AcpiAmlDumpObjectDescriptor (
     case ACPI_TYPE_PROCESSOR:
 
         AcpiOsPrintf ("%20s : %s\n",   "Type", "Processor");
+        AcpiOsPrintf ("%20s : 0x%X\n", "Processor ID", ObjDesc->Processor.ProcId);
+        AcpiOsPrintf ("%20s : 0x%X\n", "Length", ObjDesc->Processor.Length);
+        AcpiOsPrintf ("%20s : 0x%X\n", "Address", ObjDesc->Processor.Address);
         AcpiOsPrintf ("%20s : 0x%p\n", "SysHandler", ObjDesc->Processor.SysHandler);
         AcpiOsPrintf ("%20s : 0x%p\n", "DrvHandler", ObjDesc->Processor.DrvHandler);
+        AcpiOsPrintf ("%20s : 0x%p\n", "AddrHandler", ObjDesc->Processor.AddrHandler);
         break;
 
 
@@ -893,6 +889,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : %s\n",   "Type", "ThermalZone");
         AcpiOsPrintf ("%20s : 0x%p\n", "SysHandler", ObjDesc->ThermalZone.SysHandler);
         AcpiOsPrintf ("%20s : 0x%p\n", "DrvHandler", ObjDesc->ThermalZone.DrvHandler);
+        AcpiOsPrintf ("%20s : 0x%p\n", "AddrHandler", ObjDesc->ThermalZone.AddrHandler);
         break;
 
     case INTERNAL_TYPE_BANK_FIELD:
@@ -927,8 +924,12 @@ AcpiAmlDumpObjectDescriptor (
     case INTERNAL_TYPE_REFERENCE:
 
         AcpiOsPrintf ("%20s : %s\n",   "Type", "Reference");
+        AcpiOsPrintf ("%20s : 0x%X\n", "TargetType", ObjDesc->Reference.TargetType);
         AcpiOsPrintf ("%20s : 0x%X\n", "OpCode", ObjDesc->Reference.OpCode);
+        AcpiOsPrintf ("%20s : 0x%X\n", "Offset", ObjDesc->Reference.Offset);
         AcpiOsPrintf ("%20s : 0x%p\n", "ObjDesc", ObjDesc->Reference.Object);
+        AcpiOsPrintf ("%20s : 0x%p\n", "Node", ObjDesc->Reference.Node);
+        AcpiOsPrintf ("%20s : 0x%p\n", "Where", ObjDesc->Reference.Where);
         break;
 
 
@@ -955,8 +956,10 @@ AcpiAmlDumpObjectDescriptor (
 
     case INTERNAL_TYPE_DEF_FIELD:
 
-        AcpiOsPrintf ("%20s : 0x%p\n", "Offset", ObjDesc->Field.Offset);
+        AcpiOsPrintf ("%20s : 0x%p\n", "Granularity", ObjDesc->Field.Granularity);
         AcpiOsPrintf ("%20s : 0x%p\n", "Length", ObjDesc->Field.Length);
+        AcpiOsPrintf ("%20s : 0x%p\n", "Offset", ObjDesc->Field.Offset);
+        AcpiOsPrintf ("%20s : 0x%p\n", "BitOffset", ObjDesc->Field.BitOffset);
         AcpiOsPrintf ("%20s : 0x%p\n", "Container", ObjDesc->Field.Container);
         break;
 
