@@ -206,7 +206,7 @@ AmlSystemMemorySpaceHandler (
 
         /* Create a new mapping starting at the address given */
 
-        Status = OsdMapMemory ((void *) Address, SYSMEM_REGION_WINDOW_SIZE, &MemInfo->MappedLogicalAddress);
+        Status = OsdMapMemory ((void *) Address, SYSMEM_REGION_WINDOW_SIZE, (void **) &MemInfo->MappedLogicalAddress);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
