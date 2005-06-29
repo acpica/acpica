@@ -118,6 +118,7 @@
 #include <parser.h>
 #include <amlcode.h>
 #include <namesp.h>
+#include <debugger.h>
 #include "aecommon.h"
 
 #include <stdio.h>
@@ -133,9 +134,175 @@ ACPI_GENERIC_OP             *Gbl_ParsedNamespaceRoot;
 ACPI_GENERIC_OP             *root;
 UINT8                       *AmlPtr;
 UINT32                      AmlLength;
-UINT8                       *DsdtPtr = NULL;
+UINT8                       *DsdtPtr;
 UINT32                      DsdtLength;
 
+DEBUG_REGIONS	            Regions;
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    RegionHandler
+ *
+ * PARAMETERS:  Standard region handler parameters
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Test handler - Handles some dummy regions via memory that can
+ *				be manipulated in Ring 3.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS 
+RegionHandler (
+    UINT32                      Function,
+    UINT32                      Address,
+    UINT32                      BitWidth,
+    UINT32                      *Value,
+    void                        *Context)
+{
+
+    ACPI_OBJECT_INTERNAL	*RegionObject = (ACPI_OBJECT_INTERNAL *)Context;
+	UINT32					BaseAddress;
+	UINT32					Length;
+	BOOLEAN					BufferExists;
+	REGION					*RegionElement;
+    void                    *BufferValue;
+    UINT32                  ByteWidth;
+		
+    printf ("Received an OpRegion request\n");
+
+	/*
+	 * If the object is not a region, simply return
+	 */
+	if (RegionObject->Region.Type != ACPI_TYPE_Region)
+	{
+		return AE_OK;
+	}
+
+	/*
+	 * Find the region's address space and length before searching
+	 *	the linked list.
+	 */
+	BaseAddress = RegionObject->Region.Address;
+	Length = RegionObject->Region.Length;
+
+	/*
+	 * Search through the linked list for this region's buffer
+	 */
+    BufferExists = FALSE;
+
+    RegionElement = Regions.RegionList;
+
+    if (0 != Regions.NumberOfRegions)
+	{
+        while (!BufferExists && RegionElement)
+		{
+            if (RegionElement->Address == BaseAddress &&
+                RegionElement->Length == Length)
+            {
+                BufferExists = TRUE;
+            }
+            else
+            {
+                RegionElement = RegionElement->NextRegion;
+            }
+		}
+	}
+
+	/*
+	 * If the Region buffer does not exist, create it now
+	 */
+	if (FALSE == BufferExists)
+	{
+		/*
+		 * Do the memory allocations first
+		 */
+		RegionElement = malloc (sizeof(REGION));
+		if (!RegionElement)
+		{
+			return AE_NO_MEMORY;
+		}
+
+		RegionElement->Buffer = malloc (Length);
+		if (!RegionElement->Buffer)
+		{
+			free(RegionElement);
+			return AE_NO_MEMORY;
+		}
+
+		RegionElement->Address = BaseAddress;
+		
+		RegionElement->Length = Length;
+		
+		MEMSET(RegionElement->Buffer, 0, Length);
+
+		RegionElement->NextRegion = NULL;
+
+		/*
+		 * Increment the number of regions and put this one
+		 *	at the head of the list as it will probably get accessed
+		 *	more often anyway.
+		 */
+		Regions.NumberOfRegions += 1;
+		
+        if (NULL != Regions.RegionList)
+        {
+            RegionElement->NextRegion = Regions.RegionList->NextRegion;
+        }
+		
+        Regions.RegionList = RegionElement;
+	}
+
+	/*
+	 * The buffer exists and is pointed to by RegionElement.
+     *	We now need to verify the request is valid and perform the operation.
+	 */ 
+    if (RegionElement->Address + RegionElement->Length < Address + BitWidth)
+    {
+        return AE_BUFFER_OVERFLOW;
+    }
+
+    /*
+     * Get BufferValue to point to the "address" in the buffer
+     */
+    BufferValue = ((UINT8 *)RegionElement->Buffer + (Address - RegionElement->Address));
+    
+    /*
+     * Calculate the size of the memory copy
+     */
+    ByteWidth = (BitWidth / 8);
+
+    if (BitWidth % 8)
+    {
+        ByteWidth += 1;
+    }
+
+    /*
+     * Perform a read or write to the buffer space
+     */
+    switch (Function)
+    {
+    case ADDRESS_SPACE_READ:
+        /*
+         * Set the pointer Value to whatever is in the buffer
+         */
+        MEMCPY (Value, BufferValue, ByteWidth);
+        break;
+
+    case ADDRESS_SPACE_WRITE:
+        /*
+         * Write the contents of Value to the buffer
+         */
+        MEMCPY (BufferValue, Value, ByteWidth);
+        break;
+
+    default:
+        return AE_BAD_PARAMETER;
+    }
+
+    return AE_OK;
+}
 
 
 /******************************************************************************
@@ -200,7 +367,6 @@ NotifyHandler (
 }
 
 
-
 /******************************************************************************
  * 
  * FUNCTION:    AeInstallHandlers
@@ -218,17 +384,36 @@ ACPI_STATUS
 AeInstallHandlers (void)
 {
     ACPI_STATUS             Status;
-
+    UINT32                  i;
 
 
     Status = AcpiInstallNotifyHandler (ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
                                         NotifyHandler, NULL);
-
-
     if (ACPI_FAILURE (Status))
     {
         printf ("Could not install a global notify handler\n");
     }
+
+    for (i = 0; i < 3; i++)
+    {
+        Status = AcpiRemoveAddressSpaceHandler (Gbl_RootObject, i, RegionHandler);
+
+        /* Install handler at the root object. 
+         * TBD: all default handlers should be installed here!
+         */
+        Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, i, RegionHandler, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("Could not install an OpRegion handler\n");
+        }
+    }
+
+	/*
+	 * Initialize the global Region Handler space 
+	 * MCW 3/23/00
+	 */
+	Regions.NumberOfRegions = 0;
+	Regions.RegionList = NULL;
 
     return Status;
 }
@@ -295,128 +480,6 @@ TbSystemTablePointer (
     return (FALSE);
 }
 
-
-/******************************************************************************
- * 
- * FUNCTION:    AeWalkMethods
- *
- * PARAMETERS:  Callback from WalkNamespace
- *
- * RETURN:      None
- *
- * DESCRIPTION: Called for a single method found in the namespace
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AeWalkMethods (
-    ACPI_HANDLE                 ObjHandle,
-    UINT32                      NestingLevel,
-    void                        *Context,
-    void                        **ReturnValue)
-{
-    UINT32                      NumArgs;
-    ACPI_OBJECT_INTERNAL        *ObjDesc;
-    UINT32                      BufSize;
-    char                        buffer[64];
-
-
-    ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
-    NumArgs = ObjDesc->Method.MethodFlags & METHOD_ARG_COUNT_MASK;
-
-    NsHandleToPathname (ObjHandle, &BufSize, buffer);
-
-    /* Skip past the junk at the start of the path */
-
-    printf ("%32s", &buffer[6]);
-    printf ("  #args = %d\n", NumArgs);
-
-    return AE_OK;
-}
-
-
-/******************************************************************************
- * 
- * FUNCTION:    AeDisplayAllMethods
- *
- * PARAMETERS:  Root            - Root of the parse tree
- *
- * RETURN:      None
- *
- * DESCRIPTION: Need to wait until second pass to parse the control methods
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AeDisplayAllMethods (
-    UINT32                      DisplayCount)
-{
-
-    if (DisplayCount == 0)
-        DisplayCount = ACPI_UINT32_MAX;
-
-    printf ("Control Methods defined in this namespace: \n");
-
-    AcpiWalkNamespace (ACPI_TYPE_Method, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-        AeWalkMethods, NULL, NULL);
-
-    return AE_OK;
-}
-
-
-
-/******************************************************************************
- * 
- * FUNCTION:    AdLoadDsdt
- *
- * PARAMETERS:  
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Load the DSDT from the file pointer
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AdLoadDsdt(
-    FILE                    *fp, 
-    UINT8                   **DsdtPtr, 
-    UINT32                  *DsdtLength)
-{
-    ACPI_TABLE_HEADER       dsdt_hdr;
-    UINT8                   *AmlPtr;
-    UINT32                   AmlLength;
-
-
-    if (fread(&dsdt_hdr, 1, sizeof (dsdt_hdr), fp) == sizeof (dsdt_hdr))
-    {
-        *DsdtLength = dsdt_hdr.Length;
-
-        if (*DsdtLength)
-        {
-            *DsdtPtr = (UINT8*) malloc ((size_t) *DsdtLength);
-
-            if (*DsdtPtr)
-            {
-                AmlPtr = *DsdtPtr + sizeof (dsdt_hdr);
-                AmlLength = *DsdtLength - sizeof (dsdt_hdr);
-
-                memcpy (*DsdtPtr, &dsdt_hdr, sizeof (dsdt_hdr));
-                if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
-                {
-                    return AE_OK;
-                }
-
-                free(*DsdtPtr);
-            }
-        }
-    }
-
-    *DsdtPtr = NULL;
-    *DsdtLength = 0;
-
-    return AE_AML_ERROR;
-}
 
 
 
@@ -503,44 +566,10 @@ ACPI_STATUS
 AdGetTables (
     char                    *Filename)
 {
-    FILE                    *fp;
     ACPI_STATUS             Status;
 
 
-    if (Filename)
-    {
-        printf ("Loading DSDT from file %s\n", Filename);
-        fp = fopen (Filename, "rb");
-        if (!fp)
-        {
-            printf ("Couldn't open %s\n", Filename);
-            return AE_ERROR;
-        }
-
-        Status = AdLoadDsdt (fp, &DsdtPtr, &DsdtLength);
-        if (fp != stdin)
-        {
-            fclose(fp);
-        }
-
-        /* TBD: set real Dsdt ptr here.  BUT FIX this */
-
-        Gbl_DSDT = (ACPI_TABLE_HEADER *) DsdtPtr;
-    }
-
-
-    else
-    {
-#ifdef IA16
-        printf ("Scanning for DSDT\n");
-
-        Status = AdFindDsdt (&DsdtPtr, &DsdtLength);
-        AdDumpTables ();
-#else
-        printf ("Must supply filename for ACPI tables, cannot scan memory\n");
-        Status = AE_NO_ACPI_TABLES;
-#endif
-    }
+    Status = DbLoadAcpiTable (Filename);
 
     return Status;
 }

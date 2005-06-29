@@ -140,7 +140,28 @@ extern char                     *Filename;
 
 #define BUFFER_SIZE             4196
 
+/*
+ * MCW 3/23/00 Debug Regions
+ */
+typedef struct Region
+{
+	UINT32		Address;
+	UINT32		Length;
+	void		*Buffer;
+	void		*NextRegion;
 
+} REGION;
+
+typedef struct DebugRegions
+{
+	UINT32		NumberOfRegions;
+	REGION		*RegionList;
+
+} DEBUG_REGIONS;
+
+/*
+ * MCW 3/23/00 End Debug regions
+ */
 
 typedef union ptr_ovl
 {
