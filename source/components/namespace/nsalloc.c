@@ -118,12 +118,12 @@
 #define __NSALLOC_C__
 
 #include <acpi.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include <namesp.h>
+#include <interp.h>
 
 
-#define _THIS_MODULE        "nsalloc.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsalloc");
 
 
 
@@ -188,10 +188,10 @@ NsAllocateNameTable (
  ***************************************************************************/
 
 ACPI_STATUS
-NsDeleteNamespace (void)
+NsDeleteNamespace (
+    ACPI_HANDLE             ParentHandle)
 {
     ACPI_HANDLE             ChildHandle;
-    ACPI_HANDLE             ParentHandle;
     ACPI_HANDLE             Dummy;
     UINT32                  Level;
 
@@ -199,9 +199,7 @@ NsDeleteNamespace (void)
     FUNCTION_TRACE ("NsDeleteNamespace");
 
 
-    /* Begin deletion walk at the root object */
 
-    ParentHandle    = Gbl_RootObject;
     ChildHandle     = 0;
     Level           = 1;
 
@@ -236,6 +234,7 @@ NsDeleteNamespace (void)
                 /* There may be a name table even if there are no children */
 
                 NsDeleteScope (((NAME_TABLE_ENTRY *) ChildHandle)->Scope);
+                ((NAME_TABLE_ENTRY *) ChildHandle)->Scope = NULL;
 
             }
         }
@@ -249,8 +248,15 @@ NsDeleteNamespace (void)
             Level--;
 
             /* Delete the scope (Name Table) associated with the parent object */
+            /* Don't delete the top level scope, this allows the dynamic deletion of
+             * objects created underneath control methods!
+             */
 
-            NsDeleteScope (((NAME_TABLE_ENTRY *) ParentHandle)->Scope);
+            if (Level != 0)
+            {
+                NsDeleteScope (((NAME_TABLE_ENTRY *) ParentHandle)->Scope);
+                ((NAME_TABLE_ENTRY *) ParentHandle)->Scope = NULL;
+            }
 
             /* New "last child" is this parent object */
 
@@ -262,12 +268,6 @@ NsDeleteNamespace (void)
         }
     }
 
-    /* Detach any object(s) attached to the root */
-    
-    NsDetachObject (Gbl_RootObject);
-    Gbl_RootObject->Scope = NULL;
-
-    REPORT_SUCCESS ("Entire namespace and objects deleted");
 
     return_ACPI_STATUS (AE_OK); 
 }
