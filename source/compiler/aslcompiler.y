@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -2767,7 +2767,7 @@ OptionalNameString_Last
     ;
 
 OptionalNameString_First
-    :                               {$$ = NULL;}
+    :                               {$$ = TrCreateLeafNode (PARSEOP_ZERO);}
     | NameString                    {$$ = $1;}
     ;
 
