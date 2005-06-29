@@ -151,7 +151,7 @@ FILE                    *DebugFile = NULL;
  *
  *****************************************************************************/
 
-INT32
+ACPI_OBJECT_TYPE
 DbMatchArgument (
     char                    *UserArgument,
     ARGUMENT_INFO           *Arguments)
@@ -161,20 +161,20 @@ DbMatchArgument (
 
     if (!UserArgument || UserArgument[0] == 0)
     {
-        return -1;
+        return ACPI_TYPE_NotFound;
     }
 
     for (i = 0; Arguments[i].Name; i++)
     {
         if (STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
         {
-            return i;
+            return ((ACPI_OBJECT_TYPE) i);
         }
     }
 
     /* Argument not recognized */
 
-    return -1;
+    return ACPI_TYPE_NotFound;
 }
 
 
