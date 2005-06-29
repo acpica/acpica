@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.37 $
+ *       $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -134,6 +134,7 @@ extern BOOLEAN                  opt_disasm;
 extern BOOLEAN                  opt_stats;
 extern BOOLEAN                  opt_parse_jit;
 extern BOOLEAN                  opt_verbose;
+extern BOOLEAN                  opt_ini_methods;
 
 
 extern NATIVE_CHAR              *Args[DB_MAX_ARGS];
