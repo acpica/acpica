@@ -1,7 +1,6 @@
 /******************************************************************************
- *
- * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.62 $
+ * 
+ * Module Name: adexec - AcpiDump utility, top level parse and execute routines
  *
  *****************************************************************************/
 
@@ -9,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,743 +114,155 @@
  *****************************************************************************/
 
 
-#include "acpi.h"
-#include "acparser.h"
-#include "amlcode.h"
-#include "acdebug.h"
-#include "acdisasm.h"
-#include "acdispat.h"
-#include "acnamesp.h"
-#include "acapps.h"
+#include <acpi.h>
+#include <parser.h>
+#include <amlcode.h>
+#include "adcommon.h"
 
 #include <stdio.h>
-#include <string.h>
-#include <time.h>
 
 
-#define _COMPONENT          ACPI_TOOLS
-        ACPI_MODULE_NAME    ("adisasm")
+
+#define _COMPONENT          PARSER
+        MODULE_NAME         ("adexec");
 
 
-ACPI_PARSE_OBJECT       *AcpiGbl_ParsedNamespaceRoot;
 
+ACPI_GENERIC_OP         *Gbl_ParsedNamespaceRoot;
+ACPI_GENERIC_OP         *root;
+UINT8                   *AmlPtr;
+UINT32                  AmlLength;
 
-#ifndef _ACPI_ASL_COMPILER
-BOOLEAN
-AcpiDsIsResultUsed (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState)
-{
-    return TRUE;
-}
-#endif
-
-
-ACPI_STATUS
-AcpiDsRestartControlMethod (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     *ReturnDesc)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiDsTerminateControlMethod (
-    ACPI_WALK_STATE         *WalkState)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiDsCallControlMethod (
-    ACPI_THREAD_STATE       *Thread,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiDsMethodDataInitArgs (
-    ACPI_OPERAND_OBJECT     **Params,
-    UINT32                  MaxParamCount,
-    ACPI_WALK_STATE         *WalkState)
-{
-    return (AE_OK);
-}
-
-
-#define FILE_SUFFIX_DISASSEMBLY     "dsl"
-#define ACPI_TABLE_FILE_SUFFIX      ".dat"
-char                        FilenameBuf[20];
-
-/******************************************************************************
- *
- * FUNCTION:    AfGenerateFilename
- *
- * PARAMETERS:
- *
- * RETURN:
- *
- * DESCRIPTION: Build an output filename from an ACPI table ID string
- *
- ******************************************************************************/
-
-char *
-AdGenerateFilename (
-    char                    *Prefix,
-    char                    *TableId)
-{
-    ACPI_NATIVE_UINT         i;
-    ACPI_NATIVE_UINT         j;
-
-
-    for (i = 0; Prefix[i]; i++)
-    {
-        FilenameBuf[i] = Prefix[i];
-    }
-
-    FilenameBuf[i] = '_';
-    i++;
-
-    for (j = 0; j < 8 && (TableId[j] != ' ') && (TableId[j] != 0); i++, j++)
-    {
-        FilenameBuf[i] = TableId[j];
-    }
-
-    FilenameBuf[i] = 0;
-    strcat (FilenameBuf, ACPI_TABLE_FILE_SUFFIX);
-    return FilenameBuf;
-}
 
 
 /******************************************************************************
+ * 
+ * FUNCTION:    AdLoadDsdt
  *
- * FUNCTION:    AfWriteBuffer
- *
- * PARAMETERS:
- *
- * RETURN:
- *
- * DESCRIPTION: Open a file and write out a single buffer
- *
- ******************************************************************************/
-
-ACPI_NATIVE_INT
-AdWriteBuffer (
-    char                *Filename,
-    char                *Buffer,
-    UINT32              Length)
-{
-    FILE                *fp;
-    ACPI_NATIVE_INT     Actual;
-
-
-    fp = fopen (Filename, "wb");
-    if (!fp)
-    {
-        printf ("Couldn't open %s\n", Filename);
-        return -1;
-    }
-
-    Actual = fwrite (Buffer, (size_t) Length, 1, fp);
-    fclose (fp);
-    return Actual;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AfWriteTable
- *
- * PARAMETERS:
- *
- * RETURN:
- *
- * DESCRIPTION: Dump the loaded tables to a file (or files)
- *
- ******************************************************************************/
-
-void
-AdWriteTable (
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length,
-    char                    *TableName,
-    char                    *OemTableId)
-{
-    char                    *Filename;
-
-
-    Filename = AdGenerateFilename (TableName, OemTableId);
-    AdWriteBuffer (Filename, (char *) Table, Length);
-
-    AcpiOsPrintf ("Table [%s] written to \"%s\"\n", TableName, Filename);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AdInitialize
- *
- * PARAMETERS:  None.
+ * PARAMETERS:  
  *
  * RETURN:      Status
  *
- * DESCRIPTION: CA initialization
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AdInitialize (
-    void)
-{
-    ACPI_STATUS             Status;
-
-
-    /* ACPI CA subsystem initialization */
-
-    AcpiUtInitGlobals ();
-    Status = AcpiUtMutexInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        return Status;
-    }
-
-    Status = AcpiNsRootInitialize ();
-    return Status;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    FlGenerateFilename
- *
- * PARAMETERS:  InputFilename       - Original ASL source filename
- *              Suffix              - New extension.
- *
- * RETURN:      New filename containing the original base + the new suffix
- *
- * DESCRIPTION: Generate a new filename from the ASL source filename and a new
- *              extension.  Used to create the *.LST, *.TXT, etc. files.
- *
- ******************************************************************************/
-
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix)
-{
-    char                    *Position;
-    char                    *NewFilename;
-
-
-    /* Copy the original filename to a new buffer */
-
-    NewFilename = ACPI_MEM_CALLOCATE (strlen (InputFilename) + strlen (Suffix));
-    strcpy (NewFilename, InputFilename);
-
-    /* Try to find the last dot in the filename */
-
-    Position = strrchr (NewFilename, '.');
-    if (Position)
-    {
-        /* Tack on the new suffix */
-
-        Position++;
-        *Position = 0;
-        strcat (Position, Suffix);
-    }
-    else
-    {
-        /* No dot, add one and then the suffix */
-
-        strcat (NewFilename, ".");
-        strcat (NewFilename, Suffix);
-    }
-
-    return NewFilename;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    FlSplitInputPathname
- *
- * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
- *                                    compiled
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Split the input path into a directory and filename part
- *              1) Directory part used to open include files
- *              2) Filename part used to generate output filenames
- *
- ******************************************************************************/
-
-ACPI_STATUS
-FlSplitInputPathname (
-    char                    *InputPath,
-    char                    **OutDirectoryPath,
-    char                    **OutFilename)
-{
-    char                    *Substring;
-    char                    *DirectoryPath;
-    char                    *Filename;
-
-
-    *OutDirectoryPath = NULL;
-    *OutFilename = NULL;
-
-    if (!InputPath)
-    {
-        return (AE_OK);
-    }
-
-    /* Get the path to the input filename's directory */
-
-    DirectoryPath = strdup (InputPath);
-    if (!DirectoryPath)
-    {
-        return (AE_NO_MEMORY);
-    }
-
-    Substring = strrchr (DirectoryPath, '\\');
-    if (!Substring)
-    {
-        Substring = strrchr (DirectoryPath, '/');
-        if (!Substring)
-        {
-            Substring = strrchr (DirectoryPath, ':');
-        }
-    }
-
-    if (!Substring)
-    {
-        DirectoryPath[0] = 0;
-        Filename = strdup (InputPath);
-    }
-    else
-    {
-        Filename = strdup (Substring + 1);
-        *(Substring+1) = 0;
-    }
-
-    if (!Filename)
-    {
-        return (AE_NO_MEMORY);
-    }
-
-    *OutDirectoryPath = DirectoryPath;
-    *OutFilename = Filename;
-
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AdAmlDisassemble
- *
- * PARAMETERS:  OutToFile       - TRUE if output should go to a file
- *              Filename        - AML input filename
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Disassemble an entire ACPI table
+ * DESCRIPTION: Load the DSDT from the file pointer
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AdAmlDisassemble (
-    BOOLEAN                 OutToFile,
-    char                    *Filename,
-    char                    *Prefix,
-    char                    **OutFilename,
-    BOOLEAN                 GetAllTables)
+AdLoadDsdt(
+    FILE                    *fp, 
+    int                     seekable, 
+    UINT8                   **DsdtPtr, 
+    UINT32                  *DsdtLength)
 {
-    ACPI_STATUS             Status;
-    char                    *DisasmFilename = NULL;
-    FILE                    *File = NULL;
-    ACPI_TABLE_HEADER       *Table;
+    ACPI_TABLE_HEADER       dsdt_hdr;
+    UINT8                   *AmlPtr;
+    UINT32                   AmlLength;
 
 
-    /*
-     * Input:  AML Code from either a file,
-     *         or via GetTables (memory or registry)
-     */
-    if (Filename)
+    if (fread(&dsdt_hdr, 1, sizeof (dsdt_hdr), fp) == sizeof (dsdt_hdr))
     {
-        Status = AcpiDbGetTableFromFile (Filename, &Table);
-        if (ACPI_FAILURE (Status))
+        *DsdtLength = dsdt_hdr.Length;
+
+        if (*DsdtLength)
         {
-            return Status;
-        }
-    }
-    else
-    {
-        Status = AdGetLocalTables (Filename, GetAllTables);
-        if (ACPI_FAILURE (Status))
-        {
-            AcpiOsPrintf ("Could not get ACPI tables, %s\n",
-                AcpiFormatException (Status));
-            return Status;
-        }
+            *DsdtPtr = (UINT8*) malloc ((size_t) *DsdtLength);
 
-        if (!AcpiGbl_DbOpt_disasm)
-        {
-            return AE_OK;
-        }
-
-        /* Obtained the local tables, just disassmeble the DSDT */
-
-        Table = AcpiGbl_DSDT;
-        AcpiOsPrintf ("\nDisassembly of DSDT\n");
-        Prefix = AdGenerateFilename ("dsdt", AcpiGbl_DSDT->OemTableId);
-    }
-
-    /*
-     * Output:  ASL code.
-     *          Redirect to a file if requested
-     */
-    if (OutToFile)
-    {
-        /* Create/Open a disassembly output file */
-
-        DisasmFilename = FlGenerateFilename (Prefix, FILE_SUFFIX_DISASSEMBLY);
-        if (!OutFilename)
-        {
-            fprintf (stderr, "Could not generate output filename\n");
-            Status = AE_ERROR;
-            goto Cleanup;
-        }
-
-        File = fopen (DisasmFilename, "w+");
-        if (!File)
-        {
-            fprintf (stderr, "Could not open output file\n");
-            Status = AE_ERROR;
-            goto Cleanup;
-        }
-
-        AcpiOsRedirectOutput (File);
-    }
-
-    *OutFilename = DisasmFilename;
-
-    /* Always parse the tables, only option is what to display */
-
-    Status = AdParseTable (Table);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("Could not parse ACPI tables, %s\n",
-            AcpiFormatException (Status));
-        goto Cleanup;
-    }
-
-    /* Optional displays */
-
-    if (AcpiGbl_DbOpt_disasm)
-    {
-        AdDisplayTables (Filename, Table);
-        fprintf (stderr, "Disassembly completed, written to \"%s\"\n", DisasmFilename);
-    }
-
-Cleanup:
-    if (OutToFile)
-    {
-        fclose (File);
-        AcpiOsRedirectOutput (stdout);
-    }
-
-    AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
-    return Status;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AdCreateTableHeader
- *
- * PARAMETERS:  Filename            - Input file for the table
- *              Table               - Pointer to the raw table
- *
- * RETURN:      None
- *
- * DESCRIPTION: Create the ASL table header, including ACPI CA signon with
- *              current time and date.
- *
- *****************************************************************************/
-
-void
-AdCreateTableHeader (
-    char                    *Filename,
-    ACPI_TABLE_HEADER       *Table)
-{
-    time_t                  Timer;
-
-
-    time (&Timer);
-
-    AcpiOsPrintf ("/*\n * Intel ACPI Component Architecture\n");
-    AcpiOsPrintf (" * AML Disassembler version %8.8X\n", ACPI_CA_VERSION);
-    AcpiOsPrintf (" *\n * Disassembly of %s, %s */\n", Filename, ctime (&Timer));
-
-    AcpiOsPrintf (
-        "DefinitionBlock (\"%4.4s.aml\", \"%4.4s\", %hd, \"%.6s\", \"%.8s\", %d)\n",
-        Table->Signature, Table->Signature, Table->Revision,
-        Table->OemId, Table->OemTableId, Table->OemRevision);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AdDisplayTables
- *
- * PARAMETERS:  Filename            - Input file for the table
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Display (disassemble) loaded tables and dump raw tables
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AdDisplayTables (
-    char                    *Filename,
-    ACPI_TABLE_HEADER       *Table)
-{
-
-
-    if (!AcpiGbl_ParsedNamespaceRoot)
-    {
-        return AE_NOT_EXIST;
-    }
-
-    if (!AcpiGbl_DbOpt_verbose)
-    {
-        AdCreateTableHeader (Filename, Table);
-    }
-
-    AcpiDmDisassemble (NULL, AcpiGbl_ParsedNamespaceRoot, ACPI_UINT32_MAX);
-
-    if (AcpiGbl_DbOpt_verbose)
-    {
-        AcpiOsPrintf ("\n\nTable Header:\n");
-        AcpiUtDumpBuffer ((UINT8 *) Table, sizeof (ACPI_TABLE_HEADER),
-            DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
-
-        AcpiOsPrintf ("Table Body (Length 0x%X)\n", Table->Length);
-        AcpiUtDumpBuffer (((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER)), Table->Length,
-            DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
-    }
-
-    return AE_OK;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AdDeferredParse
- *
- * PARAMETERS:  Op              - Root Op of the deferred opcode
- *              Aml             - Pointer to the raw AML
- *              AmlLength       - Length of the AML
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Parse one deferred opcode
- *              (Methods, operation regions, etc.)
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AdDeferredParse (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT8                   *Aml,
-    UINT32                  AmlLength)
-{
-    ACPI_WALK_STATE         *WalkState;
-    ACPI_STATUS             Status;
-    ACPI_PARSE_OBJECT       *SearchOp;
-    ACPI_PARSE_OBJECT       *StartOp;
-    UINT32                  BaseAmlOffset;
-    ACPI_PARSE_OBJECT       *ExtraOp;
-
-
-    ACPI_FUNCTION_TRACE ("AdDeferredParse");
-
-
-    fprintf (stderr, ".");
-
-    if (!Aml || !AmlLength)
-    {
-        return_ACPI_STATUS (AE_OK);
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing %s [%4.4s]\n",
-        Op->Common.AmlOpName, (char *) &Op->Named.Name));
-
-    WalkState = AcpiDsCreateWalkState (0, Op, NULL, NULL);
-    if (!WalkState)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, Aml,
-                    AmlLength, NULL, NULL, 1);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Parse the method */
-
-    WalkState->ParseFlags &= ~ACPI_PARSE_DELETE_TREE;
-    Status = AcpiPsParseAml (WalkState);
-
-    /*
-     * We need to update all of the Aml offsets, since the parser thought
-     * that the method began at offset zero.  In reality, it began somewhere
-     * within the ACPI table, at the BaseAmlOffset.  Walk the entire tree that
-     * was just created and update the AmlOffset in each Op
-     */
-    BaseAmlOffset = (Op->Common.Value.Arg)->Common.AmlOffset + 1;
-    StartOp = (Op->Common.Value.Arg)->Common.Next;
-    SearchOp = StartOp;
-
-    /* Walk the parse tree */
-
-    while (SearchOp)
-    {
-        SearchOp->Common.AmlOffset += BaseAmlOffset;
-        SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
-    }
-
-    /*
-     * Link the newly parsed subtree into the main parse tree
-     */
-    switch (Op->Common.AmlOpcode)
-    {
-    case AML_BUFFER_OP:
-    case AML_PACKAGE_OP:
-    case AML_VAR_PACKAGE_OP:
-
-        switch (Op->Common.AmlOpcode)
-        {
-        case AML_PACKAGE_OP:
-        case AML_VAR_PACKAGE_OP:
-            ExtraOp = Op->Common.Value.Arg;
-            ExtraOp = ExtraOp->Common.Next;
-            Op->Common.Value.Arg = ExtraOp->Common.Value.Arg;
-            break;
-
-        case AML_BUFFER_OP:
-        default:
-            ExtraOp = Op->Common.Value.Arg;
-            Op->Common.Value.Arg = ExtraOp->Common.Value.Arg;
-            break;
-        }
-
-        /* Must point all parents to the main tree */
-
-        StartOp = Op;
-        SearchOp = StartOp;
-        while (SearchOp)
-        {
-            if (SearchOp->Common.Parent == ExtraOp)
+            if (*DsdtPtr)
             {
-                SearchOp->Common.Parent = Op;
-            }
-            SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
-        }
-        break;
+                AmlPtr = *DsdtPtr + sizeof (dsdt_hdr);
+                AmlLength = *DsdtLength - sizeof (dsdt_hdr);
 
-    default:
-        break;
+                memcpy (*DsdtPtr, &dsdt_hdr, sizeof (dsdt_hdr));
+                if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
+                {
+                    return AE_OK;
+                }
+
+                free(*DsdtPtr);
+            }
+        }
     }
 
-    return_ACPI_STATUS (AE_OK);
+    *DsdtPtr = NULL;
+    *DsdtLength = 0;
+
+    return AE_AML_ERROR;
 }
 
 
+
 /******************************************************************************
- *
- * FUNCTION:    AdParseDeferredOps
+ * 
+ * FUNCTION:    AdSecondPassParse
  *
  * PARAMETERS:  Root            - Root of the parse tree
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION: Parse the deferred opcodes (Methods, regions, etc.)
+ * DESCRIPTION: Need to wait until second pass to parse the control methods
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AdParseDeferredOps (
-    ACPI_PARSE_OBJECT       *Root)
+AdSecondPassParse (
+    ACPI_GENERIC_OP         *Root)
 {
-    ACPI_PARSE_OBJECT       *Op = Root;
+    ACPI_GENERIC_OP         *Op = Root;
+    ACPI_DEFERRED_OP        *Method;
+    ACPI_GENERIC_OP         *SearchOp;
+    ACPI_GENERIC_OP         *StartOp;
     ACPI_STATUS             Status = AE_OK;
-    const ACPI_OPCODE_INFO  *OpInfo;
+    UINT32                  BaseAmlOffset;
 
 
-    ACPI_FUNCTION_NAME ("AdParseDeferredOps");
-    fprintf (stderr, "Parsing Deferred Opcodes (Methods/Buffers/Packages/Regions)\n");
+    printf ("Pass two parse ....\n");
 
     while (Op)
     {
-        OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
-        if (!(OpInfo->Flags & AML_DEFER))
+        if (Op->Opcode == AML_MethodOp)
         {
-            Op = AcpiPsGetDepthNext (Root, Op);
-            continue;
-        }
+            Method = (ACPI_DEFERRED_OP *) Op;
+            Status = PsParseAml (Op, Method->Body, Method->BodyLength);
 
-        switch (Op->Common.AmlOpcode)
-        {
-        case AML_METHOD_OP:
-        case AML_BUFFER_OP:
-        case AML_PACKAGE_OP:
-        case AML_VAR_PACKAGE_OP:
+          
+            BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
+            StartOp = (Method->Value.Arg)->Next;
+            SearchOp = StartOp;
 
-            Status = AdDeferredParse (Op, Op->Named.Data, Op->Named.Length);
-            if (ACPI_FAILURE (Status))
+            while (SearchOp)
             {
-                return_ACPI_STATUS (Status);
+                SearchOp->AmlOffset += BaseAmlOffset;
+                SearchOp = PsGetDepthNext (StartOp, SearchOp);
             }
-            break;
 
-        case AML_REGION_OP:
-        case AML_CREATE_QWORD_FIELD_OP:
-        case AML_CREATE_DWORD_FIELD_OP:
-        case AML_CREATE_WORD_FIELD_OP:
-        case AML_CREATE_BYTE_FIELD_OP:
-        case AML_CREATE_BIT_FIELD_OP:
-        case AML_CREATE_FIELD_OP:
-
-            /* Nothing to do in these cases */
-
-            break;
-
-        default:
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unhandled deferred opcode [%s]\n",
-                Op->Common.AmlOpName));
-            break;
         }
 
-        Op = AcpiPsGetDepthNext (Root, Op);
+        if (Op->Opcode == AML_RegionOp)
+        {
+            /* TBD: this isn't quite the right thing to do! */
+
+            // Method = (ACPI_DEFERRED_OP *) Op;
+            // Status = PsParseAml (Op, Method->Body, Method->BodyLength);
+        }
+
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
+
+        Op = PsGetDepthNext (Root, Op);
     }
 
-    fprintf (stderr, "\n");
     return Status;
 }
 
 
+
 /******************************************************************************
+ * 
+ * FUNCTION:    AdGetTables
  *
- * FUNCTION:    AdGetLocalTables
- *
- * PARAMETERS:
+ * PARAMETERS:  Filename        - Optional filename
  *
  * RETURN:      None
  *
@@ -860,197 +271,83 @@ AdParseDeferredOps (
  *****************************************************************************/
 
 ACPI_STATUS
-AdGetLocalTables (
-    char                    *Filename,
-    BOOLEAN                 GetAllTables)
+AdGetTables (
+    char                    *Filename)
 {
+    FILE                    *fp;
     ACPI_STATUS             Status;
-    ACPI_TABLE_HEADER       TableHeader;
-    ACPI_TABLE_HEADER       *NewTable;
-    UINT32                  NumTables;
-    UINT32                  PointerSize;
 
 
-    if (GetAllTables)
+    if (Filename)
     {
-        ACPI_STRNCPY (TableHeader.Signature, RSDT_SIG, 4);
-        AcpiOsTableOverride (&TableHeader, &NewTable);
-        if (!NewTable)
+        printf ("Loading DSDT from file %s\n", Filename);
+        fp = fopen (Filename, "rb");
+        if (!fp)
         {
-            fprintf (stderr, "Could not obtain RSDT\n");
-            return AE_NO_ACPI_TABLES;
+            printf ("Couldn't open %s\n", Filename);
+            return AE_ERROR;
         }
 
-#if ACPI_MACHINE_WIDTH != 64
-
-        if (!ACPI_STRNCMP (NewTable->Signature, RSDT_SIG, 4))
+        Status = AdLoadDsdt (fp, (fp != stdin), &DsdtPtr, &DsdtLength);
+        if (fp != stdin)
         {
-            PointerSize = sizeof (UINT32);
+            fclose(fp);
         }
-        else
-#endif
-        {
-            PointerSize = sizeof (UINT64);
-        }
-
-        /*
-         * Determine the number of tables pointed to by the RSDT/XSDT.
-         * This is defined by the ACPI Specification to be the number of
-         * pointers contained within the RSDT/XSDT.  The size of the pointers
-         * is architecture-dependent.
-         */
-        NumTables = (NewTable->Length - sizeof (ACPI_TABLE_HEADER)) / PointerSize;
-        AcpiOsPrintf ("There are %d tables defined in the %4.4s\n\n",
-            NumTables, NewTable->Signature);
-
-        /* Get the FADT */
-
-        ACPI_STRNCPY (TableHeader.Signature, FADT_SIG, 4);
-        AcpiOsTableOverride (&TableHeader, &NewTable);
-        if (NewTable)
-        {
-            AcpiGbl_FADT = (void *) NewTable;
-            AdWriteTable (NewTable, NewTable->Length,
-                FADT_SIG, NewTable->OemTableId);
-        }
-        AcpiOsPrintf ("\n");
-
-        /* Get the FACS */
-
-        ACPI_STRNCPY (TableHeader.Signature, FACS_SIG, 4);
-        AcpiOsTableOverride (&TableHeader, &NewTable);
-        if (NewTable)
-        {
-            AcpiGbl_FACS = (void *) NewTable;
-            AdWriteTable (NewTable, AcpiGbl_FACS->Length,
-                FACS_SIG, AcpiGbl_FADT->OemTableId);
-        }
-        AcpiOsPrintf ("\n");
     }
 
-    /* Always get the DSDT */
 
-    ACPI_STRNCPY (TableHeader.Signature, DSDT_SIG, 4);
-    AcpiOsTableOverride (&TableHeader, &NewTable);
-    if (NewTable)
-    {
-        Status = AE_OK;
-        AcpiGbl_DSDT = NewTable;
-        AdWriteTable (AcpiGbl_DSDT, AcpiGbl_DSDT->Length,
-            "DSDT", AcpiGbl_DSDT->OemTableId);
-    }
     else
     {
-        fprintf (stderr, "Could not obtain DSDT\n");
-        return AE_NO_ACPI_TABLES;
-    }
+#ifdef IA16
+        printf ("Scanning for DSDT\n");
 
-    AcpiOsPrintf ("\n");
-
-    /* Get all SSDTs */
-
-    ACPI_STRNCPY (TableHeader.Signature, SSDT_SIG, 4);
-    Status = AcpiOsTableOverride (&TableHeader, &NewTable);
-    if (NewTable)
-    {
-        while (NewTable)
-        {
-            Status = AcpiOsTableOverride (&TableHeader, &NewTable);
-        }
-    }
-
-#ifdef _HPET
-    AfGetHpet ();
+        Status = AdFindDsdt (&DsdtPtr, &DsdtLength);
+        AdDumpTables ();
+#else
+        printf ("Must supply filename for ACPI tables, cannot scan memory\n");
+        Status = AE_NO_ACPI_TABLES;
 #endif
+    }
 
-    return AE_OK;
+    return Status;
 }
 
+
 /******************************************************************************
- *
+ * 
  * FUNCTION:    AdParseTable
  *
  * PARAMETERS:  None
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION: Parse the DSDT.
+ * DESCRIPTION: Parse all supported tables
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AdParseTable (
-    ACPI_TABLE_HEADER       *Table)
+AdParseTables (void)
 {
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_WALK_STATE         *WalkState;
-    ACPI_TABLE_DESC         TableDesc;
-    UINT8                   *AmlStart;
-    UINT32                  AmlLength;
+    ACPI_STATUS             Status;
 
 
-    if (!Table)
+    if (!DsdtPtr)
     {
         return AE_NOT_EXIST;
     }
 
-    /* Pass 1:  Parse everything except control method bodies */
 
-    fprintf (stderr, "Pass 1 parse of [%4.4s]\n", (char *) Table->Signature);
+    AmlPtr = DsdtPtr + sizeof (ACPI_TABLE_HEADER);
+    AmlLength = DsdtLength - sizeof (ACPI_TABLE_HEADER);
 
-    AmlLength  = Table->Length  - sizeof (ACPI_TABLE_HEADER);
-    AmlStart   = ((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER));
-
-    /* Create the root object */
-
-    AcpiGbl_ParsedNamespaceRoot = AcpiPsCreateScopeOp ();
-    if (!AcpiGbl_ParsedNamespaceRoot)
+    Status = PsParseTable (AmlPtr, AmlLength, NULL, NULL, &root);
+    if (ACPI_SUCCESS (Status))
     {
-        return AE_NO_MEMORY;
+        Status = AdSecondPassParse (root);
     }
 
-    /* Create and initialize a new walk state */
-
-    WalkState = AcpiDsCreateWalkState (0,
-                        AcpiGbl_ParsedNamespaceRoot, NULL, NULL);
-    if (!WalkState)
-    {
-        return (AE_NO_MEMORY);
-    }
-
-    Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParsedNamespaceRoot,
-                NULL, AmlStart, AmlLength, NULL, NULL, 1);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    WalkState->ParseFlags &= ~ACPI_PARSE_DELETE_TREE;
-
-    Status = AcpiPsParseAml (WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        return Status;
-    }
-
-    /* Pass 2 */
-
-    TableDesc.AmlStart = AmlStart;
-    TableDesc.AmlLength = AmlLength;
-    fprintf (stderr, "Pass 2 parse of [%4.4s]\n", (char *) Table->Signature);
-
-    Status = AcpiNsOneCompleteParse (2, &TableDesc);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    /* Pass 3: Parse control methods and link their parse trees into the main parse tree */
-
-    Status = AdParseDeferredOps (AcpiGbl_ParsedNamespaceRoot);
-
-    fprintf (stderr, "Parsing completed\n");
-    return AE_OK;
+    return Status;
 }
+
 
 
