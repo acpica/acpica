@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.85 $
+ *       $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -288,22 +288,7 @@ ACPI_EXTERN ALLOCATION_INFO            *AcpiGbl_TailAllocPtr;
  ****************************************************************************/
 
 
-ACPI_EXTERN UINT32                      AcpiGbl_WhenToParseMethods;
 ACPI_EXTERN ACPI_WALK_LIST             *AcpiGbl_CurrentWalkList;
-
-/* Base of AML block, and pointer to current location in it */
-
-ACPI_EXTERN UINT8                      *AcpiGbl_PCodeBase;
-ACPI_EXTERN UINT8                      *AcpiGbl_PCode;
-
-/*
- * Length of AML block, and remaining length of current package.
- */
-ACPI_EXTERN UINT32                      AcpiGbl_PCodeBlockLen;
-ACPI_EXTERN UINT32                      AcpiGbl_PCodeLen;
-
-ACPI_EXTERN UINT32                      AcpiGbl_BufSeq;             /* Counts allocated Buffer descriptors */
-ACPI_EXTERN UINT32                      AcpiGbl_NodeErr;     /* Indicate if inc_error should be called */
 
 /*
  * Handle to the last method found - used during pass1 of load
