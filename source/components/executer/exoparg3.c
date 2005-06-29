@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -181,7 +181,7 @@ AcpiExOpcode_3A_0T_0R (
     case AML_FATAL_OP:          /* Fatal (FatalType  FatalCode  FatalArg)    */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+            "FatalOp: Type %X Code %X Arg %X <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
             (UINT32) Operand[0]->Integer.Value, (UINT32) Operand[1]->Integer.Value,
             (UINT32) Operand[2]->Integer.Value));
 
