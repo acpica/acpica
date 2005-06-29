@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: amcreate - Named object creation
- *              $Revision: 1.61 $
+ * Module Name: excreate - Named object creation
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __AMCREATE_C__
+#define __EXCREATE_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -127,12 +127,12 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("amcreate")
+        MODULE_NAME         ("excreate")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlCreateBufferField
+ * FUNCTION:    AcpiExCreateBufferField
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
  *              Operands            - List of operands for the opcode
@@ -160,8 +160,8 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlCreateBufferField (
-    UINT8                   *AmlPtr,
+AcpiExCreateBufferField (
+    UINT8                   *AmlStart,
     UINT32                  AmlLength,
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_WALK_STATE         *WalkState)
@@ -171,12 +171,12 @@ AcpiAmlCreateBufferField (
     ACPI_OPERAND_OBJECT     *TmpDesc;
 
 
-    FUNCTION_TRACE ("AmlCreateBufferField");
+    FUNCTION_TRACE ("ExCreateBufferField");
 
 
     /* Create the descriptor */
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_BUFFER_FIELD);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER_FIELD);
     if (!ObjDesc)
     {
         Status = AE_NO_MEMORY;
@@ -187,8 +187,7 @@ AcpiAmlCreateBufferField (
     /*
      * Allocate a method object for this field unit
      */
-
-    ObjDesc->BufferField.Extra = AcpiCmCreateInternalObject (
+    ObjDesc->BufferField.Extra = AcpiUtCreateInternalObject (
                                     INTERNAL_TYPE_EXTRA);
     if (!ObjDesc->BufferField.Extra)
     {
@@ -201,9 +200,8 @@ AcpiAmlCreateBufferField (
      * opcode and operands -- since the buffer and index
      * operands must be evaluated.
      */
-
-    ObjDesc->BufferField.Extra->Extra.Pcode       = AmlPtr;
-    ObjDesc->BufferField.Extra->Extra.PcodeLength = AmlLength;
+    ObjDesc->BufferField.Extra->Extra.AmlStart  = AmlStart;
+    ObjDesc->BufferField.Extra->Extra.AmlLength = AmlLength;
     ObjDesc->BufferField.Node = Node;
 
 
@@ -212,9 +210,9 @@ AcpiAmlCreateBufferField (
      * to the defined BufferField -- it must not store the constructed
      * BufferField object (or its current value) in some location that the
      * Name may already be pointing to.  So, if the Name currently contains
-     * a reference which would cause AcpiAmlExecStore() to perform an indirect
+     * a reference which would cause AcpiExStore() to perform an indirect
      * store rather than setting the value of the Name itself, clobber that
-     * reference before calling AcpiAmlExecStore().
+     * reference before calling AcpiExStore().
      */
 
     /* Type of Name's existing value */
@@ -235,15 +233,14 @@ AcpiAmlCreateBufferField (
              * There is an existing object here;  delete it and zero out the
              * object field within the Node
              */
-
             DUMP_PATHNAME (Node,
-                "AmlCreateBufferField: Removing Current Reference",
-                TRACE_BFIELD, _COMPONENT);
+                "ExCreateBufferField: Removing Current Reference",
+                ACPI_LV_BFIELD, _COMPONENT);
 
-            DUMP_ENTRY (Node, TRACE_BFIELD);
+            DUMP_ENTRY (Node, ACPI_LV_BFIELD);
             DUMP_STACK_ENTRY (TmpDesc);
 
-            AcpiCmRemoveReference (TmpDesc);
+            AcpiUtRemoveReference (TmpDesc);
             AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Node, NULL,
                                     ACPI_TYPE_ANY);
         }
@@ -263,7 +260,7 @@ AcpiAmlCreateBufferField (
 
     /* Store constructed field descriptor in result location */
 
-    Status = AcpiAmlExecStore (ObjDesc, (ACPI_OPERAND_OBJECT *) Node,
+    Status = AcpiExStore (ObjDesc, (ACPI_OPERAND_OBJECT *) Node,
                     WalkState);
 
     /*
@@ -272,7 +269,7 @@ AcpiAmlCreateBufferField (
      */
     if (ObjDesc->Common.ReferenceCount <= 1)
     {
-        AcpiCmRemoveReference (ObjDesc);
+        AcpiUtRemoveReference (ObjDesc);
     }
 
 
@@ -287,7 +284,7 @@ Cleanup:
     {
         /* Remove deletes both objects! */
 
-        AcpiCmRemoveReference (ObjDesc);
+        AcpiUtRemoveReference (ObjDesc);
         ObjDesc = NULL;
     }
 
@@ -297,7 +294,7 @@ Cleanup:
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateAlias
+ * FUNCTION:    AcpiExCreateAlias
  *
  * PARAMETERS:  WalkState            - Current state, contains List of
  *                                      operands for the opcode
@@ -309,7 +306,7 @@ Cleanup:
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateAlias (
+AcpiExCreateAlias (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_NAMESPACE_NODE     *SourceNode;
@@ -317,17 +314,13 @@ AcpiAmlExecCreateAlias (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AmlExecCreateAlias");
+    FUNCTION_TRACE ("ExCreateAlias");
 
 
     /* Get the source/alias operands (both namespace nodes) */
 
-    Status = AcpiDsObjStackPopObject ((ACPI_OPERAND_OBJECT  **) &SourceNode,
-                                        WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    SourceNode = (ACPI_NAMESPACE_NODE *) WalkState->Operands[WalkState->NumOperands -1];
+    WalkState->NumOperands--;
 
     /*
      * Don't pop it, it gets removed in the calling routine
@@ -336,7 +329,7 @@ AcpiAmlExecCreateAlias (
 
     /* Add an additional reference to the object */
 
-    AcpiCmAddReference (SourceNode->Object);
+    AcpiUtAddReference (SourceNode->Object);
 
     /*
      * Attach the original source Node to the new Alias Node.
@@ -360,7 +353,7 @@ AcpiAmlExecCreateAlias (
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateEvent
+ * FUNCTION:    AcpiExCreateEvent
  *
  * PARAMETERS:  None
  *
@@ -371,19 +364,17 @@ AcpiAmlExecCreateAlias (
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateEvent (
+AcpiExCreateEvent (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("AmlExecCreateEvent");
+    FUNCTION_TRACE ("ExCreateEvent");
 
 
- BREAKPOINT3;
-
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_EVENT);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_EVENT);
     if (!ObjDesc)
     {
         Status = AE_NO_MEMORY;
@@ -398,7 +389,7 @@ AcpiAmlExecCreateEvent (
                                     &ObjDesc->Event.Semaphore);
     if (ACPI_FAILURE (Status))
     {
-        AcpiCmRemoveReference (ObjDesc);
+        AcpiUtRemoveReference (ObjDesc);
         goto Cleanup;
     }
 
@@ -409,7 +400,7 @@ AcpiAmlExecCreateEvent (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsDeleteSemaphore (ObjDesc->Event.Semaphore);
-        AcpiCmRemoveReference (ObjDesc);
+        AcpiUtRemoveReference (ObjDesc);
         goto Cleanup;
     }
 
@@ -422,7 +413,7 @@ Cleanup:
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateMutex
+ * FUNCTION:    AcpiExCreateMutex
  *
  * PARAMETERS:  InterpreterMode     - Current running mode (load1/Load2/Exec)
  *              Operands            - List of operands for the opcode
@@ -434,7 +425,7 @@ Cleanup:
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateMutex (
+AcpiExCreateMutex (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -442,20 +433,17 @@ AcpiAmlExecCreateMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecCreateMutex", WALK_OPERANDS);
+    FUNCTION_TRACE_PTR ("ExCreateMutex", WALK_OPERANDS);
 
 
     /* Get the operand */
 
-    Status = AcpiDsObjStackPopObject (&SyncDesc, WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    SyncDesc = WalkState->Operands[WalkState->NumOperands -1];
+    WalkState->NumOperands--;
 
     /* Attempt to allocate a new object */
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_MUTEX);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_MUTEX);
     if (!ObjDesc)
     {
         Status = AE_NO_MEMORY;
@@ -467,7 +455,7 @@ AcpiAmlExecCreateMutex (
     Status = AcpiOsCreateSemaphore (1, 1, &ObjDesc->Mutex.Semaphore);
     if (ACPI_FAILURE (Status))
     {
-        AcpiCmRemoveReference (ObjDesc);
+        AcpiUtRemoveReference (ObjDesc);
         goto Cleanup;
     }
 
@@ -480,7 +468,7 @@ AcpiAmlExecCreateMutex (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsDeleteSemaphore (ObjDesc->Mutex.Semaphore);
-        AcpiCmRemoveReference (ObjDesc);
+        AcpiUtRemoveReference (ObjDesc);
         goto Cleanup;
     }
 
@@ -489,7 +477,7 @@ Cleanup:
 
     /* Always delete the operand */
 
-    AcpiCmRemoveReference (SyncDesc);
+    AcpiUtRemoveReference (SyncDesc);
 
     return_ACPI_STATUS (Status);
 }
@@ -497,9 +485,9 @@ Cleanup:
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateRegion
+ * FUNCTION:    AcpiExCreateRegion
  *
- * PARAMETERS:  AmlPtr              - Pointer to the region declaration AML
+ * PARAMETERS:  AmlStart              - Pointer to the region declaration AML
  *              AmlLength           - Max length of the declaration AML
  *              Operands            - List of operands for the opcode
  *              InterpreterMode     - Load1/Load2/Execute
@@ -511,8 +499,8 @@ Cleanup:
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateRegion (
-    UINT8                   *AmlPtr,
+AcpiExCreateRegion (
+    UINT8                   *AmlStart,
     UINT32                  AmlLength,
     UINT8                   RegionSpace,
     ACPI_WALK_STATE         *WalkState)
@@ -522,7 +510,7 @@ AcpiAmlExecCreateRegion (
     ACPI_NAMESPACE_NODE     *Node;
 
 
-    FUNCTION_TRACE ("AmlExecCreateRegion");
+    FUNCTION_TRACE ("ExCreateRegion");
 
 
     /*
@@ -536,8 +524,8 @@ AcpiAmlExecCreateRegion (
         return_ACPI_STATUS (AE_AML_INVALID_SPACE_ID);
     }
 
-    DEBUG_PRINT (TRACE_LOAD, ("AmlExecCreateRegion: Region Type - %s (%X)\n",
-                    AcpiCmGetRegionName (RegionSpace), RegionSpace));
+    ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "Region Type - %s (%X)\n",
+                    AcpiUtGetRegionName (RegionSpace), RegionSpace));
 
 
     /* Get the Node from the object stack  */
@@ -546,7 +534,7 @@ AcpiAmlExecCreateRegion (
 
     /* Create the region descriptor */
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_REGION);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_REGION);
     if (!ObjDesc)
     {
         Status = AE_NO_MEMORY;
@@ -556,8 +544,7 @@ AcpiAmlExecCreateRegion (
     /*
      * Allocate a method object for this region.
      */
-
-    ObjDesc->Region.Extra =  AcpiCmCreateInternalObject (
+    ObjDesc->Region.Extra =  AcpiUtCreateInternalObject (
                                         INTERNAL_TYPE_EXTRA);
     if (!ObjDesc->Region.Extra)
     {
@@ -569,9 +556,8 @@ AcpiAmlExecCreateRegion (
      * Remember location in AML stream of address & length
      * operands since they need to be evaluated at run time.
      */
-
-    ObjDesc->Region.Extra->Extra.Pcode       = AmlPtr;
-    ObjDesc->Region.Extra->Extra.PcodeLength = AmlLength;
+    ObjDesc->Region.Extra->Extra.AmlStart  = AmlStart;
+    ObjDesc->Region.Extra->Extra.AmlLength = AmlLength;
 
     /* Init the region from the operands */
 
@@ -596,7 +582,6 @@ AcpiAmlExecCreateRegion (
      * If we have a valid region, initialize it
      * Namespace is NOT locked at this point.
      */
-
     Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
 
     if (ACPI_FAILURE (Status))
@@ -622,7 +607,7 @@ Cleanup:
         {
             /* Remove deletes both objects! */
 
-            AcpiCmRemoveReference (ObjDesc);
+            AcpiUtRemoveReference (ObjDesc);
             ObjDesc = NULL;
         }
     }
@@ -633,7 +618,7 @@ Cleanup:
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateProcessor
+ * FUNCTION:    AcpiExCreateProcessor
  *
  * PARAMETERS:  Op              - Op containing the Processor definition and
  *                                args
@@ -646,7 +631,7 @@ Cleanup:
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateProcessor (
+AcpiExCreateProcessor (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_NAMESPACE_NODE     *ProcessorNode)
 {
@@ -655,10 +640,10 @@ AcpiAmlExecCreateProcessor (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecCreateProcessor", Op);
+    FUNCTION_TRACE_PTR ("ExCreateProcessor", Op);
 
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_PROCESSOR);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_PROCESSOR);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -670,7 +655,7 @@ AcpiAmlExecCreateProcessor (
                                     (UINT8) ACPI_TYPE_PROCESSOR);
     if (ACPI_FAILURE (Status))
     {
-        AcpiCmDeleteObjectDesc (ObjDesc);
+        AcpiUtDeleteObjectDesc (ObjDesc);
         return_ACPI_STATUS (Status);
     }
 
@@ -715,7 +700,7 @@ AcpiAmlExecCreateProcessor (
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreatePowerResource
+ * FUNCTION:    AcpiExCreatePowerResource
  *
  * PARAMETERS:  Op              - Op containing the PowerResource definition
  *                                and args
@@ -728,7 +713,7 @@ AcpiAmlExecCreateProcessor (
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreatePowerResource (
+AcpiExCreatePowerResource (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_NAMESPACE_NODE     *PowerNode)
 {
@@ -737,10 +722,10 @@ AcpiAmlExecCreatePowerResource (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecCreatePowerResource", Op);
+    FUNCTION_TRACE_PTR ("ExCreatePowerResource", Op);
 
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_POWER);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_POWER);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -786,9 +771,9 @@ AcpiAmlExecCreatePowerResource (
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateMethod
+ * FUNCTION:    AcpiExCreateMethod
  *
- * PARAMETERS:  AmlPtr          - First byte of the method's AML
+ * PARAMETERS:  AmlStart          - First byte of the method's AML
  *              AmlLength       - AML byte count for this method
  *              MethodFlags     - AML method flag byte
  *              Method          - Method Node
@@ -800,8 +785,8 @@ AcpiAmlExecCreatePowerResource (
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateMethod (
-    UINT8                   *AmlPtr,
+AcpiExCreateMethod (
+    UINT8                   *AmlStart,
     UINT32                  AmlLength,
     UINT32                  MethodFlags,
     ACPI_NAMESPACE_NODE     *Method)
@@ -810,12 +795,12 @@ AcpiAmlExecCreateMethod (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecCreateMethod", Method);
+    FUNCTION_TRACE_PTR ("ExCreateMethod", Method);
 
 
     /* Create a new method object */
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_METHOD);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_METHOD);
     if (!ObjDesc)
     {
        return_ACPI_STATUS (AE_NO_MEMORY);
@@ -823,14 +808,13 @@ AcpiAmlExecCreateMethod (
 
     /* Get the method's AML pointer/length from the Op */
 
-    ObjDesc->Method.Pcode       = AmlPtr;
-    ObjDesc->Method.PcodeLength = AmlLength;
+    ObjDesc->Method.AmlStart  = AmlStart;
+    ObjDesc->Method.AmlLength = AmlLength;
 
     /*
      * First argument is the Method Flags (contains parameter count for the
      * method)
      */
-
     ObjDesc->Method.MethodFlags = (UINT8) MethodFlags;
     ObjDesc->Method.ParamCount  = (UINT8) (MethodFlags &
                                             METHOD_FLAGS_ARG_COUNT);
@@ -859,7 +843,7 @@ AcpiAmlExecCreateMethod (
     Status = AcpiNsAttachObject (Method, ObjDesc, (UINT8) ACPI_TYPE_METHOD);
     if (ACPI_FAILURE (Status))
     {
-        AcpiCmDeleteObjectDesc (ObjDesc);
+        AcpiUtDeleteObjectDesc (ObjDesc);
     }
 
     return_ACPI_STATUS (Status);
