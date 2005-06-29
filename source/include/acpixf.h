@@ -127,7 +127,7 @@
 
 ACPI_STATUS
 AcpiInitializeSubsystem (
-    ACPI_INIT_DATA          *InitData);
+    void);
 
 ACPI_STATUS
 AcpiEnableSubsystem (
@@ -160,8 +160,12 @@ AcpiFormatException (
  */
 
 ACPI_STATUS
-AcpiLoadFirmwareTables (
-    void);
+AcpiFindRootPointer (
+    void                    **RsdpPhysicalAddress);
+
+ACPI_STATUS
+AcpiLoadTables (
+    void                    *RsdpPhysicalAddress);
 
 ACPI_STATUS
 AcpiLoadTable (

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.21 $
+ *       $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -130,17 +130,7 @@ AcpiTbHandleToObject (
 
 
 /*
- * AcpiTbfac - FACP, FACS utilities
- */
-
-ACPI_STATUS
-AcpiTbGetTableFacs (
-    ACPI_TABLE_HEADER       *BufferPtr,
-    ACPI_TABLE_DESC         *TableInfo);
-
-
-/*
- * AcpiTbget - Table "get" routines
+ * tbget - Table "get" routines
  */
 
 ACPI_STATUS
@@ -155,9 +145,18 @@ AcpiTbGetTable (
     ACPI_TABLE_HEADER       *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
+ACPI_STATUS
+AcpiTbVerifyRsdp (
+    void                    *RSDP_PhysicalAddress);
+
+ACPI_STATUS
+AcpiTbGetTableFacs (
+    ACPI_TABLE_HEADER       *BufferPtr,
+    ACPI_TABLE_DESC         *TableInfo);
+
 
 /*
- * AcpiTbgetall - Get all firmware ACPI tables
+ * tbgetall - Get all firmware ACPI tables
  */
 
 ACPI_STATUS
@@ -167,7 +166,7 @@ AcpiTbGetAllTables (
 
 
 /*
- * AcpiTbinstall - Table installation
+ * tbinstall - Table installation
  */
 
 ACPI_STATUS
@@ -187,7 +186,7 @@ AcpiTbInitTableDescriptor (
 
 
 /*
- * AcpiTbremove - Table removal and deletion
+ * tbremove - Table removal and deletion
  */
 
 void
@@ -212,7 +211,7 @@ AcpiTbFreeAcpiTablesOfType (
 
 
 /*
- * AcpiTbrsd - RSDP, RSDT utilities
+ * tbrsd - RSDP, RSDT utilities
  */
 
 ACPI_STATUS
@@ -230,7 +229,7 @@ AcpiTbFindRsdp (
 
 
 /*
- * AcpiTbutils - common table utilities
+ * tbutils - common table utilities
  */
 
 BOOLEAN
