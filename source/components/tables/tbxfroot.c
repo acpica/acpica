@@ -117,8 +117,8 @@
 #define __TBTABLE_C__
 
 #include "acpi.h"
-#include "hardware.h"
-#include "tables.h"
+#include "achware.h"
+#include "actables.h"
 
 
 #define _COMPONENT          TABLE_MANAGER
@@ -130,7 +130,6 @@
  * FUNCTION:    AcpiTbGetTableRsdt
  *
  * PARAMETERS:  NumberOfTables      - Where the table count is placed
- *              TablePtr            - Input buffer pointer, optional
  *
  * RETURN:      Status
  *
@@ -197,6 +196,9 @@ AcpiTbGetTableRsdt (
                 ("RSDP points to RSDT at %lXh, but RSDT signature is invalid\n",
                 (void *) AcpiGbl_RSDP->RsdtPhysicalAddress));
         }
+        REPORT_ERROR ("Unable to locate RSDT");
+
+        return_ACPI_STATUS (Status);
     }
 
 
@@ -225,10 +227,15 @@ AcpiTbGetTableRsdt (
 
     Status = AcpiTbVerifyTableChecksum ((ACPI_TABLE_HEADER *) AcpiGbl_RSDT);
 
-    /* Determine the number of tables pointed to by the RSDT */
+    /*
+     * Determine the number of tables pointed to by the RSDT.
+     * This is defined by the ACPI Specification to be the number of
+     * pointers contained within the RSDT.  The size of the pointers
+     * is architecture-dependent.
+     */
 
-    *NumberOfTables = (INT32) DIV_4 (AcpiGbl_RSDT->header.Length -
-                                    sizeof (ACPI_TABLE_HEADER));
+    *NumberOfTables = ((AcpiGbl_RSDT->header.Length -
+                        sizeof (ACPI_TABLE_HEADER)) / sizeof (void *));
 
 
     return_ACPI_STATUS (Status);
@@ -248,13 +255,13 @@ AcpiTbGetTableRsdt (
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiTbScanMemoryForRsdp (
-    char                    *StartAddress,
+    INT8                    *StartAddress,
     UINT32                  Length)
 {
     UINT32                  Offset;
-    char                    *MemRover;
+    INT8                    *MemRover;
 
 
     /* Search from given start addr for the requested length  */
@@ -272,13 +279,13 @@ AcpiTbScanMemoryForRsdp (
         {
             /* If so, we have found the RSDP */
 
-            return MemRover;
+            return (MemRover);
         }
     }
 
     /* Searched entire block, no RSDP was found */
 
-    return NULL;
+    return (NULL);
 }
 
 
@@ -305,8 +312,8 @@ ACPI_STATUS
 AcpiTbFindRsdp (
     ACPI_TABLE_DESC         *TableInfo)
 {
-    char                    *TablePtr;
-    char                    *MemRover;
+    INT8                    *TablePtr;
+    INT8                    *MemRover;
     ACPI_STATUS             Status = AE_OK;
 
     FUNCTION_TRACE ("TbFindRsdp");
@@ -338,7 +345,7 @@ AcpiTbFindRsdp (
         if (STRNCMP (TablePtr, RSDP_SIG, sizeof (RSDP_SIG)-1) != 0)
         {
             /* Nope, BAD Signature */
-
+            AcpiOsUnmapMemory (TablePtr, sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER));
             return_ACPI_STATUS (AE_BAD_SIGNATURE);
         }
 
@@ -348,7 +355,7 @@ AcpiTbFindRsdp (
                 sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER)) != 0)
         {
             /* Nope, BAD Checksum */
-
+            AcpiOsUnmapMemory (TablePtr, sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER));
             return_ACPI_STATUS (AE_BAD_CHECKSUM);
         }
 
@@ -433,12 +440,12 @@ AcpiTbFindRsdp (
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiTbGetTableFacs
  *
- * PARAMETERS:  *BufferPtr              - If == NULL, read data from buffer
- *                                        rather than searching memory
+ * PARAMETERS:  *BufferPtr              - If BufferPtr is valid, read data from
+ *                                          buffer rather than searching memory
  *              *TableInfo              - Where the table info is returned
  *
  * RETURN:      Status
@@ -448,11 +455,11 @@ AcpiTbFindRsdp (
  *              correctly initialized.  The value of FACP->FirmwareCtrl
  *              into a far pointer which is returned.
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 ACPI_STATUS
 AcpiTbGetTableFacs (
-    char                    *BufferPtr,
+    ACPI_TABLE_HEADER       *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo)
 {
     void                    *TablePtr = NULL;

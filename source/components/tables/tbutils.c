@@ -117,8 +117,8 @@
 #define __TBUTILS_C__
 
 #include "acpi.h"
-#include "tables.h"
-#include "interp.h"
+#include "actables.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          TABLE_MANAGER
@@ -127,13 +127,14 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbSystemTablePointer
+ * FUNCTION:    AcpiTbHandleToObject
  *
- * PARAMETERS:  *Where              - Pointer to be examined
+ * PARAMETERS:  TableId             - Id for which the function is searching
+ *              TableDesc           - Pointer to return the matching table
+ *                                      descriptor.
  *
- * RETURN:      TRUE if Where is within the AML stream (in one of the ACPI
- *              system tables such as the DSDT or an SSDT.)
- *              FALSE otherwise
+ * RETURN:      Search the tables to find one with a matching TableId and 
+ *              return a pointer to that table descriptor.
  *
  ******************************************************************************/
 
@@ -154,7 +155,7 @@ AcpiTbHandleToObject (
             if (ListHead->TableId == TableId)
             {
                 *TableDesc = ListHead;
-                return AE_OK;
+                return (AE_OK);
             }
 
             ListHead = ListHead->Next;
@@ -164,7 +165,7 @@ AcpiTbHandleToObject (
 
 
     DEBUG_PRINT (ACPI_ERROR, ("TableId=0x%X does not exist\n", TableId));
-    return AE_BAD_PARAMETER;
+    return (AE_BAD_PARAMETER);
 }
 
 
@@ -281,7 +282,7 @@ AcpiTbValidateTableHeader (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("Cannot read table header at %p\n", TableHeader));
-        return AE_BAD_ADDRESS;
+        return (AE_BAD_ADDRESS);
     }
 
 
@@ -296,7 +297,7 @@ AcpiTbValidateTableHeader (
 
         REPORT_WARNING ("Invalid table signature found");
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
-        return AE_BAD_SIGNATURE;
+        return (AE_BAD_SIGNATURE);
     }
 
 
@@ -310,10 +311,10 @@ AcpiTbValidateTableHeader (
 
         REPORT_WARNING ("Invalid table header length found");
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
-        return AE_BAD_HEADER;
+        return (AE_BAD_HEADER);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -354,7 +355,7 @@ AcpiTbMapAcpiTable (
                                     (void **) &Table);
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            return (Status);
         }
 
         /* Extract the full table length before we delete the mapping */
@@ -376,7 +377,7 @@ AcpiTbMapAcpiTable (
 
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -386,7 +387,7 @@ AcpiTbMapAcpiTable (
     Status = AcpiOsMapMemory (PhysicalAddress, TableSize, (void **) &Table);
     if (ACPI_FAILURE (Status))
     {
-        return Status;
+        return (Status);
     }
 
     DEBUG_PRINT (ACPI_INFO,
@@ -396,7 +397,7 @@ AcpiTbMapAcpiTable (
     *Size = TableSize;
     *LogicalAddress = Table;
 
-    return Status;
+    return (Status);
 }
 
 
@@ -480,7 +481,7 @@ AcpiTbChecksum (
         }
     }
 
-    return sum;
+    return (sum);
 }
 
 

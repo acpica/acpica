@@ -118,9 +118,9 @@
 #define __TBXFACE_C__
 
 #include "acpi.h"
-#include "namesp.h"
-#include "interp.h"
-#include "tables.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "actables.h"
 
 
 #define _COMPONENT          TABLE_MANAGER
@@ -152,7 +152,7 @@ AcpiLoadFirmwareTables (void)
     /* Get the RSDT first */
 
     Status = AcpiTbGetTableRsdt (&NumberOfTables);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
@@ -161,7 +161,7 @@ AcpiLoadFirmwareTables (void)
     /* Now get the rest of the tables */
 
     Status = AcpiTbGetAllTables (NumberOfTables, NULL);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
@@ -211,12 +211,12 @@ AcpiLoadTable (
 
     if (!TablePtr)
     {
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /* Copy the table to a local buffer */
 
-    Status = AcpiTbGetTable (NULL, ((char *) TablePtr), &TableInfo);
+    Status = AcpiTbGetTable (NULL, TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -319,8 +319,6 @@ AcpiGetTableHeader (
 
     FUNCTION_TRACE ("AcpiGetTableHeader");
 
-    Status = AE_OK;
-
     if ((Instance == 0)                 ||
         (TableType == ACPI_TABLE_RSDP)  ||
         (!OutTableHeader))
@@ -331,7 +329,7 @@ AcpiGetTableHeader (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (AcpiGbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
+        (IS_SINGLE_TABLE (AcpiGbl_AcpiTableData[TableType].Flags) &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -341,7 +339,7 @@ AcpiGetTableHeader (
     /* Get a pointer to the entire table */
 
     Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -403,8 +401,6 @@ AcpiGetTable (
 
     FUNCTION_TRACE ("AcpiGetTable");
 
-    Status = AE_OK;
-
     /*
      *  Must have a buffer
      */
@@ -419,7 +415,7 @@ AcpiGetTable (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (AcpiGbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
+        (IS_SINGLE_TABLE (AcpiGbl_AcpiTableData[TableType].Flags) &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -429,13 +425,14 @@ AcpiGetTable (
     /* Get a pointer to the entire table */
 
     Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
     /*
-     * The function will return a NULL pointer if the table is not loaded
+     * AcpiTbGetTablePtr will return a NULL pointer if the 
+     *  table is not loaded.
      */
     if (TblPtr == NULL)
     {
