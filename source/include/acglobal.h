@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.110 $
+ *       $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -198,22 +198,18 @@ ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_AcpiMutexInfo [NUM_MTX];
 ACPI_EXTERN ACPI_MEMORY_LIST            AcpiGbl_MemoryLists[ACPI_NUM_MEM_LISTS];
 ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_DrvNotify;
 ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_SysNotify;
-ACPI_EXTERN UINT8                      *AcpiGbl_Gpe0EnableRegisterSave;
-ACPI_EXTERN UINT8                      *AcpiGbl_Gpe1EnableRegisterSave;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GlobalLockSemaphore;
 
 ACPI_EXTERN UINT32                      AcpiGbl_GlobalLockThreadCount;
-ACPI_EXTERN UINT32                      AcpiGbl_RestoreAcpiChipset;
 ACPI_EXTERN UINT32                      AcpiGbl_OriginalMode;
-ACPI_EXTERN UINT32                      AcpiGbl_EdgeLevelSave;
-ACPI_EXTERN UINT32                      AcpiGbl_IrqEnableSave;
 ACPI_EXTERN UINT32                      AcpiGbl_RsdpOriginalLocation;
 ACPI_EXTERN UINT32                      AcpiGbl_NsLookupCount;
 ACPI_EXTERN UINT32                      AcpiGbl_PsFindCount;
 ACPI_EXTERN UINT16                      AcpiGbl_Pm1EnableRegisterSave;
 ACPI_EXTERN UINT16                      AcpiGbl_NextTableOwnerId;
 ACPI_EXTERN UINT16                      AcpiGbl_NextMethodOwnerId;
+ACPI_EXTERN UINT16                      AcpiGbl_GlobalLockHandle;
 ACPI_EXTERN UINT8                       AcpiGbl_DebuggerConfiguration;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockAcquired;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_StepToNextCall;
@@ -273,28 +269,41 @@ ACPI_EXTERN UINT8                       AcpiGbl_CmSingleStep;
 
 ACPI_EXTERN ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
 
-
 /*****************************************************************************
  *
- * Event globals
+ * Hardware globals
  *
  ****************************************************************************/
 
-ACPI_EXTERN ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventHandlers[ACPI_NUM_FIXED_EVENTS];
+ACPI_EXTERN ACPI_BIT_REGISTER_INFO      AcpiGbl_BitRegisterInfo[ACPI_NUM_BITREG];
+ACPI_EXTERN UINT8                       AcpiGbl_SleepTypeA;
+ACPI_EXTERN UINT8                       AcpiGbl_SleepTypeB;
+
+
+/*****************************************************************************
+ *
+ * Event and GPE globals
+ *
+ ****************************************************************************/
+
+extern      ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS];
+ACPI_EXTERN ACPI_FIXED_EVENT_HANDLER    AcpiGbl_FixedEventHandlers[ACPI_NUM_FIXED_EVENTS];
+
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeObjHandle;
 ACPI_EXTERN UINT32                      AcpiGbl_GpeRegisterCount;
-ACPI_EXTERN ACPI_GPE_REGISTERS         *AcpiGbl_GpeRegisters;
-ACPI_EXTERN ACPI_GPE_LEVEL_INFO        *AcpiGbl_GpeInfo;
+ACPI_EXTERN UINT32                      AcpiGbl_GpeNumberMax;
+ACPI_EXTERN ACPI_GPE_REGISTER_INFO     *AcpiGbl_GpeRegisterInfo;
+ACPI_EXTERN ACPI_GPE_NUMBER_INFO       *AcpiGbl_GpeNumberInfo;
+ACPI_EXTERN ACPI_GPE_BLOCK_INFO         AcpiGbl_GpeBlockInfo[ACPI_MAX_GPE_BLOCKS];
 
 /*
- * Gpe validation and translation table
- * Indexed by the GPE number, returns GPE_INVALID if the GPE is not supported.
- * Otherwise, returns a valid index into the global GPE table.
+ * GPE translation table
+ * Indexed by the GPE number, returns a valid index into the global GPE tables.
  *
  * This table is needed because the GPE numbers supported by block 1 do not
  * have to be contiguous with the GPE numbers supported by block 0.
  */
-ACPI_EXTERN UINT8                       AcpiGbl_GpeValid [ACPI_NUM_GPE];
+ACPI_EXTERN ACPI_GPE_INDEX_INFO        *AcpiGbl_GpeNumberToIndex;
 
 /* AcpiEvent counter for debug only */
 
