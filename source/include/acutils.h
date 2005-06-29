@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.148 $
+ *       $Revision: 1.149 $
  *
  *****************************************************************************/
 
@@ -539,6 +539,13 @@ AcpiUtDeleteInternalObjectList (
 
 
 ACPI_STATUS
+AcpiUtEvaluateObject (
+    ACPI_NAMESPACE_NODE     *PrefixNode,
+    NATIVE_CHAR             *Path,
+    UINT32                  ExpectedReturnBtypes,
+    ACPI_OPERAND_OBJECT     **ReturnDesc);
+
+ACPI_STATUS
 AcpiUtEvaluateNumericObject (
     NATIVE_CHAR             *ObjectName,
     ACPI_NAMESPACE_NODE     *DeviceNode,
@@ -789,7 +796,8 @@ AcpiUtSetIntegerWidth (
 #ifdef ACPI_DEBUG_OUTPUT
 void
 AcpiUtDisplayInitPathname (
-    ACPI_HANDLE             ObjHandle,
+    UINT8                   Type,
+    ACPI_NAMESPACE_NODE     *ObjHandle,
     char                    *Path);
 
 #endif
