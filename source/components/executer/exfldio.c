@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiExSetupField (
     ACPI_OPERAND_OBJECT     *RgnDesc;
 
 
-    FUNCTION_TRACE ("ExSetupField");
+    FUNCTION_TRACE_U32 ("ExSetupField", FieldDatumByteOffset);
 
 
     /* Parameter validation */
