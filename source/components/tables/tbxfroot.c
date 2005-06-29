@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -380,7 +380,7 @@ AcpiGetFirmwareTable (
      */
     for (i = 0, j = 0; i < TableCount; i++)
     {
-        /* 
+        /*
          * Get the next table pointer, handle RSDT vs. XSDT
          * RSDT pointers are 32 bits, XSDT pointers are 64 bits
          */
