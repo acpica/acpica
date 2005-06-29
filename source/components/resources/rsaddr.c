@@ -1,10 +1,7 @@
 /*******************************************************************************
  *
- * Module Name: rsaddr - AcpiRsAddress16Resource
- *                       AcpiRsAddress16Stream
- *                       AcpiRsAddress32Resource
- *                       AcpiRsAddress32Stream
- *              $Revision: 1.11 $
+ * Module Name: rsaddr - Address resource descriptors (16/32/64)
+ *              $Revision: 1.26 $
  *
  ******************************************************************************/
 
@@ -12,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -120,9 +117,10 @@
 #define __RSADDR_C__
 
 #include "acpi.h"
+#include "acresrc.h"
 
-#define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rsaddr")
+#define _COMPONENT          ACPI_RESOURCES
+        ACPI_MODULE_NAME    ("rsaddr")
 
 
 /*******************************************************************************
@@ -130,53 +128,48 @@
  * FUNCTION:    AcpiRsAddress16Resource
  *
  * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
- *                                              stream
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                          the number of bytes consumed from
- *                                          the ByteStreamBuffer
- *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with
- *                                          the number of bytes in the filled
- *                                          in structure
+ *                                        stream
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        consumed the ByteStreamBuffer is
+ *                                        returned
+ *              OutputBuffer            - Pointer to the return data buffer
+ *              StructureSize           - Pointer to where the number of bytes
+ *                                        in the return data struct is returned
  *
- * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
+ * RETURN:      Status
  *
  * DESCRIPTION: Take the resource byte stream and fill out the appropriate
- *                  structure pointed to by the OutputBuffer.  Return the
- *                  number of bytes consumed from the byte stream.
+ *              structure pointed to by the OutputBuffer.  Return the
+ *              number of bytes consumed from the byte stream.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsAddress16Resource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize)
+    ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
+    UINT8                   *TempPtr;
+    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS16);
+    UINT32                  Index;
     UINT16                  Temp16;
     UINT8                   Temp8;
-    UINT32                  Index;
-    UINT32                  StructSize = sizeof(ADDRESS16_RESOURCE) +
-                                         RESOURCE_LENGTH_NO_DATA;
 
 
-    FUNCTION_TRACE ("RsAddress16Resource");
+    ACPI_FUNCTION_TRACE ("RsAddress16Resource");
 
     /*
      * Point past the Descriptor to get the number of bytes consumed
      */
     Buffer += 1;
-
-    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     *BytesConsumed = Temp16 + 3;
-
-    OutputStruct->Id = Address16;
-
-    OutputStruct->Length = StructSize;
+    OutputStruct->Id = ACPI_RSTYPE_ADDRESS16;
 
     /*
      * Get the Resource Type (Byte3)
@@ -185,9 +178,10 @@ AcpiRsAddress16Resource (
     Temp8 = *Buffer;
 
     /* Values 0-2 are valid */
+
     if (Temp8 > 2)
     {
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
     }
 
     OutputStruct->Data.Address16.ResourceType = Temp8 & 0x03;
@@ -198,24 +192,20 @@ AcpiRsAddress16Resource (
     Buffer += 1;
     Temp8 = *Buffer;
 
-    /*
-     * Producer / Consumer
-     */
+    /* Producer / Consumer */
+
     OutputStruct->Data.Address16.ProducerConsumer = Temp8 & 0x01;
 
-    /*
-     * Decode
-     */
+    /* Decode */
+
     OutputStruct->Data.Address16.Decode = (Temp8 >> 1) & 0x01;
 
-    /*
-     * Min Address Fixed
-     */
+    /* Min Address Fixed */
+
     OutputStruct->Data.Address16.MinAddressFixed = (Temp8 >> 2) & 0x01;
 
-    /*
-     * Max Address Fixed
-     */
+    /* Max Address Fixed */
+
     OutputStruct->Data.Address16.MaxAddressFixed = (Temp8 >> 3) & 0x01;
 
     /*
@@ -224,25 +214,23 @@ AcpiRsAddress16Resource (
     Buffer += 1;
     Temp8 = *Buffer;
 
-    if (MEMORY_RANGE == OutputStruct->Data.Address16.ResourceType)
+    if (ACPI_MEMORY_RANGE == OutputStruct->Data.Address16.ResourceType)
     {
         OutputStruct->Data.Address16.Attribute.Memory.ReadWriteAttribute =
                 (UINT16) (Temp8 & 0x01);
         OutputStruct->Data.Address16.Attribute.Memory.CacheAttribute =
                 (UINT16) ((Temp8 >> 1) & 0x0F);
     }
-
     else
     {
-        if (IO_RANGE == OutputStruct->Data.Address16.ResourceType)
+        if (ACPI_IO_RANGE == OutputStruct->Data.Address16.ResourceType)
         {
             OutputStruct->Data.Address16.Attribute.Io.RangeAttribute =
                 (UINT16) (Temp8 & 0x03);
         }
-
         else
         {
-            /* BUS_NUMBER_RANGE == Address32Data->ResourceType */
+            /* BUS_NUMBER_RANGE == Address16.Data->ResourceType */
             /* Nothing needs to be filled in */
         }
     }
@@ -251,39 +239,36 @@ AcpiRsAddress16Resource (
      * Get Granularity (Bytes 6-7)
      */
     Buffer += 1;
-    MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.Granularity,
+    ACPI_MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.Granularity,
                             Buffer);
 
     /*
      * Get MinAddressRange (Bytes 8-9)
      */
     Buffer += 2;
-    MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.MinAddressRange,
+    ACPI_MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.MinAddressRange,
                             Buffer);
 
     /*
      * Get MaxAddressRange (Bytes 10-11)
      */
     Buffer += 2;
-    MOVE_UNALIGNED16_TO_16
-        (&OutputStruct->Data.Address16.MaxAddressRange,
-         Buffer);
+    ACPI_MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.MaxAddressRange,
+                            Buffer);
 
     /*
      * Get AddressTranslationOffset (Bytes 12-13)
      */
     Buffer += 2;
-    MOVE_UNALIGNED16_TO_16
-        (&OutputStruct->Data.Address16.AddressTranslationOffset,
-         Buffer);
+    ACPI_MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.AddressTranslationOffset,
+                            Buffer);
 
     /*
      * Get AddressLength (Bytes 14-15)
      */
     Buffer += 2;
-    MOVE_UNALIGNED16_TO_16
-        (&OutputStruct->Data.Address16.AddressLength,
-         Buffer);
+    ACPI_MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.AddressLength,
+                            Buffer);
 
     /*
      * Resource Source Index (if present)
@@ -292,22 +277,28 @@ AcpiRsAddress16Resource (
 
     /*
      * This will leave us pointing to the Resource Source Index
-     *  If it is present, then save it off and calculate the
-     *  pointer to where the null terminated string goes:
-     *  Each Interrupt takes 32-bits + the 5 bytes of the
-     *  stream that are default.
+     * If it is present, then save it off and calculate the
+     * pointer to where the null terminated string goes:
+     * Each Interrupt takes 32-bits + the 5 bytes of the
+     * stream that are default.
      */
     if (*BytesConsumed > 16)
     {
         /* Dereference the Index */
 
         Temp8 = *Buffer;
-        OutputStruct->Data.Address16.ResourceSourceIndex =
-                (UINT32) Temp8;
+        OutputStruct->Data.Address16.ResourceSource.Index = (UINT32) Temp8;
 
         /* Point to the String */
 
         Buffer += 1;
+
+        /* Point the String pointer to the end of this structure */
+
+        OutputStruct->Data.Address16.ResourceSource.StringPtr =
+                (NATIVE_CHAR *)((UINT8 * )OutputStruct + StructSize);
+
+        TempPtr = (UINT8 *) OutputStruct->Data.Address16.ResourceSource.StringPtr;
 
         /* Copy the string into the buffer */
 
@@ -315,9 +306,9 @@ AcpiRsAddress16Resource (
 
         while (0x00 != *Buffer)
         {
-            OutputStruct->Data.Address16.ResourceSource[Index] =
-                *Buffer;
+            *TempPtr = *Buffer;
 
+            TempPtr += 1;
             Buffer += 1;
             Index += 1;
         }
@@ -325,32 +316,34 @@ AcpiRsAddress16Resource (
         /*
          * Add the terminating null
          */
-        OutputStruct->Data.Address16.ResourceSource[Index] = 0x00;
+        *TempPtr = 0x00;
 
-        OutputStruct->Data.Address16.ResourceSourceStringLength =
-                Index + 1;
+        OutputStruct->Data.Address16.ResourceSource.StringLength = Index + 1;
 
         /*
-         * In order for the StructSize to fall on a 32-bit boundry,
-         *  calculate the length of the string and expand the
-         *  StructSize to the next 32-bit boundry.
+         * In order for the StructSize to fall on a 32-bit boundary,
+         * calculate the length of the string and expand the
+         * StructSize to the next 32-bit boundary.
          */
         Temp8 = (UINT8) (Index + 1);
-        StructSize += ROUND_UP_TO_32BITS (Temp8);
-        OutputStruct->Length = StructSize;
+        StructSize += ACPI_ROUND_UP_TO_32BITS (Temp8);
     }
     else
     {
-        OutputStruct->Data.Address16.ResourceSourceIndex = 0x00;
-        OutputStruct->Data.Address16.ResourceSourceStringLength = 0;
-        OutputStruct->Data.Address16.ResourceSource[0] = 0x00;
+        OutputStruct->Data.Address16.ResourceSource.Index = 0x00;
+        OutputStruct->Data.Address16.ResourceSource.StringLength = 0;
+        OutputStruct->Data.Address16.ResourceSource.StringPtr = NULL;
     }
+
+    /*
+     * Set the Length parameter
+     */
+    OutputStruct->Length = (UINT32) StructSize;
 
     /*
      * Return the final size of the structure
      */
     *StructureSize = StructSize;
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -361,31 +354,31 @@ AcpiRsAddress16Resource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                          the number of bytes of the
- *                                          OutputBuffer used
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        used in the OutputBuffer is returned
  *
- * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
+ * RETURN:      Status
  *
  * DESCRIPTION: Take the linked list resource structure and fills in the
- *                  the appropriate bytes in a byte stream
+ *              the appropriate bytes in a byte stream
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsAddress16Stream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed)
+    ACPI_SIZE               *BytesConsumed)
 {
     UINT8                   *Buffer = *OutputBuffer;
     UINT8                   *LengthField;
     UINT8                   Temp8;
     NATIVE_CHAR             *TempPointer = NULL;
-    UINT32                  ActualBytes;
+    ACPI_SIZE               ActualBytes;
 
 
-    FUNCTION_TRACE ("RsAddress16Stream");
+    ACPI_FUNCTION_TRACE ("RsAddress16Stream");
+
 
     /*
      * The descriptor field is static
@@ -423,7 +416,7 @@ AcpiRsAddress16Stream (
      */
     Temp8 = 0;
 
-    if (MEMORY_RANGE == LinkedList->Data.Address16.ResourceType)
+    if (ACPI_MEMORY_RANGE == LinkedList->Data.Address16.ResourceType)
     {
         Temp8 = (UINT8)
             (LinkedList->Data.Address16.Attribute.Memory.ReadWriteAttribute &
@@ -433,8 +426,7 @@ AcpiRsAddress16Stream (
             (LinkedList->Data.Address16.Attribute.Memory.CacheAttribute &
              0x0F) << 1;
     }
-
-    else if (IO_RANGE == LinkedList->Data.Address16.ResourceType)
+    else if (ACPI_IO_RANGE == LinkedList->Data.Address16.ResourceType)
     {
         Temp8 = (UINT8)
             (LinkedList->Data.Address16.Attribute.Io.RangeAttribute &
@@ -447,44 +439,44 @@ AcpiRsAddress16Stream (
     /*
      * Set the address space granularity
      */
-    MOVE_UNALIGNED16_TO_16 (Buffer,
-                            &LinkedList->Data.Address16.Granularity);
+    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer,
+                        &LinkedList->Data.Address16.Granularity);
     Buffer += 2;
 
     /*
      * Set the address range minimum
      */
-    MOVE_UNALIGNED16_TO_16 (Buffer,
-                            &LinkedList->Data.Address16.MinAddressRange);
+    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer,
+                        &LinkedList->Data.Address16.MinAddressRange);
     Buffer += 2;
 
     /*
      * Set the address range maximum
      */
-    MOVE_UNALIGNED16_TO_16 (Buffer,
-                            &LinkedList->Data.Address16.MaxAddressRange);
+    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer,
+                        &LinkedList->Data.Address16.MaxAddressRange);
     Buffer += 2;
 
     /*
      * Set the address translation offset
      */
-    MOVE_UNALIGNED16_TO_16 (Buffer,
-                    &LinkedList->Data.Address16.AddressTranslationOffset);
+    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer,
+                        &LinkedList->Data.Address16.AddressTranslationOffset);
     Buffer += 2;
 
     /*
      * Set the address length
      */
-    MOVE_UNALIGNED16_TO_16 (Buffer,
-                            &LinkedList->Data.Address16.AddressLength);
+    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer,
+                        &LinkedList->Data.Address16.AddressLength);
     Buffer += 2;
 
     /*
      * Resource Source Index and Resource Source are optional
      */
-    if (0 != LinkedList->Data.Address16.ResourceSourceStringLength)
+    if (0 != LinkedList->Data.Address16.ResourceSource.StringLength)
     {
-        Temp8 = (UINT8) LinkedList->Data.Address16.ResourceSourceIndex;
+        Temp8 = (UINT8) LinkedList->Data.Address16.ResourceSource.Index;
 
         *Buffer = Temp8;
         Buffer += 1;
@@ -494,21 +486,20 @@ AcpiRsAddress16Stream (
         /*
          * Copy the string
          */
-        STRCPY (TempPointer, LinkedList->Data.Address16.ResourceSource);
+        ACPI_STRCPY (TempPointer,
+                LinkedList->Data.Address16.ResourceSource.StringPtr);
 
         /*
          * Buffer needs to be set to the length of the sting + one for the
          *  terminating null
          */
-        Buffer += (STRLEN (LinkedList->Data.Address16.ResourceSource) + 1);
+        Buffer += (ACPI_STRLEN (LinkedList->Data.Address16.ResourceSource.StringPtr) + 1);
     }
 
     /*
      * Return the number of bytes consumed in this operation
      */
-    ActualBytes = (UINT32) ((NATIVE_UINT) Buffer -
-                  (NATIVE_UINT) *OutputBuffer);
-
+    ActualBytes = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
     *BytesConsumed = ActualBytes;
 
     /*
@@ -516,8 +507,7 @@ AcpiRsAddress16Stream (
      * minus the header size (3 bytes)
      */
     ActualBytes -= 3;
-    MOVE_UNALIGNED16_TO_16 (LengthField, &ActualBytes);
-
+    ACPI_MOVE_UNALIGNED16_TO_16 (LengthField, &ActualBytes);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -527,56 +517,52 @@ AcpiRsAddress16Stream (
  * FUNCTION:    AcpiRsAddress32Resource
  *
  * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
- *                                          stream
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                          the number of bytes consumed from
- *                                          the ByteStreamBuffer
- *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with
- *                                          the number of bytes in the filled
- *                                          in structure
+ *                                        stream
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        consumed the ByteStreamBuffer is
+ *                                        returned
+ *              OutputBuffer            - Pointer to the return data buffer
+ *              StructureSize           - Pointer to where the number of bytes
+ *                                        in the return data struct is returned
  *
- * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
+ * RETURN:      Status
  *
  * DESCRIPTION: Take the resource byte stream and fill out the appropriate
- *                  structure pointed to by the OutputBuffer.  Return the
- *                  number of bytes consumed from the byte stream.
+ *              structure pointed to by the OutputBuffer.  Return the
+ *              number of bytes consumed from the byte stream.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsAddress32Resource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize)
+    ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer;
-    RESOURCE                *OutputStruct;
+    ACPI_RESOURCE           *OutputStruct= (void *) *OutputBuffer;
     UINT16                  Temp16;
     UINT8                   Temp8;
-    UINT32                  StructSize;
+    UINT8                   *TempPtr;
+    ACPI_SIZE               StructSize;
     UINT32                  Index;
 
 
-    FUNCTION_TRACE ("RsAddress32Resource");
+    ACPI_FUNCTION_TRACE ("RsAddress32Resource");
+
 
     Buffer = ByteStreamBuffer;
-
-    OutputStruct = (RESOURCE *) *OutputBuffer;
-
-    StructSize = sizeof (ADDRESS32_RESOURCE) +
-                 RESOURCE_LENGTH_NO_DATA;
+    StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS32);
 
     /*
      * Point past the Descriptor to get the number of bytes consumed
      */
     Buffer += 1;
-    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-
+    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
     *BytesConsumed = Temp16 + 3;
 
-    OutputStruct->Id = Address32;
+    OutputStruct->Id = ACPI_RSTYPE_ADDRESS32;
 
     /*
      * Get the Resource Type (Byte3)
@@ -587,7 +573,7 @@ AcpiRsAddress32Resource (
     /* Values 0-2 are valid */
     if(Temp8 > 2)
     {
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
     }
 
     OutputStruct->Data.Address32.ResourceType = Temp8 & 0x03;
@@ -624,7 +610,7 @@ AcpiRsAddress32Resource (
     Buffer += 1;
     Temp8 = *Buffer;
 
-    if (MEMORY_RANGE == OutputStruct->Data.Address32.ResourceType)
+    if (ACPI_MEMORY_RANGE == OutputStruct->Data.Address32.ResourceType)
     {
         OutputStruct->Data.Address32.Attribute.Memory.ReadWriteAttribute =
                 (UINT16) (Temp8 & 0x01);
@@ -632,15 +618,13 @@ AcpiRsAddress32Resource (
         OutputStruct->Data.Address32.Attribute.Memory.CacheAttribute =
                 (UINT16) ((Temp8 >> 1) & 0x0F);
     }
-
     else
     {
-        if (IO_RANGE == OutputStruct->Data.Address32.ResourceType)
+        if (ACPI_IO_RANGE == OutputStruct->Data.Address32.ResourceType)
         {
             OutputStruct->Data.Address32.Attribute.Io.RangeAttribute =
                 (UINT16) (Temp8 & 0x03);
         }
-
         else
         {
             /* BUS_NUMBER_RANGE == OutputStruct->Data.Address32.ResourceType */
@@ -652,36 +636,35 @@ AcpiRsAddress32Resource (
      * Get Granularity (Bytes 6-9)
      */
     Buffer += 1;
-    MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Address32.Granularity,
+    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Address32.Granularity,
                             Buffer);
 
     /*
      * Get MinAddressRange (Bytes 10-13)
      */
     Buffer += 4;
-    MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Address32.MinAddressRange,
+    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Address32.MinAddressRange,
                             Buffer);
 
     /*
      * Get MaxAddressRange (Bytes 14-17)
      */
     Buffer += 4;
-    MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Address32.MaxAddressRange,
+    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Address32.MaxAddressRange,
                             Buffer);
 
     /*
      * Get AddressTranslationOffset (Bytes 18-21)
      */
     Buffer += 4;
-    MOVE_UNALIGNED32_TO_32
-                (&OutputStruct->Data.Address32.AddressTranslationOffset,
-                 Buffer);
+    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Address32.AddressTranslationOffset,
+                            Buffer);
 
     /*
      * Get AddressLength (Bytes 22-25)
      */
     Buffer += 4;
-    MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Address32.AddressLength,
+    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Address32.AddressLength,
                             Buffer);
 
     /*
@@ -691,29 +674,36 @@ AcpiRsAddress32Resource (
 
     /*
      * This will leave us pointing to the Resource Source Index
-     *  If it is present, then save it off and calculate the
-     *  pointer to where the null terminated string goes:
-     *  Each Interrupt takes 32-bits + the 5 bytes of the
-     *  stream that are default.
+     * If it is present, then save it off and calculate the
+     * pointer to where the null terminated string goes:
      */
     if (*BytesConsumed > 26)
     {
         /* Dereference the Index */
 
         Temp8 = *Buffer;
-        OutputStruct->Data.Address32.ResourceSourceIndex = (UINT32)Temp8;
+        OutputStruct->Data.Address32.ResourceSource.Index =
+                (UINT32) Temp8;
 
         /* Point to the String */
 
         Buffer += 1;
 
+        /* Point the String pointer to the end of this structure */
+
+        OutputStruct->Data.Address32.ResourceSource.StringPtr =
+                (NATIVE_CHAR *)((UINT8 *)OutputStruct + StructSize);
+
+        TempPtr = (UINT8 *) OutputStruct->Data.Address32.ResourceSource.StringPtr;
+
         /* Copy the string into the buffer */
 
         Index = 0;
-
         while (0x00 != *Buffer)
         {
-            OutputStruct->Data.Address32.ResourceSource[Index] = *Buffer;
+            *TempPtr = *Buffer;
+
+            TempPtr += 1;
             Buffer += 1;
             Index += 1;
         }
@@ -721,36 +711,33 @@ AcpiRsAddress32Resource (
         /*
          * Add the terminating null
          */
-        OutputStruct->Data.Address32.ResourceSource[Index] = 0x00;
-
-        OutputStruct->Data.Address32.ResourceSourceStringLength = Index + 1;
+        *TempPtr = 0x00;
+        OutputStruct->Data.Address32.ResourceSource.StringLength = Index + 1;
 
         /*
-         * In order for the StructSize to fall on a 32-bit boundry,
+         * In order for the StructSize to fall on a 32-bit boundary,
          *  calculate the length of the string and expand the
-         *  StructSize to the next 32-bit boundry.
+         *  StructSize to the next 32-bit boundary.
          */
         Temp8 = (UINT8) (Index + 1);
-        StructSize += ROUND_UP_TO_32BITS (Temp8);
+        StructSize += ACPI_ROUND_UP_TO_32BITS (Temp8);
     }
-
     else
     {
-        OutputStruct->Data.Address32.ResourceSourceIndex = 0x00;
-        OutputStruct->Data.Address32.ResourceSourceStringLength = 0;
-        OutputStruct->Data.Address32.ResourceSource[0] = 0x00;
+        OutputStruct->Data.Address32.ResourceSource.Index = 0x00;
+        OutputStruct->Data.Address32.ResourceSource.StringLength = 0;
+        OutputStruct->Data.Address32.ResourceSource.StringPtr = NULL;
     }
 
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = StructSize;
+    OutputStruct->Length = (UINT32) StructSize;
 
     /*
      * Return the final size of the structure
      */
     *StructureSize = StructSize;
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -761,22 +748,21 @@ AcpiRsAddress32Resource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with
- *                                          the number of bytes of the
- *                                          OutputBuffer used
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        used in the OutputBuffer is returned
  *
- * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
+ * RETURN:      Status
  *
  * DESCRIPTION: Take the linked list resource structure and fills in the
- *                  the appropriate bytes in a byte stream
+ *              the appropriate bytes in a byte stream
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsAddress32Stream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed)
+    ACPI_SIZE               *BytesConsumed)
 {
     UINT8                   *Buffer;
     UINT16                  *LengthField;
@@ -784,7 +770,8 @@ AcpiRsAddress32Stream (
     NATIVE_CHAR             *TempPointer;
 
 
-    FUNCTION_TRACE ("RsAddress32Stream");
+    ACPI_FUNCTION_TRACE ("RsAddress32Stream");
+
 
     Buffer = *OutputBuffer;
 
@@ -797,8 +784,7 @@ AcpiRsAddress32Stream (
     /*
      * Set a pointer to the Length field - to be filled in later
      */
-
-    LengthField = (UINT16 *)Buffer;
+    LengthField = ACPI_CAST_PTR (UINT16, Buffer);
     Buffer += 2;
 
     /*
@@ -825,7 +811,7 @@ AcpiRsAddress32Stream (
      */
     Temp8 = 0;
 
-    if(MEMORY_RANGE == LinkedList->Data.Address32.ResourceType)
+    if (ACPI_MEMORY_RANGE == LinkedList->Data.Address32.ResourceType)
     {
         Temp8 = (UINT8)
             (LinkedList->Data.Address32.Attribute.Memory.ReadWriteAttribute &
@@ -835,8 +821,7 @@ AcpiRsAddress32Stream (
             (LinkedList->Data.Address32.Attribute.Memory.CacheAttribute &
              0x0F) << 1;
     }
-
-    else if (IO_RANGE == LinkedList->Data.Address32.ResourceType)
+    else if (ACPI_IO_RANGE == LinkedList->Data.Address32.ResourceType)
     {
         Temp8 = (UINT8)
             (LinkedList->Data.Address32.Attribute.Io.RangeAttribute &
@@ -849,44 +834,44 @@ AcpiRsAddress32Stream (
     /*
      * Set the address space granularity
      */
-    MOVE_UNALIGNED32_TO_32 (Buffer,
-                            &LinkedList->Data.Address32.Granularity);
+    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer,
+                    &LinkedList->Data.Address32.Granularity);
     Buffer += 4;
 
     /*
      * Set the address range minimum
      */
-    MOVE_UNALIGNED32_TO_32 (Buffer,
-                            &LinkedList->Data.Address32.MinAddressRange);
+    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer,
+                    &LinkedList->Data.Address32.MinAddressRange);
     Buffer += 4;
 
     /*
      * Set the address range maximum
      */
-    MOVE_UNALIGNED32_TO_32 (Buffer,
-                            &LinkedList->Data.Address32.MaxAddressRange);
+    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer,
+                    &LinkedList->Data.Address32.MaxAddressRange);
     Buffer += 4;
 
     /*
      * Set the address translation offset
      */
-    MOVE_UNALIGNED32_TO_32 (Buffer,
+    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer,
                     &LinkedList->Data.Address32.AddressTranslationOffset);
     Buffer += 4;
 
     /*
      * Set the address length
      */
-    MOVE_UNALIGNED32_TO_32 (Buffer,
-                            &LinkedList->Data.Address32.AddressLength);
+    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer,
+                    &LinkedList->Data.Address32.AddressLength);
     Buffer += 4;
 
     /*
      * Resource Source Index and Resource Source are optional
      */
-    if (0 != LinkedList->Data.Address32.ResourceSourceStringLength)
+    if (0 != LinkedList->Data.Address32.ResourceSource.StringLength)
     {
-        Temp8 = (UINT8) LinkedList->Data.Address32.ResourceSourceIndex;
+        Temp8 = (UINT8) LinkedList->Data.Address32.ResourceSource.Index;
 
         *Buffer = Temp8;
         Buffer += 1;
@@ -896,27 +881,423 @@ AcpiRsAddress32Stream (
         /*
          * Copy the string
          */
-        STRCPY (TempPointer, LinkedList->Data.Address32.ResourceSource);
+        ACPI_STRCPY (TempPointer,
+            LinkedList->Data.Address32.ResourceSource.StringPtr);
 
         /*
          * Buffer needs to be set to the length of the sting + one for the
          *  terminating null
          */
-        Buffer += (STRLEN (LinkedList->Data.Address32.ResourceSource) + 1);
+        Buffer += (ACPI_STRLEN (LinkedList->Data.Address32.ResourceSource.StringPtr) + 1);
     }
 
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer -
-                     (NATIVE_UINT) *OutputBuffer);
+    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
 
     /*
      * Set the length field to the number of bytes consumed
      *  minus the header size (3 bytes)
      */
     *LengthField = (UINT16) (*BytesConsumed - 3);
+    return_ACPI_STATUS (AE_OK);
+}
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsAddress64Resource
+ *
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
+ *                                        stream
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        consumed the ByteStreamBuffer is
+ *                                        returned
+ *              OutputBuffer            - Pointer to the return data buffer
+ *              StructureSize           - Pointer to where the number of bytes
+ *                                        in the return data struct is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Take the resource byte stream and fill out the appropriate
+ *              structure pointed to by the OutputBuffer.  Return the
+ *              number of bytes consumed from the byte stream.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiRsAddress64Resource (
+    UINT8                   *ByteStreamBuffer,
+    ACPI_SIZE               *BytesConsumed,
+    UINT8                   **OutputBuffer,
+    ACPI_SIZE               *StructureSize)
+{
+    UINT8                   *Buffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
+    UINT16                  Temp16;
+    UINT8                   Temp8;
+    UINT8                   *TempPtr;
+    ACPI_SIZE               StructSize;
+    UINT32                  Index;
+
+
+    ACPI_FUNCTION_TRACE ("RsAddress64Resource");
+
+
+    Buffer = ByteStreamBuffer;
+    StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS64);
+
+    /*
+     * Point past the Descriptor to get the number of bytes consumed
+     */
+    Buffer += 1;
+    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+
+    *BytesConsumed = Temp16 + 3;
+    OutputStruct->Id = ACPI_RSTYPE_ADDRESS64;
+
+    /*
+     * Get the Resource Type (Byte3)
+     */
+    Buffer += 2;
+    Temp8 = *Buffer;
+
+    /* Values 0-2 are valid */
+
+    if(Temp8 > 2)
+    {
+        return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
+    }
+
+    OutputStruct->Data.Address64.ResourceType = Temp8 & 0x03;
+
+    /*
+     * Get the General Flags (Byte4)
+     */
+    Buffer += 1;
+    Temp8 = *Buffer;
+
+    /*
+     * Producer / Consumer
+     */
+    OutputStruct->Data.Address64.ProducerConsumer = Temp8 & 0x01;
+
+    /*
+     * Decode
+     */
+    OutputStruct->Data.Address64.Decode = (Temp8 >> 1) & 0x01;
+
+    /*
+     * Min Address Fixed
+     */
+    OutputStruct->Data.Address64.MinAddressFixed = (Temp8 >> 2) & 0x01;
+
+    /*
+     * Max Address Fixed
+     */
+    OutputStruct->Data.Address64.MaxAddressFixed = (Temp8 >> 3) & 0x01;
+
+    /*
+     * Get the Type Specific Flags (Byte5)
+     */
+    Buffer += 1;
+    Temp8 = *Buffer;
+
+    if (ACPI_MEMORY_RANGE == OutputStruct->Data.Address64.ResourceType)
+    {
+        OutputStruct->Data.Address64.Attribute.Memory.ReadWriteAttribute =
+                (UINT16) (Temp8 & 0x01);
+
+        OutputStruct->Data.Address64.Attribute.Memory.CacheAttribute =
+                (UINT16) ((Temp8 >> 1) & 0x0F);
+    }
+    else
+    {
+        if (ACPI_IO_RANGE == OutputStruct->Data.Address64.ResourceType)
+        {
+            OutputStruct->Data.Address64.Attribute.Io.RangeAttribute =
+                (UINT16) (Temp8 & 0x03);
+        }
+        else
+        {
+            /* BUS_NUMBER_RANGE == OutputStruct->Data.Address64.ResourceType */
+            /* Nothing needs to be filled in */
+        }
+    }
+
+    /*
+     * Get Granularity (Bytes 6-13)
+     */
+    Buffer += 1;
+    ACPI_MOVE_UNALIGNED64_TO_64 (&OutputStruct->Data.Address64.Granularity,
+                            Buffer);
+
+    /*
+     * Get MinAddressRange (Bytes 14-21)
+     */
+    Buffer += 8;
+    ACPI_MOVE_UNALIGNED64_TO_64 (&OutputStruct->Data.Address64.MinAddressRange,
+                            Buffer);
+
+    /*
+     * Get MaxAddressRange (Bytes 22-29)
+     */
+    Buffer += 8;
+    ACPI_MOVE_UNALIGNED64_TO_64 (&OutputStruct->Data.Address64.MaxAddressRange,
+                            Buffer);
+
+    /*
+     * Get AddressTranslationOffset (Bytes 30-37)
+     */
+    Buffer += 8;
+    ACPI_MOVE_UNALIGNED64_TO_64 (&OutputStruct->Data.Address64.AddressTranslationOffset,
+                            Buffer);
+
+    /*
+     * Get AddressLength (Bytes 38-45)
+     */
+    Buffer += 8;
+    ACPI_MOVE_UNALIGNED64_TO_64 (&OutputStruct->Data.Address64.AddressLength,
+                            Buffer);
+
+    /*
+     * Resource Source Index (if present)
+     */
+    Buffer += 8;
+
+    /*
+     * This will leave us pointing to the Resource Source Index
+     * If it is present, then save it off and calculate the
+     * pointer to where the null terminated string goes:
+     * Each Interrupt takes 32-bits + the 5 bytes of the
+     * stream that are default.
+     */
+    if (*BytesConsumed > 46)
+    {
+        /* Dereference the Index */
+
+        Temp8 = *Buffer;
+        OutputStruct->Data.Address64.ResourceSource.Index =
+                (UINT32) Temp8;
+
+        /* Point to the String */
+
+        Buffer += 1;
+
+        /* Point the String pointer to the end of this structure */
+
+        OutputStruct->Data.Address64.ResourceSource.StringPtr =
+                (NATIVE_CHAR *)((UINT8 *)OutputStruct + StructSize);
+
+        TempPtr = (UINT8 *) OutputStruct->Data.Address64.ResourceSource.StringPtr;
+
+        /* Copy the string into the buffer */
+
+        Index = 0;
+        while (0x00 != *Buffer)
+        {
+            *TempPtr = *Buffer;
+
+            TempPtr += 1;
+            Buffer += 1;
+            Index += 1;
+        }
+
+        /*
+         * Add the terminating null
+         */
+        *TempPtr = 0x00;
+
+        OutputStruct->Data.Address64.ResourceSource.StringLength = Index + 1;
+
+        /*
+         * In order for the StructSize to fall on a 32-bit boundary,
+         * calculate the length of the string and expand the
+         * StructSize to the next 32-bit boundary.
+         */
+        Temp8 = (UINT8) (Index + 1);
+        StructSize += ACPI_ROUND_UP_TO_32BITS (Temp8);
+    }
+    else
+    {
+        OutputStruct->Data.Address64.ResourceSource.Index = 0x00;
+        OutputStruct->Data.Address64.ResourceSource.StringLength = 0;
+        OutputStruct->Data.Address64.ResourceSource.StringPtr = NULL;
+    }
+
+    /*
+     * Set the Length parameter
+     */
+    OutputStruct->Length = (UINT32) StructSize;
+
+    /*
+     * Return the final size of the structure
+     */
+    *StructureSize = StructSize;
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsAddress64Stream
+ *
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ *              OutputBuffer            - Pointer to the user's return buffer
+ *              BytesConsumed           - Pointer to where the number of bytes
+ *                                        used in the OutputBuffer is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Take the linked list resource structure and fills in the
+ *              the appropriate bytes in a byte stream
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiRsAddress64Stream (
+    ACPI_RESOURCE           *LinkedList,
+    UINT8                   **OutputBuffer,
+    ACPI_SIZE               *BytesConsumed)
+{
+    UINT8                   *Buffer;
+    UINT16                  *LengthField;
+    UINT8                   Temp8;
+    NATIVE_CHAR             *TempPointer;
+
+
+    ACPI_FUNCTION_TRACE ("RsAddress64Stream");
+
+
+    Buffer = *OutputBuffer;
+
+    /*
+     * The descriptor field is static
+     */
+    *Buffer = 0x8A;
+    Buffer += 1;
+
+    /*
+     * Set a pointer to the Length field - to be filled in later
+     */
+
+    LengthField = ACPI_CAST_PTR (UINT16, Buffer);
+    Buffer += 2;
+
+    /*
+     * Set the Resource Type (Memory, Io, BusNumber)
+     */
+    Temp8 = (UINT8) (LinkedList->Data.Address64.ResourceType & 0x03);
+
+    *Buffer = Temp8;
+    Buffer += 1;
+
+    /*
+     * Set the general flags
+     */
+    Temp8 = (UINT8) (LinkedList->Data.Address64.ProducerConsumer & 0x01);
+    Temp8 |= (LinkedList->Data.Address64.Decode & 0x01) << 1;
+    Temp8 |= (LinkedList->Data.Address64.MinAddressFixed & 0x01) << 2;
+    Temp8 |= (LinkedList->Data.Address64.MaxAddressFixed & 0x01) << 3;
+
+    *Buffer = Temp8;
+    Buffer += 1;
+
+    /*
+     * Set the type specific flags
+     */
+    Temp8 = 0;
+
+    if (ACPI_MEMORY_RANGE == LinkedList->Data.Address64.ResourceType)
+    {
+        Temp8 = (UINT8)
+            (LinkedList->Data.Address64.Attribute.Memory.ReadWriteAttribute &
+            0x01);
+
+        Temp8 |=
+            (LinkedList->Data.Address64.Attribute.Memory.CacheAttribute &
+             0x0F) << 1;
+    }
+    else if (ACPI_IO_RANGE == LinkedList->Data.Address64.ResourceType)
+    {
+        Temp8 = (UINT8)
+            (LinkedList->Data.Address64.Attribute.Io.RangeAttribute &
+             0x03);
+    }
+
+    *Buffer = Temp8;
+    Buffer += 1;
+
+    /*
+     * Set the address space granularity
+     */
+    ACPI_MOVE_UNALIGNED64_TO_64 (Buffer,
+                        &LinkedList->Data.Address64.Granularity);
+    Buffer += 8;
+
+    /*
+     * Set the address range minimum
+     */
+    ACPI_MOVE_UNALIGNED64_TO_64 (Buffer,
+                        &LinkedList->Data.Address64.MinAddressRange);
+    Buffer += 8;
+
+    /*
+     * Set the address range maximum
+     */
+    ACPI_MOVE_UNALIGNED64_TO_64 (Buffer,
+                        &LinkedList->Data.Address64.MaxAddressRange);
+    Buffer += 8;
+
+    /*
+     * Set the address translation offset
+     */
+    ACPI_MOVE_UNALIGNED64_TO_64 (Buffer,
+                        &LinkedList->Data.Address64.AddressTranslationOffset);
+    Buffer += 8;
+
+    /*
+     * Set the address length
+     */
+    ACPI_MOVE_UNALIGNED64_TO_64 (Buffer,
+                        &LinkedList->Data.Address64.AddressLength);
+    Buffer += 8;
+
+    /*
+     * Resource Source Index and Resource Source are optional
+     */
+    if (0 != LinkedList->Data.Address64.ResourceSource.StringLength)
+    {
+        Temp8 = (UINT8) LinkedList->Data.Address64.ResourceSource.Index;
+
+        *Buffer = Temp8;
+        Buffer += 1;
+
+        TempPointer = (NATIVE_CHAR *) Buffer;
+
+        /*
+         * Copy the string
+         */
+        ACPI_STRCPY (TempPointer, LinkedList->Data.Address64.ResourceSource.StringPtr);
+
+        /*
+         * Buffer needs to be set to the length of the sting + one for the
+         *  terminating null
+         */
+        Buffer += (ACPI_STRLEN (LinkedList->Data.Address64.ResourceSource.StringPtr) + 1);
+    }
+
+    /*
+     * Return the number of bytes consumed in this operation
+     */
+    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
+
+    /*
+     * Set the length field to the number of bytes consumed
+     * minus the header size (3 bytes)
+     */
+    *LengthField = (UINT16) (*BytesConsumed - 3);
     return_ACPI_STATUS (AE_OK);
 }
 
