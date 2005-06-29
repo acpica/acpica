@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -296,8 +296,8 @@ _CmAllocateObjectDesc (
         /* There is an object available, use it */
 
         Object = AcpiGbl_ObjectCache;
-        AcpiGbl_ObjectCache = Object->Common.Next;
-        Object->Common.Next = NULL;
+        AcpiGbl_ObjectCache = Object->Cache.Next;
+        Object->Cache.Next = NULL;
 
         AcpiGbl_ObjectCacheHits++;
         AcpiGbl_ObjectCacheDepth--;
@@ -361,6 +361,16 @@ AcpiCmDeleteObjectDesc (
     FUNCTION_TRACE ("AcpiCmDeleteObjectDesc");
 
 
+    /* Make sure that the object isn't already in the cache */
+
+    if (Object->Common.DataType == (ACPI_DESC_TYPE_INTERNAL | ACPI_CACHED_OBJECT))
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
+            Object));
+        return_VOID;
+    }
+
     /* Object must be an ACPI_OPERAND_OBJECT  */
 
     if (Object->Common.DataType != ACPI_DESC_TYPE_INTERNAL)
@@ -368,22 +378,6 @@ AcpiCmDeleteObjectDesc (
         DEBUG_PRINT (ACPI_ERROR,
             ("CmDeleteObjectDesc: Obj %p is not an ACPI object\n", Object));
         return_VOID;
-    }
-
-    /* Make sure that the object isn't already in the cache */
-
-    if (Object->Common.Next)
-    {
-        /* Some objects actually use the Next link field */
-
-        if ((Object->Common.Type != ACPI_TYPE_REGION) &&
-            (Object->Common.Type != INTERNAL_TYPE_ADDRESS_HANDLER))
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
-                Object));
-            return_VOID;
-        }
     }
 
 
@@ -406,11 +400,11 @@ AcpiCmDeleteObjectDesc (
     /* Clear the entire object.  This is important! */
 
     MEMSET (Object, 0, sizeof (ACPI_OPERAND_OBJECT));
-    Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL;
+    Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL | ACPI_CACHED_OBJECT;
 
     /* Put the object at the head of the global cache list */
 
-    Object->Common.Next = AcpiGbl_ObjectCache;
+    Object->Cache.Next = AcpiGbl_ObjectCache;
     AcpiGbl_ObjectCache = Object;
     AcpiGbl_ObjectCacheDepth++;
 
@@ -449,8 +443,8 @@ AcpiCmDeleteObjectCache (
     {
         /* Delete one cached state object */
 
-        Next = AcpiGbl_ObjectCache->Common.Next;
-        AcpiGbl_ObjectCache->Common.Next = NULL;
+        Next = AcpiGbl_ObjectCache->Cache.Next;
+        AcpiGbl_ObjectCache->Cache.Next = NULL;
 
         /*
          * Memory allocation metrics.  Call the macro here since we only
