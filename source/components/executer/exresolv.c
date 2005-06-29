@@ -214,7 +214,7 @@ AmlGetFieldUnitValue (
 
     else 
     {
-        /* Input parameters are valid  */
+        /* Input parameters are valid */
 
         Status = AE_OK;
 
@@ -225,7 +225,7 @@ AmlGetFieldUnitValue (
 
     if (AE_OK == Status)
     {   
-        /* Input parameters valid and global lock possibly acquired  */
+        /* Input parameters valid and global lock possibly acquired */
 
         if (FieldDesc->FieldUnit.DatLen + FieldDesc->FieldUnit.BitOffset > 32)
         {
@@ -291,7 +291,9 @@ AmlGetRvalue (
 {
     ACPI_HANDLE             TempHandle = NULL;
     ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_OBJECT             *ValDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  TempVal;
     UINT8				    MvIndex = 0;
     BOOLEAN                 Locked;
 
@@ -424,7 +426,7 @@ AmlGetRvalue (
         ObjDesc = AllocateObjectDesc ();
         if (!ObjDesc)
         {   
-            /*  descriptor allocation failure   */
+            /* Descriptor allocation failure  */
             
             FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
             return AE_NO_MEMORY;
@@ -446,7 +448,7 @@ AmlGetRvalue (
         ObjDesc = AllocateObjectDesc ();
         if (!ObjDesc)
         {   
-            /*  descriptor allocation failure   */
+            /* Descriptor allocation failure */
             
             FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
             return AE_NO_MEMORY;
@@ -464,7 +466,7 @@ AmlGetRvalue (
         break;
 
 
-    /* XXX - may need to handle IndexField, and DefField someday */
+    /* TBD: - may need to handle IndexField, and DefField someday */
 
     default:
 
@@ -474,11 +476,8 @@ AmlGetRvalue (
 
 
 
-    if (IS_NS_HANDLE (*StackPtr))       /* direct name ptr */
+    if (IS_NS_HANDLE (*StackPtr))       /* Direct name ptr */
     {
-        ACPI_OBJECT         *ValDesc = NULL;
-                
-            
 
         DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue: found direct name ptr \n"));
 
@@ -489,7 +488,6 @@ AmlGetRvalue (
 
         switch (NsGetType ((ACPI_HANDLE)* StackPtr))
         {
-            UINT32          TempVal;
 
         case TYPE_Package:
 
@@ -552,7 +550,7 @@ AmlGetRvalue (
             ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {   
-                /*  descriptor allocation failure   */
+                /* Descriptor allocation failure */
                 
                 FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
@@ -564,7 +562,7 @@ AmlGetRvalue (
 
         case TYPE_String:
 
-            /* XXX - Is there a problem here if the nte points to an AML definition? */
+            /* TBD: - Is there a problem here if the nte points to an AML definition? */
             
             if (TYPE_String != ValDesc->ValType)
             {
@@ -576,7 +574,7 @@ AmlGetRvalue (
             ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {   
-                /*  descriptor allocation failure   */
+                /* Descriptor allocation failure */
 
                 FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
@@ -639,7 +637,7 @@ AmlGetRvalue (
             ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {   
-                /*  descriptor allocation failure   */
+                /* Descriptor allocation failure */
                 
                 FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
@@ -674,7 +672,7 @@ AmlGetRvalue (
                 ObjDesc = AllocateObjectDesc ();
                 if (!ObjDesc)
                 {   
-                    /*  descriptor allocation failure   */
+                    /* Descriptor allocation failure  */
                     
                     FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                     return AE_NO_MEMORY;
@@ -699,7 +697,7 @@ AmlGetRvalue (
                 ObjDesc = AllocateObjectDesc ();
                 if (!ObjDesc)
                 {   
-                    /*  descriptor allocation failure   */
+                    /* Descriptor allocation failure  */
                     
                     FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                     return AE_NO_MEMORY;
@@ -782,7 +780,7 @@ AmlGetRvalue (
             ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {   
-                /*  descriptor allocation failure   */
+                /* Descriptor allocation failure  */
                 
                 FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
@@ -808,7 +806,6 @@ AmlGetRvalue (
                         "AmlGetRvalue/BankField:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                         *StackPtr, TYPE_BankField, ValDesc->ValType, ValDesc));
                 
-                AmlAppendBlockOwner (ValDesc);
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
@@ -816,6 +813,7 @@ AmlGetRvalue (
 
             /* Get the global lock if needed */
 
+            ObjDesc = *StackPtr;
             Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
             {
 
@@ -846,7 +844,7 @@ AmlGetRvalue (
             ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
-                /*  descriptor allocation failure   */
+                /* Descriptor allocation failure  */
 
                 FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
@@ -858,11 +856,6 @@ AmlGetRvalue (
 
 
         case TYPE_IndexField:
-
-            /* TBD: NOT SUPPORTED at this time */
-
-            FUNCTION_STATUS_EXIT (AE_NOT_IMPLEMENTED);
-            return AE_NOT_IMPLEMENTED;
 
             if (!ValDesc)
             {
@@ -877,24 +870,18 @@ AmlGetRvalue (
                         "AmlGetRvalue/IndexField: internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                         *StackPtr, TYPE_IndexField, ValDesc->ValType, ValDesc));
                 
-                AmlAppendBlockOwner (ValDesc);
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
 
-            /* 
-             * TBD: What is this?
-             * ObjDesc is not initialized at this point!!! 
-             */
-
-
             /* Set Index value to select proper Data register */
             /* Get the global lock if needed */
 
+            ObjDesc = *StackPtr;
             Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
             {
-                /* perform the update */
+                /* Perform the update */
                 
                 Status = AmlSetNamedFieldValue (ValDesc->IndexField.Index,
                                                 ValDesc->IndexField.IndexVal);
@@ -919,7 +906,7 @@ AmlGetRvalue (
             ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
-                /*  descriptor allocation failure   */
+                /* Descriptor allocation failure  */
 
                 FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
@@ -946,7 +933,6 @@ AmlGetRvalue (
                           *StackPtr, NsGetType ((ACPI_HANDLE)* StackPtr),
                           ValDesc->ValType, ValDesc));
                 
-                AmlAppendBlockOwner (ValDesc);
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
                 break;
@@ -955,7 +941,7 @@ AmlGetRvalue (
             ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
-                /*  descriptor allocation failure   */
+                /* Descriptor allocation failure  */
 
                 FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
@@ -970,7 +956,8 @@ AmlGetRvalue (
 
             break;
 
-        /* cases which just return the name as the rvalue */
+
+        /* Cases which just return the name as the rvalue */
         
         case TYPE_Device:
 
@@ -1001,7 +988,7 @@ AmlGetRvalue (
             ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
-                /*  descriptor allocation failure   */
+                /* Descriptor allocation failure  */
                 
                 FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
