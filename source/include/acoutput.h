@@ -139,12 +139,14 @@
 
 #define BUS_MANAGER                 0x00000800
 
-#define EMBEDDED_CONTROLLER         0x00001000
-#define PROCESSOR_CONTROL           0x00002000
-#define SYSTEM_CONTROL              0x00004000
-#define THERMAL_CONTROL             0x00008000
+#define PROCESSOR_CONTROL           0x00001000
+#define SYSTEM_CONTROL              0x00002000
+#define THERMAL_CONTROL             0x00004000
+#define BATTERY_CONTROL             0x00008000
 
-#define ALL_COMPONENTS              0x0000FFFF
+#define EMBEDDED_CONTROLLER         0x00010000
+
+#define ALL_COMPONENTS              0x000FFFFF
 
 
 /* Exception level -- used in the global "DebugLevel" */
