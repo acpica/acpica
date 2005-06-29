@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -827,7 +827,7 @@ NATIVE_CHAR *
 AcpiPsGetOpcodeName (
     UINT16                  Opcode)
 {
-#ifdef ACPI_DISASSEMBLER
+#if defined(ACPI_DISASSEMBLER) || defined (ACPI_DEBUG_OUTPUT)
 
     const ACPI_OPCODE_INFO  *Op;
 
