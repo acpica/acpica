@@ -154,7 +154,7 @@
 
 
 ACPI_SIZE
-_strlen (
+CmStrlen (
     const char              *String)
 {
     UINT32                  Length = 0;
@@ -187,7 +187,7 @@ _strlen (
  ******************************************************************************/
 
 char *
-_strcpy (
+CmStrcpy (
     char                    *DstString, 
     const char              *SrcString)
 {
@@ -228,7 +228,7 @@ _strcpy (
  ******************************************************************************/
 
 char *
-_strncpy (
+CmStrncpy (
     char                    *DstString, 
     const char              *SrcString, 
     ACPI_SIZE               Count)
@@ -270,7 +270,7 @@ _strncpy (
  ******************************************************************************/
 
 UINT32
-_strcmp (
+CmStrcmp (
     const char              *String1, 
     const char              *String2)
 {
@@ -304,7 +304,7 @@ _strcmp (
  ******************************************************************************/
 
 UINT32
-_strncmp (
+CmStrncmp (
     const char              *String1, 
     const char              *String2, 
     ACPI_SIZE               Count)
@@ -337,7 +337,7 @@ _strncmp (
  ******************************************************************************/
 
 char *
-_strcat (
+CmStrcat (
     char                    *DstString,
     const char              *SrcString)
 {
@@ -375,7 +375,7 @@ _strcat (
  ******************************************************************************/
 
 char *
-_strncat (
+CmStrncat (
     char                    *DstString, 
     const char              *SrcString, 
     ACPI_SIZE               Count)
@@ -423,7 +423,7 @@ _strncat (
  ******************************************************************************/
 
 void *
-_memcpy (
+CmMemcpy (
     void                    *Dest, 
     const void              *Src, 
     ACPI_SIZE               Count)
@@ -460,7 +460,7 @@ _memcpy (
  ******************************************************************************/
 
 void *
-_memset (
+CmMemset (
     void                    *Dest,
     INT32                   Value,
     ACPI_SIZE               Count)
@@ -642,16 +642,46 @@ const unsigned char _ctype[257] = {
 #define IS_DIGIT(c)  (_ctype[(unsigned char)(c)] & (_DI))
 #define IS_SPACE(c)  (_ctype[(unsigned char)(c)] & (_SP))
 
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CmToUpper
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: Convert character to uppercase
+ *
+ ******************************************************************************/
+
 INT32
-ToUpper (INT32 c)
+CmToUpper (
+    INT32                   c)
 {
+
     return (IS_LOWER(c) ? ((c)-0x20) : (c));
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    CmToLower
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: Convert character to lowercase
+ *
+ ******************************************************************************/
+
 INT32
-ToLower (INT32 c)
+CmToLower (
+    INT32                   c)
 {
+
     return (IS_UPPER(c) ? ((c)+0x20) : (c));
 }
 
@@ -669,7 +699,7 @@ ToLower (INT32 c)
  ******************************************************************************/
 
 char *
-__strupr (
+CmStrupr (
     char                    *SrcString)
 {
     char                    *String;
@@ -680,7 +710,7 @@ __strupr (
 
     for (String = SrcString; *String; )
     {
-        *String = (char) ToUpper (*String);
+        *String = (char) CmToUpper (*String);
         String++;
     }
 
@@ -705,7 +735,7 @@ __strupr (
  ******************************************************************************/
 
 char *
-_strstr (
+CmStrstr (
     char                    *String1,
     char                    *String2)
 {
@@ -713,7 +743,7 @@ _strstr (
 
 
 
-    if (_strlen (String2) > _strlen (String1))
+    if (CmStrlen (String2) > CmStrlen (String1))
     {
         return NULL;
     }
@@ -751,7 +781,7 @@ _strstr (
  ******************************************************************************/
 
 UINT32
-_strtoul (
+CmStrtoul (
     const char              *String, 
     char                    **Terminator, 
     INT32                   Base)
@@ -804,7 +834,7 @@ _strtoul (
     {
         if (*String == '0') 
         {
-            if (ToLower (*(++String)) == 'x') 
+            if (CmToLower (*(++String)) == 'x') 
             {
                 Base = 16;
                 ++String;
@@ -840,7 +870,7 @@ _strtoul (
         String++;
     }
     
-    if (Base == 16 && *String == '0' && ToLower (*(++String)) == 'x')
+    if (Base == 16 && *String == '0' && CmToLower (*(++String)) == 'x')
     {
         String++;
     }
@@ -858,7 +888,7 @@ _strtoul (
 
         else 
         {
-            index = ToUpper (*String);
+            index = CmToUpper (*String);
             if (IS_UPPER (index)) 
             {
                 index = index - 'A' + 10;
