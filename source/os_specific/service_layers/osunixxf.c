@@ -133,7 +133,7 @@
 #include "acparser.h"
 #include "acdebug.h"
 
-#define _COMPONENT          OS_DEPENDENT
+#define _COMPONENT          ACPI_OS_SERVICES
         MODULE_NAME         ("osunixxf")
 
 
