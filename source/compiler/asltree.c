@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -563,13 +563,13 @@ TrCreateNode (
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateNode  Line %d NewParent %p Child %d Op %s  ",
         Op->Asl.LineNumber, Op, NumChildren, UtGetOpName(ParseOpcode));
-    RootNode = Op;
 
     /* Some extra debug output based on the parse opcode */
 
     switch (ParseOpcode)
     {
     case PARSEOP_DEFINITIONBLOCK:
+        RootNode = Op;
         DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
@@ -683,11 +683,11 @@ TrLinkChildren (
         "\nLinkChildren  Line [%d to %d] NewParent %p Child %d Op %s  ",
         Op->Asl.LineNumber, Op->Asl.EndLine,
         Op, NumChildren, UtGetOpName(Op->Asl.ParseOpcode));
-    RootNode = Op;
 
     switch (Op->Asl.ParseOpcode)
     {
     case PARSEOP_DEFINITIONBLOCK:
+        RootNode = Op;
         DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
