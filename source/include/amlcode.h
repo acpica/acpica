@@ -323,17 +323,19 @@ typedef enum
 #define NUM_UPDATE_RULES        3
 #define NUM_MATCH_OPS           7
 #define NUM_OPCODES             256
+#define NUM_FIELD_NAMES         2
 
 /* External declarations of the AML tables */
 
-extern UINT8                    Aml             [NUM_OPCODES];
-extern UINT16                   Pfx             [NUM_OPCODES];
-extern char                     *ShortOps       [NUM_OPCODES];
-extern char                     *LongOps        [NUM_OPCODES];
-extern char                     *RegionTypes    [NUM_REGION_TYPES];
-extern char                     *MatchOps       [NUM_MATCH_OPS];
-extern char                     *AccessTypes    [NUM_ACCESS_TYPES];
-extern char                     *UpdateRules    [NUM_UPDATE_RULES];
+extern UINT8                    Gbl_Aml             [NUM_OPCODES];
+extern UINT16                   Gbl_Pfx             [NUM_OPCODES];
+extern char                     *Gbl_ShortOps       [NUM_OPCODES];
+extern char                     *Gbl_LongOps        [NUM_OPCODES];
+extern char                     *Gbl_RegionTypes    [NUM_REGION_TYPES];
+extern char                     *Gbl_MatchOps       [NUM_MATCH_OPS];
+extern char                     *Gbl_AccessTypes    [NUM_ACCESS_TYPES];
+extern char                     *Gbl_UpdateRules    [NUM_UPDATE_RULES];
+extern char                     *Gbl_FENames        [NUM_FIELD_NAMES];
 
 
 /*
@@ -344,7 +346,7 @@ extern char                     *UpdateRules    [NUM_UPDATE_RULES];
 
 /* Data used in keeping track of fields */
 
-char            *FENames[] = 
+char            *Gbl_FENames[NUM_FIELD_NAMES] = 
 { 
     "skip", 
     "?access?" 
@@ -354,7 +356,7 @@ char            *FENames[] =
 
 /* Region type decoding */
 
-char *RegionTypes[5] = 
+char *Gbl_RegionTypes[NUM_REGION_TYPES] = 
 {   
     "SystemMemory",
     "SystemIO",
@@ -364,7 +366,7 @@ char *RegionTypes[5] =
 };
 
 
-char *MatchOps[NUM_MATCH_OPS] = 
+char *Gbl_MatchOps[NUM_MATCH_OPS] = 
 {   
     "Error", 
     "MTR", 
@@ -378,7 +380,7 @@ char *MatchOps[NUM_MATCH_OPS] =
 
 /* Access type decoding */
 
-char *AccessTypes[NUM_ACCESS_TYPES] = 
+char *Gbl_AccessTypes[NUM_ACCESS_TYPES] = 
 {   
     "AnyAcc",
     "ByteAcc",
@@ -392,7 +394,7 @@ char *AccessTypes[NUM_ACCESS_TYPES] =
 
 /* Update rule decoding */
 
-char *UpdateRules[NUM_UPDATE_RULES] = 
+char *Gbl_UpdateRules[NUM_UPDATE_RULES] = 
 {   
     "Preserve",
     "WriteAsOnes",
@@ -403,7 +405,7 @@ char *UpdateRules[NUM_UPDATE_RULES] =
 
 /* primary decoder */
 
-UINT8 Aml[NUM_OPCODES] = 
+UINT8 Gbl_Aml[NUM_OPCODES] = 
 {
 /*          x0                      x1                      x2                      x3          */
 /*          x4                      x5                      x6                      x7          */
@@ -479,7 +481,7 @@ UINT8 Aml[NUM_OPCODES] =
 
 /* prefixed decoder */
 
-UINT16 Pfx[NUM_OPCODES] = 
+UINT16 Gbl_Pfx[NUM_OPCODES] = 
 {
 /*          x0                      x1                      x2                      x3          */
 /*          x4                      x5                      x6                      x7          */
@@ -555,7 +557,7 @@ UINT16 Pfx[NUM_OPCODES] =
 
 /* primary op names */
 
-char *ShortOps[NUM_OPCODES] = 
+char *Gbl_ShortOps[NUM_OPCODES] = 
 {
 /*          x0                  x1                  x2                  x3          */
 /*          x4                  x5                  x6                  x7          */
@@ -631,7 +633,7 @@ char *ShortOps[NUM_OPCODES] =
 
 /* prefixed op names */
 
-char *LongOps[NUM_OPCODES] = 
+char *Gbl_LongOps[NUM_OPCODES] = 
 {
 /*          x0                  x1                  x2                  x3          */
 /*          x4                  x5                  x6                  x7          */
