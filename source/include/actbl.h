@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.47 $
+ *       $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -282,6 +282,7 @@ typedef struct  /* Smart Battery Description Table */
 
 #define ACPI_TABLE_SINGLE       0
 #define ACPI_TABLE_MULTIPLE     1
+#define ACPI_TABLE_EXECUTABLE   2
 
 
 /* Data about each known table type */
