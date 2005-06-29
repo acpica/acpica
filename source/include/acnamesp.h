@@ -139,7 +139,7 @@
 #define LOCAL                   2   /* suppress search of enclosing scopes */
 
 
-/* UINT32 definitions of the predefined namespace names */
+/* UINT32 definitions of the predefined namespace names (Must be reversed!) */
 
 #define NS_ROOT                 '/   '
 #define NS_SYSTEM_BUS           '_BS_'
@@ -454,32 +454,6 @@ NsMarkNS(
 NAME_TABLE_ENTRY *
 NsConvertHandleToEntry (
     ACPI_HANDLE             Handle);
-
-
-/*
- * TBD: What is PLUMBER??
- */
-
-#ifndef PLUMBER
-
-/* dummy macros to make calls go away */
-
-#define MarkStaticBlocks(Count)
-#define RegisterStaticBlockPtr(BP)
-
-#else
-
-void
-RegisterStaticBlockPtr (
-    void                    **BP);
-
-void
-MarkStaticBlocks (
-    INT32                   *Count);
-
-#endif /* PLUMBER */
-
-
 
 
 #endif /* __NAMESPACE_H__ */
