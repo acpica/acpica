@@ -26,17 +26,6 @@
 #define _THIS_MODULE        "evsci.c"
 #define _COMPONENT          EVENT_HANDLING
 
-INT32                       RestoreAcpiChipset = TRUE;
-UINT16                      Pm1EnableRegisterSave = 0;
-UINT8 *                     Gpe0EnableRegisterSave = NULL;
-UINT8 *                     Gpe1EnableRegisterSave = NULL;
-INT32                       OriginalMode;
-INT32                       EdgeLevelSave   = SAVE_NOT_VALID;
-INT32                       IrqEnableSave   = SAVE_NOT_VALID;
-INT32                       OriginalMode    = SAVE_NOT_VALID;   /*  original ACPI/legacy mode   */
-
-
-
 
 static ST_KEY_DESC_TABLE KDT[] = {
    {"0000", '1', "", ""},	/*	obsolete	*/
