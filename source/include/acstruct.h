@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.5 $
+ *       $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -148,6 +148,7 @@ typedef struct acpi_walk_state
 
     struct acpi_walk_state  *Next;                              /* Next WalkState in list */
     ACPI_PARSE_OBJECT       *Origin;                            /* Start of walk [Obsolete] */
+    ACPI_PARSE_OBJECT       *Op;                                /* Current parser op */
 
 /* TBD: Obsolete with removal of WALK procedure ? */
     ACPI_PARSE_OBJECT       *PrevOp;                            /* Last op that was processed */
@@ -163,6 +164,7 @@ typedef struct acpi_walk_state
     ACPI_PARSE_DOWNWARDS    DescendingCallback;
     ACPI_PARSE_UPWARDS      AscendingCallback;
 
+    union acpi_operand_obj  *ResultObj;
     union acpi_operand_obj  *ReturnDesc;                        /* Return object, if any */
     union acpi_operand_obj  *MethodDesc;                        /* Method descriptor if running a method */
     struct acpi_node        *MethodNode;                        /* Method Node if running a method */
