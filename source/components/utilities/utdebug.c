@@ -119,8 +119,8 @@
 #include <acpi.h>
 
 
-#define _THIS_MODULE        "cmdebug.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmdebug");
 
 
 
@@ -377,7 +377,7 @@ FunctionValueExit (
     INT32                   LineNumber, 
     INT32                   ComponentId, 
     char                    *FunctionName,
-    UINT32                  Value)
+    NATIVE_UINT             Value)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
@@ -424,7 +424,7 @@ DebugPrint (
     {
         va_start (args, Format);
 
-        OsdPrintf ("%10s(%04d): ", ModuleName, LineNumber);
+        OsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
         OsdVprintf (Format, args);
 
         va_end (args);
@@ -455,7 +455,7 @@ DebugPrintPrefix (
 {
 
 
-    OsdPrintf ("%10s(%04d): ", ModuleName, LineNumber);
+    OsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
 }
 
 
