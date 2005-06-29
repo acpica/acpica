@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -563,7 +563,6 @@ AcpiDsBuildInternalSimpleObj (
                                    Op->Value.String, Op->AmlOffset));
                     }
                     *ObjDescPtr = NULL;
-                    return_ACPI_STATUS (AE_OK);
                 }
 
                 return_ACPI_STATUS (Status);
