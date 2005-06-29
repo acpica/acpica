@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.87 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -450,6 +450,10 @@ AcpiNsDumpOneObject (
             Value = (UINT8 *) ObjDesc->Buffer.Pointer;
             break;
 
+        case ACPI_TYPE_BUFFER_FIELD:
+            Value = (UINT8 *) ObjDesc->BufferField.BufferObj;
+            break;
+
         case ACPI_TYPE_PACKAGE:
             Value = (UINT8 *) ObjDesc->Package.Elements;
             break;
@@ -458,11 +462,7 @@ AcpiNsDumpOneObject (
             Value = (UINT8 *) ObjDesc->Method.Pcode;
             break;
 
-        case ACPI_TYPE_FIELD_UNIT:
-            Value = (UINT8 *) ObjDesc->FieldUnit.ContainerObj;
-            break;
-
-        case INTERNAL_TYPE_DEF_FIELD:
+        case INTERNAL_TYPE_REGION_FIELD:
             Value = (UINT8 *) ObjDesc->Field.RegionObj;
             break;
 
