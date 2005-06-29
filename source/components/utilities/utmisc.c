@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.18 $
+ *              $Revision: 1.20 $
  *
  ******************************************************************************/
 
@@ -779,6 +779,63 @@ AcpiCmDeleteGenericStateCache (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiCmResolvePackageReferences
+ *
+ * PARAMETERS:  ObjDesc         - The Package object on which to resolve refs
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walk through a package and turn internal references into values
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmResolvePackageReferences (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+    UINT32              Count;
+    ACPI_OPERAND_OBJECT *SubObject;
+
+    FUNCTION_TRACE ("AcpiCmResolvePackageReferences");
+
+    if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
+    {
+        /* Must be a package */
+
+        REPORT_ERROR (("Must resolve Package Refs on a Package\n"));
+        return_ACPI_STATUS(AE_ERROR);
+    }
+
+    for (Count = 0; Count < ObjDesc->Package.Count; Count++)
+    {    
+        SubObject = ObjDesc->Package.Elements[Count];
+
+        if (SubObject->Common.Type == INTERNAL_TYPE_REFERENCE)
+        {
+            if (SubObject->Reference.OpCode == AML_ZERO_OP)
+            {
+                SubObject->Common.Type  = ACPI_TYPE_NUMBER;
+                SubObject->Number.Value = 0;
+            }
+            else if (SubObject->Reference.OpCode == AML_ONE_OP)
+            {
+                SubObject->Common.Type  = ACPI_TYPE_NUMBER;
+                SubObject->Number.Value = 1;
+            }
+            else if (SubObject->Reference.OpCode == AML_ONES_OP)
+            {
+                SubObject->Common.Type  = ACPI_TYPE_NUMBER;
+                SubObject->Number.Value = ACPI_UINT32_MAX;
+            }   
+        }
+    }
+
+    return_ACPI_STATUS(AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    _ReportError
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -796,13 +853,11 @@ void
 _ReportError (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *Message)
+    UINT32                  ComponentId)
 {
 
-    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_ERROR,
-                "*** Error: %s\n", Message);
 
+    AcpiOsPrintf ("%8s-%04d: *** Error: ", ModuleName, LineNumber);
 }
 
 
@@ -825,13 +880,10 @@ void
 _ReportWarning (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *Message)
+    UINT32                  ComponentId)
 {
 
-    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_WARN,
-                "*** Warning: %s\n", Message);
-
+    AcpiOsPrintf ("%8s-%04d: *** Warning: ", ModuleName, LineNumber);
 }
 
 
@@ -854,13 +906,10 @@ void
 _ReportInfo (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *Message)
+    UINT32                  ComponentId)
 {
 
-    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_INFO,
-                "*** Info: %s\n", Message);
-
+    AcpiOsPrintf ("%8s-%04d: *** Info: ", ModuleName, LineNumber);
 }
 
 
