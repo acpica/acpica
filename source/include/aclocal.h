@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.117 $
+ *       $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -852,22 +852,32 @@ typedef struct acpi_parse_state
 #define RESOURCE_TYPE_IO_RANGE                  1
 #define RESOURCE_TYPE_BUS_NUMBER_RANGE          2
 
-/*
- * Small resource descriptors
- */
-#define RESOURCE_DESC_SMALL_MASK                0x78
-#define RESOURCE_DESC_IRQ_FORMAT                0x22
-#define RESOURCE_DESC_DMA_FORMAT                0x2A
-#define RESOURCE_DESC_START_DEPENDENT           0x30
-#define RESOURCE_DESC_END_DEPENDENT             0x38
-#define RESOURCE_DESC_IO_PORT                   0x47
-#define RESOURCE_DESC_FIXED_IO_PORT             0x4B
-#define RESOURCE_DESC_SMALL_VENDOR              0x70
-#define RESOURCE_DESC_END_TAG                   0x79
+/* Resource descriptor types and masks */
+
+#define RESOURCE_DESC_TYPE_LARGE                0x80
+#define RESOURCE_DESC_TYPE_SMALL                0x00
+
+#define RESOURCE_DESC_TYPE_MASK                 0x80
+#define RESOURCE_DESC_SMALL_MASK                0x78        /* Only bits 6:3 contain the type */
+
 
 /*
- * Large resource descriptors
+ * Small resource descriptor types
+ * Note: The 3 length bits (2:0) must be zero
  */
+#define RESOURCE_DESC_IRQ_FORMAT                0x20
+#define RESOURCE_DESC_DMA_FORMAT                0x28
+#define RESOURCE_DESC_START_DEPENDENT           0x30
+#define RESOURCE_DESC_END_DEPENDENT             0x38
+#define RESOURCE_DESC_IO_PORT                   0x40
+#define RESOURCE_DESC_FIXED_IO_PORT             0x48
+#define RESOURCE_DESC_SMALL_VENDOR              0x70
+#define RESOURCE_DESC_END_TAG                   0x78
+
+/*
+ * Large resource descriptor types
+ */
+
 #define RESOURCE_DESC_MEMORY_24                 0x81
 #define RESOURCE_DESC_GENERAL_REGISTER          0x82
 #define RESOURCE_DESC_LARGE_VENDOR              0x84
