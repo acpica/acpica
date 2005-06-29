@@ -145,15 +145,20 @@ HwEnableGpe (
     UINT8                   InByte;
     UINT32                  RegIndex;
     UINT8                   GpeBit;
+    UINT32                  GpeIndex;
 
+
+    /* Translate Gpe number to index into tables */
+
+    GpeIndex = GpeValid[GpeNumber];
 
     /*
      * Calculate the register number and bit position in that register.
      * There are 8 GPEs per register.
      */
 
-    RegIndex    = DIV_8 (GpeNumber);
-    GpeBit      = DecodeTo8bit [MOD_8 (GpeNumber)];
+    RegIndex    = DIV_8 (GpeIndex);
+    GpeBit      = DecodeTo8bit [MOD_8 (GpeIndex)];
 
 
     /* 
@@ -195,6 +200,12 @@ HwDisableGpe (
     UINT8                   InByte;
     UINT8                   GpeBit;
     UINT32                  RegIndex;
+    UINT32                  GpeIndex;
+
+
+    /* Translate Gpe number to index into tables */
+
+    GpeIndex = GpeValid[GpeNumber];
 
 
     /*
@@ -202,8 +213,8 @@ HwDisableGpe (
      * There are 8 GPEs per register.
      */
 
-    RegIndex    = DIV_8 (GpeNumber);
-    GpeBit      = DecodeTo8bit [MOD_8 (GpeNumber)];
+    RegIndex    = DIV_8 (GpeIndex);
+    GpeBit      = DecodeTo8bit [MOD_8 (GpeIndex)];
 
 
     /* 
@@ -234,6 +245,12 @@ HwClearGpe (
 {
     UINT32                  RegIndex;
     UINT8                   GpeBit;
+    UINT32                  GpeIndex;
+
+
+    /* Translate Gpe number to index into tables */
+
+    GpeIndex = GpeValid[GpeNumber];
 
 
     /*
@@ -241,8 +258,8 @@ HwClearGpe (
      * There are 8 GPEs per register.
      */
 
-    RegIndex    = DIV_8 (GpeNumber);
-    GpeBit      = DecodeTo8bit [MOD_8 (GpeNumber)];
+    RegIndex    = DIV_8 (GpeIndex);
+    GpeBit      = DecodeTo8bit [MOD_8 (GpeIndex)];
 
 
     /* 
