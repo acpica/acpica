@@ -1168,3 +1168,8 @@ AcpiOsDbgAssert(void *FailedAssertion, void *FileName, UINT32 LineNumber,
 } // Debug_Assert
 
 
+UINT32
+AcpiOsGetThreadId(void)
+{
+	return 0;
+}
