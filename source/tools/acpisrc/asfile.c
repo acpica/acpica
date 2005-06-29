@@ -1,8 +1,7 @@
 
 /******************************************************************************
- *
- * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.31 $
+ * 
+ * Module Name: asmain - Main module for the acpi source processor utility
  *
  *****************************************************************************/
 
@@ -10,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -39,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -118,201 +117,134 @@
 #include "acpisrc.h"
 
 
-/******************************************************************************
- *
- * FUNCTION:    AsDoWildcard
- *
- * DESCRIPTION: Process files via wildcards
- *
- ******************************************************************************/
-
-void
-AsDoWildcard (
-    ACPI_CONVERSION_TABLE   *ConversionTable,
-    char                    *SourcePath,
-    char                    *TargetPath,
-    int                     MaxPathLength,
-    int                     FileType,
-    char                    *WildcardSpec)
-{
-    void                    *DirInfo;
-    char                    *Filename;
-    char                    *SourceDirPath;
-    char                    *TargetDirPath;
-    char                    RequestedFileType;
-
-
-    if (FileType == FILE_TYPE_DIRECTORY)
-    {
-        RequestedFileType = REQUEST_DIR_ONLY;
-    }
-    else
-    {
-        RequestedFileType = REQUEST_FILE_ONLY;
-    }
-
-    VERBOSE_PRINT (("Checking for %s source files in directory \"%s\"\n",
-            WildcardSpec, SourcePath));
-
-    /* Open the directory for wildcard search */
-
-    DirInfo = AcpiOsOpenDirectory (SourcePath, WildcardSpec, RequestedFileType);
-    if (DirInfo)
-    {
-        /*
-         * Get all of the files that match both the
-         * wildcard and the requested file type
-         */
-        while ((Filename = AcpiOsGetNextFilename (DirInfo)))
-        {
-            /* Looking for directory files, must check file type */
-
-            switch (RequestedFileType)
-            {
-            case REQUEST_DIR_ONLY:
-
-                /* If we actually have a dir, process the subtree */
-
-                if (!AsCheckForDirectory (SourcePath, TargetPath, Filename,
-                        &SourceDirPath, &TargetDirPath))
-                {
-                    VERBOSE_PRINT (("Subdirectory: %s\n", Filename));
-
-                    AsProcessTree (ConversionTable, SourceDirPath, TargetDirPath);
-                    free (SourceDirPath);
-                    free (TargetDirPath);
-                }
-                break;
-
-            case REQUEST_FILE_ONLY:
-
-                /* Otherwise, this is a file, not a directory */
-
-                VERBOSE_PRINT (("File: %s\n", Filename));
-
-                AsProcessOneFile (ConversionTable, SourcePath, TargetPath,
-                        MaxPathLength, Filename, FileType);
-                break;
-            }
-        }
-
-        /* Cleanup */
-
-        AcpiOsCloseDirectory (DirInfo);
-    }
-}
-
 
 /******************************************************************************
  *
- * FUNCTION:    AsProcessTree
+ * FUNCTION:    AsProcessTree 
  *
  * DESCRIPTION: Process the directory tree.  Files with the extension ".C" and
  *              ".H" are processed as the tree is traversed.
  *
  ******************************************************************************/
 
-ACPI_NATIVE_INT
+NATIVE_INT
 AsProcessTree (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
     char                    *TargetPath)
 {
+    struct _finddata_t      FindInfo;
+    long                    FindHandle;
+    char                    *FileSpec;
+    char                    *SourceDirPath;
+    char                    *TargetDirPath;
     int                     MaxPathLength;
+
 
 
     MaxPathLength = max (strlen (SourcePath), strlen (TargetPath));
 
-    if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
+    if (mkdir (TargetPath))
     {
-        if (ConversionTable->Flags & FLG_LOWERCASE_DIRNAMES)
+        if (errno != EEXIST)
         {
-            strlwr (TargetPath);
-        }
-
-        VERBOSE_PRINT (("Creating Directory \"%s\"\n", TargetPath));
-        if (mkdir (TargetPath))
-        {
-            if (errno != EEXIST)
-            {
-                printf ("Could not create target directory\n");
-                return -1;
-            }
+            printf ("Could not create target directory\n");
+            return -1;
         }
     }
 
     /* Do the C source files */
 
-    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_SOURCE, "*.c");
+
+    FileSpec = calloc (strlen (SourcePath) + 5, 1);
+    if (!FileSpec)
+    {
+        printf ("Could not allocate buffer for wildcard pathname\n");
+        return -1;
+    }
+
+    strcpy (FileSpec, SourcePath);
+    strcat (FileSpec, "/*.c");
+
+    printf ("Source path: %s\n", FileSpec);
+
+    FindHandle = _findfirst (FileSpec, &FindInfo);
+    if (FindHandle != -1)
+    {
+        printf ("File: %s\n", FindInfo.name);
+        AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
+
+        while (_findnext (FindHandle, &FindInfo) == 0)
+        {
+            printf ("File: %s\n", FindInfo.name);
+            AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
+       }
+
+        _findclose (FindHandle);
+    }
+
 
     /* Do the C header files */
 
-    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_HEADER, "*.h");
+    strcpy (FileSpec, SourcePath);
+    strcat (FileSpec, "/*.h");
 
-    /* Do the Lex file(s) */
+    printf ("Source path: %s\n", FileSpec);
 
-    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_SOURCE, "*.l");
-
-    /* Do the yacc file(s) */
-
-    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_SOURCE, "*.y");
-
-    /* Do any subdirectories */
-
-    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_DIRECTORY, "*");
-
-    return 0;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AsDetectLoneLineFeeds
- *
- * DESCRIPTION: Find LF without CR.
- *
- ******************************************************************************/
-
-BOOLEAN
-AsDetectLoneLineFeeds (
-    char                    *Filename,
-    char                    *Buffer)
-{
-    UINT32                  i = 1;
-    UINT32                  LfCount = 0;
-
-
-    if (!Buffer[0])
+    FindHandle = _findfirst (FileSpec, &FindInfo);
+    if (FindHandle != -1)
     {
-        return FALSE;
+        printf ("File: %s\n", FindInfo.name);
+        AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_HEADER);
+
+        while (_findnext (FindHandle, &FindInfo) == 0)
+        {
+            printf ("File: %s\n", FindInfo.name);
+            AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_HEADER);
+        }
+
+        _findclose (FindHandle);
     }
 
-    while (Buffer[i])
+
+    /* Do the subdirectories */
+
+    strcpy (FileSpec, SourcePath);
+    strcat (FileSpec, "/*.*");
+
+    printf ("Source path: %s\n", FileSpec);
+
+    FindHandle = _findfirst (FileSpec, &FindInfo);
+    if (FindHandle != -1)
     {
-        if (Buffer[i] == 0x0A)
+
+        printf ("File: %s\n", FindInfo.name);
+
+        if (!AsCheckForDirectory (SourcePath, TargetPath, &FindInfo, &SourceDirPath, &TargetDirPath))
         {
-            if (Buffer[i-1] != 0x0D)
+            AsProcessTree (ConversionTable, SourceDirPath, TargetDirPath);
+            free (SourceDirPath);
+            free (TargetDirPath);
+        }
+
+        while (_findnext (FindHandle, &FindInfo) == 0)
+        {
+            printf ("File: %s\n", FindInfo.name);
+
+            if (!AsCheckForDirectory (SourcePath, TargetPath, &FindInfo, &SourceDirPath, &TargetDirPath))
             {
-                LfCount++;
+                AsProcessTree (ConversionTable, SourceDirPath, TargetDirPath);
+                free (SourceDirPath);
+                free (TargetDirPath);
             }
         }
 
-        i++;
+        _findclose (FindHandle);
     }
 
-    if (LfCount)
-    {
-        printf ("****UNIX CONTAMINATION DETECTED****\n");
-        printf ("%d lone linefeeds in file %s\n", LfCount, Filename);
-        return TRUE;
-    }
 
-    return (FALSE);
+    free (FileSpec);
+    return 0;
 }
 
 
@@ -320,7 +252,7 @@ AsDetectLoneLineFeeds (
  *
  * FUNCTION:    AsConvertFile
  *
- * DESCRIPTION: Perform the requested transforms on the file buffer (as
+ * DESCRIPTION: Perform the requested transforms on the file buffer (as 
  *              determined by the ConversionTable and the FileType).
  *
  ******************************************************************************/
@@ -329,54 +261,37 @@ void
 AsConvertFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *FileBuffer,
-    char                    *Filename,
-    ACPI_NATIVE_INT         FileType)
+    NATIVE_INT              FileType)
 {
     UINT32                  i;
     UINT32                  Functions;
     ACPI_STRING_TABLE       *StringTable;
-    ACPI_IDENTIFIER_TABLE   *ConditionalTable;
-    ACPI_IDENTIFIER_TABLE   *LineTable;
-    ACPI_IDENTIFIER_TABLE   *MacroTable;
-    ACPI_TYPED_IDENTIFIER_TABLE *StructTable;
+    ACPI_LINE_TABLE         *LineTable;
 
 
     switch (FileType)
     {
     case FILE_TYPE_SOURCE:
-        Functions           = ConversionTable->SourceFunctions;
-        StringTable         = ConversionTable->SourceStringTable;
-        LineTable           = ConversionTable->SourceLineTable;
-        ConditionalTable    = ConversionTable->SourceConditionalTable;
-        MacroTable          = ConversionTable->SourceMacroTable;
-        StructTable         = ConversionTable->SourceStructTable;
-       break;
-
-    case FILE_TYPE_HEADER:
-        Functions           = ConversionTable->HeaderFunctions;
-        StringTable         = ConversionTable->HeaderStringTable;
-        LineTable           = ConversionTable->HeaderLineTable;
-        ConditionalTable    = ConversionTable->HeaderConditionalTable;
-        MacroTable          = ConversionTable->HeaderMacroTable;
-        StructTable         = ConversionTable->HeaderStructTable;
+        Functions   = ConversionTable->SourceFunctions;
+        StringTable = ConversionTable->SourceStringTable;
+        LineTable   = ConversionTable->SourceLineTable;
         break;
-
+    
+    case FILE_TYPE_HEADER:
+        Functions   = ConversionTable->HeaderFunctions;
+        StringTable = ConversionTable->HeaderStringTable;
+        LineTable   = ConversionTable->HeaderLineTable;
+        break;
+    
     default:
         printf ("Unknown file type, cannot process\n");
         return;
     }
 
-    Gbl_Files++;
-    VERBOSE_PRINT (("Processing %d bytes\n", strlen (FileBuffer)));
 
-    if (ConversionTable->LowerCaseTable)
-    {
-        for (i = 0; ConversionTable->LowerCaseTable[i].Identifier; i++)
-        {
-            AsLowerCaseString (ConversionTable->LowerCaseTable[i].Identifier,
-                                FileBuffer);
-        }
-    }
+    Gbl_Files++;
+    printf ("Processing %d bytes\n", strlen (FileBuffer));
+
 
     /* Process all the string replacements */
 
@@ -384,8 +299,9 @@ AsConvertFile (
     {
         for (i = 0; StringTable[i].Target; i++)
         {
-            AsReplaceString (StringTable[i].Target, StringTable[i].Replacement,
-                    StringTable[i].Type, FileBuffer);
+            AsReplaceString (StringTable[i].Target,
+                                StringTable[i].Replacement,
+                                FileBuffer);
         }
     }
 
@@ -397,29 +313,6 @@ AsConvertFile (
         }
     }
 
-    if (ConditionalTable)
-    {
-        for (i = 0; ConditionalTable[i].Identifier; i++)
-        {
-            AsRemoveConditionalCompile (FileBuffer, ConditionalTable[i].Identifier);
-        }
-    }
-
-    if (MacroTable)
-    {
-        for (i = 0; MacroTable[i].Identifier; i++)
-        {
-            AsRemoveMacro (FileBuffer, MacroTable[i].Identifier);
-        }
-    }
-
-    if (StructTable)
-    {
-        for (i = 0; StructTable[i].Identifier; i++)
-        {
-            AsInsertPrefix (FileBuffer, StructTable[i].Identifier, StructTable[i].Type);
-        }
-    }
 
     /* Process the function table */
 
@@ -436,31 +329,25 @@ AsConvertFile (
 
         case CVT_COUNT_TABS:
 
-            AsCountTabs (FileBuffer, Filename);
+            AsCountTabs (FileBuffer);
             break;
 
 
         case CVT_COUNT_NON_ANSI_COMMENTS:
 
-            AsCountNonAnsiComments (FileBuffer, Filename);
-            break;
-
-
-        case CVT_CHECK_BRACES:
-
-            AsCheckForBraces (FileBuffer, Filename);
+            AsCountNonAnsiComments (FileBuffer);
             break;
 
 
         case CVT_TRIM_LINES:
 
-            AsTrimLines (FileBuffer, Filename);
+            AsTrimLines (FileBuffer);
             break;
 
 
         case CVT_COUNT_LINES:
 
-            AsCountSourceLines (FileBuffer, Filename);
+            AsCountSourceLines (FileBuffer);
             break;
 
 
@@ -486,38 +373,13 @@ AsConvertFile (
 
             AsRemoveDebugMacros (FileBuffer);
             break;
-
+    
 
         case CVT_TRIM_WHITESPACE:
 
             AsTrimWhitespace (FileBuffer);
             break;
-
-
-        case CVT_REMOVE_EMPTY_BLOCKS:
-
-            AsRemoveEmptyBlocks (FileBuffer, Filename);
-            break;
-
-
-        case CVT_REDUCE_TYPEDEFS:
-
-            AsReduceTypedefs (FileBuffer, "typedef union");
-            AsReduceTypedefs (FileBuffer, "typedef struct");
-            break;
-
-
-        case CVT_SPACES_TO_TABS4:
-
-            AsTabify4 (FileBuffer);
-            break;
-
-
-        case CVT_SPACES_TO_TABS8:
-
-            AsTabify8 (FileBuffer);
-            break;
-
+    
 
         default:
 
@@ -526,33 +388,42 @@ AsConvertFile (
         }
     }
 
+
     if (ConversionTable->NewHeader)
     {
         AsReplaceHeader (FileBuffer, ConversionTable->NewHeader);
     }
+
+
+
+    /* Tabify should always be last */
+
+//    AsTabify (FileBuffer, 4);
 }
+
+
 
 
 /******************************************************************************
  *
  * FUNCTION:    AsProcessOneFile
  *
- * DESCRIPTION: Process one source file.  The file is opened, read entirely
+ * DESCRIPTION: Process one source file.  The file is opened, read entirely 
  *              into a buffer, converted, then written to a new file.
  *
  ******************************************************************************/
 
-ACPI_NATIVE_INT
+NATIVE_INT
 AsProcessOneFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
     char                    *TargetPath,
     int                     MaxPathLength,
     char                    *Filename,
-    ACPI_NATIVE_INT         FileType)
+    NATIVE_INT              FileType)
 {
     char                    *Pathname;
-    char                    *OutPathname = NULL;
+
 
 
     /* Allocate a file pathname buffer for both source and target */
@@ -564,16 +435,10 @@ AsProcessOneFile (
         return -1;
     }
 
-    Gbl_FileType = FileType;
-
     /* Generate the source pathname and read the file */
 
-    if (SourcePath)
-    {
-        strcpy (Pathname, SourcePath);
-        strcat (Pathname, "/");
-    }
-
+    strcpy (Pathname, SourcePath);
+    strcat (Pathname, "/");
     strcat (Pathname, Filename);
 
     if (AsGetFile (Pathname, &Gbl_FileBuffer, &Gbl_FileSize))
@@ -583,59 +448,40 @@ AsProcessOneFile (
 
     /* Process the file in the buffer */
 
-    Gbl_MadeChanges = FALSE;
-    AsConvertFile (ConversionTable, Gbl_FileBuffer, Pathname, FileType);
+    AsConvertFile (ConversionTable, Gbl_FileBuffer, FileType);
 
-    if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
-    {
-        if (!(Gbl_Overwrite && !Gbl_MadeChanges))
-        {
-            /* Generate the target pathname and write the file */
+    /* Generate the target pathname and write the file */
 
-            OutPathname = calloc (MaxPathLength + strlen (Filename) + 2 + strlen (TargetPath), 1);
-            if (!OutPathname)
-            {
-                printf ("Could not allocate buffer for file pathnames\n");
-                return -1;
-            }
+    strcpy (Pathname, TargetPath);
+    strcat (Pathname, "/");
+    strcat (Pathname, Filename);
 
-            strcpy (OutPathname, TargetPath);
-            if (SourcePath)
-            {
-                strcat (OutPathname, "/");
-                strcat (OutPathname, Filename);
-            }
-
-            AsPutFile (OutPathname, Gbl_FileBuffer, ConversionTable->Flags);
-        }
-    }
+    AsPutFile (Pathname, Gbl_FileBuffer, ConversionTable->Flags);
 
     free (Gbl_FileBuffer);
     free (Pathname);
-    if (OutPathname)
-    {
-        free (OutPathname);
-    }
 
     return 0;
 }
+
+
 
 
 /******************************************************************************
  *
  * FUNCTION:    AsCheckForDirectory
  *
- * DESCRIPTION: Check if the current file is a valid directory.  If not,
- *              construct the full pathname for the source and target paths.
- *              Checks for the dot and dot-dot files (they are ignored)
+ * DESCRIPTION: Check if the current file is a directory.  If not, construct
+ *              the full pathname for the source and target paths.  Checks
+ *              for the dot and dot-dot files as well (they are ignored)
  *
  ******************************************************************************/
 
-ACPI_NATIVE_INT
+NATIVE_INT
 AsCheckForDirectory (
     char                    *SourceDirPath,
     char                    *TargetDirPath,
-    char                    *Filename,
+    struct _finddata_t      *FindInfo,
     char                    **SourcePath,
     char                    **TargetPath)
 {
@@ -643,20 +489,27 @@ AsCheckForDirectory (
     char                    *TgtPath;
 
 
-    if (!(strcmp (Filename, ".")) ||
-        !(strcmp (Filename, "..")))
+
+    if (!(FindInfo->attrib & _A_SUBDIR))
     {
         return -1;
     }
 
-    SrcPath = calloc (strlen (SourceDirPath) + strlen (Filename) + 2, 1);
+    if (!(strcmp (FindInfo->name, ".")) ||
+        !(strcmp (FindInfo->name, "..")))
+    {
+        return -1;
+    }
+
+    
+    SrcPath = calloc (strlen (SourceDirPath) + strlen (FindInfo->name) + 2, 1);
     if (!SrcPath)
     {
         printf ("Could not allocate buffer for directory source pathname\n");
         return -1;
     }
 
-    TgtPath = calloc (strlen (TargetDirPath) + strlen (Filename) + 2, 1);
+    TgtPath = calloc (strlen (TargetDirPath) + strlen (FindInfo->name) + 2, 1);
     if (!TgtPath)
     {
         printf ("Could not allocate buffer for directory target pathname\n");
@@ -666,29 +519,37 @@ AsCheckForDirectory (
 
     strcpy (SrcPath, SourceDirPath);
     strcat (SrcPath, "/");
-    strcat (SrcPath, Filename);
+    strcat (SrcPath, FindInfo->name);
 
     strcpy (TgtPath, TargetDirPath);
     strcat (TgtPath, "/");
-    strcat (TgtPath, Filename);
+    strcat (TgtPath, FindInfo->name);
 
     *SourcePath = SrcPath;
     *TargetPath = TgtPath;
+
     return 0;
 }
 
 
+
+
+
 /******************************************************************************
  *
- * FUNCTION:    AsGetFile
+ * FUNCTION:    
  *
- * DESCRIPTION: Open a file and read it entirely into a an allocated buffer
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 int
 AsGetFile (
-    char                    *Filename,
+    char                    *FileName,
     char                    **FileBuffer,
     UINT32                  *FileSize)
 {
@@ -698,30 +559,33 @@ AsGetFile (
     char                    *Buffer;
 
 
-    /* Binary mode leaves CR/LF pairs */
 
-    FileHandle = open (Filename, O_BINARY | O_RDONLY);
+    /* Text mode translates CR/LF to LF only on input */
+
+
+    FileHandle = open (FileName, O_TEXT | O_RDONLY);
     if (!FileHandle)
     {
-        printf ("Could not open %s\n", Filename);
+        printf ("Could not open %s\n", FileName);
         return -1;
     }
 
     if (fstat (FileHandle, &Gbl_StatBuf))
     {
-        printf ("Could not get file status for %s\n", Filename);
+        printf ("Could not get file status for %s\n", FileName);
         goto ErrorExit;
     }
 
-    /*
-     * Create a buffer for the entire file
-     * Add plenty extra buffer to accomodate string replacements
+    /* 
+     * Create a buffer for the entire file 
+     * Add 10% extra to accomodate string replacements
      */
+
     Size = Gbl_StatBuf.st_size;
-    Buffer = calloc (Size * 2, 1);
+    Buffer = calloc (Size + (Size / 10), 1);
     if (!Buffer)
     {
-        printf ("Could not allocate buffer of size %d\n", Size * 2);
+        printf ("Could not allocate buffer of size %d\n", Size + (Size / 10));
         goto ErrorExit;
     }
 
@@ -730,25 +594,12 @@ AsGetFile (
     Size = read (FileHandle, Buffer, Size);
     if (Size == -1)
     {
-        printf ("Could not read the input file %s\n", Filename);
+        printf ("Could not read the input file %s\n", FileName);
         goto ErrorExit;
     }
 
     Buffer [Size] = 0;         /* Null terminate the buffer */
     close (FileHandle);
-
-    /* Check for unix contamination */
-
-    if (AsDetectLoneLineFeeds (Filename, Buffer))
-    {
-        return -1;
-    }
-
-    /*
-     * Convert all CR/LF pairs to LF only.  We do this locally so that
-     * this code is portable across operating systems.
-     */
-    AsConvertToLineFeeds (Buffer);
 
     *FileBuffer = Buffer;
     *FileSize = Size;
@@ -765,10 +616,13 @@ ErrorExit:
 
 /******************************************************************************
  *
- * FUNCTION:    AsPutFile
+ * FUNCTION:    
  *
- * DESCRIPTION: Create a new output file and write the entire contents of the
- *              buffer to the new file.  Buffer must be a zero terminated string
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -777,7 +631,7 @@ AsPutFile (
     char                    *Pathname,
     char                    *FileBuffer,
     UINT32                  SystemFlags)
-{
+{   
     UINT32                  FileSize;
     int                     DestHandle;
     int                     OpenFlags;
@@ -785,16 +639,18 @@ AsPutFile (
 
     /* Create the target file */
 
-    OpenFlags = O_TRUNC | O_CREAT | O_WRONLY | O_BINARY;
+    OpenFlags = O_TRUNC | O_CREAT | O_WRONLY;
 
-    if (!(SystemFlags & FLG_NO_CARRIAGE_RETURNS))
+    if (SystemFlags & FLG_NO_CARRIAGE_RETURNS)
     {
-        /* Put back the CR before each LF */
-
-        AsInsertCarriageReturns (FileBuffer);
+        OpenFlags |= O_BINARY;
+    }
+    else
+    {
+        OpenFlags |= O_TEXT;
     }
 
-    DestHandle = open (Pathname, OpenFlags, S_IREAD | S_IWRITE);
+    DestHandle = open (Pathname, OpenFlags, _S_IREAD | _S_IWRITE);
     if (DestHandle == -1)
     {
         perror ("Could not create destination file");
