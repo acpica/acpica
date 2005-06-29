@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("asllookup")
+        ACPI_MODULE_NAME    ("asllookup")
 
 
 /*****************************************************************************
@@ -168,7 +168,6 @@ LsDoOneNamespaceObject (
             Pnode = Pnode->Child;
         }
 
-
         switch (Node->Type)
         {
         case ACPI_TYPE_INTEGER:
@@ -182,7 +181,7 @@ LsDoOneNamespaceObject (
             if (Pnode->Value.Integer64 > ACPI_UINT32_MAX)
             {
                 FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X%X]",
-                            HIDWORD (Pnode->Value.Integer64), Pnode->Value.Integer32);
+                            ACPI_HIDWORD (Pnode->Value.Integer64), Pnode->Value.Integer32);
             }
             else
             {
@@ -201,7 +200,6 @@ LsDoOneNamespaceObject (
 
             FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = \"%s\"]",
                         Pnode->Value.String);
-
             break;
 
 
@@ -213,13 +211,11 @@ LsDoOneNamespaceObject (
             }
             FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Length = 0x%02X]",
                         Pnode->Value.Integer32);
-
             break;
         }
     }
 
     FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "\n");
-
     return (AE_OK);
 }
 
@@ -259,7 +255,6 @@ LsDisplayNamespace (void)
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
                                 ACPI_UINT32_MAX, FALSE, LsDoOneNamespaceObject,
                                 NULL, NULL);
-
     return (AE_OK);
 }
 
@@ -323,7 +318,6 @@ LkObjectExists (
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
                                 ACPI_UINT32_MAX, FALSE, LsCompareOneNamespaceObject,
                                 Name, NULL);
-
     if (Status == AE_CTRL_TRUE)
     {
         /* At least one instance of the name was found */
@@ -367,19 +361,16 @@ LkCrossReferenceNamespace (void)
      * Create a new walk state for use when looking up names
      * within the namespace (Passed as context to the callbacks)
      */
-
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, NULL);
     if (!WalkState)
     {
         return AE_NO_MEMORY;
     }
 
-
     /* Walk the entire parse tree */
 
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
                         LkNamespaceLocateEnd, WalkState);
-
     return AE_OK;
 }
 
@@ -423,7 +414,7 @@ LkNamespaceLocateBegin (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
-    PROC_NAME ("LkNamespaceLocateBegin");
+    ACPI_FUNCTION_NAME ("LkNamespaceLocateBegin");
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: PsNode %p\n", PsNode));
 
 
@@ -461,9 +452,8 @@ LkNamespaceLocateBegin (
     Gbl_NsLookupCount++;
 
     Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
-                            ObjectType, IMODE_EXECUTE,
-                            NS_SEARCH_PARENT, WalkState, &(NsNode));
-
+                            ObjectType, ACPI_IMODE_EXECUTE,
+                            ACPI_NS_SEARCH_PARENT, WalkState, &(NsNode));
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
@@ -472,7 +462,6 @@ LkNamespaceLocateBegin (
              * We didn't find the name reference by path -- we can qualify this
              * a little better before we print an error message
              */
-
             if (strlen (Path) == ACPI_NAME_SIZE)
             {
                 /* A simple, one-segment ACPI name */
@@ -511,7 +500,6 @@ LkNamespaceLocateBegin (
         return (Status);
     }
 
-
     /* 1) Check for a reference to a resource descriptor */
 
     if ((NsNode->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
@@ -529,7 +517,6 @@ LkNamespaceLocateBegin (
             PsNode->Flags |= NODE_IS_BIT_OFFSET;
         }
 
-
         /* Perform BitOffset <--> ByteOffset conversion if necessary */
 
         switch (PsNode->Parent->AmlOpcode)
@@ -542,7 +529,7 @@ LkNamespaceLocateBegin (
             {
                 /* Simply multiply byte offset times 8 to get bit offset */
 
-                Temp = MUL_8 (Temp);
+                Temp = ACPI_MUL_8 (Temp);
             }
             break;
 
@@ -583,7 +570,6 @@ LkNamespaceLocateBegin (
         PsNode->AmlLength = OpcSetOptimalIntegerSize (PsNode);
     }
 
-
     /* 2) Check for a method invocation */
 
     else if ((((PsNode->ParseOpcode == NAMESTRING) || (PsNode->ParseOpcode == NAMESEG)) &&
@@ -593,14 +579,12 @@ LkNamespaceLocateBegin (
 
         (PsNode->ParseOpcode == METHODCALL))
     {
-
         /*
          * There are two types of method invocation:
          * 1) Invocation with arguments -- the parser recognizes this as a METHODCALL
          * 2) Invocation with no arguments --the parser cannot determine that this is a method
          *    invocation, therefore we have to figure it out here.
          */
-
         if (NsNode->Type != ACPI_TYPE_METHOD)
         {
             sprintf (MsgBuffer, "%s is a %s", PsNode->ExternalName, AcpiUtGetTypeName (NsNode->Type));
@@ -655,7 +639,6 @@ LkNamespaceLocateBegin (
              * Check if the method caller expects this method to return a value and
              * if the called method in fact returns a value.
              */
-
             if (!(PsNode->Flags & NODE_RESULT_NOT_USED))
             {
                 /* 1) The result from the method is used (the method is a TermArg) */
@@ -668,7 +651,6 @@ LkNamespaceLocateBegin (
                      */
                     AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, PsNode, PsNode->ExternalName);
                 }
-
                 else if (OwningPsNode->Flags & NODE_METHOD_SOME_NO_RETVAL)
                 {
                     /*
@@ -705,7 +687,7 @@ LkNamespaceLocateBegin (
              * region -- which contains the length of the region.
              */
             OwningPsNode = (ASL_PARSE_NODE *) NsNode->Object;
-            PsNode->Parent->ExtraValue = MUL_8 (OwningPsNode->Value.Integer32);
+            PsNode->Parent->ExtraValue = ACPI_MUL_8 (OwningPsNode->Value.Integer32);
 
             /* Examine the field access width */
 
@@ -767,7 +749,6 @@ LkNamespaceLocateBegin (
                 break;
             }
         }
-
         else
         {
             /*
@@ -817,7 +798,7 @@ LkNamespaceLocateEnd (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
-    PROC_NAME ("LkNamespaceLocateEnd");
+    ACPI_FUNCTION_NAME ("LkNamespaceLocateEnd");
 
 
     /* We are only interested in opcodes that have an associated name */
@@ -843,10 +824,8 @@ LkNamespaceLocateEnd (
             "%s: Popping scope for Op %p\n",
             AcpiUtGetTypeName (OpInfo->ObjectType), PsNode));
 
-
         AcpiDsScopeStackPop (WalkState);
     }
-
     return (AE_OK);
 }
 

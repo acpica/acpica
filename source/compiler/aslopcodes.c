@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.32 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "acnamesp.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslopcodes")
+        ACPI_MODULE_NAME    ("aslopcodes")
 
 
 /*******************************************************************************
@@ -132,7 +132,7 @@
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Parse tree walk to generate both the AML opcodes and the AML
  *              operands.
@@ -181,19 +181,16 @@ OpcSetOptimalIntegerSize (
         Node->AmlOpcode = AML_BYTE_OP;
         return 1;
     }
-
     else if (Node->Value.Integer <= ACPI_UINT16_MAX)
     {
         Node->AmlOpcode = AML_WORD_OP;
         return 2;
     }
-
     else if (Node->Value.Integer <= ACPI_UINT32_MAX)
     {
         Node->AmlOpcode = AML_DWORD_OP;
         return 4;
     }
-
     else
     {
         Node->AmlOpcode = AML_QWORD_OP;
@@ -273,9 +270,7 @@ OpcDoUnicode (
     BufferLengthNode = Node->Child;
     InitializerNode = BufferLengthNode->Peer;
 
-
     AsciiString = InitializerNode->Value.String;
-
 
     Count = strlen (AsciiString);
     Length = (Count * 2)  + sizeof (UINT16);
@@ -292,13 +287,11 @@ OpcDoUnicode (
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-
     BufferLengthNode->ParseOpcode   = INTEGER;
     BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
     BufferLengthNode->Value.Integer = Length;
 
     OpcSetOptimalIntegerSize (BufferLengthNode);
-
 
     InitializerNode->Value.Pointer  = UnicodeString;
     InitializerNode->AmlOpcode      = AML_RAW_DATA_BUFFER;
@@ -392,7 +385,6 @@ OpcGenerateAmlOpcode (
         Node->Value.Integer = AslKeywordMapping[Index].Value;
     }
 
-
     /* Special handling for some opcodes */
 
     switch (Node->ParseOpcode)
@@ -405,27 +397,33 @@ OpcGenerateAmlOpcode (
         break;
 
     case OFFSET:
+
         Node->AmlOpcodeLength = 1;
         break;
 
     case ACCESSAS:
+
         OpcDoAccessAs (Node);
         break;
 
     case EISAID:
+
         OpcDoEisaId (Node);
         break;
 
     case UNICODE:
+
         OpcDoUnicode (Node);
         break;
 
     case INCLUDE:
+
         Node->Child->ParseOpcode = DEFAULT_ARG;
         Gbl_HasIncludeFiles = TRUE;
         break;
 
     case EXTERNAL:
+
         Node->Child->ParseOpcode = DEFAULT_ARG;
         Node->Child->Peer->ParseOpcode = DEFAULT_ARG;
         break;

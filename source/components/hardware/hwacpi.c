@@ -1,7 +1,8 @@
+
 /******************************************************************************
  *
- * Module Name: hwacpi - ACPI hardware functions - mode and timer
- *              $Revision: 1.33 $
+ * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -9,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,8 +121,8 @@
 #include "achware.h"
 
 
-#define _COMPONENT          HARDWARE
-        MODULE_NAME         ("hwacpi")
+#define _COMPONENT          ACPI_HARDWARE
+        ACPI_MODULE_NAME    ("hwacpi")
 
 
 /******************************************************************************
@@ -140,157 +141,30 @@ ACPI_STATUS
 AcpiHwInitialize (
     void)
 {
-    ACPI_STATUS             Status = AE_OK;
-    UINT32                  Index;
+    ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("HwInitialize");
+    ACPI_FUNCTION_TRACE ("HwInitialize");
 
 
     /* We must have the ACPI tables by the time we get here */
 
     if (!AcpiGbl_FADT)
     {
-        AcpiGbl_RestoreAcpiChipset = FALSE;
-
-        DEBUG_PRINT (ACPI_ERROR, ("HwInitialize: No FADT!\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "A FADT is not loaded\n"));
 
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-    /* Must support *some* mode! */
-/*
-    if (!(SystemFlags & SYS_MODES_MASK))
-    {
-        RestoreAcpiChipset = FALSE;
+    /* Sanity check the FADT for valid values */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("CmHardwareInitialize: Supported modes uninitialized!\n"));
-        return_ACPI_STATUS (AE_ERROR);
+    Status = AcpiUtValidateFadt ();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
     }
 
-*/
-
-
-    switch (AcpiGbl_SystemFlags & SYS_MODES_MASK)
-    {
-        /* Identify current ACPI/legacy mode   */
-
-    case (SYS_MODE_ACPI):
-
-        AcpiGbl_OriginalMode = SYS_MODE_ACPI;
-        DEBUG_PRINT (ACPI_INFO, ("System supports ACPI mode only.\n"));
-        break;
-
-
-    case (SYS_MODE_LEGACY):
-
-        AcpiGbl_OriginalMode = SYS_MODE_LEGACY;
-        DEBUG_PRINT (ACPI_INFO,
-            ("Tables loaded from buffer, hardware assumed to support LEGACY mode only.\n"));
-        break;
-
-
-    case (SYS_MODE_ACPI | SYS_MODE_LEGACY):
-
-        if (AcpiHwGetMode () == SYS_MODE_ACPI)
-        {
-            AcpiGbl_OriginalMode = SYS_MODE_ACPI;
-        }
-        else
-        {
-            AcpiGbl_OriginalMode = SYS_MODE_LEGACY;
-        }
-
-        DEBUG_PRINT (ACPI_INFO,
-            ("System supports both ACPI and LEGACY modes.\n"));
-
-        DEBUG_PRINT (ACPI_INFO,
-            ("System is currently in %s mode.\n",
-            (AcpiGbl_OriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
-        break;
-    }
-
-
-    if (AcpiGbl_SystemFlags & SYS_MODE_ACPI)
-    {
-        /* Target system supports ACPI mode */
-
-        /*
-         * The purpose of this code is to save the initial state
-         * of the ACPI event enable registers. An exit function will be
-         * registered which will restore this state when the application
-         * exits. The exit function will also clear all of the ACPI event
-         * status bits prior to restoring the original mode.
-         *
-         * The location of the PM1aEvtBlk enable registers is defined as the
-         * base of PM1aEvtBlk + DIV_2(PM1aEvtBlkLength). Since the spec further
-         * fully defines the PM1aEvtBlk to be a total of 4 bytes, the offset
-         * for the enable registers is always 2 from the base. It is hard
-         * coded here. If this changes in the spec, this code will need to
-         * be modified. The PM1bEvtBlk behaves as expected.
-         */
-
-        AcpiGbl_Pm1EnableRegisterSave = (UINT16) AcpiHwRegisterRead (ACPI_MTX_LOCK, PM1_EN);
-
-
-        /*
-         * The GPEs behave similarly, except that the length of the register
-         * block is not fixed, so the buffer must be allocated with malloc
-         */
-
-        if (AcpiGbl_FADT->XGpe0Blk.Address && AcpiGbl_FADT->Gpe0BlkLen)
-        {
-            /* GPE0 specified in FADT  */
-
-            AcpiGbl_Gpe0EnableRegisterSave =
-                AcpiCmAllocate (DIV_2 (AcpiGbl_FADT->Gpe0BlkLen));
-            if (!AcpiGbl_Gpe0EnableRegisterSave)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            /* Save state of GPE0 enable bits */
-
-            for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe0BlkLen); Index++)
-            {
-                AcpiGbl_Gpe0EnableRegisterSave[Index] =
-                    (UINT8) AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index);
-            }
-        }
-
-        else
-        {
-            AcpiGbl_Gpe0EnableRegisterSave = NULL;
-        }
-
-        if (AcpiGbl_FADT->XGpe1Blk.Address && AcpiGbl_FADT->Gpe1BlkLen)
-        {
-            /* GPE1 defined */
-
-            AcpiGbl_Gpe1EnableRegisterSave =
-                AcpiCmAllocate (DIV_2 (AcpiGbl_FADT->Gpe1BlkLen));
-            if (!AcpiGbl_Gpe1EnableRegisterSave)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            /* save state of GPE1 enable bits */
-
-            for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe1BlkLen); Index++)
-            {
-                AcpiGbl_Gpe1EnableRegisterSave[Index] =
-                    (UINT8) AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index);
-            }
-        }
-
-        else
-        {
-            AcpiGbl_Gpe1EnableRegisterSave = NULL;
-        }
-    }
-
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -302,8 +176,7 @@ AcpiHwInitialize (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Transitions the system into the requested mode or does nothing
- *              if the system is already in that mode.
+ * DESCRIPTION: Transitions the system into the requested mode.
  *
  ******************************************************************************/
 
@@ -312,34 +185,37 @@ AcpiHwSetMode (
     UINT32                  Mode)
 {
 
-    ACPI_STATUS             Status = AE_ERROR;
-
-    FUNCTION_TRACE ("HwSetMode");
+    ACPI_STATUS             Status = AE_NO_HARDWARE_RESPONSE;
 
 
-    if (Mode == SYS_MODE_ACPI)
+    ACPI_FUNCTION_TRACE ("HwSetMode");
+
+
+    if (Mode == ACPI_SYS_MODE_ACPI)
     {
         /* BIOS should have disabled ALL fixed and GP events */
 
-        AcpiOsOut8 (AcpiGbl_FADT->SmiCmd, AcpiGbl_FADT->AcpiEnable);
-        DEBUG_PRINT (ACPI_INFO, ("Attempting to enable ACPI mode\n"));
+        AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, AcpiGbl_FADT->AcpiEnable, 8);
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Attempting to enable ACPI mode\n"));
     }
-
-    else if (Mode == SYS_MODE_LEGACY)
+    else if (Mode == ACPI_SYS_MODE_LEGACY)
     {
         /*
          * BIOS should clear all fixed status bits and restore fixed event
          * enable bits to default
          */
-
-        AcpiOsOut8 (AcpiGbl_FADT->SmiCmd, AcpiGbl_FADT->AcpiDisable);
-        DEBUG_PRINT (ACPI_INFO,
-                    ("Attempting to enable Legacy (non-ACPI) mode\n"));
+        AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, AcpiGbl_FADT->AcpiDisable, 8);
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+                    "Attempting to enable Legacy (non-ACPI) mode\n"));
     }
+
+    /* Give the platform some time to react */
+
+    AcpiOsStall (20000);
 
     if (AcpiHwGetMode () == Mode)
     {
-        DEBUG_PRINT (ACPI_INFO, ("Mode %X successfully enabled\n", Mode));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n", Mode));
         Status = AE_OK;
     }
 
@@ -364,130 +240,15 @@ UINT32
 AcpiHwGetMode (void)
 {
 
-    FUNCTION_TRACE ("HwGetMode");
+    ACPI_FUNCTION_TRACE ("HwGetMode");
 
 
-    if (AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_LOCK, SCI_EN))
+    if (AcpiHwBitRegisterRead (ACPI_BITREG_SCI_ENABLE, ACPI_MTX_LOCK))
     {
-        return_VALUE (SYS_MODE_ACPI);
+        return_VALUE (ACPI_SYS_MODE_ACPI);
     }
     else
     {
-        return_VALUE (SYS_MODE_LEGACY);
+        return_VALUE (ACPI_SYS_MODE_LEGACY);
     }
 }
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwGetModeCapabilities
- *
- * PARAMETERS:  none
- *
- * RETURN:      logical OR of SYS_MODE_ACPI and SYS_MODE_LEGACY determined at initial
- *              system state.
- *
- * DESCRIPTION: Returns capablities of system
- *
- ******************************************************************************/
-
-UINT32
-AcpiHwGetModeCapabilities (void)
-{
-
-    FUNCTION_TRACE ("HwGetModeCapabilities");
-
-
-    if (!(AcpiGbl_SystemFlags & SYS_MODES_MASK))
-    {
-        if (AcpiHwGetMode () == SYS_MODE_LEGACY)
-        {
-            /*
-             * Assume that if this call is being made, AcpiInit has been called
-             * and ACPI support has been established by the presence of the
-             * tables.  Therefore since we're in SYS_MODE_LEGACY, the system
-             * must support both modes
-             */
-
-            AcpiGbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
-        }
-
-        else
-        {
-            /* TBD: [Investigate] !!! this may be unsafe... */
-            /*
-             * system is is ACPI mode, so try to switch back to LEGACY to see if
-             * it is supported
-             */
-            AcpiHwSetMode (SYS_MODE_LEGACY);
-
-            if (AcpiHwGetMode () == SYS_MODE_LEGACY)
-            {
-                /* Now in SYS_MODE_LEGACY, so both are supported */
-
-                AcpiGbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
-                AcpiHwSetMode (SYS_MODE_ACPI);
-            }
-
-            else
-            {
-                /* Still in SYS_MODE_ACPI so this must be an ACPI only system */
-
-                AcpiGbl_SystemFlags |= SYS_MODE_ACPI;
-            }
-        }
-    }
-
-    return_VALUE (AcpiGbl_SystemFlags & SYS_MODES_MASK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwPmtTicks
- *
- * PARAMETERS:  none
- *
- * RETURN:      Current value of the ACPI PMT (timer)
- *
- * DESCRIPTION: Obtains current value of ACPI PMT
- *
- ******************************************************************************/
-
-UINT32
-AcpiHwPmtTicks (void)
-{
-    UINT32                   Ticks;
-
-    FUNCTION_TRACE ("AcpiPmtTicks");
-
-    Ticks = AcpiOsIn32 ((ACPI_IO_ADDRESS) AcpiGbl_FADT->XPmTmrBlk.Address);
-
-    return_VALUE (Ticks);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwPmtResolution
- *
- * PARAMETERS:  none
- *
- * RETURN:      Number of bits of resolution in the PMT (either 24 or 32)
- *
- * DESCRIPTION: Obtains resolution of the ACPI PMT (either 24bit or 32bit)
- *
- ******************************************************************************/
-
-UINT32
-AcpiHwPmtResolution (void)
-{
-    FUNCTION_TRACE ("AcpiPmtResolution");
-
-    if (0 == AcpiGbl_FADT->TmrValExt)
-    {
-        return_VALUE (24);
-    }
-
-    return_VALUE (32);
-}
-

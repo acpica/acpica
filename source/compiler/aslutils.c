@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.36 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,7 @@
 #include "acnamesp.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslutils")
+        ACPI_MODULE_NAME    ("aslutils")
 
 #ifdef _USE_BERKELEY_YACC
 extern const char * const       AslCompilername[];
@@ -163,7 +163,6 @@ UtLocalCalloc (
 
     TotalAllocations++;
     TotalAllocated += Size;
-
     return Allocated;
 }
 
@@ -230,6 +229,7 @@ UINT8
 UtHexCharToValue (
     int                     hc)
 {
+
     if (hc <= 0x39)
     {
         return ((UINT8) (hc - 0x30));
@@ -274,6 +274,34 @@ UtConvertByteToHex (
 
 /*******************************************************************************
  *
+ * FUNCTION:    UtConvertByteToAsmHex
+ *
+ * PARAMETERS:  RawByte         - Binary data
+ *              *Buffer         - Pointer to where the hex bytes will be stored
+ *
+ * RETURN:      Ascii hex byte is stored in Buffer.
+ *
+ * DESCRIPTION: Perform hex-to-ascii translation.  The return data is prefixed
+ *              with "0x"
+ *
+ ******************************************************************************/
+
+void
+UtConvertByteToAsmHex (
+    UINT8                   RawByte,
+    UINT8                   *Buffer)
+{
+
+    Buffer[0] = '0';
+
+    Buffer[1] = hex[(RawByte >> 4) & 0xF];
+    Buffer[2] = hex[RawByte & 0xF];
+    Buffer[3] = 'h';
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    DbgPrint
  *
  * PARAMETERS:  Fmt             - Printf format string
@@ -302,7 +330,6 @@ DbgPrint (
         return 0;
     }
 
-
     if ((Type == ASL_PARSE_OUTPUT) &&
         (!(AslCompilerdebug)))
     {
@@ -310,7 +337,6 @@ DbgPrint (
     }
 
     vfprintf (stderr, Fmt, Args);
-
     va_end (Args);
     return 0;
 }
@@ -341,7 +367,6 @@ UtPrintFormattedName (
         "%*s %-16.16s", (3 * Level), " ",
         yytname[ParseOpcode-255]);
 
-
     if (Level < TEXT_OFFSET)
     {
         DbgPrint (ASL_TREE_OUTPUT,
@@ -366,6 +391,7 @@ char *
 UtGetOpName (
     UINT32                  ParseOpcode)
 {
+
     return (char *) yytname [ParseOpcode - 255];
 }
 
@@ -386,7 +412,6 @@ void
 UtDisplaySummary (
     UINT32                  FileId)
 {
-
 
     FlPrintFile (FileId,
         "Compilation complete. %d Errors %d Warnings\n",
@@ -463,7 +488,7 @@ UtCheckIntegerRange (
  *
  * FUNCTION:    UtGetStringBuffer
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Length          - Size of buffer requested
  *
  * RETURN:      Pointer to the buffer.  Aborts on allocation failure
  *
@@ -497,7 +522,8 @@ UtGetStringBuffer (
  *
  * FUNCTION:    UtInternalizeName
  *
- * PARAMETERS:  None
+ * PARAMETERS:  ExternalName            - Name to convert
+ *              ConvertedName           - Where the converted name is returned
  *
  * RETURN:      Status
  *
@@ -575,7 +601,6 @@ UtAttachNamepathToOwner (
     {
         /* TBD: abort on no memory */
     }
-
 }
 
 
@@ -629,13 +654,11 @@ UtStrtoul64 (
         sign = NEGATIVE;
         ++String;
     }
-
     else if (*String == '+')
     {
         ++String;
         sign = POSITIVE;
     }
-
     else
     {
         sign = POSITIVE;
@@ -654,19 +677,16 @@ UtStrtoul64 (
                 Base = 16;
                 ++String;
             }
-
             else
             {
                 Base = 8;
             }
         }
-
         else
         {
             Base = 10;
         }
     }
-
     else if (Base < 2 || Base > 36)
     {
         /*
@@ -692,17 +712,14 @@ UtStrtoul64 (
         String++;
     }
 
+    /* Main loop: convert the string to an unsigned long */
 
-    /*
-     * Main loop: convert the string to an unsigned long:
-     */
     while (*String)
     {
         if (isdigit (*String))
         {
             index = *String - '0';
         }
-
         else
         {
             index = toupper (*String);
@@ -710,7 +727,6 @@ UtStrtoul64 (
             {
                 index = index - 'A' + 10;
             }
-
             else
             {
                 goto done;
@@ -722,9 +738,7 @@ UtStrtoul64 (
             goto done;
         }
 
-        /*
-         * Check to see if value is out of range:
-         */
+        /* Check to see if value is out of range: */
 
         if (ReturnValue > ((ACPI_INTEGER_MAX - (ACPI_INTEGER) index) /
                             (ACPI_INTEGER) Base))
@@ -732,7 +746,6 @@ UtStrtoul64 (
             Status = AE_ERROR;
             ReturnValue = 0L;           /* reset */
         }
-
         else
         {
             ReturnValue *= Base;
@@ -754,7 +767,6 @@ done:
         {
             *Terminator = (NATIVE_CHAR *) StringStart;
         }
-
         else
         {
             *Terminator = (NATIVE_CHAR *) String;

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.37 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,7 @@
 #include "aslcompiler.y.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("asltree")
+        ACPI_MODULE_NAME    ("asltree")
 
 
 /*******************************************************************************
@@ -243,12 +243,10 @@ TrUpdateNode (
     Node->ParseOpcode = (UINT16) ParseOpcode;
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
 
-
     /*
      * For the BYTE, WORD, and DWORD constants, make sure that the integer
      * that was passed in will actually fit into the data type
      */
-
     switch (ParseOpcode)
     {
     case BYTECONST:
@@ -263,7 +261,6 @@ TrUpdateNode (
         Node = UtCheckIntegerRange (Node, 0x00, ACPI_UINT32_MAX);
         break;
     }
-
 
     return Node;
 }
@@ -288,7 +285,6 @@ TrSetNodeFlags (
     UINT32                  Flags)
 {
 
-
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nSetNodeFlags: Node %p, %d\n\n", Node, Flags);
 
@@ -298,7 +294,6 @@ TrSetNodeFlags (
     }
 
     Node->Flags |= Flags;
-
     return Node;
 }
 
@@ -330,7 +325,6 @@ TrSetEndLineNumber (
 
     Node->EndLine        = Gbl_CurrentLineNumber;
     Node->EndLogicalLine = Gbl_LogicalLineNumber;
-
 }
 
 
@@ -424,7 +418,6 @@ TrCreateValuedLeafNode (
     }
 
     DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
-
     return Node;
 }
 
@@ -487,7 +480,6 @@ TrCreateNode (
         break;
     }
 
-
     /* Link the new node to its children */
 
     PrevChild = NULL;
@@ -499,14 +491,12 @@ TrCreateNode (
         Child = va_arg (ap, ASL_PARSE_NODE *);
         DbgPrint (ASL_PARSE_OUTPUT, "%p, ", Child);
 
-
         /*
          * If child is NULL, this means that an optional argument
          * was omitted.  We must create a placeholder with a special
          * opcode (DEFAULT_ARG) so that the code generator will know
          * that it must emit the correct default for this argument
          */
-
         if (!Child)
         {
             Child = TrAllocateNode (DEFAULT_ARG);
@@ -519,7 +509,6 @@ TrCreateNode (
             FirstChild = FALSE;
             Node->Child = Child;
         }
-
 
         /* Point all children to parent */
 
@@ -536,7 +525,6 @@ TrCreateNode (
          * This child might be a list, point all nodes in the list
          * to the same parent
          */
-
         while (Child->Peer)
         {
             Child = Child->Peer;
@@ -548,8 +536,6 @@ TrCreateNode (
     va_end(ap);
 
     DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
-
-
     return Node;
 }
 
@@ -608,7 +594,6 @@ TrLinkChildren (
         break;
     }
 
-
     /* Link the new node to it's children */
 
     PrevChild = NULL;
@@ -625,14 +610,12 @@ TrLinkChildren (
 
         DbgPrint (ASL_PARSE_OUTPUT, "%p, ", Child);
 
-
         /*
          * If child is NULL, this means that an optional argument
          * was omitted.  We must create a placeholder with a special
          * opcode (DEFAULT_ARG) so that the code generator will know
          * that it must emit the correct default for this argument
          */
-
         if (!Child)
         {
             Child = TrAllocateNode (DEFAULT_ARG);
@@ -645,7 +628,6 @@ TrLinkChildren (
             FirstChild = FALSE;
             Node->Child = Child;
         }
-
 
         /* Point all children to parent */
 
@@ -662,20 +644,16 @@ TrLinkChildren (
          * This child might be a list, point all nodes in the list
          * to the same parent
          */
-
         while (Child->Peer)
         {
             Child = Child->Peer;
             Child->Parent = Node;
         }
-
         PrevChild = Child;
     }
     va_end(ap);
 
     DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
-
-
     return Node;
 }
 
@@ -725,7 +703,6 @@ TrLinkPeerNode (
         return Node2;
     }
 
-
     if (Node1 == Node2)
     {
         DbgPrint (ASL_DEBUG_OUTPUT,
@@ -741,7 +718,6 @@ TrLinkPeerNode (
      * so we must walk to the end of the list and attach the new
      * peer at the end
      */
-
     Next = Node1;
     while (Next->Peer)
     {
@@ -749,7 +725,6 @@ TrLinkPeerNode (
     }
 
     Next->Peer = Node2;
-
     return Node1;
 }
 
@@ -782,7 +757,6 @@ TrLinkPeerNodes (
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nLinkPeerNodes: (%d) ", NumPeers);
 
-
     va_start (ap, NumPeers);
     This = va_arg (ap, ASL_PARSE_NODE *);
     Start = This;
@@ -812,7 +786,6 @@ TrLinkPeerNodes (
         This->Peer = Next;
         This = Next;
     }
-
 
     DbgPrint (ASL_PARSE_OUTPUT,"\n\n");
     return (Start);
@@ -862,7 +835,6 @@ TrLinkChildNode (
     }
 
     return Node1;
-
 }
 
 
@@ -943,7 +915,6 @@ TrWalkParseTree (
                 NodePreviouslyVisited = TRUE;
             }
         }
-
         break;
 
 
@@ -951,7 +922,6 @@ TrWalkParseTree (
 
         while (Node)
         {
-
             /* Visit leaf node (no children) or parent node on return trip */
 
             if ((!Node->Child) ||
@@ -998,7 +968,6 @@ TrWalkParseTree (
 
         while (Node)
         {
-
             if (NodePreviouslyVisited)
             {
                 AscendingCallback (Node, Level, Context);

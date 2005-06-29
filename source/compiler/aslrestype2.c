@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.12 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "amlcode.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslrestype2")
+        ACPI_MODULE_NAME    ("aslrestype2")
 
 
 /*******************************************************************************
@@ -149,7 +149,6 @@ RsGetStringDataLength (
         {
             return (strlen (InitializerNode->Value.String) + 1);
         }
-
         InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
     }
 
@@ -191,8 +190,8 @@ RsDoDwordIoDescriptor (
                                     StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Das.DescriptorType  = RESOURCE_DESC_DWORD_ADDRESS_SPACE;
-    Descriptor->Das.ResourceType    = RESOURCE_TYPE_IO_RANGE;
+    Descriptor->Das.DescriptorType  = ACPI_RDESC_TYPE_DWORD_ADDRESS_SPACE;
+    Descriptor->Das.ResourceType    = ACPI_RESOURCE_TYPE_IO_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
@@ -200,7 +199,6 @@ RsDoDwordIoDescriptor (
      */
     Descriptor->Das.Length = (UINT16) (ASL_RESDESC_OFFSET (Das.OptionalFields) -
                                        ASL_RESDESC_OFFSET (Das.ResourceType));
-
 
     /*
      * Process all child initialization nodes
@@ -366,8 +364,8 @@ RsDoDwordMemoryDescriptor (
                                     StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Das.DescriptorType  = RESOURCE_DESC_DWORD_ADDRESS_SPACE;
-    Descriptor->Das.ResourceType    = RESOURCE_TYPE_MEMORY_RANGE;
+    Descriptor->Das.DescriptorType  = ACPI_RDESC_TYPE_DWORD_ADDRESS_SPACE;
+    Descriptor->Das.ResourceType    = ACPI_RESOURCE_TYPE_MEMORY_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
@@ -548,8 +546,8 @@ RsDoQwordIoDescriptor (
                                     StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Qas.DescriptorType  = RESOURCE_DESC_QWORD_ADDRESS_SPACE;
-    Descriptor->Qas.ResourceType    = RESOURCE_TYPE_IO_RANGE;
+    Descriptor->Qas.DescriptorType  = ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE;
+    Descriptor->Qas.ResourceType    = ACPI_RESOURCE_TYPE_IO_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
@@ -721,8 +719,8 @@ RsDoQwordMemoryDescriptor (
                                     StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Qas.DescriptorType  = RESOURCE_DESC_QWORD_ADDRESS_SPACE;
-    Descriptor->Qas.ResourceType    = RESOURCE_TYPE_MEMORY_RANGE;
+    Descriptor->Qas.DescriptorType  = ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE;
+    Descriptor->Qas.ResourceType    = ACPI_RESOURCE_TYPE_MEMORY_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
@@ -902,8 +900,8 @@ RsDoWordIoDescriptor (
                                     StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Was.DescriptorType  = RESOURCE_DESC_WORD_ADDRESS_SPACE;
-    Descriptor->Was.ResourceType    = RESOURCE_TYPE_IO_RANGE;
+    Descriptor->Was.DescriptorType  = ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE;
+    Descriptor->Was.ResourceType    = ACPI_RESOURCE_TYPE_IO_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
@@ -1076,8 +1074,8 @@ RsDoWordBusNumberDescriptor (
                                     StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Was.DescriptorType  = RESOURCE_DESC_WORD_ADDRESS_SPACE;
-    Descriptor->Was.ResourceType    = RESOURCE_TYPE_BUS_NUMBER_RANGE;
+    Descriptor->Was.DescriptorType  = ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE;
+    Descriptor->Was.ResourceType    = ACPI_RESOURCE_TYPE_BUS_NUMBER_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
@@ -1185,10 +1183,8 @@ RsDoWordBusNumberDescriptor (
             break;
         }
 
-
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
-
 
     Rnode->BufferLength = (ASL_RESDESC_OFFSET (Was.OptionalFields) -
                            ASL_RESDESC_OFFSET (Was.DescriptorType))
@@ -1249,13 +1245,12 @@ RsDoInterruptDescriptor (
 
         OptionIndex += 4;
     }
-    InitializerNode = Node->Child;
 
+    InitializerNode = Node->Child;
     Rnode = RsAllocateResourceNode (sizeof (ASL_EXTENDED_XRUPT_DESC) +
                                     OptionIndex + StringLength);
-
     Descriptor = Rnode->Buffer;
-    Descriptor->Exx.DescriptorType  = RESOURCE_DESC_EXTENDED_XRUPT;
+    Descriptor->Exx.DescriptorType  = ACPI_RDESC_TYPE_EXTENDED_XRUPT;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
@@ -1325,9 +1320,7 @@ RsDoInterruptDescriptor (
             UtAttachNamepathToOwner (Node, InitializerNode);
             break;
 
-
         default:
-
             /*
              * Interrupt Numbers come through here, repeatedly.
              * Store the integer and move pointer to the next one.
@@ -1348,7 +1341,6 @@ RsDoInterruptDescriptor (
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
 
-
     /*
      * Add optional ResSourceIndex if present
      */
@@ -1358,7 +1350,6 @@ RsDoInterruptDescriptor (
         Rover = (ASL_RESOURCE_DESC *) (&(Rover->U8Item) + 1);
         Descriptor->Exx.Length += 1;
     }
-
 
     /*
      * Add optional ResSource string if present
@@ -1416,8 +1407,7 @@ RsDoVendorLargeDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_LARGE_VENDOR_DESC) + (i + 1));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Lgv.DescriptorType  = RESOURCE_DESC_LARGE_VENDOR;
-
+    Descriptor->Lgv.DescriptorType  = ACPI_RDESC_TYPE_LARGE_VENDOR;
 
     /*
      * Process all child initialization nodes
@@ -1428,7 +1418,6 @@ RsDoVendorLargeDescriptor (
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
-
 
     return (Rnode);
 }
@@ -1460,12 +1449,10 @@ RsDoGeneralRegisterDescriptor (
 
 
     InitializerNode = Node->Child;
-
     Rnode = RsAllocateResourceNode (sizeof (ASL_GENERAL_REGISTER_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Grg.DescriptorType  = RESOURCE_DESC_GENERAL_REGISTER;
-
+    Descriptor->Grg.DescriptorType  = ACPI_RDESC_TYPE_GENERAL_REGISTER;
     Descriptor->Grg.Length          = 12;
 
     /*
@@ -1507,8 +1494,6 @@ RsDoGeneralRegisterDescriptor (
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
-
-
     return (Rnode);
 }
 

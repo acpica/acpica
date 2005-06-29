@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.20 $
+ *              $Revision: 1.37 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -128,23 +128,11 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbexec")
+#define _COMPONENT          ACPI_DEBUGGER
+        ACPI_MODULE_NAME    ("dbexec")
 
 
-typedef struct dbmethodinfo
-{
-    ACPI_HANDLE             ThreadGate;
-    NATIVE_CHAR             *Name;
-    NATIVE_CHAR             **Args;
-    UINT32                  Flags;
-    UINT32                  NumLoops;
-    NATIVE_CHAR             Pathname[128];
-
-} DB_METHOD_INFO;
-
-
-DB_METHOD_INFO              Info;
+ACPI_DB_METHOD_INFO         AcpiGbl_DbMethodInfo;
 
 
 /*******************************************************************************
@@ -162,7 +150,7 @@ DB_METHOD_INFO              Info;
 
 ACPI_STATUS
 AcpiDbExecuteMethod (
-    DB_METHOD_INFO          *Info,
+    ACPI_DB_METHOD_INFO     *Info,
     ACPI_BUFFER             *ReturnObj)
 {
     ACPI_STATUS             Status;
@@ -171,7 +159,7 @@ AcpiDbExecuteMethod (
     UINT32                  i;
 
 
-    if (OutputToFile && !AcpiDbgLevel)
+    if (AcpiGbl_DbOutputToFile && !AcpiDbgLevel)
     {
         AcpiOsPrintf ("Warning: debug output is not enabled!\n");
     }
@@ -182,8 +170,8 @@ AcpiDbExecuteMethod (
     {
         for (i = 0; Info->Args[i] && i < MTH_NUM_ARGS; i++)
         {
-            Params[i].Type              = ACPI_TYPE_NUMBER;
-            Params[i].Number.Value      = STRTOUL (Info->Args[i], NULL, 16);
+            Params[i].Type              = ACPI_TYPE_INTEGER;
+            Params[i].Integer.Value     = STRTOUL (Info->Args[i], NULL, 16);
         }
 
         ParamObjects.Pointer        = Params;
@@ -194,8 +182,8 @@ AcpiDbExecuteMethod (
     {
         /* Setup default parameters */
 
-        Params[0].Type              = ACPI_TYPE_NUMBER;
-        Params[0].Number.Value      = 0x01020304;
+        Params[0].Type              = ACPI_TYPE_INTEGER;
+        Params[0].Integer.Value     = 0x01020304;
 
         Params[1].Type              = ACPI_TYPE_STRING;
         Params[1].String.Length     = 12;
@@ -207,8 +195,8 @@ AcpiDbExecuteMethod (
 
     /* Prepare for a return object of arbitrary size */
 
-    ReturnObj->Pointer           = Buffer;
-    ReturnObj->Length            = BUFFER_SIZE;
+    ReturnObj->Pointer           = AcpiGbl_DbBuffer;
+    ReturnObj->Length            = ACPI_DEBUG_BUFFER_SIZE;
 
 
     /* Do the actual method execution */
@@ -236,7 +224,7 @@ AcpiDbExecuteMethod (
 
 void
 AcpiDbExecuteSetup (
-    DB_METHOD_INFO          *Info)
+    ACPI_DB_METHOD_INFO         *Info)
 {
 
     /* Catenate the current scope to the supplied name */
@@ -245,27 +233,62 @@ AcpiDbExecuteSetup (
     if ((Info->Name[0] != '\\') &&
         (Info->Name[0] != '/'))
     {
-        STRCAT (Info->Pathname, ScopeBuf);
+        STRCAT (Info->Pathname, AcpiGbl_DbScopeBuf);
     }
 
     STRCAT (Info->Pathname, Info->Name);
     AcpiDbPrepNamestring (Info->Pathname);
 
-    AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
     AcpiOsPrintf ("Executing %s\n", Info->Pathname);
 
     if (Info->Flags & EX_SINGLE_STEP)
     {
         AcpiGbl_CmSingleStep = TRUE;
-        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+        AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
     }
 
     else
     {
         /* No single step, allow redirection to a file */
 
-        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
     }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbGetOutstandingAllocations
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Current global allocation count minus cache entries
+ *
+ * DESCRIPTION: Determine the current number of "outstanding" allocations --
+ *              those allocations that have not been freed and also are not
+ *              in one of the various object caches.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiDbGetOutstandingAllocations (void)
+{
+    UINT32                  Outstanding = 0;
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+    UINT32                  i;
+
+
+    for (i = ACPI_MEM_LIST_FIRST_CACHE_LIST; i < ACPI_NUM_MEM_LISTS; i++)
+    {
+        Outstanding += (AcpiGbl_MemoryLists[i].TotalAllocated -
+                        AcpiGbl_MemoryLists[i].TotalFreed -
+                        AcpiGbl_MemoryLists[i].CacheDepth);
+    }
+#endif
+
+    return (Outstanding);
 }
 
 
@@ -296,44 +319,47 @@ AcpiDbExecute (
 
 #ifdef ACPI_DEBUG
     UINT32                  PreviousAllocations;
-    UINT32                  PreviousSize;
     UINT32                  Allocations;
-    UINT32                  Size;
 
 
     /* Memory allocation tracking */
 
-    PreviousAllocations = AcpiGbl_CurrentAllocCount;
-    PreviousSize = AcpiGbl_CurrentAllocSize;
+    PreviousAllocations = AcpiDbGetOutstandingAllocations ();
 #endif
 
-    Info.Name = Name;
-    Info.Args = Args;
-    Info.Flags = Flags;
+    AcpiGbl_DbMethodInfo.Name = Name;
+    AcpiGbl_DbMethodInfo.Args = Args;
+    AcpiGbl_DbMethodInfo.Flags = Flags;
 
-    AcpiDbExecuteSetup (&Info);
-    Status = AcpiDbExecuteMethod (&Info, &ReturnObj);
+    AcpiDbExecuteSetup (&AcpiGbl_DbMethodInfo);
+    Status = AcpiDbExecuteMethod (&AcpiGbl_DbMethodInfo, &ReturnObj);
+
+    /*
+     * Allow any handlers in separate threads to complete.
+     * (Such as Notify handlers invoked from AML executed above).
+     */
+    AcpiOsSleep (0, 10);
 
 
 #ifdef ACPI_DEBUG
 
     /* Memory allocation tracking */
 
-    Allocations = AcpiGbl_CurrentAllocCount - PreviousAllocations;
-    Size = AcpiGbl_CurrentAllocSize - PreviousSize;
+    Allocations = AcpiDbGetOutstandingAllocations () - PreviousAllocations;
 
-    AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
 
     if (Allocations > 0)
     {
-        AcpiOsPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
-                        Allocations, Size);
+        AcpiOsPrintf ("Outstanding: %ld allocations after execution\n",
+                        Allocations);
     }
 #endif
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Execution of %s failed with status %s\n", Info.Pathname, AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Execution of %s failed with status %s\n",
+            AcpiGbl_DbMethodInfo.Pathname, AcpiFormatException (Status));
     }
 
     else
@@ -342,12 +368,13 @@ AcpiDbExecute (
 
         if (ReturnObj.Length)
         {
-            AcpiOsPrintf ("Execution of %s returned object %p\n", Info.Pathname, ReturnObj.Pointer);
+            AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n",
+                AcpiGbl_DbMethodInfo.Pathname, ReturnObj.Pointer, ReturnObj.Length);
             AcpiDbDumpObject (ReturnObj.Pointer, 1);
         }
     }
 
-    AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 }
 
 
@@ -369,7 +396,7 @@ AcpiDbMethodThread (
     void                    *Context)
 {
     ACPI_STATUS             Status;
-    DB_METHOD_INFO          *Info = Context;
+    ACPI_DB_METHOD_INFO     *Info = Context;
     UINT32                  i;
     ACPI_BUFFER             ReturnObj;
 
@@ -381,12 +408,12 @@ AcpiDbMethodThread (
         {
             if (ReturnObj.Length)
             {
-                AcpiOsPrintf ("Execution of %s returned object %p\n", Info->Pathname, ReturnObj.Pointer);
+                AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n",
+                    Info->Pathname, ReturnObj.Pointer, ReturnObj.Length);
                 AcpiDbDumpObject (ReturnObj.Pointer, 1);
             }
         }
     }
-
 
     /* Signal our completion */
 
@@ -438,19 +465,19 @@ AcpiDbCreateExecutionThreads (
     Status = AcpiOsCreateSemaphore (1, 0, &ThreadGate);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not create semaphore, %s\n", AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not create semaphore, %s\n", AcpiFormatException (Status));
         return;
     }
 
     /* Setup the context to be passed to each thread */
 
-    Info.Name = MethodNameArg;
-    Info.Args = NULL;
-    Info.Flags = 0;
-    Info.NumLoops = NumLoops;
-    Info.ThreadGate = ThreadGate;
+    AcpiGbl_DbMethodInfo.Name = MethodNameArg;
+    AcpiGbl_DbMethodInfo.Args = NULL;
+    AcpiGbl_DbMethodInfo.Flags = 0;
+    AcpiGbl_DbMethodInfo.NumLoops = NumLoops;
+    AcpiGbl_DbMethodInfo.ThreadGate = ThreadGate;
 
-    AcpiDbExecuteSetup (&Info);
+    AcpiDbExecuteSetup (&AcpiGbl_DbMethodInfo);
 
 
     /* Create the threads */
@@ -459,7 +486,7 @@ AcpiDbCreateExecutionThreads (
 
     for (i = 0; i < (NumThreads); i++)
     {
-        AcpiOsQueueForExecution (OSD_PRIORITY_MED, AcpiDbMethodThread, &Info);
+        AcpiOsQueueForExecution (OSD_PRIORITY_MED, AcpiDbMethodThread, &AcpiGbl_DbMethodInfo);
     }
 
 
@@ -476,9 +503,9 @@ AcpiDbCreateExecutionThreads (
 
     AcpiOsDeleteSemaphore (ThreadGate);
 
-    AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
     AcpiOsPrintf ("All threads (%X) have completed\n", NumThreads);
-    AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 }
 
 

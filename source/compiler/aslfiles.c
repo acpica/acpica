@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.25 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,7 @@
 #include "aslcompiler.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslfiles")
+        ACPI_MODULE_NAME    ("aslfiles")
 
 
 /*******************************************************************************
@@ -137,7 +137,6 @@
 void
 AslAbort (void)
 {
-
 
     AePrintErrorLog (ASL_FILE_STDOUT);
     if (Gbl_DebugFlag)
@@ -176,7 +175,6 @@ FlOpenLocalFile (
 
     DbgPrint (ASL_PARSE_OUTPUT, "FlOpenLocalFile: %s\n", StringBuffer);
     return (fopen (StringBuffer, (const char *) Mode));
-
 }
 
 
@@ -197,10 +195,8 @@ FlOpenLocalFile (
 void
 FlFileError (
     UINT32                  FileId,
-    UINT8                   ErrorId
-            )
+    UINT8                   ErrorId)
 {
-
 
     sprintf (MsgBuffer, "\"%s\" (%s)", Gbl_Files[FileId].Filename, strerror (errno));
     AslCommonError (ASL_ERROR, ErrorId, 0, 0, 0, 0, NULL, MsgBuffer);
@@ -215,7 +211,7 @@ FlFileError (
  *              Filename            - file pathname to open
  *              Mode                - Open mode for fopen
  *
- * RETURN:      None
+ * RETURN:      File descriptor
  *
  * DESCRIPTION: Open a file.
  *              NOTE: Aborts compiler on any error.
@@ -236,7 +232,6 @@ FlOpenFile (
     Gbl_Files[FileId].Filename = Filename;
     Gbl_Files[FileId].Handle   = File;
 
-
     if (!File)
     {
         FlFileError (FileId, ASL_MSG_OPEN);
@@ -255,7 +250,7 @@ FlOpenFile (
  *              Buffer              - Where to place the data
  *              Length              - Amount to read
  *
- * RETURN:      Status.  AE_ERROR indicated EOF.
+ * RETURN:      Status.  AE_ERROR indicates EOF.
  *
  * DESCRIPTION: Read data from an open file.
  *              NOTE: Aborts compiler on any error.
@@ -381,7 +376,7 @@ FlPrintFile (
 ACPI_STATUS
 FlSeekFile (
     UINT32                  FileId,
-    UINT32                  Offset)
+    long                    Offset)
 {
     UINT32                  Error;
 
@@ -462,9 +457,9 @@ FlOpenIncludeFile (
             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
             Gbl_InputByteCount, Gbl_CurrentColumn,
             Gbl_Files[ASL_FILE_INPUT].Filename, " - Null parse node");
+
         return;
     }
-
 
     /*
      * Flush out the "include ()" statement on this line, start
@@ -484,7 +479,6 @@ FlOpenIncludeFile (
         AslError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN, Node, MsgBuffer);
         return;
     }
-
 
     /* Push the include file on the open input file stack */
 
@@ -530,7 +524,6 @@ FlGenerateFilename (
         *Position = 0;
         strcat (Position, Suffix);
     }
-
     else
     {
         /* No dot, add one and then the suffix */
@@ -572,6 +565,11 @@ FlOpenInputFile (
     /* Get the path to the input filename's directory */
 
     Gbl_DirectoryPath = strdup (InputFilename);
+    if (!Gbl_DirectoryPath)
+    {
+        return (AE_NO_MEMORY);
+    }
+
     Substring = strrchr (Gbl_DirectoryPath, '\\');
     if (!Substring)
     {
@@ -586,7 +584,6 @@ FlOpenInputFile (
     {
         Gbl_DirectoryPath[0] = 0;
     }
-
     else
     {
         *(Substring+1) = 0;
@@ -671,7 +668,6 @@ FlOpenMiscOutputFiles (
 
     FlOpenFile (ASL_FILE_SOURCE_OUTPUT, Filename, "w+");
 
-
     /* Create/Open a listing output file if asked */
 
     if (Gbl_ListingFlag)
@@ -691,6 +687,44 @@ FlOpenMiscOutputFiles (
         AslCompilerFileHeader (ASL_FILE_LISTING_OUTPUT);
     }
 
+    /* Create/Open a assembly code source output file if asked */
+
+    if (Gbl_AsmOutputFlag)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_ASM_SOURCE);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        /* Open the assembly code source file, text mode */
+
+        FlOpenFile (ASL_FILE_ASM_SOURCE_OUTPUT, Filename, "w+");
+
+        AslCompilerSignon (ASL_FILE_ASM_SOURCE_OUTPUT);
+        AslCompilerFileHeader (ASL_FILE_ASM_SOURCE_OUTPUT);
+    }
+
+    /* Create/Open a C code source output file if asked */
+
+    if (Gbl_C_OutputFlag)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_C_SOURCE);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        /* Open the assembly code source file, text mode */
+
+        FlOpenFile (ASL_FILE_C_SOURCE_OUTPUT, Filename, "w+");
+
+        FlPrintFile (ASL_FILE_C_SOURCE_OUTPUT, "/*\n");
+        AslCompilerSignon (ASL_FILE_C_SOURCE_OUTPUT);
+        AslCompilerFileHeader (ASL_FILE_C_SOURCE_OUTPUT);
+    }
 
     /* Create/Open a hex output file if asked */
 
@@ -711,7 +745,6 @@ FlOpenMiscOutputFiles (
         AslCompilerFileHeader (ASL_FILE_HEX_OUTPUT);
     }
 
-
     /* Create a namespace output file if asked */
 
     if (Gbl_NsOutputFlag)
@@ -730,7 +763,6 @@ FlOpenMiscOutputFiles (
         AslCompilerSignon (ASL_FILE_NAMESPACE_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_NAMESPACE_OUTPUT);
     }
-
 
     /* Create/Open a debug output file if asked */
 
@@ -753,7 +785,6 @@ FlOpenMiscOutputFiles (
         AslCompilerSignon (ASL_FILE_DEBUG_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_DEBUG_OUTPUT);
     }
-
 
     return (AE_OK);
 }

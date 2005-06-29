@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.15 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "amlcode.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslrestype1")
+        ACPI_MODULE_NAME    ("aslrestype1")
 
 
 /*******************************************************************************
@@ -155,9 +155,8 @@ RsDoDmaDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_DMA_FORMAT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Dma.DescriptorType  = RESOURCE_DESC_DMA_FORMAT |
+    Descriptor->Dma.DescriptorType  = ACPI_RDESC_TYPE_DMA_FORMAT |
                                         ASL_RDESC_DMA_SIZE;
-
 
     /*
      * Process all child initialization nodes
@@ -212,11 +211,9 @@ RsDoDmaDescriptor (
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
 
-
     /* Now we can set the channel mask */
 
     Descriptor->Dma.DmaChannelMask = DmaChannelMask;
-
     return (Rnode);
 }
 
@@ -247,9 +244,8 @@ RsDoEndDependentDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_END_DEPENDENT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->End.DescriptorType  = RESOURCE_DESC_END_DEPENDENT |
+    Descriptor->End.DescriptorType  = ACPI_RDESC_TYPE_END_DEPENDENT |
                                         ASL_RDESC_END_DEPEND_SIZE;
-
     return (Rnode);
 }
 
@@ -283,9 +279,8 @@ RsDoFixedIoDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_FIXED_IO_PORT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Iop.DescriptorType  = RESOURCE_DESC_FIXED_IO_PORT |
+    Descriptor->Iop.DescriptorType  = ACPI_RDESC_TYPE_FIXED_IO_PORT |
                                         ASL_RDESC_FIXED_IO_SIZE;
-
 
     /*
      * Process all child initialization nodes
@@ -316,7 +311,6 @@ RsDoFixedIoDescriptor (
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
-
 
     return (Rnode);
 }
@@ -351,9 +345,8 @@ RsDoIoDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_IO_PORT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Iop.DescriptorType  = RESOURCE_DESC_IO_PORT |
+    Descriptor->Iop.DescriptorType  = ACPI_RDESC_TYPE_IO_PORT |
                                         ASL_RDESC_IO_SIZE;
-
 
     /*
      * Process all child initialization nodes
@@ -442,9 +435,8 @@ RsDoIrqDescriptor (
     /* Length = 3 (with flag byte) */
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Irq.DescriptorType  = RESOURCE_DESC_IRQ_FORMAT |
+    Descriptor->Irq.DescriptorType  = ACPI_RDESC_TYPE_IRQ_FORMAT |
                                         (ASL_RDESC_IRQ_SIZE + 0x01);
-
 
     /*
      * Process all child initialization nodes
@@ -499,11 +491,9 @@ RsDoIrqDescriptor (
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
 
-
     /* Now we can set the channel mask */
 
     Descriptor->Irq.IrqMask = IrqMask;
-
     return (Rnode);
 }
 
@@ -538,9 +528,8 @@ RsDoIrqNoFlagsDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_IRQ_NOFLAGS_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Irq.DescriptorType  = RESOURCE_DESC_IRQ_FORMAT |
+    Descriptor->Irq.DescriptorType  = ACPI_RDESC_TYPE_IRQ_FORMAT |
                                         ASL_RDESC_IRQ_SIZE;
-
 
     /*
      * Process all child initialization nodes
@@ -574,11 +563,9 @@ RsDoIrqNoFlagsDescriptor (
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
 
-
     /* Now we can set the interrupt mask */
 
     Descriptor->Irq.IrqMask = IrqMask;
-
     return (Rnode);
 }
 
@@ -612,9 +599,8 @@ RsDoMemory24Descriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_MEMORY_24_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->M24.DescriptorType  = RESOURCE_DESC_MEMORY_24;
+    Descriptor->M24.DescriptorType  = ACPI_RDESC_TYPE_MEMORY_24;
     Descriptor->M24.Length = 9;
-
 
     /*
      * Process all child initialization nodes
@@ -700,9 +686,8 @@ RsDoMemory32Descriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_MEMORY_32_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->M32.DescriptorType  = RESOURCE_DESC_MEMORY_32;
+    Descriptor->M32.DescriptorType  = ACPI_RDESC_TYPE_MEMORY_32;
     Descriptor->M32.Length = 17;
-
 
     /*
      * Process all child initialization nodes
@@ -788,9 +773,8 @@ RsDoMemory32FixedDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_FIXED_MEMORY_32_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->F32.DescriptorType  = RESOURCE_DESC_FIXED_MEMORY_32;
+    Descriptor->F32.DescriptorType  = ACPI_RDESC_TYPE_FIXED_MEMORY_32;
     Descriptor->F32.Length = 9;
-
 
     /*
      * Process all child initialization nodes
@@ -868,9 +852,8 @@ RsDoStartDependentDescriptor (
 
     /* Descriptor has priority byte */
 
-    Descriptor->Std.DescriptorType  = RESOURCE_DESC_START_DEPENDENT |
+    Descriptor->Std.DescriptorType  = ACPI_RDESC_TYPE_START_DEPENDENT |
                                         (ASL_RDESC_ST_DEPEND_SIZE + 0x01);
-
 
     /*
      * Process all child initialization nodes
@@ -889,7 +872,6 @@ RsDoStartDependentDescriptor (
             RsSetFlagBits (&Descriptor->Std.Flags, InitializerNode, 0, 0);
             break;
 
-
         case 1: /* Performance/Robustness Priority */
 
             if (InitializerNode->Value.Integer8 > 2)
@@ -899,7 +881,6 @@ RsDoStartDependentDescriptor (
 
             RsSetFlagBits (&Descriptor->Std.Flags, InitializerNode, 2, 0);
             break;
-
 
         default:
             NextRnode = RsDoOneResourceDescriptor  (InitializerNode, CurrentByteOffset);
@@ -917,7 +898,6 @@ RsDoStartDependentDescriptor (
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
-
 
     return (Rnode);
 }
@@ -953,7 +933,7 @@ RsDoStartDependentNoPriDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_START_DEPENDENT_NOPRIO_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Std.DescriptorType  = RESOURCE_DESC_START_DEPENDENT |
+    Descriptor->Std.DescriptorType  = ACPI_RDESC_TYPE_START_DEPENDENT |
                                         ASL_RDESC_ST_DEPEND_SIZE;
     PreviousRnode = Rnode;
 
@@ -1009,8 +989,7 @@ RsDoVendorSmallDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_SMALL_VENDOR_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Std.DescriptorType  = RESOURCE_DESC_SMALL_VENDOR;
-
+    Descriptor->Std.DescriptorType  = ACPI_RDESC_TYPE_SMALL_VENDOR;
 
     /*
      * Process all child initialization nodes
@@ -1021,11 +1000,9 @@ RsDoVendorSmallDescriptor (
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
     }
 
-
     /* Set the length */
 
     Descriptor->Std.DescriptorType  |= (i + 1);
-
     return (Rnode);
 }
 

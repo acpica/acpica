@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.57 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,7 @@
 #include "aslcompiler.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslerror")
+        ACPI_MODULE_NAME    ("aslerror")
 
 
 char                        *AslMessages [] = {
@@ -180,6 +180,7 @@ char                        *AslMessages [] = {
     "Opcode is not implemented in compiler AML code generator",
     "No enclosing While statement",
     "Invalid Escape Sequence",
+    "Invalid Hex/Octal Escape - Non-ASCII or NULL"
 };
 
 
@@ -219,7 +220,6 @@ AeAddToErrorLog (
         Gbl_ErrorLog = Enode;
         return;
     }
-
 
     /* List is sorted according to line number */
 
@@ -321,22 +321,19 @@ AePrintException (
         }
     }
 
-
     /* NULL message ID, just print the raw message */
 
     if (Enode->MessageId == 0)
     {
         fprintf (OutputFile, "%s\n", Enode->Message);
     }
-
-    /* Decode the message ID */
-
     else
     {
+        /* Decode the message ID */
+
         fprintf (OutputFile, "%s %4.4d -",
                     AslErrorLevel[Enode->Level],
                     Enode->MessageId + ((Enode->Level+1) * 1000));
-
 
         MainMessage = AslMessages[Enode->MessageId];
         ExtraMessage = Enode->Message;
@@ -363,7 +360,6 @@ AePrintException (
                         (int) ((SourceColumn - 1) - ErrorColumn),
                         MainMessage, " ^ ");
                 }
-
                 else
                 {
                     fprintf (OutputFile, "%*s %s",
@@ -384,10 +380,8 @@ AePrintException (
             {
                 fprintf (OutputFile, " (%s)", ExtraMessage);
             }
-
             fprintf (OutputFile, "\n\n");
         }
-
         else
         {
             fprintf (OutputFile, " %s %s\n\n",
@@ -402,7 +396,7 @@ AePrintException (
  *
  * FUNCTION:    AePrintErrorLog
  *
- * PARAMETERS:  Where           - Where to print the error log
+ * PARAMETERS:  FileId           - Where to output the error log
  *
  * RETURN:      None
  *
@@ -433,6 +427,8 @@ AePrintErrorLog (
  *              MessageId           - Index into global message buffer
  *              CurrentLineNumber   - Actual file line number
  *              LogicalLineNumber   - Cumulative line number
+ *              LogicalByteOffset   - Byte offset in source file
+ *              Column              - Column in current line
  *              Filename            - source filename
  *              ExtraMessage        - additional error message
  *
@@ -458,30 +454,27 @@ AslCommonError (
     ASL_ERROR_MSG           *Enode;
 
 
-    Enode           = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
+    Enode = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
 
     if (ExtraMessage)
     {
-        /*
-         * Allocate a buffer for the message and a new error node
-         */
-        MessageSize     = strlen (ExtraMessage) + 1;
-        MessageBuffer   = UtLocalCalloc (MessageSize);
+        /* Allocate a buffer for the message and a new error node */
 
-        /*
-         * Keep a copy of the extra message
-         */
+        MessageSize   = strlen (ExtraMessage) + 1;
+        MessageBuffer = UtLocalCalloc (MessageSize);
+
+        /* Keep a copy of the extra message */
+
         STRCPY (MessageBuffer, ExtraMessage);
     }
-
 
     /*
      * Initialize the error node
      */
     if (Filename)
     {
-        Enode->Filename             = Filename;
-        Enode->FilenameLength       = strlen (Filename);
+        Enode->Filename       = Filename;
+        Enode->FilenameLength = strlen (Filename);
         if (Enode->FilenameLength < 6)
         {
             Enode->FilenameLength = 6;
@@ -496,11 +489,9 @@ AslCommonError (
     Enode->Column               = Column;
     Enode->Message              = MessageBuffer;
 
-
     /* Add the new node to the error node list */
 
     AeAddToErrorLog (Enode);
-
 
     if (Gbl_DebugFlag)
     {
@@ -509,9 +500,7 @@ AslCommonError (
         AePrintException (ASL_FILE_STDERR, Enode);
     }
 
-
     Gbl_ExceptionCount[Level]++;
-
     if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
     {
 
@@ -525,7 +514,6 @@ AslCommonError (
         printf ("\nMaximum error count (%d) exceeded.\n", ASL_MAX_ERROR_COUNT);
         CmCleanupAndExit ();
     }
-
 
     return Enode;
 }
@@ -563,7 +551,6 @@ AslError (
                         Node->Column,
                         Node->Filename, ExtraMessage);
     }
-
     else
     {
         AslCommonError (Level, MessageId, 0,

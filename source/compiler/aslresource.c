@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.20 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslresource")
+        ACPI_MODULE_NAME    ("aslresource")
 
 
 /*******************************************************************************
@@ -155,7 +155,6 @@ RsAllocateResourceNode (
     Rnode->Buffer = UtLocalCalloc (Size);
     Rnode->BufferLength = Size;
 
-
     return (Rnode);
 }
 
@@ -186,7 +185,6 @@ RsCreateBitField (
     UINT32                  BitOffset)
 {
 
-
     Node->ExternalName      = Name;
     Node->Value.Integer32   = (ByteOffset * 8) + BitOffset;
     Node->Flags             |= (NODE_IS_RESOURCE_FIELD | NODE_IS_BIT_OFFSET);
@@ -216,7 +214,6 @@ RsCreateByteField (
     char                    *Name,
     UINT32                  ByteOffset)
 {
-
 
     Node->ExternalName      = Name;
     Node->Value.Integer32   = ByteOffset;
@@ -250,14 +247,12 @@ RsSetFlagBits (
     UINT8                   Default)
 {
 
-
     if (Node->ParseOpcode == DEFAULT_ARG)
     {
         /* Use the default bit */
 
         *Flags |= (Default << Position);
     }
-
     else
     {
         /* Use the bit specified in the initialization node */
@@ -285,7 +280,6 @@ ASL_PARSE_NODE *
 RsCompleteNodeAndGetNext (
     ASL_PARSE_NODE          *Node)
 {
-
 
     /* Mark this node unused */
 
@@ -417,7 +411,6 @@ RsDoOneResourceDescriptor (
         break;
     }
 
-
     /*
      * Mark original node as unused, but head of a resource descriptor.
      * This allows the resource to be installed in the namespace so that
@@ -425,7 +418,6 @@ RsDoOneResourceDescriptor (
      */
     DescriptorTypeNode->ParseOpcode = DEFAULT_ARG;
     DescriptorTypeNode->Flags = NODE_IS_RESOURCE_DESC;
-
 
     return (Rnode);
 }
@@ -523,7 +515,6 @@ RsDoResourceTemplate (
 
     DescriptorTypeNode = ASL_GET_PEER_NODE (BufferNode);
 
-
     /* Process all resource descriptors in the list */
 
     PreviousRnode = &HeadRnode;
@@ -544,19 +535,17 @@ RsDoResourceTemplate (
         DescriptorTypeNode = ASL_GET_PEER_NODE (DescriptorTypeNode);
     }
 
-
     /*
      * Insert the EndTag descriptor after all other descriptors have been processed
      */
     Rnode = RsAllocateResourceNode (sizeof (ASL_END_TAG_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Et.DescriptorType = RESOURCE_DESC_END_TAG |
+    Descriptor->Et.DescriptorType = ACPI_RDESC_TYPE_END_TAG |
                                         ASL_RDESC_END_TAG_SIZE;
     Descriptor->Et.Checksum = 0;
 
     CurrentByteOffset += RsLinkDescriptorChain (&PreviousRnode, Rnode);
-
 
     /*
      * Transform the nodes into the following
