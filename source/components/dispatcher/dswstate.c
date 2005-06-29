@@ -521,7 +521,7 @@ DsObjStackGetValue (
     }
 
 
-    return_VALUE (WalkState->Operands [(WalkState->NumOperands - 1) - Index]);
+    return_PTR (WalkState->Operands [(WalkState->NumOperands - 1) - Index]);
 }
 
 
@@ -626,7 +626,7 @@ DsPopWalkState (
          */
     }
 
-    return_VALUE (WalkState);
+    return_PTR (WalkState);
 }
 
 
@@ -699,7 +699,7 @@ DsCreateWalkState (
 
     DsPushWalkState (WalkState, WalkList);
 
-    return_VALUE (WalkState);
+    return_PTR (WalkState);
 }
 
 
