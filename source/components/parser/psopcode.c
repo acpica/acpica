@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -539,7 +539,7 @@
  */
 
 
-static const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
+const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[AML_NUM_OPCODES] =
 {
 /*! [Begin] no source code translation */
 /* Index           Name                 Parser Args               Interpreter Args                ObjectType                Class                      Type                  Flags */
@@ -843,5 +843,4 @@ AcpiPsGetOpcodeName (
 
 #endif
 }
-
 
