@@ -183,7 +183,7 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
 
     /* If configured, initialize the AML debugger */
 
-    DEBUG_EXEC (AcpiDbInitialize ());
+    DEBUGGER_EXEC (AcpiDbInitialize ());
 
     return_ACPI_STATUS (Status);
 }
@@ -341,7 +341,7 @@ AcpiFormatException (
     ACPI_BUFFER             *OutBuffer)
 {
     UINT32                  Length;
-    INT8                    *FormattedException;
+    NATIVE_CHAR             *FormattedException;
 
 
     FUNCTION_TRACE ("AcpiFormatException");
