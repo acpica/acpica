@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -683,6 +683,12 @@ CmCleanupAndExit (void)
     }
 
     UtDisplaySummary (ASL_FILE_STDOUT);
+
+
+    if (Gbl_ExceptionCount[ASL_ERROR] > 0)
+    {
+        exit (1);
+    }
     exit (0);
 }
 
