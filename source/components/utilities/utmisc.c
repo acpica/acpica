@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.66 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -118,12 +118,8 @@
 #define __UTMISC_C__
 
 #include "acpi.h"
-#include "acevents.h"
-#include "achware.h"
 #include "acnamesp.h"
-#include "acinterp.h"
 #include "amlcode.h"
-#include "acdebug.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -267,7 +263,7 @@ AcpiUtStrupr (
 
     for (String = SrcString; *String; )
     {
-        *String = (char) TOUPPER (*String);
+        *String = (char) ACPI_TOUPPER (*String);
         String++;
     }
 
@@ -1063,6 +1059,10 @@ AcpiUtResolveReference (
                 SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SourceObject->Integer.Value = ACPI_INTEGER_MAX;
                 break;
+
+            default:
+                /* Other types not supported */
+                return (AE_SUPPORT);
             }
         }
         break;
@@ -1075,6 +1075,9 @@ AcpiUtResolveReference (
         Info->NumPackages++;
         State->Pkg.ThisTargetObj = NULL;
         break;
+
+    default:
+        return (AE_BAD_PARAMETER);
     }
 
     return (AE_OK);
@@ -1173,7 +1176,7 @@ AcpiUtWalkPackageTree (
          *    case below.
          */
         if ((!ThisSourceObj) ||
-            (ACPI_GET_DESCRIPTOR_TYPE (ThisSourceObj) != ACPI_DESC_TYPE_INTERNAL) ||
+            (ACPI_GET_DESCRIPTOR_TYPE (ThisSourceObj) != ACPI_DESC_TYPE_OPERAND) ||
             (ThisSourceObj->Common.Type != ACPI_TYPE_PACKAGE))
         {
             Status = WalkCallback (ACPI_COPY_TYPE_SIMPLE, ThisSourceObj,
