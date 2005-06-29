@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.50 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,7 @@
 #include "acapps.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 
@@ -285,7 +286,6 @@ AdWriteTable (
     char                    *Filename;
 
 
-
     Filename = AdGenerateFilename (TableName, OemTableId);
     AdWriteBuffer (Filename,
             (char *) Table, Length);
@@ -378,6 +378,81 @@ FlGenerateFilename (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    FlSplitInputPathname
+ *
+ * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
+ *                                    compiled
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Split the input path into a directory and filename part
+ *              1) Directory part used to open include files
+ *              2) Filename part used to generate output filenames
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+FlSplitInputPathname (
+    char                    *InputPath,
+    char                    **OutDirectoryPath,
+    char                    **OutFilename)
+{
+    char                    *Substring;
+    char                    *DirectoryPath;
+    char                    *Filename;
+
+
+    *OutDirectoryPath = NULL;
+    *OutFilename = NULL;
+
+    if (!InputPath)
+    {
+        return (AE_OK);
+    }
+
+    /* Get the path to the input filename's directory */
+
+    DirectoryPath = strdup (InputPath);
+    if (!DirectoryPath)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    Substring = strrchr (DirectoryPath, '\\');
+    if (!Substring)
+    {
+        Substring = strrchr (DirectoryPath, '/');
+        if (!Substring)
+        {
+            Substring = strrchr (DirectoryPath, ':');
+        }
+    }
+
+    if (!Substring)
+    {
+        DirectoryPath[0] = 0;
+        Filename = strdup (InputPath);
+    }
+    else
+    {
+        Filename = strdup (Substring + 1);
+        *(Substring+1) = 0;
+    }
+
+    if (!Filename)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    *OutDirectoryPath = DirectoryPath;
+    *OutFilename = Filename;
+
+    return (AE_OK);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AdAmlDisassemble
@@ -395,6 +470,7 @@ ACPI_STATUS
 AdAmlDisassemble (
     BOOLEAN                 OutToFile,
     char                    *Filename,
+    char                    *Prefix,
     char                    **OutFilename,
     BOOLEAN                 GetAllTables)
 {
@@ -403,8 +479,10 @@ AdAmlDisassemble (
     FILE                    *File = NULL;
 
 
-    /* Get the ACPI Tables (always) */
-
+    /*
+     * AML Input:
+     * Either from a file, or via GetTables (memory or registry)
+     */
     if (Filename)
     {
         Status = AcpiDbLoadAcpiTable (Filename);
@@ -429,23 +507,27 @@ AdAmlDisassemble (
         }
 
         AcpiOsPrintf ("\nDisassembly of DSDT\n");
-        Filename = AdGenerateFilename ("dsdt", AcpiGbl_DSDT->OemTableId);
-        *OutFilename = Filename;
+        Prefix = AdGenerateFilename ("dsdt", AcpiGbl_DSDT->OemTableId);
     }
 
+    /*
+     * ASL Output:
+     * Redirect to a file if requested
+     */
     if (OutToFile)
     {
         /* Create/Open a disassembly output file */
 
-        DisasmFilename = FlGenerateFilename (Filename, FILE_SUFFIX_DISASSEMBLY);
+        DisasmFilename = FlGenerateFilename (Prefix, FILE_SUFFIX_DISASSEMBLY);
         if (!OutFilename)
         {
             fprintf (stderr, "Could not generate output filename\n");
         }
+
         File = fopen (DisasmFilename, "w+");
         if (!File)
         {
-            fprintf (stderr, "Could not open output filen\n");
+            fprintf (stderr, "Could not open output file\n");
         }
 
         AcpiOsRedirectOutput (File);
@@ -897,7 +979,7 @@ AdGetTables (
             if (NewTable)
             {
                 AcpiGbl_FADT = (void *) NewTable;
-                AdWriteTable (NewTable, NewTable->Length, 
+                AdWriteTable (NewTable, NewTable->Length,
                     "FADT", NewTable->OemTableId);
             }
             AcpiOsPrintf ("\n");
@@ -909,7 +991,7 @@ AdGetTables (
             if (NewTable)
             {
                 AcpiGbl_FACS = (void *) NewTable;
-                AdWriteTable (NewTable, AcpiGbl_FACS->Length, 
+                AdWriteTable (NewTable, AcpiGbl_FACS->Length,
                     "FACS", AcpiGbl_FADT->Header.OemTableId);
             }
             AcpiOsPrintf ("\n");
@@ -925,7 +1007,7 @@ AdGetTables (
             AcpiGbl_DSDT = NewTable;
             DsdtPtr = (UINT8 *) AcpiGbl_DSDT;
             DsdtLength = AcpiGbl_DSDT->Length;
-            AdWriteTable (AcpiGbl_DSDT, AcpiGbl_DSDT->Length, 
+            AdWriteTable (AcpiGbl_DSDT, AcpiGbl_DSDT->Length,
                 "DSDT", AcpiGbl_DSDT->OemTableId);
         }
         else
