@@ -117,13 +117,78 @@
 #include <events.h>
 #include <namespace.h>
 #include <amlcode.h>
+#include <methods.h>
 
 #define _THIS_MODULE        "evregion.c"
 #define _COMPONENT          EVENT_HANDLING
 
-
 #define GO_NO_FURTHER   (void *) 0xffffffff
 
+/**************************************************************************
+ *
+ * FUNCTION:    EvExecuteRegMethod
+ *
+ * PARAMETERS:  RegionObj           - Object structure
+ *              Function            - On (1) or Off (0)
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute _REG method for a region
+ *
+ *************************************************************************/
+
+ACPI_STATUS
+EvExecuteRegMethod (
+    ACPI_OBJECT_INTERNAL   *RegionObj,
+    UINT32                  Function)
+{
+    ACPI_OBJECT_INTERNAL   *Params[3];
+    ACPI_OBJECT_INTERNAL    SpaceID_Obj;
+    ACPI_OBJECT_INTERNAL    Function_Obj;
+    ACPI_STATUS             Status;
+
+    FUNCTION_TRACE("EvExecuteRegMethod");
+
+    if(RegionObj->Region.REGMethod == NULL)
+    {
+        return_ACPI_STATUS(AE_OK);
+    }
+
+/*
+ *  _REG method has two arguments
+ *	Arg0: 	Integer: Operation region space ID
+ *      Same value as RegionObj->Region.SpaceId
+ *	Arg1: 	Integer: connection status
+ *        1 for connecting the handler,
+ *        0 for disconnecting the handler
+ *      Passed as a parameter
+ */
+
+    memset ((void *) &SpaceID_Obj, 0, sizeof (SpaceID_Obj));
+    memset ((void *) &Function_Obj, 0, sizeof (Function_Obj));
+
+    /*
+     *  Method requires two parameters.
+     */
+    Params [0] = &SpaceID_Obj;
+    Params [1] = &Function_Obj;
+    Params [1] = NULL;
+
+    /*
+     *  Set up the parameter objects
+     */
+    SpaceID_Obj.Common.Type    = TYPE_Number;
+    SpaceID_Obj.Number.Value   = RegionObj->Region.SpaceId;
+
+    Function_Obj.Common.Type   = TYPE_Number;
+    Function_Obj.Number.Value  = Function;
+
+    /*
+     *  Execute the method, no return value
+     */
+    Status = NsEvaluateByHandle (RegionObj->Region.REGMethod, Params, NULL);
+    return_ACPI_STATUS(Status);
+} 
 
 /**************************************************************************
  *
@@ -148,19 +213,22 @@ EvAddressSpaceDispatch (
     UINT32                  Function,
     UINT32                  Address,
     UINT32                  BitWidth,
-    UINT32                  *Value)
+    UINT32                 *Value)
 {
     ACPI_STATUS             Status;
     ADDRESS_SPACE_HANDLER   Handler;
+    PCI_HANDLER_CONTEXT     PCIContext;
     void                   *Context;
+
+    FUNCTION_TRACE("EvAddressSpaceDispatch");
 
     /* Check for an installed handler */
 
     if (!Obj->Region.AddrHandler)
     {
         DEBUG_PRINT (TRACE_OPREGION,
-        ("Dispatch address access region 0x%X, no handler\n", Obj));
-        return AE_EXIST;
+            ("Dispatch address access region 0x%X, no handler\n", Obj));
+        return_ACPI_STATUS(AE_EXIST);
     }
 
     /* 
@@ -170,14 +238,27 @@ EvAddressSpaceDispatch (
 
     Handler = Obj->Region.AddrHandler->AddrHandler.Handler;
     Context = Obj->Region.AddrHandler->AddrHandler.Context;
+    if(Obj->Region.SpaceId == REGION_PCIConfig)
+    {
+        /*
+         *  BUGBUG: This is pretty bogus.  There's got to be a better way
+         *
+         *  For PCI Config space access, we have to pass the device and funciton
+         *  number too.  The region object has this since it will vary from
+         *  region to region.
+         */
+        Context = &PCIContext;
+        PCIContext.SegNum     = HIWORD(Obj->Region.AddrHandler->AddrHandler.Context);
+        PCIContext.BusNum     = LOWORD(Obj->Region.AddrHandler->AddrHandler.Context);
+        PCIContext.DevNum     = HIWORD(Obj->Region.RegionData);
+        PCIContext.FuncNum    = LOWORD(Obj->Region.RegionData);
+    }
     DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-        ("Invoking address handler for handler 0x%X (0x%X), Address 0x%X\n", 
+        ("Addrhandler 0x%X (0x%X), Address 0x%X\n", 
             Obj->Region.AddrHandler->AddrHandler, Handler, Address));
 
-
     Status = Handler (Function, Address, BitWidth, Value, Context);
-
-    return Status;
+    return_ACPI_STATUS(Status);
 }
 
 /******************************************************************************
@@ -234,11 +315,10 @@ EvDisassociateRegionFromHandler(
             *LastObjPtr = ObjDesc->Region.Link;
 
             /*
-             *  First stop region accesses by executing the _REG
-             *  methods
+             *  Now stop region accesses by executing the _REG
+             *  method
              */
-
-            //  BUGBUG: Need to call _REG for this region
+            EvExecuteRegMethod (RegionObj, 0);
 
             /*
              *  Remove handler reference in the region
@@ -304,6 +384,8 @@ EvAssociateRegionAndHander(
     ACPI_OBJECT_INTERNAL    *HandlerObj,
     ACPI_OBJECT_INTERNAL    *RegionObj)
 {
+    ACPI_STATUS     Status;
+
     FUNCTION_TRACE ("EvAssociateRegionAndHander");
 
     DEBUG_PRINT (TRACE_OPREGION,
@@ -311,12 +393,6 @@ EvAssociateRegionAndHander(
 
     ACPI_ASSERT(RegionObj->Region.SpaceId == HandlerObj->AddrHandler.SpaceId);
     ACPI_ASSERT(RegionObj->Region.AddrHandler == 0);
-
-    /*
-     *  BUGBUG:  We should invoke _REG here up to 2 times, If there was
-     *           a previous handler, it should have _REG run and the new
-     *           handler too.
-     */
 
     /*
      *  We need to update the reference for the handler and the region
@@ -336,7 +412,12 @@ EvAssociateRegionAndHander(
      */
     RegionObj->Region.AddrHandler = HandlerObj;
 
-    return_ACPI_STATUS (AE_OK);
+    /*
+     *  Last thing, tell ASL region is usable
+     */
+    Status = EvExecuteRegMethod (RegionObj, 1);
+
+    return_ACPI_STATUS (Status);
 
 }  /* EvAssociateRegionAndHander */
 
@@ -371,7 +452,6 @@ EvAddrHandlerHelper (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     NAME_TABLE_ENTRY        *ObjEntry;
 
-
     FUNCTION_TRACE ("EvAddrHandlerHelper");
 
     HandlerObj = (ACPI_OBJECT_INTERNAL *) Context;
@@ -380,7 +460,7 @@ EvAddrHandlerHelper (
 
     if (!HandlerObj)
     {
-        return (void *) AE_OK;
+        return_VALUE((void *) AE_OK);
     }
 
     /* Convert and validate the device handle */
@@ -489,33 +569,103 @@ EvAddrHandlerHelper (
 
 /******************************************************************************
  *
- * FUNCTION:    EvGetAddressSpaceHandler
+ * FUNCTION:    EvInitializeRegion
  *
- * PARAMETERS:  Parent     - parent NTE
- *              RegionObj  - Region we are searching for
+ * PARAMETERS:  RegionObj  - Region we are initializing
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Install a handler for accesses on an Operation Region
+ * DESCRIPTION: Initializes the region, finds any _REG methods and saves them
+ *              for execution at a later time
+ *
+ *              Get the appropriate address space handler for a newly
+ *              created region.
+ *
+ *              This also performs address space specific intialization.  For
+ *              example, PCI regions must have an _ADR object that contains
+ *              a PCI address in the scope of the defintion.  This address is
+ *              required to perform an access to PCI config space.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-EvGetAddressSpaceHandler ( ACPI_OBJECT_INTERNAL *RegionObj)
+EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
 {
     ACPI_OBJECT_INTERNAL   *HandlerObj;
     ACPI_OBJECT_INTERNAL   *TmpObj;
     UINT32                  SpaceId; 
     NAME_TABLE_ENTRY       *Nte;        /* Namespace Object */
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY       *ParentScope;
+    NAME_TABLE_ENTRY       *RegEntry;
+    ACPI_NAME              *RegNamePtr = (ACPI_NAME *) METHOD_NAME__REG;
 
-
-    FUNCTION_TRACE ("EvGetAddressSpaceHandler");
+    FUNCTION_TRACE ("EvInitializeRegion");
 
     ACPI_ASSERT(RegionObj->Region.Nte);
 
+    *((UINT32 *)(&RegionObj->Region.Name[0])) = (UINT32) ' GER';
+    *((UINT32 *)(&RegionObj->Region.Name[4])) = RegionObj->Region.Nte->Name;
+
     Nte = RegionObj->Region.Nte->ParentEntry;
     SpaceId = RegionObj->Region.SpaceId;
+    ParentScope = RegionObj->Region.Nte->ParentScope;
+
     RegionObj->Region.AddrHandler = NULL;
+    RegionObj->Region.REGMethod = NULL;
+    RegionObj->Region.RegionData = 0;
+
+    /*
+     *  First, do address space specific initialization
+     */
+    switch (RegionObj->Region.SpaceId)
+    {
+        case REGION_PCIConfig:
+        {
+            /*
+             *  For PCI we have to get the value from the _ADR object
+             *  in the parent's scope.  In otherwords we want to find the
+             *  _ADR that is a peer to the region definition
+             */
+
+            Status = Execute_ADR (Nte, &RegionObj->Region.RegionData);
+            if (Status != AE_OK)
+            {
+                /*
+                 *  We stop the initialization here, we don't want to
+                 *  touch an address space if we don't know the address
+                 *  Since the handler is set to NULL, the dispatch routine
+                 *  not access anything
+                 */
+                DEBUG_PRINT (TRACE_OPREGION,
+                    ("Unable to execute PCI _ADR for region 0x%X in device 0x%X\n",
+                        RegionObj, Nte));
+                return_ACPI_STATUS (Status);
+            }
+            break;
+        }
+    default:
+        {
+            /*
+             *  No init required
+             */
+            break;
+        }
+    }
+
+    /*
+     *  Find any "_REG" associated with this region definition
+     */
+    Status = NsSearchOnly (*RegNamePtr, ParentScope, TYPE_Method, &RegEntry, NULL);
+    if (Status == AE_OK)
+    {
+        /*
+         *  The _REG method is optional and there can be only one per region
+         *  definition.  This will be executed when the handler is attached
+         *  or removed
+         */
+        RegionObj->Region.REGMethod = RegEntry;
+    }
 
     /*
      *  The following loop depends upon the root nte having no parent
@@ -703,7 +853,6 @@ EvWalkNamespace (
                 }
             }
         }
-
         else
         {
             /* 
@@ -715,9 +864,5 @@ EvWalkNamespace (
         }
     }
 
-
     return_ACPI_STATUS (AE_OK);                   /* Complete walk, not terminated by user function */
 }
-
-
-
