@@ -14,15 +14,17 @@
  | Functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.15 $
- | $Date: 2005/06/29 18:15:38 $
+ | $Revision: 1.16 $
+ | $Date: 2005/06/29 18:15:39 $
  | $Log: nsaccess.c,v $
- | Revision 1.15  2005/06/29 18:15:38  aystarik
- | Major header file consolidation
+ | Revision 1.16  2005/06/29 18:15:39  aystarik
+ |
  |
  | 
- | date	99.04.07.22.34.00;	author rmoore1;	state Exp;
+ | date	99.04.08.21.23.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 16    4/08/99 2:23p Rmoore1
  * 
  * 15    4/07/99 3:34p Rmoore1
  * Major header file consolidation
@@ -1099,6 +1101,7 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
     UINT32              Hash;           /* hashed value of name */
     UINT16              Position;       /* position in table */
     INT32               Tries;          /* number of positions not yet searched */
+    char                *ScopeName;
 
 
     FUNCTION_TRACE ("SearchTable");
@@ -1114,9 +1117,10 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
         return NOTFOUND;
     }
 
+    ScopeName = NsNameOfScope (NameTbl);
     DEBUG_PRINT (TRACE_NAMES,
                     ("SearchTable: search %s [%p] for %4.4s\n",
-                    NsNameOfScope (NameTbl), NameTbl, NamSeg));
+                    ScopeName, NameTbl, NamSeg));
 
     if (!NcOK ((INT32) NamSeg[0]) || !NcOK ((INT32) NamSeg[1])
      || !NcOK ((INT32) NamSeg[2]) || !NcOK ((INT32) NamSeg[3]))
@@ -2119,7 +2123,6 @@ NsNameOfScope (nte *EntryToSearch)
 
     /* Calculate required buffer size based on depth below root NT */
     
-BREAKPOINT3;
     for (Size = 1, Temp = EntryToSearch;
             Temp->ParentScope;
             Temp = Temp->ParentScope)
