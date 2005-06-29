@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.54 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -621,6 +621,15 @@ AcpiHwEnableNonWakeupGpeBlock (
 
     for (i = 0; i < GpeBlock->RegisterCount; i++)
     {
+        /* Clear the entire status register */
+
+        Status = AcpiHwLowLevelWrite (8, 0xFF,
+                    &GpeBlock->RegisterInfo[i].StatusAddress);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
         /*
          * We previously stored the enabled status of all GPEs.
          * Blast them back in.
