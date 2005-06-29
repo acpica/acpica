@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  ******************************************************************************/
 
@@ -155,6 +155,7 @@ AcpiRsCreateResourceList (
     UINT8                   *ByteStreamStart;
     ACPI_SIZE               ListSizeNeeded = 0;
     UINT32                  ByteStreamBufferLength;
+    UINT8                   *Buffer;
 
 
     FUNCTION_TRACE ("RsCreateResourceList");
@@ -193,10 +194,11 @@ AcpiRsCreateResourceList (
     /*
      * Zero out the return buffer before proceeding
      */
+    Buffer = OutputBuffer->Pointer;
     MEMSET (OutputBuffer->Pointer, 0x00, OutputBuffer->Length);
 
     Status = AcpiRsByteStreamToList (ByteStreamStart, ByteStreamBufferLength,
-                    (UCHAR **) &OutputBuffer->Pointer);
+                    &Buffer);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -466,6 +468,7 @@ AcpiRsCreateByteStream (
 {
     ACPI_STATUS             Status;
     ACPI_SIZE               ByteStreamSizeNeeded = 0;
+    UINT8                   *Buffer;
 
 
     FUNCTION_TRACE ("RsCreateByteStream");
@@ -500,10 +503,11 @@ AcpiRsCreateByteStream (
     /*
      * Zero out the return buffer before proceeding
      */
+    Buffer = OutputBuffer->Pointer;
     MEMSET (OutputBuffer->Pointer, 0x00, OutputBuffer->Length);
 
     Status = AcpiRsListToByteStream (LinkedListBuffer, ByteStreamSizeNeeded,
-                (UCHAR **) &OutputBuffer->Pointer);
+                    &Buffer);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
