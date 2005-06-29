@@ -161,14 +161,6 @@ UINT32
 EvGpeDetect (
     void);
 
-void
-EvEnableGpe (
-    UINT32                  GpeNumber);
-
-void
-EvDisableGpe (
-    UINT32                  GpeNumber);
-
 
 /* Device Notify handling - evnotify */
 
