@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.60 $
+ *       $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,6 +121,14 @@
  * Data manipulation macros
  */
 
+#ifndef LODWORD
+#define LODWORD(l)                      ((UINT32)(UINT64)(l))
+#endif
+
+#ifndef HIDWORD
+#define HIDWORD(l)                      ((UINT32)((((UINT64)(l)) >> 32) & 0xFFFFFFFF))
+#endif
+
 #ifndef LOWORD
 #define LOWORD(l)                       ((UINT16)(NATIVE_UINT)(l))
 #endif
@@ -156,7 +164,7 @@
 
 #ifdef _IA16
 /*
- * For 16-bit addresses, we have to assume that the upper 32 bits 
+ * For 16-bit addresses, we have to assume that the upper 32 bits
  * are zero.
  */
 #define ACPI_GET_ADDRESS(a)             ((a).Lo)
@@ -191,6 +199,7 @@
 #define MOVE_UNALIGNED16_TO_16(d,s)     *(UINT16*)(d) = *(UINT16*)(s)
 #define MOVE_UNALIGNED32_TO_32(d,s)     *(UINT32*)(d) = *(UINT32*)(s)
 #define MOVE_UNALIGNED16_TO_32(d,s)     *(UINT32*)(d) = *(UINT16*)(s)
+#define MOVE_UNALIGNED64_TO_64(d,s)     *(UINT64*)(d) = *(UINT64*)(s)
 
 #else
 /*
@@ -208,6 +217,15 @@
                                          ((UINT8 *)(d))[3] = ((UINT8 *)(s))[3];}
 
 #define MOVE_UNALIGNED16_TO_32(d,s)     {(*(UINT32*)(d)) = 0; MOVE_UNALIGNED16_TO_16(d,s);}
+
+#define MOVE_UNALIGNED64_TO_64(d,s)     {((UINT8 *)(d))[0] = ((UINT8 *)(s))[0];\
+                                         ((UINT8 *)(d))[1] = ((UINT8 *)(s))[1];\
+                                         ((UINT8 *)(d))[2] = ((UINT8 *)(s))[2];\
+                                         ((UINT8 *)(d))[3] = ((UINT8 *)(s))[3];\
+                                         ((UINT8 *)(d))[4] = ((UINT8 *)(s))[4];\
+                                         ((UINT8 *)(d))[5] = ((UINT8 *)(s))[5];\
+                                         ((UINT8 *)(d))[6] = ((UINT8 *)(s))[6];\
+                                         ((UINT8 *)(d))[7] = ((UINT8 *)(s))[7];}
 
 #endif
 
@@ -434,7 +452,7 @@
  */
 #define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
 #define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
-#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(ACPI_INTEGER)s);return(s);}
+#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
 #define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT8 *)s);return(s);}
 
 

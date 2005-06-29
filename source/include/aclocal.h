@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.111 $
+ *       $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -881,6 +881,7 @@ typedef struct acpi_parse_state
 #define DWORD_ADDRESS_SPACE             0x87
 #define WORD_ADDRESS_SPACE              0x88
 #define EXTENDED_IRQ                    0x89
+#define QWORD_ADDRESS_SPACE             0x8A
 
 /* MUST HAVES */
 
