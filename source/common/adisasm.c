@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -548,9 +548,9 @@ AdAmlDisassemble (
     }
 
     /*
-     * TBD: We want to cross reference the namespace here, in order to 
+     * TBD: We want to cross reference the namespace here, in order to
      * generate External() statements.  The problem is that the parse
-     * tree is in run-time (interpreter) format, not compiler format, 
+     * tree is in run-time (interpreter) format, not compiler format,
      * so we cannot directly use the function below:
      *
      *    Status = LkCrossReferenceNamespace ();
