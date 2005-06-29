@@ -287,7 +287,7 @@ EvRemoveSciHandler (void)
 #ifdef _DEBUG
 
 INT32 
-EvSciCount (UINT32 Event)
+EvSciCount (ACPI_EVENT_TYPE Event)
 {
     INT32           Count;
 
