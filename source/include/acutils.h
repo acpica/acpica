@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.113 $
+ *       $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -653,8 +653,22 @@ AcpiUtDeleteObjectCache (
     void);
 
 /*
- * Ututils
+ * utmisc
  */
+
+ACPI_STATUS
+AcpiUtDivide (
+    ACPI_INTEGER            *InDividend,
+    ACPI_INTEGER            *InDivisor,
+    ACPI_INTEGER            *OutQuotient,
+    ACPI_INTEGER            *OutRemainder);
+
+ACPI_STATUS
+AcpiUtShortDivide (
+    ACPI_INTEGER            *InDividend,
+    UINT32                  Divisor,
+    ACPI_INTEGER            *OutQuotient,
+    UINT32                  *OutRemainder);
 
 BOOLEAN
 AcpiUtValidAcpiName (
@@ -729,7 +743,7 @@ AcpiUtDumpAllocationInfo (
     void);
 
 void
-AcpiUtDumpCurrentAllocations (
+AcpiUtDumpAllocations (
     UINT32                  Component,
     NATIVE_CHAR             *Module);
 #endif
