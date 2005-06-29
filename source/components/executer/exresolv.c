@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -433,7 +433,7 @@ AcpiExResolveObjectToValue (
                 break;
 
             case AML_REVISION_OP:
-                ObjDesc->Integer.Value = ACPI_CA_VERSION;
+                ObjDesc->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
                 break;
             }
 
