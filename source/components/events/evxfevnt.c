@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -124,7 +125,7 @@
 #include "acinterp.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evxfevnt");
+        MODULE_NAME         ("evxfevnt")
 
 
 ACPI_STATUS
@@ -190,7 +191,6 @@ AcpiEnable (void)
     }
 
 
-
     AcpiGbl_OriginalMode = AcpiHwGetMode();
 
     /*
@@ -241,16 +241,10 @@ AcpiEnable (void)
 
     Status = AcpiEvInitGlobalLockHandler ();
 
-    /* Call _INI on all devices */
-
-    AcpiEvInitDevices ();
-
-
-
     /*
      * Perform additional initialization that may cause control methods
      * to be executed
-     * 
+     *
      * It may be wise to move this code to a new interface
      */
 
@@ -261,10 +255,11 @@ AcpiEnable (void)
      *  EISAID("PNP0A03")
      */
 
-    //AcpiEvFindPciRootBuses ();
+    AcpiEvFindPciRootBuses ();
 
+    /* Call _INI on all devices */
 
-
+    AcpiEvInitDevices ();
 
     return_ACPI_STATUS (Status);
 }
