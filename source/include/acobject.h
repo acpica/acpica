@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.122 $
+ *       $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -259,7 +259,11 @@ typedef struct acpi_object_event
 } ACPI_OBJECT_EVENT;
 
 
-#define INFINITE_CONCURRENCY        0xFF
+#define ACPI_INFINITE_CONCURRENCY   0xFF
+
+typedef
+ACPI_STATUS (*ACPI_INTERNAL_METHOD) (
+    struct acpi_walk_state  *WalkState);
 
 typedef struct acpi_object_method
 {
@@ -269,6 +273,7 @@ typedef struct acpi_object_method
     UINT32                          AmlLength;
     void                            *Semaphore;
     UINT8                           *AmlStart;
+    ACPI_INTERNAL_METHOD            Implementation;
     UINT8                           Concurrency;
     UINT8                           ThreadCount;
     ACPI_OWNER_ID                   OwningId;
