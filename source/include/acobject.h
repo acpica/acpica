@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.75 $
+ *       $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -207,7 +207,7 @@ typedef struct /* NUMBER - has value */
 } ACPI_OBJECT_NUMBER;
 
 
-typedef struct /* STRING - has length and pointer */
+typedef struct /* STRING - has length and pointer - Null terminated, ASCII characters only */
 {
     ACPI_OBJECT_COMMON_HEADER
 
@@ -217,13 +217,11 @@ typedef struct /* STRING - has length and pointer */
 } ACPI_OBJECT_STRING;
 
 
-typedef struct /* BUFFER - has length, sequence, and pointer */
+typedef struct /* BUFFER - has length and pointer - not null terminated */
 {
     ACPI_OBJECT_COMMON_HEADER
 
     UINT32                      Length;
-    UINT32                      Sequence;       /* Sequential count of buffers created */
-
     UINT8                       *Pointer;       /* points to the buffer in allocated space */
 
 } ACPI_OBJECT_BUFFER;
