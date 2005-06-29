@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.84 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -151,13 +151,14 @@ AcpiGetIrqRoutingTable  (
 #endif
 
 
-void
+UINT32
 AeGpeHandler (
     void                        *Context)
 {
 
 
     AcpiOsPrintf ("Received a GPE at handler\n");
+    return (0);
 }
 
 void
@@ -177,9 +178,11 @@ AfInstallGpeBlock (void)
     }
 
     BlockAddress.AddressSpaceId = 0;
-    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x87654321);
+    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x76543210);
 
-    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
+//    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
+
+    /* Above should fail, ignore */
 
     Status = AcpiGetHandle (NULL, "\\GPE2", &Handle2);
     if (ACPI_SUCCESS (Status))
@@ -254,7 +257,7 @@ main (
 
 #ifdef _DEBUG
 #if ACPI_MACHINE_WIDTH != 16
-    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF | 
+    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF |
                     _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
 #endif
 #endif
@@ -381,7 +384,7 @@ main (
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
         AcpiEnableEvent (ACPI_EVENT_GLOBAL, 0);
-        AcpiEnableGpe (NULL, 0, 0);
+        AcpiEnableGpe (NULL, 0, ACPI_EVENT_WAKE_ENABLE);
 
         AfInstallGpeBlock ();
     }
