@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.119 $
+ *       $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -400,9 +400,10 @@ AcpiNsPatternMatch (
     NATIVE_CHAR             *SearchFor);
 
 ACPI_STATUS
-AcpiNsGetNode (
-    NATIVE_CHAR             *Pathname,
+AcpiNsGetNodeByPath (
+    NATIVE_CHAR             *ExternalPathname,
     ACPI_NAMESPACE_NODE     *InPrefixNode,
+    UINT32                  Flags,
     ACPI_NAMESPACE_NODE     **OutNode);
 
 ACPI_SIZE
