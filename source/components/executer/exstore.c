@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.134 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -473,12 +473,12 @@ AcpiAmlStoreObjectToIndex (
 
         switch (ValDesc->Common.Type)
         {
-        /*
-         * If the type is Integer, assign bytewise
-         * This loop to assign each of the elements is somewhat
-         * backward because of the Big Endian-ness of IA-64
-         */
         case ACPI_TYPE_INTEGER:
+            /*
+             * Type is Integer, assign bytewise
+             * This loop to assign each of the elements is somewhat
+             * backward because of the Big Endian-ness of IA-64
+             */
             Length = sizeof (ACPI_INTEGER);
             for (i = Length; i != 0; i--)
             {
@@ -487,11 +487,12 @@ AcpiAmlStoreObjectToIndex (
             }
             break;
 
-        /*
-         * If the type is Buffer, the Length is in the structure.
-         * Just loop through the elements and assign each one in turn.
-         */
+
         case ACPI_TYPE_BUFFER:
+            /*
+             * Type is Buffer, the Length is in the structure.
+             * Just loop through the elements and assign each one in turn.
+             */
             Length = ValDesc->Buffer.Length;
             for (i = 0; i < Length; i++)
             {
@@ -500,11 +501,12 @@ AcpiAmlStoreObjectToIndex (
             }
             break;
 
-        /*
-         * If the type is String, the Length is in the structure.
-         * Just loop through the elements and assign each one in turn.
-         */
+
         case ACPI_TYPE_STRING:
+            /*
+             * Type is String, the Length is in the structure.
+             * Just loop through the elements and assign each one in turn.
+             */
             Length = ValDesc->String.Length;
             for (i = 0; i < Length; i++)
             {
@@ -513,10 +515,11 @@ AcpiAmlStoreObjectToIndex (
             }
             break;
 
-        /*
-         * If source is not a valid type so return an error.
-         */
+
         default:
+
+            /* Other types are invalid */
+
             DEBUG_PRINT (ACPI_ERROR,
                 ("AmlExecStore/Index: Source must be Number/Buffer/String type, not %X\n",
                 ValDesc->Common.Type));
