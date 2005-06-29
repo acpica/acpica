@@ -267,7 +267,7 @@ AdDisplayTables (void)
     }
 
 
-    if (!opt_verbose)
+    if (!AcpiGbl_DbOpt_verbose)
     {
         AdCreateTableHeaders ();
     }
