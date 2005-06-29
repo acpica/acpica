@@ -264,65 +264,36 @@ AcpiOsStall (
  * Platform/Hardware independent I/O interfaces
  */
 
-UINT8
-AcpiOsIn8 (
-    ACPI_IO_ADDRESS         InPort);
+ACPI_STATUS
+AcpiOsReadPort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  *Value,
+    UINT32                  Width);
 
 
-UINT16
-AcpiOsIn16 (
-    ACPI_IO_ADDRESS         InPort);
-
-UINT32
-AcpiOsIn32 (
-    ACPI_IO_ADDRESS         InPort);
-
-void
-AcpiOsOut8 (
-    ACPI_IO_ADDRESS         OutPort,
-    UINT8                   Value);
-
-void
-AcpiOsOut16 (
-    ACPI_IO_ADDRESS         OutPort,
-    UINT16                  Value);
-
-void
-AcpiOsOut32 (
-    ACPI_IO_ADDRESS         OutPort,
-    UINT32                  Value);
+ACPI_STATUS
+AcpiOsWritePort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  Value,
+    UINT32                  Width);
 
 
 /*
  * Platform/Hardware independent physical memory interfaces
  */
 
-UINT8
-AcpiOsMemIn8 (
-    ACPI_PHYSICAL_ADDRESS   InAddr);
+ACPI_STATUS
+AcpiOsReadMemory (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  *Value,
+    UINT32                  Width);
 
-UINT16
-AcpiOsMemIn16 (
-    ACPI_PHYSICAL_ADDRESS   InAddr);
 
-UINT32
-AcpiOsMemIn32 (
-    ACPI_PHYSICAL_ADDRESS   InAddr);
-
-void
-AcpiOsMemOut8 (
-    ACPI_PHYSICAL_ADDRESS   OutAddr,
-    UINT8                   Value);
-
-void
-AcpiOsMemOut16 (
-    ACPI_PHYSICAL_ADDRESS   OutAddr,
-    UINT16                  Value);
-
-void
-AcpiOsMemOut32 (
-    ACPI_PHYSICAL_ADDRESS   OutAddr,
-    UINT32                  Value);
+ACPI_STATUS
+AcpiOsWriteMemory (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  Value,
+    UINT32                  Width);
 
 
 /*
@@ -330,41 +301,19 @@ AcpiOsMemOut32 (
  */
 
 ACPI_STATUS
-AcpiOsReadPciCfgByte (
+AcpiOsReadPciConfiguration (
     ACPI_PCI_ID             *PciId,
-    UINT16                  Register,
-    UINT8                   *Value);
-
-ACPI_STATUS
-AcpiOsReadPciCfgWord (
-    ACPI_PCI_ID             *PciId,
-    UINT16                  Register,
-    UINT16                  *Value);
-
-ACPI_STATUS
-AcpiOsReadPciCfgDword (
-    ACPI_PCI_ID             *PciId,
-    UINT16                  Register,
-    UINT32                  *Value);
-
-ACPI_STATUS
-AcpiOsWritePciCfgByte (
-    ACPI_PCI_ID             *PciId,
-    UINT16                  Register,
-    UINT8                   Value);
-
-ACPI_STATUS
-AcpiOsWritePciCfgWord (
-    ACPI_PCI_ID             *PciId,
-    UINT16                  Register,
-    UINT16                  Value);
+    UINT32                  Register,
+    UINT32                  *Value,
+    UINT32                  Width);
 
 
 ACPI_STATUS
-AcpiOsWritePciCfgDword (
+AcpiOsWritePciConfiguration (
     ACPI_PCI_ID             *PciId,
-    UINT16                  Register,
-    UINT32                  Value);
+    UINT32                  Register,
+    UINT32                  Value,
+    UINT32                  Width);
 
 
 /*
