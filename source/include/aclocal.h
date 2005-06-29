@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.93 $
+ *       $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -269,8 +269,11 @@ typedef struct acpi_node
 #define ANOBJ_AML_ATTACHMENT        0x01
 #define ANOBJ_END_OF_PEER_LIST      0x02
 #define ANOBJ_DATA_WIDTH_32         0x04     /* Parent table is 64-bits */
-#define ANOBJ_METHOD_ARG            0x40
-#define ANOBJ_METHOD_LOCAL          0x80
+#define ANOBJ_METHOD_ARG            0x08
+#define ANOBJ_METHOD_LOCAL          0x10
+#define ANOBJ_METHOD_NO_RETVAL      0x20
+#define ANOBJ_METHOD_SOME_NO_RETVAL 0x40
+
 
 /*
  * ACPI Table Descriptor.  One per ACPI table
