@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.78 $
+ *              $Revision: 1.81 $
  *
  ******************************************************************************/
 
@@ -119,10 +119,7 @@
 #define __NSOBJECT_C__
 
 #include "acpi.h"
-#include "amlcode.h"
 #include "acnamesp.h"
-#include "acinterp.h"
-#include "actables.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -243,13 +240,7 @@ AcpiNsAttachObject (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Installing %p into Node %p [%4.4s]\n",
-        ObjDesc, Node, (char *) &Node->Name));
-
-    /*
-     * Must increment the new value's reference count
-     * (if it is an internal object)
-     */
-    AcpiUtAddReference (ObjDesc);
+        ObjDesc, Node, Node->Name.Ascii));
 
     /* Detach an existing attached object if present */
 
@@ -258,20 +249,28 @@ AcpiNsAttachObject (
         AcpiNsDetachObject (Node);
     }
 
-
-    /*
-     * Handle objects with multiple descriptors - walk
-     * to the end of the descriptor list
-     */
-    LastObjDesc = ObjDesc;
-    while (LastObjDesc->Common.NextObject)
+    if (ObjDesc)
     {
-        LastObjDesc = LastObjDesc->Common.NextObject;
+        /*
+         * Must increment the new value's reference count
+         * (if it is an internal object)
+         */
+        AcpiUtAddReference (ObjDesc);
+
+        /*
+         * Handle objects with multiple descriptors - walk
+         * to the end of the descriptor list
+         */
+        LastObjDesc = ObjDesc;
+        while (LastObjDesc->Common.NextObject)
+        {
+            LastObjDesc = LastObjDesc->Common.NextObject;
+        }
+
+        /* Install the object at the front of the object list */
+
+        LastObjDesc->Common.NextObject = Node->Object;
     }
-
-    /* Install the object at the front of the object list */
-
-    LastObjDesc->Common.NextObject = Node->Object;
 
     Node->Type     = (UINT8) ObjectType;
     Node->Object   = ObjDesc;
@@ -328,8 +327,8 @@ AcpiNsDetachObject (
 
     Node->Type = ACPI_TYPE_ANY;
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Node %p [%4.4s] Object %p\n",
-        Node, (char *) &Node->Name, ObjDesc));
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Node %p [%4.4s] Object %p\n",
+        Node, Node->Name.Ascii, ObjDesc));
 
     /* Remove one reference on the object (and all subobjects) */
 
@@ -389,7 +388,7 @@ ACPI_OPERAND_OBJECT *
 AcpiNsGetSecondaryObject (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    ACPI_FUNCTION_TRACE_PTR ("AcpiNsGetSecondaryObject", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR ("NsGetSecondaryObject", ObjDesc);
 
 
     if ((!ObjDesc)                                   ||

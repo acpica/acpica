@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.153 $
+ *              $Revision: 1.154 $
  *
  ******************************************************************************/
 
@@ -118,7 +118,6 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 #include "acdispat.h"
 
@@ -283,7 +282,7 @@ AcpiNsRootInitialize (void)
 
             /* Store pointer to value descriptor in the Node */
 
-            AcpiNsAttachObject (NewNode, ObjDesc, ObjDesc->Common.Type);
+            Status = AcpiNsAttachObject (NewNode, ObjDesc, ObjDesc->Common.Type);
 
             /* Remove local reference to the object */
 
@@ -409,6 +408,7 @@ AcpiNsLookup (
 
         NumSegments  = 0;
         ThisNode     = AcpiGbl_RootNode;
+        Pathname     = "";
 
         ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
             "Null Pathname (Zero segments), Flags=%x\n", Flags));

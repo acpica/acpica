@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nswalk - Functions for walking the ACPI namespace
- *              $Revision: 1.31 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,6 @@
 #define __NSWALK_C__
 
 #include "acpi.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 
 
@@ -299,7 +298,11 @@ AcpiNsWalkNamespace (
                  */
                 if (UnlockBeforeCallback)
                 {
-                    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+                    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return_ACPI_STATUS (Status);
+                    }
                 }
 
                 Status = UserFunction (ChildNode, Level,
@@ -307,7 +310,11 @@ AcpiNsWalkNamespace (
 
                 if (UnlockBeforeCallback)
                 {
-                    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+                    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return_ACPI_STATUS (Status);
+                    }
                 }
 
                 switch (Status)

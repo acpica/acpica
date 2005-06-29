@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.102 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "acinterp.h"
 #include "amlcode.h"
 #include "actables.h"
 
@@ -240,7 +239,7 @@ AcpiNsLocal (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiNsGetInternalNameLength (
     ACPI_NAMESTRING_INFO    *Info)
 {
@@ -304,8 +303,6 @@ AcpiNsGetInternalNameLength (
                     4 + Info->NumCarats;
 
     Info->NextExternalChar = NextExternalChar;
-
-    return (AE_OK);
 }
 
 
@@ -358,7 +355,6 @@ AcpiNsBuildInternalName (
             Result = &InternalName[3];
         }
     }
-
     else
     {
         /*
@@ -391,7 +387,6 @@ AcpiNsBuildInternalName (
         }
     }
 
-
     /* Build the name (minus path separators) */
 
     for (; NumSegments; NumSegments--)
@@ -409,7 +404,7 @@ AcpiNsBuildInternalName (
             {
                 /* Convert the character to uppercase and save it */
 
-                Result[i] = (char) TOUPPER (*ExternalName);
+                Result[i] = (char) ACPI_TOUPPER (*ExternalName);
                 ExternalName++;
             }
         }
@@ -435,12 +430,12 @@ AcpiNsBuildInternalName (
     if (Info->FullyQualified)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "returning [%p] (abs) \"\\%s\"\n",
-            InternalName, &InternalName[0]));
+            InternalName, InternalName));
     }
     else
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "returning [%p] (rel) \"%s\"\n",
-            InternalName, &InternalName[2]));
+            InternalName, InternalName));
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -573,6 +568,9 @@ AcpiNsExternalizeName (
             PrefixLength = i;
         }
 
+        break;
+
+    default:
         break;
     }
 
@@ -783,6 +781,7 @@ AcpiNsTerminate (void)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *ThisNode;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE ("NsTerminate");
@@ -796,7 +795,11 @@ AcpiNsTerminate (void)
      * Delete all objects linked to the root
      * (additional table descriptors)
      */
-    AcpiNsDeleteNamespaceSubtree (ThisNode);
+    Status = AcpiNsDeleteNamespaceSubtree (ThisNode);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_REPORT_ERROR (("Could not delete namespace subtree\n"));
+    }
 
     /* Detach any object(s) attached to the root */
 
@@ -903,7 +906,11 @@ AcpiNsGetNodeByPath (
 
     /* Must lock namespace during lookup */
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Setup lookup scope (search starting point) */
 
@@ -923,7 +930,7 @@ AcpiNsGetNodeByPath (
 
     /* Cleanup */
 
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     ACPI_MEM_FREE (InternalPath);
     return_ACPI_STATUS (Status);
 }
@@ -961,16 +968,17 @@ AcpiNsFindParentName (
         if (ParentNode)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Parent of %p [%4.4s] is %p [%4.4s]\n",
-                ChildNode, (char*)&ChildNode->Name, ParentNode, (char*)&ParentNode->Name));
+                ChildNode,  ChildNode->Name.Ascii,
+                ParentNode, ParentNode->Name.Ascii));
 
-            if (ParentNode->Name)
+            if (ParentNode->Name.Integer)
             {
-                return_VALUE (ParentNode->Name);
+                return_VALUE ((ACPI_NAME) ParentNode->Name.Integer);
             }
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "unable to find parent of %p (%4.4s)\n",
-            ChildNode, (char*)&ChildNode->Name));
+            ChildNode, ChildNode->Name.Ascii));
     }
 
     return_VALUE (ACPI_UNKNOWN_NAME);
@@ -1005,7 +1013,7 @@ AcpiNsExistDownstreamSibling (
         return (FALSE);
     }
 
-    if (Node->Name)
+    if (Node->Name.Integer)
     {
         return (TRUE);
     }

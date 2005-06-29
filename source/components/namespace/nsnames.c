@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  ******************************************************************************/
 
@@ -118,7 +118,6 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 
 

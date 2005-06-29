@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.82 $
+ *              $Revision: 1.85 $
  *
  ******************************************************************************/
 
@@ -117,8 +117,6 @@
 #define __NSSEARCH_C__
 
 #include "acpi.h"
-#include "amlcode.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 
 
@@ -190,7 +188,7 @@ AcpiNsSearchNode (
     {
         /* Check for match against the name */
 
-        if (NextNode->Name == TargetName)
+        if (NextNode->Name.Integer == TargetName)
         {
             /*
              * Found matching entry.  Capture the type if appropriate, before
@@ -220,8 +218,8 @@ AcpiNsSearchNode (
             }
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "Name %4.4s (actual type %X) found at %p\n",
-                (char *) &TargetName, NextNode->Type, NextNode));
+                "Name %4.4s Type [%s] found at %p\n",
+                (char *) &TargetName, AcpiUtGetTypeName (NextNode->Type), NextNode));
 
             *ReturnNode = NextNode;
             return_ACPI_STATUS (AE_OK);
@@ -245,8 +243,8 @@ AcpiNsSearchNode (
 
     /* Searched entire table, not found */
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Name %4.4s (type %X) not found at %p\n",
-        (char *) &TargetName, Type, NextNode));
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Name %4.4s Type [%s] not found at %p\n",
+        (char *) &TargetName, AcpiUtGetTypeName (Type), NextNode));
 
     return_ACPI_STATUS (AE_NOT_FOUND);
 }
@@ -308,8 +306,8 @@ AcpiNsSearchParentTree (
 
         if (AcpiNsLocal (Type))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "[%4.4s] type %X is local(no search)\n",
-                (char *) &TargetName, Type));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "[%4.4s] type [%s] must be local to this scope (no parent search)\n",
+                (char *) &TargetName, AcpiUtGetTypeName (Type)));
         }
 
         return_ACPI_STATUS (AE_NOT_FOUND);

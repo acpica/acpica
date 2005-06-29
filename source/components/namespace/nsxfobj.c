@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.106 $
+ *              $Revision: 1.109 $
  *
  ******************************************************************************/
 
@@ -119,9 +119,7 @@
 #define __NSXFOBJ_C__
 
 #include "acpi.h"
-#include "acinterp.h"
 #include "acnamesp.h"
-#include "acdispat.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -176,7 +174,7 @@ AcpiEvaluateObject (
          * Allocate a new parameter block for the internal objects
          * Add 1 to count to allow for null terminated internal list
          */
-        InternalParams = ACPI_MEM_CALLOCATE ((ExternalParams->Count + 1) * 
+        InternalParams = ACPI_MEM_CALLOCATE ((ExternalParams->Count + 1) *
                                                 sizeof (void *));
         if (!InternalParams)
         {
@@ -212,7 +210,7 @@ AcpiEvaluateObject (
         /*
          *  The path is fully qualified, just evaluate by name
          */
-        Status = AcpiNsEvaluateByName (Pathname, InternalParams, 
+        Status = AcpiNsEvaluateByName (Pathname, InternalParams,
                     &InternalReturnObj);
     }
     else if (!Handle)
@@ -224,12 +222,12 @@ AcpiEvaluateObject (
          */
         if (!Pathname)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Both Handle and Pathname are NULL\n"));
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Handle is NULL and Pathname is relative\n"));
         }
 
@@ -248,7 +246,7 @@ AcpiEvaluateObject (
              * The null pathname case means the handle is for
              * the actual object to be evaluated
              */
-            Status = AcpiNsEvaluateByHandle (Handle, InternalParams, 
+            Status = AcpiNsEvaluateByHandle (Handle, InternalParams,
                             &InternalReturnObj);
         }
         else
@@ -374,7 +372,7 @@ AcpiGetNextObject (
     ACPI_HANDLE             Child,
     ACPI_HANDLE             *RetHandle)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_NAMESPACE_NODE     *ParentNode = NULL;
     ACPI_NAMESPACE_NODE     *ChildNode = NULL;
@@ -387,7 +385,11 @@ AcpiGetNextObject (
         return (AE_BAD_PARAMETER);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /* If null handle, use the parent */
 
@@ -432,7 +434,7 @@ AcpiGetNextObject (
 
 UnlockAndExit:
 
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
 
@@ -456,6 +458,7 @@ AcpiGetType (
     ACPI_OBJECT_TYPE        *RetType)
 {
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_STATUS             Status;
 
 
     /* Parameter Validation */
@@ -475,22 +478,26 @@ AcpiGetType (
         return (AE_OK);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /* Convert and validate the handle */
 
     Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
-        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         return (AE_BAD_PARAMETER);
     }
 
     *RetType = Node->Type;
 
 
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-    return (AE_OK);
+    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    return (Status);
 }
 
 
@@ -514,7 +521,7 @@ AcpiGetParent (
     ACPI_HANDLE             *RetHandle)
 {
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
 
 
     if (!RetHandle)
@@ -529,7 +536,11 @@ AcpiGetParent (
         return (AE_NULL_ENTRY);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /* Convert and validate the handle */
 
@@ -555,7 +566,7 @@ AcpiGetParent (
 
 UnlockAndExit:
 
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
 
@@ -620,11 +631,16 @@ AcpiWalkNamespace (
      * to the user function - since this function
      * must be allowed to make Acpi calls itself.
      */
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     Status = AcpiNsWalkNamespace (Type, StartObject, MaxDepth, ACPI_NS_WALK_UNLOCK,
                     UserFunction, Context, ReturnValue);
 
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -660,9 +676,18 @@ AcpiNsGetDeviceCallback (
 
     Info = Context;
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
     Node = AcpiNsMapHandleToNode (ObjHandle);
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     if (!Node)
     {
@@ -699,7 +724,7 @@ AcpiNsGetDeviceCallback (
             return (AE_CTRL_DEPTH);
         }
 
-        if (STRNCMP (Hid.Buffer, Info->Hid, sizeof (Hid.Buffer)) != 0)
+        if (ACPI_STRNCMP (Hid.Buffer, Info->Hid, sizeof (Hid.Buffer)) != 0)
         {
             Status = AcpiUtExecute_CID (Node, &Cid);
             if (Status == AE_NOT_FOUND)
@@ -713,15 +738,15 @@ AcpiNsGetDeviceCallback (
 
             /* TBD: Handle CID packages */
 
-            if (STRNCMP (Cid.Buffer, Info->Hid, sizeof (Cid.Buffer)) != 0)
+            if (ACPI_STRNCMP (Cid.Buffer, Info->Hid, sizeof (Cid.Buffer)) != 0)
             {
                 return (AE_OK);
             }
         }
     }
 
-    Info->UserFunction (ObjHandle, NestingLevel, Info->Context, ReturnValue);
-    return (AE_OK);
+    Status = Info->UserFunction (ObjHandle, NestingLevel, Info->Context, ReturnValue);
+    return (Status);
 }
 
 
@@ -785,15 +810,19 @@ AcpiGetDevices (
      * to the user function - since this function
      * must be allowed to make Acpi calls itself.
      */
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE,
                                     ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                                     ACPI_NS_WALK_UNLOCK,
                                     AcpiNsGetDeviceCallback, &Info,
                                     ReturnValue);
 
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -829,7 +858,11 @@ AcpiAttachData (
         return (AE_BAD_PARAMETER);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /* Convert and validate the handle */
 
@@ -843,8 +876,7 @@ AcpiAttachData (
     Status = AcpiNsAttachData (Node, Handler, Data);
 
 UnlockAndExit:
-
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
 
@@ -878,7 +910,11 @@ AcpiDetachData (
         return (AE_BAD_PARAMETER);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /* Convert and validate the handle */
 
@@ -892,8 +928,7 @@ AcpiDetachData (
     Status = AcpiNsDetachData (Node, Handler);
 
 UnlockAndExit:
-
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
 
@@ -929,7 +964,11 @@ AcpiGetData (
         return (AE_BAD_PARAMETER);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /* Convert and validate the handle */
 
@@ -943,8 +982,7 @@ AcpiGetData (
     Status = AcpiNsGetAttachedData (Node, Handler, Data);
 
 UnlockAndExit:
-
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
 
