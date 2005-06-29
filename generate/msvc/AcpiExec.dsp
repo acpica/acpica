@@ -112,6 +112,10 @@ SOURCE=..\..\Subsystem\Common\cmerror.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Common\cmeval.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Common\cmglobal.c
 # End Source File
 # Begin Source File
@@ -241,38 +245,6 @@ SOURCE=..\..\Subsystem\Interpreter\istoreob.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isutils.c
-# End Source File
-# End Group
-# Begin Group "Methods"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Methods\mtadr.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Methods\mtexist.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Methods\mthid.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Methods\mtpts.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Methods\mtsta.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Methods\mtuid.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Methods\mtwak.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
