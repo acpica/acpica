@@ -153,8 +153,8 @@ AcpiNsParseTable (
     FUNCTION_TRACE ("NsParseTable");
 
 
-    /* 
-     * AML Parse, pass 1 
+    /*
+     * AML Parse, pass 1
      *
      * In this pass, we load most of the namespace.  Control methods
      * are not parsed until later.  A parse tree is not created.  Instead,
@@ -180,6 +180,7 @@ AcpiNsParseTable (
     Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot,
                             TableDesc->AmlPointer,
                             TableDesc->AmlLength, PARSE_DELETE_TREE,
+                            NULL, NULL, NULL,
                             AcpiDsLoad1BeginOp,
                             AcpiDsLoad1EndOp);
 
@@ -191,12 +192,12 @@ AcpiNsParseTable (
     AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
 
 
-    /* 
-     * AML Parse, pass 2 
+    /*
+     * AML Parse, pass 2
      *
      * In this pass, we resolve forward references and other things
      * that could not be completed during the first pass.
-     * Another complete parse of the AML is performed, but the 
+     * Another complete parse of the AML is performed, but the
      * overhead of this is compensated for by the fact that the
      * parse objects are all cached.
      */
@@ -217,6 +218,7 @@ AcpiNsParseTable (
     Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot,
                             TableDesc->AmlPointer,
                             TableDesc->AmlLength, PARSE_DELETE_TREE,
+                            NULL, NULL, NULL,
                             AcpiDsLoad2BeginOp,
                             AcpiDsLoad2EndOp);
 
