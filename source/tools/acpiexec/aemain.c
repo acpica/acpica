@@ -260,9 +260,6 @@ main (
             goto enterloop;
         }
 
-        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-        Status = AcpiLoadNamespace ();
-        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
         if (ACPI_FAILURE (Status))
         {
@@ -270,19 +267,25 @@ main (
             goto enterloop;
         }
 
-        LocalFADT.Gpe0BlkLen = 19;
+        /* Need a fake FADT so that the hardware component is happy */
+
+        LocalFADT.Gpe0Blk       = 0x70;
+        LocalFADT.Gpe0BlkLen    = 8;
+        LocalFADT.Pm1EvtLen     = 4;
+        LocalFADT.Pm1CntLen     = 4;
+        LocalFADT.Pm1aEvtBlk    = 0x80;
+        LocalFADT.Pm1aCntBlk    = 0x90;
+        LocalFADT.PmTmrBlk      = 0xA0;
+        LocalFADT.PmTmLen       = 8;
+
         AcpiGbl_FACP = &LocalFADT;
-        AcpiInitializeHardware ();
-        AcpiEnable ();
 
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
 
-
-        AcpiInitializeDevices ();
-        AcpiInitializeObjects ();
+        AcpiEnableSubsystem (0);
     }
 
 #ifdef _IA16
@@ -294,9 +297,6 @@ main (
             goto enterloop;
         }
 
-        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-        Status = AcpiLoadNamespace ();
-        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
         if (ACPI_FAILURE (Status))
         {
@@ -305,18 +305,22 @@ main (
         }
 
 
-        LocalFADT.Gpe0BlkLen = 19;
+        LocalFADT.Gpe0Blk       = 0x70;
+        LocalFADT.Gpe0BlkLen    = 8;
+        LocalFADT.Pm1EvtLen     = 4;
+        LocalFADT.Pm1CntLen     = 4;
+        LocalFADT.Pm1aEvtBlk    = 0x80;
+        LocalFADT.Pm1aCntBlk    = 0x90;
+        LocalFADT.PmTmrBlk      = 0xA0;
+        LocalFADT.PmTmLen       = 8;
         AcpiGbl_FACP = &LocalFADT;
-        AcpiEnable ();
        
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
 
-
-        AcpiInitializeDevices ();
-        AcpiInitializeObjects ();
+        AcpiEnableSubsystem (0);
     }
 #endif
 
