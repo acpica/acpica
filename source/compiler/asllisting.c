@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,6 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
-#include "aslresource.h"
 #include "amlcode.h"
 #include "acparser.h"
 #include "acnamesp.h"
@@ -141,7 +140,7 @@
 
 ACPI_STATUS
 LsAmlListingWalk (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
@@ -150,11 +149,11 @@ LsAmlListingWalk (
     UINT32                  FileId = (UINT32) Context;
 
 
-    LsWriteNodeToListing (Node, FileId);
+    LsWriteNodeToListing (Op, FileId);
 
     /* Write the hex bytes to the listing file(s) (if requested) */
 
-    for (i = 0; i < Node->FinalAmlLength; i++)
+    for (i = 0; i < Op->Asl.FinalAmlLength; i++)
     {
         FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1);
         LsWriteListingHexBytes (&FileByte, 1, FileId);
@@ -746,7 +745,7 @@ LsWriteSourceLines (
  *
  * FUNCTION:    LsWriteNodeToListing
  *
- * PARAMETERS:  Node            - Parse node to write to the listing file.
+ * PARAMETERS:  Op            - Parse node to write to the listing file.
  *              FileId          - ID of current listing file
  *
  * RETURN:      None.
@@ -760,7 +759,7 @@ LsWriteSourceLines (
 
 void
 LsWriteNodeToListing (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  FileId)
 {
     const ACPI_OPCODE_INFO  *OpInfo;
@@ -770,14 +769,14 @@ LsWriteNodeToListing (
     UINT32                  i;
 
 
-    OpInfo  = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
+    OpInfo  = AcpiPsGetOpcodeInfo (Op->Asl.AmlOpcode);
     OpClass = OpInfo->Class;
 
     /* TBD: clean this up with a single flag that says: I start a named output block */
 
     if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
     {
-        switch (Node->ParseOpcode)
+        switch (Op->Asl.ParseOpcode)
         {
         case PARSEOP_DEFINITIONBLOCK:
         case PARSEOP_METHODCALL:
@@ -791,14 +790,14 @@ LsWriteNodeToListing (
             switch (OpClass)
             {
             case AML_CLASS_NAMED_OBJECT:
-                switch (Node->AmlOpcode)
+                switch (Op->Asl.AmlOpcode)
                 {
                 case AML_SCOPE_OP:
                 case AML_ALIAS_OP:
                     break;
 
                 default:
-                    if (Node->ExternalName)
+                    if (Op->Asl.ExternalName)
                     {
                         LsFlushListingBuffer (FileId);
                         FlPrintFile (FileId, "    };\n");
@@ -814,11 +813,11 @@ LsWriteNodeToListing (
 
     /* These cases do not have a corresponding AML opcode */
 
-    switch (Node->ParseOpcode)
+    switch (Op->Asl.ParseOpcode)
     {
     case PARSEOP_DEFINITIONBLOCK:
 
-        LsWriteSourceLines (Node->EndLine, Node->EndLogicalLine, FileId);
+        LsWriteSourceLines (Op->Asl.EndLine, Op->Asl.EndLogicalLine, FileId);
 
         /* Use the table Signature and TableId to build a unique name */
 
@@ -837,7 +836,7 @@ LsWriteNodeToListing (
 
     case PARSEOP_METHODCALL:
 
-        LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
+        LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber, FileId);
         return;
 
 
@@ -846,12 +845,12 @@ LsWriteNodeToListing (
         /*
          * Flush everything up to and including the include source line
          */
-        LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
+        LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber, FileId);
 
         /*
          * Create a new listing node and push it
          */
-        LsPushNode (Node->Child->Value.String);
+        LsPushNode (Op->Asl.Child->Asl.Value.String);
         return;
 
 
@@ -860,7 +859,7 @@ LsWriteNodeToListing (
         /*
          * Flush out the rest of the include file
          */
-        LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
+        LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber, FileId);
 
         /*
          * Pop off this listing node and go back to the parent file
@@ -888,7 +887,7 @@ LsWriteNodeToListing (
 
     case AML_CLASS_NAMED_OBJECT:
 
-        switch (Node->AmlOpcode)
+        switch (Op->Asl.AmlOpcode)
         {
         case AML_FIELD_OP:
         case AML_INDEX_FIELD_OP:
@@ -897,15 +896,15 @@ LsWriteNodeToListing (
 
             /* For fields, we want to dump all the AML after the entire definition */
 
-            LsWriteSourceLines (Node->EndLine, Node->EndLogicalLine, FileId);
+            LsWriteSourceLines (Op->Asl.EndLine, Op->Asl.EndLogicalLine, FileId);
             break;
 
         default:
-            LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
+            LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber, FileId);
             break;
         }
 
-        switch (Node->AmlOpcode)
+        switch (Op->Asl.AmlOpcode)
         {
         case AML_SCOPE_OP:
         case AML_ALIAS_OP:
@@ -917,9 +916,9 @@ LsWriteNodeToListing (
             case ASL_FILE_ASM_SOURCE_OUTPUT:
             case ASL_FILE_C_SOURCE_OUTPUT:
 
-                if (Node->ExternalName)
+                if (Op->Asl.ExternalName)
                 {
-                    Pathname = AcpiNsGetExternalPathname (Node->NsNode);
+                    Pathname = AcpiNsGetExternalPathname (Op->Asl.Node);
                     Length = strlen (Pathname);
                     if (Length >= 4)
                     {
@@ -953,7 +952,7 @@ LsWriteNodeToListing (
     case AML_CLASS_CREATE:
     default:
 
-        LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
+        LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber, FileId);
         break;
 
     case AML_CLASS_UNKNOWN:

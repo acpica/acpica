@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -168,7 +168,7 @@ AslLocalAllocate (unsigned int Size);
 %union {
     UINT64          i;
     char            *s;
-    ASL_PARSE_NODE  *n;
+    ACPI_PARSE_OBJECT  *n;
 }
 
 /*
@@ -2700,7 +2700,7 @@ NameSeg
 
 
 AmlPackageLengthTerm
-    : Integer                       {$$ = TrUpdateNode (PARSEOP_PACKAGE_LENGTH,(ASL_PARSE_NODE *) $1);}
+    : Integer                       {$$ = TrUpdateNode (PARSEOP_PACKAGE_LENGTH,(ACPI_PARSE_OBJECT *) $1);}
     ;
 
 OptionalAccessAttribTerm
@@ -2879,7 +2879,7 @@ AslLocalAllocate (unsigned int Size)
     return (Mem);
 }
 
-ASL_PARSE_NODE *
+ACPI_PARSE_OBJECT *
 AslDoError (void)
 {
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -130,58 +130,9 @@
  ******************************************************************************/
 
 
-/* Value union for the parse node */
-
-typedef union asl_node_value
-{
-    UINT64                      Integer;        /* Generic integer is largest integer */
-    UINT64                      Integer64;
-    UINT32                      Integer32;
-    UINT16                      Integer16;
-    UINT8                       Integer8;
-    void                        *Pointer;
-    char                        *String;
-
-} ASL_NODE_VALUE;
 
 
-/* The parse node is the fundamental element of the parse tree */
-
-typedef struct asl_parse_node
-{
-    struct asl_parse_node       *Parent;
-    struct asl_parse_node       *Peer;
-    struct asl_parse_node       *Child;
-    struct asl_parse_node       *ParentMethod;
-    ACPI_NAMESPACE_NODE         *NsNode;
-    char                        *Filename;
-    char                        *ExternalName;
-    char                        *Namepath;
-    union asl_node_value        Value;
-    UINT32                      ExtraValue;
-    UINT32                      Column;
-    UINT32                      LineNumber;
-    UINT32                      LogicalLineNumber;
-    UINT32                      LogicalByteOffset;
-    UINT32                      EndLine;
-    UINT32                      EndLogicalLine;
-    UINT16                      AmlOpcode;
-    UINT16                      ParseOpcode;
-    UINT32                      AcpiBtype;
-    UINT32                      AmlLength;
-    UINT32                      AmlSubtreeLength;
-    UINT32                      FinalAmlLength;
-    UINT32                      FinalAmlOffset;
-    UINT8                       AmlOpcodeLength;
-    UINT8                       AmlPkgLenBytes;
-    UINT16                      Flags;
-    UINT8                       Extra;
-    char                        ParseOpName[12];
-    char                        AmlOpName[12];
-
-} ASL_PARSE_NODE;
-
-/* Node flags for the ASL_PARSE_NODE */
+/* Op flags for the ACPI_PARSE_OBJECT */
 
 #define NODE_VISITED                0x0001
 #define NODE_AML_PACKAGE            0x0002
@@ -206,7 +157,7 @@ typedef struct asl_method_info
     UINT8                   ArgInitialized[MTH_NUM_ARGS];
     UINT32                  NumReturnNoValue;
     UINT32                  NumReturnWithValue;
-    ASL_PARSE_NODE          *Node;
+    ACPI_PARSE_OBJECT       *Op;
     struct asl_method_info  *Next;
     UINT8                   HasBeenTyped;
 
@@ -251,7 +202,7 @@ typedef struct
 
 typedef struct asl_walk_info
 {
-    ASL_PARSE_NODE              **NodePtr;
+    ACPI_PARSE_OBJECT           **NodePtr;
     UINT32                      *LevelPtr;
 
 } ASL_WALK_INFO;
@@ -323,7 +274,7 @@ typedef struct asl_listing_node
 
 typedef
 ACPI_STATUS (*ASL_WALK_CALLBACK) (
-    ASL_PARSE_NODE              *Node,
+    ACPI_PARSE_OBJECT           *Op,
     UINT32                      Level,
     void                        *Context);
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -117,9 +117,7 @@
 
 
 #include "aslcompiler.h"
-#include "aslcompiler.y.h"
 #include "amlcode.h"
-#include "acdispat.h"
 #include "acparser.h"
 
 
@@ -434,6 +432,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* LEQUAL */                    OP_TABLE_ENTRY (AML_LEQUAL_OP,              0,                  0,                  ACPI_BTYPE_INTEGER),
 /* LGREATER */                  OP_TABLE_ENTRY (AML_LGREATER_OP,            0,                  0,                  ACPI_BTYPE_INTEGER),
 /* LGREATEREQUAL */             OP_TABLE_ENTRY (AML_LGREATEREQUAL_OP,       0,                  0,                  ACPI_BTYPE_INTEGER),
+/* LINE */                      OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
 /* LLESS */                     OP_TABLE_ENTRY (AML_LLESS_OP,               0,                  0,                  ACPI_BTYPE_INTEGER),
 /* LLESSEQUAL */                OP_TABLE_ENTRY (AML_LLESSEQUAL_OP,          0,                  0,                  ACPI_BTYPE_INTEGER),
 /* LNOT */                      OP_TABLE_ENTRY (AML_LNOT_OP,                0,                  0,                  ACPI_BTYPE_INTEGER),
