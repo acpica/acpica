@@ -25,7 +25,7 @@ CFG=AcpiSrc - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
-CPP=cl.exe
+CPP=xicl6.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiSrc - Win32 Release"
@@ -49,7 +49,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=link.exe
+LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /out:"bin/AcpiSrc.exe"
 # Begin Special Build Tool
@@ -81,7 +81,7 @@ PostBuild_Cmds=copy bin\acpisrc.exe ..\..\libraries\acpisrc.exe	dir ..\..\librar
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=link.exe
+LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"bin/AcpiSrc.exe" /pdbtype:sept
 # Begin Special Build Tool
@@ -101,6 +101,9 @@ PostBuild_Cmds=copy bin\acpisrc.exe ..\..\libraries\acpisrc.exe	dir ..\..\librar
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Group "AcpiSrc"
+
+# PROP Default_Filter ".c"
 # Begin Source File
 
 SOURCE=..\..\Tools\AcpiSrc\asconvrt.c
@@ -117,10 +120,15 @@ SOURCE=..\..\Tools\AcpiSrc\asmain.c
 
 SOURCE=..\..\Tools\AcpiSrc\asutils.c
 # End Source File
+# End Group
+# Begin Group "Common"
+
+# PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\Tools\Common\getopt.c
+SOURCE=..\..\Common\getopt.c
 # End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
