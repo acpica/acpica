@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.102 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -358,7 +358,7 @@ AcpiDsInitObjectFromOp (
 
     /* Perform per-object initialization */
 
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_BUFFER:
 
@@ -472,6 +472,8 @@ AcpiDsInitObjectFromOp (
 
             ObjDesc->Reference.Opcode = AML_LOCAL_OP;
             ObjDesc->Reference.Offset = Opcode - AML_LOCAL_OP;
+            AcpiDsMethodDataGetNode (AML_LOCAL_OP, ObjDesc->Reference.Offset, 
+                WalkState, (ACPI_NAMESPACE_NODE **) &ObjDesc->Reference.Object);
             break;
 
 
@@ -502,7 +504,7 @@ AcpiDsInitObjectFromOp (
     default:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unimplemented data type: %X\n",
-            ObjDesc->Common.Type));
+            ACPI_GET_OBJECT_TYPE (ObjDesc)));
 
         Status = AE_AML_OPERAND_TYPE;
         break;
@@ -903,7 +905,7 @@ AcpiDsCreateNode (
 
     /* Re-type the object according to it's argument */
 
-    Node->Type = ObjDesc->Common.Type;
+    Node->Type = ACPI_GET_OBJECT_TYPE (ObjDesc);
 
     /* Attach obj to node */
 
