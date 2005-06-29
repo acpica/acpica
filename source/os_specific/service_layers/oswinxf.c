@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -247,9 +247,21 @@ AcpiOsTableOverride (
         return (AE_BAD_PARAMETER);
     }
 
-    /* override table with itself */
+    *NewTable = NULL;
 
-    *NewTable = ExistingTable;
+
+#ifdef _ACPI_EXEC_APP
+
+    /* This code exercises the table override mechanism in the core */
+
+    if (!ACPI_STRNCMP (ExistingTable->Signature, DSDT_SIG, ACPI_NAME_SIZE))
+    {
+        /* override DSDT with itself */
+
+        *NewTable = AcpiGbl_DbTablePtr;
+    }
+#endif
+
     return (AE_OK);
 }
 
