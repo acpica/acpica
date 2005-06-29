@@ -198,6 +198,8 @@ char                        *Gbl_ExceptionNames[] =
     "AE_TIME",
     "AE_TERMINATE",
     "AE_DEPTH",
+    "AE_TRUE",
+    "AE_FALSE",
     "AE_UNKNOWN_STATUS"
 };
 
@@ -205,6 +207,7 @@ char                        *Gbl_ExceptionNames[] =
 /* Message strings */
 
 char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
+char                        *Gbl_AcpiCaVersion = ACPI_CA_VERSION;
 
 
 
@@ -450,6 +453,10 @@ CmInitGlobals (void)
 
     Gbl_BufSeq                  = 0;
     Gbl_NamedObjectErr          = FALSE;
+
+    /* Parser */
+
+    Gbl_ParsedNamespaceRoot     = NULL;
 
     /* Hardware oriented */
 
