@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  ******************************************************************************/
 
@@ -895,6 +895,10 @@ AcpiDbDisplayCallingTree (void)
  *
  * DESCRIPTION: Display the result of an AML opcode
  *
+ * Note: Curently only displays the result object if we are single stepping.
+ * However, this output may be useful in other contexts and could be enabled
+ * to do so if needed.
+ *
  ******************************************************************************/
 
 void
@@ -903,10 +907,8 @@ AcpiDbDisplayResultObject (
     ACPI_WALK_STATE         *WalkState)
 {
 
-    /* TBD: [Future] We don't always want to display the result.
-     * For now, only display if single stepping
-     * however, this output is very useful in other contexts also
-     */
+    /* Only display if single stepping */
+
     if (!AcpiGbl_CmSingleStep)
     {
         return;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -171,6 +171,8 @@ ARGUMENT_INFO         AcpiDbObjectTypes [] =
  * DESCRIPTION: Check if this namespace object refers to the target object
  *              that is passed in as the context value.
  *
+ * Note: Currently doesn't check subobjects within the Node's object
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -196,14 +198,6 @@ AcpiDbWalkForReferences (
     if (AcpiNsGetAttachedObject (Node) == ObjDesc)
     {
         AcpiOsPrintf ("Reference at Node->Object %p [%4.4s]\n", Node, &Node->Name);
-    }
-
-    /* Check first child for a match */
-    /* TBD: [Investigate] probably now obsolete with new datastructure */
-
-    if (Node->Child == (void *) ObjDesc)
-    {
-        AcpiOsPrintf ("Reference at Node->Child %p [%4.4s]\n", Node, &Node->Name);
     }
 
     return (AE_OK);
@@ -981,6 +975,9 @@ void
 AcpiDbSetScope (
     NATIVE_CHAR             *Name)
 {
+    ACPI_STATUS             Status;
+    ACPI_NAMESPACE_NODE     *Node;
+
 
     if (!Name || Name[0] == 0)
     {
@@ -990,21 +987,42 @@ AcpiDbSetScope (
 
     AcpiDbPrepNamestring (Name);
 
-    /* TBD: [Future] Validate scope here */
 
     if (Name[0] == '\\')
     {
+        /* Validate new scope from the root */
+
+        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_RootNode, NS_NO_UPSEARCH, &Node);
+        if (ACPI_FAILURE (Status))
+        {
+            goto ErrorExit;
+        }
+
         STRCPY (AcpiGbl_DbScopeBuf, Name);
         STRCAT (AcpiGbl_DbScopeBuf, "\\");
     }
-
     else
     {
+        /* Validate new scope relative to old scope */
+
+        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_DbScopeNode, NS_NO_UPSEARCH, &Node);
+        if (ACPI_FAILURE (Status))
+        {
+            goto ErrorExit;
+        }
+
         STRCAT (AcpiGbl_DbScopeBuf, Name);
         STRCAT (AcpiGbl_DbScopeBuf, "\\");
     }
 
+    AcpiGbl_DbScopeNode = Node;
     AcpiOsPrintf ("New scope: %s\n", AcpiGbl_DbScopeBuf);
+    return;
+
+
+ErrorExit:
+
+    AcpiOsPrintf ("Could not attach scope: %s, %s\n", Name, AcpiFormatException (Status));
 }
 
 
