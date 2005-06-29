@@ -494,9 +494,11 @@ AmlStoreObjectToNTE (
             else
             {
                 /*
-                 *  truncate, copy onlyt what will fit
+                 *  truncate, copy only what will fit
                  */
                 MEMCPY(DestDesc->Buffer.Pointer, Buffer, DestDesc->Buffer.Length);
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlStoreObjectToNTE: Buffer: truncating input buffer\n"));
             }
             break;
         }
