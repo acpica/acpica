@@ -117,8 +117,8 @@
 #define __IESYSTEM_C__
 
 #include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          INTERPRETER
