@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.98 $
+ *       $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,9 @@
  */
 
 #ifdef _ACPI_DUMP_APP
+#ifndef MSDOS
 #define ACPI_DEBUG
+#endif
 #define ACPI_APPLICATION
 #define ACPI_DISASSEMBLER
 #define ACPI_NO_METHOD_EXECUTION
