@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amlresrc.h - AML resource descriptors
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,7 @@
 #define ASL_RESNAME_ADDRESS                     "_ADR"
 #define ASL_RESNAME_ALIGNMENT                   "_ALN"
 #define ASL_RESNAME_ADDRESSSPACE                "_ASI"
+#define ASL_RESNAME_ACCESSSIZE                  "_ASZ"
 #define ASL_RESNAME_BASEADDRESS                 "_BAS"
 #define ASL_RESNAME_BUSMASTER                   "_BM_"  /* Master(1), Slave(0) */
 #define ASL_RESNAME_DECODE                      "_DEC"
@@ -381,7 +382,7 @@ typedef struct asl_general_register_desc
     UINT8                       AddressSpaceId;
     UINT8                       BitWidth;
     UINT8                       BitOffset;
-    UINT8                       Reserved;
+    UINT8                       AccessSize; /* ACPI 3.0, was Reserved */
     UINT64                      Address;
 
 } ASL_GENERAL_REGISTER_DESC;
