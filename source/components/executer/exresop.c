@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -684,6 +684,34 @@ AcpiExResolveOperands (
             default:
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                     "Needed [Region/RegionField], found [%s] %p\n",
+                    AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
+
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+            }
+            goto NextOperand;
+
+
+        case ARGI_DATAREFOBJ:
+
+            switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+            {
+            case ACPI_TYPE_INTEGER:
+            case ACPI_TYPE_PACKAGE:
+            case ACPI_TYPE_STRING:
+            case ACPI_TYPE_BUFFER:
+            case ACPI_TYPE_BUFFER_FIELD:
+            case ACPI_TYPE_LOCAL_REFERENCE:
+            case ACPI_TYPE_LOCAL_REGION_FIELD:
+            case ACPI_TYPE_LOCAL_BANK_FIELD:
+            case ACPI_TYPE_LOCAL_INDEX_FIELD:
+            case ACPI_TYPE_DDB_HANDLE:
+
+                /* Valid operand */
+                break;
+
+            default:
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Needed Integer/Buffer/String/Package/Ref/Ddb], found [%s] %p\n",
                     AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
