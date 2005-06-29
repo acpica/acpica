@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
+ *       $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -295,7 +296,8 @@ AcpiDbFindReferences (
 
 void
 AcpiDbDisplayOp (
-    ACPI_PARSE_OBJECT       *origin,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Origin,
     UINT32                  NumOpcodes);
 
 void
@@ -308,6 +310,7 @@ AcpiDbDisplayPath (
 
 void
 AcpiDbDisplayOpcode (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
 
 
