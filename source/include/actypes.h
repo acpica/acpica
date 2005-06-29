@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
+ *       $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -342,32 +343,39 @@ typedef UINT8                           OBJECT_TYPE_INTERNAL;
 
 /*
  * This section contains object types that do not relate to the ACPI ObjectType operator.
- * They are used for various internal purposes only.  A numerical gap is provided in
- * case additional "official" ObjectTypes are added in the future.  Also, values exceeding
- * the largest official ACPI ObjectType must not overlap with defined AML opcodes.
+ * They are used for various internal purposes only.  If new predefined ACPI_TYPEs are
+ * added (via the ACPI specification), these internal types must move upwards.
+ * Also, values exceeding the largest official ACPI ObjectType must not overlap with 
+ * defined AML opcodes.
  */
-#define INTERNAL_TYPE_BEGIN             25
-#define INTERNAL_TYPE_DEF_FIELD         25 /* 0x19  */
-#define INTERNAL_TYPE_BANK_FIELD        26 /* 0x1A  */
-#define INTERNAL_TYPE_INDEX_FIELD       27 /* 0x1B  */
-#define INTERNAL_TYPE_DEF_FIELD_DEFN    28 /* 0x1C  Name, ByteConst, multiple FieldElement */
-#define INTERNAL_TYPE_BANK_FIELD_DEFN   29 /* 0x1D  2 Name,DWordConst,ByteConst,multi FieldElement */
-#define INTERNAL_TYPE_INDEX_FIELD_DEFN  30 /* 0x1E  2 Name, ByteConst, multiple FieldElement */
-#define INTERNAL_TYPE_IF                31 /* 0x1F  OpCode, multiple Code */
-#define INTERNAL_TYPE_ELSE              32 /* 0x20  multiple Code */
-#define INTERNAL_TYPE_WHILE             33 /* 0x21  OpCode, multiple Code */
-#define INTERNAL_TYPE_SCOPE             34 /* 0x22  Name, multiple Node */
-#define INTERNAL_TYPE_DEF_ANY           35 /* 0x23  type is Any, suppress search of enclosing scopes */
-#define INTERNAL_TYPE_REFERENCE         36 /* 0x24  Arg#, Local#, Name, Debug; used only in descriptors */
-#define INTERNAL_TYPE_ALIAS             37 /* 0x25  */
-#define INTERNAL_TYPE_NOTIFY            38 /* 0x26  */
-#define INTERNAL_TYPE_ADDRESS_HANDLER   39 /* 0x27  */
-#define INTERNAL_TYPE_METHOD_ARGUMENT   40 /* 0x28  */
-#define INTERNAL_TYPE_METHOD_LOCAL_VAR  41 /* 0x29  */
+#define INTERNAL_TYPE_BEGIN             17
 
-#define INTERNAL_TYPE_MAX               41
+#define INTERNAL_TYPE_DEF_FIELD         17 /* 0x11  */
+#define INTERNAL_TYPE_BANK_FIELD        18 /* 0x12  */
+#define INTERNAL_TYPE_INDEX_FIELD       19 /* 0x13  */
+#define INTERNAL_TYPE_REFERENCE         20 /* 0x14  Arg#, Local#, Name, Debug; used only in descriptors */
+#define INTERNAL_TYPE_ALIAS             21 /* 0x15  */
+#define INTERNAL_TYPE_NOTIFY            22 /* 0x16  */
+#define INTERNAL_TYPE_ADDRESS_HANDLER   23 /* 0x17  */
 
-#define INTERNAL_TYPE_INVALID           42
+#define INTERNAL_TYPE_NODE_MAX          23
+
+/* These are pseudo-types because there are never any namespace nodes with these types */
+
+#define INTERNAL_TYPE_DEF_FIELD_DEFN    24 /* 0x18  Name, ByteConst, multiple FieldElement */
+#define INTERNAL_TYPE_BANK_FIELD_DEFN   25 /* 0x19  2 Name,DWordConst,ByteConst,multi FieldElement */
+#define INTERNAL_TYPE_INDEX_FIELD_DEFN  26 /* 0x1A  2 Name, ByteConst, multiple FieldElement */
+#define INTERNAL_TYPE_IF                27 /* 0x1B  OpCode, multiple Code */
+#define INTERNAL_TYPE_ELSE              28 /* 0x1C  multiple Code */
+#define INTERNAL_TYPE_WHILE             29 /* 0x1D  OpCode, multiple Code */
+#define INTERNAL_TYPE_SCOPE             30 /* 0x1E  Name, multiple Node */
+#define INTERNAL_TYPE_DEF_ANY           31 /* 0x1F  type is Any, suppress search of enclosing scopes */
+#define INTERNAL_TYPE_METHOD_ARGUMENT   32 /* 0x20  */
+#define INTERNAL_TYPE_METHOD_LOCAL_VAR  33 /* 0x21  */
+
+#define INTERNAL_TYPE_MAX               33
+
+#define INTERNAL_TYPE_INVALID           34
 #define ACPI_TYPE_NOT_FOUND             0xFF
 
 /*
