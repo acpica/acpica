@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -286,8 +286,8 @@ typedef enum
 } ASL_FILE_TYPES;
 
 
-#define ASL_MAX_FILE            9
-#define ASL_NUM_FILES           (ASL_MAX_FILE + 1)
+#define ASL_MAX_FILE_TYPE       10
+#define ASL_NUM_FILES           (ASL_MAX_FILE_TYPE + 1)
 
 
 /* An entry in the exception list, one for each error/warning */
