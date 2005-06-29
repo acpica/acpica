@@ -314,8 +314,7 @@ CmUpdateObjectReference (
         Next = Object->AddrHandler.Link;
         while (Next)
         {
-            Next->Common.ReferenceCount = CmUpdateRefCount (Next, 
-                                            Next->Common.ReferenceCount, Action);
+            Next->Common.ReferenceCount = (UINT16) CmUpdateRefCount (Next, Next->Common.ReferenceCount, Action);
 
             Next = Next->AddrHandler.Link;
         }
@@ -380,8 +379,8 @@ CmUpdateObjectReference (
      * Now we can update the count in the main object
      */
 
-    Object->Common.ReferenceCount = CmUpdateRefCount (Object, 
-                                        Object->Common.ReferenceCount, Action);
+    Object->Common.ReferenceCount = (UINT16) CmUpdateRefCount (Object, 
+                                                Object->Common.ReferenceCount, Action);
 
     return_ACPI_STATUS (AE_OK);
 }
