@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.149 $
+ *       $Revision: 1.150 $
  *
  *****************************************************************************/
 
@@ -319,8 +319,8 @@ AcpiExDoConcatenate (
 BOOLEAN
 AcpiExDoLogicalOp (
     UINT16                  Opcode,
-    ACPI_INTEGER            Operand0,
-    ACPI_INTEGER            Operand1);
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc2);
 
 ACPI_INTEGER
 AcpiExDoMathOp (
