@@ -142,12 +142,12 @@ NsSearchOnly (
 
     /* Debug only */
 
-    ScopeName = NsNameOfScope (NameTable);
-    DEBUG_PRINT (TRACE_NAMES,
-                    ("NsSearchOnly: search %s [%p] for %4.4s (type %d)\n",
-                    ScopeName, NameTable, EntryName, Type));
-
-    OsdFree (ScopeName);
+    DEBUG_EXEC (ScopeName = NsNameOfScope (NameTable));
+    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Searching %s [%p]\n",
+                        ScopeName, NameTable));
+    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type %d)\n",
+                        EntryName, Type));
+    DEBUG_EXEC (OsdFree (ScopeName));
 
     /* 
      * Name tables are built (and subsequently dumped) in the
@@ -220,7 +220,7 @@ NsSearchOnly (
             
             CheckTrash ("leave NsSearchTable FOUND");
             *RetEntry = &NameTable[Position];
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_OK);
             return AE_OK;
         }
 
@@ -270,7 +270,7 @@ NsSearchOnly (
         RetInfo->NameTable  = NameTable;
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
     return AE_NOT_FOUND;
 }
 
@@ -339,7 +339,7 @@ NsSearchParentTree (
             if (Status == AE_OK)
             {
                 CheckTrash ("leave NsSearchTable FOUND in parent");
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
@@ -369,7 +369,7 @@ NsSearchParentTree (
         }
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
     return AE_NOT_FOUND;
 }
 
@@ -447,7 +447,7 @@ NsCreateAndLinkNewTable (
                 NewTable, ParentScope, NameTable->Scope));
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -641,7 +641,7 @@ NsSearchAndEnter (
     if (!NameTable || !EntryName || !RetEntry)
     {
         REPORT_ERROR ("NsSearchAndEnter: bad parameter");
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -656,7 +656,7 @@ NsSearchAndEnter (
         DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** bad name %08lx *** \n", 
                                     *(UINT32 *) EntryName));
         CheckTrash ("leave NsSearchTable BADNAME");
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_CHARACTER);
         return AE_BAD_CHARACTER;
     }
 
@@ -669,7 +669,7 @@ NsSearchAndEnter (
     {
         /* Either found it or there was an error -- finished either way */
 
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -690,7 +690,7 @@ NsSearchAndEnter (
         Status = NsSearchParentTree (EntryName, NameTable, Type, RetEntry);
         if (Status == AE_OK)
         {
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (Status);
             return Status;
         }
     }
@@ -702,11 +702,11 @@ NsSearchAndEnter (
 
     if (LoadMode == MODE_Exec)
     {
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: Name %.4s Not found in %p (not adding)\n", 
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %.4s Not found in %p [Not adding]\n", 
                                     EntryName, NameTable));
         CheckTrash ("leave NsSearchTable NOTFOUND");
     
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
         return AE_NOT_FOUND;
     }
 
@@ -729,7 +729,7 @@ NsSearchAndEnter (
         Status = NsCreateAndLinkNewTable (NameTable);
         if (Status != AE_OK)
         {
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (Status);
             return Status;
         }
 
@@ -749,7 +749,7 @@ NsSearchAndEnter (
                         SearchInfo.PreviousEntry);
     *RetEntry = &NameTable[Position];
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
