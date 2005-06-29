@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -575,7 +575,7 @@ FlOpenInputFile (
 
     /* Open the input ASL file, text mode */
 
-    FlOpenFile (ASL_FILE_INPUT, InputFilename, "r");
+    FlOpenFile (ASL_FILE_INPUT, InputFilename, "rt");
     AslCompilerin = Gbl_Files[ASL_FILE_INPUT].Handle;
 
     /* Get the path to the input filename's directory */
@@ -682,7 +682,7 @@ FlOpenMiscOutputFiles (
 
     /* Open the source output file, text mode */
 
-    FlOpenFile (ASL_FILE_SOURCE_OUTPUT, Filename, "w+");
+    FlOpenFile (ASL_FILE_SOURCE_OUTPUT, Filename, "w+t");
 
     /* Create/Open a listing output file if asked */
 
@@ -697,7 +697,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the listing file, text mode */
 
-        FlOpenFile (ASL_FILE_LISTING_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_LISTING_OUTPUT, Filename, "w+t");
 
         AslCompilerSignon (ASL_FILE_LISTING_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_LISTING_OUTPUT);
@@ -716,7 +716,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the assembly code source file, text mode */
 
-        FlOpenFile (ASL_FILE_ASM_SOURCE_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_ASM_SOURCE_OUTPUT, Filename, "w+t");
 
         AslCompilerSignon (ASL_FILE_ASM_SOURCE_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_ASM_SOURCE_OUTPUT);
@@ -755,7 +755,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the hex file, text mode */
 
-        FlOpenFile (ASL_FILE_HEX_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_HEX_OUTPUT, Filename, "w+t");
 
         AslCompilerSignon (ASL_FILE_HEX_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_HEX_OUTPUT);
@@ -774,7 +774,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the namespace file, text mode */
 
-        FlOpenFile (ASL_FILE_NAMESPACE_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_NAMESPACE_OUTPUT, Filename, "w+t");
 
         AslCompilerSignon (ASL_FILE_NAMESPACE_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_NAMESPACE_OUTPUT);
@@ -796,7 +796,7 @@ FlOpenMiscOutputFiles (
         /* TBD: hide this behind a FlReopenFile function */
 
         Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Filename = Filename;
-        Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle   = freopen (Filename, "w+", stderr);
+        Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle   = freopen (Filename, "w+t", stderr);
 
         AslCompilerSignon (ASL_FILE_DEBUG_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_DEBUG_OUTPUT);
