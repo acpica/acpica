@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.128 $
+ *              $Revision: 1.129 $
  *
  ******************************************************************************/
 
@@ -523,7 +523,7 @@ AcpiSetRegister (
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition, 
                 BitRegInfo->AccessBitMask, Value);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %8.8X%8.8X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %4.4X to %8.8X%8.8X\n",
             RegisterValue,
             ACPI_HIDWORD (AcpiGbl_FADT->XPm2CntBlk.Address),
             ACPI_LODWORD (AcpiGbl_FADT->XPm2CntBlk.Address)));
