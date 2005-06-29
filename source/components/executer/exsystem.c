@@ -14,15 +14,18 @@
  | FILENAME: amlopsys.c
  |__________________________________________________________________________
  |
- | $Revision: 1.10 $
- | $Date: 2005/06/29 17:56:42 $
+ | $Revision: 1.11 $
+ | $Date: 2005/06/29 17:56:43 $
  | $Log: exsystem.c,v $
- | Revision 1.10  2005/06/29 17:56:42  aystarik
- | Header cleanup;  Split debug switch into component_id and level
+ | Revision 1.11  2005/06/29 17:56:43  aystarik
+ | Major header file consolidation
  |
  | 
- | date	99.04.05.23.10.00;	author rmoore1;	state Exp;
+ | date	99.04.07.22.35.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 11    4/07/99 3:35p Rmoore1
+ * Major header file consolidation
  * 
  * 10    4/05/99 4:10p Rmoore1
  * Header cleanup;  Split debug switch into component_id and level
@@ -63,8 +66,8 @@
 #define __AMLOPSYS_C__
 
 #include <acpi.h>
-#include <acpinmsp.h>
-#include <amlopsys.h>
+#include <interpreter.h>
+#include <namespace.h>
 
 
 #define _THIS_MODULE        "amlopsys.c"
