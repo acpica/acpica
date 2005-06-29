@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.106 $
+ *       $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -469,6 +469,26 @@ AcpiUtDumpBuffer (
     UINT32                  Display,
     UINT32                  componentId);
 
+
+void
+AcpiUtDebugPrint (
+    UINT32                  RequestedDebugLevel,
+    UINT32                  ComponentId,
+    NATIVE_CHAR             *ModuleName,
+    NATIVE_CHAR             *ProcName,
+    UINT32                  LineNumber,
+    char                    *Format,
+    ...);
+
+void
+AcpiUtDebugPrintRaw (
+    UINT32                  RequestedDebugLevel,
+    UINT32                  ComponentId,
+    NATIVE_CHAR             *ModuleName,
+    NATIVE_CHAR             *ProcName,
+    UINT32                  LineNumber,
+    char                    *Format,
+    ...);
 
 /*
  * UtDelete - Object deletion
