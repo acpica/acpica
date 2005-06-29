@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -289,27 +289,26 @@ AcpiOsWritable (
  *
  * PARAMETERS:  fmt, ...            Standard printf format
  *
- * RETURN:      Actual bytes written
+ * RETURN:      None
  *
  * DESCRIPTION: Formatted output
  *
  *****************************************************************************/
 
-INT32
+void
 AcpiOsPrintf (
     const char              *Fmt,
     ...)
 {
-    INT32                   Count;
     va_list                 Args;
 
 
     va_start (Args, Fmt);
 
-    Count = AcpiOsVprintf (Fmt, Args);
+    AcpiOsVprintf (Fmt, Args);
 
     va_end (Args);
-    return Count;
+    return;
 }
 
 
@@ -320,13 +319,13 @@ AcpiOsPrintf (
  * PARAMETERS:  fmt                 Standard printf format
  *              args                Argument list
  *
- * RETURN:      Actual bytes written
+ * RETURN:      None
  *
  * DESCRIPTION: Formatted output with argument list pointer
  *
  *****************************************************************************/
 
-INT32
+void
 AcpiOsVprintf (
     const char              *Fmt,
     va_list                 Args)
@@ -359,7 +358,7 @@ AcpiOsVprintf (
         Count = vprintf (Fmt, Args);
     }
 
-    return Count;
+    return;
 }
 
 
