@@ -454,7 +454,8 @@ void
 PsGetNextNamepath (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_GENERIC_OP         *Arg,
-    UINT32                  *ArgCount);
+    UINT32                  *ArgCount,
+    BOOLEAN                 MethodCall);
 
 ACPI_GENERIC_OP *
 PsGetNextField (
