@@ -164,18 +164,22 @@ DsMethodDataInit (
 
     for (i = 0; i < MTH_NUM_ARGS; i++)
     {
+        STORE32TO32 (&WalkState->Arguments[i].Name, NAMEOF_ARG_NTE);
+
+        WalkState->Arguments[i].Name            |= (i << 24);
         WalkState->Arguments[i].DataType        = DESC_TYPE_NTE;
         WalkState->Arguments[i].Type            = INTERNAL_TYPE_MethodArgument;
-        WalkState->Arguments[i].Name            = *((UINT32 *) NAMEOF_ARG_NTE) | (i << 24);
     }
 
     /* Init the method locals */
 
     for (i = 0; i < MTH_NUM_LOCALS; i++)
     {
+        STORE32TO32 (&WalkState->LocalVariables[i].Name, NAMEOF_LOCAL_NTE);
+
+        WalkState->LocalVariables[i].Name       |= (i << 24);
         WalkState->LocalVariables[i].DataType   = DESC_TYPE_NTE;
         WalkState->LocalVariables[i].Type       = INTERNAL_TYPE_MethodLocalVar;
-        WalkState->LocalVariables[i].Name       = *((UINT32 *) NAMEOF_LOCAL_NTE) | (i << 24);
     }
 
 
