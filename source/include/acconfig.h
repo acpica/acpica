@@ -195,5 +195,9 @@
 
 #define MAX_REFERENCE_COUNT         0x200
 
+/* Max number of objects in the state object cache */
+
+#define MAX_STATE_CACHE_DEPTH       16
+
 #endif /* _CONFIG_H */
 
