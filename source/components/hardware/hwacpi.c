@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.61 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -220,7 +220,7 @@ AcpiHwSetMode (
         /* BIOS should have disabled ALL fixed and GP events */
 
         Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd,
-                        (ACPI_INTEGER) AcpiGbl_FADT->AcpiEnable, 8);
+                        (UINT32) AcpiGbl_FADT->AcpiEnable, 8);
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Attempting to enable ACPI mode\n"));
         break;
 
@@ -231,7 +231,7 @@ AcpiHwSetMode (
          * enable bits to default
          */
         Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd,
-                    (ACPI_INTEGER) AcpiGbl_FADT->AcpiDisable, 8);
+                    (UINT32) AcpiGbl_FADT->AcpiDisable, 8);
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                     "Attempting to enable Legacy (non-ACPI) mode\n"));
         break;
