@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.130 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,13 @@
 #define _COMPONENT          ACPI_EXECUTER
         ACPI_MODULE_NAME    ("exresolv")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiExResolveObjectToValue (
+    ACPI_OPERAND_OBJECT     **StackPtr,
+    ACPI_WALK_STATE         *WalkState);
+
 
 /*******************************************************************************
  *
@@ -205,13 +212,12 @@ AcpiExResolveToValue (
  *
  * FUNCTION:    AcpiExResolveObjectToValue
  *
- * PARAMETERS:  StackPtr        - Pointer to a stack location that contains a
- *                                ptr to an internal object.
+ * PARAMETERS:  StackPtr        - Pointer to an internal object
  *              WalkState       - Current method state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Retrieve the value from an internal object.  The Reference type
+ * DESCRIPTION: Retrieve the value from an internal object. The Reference type
  *              uses the associated AML opcode to determine the value.
  *
  ******************************************************************************/
@@ -246,7 +252,7 @@ AcpiExResolveObjectToValue (
         case AML_NAME_OP:
 
             /*
-             * Convert indirect name ptr to a direct name ptr.
+             * Convert name reference to a namespace node
              * Then, AcpiExResolveNodeToValue can be used to get the value
              */
             TempNode = StackDesc->Reference.Object;
@@ -255,7 +261,7 @@ AcpiExResolveObjectToValue (
 
             AcpiUtRemoveReference (StackDesc);
 
-            /* Put direct name pointer onto stack and exit */
+            /* Return the namespace node */
 
             (*StackPtr) = TempNode;
             break;
@@ -378,9 +384,8 @@ AcpiExResolveObjectToValue (
         break;
 
 
-    /*
-     * These cases may never happen here, but just in case..
-     */
+    /* These cases may never happen here, but just in case.. */
+
     case ACPI_TYPE_BUFFER_FIELD:
     case ACPI_TYPE_LOCAL_REGION_FIELD:
     case ACPI_TYPE_LOCAL_BANK_FIELD:
@@ -433,9 +438,8 @@ AcpiExResolveMultiple (
     ACPI_FUNCTION_TRACE ("AcpiExResolveMultiple");
 
 
-    /*
-     * Operand can be either a namespace node or an operand descriptor
-     */
+    /* Operand can be either a namespace node or an operand descriptor */
+
     switch (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc))
     {
     case ACPI_DESC_TYPE_OPERAND:
@@ -459,10 +463,8 @@ AcpiExResolveMultiple (
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
+    /* If type is anything other than a reference, we are done */
 
-    /*
-     * If type is anything other than a reference, we are done
-     */
     if (Type != ACPI_TYPE_LOCAL_REFERENCE)
     {
         goto Exit;
