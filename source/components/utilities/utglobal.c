@@ -288,23 +288,6 @@ ACPI_INIT_DATA Gbl_AcpiInitData;
 char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
 
 
-/* Names for the mutexes used in the subsystem */
-
-static char                 *Gbl_MutexNames[] =
-{
-    "MTX_Memory",
-    "MTX_Tables",
-    "MTX_Dispatcher",
-    "MTX_Interpreter",
-    "MTX_Execute",
-    "MTX_Namespace",
-    "MTX_Events",
-    "MTX_OpRegions",
-    "MTX_DebugCommand",
-    "MTX_Debugger"
-};
-
-
 /*****************************************************************************
  * 
  * FUNCTION:    CmGetMutexName
