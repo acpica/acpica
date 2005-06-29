@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -323,6 +323,11 @@ LdLoadResourceElements (
             NsNode->OwnerId = InitializerNode->Value.Integer16;
             InitializerNode->NsNode = NsNode;
             NsNode->Object = InitializerNode;
+
+            if (PsNode->Flags & NODE_IS_BIT_OFFSET)
+            {
+                NsNode->Flags |= ANOBJ_IS_BIT_OFFSET;
+            }
         }
 
         InitializerNode = ASL_GET_PEER_NODE (InitializerNode);

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -527,14 +527,17 @@ LkNamespaceLocateBegin (
          * the field type) and change the named reference into an integer for
          * AML code generation
          */
-
-        // TBD: obsolete, no need to delete: AcpiUtFree (PsNode->Value.String);
-
         PsNode->ParseOpcode     = INTEGER;
-        PsNode->AmlOpcode       = AML_DWORD_OP;
         PsNode->Value.Integer   = (UINT64) NsNode->OwnerId;
 
-        PsNode->AmlLength       = OpcSetOptimalIntegerSize (PsNode);
+        OpcGenerateAmlOpcode (PsNode);
+        PsNode->AmlLength = OpcSetOptimalIntegerSize (PsNode);
+
+        if (NsNode->Flags & ANOBJ_IS_BIT_OFFSET)
+        {
+            PsNode->Flags |= NODE_IS_BIT_OFFSET;
+        }
+
     }
 
 
