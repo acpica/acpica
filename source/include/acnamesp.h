@@ -11,32 +11,17 @@
  | otherwise, without the prior written permission of Intel Corporation.
  |__________________________________________________________________________
  |
- | FILENAME: acpinmsp.h - prototypes for accessing namespace
- |__________________________________________________________________________
- |
- | $Revision: 1.12 $
- | $Date: 2005/06/29 19:49:38 $
- | $Log: acnamesp.h,v $
- | Revision 1.12  2005/06/29 19:49:38  aystarik
- | Added the currently defined Public APIs and removed a lot of the old
- | source control history
- |
- | 
- | date	99.04.02.18.14.00;	author rmosgrov;	state Exp;
- |
- * 
- * 12    4/02/99 10:14a Rmosgrov
- * Added the currently defined Public APIs and removed a lot of the old
- * source control history
+ | FILENAME: namespace.h - prototypes for accessing namespace
  |__________________________________________________________________________
 
 */
 
-#ifndef __ACPINMSP_H__
-#define __ACPINMSP_H__
+#ifndef __NAMESPACE_H__
+#define __NAMESPACE_H__
 
-#include "acpiobj.h"
-#include "pnp.h"
+#include <acpiobj.h>
+#include <pnp.h>
+
 
 /* 
  * An NsHandle (which is actually an nte *) can appear in some contexts,
@@ -49,111 +34,126 @@
  * Valid NsType values must not include any character acceptable in a name.
  */
 
-#define IsNsHandle(h) (NcOK((INT32)*(char *)(h)))
+#define IsNsHandle(h)           (NcOK ((INT32) * (char *) (h)))
 
 
 /* To search the entire name space, pass this as SearchBase */
 
-#define  NS_ALL   ((NsHandle)0)
+#define  NS_ALL                 ((NsHandle)0)
 
 
-/* 
- * Definitions in amlpriv.h, including OBJECT_DESCRIPTOR, are internal to the
- * AML scanner/interpreter; however descriptor pointers are used externally
- * as object handles.  If not building the interpreter itself, we need to
- * include amlpub.h, which defines OBJECT_DESCRIPTOR as void so that functions
- * which actually expect (OBJECT_DESCRIPTOR *) are declared as receiving
- * (void *).
- */
-
-#ifdef ACPILIB_GEN
-   #include "acpitype.h"
-   #include "amlexec.h"
-   #include "amlscan.h"
-   #include "amlpriv.h"
-#else
-   #include <acpitype.h>
-   #include <amlexec.h>
-   #include <amlscan.h>
-   #include <amlpub.h>
-#endif
-
-extern char BadType[];
-extern char *NsTypeNames[];
+extern char                     BadType[];
+extern char                     *NsTypeNames[];
 
 
 /* Prototypes */
 
 INT32
-PriUnloadNameSpace (void);
+PriUnloadNameSpace (
+    void);
 
 void
-NsPushMethodScope (NsHandle nNewScope);
+NsPushMethodScope (
+    NsHandle            nNewScope);
 
 INT32
-AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR **ReturnValue,
-        OBJECT_DESCRIPTOR **Params);
+AcpiExecuteMethod (
+    char                *MethodName, 
+    OBJECT_DESCRIPTOR   **ReturnValue,
+    OBJECT_DESCRIPTOR   **Params);
 
 int 
-AcpiInit (char *);
+AcpiInit (
+    char *);
 
 INT32
-AcpiLoadNameSpace  (INT32 DisplayAmlDuringLoad);
+AcpiLoadNameSpace  (
+    INT32               DisplayAmlDuringLoad);
 
 INT32
-AcpiUnloadNameSpace (void);
+AcpiUnloadNameSpace (
+    void);
 
 void
-AcpiCleanup (void);
+AcpiCleanup (
+    void);
 
 NsType
-NsValType (NsHandle h);
+NsValType (
+    NsHandle            h);
 
 void *
-NsValPtr (NsHandle h);
+NsValPtr (
+    NsHandle            h);
 
 void
-NsSetup (void);
+NsSetup (
+    void);
 
 INT32
-NsPopCurrent (NsType Type);
+NsPopCurrent (
+    NsType              Type);
 
 NsHandle
-NsEnter (char *Name, NsType Type, OpMode iLE);
+NsEnter (
+    char                *Name, 
+    NsType              Type, 
+    OpMode              iLE);
 
 NsHandle 
-GetParentHandle (NsHandle Look);
+GetParentHandle (
+    NsHandle            Look);
 
 char *
-NsNameOfCurrentScope (void);
+NsNameOfCurrentScope (
+    void);
 
 char *
-NsFullyQualifiedName (NsHandle Look);
+NsFullyQualifiedName (
+    NsHandle            Look);
 
 void
-NsSetMethod (NsHandle h, ptrdiff_t Offset, INT32 Length);
+NsSetMethod (
+    NsHandle            h, 
+    ptrdiff_t           Offset, 
+    INT32               Length);
+        
+void
+NsSetValue (
+    NsHandle h, 
+    ACPI_OBJECT_HANDLE  v, 
+    UINT8               ValTyp);
 
 void
-NsSetValue (NsHandle h, ACPI_OBJECT_HANDLE v, UINT8 ValTyp);
+NsDumpTables (
+    INT32               DisplayBitFlags, 
+    INT32               UseGraphicCharSet,
+    NsHandle            SearchBase, 
+    INT32               MaxDepth);
 
 void
-NsDumpTables (INT32 DisplayBitFlags, INT32 UseGraphicCharSet,
-                NsHandle SearchBase, INT32 MaxDepth);
-
-void
-NsDumpEntry (NsHandle h, INT32 DisplayBitFlags);
+NsDumpEntry (
+    NsHandle            h, 
+    INT32               DisplayBitFlags);
 
 NsHandle *
-NsFindNames (char *SearchFor, NsHandle SearchBase, INT32 MaxDepth);
+NsFindNames (
+    char                *SearchFor, 
+    NsHandle            SearchBase, 
+    INT32               MaxDepth);
 
 NsHandle
-NsGetHandle (char *Name, NsHandle Scope);
+NsGetHandle (
+    char                *Name, 
+    NsHandle            Scope);
 
 INT32
-IsNsValue (OBJECT_DESCRIPTOR *pOD);
+IsNsValue (
+    OBJECT_DESCRIPTOR   *pOD);
 
 INT32
-NsMarkNS(void);
+NsMarkNS(
+    void);
 
 
 #ifndef PLUMBER
@@ -166,10 +166,12 @@ NsMarkNS(void);
 #else
 
 void
-RegisterStaticBlockPtr (void **BP);
+RegisterStaticBlockPtr (
+    void                **BP);
 
 void
-MarkStaticBlocks (INT32 *Count);
+MarkStaticBlocks (
+    INT32               *Count);
 
 #endif /* PLUMBER */
 
@@ -180,53 +182,126 @@ MarkStaticBlocks (INT32 *Count);
  ******************************************************************************/
 
 INT32
-AcpiLoadNameSpace (INT32 DisplayAmlDuringLoad);
+AcpiLoadNameSpace (
+    INT32               DisplayAmlDuringLoad);
+
 NsHandle 
-AcpiLoadTable (NsHandle OpRegion);
+AcpiLoadTable (
+    NsHandle            OpRegion);
 
 INT32 
-AcpiUnLoadTable (NsHandle TableHandle);
+AcpiUnLoadTable (
+    NsHandle            TableHandle);
 
 NsHandle 
-AcpiLoadTableFromFile (char *FileName);
+AcpiLoadTableFromFile (
+    char                *FileName);
 
 INT32 
-AcpiEnumerateDevice (NsHandle DeviceHandle, DEVICE_ID *HidPtr, BOOLEAN *EnumPtr);
+AcpiEnumerateDevice (
+    NsHandle            DeviceHandle, 
+    DEVICE_ID           *HidPtr, 
+    BOOLEAN             *EnumPtr);
 
 NsHandle 
-AcpiGetNextSubDevice(NsHandle DeviceHandle, UINT32 Count);
+AcpiGetNextSubDevice(
+    NsHandle            DeviceHandle, 
+    UINT32              Count);
 
 NsHandle 
-AcpiNameToHandle (char *NsName, NsHandle Scope);
+AcpiNameToHandle (
+    char                *NsName, 
+    NsHandle            Scope);
 
 char * 
-AcpiHandleToName (NsHandle InHandle);
+AcpiHandleToName (
+    NsHandle            InHandle);
 
 NsHandle 
-AcpiGetParentHandle (NsHandle ChildHandle);
+AcpiGetParentHandle (
+    NsHandle            ChildHandle);
 
 NsType 
-AcpiValueType (NsHandle Handle);
+AcpiValueType (
+    NsHandle            Handle);
 
 char * 
-AcpiCurrentScopeName (void);
+AcpiCurrentScopeName (
+    void);
 
 BOOLEAN 
-AcpiIsNameSpaceHandle (NsHandle QueryHandle);
+AcpiIsNameSpaceHandle (
+    NsHandle            QueryHandle);
 
 BOOLEAN 
-AcpiIsNameSpaceValue (NsType Value);
+AcpiIsNameSpaceValue (
+    NsType              Value);
 
 INT32
-AcpiSetFirmwareWakingVector (UINT32 PhysicalAddress);
+AcpiSetFirmwareWakingVector (
+    UINT32              PhysicalAddress);
 
 INT32
-AcpiGetFirmwareWakingVector (UINT32 * PhysicalAddress);
+AcpiGetFirmwareWakingVector (
+    UINT32              *PhysicalAddress);
 
 ACPI_TABLE_HEADER * 
-AcpiGetTableHeader (NsHandle Handle);
+AcpiGetTableHeader (
+    NsHandle            Handle);
 
 ACPI_TABLE_HEADER * 
-AcpiGetTable (NsHandle Handle);
+AcpiGetTable (
+    NsHandle            Handle);
 
-#endif /* __ACPINMSP_H__ */
+
+
+
+#define ACPILIB_DATA_FILE_VERSION "ADF-001"
+
+/* ACPI Table Prototypes */
+
+/* functions visable outside of the library itself */
+
+void 
+InitAcpiLibGlobals (
+    void);
+
+INT32
+LoadNameSpace (
+    INT32               DisplayAmlDuringLoad);
+
+INT32
+AcpiSetFirmwareWakingVector (
+    UINT32              PhysicalAddress);
+
+INT32
+AcpiGetFirmwareWakingVector (
+    UINT32              *PhysicalAddress);
+
+void
+AcpiCleanup (
+    void);
+
+/* functions private to the library */
+
+INT32
+FindRootSystemDescriptorPointer (
+    ROOT_SYSTEM_DESCRIPTOR_POINTER  ** RSDP,
+    OSD_FILE                        *InputFile);
+
+INT32
+VerifyTableChecksum (
+    void                *TableHeader, 
+    INT32               DisplayBitFlags);
+
+void * 
+GetTable (
+    UINT32              PhysicalAddress, 
+    OSD_FILE            *InputFile);
+
+void * 
+GetFACS (
+    OSD_FILE            *InputFile);
+
+
+#endif /* __NAMESPACE_H__ */
