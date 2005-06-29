@@ -28,7 +28,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -220,8 +220,7 @@ EvInstallSciHandler (void)
         EvSciHandler,
         NULL);
     
-    FUNCTION_EXIT;
-    return Except;
+    return_ACPI_STATUS (Except);
 }
 
 
@@ -281,8 +280,7 @@ EvRemoveSciHandler (void)
         (UINT32) FACP->SciInt,
         EvSciHandler);
 
-    FUNCTION_EXIT;
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -328,8 +326,7 @@ EvSciCount (
         Count = EventCount[Event];
     }
     
-    FUNCTION_EXIT;
-    return Count;
+    return_VALUE (Count);
 }
 
 #endif
@@ -408,8 +405,7 @@ EvRestoreAcpiState (void)
         }
     }
     
-    FUNCTION_EXIT;
-    return;
+    return_VOID;
 }
 
 
@@ -445,7 +441,7 @@ EvTerminate (void)
         CmFree (GpeInfo);
     }
 
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
  
