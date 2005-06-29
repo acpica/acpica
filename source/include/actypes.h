@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.224 $
+ *       $Revision: 1.225 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ typedef COMPILER_DEPENDENT_UINT64       UINT64;
 typedef UINT64                          NATIVE_UINT;
 typedef UINT64                          NATIVE_INT;
 
-typedef NATIVE_UINT                     ACPI_TBLPTR;
+typedef UINT64                          ACPI_TBLPTR;
 typedef UINT64                          ACPI_IO_ADDRESS;
 typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 typedef UINT64                          ACPI_SIZE;
@@ -215,7 +215,7 @@ typedef COMPILER_DEPENDENT_UINT64       UINT64;
 typedef UINT32                          NATIVE_UINT;
 typedef INT32                           NATIVE_INT;
 
-typedef NATIVE_UINT                     ACPI_TBLPTR;
+typedef UINT64                          ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 typedef UINT32                          ACPI_SIZE;
@@ -235,11 +235,34 @@ typedef UINT32                          UINT32_BIT;
 typedef NATIVE_UINT                     ACPI_PTRDIFF;
 typedef char                            NATIVE_CHAR;
 
+/*
+ * Pointer overlays to avoid lots of typecasting for
+ * code that accepts both physical and logical pointers.
+ */
+typedef union AcpiPointers
+{
+    ACPI_PHYSICAL_ADDRESS       Physical;
+    void                        *Logical;
+    ACPI_TBLPTR                 Value;
+
+} ACPI_POINTERS;
+
+typedef struct AcpiPointer
+{
+    UINT32                      PointerType;
+    ACPI_POINTERS               Pointer;
+
+} ACPI_POINTER;
+
+/* PointerTypes for above */
+
+#define ACPI_LOGICAL_POINTER            0x01
+#define ACPI_PHYSICAL_POINTER           0x02
+
 
 /*
  * Data type ranges
  */
-
 #define ACPI_UINT8_MAX                  (UINT8)  0xFF
 #define ACPI_UINT16_MAX                 (UINT16) 0xFFFF
 #define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
