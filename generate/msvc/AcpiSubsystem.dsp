@@ -67,7 +67,6 @@ RSC=rc.exe
 # ADD RSC /l 0x409
 # ADD BASE CPP /nologo /W3 /GX /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /ZI /GZ /c
 # ADD CPP /nologo /Gz /MT /W3 /GX /Z7 /Og /Os /I "..\..\Subsystem\include" /I "\98ddk\inc\win98" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "ACPI_DEBUG" /D "_DEBUG" /FR /FD /c
-# SUBTRACT CPP /FA<none>
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -110,6 +109,10 @@ SOURCE=..\..\Subsystem\Common\cmalloc.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\cmapi.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Common\cmclib.c
 # End Source File
 # Begin Source File
 
@@ -798,6 +801,10 @@ SOURCE=..\..\Subsystem\Include\internal.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\interpreter.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\macros.h
 # End Source File
 # Begin Source File
 
