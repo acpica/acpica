@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -132,15 +132,12 @@
  *
  * FUNCTION:    AcpiDsParseMethod
  *
- * PARAMETERS:  ObjHandle       - Node of the method
- *              Level           - Current nesting level
- *              Context         - Points to a method counter
- *              ReturnValue     - Not used
+ * PARAMETERS:  ObjHandle       - Method node
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Call the parser and parse the AML that is
- *              associated with the method.
+ * DESCRIPTION: Call the parser and parse the AML that is associated with the 
+ *              method.
  *
  * MUTEX:       Assumes parser is locked
  *
@@ -273,8 +270,6 @@ AcpiDsParseMethod (
  *              increments the thread count, and waits at the method semaphore
  *              for clearance to execute.
  *
- * MUTEX:       Locks/unlocks parser.
- *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -337,7 +332,8 @@ AcpiDsBeginMethodExecution (
  *
  * FUNCTION:    AcpiDsCallControlMethod
  *
- * PARAMETERS:  WalkState           - Current state of the walk
+ * PARAMETERS:  Thread              - Info for this thread
+ *              ThisWalkState       - Current walk state
  *              Op                  - Current Op to be walked
  *
  * RETURN:      Status
