@@ -137,15 +137,15 @@
  */
 
 #ifdef USE_HASHING
-#define ROOTSIZE                    101     /* # of slots in root table */
-#define TABLSIZE                    53      /* # of slots per table below the root */
+#define NS_ROOT_TABLE_SIZE          101     /* # of slots in root table */
+#define NS_DEFAULT_TABLE_SIZE       53      /* # of slots per table below the root */
 
 #else
-#define ROOTSIZE                    40      /* initial # of slots in root table */
-#define TABLSIZE                    20      /* initial # of slots per table below the root */
+#define NS_ROOT_TABLE_SIZE          40      /* initial # of slots in root table */
+#define NS_DEFAULT_TABLE_SIZE       20      /* initial # of slots per table below the root */
 #endif
 
-#define MAXNEST                     15      /* Max nesting of name scopes, used for sizing stacks */
+#define MAX_SCOPE_NESTING           15      /* Max nesting of name scopes, used for sizing stacks */
 
 
 /* 
