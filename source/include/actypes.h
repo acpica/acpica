@@ -478,8 +478,8 @@ typedef union AcpiObj
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      ProcId;
-        UINT32                      PBLKAddress;
-        UINT32                      PBLKLength;
+        UINT32                      PblkAddress;
+        UINT32                      PblkLength;
     } Processor;
 
     struct
@@ -541,7 +541,7 @@ typedef struct
  */
 typedef
 ACPI_STATUS (*ACPI_SET_C_STATE_HANDLER) (
-    NATIVE_UINT                 PBlkAddress);
+    NATIVE_UINT                 PblkAddress);
 
 /*
  *  ACPI Cx State info
