@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.54 $
+ *       $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -363,15 +363,15 @@
  * The first group is used in a dispatch table, do not change
  * without updating the table
  */
-#define AML_TYPE_MONADIC1               0x00000000
-#define AML_TYPE_MONADIC2               0x00000001
-#define AML_TYPE_MONADIC2R              0x00000002
-#define AML_TYPE_DYADIC1                0x00000003
-#define AML_TYPE_DYADIC2                0x00000004
-#define AML_TYPE_DYADIC2R               0x00000005
-#define AML_TYPE_DYADIC_T21             0x00000006
-#define AML_TYPE_TRIADIC                0x00000007
-#define AML_TYPE_HEXADIC                0x00000008
+#define AML_TYPE_EX_1A_0T_0R            0x00000000 /* Monadic1  */
+#define AML_TYPE_EX_1A_0T_1R            0x00000001 /* Monadic2  */
+#define AML_TYPE_EX_1A_1T_1R            0x00000002 /* Monadic2R */
+#define AML_TYPE_EX_2A_0T_0R            0x00000003 /* Dyadic1   */
+#define AML_TYPE_EX_2A_0T_1R            0x00000004 /* Dyadic2   */
+#define AML_TYPE_EX_2A_1T_1R            0x00000005 /* Dyadic2R  */
+#define AML_TYPE_EX_2A_2T_1R            0x00000006
+#define AML_TYPE_EX_3A_0T_0R            0x00000007
+#define AML_TYPE_EX_6A_0T_1R            0x00000008
 #define AML_TYPE_RECONFIGURATION        0x00000009
 /* End of types used in dispatch table */
 
@@ -406,7 +406,10 @@
 #define AML_CLASS_CONTROL               0x00000A00
 #define AML_CLASS_ASCII                 0x00000C00
 #define AML_CLASS_PREFIX                0x00000E00
-#define AML_CLASS_UNKNOWN               0x00001000
+#define AML_CLASS_INTERNAL              0x00001000
+#define AML_CLASS_RETURN_VALUE          0x00001200
+#define AML_CLASS_METHOD_CALL           0x00001400
+#define AML_CLASS_UNKNOWN               0x00001600
 
 #define AML_CLASS_MASK                  0x00001E00
 
