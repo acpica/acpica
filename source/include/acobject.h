@@ -215,6 +215,7 @@ typedef union AcpiObjInternal
         UINT32                  Value;
         UINT32                  Reserved2;
         UINT32                  Reserved3;
+        UINT32                  Reserved4;
 
         void                    *Reserved_p1;
         void                    *Reserved_p2;
@@ -232,6 +233,7 @@ typedef union AcpiObjInternal
         UINT32                  Length;         /* # of bytes in string, excluding trailing null */
         UINT32                  Reserved2;
         UINT32                  Reserved3;
+        UINT32                  Reserved4;
 
         UINT8                   *Pointer;       /* String value in AML stream or in allocated space */
         void                    *Reserved_p2;
@@ -249,6 +251,7 @@ typedef union AcpiObjInternal
         UINT32                  Length;         /* # of bytes in buffer */
         UINT32                  Sequence;       /* Sequential count of buffers created */
         UINT32                  Reserved3;
+        UINT32                  Reserved4;
 
         UINT8                   *Pointer;       /* points to the buffer in allocated space */
         void                    *Reserved_p2;
@@ -266,6 +269,7 @@ typedef union AcpiObjInternal
         UINT32                  Count;          /* # of elements in package */
         UINT32                  Reserved2;
         UINT32                  Reserved3;
+        UINT32                  Reserved4;
 
         union AcpiObjInternal   **Elements;     /* Array of pointers to AcpiObjects */
         union AcpiObjInternal   **NextElement;  /* used only while initializing */
@@ -283,6 +287,7 @@ typedef union AcpiObjInternal
         ACPI_OBJECT_BITFIELD32        
         UINT32                  Offset;             /* Byte offset within containing object */
         UINT32                  Sequence;           /* Container's sequence number */
+        UINT32                  Reserved4;
 
         union AcpiObjInternal   *Container;         /* Containing object (Buffer) */
         void                    *Reserved_p2;
@@ -299,6 +304,7 @@ typedef union AcpiObjInternal
         UINT32                  Reserved1;
         UINT32                  Reserved2;
         union AcpiObjInternal  *AddrHandler;        /* Handler for Address space */
+        UINT32                  Reserved4;
 
         ACPI_HANDLE             Handle;
         union AcpiObjInternal  *SysHandler;         /* Handler for system notifies */
@@ -318,6 +324,7 @@ typedef union AcpiObjInternal
         UINT16                  ThreadId;
         UINT16                  SignalCount;
         UINT16                  Fill1;
+        UINT32                  Reserved4;
 
         void                    *Reserved_p1;
         void                    *Reserved_p2;
@@ -336,6 +343,7 @@ typedef union AcpiObjInternal
         UINT16                  Fill1;
         UINT32                  PcodeLength;
         UINT32                  TableLength;
+        UINT32                  Reserved4;
 
         UINT8                   *Pcode;
         UINT8                   *AcpiTable;
@@ -355,6 +363,7 @@ typedef union AcpiObjInternal
         UINT16                  ThreadId;
         UINT16                  SyncLevel;
         UINT16                  Fill1;
+        UINT32                  Reserved4;
 
         void                    *Reserved_p1;
         void                    *Reserved_p2;
@@ -373,12 +382,13 @@ typedef union AcpiObjInternal
         UINT16                  DataValid;          /* 1 => Addr/Len are set */
         UINT32                  Address;
         UINT32                  Length;
+        UINT32                  RegionData;         /* Region Specific data (PCI _ADR) */
 
         union AcpiObjInternal  *AddressLocation;    /* Loc of 1st (address) OpCode in AML stream */
         union AcpiObjInternal  *AddrHandler;        /* Handler for system notifies */
         union AcpiObjInternal  *Link;               /* Link in list of regions */
                                                     /* list is owned by AddrHandler */
-        union AcpiObjInternal  *REGList;            /* List of _REG methods for this region */
+        NAME_TABLE_ENTRY       *REGMethod;          /* _REG method for this region (if any) */
         NAME_TABLE_ENTRY       *Nte;                /* containing object */
 
     } Region;
@@ -391,6 +401,7 @@ typedef union AcpiObjInternal
         UINT16                  Reserved;
         union AcpiObjInternal  *Link;               /* Link to next handler on device */
         union AcpiObjInternal  *RegionList;         /* regions using this handler */
+        UINT32                  Reserved4;
 
         NAME_TABLE_ENTRY       *Nte;                /* device handler was installed for */
         ADDRESS_SPACE_HANDLER   Handler;
@@ -408,6 +419,7 @@ typedef union AcpiObjInternal
         UINT32                  Reserved1;
         UINT32                  Reserved2;
         UINT32                  Reserved3;
+        UINT32                  Reserved4;
 
         NAME_TABLE_ENTRY       *Nte;                /* device handler was installed for */
         NOTIFY_HANDLER          Handler;
@@ -424,6 +436,7 @@ typedef union AcpiObjInternal
         UINT32                  Reserved1;
         UINT32                  Reserved2;
         UINT32                  Reserved3;
+        UINT32                  Reserved4;
 
         ACPI_HANDLE             Handle;
         union AcpiObjInternal  *SysHandler;         /* Handler for system notifies */
@@ -441,6 +454,7 @@ typedef union AcpiObjInternal
         UINT32                  Reserved1;
         UINT32                  Reserved2;
         union AcpiObjInternal  *AddrHandler;        /* Handler for Address space */
+        UINT32                  Reserved4;
 
         ACPI_HANDLE             Handle;
         union AcpiObjInternal  *SysHandler;         /* Handler for system notifies */
@@ -458,6 +472,7 @@ typedef union AcpiObjInternal
         UINT32                  Reserved1;
         UINT32                  Reserved2;
         union AcpiObjInternal  *AddrHandler;        /* Handler for Address space */
+        UINT32                  Reserved4;
 
         ACPI_HANDLE             Handle;
         union AcpiObjInternal  *SysHandler;         /* Handler for system notifies */
@@ -475,6 +490,7 @@ typedef union AcpiObjInternal
         ACPI_OBJECT_BITFIELD32
         UINT32                  Offset;             /* Byte offset within containing object */
         UINT32                  Reserved3;
+        UINT32                  Reserved4;
 
         union AcpiObjInternal   *Container;         /* Containing object */
         void                    *Reserved_p2;
@@ -492,6 +508,7 @@ typedef union AcpiObjInternal
         ACPI_OBJECT_BITFIELD32
         UINT32                  Offset;             /* Byte offset within containing object */
         UINT32                  Value;              /* Value to store into BankSelect */
+        UINT32                  Reserved4;
 
         ACPI_HANDLE             BankSelect;         /* Bank select register */
         union AcpiObjInternal   *Container;         /* Containing object */
@@ -513,6 +530,7 @@ typedef union AcpiObjInternal
         ACPI_OBJECT_BITFIELD32
         UINT32                  Value;              /* Value to store into Index register */
         UINT32                  Reserved3;         
+        UINT32                  Reserved4;
         
         ACPI_HANDLE             Index;              /* Index register */
         ACPI_HANDLE             Data;               /* Data register */
@@ -533,6 +551,8 @@ typedef union AcpiObjInternal
         UINT16                  Fill1;
         UINT32                  Reserved2;
         UINT32                  Reserved3;
+        UINT32                  Reserved4;
+
         void                    *Object;            /* OpCode   Use of Object field
                                                      * -------  ----------------------------
                                                      * NameOp   ACPI_HANDLE for referenced name
