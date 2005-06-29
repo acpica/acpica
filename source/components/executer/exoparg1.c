@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmonad - ACPI AML execution for monadic (1 operand) operators
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -528,7 +528,7 @@ AcpiExMonadic2R (
             Digit = ObjDesc->Integer.Value;
             for (j = 0; j < i; j++)
             {
-                Digit /= 10;
+                Digit = ACPI_DIVIDE (Digit, 10);
             }
 
             /* Create the BCD digit */
