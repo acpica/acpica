@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: psapi - Parser external interfaces
+ *
+ * Module Name: psxface - Parser external interfaces
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,32 +114,32 @@
  *
  *****************************************************************************/
 
-#define __PSAPI_C__
+#define __PSXFACE_C__
 
-#include <acpi.h>
-#include <parser.h>
-#include <dispatch.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "parser.h"
+#include "dispatch.h"
+#include "interp.h"
+#include "amlcode.h"
+#include "namesp.h"
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("psapi");
+        MODULE_NAME         ("psxface");
 
 
-char    *Gbl_ParserId = "Non-recursive AML Parser";
+char    *AcpiGbl_ParserId = "Non-recursive AML Parser";
 
 
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxExecute
+ * FUNCTION:    AcpiPsxExecute
  *
  * PARAMETERS:  ObjDesc             - A method object containing both the AML
  *                                    address and length.
- *              **Params            - List of parameters to pass to method, 
- *                                    terminated by NULL. Params itself may be 
+ *              **Params            - List of parameters to pass to method,
+ *                                    terminated by NULL. Params itself may be
  *                                    NULL if no parameters are being passed.
  *
  * RETURN:      Status
@@ -149,7 +149,7 @@ char    *Gbl_ParserId = "Non-recursive AML Parser";
  ****************************************************************************/
 
 ACPI_STATUS
-PsxExecute (
+AcpiPsxExecute (
     NAME_TABLE_ENTRY        *MethodEntry,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
@@ -169,7 +169,7 @@ PsxExecute (
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-    ObjDesc = NsGetAttachedObject (MethodEntry);
+    ObjDesc = AcpiNsGetAttachedObject (MethodEntry);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NULL_OBJECT);
@@ -177,7 +177,7 @@ PsxExecute (
 
     /* Parse method if necessary, wait on concurrency semaphore */
 
-    Status = DsBeginMethodExecution (MethodEntry, ObjDesc);
+    Status = AcpiDsBeginMethodExecution (MethodEntry, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -189,11 +189,11 @@ PsxExecute (
 
         for (i = 0; Params[i]; i++)
         {
-            CmAddReference (Params[i]);
+            AcpiCmAddReference (Params[i]);
         }
     }
 
-    /* 
+    /*
      * Method is parsed and ready to execute
      * The walk of the parse tree is where we actually execute the method
      */
@@ -201,21 +201,21 @@ PsxExecute (
     DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
                     MethodEntry, ObjDesc));
 
-    Status = PsWalkParsedAml (ObjDesc->Method.ParserOp, ObjDesc->Method.ParserOp, ObjDesc, MethodEntry->Scope, Params,
-                                ReturnObjDesc, ObjDesc->Method.OwningId, DsExecBeginOp, DsExecEndOp);
-    
+    Status = AcpiPsWalkParsedAml (ObjDesc->Method.ParserOp, ObjDesc->Method.ParserOp, ObjDesc, MethodEntry->Scope, Params,
+                                ReturnObjDesc, ObjDesc->Method.OwningId, AcpiDsExecBeginOp, AcpiDsExecEndOp);
+
     if (Params)
     {
         /* Take away the extra reference that we gave the parameters above */
 
         for (i = 0; Params[i]; i++)
         {
-            CmUpdateObjectReference (Params[i], REF_DECREMENT);
+            AcpiCmUpdateObjectReference (Params[i], REF_DECREMENT);
         }
     }
 
 
-    /* 
+    /*
      * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
      * or with Status == AE_PENDING at end of AML block (end of Method code)
      */
