@@ -123,6 +123,7 @@
 #include <interp.h>
 #include <namesp.h>
 #include <tables.h>
+#include <debugger.h>
 
 
 #define _COMPONENT          DISPATCHER
@@ -221,6 +222,9 @@ DsParseMethod (
 
     ObjDesc->Method.ParserOp = Op;
     ObjDesc->Method.OwningId = OwnerId;
+
+    DEBUG_EXEC (DbGenerateStatistics (Op, 1));
+
 
     DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle, Op));
