@@ -259,24 +259,23 @@ AcpiOsCreateCache (
     char                    *CacheName,
     UINT16                  ObjectSize,
     UINT16                  MaxDepth,
-    ACPI_HANDLE             *ReturnCache);
+    ACPI_CACHE_T            **ReturnCache);
 
 ACPI_STATUS
 AcpiOsDeleteCache (
-    ACPI_HANDLE             Cache);
+    ACPI_CACHE_T            *Cache);
 
 ACPI_STATUS
 AcpiOsPurgeCache (
-    ACPI_HANDLE             Cache);
+    ACPI_CACHE_T            *Cache);
 
-ACPI_STATUS
+void *
 AcpiOsAcquireObject (
-    ACPI_HANDLE             Cache,
-    void                    **ReturnObject);
+    ACPI_CACHE_T            *Cache);
 
 ACPI_STATUS
 AcpiOsReleaseObject (
-    ACPI_HANDLE             Cache,
+    ACPI_CACHE_T            *Cache,
     void                    *Object);
 
 
