@@ -164,6 +164,16 @@ AmlExecuteMethod (
 
 
 /*
+ * iecopy - Interpreter object copy support
+ */
+
+ACPI_STATUS
+AmlBuildCopyInternalPackageObject (
+    ACPI_OBJECT_INTERNAL    *SourceObj, 
+    ACPI_OBJECT_INTERNAL    *DestObj);
+
+
+/*
  * iefield - ACPI AML (p-code) execution - field manipulation
  */
 
@@ -284,17 +294,6 @@ AmlExecCreateMethod (
     UINT32                  AmlLength,
     UINT32                  MethodFlags,
     ACPI_HANDLE             Method);
-
-
-
-
-/*
- * ievalue - ACPI AML (p-code) execution - get value functions
- */
-
-ACPI_STATUS
-AmlResolveToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr);
 
 
 /*
@@ -428,16 +427,6 @@ OsLocalWaitSemaphore (
 
 
 /*
- * iexecute - ACPI AML (p-code) execution
- */
-
-ACPI_STATUS
-AmlExecStore (
-    ACPI_OBJECT_INTERNAL    *op1, 
-    ACPI_OBJECT_INTERNAL    *res);
-
-
-/*
  * iemonadic - ACPI AML (p-code) execution, monadic operators
  */
 
@@ -485,6 +474,29 @@ AmlExecDyadic2S (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc);
+
+
+
+/*
+ * iresolve  - Object resolution and get value functions
+ */
+
+ACPI_STATUS
+AmlResolveToValue (
+    ACPI_OBJECT_INTERNAL    **StackPtr);
+
+ACPI_STATUS
+AmlResolveEntryToValue (
+    NAME_TABLE_ENTRY        **StackPtr);
+
+ACPI_STATUS
+AmlResolveObjectToValue (
+    ACPI_OBJECT_INTERNAL    **StackPtr);
+
+ACPI_STATUS
+AmlGetFieldUnitValue (
+    ACPI_OBJECT_INTERNAL    *FieldDesc, 
+    ACPI_OBJECT_INTERNAL    *ResultDesc);
 
 
 
@@ -588,6 +600,7 @@ AmlDumpNameTableEntry (
     NAME_TABLE_ENTRY        *Entry,
     UINT32                  Flags);
 
+
 /*
  * isnames - interpreter/scanner name load/execute
  */
@@ -600,10 +613,6 @@ AmlAllocateNameString (
 INT32
 AmlGoodChar (
     INT32                   Character);
-
-BOOLEAN 
-AmlGoodName (
-    UINT32                  Name);
 
 ACPI_STATUS
 AmlExecNameSegment (
@@ -627,6 +636,25 @@ AmlDoName (
     ACPI_OBJECT_TYPE        DataType, 
     OPERATING_MODE          LoadExecMode);
 
+
+/*
+ * istore - Object store support
+ */
+
+ACPI_STATUS
+AmlExecStore (
+    ACPI_OBJECT_INTERNAL    *op1, 
+    ACPI_OBJECT_INTERNAL    *res);
+
+ACPI_STATUS
+AmlStoreObjectToObject (
+    ACPI_OBJECT_INTERNAL    *ValDesc,
+    ACPI_OBJECT_INTERNAL    *DestDesc);
+
+ACPI_STATUS
+AmlStoreObjectToNte (
+    ACPI_OBJECT_INTERNAL    *ValDesc,
+    NAME_TABLE_ENTRY        *Entry);
 
 
 /*
