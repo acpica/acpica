@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -436,40 +436,36 @@ AcpiExPciConfigSpaceHandler (
     void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  PciSeg;
+    UINT32                  PciSegment;
     UINT32                  PciBus;
-    UINT32                  PciDev;
-    UINT32                  PciFunc;
-    UINT32                  PciReg;
+    UINT32                  PciDevice;
+    UINT32                  PciFunction;
+    UINT32                  PciRegister;
     ACPI_PCI_SPACE_CONTEXT  *PCIContext;
 
 
     FUNCTION_TRACE ("ExPciConfigSpaceHandler");
 
+
     /*
      *  The arguments to AcpiOs(Read|Write)PciCfg(Byte|Word|Dword) are:
      *
-     *  PciSeg is the PCI bus segment range 0-31
-     *  PciBus is the PCI bus number range 0-255
-     *
-     *  PciDev is the PCI device number range 0-31
-     *  PciFunc is the PCI device function number
-     *
-     *  PciReg - Config space register range 0-255 bytes
+     *  PciSegment  is the PCI bus segment range 0-31
+     *  PciBus      is the PCI bus number range 0-255
+     *  PciDevice   is the PCI device number range 0-31
+     *  PciFunction is the PCI device function number
+     *  PciRegister is the Config space register range 0-255 bytes
      *
      *  Value - input value for write, output address for read
      *
      */
+    PCIContext  = (ACPI_PCI_SPACE_CONTEXT *) RegionContext;
 
-    PCIContext = (ACPI_PCI_SPACE_CONTEXT *) RegionContext;
-
-    PciSeg = LOWORD (PCIContext->Seg);
-    PciBus = LOWORD (PCIContext->Bus);
-
-    PciDev = ((PCIContext->DevFunc) & 0xffff0000) >> 16;
-    PciFunc= ((PCIContext->DevFunc) & 0x0000ffff);
-
-    PciReg  = (UINT32) Address;
+    PciSegment  = PCIContext->Segment;
+    PciBus      = PCIContext->Bus;
+    PciDevice   = PCIContext->Device;
+    PciFunction = PCIContext->Function;
+    PciRegister = (UINT32) Address;
 
     switch (Function)
     {
@@ -477,8 +473,9 @@ AcpiExPciConfigSpaceHandler (
     case ACPI_READ_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("R%d S(%04x) B(%04x) DF(%08x) R(%04x)\n", BitWidth,
-            PCIContext->Seg,PCIContext->Bus,PCIContext->DevFunc, PciReg));
+            ("R%d Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) R(%04x)\n", 
+            BitWidth, PCIContext->Segment, PCIContext->Bus, PCIContext->Device, 
+            PCIContext->Function, PciRegister));
 
         *Value  = 0;
 
@@ -487,18 +484,18 @@ AcpiExPciConfigSpaceHandler (
         /* PCI Register width */
 
         case 8:
-            Status = AcpiOsReadPciCfgByte (PciSeg, PciBus, PciDev, PciFunc, 
-                                           PciReg, (UINT8*)Value);
+            Status = AcpiOsReadPciCfgByte (PciSegment, PciBus, PciDevice, 
+                            PciFunction, PciRegister, (UINT8*)Value);
             break;
 
         case 16:
-            Status = AcpiOsReadPciCfgWord (PciSeg, PciBus, PciDev, PciFunc,
-                                           PciReg, (UINT16*)Value);
+            Status = AcpiOsReadPciCfgWord (PciSegment, PciBus, PciDevice, 
+                            PciFunction, PciRegister, (UINT16*)Value);
             break;
 
         case 32:
-            Status = AcpiOsReadPciCfgDword (PciSeg, PciBus, PciDev, PciFunc,
-                                            PciReg, Value);
+            Status = AcpiOsReadPciCfgDword (PciSegment, PciBus, PciDevice, 
+                            PciFunction, PciRegister, Value);
             break;
 
         default:
@@ -514,27 +511,27 @@ AcpiExPciConfigSpaceHandler (
     case ACPI_WRITE_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("W%d S(%04x) B(%04x) DF(%08x) R(%04x) D(%08x)\n", BitWidth,
-            PCIContext->Seg,PCIContext->Bus,PCIContext->DevFunc,
-            PciReg,*Value));
+            ("W%d Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) R(%04x) D(%08x)\n", 
+            BitWidth, PCIContext->Segment,PCIContext->Bus,PCIContext->Device,
+            PCIContext->Function, PciRegister,*Value));
 
         switch (BitWidth)
         {
         /* PCI Register width */
 
         case 8:
-            Status = AcpiOsWritePciCfgByte (PciSeg, PciBus, PciDev, PciFunc,
-                                            PciReg, *(UINT8*)Value);
+            Status = AcpiOsWritePciCfgByte (PciSegment, PciBus, PciDevice, 
+                            PciFunction, PciRegister, *(UINT8*)Value);
             break;
 
         case 16:
-            Status = AcpiOsWritePciCfgWord (PciSeg, PciBus, PciDev, PciFunc,
-                                            PciReg, *(UINT16*)Value);
+            Status = AcpiOsWritePciCfgWord (PciSegment, PciBus, PciDevice, 
+                            PciFunction, PciRegister, *(UINT16*)Value);
             break;
 
         case 32:
-            Status = AcpiOsWritePciCfgDword (PciSeg, PciBus, PciDev, PciFunc,
-                                             PciReg, *Value);
+            Status = AcpiOsWritePciCfgDword (PciSegment, PciBus, PciDevice, 
+                            PciFunction, PciRegister, *Value);
             break;
 
         default:
