@@ -280,7 +280,6 @@ PsxMthStackInitArgs (
         return_ACPI_STATUS (AE_OK);
     }
 
-
     /* Copy passed parameters into the new method stack frame  */
         
     for (Pindex = Mindex = 0; (Mindex < MTH_NUM_ARGS) && (Pindex < MaxParamCount); Mindex++)
