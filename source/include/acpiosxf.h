@@ -96,6 +96,8 @@
  *
  *****************************************************************************/
 
+#ifndef _ACPIOSD_H_
+#define _ACPIOSD_H_
 
 #include <environment.h>
 #include <datatypes.h>
@@ -311,4 +313,4 @@ OsdWrite (
     OSD_FILE                *Stream); 
 
 
-
+#endif
