@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.  
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -113,8 +113,6 @@
  *
  *****************************************************************************/
 
-
- 
 
 #define GET_SEGMENT(ptr)            ((UINT16)(_segment)(ptr))
 #define GET_OFFSET(ptr)             ((UINT16)(UINT32) (ptr))
