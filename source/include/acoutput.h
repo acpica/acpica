@@ -18,6 +18,8 @@
 #ifndef _OUTPUT_H
 #define _OUTPUT_H
 
+#include "acpiobj.h"
+
 /*
  * Debug/Error reporting table definition
  */
@@ -107,6 +109,10 @@ DumpBuf (
     UINT32              Count, 
     INT32               Flags, 
     INT32               componentId);
+
+void
+DumpObjectDescriptor (
+	OBJECT_DESCRIPTOR *Obj);
 
 void 
 _Kinc_error (char *, INT32, INT32, char *, INT32, INT32); 
