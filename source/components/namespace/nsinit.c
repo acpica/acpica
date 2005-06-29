@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.19 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,7 @@
 #include "acnamesp.h"
 #include "acdispat.h"
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsinit")
 
 
@@ -174,7 +174,7 @@ AcpiNsInitializeObjects (
 
     DEBUG_PRINT_RAW (ACPI_OK,
         ("\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n",
-        Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit, 
+        Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit,
         Info.FieldCount, Info.ObjectCount));
     DEBUG_PRINT (TRACE_DISPATCH,
         ("NsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
@@ -219,7 +219,7 @@ AcpiNsInitializeDevices (
 
     DEBUG_PRINT_RAW (ACPI_OK, ("Executing device _INI methods:"));
 
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT, 
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
                     ACPI_UINT32_MAX, FALSE, AcpiNsInitOneDevice, &Info, NULL);
 
     if (ACPI_FAILURE (Status))
@@ -299,7 +299,7 @@ AcpiNsInitOneObject (
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
-            DEBUG_PRINT (ACPI_ERROR, 
+            DEBUG_PRINT (ACPI_ERROR,
                     ("%s while getting region arguments [%4.4s]\n",
                     AcpiCmFormatException (Status), &Node->Name));
         }
@@ -325,7 +325,7 @@ AcpiNsInitOneObject (
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
-            DEBUG_PRINT (ACPI_ERROR, 
+            DEBUG_PRINT (ACPI_ERROR,
                     ("%s while getting field arguments [%4.4s]\n",
                     AcpiCmFormatException (Status), &Node->Name));
         }
