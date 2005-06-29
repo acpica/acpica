@@ -1058,6 +1058,10 @@ AsTabify8 (
     UINT32                  Column = 0;
     UINT32                  TabCount = 0;
     UINT32                  LastLineTabCount = 0;
+    UINT32                  LastLineColumnStart = 0;
+    UINT32                  ThisColumnStart = 0;
+    UINT32                  ThisTabCount =  0;
+    char                    *FirstNonBlank = NULL;
 
 
 
@@ -1066,18 +1070,47 @@ AsTabify8 (
         if (*SubBuffer == '\n')
         {
             Column = 0;
-//            LastLineTabCount = 0;
             TabCount = 0;
+            SubBuffer++;
+            continue;
         }
 
         else
         {
+            if (!FirstNonBlank)
+            {
+                FirstNonBlank = SubBuffer;
+                while (*FirstNonBlank == ' ')
+                {
+                    FirstNonBlank++;
+                }
+
+                ThisColumnStart = FirstNonBlank - SubBuffer;
+
+                if (LastLineTabCount == 0)
+                {
+                    ThisTabCount = 0;
+                }
+
+                else if (ThisColumnStart == LastLineColumnStart)
+                {
+                    ThisTabCount = LastLineTabCount -1;
+                }
+
+                else
+                {
+
+                    ThisTabCount = LastLineTabCount + 1;
+                }
+            }
+
             Column++;
         }
 
 
         if (*SubBuffer != ' ')
         {
+
             SubBuffer = AsSkipUntilChar (SubBuffer, '\n');
             if (!SubBuffer)
             {
@@ -1088,12 +1121,15 @@ AsTabify8 (
                 LastLineTabCount = TabCount;
             }
             
+            FirstNonBlank = NULL;
+            LastLineColumnStart = ThisColumnStart;
             TabCount = 0;
             Column = 0;
             SpaceCount = 0;
             SubBuffer++;
             continue;
         }
+
 
 
         SpaceCount++;
@@ -1104,7 +1140,7 @@ AsTabify8 (
 
             NewSubBuffer = SubBuffer - 4;
 
-            if (TabCount <= LastLineTabCount ? (LastLineTabCount + 1) : 0)
+            if (TabCount <= ThisTabCount ? (ThisTabCount +1) : 0)
             {
                 NewSubBuffer++;
                 *NewSubBuffer = '\t';
@@ -1114,10 +1150,10 @@ AsTabify8 (
 
             memmove ((NewSubBuffer + 1), SubBuffer, strlen (SubBuffer) + 1);
             SubBuffer = NewSubBuffer;
+
         }
 
         SubBuffer++;
-
     }
 }
 
