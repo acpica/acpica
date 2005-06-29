@@ -131,7 +131,7 @@
 #include "internal.h"       /* Internal data types */
 #include "output.h"         /* Error output and Debug macros */
 #include "acpiosd.h"        /* Interfaces to OS-dependent part (OSD) */
-#include "acapi.h"          /* External interfaces to this part */
+#include "acxface.h"        /* Acpi core external interfaces */
 #include "acobject.h"       /* Acpi internal object */
 #include "globals.h"        /* All global variables */
 #include "hardware.h"       /* Hardware defines and interfaces */
