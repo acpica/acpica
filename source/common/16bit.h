@@ -150,9 +150,10 @@ AfGenerateFilename (char *TableId);
 
 
 ACPI_STATUS
-AfFindDsdt(
-    UINT8               **DsdtPtr,
-    UINT32              *DsdtLength);
+AfFindTable(
+    char                    *TableName,
+    UINT8                   **TablePtr,
+    UINT32                  *TableLength);
 
 void
 AfDumpTables (void);

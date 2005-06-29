@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.16 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -430,7 +430,6 @@ AfRecognizeTable (
     }
 
     TableInfo->Pointer      = *TableGlobalPtr;
-    TableInfo->BasePointer  = *TableGlobalPtr;
 
     CopyExtendedToReal (*TableGlobalPtr, PhysAddr, AcpiTblHeader.Length);
 
@@ -481,12 +480,12 @@ AfGetAllTables (
 
 
     ACPI_FUNCTION_TRACE ("AfGetAllTables");
+                  
 
     if (AcpiGbl_DbOpt_verbose)
     {
         AcpiOsPrintf ("Number of tables: %d\n", (UINT32) NumberOfTables);
     }
-
 
     /*
      * Loop through all table pointers found in RSDT.
@@ -528,8 +527,9 @@ AfGetAllTables (
         return_ACPI_STATUS (Status);
     }
 
-    /* No need to get the FACS, but here is the code if needed */
-#if 0
+    /* 
+     * Get the FACS 
+     */
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl),
                         sizeof (ACPI_TABLE_HEADER));
     AcpiGbl_FACS = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
@@ -552,7 +552,6 @@ AfGetAllTables (
 
     TableInfo.Type          = ACPI_TABLE_FADT;
     TableInfo.Pointer       = (void *) AcpiGbl_FADT;
-    TableInfo.BasePointer   = (void *) AcpiGbl_FADT;
     TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
     TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
 
@@ -561,11 +560,10 @@ AfGetAllTables (
     AcpiTbInitTableDescriptor (TableInfo.Type, &TableInfo);
 
     AcpiTbBuildCommonFacs (&TableInfo);
-#endif
 
-
-    /* Get the DSDT */
-
+    /*
+     * Get the DSDT 
+     */
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XDsdt), sizeof (ACPI_TABLE_HEADER));
     AcpiGbl_DSDT = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
     if (!AcpiGbl_DSDT)
@@ -586,7 +584,6 @@ AfGetAllTables (
 
     TableInfo.Type          = ACPI_TABLE_DSDT;
     TableInfo.Pointer       = (void *) AcpiGbl_DSDT;
-    TableInfo.BasePointer   = (void *) AcpiGbl_DSDT;
     TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
     TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
 
@@ -610,9 +607,10 @@ AfGetAllTables (
  *****************************************************************************/
 
 ACPI_STATUS
-AfFindDsdt(
-    UINT8                   **DsdtPtr,
-    UINT32                  *DsdtLength)
+AfFindTable(
+    char                    *TableName,
+    UINT8                   **TablePtr,
+    UINT32                  *TableLength)
 {
     ACPI_TABLE_DESC         TableInfo;
     BOOLEAN                 Found;
@@ -622,117 +620,142 @@ AfFindDsdt(
     char                    *TableSignature;
 
 
-    ACPI_FUNCTION_TRACE ("AfFindDsdt");
+    ACPI_FUNCTION_TRACE ("AfFindTable");
 
 
-    Found = AfFindRsdp (&AcpiGbl_RSDP);
-    if (!Found)
+    if (!AcpiGbl_RSDP)
     {
-        AcpiOsPrintf ("Could not find RSDP in the low megabyte\n");
-        return (AE_NO_ACPI_TABLES);
+        Found = AfFindRsdp (&AcpiGbl_RSDP);
+        if (!Found)
+        {
+            AcpiOsPrintf ("Could not find RSDP in the low megabyte\n");
+            return (AE_NO_ACPI_TABLES);
+        }
+
+        /*
+         * For RSDP revision 0 or 1, we use the RSDT.
+         * For RSDP revision 2 (and above), we use the XSDT
+         */
+        if (AcpiGbl_RSDP->Revision < 2)
+        {
+            PhysicalAddress = AcpiGbl_RSDP->RsdtPhysicalAddress;
+            TableSignature = RSDT_SIG;
+            SignatureLength = sizeof (RSDT_SIG) -1;
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found ACPI 1.0 RSDP\n"));
+        }
+        else
+        {
+            PhysicalAddress = ACPI_GET_ADDRESS (AcpiGbl_RSDP->XsdtPhysicalAddress);
+            TableSignature = XSDT_SIG;
+            SignatureLength = sizeof (XSDT_SIG) -1;
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found ACPI 2.0 RSDP\n"));
+        }
+
+        if (AcpiGbl_DbOpt_verbose)
+        {
+            AcpiUtDumpBuffer ((char *) AcpiGbl_RSDP, sizeof (RSDP_DESCRIPTOR), 0, ACPI_UINT32_MAX);
+        }
+
+        /* Get the RSDT/XSDT header to determine the table length */
+
+        CopyExtendedToReal (&AcpiTblHeader, PhysicalAddress, sizeof (ACPI_TABLE_HEADER));
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RSDT/XSDT at %8.8X\n", (UINT32) PhysicalAddress));
+        if (AcpiGbl_DbOpt_verbose)
+        {
+            AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, ACPI_UINT32_MAX);
+        }
+
+        /* Validate the table header */
+
+        Status = AcpiTbValidateTableHeader (&AcpiTblHeader);
+        if (ACPI_FAILURE (Status))
+        {
+            /* Table failed verification, map all errors to BAD_DATA */
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid RSDT table header\n"));
+            return (AE_BAD_DATA);
+        }
+
+        /* Allocate a buffer for the entire table */
+
+        AcpiGbl_XSDT = (void *) malloc ((size_t) AcpiTblHeader.Length);
+        if (!AcpiGbl_XSDT)
+        {
+            AcpiOsPrintf ("Could not allocate buffer for RSDT length 0x%X\n",
+                (UINT32) AcpiTblHeader.Length);
+            return AE_NO_MEMORY;
+        }
+
+        /* Get the entire RSDT/XSDT */
+
+        CopyExtendedToReal (AcpiGbl_XSDT, PhysicalAddress, AcpiTblHeader.Length);
+        AcpiOsPrintf ("%s at %p (Phys %8.8X)\n",
+            TableSignature, AcpiGbl_XSDT, (UINT32) PhysicalAddress);
+   
+        if (AcpiGbl_DbOpt_verbose)
+        {
+            AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, 0);
+        }
+
+        /* Convert to common format XSDT */
+
+        TableInfo.Pointer       = (ACPI_TABLE_HEADER *) AcpiGbl_XSDT;
+        TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
+        TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
+
+        AcpiGbl_RsdtTableCount = AcpiTbGetTableCount (AcpiGbl_RSDP, TableInfo.Pointer);
+
+        Status = AcpiTbConvertToXsdt (&TableInfo);
+        if (ACPI_FAILURE (Status))
+        {
+            goto ErrorExit;
+        }
+
+        AcpiGbl_XSDT = (XSDT_DESCRIPTOR *) TableInfo.Pointer;
+
+        /* Get the rest of the required tables (DSDT, FADT) */
+
+        Status = AfGetAllTables (AcpiGbl_RsdtTableCount, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            goto ErrorExit;
+        }
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_OK, "ACPI Tables successfully acquired\n"));
     }
 
-    /*
-     * For RSDP revision 0 or 1, we use the RSDT.
-     * For RSDP revision 2 (and above), we use the XSDT
-     */
-    if (AcpiGbl_RSDP->Revision < 2)
-    {
-        PhysicalAddress = AcpiGbl_RSDP->RsdtPhysicalAddress;
-        TableSignature = RSDT_SIG;
-        SignatureLength = sizeof (RSDT_SIG) -1;
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found ACPI 1.0 RSDP\n"));
+
+    if (!ACPI_STRNCMP (TableName, DSDT_SIG, ACPI_NAME_SIZE))
+    {
+        *TablePtr = (UINT8 *) AcpiGbl_DSDT;
+        *TableLength = AcpiGbl_DSDT->Length;
+    }
+    else if (!ACPI_STRNCMP (TableName, FADT_SIG, ACPI_NAME_SIZE))
+    {
+        *TablePtr = (UINT8 *) AcpiGbl_FADT;
+        *TableLength = AcpiGbl_FADT->Header.Length;
+    }
+    else if (!ACPI_STRNCMP (TableName, FACS_SIG, ACPI_NAME_SIZE))
+    {
+        *TablePtr = (UINT8 *) AcpiGbl_FACS;
+        *TableLength = AcpiGbl_FACS->Length;
+    }
+    else if (!ACPI_STRNCMP (TableName, RSDT_SIG, ACPI_NAME_SIZE))
+    {
+        *TablePtr = (UINT8 *) AcpiGbl_XSDT;
+        *TableLength = AcpiGbl_XSDT->Header.Length;
     }
     else
     {
-        PhysicalAddress = ACPI_GET_ADDRESS (AcpiGbl_RSDP->XsdtPhysicalAddress);
-        TableSignature = XSDT_SIG;
-        SignatureLength = sizeof (XSDT_SIG) -1;
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found ACPI 2.0 RSDP\n"));
+        AcpiOsPrintf ("Unsupported table signature: [%4.4s]\n", TableName);
+        *TablePtr = NULL;
+        return AE_SUPPORT;
     }
-
-    if (AcpiGbl_DbOpt_verbose)
-    {
-        AcpiUtDumpBuffer ((char *) AcpiGbl_RSDP, sizeof (RSDP_DESCRIPTOR), 0, ACPI_UINT32_MAX);
-    }
-
-    /* Get the RSDT/XSDT header to determine the table length */
-
-    CopyExtendedToReal (&AcpiTblHeader, PhysicalAddress, sizeof (ACPI_TABLE_HEADER));
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RSDT/XSDT at %8.8X\n", (UINT32) PhysicalAddress));
-    if (AcpiGbl_DbOpt_verbose)
-    {
-        AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, ACPI_UINT32_MAX);
-    }
-
-    /* Validate the table header */
-
-    Status = AcpiTbValidateTableHeader (&AcpiTblHeader);
-    if (ACPI_FAILURE (Status))
-    {
-        /* Table failed verification, map all errors to BAD_DATA */
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid RSDT table header\n"));
-        return (AE_BAD_DATA);
-    }
-
-    /* Allocate a buffer for the entire table */
-
-    AcpiGbl_XSDT = (void *) malloc ((size_t) AcpiTblHeader.Length);
-    if (!AcpiGbl_XSDT)
-    {
-        AcpiOsPrintf ("Could not allocate buffer for RSDT length 0x%X\n",
-            (UINT32) AcpiTblHeader.Length);
-        return AE_NO_MEMORY;
-    }
-
-    /* Get the entire RSDT/XSDT */
-
-    CopyExtendedToReal (AcpiGbl_XSDT, PhysicalAddress, AcpiTblHeader.Length);
-    AcpiOsPrintf ("%s at %p (Phys %8.8X)\n",
-        TableSignature, AcpiGbl_XSDT, (UINT32) PhysicalAddress);
-   
-    if (AcpiGbl_DbOpt_verbose)
-    {
-        AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, 0);
-    }
-
-    /* Convert to common format XSDT */
-
-    TableInfo.Pointer       = (ACPI_TABLE_HEADER *) AcpiGbl_XSDT;
-    TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
-    TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
-    TableInfo.BasePointer   = AcpiGbl_XSDT;
-
-    AcpiGbl_RsdtTableCount = AcpiTbGetTableCount (AcpiGbl_RSDP, TableInfo.Pointer);
-
-    Status = AcpiTbConvertToXsdt (&TableInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        goto ErrorExit;
-    }
-
-    AcpiGbl_XSDT = (XSDT_DESCRIPTOR *) TableInfo.Pointer;
-
-    /* Get the rest of the required tables (DSDT, FADT) */
-
-    Status = AfGetAllTables (AcpiGbl_RsdtTableCount, NULL);
-    if (ACPI_FAILURE (Status))
-    {
-        goto ErrorExit;
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_OK, "ACPI Tables successfully loaded\n"));
-
-    if (AcpiGbl_DSDT)
-    {
-        *DsdtPtr = (UINT8 *) AcpiGbl_DSDT;
-        *DsdtLength = AcpiGbl_DSDT->Length;
-    }
-
+    
     return AE_OK;
 
 ErrorExit:
