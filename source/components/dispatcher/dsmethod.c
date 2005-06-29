@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.72 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -171,8 +171,7 @@ AcpiDsParseMethod (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Parsing [%4.4s] **** NamedObj=%p\n",
-        (char*)&((ACPI_NAMESPACE_NODE *)ObjHandle)->Name, ObjHandle));
-
+        (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name, ObjHandle));
 
     /* Extract the method object from the method Node */
 
@@ -212,9 +211,17 @@ AcpiDsParseMethod (
     AcpiPsSetName (Op, Node->Name);
     Op->Node = Node;
 
+    /* 
+     * Get a new OwnerId for objects created by this method.  Namespace
+     * objects (such as Operation Regions) can be created during the
+     * first pass parse.
+     */
+    OwnerId = AcpiUtAllocateOwnerId (OWNER_TYPE_METHOD);
+    ObjDesc->Method.OwningId = OwnerId;
+
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
+    WalkState = AcpiDsCreateWalkState (OwnerId,
                                     NULL, NULL, NULL);
     if (!WalkState)
     {
@@ -225,7 +232,7 @@ AcpiDsParseMethod (
                     ObjDesc->Method.AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: delete walk state */
+        AcpiDsDeleteWalkState (WalkState);
         return_ACPI_STATUS (Status);
     }
 
@@ -245,16 +252,10 @@ AcpiDsParseMethod (
         return_ACPI_STATUS (Status);
     }
 
-    /* Get a new OwnerId for objects created by this method */
-
-    OwnerId = AcpiUtAllocateOwnerId (OWNER_TYPE_METHOD);
-    ObjDesc->Method.OwningId = OwnerId;
-
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
-        (char*)&((ACPI_NAMESPACE_NODE *)ObjHandle)->Name, ObjHandle, Op));
+        (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name, ObjHandle, Op));
 
     AcpiPsDeleteParseTree (Op);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -294,7 +295,6 @@ AcpiDsBeginMethodExecution (
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-
     /*
      * If there is a concurrency limit on this method, we need to
      * obtain a unit from the method semaphore.
@@ -325,13 +325,11 @@ AcpiDsBeginMethodExecution (
                                             WAIT_FOREVER);
     }
 
-
     /*
      * Increment the method parse tree thread count since it has been
      * reentered one more time (even if it is the same thread)
      */
     ObjDesc->Method.ThreadCount++;
-
     return_ACPI_STATUS (Status);
 }
 
@@ -353,7 +351,7 @@ ACPI_STATUS
 AcpiDsCallControlMethod (
     ACPI_THREAD_STATE       *Thread,
     ACPI_WALK_STATE         *ThisWalkState,
-    ACPI_PARSE_OBJECT       *Op)  /* TBD: This operand is obsolete */
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *MethodNode;
@@ -391,7 +389,6 @@ AcpiDsCallControlMethod (
         return_ACPI_STATUS (Status);
     }
 
-
     /* 1) Parse: Create a new walk state for the preempting walk */
 
     NextWalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwningId,
@@ -399,7 +396,6 @@ AcpiDsCallControlMethod (
     if (!NextWalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
-        goto Cleanup;
     }
 
     /* Create and init a Root Node */
@@ -416,7 +412,7 @@ AcpiDsCallControlMethod (
                     NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: delete walk state */
+        AcpiDsDeleteWalkState (NextWalkState);
         goto Cleanup;
     }
 
@@ -424,7 +420,6 @@ AcpiDsCallControlMethod (
 
     Status = AcpiPsParseAml (NextWalkState);
     AcpiPsDeleteParseTree (Op);
-
 
     /* 2) Execute: Create a new state for the preempting walk */
 
@@ -521,7 +516,6 @@ AcpiDsRestartControlMethod (
                 return_ACPI_STATUS (Status);
             }
         }
-
         else
         {
             /*
@@ -530,7 +524,6 @@ AcpiDsRestartControlMethod (
              */
             AcpiUtRemoveReference (ReturnDesc);
         }
-
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
@@ -568,7 +561,7 @@ AcpiDsTerminateControlMethod (
     FUNCTION_TRACE_PTR ("DsTerminateControlMethod", WalkState);
 
 
-    /* The method object should be stored in the walk state */
+    /* The current method object was saved in the walk state */
 
     ObjDesc = WalkState->MethodDesc;
     if (!ObjDesc)
@@ -586,7 +579,6 @@ AcpiDsTerminateControlMethod (
      * we have additional cleanup to perform
      */
     AcpiUtAcquireMutex (ACPI_MTX_PARSER);
-
 
     /* Signal completion of the execution of this method if necessary */
 

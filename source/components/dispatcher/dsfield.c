@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -388,7 +388,6 @@ AcpiDsGetFieldNames (
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid opcode in field list: %X\n",
                 Arg->Opcode));
             return_ACPI_STATUS (AE_AML_ERROR);
-            break;
         }
 
         Arg = Arg->Next;

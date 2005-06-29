@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.52 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -165,10 +165,10 @@ AcpiDsMethodDataInit (
     {
         MOVE_UNALIGNED32_TO_32 (&WalkState->Arguments[i].Name,
                                 NAMEOF_ARG_NTE);
-        WalkState->Arguments[i].Name       |= (i << 24);
-        WalkState->Arguments[i].DataType    = ACPI_DESC_TYPE_NAMED;
-        WalkState->Arguments[i].Type        = ACPI_TYPE_ANY;
-        WalkState->Arguments[i].Flags       = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_ARG;
+        WalkState->Arguments[i].Name      |= (i << 24);
+        WalkState->Arguments[i].Descriptor = ACPI_DESC_TYPE_NAMED;
+        WalkState->Arguments[i].Type       = ACPI_TYPE_ANY;
+        WalkState->Arguments[i].Flags      = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_ARG;
     }
 
     /* Init the method locals */
@@ -178,10 +178,10 @@ AcpiDsMethodDataInit (
         MOVE_UNALIGNED32_TO_32 (&WalkState->LocalVariables[i].Name,
                                 NAMEOF_LOCAL_NTE);
 
-        WalkState->LocalVariables[i].Name    |= (i << 24);
-        WalkState->LocalVariables[i].DataType = ACPI_DESC_TYPE_NAMED;
-        WalkState->LocalVariables[i].Type     = ACPI_TYPE_ANY;
-        WalkState->LocalVariables[i].Flags    = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_LOCAL;
+        WalkState->LocalVariables[i].Name      |= (i << 24);
+        WalkState->LocalVariables[i].Descriptor = ACPI_DESC_TYPE_NAMED;
+        WalkState->LocalVariables[i].Type       = ACPI_TYPE_ANY;
+        WalkState->LocalVariables[i].Flags      = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_LOCAL;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -362,7 +362,6 @@ AcpiDsMethodDataGetNode (
     default:
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Opcode %d is invalid\n", Opcode));
         return_ACPI_STATUS (AE_AML_BAD_OPCODE);
-        break;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -540,7 +539,6 @@ AcpiDsMethodDataGetValue (
                 Index, Node));
 
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_ARG);
-            break;
 
         case AML_LOCAL_OP:
 
@@ -548,7 +546,6 @@ AcpiDsMethodDataGetValue (
                 Index, Node));
 
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_LOCAL);
-            break;
         }
     }
 
@@ -612,7 +609,7 @@ AcpiDsMethodDataDeleteValue (
     Node->Object = NULL;
 
     if ((Object) &&
-        (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_INTERNAL)))
+        (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_INTERNAL))
     {
         /*
          * There is a valid object.
@@ -707,21 +704,22 @@ AcpiDsStoreObjectToLocal (
          * Weird, but true.
          */
         if ((Opcode == AML_ARG_OP) &&
-            (VALID_DESCRIPTOR_TYPE (CurrentObjDesc, ACPI_DESC_TYPE_NAMED)))
+            (ACPI_GET_DESCRIPTOR_TYPE (CurrentObjDesc) == ACPI_DESC_TYPE_NAMED))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                "Arg (%p) is an ObjRef(Node), storing in %p\n",
+                "Arg (%p) is an ObjRef(Node), storing in node %p\n",
                 ObjDesc, CurrentObjDesc));
 
             /* Detach an existing object from the Node */
 
-            AcpiNsDetachObject (Node);
+            AcpiNsDetachObject ((ACPI_NAMESPACE_NODE *) CurrentObjDesc);
 
             /*
              * Store this object into the Node
              * (perform the indirect store)
              */
-            Status = AcpiNsAttachObject (Node, ObjDesc, ObjDesc->Common.Type);
+            Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) CurrentObjDesc, 
+                            ObjDesc, ObjDesc->Common.Type);
             return_ACPI_STATUS (Status);
         }
 
