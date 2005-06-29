@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.152 $
+ *              $Revision: 1.153 $
  *
  *****************************************************************************/
 
@@ -625,7 +625,7 @@ AcpiExOutAddress (
     ACPI_PHYSICAL_ADDRESS   Value)
 {
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
     AcpiOsPrintf ("%20s : %p\n", Title, Value);
 #else
     AcpiOsPrintf ("%20s : %8.8X%8.8X\n", Title,
