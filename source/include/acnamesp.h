@@ -421,6 +421,12 @@ FindRootSystemDescriptorPointer (
     ROOT_SYSTEM_DESCRIPTOR_POINTER  ** RSDP,
     OSD_FILE                        *InputFile);
 
+UINT8
+checksum (
+    void                *Buffer,
+    UINT32              Length);
+
+
 INT32
 VerifyTableChecksum (
     void                *TableHeader, 
