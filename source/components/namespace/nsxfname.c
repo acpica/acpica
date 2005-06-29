@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.68 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -315,7 +315,7 @@ AcpiGetObjectInfo (
     DEVICE_ID               Uid;
     ACPI_STATUS             Status;
     UINT32                  DeviceStatus = 0;
-    UINT32                  Address = 0;
+    ACPI_INTEGER            Address = 0;
     ACPI_NAMESPACE_NODE     *Node;
 
 
@@ -337,9 +337,7 @@ AcpiGetObjectInfo (
 
     Info->Type      = Node->Type;
     Info->Name      = Node->Name;
-    Info->Parent    = AcpiNsConvertEntryToHandle (
-                        AcpiNsGetParentObject (Node));
-
+    
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /*
@@ -377,7 +375,7 @@ AcpiGetObjectInfo (
     if (ACPI_SUCCESS (Status))
     {
         STRCPY (Info->UniqueId, Uid.Buffer);
-        
+
         Info->Valid |= ACPI_VALID_UID;
     }
 
