@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmnames - AML disassembler, names, namestrings, pathnames
- *              $Revision: 1.11 $
+ *              $Revision: 1.5 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,13 +127,60 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dmnames")
 
-/* Local prototypes */
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmValidateName
+ *
+ * PARAMETERS:  Name            - 4 character ACPI name
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Lookup the name
+ *
+ ******************************************************************************/
+
 void
-AcpiDmDisplayPath (
-    ACPI_PARSE_OBJECT       *Op);
+AcpiDmValidateName (
+    char                    *Name,
+    ACPI_PARSE_OBJECT       *Op)
+{
+
+#if 0
+    if ((!Name) ||
+        (!Op->Common.Parent))
+    {
+        return;
+    }
+
+    if (!Op->Common.Node)
+    {
+        AcpiOsPrintf (" /**** Name not found or not accessible from this scope ****/ ");
+    }
+
+    ACPI_PARSE_OBJECT       *TargetOp;
+
+
+    if ((!Name) ||
+        (!Op->Common.Parent))
+    {
+        return;
+    }
+
+    TargetOp = AcpiPsFind (Op, Name, 0, 0);
+    if (!TargetOp)
+    {
+        /*
+         * Didn't find the name in the parse tree.  This may be
+         * a problem, or it may simply be one of the predefined names
+         * (such as _OS_).  Rather than worry about looking up all
+         * the predefined names, just display the name as given
+         */
+        AcpiOsPrintf (" /**** Name not found or not accessible from this scope ****/ ");
+    }
 #endif
+
+}
 
 
 /*******************************************************************************
@@ -214,9 +261,8 @@ AcpiPsDisplayObjectPathname (
     {
         /* Node not defined in this scope, look it up */
 
-        Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Common.Value.String,
-                    ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT,
-                    WalkState, &(Node));
+        Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Common.Value.String, ACPI_TYPE_ANY,
+                        ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
 
         if (ACPI_FAILURE (Status))
         {
@@ -264,7 +310,7 @@ Exit:
  *
  * RETURN:      None
  *
- * DESCRIPTION: Decode and dump an ACPI namestring. Handles prefix characters
+ * DESCRIPTION: Decode an ACPI namestring. Handles prefix characters
  *
  ******************************************************************************/
 
@@ -329,7 +375,6 @@ AcpiDmNamestring (
 }
 
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmDisplayPath
@@ -448,61 +493,6 @@ AcpiDmDisplayPath (
         Prev = Search;
     }
 }
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmValidateName
- *
- * PARAMETERS:  Name            - 4 character ACPI name
- *
- * RETURN:      None
- *
- * DESCRIPTION: Lookup the name
- *
- ******************************************************************************/
-
-void
-AcpiDmValidateName (
-    char                    *Name,
-    ACPI_PARSE_OBJECT       *Op)
-{
-
-    if ((!Name) ||
-        (!Op->Common.Parent))
-    {
-        return;
-    }
-
-    if (!Op->Common.Node)
-    {
-        AcpiOsPrintf (
-            " /**** Name not found or not accessible from this scope ****/ ");
-    }
-
-    ACPI_PARSE_OBJECT       *TargetOp;
-
-
-    if ((!Name) ||
-        (!Op->Common.Parent))
-    {
-        return;
-    }
-
-    TargetOp = AcpiPsFind (Op, Name, 0, 0);
-    if (!TargetOp)
-    {
-        /*
-         * Didn't find the name in the parse tree.  This may be
-         * a problem, or it may simply be one of the predefined names
-         * (such as _OS_).  Rather than worry about looking up all
-         * the predefined names, just display the name as given
-         */
-        AcpiOsPrintf (
-            " /**** Name not found or not accessible from this scope ****/ ");
-    }
-}
-#endif
 
 #endif
 

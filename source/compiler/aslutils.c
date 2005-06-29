@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.62 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,10 +126,18 @@
 
 #ifdef _USE_BERKELEY_YACC
 extern const char * const       AslCompilername[];
-static const char * const       *yytname = &AslCompilername[254];
+static const char * const       *yytname = &AslCompilername[255];
 #else
 extern const char * const       yytname[];
 #endif
+
+
+void
+AslOptimizeNamepath (
+    char                *Buffer)
+{
+    printf ("NamePath: %s\n", Buffer);
+}
 
 
 /*******************************************************************************
@@ -149,7 +157,6 @@ UtDisplayConstantOpcodes (
     void)
 {
     UINT32              i;
-
 
     printf ("Constant expression opcode information\n\n");
 
@@ -250,7 +257,7 @@ UtEndEvent (
  *
  * FUNCTION:    UtHexCharToValue
  *
- * PARAMETERS:  HexChar         - Hex character in Ascii
+ * PARAMETERS:  hc          - Hex character in Ascii
  *
  * RETURN:      The binary value of the hex character
  *
@@ -260,20 +267,20 @@ UtEndEvent (
 
 UINT8
 UtHexCharToValue (
-    int                     HexChar)
+    int                     hc)
 {
 
-    if (HexChar <= 0x39)
+    if (hc <= 0x39)
     {
-        return ((UINT8) (HexChar - 0x30));
+        return ((UINT8) (hc - 0x30));
     }
 
-    if (HexChar <= 0x46)
+    if (hc <= 0x46)
     {
-        return ((UINT8) (HexChar - 0x37));
+        return ((UINT8) (hc - 0x37));
     }
 
-    return ((UINT8) (HexChar - 0x57));
+    return ((UINT8) (hc - 0x57));
 }
 
 
@@ -282,7 +289,7 @@ UtHexCharToValue (
  * FUNCTION:    UtConvertByteToHex
  *
  * PARAMETERS:  RawByte         - Binary data
- *              Buffer          - Pointer to where the hex bytes will be stored
+ *              *Buffer         - Pointer to where the hex bytes will be stored
  *
  * RETURN:      Ascii hex byte is stored in Buffer.
  *
@@ -310,7 +317,7 @@ UtConvertByteToHex (
  * FUNCTION:    UtConvertByteToAsmHex
  *
  * PARAMETERS:  RawByte         - Binary data
- *              Buffer          - Pointer to where the hex bytes will be stored
+ *              *Buffer         - Pointer to where the hex bytes will be stored
  *
  * RETURN:      Ascii hex byte is stored in Buffer.
  *
@@ -337,8 +344,7 @@ UtConvertByteToAsmHex (
  *
  * FUNCTION:    DbgPrint
  *
- * PARAMETERS:  Type            - Type of output
- *              Fmt             - Printf format string
+ * PARAMETERS:  Fmt             - Printf format string
  *              ...             - variable printf list
  *
  * RETURN:      None
@@ -425,7 +431,6 @@ void
 UtSetParseOpName (
     ACPI_PARSE_OBJECT       *Op)
 {
-
     strncpy (Op->Asl.ParseOpName, UtGetOpName (Op->Asl.ParseOpcode), 12);
 }
 
@@ -459,7 +464,7 @@ UtGetOpName (
  *
  * FUNCTION:    UtDisplaySummary
  *
- * PARAMETERS:  FileID          - ID of outpout file
+ * PARAMETERS:  None
  *
  * RETURN:      None
  *
@@ -585,8 +590,7 @@ UtGetStringBuffer (
     if ((Gbl_StringCacheNext + Length) >= Gbl_StringCacheLast)
     {
         Gbl_StringCacheNext = UtLocalCalloc (ASL_STRING_CACHE_SIZE + Length);
-        Gbl_StringCacheLast = Gbl_StringCacheNext + ASL_STRING_CACHE_SIZE +
-                                Length;
+        Gbl_StringCacheLast = Gbl_StringCacheNext + ASL_STRING_CACHE_SIZE + Length;
     }
 
     Buffer = Gbl_StringCacheNext;
@@ -663,7 +667,7 @@ UtInternalizeName (
  *
  ******************************************************************************/
 
-static void
+void
 UtPadNameWithUnderscores (
     char                    *NameSeg,
     char                    *PaddedNameSeg)
@@ -694,14 +698,14 @@ UtPadNameWithUnderscores (
  * PARAMETERS:  Op              - Parent parse node
  *              Name            - Full ExternalName
  *
- * RETURN:      None; Sets the NameSeg field in parent node
+ * RETURN:      Sets the NameSeg field in parent node
  *
  * DESCRIPTION: Extract the last nameseg of the ExternalName and store it
  *              in the NameSeg field of the Op.
  *
  ******************************************************************************/
 
-static void
+void
 UtAttachNameseg (
     ACPI_PARSE_OBJECT       *Op,
     char                    *Name)
@@ -809,8 +813,7 @@ UtDoConstant (
     Status = UtStrtoul64 (String, 0, &Converted);
     if (ACPI_FAILURE (Status))
     {
-        sprintf (ErrBuf, "%s %s\n", "Conversion error:",
-            AcpiFormatException (Status));
+        sprintf (ErrBuf, "%s %s\n", "Conversion error:", AcpiFormatException (Status));
         AslCompilererror (ErrBuf);
     }
 
@@ -818,15 +821,12 @@ UtDoConstant (
 }
 
 
-/* TBD: use version in ACPI CA main code base? */
-
 /*******************************************************************************
  *
  * FUNCTION:    UtStrtoul64
  *
  * PARAMETERS:  String          - Null terminated string
- *              Terminater      - Where a pointer to the terminating byte is
- *                                returned
+ *              Terminater      - Where a pointer to the terminating byte is returned
  *              Base            - Radix of the string
  *
  * RETURN:      Converted value
@@ -834,6 +834,8 @@ UtDoConstant (
  * DESCRIPTION: Convert a string into an unsigned value.
  *
  ******************************************************************************/
+#define NEGATIVE    1
+#define POSITIVE    0
 
 ACPI_STATUS
 UtStrtoul64 (
@@ -865,8 +867,9 @@ UtStrtoul64 (
         return (AE_BAD_PARAMETER);
     }
 
-    /* Skip over any white space in the buffer: */
-
+    /*
+     * skip over any white space in the buffer:
+     */
     while (isspace (*String) || *String == '\t')
     {
         ++String;
@@ -974,8 +977,9 @@ UtStrtoul64 (
     }
 
 
-    /* If a minus sign was present, then "the conversion is negated": */
-
+    /*
+     * If a minus sign was present, then "the conversion is negated":
+     */
     if (Sign == NEGATIVE)
     {
         ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
