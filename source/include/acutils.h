@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.86 $
+ *       $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -690,7 +690,7 @@ AcpiCmInitStaticObject (
 #define AcpiCmCallocate(a)              _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
 #define AcpiCmFree(a)                   _CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
 
-#ifndef ACPI_DEBUG
+#ifndef ACPI_DEBUG_TRACK_ALLOCATIONS
 
 #define AcpiCmAddElementToAllocList(a,b,c,d,e,f)
 #define AcpiCmDeleteElementFromAllocList(a,b,c,d)
