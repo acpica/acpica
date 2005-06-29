@@ -42,7 +42,7 @@ RSC=rc.exe
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Gz /MT /W3 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /FAs /YX /FD /c
+# ADD CPP /nologo /Gz /MT /W3 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /YX /FD /c
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -66,7 +66,7 @@ RSC=rc.exe
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 # ADD BASE CPP /nologo /W3 /GX /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /ZI /GZ /c
-# ADD CPP /nologo /Gz /MT /W3 /GX /Z7 /Od /I "..\..\Subsystem\include" /I "\98ddk\inc\win98" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_DEBUG" /D "FLAT_MODEL" /FAcs /FR /FD /c
+# ADD CPP /nologo /Gz /MT /W3 /GX /Z7 /Od /I "..\..\Subsystem\include" /I "\98ddk\inc\win98" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_DEBUG" /D "FLAT_MODEL" /FR /FD /c
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -222,6 +222,10 @@ SOURCE=..\..\Subsystem\Interpreter\iemonadic.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\iemstack.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\ieopexec.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
@@ -235,6 +239,10 @@ SOURCE=..\..\Subsystem\Interpreter\ieopexec.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\ieostack.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\ieprep.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
@@ -245,6 +253,10 @@ SOURCE=..\..\Subsystem\Interpreter\ieprep.c
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\iepstack.c
 # End Source File
 # Begin Source File
 
@@ -381,19 +393,6 @@ SOURCE=..\..\Subsystem\Interpreter\isnames.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isrdata.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\isstack.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
 
@@ -644,6 +643,10 @@ SOURCE=..\..\Subsystem\Include\globals.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\hardware.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\internal.h
 # End Source File
 # Begin Source File
 
