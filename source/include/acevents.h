@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: events.h - AcpiEvent subcomponent prototypes and defines
+ * Name: acevents.h - Event subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __EVENTS_H__
-#define __EVENTS_H__
+#ifndef __ACEVENTS_H__
+#define __ACEVENTS_H__
 
 
 /*
@@ -227,28 +227,28 @@ AcpiEvSystemMemoryRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext);
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiEvIoSpaceRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext);
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiEvPciConfigRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext);
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiEvDefaultRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext);
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiEvInitializeRegion (
@@ -297,4 +297,4 @@ AcpiEvSciCount (
 #endif
 
 
-#endif  /*  __EVENTS_H__   */
+#endif  /* __ACEVENTS_H__  */
