@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -194,7 +194,10 @@ AcpiDsInitOneObject (
 
         Info->MethodCount++;
 
-        DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        if (!(AcpiDbgLevel & TRACE_INIT))
+        {
+            DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        }
 
         /*
          * Set the execution data width (32 or 64) based upon the
@@ -364,7 +367,7 @@ AcpiDsInitObjectFromOp (
 
         /* We are expecting a number */
 
-        if (ArgDesc->Common.Type != ACPI_TYPE_NUMBER)
+        if (ArgDesc->Common.Type != ACPI_TYPE_INTEGER)
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("InitObject: Expecting number, got obj: %p type %X\n",
@@ -375,7 +378,7 @@ AcpiDsInitObjectFromOp (
 
         /* Get the value, delete the internal object */
 
-        (*ObjDesc)->Buffer.Length = (UINT32) ArgDesc->Number.Value;
+        (*ObjDesc)->Buffer.Length = (UINT32) ArgDesc->Integer.Value;
         AcpiCmRemoveReference (ArgDesc);
 
         /* Allocate the buffer */
@@ -439,8 +442,8 @@ AcpiDsInitObjectFromOp (
         Status = AcpiDsBuildInternalObject (WalkState, Op, ObjDesc);
         break;
 
-    case ACPI_TYPE_NUMBER:
-        (*ObjDesc)->Number.Value = Op->Value.Integer;
+    case ACPI_TYPE_INTEGER:
+        (*ObjDesc)->Integer.Value = Op->Value.Integer;
         break;
 
 
