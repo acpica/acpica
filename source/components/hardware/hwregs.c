@@ -733,5 +733,5 @@ HwRegisterIO (
     RegisterValue >>= HwGetBitShift (Mask);
 
     DEBUG_PRINT (TRACE_IO, ("Register I/O: returning 0x%X\n", RegisterValue));
-    return_ACPI_STATUS (RegisterValue);
+    return_VALUE (RegisterValue);
 }
