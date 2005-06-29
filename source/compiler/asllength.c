@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.9 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -127,15 +127,18 @@
 
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LnInitLengthsWalk
  *
- * PARAMETERS:  
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:      
+ * RETURN:      None.
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Walk callback to initialize (and re-initialize) the node
+ *              subtree length(s) to zero.  The Subtree lengths are bubbled
+ *              up to the root node in order to get a total AML length.
  *
  ******************************************************************************/
 
@@ -153,16 +156,24 @@ LnInitLengthsWalk (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LnPackageLengthWalk
  *
- * PARAMETERS:  
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Walk callback to calculate the total AML length.
+ *              1) Calculate the AML lengths (opcode, package length, etc.) for
+ *                 THIS node.
+ *              2) Bubbble up all of these lengths to the parent node by summing
+ *                 them all into the parent subtree length.
+ *
+ * Note:  The SubtreeLength represents the total AML length of all child nodes
+ *        in all subtrees under a given node.  Therefore, once this walk is
+ *        complete, the Root Node subtree length is the AML length of the entire
+ *        tree (and thus, the entire ACPI table)
  *
  ******************************************************************************/
 
@@ -173,18 +184,18 @@ LnPackageLengthWalk (
     void                    *Context)
 {
 
+    /* Generate the AML lengths for this node */
 
-    /* 
-     * generate the subtree length and
-     * bubble it up to the parent
-     */
     CgGenerateAmlLengths (Node);
+
+    /* Bubble up all lengths (this node and all below it) to the parent */
+
     if ((Node->Parent) &&
         (Node->ParseOpcode != DEFAULT_ARG))
     {
-        Node->Parent->AmlSubtreeLength += (Node->AmlLength + 
+        Node->Parent->AmlSubtreeLength += (Node->AmlLength +
                                             Node->AmlOpcodeLength +
-                                            Node->AmlPkgLenBytes + 
+                                            Node->AmlPkgLenBytes +
                                             Node->AmlSubtreeLength);
     }
 }
@@ -192,13 +203,16 @@ LnPackageLengthWalk (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LnAdjustLengthToRoot
  *
- * PARAMETERS:  
+ * PARAMETERS:  PsNode      - Node whose Length was changed
  *
- * RETURN:      
+ * RETURN:      None.
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Change the Subtree length of the given node, and bubble the
+ *              change all the way up to the root node.  This allows for
+ *              last second changes to a package length (for example, if the
+ *              package length encoding gets shorter or longer.)
  *
  ******************************************************************************/
 
@@ -208,6 +222,7 @@ LnAdjustLengthToRoot (
     UINT32                  LengthDelta)
 {
     ASL_PARSE_NODE          *Node;
+
 
     /* Adjust all subtree lengths up to the root */
 
@@ -226,13 +241,15 @@ LnAdjustLengthToRoot (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    CgGetPackageLenByteCount
  *
- * PARAMETERS:  
+ * PARAMETERS:  Node            - Parse node
+ *              PackageLength   - Length to be encoded
  *
- * RETURN:      
+ * RETURN:      Required length of the package length encoding
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Calculate the number of bytes required to encode the given
+ *              package length.
  *
  ******************************************************************************/
 
@@ -242,27 +259,32 @@ CgGetPackageLenByteCount (
     UINT32                  PackageLength)
 {
 
-    /* 
+    /*
      * Determine the number of bytes required to encode the package length
      * Note: the package length includes the number of bytes used to encode
      * the package length, so we must account for this also.
      */
-    if (PackageLength <= (0x0000003F - 1)) 
+
+    if (PackageLength <= (0x0000003F - 1))
     {
         return (1);
     }
+
     else if (PackageLength <= (0x00000FFF - 2))
     {
         return (2);
     }
+
     else if (PackageLength <= (0x000FFFFF - 3))
     {
         return (3);
     }
+
     else if (PackageLength <= (0x0FFFFFFF - 4))
     {
         return (4);
     }
+
     else
     {
         /* Fatal error - the package length is too large to encode */
@@ -274,16 +296,17 @@ CgGetPackageLenByteCount (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    CgGenerateAmlOpcodeLength
  *
- * PARAMETERS:  
+ * PARAMETERS:  Node        - Parse node whose AML opcode lengths will be
+ *                            calculated
  *
- * RETURN:      
+ * RETURN:      None.
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Calculate the AmlOpcodeLength, AmlPkgLenBytes, and AmlLength
+ *              fields for this node.
  *
  ******************************************************************************/
 
@@ -313,6 +336,9 @@ CgGenerateAmlOpcodeLength (
         Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node, Node->AmlSubtreeLength);
     }
 
+
+    /* Data opcode lengths are easy */
+
     switch (Node->AmlOpcode)
     {
     case AML_BYTE_OP:
@@ -334,16 +360,16 @@ CgGenerateAmlOpcodeLength (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    CgGenerateAmlLengths
  *
- * PARAMETERS:  
+ * PARAMETERS:  Node        - Parse node
  *
- * RETURN:      
+ * RETURN:      None.
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Generate internal length fields based on the AML opcode or
+ *              parse opcode.
  *
  ******************************************************************************/
 
@@ -353,7 +379,6 @@ CgGenerateAmlLengths (
 {
     char                    *Buffer;
     ACPI_STATUS             Status;
-    
 
 
     switch (Node->AmlOpcode)
@@ -362,17 +387,17 @@ CgGenerateAmlLengths (
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 1;
         return;
-    
+
     case AML_RAW_DATA_WORD:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 2;
         return;
-    
+
     case AML_RAW_DATA_DWORD:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 4;
         return;
-    
+
     case AML_RAW_DATA_QWORD:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 8;
@@ -422,8 +447,8 @@ CgGenerateAmlLengths (
         Node->Flags |= NODE_NAME_INTERNALIZED;
 
         Node->AmlLength = strlen (Buffer);
-        
-        /* 
+
+        /*
          * Check for single backslash reference to root,
          * make it a null terminated string in the AML
          */
@@ -451,6 +476,9 @@ CgGenerateAmlLengths (
     /* Ignore the "default arg" nodes, they are extraneous at this point */
 
     case DEFAULT_ARG:
+    case EXTERNAL:
+    case INCLUDE:
+    case INCLUDE_END:
         break;
 
     default:
@@ -458,7 +486,5 @@ CgGenerateAmlLengths (
         break;
     }
 }
-
-
 
 
