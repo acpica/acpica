@@ -158,15 +158,19 @@ DsCreateField (
     FUNCTION_TRACE_PTR ("DsCreateField", Op);
     
 
+
+    /* First arg is the name of the parent OpRegion */
+
     Arg = Op->Value.Arg;
 
-    /* First arg is the field flags */
+    /* Second arg is the field flags */
 
-    FieldFlags = (UINT8) Arg->Value.Integer;
     Arg = Arg->Next;
+    FieldFlags = (UINT8) Arg->Value.Integer;
 
     /* Each remaining arg is a Named Field */
 
+    Arg = Arg->Next;
     while (Arg)
     {
         switch (Arg->Opcode)
@@ -244,9 +248,13 @@ DsCreateBankField (
     FUNCTION_TRACE_PTR ("DsCreateBankField", Op);
 
 
-    /* First arg is the Bank Register */
+    /* First arg is the name of the parent OpRegion */
 
     Arg = Op->Value.Arg;
+
+    /* Socond arg is the Bank Register */
+
+    Arg = Arg->Next;
 
     Status = NsLookup (WalkState->ScopeInfo, Arg->Value.String, INTERNAL_TYPE_BankFieldDefn, IMODE_LoadPass1, 
                                 NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &BankReg);
@@ -255,7 +263,7 @@ DsCreateBankField (
         return_ACPI_STATUS (Status);
     }
 
-    /* Second arg is the BankValue */
+    /* Third arg is the BankValue */
     
     Arg = Arg->Next;
     BankValue = Arg->Value.Integer;
@@ -337,7 +345,7 @@ DsCreateIndexField (
     ACPI_STATUS             Status;
     ACPI_GENERIC_OP         *Arg;
     NAME_TABLE_ENTRY        *Entry;
-    char                    Buffer[5];
+    char                    *Buffer;
     NAME_TABLE_ENTRY        *IndexReg;
     NAME_TABLE_ENTRY        *DataReg;
     UINT8                   FieldFlags;
@@ -347,11 +355,11 @@ DsCreateIndexField (
     FUNCTION_TRACE_PTR ("DsCreateIndexField", Op);
 
 
+    Arg = Op->Value.Arg;
 
-    /* Name (in Op) is the Index register */
+    /* First arg is the name of the Index register */
 
-    *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Op)->Name);
-    Buffer[4] = 0;
+    Buffer = Arg->Value.String;
 
     Status = NsLookup (WalkState->ScopeInfo, Buffer, ACPI_TYPE_Any, IMODE_LoadPass1, 
                                 NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &IndexReg);
@@ -360,9 +368,9 @@ DsCreateIndexField (
         return_ACPI_STATUS (Status);
     }
 
-    /* First arg is the data register */
+    /* Second arg is the data register */
 
-    Arg = Op->Value.Arg;
+    Arg = Arg->Next;
 
     Status = NsLookup (WalkState->ScopeInfo, Arg->Value.String, INTERNAL_TYPE_IndexFieldDefn, IMODE_LoadPass1, 
                                 NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &DataReg);
