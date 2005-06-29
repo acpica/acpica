@@ -14,15 +14,18 @@
  | Functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.12 $
- | $Date: 2005/06/29 18:15:35 $
+ | $Revision: 1.13 $
+ | $Date: 2005/06/29 18:15:36 $
  | $Log: nsaccess.c,v $
- | Revision 1.12  2005/06/29 18:15:35  aystarik
- |
+ | Revision 1.13  2005/06/29 18:15:36  aystarik
+ | New version of DEBUG_PRINT
  |
  | 
- | date	99.04.02.17.54.00;	author rmoore1;	state Exp;
+ | date	99.04.02.22.39.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 13    4/02/99 2:39p Rmoore1
+ * New version of DEBUG_PRINT
  * 
  * 12    4/02/99 9:54a Rmoore1
  * 
@@ -716,7 +719,7 @@ AllocateNteDesc (INT32 Size)
         NewNteDesc = (nte *) (((UINT8 *) NewNteDesc) + sizeof (nte *));
     }
 
-    DEBUG_PRINT1 (TRACE_EXEC, "AllocateNteDesc: NewNteDesc=%p\n", NewNteDesc);
+    DEBUG_PRINT (TRACE_EXEC, ("AllocateNteDesc: NewNteDesc=%p\n", NewNteDesc));
 #endif
 
     return NewNteDesc;
@@ -904,7 +907,7 @@ InternalizeName (char *DottedName)
         }
     }
 
-    DEBUG_PRINT2 (TRACE_EXEC,"InternalizeName: returning %p=>\"%s\"\n", IN, IN ? IN : "");     
+    DEBUG_PRINT (TRACE_EXEC,("InternalizeName: returning %p=>\"%s\"\n", IN, IN ? IN : ""));     
     
     return IN;
 }
@@ -1033,21 +1036,21 @@ BREAKPOINT3;
             /* Method points to a method name */
         
             LINE_SET (55, Exec);
-            DEBUG_PRINT3 (AML_INFO,
-                        "[%s Method %p ptrVal %p\n",
-                        MethodName, MethodPtr, MethodPtr->ptrVal);
+            DEBUG_PRINT (AML_INFO,
+                        ("[%s Method %p ptrVal %p\n",
+                        MethodName, MethodPtr, MethodPtr->ptrVal));
 
             if (MethodPtr->ptrVal)
             {
-                DEBUG_PRINT2 (AML_INFO,
-                            "Offset %x Length %lx]\n",
+                DEBUG_PRINT (AML_INFO,
+                            ("Offset %x Length %lx]\n",
                             ((meth *) MethodPtr->ptrVal)->Offset + 1,
-                            ((meth *) MethodPtr->ptrVal)->Length - 1);
+                            ((meth *) MethodPtr->ptrVal)->Length - 1));
             }
         
             else
             {
-                DEBUG_PRINT (AML_INFO, "*Undefined*]\n");
+                DEBUG_PRINT (AML_INFO, ("*Undefined*]\n"));
             }
 #endif
 
@@ -1064,8 +1067,8 @@ BREAKPOINT3;
 
             else
             {
-                DEBUG_PRINT1 (TRACE_NAMES, "Set scope %s \n",
-                                  NsFullyQualifiedName(MethodPtr->ChildScope));
+                DEBUG_PRINT (TRACE_NAMES, ("Set scope %s \n",
+                                  NsFullyQualifiedName(MethodPtr->ChildScope)));
         
                 /*  reset current scope to beginning of scope stack */
 
@@ -1075,8 +1078,9 @@ BREAKPOINT3;
 
                 NsPushCurrentScope (MethodPtr->ChildScope, Method);
         
-                DEBUG_PRINT2 (TRACE_NAMES, "Exec Method %s at offset %8XH\n",
-                                  NsFullyQualifiedName (MethodPtr), ((meth *) MethodPtr->ptrVal)->Offset + 1);
+                DEBUG_PRINT (TRACE_NAMES, ("Exec Method %s at offset %8XH\n",
+                                  NsFullyQualifiedName (MethodPtr), 
+                                  ((meth *) MethodPtr->ptrVal)->Offset + 1));
         
                 ClearPkgStack ();
                 ObjStackTop = 0;                                           /* Clear object stack */
@@ -1128,7 +1132,7 @@ BREAKPOINT3;
             OBJECT_DESCRIPTOR           *ObjDesc;
 
 
-            DEBUG_PRINT (AML_INFO, "Value: \n");
+            DEBUG_PRINT (AML_INFO, ("Value: \n"));
             DUMP_ENTRY (MethodPtr);
 
             ObjDesc = AllocateObjectDesc (&KDT[39]);
@@ -1392,16 +1396,16 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
         return NOTFOUND;
     }
 
-    DEBUG_PRINT3 (TRACE_NAMES,
-                    "SearchTable: search %s [%p] for %4.4s\n",
-                    NsNameOfScope (NameTbl), NameTbl, NamSeg);
+    DEBUG_PRINT (TRACE_NAMES,
+                    ("SearchTable: search %s [%p] for %4.4s\n",
+                    NsNameOfScope (NameTbl), NameTbl, NamSeg));
 
     if (!NcOK ((INT32) NamSeg[0]) || !NcOK ((INT32) NamSeg[1])
      || !NcOK ((INT32) NamSeg[2]) || !NcOK ((INT32) NamSeg[3]))
     {
         sprintf (WhyBuf, "*** bad name %08lx *** \n", *(UINT32 *) NamSeg);
         Why = WhyBuf;
-        DEBUG_PRINT (NS_ERROR, Why);
+        DEBUG_PRINT (NS_ERROR, (Why));
         CheckTrash ("leave SearchTable BADNAME");
         return NOTFOUND;
     }
@@ -1409,9 +1413,9 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
     if ((NameTbl == Root && TableSize != ROOTSIZE) ||
         (NameTbl != Root && TableSize != TABLSIZE))
     {
-        DEBUG_PRINT2 (NS_ERROR, 
-            " *** NAME TABLE SIZE ERROR: expected %d, actual %d *** \n",
-            (NameTbl == Root) ? ROOTSIZE : TABLSIZE, TableSize);
+        DEBUG_PRINT (NS_ERROR, 
+                    (" *** NAME TABLE SIZE ERROR: expected %d, actual %d *** \n",
+                    (NameTbl == Root) ? ROOTSIZE : TABLSIZE, TableSize));
         Why = "*** NAME TABLE SIZE ERROR ***";
         CheckTrash ("leave SearchTable BADSIZE");
         return NOTFOUND;
@@ -1497,8 +1501,8 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
                 NameTbl[Position].NtType = Type;
             }
 
-            DEBUG_PRINT2 (TRACE_NAMES, "%4.4s - Name found at %p\n", 
-                            NamSeg, &NameTbl[Position]);
+            DEBUG_PRINT (TRACE_NAMES, ("%4.4s - Name found at %p\n", 
+                            NamSeg, &NameTbl[Position]));
             
             CheckTrash ("leave SearchTable FOUND");
             return &NameTbl[Position];
@@ -1528,7 +1532,7 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
              */
 
             NameTbl = NEXTSEG (NameTbl);
-            DEBUG_PRINT1 (TRACE_EXEC, "SearchTable: search appendage NameTbl=%p\n", NameTbl);
+            DEBUG_PRINT (TRACE_EXEC, ("SearchTable: search appendage NameTbl=%p\n", NameTbl));
             Position = 0;
             Tries += TABLSIZE;
         }
@@ -1559,7 +1563,7 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
         nte         *rv;
 
 
-        DEBUG_PRINT (TRACE_NAMES, "searching parent\n");
+        DEBUG_PRINT (TRACE_NAMES, ("searching parent\n"));
         IncIndent ();
 
         /*  recursively search parent scope */
@@ -1569,7 +1573,7 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
         CheckTrash ("after  recursive SearchTable");
         
         DecIndent ();
-        DEBUG_PRINT (TRACE_NAMES, "\n");
+        DEBUG_PRINT_RAW (TRACE_NAMES, ("\n"));
         
         if (rv != NOTFOUND)
         {
@@ -1582,12 +1586,12 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
     {
         if ((nte *) 0 == NameTbl[0].ParentScope)
         {
-            DEBUG_PRINT (TRACE_NAMES, "no parent, ");
+            DEBUG_PRINT (TRACE_NAMES, ("no parent, "));
         }
         else if (NsLocal (Type))
         {
-            DEBUG_PRINT1 (TRACE_NAMES,
-                        "%s is local, ", NsTypeNames[Type]);
+            DEBUG_PRINT (TRACE_NAMES,
+                        ("%s is local, ", NsTypeNames[Type]));
         }
     }
 
@@ -1609,9 +1613,9 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
         {
             /*  we should NEVER get here    */
 
-            DEBUG_PRINT1 (NS_ERROR,
-                "SearchTable: appendage %p about to be overwritten\n",
-                NEXTSEG (NameTbl));
+            DEBUG_PRINT (NS_ERROR,
+                        ("SearchTable: appendage %p about to be overwritten\n",
+                        NEXTSEG (NameTbl)));
         }
 
 
@@ -1630,9 +1634,9 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
             NameTbl = NEXTSEG (NameTbl);
             NameTbl[0].ParentScope = ParentScope;
 
-            DEBUG_PRINT3 (TRACE_EXEC,
-                    "nsSearchTable: appendage NameTbl=%p, ParentScope=%p, ChildScope=%p\n",
-                    NameTbl, ParentScope, NameTbl->ChildScope);
+            DEBUG_PRINT (TRACE_EXEC,
+                        ("nsSearchTable: appendage NameTbl=%p, ParentScope=%p, ChildScope=%p\n",
+                        NameTbl, ParentScope, NameTbl->ChildScope));
 
             Position = 0;
             Tries += TABLSIZE;
@@ -1689,15 +1693,15 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
                             &NameTbl[Position].NtType, NameTbl[Position].NtType, Type, (void *) NameTbl);
         }
 
-        DEBUG_PRINT2_RAW (TRACE_NAMES,
-                        "added to %p at %p\n", NameTbl, &NameTbl[Position]);
+        DEBUG_PRINT_RAW (TRACE_NAMES,
+                        ("added to %p at %p\n", NameTbl, &NameTbl[Position]));
         
         CheckTrash ("leave SearchTable ADDED");
         return &NameTbl[Position];
     }
 
 
-    DEBUG_PRINT1_RAW (TRACE_NAMES, "not found in %p \n", NameTbl);
+    DEBUG_PRINT_RAW (TRACE_NAMES, ("not found in %p \n", NameTbl));
     
     CheckTrash ("leave SearchTable NOTFOUND");
     return NOTFOUND;
@@ -1761,7 +1765,7 @@ NsSetup (void)
 
     /* Enter the pre-defined names in the name table */
     
-    DEBUG_PRINT (NS_INFO, "Entering predefined name table into namespace\n");
+    DEBUG_PRINT (NS_INFO, ("Entering predefined name table into namespace\n"));
 
     for (InitVal = PreDefinedNames; InitVal->Name; InitVal++)
     {
@@ -1865,7 +1869,7 @@ NsPopCurrent (NsType Type)
         REPORT_WARNING (&KDT[21]);
     }
 
-    DEBUG_PRINT1 (TRACE_EXEC, "Popping Scope till type (%i) is found\n", Type);
+    DEBUG_PRINT (TRACE_EXEC, ("Popping Scope till type (%i) is found\n", Type));
 
     while (CurrentScope > &ScopeStack[0])
     {
@@ -1883,16 +1887,16 @@ NsPopCurrent (NsType Type)
         Count++;
 
 
-        DEBUG_PRINT1 (TRACE_EXEC, "Popped %i ", (CurrentScope+1)->Type);
+        DEBUG_PRINT (TRACE_EXEC, ("Popped %i ", (CurrentScope+1)->Type));
 
         if ((Any == Type) || (Type == (CurrentScope + 1)->Type))
         {
-            DEBUG_PRINT1 (TRACE_EXEC, "Found %i\n", Type);
+            DEBUG_PRINT (TRACE_EXEC, ("Found %i\n", Type));
             return Count;
         }
     }
 
-    DEBUG_PRINT1 (TRACE_EXEC,"%i Not Found\n", Type);
+    DEBUG_PRINT (TRACE_EXEC,("%i Not Found\n", Type));
     return -Count;
 }
 
@@ -1958,9 +1962,9 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
         return NOTFOUND;
     }
 
-    DEBUG_PRINT6 (TRACE_NAMES,
-                    "NsEnter: Name[0-5] - %02x %02x %02x %02x %02x %02x \n",
-                    Name[0], Name[1], Name[2], Name[3], Name[4], Name[5]);
+    DEBUG_PRINT (TRACE_NAMES,
+                    ("NsEnter: Name[0-5] - %02x %02x %02x %02x %02x %02x \n",
+                    Name[0], Name[1], Name[2], Name[3], Name[4], Name[5]));
 
     CheckTrash ("enter NsEnter");
 
@@ -1994,7 +1998,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
     {
         /* Name is fully qualified, look in root name table */
         
-        DEBUG_PRINT (TRACE_NAMES, "root \n");
+        DEBUG_PRINT (TRACE_NAMES, ("root \n"));
         
         EntryToSearch = Root;
         Size = NsRootSize;
@@ -2015,7 +2019,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
         {
             /*  recursively search in parent's name scope   */
 
-            DEBUG_PRINT (TRACE_NAMES, "parent \n");
+            DEBUG_PRINT (TRACE_NAMES, ("parent \n"));
             
             Name++;                   /* point to segment part or next ParentPrefix */
             EntryToSearch = EntryToSearch->ParentScope;
@@ -2043,7 +2047,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
 
     if (*Name == DualNamePrefix)
     {
-        DEBUG_PRINT (TRACE_NAMES, "Dual Name \n");
+        DEBUG_PRINT (TRACE_NAMES, ("Dual Name \n"));
 
         NumSegments = 2;
         Name++;                             /* point to first segment */
@@ -2051,7 +2055,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
     
     else if (*Name == MultiNamePrefixOp)
     {
-        DEBUG_PRINT1 (TRACE_NAMES, "Multi Name %d \n", Name[1]);
+        DEBUG_PRINT (TRACE_NAMES, ("Multi Name %d \n", Name[1]));
         
         NumSegments = (INT32)* (UINT8 *) ++Name;
         Name++;                             /* point to first segment */
@@ -2076,7 +2080,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
         NumSegments = 1;
     }
 
-    DEBUG_PRINT1 (TRACE_NAMES, "Segments = %d \n", NumSegments);
+    DEBUG_PRINT (TRACE_NAMES, ("Segments = %d \n", NumSegments));
 
     while (NumSegments-- && EntryToSearch)
     {
@@ -2142,14 +2146,13 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
              * and the next scope has not been allocated ...
              */
 
-DEBUG_PRINT1 (NS_INFO, "Load mode = %d\n", LoadMode);
-DEBUG_PRINT1 (NS_INFO, "ThisEntry: %x\n", ThisEntry);
+            DEBUG_PRINT (NS_INFO, ("Load mode= %d  ThisEntry= %x\n", LoadMode, ThisEntry));
 
             if ((Load1 == LoadMode) || (Load == LoadMode))
             {   
                 /*  first or second pass load mode ==> locate the next scope    */
                 
-                DEBUG_PRINT (TRACE_NAMES, "add level \n");
+                DEBUG_PRINT (TRACE_NAMES, ("add level \n"));
                 ThisEntry->ChildScope = AllocateNteDesc (TABLSIZE);
             }
 
@@ -2284,9 +2287,9 @@ GetParentHandle (NsHandle TargetHandle)
             IsAppendage = TRUE;             /*  ParentEntry is appendage scope  */
             Appendage = NEXTSEG(ParentEntry);
 
-            DEBUG_PRINT3 (TRACE_EXEC,
-                "GetParentHandle: appendage: ParentEntry=%p, Appendage=%p, ParentEntry->ChildScope=%p\n",
-                ParentEntry, Appendage, ParentEntry->ChildScope);
+            DEBUG_PRINT (TRACE_EXEC,
+                    ("GetParentHandle: appendage: ParentEntry=%p, Appendage=%p, ParentEntry->ChildScope=%p\n",
+                    ParentEntry, Appendage, ParentEntry->ChildScope));
         }
         
         else    
@@ -2333,8 +2336,8 @@ FindParentName (nte *EntryToSearch, INT32 Trace)
             nte         *ParentEntry = (nte *) ParentHandle;
 
 
-            DEBUG_PRINT2 (NS_INFO, "Parent Entry: %p->%.4s\n", 
-                            ParentEntry, &ParentEntry->NameSeg);
+            DEBUG_PRINT (NS_INFO, ("Parent Entry: %p->%.4s\n", 
+                            ParentEntry, &ParentEntry->NameSeg));
 
             if (ParentEntry->NameSeg)
             {
@@ -2344,12 +2347,12 @@ FindParentName (nte *EntryToSearch, INT32 Trace)
     }
 
 
-    DEBUG_PRINT4 (TRACE_EXEC,
-        "FindParentName: unable to find %c%c%c%c parent\n",
-        (UINT8) (EntryToSearch->NameSeg & 0xFF),
-        (UINT8) (EntryToSearch->NameSeg >> 8 & 0xFF),
-        (UINT8) (EntryToSearch->NameSeg >> 16 & 0xFF),
-        (UINT8) (EntryToSearch->NameSeg >> 24 & 0xFF));
+    DEBUG_PRINT (TRACE_EXEC,
+            ("FindParentName: unable to find %c%c%c%c parent\n",
+            (UINT8) (EntryToSearch->NameSeg & 0xFF),
+            (UINT8) (EntryToSearch->NameSeg >> 8 & 0xFF),
+            (UINT8) (EntryToSearch->NameSeg >> 16 & 0xFF),
+            (UINT8) (EntryToSearch->NameSeg >> 24 & 0xFF)));
 
     return "????";
 }
@@ -2551,9 +2554,9 @@ NsFullyQualifiedName (NsHandle TargetHandle)
     if (0x4353505f == EntryToSearch->NameSeg)
     {
         TraceFQN = 1;
-        DEBUG_PRINT4 (NS_INFO,
-            "NsFQN: nte @ %p, name %08lx, parent @ %p, SizeOfFQN = %d \n",
-            EntryToSearch, EntryToSearch->NameSeg, EntryToSearch->ParentScope, Size);
+        DEBUG_PRINT (NS_INFO,
+                ("NsFQN: nte @ %p, name %08lx, parent @ %p, SizeOfFQN = %d \n",
+                EntryToSearch, EntryToSearch->NameSeg, EntryToSearch->ParentScope, Size));
     }
 #endif
 
@@ -2564,8 +2567,7 @@ NsFullyQualifiedName (NsHandle TargetHandle)
     
     if (TraceFQN)
     {
-        DEBUG_PRINT2 (NS_INFO,
-                        "%d:%08lx \n", Size, EntryToSearch->NameSeg);
+        DEBUG_PRINT (NS_INFO, ("%d:%08lx \n", Size, EntryToSearch->NameSeg));
     }
     
     *(UINT32 *) (FullyQualifiedName + Size) = EntryToSearch->NameSeg;
@@ -2581,8 +2583,8 @@ NsFullyQualifiedName (NsHandle TargetHandle)
         
         if (TraceFQN)
         {
-            DEBUG_PRINT2 (NS_INFO,
-                            "%d:%08lx \n", Size, *(UINT32 *)(FullyQualifiedName + Size));
+            DEBUG_PRINT (NS_INFO,
+                            ("%d:%08lx \n", Size, *(UINT32 *)(FullyQualifiedName + Size)));
         }
 
         FullyQualifiedName[--Size] = '.';
@@ -2653,9 +2655,9 @@ NsSetMethod (NsHandle Handle, ptrdiff_t Offset, INT32 Length)
     ((nte *) Handle)->ptrVal = (void *) Method;
 
     LINE_SET (55, Load);
-    DEBUG_PRINT4 (NS_INFO,
-            "[Method %p ptrVal %p Offset %x Length %lx]\n",
-            Handle, Method, Method->Offset, Method->Length);
+    DEBUG_PRINT (NS_INFO,
+                ("[Method %p ptrVal %p Offset %x Length %lx]\n",
+                Handle, Method, Method->Offset, Method->Length));
 }
 
 
@@ -2731,7 +2733,7 @@ NsSetValue (NsHandle handle, ACPI_OBJECT_HANDLE AcpiValue, UINT8 ValType)
         if (!AcpiValue && (Any == ValType))
         {
             ((nte *) handle)->NtType = (NsType) ValType;
-            DEBUG_PRINT (TRACE_EXEC,"leave vNsSetValue (NULL value)\n"); 
+            DEBUG_PRINT (TRACE_EXEC,("leave vNsSetValue (NULL value)\n")); 
             return;
         }
 
@@ -2803,26 +2805,26 @@ NsSetValue (NsHandle handle, ACPI_OBJECT_HANDLE AcpiValue, UINT8 ValType)
 
             if (GetDebugLevel () > 0)
             {
-                DEBUG_PRINT1 (NS_INFO,
-                            "NsSetValue:confused:setting bogus type for %s from ",
-                            NsFullyQualifiedName (handle));
+                DEBUG_PRINT (NS_INFO,
+                            ("NsSetValue:confused:setting bogus type for %s from ",
+                            NsFullyQualifiedName (handle)));
 
                 if (IsInPCodeBlock((UINT8 *) AcpiValue))
                 {
-                    DEBUG_PRINT1 (NS_INFO,
-                                "AML-stream code %02x\n", *(UINT8 *) AcpiValue);
+                    DEBUG_PRINT (NS_INFO,
+                                ("AML-stream code %02x\n", *(UINT8 *) AcpiValue));
                 }
             
                 else if (IsNsHandle (AcpiValue))
                 {
-                    DEBUG_PRINT1 (NS_INFO,
-                                "name %s\n", NsFullyQualifiedName (AcpiValue));
+                    DEBUG_PRINT (NS_INFO,
+                                ("name %s\n", NsFullyQualifiedName (AcpiValue)));
                 }
             
                 else
                 {
-                    DEBUG_PRINT1 (NS_INFO,
-                                "object %p:\n", NsFullyQualifiedName (AcpiValue));
+                    DEBUG_PRINT (NS_INFO,
+                                ("object %p:\n", NsFullyQualifiedName (AcpiValue)));
                     DUMP_STACK_ENTRY (AcpiValue);
                 }
             }
@@ -2831,7 +2833,7 @@ NsSetValue (NsHandle handle, ACPI_OBJECT_HANDLE AcpiValue, UINT8 ValType)
         }
     }
 
-    DEBUG_PRINT (TRACE_EXEC, "leave NsSetValue\n");
+    DEBUG_PRINT (TRACE_EXEC, ("leave NsSetValue\n"));
 }
 
 
@@ -2935,10 +2937,10 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
         return;
     }
 
-    DEBUG_PRINT6 (NS_INFO,
-                "enter NsDumpTable (%p, %d, %d, %d, %d) %p\n",
+    DEBUG_PRINT (NS_INFO,
+                ("enter NsDumpTable (%p, %d, %d, %d, %d) %p\n",
                 ThisEntry, Size, Level, DisplayBitFlags, UseGraphicCharSet,
-                ThisEntry->NameSeg);
+                ThisEntry->NameSeg));
 
 
     /* Locate appendage, if any, before losing original scope pointer */
@@ -2975,12 +2977,12 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
                 {
                     if (DownstreamSiblingMask & WhichBit)
                     {    
-                        DEBUG_PRINT_RAW (NS_INFO, "|  ");
+                        DEBUG_PRINT_RAW (NS_INFO, ("|  "));
                     }
                     
                     else
                     {
-                        DEBUG_PRINT_RAW (NS_INFO, "   ");
+                        DEBUG_PRINT_RAW (NS_INFO, ("   "));
                     }
                     
                     WhichBit <<= 1;
@@ -2991,29 +2993,29 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
                     if (ExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
                     {
                         DownstreamSiblingMask |= (1 << (Level - 1));
-                        DEBUG_PRINT_RAW (NS_INFO, "+--");
+                        DEBUG_PRINT_RAW (NS_INFO, ("+--"));
                     }
                     
                     else
                     {
                         DownstreamSiblingMask &= 0xffffffff ^ (1 << (Level - 1));
-                        DEBUG_PRINT_RAW (NS_INFO, "+--");
+                        DEBUG_PRINT_RAW (NS_INFO, ("+--"));
                     }
 
                     if (ThisEntry->ChildScope == NULL)
                     {
-                        DEBUG_PRINT_RAW (NS_INFO, "- ");
+                        DEBUG_PRINT_RAW (NS_INFO, ("- "));
                     }
                     
                     else if (ExistDownstreamSibling (ThisEntry->ChildScope, TABLSIZE,
                                                         NEXTSEG (ThisEntry->ChildScope)))
                     {
-                        DEBUG_PRINT_RAW (NS_INFO, "+ ");
+                        DEBUG_PRINT_RAW (NS_INFO, ("+ "));
                     }
                     
                     else
                     {
-                        DEBUG_PRINT_RAW (NS_INFO, "- ");
+                        DEBUG_PRINT_RAW (NS_INFO, ("- "));
                     }
                 }
             }
@@ -3032,15 +3034,15 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
             {
                 /* name is a Method and its AML offset/length are set */
                 
-                DEBUG_PRINT1_RAW (NS_INFO, "%p: ", ThisEntry);
+                DEBUG_PRINT_RAW (NS_INFO, ("%p: ", ThisEntry));
                 
-                DEBUG_PRINT4_RAW (NS_INFO, "%4.4s [%s %04x:%04lx]",
+                DEBUG_PRINT_RAW (NS_INFO, ("%4.4s [%s %04x:%04lx]",
                             &ThisEntry->NameSeg, NsTypeNames[Type],
                             ((meth *) ThisEntry->ptrVal)->Offset,
-                            ((meth *) ThisEntry->ptrVal)->Length);
+                            ((meth *) ThisEntry->ptrVal)->Length));
                 
-                DEBUG_PRINT2_RAW (NS_INFO, " C:%p P:%p\n",
-                        ThisEntry->ChildScope, ThisEntry->ParentScope);
+                DEBUG_PRINT_RAW (NS_INFO, (" C:%p P:%p\n",
+                        ThisEntry->ChildScope, ThisEntry->ParentScope));
             }
             
             else
@@ -3050,13 +3052,13 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
 
                 /* name is not a Method, or the AML offset/length are not set */
                 
-                DEBUG_PRINT1_RAW (NS_INFO, "%p: ", ThisEntry);
+                DEBUG_PRINT_RAW (NS_INFO, ("%p: ", ThisEntry));
                 
-                DEBUG_PRINT2_RAW (NS_INFO,
-                            "%4.4s [%s]", &ThisEntry->NameSeg, NsTypeNames[Type]);
+                DEBUG_PRINT_RAW (NS_INFO,
+                            ("%4.4s [%s]", &ThisEntry->NameSeg, NsTypeNames[Type]));
                 
-                DEBUG_PRINT3_RAW (NS_INFO, " C:%p P:%p V:%p\n",
-                            ThisEntry->ChildScope, ThisEntry->ParentScope, ThisEntry->ptrVal);
+                DEBUG_PRINT_RAW (NS_INFO, (" C:%p P:%p V:%p\n",
+                            ThisEntry->ChildScope, ThisEntry->ParentScope, ThisEntry->ptrVal));
 
 #if 0
                 /* debug code used to show parents */
@@ -3064,14 +3066,14 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
                 if ((IndexField == Type) && (0 == Size) && (0 == Level) &&
                     ThisEntry->ParentScope)
                 {
-                    DEBUG_PRINT_RAW (NS_INFO, "  in ");
+                    DEBUG_PRINT_RAW (NS_INFO, ("  in "));
                     ++TRACE;
-                    DEBUG_PRINT1_RAW (NS_INFO,
-                                "call NsDumpEntry %p\n", ThisEntry->ParentScope);
+                    DEBUG_PRINT_RAW (NS_INFO,
+                                ("call NsDumpEntry %p\n", ThisEntry->ParentScope));
                     
                     NsDumpEntry ((NsHandle) ThisEntry->ParentScope, DisplayBitFlags);
-                    DEBUG_PRINT1_RAW (NS_INFO,
-                                "ret from NsDumpEntry %p\n", ThisEntry->ParentScope);
+                    DEBUG_PRINT_RAW (NS_INFO,
+                                ("ret from NsDumpEntry %p\n", ThisEntry->ParentScope));
                     --TRACE;
                 }
 #endif
@@ -3082,14 +3084,14 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
                     UINT8               bT = ((OBJECT_DESCRIPTOR *) Value)->ValType;
 
 
-                    DEBUG_PRINT7_RAW (NS_INFO,
-                                "                 %p  %02x %02x %02x %02x %02x %02x",
+                    DEBUG_PRINT_RAW (NS_INFO,
+                                ("                 %p  %02x %02x %02x %02x %02x %02x",
                                 Value, Value[0], Value[1], Value[2], Value[3], Value[4],
-                                Value[5]);
-                    DEBUG_PRINT10_RAW (NS_INFO,
-                                " %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+                                Value[5]));
+                    DEBUG_PRINT_RAW (NS_INFO,
+                                (" %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
                                 Value[6], Value[7], Value[8], Value[9], Value[10],
-                                Value[11], Value[12], Value[13], Value[14], Value[15]);
+                                Value[11], Value[12], Value[13], Value[14], Value[15]));
                     
                     if (bT == String || bT == Buffer || bT == Package
                      || bT == FieldUnit || bT == DefField || bT == BankField
@@ -3134,7 +3136,7 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
 
 
 
-    DEBUG_PRINT1 (TRACE_EXEC, "leave NsDumpTable %p\n", ThisEntry);
+    DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpTable %p\n", ThisEntry));
 }
 
 
@@ -3178,7 +3180,7 @@ NsDumpTables (INT32 DisplayBitFlags, INT32 UseGraphicCharSet,
         /*  entire namespace    */
 
         SearchBase = Root;
-        DEBUG_PRINT (NS_INFO, "\\\n");
+        DEBUG_PRINT (NS_INFO, ("\\\n"));
     }
 
     NsDumpTable (SearchBase, SearchBase == Root ? NsRootSize : TABLSIZE,
@@ -3205,7 +3207,7 @@ NsDumpEntry (NsHandle Handle, INT32 DisplayBitFlags)
     
     NsDumpTable ((nte *) Handle, 1, 0, DisplayBitFlags, 0, 1);
     
-    DEBUG_PRINT1 (TRACE_EXEC, "leave NsDumpEntry %p\n", Handle);
+    DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpEntry %p\n", Handle));
 }
 
 
