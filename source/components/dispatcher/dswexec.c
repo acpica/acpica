@@ -244,7 +244,11 @@ PsxExecEndOp (
 
     Optype = OpInfo->Type;
     FirstArg = Op->Value.Arg;
+
+    /* Init the walk state */
+
     WalkState->NumOperands = 0;
+    WalkState->ReturnDesc = NULL;
 
 
     /* Decode the opcode */
