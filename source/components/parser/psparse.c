@@ -456,8 +456,14 @@ PsParseLoop (
                     NAME_TABLE_ENTRY        *Nte = NULL;
                     ACPI_GENERIC_STATE      ScopeInfo;
                     char                    *Path;
+                    ACPI_OBJECT_TYPE        DataType; 
 
                     Path = PsGetNextNamestring (ParserState);
+
+                    /* Map the raw opcode into an internal object type */
+
+                    DataType = DsMapNamedOpcodeToDataType (Opcode);
+
                     /* 
                      * Lookup the name in the internal namespace
                      */
@@ -473,7 +479,7 @@ PsParseLoop (
                      * Enter the object into the namespace
                      */
 
-                    Status = NsLookup (&ScopeInfo, Path, ACPI_TYPE_Any, IMODE_LoadPass2,    /* Create if not found */
+                    Status = NsLookup (&ScopeInfo, Path, DataType, IMODE_LoadPass2,    /* Create if not found */
                                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Nte);
                     if (ACPI_FAILURE (Status))
                     {
