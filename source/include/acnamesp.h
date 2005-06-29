@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.111 $
+ *       $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -461,7 +461,7 @@ ACPI_OBJECT_TYPE8
 AcpiNsGetType (
     ACPI_NAMESPACE_NODE     *Node);
 
-void *
+ACPI_OPERAND_OBJECT *
 AcpiNsGetAttachedObject (
     ACPI_NAMESPACE_NODE     *Node);
 
