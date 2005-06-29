@@ -459,6 +459,10 @@ CmSubsystemShutdown (void)
 
     CmTerminate ();
 
+    /* Flush the local cache(s) */
+
+    CmDeleteGenericStateCache ();
+
     /* Debug only - display leftover memory allocation, if any */
 
     CmDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
