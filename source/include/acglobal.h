@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.105 $
+ *       $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -318,8 +318,6 @@ ACPI_EXTERN UINT32                      AcpiGbl_EventCount[ACPI_NUM_FIXED_EVENTS
 ACPI_EXTERN BOOLEAN                     AcpiGbl_MethodExecuting;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DbTerminateThreads;
 #endif
-
-
 
 
 #endif /* __ACGLOBAL_H__ */
