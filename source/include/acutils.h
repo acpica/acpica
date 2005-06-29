@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.167 $
+ *       $Revision: 1.168 $
  *
  *****************************************************************************/
 
@@ -688,7 +688,6 @@ AcpiUtGetElementLength (
     ACPI_OPERAND_OBJECT     *SourceObject,
     ACPI_GENERIC_STATE      *State,
     void                    *Context);
-
 
 
 /*
