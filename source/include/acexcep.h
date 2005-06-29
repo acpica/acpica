@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.45 $
+ *       $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -219,8 +219,9 @@
 #define AE_AML_NOT_OWNER                (ACPI_STATUS) (0x0016 | AE_CODE_AML)
 #define AE_AML_MUTEX_ORDER              (ACPI_STATUS) (0x0017 | AE_CODE_AML)
 #define AE_AML_MUTEX_NOT_ACQUIRED       (ACPI_STATUS) (0x0018 | AE_CODE_AML)
+#define AE_AML_INVALID_RESOURCE_TYPE    (ACPI_STATUS) (0x0019 | AE_CODE_AML)
 
-#define AE_CODE_AML_MAX                 0x0018
+#define AE_CODE_AML_MAX                 0x0019
 
 /*
  * Internal exceptions used for control
@@ -317,6 +318,7 @@ static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Aml[] =
     "AE_AML_NOT_OWNER",
     "AE_AML_MUTEX_ORDER",
     "AE_AML_MUTEX_NOT_ACQUIRED",
+    "AE_AML_INVALID_RESOURCE_TYPE",
 };
 
 static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Ctrl[] =
