@@ -824,7 +824,6 @@ AmlExecStore (
                              * Increment the ref count and point the destination
                              *  object's where element to our newly built package.
                              */ 
-                            CmAddReference (TmpDesc);
                             *(DestDesc->Reference.Where) = TmpDesc;
                         }
 
@@ -852,6 +851,7 @@ AmlExecStore (
                      *  (ValDesc) and copy into the destination (TmpDesc)
                      */
                     Status = CmCopyInternalSimpleObject(ValDesc, TmpDesc);
+                    DeleteDestDesc = DestDesc;
 
                     if (AE_OK != Status)
                     {
