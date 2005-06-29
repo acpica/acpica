@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.46 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -544,7 +544,7 @@ AsReplaceString (
  *
  * FUNCTION:    AsConvertToLineFeeds
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -579,7 +579,7 @@ AsConvertToLineFeeds (
  *
  * FUNCTION:    AsInsertCarriageReturns
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -605,6 +605,7 @@ AsInsertCarriageReturns (
         }
 
         SubBuffer = AsInsertData (SubString, "\r", 1);
+        SubBuffer += 1;
     }
     return;
 }
@@ -1049,6 +1050,7 @@ AsCountLines (
         if ((EndOfLine - SubBuffer) > 80)
         {
             LongLineCount++;
+            VERBOSE_PRINT (("long: %.80s\n", SubBuffer));
         }
 
         LineCount++;
@@ -1340,5 +1342,98 @@ Next:
         SubBuffer += KeywordLength;
     }
 }
+
+#ifdef ACPI_FUTURE_IMPLEMENTATION
+/******************************************************************************
+ *
+ * FUNCTION:    AsTrimComments
+ *
+ * DESCRIPTION: Finds 3-line comments with only a single line of text
+ *
+ ******************************************************************************/
+
+void
+AsTrimComments (
+    char                    *Buffer,
+    char                    *Filename)
+{
+    char                    *SubBuffer = Buffer;
+    char                    *Ptr1;
+    char                    *Ptr2;
+    UINT32                  LineCount;
+    UINT32                  ShortCommentCount = 0;
+
+
+    while (1)
+    {
+        /* Find comment open, within procedure level */
+
+        SubBuffer = strstr (SubBuffer, "    /*");
+        if (!SubBuffer)
+        {
+            goto Exit;
+        }
+
+        /* Find comment terminator */
+
+        Ptr1 = strstr (SubBuffer, "*/");
+        if (!Ptr1)
+        {
+            goto Exit;
+        }
+
+        /* Find next EOL (from original buffer) */
+
+        Ptr2 = strstr (SubBuffer, "\n");
+        if (!Ptr2)
+        {
+            goto Exit;
+        }
+
+        /* Ignore one-line comments */
+
+        if (Ptr1 < Ptr2)
+        {
+            /* Normal comment, ignore and continue; */
+
+            SubBuffer = Ptr2;
+            continue;
+        }
+
+        /* Examine multi-line comment */
+
+        LineCount = 1;
+        while (Ptr1 > Ptr2)
+        {
+            /* Find next EOL */
+
+            Ptr2++;
+            Ptr2 = strstr (Ptr2, "\n");
+            if (!Ptr2)
+            {
+                goto Exit;
+            }
+
+            LineCount++;
+        }
+
+        SubBuffer = Ptr1;
+
+        if (LineCount <= 3)
+        {
+            ShortCommentCount++;
+        }
+    }
+
+
+Exit:
+
+    if (ShortCommentCount)
+    {
+        AsPrint ("Short Comments found", ShortCommentCount, Filename);
+    }
+}
+#endif
+
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.32 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -173,6 +173,7 @@ char * strlwr(char* str);
 #define CVT_TRIM_WHITESPACE                 0x00000200  /* Should be after all line removal */
 #define CVT_REMOVE_EMPTY_BLOCKS             0x00000400  /* Should be after trimming lines */
 #define CVT_REDUCE_TYPEDEFS                 0x00000800
+#define CVT_COUNT_SHORTMULTILINE_COMMENTS   0x00001000
 #define CVT_SPACES_TO_TABS4                 0x40000000  /* Tab conversion should be last */
 #define CVT_SPACES_TO_TABS8                 0x80000000  /* Tab conversion should be last */
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.32 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -518,6 +518,12 @@ AsConvertFile (
             AsTabify8 (FileBuffer);
             break;
 
+        case CVT_COUNT_SHORTMULTILINE_COMMENTS:
+
+#ifdef ACPI_FUTURE_IMPLEMENTATION
+            AsTrimComments (FileBuffer, Filename);
+#endif
+            break;
 
         default:
 

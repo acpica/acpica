@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.63 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -191,7 +191,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" * Copyright (C) 2000 - 2003, R. Byron Moore\n"
+" * Copyright (C) 2000 - 2005, R. Byron Moore\n"
 " * All rights reserved.\n"
 " *\n"
 " * Redistribution and use in source and binary forms, with or without\n"
@@ -231,6 +231,7 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Declarations first */
 
+    {"UINT16_BIT  ",             "u16                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"UINT32_BIT  ",             "u32                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"INT64       ",             "s64                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"UINT64      ",             "u64                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
@@ -281,6 +282,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_COMPATIBLE_ID",               SRC_TYPE_STRUCT},
     {"ACPI_COMPATIBLE_ID_LIST",          SRC_TYPE_STRUCT},
     {"ACPI_CONTROL_STATE",               SRC_TYPE_STRUCT},
+    {"ACPI_CONVERSION_TABLE",            SRC_TYPE_STRUCT},
     {"ACPI_CREATE_FIELD_INFO",           SRC_TYPE_STRUCT},
     {"ACPI_DB_METHOD_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_DEBUG_MEM_BLOCK",             SRC_TYPE_STRUCT},
@@ -293,6 +295,8 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_EVENT_HANDLER",               SRC_TYPE_SIMPLE},
     {"ACPI_EVENT_STATUS",                SRC_TYPE_SIMPLE},
     {"ACPI_EVENT_TYPE",                  SRC_TYPE_SIMPLE},
+    {"ACPI_EXCEPTION_HANDLER",           SRC_TYPE_SIMPLE},
+    {"ACPI_EXTERNAL_LIST",               SRC_TYPE_STRUCT},
     {"ACPI_FIELD_INFO",                  SRC_TYPE_STRUCT},
     {"ACPI_FIND_CONTEXT",                SRC_TYPE_STRUCT},
     {"ACPI_FIXED_EVENT_HANDLER",         SRC_TYPE_STRUCT},
@@ -306,8 +310,11 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_GPE_HANDLER",                 SRC_TYPE_SIMPLE},
     {"ACPI_GPE_INDEX_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_GPE_REGISTER_INFO",           SRC_TYPE_STRUCT},
+    {"ACPI_GPE_WALK_INFO",               SRC_TYPE_STRUCT},
     {"ACPI_HANDLE",                      SRC_TYPE_SIMPLE},
+    {"ACPI_HANDLER_INFO",                SRC_TYPE_STRUCT},
     {"ACPI_INIT_HANDLER",                SRC_TYPE_SIMPLE},
+    {"ACPI_IDENTIFIER_TABLE",            SRC_TYPE_STRUCT},
     {"ACPI_INIT_WALK_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_INTEGER",                     SRC_TYPE_SIMPLE},
     {"ACPI_INTEGRITY_INFO",              SRC_TYPE_STRUCT},
@@ -363,7 +370,10 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_OP_WALK_INFO",                SRC_TYPE_STRUCT},
     {"ACPI_OPCODE_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_OPERAND_OBJECT",              SRC_TYPE_UNION},
+    {"ACPI_OSD_HANDLER",                 SRC_TYPE_SIMPLE},
+    {"ACPI_OSD_EXEC_CALLBACK",           SRC_TYPE_SIMPLE},
     {"ACPI_OWNER_ID",                    SRC_TYPE_SIMPLE},
+    {"ACPI_PARAMETER_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_PARSE_DOWNWARDS",             SRC_TYPE_SIMPLE},
     {"ACPI_PARSE_OBJ_ASL",               SRC_TYPE_STRUCT},
     {"ACPI_PARSE_OBJ_COMMON",            SRC_TYPE_STRUCT},
@@ -407,6 +417,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_SIZE",                        SRC_TYPE_SIMPLE},
     {"ACPI_STATUS",                      SRC_TYPE_SIMPLE},
     {"ACPI_STRING",                      SRC_TYPE_SIMPLE},
+    {"ACPI_STRING_TABLE",                SRC_TYPE_STRUCT},
     {"ACPI_SYSTEM_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_TABLE_DESC",                  SRC_TYPE_STRUCT},
     {"ACPI_TABLE_HEADER",                SRC_TYPE_STRUCT},
@@ -416,6 +427,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_SUPPORT",               SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TYPE",                  SRC_TYPE_SIMPLE},
     {"ACPI_THREAD_STATE",                SRC_TYPE_STRUCT},
+    {"ACPI_TYPED_IDENTIFIER_TABLE",      SRC_TYPE_STRUCT},
     {"ACPI_UPDATE_STATE",                SRC_TYPE_STRUCT},
     {"ACPI_WALK_CALLBACK",               SRC_TYPE_SIMPLE},
     {"ACPI_WALK_INFO",                   SRC_TYPE_STRUCT},
@@ -429,6 +441,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ASL_END_TAG_DESC",                 SRC_TYPE_STRUCT},
     {"ASL_ERROR_MSG",                    SRC_TYPE_STRUCT},
     {"ASL_EVENT_INFO",                   SRC_TYPE_STRUCT},
+    {"ASL_EXTENDED_ADDRESS_DESC",        SRC_TYPE_STRUCT},
     {"ASL_EXTENDED_XRUPT_DESC",          SRC_TYPE_STRUCT},
     {"ASL_FILE_INFO",                    SRC_TYPE_STRUCT},
     {"ASL_FIXED_IO_PORT_DESC",           SRC_TYPE_STRUCT},
@@ -459,6 +472,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
 /*    {"FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"FADT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT},
     {"FADT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT},
+    {"FADT_DESCRIPTOR_REV2_MINUS",       SRC_TYPE_STRUCT},
     {"RSDP_DESCRIPTOR",                  SRC_TYPE_STRUCT},
 /*    {"RSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"RSDT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT},
@@ -593,7 +607,8 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
+     CVT_COUNT_SHORTMULTILINE_COMMENTS),
 
     /* C header files */
 
@@ -602,7 +617,8 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
+     CVT_COUNT_SHORTMULTILINE_COMMENTS),
 };
 
 
@@ -614,7 +630,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
-    {"(c) 1999 - 2003",      "(c) 1999 - 2003",          REPLACE_WHOLE_WORD},
+    {"(c) 1999 - 2005",      "(c) 1999 - 2005",         REPLACE_WHOLE_WORD},
 
 #if 0
     "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",         REPLACE_WHOLE_WORD,
