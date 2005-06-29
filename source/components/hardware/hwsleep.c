@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.42 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -233,7 +233,7 @@ AcpiEnterSleepStatePrep (
     /*
      * _PSW methods could be run here to enable wake-on keyboard, LAN, etc.
      */
-    Status = AcpiHwGetSleepTypeData (SleepState,
+    Status = AcpiGetSleepTypeData (SleepState,
                     &AcpiGbl_SleepTypeA, &AcpiGbl_SleepTypeB);
     if (ACPI_FAILURE (Status))
     {
@@ -308,7 +308,7 @@ AcpiEnterSleepState (
 
     /* Clear wake status */
 
-    Status = AcpiHwBitRegisterWrite (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_LOCK);
+    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_LOCK);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -320,7 +320,13 @@ AcpiEnterSleepState (
         return_ACPI_STATUS (Status);
     }
 
-    /* TBD: Disable arbitration here? */
+    /* Disable BM arbitration */
+
+    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 1, ACPI_MTX_LOCK);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     Status = AcpiHwDisableNonWakeupGpes();
     if (ACPI_FAILURE (Status))
@@ -406,7 +412,7 @@ AcpiEnterSleepState (
 
     do 
     {
-        Status = AcpiHwBitRegisterRead (ACPI_BITREG_WAKE_STATUS, &InValue, ACPI_MTX_LOCK);
+        Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue, ACPI_MTX_LOCK);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -472,6 +478,13 @@ AcpiLeaveSleepState (
     /* _WAK returns stuff - do we want to look at it? */
 
     Status = AcpiHwEnableNonWakeupGpes();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Disable BM arbitration */
+    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 0, ACPI_MTX_LOCK);
 
     return_ACPI_STATUS (Status);
 }
