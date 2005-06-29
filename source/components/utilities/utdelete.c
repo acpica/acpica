@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  ******************************************************************************/
 
@@ -154,11 +154,6 @@ AcpiCmDeleteInternalObj (
         return_VOID;
     }
 
-    if (Object == (void *) 0x0082ed70)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%d\n",
-                                    Object, Object->Common.ReferenceCount));
-    }
     /*
      * Must delete or free any pointers within the object that are not
      * actual ACPI objects (for example, a raw buffer pointer).
@@ -383,7 +378,6 @@ AcpiCmDeleteInternalObjectList (
  * FUNCTION:    AcpiCmUpdateRefCount
  *
  * PARAMETERS:  *Object         - Object whose ref count is to be updated
- *              Count           - Current ref count
  *              Action          - What to do
  *
  * RETURN:      New ref count
@@ -750,12 +744,6 @@ AcpiCmAddReference (
         return_VOID;
     }
 
-    if (Object == (void *) 0x0082ed70)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%d\n",
-                                    Object, Object->Common.ReferenceCount));
-    }
-
     /*
      * We have a valid ACPI internal object, now increment the reference count
      */
@@ -795,14 +783,6 @@ AcpiCmRemoveReference (
         return_VOID;
     }
 
-
-    if (Object == (void *) 0x0082ed70)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%d\n",
-                                    Object, Object->Common.ReferenceCount));
-    }
-
-
     DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%d\n",
                                 Object, Object->Common.ReferenceCount));
 
@@ -814,16 +794,6 @@ AcpiCmRemoveReference (
 
     AcpiCmUpdateObjectReference  (Object, REF_DECREMENT);
 
-    /*
-     * If the reference count has reached zero,
-     * delete the object and all sub-objects contained within it
-     */
-/*
-    if (Object->Common.ReferenceCount == 0)
-    {
-        AcpiCmDeleteInternalObj (Object);
-    }
-*/
     return_VOID;
 }
 

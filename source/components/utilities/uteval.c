@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: uteval - Object evaluation
- *              $Revision: 1.31 $
+ * Module Name: cmeval - Object evaluation
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -114,20 +114,20 @@
  *
  *****************************************************************************/
 
-#define __UTEVAL_C__
+#define __CMEVAL_C__
 
 #include "acpi.h"
 #include "acnamesp.h"
 #include "acinterp.h"
 
 
-#define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("uteval")
+#define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmeval")
 
 
-/*******************************************************************************
+/****************************************************************************
  *
- * FUNCTION:    AcpiUtEvaluateNumericObject
+ * FUNCTION:    AcpiCmEvaluateNumericObject
  *
  * PARAMETERS:  *ObjectName         - Object name to be evaluated
  *              DeviceNode          - Node for the device
@@ -140,19 +140,19 @@
  *
  *              NOTE: Internal function, no parameter validation
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
-AcpiUtEvaluateNumericObject (
+AcpiCmEvaluateNumericObject (
     NATIVE_CHAR             *ObjectName,
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_INTEGER            *Address)
+    UINT32                  *Address)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("UtEvaluateNumericObject");
+    FUNCTION_TRACE ("CmEvaluateNumericObject");
 
 
     /* Execute the method */
@@ -162,14 +162,16 @@ AcpiUtEvaluateNumericObject (
     {
         if (Status == AE_NOT_FOUND)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%s on %4.4s was not found\n",
-                ObjectName, (char*)&DeviceNode->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("%s on %4.4s was not found\n", ObjectName,
+                &DeviceNode->Name));
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s on %4.4s failed with status %s\n",
-                ObjectName, (char*)&DeviceNode->Name,
-                AcpiFormatException (Status)));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("%s on %4.4s failed with status %4.4x\n", ObjectName,
+                &DeviceNode->Name,
+                AcpiCmFormatException (Status)));
         }
 
         return_ACPI_STATUS (Status);
@@ -180,18 +182,18 @@ AcpiUtEvaluateNumericObject (
 
     if (!ObjDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object was returned from %s\n",
-            ObjectName));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("No object was returned from %s\n", ObjectName));
         return_ACPI_STATUS (AE_TYPE);
     }
 
     /* Is the return object of the correct type? */
 
-    if (ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
+    if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
     {
         Status = AE_TYPE;
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Type returned from %s was not a number: %X \n",
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from %s was not a number: %d \n",
             ObjectName, ObjDesc->Common.Type));
     }
     else
@@ -200,20 +202,20 @@ AcpiUtEvaluateNumericObject (
          * Since the structure is a union, setting any field will set all
          * of the variables in the union
          */
-        *Address = ObjDesc->Integer.Value;
+        *Address = ObjDesc->Number.Value;
     }
 
     /* On exit, we must delete the return object */
 
-    AcpiUtRemoveReference (ObjDesc);
+    AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/****************************************************************************
  *
- * FUNCTION:    AcpiUtExecute_HID
+ * FUNCTION:    AcpiCmExecute_HID
  *
  * PARAMETERS:  DeviceNode          - Node for the device
  *              *Hid                - Where the HID is returned
@@ -225,18 +227,18 @@ AcpiUtEvaluateNumericObject (
  *
  *              NOTE: Internal function, no parameter validation
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
-AcpiUtExecute_HID (
+AcpiCmExecute_HID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_DEVICE_ID          *Hid)
+    DEVICE_ID               *Hid)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("UtExecute_HID");
+    FUNCTION_TRACE ("CmExecute_HID");
 
 
     /* Execute the method */
@@ -247,14 +249,17 @@ AcpiUtExecute_HID (
     {
         if (Status == AE_NOT_FOUND)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "_HID on %4.4s was not found\n",
-                (char*)&DeviceNode->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("_HID on %4.4s was not found\n",
+                &DeviceNode->Name));
         }
 
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_HID on %4.4s failed %s\n",
-                (char*)&DeviceNode->Name, AcpiFormatException (Status)));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("_HID on %4.4s failed with status %4.4x\n",
+                &DeviceNode->Name,
+                AcpiCmFormatException (Status)));
         }
 
         return_ACPI_STATUS (Status);
@@ -264,7 +269,7 @@ AcpiUtExecute_HID (
 
     if (!ObjDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object was returned from _HID\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _HID\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -272,44 +277,47 @@ AcpiUtExecute_HID (
      *  A _HID can return either a Number (32 bit compressed EISA ID) or
      *  a string
      */
-    if ((ObjDesc->Common.Type != ACPI_TYPE_INTEGER) &&
+
+    if ((ObjDesc->Common.Type != ACPI_TYPE_NUMBER) &&
         (ObjDesc->Common.Type != ACPI_TYPE_STRING))
     {
         Status = AE_TYPE;
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Type returned from _HID not a number or string: %s(%X) \n",
-            AcpiUtGetTypeName (ObjDesc->Common.Type), ObjDesc->Common.Type));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from _HID was not a number or string: [0x%X] \n",
+            ObjDesc->Common.Type));
     }
 
     else
     {
-        if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
+        if (ObjDesc->Common.Type == ACPI_TYPE_NUMBER)
         {
             /* Convert the Numeric HID to string */
 
-            AcpiExEisaIdToString ((UINT32) ObjDesc->Integer.Value, Hid->Buffer);
+            AcpiAmlEisaIdToString (ObjDesc->Number.Value, Hid->Data.Buffer);
+            Hid->Type = STRING_DEVICE_ID;
         }
 
         else
         {
             /* Copy the String HID from the returned object */
 
-            STRNCPY(Hid->Buffer, ObjDesc->String.Pointer, sizeof(Hid->Buffer));
+            Hid->Data.StringPtr = ObjDesc->String.Pointer;
+            Hid->Type = STRING_PTR_DEVICE_ID;
         }
     }
 
 
     /* On exit, we must delete the return object */
 
-    AcpiUtRemoveReference (ObjDesc);
+    AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/****************************************************************************
  *
- * FUNCTION:    AcpiUtExecute_UID
+ * FUNCTION:    AcpiCmExecute_UID
  *
  * PARAMETERS:  DeviceNode          - Node for the device
  *              *Uid                - Where the UID is returned
@@ -321,18 +329,15 @@ AcpiUtExecute_HID (
  *
  *              NOTE: Internal function, no parameter validation
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
-AcpiUtExecute_UID (
+AcpiCmExecute_UID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_DEVICE_ID          *Uid)
+    DEVICE_ID               *Uid)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
-
-
-    PROC_NAME ("UtExecute_UID");
 
 
     /* Execute the method */
@@ -343,15 +348,17 @@ AcpiUtExecute_UID (
     {
         if (Status == AE_NOT_FOUND)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "_UID on %4.4s was not found\n",
-                (char*)&DeviceNode->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("_UID on %4.4s was not found\n",
+                &DeviceNode->Name));
         }
 
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "_UID on %4.4s failed %s\n",
-                (char*)&DeviceNode->Name, AcpiFormatException (Status)));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("_UID on %4.4s failed with status %4.4x\n",
+                &DeviceNode->Name,
+                AcpiCmFormatException (Status)));
         }
 
         return (Status);
@@ -361,7 +368,7 @@ AcpiUtExecute_UID (
 
     if (!ObjDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object was returned from _UID\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _UID\n"));
         return (AE_TYPE);
     }
 
@@ -369,44 +376,45 @@ AcpiUtExecute_UID (
      *  A _UID can return either a Number (32 bit compressed EISA ID) or
      *  a string
      */
-    if ((ObjDesc->Common.Type != ACPI_TYPE_INTEGER) &&
+
+    if ((ObjDesc->Common.Type != ACPI_TYPE_NUMBER) &&
         (ObjDesc->Common.Type != ACPI_TYPE_STRING))
     {
         Status = AE_TYPE;
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Type returned from _UID was not a number or string: %X \n",
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from _UID was not a number or string: %d \n",
             ObjDesc->Common.Type));
     }
 
     else
     {
-        if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
+        if (ObjDesc->Common.Type == ACPI_TYPE_NUMBER)
         {
-            /* Convert the Numeric UID to string */
+            /* Convert the Numeric HID to string */
 
-            AcpiExUnsignedIntegerToString (ObjDesc->Integer.Value, Uid->Buffer);
+            Uid->Data.Number = ObjDesc->Number.Value;
         }
 
         else
         {
-            /* Copy the String UID from the returned object */
+            /* Copy the String HID from the returned object */
 
-            STRNCPY(Uid->Buffer, ObjDesc->String.Pointer, sizeof(Uid->Buffer));
+            Uid->Data.StringPtr = ObjDesc->String.Pointer;
+            Uid->Type = STRING_PTR_DEVICE_ID;
         }
     }
 
 
     /* On exit, we must delete the return object */
 
-    AcpiUtRemoveReference (ObjDesc);
+    AcpiCmRemoveReference (ObjDesc);
 
     return (Status);
 }
 
-
-/*******************************************************************************
+/****************************************************************************
  *
- * FUNCTION:    AcpiUtExecute_STA
+ * FUNCTION:    AcpiCmExecute_STA
  *
  * PARAMETERS:  DeviceNode          - Node for the device
  *              *Flags              - Where the status flags are returned
@@ -418,10 +426,10 @@ AcpiUtExecute_UID (
  *
  *              NOTE: Internal function, no parameter validation
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
-AcpiUtExecute_STA (
+AcpiCmExecute_STA (
     ACPI_NAMESPACE_NODE     *DeviceNode,
     UINT32                  *Flags)
 {
@@ -429,61 +437,65 @@ AcpiUtExecute_STA (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("UtExecute_STA");
+    FUNCTION_TRACE ("CmExecute_STA");
 
 
     /* Execute the method */
 
     Status = AcpiNsEvaluateRelative (DeviceNode,
                                      METHOD_NAME__STA, NULL, &ObjDesc);
-    if (AE_NOT_FOUND == Status)
+    if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "_STA on %4.4s was not found, assuming present.\n",
-            (char*)&DeviceNode->Name));
-
-        *Flags = 0x0F;
-        Status = AE_OK;
-    }
-
-    else if (ACPI_FAILURE (Status))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_STA on %4.4s failed %s\n",
-            (char*)&DeviceNode->Name,
-            AcpiFormatException (Status)));
-    }
-
-    else /* success */
-    {
-        /* Did we get a return object? */
-
-        if (!ObjDesc)
+        if (Status == AE_NOT_FOUND)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object was returned from _STA\n"));
-            return_ACPI_STATUS (AE_TYPE);
-        }
-
-        /* Is the return object of the correct type? */
-
-        if (ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
-        {
-            Status = AE_TYPE;
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Type returned from _STA was not a number: %X \n",
-                ObjDesc->Common.Type));
+            DEBUG_PRINT (ACPI_INFO,
+                ("_STA on %4.4s was not found, assuming present.\n",
+                &DeviceNode->Name));
+            /* TBD: Should we return a value here according
+               to acpi 2.0 6.3.6? */
         }
 
         else
         {
-            /* Extract the status flags */
-
-            *Flags = (UINT32) ObjDesc->Integer.Value;
+            DEBUG_PRINT (ACPI_ERROR,
+                ("_STA on %4.4s failed with status %4.4x\n",
+                &DeviceNode->Name,
+                AcpiCmFormatException (Status)));
         }
 
-        /* On exit, we must delete the return object */
-
-        AcpiUtRemoveReference (ObjDesc);
+        return_ACPI_STATUS (Status);
     }
+
+
+    /* Did we get a return object? */
+
+    if (!ObjDesc)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _STA\n"));
+        return_ACPI_STATUS (AE_TYPE);
+    }
+
+    /* Is the return object of the correct type? */
+
+    if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
+    {
+        Status = AE_TYPE;
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from _STA was not a number: %d \n",
+            ObjDesc->Common.Type));
+    }
+
+    else
+    {
+        /* Extract the status flags */
+
+        *Flags = ObjDesc->Number.Value;
+    }
+
+
+    /* On exit, we must delete the return object */
+
+    AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
