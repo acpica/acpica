@@ -311,7 +311,9 @@ Cleanup:
 
     if (ReturnPtr)
     {
-        if (Status == AE_RETURN_VALUE)
+        /* Check if the return object is valid */
+
+        if (ReturnPtr->ValType != TYPE_Invalid)
         {
             /*
              *  Find out how large a buffer is needed to contain the
@@ -335,6 +337,10 @@ Cleanup:
                  *  Caller's buffer is too small, can't give him partial results
                  *  fail the call but return the buffer size needed
                  */
+
+                DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Needed buffer size %d, received %d\n",
+                                            BufferSpaceNeeded, ReturnBuffer->Length));
+
                 ReturnBuffer->Length = BufferSpaceNeeded;
                 FUNCTION_STATUS_EXIT (AE_BUFFER_OVERFLOW);
                 return AE_BUFFER_OVERFLOW;
@@ -353,13 +359,6 @@ Cleanup:
 
             ReturnBuffer->Length = 0;
         }
-    }
-
-    /* Never pass AE_RETURN_VALUE back to the caller */
-
-    if (Status == AE_RETURN_VALUE)
-    {
-        Status = AE_OK;
     }
 
     FUNCTION_STATUS_EXIT (Status);
