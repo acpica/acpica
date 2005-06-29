@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  ******************************************************************************/
 
@@ -822,7 +822,10 @@ AcpiDbDisplayGpes (void)
                     GpeBlock->BlockBaseNumber,
                     GpeBlock->BlockBaseNumber + 
                         (GpeBlock->RegisterCount * 8) -1);
-            AcpiOsPrintf ("    RegisterInfo: %p\n", GpeBlock->RegisterInfo);
+            AcpiOsPrintf ("    RegisterInfo: %p  Status %p Enable %p\n", 
+                    GpeBlock->RegisterInfo,
+                    (UINT32) GpeBlock->RegisterInfo->StatusAddress.Address,
+                    (UINT32) GpeBlock->RegisterInfo->EnableAddress.Address);
             AcpiOsPrintf ("    EventInfo:    %p\n", GpeBlock->EventInfo);
 
             /* Examine each GPE Register within the block */
@@ -831,9 +834,12 @@ AcpiDbDisplayGpes (void)
             {
                 GpeRegisterInfo = &GpeBlock->RegisterInfo[i];
 
-                AcpiOsPrintf ("    Reg %u:  Wake enable 0x%2.2X, Run enable 0x%2.2X\n",
+                AcpiOsPrintf (
+                        "    Reg %u:  WakeEnable %2.2X, RunEnable %2.2X  Status %p Enable %p\n",
                         i, GpeRegisterInfo->EnableForWake,
-                        GpeRegisterInfo->EnableForRun);
+                        GpeRegisterInfo->EnableForRun,
+                        (UINT32) GpeRegisterInfo->StatusAddress.Address,
+                        (UINT32) GpeRegisterInfo->EnableAddress.Address);
 
                 /* Now look at the individual GPEs in this byte register */
 
@@ -864,38 +870,38 @@ AcpiDbDisplayGpes (void)
                         AcpiOsPrintf ("Edge,  ");
                     }
 
-                    if (GpeEventInfo->Flags & ACPI_GPE_WAKE_ENABLED)
-                    {
-                        AcpiOsPrintf ("WakeEnabled,  ");
-                    }
-                    else
-                    {
-                        AcpiOsPrintf ("WakeDisabled, ");
-                    }
-
                     switch (GpeEventInfo->Flags & ACPI_GPE_TYPE_MASK)
                     {
                     case ACPI_GPE_TYPE_WAKE:
-                        AcpiOsPrintf ("WakeOnly, ");
+                        AcpiOsPrintf ("WakeOnly: ");
                         break;
                     case ACPI_GPE_TYPE_RUNTIME:
-                        AcpiOsPrintf ("RunOnly,  ");
+                        AcpiOsPrintf (" RunOnly: ");
                         break;
                     case ACPI_GPE_TYPE_WAKE_RUN:
-                        AcpiOsPrintf ("WakeRun,  ");
+                        AcpiOsPrintf (" WakeRun: ");
                         break;
                     default:
-                        AcpiOsPrintf ("NotUsed,  ");
+                        AcpiOsPrintf (" NotUsed: ");
                         break;
                     }
 
-                    if (GpeEventInfo->Flags & ACPI_GPE_SYSTEM_RUNNING)
+                    if (GpeEventInfo->Flags & ACPI_GPE_WAKE_ENABLED)
                     {
-                        AcpiOsPrintf ("Running, ");
+                        AcpiOsPrintf ("[Wake 1 ");
                     }
                     else
                     {
-                        AcpiOsPrintf ("Waking,  ");
+                        AcpiOsPrintf ("[Wake 0 ");
+                    }
+
+                    if (GpeEventInfo->Flags & ACPI_GPE_RUN_ENABLED)
+                    {
+                        AcpiOsPrintf ("Run 1], ");
+                    }
+                    else
+                    {
+                        AcpiOsPrintf ("Run 0], ");
                     }
 
                     switch (GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK)
