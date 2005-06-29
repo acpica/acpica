@@ -636,7 +636,6 @@ AcpiRemoveNotifyHandler (
     {
         NotifyObj = ObjDesc->Device.SysHandler;
     }
-
     else
     {
         NotifyObj = ObjDesc->Device.DrvHandler;
@@ -656,7 +655,6 @@ AcpiRemoveNotifyHandler (
     {
         ObjDesc->Device.SysHandler = NULL;
     }
-
     else
     {
         ObjDesc->Device.DrvHandler = NULL;
@@ -664,13 +662,10 @@ AcpiRemoveNotifyHandler (
  
     CmRemoveReference (NotifyObj);
 
-
-
 UnlockAndExit:
     CmReleaseMutex (MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
-
 
 /******************************************************************************
  *
@@ -693,6 +688,7 @@ AcpiInstallAddressSpaceHandler (
     ACPI_HANDLE             Device, 
     ACPI_ADDRESS_SPACE_TYPE SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler, 
+    REGION_SETUP_FUNCTION   RegInit,
     void                    *Context)
 {
     ACPI_OBJECT_INTERNAL   *ObjDesc;
@@ -704,7 +700,6 @@ AcpiInstallAddressSpaceHandler (
 
 
     FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
-
 
     /* Parameter validation */
 
@@ -741,7 +736,6 @@ AcpiInstallAddressSpaceHandler (
         goto UnlockAndExit;
     }
 
-
     if (Handler == ACPI_DEFAULT_HANDLER)
     {
         Flags = ADDR_HANDLER_DEFAULT_INSTALLED;
@@ -750,14 +744,17 @@ AcpiInstallAddressSpaceHandler (
         {
         case ADDRESS_SPACE_SYSTEM_MEMORY:
             Handler = AmlSystemMemorySpaceHandler;
+            RegInit = EvSystemMemoryRegionSetup;
             break;
 
         case ADDRESS_SPACE_SYSTEM_IO:
             Handler = AmlSystemIoSpaceHandler;
+            RegInit = EvIoSpaceRegionSetup;
             break;
 
         case ADDRESS_SPACE_PCI_CONFIG:
             Handler = AmlPciConfigSpaceHandler;
+            RegInit = EvPciConfigRegionSetup;
             break;
 
         default:
@@ -767,7 +764,16 @@ AcpiInstallAddressSpaceHandler (
         }
     }
 
-    /* Check for an existing internal object */
+    /*
+     *  If the caller hasn't specified a setup routine, use the default
+     */
+    if (!RegInit) {
+            RegInit = EvDefaultRegionSetup;
+    }
+
+    /*
+     *  Check for an existing internal object
+     */
 
     ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
     if (ObjDesc)
