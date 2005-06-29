@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -513,8 +513,7 @@ AcpiExOpcode_1A_1T_1R (
      */
     case AML_COPY_OP:               /* Copy (Source, Target) */
 
-        Status = AE_NOT_IMPLEMENTED;
-        goto Cleanup;
+        Status = AcpiUtCopyIobjectToIobject (Operand[0], &ReturnDesc, WalkState);
         break;
 
 
