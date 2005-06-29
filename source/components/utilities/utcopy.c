@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -396,7 +396,7 @@ AcpiUtCopyIpackageToEpackage (
      * Leave room for an array of ACPI_OBJECTS in the buffer
      * and move the free space past it
      */
-    Info.Length    += ExternalObject->Package.Count *
+    Info.Length    += (ACPI_SIZE) ExternalObject->Package.Count *
                             ACPI_ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
     Info.FreeSpace += ExternalObject->Package.Count *
                             ACPI_ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
