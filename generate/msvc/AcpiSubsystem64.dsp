@@ -339,6 +339,10 @@ SOURCE=..\..\source\components\namespace\nsdump.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsdumpdv.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\namespace\nseval.c
 # End Source File
 # Begin Source File
@@ -368,6 +372,10 @@ SOURCE=..\..\source\components\namespace\nsutils.c
 # Begin Source File
 
 SOURCE=..\..\source\components\namespace\nswalk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsxfeval.c
 # End Source File
 # Begin Source File
 
@@ -498,54 +506,6 @@ SOURCE=..\..\source\components\interpreter\parser\pswalk.c
 SOURCE=..\..\source\components\interpreter\parser\psxface.c
 # End Source File
 # End Group
-# Begin Group "Debugger"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbcmds.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbdisasm.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbdisply.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DEBUGGER\dbdswalk.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbexec.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbfileio.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbhistry.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbinput.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbstats.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbxface.c
-# End Source File
-# End Group
 # Begin Group "Dispatcher"
 
 # PROP Default_Filter ""
@@ -588,6 +548,82 @@ SOURCE=..\..\source\components\interpreter\dispatcher\dswscope.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\dispatcher\dswstate.c
+# End Source File
+# End Group
+# Begin Group "Disassembler"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmbuffer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmwalk.c
+# End Source File
+# End Group
+# Begin Group "Debugger"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbcmds.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbdisply.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbexec.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbhistry.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbinput.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbstats.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbxface.c
 # End Source File
 # End Group
 # End Group
