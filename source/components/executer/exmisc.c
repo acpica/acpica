@@ -155,6 +155,11 @@ AmlExecCreateField (UINT16 opcode)
     INT32                   NumOperands;
     UINT16                  BitCount;
     UINT32                  BitOffset;
+    UINT8       			bTypeFound;
+    char        			TypeFound[20];
+    char        			*TypeFoundPtr = NULL;
+
+
 
 
     FUNCTION_TRACE ("AmlExecCreateField");
@@ -263,11 +268,7 @@ AmlExecCreateField (UINT16 opcode)
 
     switch (SrcDesc->ValType)
     {
-        UINT8       bTypeFound;
-        char        TypeFound[20];
-        char        *TypeFoundPtr = NULL;
-
-
+    
     /*  SourceBuff  :=  TermArg=>Buffer */
 
     case TYPE_Buffer:
@@ -878,9 +879,10 @@ AmlGetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDes
 ACPI_STATUS
 AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 {
-    NsHandle            TempHandle;
-    OBJECT_DESCRIPTOR * ObjDesc = NULL;
+    NsHandle            TempHandle = NULL;
+    OBJECT_DESCRIPTOR   *ObjDesc = NULL;
     ACPI_STATUS         Status = AE_OK;
+    UINT8				MvIndex = 0;
 
 
     FUNCTION_TRACE ("AmlGetRvalue");
@@ -898,7 +900,6 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
         switch ((*StackPtr)->Lvalue.OpCode)
         {
-            UINT8       MvIndex;
 
         case AML_NameOp:
             

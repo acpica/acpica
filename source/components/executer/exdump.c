@@ -246,7 +246,6 @@ ACPI_STATUS
 AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
 {
     char        *OutString = NULL;
-    char        *FullyQualifiedName = NULL;
     UINT8       *Buf = NULL;
     UINT16      Length;
 

@@ -1,4 +1,3 @@
-
 /******************************************************************************
  * 
  * Module Name: iefield - ACPI AML (p-code) execution - field manipulation
@@ -327,7 +326,11 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
     UINT32              Address;
     UINT32              LocalValue = 0;
     INT32               FieldByteWidth;
-
+	void *      		PhysicalAddrPtr = NULL;
+    UINT8       		PciBus = 0;
+    UINT8       		DevFunc = 0;
+    UINT8       		PciReg = 0;
+    UINT8       		PciExcep = 0;
 
     FUNCTION_TRACE ("AmlReadField");
 
@@ -376,11 +379,6 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
 
     switch(RgnDesc->Region.SpaceId)
     {
-        void *      PhysicalAddrPtr = NULL;
-        UINT8       PciBus;
-        UINT8       DevFunc;
-        UINT8       PciReg;
-        UINT8       PciExcep;
 
     case REGION_SystemMemory:
 
@@ -530,6 +528,11 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Address;
     INT32                   FieldByteWidth;
+    void        			*PhysicalAddrPtr = NULL;
+    UINT8       			PciBus = 0;
+    UINT8       			DevFunc = 0;
+    UINT8       			PciReg = 0;
+    UINT8       			PciExcep = 0;
 
 
     FUNCTION_TRACE ("AmlWriteField");
@@ -567,13 +570,7 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
 
     switch(RgnDesc->Region.SpaceId)
     {
-        void        *PhysicalAddrPtr;
-        UINT8       PciBus;
-        UINT8       DevFunc;
-        UINT8       PciReg;
-        UINT8       PciExcep;
-
-
+     
     case REGION_SystemMemory:
 
         /* RBM:  Is this an issue in protected mode?  !!! */
@@ -709,8 +706,8 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
     OBJECT_DESCRIPTOR       *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_AML_ERROR;
     char                    *Type = NULL;
-    INT32                   Granularity;
-    INT32                   MaxW;
+    INT32                   Granularity = 0;
+    INT32                   MaxW = 0;
     UINT32                  Mask = 0;
     UINT32                  dValue = 0;
     UINT32                  OldVal = 0;
