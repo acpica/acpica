@@ -116,6 +116,7 @@
 #include <acpi.h>
 #include <events.h>
 #include <namespace.h>
+#include <amlcode.h>
 
 #define _THIS_MODULE        "evregion.c"
 #define _COMPONENT          EVENT_HANDLING
@@ -157,6 +158,8 @@ EvAddressSpaceDispatch (
 
     if (!Obj->Region.AddrHandler)
     {
+        DEBUG_PRINT (TRACE_OPREGION,
+        ("Dispatch address access region 0x%X, no handler\n", Obj));
         return AE_EXIST;
     }
 
@@ -167,6 +170,11 @@ EvAddressSpaceDispatch (
 
     Handler = Obj->Region.AddrHandler->AddrHandler.Handler;
     Context = Obj->Region.AddrHandler->AddrHandler.Context;
+    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
+        ("Invoking address handler for handler 0x%X (0x%X), Address 0x%X\n", 
+            Obj->Region.AddrHandler->AddrHandler, Handler, Address));
+
+
     Status = Handler (Function, Address, BitWidth, Value, Context);
 
     return Status;
@@ -187,32 +195,23 @@ EvAddressSpaceDispatch (
  ******************************************************************************/
 
 void
-EvDisassociateRegionAndHandler(
-    ACPI_OBJECT_INTERNAL    *HandlerObj,
-    ACPI_OBJECT_INTERNAL    *RegionObj)
+EvDisassociateRegionFromHandler(
+    ACPI_OBJECT_INTERNAL   *RegionObj)
 {
+    ACPI_OBJECT_INTERNAL   *HandlerObj;
     ACPI_OBJECT_INTERNAL   *ObjDesc;
-    ACPI_OBJECT_INTERNAL   **LastObjPtr;
-
+    ACPI_OBJECT_INTERNAL  **LastObjPtr;
 
     FUNCTION_TRACE ("EvDisassociateRegionAndHandler");
 
-
-    /*
-     *  First stop region accesses by executing the _REG
-     *  methods
-     */
-
-    //  BUGBUG: Need to call _REG for this region
-
-    /*
-     *  Remove handler reference in the region
-     *
-     *  NOTE: this doesn't mean that the region goes away
-     *  The region is just inaccessible as indicated to
-     *  the _REG method
-     */
-
+    HandlerObj = RegionObj->Region.AddrHandler;
+    if (!HandlerObj)
+    {
+        /*
+         *  This guy has no handler, we're done
+         */
+        return;
+    }
     /*
      *  Find this region in the handler's list
      */
@@ -226,10 +225,35 @@ EvDisassociateRegionAndHandler(
          */
         if (ObjDesc == RegionObj)
         {
+            DEBUG_PRINT (TRACE_OPREGION,
+                ("Removing Region 0x%X from address handler 0x%X\n",
+                    RegionObj, HandlerObj));
             /*
              *  This is it, remove it from the handler's list
              */
             *LastObjPtr = ObjDesc->Region.Link;
+
+            /*
+             *  First stop region accesses by executing the _REG
+             *  methods
+             */
+
+            //  BUGBUG: Need to call _REG for this region
+
+            /*
+             *  Remove handler reference in the region
+             *
+             *  NOTE: this doesn't mean that the region goes away
+             *  The region is just inaccessible as indicated to
+             *  the _REG method
+             *
+             *  If the region is on the handler's list
+             *  this better be the region's handler
+             */
+
+            ACPI_ASSERT( RegionObj->Region.AddrHandler == HandlerObj);
+
+            RegionObj->Region.AddrHandler = NULL;
 
             /*
              *  Remove handler reference in the region and
@@ -252,6 +276,9 @@ EvDisassociateRegionAndHandler(
     /*
      *  If we get here, the region was not not in the handler's region list
      */
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("Cannot remove region 0x%X from address handler 0x%X\n",
+            RegionObj, HandlerObj));
 
 }  /* EvDisassociateRegionAndHandler */
 
@@ -276,20 +303,17 @@ EvAssociateRegionAndHander(
 {
     FUNCTION_TRACE ("EvAssociateRegionAndHander");
 
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("Adding Region 0x%X to address handler 0x%X\n", RegionObj, HandlerObj));
+
+    ACPI_ASSERT(RegionObj->Region.SpaceId == HandlerObj->AddrHandler.SpaceId);
+    ACPI_ASSERT(RegionObj->Region.AddrHandler == 0);
 
     /*
      *  BUGBUG:  We should invoke _REG here up to 2 times, If there was
      *           a previous handler, it should have _REG run and the new
      *           handler too.
      */
-
-    /*
-     *  Break any old associations
-     */
-    if (RegionObj->Region.AddrHandler)
-    {
-        EvDisassociateRegionAndHandler(RegionObj->Region.AddrHandler, RegionObj);
-    }
 
     /*
      *  We need to update the reference for the handler and the region
@@ -303,6 +327,11 @@ EvAssociateRegionAndHander(
 
     RegionObj->Region.Link = HandlerObj->AddrHandler.RegionList;
     HandlerObj->AddrHandler.RegionList = RegionObj;
+
+    /*
+     *  set the region's handler
+     */
+    RegionObj->Region.AddrHandler = HandlerObj;
 
     return_ACPI_STATUS (AE_OK);
 
@@ -340,8 +369,7 @@ EvAddrHandlerHelper (
     NAME_TABLE_ENTRY        *ObjEntry;
 
 
-    FUNCTION_TRACE ("InsAddrHandlerHelper");
-
+    FUNCTION_TRACE ("EvAddrHandlerHelper");
 
     HandlerObj = (ACPI_OBJECT_INTERNAL *) Context;
 
@@ -365,7 +393,8 @@ EvAddrHandlerHelper (
      */
 
     if ((ObjEntry->Type != TYPE_Device) &&
-        (ObjEntry->Type != TYPE_Region))
+        (ObjEntry->Type != TYPE_Region) &&
+        (ObjEntry != Gbl_RootObject))
     {
         return (void *) AE_OK;
     }
@@ -376,22 +405,41 @@ EvAddrHandlerHelper (
     if (!ObjDesc)
     {
         /*
-         *  The object DNE, this is bad
+         *  The object DNE, we don't care about it
          */
-        return (void *) AE_AML_ERROR;
+        return (void *) AE_OK;
     }
 
+    /*
+     *  Devices are handled different than regions
+     */
     if (ObjDesc->Common.Type == TYPE_Device)
     {
+        /*
+         *  See if this guy has any handlers
+         */
         TmpObj = ObjDesc->Device.AddrHandler;
         while (TmpObj)
         {
             /*
-             *  This device has an Address handler, see if this is
-             *  the same user address space.
+             *  Now let's see if it's for the same address space.
              */
-            if(TmpObj->AddrHandler.SpaceId == HandlerObj->AddrHandler.SpaceId)
-            {
+            if (TmpObj->AddrHandler.SpaceId == HandlerObj->AddrHandler.SpaceId)
+                {
+                /*
+                 *  It's for the same address space
+                 */
+                DEBUG_PRINT (TRACE_OPREGION,
+                    ("Found handler for %s in device 0x%X (0x%X) handler 0x%X\n",
+                    Gbl_RegionTypes[HandlerObj->AddrHandler.SpaceId],
+                    ObjDesc, TmpObj, HandlerObj));
+                /*
+                 *  Since the object we found it on was a device, then it
+                 *  means that someone has already installed a handler for
+                 *  the branch of the namespace from this device on.  Just
+                 *  bail out telling the walk routine to not traverse this
+                 *  branch.  This preserves the scoping rule for handlers.
+                 */
                 return GO_NO_FURTHER;
             }
             /*
@@ -399,14 +447,38 @@ EvAddrHandlerHelper (
              */
             TmpObj = TmpObj->AddrHandler.Link;
         }
+        /*
+         *  As long as the device didn't have a handler for this
+         *  space we don't care about it.  We just ignore it and
+         *  proceed.
+         */
         return (void *) AE_OK;
     }
 
     /*
-     *  Object is a Region, update the handler overwriting whatever
-     *  is there.  First decrement the reference count in the old handler
+     *  Only here if it was a region
      */
+    ACPI_ASSERT(ObjDesc->Common.Type == TYPE_Region);
 
+    if (ObjDesc->Region.SpaceId != HandlerObj->AddrHandler.SpaceId)
+    {
+        /*
+         *  This region os for a different address space
+         *  ignore it
+         */
+        return (void *) AE_OK;
+    }
+    /*
+     *  Now we have a region and it is for the handler's address
+     *  space type.
+     *
+     *  First disconnect region for any previous handler (if any)
+     */
+    EvDisassociateRegionFromHandler(ObjDesc);
+
+    /*
+     *  Then conenct the region to the new handler
+     */
     EvAssociateRegionAndHander(HandlerObj, ObjDesc);
 
     return (void *) AE_OK;
@@ -429,62 +501,73 @@ ACPI_STATUS
 EvGetAddressSpaceHandler ( ACPI_OBJECT_INTERNAL *RegionObj)
 {
     ACPI_OBJECT_INTERNAL   *HandlerObj;
+    ACPI_OBJECT_INTERNAL   *TmpObj;
     UINT32                  SpaceId; 
     NAME_TABLE_ENTRY       *Nte;        /* Namespace Object */
 
 
     FUNCTION_TRACE ("EvGetAddressSpaceHandler");
 
+    ACPI_ASSERT(RegionObj->Region.Nte);
 
-    Nte = RegionObj->Region.Parent;
+    Nte = RegionObj->Region.Nte->ParentEntry;
     SpaceId = RegionObj->Region.SpaceId;
     RegionObj->Region.AddrHandler = NULL;
 
-    while (Nte != Gbl_RootObject)
+    /*
+     *  The following loop depends upon the root nte having no parent
+     *  ie: Gbl_RootObject->ParentEntry being set to NULL
+     */
+    while (Nte)
     {
         /*
          *  Check to see if a handler exists
          */
-        switch (Nte->Type)
-        {
-        case TYPE_Device:
-
-            HandlerObj = ((ACPI_OBJECT_INTERNAL *)Nte->Object)->Device.AddrHandler;
-            break;
-
-        case TYPE_Processor:
-
-            HandlerObj = ((ACPI_OBJECT_INTERNAL *)Nte->Object)->Processor.AddrHandler;
-            break;
-
-        case TYPE_Thermal:
-
-            HandlerObj = ((ACPI_OBJECT_INTERNAL *)Nte->Object)->ThermalZone.AddrHandler;
-            break;
-
-        default:
-            HandlerObj = NULL;
-            break;
-        }
-
-
-        while (HandlerObj)
-        {
+        HandlerObj = NULL;
+        TmpObj = (ACPI_OBJECT_INTERNAL *) Nte->Object;
+        if (TmpObj) {
             /*
-             *  This guy has at least one address handler
-             *  see if it has the type we want 
+             *  can only be a handler if the object exists
              */
-            if (HandlerObj->AddrHandler.SpaceId == SpaceId)
+            switch (Nte->Type)
             {
-                /*
-                 *  Found it!!! Now update the region and the handler
-                 */
-                EvAssociateRegionAndHander(HandlerObj, RegionObj);
-                return_ACPI_STATUS (AE_OK);
+            case TYPE_Device:
+
+                HandlerObj = TmpObj->Device.AddrHandler;
+                break;
+
+            case TYPE_Processor:
+
+                HandlerObj = TmpObj->Processor.AddrHandler;
+                break;
+
+            case TYPE_Thermal:
+
+                HandlerObj = TmpObj->ThermalZone.AddrHandler;
+                break;
             }
 
-            HandlerObj = HandlerObj->AddrHandler.Link;
-        } /* while handlerobj */
+            while (HandlerObj)
+            {
+                /*
+                 *  This guy has at least one address handler
+                 *  see if it has the type we want 
+                 */
+                if (HandlerObj->AddrHandler.SpaceId == SpaceId)
+                {
+                    DEBUG_PRINT (TRACE_OPREGION,
+                        ("Found handler (0x%X) for region 0x%X in obj 0x%X\n",
+                        HandlerObj, RegionObj, TmpObj));
+                   /*
+                     *  Found it!!! Now update the region and the handler
+                     */
+                    EvAssociateRegionAndHander(HandlerObj, RegionObj);
+                    return_ACPI_STATUS (AE_OK);
+                }
+
+                HandlerObj = HandlerObj->AddrHandler.Link;
+            } /* while handlerobj */
+        }
 
         /*
          *  This one does not have the handler we need
@@ -497,6 +580,8 @@ EvGetAddressSpaceHandler ( ACPI_OBJECT_INTERNAL *RegionObj)
     /*
      *  If we get here the handler DNE, get out with error
      */
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("Unable to find handler for region 0x%X\n", RegionObj));
     return_ACPI_STATUS (AE_NOT_EXIST);
 }
 
