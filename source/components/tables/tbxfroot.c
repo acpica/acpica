@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -162,13 +162,32 @@ AcpiTbFindTable (
         return_ACPI_STATUS (AE_AML_STRING_LIMIT);
     }
 
-    /* Find the table */
-
-    Status = AcpiGetFirmwareTable (Signature, 1,
-                        ACPI_LOGICAL_ADDRESSING, &Table);
-    if (ACPI_FAILURE (Status))
+    if (!ACPI_STRNCMP (Signature, DSDT_SIG, ACPI_NAME_SIZE))
     {
-        return_ACPI_STATUS (Status);
+        /*
+         * The DSDT pointer is contained in the FADT, not the RSDT.
+         * This code should suffice, because the only code that would perform
+         * a "find" on the DSDT is the DataTableRegion() AML opcode -- in 
+         * which case, the DSDT is guaranteed to be already loaded.
+         * If this becomes insufficient, the FADT will have to be found first.
+         */
+        if (!AcpiGbl_DSDT)
+        {
+            return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+        }
+
+        Table = AcpiGbl_DSDT;
+    }
+    else
+    {
+        /* Find the table */
+
+        Status = AcpiGetFirmwareTable (Signature, 1,
+                            ACPI_LOGICAL_ADDRESSING, &Table);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* Check OemId and OemTableId */
@@ -179,6 +198,7 @@ AcpiTbFindTable (
         return_ACPI_STATUS (AE_AML_NAME_NOT_FOUND);
     }
 
+    ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "Found table [%4.4s]\n", Table->Signature));
     *TablePtr = Table;
     return_ACPI_STATUS (AE_OK);
 }
