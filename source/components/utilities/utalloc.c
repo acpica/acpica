@@ -121,8 +121,9 @@
 #include <namespace.h>
 #include <globals.h>
 
-#define _THIS_MODULE        "cmalloc.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmalloc");
+
 
 /*
  * Most of this code is for tracking memory leaks in the subsystem, and it
