@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.146 $
+ *              $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,53 @@
 
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evxface")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiInstallExceptionHandler
+ *
+ * PARAMETERS:  Handler         - Pointer to the handler function for the
+ *                                event
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Saves the pointer to the handler function
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInstallExceptionHandler (
+    ACPI_EXCEPTION_HANDLER  Handler)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE ("AcpiInstallExceptionHandler");
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Don't allow two handlers. */
+
+    if (AcpiGbl_ExceptionHandler)
+    {
+        Status = AE_ALREADY_EXISTS;
+        goto Cleanup;
+    }
+
+    /* Install the handler */
+
+    AcpiGbl_ExceptionHandler = Handler;
+
+Cleanup:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return_ACPI_STATUS (Status);
+}
 
 
 /*******************************************************************************
