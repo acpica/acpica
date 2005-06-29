@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -192,7 +192,7 @@ AcpiLoadTables (void)
         goto ErrorExit;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_OK, "ACPI Tables successfully acquired\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "ACPI Tables successfully acquired\n"));
 
 
     /* Load the namespace from the tables */
