@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -144,7 +144,7 @@
 void
 AcpiNsBuildExternalPath (
     ACPI_NAMESPACE_NODE     *Node,
-    UINT32                  Size,
+    ACPI_SIZE               Size,
     NATIVE_CHAR             *NameBuffer)
 {
     UINT32                  Index;
@@ -219,7 +219,7 @@ AcpiNsGetExternalPathname (
     ACPI_NAMESPACE_NODE     *Node)
 {
     NATIVE_CHAR             *NameBuffer;
-    UINT32                  Size;
+    ACPI_SIZE               Size;
 
 
     FUNCTION_TRACE_PTR ("NsGetExternalPathname", Node);
@@ -258,11 +258,11 @@ AcpiNsGetExternalPathname (
  *
  ******************************************************************************/
 
-UINT32
+ACPI_SIZE
 AcpiNsGetPathnameLength (
     ACPI_NAMESPACE_NODE     *Node)
 {
-    UINT32                  Size;
+    ACPI_SIZE               Size;
     ACPI_NAMESPACE_NODE     *NextNode;
 
 
@@ -306,13 +306,13 @@ AcpiNsGetPathnameLength (
 ACPI_STATUS
 AcpiNsHandleToPathname (
     ACPI_HANDLE             TargetHandle,
-    UINT32                  *BufSize,
+    ACPI_SIZE               *BufSize,
     NATIVE_CHAR             *UserBuffer)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_NAMESPACE_NODE     *Node;
-    UINT32                  UserBufSize;
-    UINT32                  Size;
+    ACPI_SIZE               UserBufSize;
+    ACPI_SIZE               Size;
 
 
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
