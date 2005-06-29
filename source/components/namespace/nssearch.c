@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.84 $
+ *              $Revision: 1.88 $
  *
  ******************************************************************************/
 
@@ -117,8 +117,6 @@
 #define __NSSEARCH_C__
 
 #include "acpi.h"
-#include "amlcode.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 
 
@@ -165,7 +163,7 @@ AcpiNsSearchNode (
     ACPI_FUNCTION_TRACE ("NsSearchNode");
 
 
-#ifdef ACPI_DEBUG
+#ifdef ACPI_DEBUG_OUTPUT
     if (ACPI_LV_NAMES & AcpiDbgLevel)
     {
         NATIVE_CHAR         *ScopeName;
@@ -308,7 +306,8 @@ AcpiNsSearchParentTree (
 
         if (AcpiNsLocal (Type))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "[%4.4s] type [%s] must be local to this scope (no parent search)\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                "[%4.4s] type [%s] must be local to this scope (no parent search)\n",
                 (char *) &TargetName, AcpiUtGetTypeName (Type)));
         }
 
