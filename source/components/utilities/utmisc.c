@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  ******************************************************************************/
 
@@ -924,6 +924,7 @@ AcpiCmResolvePackageReferences (
     return_ACPI_STATUS(AE_OK);
 }
 
+#ifdef ACPI_DEBUG
 
 /******************************************************************************
  *
@@ -943,7 +944,6 @@ AcpiCmDisplayInitPathname (
     ACPI_HANDLE             ObjHandle,
     char                    *Path)
 {
-#ifdef ACPI_DEBUG
     ACPI_STATUS             Status;
     UINT32                  Length = 128;
     char                    Buffer[128];
@@ -961,10 +961,8 @@ AcpiCmDisplayInitPathname (
             DEBUG_PRINT (TRACE_INIT, ("%s\n", Buffer))
         }
     }
-
-#endif
 }
-
+#endif
 
 /*******************************************************************************
  *
