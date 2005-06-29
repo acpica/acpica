@@ -170,7 +170,7 @@ ACPI_EXTERN INT32               RestoreAcpiChipset;
 ACPI_EXTERN UINT16              Pm1EnableRegisterSave;
 ACPI_EXTERN UINT8               *Gpe0EnableRegisterSave;
 ACPI_EXTERN UINT8               *Gpe1EnableRegisterSave;
-ACPI_EXTERN INT32               OriginalMode;
+ACPI_EXTERN UINT32              OriginalMode;
 ACPI_EXTERN INT32               EdgeLevelSave;
 ACPI_EXTERN INT32               IrqEnableSave;
 extern char                     *ExceptionNames[];
