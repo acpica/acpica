@@ -703,7 +703,7 @@ DbSprintOp (
             Opc = PsGetOpcodeInfo (Op->Opcode);
             if (Opc)
             {
-                DEBUG_EXEC ((OsdPrintf ("%s", Opc->Name)));
+                DEBUG_ONLY_MEMBERS ((OsdPrintf ("%s", Opc->Name)));
             }
             else
             {
