@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.125 $
+ *       $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -266,6 +266,13 @@ ACPI_STATUS
 AcpiExGetObjectReference (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **ReturnDesc,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiExConcatTemplate (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc2,
+    ACPI_OPERAND_OBJECT     **ActualReturnDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
