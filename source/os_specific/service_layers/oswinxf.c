@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.46 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -344,6 +344,36 @@ AcpiOsGetRootPointer (
 {
 
     return (AeLocalGetRootPointer (Flags, Address));
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsPredefinedOverride
+ *
+ * PARAMETERS:  InitVal     - Initial value of the predefined object
+ *              NewVal      - The new value for the object
+ *
+ * RETURN:      Status, pointer to value.  Null pointer returned if not
+ *              overriding.
+ *
+ * DESCRIPTION: Allow the OS to override predefined names
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsPredefinedOverride (
+	const ACPI_PREDEFINED_NAMES *InitVal,
+	ACPI_STRING                 *NewVal)
+{
+
+    if (!InitVal || !NewVal)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    *NewVal = NULL;
+    return (AE_OK);
 }
 
 
@@ -963,6 +993,44 @@ AcpiOsSignalSemaphore (
 
     return (AE_OK);
 }
+
+
+
+
+ACPI_STATUS
+AcpiOsCreateLock (
+    ACPI_HANDLE             *OutHandle)
+{
+
+    return (AcpiOsCreateSemaphore (1, 1, OutHandle));
+}
+
+void
+AcpiOsDeleteLock (
+    ACPI_HANDLE             Handle)
+{
+    AcpiOsDeleteSemaphore (Handle);
+}
+
+
+void
+AcpiOsAcquireLock (
+    ACPI_HANDLE             Handle,
+    UINT32                  Flags)
+{
+    AcpiOsWaitSemaphore (Handle, 1, 0xFFFF);
+}
+
+
+void
+AcpiOsReleaseLock (
+    ACPI_HANDLE             Handle,
+    UINT32                  Flags)
+{
+    AcpiOsSignalSemaphore (Handle, 1);
+}
+
+
 
 
 /******************************************************************************
