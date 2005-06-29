@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.2 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "achware.h"
 #include "acevents.h"
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("ammutex")
 
 
@@ -341,7 +341,7 @@ AcpiAmlReleaseMutex (
 
     AcpiAmlUnlinkMutex (ObjDesc);
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
