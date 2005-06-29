@@ -402,7 +402,7 @@ DsCallControlMethod (
 
     /* Create a new state for the preempting walk */
 
-    NextWalkState = DsCreateWalkState ((ACPI_GENERIC_OP *) Method, ObjDesc, WalkList);
+    NextWalkState = DsCreateWalkState (ObjDesc->Method.OwningId, (ACPI_GENERIC_OP *) Method, ObjDesc, WalkList);
     if (!NextWalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
