@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -289,7 +289,6 @@ AcpiAmlAcquireGlobalLock (
         Status = AcpiEvAcquireGlobalLock ();
         if (ACPI_SUCCESS (Status))
         {
-            AcpiGbl_GlobalLockSet = TRUE;
             Locked = TRUE;
         }
 
@@ -330,20 +329,9 @@ AcpiAmlReleaseGlobalLock (
 
     if (LockedByMe)
     {
-        /* Double check against the global flag */
+        /* OK, now release the lock */
 
-        if (AcpiGbl_GlobalLockSet)
-        {
-            /* OK, now release the lock */
-
-            AcpiEvReleaseGlobalLock ();
-            AcpiGbl_GlobalLockSet = FALSE;
-        }
-
-        else
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("Global lock was not set\n"));
-        }
+        AcpiEvReleaseGlobalLock ();
     }
 
 
