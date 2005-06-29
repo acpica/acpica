@@ -509,7 +509,6 @@ void (*NOTIFY_HANDLER) (
     UINT32                  Value,
     void                    *Context);
 
-
 #define ADDRESS_SPACE_READ      1
 #define ADDRESS_SPACE_WRITE     2
 
@@ -521,13 +520,7 @@ ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
     UINT32                  *Value,
     void                    *Context);
 
-typedef struct
-{
-    UINT16      SegNum;
-    UINT16      BusNum;
-    UINT16      DevNum;
-    UINT16      FuncNum;
-} PCI_HANDLER_CONTEXT;
+#define ACPI_DEFAULT_HANDLE     ((ADDRESS_SPACE_HANDLER) NULL)
 
 typedef
 void * (*WALK_CALLBACK) (
