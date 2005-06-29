@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.67 $
+ *              $Revision: 1.70 $
  *
  ******************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -274,50 +274,6 @@ AcpiEvRemoveSciHandler (void)
 
     return_ACPI_STATUS (AE_OK);
 }
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiEvSciCount
- *
- * PARAMETERS:  Event       Event that generated an SCI.
- *
- * RETURN:      Number of SCI's for requested event since last time
- *              SciOccured() was called for this event.
- *
- * DESCRIPTION: Checks to see if SCI has been generated from requested source
- *              since the last time this function was called.
- *
- ******************************************************************************/
-
-#ifdef ACPI_DEBUG
-
-UINT32
-AcpiEvSciCount (
-    UINT32                  Event)
-{
-    UINT32                  Count;
-
-    FUNCTION_TRACE ("EvSciCount");
-
-    /*
-     * Elements correspond to counts for TMR, NOT_USED, GBL,
-     * PWR_BTN, SLP_BTN, RTC, and GENERAL respectively.
-     */
-
-    if (Event >= NUM_FIXED_EVENTS)
-    {
-        Count = (UINT32) -1;
-    }
-    else
-    {
-        Count = AcpiGbl_EventCount[Event];
-    }
-
-    return_VALUE (Count);
-}
-
-#endif
 
 
 /*******************************************************************************
