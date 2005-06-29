@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.57 $
+ *       $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -118,14 +118,17 @@
 #define __ACEVENTS_H__
 
 
-
 ACPI_STATUS
 AcpiEvInitialize (
     void);
 
+ACPI_STATUS
+AcpiEvHandlerInitialize (
+    void);
+
 
 /*
- * AcpiEvfixed - Fixed event handling
+ * Evfixed - Fixed event handling
  */
 
 ACPI_STATUS
@@ -138,16 +141,16 @@ AcpiEvFixedEventDetect (
 
 UINT32
 AcpiEvFixedEventDispatch (
-    UINT32                  AcpiEvent);
+    UINT32                  Event);
 
 
 /*
- * AcpiEvglock - Global Lock support
+ * Evmisc
  */
 
 ACPI_STATUS
 AcpiEvAcquireGlobalLock(
-    void);
+    UINT32                  Timeout);
 
 void
 AcpiEvReleaseGlobalLock(
@@ -157,9 +160,26 @@ ACPI_STATUS
 AcpiEvInitGlobalLockHandler (
     void);
 
+UINT32
+AcpiEvGetGpeRegisterIndex (
+    UINT32                  GpeNumber);
+
+UINT32
+AcpiEvGetGpeNumberIndex (
+    UINT32                  GpeNumber);
+
+ACPI_STATUS
+AcpiEvQueueNotifyRequest (
+    ACPI_NAMESPACE_NODE     *Node,
+    UINT32                  NotifyValue);
+
+void ACPI_SYSTEM_XFACE
+AcpiEvNotifyDispatch (
+    void                    *Context);
+
 
 /*
- * AcpiEvgpe - GPE handling and dispatch
+ * Evgpe - GPE handling and dispatch
  */
 
 ACPI_STATUS
@@ -178,19 +198,8 @@ UINT32
 AcpiEvGpeDetect (
     void);
 
-
 /*
- * AcpiEvnotify - Device Notify handling and dispatch
- */
-
-void
-AcpiEvNotifyDispatch (
-    ACPI_HANDLE             Device,
-    UINT32                  NotifyValue);
-
-
-/*
- * AcpiEvregion - Address Space handling
+ * Evregion - Address Space handling
  */
 
 ACPI_STATUS
@@ -201,10 +210,9 @@ ACPI_STATUS
 AcpiEvAddressSpaceDispatch (
     ACPI_OPERAND_OBJECT    *RegionObj,
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value);
-
+    ACPI_INTEGER            *Value);
 
 ACPI_STATUS
 AcpiEvAddrHandlerHelper (
@@ -215,8 +223,8 @@ AcpiEvAddrHandlerHelper (
 
 void
 AcpiEvDisassociateRegionFromHandler(
-    ACPI_OPERAND_OBJECT    *RegionObj);
-
+    ACPI_OPERAND_OBJECT    *RegionObj,
+    BOOLEAN                 AcpiNsIsLocked);
 
 ACPI_STATUS
 AcpiEvAssociateRegionAndHandler (
@@ -226,7 +234,7 @@ AcpiEvAssociateRegionAndHandler (
 
 
 /*
- * AcpiEvregini - Region initialization and setup
+ * Evregini - Region initialization and setup
  */
 
 ACPI_STATUS
@@ -245,6 +253,20 @@ AcpiEvIoSpaceRegionSetup (
 
 ACPI_STATUS
 AcpiEvPciConfigRegionSetup (
+    ACPI_HANDLE             Handle,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **RegionContext);
+
+ACPI_STATUS
+AcpiEvCmosRegionSetup (
+    ACPI_HANDLE             Handle,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **RegionContext);
+
+ACPI_STATUS
+AcpiEvPciBarRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
@@ -280,28 +302,8 @@ AcpiEvInitializeSCI (
     UINT32                  ProgramSCI);
 
 void
-AcpiEvRestoreAcpiState (
-    void);
-
-void
 AcpiEvTerminate (
     void);
-
-
-/* Debug support */
-
-#ifdef ACPI_DEBUG
-
-UINT32
-AcpiEvSciCount (
-    UINT32                  AcpiEvent);
-
-#define DEBUG_INCREMENT_EVENT_COUNT(a)   AcpiGbl_EventCount[a]++;
-
-#else
-
-#define DEBUG_INCREMENT_EVENT_COUNT(a)
-#endif
 
 
 #endif  /* __ACEVENTS_H__  */

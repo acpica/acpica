@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.55 $
+ *       $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -116,7 +116,6 @@
 
 #ifndef __ACDEBUG_H__
 #define __ACDEBUG_H__
-
 
 
 #define ACPI_DEBUG_BUFFER_SIZE  4196
@@ -390,7 +389,7 @@ AcpiDbCommandDispatch (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
 
-void
+void ACPI_SYSTEM_XFACE
 AcpiDbExecuteThread (
     void                    *Context);
 
