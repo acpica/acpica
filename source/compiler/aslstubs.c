@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -348,7 +348,8 @@ AcpiTbFindTable (
 ACPI_STATUS
 AcpiTbMatchSignature (
     NATIVE_CHAR             *Signature,
-    ACPI_TABLE_DESC         *TableInfo)
+    ACPI_TABLE_DESC         *TableInfo,
+    UINT8                   SearchType)
 {
     return (AE_OK);
 }
