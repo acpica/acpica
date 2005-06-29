@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.63 $
+ *              $Revision: 1.58 $
  *
  ******************************************************************************/
 
@@ -151,7 +151,7 @@ AcpiNsGetTablePathname (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    FUNCTION_TRACE_PTR ("NsGetTablePathname", Node);
+    FUNCTION_TRACE_PTR ("AcpiNsGetTablePathname", Node);
 
 
     if (!AcpiGbl_RootNode || !Node)
@@ -182,7 +182,7 @@ AcpiNsGetTablePathname (
 
     /* Allocate a buffer to be returned to caller */
 
-    NameBuffer = ACPI_MEM_CALLOCATE (Size + 1);
+    NameBuffer = AcpiUtCallocate (Size + 1);
     if (!NameBuffer)
     {
         REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
@@ -209,7 +209,7 @@ AcpiNsGetTablePathname (
 
     if (Size != 0)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad pointer returned; size=%X\n", Size));
+        DEBUG_PRINTP (ACPI_ERROR, ("Bad pointer returned; size=%X\n", Size));
     }
 
     return_PTR (NameBuffer);
@@ -234,10 +234,6 @@ AcpiNsGetPathnameLength (
 {
     UINT32                  Size;
     ACPI_NAMESPACE_NODE     *NextNode;
-
-
-    FUNCTION_ENTRY ();
-
 
     /*
      * Compute length of pathname as 5 * number of name segments.
@@ -291,16 +287,16 @@ AcpiNsHandleToPathname (
     ACPI_NAME               Name;
     UINT32                  Size;
 
-
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
 
-    if (!AcpiGbl_RootNode)
+    if (!AcpiGbl_RootNode || !TargetHandle)
     {
         /*
          * If the name space has not been initialized,
          * this function should not have been called.
          */
+
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
@@ -355,9 +351,10 @@ AcpiNsHandleToPathname (
      * Overlay the "." preceding the first segment with
      * the root name "\"
      */
+
     UserBuffer[Size] = '\\';
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Len=%X, %s \n", PathLength, UserBuffer));
+    DEBUG_PRINTP (TRACE_EXEC, ("Len=%X, %s \n", PathLength, UserBuffer));
 
 Exit:
     return_ACPI_STATUS (Status);
