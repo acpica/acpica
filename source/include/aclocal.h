@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.185 $
+ *       $Revision: 1.187 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -428,7 +428,6 @@ typedef struct acpi_gpe_number_info
     UINT8                   Type;           /* Level or Edge */
     UINT8                   BitMask;
 
-
 } ACPI_GPE_NUMBER_INFO;
 
 
@@ -739,10 +738,7 @@ typedef struct acpi_parse_obj_named
 typedef struct acpi_parse_obj_asl
 {
     ACPI_PARSE_COMMON
-
     union acpi_parse_object     *Child;
-
-
     union acpi_parse_object     *ParentMethod;
     char                        *Filename;
     char                        *ExternalName;
