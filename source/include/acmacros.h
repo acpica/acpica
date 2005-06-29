@@ -237,12 +237,27 @@
  * Reporting macros that are never compiled out
  */
 
-/* Error reporting.  These versions add callers module and line# */
+/*
+ * Error reporting.  These versions add callers module and line#.  Since
+ * _THIS_MODULE gets compiled out when ACPI_DEBUG isn't defined, only
+ * use it in debug mode.
+ */
+
+#ifdef ACPI_DEBUG
 
 #define REPORT_INFO(a)                  _ReportInfo(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define REPORT_ERROR(a)                 _ReportError(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define REPORT_WARNING(a)               _ReportWarning(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define REPORT_SUCCESS(a)               _ReportSuccess(_THIS_MODULE,__LINE__,_COMPONENT,a)
+
+#else
+
+#define REPORT_INFO(a)                  _ReportInfo("",__LINE__,_COMPONENT,a)
+#define REPORT_ERROR(a)                 _ReportError("",__LINE__,_COMPONENT,a)
+#define REPORT_WARNING(a)               _ReportWarning("",__LINE__,_COMPONENT,a)
+#define REPORT_SUCCESS(a)               _ReportSuccess("",__LINE__,_COMPONENT,a)
+
+#endif
 
 /* Error reporting.  These versions pass thru the module and line# */
 
@@ -254,13 +269,13 @@
 
 #define DUMP_BUFFER(a,b,c)              DumpBuffer((char *)a,b,c,_COMPONENT)
 
-#define MODULE_NAME(name)               static char *_THIS_MODULE = name
-
 /*
  * Debug macros that are conditionally compiled
  */
 
 #ifdef ACPI_DEBUG
+
+#define MODULE_NAME(name)               static char *_THIS_MODULE = name
 
 /* 
  * Function entry tracing. 
@@ -338,6 +353,9 @@
  * This is the non-debug case -- make everything go away,
  * leaving no executable debug code!
  */
+
+#define MODULE_NAME(name)
+#define _THIS_MODULE ""
 
 #define DEBUG_EXEC(a)  
 #define DEBUG_DEFINE(a)                     
