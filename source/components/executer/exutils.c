@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.104 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -286,7 +286,7 @@ AcpiExAcquireGlobalLock (
     {
         /* We should attempt to get the lock, wait forever */
 
-        Status = AcpiEvAcquireGlobalLock (ACPI_UINT32_MAX);
+        Status = AcpiEvAcquireGlobalLock (ACPI_WAIT_FOREVER);
         if (ACPI_SUCCESS (Status))
         {
             Locked = TRUE;
@@ -400,7 +400,7 @@ AcpiExDigitsNeeded (
 void
 AcpiExEisaIdToString (
     UINT32                  NumericId,
-    NATIVE_CHAR             *OutString)
+    char                    *OutString)
 {
     UINT32                  EisaId;
 
@@ -412,7 +412,7 @@ AcpiExEisaIdToString (
 
     EisaId = AcpiUtDwordByteSwap (NumericId);
 
-    OutString[0] = (char) ('@' + ((EisaId >> 26) & 0x1f));
+    OutString[0] = (char) ('@' + (((unsigned long) EisaId >> 26) & 0x1f));
     OutString[1] = (char) ('@' + ((EisaId >> 21) & 0x1f));
     OutString[2] = (char) ('@' + ((EisaId >> 16) & 0x1f));
     OutString[3] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) EisaId, 12);
@@ -437,7 +437,7 @@ AcpiExEisaIdToString (
 void
 AcpiExUnsignedIntegerToString (
     ACPI_INTEGER            Value,
-    NATIVE_CHAR             *OutString)
+    char                    *OutString)
 {
     UINT32                  Count;
     UINT32                  DigitsNeeded;
@@ -454,7 +454,7 @@ AcpiExUnsignedIntegerToString (
     for (Count = DigitsNeeded; Count > 0; Count--)
     {
         (void) AcpiUtShortDivide (&Value, 10, &Quotient, &Remainder);
-        OutString[Count-1] = (NATIVE_CHAR) ('0' + Remainder);\
+        OutString[Count-1] = (char) ('0' + Remainder);\
         Value = Quotient;
     }
 }

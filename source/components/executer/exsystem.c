@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.72 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -143,7 +143,7 @@
 ACPI_STATUS
 AcpiExSystemWaitSemaphore (
     ACPI_HANDLE             Semaphore,
-    UINT32                  Timeout)
+    UINT16                  Timeout)
 {
     ACPI_STATUS             Status;
     ACPI_STATUS             Status2;
@@ -300,12 +300,12 @@ AcpiExSystemAcquireMutex (
      */
     if (ObjDesc->Mutex.Semaphore == AcpiGbl_GlobalLockSemaphore)
     {
-        Status = AcpiEvAcquireGlobalLock ((UINT32) TimeDesc->Integer.Value);
+        Status = AcpiEvAcquireGlobalLock ((UINT16) TimeDesc->Integer.Value);
         return_ACPI_STATUS (Status);
     }
 
     Status = AcpiExSystemWaitSemaphore (ObjDesc->Mutex.Semaphore,
-                                         (UINT32) TimeDesc->Integer.Value);
+                                         (UINT16) TimeDesc->Integer.Value);
     return_ACPI_STATUS (Status);
 }
 
@@ -345,8 +345,8 @@ AcpiExSystemReleaseMutex (
      */
     if (ObjDesc->Mutex.Semaphore == AcpiGbl_GlobalLockSemaphore)
     {
-        AcpiEvReleaseGlobalLock ();
-        return_ACPI_STATUS (AE_OK);
+        Status = AcpiEvReleaseGlobalLock ();
+        return_ACPI_STATUS (Status);
     }
 
     Status = AcpiOsSignalSemaphore (ObjDesc->Mutex.Semaphore, 1);
@@ -415,7 +415,7 @@ AcpiExSystemWaitEvent (
     if (ObjDesc)
     {
         Status = AcpiExSystemWaitSemaphore (ObjDesc->Event.Semaphore,
-                                             (UINT32) TimeDesc->Integer.Value);
+                                             (UINT16) TimeDesc->Integer.Value);
     }
 
     return_ACPI_STATUS (Status);
@@ -452,7 +452,7 @@ AcpiExSystemResetEvent (
     Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 0, &TempSemaphore);
     if (ACPI_SUCCESS (Status))
     {
-        AcpiOsDeleteSemaphore (ObjDesc->Event.Semaphore);
+        (void) AcpiOsDeleteSemaphore (ObjDesc->Event.Semaphore);
         ObjDesc->Event.Semaphore = TempSemaphore;
     }
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.60 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -177,8 +177,8 @@ AcpiExResolveNodeToValue (
     SourceDesc = AcpiNsGetAttachedObject (Node);
     EntryType  = AcpiNsGetType ((ACPI_HANDLE) Node);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Entry=%p SourceDesc=%p Type=%X\n",
-         Node, SourceDesc, EntryType));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Entry=%p SourceDesc=%p [%s]\n",
+         Node, SourceDesc, AcpiUtGetTypeName (EntryType)));
 
     if (EntryType == ACPI_TYPE_LOCAL_ALIAS)
     {

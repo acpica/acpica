@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.161 $
+ *              $Revision: 1.166 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -150,7 +150,6 @@ AcpiExDumpOperand (
 {
     UINT8                   *Buf = NULL;
     UINT32                  Length;
-    UINT32                  i;
     ACPI_OPERAND_OBJECT     **Element;
     UINT16                  ElementIndex;
 
@@ -370,15 +369,10 @@ AcpiExDumpOperand (
 
     case ACPI_TYPE_STRING:
 
-        AcpiOsPrintf ("String length %X @ %p \"",
+        AcpiOsPrintf ("String length %X @ %p ",
                     ObjDesc->String.Length, ObjDesc->String.Pointer);
-
-        for (i = 0; i < ObjDesc->String.Length; i++)
-        {
-            AcpiOsPrintf ("%c",
-                        ObjDesc->String.Pointer[i]);
-        }
-        AcpiOsPrintf ("\"\n");
+        AcpiUtPrintString (ObjDesc->String.Pointer, ACPI_UINT8_MAX);
+        AcpiOsPrintf ("\n");
         break;
 
 
@@ -502,13 +496,13 @@ void
 AcpiExDumpOperands (
     ACPI_OPERAND_OBJECT     **Operands,
     ACPI_INTERPRETER_MODE   InterpreterMode,
-    NATIVE_CHAR             *Ident,
+    char                    *Ident,
     UINT32                  NumLevels,
-    NATIVE_CHAR             *Note,
-    NATIVE_CHAR             *ModuleName,
+    char                    *Note,
+    char                    *ModuleName,
     UINT32                  LineNumber)
 {
-    NATIVE_UINT             i;
+    ACPI_NATIVE_UINT        i;
     ACPI_OPERAND_OBJECT     **ObjDesc;
 
 
@@ -706,7 +700,10 @@ AcpiExDumpObjectDescriptor (
     case ACPI_TYPE_STRING:
 
         AcpiExOutInteger ("Length",          ObjDesc->String.Length);
-        AcpiExOutPointer ("Pointer",         ObjDesc->String.Pointer);
+
+        AcpiOsPrintf ("%20s : %p  ", "Pointer", ObjDesc->String.Pointer);
+        AcpiUtPrintString (ObjDesc->String.Pointer, ACPI_UINT8_MAX);
+        AcpiOsPrintf ("\n");
         break;
 
 
@@ -714,6 +711,7 @@ AcpiExDumpObjectDescriptor (
 
         AcpiExOutInteger ("Length",          ObjDesc->Buffer.Length);
         AcpiExOutPointer ("Pointer",         ObjDesc->Buffer.Pointer);
+        ACPI_DUMP_BUFFER (ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length);
         break;
 
 

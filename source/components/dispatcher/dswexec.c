@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.95 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -443,7 +443,6 @@ AcpiDsExecEndOp (
     UINT32                  OpClass;
     ACPI_PARSE_OBJECT       *NextOp;
     ACPI_PARSE_OBJECT       *FirstArg;
-    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE_PTR ("DsExecEndOp", WalkState);
@@ -526,16 +525,7 @@ AcpiDsExecEndOp (
 
         /* Always delete the argument objects and clear the operand stack */
 
-        for (i = 0; i < WalkState->NumOperands; i++)
-        {
-            /*
-             * Remove a reference to all operands, including both
-             * "Arguments" and "Targets".
-             */
-            AcpiUtRemoveReference (WalkState->Operands[i]);
-            WalkState->Operands[i] = NULL;
-        }
-        WalkState->NumOperands = 0;
+        AcpiDsClearOperands (WalkState);
 
         /*
          * If a result object was returned from above, push it on the
@@ -601,6 +591,9 @@ AcpiDsExecEndOp (
             Status = AcpiDsResolveOperands (WalkState);
             if (ACPI_FAILURE (Status))
             {
+                /* On error, clear all resolved operands */
+
+                AcpiDsClearOperands (WalkState);
                 break;
             }
 
@@ -769,6 +762,14 @@ Cleanup:
          */
         AcpiDsDeleteResultIfNotUsed (Op, WalkState->ResultObj, WalkState);
     }
+
+#if _UNDER_DEVELOPMENT
+
+    if (WalkState->ParserState.Aml == WalkState->ParserState.AmlEnd)
+    {
+        AcpiDbMethodEnd (WalkState);
+    }
+#endif
 
     /* Always clear the object stack */
 

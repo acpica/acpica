@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.120 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -205,28 +205,24 @@ AcpiExDecodeFieldAccess (
         break;
 
     case AML_FIELD_ACCESS_BYTE:
+    case AML_FIELD_ACCESS_BUFFER:   /* ACPI 2.0 (SMBus Buffer) */
         ByteAlignment = 1;
-        BitLength = 8;
+        BitLength     = 8;
         break;
 
     case AML_FIELD_ACCESS_WORD:
         ByteAlignment = 2;
-        BitLength = 16;
+        BitLength     = 16;
         break;
 
     case AML_FIELD_ACCESS_DWORD:
         ByteAlignment = 4;
-        BitLength = 32;
+        BitLength     = 32;
         break;
 
-    case AML_FIELD_ACCESS_QWORD:  /* ACPI 2.0 */
+    case AML_FIELD_ACCESS_QWORD:    /* ACPI 2.0 */
         ByteAlignment = 8;
-        BitLength = 64;
-        break;
-
-    case AML_FIELD_ACCESS_BUFFER:  /* ACPI 2.0 */
-        ByteAlignment = 8;
-        BitLength = 8;
+        BitLength     = 64;
         break;
 
     default:

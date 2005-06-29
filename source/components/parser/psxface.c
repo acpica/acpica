@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.58 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,12 +120,11 @@
 #include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
-#include "amlcode.h"
 #include "acnamesp.h"
 
 
 #define _COMPONENT          ACPI_PARSER
-        MODULE_NAME         ("psxface")
+        ACPI_MODULE_NAME    ("psxface")
 
 
 /*******************************************************************************
@@ -159,7 +158,7 @@ AcpiPsxExecute (
     ACPI_WALK_STATE         *WalkState;
 
 
-    FUNCTION_TRACE ("PsxExecute");
+    ACPI_FUNCTION_TRACE ("PsxExecute");
 
 
     /* Validate the Node and get the attached object */
@@ -199,13 +198,13 @@ AcpiPsxExecute (
      * 1) Perform the first pass parse of the method to enter any
      * named objects that it creates into the namespace
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "**** Begin Method Parse **** Entry=%p obj=%p\n",
         MethodNode, ObjDesc));
 
     /* Create and init a Root Node */
 
-    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    Op = AcpiPsCreateScopeOp ();
     if (!Op)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -216,7 +215,7 @@ AcpiPsxExecute (
      * objects (such as Operation Regions) can be created during the
      * first pass parse.
      */
-    ObjDesc->Method.OwningId = AcpiUtAllocateOwnerId (OWNER_TYPE_METHOD);
+    ObjDesc->Method.OwningId = AcpiUtAllocateOwnerId (ACPI_OWNER_TYPE_METHOD);
 
     /* Create and initialize a new walk state */
 
@@ -240,17 +239,16 @@ AcpiPsxExecute (
     Status = AcpiPsParseAml (WalkState);
     AcpiPsDeleteParseTree (Op);
 
-
     /*
      * 2) Execute the method.  Performs second pass parse simultaneously
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "**** Begin Method Execution **** Entry=%p obj=%p\n",
         MethodNode, ObjDesc));
 
     /* Create and init a Root Node */
 
-    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    Op = AcpiPsCreateScopeOp ();
     if (!Op)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -258,13 +256,12 @@ AcpiPsxExecute (
 
     /* Init new op with the method name and pointer back to the NS node */
 
-    AcpiPsSetName (Op, MethodNode->Name);
-    Op->Node = MethodNode;
+    AcpiPsSetName (Op, MethodNode->Name.Integer);
+    Op->Common.Node = MethodNode;
 
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
-                                    NULL, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, NULL);
     if (!WalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -290,7 +287,9 @@ AcpiPsxExecute (
 
         for (i = 0; Params[i]; i++)
         {
-            AcpiUtUpdateObjectReference (Params[i], REF_DECREMENT);
+            /* Ignore errors, just do them all */
+
+            (void) AcpiUtUpdateObjectReference (Params[i], REF_DECREMENT);
         }
     }
 
@@ -300,9 +299,9 @@ AcpiPsxExecute (
      */
     if (*ReturnObjDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Method returned ObjDesc=%p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Method returned ObjDesc=%p\n",
             *ReturnObjDesc));
-        DUMP_STACK_ENTRY (*ReturnObjDesc);
+        ACPI_DUMP_STACK_ENTRY (*ReturnObjDesc);
 
         Status = AE_CTRL_RETURN_VALUE;
     }

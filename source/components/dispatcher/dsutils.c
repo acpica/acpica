@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.96 $
+ *              $Revision: 1.99 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -379,6 +379,46 @@ AcpiDsResolveOperands (
 
     return_ACPI_STATUS (Status);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsClearOperands
+ *
+ * PARAMETERS:  WalkState           - Current walk state with operands on stack
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Clear all operands on the current walk state operand stack.
+ *
+ ******************************************************************************/
+
+void
+AcpiDsClearOperands (
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT32                  i;
+
+
+    ACPI_FUNCTION_TRACE_PTR ("AcpiDsClearOperands", WalkState);
+
+
+    /*
+     * Remove a reference on each operand on the stack
+     */
+    for (i = 0; i < WalkState->NumOperands; i++)
+    {
+        /*
+         * Remove a reference to all operands, including both
+         * "Arguments" and "Targets".
+         */
+        AcpiUtRemoveReference (WalkState->Operands[i]);
+        WalkState->Operands[i] = NULL;
+    }
+
+    WalkState->NumOperands = 0;
+    return_VOID;
+}
 #endif
 
 
@@ -405,7 +445,7 @@ AcpiDsCreateOperand (
     UINT32                  ArgIndex)
 {
     ACPI_STATUS             Status = AE_OK;
-    NATIVE_CHAR             *NameString;
+    char                    *NameString;
     UINT32                  NameLength;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_PARSE_OBJECT       *ParentOp;

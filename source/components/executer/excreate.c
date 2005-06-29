@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.95 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -148,7 +148,7 @@ AcpiExCreateAlias (
 {
     ACPI_NAMESPACE_NODE     *TargetNode;
     ACPI_NAMESPACE_NODE     *AliasNode;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     ACPI_FUNCTION_TRACE ("ExCreateAlias");
@@ -161,10 +161,10 @@ AcpiExCreateAlias (
 
     if (TargetNode->Type == ACPI_TYPE_LOCAL_ALIAS)
     {
-        /* 
+        /*
          * Dereference an existing alias so that we don't create a chain
          * of aliases.  With this code, we guarantee that an alias is
-         * always exactly one level of indirection away from the 
+         * always exactly one level of indirection away from the
          * actual aliased name.
          */
         TargetNode = (ACPI_NAMESPACE_NODE *) TargetNode->Object;
@@ -191,7 +191,7 @@ AcpiExCreateAlias (
          * types, the object can change dynamically via a Store.
          */
         AliasNode->Type = ACPI_TYPE_LOCAL_ALIAS;
-        AliasNode->Object = (ACPI_OPERAND_OBJECT *) TargetNode;
+        AliasNode->Object = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, TargetNode);
         break;
 
     default:
@@ -212,7 +212,7 @@ AcpiExCreateAlias (
 
     /* Since both operands are Nodes, we don't need to delete them */
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -320,9 +320,10 @@ AcpiExCreateMutex (
     /* Init object and attach to NS node */
 
     ObjDesc->Mutex.SyncLevel = (UINT8) WalkState->Operands[1]->Integer.Value;
+    ObjDesc->Mutex.Node = (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
 
-    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
-                                ObjDesc, ACPI_TYPE_MUTEX);
+    Status = AcpiNsAttachObject (ObjDesc->Mutex.Node,
+                ObjDesc, ACPI_TYPE_MUTEX);
 
 
 Cleanup:

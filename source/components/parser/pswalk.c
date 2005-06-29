@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.65 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -334,6 +334,7 @@ AcpiPsDeleteParseTree (
 {
     ACPI_WALK_STATE         *WalkState;
     ACPI_THREAD_STATE       *Thread;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE_PTR ("PsDeleteParseTree", SubtreeRoot);
@@ -351,7 +352,6 @@ AcpiPsDeleteParseTree (
     {
         return_VOID;
     }
-
 
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, Thread);
     if (!WalkState)
@@ -374,13 +374,17 @@ AcpiPsDeleteParseTree (
 
     while (WalkState->NextOp)
     {
-        AcpiPsGetNextWalkOp (WalkState, WalkState->NextOp,
+        Status = AcpiPsGetNextWalkOp (WalkState, WalkState->NextOp,
                                 AcpiPsDeleteCompletedOp);
+        if (ACPI_FAILURE (Status))
+        {
+            break;
+        }
     }
 
     /* We are done with this walk */
 
-    AcpiUtDeleteGenericState ((ACPI_GENERIC_STATE *) Thread);
+    AcpiUtDeleteGenericState (ACPI_CAST_PTR (ACPI_GENERIC_STATE, Thread));
     AcpiDsDeleteWalkState (WalkState);
 
     return_VOID;

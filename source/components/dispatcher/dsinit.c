@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.2 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -202,7 +202,7 @@ AcpiDsInitOneObject (
 
         if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
         {
-            AcpiOsPrintf (".");
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
         }
 
         /*

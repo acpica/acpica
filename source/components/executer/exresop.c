@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.59 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -505,15 +505,6 @@ AcpiExResolveOperands (
 
                 return_ACPI_STATUS (Status);
             }
-
-            if (ObjDesc != *StackPtr)
-            {
-                /* 
-                 * We just created a new object, remove a reference
-                 * on the original operand object
-                 */
-                AcpiUtRemoveReference (ObjDesc);
-            }
             goto NextOperand;
 
 
@@ -538,15 +529,6 @@ AcpiExResolveOperands (
 
                 return_ACPI_STATUS (Status);
             }
-
-            if (ObjDesc != *StackPtr)
-            {
-                /* 
-                 * We just created a new object, remove a reference
-                 * on the original operand object
-                 */
-                AcpiUtRemoveReference (ObjDesc);
-            }
             goto NextOperand;
 
 
@@ -570,15 +552,6 @@ AcpiExResolveOperands (
                 }
 
                 return_ACPI_STATUS (Status);
-            }
-
-            if (ObjDesc != *StackPtr)
-            {
-                /* 
-                 * We just created a new object, remove a reference
-                 * on the original operand object
-                 */
-                AcpiUtRemoveReference (ObjDesc);
             }
             goto NextOperand;
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.173 $
+ *              $Revision: 1.175 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -175,7 +175,7 @@ AcpiExStore (
     {
         /*
          * Dest is a namespace node,
-         * Storing an object into a Name "container"
+         * Storing an object into a Named node.
          */
         Status = AcpiExStoreObjectToNode (SourceDesc,
                     (ACPI_NAMESPACE_NODE *) DestDesc, WalkState);
@@ -541,7 +541,7 @@ AcpiExStoreObjectToNode (
         /*
          * For fields, copy the source data to the target field.
          */
-        Status = AcpiExWriteDataToField (SourceDesc, TargetDesc);
+        Status = AcpiExWriteDataToField (SourceDesc, TargetDesc, &WalkState->ResultObj);
         break;
 
 

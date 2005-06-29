@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.110 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -245,9 +245,8 @@ AcpiExConcatTemplate (
     ACPI_OPERAND_OBJECT     **ActualReturnDesc,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *ReturnDesc;
-    NATIVE_CHAR             *NewBuf;
+    UINT8                   *NewBuf;
     UINT8                   *EndTag1;
     UINT8                   *EndTag2;
     ACPI_SIZE               Length1;
@@ -266,56 +265,36 @@ AcpiExConcatTemplate (
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
-    /* Create a new buffer object for the result */
-
-    ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
-    if (!ReturnDesc)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    /* Allocate a new buffer for the result */
+    /* Compute the length of each part */
 
     Length1 = ACPI_PTR_DIFF (EndTag1, ObjDesc1->Buffer.Pointer);
     Length2 = ACPI_PTR_DIFF (EndTag2, ObjDesc2->Buffer.Pointer) +
                              2; /* Size of END_TAG */
 
-    NewBuf = ACPI_MEM_ALLOCATE (Length1 + Length2);
-    if (!NewBuf)
+    /* Create a new buffer object for the result */
+
+    ReturnDesc = AcpiUtCreateBufferObject (Length1 + Length2);
+    if (!ReturnDesc)
     {
-        ACPI_REPORT_ERROR
-            (("ExConcatTemplate: Buffer allocation failure\n"));
-        Status = AE_NO_MEMORY;
-        goto Cleanup;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Copy the templates to the new descriptor */
 
+    NewBuf = ReturnDesc->Buffer.Pointer;
     ACPI_MEMCPY (NewBuf, ObjDesc1->Buffer.Pointer, Length1);
     ACPI_MEMCPY (NewBuf + Length1, ObjDesc2->Buffer.Pointer, Length2);
 
-    /* Complete the buffer object initialization */
-
-    ReturnDesc->Common.Flags   = AOPOBJ_DATA_VALID;
-    ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
-    ReturnDesc->Buffer.Length  = (UINT32) (Length1 + Length2);
-
     /* Compute the new checksum */
 
-    NewBuf[ReturnDesc->Buffer.Length - 1] = (NATIVE_CHAR)
+    NewBuf[ReturnDesc->Buffer.Length - 1] =
             AcpiUtGenerateChecksum (ReturnDesc->Buffer.Pointer,
-                                    (ReturnDesc->Buffer.Length - 1));
+                                   (ReturnDesc->Buffer.Length - 1));
 
     /* Return the completed template descriptor */
 
     *ActualReturnDesc = ReturnDesc;
     return_ACPI_STATUS (AE_OK);
-
-
-Cleanup:
-
-    AcpiUtRemoveReference (ReturnDesc);
-    return_ACPI_STATUS (Status);
 }
 
 
@@ -345,7 +324,7 @@ AcpiExDoConcatenate (
     UINT32                  i;
     ACPI_INTEGER            ThisInteger;
     ACPI_OPERAND_OBJECT     *ReturnDesc;
-    NATIVE_CHAR             *NewBuf;
+    char                    *NewBuf;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -363,31 +342,22 @@ AcpiExDoConcatenate (
     case ACPI_TYPE_INTEGER:
 
         /* Result of two Integers is a Buffer */
+        /* Need enough buffer space for two integers */
 
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        ReturnDesc = AcpiUtCreateBufferObject (AcpiGbl_IntegerByteWidth * 2);
         if (!ReturnDesc)
         {
             return (AE_NO_MEMORY);
         }
 
-        /* Need enough buffer space for two integers */
-
-        ReturnDesc->Buffer.Length = AcpiGbl_IntegerByteWidth * 2;
-        NewBuf = ACPI_MEM_CALLOCATE (ReturnDesc->Buffer.Length);
-        if (!NewBuf)
-        {
-            ACPI_REPORT_ERROR
-                (("ExDoConcatenate: Buffer allocation failure\n"));
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
+        NewBuf = (char *) ReturnDesc->Buffer.Pointer;
 
         /* Convert the first integer */
 
         ThisInteger = ObjDesc1->Integer.Value;
         for (i = 0; i < AcpiGbl_IntegerByteWidth; i++)
         {
-            NewBuf[i] = (NATIVE_CHAR) ThisInteger;
+            NewBuf[i] = (char) ThisInteger;
             ThisInteger >>= 8;
         }
 
@@ -396,14 +366,10 @@ AcpiExDoConcatenate (
         ThisInteger = ObjDesc2->Integer.Value;
         for (; i < (ACPI_MUL_2 (AcpiGbl_IntegerByteWidth)); i++)
         {
-            NewBuf[i] = (NATIVE_CHAR) ThisInteger;
+            NewBuf[i] = (char) ThisInteger;
             ThisInteger >>= 8;
         }
 
-        /* Complete the buffer object initialization */
-
-        ReturnDesc->Common.Flags   = AOPOBJ_DATA_VALID;
-        ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
         break;
 
 
@@ -419,8 +385,8 @@ AcpiExDoConcatenate (
 
         /* Operand0 is string  */
 
-        NewBuf = ACPI_MEM_ALLOCATE ((ACPI_SIZE) ObjDesc1->String.Length +
-                                    (ACPI_SIZE) ObjDesc2->String.Length + 1);
+        NewBuf = ACPI_MEM_CALLOCATE ((ACPI_SIZE) ObjDesc1->String.Length +
+                                     (ACPI_SIZE) ObjDesc2->String.Length + 1);
         if (!NewBuf)
         {
             ACPI_REPORT_ERROR
@@ -447,21 +413,15 @@ AcpiExDoConcatenate (
 
         /* Result of two Buffers is a Buffer */
 
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        ReturnDesc = AcpiUtCreateBufferObject (
+                            (ACPI_SIZE) ObjDesc1->Buffer.Length +
+                            (ACPI_SIZE) ObjDesc2->Buffer.Length);
         if (!ReturnDesc)
         {
             return (AE_NO_MEMORY);
         }
 
-        NewBuf = ACPI_MEM_ALLOCATE ((ACPI_SIZE) ObjDesc1->Buffer.Length +
-                                    (ACPI_SIZE) ObjDesc2->Buffer.Length);
-        if (!NewBuf)
-        {
-            ACPI_REPORT_ERROR
-                (("ExDoConcatenate: Buffer allocation failure\n"));
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
+        NewBuf = (char *) ReturnDesc->Buffer.Pointer;
 
         /* Concatenate the buffers */
 
@@ -470,12 +430,6 @@ AcpiExDoConcatenate (
         ACPI_MEMCPY (NewBuf + ObjDesc1->Buffer.Length, ObjDesc2->Buffer.Pointer,
                          ObjDesc2->Buffer.Length);
 
-        /* Complete the buffer object initialization */
-
-        ReturnDesc->Common.Flags   = AOPOBJ_DATA_VALID;
-        ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
-        ReturnDesc->Buffer.Length  = ObjDesc1->Buffer.Length +
-                                     ObjDesc2->Buffer.Length;
         break;
 
 
