@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -150,7 +150,6 @@ AcpiGetTimerResolution (
     {
         *Resolution = 24;
     }
-
     else
     {
         *Resolution = 32;
@@ -224,10 +223,10 @@ AcpiGetTimerDuration (
     UINT32                  *TimeElapsed)
 {
     UINT32                  DeltaTicks = 0;
-    UINT32                  Seconds = 0;
-    UINT32                  Milliseconds = 0;
-    UINT32                  Microseconds = 0;
-    UINT32                  Remainder = 0;
+    UINT32                  Remainder;
+    UINT32                  Quotient;
+    UINT32                  Divisor;
+    UINT64_OVERLAY          NormalizedTicks;
 
 
     FUNCTION_TRACE ("AcpiGetTimerDuration");
@@ -247,24 +246,21 @@ AcpiGetTimerDuration (
     {
         DeltaTicks = EndTicks - StartTicks;
     }
-
     else if (StartTicks > EndTicks)
     {
-        /* 24-bit Timer */
-
         if (0 == AcpiGbl_FADT->TmrValExt)
         {
+            /* 24-bit Timer */
+
             DeltaTicks = (((0x00FFFFFF - StartTicks) + EndTicks) & 0x00FFFFFF);
         }
-
-        /* 32-bit Timer */
-
         else
         {
+            /* 32-bit Timer */
+
             DeltaTicks = (0xFFFFFFFF - StartTicks) + EndTicks;
         }
     }
-
     else
     {
         *TimeElapsed = 0;
@@ -274,48 +270,18 @@ AcpiGetTimerDuration (
     /*
      * Compute Duration:
      * -----------------
-     * Since certain compilers (gcc/Linux, argh!) don't support 64-bit
-     * divides in kernel-space we have to do some trickery to preserve
-     * accuracy while using 32-bit math.
      *
-     * TBD: Change to use 64-bit math when supported.
+     * Requires a 64-bit divide: 
      *
-     * The process is as follows:
-     *  1. Compute the number of seconds by dividing Delta Ticks by
-     *     the timer frequency.
-     *  2. Compute the number of milliseconds in the remainder from step #1
-     *     by multiplying by 1000 and then dividing by the timer frequency.
-     *  3. Compute the number of microseconds in the remainder from step #2
-     *     by multiplying by 1000 and then dividing by the timer frequency.
-     *  4. Add the results from steps 1, 2, and 3 to get the total duration.
-     *
-     * Example: The time elapsed for DeltaTicks = 0xFFFFFFFF should be
-     *          1199864031 microseconds.  This is computed as follows:
-     *          Step #1: Seconds = 1199; Remainder = 3092840
-     *          Step #2: Milliseconds = 864; Remainder = 113120
-     *          Step #3: Microseconds = 31; Remainder = <don't care!>
+     * TimeElapsed = (DeltaTicks * 1000000) / PM_TIMER_FREQUENCY;
      */
+    NormalizedTicks.Full = DeltaTicks * 1000000;
+    Divisor = PM_TIMER_FREQUENCY;
 
-    /* Step #1 */
+    ACPI_DIV_64_BY_32 (NormalizedTicks.Part.Hi, NormalizedTicks.Part.Lo, Divisor,
+                        Quotient, Remainder);
 
-    Seconds = DeltaTicks / PM_TIMER_FREQUENCY;
-    Remainder = DeltaTicks % PM_TIMER_FREQUENCY;
-
-    /* Step #2 */
-
-    Milliseconds = (Remainder * 1000) / PM_TIMER_FREQUENCY;
-    Remainder = (Remainder * 1000) % PM_TIMER_FREQUENCY;
-
-    /* Step #3 */
-
-    Microseconds = (Remainder * 1000) / PM_TIMER_FREQUENCY;
-
-    /* Step #4 */
-
-    *TimeElapsed = Seconds * 1000000;
-    *TimeElapsed += Milliseconds * 1000;
-    *TimeElapsed += Microseconds;
-
+    *TimeElapsed = Quotient;
     return_ACPI_STATUS (AE_OK);
 }
 
