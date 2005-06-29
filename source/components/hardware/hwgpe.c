@@ -129,13 +129,11 @@ UINT8 DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
  *
  * FUNCTION:    HwEnableGpe
  *
- * PARAMETERS:  RegisterIndex   - Register containing this GPE
- *              BitMask         - Bit location within the register
+ * PARAMETERS:  GpeNumber       - The GPE
  *
  * RETURN:      None
  *
- * DESCRIPTION: Enable a single GPE.  Note that the GPE is specified using
- *              its (already translated) register/bit index values.
+ * DESCRIPTION: Enable a single GPE.
  *
  ******************************************************************************/
 
@@ -170,13 +168,11 @@ HwEnableGpe (
  *
  * FUNCTION:    HwDisableGpe
  *
- * PARAMETERS:  RegisterIndex   - Register containing this GPE
- *              BitMask         - Bit location within the register
+ * PARAMETERS:  GpeNumber       - The GPE
  *
  * RETURN:      None
  *
- * DESCRIPTION: Disable a single GPE. Note that the GPE is specified using
- *              its (already translated) register/bit index values.
+ * DESCRIPTION: Disable a single GPE.
  *
  ******************************************************************************/
 
@@ -211,13 +207,11 @@ HwDisableGpe (
  *
  * FUNCTION:    HwClearGpe
  *
- * PARAMETERS:  RegisterIndex   - Register containing this GPE
- *              BitMask         - Bit location within the register
+ * PARAMETERS:  GpeNumber       - The GPE
  *
  * RETURN:      None
  *
- * DESCRIPTION: Clear a single GPE. Note that the GPE is specified using
- *              its (already translated) register/bit index values.
+ * DESCRIPTION: Clear a single GPE. 
  *
  ******************************************************************************/
 
@@ -243,4 +237,64 @@ HwClearGpe (
      * clear this GPE.
      */
     OsdOut8 (Gbl_GpeRegisters[RegisterIndex].StatusAddr, BitMask);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    HwGetGpeStatus
+ *
+ * PARAMETERS:  GpeNumber       - The GPE
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Return the status of a single GPE.
+ *
+ ******************************************************************************/
+
+void
+HwGetGpeStatus (
+    UINT32                  GpeNumber,
+    ACPI_EVENT_STATUS       *EventStatus)
+{
+    UINT8                   InByte = 0;
+    UINT32                  RegisterIndex = 0;
+    UINT8                   BitMask = 0;
+
+    if (!EventStatus)
+    {
+        return;   
+    }
+
+    (*EventStatus) = 0;
+
+    /* 
+     * Translate GPE number to index into global registers array.
+     */
+    RegisterIndex = Gbl_GpeValid[GpeNumber];
+
+    /* 
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitMask = DecodeTo8bit [MOD_8 (GpeNumber)];
+
+    /* 
+     * Enabled?:
+     */
+    InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].EnabledAddr);
+
+    if (BitMask & InByte)
+    {
+        (*EventStatus) |= EVENT_FLAG_ENABLED;
+    }
+
+    /* 
+     * Set?
+     */
+    InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].StatusAddr);
+
+    if (BitMask & InByte)
+    {
+        (*EventStatus) |= EVENT_FLAG_SET;
+    }
 }
