@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.68 $
+ *       $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -447,7 +447,7 @@
 
 /* Buffer dump macros */
 
-#define DUMP_BUFFER(a,b)                AcpiCmDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
+#define DUMP_BUFFER(a,b)                AcpiUtDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
 
 /*
  * Debug macros that are conditionally compiled
@@ -463,6 +463,7 @@
  * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
  */
 
+#define PROC_NAME(a)                    char * _ProcName = a;
 #define FUNCTION_TRACE(a)               char * _ProcName = a;\
                                         FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define FUNCTION_TRACE_PTR(a,b)         char * _ProcName = a;\
@@ -497,8 +498,8 @@
 
 /* Stack and buffer dumping */
 
-#define DUMP_STACK_ENTRY(a)             AcpiAmlDumpOperand(a)
-#define DUMP_OPERANDS(a,b,c,d,e)        AcpiAmlDumpOperands(a,b,c,d,e,_THIS_MODULE,__LINE__)
+#define DUMP_STACK_ENTRY(a)             AcpiExDumpOperand(a)
+#define DUMP_OPERANDS(a,b,c,d,e)        AcpiExDumpOperands(a,b,c,d,e,_THIS_MODULE,__LINE__)
 
 
 #define DUMP_ENTRY(a,b)                 AcpiNsDumpEntry (a,b)
@@ -533,6 +534,12 @@
                                             DebugPrintRaw PARAM_LIST(fp);\
                                             BREAK_ON_ERROR(lvl);}
 
+#define DEBUG_PRINTP(lvl,fp)            TEST_DEBUG_SWITCH(lvl) {\
+                                            DebugPrintPrefix (_THIS_MODULE,__LINE__);\
+                                            DebugPrintRaw ("%s: ",_ProcName);\
+                                            DebugPrintRaw PARAM_LIST(fp);\
+                                            BREAK_ON_ERROR(lvl);}
+
 #define DEBUG_PRINT_RAW(lvl,fp)         TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintRaw PARAM_LIST(fp);}
 
@@ -560,6 +567,7 @@
 
 #define DEBUG_DEFINE(a)
 #define DEBUG_ONLY_MEMBERS(a)
+#define PROC_NAME(a)
 #define FUNCTION_TRACE(a)
 #define FUNCTION_TRACE_PTR(a,b)
 #define FUNCTION_TRACE_U32(a,b)
@@ -574,6 +582,7 @@
 #define DUMP_PATHNAME(a,b,c,d)
 #define DUMP_RESOURCE_LIST(a)
 #define DEBUG_PRINT(l,f)
+#define DEBUG_PRINTP(l,f)
 #define DEBUG_PRINT_RAW(l,f)
 #define BREAK_MSG(a)
 
@@ -633,10 +642,10 @@
 
 #ifndef ACPI_DEBUG_TRACK_ALLOCATIONS
 
-#define AcpiCmAddElementToAllocList(a,b,c,d,e,f)
-#define AcpiCmDeleteElementFromAllocList(a,b,c,d)
-#define AcpiCmDumpCurrentAllocations(a,b)
-#define AcpiCmDumpAllocationInfo()
+#define AcpiUtAddElementToAllocList(a,b,c,d,e,f)
+#define AcpiUtDeleteElementFromAllocList(a,b,c,d)
+#define AcpiUtDumpCurrentAllocations(a,b)
+#define AcpiUtDumpAllocationInfo()
 
 #define DECREMENT_OBJECT_METRICS(a)
 #define INCREMENT_OBJECT_METRICS(a)
