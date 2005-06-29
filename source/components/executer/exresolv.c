@@ -117,10 +117,12 @@
 #define __IEVALUE_C__
 
 #include <acpi.h>
-#include <interpreter.h>
 #include <amlcode.h>
+#include <parser.h>
+#include <interpreter.h>
 #include <namespace.h>
 #include <tables.h>
+#include <events.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -533,7 +535,7 @@ AmlGetRvalueFromEntry (
     ValDesc     = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
     EntryType   = NsGetType ((ACPI_HANDLE) StackEntry);
 
-    DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: Entry=%p ValDesc=%p Type=%d\n", 
+    DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: Entry=%p ValDesc=%p Type=%X\n", 
                     StackEntry, ValDesc, EntryType));
 
 
@@ -548,6 +550,9 @@ AmlGetRvalueFromEntry (
         AttachedAmlPointer = TRUE;
         AmlOpcode = *((UINT8 *) ValDesc);
         AmlPointer = ((UINT8 *) ValDesc) + 1;
+
+        DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: Unparsed AML: %p Len=%X\n", 
+                        AmlOpcode, AmlPointer));
     }
 
 
@@ -570,8 +575,10 @@ AmlGetRvalueFromEntry (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
+
         if (AttachedAmlPointer)
         {
+#if defined  _RPARSER
             if (AML_PackageOp == AmlOpcode)
             {
                 /* 
@@ -613,8 +620,11 @@ AmlGetRvalueFromEntry (
                                 AmlOpcode));
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
+#else
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Unparsed Packages not supported!\n"));
+            return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
+#endif
         }
-
         
         /* ValDesc is an internal object in all cases by the time we get here */
 
@@ -652,8 +662,11 @@ AmlGetRvalueFromEntry (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-        if (AttachedAmlPointer)
+
+
+       if (AttachedAmlPointer)
         {
+#if defined _RPARSER
             if (AML_BufferOp == AmlOpcode)
             {
                 /* 
@@ -694,9 +707,14 @@ AmlGetRvalueFromEntry (
                                 AmlOpcode));
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
+#else
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Unparsed Buffers not supported!\n"));
+            return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
+#endif
         }
 
-        
+
+
         /* ValDesc is an internal object in all cases by the time we get here */
 
         if (!ValDesc || (ACPI_TYPE_Buffer != ValDesc->Common.Type))
@@ -902,7 +920,9 @@ AmlGetRvalueFromEntry (
 
     case INTERNAL_TYPE_DefField:
 
-        /* 
+        /*
+         * TBD: Convert to generic buffer
+         *
          * XXX - Implementation limitation: Fields are implemented as type
          * XXX - Number, but they really are supposed to be type Buffer.
          * XXX - The two are interchangeable only for lengths <= 32 bits.
@@ -913,7 +933,6 @@ AmlGetRvalueFromEntry (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-BREAKPOINT3;
         ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
         if (!ObjDesc)
         {   
@@ -1021,7 +1040,7 @@ BREAKPOINT3;
         Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
         {
             /* Perform the update */
-            
+          
             Status = AmlSetNamedFieldValue (ValDesc->IndexField.Index,
                                             &ValDesc->IndexField.Value, sizeof (ValDesc->IndexField.Value));
         }
@@ -1183,7 +1202,6 @@ AmlGetRvalue (
     }
 
 
-BREAKPOINT3;
     /* 
      * The entity pointed to by the StackPtr can be either
      * 1) A valid ACPI_OBJECT_INTERNAL, or
