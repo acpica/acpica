@@ -484,24 +484,38 @@ AmlExecCreateAlias (
 {
     NAME_TABLE_ENTRY        *SrcEntry;
     NAME_TABLE_ENTRY        *AliasEntry;
+    UINT32                  Status;
 
 
     FUNCTION_TRACE ("AmlExecCreateAlias");
 
 
+    /* Get the source/alias operands (both NTEs) */
+
     SrcEntry    = (NAME_TABLE_ENTRY *) Operands[0];
     AliasEntry  = (NAME_TABLE_ENTRY *) Operands[-1];
 
+
+    /* Add an additional reference to the object */
+
+    CmUpdateObjectReference (SrcEntry->Object, REF_INCREMENT);
+
     /* 
-     * Attach the source NTE to the Alias NTE.
+     * Attach the original source NTE to the new Alias NTE.
      */
+    Status = NsAttachObject (AliasEntry, SrcEntry->Object, SrcEntry->Type);
 
-    AliasEntry->Object = SrcEntry;
 
+    /* 
+     * The new alias assumes the type of the source, but it points
+     * to the same object.  The reference count of the object has two additional
+     * references to prevent deletion out from under either the source
+     * or the alias NTE 
+     */
 
     /* Since both operands are NTEs, we don't need to delete them */
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
