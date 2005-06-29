@@ -153,7 +153,7 @@ AcpiEnable (void)
 
     /* Make sure we've got ACPI tables */ 
 
-    if (!Gbl_RSDP)
+    if (!Gbl_DSDT)
     {
         DEBUG_PRINT (ACPI_WARN, ("No ACPI tables present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
