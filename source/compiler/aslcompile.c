@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.48 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -118,55 +118,10 @@
 #include <stdio.h>
 #include "aslcompiler.h"
 #include "acnamesp.h"
-#include "acdebug.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslcompile")
 
-
-/*
- * Stubs to simplify linkage to the
- * ACPI Namespace Manager (Unused functions).
- * TBD: These functions should be split out so
- * that these stubs are no longer needed.
- */
-void
-AcpiExUnlinkMutex (
-    ACPI_OPERAND_OBJECT     *ObjDesc)
-{
-}
-
-void
-AcpiTbDeleteAcpiTables (void)
-{
-}
-
-ACPI_STATUS
-AeLocalGetRootPointer (
-    UINT32                  Flags,
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
-{
-    return AE_ERROR;
-}
-
-void
-AcpiExDumpOperands (
-    ACPI_OPERAND_OBJECT     **Operands,
-    ACPI_INTERPRETER_MODE   InterpreterMode,
-    NATIVE_CHAR             *Ident,
-    UINT32                  NumLevels,
-    NATIVE_CHAR             *Note,
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber)
-{
-}
-
-ACPI_STATUS
-AcpiExDumpOperand (
-    ACPI_OPERAND_OBJECT     *EntryDesc)
-{
-    return AE_OK;
-}
 
 
 /*******************************************************************************
@@ -215,12 +170,16 @@ AslCompilerSignon (
 
         Prefix = " * ";
         break;
+
+    default:
+        /* No other output types supported */
+        break;
     }
 
     /* Compiler signon with copyright */
 
     FlPrintFile (FileId,
-        "%s\n%s%s %s [%s]\n%sIncludes ACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0\n%s\n",
+        "%s\n%s%s %s [%s]\n%sIncludes ACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0a\n%s\n",
         Prefix,
         Prefix, CompilerId, CompilerVersion, __DATE__,
         Prefix, ACPI_CA_VERSION,
@@ -277,17 +236,32 @@ AslCompilerFileHeader (
 
         Prefix = " * ";
         break;
+
+    default:
+        /* No other output types supported */
+        break;
     }
 
     /* Compilation header with timestamp */
 
-    time (&Aclock);
+    (void) time (&Aclock);
     NewTime = localtime (&Aclock);
 
     FlPrintFile (FileId,
         "%sCompilation of \"%s\" - %s%s\n",
         Prefix, Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime),
         Prefix);
+
+    switch (FileId)
+    {
+    case ASL_FILE_C_SOURCE_OUTPUT:
+        FlPrintFile (FileId, " */\n");
+        break;
+
+    default:
+        /* Nothing to do for other output types */
+        break;
+    }
 }
 
 
@@ -329,11 +303,6 @@ CmDoCompile (void)
         return -1;
     }
 
-    /* ACPI CA subsystem initialization */
-
-    AcpiUtInitGlobals ();
-    AcpiUtMutexInitialize ();
-    AcpiNsRootInitialize ();
     UtEndEvent (i++);
 
     /* Build the parse tree */
@@ -341,6 +310,8 @@ CmDoCompile (void)
     UtBeginEvent (i, "Parse source code and build parse tree");
     AslCompilerparse();
     UtEndEvent (i++);
+
+    OpcGetIntegerWidth (RootNode);
 
     /* Pre-process parse tree for any operator transforms */
 
@@ -352,6 +323,13 @@ CmDoCompile (void)
 
     DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating AML opcodes\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
+    UtEndEvent (i++);
+
+    /* Interpret and generate all compile-time constants */
+
+    UtBeginEvent (i, "Constant folding via AML interpreter");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nInterpreting compile-time constant expressions\n\n");
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, OpcAmlConstantWalk, NULL, NULL);
     UtEndEvent (i++);
 
     /* Calculate all AML package lengths */
@@ -382,14 +360,23 @@ CmDoCompile (void)
     /* Namespace loading */
 
     UtBeginEvent (i, "Create ACPI Namespace");
-    LdLoadNamespace ();
+    Status = LdLoadNamespace (RootNode);
     UtEndEvent (i++);
+    if (ACPI_FAILURE (Status))
+    {
+        return -1;
+    }
 
     /* Namespace lookup */
 
     UtBeginEvent (i, "Cross reference parse tree and Namespace");
-    LkCrossReferenceNamespace ();
+    Status = LkCrossReferenceNamespace ();
     UtEndEvent (i++);
+    UtEndEvent (i++);
+    if (ACPI_FAILURE (Status))
+    {
+        return -1;
+    }
 
     /*
      * Semantic analysis.  This can happen only after the
@@ -531,6 +518,7 @@ CmCleanupAndExit (void)
         printf ("%11u : %s\n", TotalMethods, "Control methods");
         printf ("%11u : %s\n", TotalAllocations, "Memory Allocations");
         printf ("%11u : %s\n", TotalAllocated, "Total allocated memory");
+        printf ("%11u : %s\n", TotalFolds, "Constant subtrees folded");
         printf ("\n");
     }
 
@@ -539,7 +527,7 @@ CmCleanupAndExit (void)
         DbgPrint (ASL_DEBUG_OUTPUT, "\n\nMiscellaneous compile statistics\n\n");
         DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Total Namespace searches", Gbl_NsLookupCount);
         DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Time per search",
-                        ((AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) * 1000) /
+                        ((UINT32) (AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) * 1000) /
                         Gbl_NsLookupCount);
     }
 

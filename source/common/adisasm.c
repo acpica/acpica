@@ -183,6 +183,41 @@ AcpiDsMethodDataInitArgs (
 
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
 
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AdInitialize
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: CA initialization
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AdInitialize (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    /* ACPI CA subsystem initialization */
+
+    AcpiUtInitGlobals ();
+    Status = AcpiUtMutexInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        return Status;
+    }
+
+    Status = AcpiNsRootInitialize ();
+    return Status;
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    FlGenerateFilename
@@ -248,11 +283,12 @@ FlGenerateFilename (
 
 ACPI_STATUS
 AdAmlDisassemble (
-    char                *Filename)
+    BOOLEAN                 OutToFile,
+    char                    *Filename)
 {
-    ACPI_STATUS         Status;
-    char                *OutFilename;
-    FILE                *File;
+    ACPI_STATUS             Status;
+    char                    *OutFilename = NULL;
+    FILE                    *File;
 
 
 
@@ -279,20 +315,23 @@ AdAmlDisassemble (
     }
 
 
-    /* Create/Open a combined source output file */
-
-    OutFilename = FlGenerateFilename (Filename, FILE_SUFFIX_DISASSEMBLY);
-    if (!OutFilename)
+    if (OutToFile)
     {
-        fprintf (stderr, "Could not generate output filename\n");
-    }
-    File = fopen (OutFilename, "w+");
-    if (!File)
-    {
-        fprintf (stderr, "Could not open output filen\n");
-    }
+        /* Create/Open a combined source output file */
 
-    AcpiOsRedirectOutput (File);
+        OutFilename = FlGenerateFilename (Filename, FILE_SUFFIX_DISASSEMBLY);
+        if (!OutFilename)
+        {
+            fprintf (stderr, "Could not generate output filename\n");
+        }
+        File = fopen (OutFilename, "w+");
+        if (!File)
+        {
+            fprintf (stderr, "Could not open output filen\n");
+        }
+
+        AcpiOsRedirectOutput (File);
+    }
 
     /* Always parse the tables, only option is what to display */
 
@@ -471,7 +510,7 @@ AdDoDeferredParse (
     ACPI_PARSE_OBJECT       *ExtraOp;
 
 
-    ACPI_FUNCTION_NAME ("AdDoDeferredParse");
+    ACPI_FUNCTION_TRACE ("AdDoDeferredParse");
 
 
     fprintf (stderr, ".");
@@ -499,6 +538,7 @@ AdDoDeferredParse (
 
     /* Parse the method */
 
+    WalkState->ParseFlags &= ~ACPI_PARSE_DELETE_TREE;
     Status = AcpiPsParseAml (WalkState);
 
     /*
@@ -595,7 +635,6 @@ AdSecondPassParse (
             continue;
         }
 
-
         switch (Op->Common.AmlOpcode)
         {
         case AML_METHOD_OP:
@@ -626,7 +665,6 @@ AdSecondPassParse (
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unhandled deferred opcode [%s]\n",
                 Op->Common.AmlOpName));
             break;
-
         }
 
         Op = AcpiPsGetDepthNext (Root, Op);
@@ -698,21 +736,6 @@ AdGetTables (
     return Status;
 }
 
-
-ACPI_STATUS
-AcpiDsInitCallbacks (
-    ACPI_WALK_STATE         *WalkState,
-    UINT32                  PassNumber)
-{
-
-    WalkState->ParseFlags         = 0;
-    WalkState->DescendingCallback = AcpiPsFindObject;
-    WalkState->AscendingCallback  = NULL;
-
-    return (AE_OK);
-}
-
-
 /******************************************************************************
  *
  * FUNCTION:    AdParseTable
@@ -730,6 +753,7 @@ AdParseTables (void)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_WALK_STATE         *WalkState;
+    ACPI_TABLE_DESC         TableDesc;
 
 
     if (!AcpiGbl_DSDT)
@@ -737,21 +761,22 @@ AdParseTables (void)
         return AE_NOT_EXIST;
     }
 
+    /* Pass 1:  Parse everything except control method bodies */
+
+    fprintf (stderr, "Pass 1 parse\n");
+
+
+    DsdtLength = AcpiGbl_DSDT->Length;
+    AmlLength  = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
+    AmlStart   = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
+
     /* Create the root object */
 
-    AcpiGbl_ParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
+    AcpiGbl_ParsedNamespaceRoot = AcpiPsCreateScopeOp ();
     if (!AcpiGbl_ParsedNamespaceRoot)
     {
         return AE_NO_MEMORY;
     }
-
-    /* Initialize the root object */
-
-    AcpiGbl_ParsedNamespaceRoot->Named.Name = ACPI_ROOT_NAME;
-
-    /* Pass 1:  Parse everything except control method bodies */
-
-    fprintf (stderr, "Pass 1 parse\n");
 
     /* Create and initialize a new walk state */
 
@@ -762,10 +787,6 @@ AdParseTables (void)
         return (AE_NO_MEMORY);
     }
 
-    DsdtLength = AcpiGbl_DSDT->Length;
-    AmlLength  = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
-    AmlStart   = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
-
     Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParsedNamespaceRoot, NULL, AmlStart,
                     AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
@@ -773,20 +794,32 @@ AdParseTables (void)
         return (Status);
     }
 
-
+    WalkState->ParseFlags &= ~ACPI_PARSE_DELETE_TREE;
+    
     Status = AcpiPsParseAml (WalkState);
     if (ACPI_FAILURE (Status))
     {
         return Status;
     }
 
-    /* Pass 2: Parse control methods and link their parse trees into the main parse tree */
+    /* Second pass */
 
+    TableDesc.AmlStart = AmlStart;
+    TableDesc.AmlLength = AmlLength;
     fprintf (stderr, "Pass 2 parse\n");
+
+    Status = AcpiNsOneCompleteParse (2, &TableDesc);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Pass 3: Parse control methods and link their parse trees into the main parse tree */
+
     Status = AdSecondPassParse (AcpiGbl_ParsedNamespaceRoot);
 
     fprintf (stderr, "Parsing completed\n");
-    return Status;
+    return AE_OK;
 }
 
 
