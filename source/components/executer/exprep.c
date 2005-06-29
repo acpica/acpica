@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: ieprep - ACPI AML (p-code) execution - field prep utilities
+ *
+ * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __IEPREP_C__
+#define __AMPREP_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -124,12 +124,11 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ieprep");
-
+        MODULE_NAME         ("amprep");
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlDecodeFieldAccessType
  *
  * PARAMETERS:  Access          - Encoded field access bits
@@ -144,7 +143,7 @@ UINT32
 AcpiAmlDecodeFieldAccessType (
     UINT32                  Access)
 {
- 
+
     switch (Access)
     {
     case ACCESS_ANY_ACC:
@@ -173,9 +172,8 @@ AcpiAmlDecodeFieldAccessType (
 }
 
 
-
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlPrepCommonFieldObjec
  *
  * PARAMETERS:  ObjDesc             - The field object
@@ -195,9 +193,9 @@ AcpiAmlDecodeFieldAccessType (
 ACPI_STATUS
 AcpiAmlPrepCommonFieldObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc,
-    UINT8                   FieldFlags, 
+    UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
-    UINT32                  FieldPosition, 
+    UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
     UINT32                  Granularity;
@@ -244,7 +242,7 @@ AcpiAmlPrepCommonFieldObject (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlPrepDefFieldValue
  *
  * PARAMETERS:  ThisEntry           - Owning NTE
@@ -257,7 +255,7 @@ AcpiAmlPrepCommonFieldObject (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type DefField and 
+ * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type DefField and
  *              connect it to the parent NTE.
  *
  ****************************************************************************/
@@ -265,10 +263,10 @@ AcpiAmlPrepCommonFieldObject (
 ACPI_STATUS
 AcpiAmlPrepDefFieldValue (
     NAME_TABLE_ENTRY        *ThisEntry,
-    ACPI_HANDLE             Region, 
+    ACPI_HANDLE             Region,
     UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
-    UINT32                  FieldPosition, 
+    UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -299,7 +297,7 @@ AcpiAmlPrepDefFieldValue (
 
     ObjDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_DEF_FIELD);
     if (!ObjDesc)
-    {   
+    {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
@@ -343,7 +341,7 @@ AcpiAmlPrepDefFieldValue (
     }
     DEBUG_PRINT (ACPI_INFO, ("============================================================\n"));
 
-    /* 
+    /*
      * Store the constructed descriptor (ObjDesc) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
@@ -355,7 +353,7 @@ AcpiAmlPrepDefFieldValue (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlPrepBankFieldValue
  *
  * PARAMETERS:  ThisEntry           - Owning NTE
@@ -368,7 +366,7 @@ AcpiAmlPrepDefFieldValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type BankField and 
+ * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type BankField and
  *              connect it to the parent NTE.
  *
  ****************************************************************************/
@@ -376,12 +374,12 @@ AcpiAmlPrepDefFieldValue (
 ACPI_STATUS
 AcpiAmlPrepBankFieldValue (
     NAME_TABLE_ENTRY        *ThisEntry,
-    ACPI_HANDLE             Region, 
-    ACPI_HANDLE             BankReg, 
+    ACPI_HANDLE             Region,
+    ACPI_HANDLE             BankReg,
     UINT32                  BankVal,
-    UINT8                   FieldFlags, 
+    UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
-    UINT32                  FieldPosition, 
+    UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -412,7 +410,7 @@ AcpiAmlPrepBankFieldValue (
 
     ObjDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_BANK_FIELD);
     if (!ObjDesc)
-    {   
+    {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
@@ -448,13 +446,13 @@ AcpiAmlPrepBankFieldValue (
 
     DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
                     ThisEntry, &(ThisEntry->Name), ObjDesc));
-    
+
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (Region, ACPI_INFO);
     DUMP_ENTRY (BankReg, ACPI_INFO);
     DEBUG_PRINT (ACPI_INFO, ("============================================================\n"));
 
-    /* 
+    /*
      * Store the constructed descriptor (ObjDesc) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
@@ -466,7 +464,7 @@ AcpiAmlPrepBankFieldValue (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlPrepIndexFieldValue
  *
  * PARAMETERS:  ThisEntry           - Owning NTE
@@ -478,7 +476,7 @@ AcpiAmlPrepBankFieldValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type IndexField and 
+ * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type IndexField and
  *              connect it to the parent NTE.
  *
  ****************************************************************************/
@@ -486,11 +484,11 @@ AcpiAmlPrepBankFieldValue (
 ACPI_STATUS
 AcpiAmlPrepIndexFieldValue (
     NAME_TABLE_ENTRY        *ThisEntry,
-    ACPI_HANDLE             IndexReg, 
+    ACPI_HANDLE             IndexReg,
     ACPI_HANDLE             DataReg,
-    UINT8                   FieldFlags, 
+    UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
-    UINT32                  FieldPosition, 
+    UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -512,7 +510,7 @@ AcpiAmlPrepIndexFieldValue (
 
     ObjDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_INDEX_FIELD);
     if (!ObjDesc)
-    {   
+    {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
@@ -543,7 +541,7 @@ AcpiAmlPrepIndexFieldValue (
     DUMP_ENTRY (DataReg, ACPI_INFO);
     DEBUG_PRINT (ACPI_INFO, ("============================================================\n"));
 
-    /* 
+    /*
      * Store the constructed descriptor (ObjDesc) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */

@@ -1,6 +1,6 @@
 /******************************************************************************
- * 
- * Module Name: iefield - ACPI AML (p-code) execution - field manipulation
+ *
+ * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
  *
  *****************************************************************************/
 
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,7 +114,7 @@
  *****************************************************************************/
 
 
-#define __IEFIELD_C__
+#define __AMFIELD_C__
 
 #include "acpi.h"
 #include "dispatch.h"
@@ -126,13 +126,11 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iefield");
-
-
+        MODULE_NAME         ("amfield");
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlSetupField
  *
  * PARAMETERS:  *ObjDesc            - Field to be read or written
@@ -161,8 +159,8 @@
 
 ACPI_STATUS
 AcpiAmlSetupField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc, 
-    ACPI_OBJECT_INTERNAL    *RgnDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OBJECT_INTERNAL    *RgnDesc,
     INT32                   FieldBitWidth)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -189,11 +187,11 @@ AcpiAmlSetupField (
 
 
     /* Init and validate Field width */
-    
+
     FieldByteWidth = DIV_8 (FieldBitWidth);     /*  possible values are 1, 2, 4 */
 
-    if ((FieldBitWidth != 8) && 
-        (FieldBitWidth != 16) && 
+    if ((FieldBitWidth != 8) &&
+        (FieldBitWidth != 16) &&
         (FieldBitWidth != 32))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - bad width %d\n", FieldBitWidth));
@@ -201,7 +199,7 @@ AcpiAmlSetupField (
     }
 
 
-    /* 
+    /*
      * If the address and length have not been previously evaluated,
      * evaluate them and save the results.
      */
@@ -216,7 +214,7 @@ AcpiAmlSetupField (
     }
 
 
-    /* 
+    /*
      * If (offset rounded up to next multiple of field width)
      * exceeds region length, indicate an error.
      */
@@ -224,7 +222,7 @@ AcpiAmlSetupField (
     if (RgnDesc->Region.Length <
        (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1)) + FieldByteWidth)
     {
-        /*  
+        /*
          * Offset rounded up to next multiple of field width
          * exceeds region length, indicate an error
          */
@@ -244,7 +242,7 @@ AcpiAmlSetupField (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlAccessNamedField
  *
  * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
@@ -260,8 +258,8 @@ AcpiAmlSetupField (
 
 ACPI_STATUS
 AcpiAmlAccessNamedField (
-    INT32                   Mode, 
-    ACPI_HANDLE             NamedField, 
+    INT32                   Mode,
+    ACPI_HANDLE             NamedField,
     void                    *Buffer,
     UINT32                  BufferLength)
 {
@@ -377,7 +375,6 @@ AcpiAmlAccessNamedField (
     }
 
 
-
     /* Release global lock if we acquired it earlier */
 
     AcpiAmlReleaseGlobalLock (Locked);
@@ -387,7 +384,7 @@ AcpiAmlAccessNamedField (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlSetNamedFieldValue
  *
  * PARAMETERS:  NamedField          - Handle for field to be set
@@ -424,7 +421,7 @@ AcpiAmlSetNamedFieldValue (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlGetNamedFieldValue
  *
  * PARAMETERS:  NamedField          - Handle for field to be read
@@ -439,7 +436,7 @@ AcpiAmlSetNamedFieldValue (
 
 ACPI_STATUS
 AcpiAmlGetNamedFieldValue (
-    ACPI_HANDLE             NamedField, 
+    ACPI_HANDLE             NamedField,
     void                    *Buffer,
     UINT32                  BufferLength)
 {
@@ -458,4 +455,4 @@ AcpiAmlGetNamedFieldValue (
     Status = AcpiAmlAccessNamedField (ACPI_READ, NamedField, Buffer, BufferLength);
     return_ACPI_STATUS (Status);
 }
-  
+

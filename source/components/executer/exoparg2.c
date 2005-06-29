@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: iedyad - ACPI AML (p-code) execution for dyadic operators
+ *
+ * Module Name: amdyadic - ACPI AML (p-code) execution for dyadic operators
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,7 +115,7 @@
  *****************************************************************************/
 
 
-#define __IEDYAD_C__
+#define __AMDYADIC_C__
 
 #include "acpi.h"
 #include "parser.h"
@@ -127,11 +127,11 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iedyad");
+        MODULE_NAME         ("amdyadic");
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlExecDyadic1
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
@@ -177,7 +177,6 @@ AcpiAmlExecDyadic1 (
     }
 
 
-
     /* Examine the opcode */
 
     switch (Opcode)
@@ -200,7 +199,7 @@ AcpiAmlExecDyadic1 (
             {
             case ACPI_TYPE_DEVICE:
             case ACPI_TYPE_THERMAL:
-            
+
                 /* Requires that Device and ThermalZone be compatible mappings */
 
                 /* Dispatch the notify to the appropriate handler */
@@ -211,7 +210,7 @@ AcpiAmlExecDyadic1 (
             default:
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic1/NotifyOp: unexpected notify object type %d\n",
                                 ObjDesc->Common.Type));
-                
+
                 Status = AE_AML_OPERAND_TYPE;
             }
         }
@@ -229,14 +228,14 @@ Cleanup:
 
     AcpiCmRemoveReference (ValDesc);
     AcpiCmRemoveReference (ObjDesc);
-    
+
 
     return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlExecDyadic2R
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
@@ -294,8 +293,6 @@ AcpiAmlExecDyadic2R (
     }
 
 
-
-
     /* Create an internal return object if necessary */
 
     switch (Opcode)
@@ -323,8 +320,8 @@ AcpiAmlExecDyadic2R (
     }
 
 
-    /* 
-     * Execute the opcode 
+    /*
+     * Execute the opcode
      */
 
     switch (Opcode)
@@ -336,8 +333,8 @@ AcpiAmlExecDyadic2R (
 
         RetDesc->Number.Value = ObjDesc->Number.Value + ObjDesc2->Number.Value;
         break;
- 
-        
+
+
     /* DefAnd  :=  AndOp   Operand1    Operand2    Result  */
 
     case AML_BIT_AND_OP:
@@ -345,23 +342,23 @@ AcpiAmlExecDyadic2R (
         RetDesc->Number.Value = ObjDesc->Number.Value & ObjDesc2->Number.Value;
         break;
 
-        
+
     /* DefNAnd :=  NAndOp  Operand1    Operand2    Result  */
 
     case AML_BIT_NAND_OP:
 
         RetDesc->Number.Value = ~(ObjDesc->Number.Value & ObjDesc2->Number.Value);
         break;
-   
-       
+
+
     /* DefOr   :=  OrOp    Operand1    Operand2    Result  */
-        
+
     case AML_BIT_OR_OP:
 
         RetDesc->Number.Value = ObjDesc->Number.Value | ObjDesc2->Number.Value;
         break;
 
-        
+
     /* DefNOr  :=  NOrOp   Operand1    Operand2    Result  */
 
     case AML_BIT_NOR_OP:
@@ -369,7 +366,7 @@ AcpiAmlExecDyadic2R (
         RetDesc->Number.Value = ~(ObjDesc->Number.Value | ObjDesc2->Number.Value);
         break;
 
-        
+
     /* DefXOr  :=  XOrOp   Operand1    Operand2    Result  */
 
     case AML_BIT_XOR_OP:
@@ -377,7 +374,7 @@ AcpiAmlExecDyadic2R (
         RetDesc->Number.Value = ObjDesc->Number.Value ^ ObjDesc2->Number.Value;
         break;
 
-        
+
     /* DefDivide   :=  DivideOp Dividend Divisor Remainder Quotient    */
 
     case AML_DIVIDE_OP:
@@ -403,7 +400,7 @@ AcpiAmlExecDyadic2R (
         RetDesc->Number.Value   = Remainder;                                        /* Remainder */
         break;
 
-        
+
     /* DefMultiply :=  MultiplyOp  Operand1    Operand2    Result  */
 
     case AML_MULTIPLY_OP:
@@ -411,7 +408,7 @@ AcpiAmlExecDyadic2R (
         RetDesc->Number.Value = ObjDesc->Number.Value * ObjDesc2->Number.Value;
         break;
 
-        
+
     /* DefShiftLeft    :=  ShiftLeftOp Operand ShiftCount  Result  */
 
     case AML_SHIFT_LEFT_OP:
@@ -419,7 +416,7 @@ AcpiAmlExecDyadic2R (
         RetDesc->Number.Value = ObjDesc->Number.Value << ObjDesc2->Number.Value;
         break;
 
-        
+
     /* DefShiftRight   :=  ShiftRightOp    Operand ShiftCount  Result  */
 
     case AML_SHIFT_RIGHT_OP:
@@ -427,7 +424,7 @@ AcpiAmlExecDyadic2R (
         RetDesc->Number.Value = ObjDesc->Number.Value >> ObjDesc2->Number.Value;
         break;
 
-        
+
     /* DefSubtract :=  SubtractOp  Operand1    Operand2    Result  */
 
     case AML_SUBTRACT_OP:
@@ -449,7 +446,7 @@ AcpiAmlExecDyadic2R (
         }
 
         /* Both operands are now known to be the same */
-        
+
         if (ACPI_TYPE_STRING == ObjDesc->Common.Type)
         {
             RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_STRING);
@@ -469,16 +466,16 @@ AcpiAmlExecDyadic2R (
                 Status = AE_NO_MEMORY;
                 goto Cleanup;
             }
-            
+
             STRCPY (NewBuf, (char *) ObjDesc->String.Pointer);
             STRCPY (NewBuf + ObjDesc->String.Length, (char *) ObjDesc2->String.Pointer);
-            
+
             /* Point the return object to the new string */
-            
+
             RetDesc->String.Pointer = NewBuf;
             RetDesc->String.Length = ObjDesc->String.Length += ObjDesc2->String.Length;
         }
-        
+
         else
         {
             /* Operand1 is not a string ==> must be a buffer */
@@ -495,7 +492,7 @@ AcpiAmlExecDyadic2R (
             if (!NewBuf)
             {
                 /* Only bail out if the buffer is small */
-                
+
                 /* TBD: [Investigate] what is the point of this code? */
 
                 if (ObjDesc->Buffer.Length + ObjDesc2->Buffer.Length < 1024)
@@ -511,15 +508,15 @@ AcpiAmlExecDyadic2R (
                 goto Cleanup;
             }
 
-            MEMCPY (NewBuf, ObjDesc->Buffer.Pointer, 
+            MEMCPY (NewBuf, ObjDesc->Buffer.Pointer,
                             (ACPI_SIZE) ObjDesc->Buffer.Length);
             MEMCPY (NewBuf + ObjDesc->Buffer.Length, ObjDesc2->Buffer.Pointer,
                             (ACPI_SIZE) ObjDesc2->Buffer.Length);
-            
+
             /*
              * Point the return object to the new buffer
              */
-            
+
             RetDesc->Buffer.Pointer     = (UINT8 *) NewBuf;
             RetDesc->Buffer.Length      = ObjDesc->Buffer.Length + ObjDesc2->Buffer.Length;
         }
@@ -533,7 +530,7 @@ AcpiAmlExecDyadic2R (
         goto Cleanup;
     }
 
-    
+
     /*
      * Store the result of the operation (which is now in ObjDesc) into
      * the result descriptor, or the location pointed to by the result
@@ -544,7 +541,7 @@ AcpiAmlExecDyadic2R (
     {
         goto Cleanup;
     }
-    
+
     if (AML_DIVIDE_OP == Opcode)
     {
         Status = AcpiAmlExecStore (RetDesc2, ResDesc2);
@@ -592,7 +589,7 @@ Cleanup:
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlExecDyadic2S
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
@@ -630,13 +627,12 @@ AcpiAmlExecDyadic2S (
     Status |= AcpiDsObjStackPopObject (&TimeDesc, WalkState);
     Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
     if (Status != AE_OK)
-    {   
+    {
         /* Invalid parameters on object stack  */
 
         AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 2);
         goto Cleanup;
     }
-
 
 
     /* Create the internal return object */
@@ -649,7 +645,7 @@ AcpiAmlExecDyadic2S (
     }
     RetDesc->Number.Value = 0;              /* Default return value is FALSE, operation did not time out */
 
-    
+
     /* Examine the opcode */
 
     switch (Opcode)
@@ -689,7 +685,6 @@ AcpiAmlExecDyadic2S (
     }
 
 
-
 Cleanup:
 
     /* Delete params */
@@ -715,7 +710,7 @@ Cleanup:
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlExecDyadic2
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
@@ -764,8 +759,6 @@ AcpiAmlExecDyadic2 (
     }
 
 
-
-
     /* Create the internal return object */
 
     RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
@@ -786,7 +779,7 @@ AcpiAmlExecDyadic2 (
     /* DefLAnd :=  LAndOp  Operand1    Operand2    */
 
     case AML_LAND_OP:
-        
+
         Lboolean = (BOOLEAN) (ObjDesc->Number.Value && ObjDesc2->Number.Value);
         break;
 
@@ -821,7 +814,7 @@ AcpiAmlExecDyadic2 (
 
         Lboolean = (BOOLEAN) (ObjDesc->Number.Value || ObjDesc2->Number.Value);
         break;
-    
+
 
     default:
 
@@ -832,8 +825,8 @@ AcpiAmlExecDyadic2 (
     }
 
 
-    /* Set return value to logical TRUE (all ones) or FALSE (zero) */  
-    
+    /* Set return value to logical TRUE (all ones) or FALSE (zero) */
+
     if (Lboolean)
     {
         RetDesc->Number.Value = 0xffffffff;
@@ -851,7 +844,7 @@ Cleanup:
     AcpiCmRemoveReference (ObjDesc);
     AcpiCmRemoveReference (ObjDesc2);
 
- 
+
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status) &&
