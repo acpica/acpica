@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.138 $
+ *              $Revision: 1.139 $
  *
  ******************************************************************************/
 
@@ -366,7 +366,8 @@ AcpiNsLookup (
     if ((!ScopeInfo) ||
         (!ScopeInfo->Scope.Node))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Null scope prefix, using root node (%p)\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, 
+            "Null scope prefix, using root node (%p)\n",
             AcpiGbl_RootNode));
 
         PrefixNode = AcpiGbl_RootNode;
@@ -465,12 +466,12 @@ AcpiNsLookup (
 
             CurrentNode = PrefixNode;
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching relative to pfx scope [%p]\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, 
+                "Searching relative to pfx scope [%p]\n",
                 PrefixNode));
 
             /*
-             * Handle up-prefix (carat).  More than one prefix
-             * is supported
+             * Handle up-prefix (carat).  More than one prefix is supported
              */
             while (*Pathname == AML_PARENT_PREFIX)
             {
@@ -496,8 +497,8 @@ AcpiNsLookup (
 
 
         /*
-         * Examine the name prefix opcode, if any,
-         * to determine the number of segments
+         * Examine the name prefix opcode, if any, to determine the number of 
+         * segments
          */
         if (*Pathname == AML_DUAL_NAME_PREFIX)
         {
@@ -525,8 +526,8 @@ AcpiNsLookup (
         else
         {
             /*
-             * No Dual or Multi prefix, hence there is only one
-             * segment and Pathname is already pointing to it.
+             * No Dual or Multi prefix, hence there is only one segment and 
+             * Pathname is already pointing to it.
              */
             NumSegments = 1;
 
@@ -538,8 +539,8 @@ AcpiNsLookup (
     }
 
     /*
-     * Search namespace for each segment of the name.
-     * Loop through and verify/add each name segment.
+     * Search namespace for each segment of the name.  Loop through and 
+     * verify/add each name segment.
      */
     while (NumSegments-- && CurrentNode)
     {
@@ -647,32 +648,19 @@ CheckForNewScopeAndExit:
     if (!(Flags & NS_DONT_OPEN_SCOPE) && (WalkState))
     {
         /*
-         * If entry is a type which opens a scope,
-         * push the new scope on the scope stack.
+         * If entry is a type which opens a scope, push the new scope on the 
+         * scope stack.
          */
         if (AcpiNsOpensScope (TypeToCheckFor))
         {
-            /*  8-12-98 ASL Grammar Update supports null NamePath   */
-
-            if (NullNamePath)
-            {
-                /* TBD: [Investigate] - is this the correct thing to do? */
-
-                ScopeToPush = NULL;
-            }
-            else
-            {
-                ScopeToPush = ThisNode;
-            }
-
-            Status = AcpiDsScopeStackPush (ScopeToPush, Type,
-                                            WalkState);
+            Status = AcpiDsScopeStackPush (ThisNode, Type, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Set global scope to %p\n", ScopeToPush));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
+                "Set global scope to %p\n", ThisNode));
         }
     }
 
