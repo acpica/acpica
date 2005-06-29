@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.125 $
+ *       $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -163,6 +163,7 @@ extern      UINT32                      AcpiGbl_NestingLevel;
  *
  */
 ACPI_EXTERN UINT32                      AcpiGbl_TableFlags;
+ACPI_EXTERN UINT32                      AcpiGbl_RsdtTableCount;
 ACPI_EXTERN RSDP_DESCRIPTOR            *AcpiGbl_RSDP;
 ACPI_EXTERN XSDT_DESCRIPTOR            *AcpiGbl_XSDT;
 ACPI_EXTERN FADT_DESCRIPTOR            *AcpiGbl_FADT;
