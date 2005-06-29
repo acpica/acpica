@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.166 $
+ *              $Revision: 1.167 $
  *
  ******************************************************************************/
 
@@ -337,7 +337,7 @@ UnlockAndExit:
 ACPI_STATUS
 AcpiNsLookup (
     ACPI_GENERIC_STATE      *ScopeInfo,
-    NATIVE_CHAR             *Pathname,
+    char                    *Pathname,
     ACPI_OBJECT_TYPE        Type,
     ACPI_INTERPRETER_MODE   InterpreterMode,
     UINT32                  Flags,
@@ -345,7 +345,7 @@ AcpiNsLookup (
     ACPI_NAMESPACE_NODE     **ReturnNode)
 {
     ACPI_STATUS             Status;
-    NATIVE_CHAR             *Path = Pathname;
+    char                    *Path = Pathname;
     ACPI_NAMESPACE_NODE     *PrefixNode;
     ACPI_NAMESPACE_NODE     *CurrentNode = NULL;
     ACPI_NAMESPACE_NODE     *ThisNode = NULL;
