@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.4 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,26 +116,29 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "amlcode.h"
 #include "acnamesp.h"
+
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("asloperands")
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    OpnDoMethod
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The parent parse node
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct the operands for the METHOD ASL keyword.
  *
  ******************************************************************************/
 
 void
-CgDoMethod (
+OpnDoMethod (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *Next;
@@ -189,23 +192,28 @@ CgDoMethod (
     Next->AmlOpcode = AML_RAW_DATA_BYTE;
     Next->AmlLength = 1;
     Next->ParseOpcode = RAW_DATA;
+
+    /* Save the arg count in the first node */
+
+    Node->Extra = NumArgs;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    OpnDoFieldCommon
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The parent parse node
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct the AML operands for the various field keywords,
+ *              FIELD, BANKFIELD, INDEXFIELD
  *
  ******************************************************************************/
 
 void
-CgDoFieldCommon (
+OpnDoFieldCommon (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *Next;
@@ -247,7 +255,7 @@ CgDoFieldCommon (
     Next->AmlLength = 1;
     Next->ParseOpcode = RAW_DATA;
 
-    /*  Process the FieldUnitList */
+    /* Process the FieldUnitList */
 
     Next = Next->Peer;
     CurrentBitOffset = 0;
@@ -257,28 +265,70 @@ CgDoFieldCommon (
         switch (Next->ParseOpcode)
         {
         case ACCESSAS:
+
+            /* Nothing additional to do */
             break;
+
 
         case OFFSET:
+
+            /* New offset into the field */
+
             PkgLengthNode = Next->Child;
             NewBitOffset = PkgLengthNode->Value.Integer32 * 8;
+
+            /*
+             * Examine the specified offset in relation to the
+             * current offset counter.
+             */
+
             if (NewBitOffset < CurrentBitOffset)
             {
-                DbgPrint ("Offset less than current offset\n");
+                /*
+                 * Not allowed to specify a backwards offset!
+                 * Issue error and ignore this node.
+                 */
+                AslError (ASL_ERROR, ASL_MSG_BACKWARDS_OFFSET, PkgLengthNode, NULL);
+                Next->ParseOpcode = DEFAULT_ARG;
+                PkgLengthNode->ParseOpcode = DEFAULT_ARG;
             }
 
-            PkgLengthNode->Value.Integer = NewBitOffset - CurrentBitOffset;
-            CurrentBitOffset = NewBitOffset;
+            else if (NewBitOffset == CurrentBitOffset)
+            {
+                /*
+                 * Offset is redundant; we don't need to output an
+                 * offset opcode.  Just set these nodes to default
+                 */
+                Next->ParseOpcode = DEFAULT_ARG;
+                PkgLengthNode->ParseOpcode = DEFAULT_ARG;
+            }
+
+            else
+            {
+                /*
+                 * Valid new offset - set the value to be inserted into the AML
+                 * and update the offset counter.
+                 */
+                PkgLengthNode->Value.Integer = NewBitOffset - CurrentBitOffset;
+                CurrentBitOffset = NewBitOffset;
+            }
             break;
+
 
         case NAMESEG:
         case RESERVED_BYTES:
-            PkgLengthNode = Next->Child;
-            NewBitOffset = PkgLengthNode->Value.Integer32;
+
+            /* Named or reserved field entry */
+
+            PkgLengthNode     = Next->Child;
+            NewBitOffset      = PkgLengthNode->Value.Integer32;
             CurrentBitOffset += NewBitOffset;
             break;
 
         }
+
+        /* Move on to next entry in the field list */
+
         Next = Next->Peer;
     }
 }
@@ -286,18 +336,18 @@ CgDoFieldCommon (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    OpnDoField
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The parent parse node
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct the AML operands for the FIELD ASL keyword
  *
  ******************************************************************************/
 
 void
-CgDoField (
+OpnDoField (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *Next;
@@ -310,25 +360,24 @@ CgDoField (
 
     /* Second child is the AccessType */
 
-    CgDoFieldCommon (Next->Peer);
-
+    OpnDoFieldCommon (Next->Peer);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    OpnDoIndexField
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The parent parse node
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct the AML operands for the INDEXFIELD ASL keyword
  *
  ******************************************************************************/
 
 void
-CgDoIndexField (
+OpnDoIndexField (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *Next;
@@ -345,25 +394,25 @@ CgDoIndexField (
 
     /* Third child is the AccessType */
 
-    CgDoFieldCommon (Next->Peer);
+    OpnDoFieldCommon (Next->Peer);
 
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    OpnDoBankField
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The parent parse node
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct the AML operands for the BANKFIELD ASL keyword
  *
  ******************************************************************************/
 
 void
-CgDoBankField (
+OpnDoBankField (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *Next;
@@ -384,25 +433,27 @@ CgDoBankField (
 
     /* Fourth child is the AccessType */
 
-    CgDoFieldCommon (Next->Peer);
+    OpnDoFieldCommon (Next->Peer);
 
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    OpnDoBuffer
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The parent parse node
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct the AML operands for the BUFFER ASL keyword.  We
+ *              build a single raw byte buffer from the initialization nodes,
+ *              each parse node contains a buffer byte.
  *
  ******************************************************************************/
 
 void
-CgDoBuffer (
+OpnDoBuffer (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *InitializerNode;
@@ -511,7 +562,7 @@ CgDoBuffer (
     BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
     BufferLengthNode->Value.Integer = BufferLength;
 
-    CgSetOptimalIntegerSize (BufferLengthNode);
+    OpcSetOptimalIntegerSize (BufferLengthNode);
 
     /* Remaining nodes are handled via the tree walk */
 }
@@ -519,18 +570,18 @@ CgDoBuffer (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    OpnDoPackage
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The parent parse node
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct the AML operands for the PACKAGE ASL keyword.
  *
  ******************************************************************************/
 
 void
-CgDoPackage (
+OpnDoPackage (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *InitializerNode;
@@ -601,18 +652,18 @@ CgDoPackage (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    OpnDoDefinitionBlock
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The parent parse node
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct the AML operands for the DEFINTIONBLOCK ASL keyword
  *
  ******************************************************************************/
 
 void
-CgDoDefinitionBlock (
+OpnDoDefinitionBlock (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *Child;
@@ -632,7 +683,7 @@ CgDoDefinitionBlock (
     Child = Node->Child;
     if ((Child->Value.Pointer) && (Gbl_UseDefaultAmlFilename))
     {
-        Gbl_OutputFilename = Child->Value.Pointer;
+        Gbl_OutputFilenamePrefix = Child->Value.Pointer;
     }
     Child->ParseOpcode = DEFAULT_ARG;
 
@@ -665,14 +716,14 @@ CgDoDefinitionBlock (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsGetArg
+ * FUNCTION:    UtGetArg
  *
  * PARAMETERS:  Op              - Get an argument for this op
  *              Argn            - Nth argument to get
  *
  * RETURN:      The argument (as an Op object).  NULL if argument does not exist
  *
- * DESCRIPTION: Get the specified op's argument.
+ * DESCRIPTION: Get the specified op's argument (peer)
  *
  ******************************************************************************/
 
@@ -699,18 +750,20 @@ UtGetArg (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    OpnAttachNameToNode
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The parent parse node
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: For the named ASL/AML operators, get the actual name from the
+ *              argument list and attach it to the parent node so that we
+ *              can get to it quickly later.
  *
  ******************************************************************************/
 
 void
-CgAttachNameToNode (
+OpnAttachNameToNode (
     ASL_PARSE_NODE          *PsNode)
 {
     ASL_PARSE_NODE          *Child = NULL;
@@ -790,18 +843,20 @@ CgAttachNameToNode (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    OpnGenerateAmlOperands
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - The parent parse node
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Prepare nodes to be output as AML data and operands.  The more
+ *              complex AML opcodes require processing of the child nodes
+ *              (arguments/operands).
  *
  ******************************************************************************/
 
 void
-CgGenerateAmlOperands (
+OpnGenerateAmlOperands (
     ASL_PARSE_NODE              *Node)
 {
 
@@ -815,35 +870,35 @@ CgGenerateAmlOperands (
     switch (Node->ParseOpcode)
     {
     case DEFINITIONBLOCK:
-        CgDoDefinitionBlock (Node);
+        OpnDoDefinitionBlock (Node);
         break;
 
     case METHOD:
-        CgDoMethod (Node);
+        OpnDoMethod (Node);
         break;
 
     case FIELD:
-        CgDoField (Node);
+        OpnDoField (Node);
         break;
 
     case INDEXFIELD:
-        CgDoIndexField (Node);
+        OpnDoIndexField (Node);
         break;
 
     case BANKFIELD:
-        CgDoBankField (Node);
+        OpnDoBankField (Node);
         break;
 
     case BUFFER:
-        CgDoBuffer (Node);
+        OpnDoBuffer (Node);
         break;
 
     case PACKAGE:
-        CgDoPackage (Node);
+        OpnDoPackage (Node);
         break;
 
     case RESOURCETEMPLATE:
-        CgDoResourceTemplate (Node);
+        RsDoResourceTemplate (Node);
         break;
 
     case NAMESEG:
@@ -859,7 +914,7 @@ CgGenerateAmlOperands (
 
     /* TBD: move */
 
-    CgAttachNameToNode (Node);
+    OpnAttachNameToNode (Node);
 }
 
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.16 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -123,11 +123,11 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "AslCompiler.h"
+#include "aslcompiler.h"
 
-#include "AslCompiler.y.h"
+#include "aslcompiler.y.h"
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslload")
 
 
@@ -153,7 +153,7 @@ LdLoadNamespace (void)
     ACPI_WALK_LIST          WalkList;
 
 
-    DbgPrint ("\nCreating namespace\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nCreating namespace\n\n");
 
 
     /* Create a new walk state */
@@ -362,7 +362,6 @@ LdNamespace1Begin (
     UINT32                  i;
 
 
-
     DEBUG_PRINT (TRACE_DISPATCH,
         ("Load1BeginOp: PsNode %p\n", PsNode));
 
@@ -450,7 +449,7 @@ LdNamespace1Begin (
      * as we go downward in the parse tree.  Any necessary subobjects that involve
      * arguments to the opcode must be created as we go back up the parse tree later.
      */
-    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, DataType, 
+    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, DataType,
                     IMODE_LOAD_PASS1, Flags, WalkState, &(NsNode));
 
     if (ACPI_FAILURE (Status))

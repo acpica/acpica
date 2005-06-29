@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.17 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -114,10 +114,9 @@
  *
  *****************************************************************************/
 
-#define __DSWLOAD_C__
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 
 #include "acparser.h"
 #include "amlcode.h"
@@ -125,8 +124,8 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dswload")
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("asllookup")
 
 
 /*****************************************************************************
@@ -150,14 +149,78 @@ LsDoOneNamespaceObject (
     void                    **ReturnValue)
 {
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ASL_PARSE_NODE          *Pnode;
 
 
     Gbl_NumNamespaceObjects++;
 
-    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s\n",
+    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s",
                         Gbl_NumNamespaceObjects, Level, (Level * 3), " ",
                         &Node->Name,
                         AcpiCmGetTypeName (Node->Type));
+
+    Pnode = (ASL_PARSE_NODE *) Node->Object;
+
+    if (Pnode)
+    {
+        if (Pnode->ParseOpcode == NAME)
+        {
+            Pnode = Pnode->Child;
+        }
+
+
+        switch (Node->Type)
+        {
+        case ACPI_TYPE_INTEGER:
+
+            if ((Pnode->ParseOpcode == NAMESEG)  ||
+                (Pnode->ParseOpcode == NAMESTRING))
+            {
+                Pnode = Pnode->Peer;
+            }
+
+            if (Pnode->Value.Integer64 > ACPI_UINT32_MAX)
+            {
+                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X%X]",
+                            HIDWORD (Pnode->Value.Integer64), Pnode->Value.Integer32);
+            }
+            else
+            {
+                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X]",
+                            Pnode->Value.Integer32);
+            }
+            break;
+
+
+        case ACPI_TYPE_STRING:
+            if ((Pnode->ParseOpcode == NAMESEG)  ||
+                (Pnode->ParseOpcode == NAMESTRING))
+            {
+                Pnode = Pnode->Peer;
+            }
+
+            fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = \"%s\"]",
+                        Pnode->Value.String);
+
+            break;
+
+
+        case INTERNAL_TYPE_DEF_FIELD:
+            if ((Pnode->ParseOpcode == NAMESEG)  ||
+                (Pnode->ParseOpcode == NAMESTRING))
+            {
+                Pnode = Pnode->Child;
+            }
+            fprintf (Gbl_NamespaceOutputFile, "    [Length = 0x%02X]",
+                        Pnode->Value.Integer32);
+
+            break;
+
+        }
+
+    }
+
+    fprintf (Gbl_NamespaceOutputFile, "\n");
 
     return (AE_OK);
 }
@@ -205,6 +268,77 @@ LsDisplayNamespace (void)
 
 /*****************************************************************************
  *
+ * FUNCTION:    LsCompareOneNamespaceObject
+ *
+ * PARAMETERS:  ACPI_WALK_CALLBACK
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compare name of one object.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+LsCompareOneNamespaceObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+
+
+    /* Simply check the name */
+
+    if (*((UINT32 *) (Context)) == Node->Name)
+    {
+        /* Abort walk if we found one instance */
+
+        return (AE_CTRL_TRUE);
+    }
+
+    return (AE_OK);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    LkObjectExists
+ *
+ * PARAMETERS:  Name            - 4 char ACPI name
+ *
+ * RETURN:      TRUE if name exists in namespace
+ *
+ * DESCRIPTION: Walk the namespace to find an object
+ *
+ ****************************************************************************/
+
+BOOLEAN
+LkObjectExists (
+    char                    *Name)
+{
+    ACPI_STATUS             Status;
+
+
+    /* Walk entire namespace from the supplied root */
+
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+                                ACPI_UINT32_MAX, FALSE, LsCompareOneNamespaceObject,
+                                Name, NULL);
+
+    if (Status == AE_CTRL_TRUE)
+    {
+        /* At least one instance of the name was found */
+
+        return (TRUE);
+    }
+
+    return (FALSE);
+}
+
+
+/*****************************************************************************
+ *
  * FUNCTION:    LkCrossReferenceNamespace
  *
  * PARAMETERS:  None
@@ -230,7 +364,7 @@ LkCrossReferenceNamespace (void)
     ACPI_WALK_LIST          WalkList;
 
 
-    DbgPrint ("\nCreating namespace\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nCreating namespace\n\n");
 
     /*
      * Create a new walk state for use when looking up names
@@ -328,6 +462,8 @@ LkNamespaceLocateBegin (
      * The namespace is also used as a lookup table for references to resource
      * descriptors and the fields within them.
      */
+    Gbl_NsLookupCount++;
+
     Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
                             DataType, IMODE_EXECUTE,
                             NS_SEARCH_PARENT, WalkState, &(NsNode));
@@ -336,7 +472,46 @@ LkNamespaceLocateBegin (
     {
         if (Status == AE_NOT_FOUND)
         {
-            AslError (ASL_WARNING, ASL_MSG_NOT_FOUND, PsNode, PsNode->ExternalName);
+            /*
+             * We didn't find the name reference by path -- we can qualify this
+             * a little better before we print an error message 
+             */
+
+            if (strlen (Path) == ACPI_NAME_SIZE)
+            {
+                /* A simple, one-segment ACPI name */
+
+                if (LkObjectExists (Path))
+                {
+                    /* There exists such a name, but we couldn't get to it from this scope */
+
+                    AslError (ASL_WARNING, ASL_MSG_NOT_REACHABLE, PsNode, PsNode->ExternalName);
+                }
+                else
+                {
+                    /* The name doesn't exist, period */
+
+                    AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, PsNode, PsNode->ExternalName);
+                }
+            }
+
+            else
+            {
+                /* Check for a fully qualified path */
+
+                if (Path[0] == AML_ROOT_PREFIX)
+                {
+                    /* Gave full path, the object does not exist */
+
+                    AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, PsNode, PsNode->ExternalName);
+                }
+                else
+                {
+                    /* We can't tell whether it doesn't exist or just can't be reached. */
+
+                    AslError (ASL_WARNING, ASL_MSG_NOT_FOUND, PsNode, PsNode->ExternalName);
+                }
+            }
         }
         return (Status);
     }
@@ -351,7 +526,7 @@ LkNamespaceLocateBegin (
          * AML code generation
          */
 
-        free (PsNode->Value.String);
+        AcpiCmFree (PsNode->Value.String);
 
         PsNode->ParseOpcode     = INTEGER;
         PsNode->AmlOpcode       = AML_DWORD_OP;
@@ -373,6 +548,13 @@ LkNamespaceLocateBegin (
 
         (PsNode->ParseOpcode == METHODCALL))
     {
+
+        if (NsNode->Type != ACPI_TYPE_METHOD)
+        {
+            AslError (ASL_ERROR, ASL_MSG_NOT_METHOD, PsNode, PsNode->ExternalName);
+            return (AE_OK);
+        }
+
         /*
          * This is a method invocation, with or without arguments.
          * Count the number of arguments, each appears as a child
@@ -400,6 +582,12 @@ LkNamespaceLocateBegin (
             if (PassedArgs < NsNode->OwnerId)
             {
                 AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_LO, PsNode, MsgBuffer);
+
+                if (NsNode->OwnerId > 7)
+                {
+                    printf ("too many arguments defined for method [%4.4s]\n", &NsNode->Name);
+                    return (AE_BAD_PARAMETER);
+                }
             }
             else
             {

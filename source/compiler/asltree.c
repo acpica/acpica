@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.15 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,35 +116,39 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("asltree")
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    TrAllocateNode
  *
- * PARAMETERS:
+ * PARAMETERS:  ParseOpcode         - Opcode to be assigned to the node
  *
- * RETURN:
+ * RETURN:      New parse node.  Aborts on allocation failure
  *
- * DESCRIPTION:
+ * DESCRIPTION: Allocate and initialize a new parse node for the parse tree
  *
  ******************************************************************************/
 
-
 ASL_PARSE_NODE *
-TgAllocateNode (
+TrAllocateNode (
     UINT32                  ParseOpcode)
 {
     ASL_PARSE_NODE          *Node;
 
 
     Node = UtLocalCalloc (sizeof (ASL_PARSE_NODE));
+
     Node->ParseOpcode       = ParseOpcode;
     Node->Filename          = Gbl_InputFilename;
     Node->LineNumber        = Gbl_CurrentLineNumber;
     Node->LogicalLineNumber = Gbl_LogicalLineNumber;
+    Node->LogicalByteOffset = Gbl_CurrentLineOffset;
+    Node->Column            = Gbl_CurrentColumn;
 
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
 
@@ -154,18 +158,22 @@ TgAllocateNode (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    TrUpdateNode
  *
- * PARAMETERS:
+ * PARAMETERS:  ParseOpcode         - New opcode to be assigned to the node
+ *              Node                - An existing parse node
  *
- * RETURN:
+ * RETURN:      The updated node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Change the parse opcode assigned to a node.  Usually used to
+ *              change an opcode to DEFAULT_ARG so that the node is ignored
+ *              during the code generation.  Also used to set generic integers
+ *              to a specific size (8, 16, 32, or 64 bits)
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TgUpdateNode (
+TrUpdateNode (
     UINT32                  ParseOpcode,
     ASL_PARSE_NODE          *Node)
 {
@@ -176,35 +184,64 @@ TgUpdateNode (
         return NULL;
     }
 
-    DbgPrint ("\nUpdateNode: Old - %s, New - %s\n\n",
-                UtGetOpName (Node->ParseOpcode),
-                UtGetOpName (ParseOpcode));
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nUpdateNode: Old - %s, New - %s\n\n",
+        UtGetOpName (Node->ParseOpcode),
+        UtGetOpName (ParseOpcode));
+
+    /* Assign new opcode and name */
 
     Node->ParseOpcode = ParseOpcode;
+    strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
+
+
+    /*
+     * For the BYTE, WORD, and DWORD constants, make sure that the integer
+     * that was passed in will actually fit into the data type
+     */
+
+    switch (ParseOpcode)
+    {
+    case BYTECONST:
+        Node = UtCheckIntegerRange (Node, 0x00, ACPI_UINT8_MAX);
+        break;
+
+    case WORDCONST:
+        Node = UtCheckIntegerRange (Node, 0x00, ACPI_UINT16_MAX);
+        break;
+
+    case DWORDCONST:
+        Node = UtCheckIntegerRange (Node, 0x00, ACPI_UINT32_MAX);
+        break;
+    }
+
+
     return Node;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    TrSetNodeFlags
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - An existing parse node
+ *              Flags               - New flags word
  *
- * RETURN:
+ * RETURN:      The updated node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Set bits in the node flags word.  Will not clear bits, only set
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TgSetNodeFlags (
+TrSetNodeFlags (
     ASL_PARSE_NODE          *Node,
     UINT32                  Flags)
 {
 
 
-    DbgPrint ("\nSetNodeFlags: Node %p, %d\n\n", Node, Flags);
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nSetNodeFlags: Node %p, %d\n\n", Node, Flags);
 
     if (!Node)
     {
@@ -219,27 +256,30 @@ TgSetNodeFlags (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    TrSetEndLineNumber
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - An existing parse node
  *
- * RETURN:
+ * RETURN:      None.
  *
- * DESCRIPTION:
+ * DESCRIPTION: Set the ending line numbers (file line and logical line) of a
+ *              parse node to the current line numbers.
  *
  ******************************************************************************/
 
 void
-TgSetEndLineNumber (
+TrSetEndLineNumber (
     ASL_PARSE_NODE          *Node)
 {
+
+    /* If the end line # is already set, just return */
 
     if (Node->EndLine)
     {
         return;
     }
 
-    Node->EndLine = Gbl_CurrentLineNumber;
+    Node->EndLine        = Gbl_CurrentLineNumber;
     Node->EndLogicalLine = Gbl_LogicalLineNumber;
 
 }
@@ -247,18 +287,117 @@ TgSetEndLineNumber (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    TrCreateLeafNode
  *
- * PARAMETERS:
+ * PARAMETERS:  ParseOpcode         - New opcode to be assigned to the node
  *
- * RETURN:
+ * RETURN:      Pointer to the new node.  Aborts on allocation failure
  *
- * DESCRIPTION:
+ * DESCRIPTION: Create a simple leaf node (no children or peers, and no value
+ *              assigned to the node)
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TgCreateNode (
+TrCreateLeafNode (
+    UINT32                  ParseOpcode)
+{
+    ASL_PARSE_NODE          *Node;
+
+
+    Node = TrAllocateNode (ParseOpcode);
+
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nCreateLeafNode  Line %d NewNode %p  Op %s\n\n",
+        Node->LineNumber, Node, UtGetOpName(ParseOpcode));
+
+    return Node;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrCreateValuedLeafNode
+ *
+ * PARAMETERS:  ParseOpcode         - New opcode to be assigned to the node
+ *              Value               - Value to be assigned to the node
+ *
+ * RETURN:      Pointer to the new node.  Aborts on allocation failure
+ *
+ * DESCRIPTION: Create a leaf node (no children or peers) with a value
+ *              assigned to it
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE *
+TrCreateValuedLeafNode (
+    UINT32                  ParseOpcode,
+    ACPI_INTEGER            Value)
+{
+    ASL_PARSE_NODE          *Node;
+
+
+    Node = TrAllocateNode (ParseOpcode);
+
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %lX  ",
+        Node->LineNumber, Node, UtGetOpName(ParseOpcode), Value);
+    Node->Value.Integer = Value;
+
+    switch (ParseOpcode)
+    {
+    case STRING_LITERAL:
+        DbgPrint (ASL_PARSE_OUTPUT, "STRING->%s", Value);
+        break;
+
+    case NAMESEG:
+        DbgPrint (ASL_PARSE_OUTPUT, "NAMESEG->%s", Value);
+        break;
+
+    case NAMESTRING:
+        DbgPrint (ASL_PARSE_OUTPUT, "NAMESTRING->%s", Value);
+        break;
+
+    case EISAID:
+        DbgPrint (ASL_PARSE_OUTPUT, "EISAID->%s", Value);
+        break;
+
+    case METHOD:
+        DbgPrint (ASL_PARSE_OUTPUT, "METHOD");
+        break;
+
+    case INTEGER:
+        DbgPrint (ASL_PARSE_OUTPUT, "INTEGER");
+        break;
+
+    default:
+        break;
+    }
+
+    DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
+
+    return Node;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrCreateNode
+ *
+ * PARAMETERS:  ParseOpcode         - Opcode to be assigned to the node
+ *              NumChildren         - Number of children to follow
+ *              ...                 - A list of child nodes to link to the new
+ *                                    node.  NumChildren long.
+ *
+ * RETURN:      Pointer to the new node.  Aborts on allocation failure
+ *
+ * DESCRIPTION: Create a new parse node and link together a list of child
+ *              nodes underneath the new node.
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE *
+TrCreateNode (
     UINT32                  ParseOpcode,
     UINT32                  NumChildren,
     ...)
@@ -273,37 +412,43 @@ TgCreateNode (
 
     va_start (ap, NumChildren);
 
-    Node = TgAllocateNode (ParseOpcode);
+    /* Allocate one new node */
 
-    DbgPrint ("\nCreateNode  Line %d NewParent %p Child %d Op %s  ",
-                Node->LineNumber, Node, NumChildren, UtGetOpName(ParseOpcode));
+    Node = TrAllocateNode (ParseOpcode);
+
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nCreateNode  Line %d NewParent %p Child %d Op %s  ",
+        Node->LineNumber, Node, NumChildren, UtGetOpName(ParseOpcode));
     RootNode = Node;
 
+    /* Some extra debug output based on the parse opcode */
 
     switch (ParseOpcode)
     {
     case DEFINITIONBLOCK:
-        DbgPrint ("DEFINITION_BLOCK (Tree Completed)->");
+        DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
     case OPERATIONREGION:
-        DbgPrint ("OPREGION->");
+        DbgPrint (ASL_PARSE_OUTPUT, "OPREGION->");
         break;
 
     case OR:
-        DbgPrint ("OR->");
+        DbgPrint (ASL_PARSE_OUTPUT, "OR->");
         break;
     }
 
 
-    /* Link the new node to it's children */
+    /* Link the new node to its children */
 
     PrevChild = NULL;
     FirstChild = TRUE;
     for (i = 0; i < NumChildren; i++)
     {
+        /* Get the next child */
+
         Child = va_arg (ap, ASL_PARSE_NODE *);
-        DbgPrint ("%p, ", Child);
+        DbgPrint (ASL_PARSE_OUTPUT, "%p, ", Child);
 
 
         /*
@@ -315,7 +460,7 @@ TgCreateNode (
 
         if (!Child)
         {
-            Child = TgAllocateNode (DEFAULT_ARG);
+            Child = TrAllocateNode (DEFAULT_ARG);
         }
 
         /* Link first child to parent */
@@ -353,7 +498,7 @@ TgCreateNode (
     }
     va_end(ap);
 
-    DbgPrint ("\n\n");
+    DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
 
 
     return Node;
@@ -362,18 +507,21 @@ TgCreateNode (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    TrLinkChildren
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - An existing parse node
+ *              NumChildren         - Number of children to follow
+ *              ...                 - A list of child nodes to link to the new
+ *                                    node.  NumChildren long.
  *
- * RETURN:
+ * RETURN:      The updated (linked) node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Link a group of nodes to an existing parse node
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TgLinkChildren (
+TrLinkChildren (
     ASL_PARSE_NODE          *Node,
     UINT32                  NumChildren,
     ...)
@@ -388,26 +536,26 @@ TgLinkChildren (
     va_start (ap, NumChildren);
 
 
-    TgSetEndLineNumber (Node);
+    TrSetEndLineNumber (Node);
 
-    DbgPrint ("\nLinkChildren  Line %d NewParent %p Child %d Op %s  ",
-                Node->LineNumber,
-                Node, NumChildren, UtGetOpName(Node->ParseOpcode));
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nLinkChildren  Line %d NewParent %p Child %d Op %s  ",
+        Node->LineNumber,
+        Node, NumChildren, UtGetOpName(Node->ParseOpcode));
     RootNode = Node;
-
 
     switch (Node->ParseOpcode)
     {
     case DEFINITIONBLOCK:
-        DbgPrint ("DEFINITION_BLOCK (Tree Completed)->");
+        DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
     case OPERATIONREGION:
-        DbgPrint ("OPREGION->");
+        DbgPrint (ASL_PARSE_OUTPUT, "OPREGION->");
         break;
 
     case OR:
-        DbgPrint ("OR->");
+        DbgPrint (ASL_PARSE_OUTPUT, "OR->");
         break;
     }
 
@@ -419,7 +567,7 @@ TgLinkChildren (
     for (i = 0; i < NumChildren; i++)
     {
         Child = va_arg (ap, ASL_PARSE_NODE *);
-        DbgPrint ("%p, ", Child);
+        DbgPrint (ASL_PARSE_OUTPUT, "%p, ", Child);
 
 
         /*
@@ -431,7 +579,7 @@ TgLinkChildren (
 
         if (!Child)
         {
-            Child = TgAllocateNode (DEFAULT_ARG);
+            Child = TrAllocateNode (DEFAULT_ARG);
         }
 
         /* Link first child to parent */
@@ -469,7 +617,7 @@ TgLinkChildren (
     }
     va_end(ap);
 
-    DbgPrint ("\n\n");
+    DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
 
 
     return Node;
@@ -478,117 +626,34 @@ TgLinkChildren (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    TrLinkPeerNode
  *
- * PARAMETERS:
+ * PARAMETERS:  Node1           - First peer
+ *              Node2           - Second peer
  *
- * RETURN:
+ * RETURN:      Node1 or the non-null node.
  *
- * DESCRIPTION:
- *
- ******************************************************************************/
-
-ASL_PARSE_NODE *
-TgCreateValuedLeafNode (
-    UINT32                  ParseOpcode,
-    void                    *Value)
-{
-    ASL_PARSE_NODE          *Node;
-
-
-    Node = TgAllocateNode (ParseOpcode);
-
-    DbgPrint ("\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %X  ",
-                Node->LineNumber, Node, UtGetOpName(ParseOpcode), Value);
-    Node->Value.Pointer = Value;
-
-    switch (ParseOpcode)
-    {
-    case STRING_LITERAL:
-        DbgPrint ("STRING->%s", Value);
-        break;
-
-    case NAMESEG:
-        DbgPrint ("NAMESEG->%s", Value);
-        break;
-
-    case NAMESTRING:
-        DbgPrint ("NAMESTRING->%s", Value);
-        break;
-
-    case EISAID:
-        DbgPrint ("EISAID->%s", Value);
-        break;
-
-    case METHOD:
-        DbgPrint ("METHOD");
-        break;
-
-    default:
-        break;
-    }
-
-    DbgPrint ("\n\n");
-
-    return Node;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:
- *
- * PARAMETERS:
- *
- * RETURN:
- *
- * DESCRIPTION:
+ * DESCRIPTION: Link two nodes as peers.  Handles cases where one peer is null.
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TgCreateLeafNode (
-    UINT32                  ParseOpcode)
-{
-    ASL_PARSE_NODE          *Node;
-
-
-    Node = TgAllocateNode (ParseOpcode);
-
-    DbgPrint ("\nCreateLeafNode  Line %d NewNode %p  Op %s\n\n",
-                Node->LineNumber, Node, UtGetOpName(ParseOpcode));
-
-    return Node;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:
- *
- * PARAMETERS:
- *
- * RETURN:
- *
- * DESCRIPTION:
- *
- ******************************************************************************/
-
-ASL_PARSE_NODE *
-TgLinkPeerNode (
+TrLinkPeerNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2)
 {
     ASL_PARSE_NODE          *Next;
 
-    DbgPrint ("\nLinkPeerNode: 1=%p (%s), 2=%p (%s)\n\n",
+
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nLinkPeerNode: 1=%p (%s), 2=%p (%s)\n\n",
         Node1, Node1 ? UtGetOpName(Node1->ParseOpcode) : NULL,
         Node2, Node2 ? UtGetOpName(Node2->ParseOpcode) : NULL);
 
 
     if ((!Node1) && (!Node2))
     {
-        DbgPrint ("\nTwo Null nodes!\n");
+        DbgPrint (ASL_PARSE_OUTPUT, "\nTwo Null nodes!\n");
         return Node1;
     }
 
@@ -607,7 +672,8 @@ TgLinkPeerNode (
 
     if (Node1 == Node2)
     {
-        DbgPrint ("\n\n************* Internal error, linking node to itself %p\n\n\n", Node1);
+        DbgPrint (ASL_DEBUG_OUTPUT,
+            "\n\n************* Internal error, linking node to itself %p\n\n\n", Node1);
         printf ("Internal error, linking node to itself\n");
         return Node1;
     }
@@ -634,18 +700,19 @@ TgLinkPeerNode (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    TrLinkPeerNodes
  *
- * PARAMETERS:
+ * PARAMETERS:  NumPeers            - The number of nodes in the list to follow
+ *              ...                 - A list of nodes to link together as peers
  *
- * RETURN:
+ * RETURN:      The first node in the list (head of the peer list)
  *
- * DESCRIPTION:
+ * DESCRIPTION: Link together an arbitrary number of peer nodes.
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TgLinkPeerNodes (
+TrLinkPeerNodes (
     UINT32                  NumPeers,
     ...)
 {
@@ -656,64 +723,69 @@ TgLinkPeerNodes (
     ASL_PARSE_NODE          *Start;
 
 
-    DbgPrint ("\nLinkPeerNodes: (%d) ", NumPeers);
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nLinkPeerNodes: (%d) ", NumPeers);
 
 
     va_start (ap, NumPeers);
     This = va_arg (ap, ASL_PARSE_NODE *);
     Start = This;
 
+    /*
+     * Link all peers
+     */
     for (i = 0; i < (NumPeers -1); i++)
     {
-        DbgPrint ("%d=%p ", (i+1), This);
+        DbgPrint (ASL_PARSE_OUTPUT, "%d=%p ", (i+1), This);
 
         while (This->Peer)
         {
             This = This->Peer;
         }
 
+        /* Get another peer node */
+
         Next = va_arg (ap, ASL_PARSE_NODE *);
         if (!Next)
         {
-            Next = TgAllocateNode (DEFAULT_ARG);
-        }
-        This->Peer = Next;
-        if ((UINT32) Next == 0x64)
-        {
-            printf ("Found 64\n");
-            This->Peer = NULL;
+            Next = TrAllocateNode (DEFAULT_ARG);
         }
 
+        /* link new node to the current node */
+
+        This->Peer = Next;
         This = Next;
     }
 
 
-    DbgPrint ("\n\n");
+    DbgPrint (ASL_PARSE_OUTPUT,"\n\n");
     return (Start);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    TrLinkChildNode
  *
- * PARAMETERS:
+ * PARAMETERS:  Node1           - Parent node
+ *              Node2           - Node to become a child
  *
- * RETURN:
+ * RETURN:      The parent node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Link two nodes together as a parent and child
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
-TgLinkChildNode (
+TrLinkChildNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2)
 {
     ASL_PARSE_NODE          *Next;
 
 
-    DbgPrint ("\nLinkChildNode: Parent=%p (%s), Child=%p (%s)\n\n",
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nLinkChildNode: Parent=%p (%s), Child=%p (%s)\n\n",
         Node1, Node1 ? UtGetOpName(Node1->ParseOpcode): NULL,
         Node2, Node2 ? UtGetOpName(Node2->ParseOpcode): NULL);
 
@@ -740,24 +812,27 @@ TgLinkChildNode (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    TrWalkParseTree
  *
- * PARAMETERS:
+ * PARAMETERS:  Visitation              - Type of walk
+ *              DescendingCallback      - Called during tree descent
+ *              AscendingCallback       - Called during tree ascent
+ *              Context                 - To be passed to the callbacks
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Walk the entire parse tree.
  *
  ******************************************************************************/
 
 void
-TgWalkParseTree (
+TrWalkParseTree (
+    ASL_PARSE_NODE          *Node,
     UINT32                  Visitation,
     ASL_WALK_CALLBACK       DescendingCallback,
     ASL_WALK_CALLBACK       AscendingCallback,
     void                    *Context)
 {
-    ASL_PARSE_NODE          *Node;
     UINT32                  Level;
     BOOLEAN                 NodePreviouslyVisited;
 
@@ -770,7 +845,6 @@ TgWalkParseTree (
 
     Level = 0;
     NodePreviouslyVisited = FALSE;
-    Node = RootNode;
 
     switch (Visitation)
     {

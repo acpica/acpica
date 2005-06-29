@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: aslrestype1 - Small (type1) resource templates and descriptors
- *              $Revision: 1.4 $
+ * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,21 +116,26 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "aslresource.h"
 #include "amlcode.h"
+
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("aslrestype1")
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoDmaDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "DMA" descriptor
  *
  ******************************************************************************/
 
@@ -210,13 +215,15 @@ RsDoDmaDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoEndDependentDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "EndDependentFn" descriptor
  *
  ******************************************************************************/
 
@@ -240,13 +247,15 @@ RsDoEndDependentDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoFixedIoDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "FixedIO" descriptor
  *
  ******************************************************************************/
 
@@ -305,13 +314,15 @@ RsDoFixedIoDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoIoDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "IO" descriptor
  *
  ******************************************************************************/
 
@@ -388,13 +399,15 @@ RsDoIoDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoIrqDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "IRQ" descriptor
  *
  ******************************************************************************/
 
@@ -487,13 +500,15 @@ RsDoIrqDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoIrqNoFlagsDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "IRQNoFlags" descriptor
  *
  ******************************************************************************/
 
@@ -564,13 +579,15 @@ RsDoIrqNoFlagsDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoMemory24Descriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "Memory24" descriptor
  *
  ******************************************************************************/
 
@@ -650,13 +667,15 @@ RsDoMemory24Descriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoMemory32Descriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "Memory32" descriptor
  *
  ******************************************************************************/
 
@@ -736,13 +755,15 @@ RsDoMemory32Descriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoMemory32FixedDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "Memory32Fixed" descriptor
  *
  ******************************************************************************/
 
@@ -808,13 +829,15 @@ RsDoMemory32FixedDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoStartDependentDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "StartDependentFn" descriptor
  *
  ******************************************************************************/
 
@@ -873,10 +896,7 @@ RsDoStartDependentDescriptor (
 
         case 2:
 
-            /* Finished with the StartDependent descriptor, update buffer pointer */
-
-            //*DescriptorPtr = NEXT_RESOURCE_DESC (Descriptor, ASL_START_DEPENDENT_DESC);
-
+            /* Finished with the StartDependent descriptor */
             /* Fall through */
 
         default:
@@ -903,13 +923,15 @@ RsDoStartDependentDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoStartDependentNoPriDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "StartDependentNoPri" descriptor
  *
  ******************************************************************************/
 
@@ -957,13 +979,15 @@ RsDoStartDependentNoPriDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoVendorSmallDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a short "VendorShort" descriptor
  *
  ******************************************************************************/
 

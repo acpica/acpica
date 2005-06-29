@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: aslrestype2 - Large (type2) resource templates and descriptors
- *              $Revision: 1.2 $
+ * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,21 +116,25 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "aslresource.h"
 #include "amlcode.h"
+
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("aslrestype2")
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsGetStringDataLength
  *
- * PARAMETERS:
+ * PARAMETERS:  InitializerNode     - Start of a subtree of init nodes
  *
- * RETURN:
+ * RETURN:      Valid string length if a string node is found
  *
- * DESCRIPTION:
+ * DESCRIPTION: In a list of peer nodes, find the first one that contains a
+ *              string and return the length of the string.
  *
  ******************************************************************************/
 
@@ -155,13 +159,15 @@ RsGetStringDataLength (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoDwordIoDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a long "DwordIO" descriptor
  *
  ******************************************************************************/
 
@@ -328,13 +334,15 @@ RsDoDwordIoDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoDwordMemoryDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a long "DwordMemory" descriptor
  *
  ******************************************************************************/
 
@@ -508,13 +516,15 @@ RsDoDwordMemoryDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoQwordIoDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a long "QwordIO" descriptor
  *
  ******************************************************************************/
 
@@ -679,13 +689,15 @@ RsDoQwordIoDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoQwordMemoryDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a long "QwordMemory" descriptor
  *
  ******************************************************************************/
 
@@ -858,13 +870,15 @@ RsDoQwordMemoryDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoWordIoDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a long "WordIO" descriptor
  *
  ******************************************************************************/
 
@@ -1030,13 +1044,15 @@ RsDoWordIoDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoWordBusNumberDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a long "WordBusNumber" descriptor
  *
  ******************************************************************************/
 
@@ -1183,13 +1199,15 @@ RsDoWordBusNumberDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoInterruptDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a long "Interrupt" descriptor
  *
  ******************************************************************************/
 
@@ -1325,8 +1343,6 @@ RsDoInterruptDescriptor (
 
         strcpy ((char *) Descriptor, ResSourceString);
         ((UINT8 *) Descriptor) += StringLength;
-
-       // StartOfDescriptor->Exx.Length += StringLength;
     }
 
     Rnode->BufferLength = (ASL_RESDESC_OFFSET (Exx.InterruptNumber) -
@@ -1335,15 +1351,18 @@ RsDoInterruptDescriptor (
     return (Rnode);
 }
 
+
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoVendorLargeDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a long "VendorLong" descriptor
  *
  ******************************************************************************/
 
@@ -1391,13 +1410,15 @@ RsDoVendorLargeDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoGeneralRegisterDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  Node                - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
  *
- * RETURN:
+ * RETURN:      Completed resource node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Construct a long "Register" descriptor
  *
  ******************************************************************************/
 

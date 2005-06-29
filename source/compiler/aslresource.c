@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.9 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,21 +116,26 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "aslresource.h"
 #include "amlcode.h"
 
 
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("aslresource")
+
+
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsAllocateResourceNode
  *
- * PARAMETERS:
+ * PARAMETERS:  Size        - Size of node in bytes
  *
- * RETURN:
+ * RETURN:      The allocated node - aborts on allocation failure
  *
- * DESCRIPTION:
+ * DESCRIPTION: Allocate a resource description node and the resource
+ *              descriptor itself (the nodes are used to link descriptors).
  *
  ******************************************************************************/
 
@@ -157,22 +162,28 @@ RsAllocateResourceNode (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsCreateBitField
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Resource field node
+ *              Name            - Name of the field (Used only to reference
+ *                                the field in the ASL, not in the AML)
+ *              ByteOffset      - Offset from the field start
+ *              BitOffset       - Additional bit offset
  *
- * RETURN:
+ * RETURN:      None, sets fields within the input node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Utility function to generate a named bit field within a
+ *              resource descriptor.  Mark a node as 1) a field in a resource
+ *              descriptor, and 2) set the value to be a BIT offset
  *
  ******************************************************************************/
 
 void
 RsCreateBitField (
-    ASL_PARSE_NODE              *Node,
-    char                        *Name,
-    UINT32                      ByteOffset,
-    UINT32                      BitOffset)
+    ASL_PARSE_NODE          *Node,
+    char                    *Name,
+    UINT32                  ByteOffset,
+    UINT32                  BitOffset)
 {
 
 
@@ -184,21 +195,26 @@ RsCreateBitField (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsCreateByteField
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Resource field node
+ *              Name            - Name of the field (Used only to reference
+ *                                the field in the ASL, not in the AML)
+ *              ByteOffset      - Offset from the field start
  *
- * RETURN:
+ * RETURN:      None, sets fields within the input node
  *
- * DESCRIPTION:
+ * DESCRIPTION: Utility function to generate a named byte field within a
+ *              resource descriptor.  Mark a node as 1) a field in a resource
+ *              descriptor, and 2) set the value to be a BYTE offset
  *
  ******************************************************************************/
 
 void
 RsCreateByteField (
-    ASL_PARSE_NODE              *Node,
-    char                        *Name,
-    UINT32                      ByteOffset)
+    ASL_PARSE_NODE          *Node,
+    char                    *Name,
+    UINT32                  ByteOffset)
 {
 
 
@@ -210,22 +226,28 @@ RsCreateByteField (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsSetFlagBits
  *
- * PARAMETERS:
+ * PARAMETERS:  *Flags          - Pointer to the flag byte
+ *              Node            - Flag initialization node
+ *              Position        - Bit position within the flag byte
+ *              Default         - Used if the node is DEFAULT.
  *
- * RETURN:
+ * RETURN:      Sets bits within the *Flags output byte.
  *
- * DESCRIPTION:
+ * DESCRIPTION: Set a bit in a cumulative flags word from an initialization
+ *              node.  Will use a default value if the node is DEFAULT, meaning
+ *              that no value was specified in the ASL.  Used to merge multiple
+ *              keywords into a single flags byte.
  *
  ******************************************************************************/
 
 void
 RsSetFlagBits (
-    UINT8                       *Flags,
-    ASL_PARSE_NODE              *Node,
-    UINT8                       Position,
-    UINT8                       Default)
+    UINT8                   *Flags,
+    ASL_PARSE_NODE          *Node,
+    UINT8                   Position,
+    UINT8                   Default)
 {
 
 
@@ -247,19 +269,21 @@ RsSetFlagBits (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsCompleteNodeAndGetNext
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Resource node to be completed
  *
- * RETURN:
+ * RETURN:      The next peer to the input node.
  *
- * DESCRIPTION:
+ * DESCRIPTION: Mark the current node completed and return the next peer.
+ *              The node ParseOpcode is set to DEFAULT_ARG, meaning that
+ *              this node is to be ignored from now on.
  *
  ******************************************************************************/
 
 ASL_PARSE_NODE *
 RsCompleteNodeAndGetNext (
-    ASL_PARSE_NODE              *Node)
+    ASL_PARSE_NODE          *Node)
 {
 
 
@@ -275,13 +299,15 @@ RsCompleteNodeAndGetNext (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoOneResourceDescriptor
  *
- * PARAMETERS:
+ * PARAMETERS:  DescriptorTypeNode  - Parent parse node of the descriptor
+ *              CurrentByteOffset   - Offset in the resource descriptor
+ *                                    buffer.
  *
- * RETURN:
+ * RETURN:      A valid resource node for the descriptor
  *
- * DESCRIPTION:
+ * DESCRIPTION: Dispatches the processing of one resource descriptor
  *
  ******************************************************************************/
 
@@ -407,13 +433,16 @@ RsDoOneResourceDescriptor (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsLinkDescriptorChain
  *
- * PARAMETERS:
+ * PARAMETERS:  PreviousRnode       - Pointer to the node that will be previous
+ *                                    to the linked node,  At exit, set to the
+ *                                    last node in the new chain.
+ *              Rnode               - Resource node to link into the list
  *
- * RETURN:
+ * RETURN:      Cumulative buffer byte offset of the new segment of chain
  *
- * DESCRIPTION:
+ * DESCRIPTION: Link a descriptor chain at the end of an existing chain.
  *
  ******************************************************************************/
 
@@ -426,13 +455,19 @@ RsLinkDescriptorChain (
     UINT32                  CurrentByteOffset;
 
 
+    /* Anything to do? */
+
     if (!Rnode)
     {
         return 0;
     }
 
+    /* Point the previous node to the new node */
+
     (*PreviousRnode)->Next = Rnode;
     CurrentByteOffset = Rnode->BufferLength;
+
+    /* Walk to the end of the chain headed by Rnode */
 
     LastRnode = Rnode;
     while (LastRnode->Next)
@@ -441,6 +476,8 @@ RsLinkDescriptorChain (
         CurrentByteOffset += LastRnode->BufferLength;
     }
 
+    /* Previous node becomes the last node in the chain */
+
     *PreviousRnode = LastRnode;
     return CurrentByteOffset;
 }
@@ -448,18 +485,19 @@ RsLinkDescriptorChain (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    RsDoResourceTemplate
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - Parent of a resource template list
  *
- * RETURN:
+ * RETURN:      None.  Sets input node to point to a list of AML code
  *
- * DESCRIPTION:
+ * DESCRIPTION: Merge a list of resource descriptors into a single AML buffer,
+ *              in preparation for output to the AML output file.
  *
  ******************************************************************************/
 
 void
-CgDoResourceTemplate (
+RsDoResourceTemplate (
     ASL_PARSE_NODE          *Node)
 {
     ASL_PARSE_NODE          *BufferLengthNode;
@@ -533,7 +571,7 @@ CgDoResourceTemplate (
     BufferLengthNode->ParseOpcode   = INTEGER;
     BufferLengthNode->Value.Integer = CurrentByteOffset;
 
-    CgSetOptimalIntegerSize (BufferLengthNode);
+    OpcSetOptimalIntegerSize (BufferLengthNode);
 
     BufferNode->ParseOpcode         = RAW_DATA;
     BufferNode->AmlOpcode           = AML_RAW_DATA_CHAIN;
