@@ -155,11 +155,12 @@ AmlExecMonadic1 (
 
     if (AML_SleepOp == opcode || AML_StallOp == opcode)
     {
-        Status = AmlPrepObjStack ("n");                 /* operand should be a Number */
+        Status = AmlPrepObjStack ("n");                 /* Operand should be a Number */
     }
+
     else
     {
-        Status = AmlPrepObjStack ("l");                 /* operand should be an Lvalue */
+        Status = AmlPrepObjStack ("l");                 /* Operand should be an Lvalue */
     }
 
     if (Status != AE_OK)
@@ -182,18 +183,7 @@ AmlExecMonadic1 (
 
     if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
-        if (((NAME_TABLE_ENTRY *) ObjDesc)->Object)
-        {
-            /* Valid object, get it */
-
-            ObjDesc = ((NAME_TABLE_ENTRY *) ObjDesc)->Object;
-
-            /* The object is deleted below, we must clear the entry */
-
-            ((NAME_TABLE_ENTRY *) ObjDesc)->Object = NULL;
-        }
-
-        else
+        if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjDesc)));
         {
             /* No object, just exit */
 
@@ -223,7 +213,7 @@ AmlExecMonadic1 (
         return_ACPI_STATUS (Status);
 
 
-    /*  DefReset        :=  ResetOp     EventObject */
+    /*  DefReset    :=  ResetOp     EventObject */
 
     case AML_ResetOp:
 
@@ -238,7 +228,7 @@ AmlExecMonadic1 (
         return_ACPI_STATUS (Status);
 
 
-    /*  DefSignal   :=  SignalOp        EventObject */
+    /*  DefSignal   :=  SignalOp    EventObject */
     
     case AML_SignalOp:
 
@@ -269,7 +259,7 @@ AmlExecMonadic1 (
         break;
 
 
-    /*  unknown opcode  */
+    /*  Unknown opcode  */
     
     default:
 
@@ -279,7 +269,9 @@ AmlExecMonadic1 (
     } /* switch */
 
 
-    /* Delete the operand */
+    /* 
+     * Delete the operand (If NTE, it won't be deleted)
+     */
 
     AmlObjStackDeleteValue (0);
 
