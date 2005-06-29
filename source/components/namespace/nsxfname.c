@@ -118,19 +118,16 @@
 #define __NSAPINAM_C__
 
 #include <acpi.h>
-#include <acobject.h>
 #include <interp.h>
 #include <namesp.h>
-#include <methods.h>
 #include <amlcode.h>
-#include <pnp.h>
 #include <parser.h>
 #include <dispatch.h>
+#include <events.h>
 
 
 #define _COMPONENT          NAMESPACE
         MODULE_NAME         ("nsapinam");
-
 
 
 
@@ -168,8 +165,9 @@ AcpiLoadNamespace (
 
 
     /* Init the hardware */
-    /* TBD: this should be moved elsewhere, like AcpiEnable! */
-    /* TBD: we need to be able to call this interface repeatedly! */
+    /* TBD: Should this should be moved elsewhere, like AcpiEnable! ??*/
+    /* we need to be able to call this interface repeatedly! */
+    /* Does H/W require init before loading the namespace? */
 
     Status = CmHardwareInitialize ();
     if (ACPI_FAILURE (Status))
@@ -194,9 +192,7 @@ AcpiLoadNamespace (
     NsLoadTableByType (TABLE_PSDT);
 
 
-/*    DUMP_TABLES (NS_ALL, ACPI_INT32_MAX); */
-
-    DEBUG_PRINT (ACPI_OK, ("**** ACPI Namespace successfully loaded at root 0x%p\n", 
+    DEBUG_PRINT_RAW (ACPI_OK, ("ACPI Namespace successfully loaded at root 0x%p\n", 
                     Gbl_RootObject->Scope));
 
 
@@ -427,7 +423,7 @@ AcpiGetObjectInfo (
 
     /* Execute the _HID method and save the result */
 
-    Status = Execute_HID (DeviceEntry, &Hid);
+    Status = CmExecute_HID (DeviceEntry, &Hid);
     if (ACPI_SUCCESS (Status))
     {
         if (Hid.Type == STRING_PTR_DEVICE_ID)
@@ -444,7 +440,7 @@ AcpiGetObjectInfo (
 
     /* Execute the _UID method and save the result */
 
-    Status = Execute_UID (DeviceEntry, &Uid);
+    Status = CmExecute_UID (DeviceEntry, &Uid);
     if (ACPI_SUCCESS (Status))
     {
         if (Hid.Type == STRING_PTR_DEVICE_ID)
@@ -464,7 +460,7 @@ AcpiGetObjectInfo (
      * _STA is not always present 
      */
 
-    Status = Execute_STA (DeviceEntry, &DeviceStatus);
+    Status = CmExecute_STA (DeviceEntry, &DeviceStatus);
     if (ACPI_SUCCESS (Status))
     {
         Info->CurrentStatus = DeviceStatus;
@@ -476,7 +472,7 @@ AcpiGetObjectInfo (
      * _ADR is not always present
      */
 
-    Status = EvaluateNumeric (METHOD_NAME__ADR, DeviceEntry, &Address);
+    Status = CmEvaluateNumericObject (METHOD_NAME__ADR, DeviceEntry, &Address);
     if (ACPI_SUCCESS (Status))
     {
         Info->Address = Address;
