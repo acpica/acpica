@@ -275,7 +275,9 @@ CmUpdateObjectReference (
 
     case ACPI_TYPE_Device:
 
+/* TBD:
         CmUpdateObjectReference (Object->Device.AddrHandler, Action);
+*/
         CmUpdateObjectReference (Object->Device.SysHandler, Action);
         CmUpdateObjectReference (Object->Device.DrvHandler, Action);
         break;
@@ -337,7 +339,10 @@ CmUpdateObjectReference (
 
     case ACPI_TYPE_Region:
 
-        CmUpdateObjectReference (Object->Region.AddressLocation, Action);
+        CmUpdateObjectReference (Object->Region.Method, Action);
+/* TBD:
+        CmUpdateObjectReference (Object->Region.AddrHandler, Action);
+*/
         break;
 
 
@@ -405,7 +410,9 @@ CmDeleteInternalObj (
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Device %p\n", 
                                 Object));
 
+        /* TBD: temp fix for handler ref count issues */
 
+        CmUpdateObjectReference (Object->Device.AddrHandler, REF_DECREMENT);
         CmDeleteInternalObj (Object->Device.AddrHandler);
         CmDeleteInternalObj (Object->Device.SysHandler);
         CmDeleteInternalObj (Object->Device.DrvHandler);
@@ -502,9 +509,12 @@ CmDeleteInternalObj (
     case ACPI_TYPE_Region:
         
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Region %p, method %p\n", 
-                                Object, Object->Region.AddressLocation));
+                                Object, Object->Region.Method));
 
-        CmDeleteInternalObj (Object->Region.AddressLocation);        
+        CmDeleteInternalObj (Object->Region.Method); 
+/* TBD       
+        CmDeleteInternalObj (Object->Region.AddrHandler);        
+*/
         break;
 
 
