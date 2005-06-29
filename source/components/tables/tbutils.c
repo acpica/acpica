@@ -118,6 +118,7 @@
 
 #include <acpi.h>
 #include <tables.h>
+#include <interp.h>
 
 
 #define _COMPONENT          TABLE_MANAGER
@@ -235,6 +236,63 @@ TbSystemTablePointer (
 
 /******************************************************************************
  *
+ * FUNCTION:    TbValidateTableHeader
+ *
+ * PARAMETERS:  TableHeader         - Logical pointer to the table
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Check an ACPI table header for validity
+ *
+ * NOTE:  Table pointers are validated as follows:
+ *          1) Table pointer must point to valid physical memory 
+ *          2) Signature must be 4 ASCII chars, even if we don't recognize the name
+ *          3) Table must be readable for length specified in the header
+ *          4) Table checksum must be valid (with the exception of the FACS which 
+ *              has no checksum for some odd reason…)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+TbValidateTableHeader (
+    ACPI_TABLE_HEADER       *TableHeader)
+{
+
+    /* Verify that this is a valid address */
+
+    if (!OsdReadable (TableHeader, sizeof (ACPI_TABLE_HEADER)))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("Cannot read table header at %p\n", TableHeader));
+        return AE_BAD_ADDRESS;
+    }
+
+
+    /* Ensure that the signature is 4 ASCII characters */
+
+    if (!CmValidAcpiName (*(UINT32 *) TableHeader->Signature))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("Table signature [%X] contains one or more invalid characters\n", *(UINT32 *) TableHeader->Signature));
+        REPORT_WARNING ("Invalid table signature found");
+        return AE_BAD_SIGNATURE;
+    }
+
+
+    /* Validate the table length */
+
+    if (TableHeader->Length < (UINT32) sizeof (ACPI_TABLE_HEADER))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("Invalid length in header at %08lXh name %4.4s\n", TableHeader, &TableHeader->Signature));
+        REPORT_WARNING ("Invalid table header length found");
+        return AE_BAD_HEADER;
+    }
+
+
+    return AE_OK;
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    TbMapAcpiTable
  *
  * PARAMETERS:  PhysicalAddress         - Physical address of table to map
@@ -267,12 +325,20 @@ TbMapAcpiTable (
     {
         /* Get the table header so we can extract the table length */
 
-        Status = OsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER), &Table);
-
+        Status = OsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER), (void **)&Table);
 		if (ACPI_FAILURE (Status))
 		{
 			return Status;
 		}
+
+        /* Validate the header */
+
+        Status = TbValidateTableHeader (Table);
+        if (ACPI_FAILURE (Status))
+        {
+            OsdUnMapMemory (Table, sizeof (ACPI_TABLE_HEADER));
+            return Status;
+        }
 
         /* Now we know how large to make the mapping (table + header) */
 
@@ -283,8 +349,7 @@ TbMapAcpiTable (
 
     /* Map the physical memory for the correct length */
 
-    Status = OsdMapMemory (PhysicalAddress, TableSize, &Table);
-
+    Status = OsdMapMemory (PhysicalAddress, TableSize, (void **)&Table);
 	if (ACPI_FAILURE (Status))
 	{
 		return Status;
