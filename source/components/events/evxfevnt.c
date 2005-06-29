@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.36 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -157,13 +157,7 @@ AcpiEnable (void)
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-    /* Make sure the BIOS supports ACPI mode */
-
-    if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Only legacy mode supported!\n"));
-        return_ACPI_STATUS (AE_ERROR);
-    }
+    AcpiGbl_OriginalMode = AcpiHwGetMode();
 
     /* Transition to ACPI mode */
 
@@ -202,14 +196,6 @@ AcpiDisable (void)
     FUNCTION_TRACE ("AcpiDisable");
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Restore original mode  */
 
     Status = AcpiHwSetMode (AcpiGbl_OriginalMode);
@@ -234,6 +220,7 @@ AcpiDisable (void)
  *
  * PARAMETERS:  Event           - The fixed event or GPE to be enabled
  *              Type            - The type of event
+ *              Flags           - Just enable, or also wake enable?
  *
  * RETURN:      Status
  *
@@ -244,7 +231,8 @@ AcpiDisable (void)
 ACPI_STATUS
 AcpiEnableEvent (
     UINT32                  Event,
-    UINT32                  Type)
+    UINT32                  Type,
+    UINT32                  Flags)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  RegisterId;
@@ -252,14 +240,6 @@ AcpiEnableEvent (
 
     FUNCTION_TRACE ("AcpiEnableEvent");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /* The Type must be either Fixed AcpiEvent or GPE */
 
@@ -326,7 +306,15 @@ AcpiEnableEvent (
 
         /* Enable the requested GPE number */
 
-        AcpiHwEnableGpe (Event);
+        if (Flags & ACPI_EVENT_ENABLE)
+        {
+            AcpiHwEnableGpe (Event);
+        }
+        if (Flags & ACPI_EVENT_WAKE_ENABLE)
+        {
+            AcpiHwEnableGpeForWakeup (Event);
+        }
+
         break;
 
 
@@ -345,7 +333,8 @@ AcpiEnableEvent (
  * FUNCTION:    AcpiDisableEvent
  *
  * PARAMETERS:  Event           - The fixed event or GPE to be enabled
- *              Type            - The type of event
+ *              Type            - The type of event, fixed or general purpose
+ *              Flags           - Wake disable vs. non-wake disable
  *
  * RETURN:      Status
  *
@@ -356,7 +345,8 @@ AcpiEnableEvent (
 ACPI_STATUS
 AcpiDisableEvent (
     UINT32                  Event,
-    UINT32                  Type)
+    UINT32                  Type,
+    UINT32                  Flags)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  RegisterId;
@@ -364,14 +354,6 @@ AcpiDisableEvent (
 
     FUNCTION_TRACE ("AcpiDisableEvent");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /* The Type must be either Fixed AcpiEvent or GPE */
 
@@ -437,7 +419,15 @@ AcpiDisableEvent (
 
         /* Disable the requested GPE number */
 
-        AcpiHwDisableGpe (Event);
+        if (Flags & ACPI_EVENT_DISABLE)
+        {
+            AcpiHwDisableGpe (Event);
+        }
+        if (Flags & ACPI_EVENT_WAKE_DISABLE)
+        {
+            AcpiHwDisableGpeForWakeup (Event);
+        }
+
         break;
 
 
@@ -473,14 +463,6 @@ AcpiClearEvent (
 
     FUNCTION_TRACE ("AcpiClearEvent");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /* The Type must be either Fixed AcpiEvent or GPE */
 
@@ -578,14 +560,6 @@ AcpiGetEventStatus (
 
     FUNCTION_TRACE ("AcpiGetEventStatus");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     if (!EventStatus)
     {
