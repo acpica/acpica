@@ -151,6 +151,27 @@ extern      UINT32              DebugLayer;
 extern      UINT32              Gbl_NestingLevel;
 
 
+/*****************************************************************************
+ * 
+ * Memory allocation metrics - Debug Only!
+ *
+ ****************************************************************************/
+#ifdef ACPI_DEBUG
+
+ACPI_EXTERN UINT32				Gbl_CurrentAllocSize;
+ACPI_EXTERN UINT32				Gbl_CurrentAllocCount;
+ACPI_EXTERN UINT32				Gbl_RunningAllocSize;
+ACPI_EXTERN UINT32				Gbl_RunningAllocCount;
+ACPI_EXTERN UINT32				Gbl_MaxConcurrentAllocSize;
+ACPI_EXTERN UINT32				Gbl_MaxConcurrentAllocCount;
+ACPI_EXTERN UINT32				Gbl_CurrentObjectCount;
+ACPI_EXTERN UINT32				Gbl_CurrentObjectSize;
+ACPI_EXTERN UINT32				Gbl_MaxConcurrentObjectCount;
+ACPI_EXTERN UINT32				Gbl_MaxConcurrentObjectSize;
+ACPI_EXTERN UINT32				Gbl_RunningObjectCount;
+ACPI_EXTERN UINT32				Gbl_RunningObjectSize;
+
+#endif
 
 /*****************************************************************************
  * 
