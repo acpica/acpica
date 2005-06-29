@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -1041,7 +1041,7 @@ AcpiDsInitAmlWalk (
     {
         if (Info->ParameterType == ACPI_PARAM_GPE)
         {
-            WalkState->GpeEventInfo = ACPI_CAST_PTR (ACPI_GPE_EVENT_INFO, 
+            WalkState->GpeEventInfo = ACPI_CAST_PTR (ACPI_GPE_EVENT_INFO,
                                             Info->Parameters);
         }
         else
