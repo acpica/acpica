@@ -218,7 +218,7 @@ PsAllocOp (
          * Check if there is an Op already available in the cache
          */
 
-        CmAcquireMutex (MTX_MEMORY);
+        CmAcquireMutex (MTX_CACHES);
         Gbl_ParseCacheRequests++;
         if (Gbl_ParseCache)
         {
@@ -234,7 +234,7 @@ PsAllocOp (
 
             MEMSET (Op, 0, sizeof (ACPI_GENERIC_OP));
         }
-        CmReleaseMutex (MTX_MEMORY);
+        CmReleaseMutex (MTX_CACHES);
     }
 
     /* Allocate a new Op if necessary */
@@ -283,13 +283,13 @@ PsFreeOp (
         {
             /* Put a GENERIC_OP back into the cache */
 
-            CmAcquireMutex (MTX_MEMORY);
+            CmAcquireMutex (MTX_CACHES);
             Gbl_ParseCacheDepth++;
 
             Op->Next = Gbl_ParseCache;
             Gbl_ParseCache = Op;
 
-            CmReleaseMutex (MTX_MEMORY);
+            CmReleaseMutex (MTX_CACHES);
             return;
         }
     }
