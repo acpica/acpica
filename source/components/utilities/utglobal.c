@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.188 $
+ *              $Revision: 1.190 $
  *
  *****************************************************************************/
 
@@ -612,6 +612,99 @@ AcpiUtGetObjectTypeName (
     }
 
     return (AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (ObjDesc)));
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetNodeName
+ *
+ * PARAMETERS:  Object               - A namespace node
+ *
+ * RETURN:      Pointer to a string
+ *
+ * DESCRIPTION: Validate the node and return the node's ACPI name.
+ *
+ ****************************************************************************/
+
+char *
+AcpiUtGetNodeName (
+    void                    *Object)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+
+
+    if (!Object)
+    {
+        return ("NULL NODE");
+    }
+
+    Node = (ACPI_NAMESPACE_NODE *) Object;
+
+    if (Node->Descriptor != ACPI_DESC_TYPE_NAMED)
+    {
+        return ("INVALID NODE");
+    }
+
+    if (!AcpiUtValidAcpiName (* (UINT32 *) Node->Name.Ascii))
+    {
+        return ("INVALID NODE NAME");
+    }
+
+    return (Node->Name.Ascii);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetDescriptorName
+ *
+ * PARAMETERS:  Object               - An ACPI object
+ *
+ * RETURN:      Pointer to a string
+ *
+ * DESCRIPTION: Validate object and return the descriptor type
+ *
+ ****************************************************************************/
+
+static const char           *AcpiGbl_DescTypeNames[] =    /* printable names of descriptor types */
+{
+    /* 00 */ "Invalid",
+    /* 01 */ "Cached",
+    /* 02 */ "State-Generic",
+    /* 03 */ "State-Update",
+    /* 04 */ "State-Package",
+    /* 05 */ "State-Control",
+    /* 06 */ "State-RootParseScope",
+    /* 07 */ "State-ParseScope",
+    /* 08 */ "State-WalkScope",
+    /* 09 */ "State-Result",
+    /* 10 */ "State-Notify",
+    /* 11 */ "State-Thread",
+    /* 12 */ "Walk",
+    /* 13 */ "Parser",
+    /* 14 */ "Operand",
+    /* 15 */ "Node"
+};
+
+
+char *
+AcpiUtGetDescriptorName (
+    void                    *Object)
+{
+
+    if (!Object)
+    {
+        return ("NULL OBJECT");
+    }
+
+    if (ACPI_GET_DESCRIPTOR_TYPE (Object) > ACPI_DESC_TYPE_MAX)
+    {
+        return ((char *) AcpiGbl_BadType);
+    }
+
+    return ((char *) AcpiGbl_DescTypeNames[ACPI_GET_DESCRIPTOR_TYPE (Object)]);
+
 }
 
 
