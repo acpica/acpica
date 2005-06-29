@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: config.h - Global configuration constants
+ * Name: acconfig.h - Global configuration constants
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef _CONFIG_H
-#define _CONFIG_H
+#ifndef _ACCONFIG_H
+#define _ACCONFIG_H
 
 
 /******************************************************************************
@@ -148,7 +148,7 @@
 
 /* Name of host operating system (returned by the _OS_ namespace object) */
 
-#ifdef _LINUX 
+#ifdef _LINUX
 #define ACPI_OS_NAME                "Linux"
 #else
 #define ACPI_OS_NAME                "Intel ACPI/CA Core Subsystem"
@@ -254,7 +254,7 @@
 /* Names within the namespace are 4 bytes long */
 
 #define ACPI_NAME_SIZE              4
-#define PATH_SEGMENT_LENGTH         5       /* 4 chars for name + 1 char for separator */
+#define PATH_SEGMENT_LENGTH         5       /* 4 chars for name + 1 INT8 for separator */
 #define PATH_SEPARATOR              '.'
 
 
@@ -272,5 +272,5 @@
 #define MAX_PACKAGE_DEPTH           16
 
 
-#endif /* _CONFIG_H */
+#endif /* _ACCONFIG_H */
 

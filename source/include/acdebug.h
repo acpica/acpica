@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: debugger.h - ACPI/AML debugger
+ * Name: acdebug.h - ACPI/AML debugger
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __DEBUGGER_H__
-#define __DEBUGGER_H__
+#ifndef __ACDEBUG_H__
+#define __ACDEBUG_H__
 
 
 #define DB_MAX_ARGS             8  /* Must be max method args + 1 */
@@ -125,7 +125,7 @@
 
 
 extern int                      optind;
-extern char                     *optarg;
+extern INT8                     *optarg;
 extern UINT8                    *AmlPtr;
 extern UINT32                   AcpiAmlLength;
 
@@ -136,18 +136,18 @@ extern BOOLEAN                  opt_parse_jit;
 extern BOOLEAN                  opt_verbose;
 
 
-extern char                     *Args[DB_MAX_ARGS];
-extern char                     LineBuf[80];
-extern char                     ScopeBuf[40];
-extern char                     DebugFilename[40];
+extern INT8                     *Args[DB_MAX_ARGS];
+extern INT8                     LineBuf[80];
+extern INT8                     ScopeBuf[40];
+extern INT8                     DebugFilename[40];
 extern BOOLEAN                  OutputToFile;
-extern char                     *Buffer;
-extern char                     *Filename;
-extern char                     *INDENT_STRING;
-extern UINT32                   Acpi_GblMethodBreakpoint;
-extern UINT8                    Acpi_GblDbOutputFlags;
-extern UINT32                   Acpi_GblDbDebugLevel;
-extern UINT32                   Acpi_GblDbConsoleDebugLevel;
+extern INT8                     *Buffer;
+extern INT8                     *Filename;
+extern INT8                     *INDENT_STRING;
+extern UINT32                   AcpiGbl_MethodBreakpoint;
+extern UINT8                    AcpiGbl_DbOutputFlags;
+extern UINT32                   AcpiGbl_DbDebugLevel;
+extern UINT32                   AcpiGbl_DbConsoleDebugLevel;
 
 extern UINT32                   NumNames;
 extern UINT32                   NumMethods;
@@ -179,21 +179,19 @@ extern UINT32                   SizeOfAcpiObjects;
 #define DB_DUPLICATE_OUTPUT     0x03
 
 
-
 typedef struct CommandInfo
 {
-    char                    *Name;          /* Command Name */
-    char                    MinArgs;        /* Minimum arguments required */
+    INT8                    *Name;          /* Command Name */
+    INT8                    MinArgs;        /* Minimum arguments required */
 
 } COMMAND_INFO;
 
 
 typedef struct ArgumentInfo
 {
-    char                    *Name;          /* Argument Name */
+    INT8                    *Name;          /* Argument Name */
 
 } ARGUMENT_INFO;
-
 
 
 #define PARAM_LIST(pl)                  pl
@@ -201,7 +199,7 @@ typedef struct ArgumentInfo
 #define DBTEST_OUTPUT_LEVEL(lvl)        if (opt_verbose)
 
 #define VERBOSE_PRINT(fp)               DBTEST_OUTPUT_LEVEL(lvl) {\
-                                            AcpiOsdPrintf PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 
 #define EX_NO_SINGLE_STEP       1
 #define EX_SINGLE_STEP          2
@@ -232,16 +230,16 @@ AcpiDbSingleStep (
 
 void
 AcpiDbDisplayTableInfo (
-    char                    *TableArg);
+    INT8                    *TableArg);
 
 void
 AcpiDbUnloadAcpiTable (
-    char                    *TableArg,
-    char                    *InstanceArg);
+    INT8                    *TableArg,
+    INT8                    *InstanceArg);
 
 void
 AcpiDbSetMethodBreakpoint (
-    char                    *Location,
+    INT8                    *Location,
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op);
 
@@ -251,42 +249,46 @@ AcpiDbSetMethodCallBreakpoint (
 
 void
 AcpiDbDisassembleAml (
-    char                    *Statements,
+    INT8                    *Statements,
     ACPI_GENERIC_OP         *Op);
 
 void
 AcpiDbDumpNamespace (
-    char                    *StartArg,
-    char                    *DepthArg);
+    INT8                    *StartArg,
+    INT8                    *DepthArg);
 
 void
 AcpiDbDumpNamespaceByOwner (
-    char                    *OwnerArg,
-    char                    *DepthArg);
+    INT8                    *OwnerArg,
+    INT8                    *DepthArg);
 
 void
 AcpiDbSendNotify (
-    char                    *Name,
+    INT8                    *Name,
     UINT32                  Value);
 
 void
 AcpiDbSetMethodData (
-    char                    *TypeArg,
-    char                    *IndexArg,
-    char                    *ValueArg);
+    INT8                    *TypeArg,
+    INT8                    *IndexArg,
+    INT8                    *ValueArg);
 
 ACPI_STATUS
 AcpiDbDisplayObjects (
-    char                    *ObjTypeArg,
-    char                    *DisplayCountArg);
+    INT8                    *ObjTypeArg,
+    INT8                    *DisplayCountArg);
 
 ACPI_STATUS
 AcpiDbFindNameInNamespace (
-    char                    *NameArg);
+    INT8                    *NameArg);
 
 void
 AcpiDbSetScope (
-    char                    *Name);
+    INT8                    *Name);
+
+void
+AcpiDbFindReferences (
+    INT8                    *ObjectArg);
 
 
 /*
@@ -300,7 +302,7 @@ AcpiDbDisplayOp (
 
 void
 AcpiDbDisplayNamestring (
-    char                    *Name);
+    INT8                    *Name);
 
 void
 AcpiDbDisplayPath (
@@ -309,7 +311,6 @@ AcpiDbDisplayPath (
 void
 AcpiDbDisplayOpcode (
     ACPI_GENERIC_OP         *Op);
-
 
 
 /*
@@ -323,8 +324,8 @@ AcpiDbDisplayMethodInfo (
 
 void
 AcpiDbDecodeAndDisplayObject (
-    char                    *Target,
-    char                    *OutputType);
+    INT8                    *Target,
+    INT8                    *OutputType);
 
 void
 AcpiDbDisplayResultObject (
@@ -332,7 +333,7 @@ AcpiDbDisplayResultObject (
 
 ACPI_STATUS
 AcpiDbDisplayAllMethods (
-    char                    *DisplayCountArg);
+    INT8                    *DisplayCountArg);
 
 void
 AcpiDbDisplayInternalObject (
@@ -365,16 +366,15 @@ AcpiDbDisplayArgumentObject (
 
 void
 AcpiDbExecute (
-    char                    *Name,
-    char                    **Args,
+    INT8                    *Name,
+    INT8                    **Args,
     UINT32                  Flags);
 
 void
 AcpiDbCreateExecutionThreads (
-    char                    *NumThreadsArg,
-    char                    *NumLoopsArg,
-    char                    *MethodNameArg);
-
+    INT8                    *NumThreadsArg,
+    INT8                    *NumLoopsArg,
+    INT8                    *MethodNameArg);
 
 
 /*
@@ -383,7 +383,7 @@ AcpiDbCreateExecutionThreads (
 
 OBJECT_TYPE_INTERNAL
 AcpiDbMatchArgument (
-    char                    *UserArgument,
+    INT8                    *UserArgument,
     ARGUMENT_INFO           *Arguments);
 
 
@@ -393,11 +393,11 @@ AcpiDbCloseDebugFile (
 
 void
 AcpiDbOpenDebugFile (
-    char                    *Name);
+    INT8                    *Name);
 
 ACPI_STATUS
 AcpiDbLoadAcpiTable (
-    char                    *Filename);
+    INT8                    *Filename);
 
 
 /*
@@ -406,14 +406,14 @@ AcpiDbLoadAcpiTable (
 
 void
 AcpiDbAddToHistory (
-    char                    *CommandLine);
+    INT8                    *CommandLine);
 
 void
 AcpiDbDisplayHistory (void);
 
-char *
+INT8 *
 AcpiDbGetFromHistory (
-    char                    *CommandNumArg);
+    INT8                    *CommandNumArg);
 
 
 /*
@@ -422,7 +422,7 @@ AcpiDbGetFromHistory (
 
 ACPI_STATUS
 AcpiDbCommandDispatch (
-    char                    *InputBuffer,
+    INT8                    *InputBuffer,
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op);
 
@@ -432,10 +432,8 @@ AcpiDbExecuteThread (
 
 ACPI_STATUS
 AcpiDbUserCommands (
-    char                    Prompt,
+    INT8                    Prompt,
     ACPI_GENERIC_OP         *Op);
-
-
 
 
 /*
@@ -450,8 +448,7 @@ AcpiDbGenerateStatistics (
 
 ACPI_STATUS
 AcpiDbDisplayStatistics (
-    char                    *TypeArg);
-
+    INT8                    *TypeArg);
 
 
 /*
@@ -473,18 +470,16 @@ AcpiDbDumpObject (
 
 void
 AcpiDbPrepNamestring (
-    char                    *Name);
+    INT8                    *Name);
 
 
 ACPI_STATUS
 AcpiDbSecondPassParse (
     ACPI_GENERIC_OP         *Root);
 
-NAME_TABLE_ENTRY *
+ACPI_NAMED_OBJECT*
 AcpiDbLocalNsLookup (
-    char                    *Name);
+    INT8                    *Name);
 
 
-
-
-#endif  /* __DEBUGGER_H__ */
+#endif  /* __ACDEBUG_H__ */
