@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -126,6 +126,7 @@ char                        *AslWarnings [] = {
 };
 
 char                        *AslErrors [] = {
+    "Memory allocation failure",
     "Could not open input file",
     "Could not create output filename",
     "Could not open output AML file",
@@ -134,6 +135,8 @@ char                        *AslErrors [] = {
     "Could not create debug filename",
     "Could not open debug file",
     "Package length too long to encode",
+    "Local variable is not initialized",
+    "Method argument does not exist",
 };
 
 
@@ -190,15 +193,27 @@ AslCompilererror(char *s)
 
 void
 AslWarning (
-    UINT32                  WarningId)
+    UINT32                  WarningId,
+    UINT32                  LineNumber)
 {
 
-    fprintf (stderr, "Warning %04.4d: %s\n", 
+    fprintf (stderr, "%s", Gbl_InputFilename);
+    if (LineNumber)
+    {
+        fprintf (stderr, "(%04d)", LineNumber);
+    }
+    fprintf (stderr, " - Warning %04.4d: %s\n", 
                 WarningId + ASL_WARNING_PREFIX, AslWarnings[WarningId]);
 
     if (Gbl_DebugFlag)
     {
-        printf ("Warning %04.4d: %s\n", 
+        printf ("%s", Gbl_InputFilename);
+        if (LineNumber)
+        {
+            printf ("(%04d)", LineNumber);
+        }
+
+        printf (" - Warning %04.4d: %s\n", 
                     WarningId + ASL_WARNING_PREFIX, AslWarnings[WarningId]);
     }
     
@@ -220,15 +235,28 @@ AslWarning (
 
 void
 AslError (
-    UINT32                  ErrorId)
+    UINT32                  ErrorId,
+    UINT32                  LineNumber)
 {
 
-    fprintf (stderr, "Error %04.4d: %s\n", 
+    fprintf (stderr, "%s", Gbl_InputFilename);
+    if (LineNumber)
+    {
+        fprintf (stderr, "(%04d)", LineNumber);
+    }
+
+    fprintf (stderr, " - Error %04.4d  : %s\n", 
                 ErrorId + ASL_ERROR_PREFIX, AslErrors[ErrorId]);
 
     if (Gbl_DebugFlag)
     {
-        printf ("Error %04.4d: %s\n", 
+        printf ("%s", Gbl_InputFilename);
+        if (LineNumber)
+        {
+            printf ("(%04d)", LineNumber);
+        }
+
+        printf (" - Error %04.4d  : %s\n", 
                     ErrorId + ASL_ERROR_PREFIX, AslErrors[ErrorId]);
     }
 
