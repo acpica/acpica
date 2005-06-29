@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -236,12 +236,14 @@ typedef enum
     ASL_FILE_NAMESPACE_OUTPUT,
     ASL_FILE_DEBUG_OUTPUT,
     ASL_FILE_ASM_SOURCE_OUTPUT,
-    ASL_FILE_C_SOURCE_OUTPUT
+    ASL_FILE_C_SOURCE_OUTPUT,
+    ASL_FILE_ASM_INCLUDE_OUTPUT,
+    ASL_FILE_C_INCLUDE_OUTPUT
 
 } ASL_FILE_TYPES;
 
 
-#define ASL_MAX_FILE_TYPE       10
+#define ASL_MAX_FILE_TYPE       12
 #define ASL_NUM_FILES           (ASL_MAX_FILE_TYPE + 1)
 
 
