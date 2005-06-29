@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -145,7 +146,7 @@
 
 void
 AcpiDbSetOutputDestination (
-    INT32                   OutputFlags)
+    UINT32                  OutputFlags)
 {
 
     AcpiGbl_DbOutputFlags = (UINT8) OutputFlags;
@@ -183,7 +184,7 @@ AcpiDbDumpBuffer (
     AcpiOsPrintf ("\nLocation 0x%X:\n", Address);
 
     AcpiDbgLevel |= TRACE_TABLES;
-    AcpiCmDumpBuffer ((INT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiCmDumpBuffer ((UINT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 }
 
 
@@ -246,7 +247,7 @@ AcpiDbDumpObject (
     case ACPI_TYPE_BUFFER:
 
         AcpiOsPrintf ("[Buffer]  Value: ");
-        AcpiCmDumpBuffer ((INT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        AcpiCmDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         break;
 
 
@@ -283,7 +284,7 @@ AcpiDbDumpObject (
 
 void
 AcpiDbPrepNamestring (
-    INT8                    *Name)
+    NATIVE_CHAR             *Name)
 {
 
 
@@ -340,7 +341,7 @@ AcpiDbSecondPassParse (
     ACPI_GENERIC_OP         *Root)
 {
     ACPI_GENERIC_OP         *Op = Root;
-    ACPI_DEFERRED_OP        *Method;
+    ACPI_EXTENDED_OP        *Method;
     ACPI_GENERIC_OP         *SearchOp;
     ACPI_GENERIC_OP         *StartOp;
     ACPI_STATUS             Status = AE_OK;
@@ -353,9 +354,9 @@ AcpiDbSecondPassParse (
     {
         if (Op->Opcode == AML_METHOD_OP)
         {
-            Method = (ACPI_DEFERRED_OP *) Op;
-            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0,
-                        AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
+            Method = (ACPI_EXTENDED_OP *) Op;
+            Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
+                        NULL, NULL, NULL, AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
 
 
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
@@ -406,11 +407,11 @@ AcpiDbSecondPassParse (
 
 ACPI_NAMED_OBJECT*
 AcpiDbLocalNsLookup (
-    INT8                    *Name)
+    NATIVE_CHAR             *Name)
 {
-    INT8                    *InternalPath;
+    NATIVE_CHAR             *InternalPath;
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *Entry = NULL;
+    ACPI_NAMED_OBJECT       *NameDesc = NULL;
 
 
     AcpiDbPrepNamestring (Name);
@@ -430,7 +431,7 @@ AcpiDbLocalNsLookup (
     /* Use the root scope for the start of the search */
 
     Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
-                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
+                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &NameDesc);
 
     if (ACPI_FAILURE (Status))
     {
@@ -440,7 +441,7 @@ AcpiDbLocalNsLookup (
 
     AcpiCmFree (InternalPath);
 
-    return (Entry);
+    return (NameDesc);
 }
 
 

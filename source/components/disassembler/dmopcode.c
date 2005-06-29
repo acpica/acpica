@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -130,7 +131,7 @@
 #define MAX_SHOW_ENTRY      128
 
 
-INT8                        *INDENT_STRING = "....";
+NATIVE_CHAR                 *INDENT_STRING = "....";
 
 
 /*******************************************************************************
@@ -148,7 +149,7 @@ INT8                        *INDENT_STRING = "....";
 #define BLOCK_PAREN 1
 #define BLOCK_BRACE 2
 
-INT32
+UINT32
 AcpiDbBlockType (
     ACPI_GENERIC_OP *Op)
 {
@@ -226,29 +227,29 @@ AcpiPsDisplayObjectPathname (
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *Nte;
-    INT8                    Buffer[MAX_SHOW_ENTRY];
+    ACPI_NAMED_OBJECT       *NameDesc;
+    NATIVE_CHAR             Buffer[MAX_SHOW_ENTRY];
     UINT32                  BufferSize = MAX_SHOW_ENTRY;
 
 
     AcpiOsPrintf ("  (Path ");
 
-    /* Just get the NTE out of the Op object */
+    /* Just get the NamedObject out of the Op object */
 
-    Nte = Op->AcpiNamedObject;
-    if (!Nte)
+    NameDesc = Op->AcpiNamedObject;
+    if (!NameDesc)
     {
         /*
-         * No NTE, so we can't get the pathname since the object
+         * No Named obj,  so we can't get the pathname since the object
          * is not in the namespace.  This can happen during single
          * stepping where a dynamic named object is *about* to be created.
          */
         return (AE_OK);
     }
 
-    /* Convert NTE/handle to a full pathname */
+    /* Convert NamedDesc/handle to a full pathname */
 
-    Status = AcpiNsHandleToPathname (Nte, &BufferSize, Buffer);
+    Status = AcpiNsHandleToPathname (NameDesc, &BufferSize, Buffer);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("****Could not get pathname****)");
@@ -434,7 +435,7 @@ AcpiDbDisplayOp (
 
 void
 AcpiDbDisplayNamestring (
-    INT8                    *Name)
+    NATIVE_CHAR             *Name)
 {
     UINT32                  SegCount;
     BOOLEAN                 DoDot = FALSE;
@@ -462,7 +463,7 @@ AcpiDbDisplayNamestring (
         break;
 
     case AML_MULTI_NAME_PREFIX_OP:
-        SegCount = (INT32) GET8 (Name + 1);
+        SegCount = (UINT32) GET8 (Name + 1);
         Name += 2;
         break;
 
