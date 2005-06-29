@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -664,12 +664,12 @@ AcpiOsDeleteLock (
 }
 
 
-void
+UINT32
 AcpiOsAcquireLock (
-    ACPI_HANDLE             Handle,
-    UINT32                  Flags)
+    ACPI_HANDLE             Handle)
 {
     AcpiOsWaitSemaphore (Handle, 1, 0xFFFF);
+    return (0);
 }
 
 

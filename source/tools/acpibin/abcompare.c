@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.10 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,95 @@ FILE                *File1;
 FILE                *File2;
 ACPI_TABLE_HEADER   Header1;
 ACPI_TABLE_HEADER   Header2;
+struct stat         Gbl_StatBuf;
+
+#define BUFFER_SIZE 256
+char                Buffer[BUFFER_SIZE];
+
+
+#define DB_CONSOLE_OUTPUT            0x02
+#define ACPI_DB_REDIRECTABLE_OUTPUT  0x01
+
+extern FILE                        *AcpiGbl_DebugFile = NULL;
+extern UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
+
+/* Local prototypes */
+
+static BOOLEAN
+AbValidateHeader (
+    ACPI_TABLE_HEADER       *Header);
+
+static UINT8
+AcpiTbChecksum (
+    void                    *Buffer,
+    UINT32                  Length);
+
+static char *
+AbGetFile (
+    char                    *Filename,
+    UINT32                  *FileSize);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtHexCharToValue
+ *
+ * PARAMETERS:  HexChar         - Hex character in Ascii
+ *
+ * RETURN:      The binary value of the hex character
+ *
+ * DESCRIPTION: Perform ascii-to-hex translation
+ *
+ ******************************************************************************/
+
+static UINT8
+UtHexCharToValue (
+    int                     HexChar,
+    UINT8                   *OutBinary)
+{
+
+    if (HexChar >= 0x30 && HexChar <= 0x39)
+    {
+        *OutBinary = (UINT8) (HexChar - 0x30);
+        return (1);
+    }
+
+    else if (HexChar >= 0x41 && HexChar <= 0x46)
+    {
+        *OutBinary = (UINT8) (HexChar - 0x37);
+        return (1);
+    }
+
+    else if (HexChar >= 0x61 && HexChar <= 0x66)
+    {
+        *OutBinary = (UINT8) (HexChar - 0x57);
+        return (1);
+    }
+    return (0);
+}
+
+static UINT8
+AbHexByteToBinary (
+    char                    *HexString,
+    char                    *OutBinary)
+{
+    UINT8                   Local1;
+    UINT8                   Local2;
+
+
+    if (!UtHexCharToValue (HexString[0], &Local1))
+    {
+        return (0);
+    }
+    if (!UtHexCharToValue (HexString[1], &Local2))
+    {
+        return (0);
+    }
+
+    *OutBinary = (UINT8) ((Local1 << 4) | Local2);
+    return (2);
+
+}
 
 
 /******************************************************************************
@@ -133,7 +222,7 @@ ACPI_TABLE_HEADER   Header2;
  *
  ******************************************************************************/
 
-BOOLEAN
+static BOOLEAN
 AbValidateHeader (
     ACPI_TABLE_HEADER       *Header)
 {
@@ -145,6 +234,203 @@ AbValidateHeader (
     }
 
     return TRUE;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbChecksum
+ *
+ * PARAMETERS:  Buffer              - Buffer to checksum
+ *              Length              - Size of the buffer
+ *
+ * RETURNS      8 bit checksum of buffer
+ *
+ * DESCRIPTION: Computes an 8 bit checksum of the buffer(length) and returns it.
+ *
+ ******************************************************************************/
+
+static UINT8
+AcpiTbChecksum (
+    void                    *Buffer,
+    UINT32                  Length)
+{
+    const UINT8             *limit;
+    const UINT8             *rover;
+    UINT8                   sum = 0;
+
+
+    if (Buffer && Length)
+    {
+        /* Buffer and Length are valid */
+
+        limit = (UINT8 *) Buffer + Length;
+
+        for (rover = Buffer; rover < limit; rover++)
+        {
+            sum = (UINT8) (sum + *rover);
+        }
+    }
+    return (sum);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AbDisplayHeader
+ *
+ * DESCRIPTION: Display an ACPI table header
+ *
+ ******************************************************************************/
+
+void
+AbDisplayHeader (
+    char                    *File1Path)
+{
+    UINT32                  Actual1;
+
+
+    File1 = fopen (File1Path, "rb");
+    if (!File1)
+    {
+        printf ("Could not open file %s\n", File1Path);
+        return;
+    }
+
+    Actual1 = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
+    {
+        printf ("File %s does not contain an ACPI table header\n", File1Path);
+        return;
+    }
+
+    if (!AbValidateHeader (&Header1))
+    {
+        return;
+    }
+
+    /* Display header information */
+
+    printf ("Signature         : %8.4s\n",    Header1.Signature);
+    printf ("Length            : %8.8X\n",    Header1.Length);
+    printf ("Revision          : % 8.2X\n",   Header1.Revision);
+    printf ("Checksum          : % 8.2X\n",   Header1.Checksum);
+    printf ("OEM ID            : %8.6s\n",    Header1.OemId);
+    printf ("OEM Table ID      : %8.8s\n",    Header1.OemTableId);
+    printf ("OEM Revision      : %8.8X\n",    Header1.OemRevision);
+    printf ("ASL Compiler ID   : %8.4s\n",    Header1.AslCompilerId);
+    printf ("Compiler Revision : %8.8X\n",    Header1.AslCompilerRevision);
+    printf ("\n");
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AbComputeChecksum
+ *
+ * DESCRIPTION: Compute proper checksum for an ACPI table
+ *
+ ******************************************************************************/
+
+void
+AbComputeChecksum (
+    char                    *File1Path)
+{
+    UINT32                  Actual1;
+    ACPI_TABLE_HEADER       *Table;
+    UINT8                   Checksum;
+
+
+    File1 = fopen (File1Path, "rb");
+    if (!File1)
+    {
+        printf ("Could not open file %s\n", File1Path);
+        return;
+    }
+
+    Actual1 = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
+    {
+        printf ("File %s does not contain an ACPI table header\n", File1Path);
+        return;
+    }
+
+    if (!AbValidateHeader (&Header1))
+    {
+        return;
+    }
+
+    if (!Gbl_TerseMode)
+    {
+        /* Display header information */
+
+        printf ("Signature         : %8.4s\n",    Header1.Signature);
+        printf ("Length            : %8.8X\n",    Header1.Length);
+        printf ("Revision          : % 8.2X\n",   Header1.Revision);
+        printf ("Checksum          : % 8.2X\n",   Header1.Checksum);
+        printf ("OEM ID            : %8.6s\n",    Header1.OemId);
+        printf ("OEM Table ID      : %8.8s\n",    Header1.OemTableId);
+        printf ("OEM Revision      : %8.8X\n",    Header1.OemRevision);
+        printf ("ASL Compiler ID   : %8.4s\n",    Header1.AslCompilerId);
+        printf ("Compiler Revision : %8.8X\n",    Header1.AslCompilerRevision);
+        printf ("\n");
+    }
+
+    /* Allocate a buffer to hold the entire table */
+
+    Table = AcpiOsAllocate (Header1.Length);
+    if (!Table)
+    {
+        printf ("could not allocate\n");
+        return;
+    }
+
+    /* Read the entire table, including header */
+
+    fseek (File1, 0, SEEK_SET);
+    Actual1 = fread (Table, 1, Header1.Length, File1);
+    if (Actual1 < Header1.Length)
+    {
+        printf ("could not read table\n");
+        return;
+    }
+
+    /* Compute the checksum for the table */
+
+    Table->Checksum = 0;
+
+    Checksum = (UINT8) (0 - AcpiTbChecksum (Table, Table->Length));
+    printf ("Computed checksum: 0x%X\n\n", Checksum);
+
+    if (Header1.Checksum == Checksum)
+    {
+        printf ("Checksum ok in AML file, not updating\n");
+        return;
+    }
+
+    /* Open the target file for writing, to update checksum */
+
+    fclose (File1);
+    File1 = fopen (File1Path, "r+b");
+    if (!File1)
+    {
+        printf ("Could not open file %s for writing\n", File1Path);
+        return;
+    }
+
+    /* Set the checksum, write the new header */
+
+    Header1.Checksum = Checksum;
+
+    Actual1 = fwrite (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
+    {
+        printf ("Could not write updated table header\n");
+        return;
+    }
+
+    printf ("Wrote new checksum\n");
+    return;
 }
 
 
@@ -167,6 +453,7 @@ AbCompareAmlFiles (
     UINT8                   Char1;
     UINT8                   Char2;
     UINT8                   Mismatches = 0;
+    BOOLEAN                 HeaderMismatch = FALSE;
 
 
     File1 = fopen (File1Path, "rb");
@@ -176,14 +463,12 @@ AbCompareAmlFiles (
         return -1;
     }
 
-
     File2 = fopen (File2Path, "rb");
     if (!File2)
     {
         printf ("Could not open file %s\n", File2Path);
         return -1;
     }
-
 
     /* Read the ACPI header from each file */
 
@@ -209,12 +494,11 @@ AbCompareAmlFiles (
 
     /* Table signatures must match */
 
-    if ((UINT32) Header1.Signature != (UINT32) Header1.Signature)
+    if (*((UINT32 *) Header1.Signature) != *((UINT32 *) Header2.Signature))
     {
         printf ("Table signatures do not match\n");
         return -1;
     }
-
 
     if (!Gbl_TerseMode)
     {
@@ -232,6 +516,12 @@ AbCompareAmlFiles (
         printf ("\n");
     }
 
+    if (memcmp (Header1.Signature, Header2.Signature, sizeof (ACPI_TABLE_HEADER)))
+    {
+        printf ("Headers do not match exactly\n");
+        HeaderMismatch = TRUE;
+    }
+
     /* Do the byte-by-byte compare */
 
     Actual1 = fread (&Char1, 1, 1, File1);
@@ -242,21 +532,20 @@ AbCompareAmlFiles (
     {
         if (Char1 != Char2)
         {
-            printf ("Error - Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n", Offset, Char1, Char2);
+            printf ("Error - Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n", 
+                Offset, Char1, Char2);
             Mismatches++;
-            if (Mismatches > 10)
+            if (Mismatches > 100)
             {
-                printf ("10 Mismatches: Too many mismatches\n");
-                return 0;
+                printf ("100 Mismatches: Too many mismatches\n");
+                return -1;
             }
         }
 
         Offset++;
         Actual1 = fread (&Char1, 1, 1, File1);
         Actual2 = fread (&Char2, 1, 1, File2);
-
     }
-
 
     if (Actual1)
     {
@@ -270,7 +559,14 @@ AbCompareAmlFiles (
     }
     else if (!Mismatches)
     {
-        printf ("Files compare exactly after header\n");
+        if (HeaderMismatch)
+        {
+            printf ("Files compare exactly after header\n");
+        }
+        else
+        {
+            printf ("Files compare exactly\n");
+        }
     }
 
     printf ("%d Mismatches found\n", Mismatches);
@@ -278,29 +574,25 @@ AbCompareAmlFiles (
 }
 
 
-struct stat              Gbl_StatBuf;
-
-
 /******************************************************************************
  *
  * FUNCTION:    AsGetFile
  *
- * DESCRIPTION: Open a file and read it entirely into a an allocated buffer
+ * DESCRIPTION: Open a file and read it entirely into a new buffer
  *
  ******************************************************************************/
 
-char *
+static char *
 AbGetFile (
     char                    *Filename,
     UINT32                  *FileSize)
 {
-
     int                     FileHandle;
     UINT32                  Size;
     char                    *Buffer = NULL;
 
 
-    /* Binary mode leaves CR/LF pairs */
+    /* Binary mode does not alter CR/LF pairs */
 
     FileHandle = open (Filename, O_BINARY | O_RDONLY);
     if (!FileHandle)
@@ -309,22 +601,21 @@ AbGetFile (
         return NULL;
     }
 
+    /* Need file size to allocate a buffer */
+
     if (fstat (FileHandle, &Gbl_StatBuf))
     {
         printf ("Could not get file status for %s\n", Filename);
         goto ErrorExit;
     }
 
-    /*
-     * Create a buffer for the entire file
-     * Add 10% extra to accomodate string replacements
-     */
+    /* Allocate a buffer for the entire file */
 
     Size = Gbl_StatBuf.st_size;
-    Buffer = calloc (Size + (Size / 10), 1);
+    Buffer = calloc (Size, 1);
     if (!Buffer)
     {
-        printf ("Could not allocate buffer of size %d\n", Size + (Size / 10));
+        printf ("Could not allocate buffer of size %d\n", Size);
         goto ErrorExit;
     }
 
@@ -348,63 +639,218 @@ ErrorExit:
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AbDumpAmlFile
+ *
+ * DESCRIPTION: Dump a binary AML file to a text file
+ *
+ ******************************************************************************/
+
 int
 AbDumpAmlFile (
-    char                    *File1Path)
+    char                    *File1Path,
+    char                    *File2Path)
 {
     char                    *FileBuffer;
     UINT32                  FileSize;
+    FILE                    *FileOutHandle;
 
+
+    /* Get the entire AML file, validate header */
 
     FileBuffer = AbGetFile (File1Path, &FileSize);
     printf ("File %s contains 0x%X bytes\n\n", File1Path, FileSize);
 
+    FileOutHandle = fopen (File2Path, "wb");
+    if (!FileOutHandle)
+    {
+        printf ("Could not open %s\n", File2Path);
+        return -1;
+    }
 
     if (!AbValidateHeader ((ACPI_TABLE_HEADER *) FileBuffer))
     {
         return -1;
     }
 
+    /* Convert binary AML to text, using common dump buffer routine */
 
+    AcpiGbl_DebugFile = FileOutHandle;
+    AcpiGbl_DbOutputFlags = ACPI_DB_REDIRECTABLE_OUTPUT;
+
+    AcpiOsPrintf ("%4.4s\n", ((ACPI_TABLE_HEADER *) FileBuffer)->Signature);
     AcpiDbgLevel = ACPI_UINT32_MAX;
-    AcpiUtDumpBuffer (FileBuffer, FileSize, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer ((UINT8 *) FileBuffer, FileSize,
+        DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     return 0;
 }
 
-#define DB_CONSOLE_OUTPUT       0x02
 
-FILE                        *AcpiGbl_DebugFile = NULL;
-UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
+/******************************************************************************
+ *
+ * FUNCTION:    AbExtractAmlFile
+ *
+ * DESCRIPTION: Extract a binary AML file from a text file (as produced by the
+ *              DumpAmlFile procedure or the "acpidmp" table utility.
+ *
+ ******************************************************************************/
 
-
-void *
-AcpiUtCallocate (
-    UINT32                  Size,
-    UINT32                  Component,
-    NATIVE_CHAR             *Module,
-    UINT32                  Line)
+int
+AbExtractAmlFile (
+    char                    *TableSig,
+    char                    *File1Path,
+    char                    *File2Path)
 {
+    char                    *Table;
+    char                    Value;
+    UINT32                  i;
+    FILE                    *FileHandle;
+    FILE                    *FileOutHandle;
+    UINT32                  Count = 0;
+    int                     Scanned;
 
-    return NULL;
+
+    /* Open in/out files. input is in text mode, output is in binary mode */
+
+    FileHandle = fopen (File1Path, "rt");
+    if (!FileHandle)
+    {
+        printf ("Could not open %s\n", File1Path);
+        return -1;
+    }
+
+    FileOutHandle = fopen (File2Path, "w+b");
+    if (!FileOutHandle)
+    {
+        printf ("Could not open %s\n", File2Path);
+        return -1;
+    }
+
+    /* Force input table sig to uppercase */
+
+    AcpiUtStrupr (TableSig);
+
+
+    /* TBD: examine input for ASCII */
+
+
+    /* We have an ascii file, grab one line at a time */
+
+    while (fgets (Buffer, BUFFER_SIZE, FileHandle))
+    {
+        /* The 4-char ACPI signature appears at the beginning of a line */
+
+        if (!strncmp (Buffer, TableSig, 4))
+        {
+            printf ("Found table [%4.4s]\n", TableSig);
+
+            /* 
+             * Eat all lines in the table, of the form:
+             *   <offset>: <16 bytes of hex data, separated by spaces> <ASCII representation> <newline>
+             *
+             * Example:
+             *
+             *   02C0: 5F 53 42 5F 4C 4E 4B 44 00 12 13 04 0C FF FF 08  _SB_LNKD........
+             *
+             */
+            while (fgets (Buffer, BUFFER_SIZE, FileHandle))
+            {
+                /* Get past the offset, terminated by a colon */
+
+                if (Count >= 0x3C50)
+                {
+                    printf ("end\n");
+                }
+
+                Table = strchr (Buffer, ':');
+                if (!Table)
+                {
+                    /* No colon, all done */
+                    goto Exit;
+                }
+
+                Table += 2; /* Eat the colon + space */
+
+                for (i = 0; i < 16; i++)
+                {
+                    Scanned = AbHexByteToBinary (Table, &Value);
+                    if (!Scanned)
+                    {
+                        goto Exit;
+                    }
+
+                    Table += 3; /* Go past this hex byte and space */
+
+                    /* Write the converted (binary) byte */
+
+                    fwrite (&Value, 1, 1, FileOutHandle);
+                    Count++;
+                }
+
+#if 0
+                Table += 2; /* Eat the colon + space */
+
+                /* Convert up to 16 bytes per input line */
+
+                for (i = 0; i < 16; i++)
+                {
+                    /* Convert next integer from ASCII to binary, eats the space */
+
+                    Value = strtoul (Table, &End, 16);
+                    if (End == Table)
+                    {
+                        /*
+                         * No conversion was performed, all done.  If other tables
+                         * follow this one, this is where we will exit.
+                         */
+                        goto Exit;
+                    }
+
+                    Table += 3; /* Go past this hex byte and space */
+
+                    /* Write the converted (binary) byte */
+
+                    fwrite (&(char *) Value, 1, 1, FileOutHandle);
+                    Count++;
+                }
+#endif
+            }
+
+            /* No more lines, EOF, all done */
+
+            goto Exit;
+        }
+    }
+
+    /* Searched entire file, no match to table signature */
+
+    printf ("Could not match table signature\n");
+    fclose (FileHandle);
+    return -1;
+
+Exit:
+    printf ("%d (0x%X) bytes written to %s\n", Count, Count, File2Path);
+    fclose (FileHandle);
+    fclose (FileOutHandle);
+    return 0;
 }
 
-void
-AcpiUtFree (
-    void                    *Address,
-    UINT32                  Component,
-    NATIVE_CHAR             *Module,
-    UINT32                  Line)
+
+/******************************************************************************
+ *
+ * FUNCTION:    Stubs
+ *
+ * DESCRIPTION: For linkage
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AeLocalGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
 {
-    return;
+    return AE_OK;
 }
 
-
-void *
-AcpiUtMemset (
-    void                    *Dest,
-    UINT32                  Value,
-    NATIVE_UINT             Count)
-{
-    return (Dest);
-}

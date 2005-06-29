@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.57 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -145,7 +145,6 @@
         ACPI_MODULE_NAME    ("oswinxf")
 
 
-UINT32                      AcpiGbl_NextSemaphore = 0;
 #define NUM_SEMAPHORES      128
 
 typedef struct semaphore_entry
@@ -165,7 +164,7 @@ AeLocalGetRootPointer (
     ACPI_POINTER            *Address);
 
 FILE                        *AcpiGbl_OutputFile;
-LARGE_INTEGER               TimerFrequency;
+UINT64                      TimerFrequency2;
 
 #ifndef _ACPI_EXEC_APP
 /* Used by both iASL and AcpiDump applications */
@@ -327,6 +326,7 @@ ACPI_STATUS
 AcpiOsInitialize (void)
 {
     UINT32                  i;
+    LARGE_INTEGER           TimerFrequency;
 
 
     AcpiGbl_OutputFile = stdout;
@@ -336,9 +336,12 @@ AcpiOsInitialize (void)
         AcpiGbl_Semaphores[i].OsHandle = NULL;
     }
 
-    if (!QueryPerformanceFrequency (&TimerFrequency))
+    TimerFrequency2 = 0;
+    if (QueryPerformanceFrequency (&TimerFrequency))
     {
-        TimerFrequency.QuadPart = 0;
+        /* Convert ticks/sec to ticks/100nsec */
+
+        TimerFrequency2 = TimerFrequency.QuadPart / 10000;
     }
 
     return AE_OK;
@@ -492,13 +495,12 @@ AcpiOsGetTimer (
 
     /* Attempt to use hi-granularity timer first */
 
-    if (TimerFrequency.QuadPart && 
+    if (TimerFrequency2 &&
         QueryPerformanceCounter (&Timer))
     {
         /* Convert to 100 nanosecond ticks */
 
-        return ((UINT64) (
-            (Timer.QuadPart * 10000000) / TimerFrequency.QuadPart));
+        return ((UINT64) (Timer.QuadPart / TimerFrequency2));
     }
 
     /* Fall back to the lo-granularity timer */
@@ -818,6 +820,7 @@ AcpiOsCreateSemaphore (
 {
 #ifdef _MULTI_THREADED
     void                *Mutex;
+    UINT32              i;
 
     ACPI_FUNCTION_NAME ("OsCreateSemaphore");
 #endif
@@ -840,6 +843,20 @@ AcpiOsCreateSemaphore (
 
 #ifdef _MULTI_THREADED
 
+    /* Find an empty slot */
+
+    for (i = 0; i < NUM_SEMAPHORES; i++)
+    {
+        if (!AcpiGbl_Semaphores[i].OsHandle)
+        {
+            break;
+        }
+    }
+    if (i >= NUM_SEMAPHORES)
+    {
+        return AE_LIMIT;
+    }
+
     /* Create an OS semaphore */
 
     Mutex = CreateSemaphore (NULL, InitialUnits, MaxUnits, NULL);
@@ -850,15 +867,14 @@ AcpiOsCreateSemaphore (
         return AE_NO_MEMORY;
     }
 
-    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].MaxUnits = (UINT16) MaxUnits;
-    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].CurrentUnits = (UINT16) InitialUnits;
-    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].OsHandle = Mutex;
+    AcpiGbl_Semaphores[i].MaxUnits = (UINT16) MaxUnits;
+    AcpiGbl_Semaphores[i].CurrentUnits = (UINT16) InitialUnits;
+    AcpiGbl_Semaphores[i].OsHandle = Mutex;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
-            AcpiGbl_NextSemaphore, MaxUnits, InitialUnits, Mutex));
+            i, MaxUnits, InitialUnits, Mutex));
 
-    *OutHandle = (void *) AcpiGbl_NextSemaphore;
-    AcpiGbl_NextSemaphore++;
+    *OutHandle = (void *) i;
 #endif
 
     return AE_OK;
@@ -954,7 +970,9 @@ AcpiOsWaitSemaphore (
         OsTimeout = INFINITE;
     }
 
-    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout);
+    /* Add 10ms to account for clock tick granularity */
+
+    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout+10);
     if (WaitStatus == WAIT_TIMEOUT)
     {
 /* Make optional -- wait of 0 is used to detect if unit is available
@@ -1054,12 +1072,12 @@ AcpiOsDeleteLock (
 }
 
 
-void
+UINT32
 AcpiOsAcquireLock (
-    ACPI_HANDLE             Handle,
-    UINT32                  Flags)
+    ACPI_HANDLE             Handle)
 {
     AcpiOsWaitSemaphore (Handle, 1, 0xFFFF);
+    return (0);
 }
 
 
@@ -1209,7 +1227,9 @@ AcpiOsSleep (
     ACPI_INTEGER            milliseconds)
 {
 
-    Sleep ((unsigned long) milliseconds);
+    /* Add 10ms to account for clock tick granularity */
+
+    Sleep (((unsigned long) milliseconds) + 10);
     return;
 }
 
