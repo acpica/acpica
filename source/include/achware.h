@@ -117,8 +117,6 @@
 #ifndef __HARDWARE_H__
 #define __HARDWARE_H__
 
-#include <errata.h>
-
 /* Sleep states */
 
 #define SLWA_DEBUG_LEVEL    4
