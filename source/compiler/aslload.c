@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -518,7 +518,7 @@ LdNamespace1Begin (
              * Which is used to workaround the fact that the MS interpreter
              * does not allow Scope() forward references.
              */
-            sprintf (MsgBuffer, "%s, %s, Changing type to (Scope)",
+            sprintf (MsgBuffer, "%s [%s], changing type to [Scope]",
                 Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
             AslError (ASL_REMARK, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
 
@@ -538,7 +538,7 @@ LdNamespace1Begin (
             /*
              * All other types are an error
              */
-            sprintf (MsgBuffer, "%s, %s", Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
+            sprintf (MsgBuffer, "%s [%s]", Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
             AslError (ASL_ERROR, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
 
             /*
