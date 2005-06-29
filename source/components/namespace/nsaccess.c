@@ -192,7 +192,7 @@ NsSetup (void)
     for (InitVal = PreDefinedNames; InitVal->Name; InitVal++)
     {
         Status = NsLookup (CurrentScope->Scope, InitVal->Name, InitVal->Type, 
-                                    MODE_Load, NS_NO_UPSEARCH, &NewEntry);
+                                    IMODE_LoadPass2, NS_NO_UPSEARCH, &NewEntry);
 
         /* 
          * if name entered successfully
@@ -233,10 +233,19 @@ NsSetup (void)
                 if (!ObjDesc->String.Pointer)
                 {
                     REPORT_ERROR ("Initial value string allocation failure");
+                    CmDeleteInternalObject (ObjDesc);
                     return_ACPI_STATUS (AE_NO_MEMORY);
                 }
 
                 strcpy ((char *) ObjDesc->String.Pointer, InitVal->Val);
+                break;
+
+
+            case TYPE_Mutex:
+                ObjDesc->Mutex.SyncLevel = (UINT16) strtoul (InitVal->Val, NULL, 10);
+                ObjDesc->Mutex.Semaphore = 0;
+                ObjDesc->Mutex.LockCount = 0;
+                ObjDesc->Mutex.ThreadId  = 0;
                 break;
 
 
@@ -265,7 +274,7 @@ NsSetup (void)
  *              Name            - Name to be entered, in internal format
  *                                as represented in the AML stream
  *              Type            - Type associated with name
- *              LoadMode        - MODE_Load => add name if not found
+ *              InterpreterMode - IMODE_LoadPass2 => add name if not found
  *              RetEntry        - Where the new entry (NTE) is placed
  *
  * RETURN:      Status
@@ -280,7 +289,7 @@ NsLookup (
     NAME_TABLE_ENTRY        *PrefixScope,
     char                    *Name, 
     ACPI_OBJECT_TYPE        Type, 
-    OPERATING_MODE          LoadMode,
+    OPERATING_MODE          InterpreterMode,
     UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry)
 {
@@ -311,7 +320,7 @@ NsLookup (
          * -  In Exec mode, there are no names to be found.
          */
 
-        if (MODE_Load1 == LoadMode)
+        if (IMODE_LoadPass1 == InterpreterMode)
         {
             if ((Status = NsSetup ()) != AE_OK)
             {
@@ -459,7 +468,7 @@ NsLookup (
          * Type is significant only at the last level.
          */
 
-        Status = NsSearchAndEnter (Name, EntryToSearch, LoadMode,
+        Status = NsSearchAndEnter (Name, EntryToSearch, InterpreterMode,
                                     NumSegments == 0 ? Type : TYPE_Any, Flags, &ThisEntry);
         if (Status != AE_OK)
         {
@@ -467,7 +476,8 @@ NsLookup (
             {
                 /* Name not in ACPI namespace  */
 
-                if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
+                if (IMODE_LoadPass1 == InterpreterMode || 
+                    IMODE_LoadPass2 == InterpreterMode)
                 {
                     REPORT_ERROR ("Name table overflow");
                 }
@@ -512,9 +522,10 @@ NsLookup (
              * and the next scope has not been allocated.
              */
 
-            DEBUG_PRINT (ACPI_INFO, ("NsLookup: Load mode=%d  ThisEntry=%x\n", LoadMode, ThisEntry));
+            DEBUG_PRINT (ACPI_INFO, ("NsLookup: Load mode=%d  ThisEntry=%x\n", InterpreterMode, ThisEntry));
 
-            if ((MODE_Load1 == LoadMode) || (MODE_Load == LoadMode))
+            if ((IMODE_LoadPass1 == InterpreterMode) || 
+                (IMODE_LoadPass2 == InterpreterMode))
             {   
                 /* First or second pass load mode ==> locate the next scope */
                 
@@ -533,7 +544,8 @@ NsLookup (
             {
                 DEBUG_PRINT (ACPI_ERROR, ("NsLookup: No child scope at entry %p\n", ThisEntry));
 
-                if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
+                if (IMODE_LoadPass1 == InterpreterMode || 
+                    IMODE_LoadPass2 == InterpreterMode)
                 {
                     REPORT_ERROR ("Name Table allocation failure");
                     return_ACPI_STATUS (AE_NOT_FOUND);
@@ -547,7 +559,8 @@ NsLookup (
 
             /* Scope table initialization */
 
-            if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
+            if (IMODE_LoadPass1 == InterpreterMode || 
+                IMODE_LoadPass2 == InterpreterMode)
             {
                 /* Initialize the new table */
 
