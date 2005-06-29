@@ -324,6 +324,8 @@ NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
  * FUNCTION:    NsDumpObjects 
  *
  * PARAMETERS:  Type                - Object type to be dumped
+ *              MaxDepth            - Maximum depth of dump.  Use INT_MAX
+ *                                    for an effectively unlimited depth.
  *              StartHandle         - Where in namespace to start/end search
  *
  * DESCRIPTION: Dump typed objects
@@ -332,9 +334,9 @@ NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
  ***************************************************************************/
 
 void
-NsDumpObjects (NsType Type, NsHandle StartHandle)
+NsDumpObjects (NsType Type, INT32 MaxDepth, NsHandle StartHandle)
 {
-    NsWalkNamespace (Type, StartHandle, INT_MAX, NsDumpOneObject, NULL);
+    NsWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, NULL);
 }
 
 
@@ -364,7 +366,7 @@ NsDumpRootDevices (void)
     AcpiNameToHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("All devices in the namespace:\n"));
-    NsDumpObjects (TYPE_Device, SysBusHandle);
+    NsDumpObjects (TYPE_Device, INT_MAX, SysBusHandle);
 
 }
 
@@ -410,7 +412,7 @@ NsDumpTables (NsHandle SearchBase, INT32 MaxDepth)
     }
 
 
-    NsDumpObjects (TYPE_Any, SearchHandle);
+    NsDumpObjects (TYPE_Any, MaxDepth, SearchHandle);
 }
 
 
