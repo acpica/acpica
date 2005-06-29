@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.165 $
+ *              $Revision: 1.166 $
  *
  *****************************************************************************/
 
@@ -290,35 +290,40 @@ AcpiNsDumpOneObject (
         return (AE_OK);
     }
 
-    /* Indent the object according to the level */
-
-    AcpiOsPrintf ("%2d%*s", (UINT32) Level - 1, (int) Level * 2, " ");
-
-    /* Check the node type and name */
-
-    if (Type > ACPI_TYPE_LOCAL_MAX)
+    if (!(Info->DisplayType & ACPI_DISPLAY_SHORT))
     {
-        ACPI_REPORT_WARNING (("Invalid ACPI Type %08X\n", Type));
-    }
+        /* Indent the object according to the level */
 
-    if (!AcpiUtValidAcpiName (ThisNode->Name.Integer))
-    {
-        ACPI_REPORT_WARNING (("Invalid ACPI Name %08X\n",
-            ThisNode->Name.Integer));
+        AcpiOsPrintf ("%2d%*s", (UINT32) Level - 1, (int) Level * 2, " ");
+
+        /* Check the node type and name */
+
+        if (Type > ACPI_TYPE_LOCAL_MAX)
+        {
+            ACPI_REPORT_WARNING (("Invalid ACPI Type %08X\n", Type));
+        }
+
+        if (!AcpiUtValidAcpiName (ThisNode->Name.Integer))
+        {
+            ACPI_REPORT_WARNING (("Invalid ACPI Name %08X\n",
+                ThisNode->Name.Integer));
+        }
+
+        AcpiOsPrintf ("%4.4s", AcpiUtGetNodeName (ThisNode));
     }
 
     /*
      * Now we can print out the pertinent information
      */
-    AcpiOsPrintf ("%4.4s %-12s %p ",
-            AcpiUtGetNodeName (ThisNode), AcpiUtGetTypeName (Type), ThisNode);
+    AcpiOsPrintf (" %-12s %p ",
+            AcpiUtGetTypeName (Type), ThisNode);
 
     DbgLevel = AcpiDbgLevel;
     AcpiDbgLevel = 0;
     ObjDesc = AcpiNsGetAttachedObject (ThisNode);
     AcpiDbgLevel = DbgLevel;
 
-    switch (Info->DisplayType)
+    switch (Info->DisplayType & ACPI_DISPLAY_MASK)
     {
     case ACPI_DISPLAY_SUMMARY:
 
