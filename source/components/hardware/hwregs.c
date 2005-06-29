@@ -15,15 +15,18 @@
  | control and status registers.
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 16:54:04 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 16:54:05 $
  | $Log: hwregs.c,v $
- | Revision 1.5  2005/06/29 16:54:04  aystarik
- | Major Cleanup
+ | Revision 1.6  2005/06/29 16:54:05  aystarik
+ | Anti-Polish
  |
  | 
- | date	99.01.20.17.38.00;	author rmoore1;	state Exp;
+ | date	99.02.12.01.51.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 6     2/11/99 5:51p Rmosgrov
+ * Anti-Polish
  * 
  * 5     1/20/99 9:38a Rmoore1
  * Major Cleanup
@@ -46,7 +49,7 @@
 // Quieted chatter from iC386
 // 
 //    Rev 1.16   11 Dec 1997 09:09:34   calingle
-// added code to vClearAllAcpiChipsetStatusBits to clear bits
+// added code to ClearAllAcpiChipsetStatusBits to clear bits
 // in GPE Block 0 and (if it exists) GPE Block 1.
 // 
 //    Rev 1.15   08 Dec 1997 17:08:20   kdbranno
@@ -60,7 +63,7 @@
 // 
 //    Rev 1.12   26 Nov 1997 11:00:54   kdbranno
 // Changed references to ACPI_REGISTER_READ and ACPI_REGISTER_WRITE to ACPI_READ and ACPI_WRITE.
-// Added function vClearAllAcpiChipsetStatusBits.
+// Added function ClearAllAcpiChipsetStatusBits.
 // 
 //    Rev 1.11   25 Sep 1997 11:14:44   calingle
 // Added support for general purpose event register read and 
@@ -71,7 +74,7 @@
 // statement.
 // 
 //    Rev 1.9   24 Sep 1997 09:15:52   calingle
-// Updated dAcpiRegisterIO () to support General Purpose Events by
+// Updated AcpiRegisterIO () to support General Purpose Events by
 // adding cases to the switch statemene for GPE0 Enable and 
 // GPE0 Status blocks.  This only allows for the GPE0 register since
 // the ACPI spec is not clear on how to tell which Register a given
@@ -98,11 +101,11 @@
 // bit.
 // 
 //    Rev 1.4   09 Jun 1997 13:14:26   kdbranno
-// changed casting of first parameter to vOut16.  Now casts correctly.
+// changed casting of first parameter to Out16.  Now casts correctly.
 //
 //    Rev 1.3   15 May 1997 11:18:56   kdbranno
 // Fixed bug in wAcpiRegisterIO ('=' became '==').  Changed inword/outword to
-// wIn16/vOut16.
+// In16/Out16.
 //
 //    Rev 1.2   16 Apr 1997 19:35:48   kdbranno
 // Redesigned and completed implementation of ACPI register access functions
@@ -133,9 +136,9 @@
 
 /******************************************************************************
  *
- * FUNCTION:    iGetBitShift
+ * FUNCTION:    GetBitShift
  *
- * PARAMETERS:  DWORD   dMask     - input mask to determine bit shift from.  Must
+ * PARAMETERS:  DWORD   Mask     - input mask to determine bit shift from.  Must
  *                                  have at least 1 bit set.
  *
  * RETURN:      bit location of the lsb of the mask
@@ -145,28 +148,28 @@
  ******************************************************************************/
 
 int
-iGetBitShift (DWORD dMask)
+GetBitShift (DWORD Mask)
 {
-    int             iShift;
+    int             Shift;
 
 
-    FUNCTION_TRACE ("iGetBitShift");
+    FUNCTION_TRACE ("GetBitShift");
 
 
-    for (iShift = 0; ((dMask >> iShift) & 1) == 0; iShift++)
+    for (Shift = 0; ((Mask >> Shift) & 1) == 0; Shift++)
     { ; }
 
-    return (iShift);
+    return (Shift);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    dAcpiRegisterIO
+ * FUNCTION:    AcpiRegisterIO
  *
- * PARAMETERS:  int     iReadWrite      - Either ACPI_READ or ACPI_WRITE.
- *              int     iRegisterId     - index of ACPI register to access
- *              DWORD   dValue          - (only used on write) value to write to the
+ * PARAMETERS:  int     ReadWrite      - Either ACPI_READ or ACPI_WRITE.
+ *              int     RegisterId     - index of ACPI register to access
+ *              DWORD   Value          - (only used on write) value to write to the
  *                                      register.  This value is shifted all the way right.
  *
  * RETURN:      value written to or read from specified register.  This value
@@ -177,74 +180,74 @@ iGetBitShift (DWORD dMask)
  ******************************************************************************/
 
 DWORD
-dAcpiRegisterIO (int iReadWrite, int iRegisterId, ... /* DWORD dValue */)
+AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
 {
-    DWORD           dRegisterValue, dMask, dValue;
-    DWORD           dGpeReg=0;
+    DWORD           RegisterValue, Mask, Value;
+    DWORD           GpeReg=0;
 
 
-    FUNCTION_TRACE ("dAcpiRegisterIO");
+    FUNCTION_TRACE ("AcpiRegisterIO");
 
     
-    if (iReadWrite == ACPI_WRITE)
+    if (ReadWrite == ACPI_WRITE)
     {
         va_list         marker;
 
-        va_start (marker, iRegisterId);
-        dValue = va_arg (marker, int);
+        va_start (marker, RegisterId);
+        Value = va_arg (marker, int);
         va_end (marker);
     }
 
-    switch (iRegisterId & REGISTER_BLOCK_MASK)
+    switch (RegisterId & REGISTER_BLOCK_MASK)
     {
         case PM1_EVT:
-            if (iRegisterId < (int) TMR_EN)
+            if (RegisterId < (int) TMR_EN)
             {   
                 /* status register */
                 
-                dRegisterValue = (DWORD) wIn16 ((WORD) pFACP->dPm1aEvtBlk);
+                RegisterValue = (DWORD) In16 ((WORD) FACP->Pm1aEvtBlk);
                 
-                if (pFACP->dPm1bEvtBlk)
+                if (FACP->Pm1bEvtBlk)
                 {
-                    dRegisterValue |= (DWORD) wIn16 ((WORD) pFACP->dPm1bEvtBlk);
+                    RegisterValue |= (DWORD) In16 ((WORD) FACP->Pm1bEvtBlk);
                 }
 
-                switch (iRegisterId)
+                switch (RegisterId)
                 {
                     case TMR_STS:
-                        dMask = TMR_STS_MASK;
+                        Mask = TMR_STS_MASK;
                         break;
                     
                     case BM_STS:
-                        dMask = BM_STS_MASK;
+                        Mask = BM_STS_MASK;
                         break;
                     
                     case GBL_STS:
-                        dMask = GBL_STS_MASK;
+                        Mask = GBL_STS_MASK;
                         break;
                     
                     case PWRBTN_STS:
-                        dMask = PWRBTN_STS_MASK;
+                        Mask = PWRBTN_STS_MASK;
                         break;
                     
                     case SLPBTN_STS:
-                        dMask = SLPBTN_STS_MASK;
+                        Mask = SLPBTN_STS_MASK;
                         break;
                     
                     case RTC_STS:
-                        dMask = RTC_STS_MASK;
+                        Mask = RTC_STS_MASK;
                         break;
                     
                     case WAK_STS:
-                        dMask = WAK_STS_MASK;
+                        Mask = WAK_STS_MASK;
                         break;
                     
                     default:
-                        dMask = 0;
+                        Mask = 0;
                         break;
                 }
                 
-                if (iReadWrite == ACPI_WRITE)
+                if (ReadWrite == ACPI_WRITE)
                 {
                     /* 
                      * status registers are different from the rest.  Clear by writing 1, writing 0
@@ -253,23 +256,23 @@ dAcpiRegisterIO (int iReadWrite, int iRegisterId, ... /* DWORD dValue */)
                      * unchanged 
                      */
                     
-                    dValue <<= iGetBitShift (dMask);
-                    dValue &= dMask;
+                    Value <<= GetBitShift (Mask);
+                    Value &= Mask;
                     
-                    if (dValue)
+                    if (Value)
                     {
 #if 0
-                        printf_bu ("\nAbout to write %04X to %04X", (WORD) dValue, 
-                                    (WORD) pFACP->dPm1aEvtBlk);
+                        printf_bu ("\nAbout to write %04X to %04X", (WORD) Value, 
+                                    (WORD) FACP->Pm1aEvtBlk);
 #endif
-                        vOut16 ((WORD) pFACP->dPm1aEvtBlk, (WORD) dValue);
+                        Out16 ((WORD) FACP->Pm1aEvtBlk, (WORD) Value);
                         
-                        if (pFACP->dPm1bEvtBlk)
+                        if (FACP->Pm1bEvtBlk)
                         {
-                            vOut16 ((WORD) pFACP->dPm1bEvtBlk, (WORD) dValue);
+                            Out16 ((WORD) FACP->Pm1bEvtBlk, (WORD) Value);
                         }
                         
-                        dRegisterValue = 0;
+                        RegisterValue = 0;
                     }
                 }
             }
@@ -278,66 +281,66 @@ dAcpiRegisterIO (int iReadWrite, int iRegisterId, ... /* DWORD dValue */)
             {   
                 /* enable register */
                 
-                dRegisterValue = (DWORD) wIn16 ((WORD) (pFACP->dPm1aEvtBlk + pFACP->bPm1EvtLen / 2));
+                RegisterValue = (DWORD) In16 ((WORD) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
                 
-                if (pFACP->dPm1bEvtBlk)
+                if (FACP->Pm1bEvtBlk)
                 {
-                    dRegisterValue |= (DWORD) wIn16 ((WORD) (pFACP->dPm1bEvtBlk + pFACP->bPm1EvtLen / 2));
+                    RegisterValue |= (DWORD) In16 ((WORD) (FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2));
                 }
 
-                switch (iRegisterId)
+                switch (RegisterId)
                 {
                     case TMR_EN:
-                        dMask = TMR_EN_MASK;
+                        Mask = TMR_EN_MASK;
                         break;
                     
                     case GBL_EN:
-                        dMask = GBL_EN_MASK;
+                        Mask = GBL_EN_MASK;
                         break;
                     
                     case PWRBTN_EN:
-                        dMask = PWRBTN_EN_MASK;
+                        Mask = PWRBTN_EN_MASK;
                         break;
                     
                     case SLPBTN_EN:
-                        dMask = SLPBTN_EN_MASK;
+                        Mask = SLPBTN_EN_MASK;
                         break;
                     
                     case RTC_EN:
-                        dMask = RTC_EN_MASK;
+                        Mask = RTC_EN_MASK;
                         break;
                     
                     default:
-                        dMask = 0;
+                        Mask = 0;
                         break;
                 }
                 
-                if (iReadWrite == ACPI_WRITE)
+                if (ReadWrite == ACPI_WRITE)
                 {
-                    dRegisterValue  &= ~dMask;
-                    dValue          <<= iGetBitShift (dMask);
-                    dValue          &= dMask;
-                    dRegisterValue  |= dValue;
+                    RegisterValue  &= ~Mask;
+                    Value          <<= GetBitShift (Mask);
+                    Value          &= Mask;
+                    RegisterValue  |= Value;
 #if 0
-                    printf_bu ("\nAbout to write %04X to %04X", (WORD) dRegisterValue, 
-                                (WORD) (pFACP->dPm1aEvtBlk + pFACP->bPm1EvtLen / 2));
+                    printf_bu ("\nAbout to write %04X to %04X", (WORD) RegisterValue, 
+                                (WORD) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
 #endif
-                    vOut16 ((WORD) (pFACP->dPm1aEvtBlk + pFACP->bPm1EvtLen / 2), 
-                            (WORD) dRegisterValue);
+                    Out16 ((WORD) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2), 
+                            (WORD) RegisterValue);
                     
-                    if (pFACP->dPm1bEvtBlk)
+                    if (FACP->Pm1bEvtBlk)
                     {
-                        vOut16 ((WORD)(pFACP->dPm1bEvtBlk + pFACP->bPm1EvtLen / 2), 
-                                (WORD) dRegisterValue);
+                        Out16 ((WORD)(FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2), 
+                                (WORD) RegisterValue);
                     }
                 }
             }
             break;
         
         case PM1_CONTROL:
-            dRegisterValue = 0;
+            RegisterValue = 0;
             
-            if (iRegisterId != (int) SLP_TYPb)   
+            if (RegisterId != (int) SLP_TYPb)   
             {
                 /* 
                  * SLP_TYPx registers are written differently
@@ -346,48 +349,48 @@ dAcpiRegisterIO (int iReadWrite, int iRegisterId, ... /* DWORD dValue */)
                  * for A may be different than the value for B 
                  */
 
-                dRegisterValue = (DWORD) wIn16 ((WORD)  pFACP->dPm1aCntBlk);
+                RegisterValue = (DWORD) In16 ((WORD)  FACP->Pm1aCntBlk);
             }
 
-            if (pFACP->dPm1bEvtBlk && iRegisterId != (int)SLP_TYPa)
+            if (FACP->Pm1bEvtBlk && RegisterId != (int)SLP_TYPa)
             {
-                dRegisterValue |= (DWORD) wIn16 ((WORD) pFACP->dPm1bCntBlk);
+                RegisterValue |= (DWORD) In16 ((WORD) FACP->Pm1bCntBlk);
             }
 
-            switch (iRegisterId)
+            switch (RegisterId)
             {
                 case SCI_EN:
-                    dMask = SCI_EN_MASK;
+                    Mask = SCI_EN_MASK;
                     break;
                 
                 case BM_RLD:
-                    dMask = BM_RLD_MASK;
+                    Mask = BM_RLD_MASK;
                     break;
                 
                 case GBL_RLS:
-                    dMask = GBL_RLS_MASK;
+                    Mask = GBL_RLS_MASK;
                     break;
                 
                 case SLP_TYPa:
                 case SLP_TYPb:
-                    dMask = SLP_TYPx_MASK;
+                    Mask = SLP_TYPx_MASK;
                     break;
                 
                 case SLP_EN:
-                    dMask = SLP_EN_MASK;
+                    Mask = SLP_EN_MASK;
                     break;
                 default:
                 
-                    dMask = 0;
+                    Mask = 0;
                     break;
             }
             
-            if (iReadWrite == ACPI_WRITE)
+            if (ReadWrite == ACPI_WRITE)
             {
-                dRegisterValue  &= ~dMask;
-                dValue          <<= iGetBitShift (dMask);
-                dValue          &= dMask;
-                dRegisterValue  |= dValue;
+                RegisterValue  &= ~Mask;
+                Value          <<= GetBitShift (Mask);
+                Value          &= Mask;
+                RegisterValue  |= Value;
                 
                 /* 
                  * SLP_TYPx registers are written differently
@@ -396,16 +399,16 @@ dAcpiRegisterIO (int iReadWrite, int iRegisterId, ... /* DWORD dValue */)
                  * for A may be different than the value for B
                  */
                 
-                if (iRegisterId != (int) SLP_TYPb)
+                if (RegisterId != (int) SLP_TYPb)
                 {
-                    if (dMask == SLP_EN_MASK)
+                    if (Mask == SLP_EN_MASK)
                     {
                         disable();  /* disable interrupts */
                     }
 
-                    vOut16 ((WORD) pFACP->dPm1aCntBlk, (WORD) dRegisterValue);
+                    Out16 ((WORD) FACP->Pm1aCntBlk, (WORD) RegisterValue);
                     
-                    if (dMask == SLP_EN_MASK)
+                    if (Mask == SLP_EN_MASK)
                     {
                         /* 
                          * enable interrupts, the SCI handler is likely going to be invoked as
@@ -416,72 +419,72 @@ dAcpiRegisterIO (int iReadWrite, int iRegisterId, ... /* DWORD dValue */)
                     }
                 }
                     
-                if (pFACP->dPm1bEvtBlk && iRegisterId != (int) SLP_TYPa)
+                if (FACP->Pm1bEvtBlk && RegisterId != (int) SLP_TYPa)
                 {
-                    vOut16 ((WORD) pFACP->dPm1bCntBlk, (WORD) dRegisterValue);
+                    Out16 ((WORD) FACP->Pm1bCntBlk, (WORD) RegisterValue);
                 }
             }
             break;
         
         case PM2_CONTROL:
-            dRegisterValue = (DWORD) wIn16 ((WORD) pFACP->dPm2CntBlk);
+            RegisterValue = (DWORD) In16 ((WORD) FACP->Pm2CntBlk);
             
-            switch (iRegisterId)
+            switch (RegisterId)
             {
                 case ARB_DIS:
-                    dMask = ARB_DIS_MASK;
+                    Mask = ARB_DIS_MASK;
                     break;
                 
                 default:
-                    dMask = 0;
+                    Mask = 0;
                     break;
             }
             
-            if (iReadWrite == ACPI_WRITE)
+            if (ReadWrite == ACPI_WRITE)
             {
-                dRegisterValue  &= ~dMask;
-                dValue          <<= iGetBitShift (dMask);
-                dValue          &= dMask;
-                dRegisterValue  |= dValue;
+                RegisterValue  &= ~Mask;
+                Value          <<= GetBitShift (Mask);
+                Value          &= Mask;
+                RegisterValue  |= Value;
 #if 0
-                printf_bu ("\nAbout to write %04X to %04X", (WORD) dRegisterValue, 
-                            (WORD) pFACP->dPm2CntBlk);
+                printf_bu ("\nAbout to write %04X to %04X", (WORD) RegisterValue, 
+                            (WORD) FACP->Pm2CntBlk);
 #endif
-                vOut16 ((WORD) pFACP->dPm2CntBlk, (WORD) dRegisterValue);
+                Out16 ((WORD) FACP->Pm2CntBlk, (WORD) RegisterValue);
             }
             break;
         
         case PM_TIMER:
-            dRegisterValue = dIn32 ((WORD) pFACP->dPmTmrBlk);
-            dMask = 0xFFFFFFFF;
+            RegisterValue = In32 ((WORD) FACP->dPmTmrBlk);
+            Mask = 0xFFFFFFFF;
             break;
         
         case GPE1_EN_BLOCK:
-            dGpeReg = (pFACP->dGpe1Blk + (DWORD) pFACP->bGpe1Base) + (dGpeReg + 
-                        ((DWORD) ((pFACP->bGpe1BlkLen) / 2)));
+            GpeReg = (FACP->Gpe1Blk + (DWORD) FACP->Gpe1Base) + (GpeReg + 
+                        ((DWORD) ((FACP->Gpe1BlkLen) / 2)));
         
         case GPE1_STS_BLOCK:
-            if (!dGpeReg)
+            if (!GpeReg)
             {
-                dGpeReg = (pFACP->dGpe1Blk + (DWORD) pFACP->bGpe1Base);
+                GpeReg = (FACP->Gpe1Blk + (DWORD) FACP->Gpe1Base);
             }
 
         case GPE0_EN_BLOCK:
-            if (!dGpeReg)
+            if (!GpeReg)
             {
-                dGpeReg = pFACP->dGpe0Blk + ((DWORD) ((pFACP->bGpe0BlkLen) / 2));
+                GpeReg = FACP->Gpe0Blk + ((DWORD) ((FACP->Gpe0BlkLen) / 2));
             }
         
         case GPE0_STS_BLOCK:
-            if (!dGpeReg)
+            if (!GpeReg)
             {
-                dGpeReg = pFACP->dGpe0Blk;
+                GpeReg = FACP->Gpe0Blk;
             }
 
             /* Determine the bit to be accessed */
             
-            dMask = (((DWORD) iRegisterId) & BIT_IN_REGISTER_MASK);
-            dMask = 1 << (dMask-1);
+            Mask = (((DWORD) RegisterId) & BIT_IN_REGISTER_MASK);
+            Mask = 1 << (Mask-1);
             
             /* The base address of the GPE 0 Register Block */
             /* Plus 1/2 the length of the GPE 0 Register Block */
@@ -489,48 +492,48 @@ dAcpiRegisterIO (int iReadWrite, int iRegisterId, ... /* DWORD dValue */)
             /* and each register is defined as 1/2 of the total Register Block */
             
             /* This sets the bit within wEnableBit that needs to be written to */
-            /* the register indicated in dMask to a 1, all others are 0 */
+            /* the register indicated in Mask to a 1, all others are 0 */
             
-            if (dMask > LOW_BYTE)
+            if (Mask > LOW_BYTE)
             {
                 /* Shift the value 1 byte to the right and add 1 to the register */
                 
-                dMask >>= ONE_BYTE;
-                dGpeReg++;
+                Mask >>= ONE_BYTE;
+                GpeReg++;
             }
             
             /* Now get the current Enable Bits in the selected Reg */
             
-            dRegisterValue = (DWORD) bIn8 ((WORD) dGpeReg);
+            RegisterValue = (DWORD) In8 ((WORD) GpeReg);
             
-            if (iReadWrite == ACPI_WRITE)
+            if (ReadWrite == ACPI_WRITE)
             {               
-                dRegisterValue  &= ~dMask;
-                dValue          <<= iGetBitShift (dMask);
-                dValue          &= dMask;
-                dRegisterValue  |= dValue;
+                RegisterValue  &= ~Mask;
+                Value          <<= GetBitShift (Mask);
+                Value          &= Mask;
+                RegisterValue  |= Value;
                
                 /* This write will put the iAction state into the General Purpose */
-                /* Enable Register indexed by the value in dMask */
+                /* Enable Register indexed by the value in Mask */
 #if 0
-                printf_bu ("\nAbout to write %04X to %04X", (WORD) dRegisterValue, 
-                            (WORD) dGpeReg);
+                printf_bu ("\nAbout to write %04X to %04X", (WORD) RegisterValue, 
+                            (WORD) GpeReg);
 #endif
-                vOut8 ((WORD) dGpeReg, (BYTE) dRegisterValue);
-                dRegisterValue = (DWORD) bIn8 ((WORD) dGpeReg);          
+                Out8 ((WORD) GpeReg, (BYTE) RegisterValue);
+                RegisterValue = (DWORD) In8 ((WORD) GpeReg);          
             }
             break;
         
         case PROCESSOR_BLOCK:
         default:
-            dMask = 0;
+            Mask = 0;
             break;
     }
 
-    dRegisterValue &= dMask;
-    dRegisterValue >>= iGetBitShift (dMask);
+    RegisterValue &= Mask;
+    RegisterValue >>= GetBitShift (Mask);
 
-    return (dRegisterValue);
+    return (RegisterValue);
 }
 
 #ifndef RMX
@@ -540,7 +543,7 @@ dAcpiRegisterIO (int iReadWrite, int iRegisterId, ... /* DWORD dValue */)
 
 /******************************************************************************
  *
- * FUNCTION:    vClearAllAcpiChipsetStatusBits
+ * FUNCTION:    ClearAllAcpiChipsetStatusBits
  *
  * PARAMETERS:  none
  *
@@ -551,45 +554,45 @@ dAcpiRegisterIO (int iReadWrite, int iRegisterId, ... /* DWORD dValue */)
  ******************************************************************************/
 
 void 
-vClearAllAcpiChipsetStatusBits (void)
+ClearAllAcpiChipsetStatusBits (void)
 {
-    WORD    wGpeLength;
-    WORD    wIndex;
+    WORD    GpeLength;
+    WORD    Index;
 
 
-    FUNCTION_TRACE ("vClearAllAcpiChipsetStatusBits");
+    FUNCTION_TRACE ("ClearAllAcpiChipsetStatusBits");
 
 
 #if 0
-    printf_bu ("\nAbout to write %04X to %04X", ALL_STS_BITS, (WORD) pFACP->dPm1aEvtBlk);
+    printf_bu ("\nAbout to write %04X to %04X", ALL_STS_BITS, (WORD) FACP->Pm1aEvtBlk);
 #endif
 
-    vOut16 ((WORD) pFACP->dPm1aEvtBlk, (WORD) ALL_FIXED_STS_BITS);
+    Out16 ((WORD) FACP->Pm1aEvtBlk, (WORD) ALL_FIXED_STS_BITS);
     
-    if (pFACP->dPm1bEvtBlk)
+    if (FACP->Pm1bEvtBlk)
     {
-        vOut16 ((WORD) pFACP->dPm1bEvtBlk, (WORD) ALL_FIXED_STS_BITS);
+        Out16 ((WORD) FACP->Pm1bEvtBlk, (WORD) ALL_FIXED_STS_BITS);
     }
 
     /* now clear GPE Bits */
     
-    if (pFACP->bGpe0BlkLen)
+    if (FACP->Gpe0BlkLen)
     {
-        wGpeLength = pFACP->bGpe0BlkLen / 2;
+        GpeLength = FACP->Gpe0BlkLen / 2;
 
-        for (wIndex = 0; wIndex < wGpeLength; wIndex++)
+        for (Index = 0; Index < GpeLength; Index++)
         {
-            vOut8 ((WORD) (pFACP->dGpe0Blk + wIndex), (BYTE) 0xff);
+            Out8 ((WORD) (FACP->Gpe0Blk + Index), (BYTE) 0xff);
         }
     }
 
-    if (pFACP->bGpe1BlkLen)
+    if (FACP->Gpe1BlkLen)
     {
-        wGpeLength = pFACP->bGpe1BlkLen / 2;
+        GpeLength = FACP->Gpe1BlkLen / 2;
 
-        for (wIndex = 0; wIndex < wGpeLength; wIndex++)
+        for (Index = 0; Index < GpeLength; Index++)
         {
-            vOut8 ((WORD) (pFACP->dGpe1Blk + wIndex), (BYTE) 0xff);
+            Out8 ((WORD) (FACP->Gpe1Blk + Index), (BYTE) 0xff);
         }
     }
 }   
