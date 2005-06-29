@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.72 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -293,7 +293,8 @@ AcpiAmlAccessNamedField (
     FUNCTION_TRACE_PTR ("AmlAccessNamedField", NamedField);
 
 
-    /* Basic data checking */
+    /* Parameter validation */
+
     if ((!NamedField) || (ACPI_READ == Mode && !Buffer))
     {
         DEBUG_PRINT (ACPI_ERROR,
@@ -367,23 +368,30 @@ AcpiAmlAccessNamedField (
     if (BufferLength > ByteFieldLength)
     {
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlAccessNamedField: Byte length %d too large, truncated to %x\n",
-	     ActualByteLength, ByteFieldLength));
+            ("AmlAccessNamedField: Byte length %X truncated to %X\n",
+            ActualByteLength, ByteFieldLength));
 
         ActualByteLength = ByteFieldLength;
     }
+
     /* TBD: should these round down to a power of 2? */
-    if (DIV_8(BitGranularity) > ByteFieldLength) {
+
+    if (DIV_8 (BitGranularity) > ByteFieldLength)
+    {
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlAccessNamedField: Bit granularity %d too large, truncated to %x\n",
-	     BitGranularity, MUL_8(ByteFieldLength)));
-	BitGranularity = MUL_8(ByteFieldLength);
+            ("AmlAccessNamedField: Bit granularity %X truncated to %X\n",
+            BitGranularity, MUL_8(ByteFieldLength)));
+
+        BitGranularity = MUL_8(ByteFieldLength);
     }
-    if (ByteGranularity > ByteFieldLength) {
+
+    if (ByteGranularity > ByteFieldLength)
+    {
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlAccessNamedField: Byte granularity %d too large, truncated to %x\n",
-	     ByteGranularity, ByteFieldLength));
-	ByteGranularity = ByteFieldLength;
+            ("AmlAccessNamedField: Byte granularity %X truncated to %X\n",
+            ByteGranularity, ByteFieldLength));
+
+        ByteGranularity = ByteFieldLength;
     }
 
 
