@@ -136,7 +136,9 @@
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
- *              Context             - Context pointer
+ *              HandlerContext      - Pointer to Handler's context
+ *              RegionContext       - Pointer to context specific to the 
+ *                                      accessed region
  *
  * RETURN:      Status
  *
@@ -150,11 +152,12 @@ AcpiAmlSystemMemorySpaceHandler (
     UINT32                  Address, /* TBD: [Future] Should this be A POINTER for 64-bit support? */
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context)
+    void                    *HandlerContext,
+    void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
     void                    *LogicalAddrPtr = NULL;
-    MEM_HANDLER_CONTEXT     *MemInfo = Context;
+    MEM_HANDLER_CONTEXT     *MemInfo = RegionContext;
     UINT32                  Length;
 
 
@@ -302,7 +305,9 @@ AcpiAmlSystemMemorySpaceHandler (
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
- *              Context             - Context pointer
+ *              HandlerContext      - Pointer to Handler's context
+ *              RegionContext       - Pointer to context specific to the 
+ *                                      accessed region
  *
  * RETURN:      Status
  *
@@ -316,7 +321,8 @@ AcpiAmlSystemIoSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context)
+    void                    *HandlerContext,
+    void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -407,7 +413,9 @@ AcpiAmlSystemIoSpaceHandler (
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
- *              Context             - Context pointer
+ *              HandlerContext      - Pointer to Handler's context
+ *              RegionContext       - Pointer to context specific to the 
+ *                                      accessed region
  *
  * RETURN:      Status
  *
@@ -421,7 +429,8 @@ AcpiAmlPciConfigSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context)
+    void                    *HandlerContext,
+    void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  PciBus;
@@ -447,7 +456,7 @@ AcpiAmlPciConfigSpaceHandler (
      *
      */
 
-    PCIContext = (PCI_HANDLER_CONTEXT *) Context;
+    PCIContext = (PCI_HANDLER_CONTEXT *) RegionContext;
 
     PciBus = LOWORD(PCIContext->Seg) << 16;
     PciBus |= LOWORD(PCIContext->Bus);
