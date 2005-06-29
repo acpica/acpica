@@ -115,10 +115,10 @@
 
 #include <acpi.h>
 #include <hardware.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <events.h>
 
-#define _COMPONENT          DEVICE_MANAGER
+#define _COMPONENT          HARDWARE
         MODULE_NAME         ("hwgpe");
 
 
