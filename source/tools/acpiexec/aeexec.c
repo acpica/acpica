@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -313,7 +313,7 @@ AeBuildLocalTables (
     LocalFADT.PmTmLen           = 8;
 
     LocalFADT.Gpe0Blk           = 0x12340000;
-    LocalFADT.Gpe1Blk           = 0x12341110;
+    LocalFADT.Gpe1Blk           = 0x5678AAA0;
 
     LocalFADT.Pm1aEvtBlk        = 0x1234aaa0;
     LocalFADT.Pm1bEvtBlk        = 0;
