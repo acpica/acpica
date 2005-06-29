@@ -125,6 +125,7 @@
 
 #include <acpi.h>
 #include <parser.h>
+#include <dispatch.h>
 #include <amlcode.h>
 #include <namesp.h>
 #include <debugger.h>
@@ -765,7 +766,7 @@ BREAKPOINT3;
 /* TBD: Temp only */
 
     PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL, NULL,
-                        PsxLoad1BeginOp, PsxLoad1EndOp);
+                        DsLoad1BeginOp, DsLoad1EndOp);
 
 
     PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL, NULL,
