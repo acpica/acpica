@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.3 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,6 @@
 
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evgpe")
-
 
 
 /*******************************************************************************
@@ -357,7 +356,7 @@ AcpiEvCreateGpeInfoBlocks (
     {
         /* Init the RegisterInfo for this GPE register (8 GPEs) */
 
-        ThisRegister->BaseGpeNumber = (UINT8) (GpeBlock->BlockBaseNumber + 
+        ThisRegister->BaseGpeNumber = (UINT8) (GpeBlock->BlockBaseNumber +
                                                  (i * ACPI_GPE_REGISTER_WIDTH));
 
         ACPI_STORE_ADDRESS (ThisRegister->StatusAddress.Address,
@@ -390,20 +389,20 @@ AcpiEvCreateGpeInfoBlocks (
          * are cleared by writing a '1', while enable registers are cleared
          * by writing a '0'.
          */
-        Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0x00, 
+        Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0x00,
                     &ThisRegister->EnableAddress, 0);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
         }
 
-        Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0xFF, 
+        Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0xFF,
                     &ThisRegister->StatusAddress, 0);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
         }
-        
+
         ThisRegister++;
     }
 
@@ -492,7 +491,7 @@ AcpiEvCreateGpeBlock (
         ACPI_MEM_FREE (GpeBlock);
         return_ACPI_STATUS (Status);
     }
-        
+
     /* Install the new block in the global list(s) */
     /* TBD: Install block in the interrupt handler list */
 
@@ -543,6 +542,7 @@ AcpiEvGpeInitialize (void)
     UINT32                  RegisterCount0 = 0;
     UINT32                  RegisterCount1 = 0;
     UINT32                  GpeNumberMax = 0;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE ("EvGpeInitialize");
@@ -572,7 +572,7 @@ AcpiEvGpeInitialize (void)
      * If EITHER the register length OR the block address are zero, then that
      * particular block is not supported.
      */
-    if (AcpiGbl_FADT->Gpe0BlkLen && 
+    if (AcpiGbl_FADT->Gpe0BlkLen &&
         ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address))
     {
         /* GPE block 0 exists (has both length and address > 0) */
@@ -581,11 +581,17 @@ AcpiEvGpeInitialize (void)
 
         GpeNumberMax = (RegisterCount0 * ACPI_GPE_REGISTER_WIDTH) - 1;
 
-        AcpiEvCreateGpeBlock ("\\_GPE", &AcpiGbl_FADT->XGpe0Blk, 
-            RegisterCount0, 0, AcpiGbl_FADT->SciInt);
+        Status = AcpiEvCreateGpeBlock ("\\_GPE", &AcpiGbl_FADT->XGpe0Blk,
+                    RegisterCount0, 0, AcpiGbl_FADT->SciInt);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_REPORT_ERROR ((
+                "Could not create GPE Block 0, %s\n",
+                AcpiFormatException (Status)));
+        }
     }
 
-    if (AcpiGbl_FADT->Gpe1BlkLen && 
+    if (AcpiGbl_FADT->Gpe1BlkLen &&
         ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address))
     {
         /* GPE block 1 exists (has both length and address > 0) */
@@ -600,7 +606,7 @@ AcpiEvGpeInitialize (void)
             ACPI_REPORT_ERROR ((
                 "GPE0 block (GPE 0 to %d) overlaps the GPE1 block (GPE %d to %d) - Ignoring GPE1\n",
                 GpeNumberMax, AcpiGbl_FADT->Gpe1Base,
-                AcpiGbl_FADT->Gpe1Base + 
+                AcpiGbl_FADT->Gpe1Base +
                 ((RegisterCount1 * ACPI_GPE_REGISTER_WIDTH) - 1)));
 
             /* Ignore GPE1 block by setting the register count to zero */
@@ -609,8 +615,14 @@ AcpiEvGpeInitialize (void)
         }
         else
         {
-            AcpiEvCreateGpeBlock ("\\_GPE", &AcpiGbl_FADT->XGpe1Blk, 
-                RegisterCount1, AcpiGbl_FADT->Gpe1Base, AcpiGbl_FADT->SciInt);
+            Status = AcpiEvCreateGpeBlock ("\\_GPE", &AcpiGbl_FADT->XGpe1Blk,
+                        RegisterCount1, AcpiGbl_FADT->Gpe1Base, AcpiGbl_FADT->SciInt);
+            if (ACPI_FAILURE (Status))
+            {
+                ACPI_REPORT_ERROR ((
+                    "Could not create GPE Block 1, %s\n",
+                    AcpiFormatException (Status)));
+            }
 
             /*
              * GPE0 and GPE1 do not have to be contiguous in the GPE number space,
