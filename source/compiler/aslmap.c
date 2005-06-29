@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -119,10 +119,54 @@
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
 #include "amlcode.h"
+#include "acdispat.h"
+#include "acparser.h"
 
 
 #define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslmap")
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslMapNamedOpcodeToDataType
+ *
+ * PARAMETERS:  Opcode              - The Named AML opcode to map
+ *
+ * RETURN:      The ACPI type associated with the named opcode
+ *
+ * DESCRIPTION: Convert a raw Named AML opcode to the associated data type.
+ *              Named opcodes are a subset of the AML opcodes.
+ *
+ ******************************************************************************/
+
+ACPI_OBJECT_TYPE8
+AslMapNamedOpcodeToDataType (
+    UINT16                  Opcode)
+{
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    /*
+     * There are some differences from the opcode table types, we 
+     * catch them here.
+     */
+    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
+
+    if (OpInfo->Flags & AML_NSOBJECT)
+    {
+        if (Opcode == AML_INT_NAMEPATH_OP)
+        {
+            return (ACPI_TYPE_ANY);
+        }
+
+        return (OpInfo->ObjectType);
+    }
+
+    return (ACPI_TYPE_ANY);
+}
 
 
 /*******************************************************************************
@@ -542,14 +586,10 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 };
 
 
-#include "amlcode.h"
-#include "acdispat.h"
-#include "acparser.h"
-
 /*
  * TBD:
  *
- * These are here temporarily until they are segregated out into separate
+ * This function is here temporarily until it is segregated out into separate
  * modules in the main subsystem source.
  */
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -215,9 +215,7 @@ LsDoOneNamespaceObject (
                         Pnode->Value.Integer32);
 
             break;
-
         }
-
     }
 
     FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "\n");
@@ -451,10 +449,7 @@ LkNamespaceLocateBegin (
         Path = PsNode->Value.String;
     }
 
-
-    /* Map the raw opcode into an internal object type */
-
-    ObjectType = OpInfo->ObjectType;
+    ObjectType = AslMapNamedOpcodeToDataType (PsNode->AmlOpcode);
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%x\n", ObjectType));
 
     /*
@@ -496,7 +491,6 @@ LkNamespaceLocateBegin (
                     AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, PsNode, PsNode->ExternalName);
                 }
             }
-
             else
             {
                 /* Check for a fully qualified path */
@@ -803,26 +797,15 @@ LkNamespaceLocateEnd (
         return (AE_OK);
     }
 
-
-    if (PsNode->AmlOpcode == AML_NAME_OP)
-    {
-        /* For Name opcode, check the argument */
-
-        if (PsNode->Child)
-        {
-/*
-            ObjectType = AcpiDsMapOpcodeToDataType (
-                            PsNode->Child->AmlOpcode, NULL);
-            ((ACPI_NAMESPACE_NODE *)Op->Node)->Type =
-                            (UINT8) ObjectType;
-*/
-        }
-    }
-
+    /*
+     * TBD: do we ever need to check the argument of AML_NAME_OP
+     * to get the correct type?
+     *  if (PsNode->AmlOpcode == AML_NAME_OP)
+     */
 
     /* Pop the scope stack */
 
-    if (AcpiNsOpensScope (OpInfo->ObjectType))
+    if (AcpiNsOpensScope (AslMapNamedOpcodeToDataType (PsNode->AmlOpcode)))
     {
 
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
@@ -831,7 +814,6 @@ LkNamespaceLocateEnd (
 
 
         AcpiDsScopeStackPop (WalkState);
-
     }
 
     return (AE_OK);

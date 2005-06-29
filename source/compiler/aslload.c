@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -451,7 +451,8 @@ LdNamespace1Begin (
 
     else
     {
-        ObjectType = AcpiPsGetOpcodeInfo (PsNode->AmlOpcode)->ObjectType;
+        ObjectType = AslMapNamedOpcodeToDataType (PsNode->AmlOpcode);
+ 
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "LdNamespace1Begin: Type=%x\n", ObjectType));
@@ -557,7 +558,7 @@ LdNamespace1End (
     }
     else
     {
-        ObjectType = AcpiPsGetOpcodeInfo (PsNode->AmlOpcode)->ObjectType;
+        ObjectType = AslMapNamedOpcodeToDataType (PsNode->AmlOpcode);
     }
 
     /* Pop the scope stack */
