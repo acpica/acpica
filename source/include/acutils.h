@@ -454,7 +454,7 @@ _strtoul (
     INT32                   Base);
 
 char *
-_strstr (
+__strstr (
     char                    *String1,
     char                    *String2);
 
