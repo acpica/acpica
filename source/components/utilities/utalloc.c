@@ -232,7 +232,7 @@ AcpiCmAddElementToAllocList (
 
     if (NULL == AcpiGbl_HeadAllocPtr)
     {
-        AcpiGbl_HeadAllocPtr = (ALLOCATION_INFO *) AcpiOsdCallocate (sizeof (ALLOCATION_INFO));
+        AcpiGbl_HeadAllocPtr = (ALLOCATION_INFO *) AcpiOsCallocate (sizeof (ALLOCATION_INFO));
         if (!AcpiGbl_HeadAllocPtr)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Could not allocate memory info block\n"));
@@ -245,7 +245,7 @@ AcpiCmAddElementToAllocList (
 
     else
     {
-        AcpiGbl_TailAllocPtr->Next = (ALLOCATION_INFO *) AcpiOsdCallocate (sizeof (ALLOCATION_INFO));
+        AcpiGbl_TailAllocPtr->Next = (ALLOCATION_INFO *) AcpiOsCallocate (sizeof (ALLOCATION_INFO));
         if (!AcpiGbl_TailAllocPtr->Next)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Could not allocate memory info block\n"));
@@ -351,7 +351,7 @@ AcpiCmDeleteElementFromAllocList (
 
         Size = AcpiGbl_HeadAllocPtr->Size;
 
-        AcpiOsdFree (AcpiGbl_HeadAllocPtr);
+        AcpiOsFree (AcpiGbl_HeadAllocPtr);
         AcpiGbl_HeadAllocPtr = NULL;
         AcpiGbl_TailAllocPtr = NULL;
 
@@ -414,7 +414,7 @@ AcpiCmDeleteElementFromAllocList (
         Size = Element->Size;
 
         MEMSET (Element, 0xEA, sizeof (ALLOCATION_INFO));
-        AcpiOsdFree (Element);
+        AcpiOsFree (Element);
     }
 
     else
@@ -613,7 +613,7 @@ _CmAllocate (
         Size = 1;
     }
 
-    Address = AcpiOsdAllocate (Size);
+    Address = AcpiOsAllocate (Size);
     if (!Address)
     {
         /* Report allocation error */
@@ -630,7 +630,7 @@ _CmAllocate (
     Status = AcpiCmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdFree (Address);
+        AcpiOsFree (Address);
         return_PTR (NULL);
     }
 
@@ -682,7 +682,7 @@ _CmCallocate (
     }
 
 
-    Address = AcpiOsdCallocate (Size);
+    Address = AcpiOsCallocate (Size);
 
     if (!Address)
     {
@@ -700,7 +700,7 @@ _CmCallocate (
     Status = AcpiCmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdFree (Address);
+        AcpiOsFree (Address);
         return_PTR (NULL);
     }
 #endif
@@ -748,7 +748,7 @@ _CmFree (
     AcpiCmDeleteElementFromAllocList (Address, Component, Module, Line);
 #endif
 
-    AcpiOsdFree (Address);
+    AcpiOsFree (Address);
 
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %p freed\n", Address));
 
