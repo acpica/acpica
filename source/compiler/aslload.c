@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.2 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -133,9 +133,20 @@
 
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
-LkLoadNamespace (void)
+LdLoadNamespace (void)
 {
     ACPI_WALK_STATE         *WalkState;
     ACPI_WALK_LIST          WalkList;
@@ -230,6 +241,18 @@ LdLoadFieldElements (
     }
 }
 
+
+/*****************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ****************************************************************************/
 
 void
 LdLoadResourceElements (
@@ -350,8 +373,16 @@ LdNamespace1Begin (
 
     /* Map the raw opcode into an internal object type */
 
-    if ((PsNode->ParseOpcode == DEFAULT_ARG) &&
-        (PsNode->Flags == NODE_IS_RESOURCE_DESC))
+    if (PsNode->ParseOpcode == EXTERNAL)
+    {
+        /* "External" simply enters a name and type into the namespace */
+        /* first child is name, next child is ObjectType */
+
+        DataType = PsNode->Child->Peer->Value.Integer8;
+    }
+
+    else if ((PsNode->ParseOpcode == DEFAULT_ARG) &&
+             (PsNode->Flags == NODE_IS_RESOURCE_DESC))
     {
         /* TBD: Merge into AcpiDsMapNamedOpcodeToDataType */
 
