@@ -112,6 +112,44 @@ static ST_KEY_DESC_TABLE KDT[] = {
 };
 
 
+/****************************************************************************
+ *
+ * FUNCTION:    NsDumpPathname   
+ *
+ * PARAMETERS:  Handle              Object
+ *              Msg                 Prefix message
+ *              Level               Desired debug level
+ *              Component           Caller's component ID
+ *
+ * DESCRIPTION: Print an object's full namespace pathname
+ *              Manages allocation/freeing of a pathname buffer
+ *
+ ***************************************************************************/
+
+void
+NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
+{
+    char            *Buffer;
+
+
+    if (!(DebugLevel & Level) || !(DebugLayer & Component))
+    {
+        return;
+    }
+
+    Buffer = LocalAllocate (PATHNAME_MAX);
+    if (!Buffer)
+    {
+        return;
+    }
+
+    if (ACPI_SUCCESS (NsHandleToPathname (Handle, PATHNAME_MAX, Buffer)))
+    {
+        OsdPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
+    }
+
+    OsdFree (Buffer);
+}
 
 
 /****************************************************************************
@@ -204,7 +242,7 @@ NsDumpOneObject (NsHandle ObjHandle, INT32 Level, void *Context)
         Type = TYPE_DefAny;                                 /* prints as *ERROR* */
     }
     
-    if (!NcOK ((INT32)* (char *) &ThisEntry->Name))
+    if (!AmlGoodChar ((INT32)* (char *) &ThisEntry->Name))
     {
         REPORT_WARNING (&KDT[0]);
     }
@@ -292,7 +330,7 @@ NsDumpOneObject (NsHandle ObjHandle, INT32 Level, void *Context)
  *
  ***************************************************************************/
 
-static void
+void
 NsDumpObjects (NsType Type, NsHandle StartHandle)
 {
     NsWalkNamespace (Type, StartHandle, INT_MAX, NsDumpOneObject, NULL);
@@ -322,7 +360,7 @@ NsDumpRootDevices (void)
         return;
     }
 
-    SysBusHandle = AcpiNameToHandle (0, NS_SYSTEM_BUS);
+    AcpiNameToHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("All devices in the namespace:\n"));
     NsDumpObjects (TYPE_Device, SysBusHandle);
