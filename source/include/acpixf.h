@@ -356,11 +356,12 @@ AcpiInstallGpeHandler (
 
 ACPI_STATUS
 AcpiAcquireGlobalLock (
-    void);
+    UINT32                  Timeout,
+    UINT32                  *Handle);
 
 ACPI_STATUS
 AcpiReleaseGlobalLock (
-    void);
+    UINT32                  Handle);
 
 ACPI_STATUS
 AcpiRemoveGpeHandler (
