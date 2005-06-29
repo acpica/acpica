@@ -407,7 +407,7 @@ UINT8   AcpiTableFlags[NUM_ACPI_TABLES] =
     ACPI_TABLE_MULTIPLE,    /* PSDT */
     ACPI_TABLE_SINGLE,      /* RSDT */
     ACPI_TABLE_MULTIPLE,    /* SSDT */
-    ACPI_TABLE_SINGLE       /* SBDT */
+    ACPI_TABLE_SINGLE       /* SBST */
 };
 
 char *AcpiTableNames[] = 
@@ -420,7 +420,7 @@ char *AcpiTableNames[] =
         PSDT_SIG,
         RSDT_SIG,
         SSDT_SIG,
-        SBDT_SIG
+        SBST_SIG
 };
 
 
@@ -473,7 +473,7 @@ CmInitGlobals (void)
     FACP                    = NULL;
     APIC                    = NULL;
     DSDT                    = NULL;
-    SBDT                    = NULL;
+    SBST                    = NULL;
 
 
     /* Miscellaneous variables */
