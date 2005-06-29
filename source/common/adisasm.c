@@ -115,10 +115,10 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "debugger.h"
-#include "namesp.h"
+#include "acdebug.h"
+#include "acnamesp.h"
 #include "adcommon.h"
 
 #include <stdio.h>
