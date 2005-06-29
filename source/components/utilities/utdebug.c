@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -269,7 +269,7 @@ AcpiUtDebugPrintRaw (
 
 /*****************************************************************************
  *
- * FUNCTION:    FunctionTrace
+ * FUNCTION:    AcpiUtTrace
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -284,7 +284,7 @@ AcpiUtDebugPrintRaw (
  ****************************************************************************/
 
 void
-FunctionTrace (
+AcpiUtTrace (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -300,7 +300,7 @@ FunctionTrace (
 
 /*****************************************************************************
  *
- * FUNCTION:    FunctionTracePtr
+ * FUNCTION:    AcpiUtTracePtr
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -316,7 +316,7 @@ FunctionTrace (
  ****************************************************************************/
 
 void
-FunctionTracePtr (
+AcpiUtTracePtr (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -332,7 +332,7 @@ FunctionTracePtr (
 
 /*****************************************************************************
  *
- * FUNCTION:    FunctionTraceStr
+ * FUNCTION:    AcpiUtTraceStr
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -348,7 +348,7 @@ FunctionTracePtr (
  ****************************************************************************/
 
 void
-FunctionTraceStr (
+AcpiUtTraceStr (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -364,7 +364,7 @@ FunctionTraceStr (
 
 /*****************************************************************************
  *
- * FUNCTION:    FunctionTraceU32
+ * FUNCTION:    AcpiUtTraceU32
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -380,7 +380,7 @@ FunctionTraceStr (
  ****************************************************************************/
 
 void
-FunctionTraceU32 (
+AcpiUtTraceU32 (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -396,7 +396,7 @@ FunctionTraceU32 (
 
 /*****************************************************************************
  *
- * FUNCTION:    FunctionExit
+ * FUNCTION:    AcpiUtExit
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -411,7 +411,7 @@ FunctionTraceU32 (
  ****************************************************************************/
 
 void
-FunctionExit (
+AcpiUtExit (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -427,7 +427,7 @@ FunctionExit (
 
 /*****************************************************************************
  *
- * FUNCTION:    FunctionStatusExit
+ * FUNCTION:    AcpiUtStatusExit
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -443,7 +443,7 @@ FunctionExit (
  ****************************************************************************/
 
 void
-FunctionStatusExit (
+AcpiUtStatusExit (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -461,7 +461,7 @@ FunctionStatusExit (
 
 /*****************************************************************************
  *
- * FUNCTION:    FunctionValueExit
+ * FUNCTION:    AcpiUtValueExit
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -477,7 +477,7 @@ FunctionStatusExit (
  ****************************************************************************/
 
 void
-FunctionValueExit (
+AcpiUtValueExit (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -495,7 +495,7 @@ FunctionValueExit (
 
 /*****************************************************************************
  *
- * FUNCTION:    FunctionPtrExit
+ * FUNCTION:    AcpiUtPtrExit
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -511,7 +511,7 @@ FunctionValueExit (
  ****************************************************************************/
 
 void
-FunctionPtrExit (
+AcpiUtPtrExit (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
