@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.42 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -147,7 +147,7 @@
 ACPI_STATUS
 AcpiUtEvaluateObject (
     ACPI_NAMESPACE_NODE     *PrefixNode,
-    NATIVE_CHAR             *Path,
+    char                    *Path,
     UINT32                  ExpectedReturnBtypes,
     ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
@@ -171,7 +171,7 @@ AcpiUtEvaluateObject (
         }
         else
         {
-            ACPI_REPORT_METHOD_ERROR ("Method execution failed", 
+            ACPI_REPORT_METHOD_ERROR ("Method execution failed",
                 PrefixNode, Path, Status);
         }
 
@@ -184,7 +184,7 @@ AcpiUtEvaluateObject (
     {
         if (ExpectedReturnBtypes)
         {
-            ACPI_REPORT_METHOD_ERROR ("No object was returned from", 
+            ACPI_REPORT_METHOD_ERROR ("No object was returned from",
                 PrefixNode, Path, AE_NOT_EXIST);
 
             return_ACPI_STATUS (AE_NOT_EXIST);
@@ -222,7 +222,7 @@ AcpiUtEvaluateObject (
 
     if (!(ExpectedReturnBtypes & ReturnBtype))
     {
-        ACPI_REPORT_METHOD_ERROR ("Return object type is incorrect", 
+        ACPI_REPORT_METHOD_ERROR ("Return object type is incorrect",
             PrefixNode, Path, AE_TYPE);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -261,7 +261,7 @@ AcpiUtEvaluateObject (
 
 ACPI_STATUS
 AcpiUtEvaluateNumericObject (
-    NATIVE_CHAR             *ObjectName,
+    char                    *ObjectName,
     ACPI_NAMESPACE_NODE     *DeviceNode,
     ACPI_INTEGER            *Address)
 {
@@ -272,7 +272,7 @@ AcpiUtEvaluateNumericObject (
     ACPI_FUNCTION_TRACE ("UtEvaluateNumericObject");
 
 
-    Status = AcpiUtEvaluateObject (DeviceNode, ObjectName, 
+    Status = AcpiUtEvaluateObject (DeviceNode, ObjectName,
                 ACPI_BTYPE_INTEGER, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
@@ -287,6 +287,47 @@ AcpiUtEvaluateNumericObject (
 
     AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtCopyIdString
+ *
+ * PARAMETERS:  Destination         - Where to copy the string
+ *              Source              - Source string
+ *              MaxLength           - Length of the destination buffer
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Copies an ID string for the _HID, _CID, and _UID methods.
+ *              Performs removal of a leading asterisk if present -- workaround
+ *              for a known issue on a bunch of machines.
+ *
+ ******************************************************************************/
+
+static void
+AcpiUtCopyIdString (
+    char                    *Destination,
+    char                    *Source,
+    ACPI_SIZE               MaxLength)
+{
+
+
+    /*
+     * Workaround for ID strings that have a leading asterisk. This construct
+     * is not allowed by the ACPI specification  (ID strings must be
+     * alphanumeric), but enough existing machines have this embedded in their
+     * ID strings that the following code is useful.
+     */
+    if (*Source == '*')
+    {
+        Source++;
+    }
+
+    /* Do the actual copy */
+
+    ACPI_STRNCPY (Destination, Source, MaxLength);
 }
 
 
@@ -318,7 +359,7 @@ AcpiUtExecute_HID (
     ACPI_FUNCTION_TRACE ("UtExecute_HID");
 
 
-    Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__HID, 
+    Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__HID,
                 ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
@@ -335,7 +376,8 @@ AcpiUtExecute_HID (
     {
         /* Copy the String HID from the returned object */
 
-        ACPI_STRNCPY (Hid->Buffer, ObjDesc->String.Pointer, sizeof(Hid->Buffer));
+        AcpiUtCopyIdString (Hid->Buffer, ObjDesc->String.Pointer,
+                sizeof(Hid->Buffer));
     }
 
     /* On exit, we must delete the return object */
@@ -373,8 +415,9 @@ AcpiUtExecute_CID (
     ACPI_FUNCTION_TRACE ("UtExecute_CID");
 
 
-    Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__CID, 
-                ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_PACKAGE, &ObjDesc);
+    Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__CID,
+                ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_PACKAGE,
+                &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -398,7 +441,8 @@ AcpiUtExecute_CID (
 
         /* Copy the String CID from the returned object */
 
-        ACPI_STRNCPY (Cid->Buffer, ObjDesc->String.Pointer, sizeof (Cid->Buffer));
+        AcpiUtCopyIdString (Cid->Buffer, ObjDesc->String.Pointer,
+                sizeof (Cid->Buffer));
         break;
 
     case ACPI_TYPE_PACKAGE:
@@ -449,8 +493,7 @@ AcpiUtExecute_UID (
     ACPI_FUNCTION_TRACE ("UtExecute_UID");
 
 
-
-    Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__UID, 
+    Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__UID,
                 ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
@@ -467,7 +510,8 @@ AcpiUtExecute_UID (
     {
         /* Copy the String UID from the returned object */
 
-        ACPI_STRNCPY (Uid->Buffer, ObjDesc->String.Pointer, sizeof (Uid->Buffer));
+        AcpiUtCopyIdString (Uid->Buffer, ObjDesc->String.Pointer,
+                sizeof (Uid->Buffer));
     }
 
     /* On exit, we must delete the return object */
@@ -505,7 +549,7 @@ AcpiUtExecute_STA (
     ACPI_FUNCTION_TRACE ("UtExecute_STA");
 
 
-    Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__STA, 
+    Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__STA,
                 ACPI_BTYPE_INTEGER, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
