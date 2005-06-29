@@ -483,6 +483,17 @@
 
 #endif
 
+/*
+ * Some code only gets executed when the debugger is built in.
+ * Note that this is entirely independent of whether the
+ * DEBUG_PRINT stuff (set by ACPI_DEBUG) is on, or not.
+ */
+#ifdef ENABLE_DEBUGGER
+#define DEBUGGER_EXEC(a)                a;
+#else
+#define DEBUGGER_EXEC(a)
+#endif
+
 
 /*
  * For 16-bit code, we want to shrink some things even though
