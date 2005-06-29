@@ -385,7 +385,7 @@ AdSecondPassParse (
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
-            Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, Method->Data, 
+            Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, Method->Data,
                             Method->Length, NULL, NULL, 1);
             if (ACPI_FAILURE (Status))
             {
@@ -518,7 +518,6 @@ AcpiDsInitCallbacks (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AdParseTable
@@ -572,7 +571,7 @@ AdParseTables (void)
     AmlLength  = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
     AmlStart   = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
 
-    Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParsedNamespaceRoot, NULL, AmlStart, 
+    Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParsedNamespaceRoot, NULL, AmlStart,
                     AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
