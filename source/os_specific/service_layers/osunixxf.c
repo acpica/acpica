@@ -453,10 +453,10 @@ AcpiOsGetLine (
 ACPI_STATUS
 AcpiOsMapMemory (
     ACPI_PHYSICAL_ADDRESS   where,
-    UINT32                  length,
+    ACPI_SIZE               length,
     void                    **there)
 {
-    *there = (void *) (UINT32) where;
+    *there = (void *) (ACPI_NATIVE_UINT) where;
 
     return AE_OK;
 }
@@ -479,7 +479,7 @@ AcpiOsMapMemory (
 void
 AcpiOsUnmapMemory (
     void                    *where,
-    UINT32                  length)
+    ACPI_SIZE               length)
 {
 
     return;
@@ -500,7 +500,7 @@ AcpiOsUnmapMemory (
 
 void *
 AcpiOsAllocate (
-    UINT32                  size)
+    ACPI_SIZE               size)
 {
     void                    *Mem;
 
