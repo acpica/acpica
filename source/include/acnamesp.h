@@ -149,6 +149,9 @@
 #define NS_ROOT_PATH            "/"
 
 
+/* Used in NsMapAcpiTable for size parameter if table header is to be used */
+
+#define SIZE_IN_HEADER          0
 
 /*
  * Top-level namespace access - nsaccess
@@ -385,14 +388,14 @@ NsVerifyTableChecksum (
 
 ACPI_STATUS
 NsGetTable (
-    UINT32              PhysicalAddress, 
+    void                *PhysicalAddress, 
     OSD_FILE            *InputFile,
-    void *              *Table);
+    void                **Table);
 
 ACPI_STATUS
 NsGetFACS (
     OSD_FILE            *InputFile,
-    void *              *Table);
+    void                **Table);
 
 
 /*
