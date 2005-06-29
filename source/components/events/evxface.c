@@ -158,7 +158,7 @@ AcpiEnable (void)
 
     /*  ACPI tables are available or not required */
 
-    if (LEGACY_MODE == HwGetModeCapabilities ())
+    if (SYS_MODE_LEGACY == HwGetModeCapabilities ())
     {   
         /*
          * No ACPI mode support provided by BIOS
@@ -184,11 +184,11 @@ AcpiEnable (void)
     
     /*  SCI Interrupt Handler installed properly    */
 
-    if (ACPI_MODE != OriginalMode)
+    if (SYS_MODE_ACPI != OriginalMode)
     {   
         /*  legacy mode */
                 
-        if (AE_OK != AcpiSetMode (ACPI_MODE))
+        if (AE_OK != AcpiSetMode (SYS_MODE_ACPI))
         {   
             /*  Unable to transition to ACPI Mode   */
 
