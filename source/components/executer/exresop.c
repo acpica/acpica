@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.71 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -693,6 +693,8 @@ AcpiExResolveOperands (
 
         case ARGI_DATAREFOBJ:
 
+            /* Used by the Store() operator only */
+
             switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
             {
             case ACPI_TYPE_INTEGER:
@@ -710,6 +712,17 @@ AcpiExResolveOperands (
                 break;
 
             default:
+
+                if (AcpiGbl_EnableInterpreterSlack)
+                {
+                    /*
+                     * Enable original behavior of Store(), allowing any and all
+                     * objects as the source operand.  The ACPI spec does not
+                     * allow this, however.
+                     */
+                    break;
+                }
+
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                     "Needed Integer/Buffer/String/Package/Ref/Ddb], found [%s] %p\n",
                     AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
