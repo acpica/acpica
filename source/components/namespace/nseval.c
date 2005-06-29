@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  ******************************************************************************/
 
@@ -491,6 +491,16 @@ AcpiNsExecuteControlMethod (
     FUNCTION_TRACE ("NsExecuteControlMethod");
 
 
+    /*
+     * Unlock the namespace before execution.  This allows namespace access
+     * via the external Acpi* interfaces while a method is being executed.
+     * However, any namespace deletion must acquire both the namespace and
+     * interpreter locks to ensure that no thread is using the portion of the
+     * namespace that is being deleted.
+     */
+
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+
     /* Verify that there is a method associated with this object */
 
     ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) MethodNode);
@@ -511,17 +521,6 @@ AcpiNsExecuteControlMethod (
 
     DEBUG_PRINT (TRACE_NAMES,
         ("At offset %8XH\n", ObjDesc->Method.Pcode + 1));
-
-
-    /*
-     * Unlock the namespace before execution.  This allows namespace access
-     * via the external Acpi* interfaces while a method is being executed.
-     * However, any namespace deletion must acquire both the namespace and
-     * interpreter locks to ensure that no thread is using the portion of the
-     * namespace that is being deleted.
-     */
-
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /*
      * Execute the method via the interpreter
