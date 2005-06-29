@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -183,7 +183,7 @@ AcpiRsGetPrtMethodData (
     if (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_PACKAGE)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_PRT did not return a Package, returned %s\n",
-                AcpiUtGetTypeName (ObjDesc->Common.Type)));
+                AcpiUtGetObjectTypeName (ObjDesc)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
@@ -258,10 +258,10 @@ AcpiRsGetCrsMethodData (
      * then the underlying AML code is corrupt or improperly
      * written.
      */
-    if (ACPI_TYPE_BUFFER != ObjDesc->Common.Type)
+    if (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_BUFFER)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_CRS did not return a Buffer, returned %s\n",
-                AcpiUtGetTypeName (ObjDesc->Common.Type)));
+                AcpiUtGetObjectTypeName (ObjDesc)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
@@ -337,10 +337,10 @@ AcpiRsGetPrsMethodData (
      * then the underlying AML code is corrupt or improperly
      * written..
      */
-    if (ACPI_TYPE_BUFFER != ObjDesc->Common.Type)
+    if (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_BUFFER)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_PRS did not return a Buffer, returned %s\n",
-                AcpiUtGetTypeName (ObjDesc->Common.Type)));
+                AcpiUtGetObjectTypeName (ObjDesc)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
