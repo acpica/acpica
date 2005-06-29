@@ -156,6 +156,7 @@
 #define FLG_DEFAULT_FLAGS                   0x00000000
 #define FLG_NO_CARRIAGE_RETURNS             0x00000001
 #define FLG_NO_FILE_OUTPUT                  0x00000002
+#define FLG_LOWERCASE_DIRNAMES              0x00000004
 
 
 /* Globals */
