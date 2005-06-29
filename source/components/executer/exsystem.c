@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.84 $
+ * Module Name: amsystem - Interface to OS services
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -115,22 +115,45 @@
  *
  *****************************************************************************/
 
-#define __EXSYSTEM_C__
+#define __AMSYSTEM_C__
 
 #include "acpi.h"
 #include "acinterp.h"
+#include "acnamesp.h"
+#include "achware.h"
 #include "acevents.h"
 
-#define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exsystem")
+#define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("amsystem")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemWaitSemaphore
+ * FUNCTION:    AcpiAmlSystemThreadId
  *
- * PARAMETERS:  Semaphore       - Semaphore to wait on
- *              Timeout         - Max time to wait
+ * PARAMETERS:  None
+ *
+ * RETURN:      Current Thread ID (for this implementation a 1 is returned)
+ *
+ * DESCRIPTION: An invocation is identified by its Thread ID.  In a single
+ *              threaded OS the Thread ID is undefined so a 1 will be
+ *              returned.
+ *
+ ******************************************************************************/
+
+UINT16
+AcpiAmlSystemThreadId (void)
+{
+    return (1);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlSystemWaitSemaphore
+ *
+ * PARAMETERS:  Semaphore           - OSD semaphore to wait on
+ *              Timeout             - Max time to wait
  *
  * RETURN:      Status
  *
@@ -141,16 +164,14 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemWaitSemaphore (
+AcpiAmlSystemWaitSemaphore (
     ACPI_HANDLE             Semaphore,
-    UINT16                  Timeout)
+    UINT32                  Timeout)
 {
     ACPI_STATUS             Status;
-    ACPI_STATUS             Status2;
 
 
-    ACPI_FUNCTION_TRACE ("ExSystemWaitSemaphore");
-
+    FUNCTION_TRACE ("AcpiAmlSystemWaitSemaphore");
 
     Status = AcpiOsWaitSemaphore (Semaphore, 1, 0);
     if (ACPI_SUCCESS (Status))
@@ -162,23 +183,17 @@ AcpiExSystemWaitSemaphore (
     {
         /* We must wait, so unlock the interpreter */
 
-        AcpiExExitInterpreter ();
+        AcpiAmlExitInterpreter ();
 
         Status = AcpiOsWaitSemaphore (Semaphore, 1, Timeout);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "*** Thread awake after blocking, %s\n",
-            AcpiFormatException (Status)));
-
         /* Reacquire the interpreter */
 
-        Status2 = AcpiExEnterInterpreter ();
-        if (ACPI_FAILURE (Status2))
-        {
-            /* Report fatal error, could not acquire interpreter */
+        AcpiAmlEnterInterpreter ();
 
-            return_ACPI_STATUS (Status2);
-        }
+        DEBUG_PRINT (TRACE_EXEC,
+            ("*** Thread awake and inside interpreter after blocking, %s\n",
+            AcpiCmFormatException (Status)));
     }
 
     return_ACPI_STATUS (Status);
@@ -187,58 +202,9 @@ AcpiExSystemWaitSemaphore (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemDoStall
+ * FUNCTION:    AcpiAmlSystemDoStall
  *
- * PARAMETERS:  HowLong         - The amount of time to stall,
- *                                in microseconds
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Suspend running thread for specified amount of time.
- *              Note: ACPI specification requires that Stall() does not
- *              relinquish the processor, and delays longer than 100 usec
- *              should use Sleep() instead.  We allow stalls up to 255 usec
- *              for compatibility with other interpreters and existing BIOSs.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExSystemDoStall (
-    UINT32                  HowLong)
-{
-    ACPI_STATUS             Status = AE_OK;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    if (HowLong > 255) /* 255 microseconds */
-    {
-        /*
-         * Longer than 255 usec, this is an error
-         *
-         * (ACPI specifies 100 usec as max, but this gives some slack in
-         * order to support existing BIOSs)
-         */
-        ACPI_REPORT_ERROR (("Stall: Time parameter is too large (%d)\n",
-            HowLong));
-        Status = AE_AML_OPERAND_VALUE;
-    }
-    else
-    {
-        AcpiOsStall (HowLong);
-    }
-
-    return (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExSystemDoSuspend
- *
- * PARAMETERS:  HowLong         - The amount of time to suspend,
- *                                in milliseconds
+ * PARAMETERS:  HowLong             - The amount of time to stall
  *
  * RETURN:      None
  *
@@ -246,35 +212,66 @@ AcpiExSystemDoStall (
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiExSystemDoSuspend (
-    ACPI_INTEGER            HowLong)
+void
+AcpiAmlSystemDoStall (
+    UINT32                  HowLong)
 {
-    ACPI_STATUS             Status;
 
+    if (HowLong > 1000) /* 1 millisecond */
+    {
+        /* Since this thread will sleep, we must release the interpreter */
 
-    ACPI_FUNCTION_ENTRY ();
+        AcpiAmlExitInterpreter ();
 
+        AcpiOsSleepUsec (HowLong);
 
-    /* Since this thread will sleep, we must release the interpreter */
+        /* And now we must get the interpreter again */
 
-    AcpiExExitInterpreter ();
+        AcpiAmlEnterInterpreter ();
+    }
 
-    AcpiOsSleep (HowLong);
-
-    /* And now we must get the interpreter again */
-
-    Status = AcpiExEnterInterpreter ();
-    return (Status);
+    else
+    {
+        AcpiOsSleepUsec (HowLong);
+    }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemAcquireMutex
+ * FUNCTION:    AcpiAmlSystemDoSuspend
  *
- * PARAMETERS:  TimeDesc        - The 'time to delay' object descriptor
- *              ObjDesc         - The object descriptor for this op
+ * PARAMETERS:  HowLong             - The amount of time to suspend
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Suspend running thread for specified amount of time.
+ *
+ ******************************************************************************/
+
+void
+AcpiAmlSystemDoSuspend (
+    UINT32                  HowLong)
+{
+    /* Since this thread will sleep, we must release the interpreter */
+
+    AcpiAmlExitInterpreter ();
+
+    AcpiOsSleep ((UINT16) (HowLong / (UINT32) 1000),
+                 (UINT16) (HowLong % (UINT32) 1000));
+
+    /* And now we must get the interpreter again */
+
+    AcpiAmlEnterInterpreter ();
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlSystemAcquireMutex
+ *
+ * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
+ *              *ObjDesc            - The object descriptor for this op
  *
  * RETURN:      Status
  *
@@ -285,40 +282,41 @@ AcpiExSystemDoSuspend (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemAcquireMutex (
+AcpiAmlSystemAcquireMutex (
     ACPI_OPERAND_OBJECT     *TimeDesc,
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExSystemAcquireMutex", ObjDesc);
-
+    FUNCTION_TRACE_PTR ("AcpiAmlSystemAcquireMutex", ObjDesc);
 
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Support for the _GL_ Mutex object -- go get the global lock */
+    /*
+     * Support for the _GL_ Mutex object -- go get the global lock
+     */
 
     if (ObjDesc->Mutex.Semaphore == AcpiGbl_GlobalLockSemaphore)
     {
-        Status = AcpiEvAcquireGlobalLock ((UINT16) TimeDesc->Integer.Value);
+        Status = AcpiEvAcquireGlobalLock ();
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiExSystemWaitSemaphore (ObjDesc->Mutex.Semaphore,
-                (UINT16) TimeDesc->Integer.Value);
+    Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Mutex.Semaphore,
+                                         (UINT32) TimeDesc->Integer.Value);
     return_ACPI_STATUS (Status);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemReleaseMutex
+ * FUNCTION:    AcpiAmlSystemReleaseMutex
  *
- * PARAMETERS:  ObjDesc         - The object descriptor for this op
+ * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
  * RETURN:      Status
  *
@@ -330,13 +328,13 @@ AcpiExSystemAcquireMutex (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemReleaseMutex (
+AcpiAmlSystemReleaseMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExSystemReleaseMutex");
+    FUNCTION_TRACE ("AcpiAmlSystemReleaseMutex");
 
 
     if (!ObjDesc)
@@ -344,12 +342,13 @@ AcpiExSystemReleaseMutex (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Support for the _GL_ Mutex object -- release the global lock */
-
+    /*
+     * Support for the _GL_ Mutex object -- release the global lock
+     */
     if (ObjDesc->Mutex.Semaphore == AcpiGbl_GlobalLockSemaphore)
     {
-        Status = AcpiEvReleaseGlobalLock ();
-        return_ACPI_STATUS (Status);
+        AcpiEvReleaseGlobalLock ();
+        return_ACPI_STATUS (AE_OK);
     }
 
     Status = AcpiOsSignalSemaphore (ObjDesc->Mutex.Semaphore, 1);
@@ -359,11 +358,11 @@ AcpiExSystemReleaseMutex (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemSignalEvent
+ * FUNCTION:    AcpiAmlSystemSignalEvent
  *
- * PARAMETERS:  ObjDesc         - The object descriptor for this op
+ * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
- * RETURN:      Status
+ * RETURN:      AE_OK
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
  *              within the AML.
@@ -371,13 +370,13 @@ AcpiExSystemReleaseMutex (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemSignalEvent (
+AcpiAmlSystemSignalEvent (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExSystemSignalEvent");
+    FUNCTION_TRACE ("AcpiAmlSystemSignalEvent");
 
 
     if (ObjDesc)
@@ -391,10 +390,10 @@ AcpiExSystemSignalEvent (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemWaitEvent
+ * FUNCTION:    AcpiAmlSystemWaitEvent
  *
- * PARAMETERS:  TimeDesc        - The 'time to delay' object descriptor
- *              ObjDesc         - The object descriptor for this op
+ * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
+ *              *ObjDesc            - The object descriptor for this op
  *
  * RETURN:      Status
  *
@@ -405,21 +404,22 @@ AcpiExSystemSignalEvent (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemWaitEvent (
+AcpiAmlSystemWaitEvent (
     ACPI_OPERAND_OBJECT     *TimeDesc,
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExSystemWaitEvent");
+    FUNCTION_TRACE ("AcpiAmlSystemWaitEvent");
 
 
     if (ObjDesc)
     {
-        Status = AcpiExSystemWaitSemaphore (ObjDesc->Event.Semaphore,
-                    (UINT16) TimeDesc->Integer.Value);
+        Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Event.Semaphore,
+                                             (UINT32) TimeDesc->Integer.Value);
     }
+
 
     return_ACPI_STATUS (Status);
 }
@@ -427,36 +427,35 @@ AcpiExSystemWaitEvent (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemResetEvent
+ * FUNCTION:    AcpiAmlSystemResetEvent
  *
- * PARAMETERS:  ObjDesc         - The object descriptor for this op
+ * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Reset an event to a known state.
+ * DESCRIPTION: Provides an access point to perform synchronization operations
+ *              within the AML.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemResetEvent (
+AcpiAmlSystemResetEvent (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
     void                    *TempSemaphore;
 
 
-    ACPI_FUNCTION_ENTRY ();
-
-
     /*
      * We are going to simply delete the existing semaphore and
      * create a new one!
      */
+
     Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 0, &TempSemaphore);
     if (ACPI_SUCCESS (Status))
     {
-        (void) AcpiOsDeleteSemaphore (ObjDesc->Event.Semaphore);
-        ObjDesc->Event.Semaphore = TempSemaphore;
+        AcpiOsDeleteSemaphore (ObjDesc->Mutex.Semaphore);
+        ObjDesc->Mutex.Semaphore = TempSemaphore;
     }
 
     return (Status);

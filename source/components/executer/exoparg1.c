@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
- *              $Revision: 1.81 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -143,7 +143,7 @@
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlGetObjectReference (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **RetDesc,
@@ -256,8 +256,8 @@ AcpiAmlExecMonadic1 (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("ExecMonadic1/%s: bad operand(s) (0x%X)\n",
-            AcpiPsGetOpcodeName (Opcode), Status));
+            ("ExecMonadic1/%s: bad operand(s) (Status=%s)\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiCmFormatException(Status)));
 
         goto Cleanup;
     }
@@ -296,7 +296,7 @@ AcpiAmlExecMonadic1 (
 
     case AML_SLEEP_OP:
 
-        AcpiAmlSystemDoSuspend ((UINT32) ObjDesc->Number.Value);
+        AcpiAmlSystemDoSuspend ((UINT32) ObjDesc->Integer.Value);
         break;
 
 
@@ -304,7 +304,7 @@ AcpiAmlExecMonadic1 (
 
     case AML_STALL_OP:
 
-        AcpiAmlSystemDoStall ((UINT32) ObjDesc->Number.Value);
+        AcpiAmlSystemDoStall ((UINT32) ObjDesc->Integer.Value);
         break;
 
 
@@ -355,10 +355,9 @@ AcpiAmlExecMonadic2R (
     ACPI_OPERAND_OBJECT     *RetDesc2 = NULL;
     UINT32                  ResVal;
     ACPI_STATUS             Status;
-    UINT32                  d0;
-    UINT32                  d1;
-    UINT32                  d2;
-    UINT32                  d3;
+    UINT32                  i;
+    UINT32                  j;
+    ACPI_INTEGER            Digit;
 
 
     FUNCTION_TRACE_PTR ("AmlExecMonadic2R", WALK_OPERANDS);
@@ -378,8 +377,8 @@ AcpiAmlExecMonadic2R (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("ExecMonadic2R/%s: bad operand(s) (0x%X)\n",
-            AcpiPsGetOpcodeName (Opcode), Status));
+            ("ExecMonadic2R/%s: bad operand(s) (Status=%s)\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiCmFormatException(Status)));
 
         goto Cleanup;
     }
@@ -396,7 +395,7 @@ AcpiAmlExecMonadic2R (
     case AML_TO_BCD_OP:
     case AML_COND_REF_OF_OP:
 
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
@@ -413,7 +412,7 @@ AcpiAmlExecMonadic2R (
 
     case AML_BIT_NOT_OP:
 
-        RetDesc->Number.Value = ~ObjDesc->Number.Value;
+        RetDesc->Integer.Value = ~ObjDesc->Integer.Value;
         break;
 
 
@@ -421,18 +420,18 @@ AcpiAmlExecMonadic2R (
 
     case AML_FIND_SET_LEFT_BIT_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value;
 
         /*
          * Acpi specification describes Integer type as a little
          * endian unsigned value, so this boundry condition is valid.
          */
-        for (ResVal = 0; RetDesc->Number.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
+        for (ResVal = 0; RetDesc->Integer.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
         {
-            RetDesc->Number.Value >>= 1;
+            RetDesc->Integer.Value >>= 1;
         }
 
-        RetDesc->Number.Value = ResVal;
+        RetDesc->Integer.Value = ResVal;
         break;
 
 
@@ -440,20 +439,20 @@ AcpiAmlExecMonadic2R (
 
     case AML_FIND_SET_RIGHT_BIT_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value;
 
         /*
          * Acpi specification describes Integer type as a little
          * endian unsigned value, so this boundry condition is valid.
          */
-        for (ResVal = 0; RetDesc->Number.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
+        for (ResVal = 0; RetDesc->Integer.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
         {
-            RetDesc->Number.Value <<= 1;
+            RetDesc->Integer.Value <<= 1;
         }
 
         /* Since returns must be 1-based, subtract from 33 (65) */
 
-        RetDesc->Number.Value = ResVal == 0 ? 0 : (ACPI_INTEGER_BIT_SIZE + 1) - ResVal;
+        RetDesc->Integer.Value = ResVal == 0 ? 0 : (ACPI_INTEGER_BIT_SIZE + 1) - ResVal;
         break;
 
 
@@ -461,21 +460,39 @@ AcpiAmlExecMonadic2R (
 
     case AML_FROM_BCD_OP:
 
-        d0 = (UINT32) (ObjDesc->Number.Value & 15);
-        d1 = (UINT32) (ObjDesc->Number.Value >> 4 & 15);
-        d2 = (UINT32) (ObjDesc->Number.Value >> 8 & 15);
-        d3 = (UINT32) (ObjDesc->Number.Value >> 12 & 15);
-
-        if (d0 > 9 || d1 > 9 || d2 > 9 || d3 > 9)
+        /*
+         * The 64-bit ACPI integer can hold 16 4-bit BCD integers
+         */
+        RetDesc->Integer.Value = 0;
+        for (i = 0; i < ACPI_MAX_BCD_DIGITS; i++)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("Monadic2R/FromBCDOp: BCD digit too large %d %d %d %d\n",
-                d3, d2, d1, d0));
-            Status = AE_AML_NUMERIC_OVERFLOW;
-            goto Cleanup;
-        }
+            /* Get one BCD digit */
 
-        RetDesc->Number.Value = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
+            Digit = (ACPI_INTEGER) ((ObjDesc->Integer.Value >> (i * 4)) & 0xF);
+
+            /* Check the range of the digit */
+
+            if (Digit > 9)
+            {
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("Monadic2R/FromBCDOp: BCD digit too large: \n",
+                    Digit));
+                Status = AE_AML_NUMERIC_OVERFLOW;
+                goto Cleanup;
+            }
+
+            if (Digit > 0)
+            {
+                /* Sum into the result with the appropriate power of 10 */
+
+                for (j = 0; j < i; j++)
+                {
+                    Digit *= 10;
+                }
+
+                RetDesc->Integer.Value += Digit;
+            }
+        }
         break;
 
 
@@ -484,20 +501,32 @@ AcpiAmlExecMonadic2R (
     case AML_TO_BCD_OP:
 
 
-        if (ObjDesc->Number.Value > 9999)
+        if (ObjDesc->Integer.Value > ACPI_MAX_BCD_VALUE)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Monadic2R/ToBCDOp: BCD overflow: %d\n",
-                ObjDesc->Number.Value));
+                ObjDesc->Integer.Value));
             Status = AE_AML_NUMERIC_OVERFLOW;
             goto Cleanup;
         }
 
-        RetDesc->Number.Value
-            = ObjDesc->Number.Value % 10
-            + (ObjDesc->Number.Value / 10 % 10 << 4)
-            + (ObjDesc->Number.Value / 100 % 10 << 8)
-            + (ObjDesc->Number.Value / 1000 % 10 << 12);
+        RetDesc->Integer.Value = 0;
+        for (i = 0; i < ACPI_MAX_BCD_DIGITS; i++)
+        {
+            /* Divide by nth factor of 10 */
 
+            Digit = ObjDesc->Integer.Value;
+            for (j = 0; j < i; j++)
+            {
+                Digit /= 10;
+            }
+
+            /* Create the BCD digit */
+
+            if (Digit > 0)
+            {
+                RetDesc->Integer.Value += (ACPI_MODULO (Digit, 10) << (i * 4));
+            }
+        }
         break;
 
 
@@ -518,7 +547,7 @@ AcpiAmlExecMonadic2R (
              * return FALSE
              */
 
-            RetDesc->Number.Value = 0;
+            RetDesc->Integer.Value = 0;
 
             /*
              * Must delete the result descriptor since there is no reference
@@ -541,7 +570,7 @@ AcpiAmlExecMonadic2R (
 
         /* The object exists in the namespace, return TRUE */
 
-        RetDesc->Number.Value = ACPI_INTEGER_MAX
+        RetDesc->Integer.Value = ACPI_INTEGER_MAX;
         goto Cleanup;
         break;
 
@@ -721,14 +750,14 @@ AcpiAmlExecMonadic2 (
 
     case AML_LNOT_OP:
 
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        RetDesc->Number.Value = !ObjDesc->Number.Value;
+        RetDesc->Integer.Value = !ObjDesc->Integer.Value;
         break;
 
 
@@ -780,8 +809,8 @@ AcpiAmlExecMonadic2 (
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("ExecMonadic2/%s: bad operand(s) (0x%X)\n",
-                AcpiPsGetOpcodeName (Opcode), Status));
+                ("ExecMonadic2/%s: bad operand(s) (Status=%s)\n",
+                AcpiPsGetOpcodeName (Opcode), AcpiCmFormatException(Status)));
 
             goto Cleanup;
         }
@@ -790,11 +819,11 @@ AcpiAmlExecMonadic2 (
 
         if (AML_INCREMENT_OP == Opcode)
         {
-            RetDesc->Number.Value++;
+            RetDesc->Integer.Value++;
         }
         else
         {
-            RetDesc->Number.Value--;
+            RetDesc->Integer.Value--;
         }
 
         /* Store the result back in the original descriptor */
@@ -826,7 +855,7 @@ AcpiAmlExecMonadic2 (
 
                 /* Constants are of type Number */
 
-                Type = ACPI_TYPE_NUMBER;
+                Type = ACPI_TYPE_INTEGER;
                 break;
 
 
@@ -889,14 +918,14 @@ AcpiAmlExecMonadic2 (
 
         /* Allocate a descriptor to hold the type. */
 
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        RetDesc->Number.Value = Type;
+        RetDesc->Integer.Value = Type;
         break;
 
 
@@ -944,7 +973,7 @@ AcpiAmlExecMonadic2 (
             default:
 
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlExecMonadic2: Not Buf/Str/Pkg - found type 0x%X\n",
+                    ("AmlExecMonadic2: Not Buf/Str/Pkg - found type %X\n",
                     ObjDesc->Common.Type));
                 Status = AE_AML_OPERAND_TYPE;
                 goto Cleanup;
@@ -956,14 +985,14 @@ AcpiAmlExecMonadic2 (
          * object to hold the value
          */
 
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        RetDesc->Number.Value = Value;
+        RetDesc->Integer.Value = Value;
         break;
 
 
@@ -1083,7 +1112,7 @@ AcpiAmlExecMonadic2 (
                      * sub-buffer of the main buffer, it is only a pointer to a
                      * single element (byte) of the buffer!
                      */
-                    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+                    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
                     if (!RetDesc)
                     {
                         Status = AE_NO_MEMORY;
@@ -1091,7 +1120,7 @@ AcpiAmlExecMonadic2 (
                     }
 
                     TmpDesc = ObjDesc->Reference.Object;
-                    RetDesc->Number.Value =
+                    RetDesc->Integer.Value =
                         TmpDesc->Buffer.Pointer[ObjDesc->Reference.Offset];
 
                     /* TBD: [Investigate] (see below) Don't add an additional
