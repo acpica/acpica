@@ -590,8 +590,10 @@ PsWalkParsedAml (
         {
             /* There is another walk state, restart it */
 
-            /* TBD: What if the returned value is not used by the parent?  The obj must be deleted */
-            /* In restart, call DeleteIfNotUsed?? */
+            /* 
+             * If the method returned value is not used by the parent,
+             * The object is deleted 
+             */
 
             PsxRestartControlMethod (WalkState, ReturnDesc);
 
