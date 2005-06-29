@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file for iASL
- *              $Revision: 1.137 $
+ *              $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -414,12 +414,6 @@ LnInitLengthsWalk (
     UINT32                  Level,
     void                    *Context);
 
-ACPI_STATUS
-CgAmlWriteWalk (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
 void
 CgGenerateAmlLengths (
     ACPI_PARSE_OBJECT       *Op);
@@ -472,10 +466,6 @@ TrAllocateNode (
 void
 TrReleaseNode (
     ACPI_PARSE_OBJECT       *Op);
-
-char *
-TrAddNode (
-    void                    *Thing);
 
 ACPI_PARSE_OBJECT *
 TrUpdateNode (
@@ -694,12 +684,6 @@ UtCheckIntegerRange (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  LowValue,
     UINT32                  HighValue);
-
-ACPI_STATUS
-UtStrtoul64 (
-    char                    *String,
-    UINT32                  Base,
-    ACPI_INTEGER            *RetInteger);
 
 ACPI_INTEGER
 UtDoConstant (

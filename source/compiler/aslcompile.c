@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -616,7 +616,7 @@ CmDoOutputFiles (
 
     /* Dump the namespace to the .nsp file if requested */
 
-    LsDisplayNamespace ();
+    (void) LsDisplayNamespace ();
 }
 
 

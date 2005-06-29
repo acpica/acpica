@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -414,17 +414,17 @@ CgWriteAmlOpcode (
     {
     case AML_BYTE_OP:
 
-        CgLocalWriteAmlData (Op, (UINT8 *) &Op->Asl.Value.Integer, 1);
+        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer, 1);
         break;
 
     case AML_WORD_OP:
 
-        CgLocalWriteAmlData (Op, (UINT16 *) &Op->Asl.Value.Integer, 2);
+        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer, 2);
        break;
 
     case AML_DWORD_OP:
 
-        CgLocalWriteAmlData (Op, (UINT32 *) &Op->Asl.Value.Integer, 4);
+        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer, 4);
         break;
 
     case AML_QWORD_OP:
