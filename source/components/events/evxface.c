@@ -121,6 +121,7 @@
 #include <namespace.h>
 #include <events.h>
 #include <amlcode.h>
+#include <interpreter.h>
 
 #define _THIS_MODULE        "evapi.c"
 #define _COMPONENT          EVENT_HANDLING
@@ -805,7 +806,7 @@ AcpiInstallAddressSpaceHandler (
     /* Parameter validation */
 
     if ((!Device)   ||
-        (!Handler)  ||
+        ((!Handler)  && (Handler != ACPI_DEFAULT_HANDLE)) ||
         (SpaceId > ACPI_MAX_ADDRESS_SPACE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -830,6 +831,33 @@ AcpiInstallAddressSpaceHandler (
         (ObjEntry != Gbl_RootObject))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    if (Handler == ACPI_DEFAULT_HANDLE)
+    {
+        switch (SpaceId)
+        {
+        case REGION_SystemMemory:
+            {
+                Handler = AmlSystemMemorySpaceHandler;
+                break;
+            }
+        case REGION_SystemIO:
+            {
+                Handler = AmlSystemIoSpaceHandler;
+                break;
+            }
+        case REGION_PCIConfig:
+            {
+                Handler = AmlPciConfigSpaceHandler;
+                break;
+            }
+        default:
+            {
+            return_ACPI_STATUS (AE_NOT_EXIST);
+            }
+        }
     }
 
     /* Check for an existing internal object */
