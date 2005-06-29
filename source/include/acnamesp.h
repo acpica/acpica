@@ -14,15 +14,18 @@
  | FILENAME: acpinmsp.h - prototypes for accessing namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.4 $
- | $Date: 2005/06/29 19:49:30 $
+ | $Revision: 1.5 $
+ | $Date: 2005/06/29 19:49:31 $
  | $Log: acnamesp.h,v $
- | Revision 1.4  2005/06/29 19:49:30  aystarik
- | Moved definition of NsType to acpiobj.h
+ | Revision 1.5  2005/06/29 19:49:31  aystarik
+ | Anti-Polish clean up
  |
  | 
- | date	99.02.04.00.12.00;	author rmoore1;	state Exp;
+ | date	99.02.12.18.26.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 5     2/12/99 10:26a Rmosgrov
+ * Anti-Polish clean up
  * 
  * 4     2/03/99 4:12p Rmoore1
  * Moved definition of NsType to acpiobj.h
@@ -36,8 +39,8 @@
  * Subsystem headers
 // 
 //    Rev 1.23   05 Feb 1998 11:56:34   phutchis
-// Added vNsPushMethodScope(), iIsNsValue(), vRegisterStaticBlockPtr(), and
-//   vMarkStaticBlocks().
+// Added NsPushMethodScope(), IsNsValue(), RegisterStaticBlockPtr(), and
+//   MarkStaticBlocks().
 // 
 //    Rev 1.22   26 Nov 1997 16:19:44   phutchis
 // Code inspection rework:
@@ -47,12 +50,12 @@
 // Rework from code inspection:
 //   Added/revised comments throughout.
 //   Added #include <stddef.h> to get typedef for ptrdiff_t.
-//   Changed vNsPopCurrent() to iNsPopCurrent(), returning the number of frames
+//   Changed vNsPopCurrent() to NsPopCurrent(), returning the number of frames
 //     popped (or an error indication).
 //   Changed empty formal parameter lists to "(void)".
-//   Changed meth.iOffset, and other values which are offsets, from (int) to
+//   Changed meth.Offset, and other values which are offsets, from (int) to
 //     (ptrdiff_t).
-//   Replaced "int iLoading" parameter of hNsEnter() with "OpMode iLE".
+//   Replaced "int iLoading" parameter of NsEnter() with "OpMode iLE".
 // Removed vReporter() parameter from several functions.
 //   Removed iExistDownstreamSibling() which is now static.
 // 
@@ -61,39 +64,39 @@
 // when ACPILIB_GEN is not defined.
 // 
 //    Rev 1.19   24 Sep 1997 15:11:36   phutchis
-// Add function declaration for iNsMarkNS().
+// Add function declaration for NsMarkNS().
 // 
 //    Rev 1.18   16 Sep 1997 10:43:00   phutchis
-// Added function hNsGetHandle()
+// Added function NsGetHandle()
 // 
 //    Rev 1.17   04 Aug 1997 16:14:12   kdbranno
-// Added function hGetParentHandle.
+// Added function GetParentHandle.
 // 
 //    Rev 1.16   29 Jul 1997 14:34:28   phutchis
-// Add ppsParams parameter to iAcpiExecuteMethod() and iAmlExec()
+// Add Params parameter to AcpiExecuteMethod() and iAmlExec()
 // 
 //    Rev 1.15   11 Jul 1997 16:13:58   phutchis
 // Fix problem with ordering of recursive includes
 // 
 //    Rev 1.14   11 Jul 1997 16:07:38   phutchis
-// Add iIsNsHandle() macro.
+// Add IsNsHandle() macro.
 // 
 //    Rev 1.13   08 Jul 1997 17:03:22   phutchis
-// Add ppsReturnValue parameter to iAcpiExecuteMethod().
+// Add ReturnValue parameter to AcpiExecuteMethod().
 // This requires #include of amlexec.h and amlpriv.h
 // 
 //    Rev 1.12   18 Jun 1997 09:34:42   phutchis
-// Add hSearchBase and iMaxDepth parameters to vNsDumpTables()
-// and phNsFindNames()
+// Add SearchBase and MaxDepth parameters to NsDumpTables()
+// and NsFindNames()
 // 
 //    Rev 1.11   12 Jun 1997 11:43:52   phutchis
 // Conform function headers to .c file.
 // 
 //    Rev 1.10   12 Jun 1997 09:59:54   phutchis
-// Add parameter to phNsFindNames() to enable searching a subtree.
+// Add parameter to NsFindNames() to enable searching a subtree.
 // 
 //    Rev 1.9   11 Jun 1997 15:51:12   phutchis
-// Add entry point phNsFindNames.
+// Add entry point NsFindNames.
 // Add some debug capability.
 // 
 //    Rev 1.8   14 May 1997 16:05:10   kdbranno
@@ -114,10 +117,10 @@
 // Added prototype for iExistDownstreamSibling
 //
 //    Rev 1.3   Apr 14 1997 15:43:00   kdbranno
-// Added DisplayBitFlags parameter to vNsDumpTables()
+// Added DisplayBitFlags parameter to NsDumpTables()
 //
 //    Rev 1.2   14 Mar 1997 17:46:26   phutchis
-// Renamed vNsEnter to hNsEnter to correspond to its return value
+// Renamed vNsEnter to NsEnter to correspond to its return value
 // type (handle), and added iLoading parameter.
 //
 //    Rev 1.1   05 Mar 1997 13:29:14   phutchis
@@ -142,14 +145,14 @@
  *
  * The first byte of an nte is a character of the name segment, which will
  * be accepted by NcOK().  The first byte of an OBJECT_DESCRIPTOR is the
- * bValTyp field, whose (BYTE) value comes from the NsType enumeration.
+ * ValTyp field, whose (BYTE) value comes from the NsType enumeration.
  * Valid NsType values must not include any character acceptable in a name.
  */
 
-#define iIsNsHandle(h) (NcOK((int)*(char *)(h)))
+#define IsNsHandle(h) (NcOK((int)*(char *)(h)))
 
 
-/* To search the entire name space, pass this as hSearchBase */
+/* To search the entire name space, pass this as SearchBase */
 
 #define  NS_ALL   ((NsHandle)0)
 
@@ -164,12 +167,12 @@
  */
 
 #ifdef ACPILIB_GEN
-   #include "acpitype.h"
+   #include "acpType.h"
    #include "amlexec.h"
    #include "amlscan.h"
    #include "amlpriv.h"
 #else
-   #include <acpitype.h>
+   #include <acpType.h>
    #include <amlexec.h>
    #include <amlscan.h>
    #include <amlpub.h>
@@ -180,7 +183,7 @@ extern char *apcNsTypeNames[];
 
 
 /****************************************************************************
- * FUNCTION:    vNsPushMethodScope
+ * FUNCTION:    NsPushMethodScope
  *
  * PARAMETERS:  NsHandle nNewScope,             name to be made current
  *
@@ -190,25 +193,25 @@ extern char *apcNsTypeNames[];
  ***************************************************************************/
 
 void
-vNsPushMethodScope(NsHandle nNewScope);
+NsPushMethodScope(NsHandle nNewScope);
 
 
 /****************************************************************************
- * FUNCTION:    iAcpiExecuteMethod
+ * FUNCTION:    AcpiExecuteMethod
  *
- * PARAMETERS:  char *pcMethodName              name of method to execute
+ * PARAMETERS:  char *MethodName              name of method to execute
  *
- *              OBJECT_DESCRIPTOR **ppsReturnValue  where to put method's return
+ *              OBJECT_DESCRIPTOR **ReturnValue  where to put method's return
  *                                              value (if any).
- *                                              ppsReturnValue must not be
+ *                                              ReturnValue must not be
  *                                              passed in as NULL because
- *                                              *ppsReturnValue will always
+ *                                              *ReturnValue will always
  *                                              be set (to NULL if there is
  *                                              no return value).
  *
- *              OBJECT_DESCRIPTOR **ppsParams   list of parameters to pass to
+ *              OBJECT_DESCRIPTOR **Params   list of parameters to pass to
  *                                              method, terminated by NULL.
- *                                              ppsParams itself may be NULL
+ *                                              Params itself may be NULL
  *                                              if no parameters are being
  *                                              passed.
  *
@@ -220,12 +223,12 @@ vNsPushMethodScope(NsHandle nNewScope);
  ****************************************************************************/
 
 int
-iAcpiExecuteMethod (char * pcMethodName, OBJECT_DESCRIPTOR **ppsReturnValue,
-        OBJECT_DESCRIPTOR **ppsParams);
+AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR **ReturnValue,
+        OBJECT_DESCRIPTOR **Params);
 
 
 /****************************************************************************
- * FUNCTION:    iAcpiLoadNameSpace
+ * FUNCTION:    AcpiLoadNameSpace
  *
  * PARAMETERS:  none
  *
@@ -236,11 +239,11 @@ iAcpiExecuteMethod (char * pcMethodName, OBJECT_DESCRIPTOR **ppsReturnValue,
  ****************************************************************************/
 
 int
-iAcpiLoadNameSpace (void);
+AcpiLoadNameSpace (void);
 
 
 /****************************************************************************
- * FUNCTION:    iAcpiUnloadNameSpace 
+ * FUNCTION:    AcpiUnloadNameSpace 
  *
  * PARAMETERS:  none
  *
@@ -252,37 +255,37 @@ iAcpiLoadNameSpace (void);
  ****************************************************************************/
 
 int
-iAcipUnloadNameSpace (void);
+AcipUnloadNameSpace (void);
 
 
 /****************************************************************************
- * FUNCTION:    iNsValType
+ * FUNCTION:    NsValType
  *
  * PARAMETERS:  NsHandle h      Handle of nte to be examined
  *
- * RETURN:      iType field from nte whose handle is passed
+ * RETURN:      Type field from nte whose handle is passed
  *
  ***************************************************************************/
 
 NsType
-iNsValType(NsHandle h);
+NsValType(NsHandle h);
 
 
 /****************************************************************************
- * FUNCTION:    pvNsValPtr
+ * FUNCTION:    NsValPtr
  *
  * PARAMETERS:  NsHandle h      Handle of nte to be examined
  *
- * RETURN:      pVal field from nte whose handle is passed
+ * RETURN:      Val field from nte whose handle is passed
  *
  ***************************************************************************/
 
 void *
-pvNsValPtr(NsHandle h);
+NsValPtr(NsHandle h);
 
 
 /****************************************************************************
- * FUNCTION:    vNsSetup
+ * FUNCTION:    NsSetup
  *
  * PARAMETERS:  none
  *
@@ -291,13 +294,13 @@ pvNsValPtr(NsHandle h);
  ***************************************************************************/
 
 void
-vNsSetup(void);
+NsSetup(void);
 
 
 /****************************************************************************
- * FUNCTION:    iNsPopCurrent
+ * FUNCTION:    NsPopCurrent
  *
- * PARAMETERS:  NsType iType    The type of frame to be found
+ * PARAMETERS:  NsType Type    The type of frame to be found
  *
  * DESCRIPTION: Pop the scope stack until a frame of the requested type
  *              is found.
@@ -311,15 +314,15 @@ vNsSetup(void);
  ***************************************************************************/
 
 int
-iNsPopCurrent(NsType iType);
+NsPopCurrent(NsType Type);
 
 
 /****************************************************************************
-* FUNCTION:     hNsEnter
+* FUNCTION:     NsEnter
  *
- * PARAMETERS:  char  *pcName   name to be entered, in internal format
+ * PARAMETERS:  char  *Name   name to be entered, in internal format
  *                              as represented in the AML stream
- *              NsType iType    type associated with name
+ *              NsType Type    type associated with name
  *              OpMode iLE      Load => add name if not found
  *
  * RETURN:      Handle to the nte for the passed name
@@ -329,25 +332,25 @@ iNsPopCurrent(NsType iType);
  ***************************************************************************/
 
 NsHandle
-hNsEnter(char *pcName, NsType iType, OpMode iLE);
+NsEnter(char *Name, NsType Type, OpMode iLE);
 
 
 /****************************************************************************
- * FUNCTION:    hGetParentHandle
+ * FUNCTION:    GetParentHandle
  *
- * PARAMETERS:  NsHandle hLook - Handle whose parent is to be returned
+ * PARAMETERS:  NsHandle Look - Handle whose parent is to be returned
  *
- * RETURN:      Parent of parameter.    NOTFOUND if hLook is invalid
- *              or hLook refers to the root.
+ * RETURN:      Parent of parameter.    NOTFOUND if Look is invalid
+ *              or Look refers to the root.
  *
  ***************************************************************************/
 
 NsHandle 
-hGetParentHandle(NsHandle hLook);
+GetParentHandle(NsHandle Look);
 
 
 /****************************************************************************
- * FUNCTION:    pcNsNameOfCurrentScope
+ * FUNCTION:    NsNameOfCurrentScope
  *
  * PARAMETERS:  none
  *
@@ -358,13 +361,13 @@ hGetParentHandle(NsHandle hLook);
  ***************************************************************************/
 
 char *
-pcNsNameOfCurrentScope(void);
+NsNameOfCurrentScope(void);
 
 
 /****************************************************************************
- * FUNCTION:    pcNsFullyQualifiedName
+ * FUNCTION:    NsFullyQualifiedName
  *
- * PARAMETERS:  NsHandle hLook      handle of nte whose name is to be found
+ * PARAMETERS:  NsHandle Look      handle of nte whose name is to be found
  *
  * RETURN:      pointer to storage containing the name, in external format
  *
@@ -373,15 +376,15 @@ pcNsNameOfCurrentScope(void);
  ***************************************************************************/
 
 char *
-pcNsFullyQualifiedName(NsHandle hLook);
+NsFullyQualifiedName(NsHandle Look);
 
 
 /****************************************************************************
- * FUNCTION:    vNsSetMethod
+ * FUNCTION:    NsSetMethod
  *
  * PARAMETERS:  NsHandle        h           handle of nte to be set
- *              ptrdiff_t       iOffset     value to be set
- *              long            lLength     length associated with value
+ *              ptrdiff_t       Offset     value to be set
+ *              long            Length     length associated with value
  *
  * DESCRIPTION: Record the given offset and p-code length of the method
  *              whose handle is passed
@@ -389,15 +392,15 @@ pcNsFullyQualifiedName(NsHandle hLook);
  ***************************************************************************/
 
 void
-vNsSetMethod(NsHandle h, ptrdiff_t iOffset, long lLength);
+NsSetMethod(NsHandle h, ptrdiff_t Offset, long Length);
 
 
 /****************************************************************************
- * FUNCTION:    vNsSetValue
+ * FUNCTION:    NsSetValue
  *
- * PARAMETERS:  NsHandle            hN          handle of nte to be set
- *              ACPI_OBJECT_HANDLE  hV          value to be set
- *              BYTE                bValTyp     type of value,
+ * PARAMETERS:  NsHandle            h          handle of nte to be set
+ *              ACPI_OBJECT_HANDLE  v          value to be set
+ *              BYTE                ValTyp     type of value,
  *                                              or Any if not known
  *
  * DESCRIPTION: Record the given object as the value associated with the
@@ -406,20 +409,20 @@ vNsSetMethod(NsHandle h, ptrdiff_t iOffset, long lLength);
  ***************************************************************************/
 
 void
-vNsSetValue(NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE bValTyp);
+NsSetValue(NsHandle h, ACPI_OBJECT_HANDLE v, BYTE ValTyp);
 
 
 /****************************************************************************
- * FUNCTION:    vNsDumpTables
+ * FUNCTION:    NsDumpTables
  *
- * PARAMETERS:  int iDisplayBitFlags        See definitions of OUTPUT_DATA
+ * PARAMETERS:  int DisplayBitFlags        See definitions of OUTPUT_DATA
  *                                          and related symbols in display.h
- *              int iUseGraphicCharSet      1 => use graphic character set to
+ *              int UseGraphicCharSet      1 => use graphic character set to
  *                                          draw links in name space tree
  *                                          0 => use +, -, and | to draw links
- *              NsHandle hSearchBase        Root of subtree to be dumped, or
+ *              NsHandle SearchBase        Root of subtree to be dumped, or
  *                                          NS_ALL to dump the entire namespace
- *              int     iMaxDepth           Maximum depth of dump.  Use INT_MAX
+ *              int     MaxDepth           Maximum depth of dump.  Use INT_MAX
  *                                          for an effectively unlimited depth.
  *
  * DESCRIPTION: Dump the name space, or a portion of it.
@@ -427,8 +430,8 @@ vNsSetValue(NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE bValTyp);
  ***************************************************************************/
 
 void
-vNsDumpTables(int iDisplayBitFlags, int iUseGraphicCharSet,
-                NsHandle hSearchBase, int iMaxDepth);
+NsDumpTables(int DisplayBitFlags, int UseGraphicCharSet,
+                NsHandle SearchBase, int MaxDepth);
 
 
 /****************************************************************************
@@ -441,18 +444,18 @@ vNsDumpTables(int iDisplayBitFlags, int iUseGraphicCharSet,
  ***************************************************************************/
 
 void
-vNsDumpEntry(NsHandle h, int iDisplayBitFlags);
+NsDumpEntry(NsHandle h, int DisplayBitFlags);
 
 
 /****************************************************************************
- * FUNCTION:    phNsFindNames
+ * FUNCTION:    NsFindNames
  *
- * PARAMETERS:  char        *pcSearchFor    pattern to be found.
+ * PARAMETERS:  char        *SearchFor    pattern to be found.
  *                                          4 bytes, ? matches any character.
  *                                          If NULL, "????" will be used.
- *              NsHandle    hSearchBase     Root of subtree to be searched, or
+ *              NsHandle    SearchBase     Root of subtree to be searched, or
  *                                          NS_ALL to search the entire namespace
- *              int         iMaxDepth       Maximum depth of search.  Use INT_MAX
+ *              int         MaxDepth       Maximum depth of search.  Use INT_MAX
  *                                          for an effectively unlimited depth.
  *
  * DESCRIPTION: Traverse the name space finding names which match a search
@@ -460,26 +463,26 @@ vNsDumpEntry(NsHandle h, int iDisplayBitFlags);
  *              array is marked by the value (NsHandle)0.  A return value
  *              of (NsHandle *)0 indicates that no matching names were
  *              found or that space for the list could not be allocated.
- *              if hSearchBase is NS_ALL (null) search from the root,
+ *              if SearchBase is NS_ALL (null) search from the root,
  *              else it is a handle whose children are to be searched.
  *
  ***************************************************************************/
 
 NsHandle *
-phNsFindNames(char *pcSearchFor, NsHandle hSearchBase, int iMaxDepth);
+NsFindNames(char *SearchFor, NsHandle SearchBase, int MaxDepth);
 
 
 /****************************************************************************
- * FUNCTION:    hNsGetHandle
+ * FUNCTION:    NsGetHandle
  *
- * PARAMETERS:  char        *pcName     Name to be found, in external (ASL)
+ * PARAMETERS:  char        *Name     Name to be found, in external (ASL)
  *                                      format.  The \ and ^ prefixes, and the
  *                                      . to separate segments, are supported.
  *
- *              NsHandle    hScope      Root of subtree to be searched, or
+ *              NsHandle    Scope      Root of subtree to be searched, or
  *                                      NS_ALL for the root of the name space.
- *                                      If pcName is fully qualified (first char
- *                                      is '\'), the passed value of hScope will
+ *                                      If Name is fully qualified (first char
+ *                                      is '\'), the passed value of Scope will
  *                                      not be accessed.
  *
  * DESCRIPTION: Look up a name relative to a given scope and return the
@@ -488,11 +491,11 @@ phNsFindNames(char *pcSearchFor, NsHandle hSearchBase, int iMaxDepth);
  ***************************************************************************/
 
 NsHandle
-hNsGetHandle(char *pcName, NsHandle hScope);
+NsGetHandle(char *Name, NsHandle Scope);
 
 
 /*****************************************************************************
- * FUNCTION:    iIsNsValue
+ * FUNCTION:    IsNsValue
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *pOD
  *
@@ -502,11 +505,11 @@ hNsGetHandle(char *pcName, NsHandle hScope);
  ****************************************************************************/
 
 int
-iIsNsValue(OBJECT_DESCRIPTOR *pOD);
+IsNsValue(OBJECT_DESCRIPTOR *pOD);
 
 
 /****************************************************************************
- * FUNCTION:    iNsMarkNS
+ * FUNCTION:    NsMarkNS
  *
  * PARAMETERS:  none
  *
@@ -518,43 +521,43 @@ iIsNsValue(OBJECT_DESCRIPTOR *pOD);
  ***************************************************************************/
 
 int
-iNsMarkNS(void);
+NsMarkNS(void);
 
 
 #ifndef PLUMBER
 
 /* dummy macros to make calls go away */
 
-#define vMarkStaticBlocks(piCount)
-#define vRegisterStaticBlockPtr(ppvBP)
+#define MarkStaticBlocks(Count)
+#define RegisterStaticBlockPtr(BP)
 
 #else
 
 /****************************************************************************
- * FUNCTION:    vRegisterStaticBlockPtr
+ * FUNCTION:    RegisterStaticBlockPtr
  *
- * PARAMETERS:  void    **ppvBP         Addr of static pointer to be registered
+ * PARAMETERS:  void    **BP         Addr of static pointer to be registered
  *
  * DESCRIPTION: If compiled with bu_plumr.h, add the pointer whose address
- *              is passed to the registry.  vMarkStaticBlocks() will then
+ *              is passed to the registry.  MarkStaticBlocks() will then
  *              "mark" each block pointed to by a registered pointer.
  *
  ***************************************************************************/
 
 void
-vRegisterStaticBlockPtr(void **ppvBP);
+RegisterStaticBlockPtr(void **BP);
 
 
 /****************************************************************************
- * FUNCTION:    vMarkStaticBlocks
+ * FUNCTION:    MarkStaticBlocks
  *
- * PARAMETERS:  int *piCount        Count of blocks marked
+ * PARAMETERS:  int *Count        Count of blocks marked
  *
  * DESCRIPTION: "Mark" all blocks pointed to by registered static pointers
  *
  ***************************************************************************/
 void
-vMarkStaticBlocks(int *piCount)
+MarkStaticBlocks(int *Count)
 ;
 
 #endif /* PLUMBER */
