@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.144 $
+ *              $Revision: 1.145 $
  *
  *****************************************************************************/
 
@@ -326,7 +326,7 @@ AcpiEvAddressSpaceDispatch (
 
     /* Ensure that there is a handler associated with this region */
 
-    HandlerDesc = RegionObj->Region.AddressSpace;
+    HandlerDesc = RegionObj->Region.Handler;
     if (!HandlerDesc)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
@@ -413,7 +413,7 @@ AcpiEvAddressSpaceDispatch (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
         "Handler %p (@%p) Address %8.8X%8.8X [%s]\n",
-        &RegionObj->Region.AddressSpace->AddressSpace, Handler,
+        &RegionObj->Region.Handler->AddressSpace, Handler,
         ACPI_FORMAT_UINT64 (Address),
         AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
@@ -496,7 +496,7 @@ AcpiEvDetachRegion(
 
     /* Get the address handler from the region object */
 
-    HandlerObj = RegionObj->Region.AddressSpace;
+    HandlerObj = RegionObj->Region.Handler;
     if (!HandlerObj)
     {
         /* This region has no handler, all done */
@@ -579,7 +579,7 @@ AcpiEvDetachRegion(
              * If the region is on the handler's list
              * this better be the region's handler
              */
-            RegionObj->Region.AddressSpace = NULL;
+            RegionObj->Region.Handler = NULL;
             AcpiUtRemoveReference (HandlerObj);
 
             return_VOID;
@@ -643,12 +643,12 @@ AcpiEvAttachRegion (
 
     /* Install the region's handler */
 
-    if (RegionObj->Region.AddressSpace)
+    if (RegionObj->Region.Handler)
     {
         return_ACPI_STATUS (AE_ALREADY_EXISTS);
     }
 
-    RegionObj->Region.AddressSpace = HandlerObj;
+    RegionObj->Region.Handler = HandlerObj;
     AcpiUtAddReference (HandlerObj);
 
     /*
@@ -759,7 +759,7 @@ AcpiEvInstallHandler (
     {
         /* Check if this Device already has a handler for this address space */
 
-        NextHandlerObj = ObjDesc->Device.AddressSpace;
+        NextHandlerObj = ObjDesc->Device.Handler;
         while (NextHandlerObj)
         {
             /* Found a handler, is it for the same address space? */
