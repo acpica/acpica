@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.43 $
+ *              $Revision: 1.45 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -154,7 +154,7 @@ AcpiRsCreateResourceList (
 
     ACPI_STATUS             Status;
     UINT8                   *ByteStreamStart;
-    UINT32                  ListSizeNeeded = 0;
+    ACPI_SIZE               ListSizeNeeded = 0;
     UINT32                  ByteStreamBufferLength;
 
 
@@ -242,7 +242,7 @@ AcpiRsCreatePciRoutingTable (
     ACPI_OPERAND_OBJECT     **TopObjectList = NULL;
     ACPI_OPERAND_OBJECT     **SubObjectList = NULL;
     ACPI_OPERAND_OBJECT     *PackageElement = NULL;
-    UINT32                  BufferSizeNeeded = 0;
+    ACPI_SIZE               BufferSizeNeeded = 0;
     UINT32                  NumberOfElements = 0;
     UINT32                  Index = 0;
     ACPI_PCI_ROUTING_TABLE  *UserPrt = NULL;
@@ -370,7 +370,7 @@ AcpiRsCreatePciRoutingTable (
 
             /* Use *remaining* length of the buffer as max for pathname */
 
-            BufferSizeNeeded = *OutputBufferLength - 
+            BufferSizeNeeded = *OutputBufferLength -
                                 (UINT32) ((UINT8 *) UserPrt->Source - OutputBuffer);
 
             Status = AcpiNsHandleToPathname ((ACPI_HANDLE *) Node,
@@ -411,7 +411,6 @@ AcpiRsCreatePciRoutingTable (
            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Need Integer, found %s\n",
                 AcpiUtGetTypeName ((*SubObjectList)->Common.Type)));
            return_ACPI_STATUS (AE_BAD_DATA);
-           break;
         }
 
         /* Now align the current length */

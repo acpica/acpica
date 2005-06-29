@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -265,7 +265,7 @@ AcpiRsIrqResource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes 
+ *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
@@ -415,15 +415,15 @@ AcpiRsExtendedIrqResource (
 
     /*
      * Check for Interrupt Mode
-     * 
-     * The definition of an Extended IRQ changed between ACPI spec v1.0b 
+     *
+     * The definition of an Extended IRQ changed between ACPI spec v1.0b
      * and ACPI spec 2.0 (section 6.4.3.6 in both).
      *
      * - Edge/Level are defined opposite in the table vs the headers
      */
     OutputStruct->Data.ExtendedIrq.EdgeLevel =
                         (Temp8 & 0x2) ? EDGE_SENSITIVE : LEVEL_SENSITIVE;
-   
+
     /*
      * Check Interrupt Polarity
      */
@@ -545,7 +545,7 @@ AcpiRsExtendedIrqResource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes 
+ *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
@@ -591,8 +591,8 @@ AcpiRsExtendedIrqStream (
 
     /*
      * Set the Interrupt Mode
-     * 
-     * The definition of an Extended IRQ changed between ACPI spec v1.0b 
+     *
+     * The definition of an Extended IRQ changed between ACPI spec v1.0b
      * and ACPI spec 2.0 (section 6.4.3.6 in both).  This code does not
      * implement the more restrictive definition of 1.0b
      *

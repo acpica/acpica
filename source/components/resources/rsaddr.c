@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -354,7 +354,7 @@ AcpiRsAddress16Resource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes 
+ *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
@@ -751,7 +751,7 @@ AcpiRsAddress32Resource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes 
+ *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
@@ -1150,7 +1150,7 @@ AcpiRsAddress64Resource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes 
+ *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status

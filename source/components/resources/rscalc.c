@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.35 $
+ *              $Revision: 1.37 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -343,7 +343,6 @@ AcpiRsCalculateByteStreamLength (
              * so exit with an error
              */
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
-            break;
 
         } /* switch (LinkedList->Id) */
 
@@ -389,7 +388,7 @@ ACPI_STATUS
 AcpiRsCalculateListLength (
     UINT8                   *ByteStreamBuffer,
     UINT32                  ByteStreamBufferLength,
-    UINT32                  *SizeNeeded)
+    ACPI_SIZE               *SizeNeeded)
 {
     UINT32                  BufferSize = 0;
     UINT32                  BytesParsed = 0;
@@ -800,7 +799,6 @@ AcpiRsCalculateListLength (
              *  so exit with an error
              */
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
-            break;
         }
 
         /*
@@ -843,7 +841,7 @@ AcpiRsCalculateListLength (
 ACPI_STATUS
 AcpiRsCalculatePciRoutingTableLength (
     ACPI_OPERAND_OBJECT     *PackageObject,
-    UINT32                  *BufferSizeNeeded)
+    ACPI_SIZE               *BufferSizeNeeded)
 {
     UINT32                  NumberOfElements;
     UINT32                  TempSizeNeeded = 0;

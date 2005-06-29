@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.20 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -155,7 +155,6 @@ AcpiRsGetResourceType (
          * Small Resource Type -- Only bits 6:3 are valid
          */
         return ((UINT8) (ResourceStartByte & RESOURCE_DESC_SMALL_MASK));
-        break;
 
 
     case RESOURCE_DESC_TYPE_LARGE:
@@ -164,7 +163,6 @@ AcpiRsGetResourceType (
          * Large Resource Type -- All bits are valid
          */
         return (ResourceStartByte);
-        break;
     }
 
     return (0xFF);
@@ -432,7 +430,7 @@ AcpiRsListToByteStream (
 {
     ACPI_STATUS             Status;
     UINT8                   *Buffer = *OutputBuffer;
-    UINT32                  BytesConsumed = 0;
+    ACPI_SIZE               BytesConsumed = 0;
     BOOLEAN                 Done = FALSE;
 
 

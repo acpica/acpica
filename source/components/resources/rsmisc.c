@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -187,7 +187,7 @@ AcpiRsEndTagResource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes 
+ *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
@@ -347,7 +347,7 @@ AcpiRsVendorResource (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes 
+ *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status
@@ -646,7 +646,7 @@ AcpiRsStartDependFnsStream (
  *
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes 
+ *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
  *
  * RETURN:      Status

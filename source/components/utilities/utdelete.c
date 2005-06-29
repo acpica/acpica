@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.74 $
+ *              $Revision: 1.86 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -145,6 +145,7 @@ AcpiUtDeleteInternalObj (
 {
     void                    *ObjPointer = NULL;
     ACPI_OPERAND_OBJECT     *HandlerDesc;
+    ACPI_OPERAND_OBJECT     *SecondDesc;
 
 
     FUNCTION_TRACE_PTR ("UtDeleteInternalObj", Object);
@@ -159,7 +160,6 @@ AcpiUtDeleteInternalObj (
      * Must delete or free any pointers within the object that are not
      * actual ACPI objects (for example, a raw buffer pointer).
      */
-
     switch (Object->Common.Type)
     {
 
@@ -235,7 +235,6 @@ AcpiUtDeleteInternalObj (
             AcpiOsDeleteSemaphore (Object->Method.Semaphore);
             Object->Method.Semaphore = NULL;
         }
-
         break;
 
 
@@ -243,7 +242,8 @@ AcpiUtDeleteInternalObj (
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "***** Region %p\n", Object));
 
-        if (Object->Region.Extra)
+        SecondDesc = AcpiNsGetSecondaryObject (Object);
+        if (SecondDesc)
         {
             /*
              * Free the RegionContext if and only if the handler is one of the
@@ -254,12 +254,12 @@ AcpiUtDeleteInternalObj (
             if ((HandlerDesc) &&
                 (HandlerDesc->AddrHandler.Hflags == ADDR_HANDLER_DEFAULT_INSTALLED))
             {
-                ObjPointer = Object->Region.Extra->Extra.RegionContext;
+                ObjPointer = SecondDesc->Extra.RegionContext;
             }
 
             /* Now we can free the Extra object */
 
-            AcpiUtDeleteObjectDesc (Object->Region.Extra);
+            AcpiUtDeleteObjectDesc (SecondDesc);
         }
         break;
 
@@ -268,47 +268,34 @@ AcpiUtDeleteInternalObj (
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "***** Buffer Field %p\n", Object));
 
-        if (Object->BufferField.Extra)
+        SecondDesc = AcpiNsGetSecondaryObject (Object);
+        if (SecondDesc)
         {
-            AcpiUtDeleteObjectDesc (Object->BufferField.Extra);
+            AcpiUtDeleteObjectDesc (SecondDesc);
         }
         break;
+
 
     default:
         break;
     }
 
 
-    /*
-     * Delete any allocated memory found above
-     */
+    /* Free any allocated memory (pointer within the object) found above */
+
     if (ObjPointer)
     {
-        if (!AcpiTbSystemTablePointer (ObjPointer))
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Deleting Obj Ptr %p \n", ObjPointer));
-
-            ACPI_MEM_FREE (ObjPointer);
-        }
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Deleting Object Subptr %p\n",
+                ObjPointer));
+        ACPI_MEM_FREE (ObjPointer);
     }
 
+    /* Now the object can be safely deleted */
 
-    /* Only delete the object if it was dynamically allocated */
-
-    if (Object->Common.Flags & AOPOBJ_STATIC_ALLOCATION)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object %p [%s] static allocation, no delete\n",
-            Object, AcpiUtGetTypeName (Object->Common.Type)));
-    }
-
-    if (!(Object->Common.Flags & AOPOBJ_STATIC_ALLOCATION))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Deleting object %p [%s]\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Deleting Object %p [%s]\n",
             Object, AcpiUtGetTypeName (Object->Common.Type)));
 
-        AcpiUtDeleteObjectDesc (Object);
-    }
-
+    AcpiUtDeleteObjectDesc (Object);
     return_VOID;
 }
 
@@ -340,23 +327,7 @@ AcpiUtDeleteInternalObjectList (
 
     for (InternalObj = ObjList; *InternalObj; InternalObj++)
     {
-        /*
-         * Check for a package
-         * Simple objects are simply stored in the array and do not
-         * need to be deleted separately.
-         */
-
-        if (IS_THIS_OBJECT_TYPE ((*InternalObj), ACPI_TYPE_PACKAGE))
-        {
-            /* Delete the package */
-
-            /*
-             * TBD: [Investigate] This might not be the right thing to do,
-             * depending on how the internal package object was allocated!!!
-             */
-            AcpiUtDeleteInternalObj (*InternalObj);
-        }
-
+        AcpiUtRemoveReference (*InternalObj);
     }
 
     /* Free the combined parameter pointer list and object array */
@@ -403,7 +374,6 @@ AcpiUtUpdateRefCount (
     /*
      * Reference count action (increment, decrement, or force delete)
      */
-
     switch (Action)
     {
 
@@ -472,12 +442,11 @@ AcpiUtUpdateRefCount (
      * Sanity check the reference count, for debug purposes only.
      * (A deleted object will have a huge reference count)
      */
-
     if (Count > MAX_REFERENCE_COUNT)
     {
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "**** AE_ERROR **** Invalid Reference Count (%X) in object %p\n\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
+            "**** Warning **** Large Reference Count (%X) in object %p\n\n",
             Count, Object));
     }
 
@@ -530,23 +499,14 @@ AcpiUtUpdateObjectReference (
         return_ACPI_STATUS (AE_OK);
     }
 
-
     /*
-     * Make sure that this isn't a namespace handle or an AML pointer
+     * Make sure that this isn't a namespace handle
      */
-
-    if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
+    if (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_NAMED)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object %p is NS handle\n", Object));
         return_ACPI_STATUS (AE_OK);
     }
-
-    if (AcpiTbSystemTablePointer (Object))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Object %p is Pcode Ptr\n", Object));
-        return_ACPI_STATUS (AE_OK);
-    }
-
 
     State = AcpiUtCreateUpdateState (Object, Action);
 
@@ -562,7 +522,6 @@ AcpiUtUpdateObjectReference (
          */
         switch (Object->Common.Type)
         {
-
         case ACPI_TYPE_DEVICE:
 
             Status = AcpiUtCreateUpdateStateAndPush (Object->Device.AddrHandler,
@@ -605,7 +564,6 @@ AcpiUtUpdateObjectReference (
                  * Note: There can be null elements within the package,
                  * these are simply ignored
                  */
-
                 Status = AcpiUtCreateUpdateStateAndPush (
                             Object->Package.Elements[i], Action, &StateList);
                 if (ACPI_FAILURE (Status))
@@ -642,7 +600,7 @@ AcpiUtUpdateObjectReference (
         case INTERNAL_TYPE_BANK_FIELD:
 
             Status = AcpiUtCreateUpdateStateAndPush (
-                        Object->BankField.BankRegisterObj, Action, &StateList);
+                        Object->BankField.BankObj, Action, &StateList);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -676,42 +634,23 @@ AcpiUtUpdateObjectReference (
 
 
         case ACPI_TYPE_REGION:
-
-    /* TBD: [Investigate]
-            AcpiUtUpdateRefCount (Object->Region.AddrHandler, Action);
-    */
-/*
-            Status =
-                AcpiUtCreateUpdateStateAndPush (Object->Region.AddrHandler,
-                                                Action, &StateList);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-*/
-            break;
-
-
         case INTERNAL_TYPE_REFERENCE:
 
+            /* No subobjects */
             break;
         }
-
 
         /*
          * Now we can update the count in the main object.  This can only
          * happen after we update the sub-objects in case this causes the
          * main object to be deleted.
          */
-
         AcpiUtUpdateRefCount (Object, Action);
-
 
         /* Move on to the next object to be updated */
 
         State = AcpiUtPopGenericState (&StateList);
     }
-
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -741,7 +680,6 @@ AcpiUtAddReference (
     /*
      * Ensure that we have a valid object
      */
-
     if (!AcpiUtValidInternalObject (Object))
     {
         return_VOID;
@@ -750,7 +688,6 @@ AcpiUtAddReference (
     /*
      * We have a valid ACPI internal object, now increment the reference count
      */
-
     AcpiUtUpdateObjectReference  (Object, REF_INCREMENT);
 
     return_VOID;
@@ -776,11 +713,21 @@ AcpiUtRemoveReference (
 
     FUNCTION_TRACE_PTR ("UtRemoveReference", Object);
 
+    /*
+     * Allow a NULL pointer to be passed in, just ignore it.  This saves
+     * each caller from having to check.  Also, ignore NS nodes.
+     *
+     */
+    if (!Object ||
+        (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_NAMED))
+
+    {
+        return_VOID;
+    }
 
     /*
      * Ensure that we have a valid object
      */
-
     if (!AcpiUtValidInternalObject (Object))
     {
         return_VOID;
@@ -794,7 +741,6 @@ AcpiUtRemoveReference (
      * if the reference count becomes 0.  (Must also decrement the ref count
      * of all subobjects!)
      */
-
     AcpiUtUpdateObjectReference  (Object, REF_DECREMENT);
     return_VOID;
 }
