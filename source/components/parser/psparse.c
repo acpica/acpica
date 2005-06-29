@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.116 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -287,6 +287,13 @@ AcpiPsCompleteThisOp (
 
     FUNCTION_TRACE_PTR ("PsCompleteThisOp", Op);
 
+
+    /* Check for null Op, can happen if AML code is corrupt */
+
+    if (!Op)
+    {
+        return_VALUE (TRUE);
+    }
 
     /* Delete this op and the subtree below it if asked to */
 
@@ -1018,7 +1025,7 @@ CloseThisOp:
 
             AcpiPsCompleteThisOp (WalkState, Op);
             Op = NULL;
-            
+
             Status = AE_OK;
             break;
 
@@ -1188,7 +1195,7 @@ AcpiPsParseAml (
     WalkState->Thread = Thread;
     AcpiDsPushWalkState (WalkState, Thread);
 
-    /* 
+    /*
      * This global allows the AML debugger to get a handle to the currently
      * executing control method.
      */
