@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -1113,13 +1113,17 @@ AnMethodAnalysisWalkEnd (
 
     case PARSEOP_RETURN:
 
+        /* 
+         * The parent block does not "exit" and continue execution -- the
+         * method is terminated here with the Return() statement.
+         */
         Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
         Op->Asl.ParentMethod = MethodInfo->Op;      /* Used in the "typing" pass later */
 
         /*
          * If there is a peer node after the return statement, then this
          * node is unreachable code -- i.e., it won't be executed because of the
-         * preceeding Return().
+         * preceeding Return() statement.
          */
         if (Op->Asl.Next)
         {
@@ -1134,6 +1138,11 @@ AnMethodAnalysisWalkEnd (
             (Op->Asl.Next) &&
             (Op->Asl.Next->Asl.ParseOpcode == PARSEOP_ELSE))
         {
+            /*
+             * This IF has a corresponding ELSE.  The IF block has no exit, 
+             * (it contains an unconditional Return)
+             * mark the ELSE block to remember this fact.
+             */
             Op->Asl.Next->Asl.CompileFlags |= NODE_IF_HAS_NO_EXIT;
         }
         break;
@@ -1144,6 +1153,10 @@ AnMethodAnalysisWalkEnd (
         if ((Op->Asl.CompileFlags & NODE_HAS_NO_EXIT) &&
             (Op->Asl.CompileFlags & NODE_IF_HAS_NO_EXIT))
         {
+            /*
+             * This ELSE block has no exit and the corresponding IF block
+             * has no exit either.  Therefore, the parent node has no exit.
+             */
             Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
         }
         break;
@@ -1154,6 +1167,8 @@ AnMethodAnalysisWalkEnd (
         if ((Op->Asl.CompileFlags & NODE_HAS_NO_EXIT) &&
             (Op->Asl.Parent))
         {
+            /* If this node has no exit, then the parent has no exit either */
+
             Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
         }
         break;
