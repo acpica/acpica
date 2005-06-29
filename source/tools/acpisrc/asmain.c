@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.49 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -189,7 +189,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" *  Copyright (C) 2000 - 2002, R. Byron Moore\n"
+" *  Copyright (C) 2000 - 2003, R. Byron Moore\n"
 " *\n"
 " *  This program is free software; you can redistribute it and/or modify\n"
 " *  it under the terms of the GNU General Public License as published by\n"
@@ -219,6 +219,7 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "BOOLEAN     ",             "u8                  ",             REPLACE_WHOLE_WORD,
     "char        ",             "char                ",             REPLACE_WHOLE_WORD,
     "void        ",             "void                ",             REPLACE_WHOLE_WORD,
+    "int         ",             "int                 ",             REPLACE_WHOLE_WORD,
 
     /* Now do embedded typecasts */
 
@@ -270,7 +271,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     "ACPI_DEBUG_PRINT_INFO",            SRC_TYPE_STRUCT,
     "ACPI_DESCRIPTOR",                  SRC_TYPE_UNION,
     "ACPI_DEVICE_ID",                   SRC_TYPE_STRUCT,
-    "ACPI_DEVICE_INFO",                 SRC_TYPE_SIMPLE,
+    "ACPI_DEVICE_INFO",                 SRC_TYPE_STRUCT,
     "ACPI_DEVICE_WALK_INFO",            SRC_TYPE_STRUCT,
     "ACPI_EVENT_HANDLER",               SRC_TYPE_SIMPLE,
     "ACPI_EVENT_STATUS",                SRC_TYPE_SIMPLE,
@@ -393,12 +394,15 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     "ACPI_TABLE_HEADER",                SRC_TYPE_STRUCT,
     "ACPI_TABLE_INFO",                  SRC_TYPE_STRUCT,
     "ACPI_TABLE_PTR",                   SRC_TYPE_SIMPLE,
+    "ACPI_TABLE_SUPPORT",               SRC_TYPE_STRUCT,
     "ACPI_TABLE_TYPE",                  SRC_TYPE_SIMPLE,
     "ACPI_THREAD_STATE",                SRC_TYPE_STRUCT,
     "ACPI_UPDATE_STATE",                SRC_TYPE_STRUCT,
     "ACPI_WALK_CALLBACK",               SRC_TYPE_SIMPLE,
     "ACPI_WALK_INFO",                   SRC_TYPE_STRUCT,
     "ACPI_WALK_STATE",                  SRC_TYPE_STRUCT,
+    "APIC_HEADER",                      SRC_TYPE_STRUCT,
+    "ARGUMENT_INFO",                    SRC_TYPE_STRUCT,
     "ASL_ANALYSIS_WALK_INFO",           SRC_TYPE_STRUCT,
     "ASL_DMA_FORMAT_DESC",              SRC_TYPE_STRUCT,
     "ASL_DWORD_ADDRESS_DESC",           SRC_TYPE_STRUCT,
@@ -429,15 +433,22 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     "ASL_START_DEPENDENT_NOPRIO_DESC",  SRC_TYPE_STRUCT,
     "ASL_WALK_CALLBACK",                SRC_TYPE_SIMPLE,
     "ASL_WORD_ADDRESS_DESC",            SRC_TYPE_STRUCT,
+    "COMMAND_INFO",                     SRC_TYPE_STRUCT,
+    "FACS_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
     "FACS_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT,
     "FACS_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
+    "FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
     "FADT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT,
     "FADT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
     "RSDP_DESCRIPTOR",                  SRC_TYPE_STRUCT,
+    "RSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
+    "RSDT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT,
+    "RSDT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
     "UINT32_STRUCT",                    SRC_TYPE_STRUCT,
     "UINT64_OVERLAY",                   SRC_TYPE_UNION,
     "UINT64_STRUCT",                    SRC_TYPE_STRUCT,
     "XSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
+    "XSDT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
 
     NULL
 };
@@ -509,7 +520,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     AcpiIdentifiers,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
      CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE |
-     CVT_REMOVE_EMPTY_BLOCKS| CVT_SPACES_TO_TABS8),
+     CVT_REMOVE_EMPTY_BLOCKS| CVT_REDUCE_TYPEDEFS | CVT_SPACES_TO_TABS8),
 };
 
 
@@ -579,19 +590,17 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
-#if 0
-    "1999 - 2002, Intel Corp",      "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
-    "1999, Intel Corp",             "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
-    "  All rights\n * reserved.",    "\n * All rights reserved.",     REPLACE_WHOLE_WORD,
-    "Copyright (C) 2000, 2001",     "Copyright (C) 2000 - 2002",      REPLACE_WHOLE_WORD,
-#endif
+    "(c) 1999 - 2003",      "(c) 1999 - 2003",     REPLACE_WHOLE_WORD,
 
+#if 0
     "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",           REPLACE_WHOLE_WORD,
     "ACPI_NATIVE_UINT *",        "ACPI_NATIVE_UINT *",           REPLACE_WHOLE_WORD,
     "ACPI_NATIVE_UINT",          "ACPI_NATIVE_UINT",           REPLACE_WHOLE_WORD,
     "ACPI_NATIVE_INT",      "ACPI_NATIVE_INT",           REPLACE_WHOLE_WORD,
     "ACPI_NATIVE_INT *",         "ACPI_NATIVE_INT *",           REPLACE_WHOLE_WORD,
     "ACPI_NATIVE_INT",           "ACPI_NATIVE_INT",           REPLACE_WHOLE_WORD,
+#endif
+
     NULL,                    NULL, 0
 };
 
@@ -888,9 +897,16 @@ main (
     {
         /* Process a single file */
 
-        /* TBD: Need to differentiate between source and header files !! */
+        /* Differentiate between source and header files */
 
-        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_SOURCE);
+        if (strstr (SourcePath, ".h"))
+        {
+            AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_HEADER);
+        }
+        else
+        {
+            AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_SOURCE);
+        }
     }
 
     /* Always display final summary and stats */

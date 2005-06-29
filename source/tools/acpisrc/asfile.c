@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.22 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -522,6 +522,13 @@ AsConvertFile (
         case CVT_REMOVE_EMPTY_BLOCKS:
 
             AsRemoveEmptyBlocks (FileBuffer, Filename);
+            break;
+
+
+        case CVT_REDUCE_TYPEDEFS:
+
+            AsReduceTypedefs (FileBuffer, "typedef union");
+            AsReduceTypedefs (FileBuffer, "typedef struct");
             break;
 
 
