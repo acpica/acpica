@@ -1,6 +1,7 @@
 /******************************************************************************
- * 
+ *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -37,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -113,21 +114,18 @@
  *
  *****************************************************************************/
 
-#include <acpi.h>
-#include <hardware.h>
-#include <namesp.h>
-#include <events.h>
+#include "acpi.h"
+#include "achware.h"
+#include "acnamesp.h"
+#include "acevents.h"
 
 #define _COMPONENT          HARDWARE
-        MODULE_NAME         ("hwgpe");
-
-
-UINT8 DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
+        MODULE_NAME         ("hwgpe")
 
 
 /******************************************************************************
  *
- * FUNCTION:    HwEnableGpe
+ * FUNCTION:    AcpiHwEnableGpe
  *
  * PARAMETERS:  GpeNumber       - The GPE
  *
@@ -138,35 +136,36 @@ UINT8 DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
  ******************************************************************************/
 
 void
-HwEnableGpe (
+AcpiHwEnableGpe (
     UINT32                  GpeNumber)
 {
     UINT8                   InByte;
     UINT32                  RegisterIndex;
     UINT8                   BitMask;
 
-    /* 
+    /*
      * Translate GPE number to index into global registers array.
      */
-    RegisterIndex = Gbl_GpeValid[GpeNumber];
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
-    /* 
+    /*
      * Figure out the bit offset for this GPE within the target register.
      */
-    BitMask = DecodeTo8bit [MOD_8 (GpeNumber)];
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
 
-    /* 
+    /*
      * Read the current value of the register, set the appropriate bit
      * to enable the GPE, and write out the new register.
      */
-    InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr);
-    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte | BitMask));
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr,
+                (UINT8)(InByte | BitMask));
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    HwDisableGpe
+ * FUNCTION:    AcpiHwDisableGpe
  *
  * PARAMETERS:  GpeNumber       - The GPE
  *
@@ -177,72 +176,73 @@ HwEnableGpe (
  ******************************************************************************/
 
 void
-HwDisableGpe (
+AcpiHwDisableGpe (
     UINT32                  GpeNumber)
 {
     UINT8                   InByte;
     UINT32                  RegisterIndex;
     UINT8                   BitMask;
 
-    /* 
+    /*
      * Translate GPE number to index into global registers array.
      */
-    RegisterIndex = Gbl_GpeValid[GpeNumber];
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
-    /* 
+    /*
      * Figure out the bit offset for this GPE within the target register.
      */
-    BitMask = DecodeTo8bit [MOD_8 (GpeNumber)];
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
 
-    /* 
+    /*
      * Read the current value of the register, clear the appropriate bit,
      * and write out the new register value to disable the GPE.
      */
-    InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr);
-    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte & ~BitMask));
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr,
+                (UINT8)(InByte & ~BitMask));
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    HwClearGpe
+ * FUNCTION:    AcpiHwClearGpe
  *
  * PARAMETERS:  GpeNumber       - The GPE
  *
  * RETURN:      None
  *
- * DESCRIPTION: Clear a single GPE. 
+ * DESCRIPTION: Clear a single GPE.
  *
  ******************************************************************************/
 
 void
-HwClearGpe (
+AcpiHwClearGpe (
     UINT32                  GpeNumber)
 {
     UINT32                  RegisterIndex;
     UINT8                   BitMask;
 
-    /* 
+    /*
      * Translate GPE number to index into global registers array.
      */
-    RegisterIndex = Gbl_GpeValid[GpeNumber];
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
-    /* 
+    /*
      * Figure out the bit offset for this GPE within the target register.
      */
-    BitMask = DecodeTo8bit [MOD_8 (GpeNumber)];
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
 
-    /* 
-     * Write a one to the appropriate bit in the status register to 
+    /*
+     * Write a one to the appropriate bit in the status register to
      * clear this GPE.
      */
-    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].StatusAddr, BitMask);
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr, BitMask);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    HwGetGpeStatus
+ * FUNCTION:    AcpiHwGetGpeStatus
  *
  * PARAMETERS:  GpeNumber       - The GPE
  *
@@ -253,7 +253,7 @@ HwClearGpe (
  ******************************************************************************/
 
 void
-HwGetGpeStatus (
+AcpiHwGetGpeStatus (
     UINT32                  GpeNumber,
     ACPI_EVENT_STATUS       *EventStatus)
 {
@@ -263,38 +263,38 @@ HwGetGpeStatus (
 
     if (!EventStatus)
     {
-        return;   
+        return;
     }
 
     (*EventStatus) = 0;
 
-    /* 
+    /*
      * Translate GPE number to index into global registers array.
      */
-    RegisterIndex = Gbl_GpeValid[GpeNumber];
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
-    /* 
+    /*
      * Figure out the bit offset for this GPE within the target register.
      */
-    BitMask = DecodeTo8bit [MOD_8 (GpeNumber)];
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
 
-    /* 
+    /*
      * Enabled?:
      */
-    InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr);
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
 
     if (BitMask & InByte)
     {
-        (*EventStatus) |= EVENT_FLAG_ENABLED;
+        (*EventStatus) |= ACPI_EVENT_FLAG_ENABLED;
     }
 
-    /* 
+    /*
      * Set?
      */
-    InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].StatusAddr);
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr);
 
     if (BitMask & InByte)
     {
-        (*EventStatus) |= EVENT_FLAG_SET;
+        (*EventStatus) |= ACPI_EVENT_FLAG_SET;
     }
 }
