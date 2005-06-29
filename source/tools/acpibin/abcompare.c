@@ -2,7 +2,7 @@
 /******************************************************************************
  * 
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -163,9 +163,23 @@ AbCompareAmlFiles (
     }
 
 
+    /* Read the ACPI header from each file */
 
-    Actual1 = fread (&Header1, sizeof (ACPI_TABLE_HEADER), 1, File1);
-    Actual2 = fread (&Header2, sizeof (ACPI_TABLE_HEADER), 1, File2);
+    Actual1 = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
+    {
+        printf ("File %s does not contain an ACPI table header\n", File1Path);
+        return -1;
+    }
+
+    Actual2 = fread (&Header2, 1, sizeof (ACPI_TABLE_HEADER), File2);
+    if (Actual2 < sizeof (ACPI_TABLE_HEADER))
+    {
+        printf ("File %s does not contain an ACPI table header\n", File2Path);
+        return -1;
+    }
+
+    /* Table signatures must match */
 
     if ((UINT32) Header1.Signature != (UINT32) Header1.Signature)
     {
@@ -173,6 +187,8 @@ AbCompareAmlFiles (
         return -1;
     }
 
+
+    /* Display header information */
 
     printf ("Signature         : %8.4s  %8.4s\n",    Header1.Signature, Header2.Signature);
     printf ("Length            : %8.8X  %8.8X\n",    Header1.Length, Header2.Length);
@@ -185,6 +201,9 @@ AbCompareAmlFiles (
     printf ("Compiler Revision : %8.8X  %8.8X\n",    Header1.AslCompilerRevision, Header2.AslCompilerRevision);
     printf ("\n");
 
+
+    /* Do the byte-by-byte compare */
+
     Actual1 = fread (&Char1, 1, 1, File1);
     Actual2 = fread (&Char2, 1, 1, File2);
     Offset = sizeof (ACPI_TABLE_HEADER);
@@ -193,7 +212,7 @@ AbCompareAmlFiles (
     {
         if (Char1 != Char2)
         {
-            printf ("Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n", Offset, Char1, Char2);
+            printf ("Error - Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n", Offset, Char1, Char2);
             Mismatches++;
             if (Mismatches > 10)
             {
@@ -209,8 +228,15 @@ AbCompareAmlFiles (
     } 
 
 
-
-    if (!Mismatches)
+    if (Actual1)
+    {
+        printf ("Error - file %s is longer than file %s\n", File1Path, File2Path);
+    }
+    else if (Actual2)
+    {
+        printf ("Error - file %s is shorter than file %s\n", File1Path, File2Path);
+    }
+    else if (!Mismatches)
     { 
         printf ("Files compare exactly after header\n");
     }
