@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.183 $
+ *              $Revision: 1.184 $
  *
  *****************************************************************************/
 
@@ -193,7 +193,7 @@ AcpiExDumpOperand (
 
     if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_NAMED)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%p is a NS Node: ", ObjDesc));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%p Namespace Node: ", ObjDesc));
         ACPI_DUMP_ENTRY (ObjDesc, ACPI_LV_EXEC);
         return;
     }
@@ -563,7 +563,7 @@ AcpiExDumpOperands (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "************* Stack dump from %s(%d), %s\n",
+        "************* Operand Stack dump from %s(%d), %s\n",
         ModuleName, LineNumber, Note));
     return;
 }
