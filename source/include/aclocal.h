@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.205 $
+ *       $Revision: 1.207 $
  *
  *****************************************************************************/
 
@@ -145,7 +145,6 @@ typedef UINT32                          ACPI_MUTEX_HANDLE;
  *
  * NOTE: any changes here must be reflected in the AcpiGbl_MutexNames table also!
  */
-
 #define ACPI_MTX_EXECUTE                0
 #define ACPI_MTX_INTERPRETER            1
 #define ACPI_MTX_PARSER                 2
@@ -225,12 +224,12 @@ typedef UINT16                          ACPI_OWNER_ID;
 #define ACPI_FIELD_DWORD_GRANULARITY    4
 #define ACPI_FIELD_QWORD_GRANULARITY    8
 
+
 /*****************************************************************************
  *
  * Namespace typedefs and structs
  *
  ****************************************************************************/
-
 
 /* Operational modes of the AML interpreter/scanner */
 
@@ -250,7 +249,6 @@ typedef enum
  * DataType is used to differentiate between internal descriptors, and MUST
  * be the first byte in this structure.
  */
-
 typedef union acpi_name_union
 {
     UINT32                      Integer;
@@ -508,7 +506,6 @@ typedef struct acpi_field_info
  *
  ****************************************************************************/
 
-
 #define ACPI_CONTROL_NORMAL                  0xC0
 #define ACPI_CONTROL_CONDITIONAL_EXECUTING   0xC1
 #define ACPI_CONTROL_PREDICATE_EXECUTING     0xC2
@@ -517,6 +514,7 @@ typedef struct acpi_field_info
 
 
 /* Forward declarations */
+
 struct acpi_walk_state;
 struct acpi_obj_mutex;
 union acpi_parse_object;
@@ -704,7 +702,6 @@ typedef struct acpi_opcode_info
 
 } ACPI_OPCODE_INFO;
 
-
 typedef union acpi_parse_value
 {
     ACPI_INTEGER                Integer;        /* Integer constant (Up to 64 bits) */
@@ -716,7 +713,6 @@ typedef union acpi_parse_value
     union acpi_parse_object     *Arg;           /* arguments and contained ops */
 
 } ACPI_PARSE_VALUE;
-
 
 #define ACPI_PARSE_COMMON \
     UINT8                       DataType;       /* To differentiate various internal objs */\
@@ -797,7 +793,6 @@ typedef struct acpi_parse_obj_asl
 
 } ACPI_PARSE_OBJ_ASL;
 
-
 typedef union acpi_parse_object
 {
     ACPI_PARSE_OBJ_COMMON       Common;
@@ -850,6 +845,7 @@ typedef struct acpi_parse_state
  ****************************************************************************/
 
 #define PCI_ROOT_HID_STRING         "PNP0A03"
+#define PCI_EXPRESS_ROOT_HID_STRING "PNP0A08"
 
 typedef struct acpi_bit_register_info
 {
@@ -942,7 +938,6 @@ typedef struct acpi_bit_register_info
  * Resource descriptors
  *
  ****************************************************************************/
-
 
 /* ResourceType values */
 
