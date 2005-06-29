@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.129 $
+ *              $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -258,7 +258,7 @@ AcpiExOpcode_1A_1T_0R (
     {
     case AML_LOAD_OP:
 
-        Status = AcpiExLoadOp (Operand[0], Operand[1]);
+        Status = AcpiExLoadOp (Operand[0], Operand[1], WalkState);
         break;
 
     default:                        /* Unknown opcode */
