@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -134,17 +134,18 @@
  * Dispatch table for opcode classes
  */
 static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] = {
-                            AcpiExOpcode_1A_0T_0R,
-                            AcpiExOpcode_1A_0T_1R,
-                            AcpiExOpcode_1A_1T_0R,
-                            AcpiExOpcode_1A_1T_1R,
-                            AcpiExOpcode_2A_0T_0R,
-                            AcpiExOpcode_2A_0T_1R,
-                            AcpiExOpcode_2A_1T_1R,
-                            AcpiExOpcode_2A_2T_1R,
-                            AcpiExOpcode_3A_0T_0R,
-                            AcpiExOpcode_3A_1T_1R,
-                            AcpiExOpcode_6A_0T_1R};
+                                AcpiExOpcode_0A_0T_1R,
+                                AcpiExOpcode_1A_0T_0R,
+                                AcpiExOpcode_1A_0T_1R,
+                                AcpiExOpcode_1A_1T_0R,
+                                AcpiExOpcode_1A_1T_1R,
+                                AcpiExOpcode_2A_0T_0R,
+                                AcpiExOpcode_2A_0T_1R,
+                                AcpiExOpcode_2A_1T_1R,
+                                AcpiExOpcode_2A_2T_1R,
+                                AcpiExOpcode_3A_0T_0R,
+                                AcpiExOpcode_3A_1T_1R,
+                                AcpiExOpcode_6A_0T_1R};
 
 /*****************************************************************************
  *
@@ -514,7 +515,7 @@ AcpiDsExecEndOp (
              * routine.  There is one routine per opcode "type" based upon the
              * number of opcode arguments and return type.
              */
-            Status = AcpiGbl_OpTypeDispatch [OpType] (WalkState);
+            Status = AcpiGbl_OpTypeDispatch[OpType] (WalkState);
         }
         else
         {
