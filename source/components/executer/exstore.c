@@ -128,7 +128,7 @@ ACPI_STATUS
 AmlExecuteMethod (
     INT32                   Offset, 
     INT32                   Length, 
-    ACPI_OBJECT             **Params)
+    ACPI_OBJECT_INTERNAL    **Params)
 {
     ACPI_STATUS             Status;
     INT32                   i1;
@@ -205,7 +205,7 @@ AmlExecuteMethod (
             if (AE_RETURN_VALUE == Status)
             {
                 DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
-                DUMP_STACK_ENTRY ((ACPI_OBJECT *) ObjStack[ObjStackTop]);
+                DUMP_STACK_ENTRY ((ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop]);
                 DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", ObjStackTop));
             }
 
@@ -233,7 +233,7 @@ AmlExecuteMethod (
  *
  * PARAMETERS:  *ValDesc            - Value to be stored
  *              *DestDesc           - Where to store it -- must be an (ACPI_HANDLE)
- *                                    or an ACPI_OBJECT of type Lvalue;
+ *                                    or an ACPI_OBJECT_INTERNAL of type Lvalue;
  *                                    if the latter the descriptor will be 
  *                                    either reused or deleted.
  *
@@ -248,14 +248,14 @@ AmlExecuteMethod (
 
 ACPI_STATUS
 AmlExecStore (
-    ACPI_OBJECT             *ValDesc, 
-    ACPI_OBJECT             *DestDesc)
+    ACPI_OBJECT_INTERNAL    *ValDesc, 
+    ACPI_OBJECT_INTERNAL    *DestDesc)
 {
     ACPI_HANDLE             TempHandle;
     ACPI_STATUS             Status = AE_AML_ERROR;
     INT32                   Stacked = FALSE;
     BOOLEAN                 Locked = FALSE;
-    ACPI_OBJECT             *DeleteDestDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *DeleteDestDesc = NULL;
     UINT8                   *Location=NULL;
     UINT32                  Mask;
 
@@ -370,6 +370,7 @@ AmlExecStore (
             DeleteDestDesc = DestDesc;
             break;
 
+
         case TYPE_BankField:
 
             /* 
@@ -401,6 +402,13 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    ObjStack[ObjStackTop] = NULL;
+                }
+
                 DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
@@ -416,7 +424,7 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
-                AmlAppendBlockOwner (DestDesc);
+
                 Status = AE_AML_ERROR;
             }
 
@@ -481,6 +489,13 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    ObjStack[ObjStackTop] = NULL;
+                }
+
                 DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
@@ -495,7 +510,7 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
-                AmlAppendBlockOwner (DestDesc);
+
                 Status = AE_AML_ERROR;
             }
 
@@ -544,6 +559,13 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    ObjStack[ObjStackTop] = NULL;
+                }
+
                 DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
@@ -558,7 +580,7 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
-                AmlAppendBlockOwner (DestDesc);
+
                 Status = AE_AML_ERROR;
             }
 
@@ -621,6 +643,13 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    ObjStack[ObjStackTop] = NULL;
+                }
+
                 DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
@@ -642,7 +671,7 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                           TempHandle, NsGetType(TempHandle), DestDesc->ValType, DestDesc));
-                AmlAppendBlockOwner (DestDesc);
+
                 Status = AE_AML_ERROR;
             }
 
@@ -793,7 +822,7 @@ AmlExecStore (
         
         /* TBD:  use object dump routine !! */
 
-        DUMP_BUFFER (DestDesc, sizeof (ACPI_OBJECT),0);
+        DUMP_BUFFER (DestDesc, sizeof (ACPI_OBJECT_INTERNAL),0);
 
         DeleteDestDesc = DestDesc;
         Status = AE_AML_ERROR;

@@ -124,7 +124,7 @@
 
 BOOLEAN
 AmlIsMethodValue (
-    ACPI_OBJECT             *ObjDesc)
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     INT32                   MethodNestLevel;
     INT32                   Index;
@@ -171,8 +171,8 @@ AmlIsMethodValue (
 
 ACPI_STATUS
 AmlGetFieldUnitValue (
-    ACPI_OBJECT             *FieldDesc, 
-    ACPI_OBJECT             *ResultDesc)
+    ACPI_OBJECT_INTERNAL    *FieldDesc, 
+    ACPI_OBJECT_INTERNAL    *ResultDesc)
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
     UINT32                  Mask;
@@ -276,7 +276,7 @@ AmlGetFieldUnitValue (
  * FUNCTION:    AmlGetRvalue
  *
  * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can 
- *                                    be either an (ACPI_OBJECT *)
+ *                                    be either an (ACPI_OBJECT_INTERNAL *)
  *                                    or an ACPI_HANDLE.
  *
  * RETURN:      Status
@@ -287,11 +287,11 @@ AmlGetFieldUnitValue (
 
 ACPI_STATUS
 AmlGetRvalue (
-    ACPI_OBJECT             **StackPtr)
+    ACPI_OBJECT_INTERNAL    **StackPtr)
 {
     ACPI_HANDLE             TempHandle = NULL;
-    ACPI_OBJECT             *ObjDesc = NULL;
-    ACPI_OBJECT             *ValDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ValDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  TempVal;
     UINT8				    MvIndex = 0;
@@ -481,7 +481,7 @@ AmlGetRvalue (
 
         DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue: found direct name ptr \n"));
 
-        ValDesc = (ACPI_OBJECT *) NsGetValue ((ACPI_HANDLE)* StackPtr);
+        ValDesc = (ACPI_OBJECT_INTERNAL *) NsGetValue ((ACPI_HANDLE)* StackPtr);
 
         DEBUG_PRINT (TRACE_EXEC,
                     ("AmlGetRvalue: NsGetValue(%p) returned Val=%p\n", *StackPtr, ValDesc));
@@ -492,7 +492,7 @@ AmlGetRvalue (
         case TYPE_Package:
 
             /* 
-             * ValDesc should point to either an ACPI_OBJECT of
+             * ValDesc should point to either an ACPI_OBJECT_INTERNAL of
              * type Package, or an initialization in the AML stream.
              */
             if (!ValDesc)
@@ -528,7 +528,7 @@ AmlGetRvalue (
 
                     /* Refresh local value pointer to reflect newly set value */
                     
-                    ValDesc = (ACPI_OBJECT *) NsGetValue ((ACPI_HANDLE)* StackPtr);
+                    ValDesc = (ACPI_OBJECT_INTERNAL *) NsGetValue ((ACPI_HANDLE)* StackPtr);
                     ObjStackTop--;
                 }
                 
@@ -615,7 +615,7 @@ AmlGetRvalue (
                     
                     /* Refresh local value pointer to reflect newly set value */
                     
-                    ValDesc = (ACPI_OBJECT *) NsGetValue ((ACPI_HANDLE)* StackPtr);
+                    ValDesc = (ACPI_OBJECT_INTERNAL *) NsGetValue ((ACPI_HANDLE)* StackPtr);
                     ObjStackTop--;
                 }
                 
