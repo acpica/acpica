@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -441,6 +441,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ASL_END_TAG_DESC",                 SRC_TYPE_STRUCT},
     {"ASL_ERROR_MSG",                    SRC_TYPE_STRUCT},
     {"ASL_EVENT_INFO",                   SRC_TYPE_STRUCT},
+    {"ASL_EXTENDED_ADDRESS_DESC",        SRC_TYPE_STRUCT},
     {"ASL_EXTENDED_XRUPT_DESC",          SRC_TYPE_STRUCT},
     {"ASL_FILE_INFO",                    SRC_TYPE_STRUCT},
     {"ASL_FIXED_IO_PORT_DESC",           SRC_TYPE_STRUCT},
