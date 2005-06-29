@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -282,6 +282,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_COMPATIBLE_ID",               SRC_TYPE_STRUCT},
     {"ACPI_COMPATIBLE_ID_LIST",          SRC_TYPE_STRUCT},
     {"ACPI_CONTROL_STATE",               SRC_TYPE_STRUCT},
+    {"ACPI_CONVERSION_TABLE",            SRC_TYPE_STRUCT},
     {"ACPI_CREATE_FIELD_INFO",           SRC_TYPE_STRUCT},
     {"ACPI_DB_METHOD_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_DEBUG_MEM_BLOCK",             SRC_TYPE_STRUCT},
@@ -309,6 +310,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_GPE_REGISTER_INFO",           SRC_TYPE_STRUCT},
     {"ACPI_HANDLE",                      SRC_TYPE_SIMPLE},
     {"ACPI_INIT_HANDLER",                SRC_TYPE_SIMPLE},
+    {"ACPI_IDENTIFIER_TABLE",            SRC_TYPE_STRUCT},
     {"ACPI_INIT_WALK_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_INTEGER",                     SRC_TYPE_SIMPLE},
     {"ACPI_INTEGRITY_INFO",              SRC_TYPE_STRUCT},
@@ -408,6 +410,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_SIZE",                        SRC_TYPE_SIMPLE},
     {"ACPI_STATUS",                      SRC_TYPE_SIMPLE},
     {"ACPI_STRING",                      SRC_TYPE_SIMPLE},
+    {"ACPI_STRING_TABLE",                SRC_TYPE_STRUCT},
     {"ACPI_SYSTEM_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_TABLE_DESC",                  SRC_TYPE_STRUCT},
     {"ACPI_TABLE_HEADER",                SRC_TYPE_STRUCT},
@@ -417,6 +420,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_SUPPORT",               SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TYPE",                  SRC_TYPE_SIMPLE},
     {"ACPI_THREAD_STATE",                SRC_TYPE_STRUCT},
+    {"ACPI_TYPED_IDENTIFIER_TABLE",      SRC_TYPE_STRUCT},
     {"ACPI_UPDATE_STATE",                SRC_TYPE_STRUCT},
     {"ACPI_WALK_CALLBACK",               SRC_TYPE_SIMPLE},
     {"ACPI_WALK_INFO",                   SRC_TYPE_STRUCT},
