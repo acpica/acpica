@@ -123,8 +123,8 @@
 #include <amlcode.h>
 #include <interpreter.h>
 
-#define _THIS_MODULE        "evapi.c"
 #define _COMPONENT          EVENT_HANDLING
+        MODULE_NAME         ("evapi");
 
 
 /**************************************************************************
@@ -585,7 +585,7 @@ AcpiInstallNotifyHandler (
 
     /* Check for an existing internal object */
 
-    ObjDesc = ObjEntry->Object;
+    ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
     if (ObjDesc)
     {
         /*
@@ -720,13 +720,10 @@ AcpiRemoveNotifyHandler (
 
     /* Check for an existing internal object */
 
-    if (!ObjEntry->Object)
+    if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry)))
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
-        
     }
-
-    ObjDesc = ObjEntry->Object;
 
     /*
      *  The object exists.
@@ -867,8 +864,7 @@ AcpiInstallAddressSpaceHandler (
 
     /* Check for an existing internal object */
 
-    ObjDesc = ObjEntry->Object;
-
+    ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
     if (ObjDesc)
     {
         /*
@@ -1048,12 +1044,10 @@ AcpiRemoveAddressSpaceHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* TBD: Mutex */
 
     /* Make sure the internal object exists */
 
-    ObjDesc = ObjEntry->Object;
-
+    ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
     if (!ObjDesc)
     {
         /*
