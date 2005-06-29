@@ -216,24 +216,18 @@ ACPI_STATUS
 EvInitializeRegion (
     ACPI_OBJECT_INTERNAL    *RegionObj);
 
-void *
+ACPI_STATUS
 EvAddrHandlerHelper (
     ACPI_HANDLE             ObjHandle, 
     UINT32                  Level, 
-    void                    *Context);
-
-ACPI_STATUS
-EvWalkNamespace (
-    ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             StartObject, 
-    UINT32                  MaxDepth,
-    WALK_CALLBACK           UserFunction, 
-    void                    *Context, 
+    void                    *Context,
     void                    **ReturnValue);
 
 void
 EvDisassociateRegionFromHandler(
     ACPI_OBJECT_INTERNAL   *RegionObj);
+
+
 
 /* Debug stuff */
 
