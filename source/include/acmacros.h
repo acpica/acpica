@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.85 $
+ *       $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -172,7 +172,8 @@
 #define ACPI_STORE_ADDRESS(a,b)         {(a).Hi=0;(a).Lo=(b);}
 #define ACPI_VALID_ADDRESS(a)           ((a).Hi | (a).Lo)
 
-#elif ACPI_NO_INTEGER64_SUPPORT
+#else
+#ifdef ACPI_NO_INTEGER64_SUPPORT
 /*
  * ACPI_INTEGER is 32-bits, no 64-bit support on this platform
  */
@@ -204,6 +205,7 @@
 #define ACPI_GET_ADDRESS(a)             (a)
 #define ACPI_STORE_ADDRESS(a,b)         ((a)=(b))
 #define ACPI_VALID_ADDRESS(a)           (a)
+#endif
 #endif
 
  /*
