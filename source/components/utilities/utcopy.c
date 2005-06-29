@@ -117,9 +117,9 @@
 #define __CMOBJECT_C__
 
 #include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
-#include <acpiobj.h>
+#include <acobject.h>
+#include <interp.h>
+#include <namesp.h>
 #include <pnp.h>
 
 
@@ -164,6 +164,7 @@ CmBuildExternalSimpleObject (
     UINT8                   *DataSpace,
     UINT32                  *BufferSpaceUsed)
 {
+    ACPI_STATUS             Status = AE_OK;
     UINT32                  Length = 0;
     UINT8                   *SourcePtr = NULL;
 
@@ -178,10 +179,11 @@ CmBuildExternalSimpleObject (
 
     case ACPI_TYPE_String:
 
-        Length = InternalObj->String.Length;
-        ExternalObj->String.Length = InternalObj->String.Length;
+        Status = NsExternalizeName(InternalObj->String.Length, InternalObj->String.Pointer, &Length, (char**)&SourcePtr);
+
+        ExternalObj->String.Length = Length;
         ExternalObj->String.Pointer = DataSpace;
-        SourcePtr = InternalObj->String.Pointer;
+
         break;
 
 
@@ -212,6 +214,14 @@ CmBuildExternalSimpleObject (
          * Copy the return data to the caller's buffer
          */
         MEMCPY ((void *) DataSpace, (void *) SourcePtr, Length);
+
+        /*
+         * Free any memory allocated during the call to NsExternalizeName().
+         */ 
+        if (ExternalObj->Type == ACPI_TYPE_String)
+        {
+            CmFree(SourcePtr);
+        }
     }
 
 
