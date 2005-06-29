@@ -413,7 +413,7 @@ NsEvaluateByHandle (
      * Check if there is a return value on the stack that must be dealt with 
      */
 
-    if (Status == AE_RETURN_VALUE)
+    if (Status == AE_CTRL_RETURN_VALUE)
     {
 BREAKPOINT3;
         /* 
@@ -432,7 +432,7 @@ BREAKPOINT3;
 
         /* Map AE_RETURN_VALUE to AE_OK, we are done with it */
 
-        if (Status == AE_RETURN_VALUE)
+        if (Status == AE_CTRL_RETURN_VALUE)
         {
             Status = AE_OK;
         }
@@ -611,7 +611,7 @@ NsGetObjectValue (
 
     if (Status == AE_OK)
     {
-        Status = AE_RETURN_VALUE;
+        Status = AE_CTRL_RETURN_VALUE;
 
         *ReturnObjDesc = ObjDesc;
         DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning obj %p\n", 
