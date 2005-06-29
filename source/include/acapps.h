@@ -148,7 +148,8 @@ FlGenerateFilename (
 ACPI_STATUS
 AdAmlDisassemble (
     BOOLEAN                 OutToFile,
-    char                    *Filename);
+    char                    *Filename,
+    char                    **OutFilename);
 
 void
 AdPrintStatistics (void);
