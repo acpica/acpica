@@ -1,4 +1,22 @@
 /*
+  __________________________________________________________________________
+ |
+ |
+ |               Copyright (C) Intel Corporation 1994-1996
+ |
+ | All rights reserved.  No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | FILENAME: config.h - configuration constants
+ |__________________________________________________________________________
+
+*/
+
+/*
  * Configuration constants for the ACPI subsystem
  */
 
