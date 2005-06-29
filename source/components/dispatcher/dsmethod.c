@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.83 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -219,8 +219,7 @@ AcpiDsParseMethod (
 
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (OwnerId,
-                                    NULL, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (OwnerId, NULL, NULL, NULL);
     if (!WalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -250,7 +249,8 @@ AcpiDsParseMethod (
         return_ACPI_STATUS (Status);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+        "**** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
         ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii, ObjHandle, Op));
 
     AcpiPsDeleteParseTree (Op);
@@ -398,7 +398,7 @@ AcpiDsCallControlMethod (
 
     /* Create and init a Root Node */
 
-    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    Op = AcpiPsCreateScopeOp ();
     if (!Op)
     {
         Status = AE_NO_MEMORY;
@@ -459,8 +459,8 @@ AcpiDsCallControlMethod (
 
     ThisWalkState->NumOperands = 0;
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Starting nested execution, newstate=%p\n",
-        NextWalkState));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "Starting nested execution, newstate=%p\n", NextWalkState));
 
     return_ACPI_STATUS (AE_OK);
 
@@ -468,7 +468,7 @@ AcpiDsCallControlMethod (
     /* On error, we must delete the new walk state */
 
 Cleanup:
-    AcpiDsTerminateControlMethod (NextWalkState);
+    (void) AcpiDsTerminateControlMethod (NextWalkState);
     AcpiDsDeleteWalkState (NextWalkState);
     return_ACPI_STATUS (Status);
 
@@ -591,8 +591,15 @@ AcpiDsTerminateControlMethod (
 
     if (WalkState->MethodDesc->Method.Semaphore)
     {
-        AcpiOsSignalSemaphore (
-            WalkState->MethodDesc->Method.Semaphore, 1);
+        Status = AcpiOsSignalSemaphore (
+                        WalkState->MethodDesc->Method.Semaphore, 1);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_REPORT_ERROR (("Could not signal method semaphore\n"));
+            Status = AE_OK;
+
+            /* Ignore error and continue cleanup */
+        }
     }
 
     /* Decrement the thread count on the method parse tree */

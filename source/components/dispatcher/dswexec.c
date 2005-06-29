@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.91 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 /*
  * Dispatch table for opcode classes
  */
-ACPI_EXECUTE_OP         AcpiGbl_OpTypeDispatch [] = {
+static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] = {
                             AcpiExOpcode_1A_0T_0R,
                             AcpiExOpcode_1A_0T_1R,
                             AcpiExOpcode_1A_1T_0R,
@@ -212,11 +212,11 @@ AcpiDsGetPredicateValue (
      * Result of predicate evaluation currently must
      * be a number
      */
-    if (ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
+    if (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_INTEGER)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Bad predicate (not a number) ObjDesc=%p State=%p Type=%X\n",
-            ObjDesc, WalkState, ObjDesc->Common.Type));
+            ObjDesc, WalkState, ACPI_GET_OBJECT_TYPE (ObjDesc)));
 
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
@@ -224,7 +224,7 @@ AcpiDsGetPredicateValue (
 
     /* Truncate the predicate to 32-bits if necessary */
 
-    AcpiExTruncateFor32bitTable (ObjDesc, WalkState);
+    AcpiExTruncateFor32bitTable (ObjDesc);
 
     /*
      * Save the result of the predicate evaluation on
@@ -311,7 +311,12 @@ AcpiDsExecBeginOp (
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "(%s) Popping scope for Op %p\n",
                 AcpiUtGetTypeName (WalkState->OpInfo->ObjectType), Op));
-            AcpiDsScopeStackPop (WalkState);
+
+            Status = AcpiDsScopeStackPop (WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
         }
     }
 
@@ -410,7 +415,6 @@ AcpiDsExecBeginOp (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*****************************************************************************
@@ -555,8 +559,12 @@ AcpiDsExecEndOp (
             /* 1 Operand, 0 ExternalResult, 0 InternalResult */
 
             Status = AcpiDsExecEndControlOp (WalkState, Op);
+            if (ACPI_FAILURE (Status))
+            {
+                break;
+            }
 
-            AcpiDsResultStackPop (WalkState);
+            Status = AcpiDsResultStackPop (WalkState);
             break;
 
 
@@ -647,10 +655,11 @@ AcpiDsExecEndOp (
                 }
 
                 /* Fall through */
+                /*lint -fallthrough */
 
             case AML_INT_EVAL_SUBTREE_OP:
 
-                Status = AcpiDsEvalDataObjectOperands (WalkState, Op, 
+                Status = AcpiDsEvalDataObjectOperands (WalkState, Op,
                                 AcpiNsGetAttachedObject (Op->Common.Parent->Common.Node));
                 break;
 
@@ -729,7 +738,7 @@ AcpiDsExecEndOp (
      * ACPI 2.0 support for 64-bit integers: Truncate numeric
      * result value if we are executing from a 32-bit ACPI table
      */
-    AcpiExTruncateFor32bitTable (WalkState->ResultObj, WalkState);
+    AcpiExTruncateFor32bitTable (WalkState->ResultObj);
 
     /*
      * Check if we just completed the evaluation of a
