@@ -418,7 +418,7 @@ NsDumpRootDevices (void)
         return;
     }
 
-    AcpiNameToHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
+    AcpiNameToHandle (NS_SYSTEM_BUS, 0, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
     AcpiWalkNamespace (TYPE_Device, SysBusHandle, ACPI_INT_MAX, NsDumpOneDevice, NULL, NULL);
