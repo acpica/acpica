@@ -631,7 +631,7 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
 
     Gbl_GenericStateCache       = NULL;
     Gbl_GenericStateCacheDepth  = 0;
-
+    Gbl_StateCacheRequests      = 0;
 
 
     /* Interpreter */
