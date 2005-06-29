@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: tbtable - ACPI tables: FACP, FACS, and RSDP utilities
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -255,13 +256,13 @@ AcpiTbGetTableRsdt (
  *
  ******************************************************************************/
 
-INT8 *
+UINT8 *
 AcpiTbScanMemoryForRsdp (
-    INT8                    *StartAddress,
+    UINT8                   *StartAddress,
     UINT32                  Length)
 {
     UINT32                  Offset;
-    INT8                    *MemRover;
+    UINT8                   *MemRover;
 
 
     /* Search from given start addr for the requested length  */
@@ -312,8 +313,8 @@ ACPI_STATUS
 AcpiTbFindRsdp (
     ACPI_TABLE_DESC         *TableInfo)
 {
-    INT8                    *TablePtr;
-    INT8                    *MemRover;
+    UINT8                   *TablePtr;
+    UINT8                   *MemRover;
     ACPI_STATUS             Status = AE_OK;
 
     FUNCTION_TRACE ("TbFindRsdp");
