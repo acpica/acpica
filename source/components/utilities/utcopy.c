@@ -126,13 +126,19 @@
 #define _THIS_MODULE        "cmobject.c"
 #define _COMPONENT          MISCELLANEOUS
 
-struct Search_st 
+
+typedef struct Search_st 
 {
     ACPI_OBJECT_INTERNAL        *CAObj;
     UINT32                      Index;
     ACPI_OBJECT                 *UserObj;
 
-} Level[MAX_OBJECT_DEPTH];
+} PKG_SEARCH_INFO;
+
+
+/* Used to traverse nested packages */
+
+PKG_SEARCH_INFO                 Level[MAX_PACKAGE_DEPTH];
 
 
 /******************************************************************************
@@ -140,8 +146,7 @@ struct Search_st
  * FUNCTION:    CmGetSimpleObjectSize
  *
  * PARAMETERS:  *Obj            - Pointer to the object we are examining
- *              *RetLength      - a pointer to a variabl to recieve the
- *                                length
+ *              *RetLength      - Where the length is returned
  * 
  * RETURN:      Status          - the status of the call
  * 
@@ -184,7 +189,7 @@ CmGetSimpleObjectSize (
 
     case TYPE_Number:
         /*
-         *  Number is included in the object itself
+         * Number is included in the object itself
          */
         break;
 
@@ -207,8 +212,7 @@ CmGetSimpleObjectSize (
  * FUNCTION:    CmGetPackageObjectSize
  *
  * PARAMETERS:  *Obj            - Pointer to the object we are examining
- *              *RetLength      - a pointer to a variabl to recieve the
- *                                length
+ *              *RetLength      - Where the length is returned
  * 
  * RETURN:      Status          - the status of the call
  * 
@@ -227,10 +231,10 @@ CmGetPackageObjectSize (
 {
 
     ACPI_OBJECT_INTERNAL    *ThisObj;
-    ACPI_OBJECT_INTERNAL    *ParentObj[MAX_OBJECT_DEPTH] = { 0,0,0,0,0 };
+    ACPI_OBJECT_INTERNAL    *ParentObj[MAX_PACKAGE_DEPTH] = { 0,0,0,0,0 };
     ACPI_OBJECT_INTERNAL    *ThisParent;
     UINT32                  ThisIndex;
-    UINT32                  Index[MAX_OBJECT_DEPTH] = { 0,0,0,0,0 };
+    UINT32                  Index[MAX_PACKAGE_DEPTH] = { 0,0,0,0,0 };
     UINT32                  Length = 0;
     UINT32                  Temp;
     UINT32                  CurrentDepth = 0;
@@ -245,17 +249,17 @@ CmGetPackageObjectSize (
 
     while (1)
     {
-        ThisParent = ParentObj[CurrentDepth];
-        ThisIndex = Index[CurrentDepth];
-        ThisObj = ThisParent->Package.Elements[ThisIndex];
+        ThisParent  = ParentObj[CurrentDepth];
+        ThisIndex   = Index[CurrentDepth];
+        ThisObj     = ThisParent->Package.Elements[ThisIndex];
 
         if (ThisObj->Type == TYPE_Package)
         {
             /*
-             *  If this object is a package then we go one deeper
+             * If this object is a package then we go one deeper
              */
             PackageCount++;
-            if (CurrentDepth < MAX_OBJECT_DEPTH-1)
+            if (CurrentDepth < MAX_PACKAGE_DEPTH-1)
             {
                 CurrentDepth++;
                 ParentObj[CurrentDepth] = ThisObj;
@@ -265,11 +269,11 @@ CmGetPackageObjectSize (
             else
             {
                 /*
-                 *  Too many nested levels of packages for us to handle
+                 * Too many nested levels of packages for us to handle
                  */
                 
                 DEBUG_PRINT (ACPI_ERROR, ("CmGetPackageObjectSize: Pkg nested too deep (max %d)\n",
-                                            MAX_OBJECT_DEPTH));
+                                            MAX_PACKAGE_DEPTH));
                 FUNCTION_STATUS_EXIT (AE_LIMIT);
                 return AE_LIMIT;
             }
@@ -277,11 +281,11 @@ CmGetPackageObjectSize (
 
         else
         {
-            Status = CmGetSimpleObjectSize(ThisObj, &Temp);
+            Status = CmGetSimpleObjectSize (ThisObj, &Temp);
             if (Status != AE_OK) 
             {
                 /*
-                 *  Failure get out
+                 * Failure get out
                  */
                 FUNCTION_STATUS_EXIT (Status);
                 return Status;
@@ -293,17 +297,17 @@ CmGetPackageObjectSize (
             while (Index[CurrentDepth] >= ParentObj[CurrentDepth]->Package.Count)
             {
                 /*
-                 *  We've handled all of the objects at this level,  This means that we
-                 *  have just completed a package.  That package may have contained one
-                 *  or more packages itself
+                 * We've handled all of the objects at this level,  This means that we
+                 * have just completed a package.  That package may have contained one
+                 * or more packages itself.
                  */
                 if (CurrentDepth == 0)
                 {
                     /*
-                     *  We have handled all of the objects in the top level package
-                     *  just add the length of the package objects and get out
+                     * We have handled all of the objects in the top level package
+                     * just add the length of the package objects and get out.
                      */
-                    Length += sizeof(ACPI_OBJECT) * PackageCount;
+                    Length += sizeof (ACPI_OBJECT) * PackageCount;
                     *ObjLength = Length;
                     
                     FUNCTION_STATUS_EXIT (AE_OK);
@@ -311,17 +315,17 @@ CmGetPackageObjectSize (
                 }
 
                 /*
-                 *  go back up a level and move the index past the just completed
-                 *  package object.
+                 * Go back up a level and move the index past the just completed
+                 * package object.
                  */
                 CurrentDepth--;
                 Index[CurrentDepth]++;
             }
         }   /* else object is NOT a package */
-    }   /*  while (1)  */
+    }   /* while (1)  */
 
     /*
-     *  We'll never get here, but the compiler whines about return value
+     * We'll never get here, but the compiler whines about return value
      */
     FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
@@ -369,9 +373,8 @@ CmGetObjectSize(
  * FUNCTION:    CmBuildExternalSimpleObject
  *
  * PARAMETERS:  *Obj            - Pointer to the object we are examining
- *              *Buffer         - a pointer to the caller's buffer to place
- *                                the object in
- *              *SpaceUsed      - a pointer to a dword to return the data length
+ *              *Buffer         - Where the object is returned
+ *              *SpaceUsed      - Where the data length is returned
  * 
  * RETURN:      Status          - the status of the call
  * 
@@ -434,7 +437,7 @@ CmBuildExternalSimpleObject (
     if (Length)
     {
         /*
-         *  Copy the return data to the caller's buffer
+         * Copy the return data to the caller's buffer
          */
         memcpy ((void *) DataSpace, (void *) SourcePtr, Length);
     }
@@ -452,10 +455,8 @@ CmBuildExternalSimpleObject (
  * FUNCTION:    CmBuildExternalPackageObject
  *
  * PARAMETERS:  *Obj            - Pointer to the object we are returning
- *              *Buffer         - a pointer to the caller's buffer to place
- *                                the object in
- *              *SpaceUsed      - a pointer to a dword to return the number
- *                                of bytes used to build the object(s)
+ *              *Buffer         - Where the object is returned
+ *              *SpaceUsed      - Where the object length is returned
  * 
  * RETURN:      Status          - the status of the call
  * 
@@ -483,27 +484,29 @@ CmBuildExternalPackageObject (
     UINT32                  Temp;
     ACPI_OBJECT_INTERNAL    *ThisObj;
     ACPI_OBJECT             *ThisUObj;
-    register struct Search_st  *LevelPtr;
+    PKG_SEARCH_INFO         *LevelPtr;
     
 
     FUNCTION_TRACE ("CmBuildExternalPackageObject");
 
 
     /*
-     *  First package at head of the buffer
+     * First package at head of the buffer
      */
-    UserObj = (ACPI_OBJECT *)Buffer;
+    UserObj = (ACPI_OBJECT *) Buffer;
 
     /*
-     *  Free space begins right after the first package
+     * Free space begins right after the first package
      */
-    FreeSpace = Buffer + sizeof(ACPI_OBJECT);
+    FreeSpace = Buffer + sizeof (ACPI_OBJECT);
 
 
     /*
-     *  Initialize the working variables
+     * Initialize the working variables
      */
-    
+
+BREAKPOINT3;
+
     Level[0].CAObj = Obj;
     Level[0].UserObj = UserObj;
     CurrentDepth = 0;
@@ -516,8 +519,8 @@ CmBuildExternalPackageObject (
 
 
     /*
-     *  Build an array of ACPI_OBJECTS in the buffer
-     *  and move the free space past it
+     * Build an array of ACPI_OBJECTS in the buffer
+     * and move the free space past it
      */
 
     FreeSpace += UserObj->Package.Count * sizeof (ACPI_OBJECT);
@@ -533,29 +536,29 @@ CmBuildExternalPackageObject (
         if (ThisObj->Type == TYPE_Package)
         {
             /*
-             *  If this object is a package then we go one deeper
+             * If this object is a package then we go one deeper
              */
-            if (CurrentDepth >= MAX_OBJECT_DEPTH-1)
+            if (CurrentDepth >= MAX_PACKAGE_DEPTH-1)
             {
                 /*
-                 *  Too many nested levels of packages for us to handle
+                 * Too many nested levels of packages for us to handle
                  */
                 DEBUG_PRINT (ACPI_ERROR, ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
-                                            MAX_OBJECT_DEPTH));
+                                            MAX_PACKAGE_DEPTH));
                 FUNCTION_STATUS_EXIT (AE_LIMIT);
                 return AE_LIMIT;
             }
 
             /*
-             *  Build the package object
+             * Build the package object
              */
             ThisUObj->Type = TYPE_Package;
             ThisUObj->Package.Count = ThisObj->Package.Count;
             ThisUObj->Package.Elements = (ACPI_OBJECT *) FreeSpace;
 
             /*
-             *  Save space for the array of objects (Package elements)
-             *  update the buffer length counter
+             * Save space for the array of objects (Package elements)
+             * update the buffer length counter
              */
             Temp = ThisUObj->Package.Count * sizeof(ACPI_OBJECT);
             FreeSpace += Temp;
@@ -575,7 +578,7 @@ CmBuildExternalPackageObject (
             if (Status != AE_OK) 
             {
                 /*
-                 *  Failure get out
+                 * Failure get out
                  */
                 FUNCTION_STATUS_EXIT (Status);
                 return Status;
@@ -588,15 +591,15 @@ CmBuildExternalPackageObject (
             while (LevelPtr->Index >= LevelPtr->CAObj->Package.Count)
             {
                 /*
-                 *  We've handled all of the objects at this level,  This means that we
-                 *  have just completed a package.  That package may have contained one
-                 *  or more packages itself
+                 * We've handled all of the objects at this level,  This means that we
+                 * have just completed a package.  That package may have contained one
+                 * or more packages itself
                  */
                 if (CurrentDepth == 0)
                 {
                     /*
-                     *  We have handled all of the objects in the top level package
-                     *  just add the length of the package objects and get out
+                     * We have handled all of the objects in the top level package
+                     * just add the length of the package objects and get out
                      */
                     *SpaceUsed = Length;
                     FUNCTION_STATUS_EXIT (AE_OK);
@@ -604,19 +607,19 @@ CmBuildExternalPackageObject (
                 }
 
                 /*
-                 *  go back up a level and move the index past the just completed
-                 *  package object.
+                 * go back up a level and move the index past the just completed
+                 * package object.
                  */
                 CurrentDepth--;
                 LevelPtr = &Level[CurrentDepth];
                 LevelPtr->Index++;
             }
         }   /* else object is NOT a package */
-    }   /*  while (1)  */
+    }   /* while (1)  */
 
 
     /*
-     *  We'll never get here, but the compiler whines about return value
+     * We'll never get here, but the compiler whines about return value
      */
     FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
@@ -627,8 +630,8 @@ CmBuildExternalPackageObject (
  *
  * FUNCTION:    CmBuildExternalObject
  *
- * PARAMETERS:  *Obj            - Pointer to the object we are building from
- *              *BufferPtr      - a pointer to a the caller's return buffer
+ * PARAMETERS:  *Obj            - The internal object to be converted
+ *              *BufferPtr      - Where the object is returned
  * 
  * RETURN:      Status          - the status of the call
  * 
@@ -651,8 +654,8 @@ CmBuildExternalObject (
     if (Obj->Type == TYPE_Package)
     {
         /*
-         *  Package objects contain other objects (which can be objects)
-         *  buildpackage does it all
+         * Package objects contain other objects (which can be objects)
+         * buildpackage does it all
          */
         Status = CmBuildExternalPackageObject(Obj, RetBuffer->Pointer,
                         &RetBuffer->Length);
@@ -661,15 +664,15 @@ CmBuildExternalObject (
     else
     {
         /*
-         *  Build a simple object (no nested objects)
+         * Build a simple object (no nested objects)
          */
         Status = CmBuildExternalSimpleObject(Obj,
                         (ACPI_OBJECT *) RetBuffer->Pointer,
                         ((UINT8 *) RetBuffer->Pointer + sizeof (ACPI_OBJECT)),
                         &RetBuffer->Length);
         /*
-         *  build simple does not include the object size in the length
-         *  so we add it in here
+         * build simple does not include the object size in the length
+         * so we add it in here
          */
         RetBuffer->Length += sizeof (ACPI_OBJECT);
     }
@@ -682,8 +685,8 @@ CmBuildExternalObject (
  *
  * FUNCTION:    CmBuildInternalSimpleObject
  *
- * PARAMETERS:  *UserObj        - Pointer to the external object
- *              *Obj            - Pointer to the internal object
+ * PARAMETERS:  *UserObj        - The external object to be converted
+ *              *Obj            - Where the internal object is returned
  * 
  * RETURN:      Status          - the status of the call
  * 
@@ -724,7 +727,7 @@ CmBuildInternalSimpleObject (
 
     case TYPE_Number:
         /*
-         *  Number is included in the object itself
+         * Number is included in the object itself
          */
         Obj->Number.Value = UserObj->Number.Value;
         break;
@@ -747,10 +750,8 @@ CmBuildInternalSimpleObject (
  * FUNCTION:    CmBuildInternalPackageObject
  *
  * PARAMETERS:  *Obj            - Pointer to the object we are returning
- *              *Buffer         - a pointer to the caller's buffer to place
- *                                the object in
- *              *SpaceUsed      - a pointer to a dword to return the number
- *                                of bytes used to build the object(s)
+ *              *Buffer         - Where the object is returned
+ *              *SpaceUsed      - Where the length of the object is returned
  * 
  * RETURN:      Status          - the status of the call
  * 
@@ -778,7 +779,7 @@ CmBuildInternalPackageObject (
     UINT32                  Temp = 0;
     ACPI_OBJECT_INTERNAL    *ThisObj;
     ACPI_OBJECT             *ThisUObj;
-    register struct Search_st  *LevelPtr;
+    PKG_SEARCH_INFO         *LevelPtr;
     
 
     
@@ -786,18 +787,18 @@ CmBuildInternalPackageObject (
 
 
     /*
-     *  First package at head of the buffer
+     * First package at head of the buffer
      */
     UserObj = (ACPI_OBJECT *)Buffer;
 
     /*
-     *  Free space begins right after the first package
+     * Free space begins right after the first package
      */
     FreeSpace = Buffer + sizeof(ACPI_OBJECT);
 
 
     /*
-     *  Initialize the working variables
+     * Initialize the working variables
      */
     
     Level[0].CAObj = Obj;
@@ -812,8 +813,8 @@ CmBuildInternalPackageObject (
 
 
     /*
-     *  Build an array of ACPI_OBJECTS in the buffer
-     *  and move the free space past it
+     * Build an array of ACPI_OBJECTS in the buffer
+     * and move the free space past it
      */
 
     FreeSpace += UserObj->Package.Count * sizeof(ACPI_OBJECT);
@@ -829,29 +830,29 @@ CmBuildInternalPackageObject (
         if (ThisObj->Type == TYPE_Package)
         {
             /*
-             *  If this object is a package then we go one deeper
+             * If this object is a package then we go one deeper
              */
-            if (CurrentDepth >= MAX_OBJECT_DEPTH-1)
+            if (CurrentDepth >= MAX_PACKAGE_DEPTH-1)
             {
                 /*
-                 *  Too many nested levels of packages for us to handle
+                 * Too many nested levels of packages for us to handle
                  */
                 DEBUG_PRINT (ACPI_ERROR, ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
-                                            MAX_OBJECT_DEPTH));
+                                            MAX_PACKAGE_DEPTH));
                 FUNCTION_STATUS_EXIT (AE_LIMIT);
                 return AE_LIMIT;
             }
 
             /*
-             *  Build the package object
+             * Build the package object
              */
             ThisUObj->Type = TYPE_Package;
             ThisUObj->Package.Count = ThisObj->Package.Count;
             ThisUObj->Package.Elements = (ACPI_OBJECT *) FreeSpace;
 
             /*
-             *  Save space for the array of objects (Package elements)
-             *  update the buffer length counter
+             * Save space for the array of objects (Package elements)
+             * update the buffer length counter
              */
             Temp = ThisUObj->Package.Count * sizeof(ACPI_OBJECT);
             FreeSpace += Temp;
@@ -872,7 +873,7 @@ CmBuildInternalPackageObject (
             if (Status != AE_OK) 
             {
                 /*
-                 *  Failure get out
+                 * Failure get out
                  */
                 FUNCTION_STATUS_EXIT (Status);
                 return Status;
@@ -885,15 +886,15 @@ CmBuildInternalPackageObject (
             while (LevelPtr->Index >= LevelPtr->CAObj->Package.Count)
             {
                 /*
-                 *  We've handled all of the objects at this level,  This means that we
-                 *  have just completed a package.  That package may have contained one
-                 *  or more packages itself
+                 * We've handled all of the objects at this level,  This means that we
+                 * have just completed a package.  That package may have contained one
+                 * or more packages itself
                  */
                 if (CurrentDepth == 0)
                 {
                     /*
-                     *  We have handled all of the objects in the top level package
-                     *  just add the length of the package objects and get out
+                     * We have handled all of the objects in the top level package
+                     * just add the length of the package objects and get out
                      */
                     *SpaceUsed = Length;
                     FUNCTION_STATUS_EXIT (AE_OK);
@@ -901,19 +902,19 @@ CmBuildInternalPackageObject (
                 }
 
                 /*
-                 *  go back up a level and move the index past the just completed
-                 *  package object.
+                 * go back up a level and move the index past the just completed
+                 * package object.
                  */
                 CurrentDepth--;
                 LevelPtr = &Level[CurrentDepth];
                 LevelPtr->Index++;
             }
         }   /* else object is NOT a package */
-    }   /*  while (1)  */
+    }   /* while (1)  */
 
 
     /*
-     *  We'll never get here, but the compiler whines about return value
+     * We'll never get here, but the compiler whines about return value
      */
     FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
@@ -924,13 +925,12 @@ CmBuildInternalPackageObject (
  *
  * FUNCTION:    CmBuildInternalObject
  *
- * PARAMETERS:  *Obj            - Pointer to the object we are building from
- *              *BufferPtr      - a pointer to a the caller's return buffer
+ * PARAMETERS:  *Obj            - The external object to be converted
+ *              *BufferPtr      - Where the internal object is returned
  * 
  * RETURN:      Status          - the status of the call
  * 
- * DESCRIPTION: This function is called to build an API object to be returned to
- *              the caller.
+ * DESCRIPTION: Converts an external object to an internal object.
  *
  ******************************************************************************/
 
@@ -948,8 +948,8 @@ CmBuildInternalObject (
     if (Obj->Type == TYPE_Package)
     {
         /*
-         *  Package objects contain other objects (which can be objects)
-         *  buildpackage does it all
+         * Package objects contain other objects (which can be objects)
+         * buildpackage does it all
          */
 /*
         Status = CmBuildInternalPackageObject(Obj, RetBuffer->Pointer,
@@ -964,17 +964,81 @@ CmBuildInternalObject (
     else
     {
         /*
-         *  Build a simple object (no nested objects)
+         * Build a simple object (no nested objects)
          */
         Status = CmBuildInternalSimpleObject(Obj, InternalObj);
         /*
-         *  build simple does not include the object size in the length
-         *  so we add it in here
+         * build simple does not include the object size in the length
+         * so we add it in here
          */
     }
 
     FUNCTION_STATUS_EXIT (Status);
     return Status;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    CmDeleteInternalPackageObject
+ *
+ * PARAMETERS:  *Object        - Pointer to the list to be deleted
+ * 
+ * RETURN:      None
+ * 
+ * DESCRIPTION: This function deletes a package object.
+ *
+ ******************************************************************************/
+
+void
+CmDeleteInternalPackageObject (
+    ACPI_OBJECT_INTERNAL    *Object)
+{
+    UINT32                  i;
+    ACPI_OBJECT_INTERNAL    *Element;
+
+
+
+    FUNCTION_TRACE ("CmDeleteInternalPackageObject");
+
+
+    if (Object->Package.Count == 0)
+    {
+        FUNCTION_EXIT;
+        return;
+    }
+
+    for (i = 0; i < Object->Package.Count; i++)
+    {
+        /* Get the next element pointer from the list */
+
+        Element = Object->Package.Elements[i];
+
+        /* Don't want to delete any namespace handles */
+        /* TBD: this may be obsolete, an old bug put handles in package lists */
+
+        if (IS_NS_HANDLE (Element))
+        {
+            continue;
+        }
+
+        /* If element is a package, we must delete the package elements... */
+
+        if (Element->Type == TYPE_Package)
+        {
+            CmDeleteInternalPackageObject (Element);
+        }
+
+        /* Now we can free this single object */
+
+        CmFree (Element);
+    }
+
+    /* Now we can free the element list */
+
+    CmFree (Object->Package.Elements);
+
+    FUNCTION_EXIT;
 }
 
 
@@ -1008,10 +1072,8 @@ CmDeleteInternalObjectList (
         if ((*Obj)->Type == TYPE_Package)
         {
             /* Delete the package */
-
-            /* TBD: Not implemented yet! */
-
-            DEBUG_PRINT (ACPI_ERROR, ("CmDeleteInternalObjectList: Package deletion not implemented!\n"));
+BREAKPOINT3;            
+            CmDeleteInternalPackageObject (*Obj);
         }
 
     }
