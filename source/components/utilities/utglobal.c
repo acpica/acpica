@@ -167,11 +167,12 @@ char            *ExceptionNames[] =
     "AE_NO_ACPI_TABLES",
     "AE_NO_NAMESPACE",
     "AE_NO_MEMORY",
+    "AE_BAD_SIGNATURE",
     "AE_BAD_HEADER",
     "AE_BAD_CHECKSUM",
     "AE_BAD_PARAMETER",
     "AE_BAD_CHARACTER",
-    "AE_BAD_SIGNATURE",
+    "AE_BAD_PATHNAME",
     "AE_BAD_DATA",
     "AE_NOT_FOUND",
     "AE_NOT_EXIST",
@@ -186,6 +187,7 @@ char            *ExceptionNames[] =
     "AE_SUPPORT",
     "AE_SHARE",
     "AE_LIMIT",
+    "AE_TIME",
     "AE_UNKNOWN_STATUS"
 };
 
