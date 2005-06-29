@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.36 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -157,7 +157,7 @@ AcpiExConvertToInteger (
     ACPI_FUNCTION_TRACE_PTR ("ExConvertToInteger", ObjDesc);
 
 
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_INTEGER:
         *ResultDesc = ObjDesc;
@@ -198,7 +198,7 @@ AcpiExConvertToInteger (
     /*
      * String conversion is different than Buffer conversion
      */
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_STRING:
 
@@ -291,7 +291,7 @@ AcpiExConvertToBuffer (
     ACPI_FUNCTION_TRACE_PTR ("ExConvertToBuffer", ObjDesc);
 
 
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_INTEGER:
 
@@ -335,7 +335,35 @@ AcpiExConvertToBuffer (
 
 
     case ACPI_TYPE_STRING:
-        *ResultDesc = ObjDesc;
+        /*
+         * Create a new Buffer object
+         */
+        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        if (!RetDesc)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        /* Need enough space for one integer */
+
+        NewBuf = ACPI_MEM_CALLOCATE (ObjDesc->String.Length);
+        if (!NewBuf)
+        {
+            ACPI_REPORT_ERROR
+                (("ExConvertToBuffer: Buffer allocation failure\n"));
+            AcpiUtRemoveReference (RetDesc);
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        ACPI_STRNCPY ((char *) NewBuf, (char *) ObjDesc->String.Pointer, ObjDesc->String.Length);
+        RetDesc->Buffer.Flags |= AOPOBJ_DATA_VALID;
+        RetDesc->Buffer.Pointer = NewBuf;
+        RetDesc->Buffer.Length = ObjDesc->String.Length;
+
+        /* Return the new buffer descriptor */
+
+        *ResultDesc = RetDesc;
+
         break;
 
 
@@ -491,7 +519,7 @@ AcpiExConvertToString (
     ACPI_FUNCTION_TRACE_PTR ("ExConvertToString", ObjDesc);
 
 
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_INTEGER:
 
@@ -704,11 +732,11 @@ AcpiExConvertToTargetType (
         default:
             /* No conversion allowed for these types */
 
-            if (DestinationType != SourceDesc->Common.Type)
+            if (DestinationType != ACPI_GET_OBJECT_TYPE (SourceDesc))
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                     "Target does not allow conversion of type %s to %s\n",
-                    AcpiUtGetTypeName ((SourceDesc)->Common.Type),
+                    AcpiUtGetObjectTypeName (SourceDesc),
                     AcpiUtGetTypeName (DestinationType)));
                 Status = AE_TYPE;
             }
