@@ -122,87 +122,6 @@ cleanup:
 }
 
 
-/******************************************************************************
- * 
- * FUNCTION:    DumpCode
- *
- * PARAMETERS:  OpMode LoadExecMode        Load or Exec -- controls printing
- *
- * DESCRIPTION: Consume and dump the remainder of the current code package.
- *              Characters which may legally appear in a name are printed
- *              as such; everything else is printed in hex.
- *
- *****************************************************************************/
-
-#define MAX_AML_DUMP        1024
-
-void
-DumpCode (OpMode LoadExecMode)
-{
-    UINT8           *Code;
-    UINT32          i = 0;
-    UINT32          j = 0;
-    UINT8           LineBuf[16];
-
-
-    FUNCTION_TRACE ("DumpCode");
-
-    /* Only dump the code if tracing is enabled */
-
-    if (!(TRACE_TABLES & DebugLevel))
-    {
-        return;
-    }
-
-    /* Make sure there's really something to dump */
-
-    Code = ConsumeAMLByte (1);
-    if (!Code)
-    {
-        return;
-    }
-
-    /* Only now can we print the header */
-
-    DEBUG_PRINT (TRACE_TABLES, ("Hex dump of remainder (up to %d bytes) of AML package:\n",
-                    MAX_AML_DUMP));
-
-    /* dump the package, but not too much of it */
-
-    do
-    {
-        OsdPrintf (NULL, "%02X ", *Code);
-        LineBuf[i] = *Code;
-
-        i++;
-        j++;
-        if (i > 15)
-        {
-            for (i = 0; i < 16; i++)
-            {
-                if (NcOK ((INT32) LineBuf[i]))
-                {
-                    OsdPrintf (NULL, "%c", LineBuf[i]);
-                }
-
-                else
-                {
-                    OsdPrintf (NULL, ".");
-                }
-            }
-
-            /* Done with that line. */
-
-            OsdPrintf (NULL, "\n");
-            i = 0;
-        }
-
-    } while ((Code = ConsumeAMLByte (1)) && (j < MAX_AML_DUMP));
-
-    OsdPrintf (NULL, "\n");
-}
-
-
 /****************************************************************************
  * 
  * FUNCTION:    DumpAMLBuffer
@@ -251,13 +170,13 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
 
     if (!EntryDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("***NULL stack entry pointer***\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("DumpStackEntry: ***NULL stack entry pointer***\n"));
         return S_ERROR;
     }
 
     else if (IsNsHandle (EntryDesc))
     {
-        DEBUG_PRINT (ACPI_INFO, ("Name \n"));
+        DEBUG_PRINT (ACPI_INFO, ("DumpStackEntry: Name \n"));
         DUMP_ENTRY (EntryDesc);
     }
 
@@ -511,7 +430,8 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
             if (UNASSIGNED != Aml[(INT32) EntryDesc->ValType])
             {
                 DEBUG_PRINT (ACPI_ERROR,
-                              ("(AML %s) \n", ShortOps[Aml[(INT32) EntryDesc->ValType]]));
+                              ("DumpStackEntry: Unhandled opcode (AML %s) \n", 
+                              ShortOps[Aml[(INT32) EntryDesc->ValType]]));
             }
 
 
