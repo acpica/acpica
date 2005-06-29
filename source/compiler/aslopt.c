@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -593,7 +593,7 @@ OptOptimizeNamePath (
 
     /* Various required items */
 
-    if (!TargetNode || !WalkState || !Op->Common.Parent)
+    if (!TargetNode || !WalkState || !AmlNameString || !Op->Common.Parent)
     {
         return_VOID;
     }
