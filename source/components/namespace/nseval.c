@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  ******************************************************************************/
 
@@ -491,7 +491,6 @@ AcpiNsExecuteControlMethod (
     FUNCTION_TRACE ("NsExecuteControlMethod");
 
 
-
     /* Verify that there is a method associated with this object */
 
     ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) MethodNode);
@@ -623,7 +622,7 @@ AcpiNsGetObjectValue (
         ObjDesc->Reference.Object  = (void *) Node;
 
         /*
-         * Use ResolveToValue() to get the associated value.  This call 
+         * Use ResolveToValue() to get the associated value.  This call
          * always deletes ObjDesc (allocated above).
          *
          * NOTE: we can get away with passing in NULL for a walk state
