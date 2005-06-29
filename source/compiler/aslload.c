@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.57 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -153,7 +153,7 @@ LdLoadNamespace (
 
     /* Create a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
     if (!WalkState)
     {
         return AE_NO_MEMORY;
@@ -326,7 +326,7 @@ LdLoadResourceElements (
              * Store the field offset in the namespace node so it
              * can be used when the field is referenced
              */
-            Node->OwnerId = InitializerOp->Asl.Value.Integer16;
+            Node->OwnerId = (UINT16) InitializerOp->Asl.Value.Integer;
             InitializerOp->Asl.Node = Node;
             Node->Object = (ACPI_OPERAND_OBJECT *) InitializerOp;
 
@@ -441,7 +441,7 @@ LdNamespace1Begin (
          *
          * first child is name, next child is ObjectType
          */
-        ActualObjectType = Op->Asl.Child->Asl.Next->Asl.Value.Integer8;
+        ActualObjectType = (UINT8) Op->Asl.Child->Asl.Next->Asl.Value.Integer;
         ObjectType = ACPI_TYPE_ANY;
         break;
 

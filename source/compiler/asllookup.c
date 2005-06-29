@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.79 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -181,12 +181,12 @@ LsDoOneNamespaceObject (
             if (Op->Asl.Value.Integer > ACPI_UINT32_MAX)
             {
                 FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X%X]",
-                            ACPI_HIDWORD (Op->Asl.Value.Integer64), Op->Asl.Value.Integer32);
+                            ACPI_HIDWORD (Op->Asl.Value.Integer64), (UINT32) Op->Asl.Value.Integer);
             }
             else
             {
                 FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X]",
-                            Op->Asl.Value.Integer32);
+                            (UINT32) Op->Asl.Value.Integer);
             }
             break;
 
@@ -212,7 +212,7 @@ LsDoOneNamespaceObject (
                 Op = Op->Asl.Child;
             }
             FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Offset 0x%02X, Length 0x%02X]",
-                        Op->Asl.Parent->Asl.ExtraValue, Op->Asl.Value.Integer32);
+                        Op->Asl.Parent->Asl.ExtraValue, (UINT32) Op->Asl.Value.Integer);
             break;
 
 
@@ -370,7 +370,7 @@ LkCrossReferenceNamespace (
      * Create a new walk state for use when looking up names
      * within the namespace (Passed as context to the callbacks)
      */
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
     if (!WalkState)
     {
         return AE_NO_MEMORY;
@@ -819,11 +819,11 @@ LkNamespaceLocateBegin (
              * region -- which contains the length of the region.
              */
             OwningOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
-            Op->Asl.Parent->Asl.ExtraValue = ACPI_MUL_8 (OwningOp->Asl.Value.Integer32);
+            Op->Asl.Parent->Asl.ExtraValue = ACPI_MUL_8 ((UINT32) OwningOp->Asl.Value.Integer);
 
             /* Examine the field access width */
 
-            switch (Op->Asl.Parent->Asl.Value.Integer8)
+            switch ((UINT8) Op->Asl.Parent->Asl.Value.Integer)
             {
             case AML_FIELD_ACCESS_ANY:
             case AML_FIELD_ACCESS_BYTE:
@@ -849,8 +849,8 @@ LkNamespaceLocateBegin (
              * Is the region at least as big as the access width?
              * Note: DataTableRegions have 0 length
              */
-            if ((OwningOp->Asl.Value.Integer32) &&
-                (OwningOp->Asl.Value.Integer32 < MinimumLength))
+            if (((UINT32) OwningOp->Asl.Value.Integer) &&
+                ((UINT32) OwningOp->Asl.Value.Integer < MinimumLength))
             {
                 AslError (ASL_ERROR, ASL_MSG_FIELD_ACCESS_WIDTH, Op, NULL);
             }
@@ -860,12 +860,12 @@ LkNamespaceLocateBegin (
              * access type is used (BYTE for EC/CMOS, BUFFER for SMBUS)
              */
             SpaceIdOp = OwningOp->Asl.Child->Asl.Next;
-            switch (SpaceIdOp->Asl.Value.Integer32)
+            switch ((UINT32) SpaceIdOp->Asl.Value.Integer)
             {
             case REGION_EC:
             case REGION_CMOS:
 
-                if (Op->Asl.Parent->Asl.Value.Integer8 != AML_FIELD_ACCESS_BYTE)
+                if ((UINT8) Op->Asl.Parent->Asl.Value.Integer != AML_FIELD_ACCESS_BYTE)
                 {
                     AslError (ASL_ERROR, ASL_MSG_REGION_BYTE_ACCESS, Op, NULL);
                 }
@@ -873,7 +873,7 @@ LkNamespaceLocateBegin (
 
             case REGION_SMBUS:
 
-                if (Op->Asl.Parent->Asl.Value.Integer8 != AML_FIELD_ACCESS_BUFFER)
+                if ((UINT8) Op->Asl.Parent->Asl.Value.Integer != AML_FIELD_ACCESS_BUFFER)
                 {
                     AslError (ASL_ERROR, ASL_MSG_REGION_BUFFER_ACCESS, Op, NULL);
                 }
@@ -902,7 +902,7 @@ LkNamespaceLocateBegin (
                 LkCheckFieldRange (Op,
                             Op->Asl.Parent->Asl.ExtraValue,
                             Op->Asl.ExtraValue,
-                            Op->Asl.Child->Asl.Value.Integer32,
+                            (UINT32) Op->Asl.Child->Asl.Value.Integer,
                             Op->Asl.Child->Asl.ExtraValue);
             }
         }

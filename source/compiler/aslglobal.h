@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.38 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -137,15 +137,17 @@
 /*
  * Parser and other externals
  */
-extern int                      yydebug;
-extern FILE                     *AslCompilerin;
-extern int                      AslCompilerdebug;
-extern const ASL_MAPPING_ENTRY  AslKeywordMapping[];
-extern char                     *AslCompilertext;
-extern char                     hex[];
+extern int                          yydebug;
+extern FILE                         *AslCompilerin;
+extern int                          AslCompilerdebug;
+extern const ASL_MAPPING_ENTRY      AslKeywordMapping[];
+extern char                         *AslCompilertext;
+extern char                         hex[];
 
-#define ASL_LINE_BUFFER_SIZE    512
-#define ASL_MSG_BUFFER_SIZE     (ASL_LINE_BUFFER_SIZE * 2)
+#define ASL_LINE_BUFFER_SIZE        512
+#define ASL_MSG_BUFFER_SIZE         (ASL_LINE_BUFFER_SIZE * 2)
+#define HEX_TABLE_LINE_SIZE         8
+#define HEX_LISTING_LINE_SIZE       16
 
 
 /* Source code buffers and pointers for error reporting */
@@ -176,6 +178,7 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_AsmIncludeOutputFlag, F
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_C_IncludeOutputFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_ListingFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_GenerateExternals, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_ParseOnlyFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CompileTimesFlag, FALSE);
@@ -187,7 +190,6 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_IntegerOptimizationFlag
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_ReferenceOptimizationFlag, TRUE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DisplayRemarks, TRUE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DisplayOptimizations, FALSE);
-
 
 #define HEX_OUTPUT_NONE         0
 #define HEX_OUTPUT_C            1
@@ -256,7 +258,7 @@ ASL_EXTERN ASL_EVENT_INFO           AslGbl_Events[21];
 
 /* Scratch buffers */
 
-ASL_EXTERN UINT8                    Gbl_AmlBuffer[16];
+ASL_EXTERN UINT8                    Gbl_AmlBuffer[HEX_LISTING_LINE_SIZE];
 ASL_EXTERN char                     MsgBuffer[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN char                     StringBuffer[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN char                     StringBuffer2[ASL_MSG_BUFFER_SIZE];

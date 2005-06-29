@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.44 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -441,8 +441,8 @@ FlSetLineNumber (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-    Gbl_CurrentLineNumber = Op->Asl.Value.Integer32;
-    Gbl_LogicalLineNumber = Op->Asl.Value.Integer32;
+    Gbl_CurrentLineNumber = (UINT32) Op->Asl.Value.Integer;
+    Gbl_LogicalLineNumber = (UINT32) Op->Asl.Value.Integer;
 }
 
 
@@ -593,14 +593,6 @@ FlOpenInputFile (
 
     FlOpenFile (ASL_FILE_INPUT, InputFilename, "r");
     AslCompilerin = Gbl_Files[ASL_FILE_INPUT].Handle;
-
-    /* Get the path to the input filename's directory */
-
-    Gbl_DirectoryPath = strdup (InputFilename);
-    if (!Gbl_DirectoryPath)
-    {
-        return (AE_NO_MEMORY);
-    }
 
     return (AE_OK);
 }

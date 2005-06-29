@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.60 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -131,6 +131,46 @@
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDbMatchArgument
+ *
+ * PARAMETERS:  UserArgument            - User command line
+ *              Arguments               - Array of commands to match against
+ *
+ * RETURN:      Index into command array or ACPI_TYPE_NOT_FOUND if not found
+ *
+ * DESCRIPTION: Search command array for a command match
+ *
+ ******************************************************************************/
+
+ACPI_OBJECT_TYPE
+AcpiDbMatchArgument (
+    char                    *UserArgument,
+    ARGUMENT_INFO           *Arguments)
+{
+    UINT32                  i;
+
+
+    if (!UserArgument || UserArgument[0] == 0)
+    {
+        return (ACPI_TYPE_NOT_FOUND);
+    }
+
+    for (i = 0; Arguments[i].Name; i++)
+    {
+        if (ACPI_STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
+        {
+            return (i);
+        }
+    }
+
+    /* Argument not recognized */
+
+    return (ACPI_TYPE_NOT_FOUND);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDbSetOutputDestination
  *
  * PARAMETERS:  OutputFlags         - Current flags word
@@ -180,7 +220,8 @@ AcpiDbDumpBuffer (
     AcpiOsPrintf ("\nLocation %X:\n", Address);
 
     AcpiDbgLevel |= ACPI_LV_TABLES;
-    AcpiUtDumpBuffer (ACPI_TO_POINTER (Address), 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer (ACPI_TO_POINTER (Address), 64, DB_BYTE_DISPLAY,
+            ACPI_UINT32_MAX);
 }
 
 
@@ -227,8 +268,7 @@ AcpiDbDumpObject (
     case ACPI_TYPE_INTEGER:
 
         AcpiOsPrintf ("[Integer] = %8.8X%8.8X\n",
-                    ACPI_HIDWORD (ObjDesc->Integer.Value),
-                    ACPI_LODWORD (ObjDesc->Integer.Value));
+                    ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
         break;
 
 
@@ -248,7 +288,8 @@ AcpiDbDumpObject (
         AcpiOsPrintf ("[Buffer] Length %.2X = ", ObjDesc->Buffer.Length);
         if (ObjDesc->Buffer.Length)
         {
-            AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+            AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer,
+                    ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         }
         else
         {
@@ -259,7 +300,8 @@ AcpiDbDumpObject (
 
     case ACPI_TYPE_PACKAGE:
 
-        AcpiOsPrintf ("[Package]  Contains %d Elements: \n", ObjDesc->Package.Count);
+        AcpiOsPrintf ("[Package]  Contains %d Elements: \n",
+                ObjDesc->Package.Count);
 
         for (i = 0; i < ObjDesc->Package.Count; i++)
         {
@@ -387,8 +429,7 @@ AcpiDbSecondPassParse (
 
             /* Create a new walk state for the parse */
 
-            WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
-                                            NULL, NULL, NULL);
+            WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
             if (!WalkState)
             {
                 return (AE_NO_MEMORY);
@@ -482,10 +523,11 @@ AcpiDbLocalNsLookup (
      * (Uses root node as the search starting point)
      */
     Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-                                    ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
+                    ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiFormatException (Status));
+        AcpiOsPrintf ("Could not locate name: %s %s\n",
+                Name, AcpiFormatException (Status));
     }
 
     ACPI_MEM_FREE (InternalPath);

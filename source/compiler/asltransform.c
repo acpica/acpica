@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.18 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -266,7 +266,7 @@ TrAmlInsertPeer (
     ACPI_PARSE_OBJECT       *NewPeer)
 {
 
-    NewPeer->Asl.Next   = Op->Asl.Next;
+    NewPeer->Asl.Next = Op->Asl.Next;
     Op->Asl.Next      = NewPeer;
 }
 
@@ -381,32 +381,47 @@ TrDoDefinitionBlock (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Transform an Elseif into an Else and If AML opcode
+ * DESCRIPTION: Transform an Elseif into an Else and If AML opcode pair.
+ *              There is no AML opcode for ELSEIF -- it must be simulated
+ *              with an if/else pair.
  *
  ******************************************************************************/
 
 void
 TrDoElseif (
-    ACPI_PARSE_OBJECT       *Op)
+    ACPI_PARSE_OBJECT       *ElseNode)
 {
-    ACPI_PARSE_OBJECT       *IfNode;
+    ACPI_PARSE_OBJECT       *IfNode = NULL;
+    ACPI_PARSE_OBJECT       *NextNode;
 
 
     /* Change the ELSEIF into an ELSE */
 
-    TrAmlInitNode (Op, PARSEOP_ELSE);
+    TrAmlInitNode (ElseNode, PARSEOP_ELSE);
 
     /* Create a new IF node */
 
-    IfNode              = TrCreateLeafNode (PARSEOP_IF);
-    IfNode->Asl.Parent      = Op;
-    TrAmlInitLineNumbers (IfNode, Op);
+    IfNode             = TrCreateLeafNode (PARSEOP_IF);
+    IfNode->Asl.Parent = ElseNode;
+    TrAmlInitLineNumbers (IfNode, ElseNode);
 
     /* Insert the the IF node first in the ELSE child list */
 
-    IfNode->Asl.Child       = Op->Asl.Child;
-    Op->Asl.Child         = IfNode;
+    IfNode->Asl.Child   = ElseNode->Asl.Child;
+    ElseNode->Asl.Child = IfNode;
 
+    /* Go to the end of the IF <Predicate><TermList> block */
+
+    NextNode = IfNode->Asl.Child;       /* Next = Predicate */
+    NextNode = NextNode->Asl.Next;      /* Nest = TermList  */
+
+    /* Make the next node after the IF the rest of the original tree */
+
+    IfNode->Asl.Next = NextNode->Asl.Next;
+
+    /* Terminate the IF subtree and set IF node as the parent for all nodes */
+
+    NextNode->Asl.Next = NULL;
     TrAmlSetSubtreeParent (IfNode->Asl.Child, IfNode);
 }
 
@@ -443,7 +458,7 @@ TrDoSwitch (
     char                    *PredicateValuePath;
 
 
-    CurrentParentNode = StartNode;
+    CurrentParentNode  = StartNode;
     PredicateValueName = TrAmlGetNextTempName (&PredicateValuePath);
 
     /* First child is the predicate */
@@ -471,12 +486,12 @@ TrDoSwitch (
                 /* Link ELSE node as a peer to the previous IF */
 
                 TrAmlInsertPeer (Conditional, NewOp);
-                CurrentParentNode   = NewOp;
+                CurrentParentNode = NewOp;
             }
 
-            CaseOp = Next;
+            CaseOp      = Next;
             Conditional = CaseOp;
-            CaseBlock = CaseOp->Asl.Child->Asl.Next;
+            CaseBlock   = CaseOp->Asl.Child->Asl.Next;
             Conditional->Asl.Child->Asl.Next = NULL;
 
             /*

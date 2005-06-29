@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.9 $
+ *              $Revision: 1.12 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -358,28 +358,23 @@ AcpiDmQwordDescriptor (
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X,\n",
-        ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->Granularity)),
-        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->Granularity)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Granularity)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X,\n",
-        ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->AddressMin)),
-        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->AddressMin)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMin)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X,\n",
-        ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->AddressMax)),
-        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->AddressMax)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMax)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X,\n",
-        ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->TranslationOffset)),
-        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->TranslationOffset)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TranslationOffset)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X",
-        ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->AddressLength)),
-        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->AddressLength)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressLength)));
 
     /* Optional fields */
 
@@ -518,8 +513,7 @@ AcpiDmGenericRegisterDescriptor (
     AcpiOsPrintf ("0x%2.2X, 0x%2.2X, 0x%8.8X%8.8X)\n",
         (UINT32) Resource->BitWidth,
         (UINT32) Resource->BitOffset,
-        ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->Address)),
-        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->Address)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Address)));
 }
 
 
@@ -544,7 +538,7 @@ AcpiDmInterruptDescriptor (
     UINT32                  Level)
 {
     UINT32                  i;
-    char                    *Rover;
+    UINT8                   *Rover;
 
 
     AcpiDmIndent (Level);
@@ -556,16 +550,16 @@ AcpiDmInterruptDescriptor (
 
     /* Resource Index/Source, optional -- at end of descriptor */
 
-    if (Resource->Length > (4 * Resource->TableLength) + 2)
+    if (Resource->Length > (UINT16) (4 * Resource->TableLength) + 2)
     {
         /* Get a pointer past the interrupt values */
 
-        Rover = ((char *) Resource) + ((4 * Resource->TableLength) + 5);
+        Rover = ((UINT8 *) Resource) + ((4 * Resource->TableLength) + 5);
 
         /* Resource Index */
         /* Resource Source */
 
-        AcpiOsPrintf (", 0x%X, \"%s\"", (UINT32) Rover[0], &Rover[1]);
+        AcpiOsPrintf (", 0x%X, \"%s\"", (UINT32) Rover[0], (char *) &Rover[1]);
     }
 
     AcpiOsPrintf (")\n");

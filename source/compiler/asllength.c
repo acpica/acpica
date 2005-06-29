@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.29 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -477,7 +477,7 @@ CgGenerateAmlLengths (
     case PARSEOP_PACKAGE_LENGTH:
 
         Op->Asl.AmlOpcodeLength = 0;
-        Op->Asl.AmlPkgLenBytes = CgGetPackageLenByteCount (Op, Op->Asl.Value.Integer32);
+        Op->Asl.AmlPkgLenBytes = CgGetPackageLenByteCount (Op, (UINT32) Op->Asl.Value.Integer);
         break;
 
     case PARSEOP_RAW_DATA:

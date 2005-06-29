@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.106 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -152,9 +152,9 @@ AcpiEvInitialize (
     }
 
     /*
-     * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
-     * done prior to enabling SCIs to prevent interrupts from occuring
-     * before handers are installed.
+     * Initialize the Fixed and General Purpose Events. This is
+     * done prior to enabling SCIs to prevent interrupts from
+     * occurring before handers are installed.
      */
     Status = AcpiEvFixedEventInitialize ();
     if (ACPI_FAILURE (Status))
@@ -186,7 +186,7 @@ AcpiEvInitialize (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Install handlers for the SCI, Global Lock, and GPEs.
+ * DESCRIPTION: Install interrupt handlers for the SCI and Global Lock
  *
  ******************************************************************************/
 
@@ -207,17 +207,6 @@ AcpiEvHandlerInitialize (
     {
         ACPI_REPORT_ERROR ((
                 "Unable to install System Control Interrupt Handler, %s\n",
-                AcpiFormatException (Status)));
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Install handlers for control method GPE handlers (_Lxx, _Exx) */
-
-    Status = AcpiEvInitGpeControlMethods ();
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_REPORT_ERROR ((
-                "Unable to initialize GPE control methods, %s\n",
                 AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
@@ -317,7 +306,7 @@ AcpiEvFixedEventDetect (
     (void) AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_ENABLE, &FixedEnable);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
-        "Fixed AcpiEvent Block: Enable %08X Status %08X\n",
+        "Fixed Event Block: Enable %08X Status %08X\n",
         FixedEnable, FixedStatus));
 
     /*
@@ -377,7 +366,7 @@ AcpiEvFixedEventDispatch (
                 0, ACPI_MTX_DO_NOT_LOCK);
 
         ACPI_REPORT_ERROR (
-            ("EvGpeDispatch: No installed handler for fixed event [%08X]\n",
+            ("No installed handler for fixed event [%08X]\n",
             Event));
 
         return (ACPI_INTERRUPT_NOT_HANDLED);

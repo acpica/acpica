@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.22 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -185,7 +185,7 @@ AcpiGetTimer (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    Status = AcpiHwLowLevelRead (32, Ticks, &AcpiGbl_FADT->XPmTmrBlk, 0);
+    Status = AcpiHwLowLevelRead (32, Ticks, &AcpiGbl_FADT->XPmTmrBlk);
 
     return_ACPI_STATUS (Status);
 }
@@ -210,10 +210,13 @@ AcpiGetTimer (
  *              transitions (unlike many CPU timestamp counters) -- making it
  *              a versatile and accurate timer.
  *
- *              Note that this function accomodates only a single timer
+ *              Note that this function accommodates only a single timer
  *              rollover.  Thus for 24-bit timers, this function should only
  *              be used for calculating durations less than ~4.6 seconds
- *              (~20 hours for 32-bit timers).
+ *              (~20 minutes for 32-bit timers) -- calculations below
+ *
+ *              2**24 Ticks / 3,600,000 Ticks/Sec = 4.66 sec
+ *              2**32 Ticks / 3,600,000 Ticks/Sec = 1193 sec or 19.88 minutes
  *
  ******************************************************************************/
 

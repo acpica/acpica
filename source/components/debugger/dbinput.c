@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.93 $
+ *              $Revision: 1.98 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -148,6 +148,8 @@ enum AcpiExDebuggerCommands
     CMD_EXIT,
     CMD_FIND,
     CMD_GO,
+    CMD_GPE,
+    CMD_GPES,
     CMD_HELP,
     CMD_HELP2,
     CMD_HISTORY,
@@ -179,6 +181,7 @@ enum AcpiExDebuggerCommands
     CMD_TERMINATE,
     CMD_THREADS,
     CMD_TREE,
+    CMD_TYPE,
     CMD_UNLOAD
 };
 
@@ -203,6 +206,8 @@ static const COMMAND_INFO       AcpiGbl_DbCommands[] =
     {"EXIT",         0},
     {"FIND",         1},
     {"GO",           0},
+    {"GPE",          2},
+    {"GPES",         0},
     {"HELP",         0},
     {"?",            0},
     {"HISTORY",      0},
@@ -234,6 +239,7 @@ static const COMMAND_INFO       AcpiGbl_DbCommands[] =
     {"TERMINATE",    0},
     {"THREADS",      3},
     {"TREE",         0},
+    {"TYPE",         1},
     {"UNLOAD",       1},
     {NULL,           0}
 };
@@ -622,6 +628,14 @@ AcpiDbCommandDispatch (
         AcpiGbl_CmSingleStep = FALSE;
         return (AE_OK);
 
+    case CMD_GPE:
+        AcpiDbGenerateGpe (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2]);
+        break;
+
+    case CMD_GPES:
+        AcpiDbDisplayGpes ();
+        break;
+
     case CMD_HELP:
     case CMD_HELP2:
         AcpiDbDisplayHelp (AcpiGbl_DbArgs[1]);
@@ -700,7 +714,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_LOAD:
-        Status = AcpiDbLoadAcpiTable (AcpiGbl_DbArgs[1]);
+        Status = AcpiDbGetTableFromFile (AcpiGbl_DbArgs[1], NULL);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -787,6 +801,10 @@ AcpiDbCommandDispatch (
 
     case CMD_TREE:
         AcpiDbDisplayCallingTree ();
+        break;
+
+    case CMD_TYPE:
+        AcpiDbDisplayObjectType (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_UNLOAD:

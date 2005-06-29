@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.52 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -182,7 +182,7 @@ OpcGetIntegerWidth (
 
     /* Use the revision to set the integer width */
 
-    AcpiUtSetIntegerWidth (Child->Asl.Value.Integer8);
+    AcpiUtSetIntegerWidth ((UINT8) Child->Asl.Value.Integer);
 }
 
 
@@ -509,7 +509,7 @@ OpcDoEisaId (
      * Morph the Op into an integer, regardless of whether there
      * was an error in the EISAID string
      */
-    Op->Asl.Value.Integer32 = EisaId;
+    Op->Asl.Value.Integer = EisaId;
 
     Op->Asl.CompileFlags &= ~NODE_COMPILE_TIME_CONST;
     Op->Asl.ParseOpcode = PARSEOP_INTEGER;

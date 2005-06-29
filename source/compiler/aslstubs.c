@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.10 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -163,6 +163,13 @@ AcpiDsStoreObjectToLocal (
     UINT32                  Index,
     ACPI_OPERAND_OBJECT     *SrcDesc,
     ACPI_WALK_STATE         *WalkState)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiEvDeleteGpeBlock (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock)
 {
     return (AE_OK);
 }

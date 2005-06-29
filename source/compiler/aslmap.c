@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.68 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -192,11 +192,23 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_AC1",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AC2",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AC3",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC4",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC5",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC6",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC7",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC8",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC9",     0,      ASL_RSVD_RETURN_VALUE},
     {"_ADR",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AL0",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AL1",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AL2",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AL3",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL4",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL5",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL6",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL7",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL8",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL9",     0,      ASL_RSVD_RETURN_VALUE},
     {"_ALN",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_ASI",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_BAS",     0,      ASL_RSVD_RESOURCE_NAME},
@@ -268,6 +280,7 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_OSI",     1,      ASL_RSVD_RETURN_VALUE},
     {"_PCL",     0,      ASL_RSVD_RETURN_VALUE},
     {"_PCT",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_PDC",     1,      0},
     {"_PIC",     1,      0},
     {"_PPC",     0,      ASL_RSVD_RETURN_VALUE},
     {"_PR0",     0,      ASL_RSVD_RETURN_VALUE},

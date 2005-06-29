@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.44 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -160,7 +160,7 @@ OpnDoMethod (
     Next = Next->Asl.Next;
     if (Next->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
-        NumArgs = Next->Asl.Value.Integer8;
+        NumArgs = (UINT8) Next->Asl.Value.Integer;
         Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
     }
 
@@ -169,7 +169,7 @@ OpnDoMethod (
     Next = Next->Asl.Next;
     if (Next->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
-        Serialized = Next->Asl.Value.Integer8;
+        Serialized = (UINT8) Next->Asl.Value.Integer;
         Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
     }
 
@@ -178,7 +178,7 @@ OpnDoMethod (
     Next = Next->Asl.Next;
     if (Next->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
-        Concurrency = Next->Asl.Value.Integer8;
+        Concurrency = (UINT8) Next->Asl.Value.Integer;
     }
 
     /* Put the bits in their proper places */
@@ -232,23 +232,23 @@ OpnDoFieldCommon (
 
     /* AccessType -- not optional, so no need to check for DEFAULT_ARG */
 
-    AccessType = Op->Asl.Value.Integer8;
+    AccessType = (UINT8) Op->Asl.Value.Integer;
     Op->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
 
     /* Set the access type in the parent (field) node for use later */
 
-    FieldOp->Asl.Value.Integer8 = AccessType;
+    FieldOp->Asl.Value.Integer = AccessType;
 
     /* LockRule -- not optional, so no need to check for DEFAULT_ARG */
 
     Next = Op->Asl.Next;
-    LockRule = Next->Asl.Value.Integer8;
+    LockRule = (UINT8) Next->Asl.Value.Integer;
     Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
 
     /* UpdateRule -- not optional, so no need to check for DEFAULT_ARG */
 
     Next = Next->Asl.Next;
-    UpdateRule = Next->Asl.Value.Integer8;
+    UpdateRule = (UINT8) Next->Asl.Value.Integer;
 
     /*
      * Generate the flags byte.  The various fields are already
@@ -282,7 +282,7 @@ OpnDoFieldCommon (
         case PARSEOP_ACCESSAS:
 
             PkgLengthNode = Next->Asl.Child;
-            AccessType = PkgLengthNode->Asl.Value.Integer8;
+            AccessType = (UINT8) PkgLengthNode->Asl.Value.Integer;
 
             /* Nothing additional to do */
             break;
@@ -293,7 +293,7 @@ OpnDoFieldCommon (
             /* New offset into the field */
 
             PkgLengthNode = Next->Asl.Child;
-            NewBitOffset = PkgLengthNode->Asl.Value.Integer32 * 8;
+            NewBitOffset = ((UINT32) PkgLengthNode->Asl.Value.Integer) * 8;
 
             /*
              * Examine the specified offset in relation to the
@@ -336,7 +336,7 @@ OpnDoFieldCommon (
             /* Named or reserved field entry */
 
             PkgLengthNode     = Next->Asl.Child;
-            NewBitOffset      = PkgLengthNode->Asl.Value.Integer32;
+            NewBitOffset      = (UINT32) PkgLengthNode->Asl.Value.Integer;
             CurrentBitOffset += NewBitOffset;
 
             /* Save the current AccessAs value for error checking later */
@@ -634,7 +634,7 @@ OpnDoBuffer (
 
     if (BufferLengthOp->Asl.Value.Integer > BufferLength)
     {
-        BufferLength = BufferLengthOp->Asl.Value.Integer32;
+        BufferLength = (UINT32) BufferLengthOp->Asl.Value.Integer;
     }
 
     if (!BufferLength)
@@ -713,7 +713,7 @@ OpnDoPackage (
     {
         if (PackageLengthOp->Asl.Value.Integer > PackageLength)
         {
-            PackageLength = PackageLengthOp->Asl.Value.Integer32;
+            PackageLength = (UINT32) PackageLengthOp->Asl.Value.Integer;
         }
     }
 
@@ -881,7 +881,7 @@ OpnDoDefinitionBlock (
 
     /* Use the revision to set the integer width */
 
-    AcpiUtSetIntegerWidth (Child->Asl.Value.Integer8);
+    AcpiUtSetIntegerWidth ((UINT8) Child->Asl.Value.Integer);
 
     /* OEMID */
 

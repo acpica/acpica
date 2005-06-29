@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.73 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -177,10 +177,11 @@ Options (
     printf ("  -ln            Create namespace file (*.nsp)\n");
     printf ("  -ls            Create combined source file (expanded includes) (*.src)\n");
 
-    printf ("\nACPI Tables and AML Disassembler:\n");
+    printf ("\nAML Disassembler:\n");
     printf ("  -d  [file]     Disassemble AML to ASL source code file (*.dsl)\n");
     printf ("  -dc [file]     Disassemble AML and immediately compile it\n");
     printf ("                 (Obtain DSDT from current system if no input file)\n");
+    printf ("  -e             Generate External() statements for unresolved symbols\n");
     printf ("  -g             Get ACPI tables and write to files (*.dat)\n");
 
     printf ("\nHelp:\n");
@@ -221,7 +222,7 @@ HelpMessage (
     printf ("\nCompiler Debug Options:\n");
     printf ("  -b<p|t|b>      Create compiler debug/trace file (*.txt)\n");
     printf ("                   Types: Parse/Tree/Both\n");
-    printf ("  -e             Ignore errors, always create AML output file(s)\n");
+    printf ("  -f             Ignore errors, force creation of AML output file(s)\n");
     printf ("  -c             Parse only, no output generation\n");
     printf ("  -ot            Display compile times\n");
     printf ("  -x<level>      Set debug level for trace output\n");
@@ -320,7 +321,7 @@ AslCommandLine (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "b:cd^egh^i^l^o:p:rs:t:v:x:")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "b:cd^efgh^i^l^o:p:rs:t:v:x:")) != EOF) switch (j)
     {
     case 'b':
 
@@ -379,7 +380,15 @@ AslCommandLine (
 
     case 'e':
 
-        /* Ignore errors and always attempt to create aml file */
+        /* Generate external statements for unresolved symbols */
+
+        Gbl_GenerateExternals = TRUE;
+        break;
+
+
+    case 'f':
+
+        /* Ignore errors and force creation of aml file */
 
         Gbl_IgnoreErrors = TRUE;
         break;
@@ -706,8 +715,8 @@ main (
     {
         /* ACPI CA subsystem initialization */
 
-        AcpiUtInitGlobals ();
         Status = AcpiOsInitialize ();
+        AcpiUtInitGlobals ();
         Status = AcpiUtMutexInitialize ();
         if (ACPI_FAILURE (Status))
         {
@@ -763,8 +772,8 @@ main (
 
         /* ACPI CA subsystem initialization (Must be re-initialized) */
 
-        AcpiUtInitGlobals ();
         Status = AcpiOsInitialize ();
+        AcpiUtInitGlobals ();
         Status = AcpiUtMutexInitialize ();
         if (ACPI_FAILURE (Status))
         {

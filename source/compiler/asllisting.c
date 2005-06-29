@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,6 +124,105 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslisting")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    LsDumpAscii
+ *
+ * PARAMETERS:  FileId          - ID of current listing file
+ *              Count           - Number of bytes to convert
+ *              Buffer          - Buffer of bytes to convert
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Convert hex bytes to ascii
+ *
+ ******************************************************************************/
+
+void
+LsDumpAscii (
+    UINT32                  FileId,
+    UINT32                  Count,
+    UINT8                   *Buffer)
+{
+    UINT8                   BufChar;
+    UINT32                  i;
+
+
+    FlPrintFile (FileId, "    \"");
+    for (i = 0; i < Count; i++)
+    {
+        BufChar = Buffer[i];
+        if (isprint (BufChar))
+        {
+            FlPrintFile (FileId, "%c", BufChar);
+        }
+        else
+        {
+            /* Not a printable character, just put out a dot */
+
+            FlPrintFile (FileId, ".");
+        }
+    }
+    FlPrintFile (FileId, "\"");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    LsDumpAsciiInComment
+ *
+ * PARAMETERS:  FileId          - ID of current listing file
+ *              Count           - Number of bytes to convert
+ *              Buffer          - Buffer of bytes to convert
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Convert hex bytes to ascii
+ *
+ ******************************************************************************/
+
+void
+LsDumpAsciiInComment (
+    UINT32                  FileId,
+    UINT32                  Count,
+    UINT8                   *Buffer)
+{
+    UINT8                   BufChar = 0;
+    UINT8                   LastChar;
+    UINT32                  i;
+
+
+    FlPrintFile (FileId, "    \"");
+    for (i = 0; i < Count; i++)
+    {
+        LastChar = BufChar;
+        BufChar = Buffer[i];
+
+        if (isprint (BufChar))
+        {
+            /* Handle embedded C comment sequences */
+
+            if (((LastChar == '*') && (BufChar == '/')) ||
+                ((LastChar == '/') && (BufChar == '*')))
+            {
+                /* Insert a space to break the sequence */
+
+                FlPrintFile (FileId, ".", BufChar);
+            }
+
+            FlPrintFile (FileId, "%c", BufChar);
+        }
+        else
+        {
+            /* Not a printable character, just put out a dot */
+
+            FlPrintFile (FileId, ".");
+        }
+    }
+    FlPrintFile (FileId, "\"");
+}
 
 
 /*******************************************************************************
@@ -387,7 +486,6 @@ LsFlushListingBuffer (
     UINT32                  FileId)
 {
     UINT32                  i;
-    UINT8                   BufChar;
 
 
     if (Gbl_CurrentHexColumn == 0)
@@ -406,12 +504,14 @@ LsFlushListingBuffer (
             FlPrintFile (FileId, "%2.2X ", Gbl_AmlBuffer[i]);
         }
 
-        for (i = 0; i < ((16 - Gbl_CurrentHexColumn) * 3); i++)
+        for (i = 0; i < ((HEX_LISTING_LINE_SIZE - Gbl_CurrentHexColumn) * 3); i++)
         {
             FlWriteFile (FileId, ".", 1);
         }
 
-        FlPrintFile (FileId, "    \"");
+        /* Write the ASCII character associated with each of the bytes */
+
+        LsDumpAscii (FileId, Gbl_CurrentHexColumn, Gbl_AmlBuffer);
         break;
 
 
@@ -426,12 +526,16 @@ LsFlushListingBuffer (
             FlPrintFile (FileId, "0%2.2Xh", Gbl_AmlBuffer[i]);
         }
 
-        for (i = 0; i < ((16 - Gbl_CurrentHexColumn) * 5); i++)
+        for (i = 0; i < ((HEX_LISTING_LINE_SIZE - Gbl_CurrentHexColumn) * 5); i++)
         {
             FlWriteFile (FileId, " ", 1);
         }
 
-        FlPrintFile (FileId, "  ;%8.8X \"", Gbl_CurrentAmlOffset);
+        FlPrintFile (FileId, "  ;%8.8X", Gbl_CurrentAmlOffset - HEX_LISTING_LINE_SIZE);
+
+        /* Write the ASCII character associated with each of the bytes */
+
+        LsDumpAscii (FileId, Gbl_CurrentHexColumn, Gbl_AmlBuffer);
         break;
 
 
@@ -442,12 +546,17 @@ LsFlushListingBuffer (
             FlPrintFile (FileId, "0x%2.2X,", Gbl_AmlBuffer[i]);
         }
 
-        for (i = 0; i < ((16 - Gbl_CurrentHexColumn) * 5); i++)
+        for (i = 0; i < ((HEX_LISTING_LINE_SIZE - Gbl_CurrentHexColumn) * 5); i++)
         {
             FlWriteFile (FileId, " ", 1);
         }
 
-        FlPrintFile (FileId, "    /* %8.8X \"", Gbl_CurrentAmlOffset);
+        FlPrintFile (FileId, "    /* %8.8X", Gbl_CurrentAmlOffset - HEX_LISTING_LINE_SIZE);
+
+        /* Write the ASCII character associated with each of the bytes */
+
+        LsDumpAsciiInComment (FileId, Gbl_CurrentHexColumn, Gbl_AmlBuffer);
+        FlPrintFile (FileId, " */");
         break;
 
     default:
@@ -455,26 +564,6 @@ LsFlushListingBuffer (
         return;
     }
 
-    /* Write the ASCII character associated with each of the bytes */
-
-    for (i = 0; i < Gbl_CurrentHexColumn; i++)
-    {
-        BufChar = Gbl_AmlBuffer[i];
-        if (isprint (BufChar) && !isspace (BufChar))
-        {
-            FlPrintFile (FileId, "%c", BufChar);
-        }
-        else
-        {
-            FlWriteFile (FileId, ".", 1);
-        }
-    }
-
-    FlPrintFile (FileId, "\"");
-    if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
-    {
-        FlPrintFile (FileId, " */");
-    }
     FlPrintFile (FileId, "\n");
 
     Gbl_CurrentHexColumn = 0;
@@ -552,7 +641,7 @@ LsWriteListingHexBytes (
 
         /* Flush buffer when it is full */
 
-        if (Gbl_CurrentHexColumn >= 16)
+        if (Gbl_CurrentHexColumn >= HEX_LISTING_LINE_SIZE)
         {
             LsFlushListingBuffer (FileId);
         }
@@ -1043,47 +1132,6 @@ LsWriteNodeToListing (
 
 /*******************************************************************************
  *
- * FUNCTION:    LsDumpAscii
- *
- * PARAMETERS:  FileId          - ID of current listing file
- *              Count           - Number of bytes to convert
- *              Buffer          - Buffer of bytes to convert
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Convert hex bytes to ascii
- *
- ******************************************************************************/
-
-void
-LsDumpAscii (
-    UINT32                  FileId,
-    UINT32                  Count,
-    UINT8                   *Buffer)
-{
-    UINT8                   BufChar;
-    UINT32                  i;
-
-
-    for (i = 0; i < Count; i++)
-    {
-        BufChar = Buffer[i];
-        if (isprint (BufChar))
-        {
-            FlPrintFile (FileId, "%c", BufChar);
-        }
-        else
-        {
-            /* Not a printable character, just put out a dot */
-
-            FlPrintFile (FileId, ".");
-        }
-    }
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    LsDoHexOutput
  *
  * PARAMETERS:  None
@@ -1131,13 +1179,11 @@ LsDoHexOutput (void)
  *
  ******************************************************************************/
 
-#define HEX_CHARS_PER_LINE 8
-
 void
 LsDoHexOutputC (void)
 {
     UINT32                  j;
-    UINT8                   FileByte[HEX_CHARS_PER_LINE];
+    UINT8                   FileByte[HEX_TABLE_LINE_SIZE];
     UINT8                   Buffer[4];
     UINT32                  Offset = 0;
 
@@ -1170,16 +1216,23 @@ LsDoHexOutputC (void)
 
         Offset++;
         j++;
-        if (j >= HEX_CHARS_PER_LINE)
+
+        if (j >= HEX_TABLE_LINE_SIZE)
         {
-            FlPrintFile (ASL_FILE_HEX_OUTPUT, "  /* %8.8X \"", Offset - HEX_CHARS_PER_LINE);
+            /* End of line, emit the ascii dump of the entire line */
+
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "  /* %8.8X", Offset - HEX_TABLE_LINE_SIZE);
 
             /* Write the ASCII character associated with each of the bytes */
 
-            LsDumpAscii (ASL_FILE_HEX_OUTPUT, HEX_CHARS_PER_LINE, FileByte);
-            FlPrintFile (ASL_FILE_HEX_OUTPUT, "\"  */\n");
+            LsDumpAsciiInComment (ASL_FILE_HEX_OUTPUT, HEX_TABLE_LINE_SIZE, FileByte);
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, " */\n");
+
+            /* Start new line */
+
             j = 0;
         }
+
     }
 
     FlPrintFile (ASL_FILE_HEX_OUTPUT, "\n};\n");
@@ -1201,15 +1254,12 @@ LsDoHexOutputC (void)
  *
  ******************************************************************************/
 
-#define ASM_HEX_CHARS_PER_LINE 8
-
-
 void
 LsDoHexOutputAsm (
     void)
 {
     UINT32                  j;
-    UINT8                   FileByte[HEX_CHARS_PER_LINE];
+    UINT8                   FileByte[HEX_TABLE_LINE_SIZE];
     UINT8                   Buffer[4];
     UINT32                  Offset = 0;
     BOOLEAN                 DoComma = FALSE;
@@ -1246,14 +1296,14 @@ LsDoHexOutputAsm (
 
         Offset++;
         j++;
-        if (j >= ASM_HEX_CHARS_PER_LINE)
+        if (j >= HEX_TABLE_LINE_SIZE)
         {
-            FlPrintFile (ASL_FILE_HEX_OUTPUT, "  ;%8.8X \"", Offset - ASM_HEX_CHARS_PER_LINE);
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "  ;%8.8X", Offset - HEX_TABLE_LINE_SIZE);
 
             /* Write the ASCII character associated with each of the bytes */
 
-            LsDumpAscii (ASL_FILE_HEX_OUTPUT, ASM_HEX_CHARS_PER_LINE, FileByte);
-            FlPrintFile (ASL_FILE_HEX_OUTPUT, "\"\n");
+            LsDumpAscii (ASL_FILE_HEX_OUTPUT, HEX_TABLE_LINE_SIZE, FileByte);
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "\n");
             j = 0;
         }
         else

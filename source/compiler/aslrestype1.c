@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.24 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -195,7 +195,7 @@ RsDoDmaDescriptor (
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                DmaChannelMask |= (1 << InitializerOp->Asl.Value.Integer8);
+                DmaChannelMask |= (1 << ((UINT8) InitializerOp->Asl.Value.Integer));
             }
 
             if (i == 4) /* case 4: First DMA byte */
@@ -289,14 +289,14 @@ RsDoFixedIoDescriptor (
         {
         case 0: /* Base Address */
 
-            Descriptor->Fio.BaseAddress = InitializerOp->Asl.Value.Integer16;
+            Descriptor->Fio.BaseAddress = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_BASEADDRESS,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Fio.BaseAddress));
             break;
 
         case 1: /* Length */
 
-            Descriptor->Fio.Length = InitializerOp->Asl.Value.Integer8;
+            Descriptor->Fio.Length = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Fio.Length));
             break;
@@ -367,28 +367,28 @@ RsDoIoDescriptor (
 
         case 1:  /* Min Address */
 
-            Descriptor->Iop.AddressMin = InitializerOp->Asl.Value.Integer16;
+            Descriptor->Iop.AddressMin = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Iop.AddressMin));
             break;
 
         case 2: /* Max Address */
 
-            Descriptor->Iop.AddressMax = InitializerOp->Asl.Value.Integer16;
+            Descriptor->Iop.AddressMax = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Iop.AddressMax));
             break;
 
         case 3: /* Alignment */
 
-            Descriptor->Iop.Alignment = InitializerOp->Asl.Value.Integer8;
+            Descriptor->Iop.Alignment = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_ALIGNMENT,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Iop.Alignment));
             break;
 
         case 4: /* Length */
 
-            Descriptor->Iop.Length = InitializerOp->Asl.Value.Integer8;
+            Descriptor->Iop.Length = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Iop.Length));
             break;
@@ -485,7 +485,7 @@ RsDoIrqDescriptor (
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                IrqMask |= (1 << InitializerOp->Asl.Value.Integer8);
+                IrqMask |= (1 << (UINT8) InitializerOp->Asl.Value.Integer);
             }
 
             if (i == 4) /* case 4: First IRQ byte */
@@ -557,7 +557,7 @@ RsDoIrqNoFlagsDescriptor (
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                IrqMask |= (1 << InitializerOp->Asl.Value.Integer8);
+                IrqMask |= (1 << ((UINT8) InitializerOp->Asl.Value.Integer));
             }
 
             if (i == 1) /* case 1: First IRQ byte */
@@ -626,28 +626,28 @@ RsDoMemory24Descriptor (
 
         case 1: /* Min Address */
 
-            Descriptor->M24.AddressMin = InitializerOp->Asl.Value.Integer16;
+            Descriptor->M24.AddressMin = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (M24.AddressMin));
             break;
 
         case 2: /* Max Address */
 
-            Descriptor->M24.AddressMax = InitializerOp->Asl.Value.Integer16;
+            Descriptor->M24.AddressMax = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (M24.AddressMax));
             break;
 
         case 3: /* Alignment */
 
-            Descriptor->M24.Alignment = InitializerOp->Asl.Value.Integer16;
+            Descriptor->M24.Alignment = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_ALIGNMENT,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (M24.Alignment));
             break;
 
         case 4: /* Length */
 
-            Descriptor->M24.RangeLength = InitializerOp->Asl.Value.Integer16;
+            Descriptor->M24.RangeLength = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (M24.RangeLength));
             break;
@@ -718,28 +718,28 @@ RsDoMemory32Descriptor (
 
         case 1:  /* Min Address */
 
-            Descriptor->M32.AddressMin = InitializerOp->Asl.Value.Integer32;
+            Descriptor->M32.AddressMin = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (M32.AddressMin));
             break;
 
         case 2: /* Max Address */
 
-            Descriptor->M32.AddressMax = InitializerOp->Asl.Value.Integer32;
+            Descriptor->M32.AddressMax = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (M32.AddressMax));
             break;
 
         case 3: /* Alignment */
 
-            Descriptor->M32.Alignment = InitializerOp->Asl.Value.Integer32;
+            Descriptor->M32.Alignment = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_ALIGNMENT,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (M32.Alignment));
             break;
 
         case 4: /* Length */
 
-            Descriptor->M32.RangeLength = InitializerOp->Asl.Value.Integer32;
+            Descriptor->M32.RangeLength = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (M32.RangeLength));
             break;
@@ -810,14 +810,14 @@ RsDoMemory32FixedDescriptor (
 
         case 1: /* Address */
 
-            Descriptor->F32.BaseAddress = InitializerOp->Asl.Value.Integer32;
+            Descriptor->F32.BaseAddress = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_BASEADDRESS,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (F32.BaseAddress));
             break;
 
         case 2: /* Length */
 
-            Descriptor->F32.RangeLength = InitializerOp->Asl.Value.Integer32;
+            Descriptor->F32.RangeLength = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (F32.RangeLength));
             break;
@@ -889,7 +889,7 @@ RsDoStartDependentDescriptor (
         {
         case 0: /* Compatibility Priority */
 
-            if (InitializerOp->Asl.Value.Integer8 > 2)
+            if ((UINT8) InitializerOp->Asl.Value.Integer > 2)
             {
                 AslError (ASL_ERROR, ASL_MSG_INVALID_PRIORITY, InitializerOp, NULL);
             }
@@ -899,7 +899,7 @@ RsDoStartDependentDescriptor (
 
         case 1: /* Performance/Robustness Priority */
 
-            if (InitializerOp->Asl.Value.Integer8 > 2)
+            if ((UINT8) InitializerOp->Asl.Value.Integer > 2)
             {
                 AslError (ASL_ERROR, ASL_MSG_INVALID_PERFORMANCE, InitializerOp, NULL);
             }
@@ -1024,7 +1024,7 @@ RsDoVendorSmallDescriptor (
     InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     for (i = 0; (InitializerOp && (i < 7)); i++)
     {
-        Descriptor->Smv.VendorDefined[i] = InitializerOp->Asl.Value.Integer8;
+        Descriptor->Smv.VendorDefined[i] = (UINT8) InitializerOp->Asl.Value.Integer;
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
