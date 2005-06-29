@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.37 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -140,6 +140,9 @@ AcpiEvSetGpeType (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo,
     UINT8                   Type)
 {
+    ACPI_STATUS             Status;
+
+
     ACPI_FUNCTION_TRACE ("EvSetGpeType");
 
 
@@ -158,13 +161,13 @@ AcpiEvSetGpeType (
 
     /* Disable the GPE if currently enabled */
 
-    AcpiEvDisableGpe (GpeEventInfo);
+    Status = AcpiEvDisableGpe (GpeEventInfo);
 
     /* Type was validated above */
 
     GpeEventInfo->Flags &= ~ACPI_GPE_TYPE_MASK; /* Clear type bits */
     GpeEventInfo->Flags |= Type;                /* Insert type */
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -277,7 +280,7 @@ AcpiEvEnableGpe (
     case ACPI_GPE_TYPE_WAKE_RUN:
         GpeEventInfo->Flags |= ACPI_GPE_WAKE_ENABLED;
 
-        /* Fallthrough */
+        /*lint -fallthrough */
 
     case ACPI_GPE_TYPE_RUNTIME:
 
@@ -353,7 +356,7 @@ AcpiEvDisableGpe (
     case ACPI_GPE_TYPE_WAKE_RUN:
         GpeEventInfo->Flags &= ~ACPI_GPE_WAKE_ENABLED;
 
-        /* Fallthrough */
+        /*lint -fallthrough */
 
     case ACPI_GPE_TYPE_RUNTIME:
 
@@ -471,8 +474,8 @@ AcpiEvGpeDetect (
     UINT32                  EnableReg;
     ACPI_STATUS             Status;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
-    UINT32                  i;
-    UINT32                  j;
+    ACPI_NATIVE_UINT        i;
+    ACPI_NATIVE_UINT        j;
 
 
     ACPI_FUNCTION_NAME ("EvGpeDetect");
@@ -552,7 +555,7 @@ AcpiEvGpeDetect (
                      */
                     IntStatus |= AcpiEvGpeDispatch (
                                     &GpeBlock->EventInfo[(i * ACPI_GPE_REGISTER_WIDTH) + j],
-                                    j + GpeRegisterInfo->BaseGpeNumber);
+                                    (UINT32) j + GpeRegisterInfo->BaseGpeNumber);
                 }
             }
         }
@@ -624,7 +627,7 @@ AcpiEvAsynchExecuteGpeMethod (
     }
 
     /*
-     * Must check for control method type dispatch one more 
+     * Must check for control method type dispatch one more
      * time to avoid race with EvGpeInstallHandler
      */
     if ((LocalGpeEventInfo.Flags & ACPI_GPE_DISPATCH_MASK) == ACPI_GPE_DISPATCH_METHOD)
@@ -734,7 +737,7 @@ AcpiEvGpeDispatch (
 
         /* Invoke the installed handler (at interrupt level) */
 
-        GpeEventInfo->Dispatch.Handler->Address (
+        GpeEventInfo->Dispatch.Handler->Address ((void *)
                         GpeEventInfo->Dispatch.Handler->Context);
 
         /* It is now safe to clear level-triggered events. */
