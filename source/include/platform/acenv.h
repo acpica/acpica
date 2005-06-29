@@ -224,8 +224,8 @@ typedef char *va_list;
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)           __strstr((char *) (s1), (char *) (s2))
-#define STRUPR(s)               _strupr((char *) (s))
+#define STRSTR(s1,s2)           _strstr((char *) (s1), (char *) (s2))
+#define STRUPR(s)               __strupr((char *) (s))
 #define STRLEN(s)               _strlen((char *) (s))
 #define STRCPY(d,s)             _strcpy((char *) (d), (char *) (s))
 #define STRNCPY(d,s,n)          _strncpy((char *) (d), (char *) (s), (n))
