@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.47 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -544,7 +544,7 @@ AsReplaceString (
  *
  * FUNCTION:    AsConvertToLineFeeds
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -579,7 +579,7 @@ AsConvertToLineFeeds (
  *
  * FUNCTION:    AsInsertCarriageReturns
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -1050,6 +1050,7 @@ AsCountLines (
         if ((EndOfLine - SubBuffer) > 80)
         {
             LongLineCount++;
+            VERBOSE_PRINT (("long: %.80s\n", SubBuffer));
         }
 
         LineCount++;
