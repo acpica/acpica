@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.38 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -132,19 +132,19 @@
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiDsGetFieldUnitArguments
+ * FUNCTION:    AcpiDsGetBufferFieldArguments
  *
- * PARAMETERS:  ObjDesc         - A valid FieldUnit object
+ * PARAMETERS:  ObjDesc         - A valid BufferField object
  *
  * RETURN:      Status.
  *
- * DESCRIPTION: Get FieldUnit Buffer and Index.  This implements the late
+ * DESCRIPTION: Get BufferField Buffer and Index.  This implements the late
  *              evaluation of these field attributes.
  *
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiDsGetFieldUnitArguments (
+AcpiDsGetBufferFieldArguments (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_OPERAND_OBJECT     *ExtraDesc;
@@ -155,7 +155,7 @@ AcpiDsGetFieldUnitArguments (
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    FUNCTION_TRACE_PTR ("DsGetFieldUnitArguments", ObjDesc);
+    FUNCTION_TRACE_PTR ("DsGetBufferFieldArguments", ObjDesc);
 
 
     if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
@@ -164,14 +164,14 @@ AcpiDsGetFieldUnitArguments (
     }
 
 
-    /* Get the AML pointer (method object) and FieldUnit node */
+    /* Get the AML pointer (method object) and BufferField node */
 
-    ExtraDesc = ObjDesc->FieldUnit.Extra;
-    Node = ObjDesc->FieldUnit.Node;
+    ExtraDesc = ObjDesc->BufferField.Extra;
+    Node = ObjDesc->BufferField.Node;
 
     DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "  [Field]"));
     DEBUG_PRINT (TRACE_EXEC,
-        ("DsGetFieldUnitArguments: [%4.4s] FieldUnit JIT Init\n",
+        ("DsGetBufferFieldArguments: [%4.4s] BufferField JIT Init\n",
         &Node->Name));
 
 
@@ -198,7 +198,7 @@ AcpiDsGetFieldUnitArguments (
         return_ACPI_STATUS (Status);
     }
 
-    /* Pass1: Parse the entire FieldUnit declaration */
+    /* Pass1: Parse the entire BufferField declaration */
 
     Status = AcpiPsParseAml (Op, ExtraDesc->Extra.Pcode,
                                 ExtraDesc->Extra.PcodeLength, 0,
@@ -244,8 +244,8 @@ AcpiDsGetFieldUnitArguments (
      * The pseudo-method object is no longer needed since the region is
      * now initialized
      */
-    AcpiCmRemoveReference (ObjDesc->FieldUnit.Extra);
-    ObjDesc->FieldUnit.Extra = NULL;
+    AcpiCmRemoveReference (ObjDesc->BufferField.Extra);
+    ObjDesc->BufferField.Extra = NULL;
 
     return_ACPI_STATUS (Status);
 }
@@ -398,29 +398,45 @@ AcpiDsInitializeRegion (
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiDsEvalFieldUnitOperands
+ * FUNCTION:    AcpiDsEvalBufferFieldOperands
  *
- * PARAMETERS:  Op              - A valid FieldUnit Op object
+ * PARAMETERS:  Op              - A valid BufferField Op object
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Get FieldUnit Buffer and Index
- *              Called from AcpiDsExecEndOp during FieldUnit parse tree walk
+ * DESCRIPTION: Get BufferField Buffer and Index
+ *              Called from AcpiDsExecEndOp during BufferField parse tree walk
+ *
+ * ACPI SPECIFICATION REFERENCES:
+ *  Each of the Buffer Field opcodes is defined as specified in in-line
+ *  comments below. For each one, use the following definitions.
+ *
+ *  DefBitField     :=  BitFieldOp      SrcBuf  BitIdx  Destination
+ *  DefByteField    :=  ByteFieldOp     SrcBuf  ByteIdx Destination
+ *  DefCreateField  :=  CreateFieldOp   SrcBuf  BitIdx  NumBits  NameString
+ *  DefDWordField   :=  DWordFieldOp    SrcBuf  ByteIdx Destination
+ *  DefWordField    :=  WordFieldOp     SrcBuf  ByteIdx Destination
+ *  BitIndex        :=  TermArg=>Integer
+ *  ByteIndex       :=  TermArg=>Integer
+ *  Destination     :=  NameString
+ *  NumBits         :=  TermArg=>Integer
+ *  SourceBuf       :=  TermArg=>Buffer
  *
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiDsEvalFieldUnitOperands (
+AcpiDsEvalBufferFieldOperands (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     *FieldDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_PARSE_OBJECT       *NextOp;
     UINT32                  Offset;
     UINT32                  BitOffset;
-    UINT16                  BitCount;
+    UINT32                  BitCount;
+    UINT8                   FieldFlags;
 
 
     ACPI_OPERAND_OBJECT     *ResDesc = NULL;
@@ -430,16 +446,18 @@ AcpiDsEvalFieldUnitOperands (
     UINT32                  NumOperands = 3;
 
 
-    FUNCTION_TRACE_PTR ("DsEvalFieldUnitOperands", Op);
+    FUNCTION_TRACE_PTR ("DsEvalBufferFieldOperands", Op);
 
 
     /*
-     * This is where we evaluate the address and length fields of the OpFieldUnit declaration
+     * This is where we evaluate the address and length fields of the
+     * CreateXxxField declaration
      */
 
     Node =  Op->Node;
 
     /* NextOp points to the op that holds the Buffer */
+
     NextOp = Op->Value.Arg;
 
     /* AcpiEvaluate/create the address and length operands */
@@ -450,8 +468,8 @@ AcpiDsEvalFieldUnitOperands (
         return_ACPI_STATUS (Status);
     }
 
-    FieldDesc = AcpiNsGetAttachedObject (Node);
-    if (!FieldDesc)
+    ObjDesc = AcpiNsGetAttachedObject (Node);
+    if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
@@ -499,7 +517,7 @@ AcpiDsEvalFieldUnitOperands (
     if (!VALID_DESCRIPTOR_TYPE (ResDesc, ACPI_DESC_TYPE_NAMED))
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecCreateField (%s): destination must be a Node\n",
+            ("DsEvalBufferFieldOperands (%s): destination must be a Node\n",
             AcpiPsGetOpcodeName (Op->Opcode)));
 
         Status = AE_AML_OPERAND_TYPE;
@@ -514,65 +532,82 @@ AcpiDsEvalFieldUnitOperands (
     switch (Op->Opcode)
     {
 
-    /* DefCreateBitField */
-
-    case AML_BIT_FIELD_OP:
-
-        /* Offset is in bits, Field is a bit */
-
-        BitOffset = Offset;
-        BitCount = 1;
-        break;
-
-
-    /* DefCreateByteField */
-
-    case AML_BYTE_FIELD_OP:
-
-        /* Offset is in bytes, field is a byte */
-
-        BitOffset = 8 * Offset;
-        BitCount = 8;
-        break;
-
-
-    /* DefCreateWordField  */
-
-    case AML_WORD_FIELD_OP:
-
-        /* Offset is in bytes, field is a word */
-
-        BitOffset = 8 * Offset;
-        BitCount = 16;
-        break;
-
-
-    /* DefCreateDWordField */
-
-    case AML_DWORD_FIELD_OP:
-
-        /* Offset is in bytes, field is a dword */
-
-        BitOffset = 8 * Offset;
-        BitCount = 32;
-        break;
-
-
     /* DefCreateField   */
 
     case AML_CREATE_FIELD_OP:
 
         /* Offset is in bits, count is in bits */
 
-        BitOffset = Offset;
-        BitCount = (UINT16) CntDesc->Integer.Value;
+        BitOffset   = Offset;
+        BitCount    = (UINT32) CntDesc->Integer.Value;
+        FieldFlags  = ACCESS_BYTE_ACC;
+        break;
+
+
+    /* DefCreateBitField */
+
+    case AML_CREATE_BIT_FIELD_OP:
+
+        /* Offset is in bits, Field is one bit */
+
+        BitOffset   = Offset;
+        BitCount    = 1;
+        FieldFlags  = ACCESS_BYTE_ACC;
+        break;
+
+
+    /* DefCreateByteField */
+
+    case AML_CREATE_BYTE_FIELD_OP:
+
+        /* Offset is in bytes, field is one byte */
+
+        BitOffset   = 8 * Offset;
+        BitCount    = 8;
+        FieldFlags  = ACCESS_BYTE_ACC;
+        break;
+
+
+    /* DefCreateWordField  */
+
+    case AML_CREATE_WORD_FIELD_OP:
+
+        /* Offset is in bytes, field is one word */
+
+        BitOffset   = 8 * Offset;
+        BitCount    = 16;
+        FieldFlags  = ACCESS_WORD_ACC;
+        break;
+
+
+    /* DefCreateDWordField */
+
+    case AML_CREATE_DWORD_FIELD_OP:
+
+        /* Offset is in bytes, field is one dword */
+
+        BitOffset   = 8 * Offset;
+        BitCount    = 32;
+        FieldFlags  = ACCESS_DWORD_ACC;
+        break;
+
+
+    /* DefCreateQWordField */
+
+    case AML_CREATE_QWORD_FIELD_OP:
+
+        /* Offset is in bytes, field is one qword */
+
+        BitOffset   = 8 * Offset;
+        BitCount    = 64;
+        FieldFlags  = ACCESS_QWORD_ACC;
         break;
 
 
     default:
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecCreateField: Internal error - unknown field creation opcode %02x\n",
+            ("DsEvalBufferFieldOperands: Internal error - unknown field creation opcode %02x\n",
             Op->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
@@ -590,32 +625,35 @@ AcpiDsEvalFieldUnitOperands (
 
     case ACPI_TYPE_BUFFER:
 
-        if (BitOffset + (UINT32) BitCount >
+        if ((BitOffset + BitCount) >
             (8 * (UINT32) SrcDesc->Buffer.Length))
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
-                 BitOffset + (UINT32) BitCount,
+                ("DsEvalBufferFieldOperands: Field size %d exceeds Buffer size %d (bits)\n",
+                 BitOffset + BitCount,
                  8 * (UINT32) SrcDesc->Buffer.Length));
             Status = AE_AML_BUFFER_LIMIT;
             goto Cleanup;
         }
 
 
-        /* Construct the remainder of the field object */
+        /*
+         * Initialize areas of the field object that are common to all fields
+         * For FieldFlags, use LOCK_RULE = 0 (NO_LOCK), UPDATE_RULE = 0 (UPDATE_PRESERVE)
+         */
+        Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags,
+                                                BitOffset, BitCount);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
 
-        FieldDesc->FieldUnit.Access       = (UINT8) ACCESS_ANY_ACC;
-        FieldDesc->FieldUnit.LockRule     = (UINT8) GLOCK_NEVER_LOCK;
-        FieldDesc->FieldUnit.UpdateRule   = (UINT8) UPDATE_PRESERVE;
-        FieldDesc->FieldUnit.Length       = BitCount;
-        FieldDesc->FieldUnit.BitOffset    = (UINT8) (BitOffset % 8);
-        FieldDesc->FieldUnit.Offset       = DIV_8 (BitOffset);
-        FieldDesc->FieldUnit.ContainerObj = SrcDesc;
+        ObjDesc->BufferField.BufferObj = SrcDesc;
 
-        /* Reference count for SrcDesc inherits FieldDesc count */
+        /* Reference count for SrcDesc inherits ObjDesc count */
 
         SrcDesc->Common.ReferenceCount = (UINT16) (SrcDesc->Common.ReferenceCount +
-                                                    FieldDesc->Common.ReferenceCount);
+                                                    ObjDesc->Common.ReferenceCount);
 
         break;
 
@@ -626,17 +664,15 @@ AcpiDsEvalFieldUnitOperands (
 
         if ((SrcDesc->Common.Type > (UINT8) INTERNAL_TYPE_REFERENCE) || !AcpiCmValidObjectType (SrcDesc->Common.Type)) /* TBD: This line MUST be a single line until AcpiSrc can handle it (block deletion) */
         {
-
-
             DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecCreateField: Tried to create field in invalid object type %X\n",
+                ("DsEvalBufferFieldOperands: Tried to create field in invalid object type %X\n",
                 SrcDesc->Common.Type));
         }
 
         else
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecCreateField: Tried to create field in improper object type - %s\n",
+                ("DsEvalBufferFieldOperands: Tried to create field in improper object type - %s\n",
                 AcpiCmGetTypeName (SrcDesc->Common.Type)));
         }
 
@@ -675,9 +711,9 @@ Cleanup:
 
     else
     {
-        /* Now the address and length are valid for this opFieldUnit */
+        /* Now the address and length are valid for this BufferField */
 
-        FieldDesc->FieldUnit.Flags |= AOPOBJ_DATA_VALID;
+        ObjDesc->BufferField.Flags |= AOPOBJ_DATA_VALID;
     }
 
     return_ACPI_STATUS (Status);
