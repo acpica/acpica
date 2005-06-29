@@ -330,12 +330,12 @@ Cleanup:
                  *  Failed the call
                  */
                 ReturnBuffer->Length = 0;
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
             }
 
 
-            if (ReturnBuffer->Length < BufferSpaceNeeded) 
+            /* Check if there is enough room in the caller's buffer */
+
+            else if (ReturnBuffer->Length < BufferSpaceNeeded) 
             {
                 /*
                  *  Caller's buffer is too small, can't give him partial results
@@ -346,15 +346,29 @@ Cleanup:
                                             BufferSpaceNeeded, ReturnBuffer->Length));
 
                 ReturnBuffer->Length = BufferSpaceNeeded;
-                FUNCTION_STATUS_EXIT (AE_BUFFER_OVERFLOW);
-                return AE_BUFFER_OVERFLOW;
+                Status = AE_BUFFER_OVERFLOW;
             }
 
-            /*
-             *  We have enough space for the object, build it
-             */
-            Status = CmBuildExternalObject (ReturnPtr, ReturnBuffer);
-            ReturnBuffer->Length = BufferSpaceNeeded;
+
+            /* If all is OK, build the external object */
+
+            if (ACPI_SUCCESS (Status))
+            {
+                /*
+                 *  We have enough space for the object, build it
+                 */
+                Status = CmBuildExternalObject (ReturnPtr, ReturnBuffer);
+                ReturnBuffer->Length = BufferSpaceNeeded;
+            }
+
+
+            /* Now delete the internal return object */
+            /* Only the package type has internal objects that require deletion */
+
+            if (ReturnPtr->Type == TYPE_Package)
+            {
+                CmDeleteInternalPackageObject (ReturnPtr);
+            }
         }
 
         else
