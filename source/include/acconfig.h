@@ -182,9 +182,9 @@
 #define RSDP_SCAN_STEP              16
 
 
-/* Maximum nesting of objects */
+/* Maximum nesting of package objects */
 
-#define MAX_OBJECT_DEPTH            16
+#define MAX_PACKAGE_DEPTH           16
 
 
 #endif /* _CONFIG_H */
