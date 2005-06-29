@@ -239,16 +239,6 @@
 #define ROUND_UP_TO_NATIVE_WORD(a)      ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
 
 
-
-
-/* TBD: what is this for? */
-
-#ifdef IA64
-#define ALIGN64(bc)                     char Align[bc];
-#else
-#define ALIGN64(bc)
-#endif
-
 #ifdef DEBUG_ASSERT
 #undef DEBUG_ASSERT
 #endif
@@ -287,10 +277,15 @@
  * and ((UINT8 *)b+b->Length) points one byte past the end of the table.
  */
 
+#ifndef _IA16
 #define IS_IN_ACPI_TABLE(a,b)           (((UINT8 *)(a) >= (UINT8 *)(b + 1)) &&\
                                         ((UINT8 *)(a) < ((UINT8 *)b + b->Length)))
 
-
+#else
+#define IS_IN_ACPI_TABLE(a,b)           (_segment)(a) == (_segment)(b) &&\
+                                        (((UINT8 *)(a) >= (UINT8 *)(b + 1)) &&\
+                                        ((UINT8 *)(a) < ((UINT8 *)b + b->Length)))
+#endif
 
 /*
  * Macros for the master AML opcode table
