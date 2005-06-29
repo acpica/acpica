@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -720,7 +720,7 @@ AcpiUtDumpAllocations (
 
 void *
 AcpiUtAllocate (
-    UINT32                  Size,
+    ACPI_SIZE               Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line)
@@ -786,7 +786,7 @@ AcpiUtAllocate (
 
 void *
 AcpiUtCallocate (
-    UINT32                  Size,
+    ACPI_SIZE               Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line)
