@@ -7,10 +7,6 @@ Project: "AcpiDump"=.\AcpiDump.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
-    begin source code control
-    "$/Acpi Components/Tools/AcpiDump", XHHAAAAA
-    ..\..\tools\acpidump
-    end source code control
 }}}
 
 Package=<4>
@@ -56,9 +52,21 @@ Project: "app"=..\..\Test\App\Wdm\app.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/Test/app", GECAAAAA
-    ..\..\test\app
+    "$/Acpi Components/Test/App", GECAAAAA
+    ..\..\app
     end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "wdmdrv"=..\..\OsDependent\Wdm\wdmDrv.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
 }}}
 
 Package=<4>
