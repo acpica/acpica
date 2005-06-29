@@ -124,6 +124,25 @@ char        *HeaderBegin = "/***************************************************
 
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AsPrint
+ *
+ * DESCRIPTION: Common formatted print
+ *
+ ******************************************************************************/
+
+void
+AsPrint (
+    char                    *Message,
+    UINT32                  Count,
+    char                    *Filename)
+{
+
+
+    printf ("-- %4u %28.28s : %s\n", Count, Message, Filename);
+}
+
 
 /******************************************************************************
  *
@@ -185,7 +204,7 @@ AsTrimLines (
 Exit:
     if (SpaceCount)
     {
-        printf ("!! Eliminated %d extraneous spaces in %s\n", SpaceCount, Filename);
+        AsPrint ("Extraneous spaces Removed", SpaceCount, Filename);
     }
 }
 
@@ -354,6 +373,22 @@ AsMixedCaseToUnderscores (
     while (*SubBuffer)
     {
 
+        /* 
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*') &&
+            (SubBuffer[2] == '!'))
+        {
+            SubBuffer = strstr (SubBuffer, "!*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
+        }
+
         /* Ignore hex constants */
 
         if (SubBuffer[0] == '0')
@@ -392,7 +427,7 @@ AsMixedCaseToUnderscores (
                 TokenEnd++;
             }
 
-            SubBuffer[1] = tolower (SubBuffer[1]);
+            SubBuffer[1] = (char) tolower (SubBuffer[1]);
 
 
 
@@ -445,6 +480,22 @@ AsLowerCaseIdentifiers (
 
     while (*SubBuffer)
     {
+        /* 
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*') &&
+            (SubBuffer[2] == '!'))
+        {
+            SubBuffer = strstr (SubBuffer, "!*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
+        }
+
         /* Ignore comments */
 
         if ((SubBuffer[0] == '/') &&
@@ -480,7 +531,7 @@ AsLowerCaseIdentifiers (
         if ((isupper (SubBuffer[0])) &&
             (islower (SubBuffer[1])))
         {
-            *SubBuffer = tolower (*SubBuffer);
+            *SubBuffer = (char) tolower (*SubBuffer);
         }
 
         SubBuffer++;
@@ -542,9 +593,10 @@ AsBracesOnSameLine (
             {
                 SubBuffer++;
                 Length = strlen (SubBuffer);
-                memmove (Beginning + 3, SubBuffer, Length+3);
+                memmove (Beginning + 2, SubBuffer, Length+3);
 
-                memmove (Beginning, " {\n", 3);
+                memmove (Beginning, " {", 2);
+                /* memmove (Beginning, " {\n", 3); */
             }
             else
             {
@@ -615,6 +667,13 @@ AsRemoveStatement (
                 return;
             }
 
+            /* If next line is blank, remove it too */
+
+            if (*SubBuffer == '\n')
+            {
+                SubBuffer++;
+            }
+
             StrLength = strlen (SubBuffer);
 
             memmove (SubString, SubBuffer, StrLength+1);
@@ -626,7 +685,7 @@ AsRemoveStatement (
 
 /******************************************************************************
  *
- * FUNCTION:    AsRemoveIfdef
+ * FUNCTION:    AsRemoveConditionalCompile
  *
  * DESCRIPTION: Remove a "#ifdef" statement, and all text that it encompasses.
  *              Limitations: cannot handle nested ifdefs.
@@ -634,14 +693,16 @@ AsRemoveStatement (
  ******************************************************************************/
 
 void
-AsRemoveIfdef (
+AsRemoveConditionalCompile (
     char                    *Buffer,
     char                    *Keyword)
 {
     char                    *SubString;
     char                    *SubBuffer;
+    char                    *IfPtr;
     char                    *EndifPtr;
     char                    *ElsePtr;
+    char                    *Comment;
     int                     StrLength;
 
 
@@ -652,23 +713,85 @@ AsRemoveIfdef (
 
     while (SubString)
     {
-        SubString = strstr (SubBuffer, Keyword);
-
-        if (SubString)
+        Comment = strstr (SubString, "/*");
+        SubBuffer = strstr (SubString, Keyword);
+        if (!SubBuffer)
         {
-            SubBuffer = SubString;
+            return;
+        }
 
-            /* Find start of this line */
-
-            while (*SubString != '\n')
+        if ((Comment) &&
+            (Comment < SubBuffer))
+        {
+            SubString = strstr (Comment, "*/");
+            if (!SubString)
             {
-                SubString--;
+                return;
             }
-            SubString++;
 
-            /* Find closing #endif or #else */
+            SubString += 2;
+            continue;
+        }
 
-            EndifPtr = strstr (SubBuffer, "#endif");
+        SubString = SubBuffer;
+
+        /* Find start of this line */
+
+        while (*SubString != '\n' && (SubString > Buffer))
+        {
+            SubString--;
+        }
+        SubString++;
+
+
+        /* Find the "#ifxxxx" */
+
+        IfPtr = strstr (SubString, "#if");
+        if (!IfPtr)
+        {
+            return;
+        }
+
+        if (IfPtr > SubBuffer)
+        {
+            /* Not the right #if */
+
+            SubString = SubBuffer + strlen (Keyword);
+            continue;
+        }
+
+        /* Find closing #endif or #else */
+
+        EndifPtr = strstr (SubBuffer, "#endif");
+        if (!EndifPtr)
+        {
+            /* There has to be an #endif */
+
+            return;
+        }
+
+        ElsePtr = strstr (SubBuffer, "#else");
+        if ((ElsePtr) &&
+            (EndifPtr > ElsePtr))
+        {
+            /* This #ifdef contains an #else clause */
+
+            /* Find end of this line */
+
+            SubBuffer = AsSkipPastChar (ElsePtr, '\n');
+            if (!SubBuffer)
+            {
+                return;
+            }
+        
+            /* Remove the #ifdef .... #else code */
+
+            StrLength = strlen (SubBuffer);
+            memmove (SubString, SubBuffer, StrLength+1);
+
+            /* Next, we will remove the #endif statement */
+
+            EndifPtr = strstr (SubString, "#endif");
             if (!EndifPtr)
             {
                 /* There has to be an #endif */
@@ -676,54 +799,23 @@ AsRemoveIfdef (
                 return;
             }
 
-            ElsePtr = strstr (SubBuffer, "#else");
-            if ((ElsePtr) &&
-                (EndifPtr > ElsePtr))
-            {
-                /* This #ifdef contains an #else clause */
-
-                /* Find end of this line */
-
-                SubBuffer = AsSkipPastChar (ElsePtr, '\n');
-                if (!SubBuffer)
-                {
-                    return;
-                }
-            
-                /* Remove the #ifdef .... #else code */
-
-                StrLength = strlen (SubBuffer);
-
-                memmove (SubString, SubBuffer, StrLength+1);
-
-                /* Next, we will remove the #endif statement */
-
-                EndifPtr = strstr (SubString, "#endif");
-                if (!EndifPtr)
-                {
-                    /* There has to be an #endif */
-
-                    return;
-                }
-
-                SubString = EndifPtr;
-            }
-
-            /* Remove the ... #endif part */
-
-            /* Find end of this line */
-
-            SubBuffer = AsSkipPastChar (EndifPtr, '\n');
-            if (!SubBuffer)
-            {
-                return;
-            }
-
-            StrLength = strlen (SubBuffer);
-
-            memmove (SubString, SubBuffer, StrLength+1);
-            SubBuffer = SubString;
+            SubString = EndifPtr;
         }
+
+        /* Remove the ... #endif part */
+
+        /* Find end of this line */
+
+        SubBuffer = AsSkipPastChar (EndifPtr, '\n');
+        if (!SubBuffer)
+        {
+            return;
+        }
+
+        StrLength = strlen (SubBuffer);
+
+        memmove (SubString, SubBuffer, StrLength+1);
+        SubBuffer = SubString;
     }
 }
 
@@ -787,7 +879,91 @@ AsRemoveLine (
 
 /******************************************************************************
  *
- * FUNCTION:    AsTabify
+ * FUNCTION:    AsRemoveEmptyBlocks
+ *
+ * DESCRIPTION: Remove any C blocks (e.g., if {}) that contain no code.  This
+ *              can happen as a result of removing lines such as DEBUG_PRINT.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveEmptyBlocks (
+    char                    *Buffer,
+    char                    *Filename)
+{
+    char                    *SubBuffer;
+    char                    *BlockStart;
+    BOOLEAN                 EmptyBlock = TRUE;
+    BOOLEAN                 AnotherPassRequired = TRUE;
+    UINT32                  BlockCount = 0;
+
+
+    while (AnotherPassRequired)
+    {
+        SubBuffer = Buffer;
+        AnotherPassRequired = FALSE;
+
+        while (*SubBuffer)
+        {
+            if (*SubBuffer == '{')
+            {
+                BlockStart = SubBuffer;
+                EmptyBlock = TRUE;
+
+                SubBuffer++;
+                while (*SubBuffer != '}')
+                {
+                    if ((*SubBuffer != ' ') &&
+                        (*SubBuffer != '\n'))
+                    {
+                        EmptyBlock = FALSE;
+                        break;
+                    }
+                    SubBuffer++;
+                }
+
+                if (EmptyBlock)
+                {
+                    /* Find start of the first line of the block */
+
+                    while (*BlockStart != '\n')
+                    {
+                        BlockStart--;
+                    }
+
+                    /* Find end of the last line of the block */
+
+                    SubBuffer = AsSkipUntilChar (SubBuffer, '\n');
+                    if (!SubBuffer)
+                    {
+                        break;
+                    }
+
+                    memmove (BlockStart, SubBuffer, strlen (SubBuffer) +1);
+
+                    SubBuffer = BlockStart;
+                    BlockCount++;
+                    AnotherPassRequired = TRUE;
+                    continue;
+                }
+
+            }
+
+            SubBuffer++;
+        }
+    }
+
+
+    if (BlockCount)
+    {
+        AsPrint ("Code blocks deleted", BlockCount, Filename);
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsTabify4
  *
  * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is 
  *              preserved.
@@ -795,9 +971,8 @@ AsRemoveLine (
  ******************************************************************************/
 
 void
-AsTabify (
-    char                    *Buffer,
-    UINT32                  SpacesPerTab)
+AsTabify4 (
+    char                    *Buffer)
 {
     char                    *SubBuffer = Buffer;
     char                    *NewSubBuffer;
@@ -805,10 +980,6 @@ AsTabify (
     UINT32                  Column = 0;
 
 
-    if (SpacesPerTab == 0)
-    {
-        return;
-    }
 
 
     while (*SubBuffer)
@@ -840,11 +1011,11 @@ AsTabify (
         {
             SpaceCount++;
 
-            if (SpaceCount >= SpacesPerTab)
+            if (SpaceCount >= 4)
             {
                 SpaceCount = 0;
 
-                NewSubBuffer = (SubBuffer + 1) - SpacesPerTab;
+                NewSubBuffer = (SubBuffer + 1) - 4;
                 *NewSubBuffer = '\t';
 
                 SubBuffer++;
@@ -852,7 +1023,7 @@ AsTabify (
                 SubBuffer = NewSubBuffer;
             }
 
-            if ((Column % SpacesPerTab) == 0)
+            if ((Column % 4) == 0)
             {
                 SpaceCount = 0;
             }
@@ -864,6 +1035,89 @@ AsTabify (
         }
 
         SubBuffer++;
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsTabify8
+ *
+ * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is 
+ *              preserved.
+ *
+ ******************************************************************************/
+
+void
+AsTabify8 (
+    char                    *Buffer)
+{
+    char                    *SubBuffer = Buffer;
+    char                    *NewSubBuffer;
+    UINT32                  SpaceCount = 0;
+    UINT32                  Column = 0;
+    UINT32                  TabCount = 0;
+    UINT32                  LastLineTabCount = 0;
+
+
+
+    while (*SubBuffer)
+    {
+        if (*SubBuffer == '\n')
+        {
+            Column = 0;
+//            LastLineTabCount = 0;
+            TabCount = 0;
+        }
+
+        else
+        {
+            Column++;
+        }
+
+
+        if (*SubBuffer != ' ')
+        {
+            SubBuffer = AsSkipUntilChar (SubBuffer, '\n');
+            if (!SubBuffer)
+            {
+                return;
+            }
+            if (TabCount > 0)
+            {
+                LastLineTabCount = TabCount;
+            }
+            
+            TabCount = 0;
+            Column = 0;
+            SpaceCount = 0;
+            SubBuffer++;
+            continue;
+        }
+
+
+        SpaceCount++;
+
+        if (SpaceCount >= 4)
+        {
+            SpaceCount = 0;
+
+            NewSubBuffer = SubBuffer - 4;
+
+            if (TabCount <= LastLineTabCount ? (LastLineTabCount + 1) : 0)
+            {
+                NewSubBuffer++;
+                *NewSubBuffer = '\t';
+                SubBuffer++;
+                TabCount++;
+            }
+
+            memmove ((NewSubBuffer + 1), SubBuffer, strlen (SubBuffer) + 1);
+            SubBuffer = NewSubBuffer;
+        }
+
+        SubBuffer++;
+
     }
 }
 
@@ -892,7 +1146,58 @@ AsRemoveDebugMacros (
     AsReplaceString ("return_ACPI_STATUS",  "return", Buffer);
     AsReplaceString ("return_VALUE",        "return", Buffer);
 
-    AsRemoveIfdef (Buffer, "ACPI_DEBUG");
+    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG");
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsCountLines
+ *
+ * DESCRIPTION: Count the number of lines in the input buffer.  Also count
+ *              the number of long lines (lines longer than 80 chars).
+ *
+ ******************************************************************************/
+
+UINT32
+AsCountLines (
+    char                    *Buffer,
+    char                    *Filename)
+{   
+    char                    *SubBuffer = Buffer;
+    char                    *EndOfLine;
+    UINT32                  LineCount = 0;
+    UINT32                  LongLineCount = 0;
+
+
+    while (*SubBuffer)
+    {
+        EndOfLine = AsSkipUntilChar (SubBuffer, '\n');
+        if (!EndOfLine)
+        {
+            Gbl_TotalLines += LineCount;
+            return LineCount;
+        }
+
+        if ((EndOfLine - SubBuffer) > 80)
+        {
+            LongLineCount++;
+        }
+
+        LineCount++;
+        SubBuffer = EndOfLine + 1;
+    }
+
+
+    if (LongLineCount)
+    {
+// Another verbose mode?
+//        AsPrint ("Lines longer than 80 found", LongLineCount, Filename);
+        Gbl_LongLines += LongLineCount;
+    }
+
+    Gbl_TotalLines += LineCount;
+    return LineCount;
 }
 
 
@@ -923,9 +1228,11 @@ AsCountTabs (
 
     if (TabCount)
     {
-        printf ("!! Found %d Tabs in %s\n", TabCount, Filename);
+        AsPrint ("Tabs found", TabCount, Filename);
         Gbl_Tabs += TabCount;
     }
+
+    AsCountLines (Buffer, Filename);
 }
 
 
@@ -959,7 +1266,7 @@ AsCountNonAnsiComments (
 
     if (CommentCount)
     {
-        printf ("!! Found %d Non-ANSI Comments (// Comments) in \n", CommentCount, Filename);
+        AsPrint ("Non-ANSI Comments found", CommentCount, Filename);
         Gbl_NonAnsiComments += CommentCount;
     }
 }
@@ -1113,7 +1420,7 @@ AsUppercaseTokens (
 
             for (i = 0; i < (TokenEnd - SubBuffer); i++)
             {
-                SubBuffer[i] = toupper (SubBuffer[i]);
+                SubBuffer[i] = (char) toupper (SubBuffer[i]);
             }
 
             SubBuffer = TokenEnd;

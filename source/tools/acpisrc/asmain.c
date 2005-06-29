@@ -126,6 +126,8 @@ UINT32                  Gbl_Files = 0;
 UINT32                  Gbl_WhiteLines = 0;
 UINT32                  Gbl_CommentLines = 0;
 UINT32                  Gbl_SourceLines = 0;
+UINT32                  Gbl_LongLines = 0;
+UINT32                  Gbl_TotalLines = 0;
 
 struct stat             Gbl_StatBuf;
 char                    *Gbl_FileBuffer;
@@ -134,34 +136,16 @@ BOOLEAN                 Gbl_VerboseMode = FALSE;
 BOOLEAN                 Gbl_BatchMode = FALSE;
 
 
+
 /******************************************************************************
  *
- * Linux-specific translation tables
+ * Standard/Common translation tables
  *
  ******************************************************************************/
 
-char                        LinuxHeader[] = 
-"/*\n"
-" *  Copyright (C) 2000 R. Byron Moore\n"
-" *\n"
-" *  This program is free software; you can redistribute it and/or modify\n"
-" *  it under the terms of the GNU General Public License as published by\n"
-" *  the Free Software Foundation; either version 2 of the License, or\n"
-" *  (at your option) any later version.\n"
-" *\n"
-" *  This program is distributed in the hope that it will be useful,\n"
-" *  but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-" *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-" *  GNU General Public License for more details.\n"
-" *\n"
-" *  You should have received a copy of the GNU General Public License\n"
-" *  along with this program; if not, write to the Free Software\n"
-" *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
-" */\n";
 
 
-
-ACPI_STRING_TABLE           LinuxReplacementStrings[] = {
+ACPI_STRING_TABLE           StandardDataTypes[] = {
 
     /* Declarations first */
 
@@ -192,12 +176,83 @@ ACPI_STRING_TABLE           LinuxReplacementStrings[] = {
 };
 
 
-ACPI_LINE_TABLE             LinuxLineIdentifiers[] = {
+
+
+
+/******************************************************************************
+ *
+ * Linux-specific translation tables
+ *
+ ******************************************************************************/
+
+char                        LinuxHeader[] = 
+"/*\n"
+" *  Copyright (C) 2000 R. Byron Moore\n"
+" *\n"
+" *  This program is free software; you can redistribute it and/or modify\n"
+" *  it under the terms of the GNU General Public License as published by\n"
+" *  the Free Software Foundation; either version 2 of the License, or\n"
+" *  (at your option) any later version.\n"
+" *\n"
+" *  This program is distributed in the hope that it will be useful,\n"
+" *  but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+" *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+" *  GNU General Public License for more details.\n"
+" *\n"
+" *  You should have received a copy of the GNU General Public License\n"
+" *  along with this program; if not, write to the Free Software\n"
+" *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
+" */\n";
+
+
+
+ACPI_STRING_TABLE           LinuxDataTypes[] = {
+
+    /* Declarations first */
+
+    "UINT32_BIT  ",     "u32         ",
+
+    "UINT32      ",     "u32         ",
+    "UINT16      ",     "u16         ",
+    "UINT8       ",     "u8          ",
+    "BOOLEAN     ",     "u8          ",
+
+    /* Now do embedded typecasts */
+
+    "UINT32",           "u32",
+    "UINT16",           "u16",
+    "UINT8",            "u8",
+    "BOOLEAN",          "u8",
+
+    "INT32  ",          "s32    ",
+    "INT32",            "s32",
+    "INT16  ",          "s16    ",
+    "INT8   ",          "s8     ", 
+    "INT16",            "s16",
+    "INT8",             "s8", 
+
+    /* Put back anything we broke (such as anything with _INT32_ in it) */
+
+    "_s32_",            "_INT32_",
+    "_u32_",            "_UINT32_",
+    NULL,               NULL
+};
+
+
+ACPI_IDENTIFIER_TABLE       LinuxLineIdentifiers[] = {
 
     "#define __",
     NULL
 };
 
+
+ACPI_IDENTIFIER_TABLE       LinuxConditionalIdentifiers[] = {
+
+//    "ACPI_USE_STANDARD_HEADERS",
+    "WIN32",
+    "_MSC_VER",
+    NULL
+};
 
 ACPI_CONVERSION_TABLE       LinuxConversionTable = {
 
@@ -206,17 +261,21 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
 
     /* C source files */
 
-    LinuxReplacementStrings,
+    LinuxDataTypes,
     LinuxLineIdentifiers,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE | 
-     CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE),
+     CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
+     CVT_REMOVE_EMPTY_BLOCKS | CVT_SPACES_TO_TABS8),
 
     /* C header files */
 
-    LinuxReplacementStrings,
+    LinuxDataTypes,
     NULL,
+    LinuxConditionalIdentifiers,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
-     CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE),
+     CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE | 
+     CVT_REMOVE_EMPTY_BLOCKS| CVT_SPACES_TO_TABS8),
 };
 
 
@@ -237,10 +296,12 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
 
     NULL,
     NULL,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
+    NULL,
     NULL,
     NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
@@ -256,10 +317,12 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
     NULL,
     NULL,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
 
     /* C header files */
 
+    NULL,
     NULL,
     NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
@@ -359,14 +422,16 @@ AsDisplayStats (void)
 {
 
     printf ("\nAcpiSrc statistics:\n\n");
-    printf ("%d Files processed\n", Gbl_Files);
-    printf ("%d Tabs found\n", Gbl_Tabs);
-    printf ("%d Non-ANSI comments found\n", Gbl_NonAnsiComments);
-    printf ("%d Lines of code\n", Gbl_SourceLines);
-    printf ("%d Lines of non-comment whitespace\n", Gbl_WhiteLines);
-    printf ("%d Lines of comments\n", Gbl_CommentLines);
-    printf ("%f Ratio of code to whitespace\n", ((float) Gbl_SourceLines / (float) Gbl_WhiteLines));
-    printf ("%f Ratio of code to comments\n", ((float) Gbl_SourceLines / (float) Gbl_CommentLines));
+    printf ("%6d Files processed\n", Gbl_Files);
+    printf ("%6d Tabs found\n", Gbl_Tabs);
+    printf ("%6d Non-ANSI comments found\n", Gbl_NonAnsiComments);
+    printf ("%6d Total Lines\n", Gbl_TotalLines);
+    printf ("%6d Lines of code\n", Gbl_SourceLines);
+    printf ("%6d Lines of non-comment whitespace\n", Gbl_WhiteLines);
+    printf ("%6d Lines of comments\n", Gbl_CommentLines);
+    printf ("%6d Long lines found\n", Gbl_LongLines);
+    printf ("%6.1f Ratio of code to whitespace\n", ((float) Gbl_SourceLines / (float) Gbl_WhiteLines));
+    printf ("%6.1f Ratio of code to comments\n", ((float) Gbl_SourceLines / (float) Gbl_CommentLines));
 
     return;
 }
@@ -510,7 +575,7 @@ main (
     {
         /* Process a single file */
 
-        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_SOURCE);
+        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_HEADER);
     }
 
     /* Always display final summary and stats */

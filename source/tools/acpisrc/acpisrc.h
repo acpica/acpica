@@ -148,6 +148,9 @@
 #define CVT_LOWER_CASE_IDENTIFIERS          0x00000040
 #define CVT_REMOVE_DEBUG_MACROS             0x00000080
 #define CVT_TRIM_WHITESPACE                 0x00000100  /* Should be after all line removal */
+#define CVT_REMOVE_EMPTY_BLOCKS             0x00000200  /* Should be after trimming lines */
+#define CVT_SPACES_TO_TABS4                 0x40000000
+#define CVT_SPACES_TO_TABS8                 0x80000000
 
 
 #define FLG_DEFAULT_FLAGS                   0x00000000
@@ -163,6 +166,8 @@ extern UINT32                   Gbl_NonAnsiComments;
 extern UINT32                   Gbl_SourceLines;
 extern UINT32                   Gbl_WhiteLines;
 extern UINT32                   Gbl_CommentLines;
+extern UINT32                   Gbl_LongLines;
+extern UINT32                   Gbl_TotalLines;
 extern struct stat              Gbl_StatBuf;
 extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
@@ -174,6 +179,7 @@ extern int                      optind;
 extern char                     *optarg;
 
 #define PARAM_LIST(pl)          pl
+#define TERSE_PRINT(a)          if (!Gbl_VerboseMode) printf PARAM_LIST(a)
 #define VERBOSE_PRINT(a)        if (Gbl_VerboseMode) printf PARAM_LIST(a)
 
 
@@ -187,11 +193,11 @@ typedef struct acpi_string_table
 } ACPI_STRING_TABLE;
 
 
-typedef struct acpi_line_table
+typedef struct acpi_identifier_table
 {
     char                        *Identifier;
 
-} ACPI_LINE_TABLE;
+} ACPI_IDENTIFIER_TABLE;
 
 
 typedef struct acpi_conversion_table
@@ -200,11 +206,13 @@ typedef struct acpi_conversion_table
     UINT32                      Flags;
 
     ACPI_STRING_TABLE           *SourceStringTable;
-    ACPI_LINE_TABLE             *SourceLineTable;
+    ACPI_IDENTIFIER_TABLE       *SourceLineTable;
+    ACPI_IDENTIFIER_TABLE       *SourceConditionalTable;
     UINT32                      SourceFunctions;
 
     ACPI_STRING_TABLE           *HeaderStringTable;
-    ACPI_LINE_TABLE             *HeaderLineTable;
+    ACPI_IDENTIFIER_TABLE      *HeaderLineTable;
+    ACPI_IDENTIFIER_TABLE      *HeaderConditionalTable;
     UINT32                      HeaderFunctions;
 
 } ACPI_CONVERSION_TABLE;
@@ -275,6 +283,11 @@ AsRemoveDebugMacros (
     char                    *Buffer);
 
 void
+AsRemoveEmptyBlocks (
+    char                    *Buffer,
+    char                    *Filename);
+
+void
 AsCountSourceLines (
     char                    *Buffer,
     char                    *Filename);
@@ -288,6 +301,18 @@ void
 AsTrimWhitespace (
     char                    *Buffer);
 
+void
+AsTabify4 (
+    char                    *Buffer);
+
+void
+AsTabify8 (
+    char                    *Buffer);
+
+void
+AsRemoveConditionalCompile (
+    char                    *Buffer,
+    char                    *Keyword);
 
 NATIVE_INT
 AsProcessTree (

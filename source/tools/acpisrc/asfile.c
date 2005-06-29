@@ -265,21 +265,24 @@ AsConvertFile (
     UINT32                  i;
     UINT32                  Functions;
     ACPI_STRING_TABLE       *StringTable;
-    ACPI_LINE_TABLE         *LineTable;
+    ACPI_IDENTIFIER_TABLE   *ConditionalTable;
+    ACPI_IDENTIFIER_TABLE   *LineTable;
 
 
     switch (FileType)
     {
     case FILE_TYPE_SOURCE:
-        Functions   = ConversionTable->SourceFunctions;
-        StringTable = ConversionTable->SourceStringTable;
-        LineTable   = ConversionTable->SourceLineTable;
+        Functions           = ConversionTable->SourceFunctions;
+        StringTable         = ConversionTable->SourceStringTable;
+        LineTable           = ConversionTable->SourceLineTable;
+        ConditionalTable    = ConversionTable->SourceConditionalTable;
         break;
     
     case FILE_TYPE_HEADER:
-        Functions   = ConversionTable->HeaderFunctions;
-        StringTable = ConversionTable->HeaderStringTable;
-        LineTable   = ConversionTable->HeaderLineTable;
+        Functions           = ConversionTable->HeaderFunctions;
+        StringTable         = ConversionTable->HeaderStringTable;
+        LineTable           = ConversionTable->HeaderLineTable;
+        ConditionalTable    = ConversionTable->HeaderConditionalTable;
         break;
     
     default:
@@ -290,6 +293,7 @@ AsConvertFile (
 
     Gbl_Files++;
     VERBOSE_PRINT (("Processing %d bytes\n", strlen (FileBuffer)));
+//    TERSE_PRINT (("."));
 
 
     /* Process all the string replacements */
@@ -309,6 +313,15 @@ AsConvertFile (
         for (i = 0; LineTable[i].Identifier; i++)
         {
             AsRemoveLine (FileBuffer, LineTable[i].Identifier);
+        }
+    }
+
+
+    if (ConditionalTable)
+    {
+        for (i = 0; ConditionalTable[i].Identifier; i++)
+        {
+            AsRemoveConditionalCompile (FileBuffer, ConditionalTable[i].Identifier);
         }
     }
 
@@ -379,6 +392,25 @@ AsConvertFile (
             AsTrimWhitespace (FileBuffer);
             break;
     
+
+        case CVT_REMOVE_EMPTY_BLOCKS:
+
+            AsRemoveEmptyBlocks (FileBuffer, Filename);
+            break;
+
+
+
+        case CVT_SPACES_TO_TABS4:
+
+            AsTabify4 (FileBuffer);
+            break;
+
+
+        case CVT_SPACES_TO_TABS8:
+
+            AsTabify8 (FileBuffer);
+            break;
+
 
         default:
 
@@ -541,18 +573,11 @@ AsCheckForDirectory (
 }
 
 
-
-
-
 /******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AsGetFile  
  *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
+ * DESCRIPTION: Open a file and read it entirely into a an allocated buffer 
  *
  ******************************************************************************/
 
@@ -625,13 +650,10 @@ ErrorExit:
 
 /******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AsPutFile
  *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
+ * DESCRIPTION: Create a new output file and write the entire contents of the
+ *              buffer to the new file.  Buffer must be a zero terminated string
  *
  ******************************************************************************/
 
