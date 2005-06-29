@@ -287,10 +287,9 @@ ACPI_EXTERN	ALLOCATION_INFO	           *Gbl_TailAllocPtr;
 #ifdef _RPARSER
 
 /* 
- * Package stack.  used for keeping track of nested AML packages.
- * Grows upwards. 
+ * Package stack.  used for keeping track of nested AML packages. Grows upwards. 
+ * 
  */
-
 extern      INT32                       Gbl_PkgStackLevel;
 extern      INT32                       Gbl_PkgStack_Len[AML_PKG_MAX_NEST];
 extern      UINT8                      *Gbl_PkgStack_Code[AML_PKG_MAX_NEST];
@@ -307,6 +306,7 @@ ACPI_EXTERN	METHOD_STACK                *Gbl_MthStackHead;
 
 #endif
 
+ACPI_EXTERN UINT32                      Gbl_WhenToParseMethods;
 ACPI_EXTERN ACPI_WALK_LIST             *Gbl_CurrentWalkList;
 
 /* Base of AML block, and pointer to current location in it */
@@ -335,6 +335,12 @@ ACPI_EXTERN ACPI_HANDLE                 Gbl_LastMethod;
 ACPI_EXTERN ADDRESS_SPACE_INFO          Gbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
 
 
+/* Control method single step flag */
+
+ACPI_EXTERN UINT8                       Gbl_CmSingleStep;
+
+
+
 /*****************************************************************************
  * 
  * Parser globals 
@@ -346,6 +352,7 @@ ACPI_EXTERN ACPI_GENERIC_OP             *Gbl_ParsedNamespaceRoot;
 extern ACPI_OP_INFO                     Gbl_AmlOpInfo[];
 extern UINT8                            Gbl_AmlOpInfoIndex[256];
 extern char                             *Gbl_ParserId;
+
 
 
 /*****************************************************************************
