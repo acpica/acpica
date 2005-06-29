@@ -157,7 +157,7 @@ DsObjStackPopObject (
 /* dsregion - Op region support */
 
 ACPI_STATUS
-DsGetRegionData (
+DsGetRegionArguments (
     ACPI_OBJECT_INTERNAL    *RgnDesc);
 
 
