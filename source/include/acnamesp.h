@@ -108,14 +108,12 @@
 
 
 /* 
- * If USE_HASHING is not set, there will be an (nte *) prefix to each name
- * table, containing either a NULL pointer or the address of the next array
- * of nte's in the scope.
+ * There is an (nte *) prefix to each name table, containing either a NULL 
+ * pointer or the address of the next array of nte's in the scope.
+ *
+ * This macro extracts a pointer to the NEXT table in the chain.
  */
-
-#ifndef USE_HASHING
 #define NEXTSEG(NameTbl) ((nte **)NameTbl)[-1]
-#endif
 
 /* Names are 4 bytes long */
 
@@ -134,14 +132,9 @@
 
 #define IS_NS_HANDLE(h)         (AmlGoodChar((INT32) * (char *) (h)))
 
-
 /* To search the entire name space, pass this as SearchBase */
 
 #define NS_ALL                  ((NsHandle)0)
-
-
-#define NUM_NS_TYPES            37
-
 
 /* 
  * Elements of NsProperties are bit significant
@@ -159,16 +152,6 @@
 /* Char * definitions of common namespace names */
 
 #define NS_ROOT_PATH            "/"
-
-
-/* Namespace globals */
-
-extern SCOPE_STACK              ScopeStack[];
-extern SCOPE_STACK              *CurrentScope;
-extern char                     BadType[];
-extern char                     *NsTypeNames[NUM_NS_TYPES];
-extern INT32                    NsProperties[NUM_NS_TYPES];
-
 
 
 
@@ -226,14 +209,6 @@ NsEnter (
 INT32
 NsOpensScope (
     NsType              Type);
-
-ACPI_STATUS
-NsSearchAndEnter (
-    char                *NamSeg, 
-    nte                 *NameTbl, 
-    OpMode              LoadMode, 
-    NsType              Type,
-    nte *               *RetNte);
 
 char *
 NsNameOfScope (
@@ -304,6 +279,24 @@ NsFindValue (
     NsHandle            SearchBase, 
     INT32               MaxDepth);
 
+/*
+ * Namespace searching and entry
+ */
+
+
+ACPI_STATUS
+NsSearchAndEnter (
+    char                *NamSeg, 
+    nte                 *NameTbl, 
+    OpMode              LoadMode, 
+    NsType              Type,
+    nte *               *RetNte);
+
+void
+NsInitializeTable (
+    nte                 *NewTbl, 
+    nte                 *ParentScope, 
+    nte                 *ParentEntry);
 
 /*
  * Scope Stack manipulation - nsstack
