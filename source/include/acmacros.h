@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.100 $
+ *       $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -292,8 +292,8 @@
 /*
  * Rounding macros (Power of two boundaries only)
  */
-#define ROUND_DOWN(value,boundary)      ((value) & (~((boundary)-1)))
-#define ROUND_UP(value,boundary)        (((value) + ((boundary)-1)) & (~((boundary)-1)))
+#define ROUND_DOWN(value,boundary)      (((NATIVE_UINT)(value)) & (~((boundary)-1)))
+#define ROUND_UP(value,boundary)        ((((NATIVE_UINT)(value)) + ((boundary)-1)) & (~((boundary)-1)))
 
 #define ROUND_DOWN_TO_32_BITS(a)        ROUND_DOWN(a,4)
 #define ROUND_DOWN_TO_64_BITS(a)        ROUND_DOWN(a,8)
@@ -303,8 +303,6 @@
 #define ROUND_UP_TO_64BITS(a)           ROUND_UP(a,8)
 #define ROUND_UP_TO_NATIVE_WORD(a)      ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
 
-#define ROUND_PTR_UP_TO_4(a,b)          ((b *)(((NATIVE_UINT)(a) + 3) & ~3))
-#define ROUND_PTR_UP_TO_8(a,b)          ((b *)(((NATIVE_UINT)(a) + 7) & ~7))
 
 #define ROUND_BITS_UP_TO_BYTES(a)       DIV_8((a) + 7)
 #define ROUND_BITS_DOWN_TO_BYTES(a)     DIV_8((a))
@@ -352,14 +350,15 @@
  * where a pointer to an ACPI_OPERAND_OBJECT  can also
  * appear.  This macro is used to distinguish them.
  *
- * The DataType field is the first field in both structures.
+ * The "Descriptor" field is the first field in both structures.
  */
-#define VALID_DESCRIPTOR_TYPE(d,t)      (((ACPI_NAMESPACE_NODE *)d)->DataType == t)
+#define ACPI_GET_DESCRIPTOR_TYPE(d)     (((ACPI_NAMESPACE_NODE *)d)->Descriptor)
+#define ACPI_SET_DESCRIPTOR_TYPE(d,t)   (((ACPI_NAMESPACE_NODE *)d)->Descriptor = t)
 
 
 /* Macro to test the object type */
 
-#define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OPERAND_OBJECT  *)d)->Common.Type == (UINT8)t)
+#define ACPI_GET_OBJECT_TYPE(d)         (((ACPI_OPERAND_OBJECT *)d)->Common.Type)
 
 /* Macro to check the table flags for SINGLE or MULTIPLE tables are allowed */
 
