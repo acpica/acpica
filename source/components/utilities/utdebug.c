@@ -435,42 +435,6 @@ KFatalError (char * a, char * b, ...)
 */
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    OFT functions
- *
- * RETURN:      none
- *
- * DESCRIPTION: Purpose unknown ?? TBD
- *
- ****************************************************************************/
-
-void
-CloseOFT (void)
-{
-
-    DEBUG_PRINT (TRACE_EXEC, ("CloseOFT called, not supported **********\n"));
-    return;
-}
-
-void
-RestoreOFT (void)
-{
-
-    DEBUG_PRINT (TRACE_EXEC, ("RestoreOFT called, not supported **********\n"));
-    return;
-}
-
-void
-SetNotSupported (void)
-{
-    DEBUG_PRINT (TRACE_EXEC, ("SetNotSupported called, not supported **********\n"));
-    return;
-}
-
-
-
-
 /* Misc stuff */
 
 /* TBD: Need a real checksum routine here !! */
