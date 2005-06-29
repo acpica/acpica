@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.55 $
+ *       $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -359,79 +359,96 @@
 
 
 /* 
- * Opcode types. 
- * The first group is used in a dispatch table, do not change
- * without updating the table
+ * Opcode information 
  */
-#define AML_TYPE_EX_1A_0T_0R            0x00000000 /* Monadic1  */
-#define AML_TYPE_EX_1A_0T_1R            0x00000001 /* Monadic2  */
-#define AML_TYPE_EX_1A_1T_1R            0x00000002 /* Monadic2R */
-#define AML_TYPE_EX_2A_0T_0R            0x00000003 /* Dyadic1   */
-#define AML_TYPE_EX_2A_0T_1R            0x00000004 /* Dyadic2   */
-#define AML_TYPE_EX_2A_1T_1R            0x00000005 /* Dyadic2R  */
-#define AML_TYPE_EX_2A_2T_1R            0x00000006
-#define AML_TYPE_EX_3A_0T_0R            0x00000007
-#define AML_TYPE_EX_6A_0T_1R            0x00000008
-#define AML_TYPE_RECONFIGURATION        0x00000009
-/* End of types used in dispatch table */
-
-#define AML_TYPE_LITERAL                0x0000000A
-#define AML_TYPE_CONSTANT               0x0000000B
-#define AML_TYPE_METHOD_ARGUMENT        0x0000000C
-#define AML_TYPE_LOCAL_VARIABLE         0x0000000D
-#define AML_TYPE_DATA_TERM              0x0000000E
-
-/* Generic for an op that returns a value */
-
-#define AML_TYPE_METHOD_CALL            0x0000000F
-
-/* Misc */
-
-#define AML_TYPE_CREATE_FIELD           0x00000010
-#define AML_TYPE_CONTROL                0x00000011
-#define AML_TYPE_NAMED_OBJECT           0x00000012
-#define AML_TYPE_RETURN                 0x00000013
-
-#define AML_TYPE_UNDEFINED              0x00000014
-#define AML_TYPE_BOGUS                  0x00000015
-
-#define AML_TYPE_MASK                   0x0000001F
-
-/* Opcode classes */
-
-#define AML_CLASS_EXECUTE               0x00000200
-#define AML_CLASS_CREATE                0x00000400
-#define AML_CLASS_ARGUMENT              0x00000600
-#define AML_CLASS_NAMED_OBJECT          0x00000800
-#define AML_CLASS_CONTROL               0x00000A00
-#define AML_CLASS_ASCII                 0x00000C00
-#define AML_CLASS_PREFIX                0x00000E00
-#define AML_CLASS_INTERNAL              0x00001000
-#define AML_CLASS_RETURN_VALUE          0x00001200
-#define AML_CLASS_METHOD_CALL           0x00001400
-#define AML_CLASS_UNKNOWN               0x00001600
-
-#define AML_CLASS_MASK                  0x00001E00
 
 /* Opcode flags */
 
-#define AML_HAS_ARGS                    0x80000000
-#define AML_NSOBJECT                    0x40000000
-#define AML_NSOPCODE                    0x20000000
-#define AML_NSNODE                      0x10000000
-#define AML_NAMED                       0x08000000
-#define AML_DEFER                       0x04000000
-#define AML_FIELD                       0x02000000
-#define AML_CREATE                      0x01000000
-#define AML_MATH                        0x00800000
-#define AML_LOGICAL                     0x00400000
+#define AML_HAS_ARGS                    0x0800
+#define AML_HAS_TARGET                  0x0400
+#define AML_HAS_RETVAL                  0x0200
+#define AML_NSOBJECT                    0x0100
+#define AML_NSOPCODE                    0x0080
+#define AML_NSNODE                      0x0040
+#define AML_NAMED                       0x0020
+#define AML_DEFER                       0x0010
+#define AML_FIELD                       0x0008
+#define AML_CREATE                      0x0004
+#define AML_MATH                        0x0002
+#define AML_LOGICAL                     0x0001
 
-#define AML_FLAGS_MASK                  0xFFF00000
+/* Convenient flag groupings */
 
-#define ACPI_GET_OP_TYPE(a)             ((a)->Flags & AML_TYPE_MASK)
-#define ACPI_GET_OP_CLASS(a)            ((a)->Flags & AML_CLASS_MASK)
-#define ACPI_GET_OP_FLAGS(a)            ((a)->Flags & AML_FLAGS_MASK)
+#define AML_FLAGS_EXEC_1A_0T_0R         AML_HAS_ARGS                                   /* Monadic1  */
+#define AML_FLAGS_EXEC_1A_0T_1R         AML_HAS_ARGS |                  AML_HAS_RETVAL /* Monadic2  */
+#define AML_FLAGS_EXEC_1A_1T_0R         AML_HAS_ARGS | AML_HAS_TARGET
+#define AML_FLAGS_EXEC_1A_1T_1R         AML_HAS_ARGS | AML_HAS_TARGET | AML_HAS_RETVAL /* Monadic2R */
+#define AML_FLAGS_EXEC_2A_0T_0R         AML_HAS_ARGS                                   /* Dyadic1   */
+#define AML_FLAGS_EXEC_2A_0T_1R         AML_HAS_ARGS |                  AML_HAS_RETVAL /* Dyadic2   */
+#define AML_FLAGS_EXEC_2A_1T_1R         AML_HAS_ARGS | AML_HAS_TARGET | AML_HAS_RETVAL /* Dyadic2R  */
+#define AML_FLAGS_EXEC_2A_2T_1R         AML_HAS_ARGS | AML_HAS_TARGET | AML_HAS_RETVAL
+#define AML_FLAGS_EXEC_3A_0T_0R         AML_HAS_ARGS
+#define AML_FLAGS_EXEC_6A_0T_1R         AML_HAS_ARGS |                  AML_HAS_RETVAL
 
+
+/*
+ * The opcode Type is used in a dispatch table, do not change
+ * without updating the table.
+ */
+#define AML_TYPE_EXEC_1A_0T_0R          0x00 /* Monadic1  */
+#define AML_TYPE_EXEC_1A_0T_1R          0x01 /* Monadic2  */
+#define AML_TYPE_EXEC_1A_1T_0R          0x02
+#define AML_TYPE_EXEC_1A_1T_1R          0x03 /* Monadic2R */
+#define AML_TYPE_EXEC_2A_0T_0R          0x04 /* Dyadic1   */
+#define AML_TYPE_EXEC_2A_0T_1R          0x05 /* Dyadic2   */
+#define AML_TYPE_EXEC_2A_1T_1R          0x06 /* Dyadic2R  */
+#define AML_TYPE_EXEC_2A_2T_1R          0x07
+#define AML_TYPE_EXEC_3A_0T_0R          0x08
+#define AML_TYPE_EXEC_6A_0T_1R          0x09
+/* End of types used in dispatch table */
+
+#define AML_TYPE_LITERAL                0x0A
+#define AML_TYPE_CONSTANT               0x0B
+#define AML_TYPE_METHOD_ARGUMENT        0x0C
+#define AML_TYPE_LOCAL_VARIABLE         0x0D
+#define AML_TYPE_DATA_TERM              0x0E
+
+/* Generic for an op that returns a value */
+
+#define AML_TYPE_METHOD_CALL            0x0F
+
+/* Misc */
+
+#define AML_TYPE_CREATE_FIELD           0x10
+#define AML_TYPE_CONTROL                0x11
+#define AML_TYPE_NAMED_OBJECT           0x12
+#define AML_TYPE_RETURN                 0x13
+
+#define AML_TYPE_UNDEFINED              0x14
+#define AML_TYPE_BOGUS                  0x15
+
+
+/* 
+ * Opcode classes 
+ */
+#define AML_CLASS_EXECUTE               0x00
+#define AML_CLASS_CREATE                0x01
+#define AML_CLASS_ARGUMENT              0x02
+#define AML_CLASS_NAMED_OBJECT          0x03
+#define AML_CLASS_CONTROL               0x04
+#define AML_CLASS_ASCII                 0x05
+#define AML_CLASS_PREFIX                0x06
+#define AML_CLASS_INTERNAL              0x07
+#define AML_CLASS_RETURN_VALUE          0x08
+#define AML_CLASS_METHOD_CALL           0x09
+#define AML_CLASS_UNKNOWN               0x0A
+
+
+/*
+#define ACPI_GET_OP_TYPE(a)             ((a)->Type)
+#define ACPI_GET_OP_CLASS(a)            ((a)->Class)
+#define ACPI_GET_OP_FLAGS(a)            ((a)->Flags)
+*/
 
 /* Predefined Operation Region SpaceIDs */
 
