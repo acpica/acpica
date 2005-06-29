@@ -171,7 +171,7 @@ GetMethodValTyp (INT32 Index)
 
     if (!MethodStack[MethodStackTop][Index])
     {
-        return Any; /* Any == 0 => "uninitialized" -- see spec 15.2.3.5.2.28 */
+        return TYPE_Any; /* Any == 0 => "uninitialized" -- see spec 15.2.3.5.2.28 */
     }
 
     return MethodStack[MethodStackTop][Index]->ValType;
@@ -257,7 +257,7 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
                      (void *) MethodStack[MethodStackTop][Index],
                      sizeof (*ObjDesc));
 
-            if (Buffer == ObjDesc->ValType)
+            if (TYPE_Buffer == ObjDesc->ValType)
             {
                 /* Assign a new sequence number to track buffer usage */
             
@@ -373,7 +373,7 @@ SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjD
         {
             /* object descriptor currently defined, delete the old descriptor   */
 
-            if (Buffer == MethodStack[MethodStackTop][Index]->ValType)
+            if (TYPE_Buffer == MethodStack[MethodStackTop][Index]->ValType)
             {
                 /* 
                  * Ensure the about-to-be-deleted Buffer's sequence number
@@ -412,7 +412,7 @@ SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjD
         memcpy ((void *) MethodStack[MethodStackTop][Index],
                  (void *) ObjDesc, sizeof (*ObjDesc));
 
-        if (Buffer == ObjDesc->ValType)
+        if (TYPE_Buffer == ObjDesc->ValType)
         {
             /* Assign a new sequence number to track buffers */
 
@@ -483,11 +483,11 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
     {   
         /* ObjDesc and Region valid */
 
-        DUMP_STACK (Exec, "PrepDefFieldValue", 2, "case DefField");
+        DUMP_STACK (MODE_Exec, "PrepDefFieldValue", 2, "case DefField");
 
 
-        ObjDesc->ValType = (UINT8) DefField;
-        if (DefField != ObjDesc->Field.ValType)
+        ObjDesc->ValType = (UINT8) TYPE_DefField;
+        if (TYPE_DefField != ObjDesc->Field.ValType)
         {
             /* 
              * The C implementation has done something which is technically legal
@@ -610,10 +610,10 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
     {   
         /*  ObjDesc and Region valid    */
 
-        DUMP_STACK (Exec, "PrepBankFieldValue", 2, "case BankField");
+        DUMP_STACK (MODE_Exec, "PrepBankFieldValue", 2, "case BankField");
 
-        ObjDesc->ValType = (UINT8) BankField;
-        if (BankField != ObjDesc->BankField.ValType)
+        ObjDesc->ValType = (UINT8) TYPE_BankField;
+        if (TYPE_BankField != ObjDesc->BankField.ValType)
         {
             /* See comments in PrepDefFieldValue() re unexpected C behavior */
 
@@ -719,8 +719,8 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
     {   
         /* ObjDesc, IndexRegion, and DataReg valid  */
 
-        ObjDesc->ValType = (UINT8) IndexField;
-        if (IndexField != ObjDesc->IndexField.ValType)
+        ObjDesc->ValType = (UINT8) TYPE_IndexField;
+        if (TYPE_IndexField != ObjDesc->IndexField.ValType)
         {
             /* See comments in PrepDefFieldValue() re unexpected C behavior */
         
@@ -813,7 +813,7 @@ PrepStack (char *Types)
      * without clobbering top existing entry.
      */
 
-    Excep = PushIfExec (Exec);
+    Excep = PushIfExec (MODE_Exec);
     if (S_SUCCESS != Excep)
     {
         return Excep;
@@ -842,27 +842,27 @@ PrepStack (char *Types)
         }
 
         bTypeFound = (*StackPtr)->ValType;
-        if (bTypeFound > (UINT8) Lvalue || 
+        if (bTypeFound > (UINT8) TYPE_Lvalue || 
             BadType == NsTypeNames[bTypeFound])
         {
             sprintf (TypeFound, "type encoding %d", bTypeFound);
             TypeFoundPtr = TypeFound;
         }
         
-        else if ((UINT8) Lvalue == bTypeFound)
+        else if ((UINT8) TYPE_Lvalue == bTypeFound)
         {
             strcpy (TypeFound, "Lvalue ");
             switch ((*StackPtr)->Lvalue.OpCode)
             {
-            case ZeroOp:
+            case AML_ZeroOp:
                 strcat (TypeFound, "Zero");
                 break;
             
-            case OneOp:
+            case AML_OneOp:
                 strcat (TypeFound, "One");
                 break;
             
-            case OnesOp:
+            case AML_OnesOp:
                 strcat (TypeFound, "Ones");
                 break;
             
@@ -870,25 +870,25 @@ PrepStack (char *Types)
                 strcat (TypeFound, "Debug");
                 break;
             
-            case NameOp:
+            case AML_NameOp:
                 sprintf (&TypeFound[7], "Name");
                 break;
            
-            case IndexOp:
+            case AML_IndexOp:
                 sprintf (&TypeFound[7], "Index %p",
                             (*StackPtr)->Lvalue.Ref);
                 break;
             
-            case Arg0: case Arg1: case Arg2: case Arg3:
-            case Arg4: case Arg5: case Arg6:
+            case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
+            case AML_Arg4: case AML_Arg5: case AML_Arg6:
                 sprintf (&TypeFound[7], "Arg%d",
-                            (*StackPtr)->Lvalue.OpCode - Arg0);
+                            (*StackPtr)->Lvalue.OpCode - AML_Arg0);
                 break;
             
-            case Local0: case Local1: case Local2: case Local3:
-            case Local4: case Local5: case Local6: case Local7:
+            case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
+            case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
                 sprintf (&TypeFound[7], "Local%d",
-                            (*StackPtr)->Lvalue.OpCode - Local0);
+                            (*StackPtr)->Lvalue.OpCode - AML_Local0);
                 break;
             
             default:
@@ -912,7 +912,7 @@ PrepStack (char *Types)
                 break;
             }
 
-            if (Lvalue != (*StackPtr)->ValType)
+            if (TYPE_Lvalue != (*StackPtr)->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Lvalue, found %s\n",
                             TypeFoundPtr));
@@ -920,7 +920,7 @@ PrepStack (char *Types)
                 return S_ERROR;
             }
 
-            if (NameOp == (*StackPtr)->Lvalue.OpCode)
+            if (AML_NameOp == (*StackPtr)->Lvalue.OpCode)
             {
                 /* Convert indirect name ptr to direct name ptr */
                 
@@ -942,7 +942,7 @@ PrepStack (char *Types)
                 return Excep;
             }
 
-            if (Number != (*StackPtr)->ValType)
+            if (TYPE_Number != (*StackPtr)->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Number, found %s\n",
                             TypeFoundPtr));
@@ -960,8 +960,8 @@ PrepStack (char *Types)
 
             DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
 
-            if (String != (*StackPtr)->ValType &&
-                Buffer != (*StackPtr)->ValType)
+            if (TYPE_String != (*StackPtr)->ValType &&
+                TYPE_Buffer != (*StackPtr)->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "PrepStack: Needed String or Buffer, found %s\n",
@@ -980,7 +980,7 @@ PrepStack (char *Types)
 
             DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
 
-            if (Buffer != (*StackPtr)->ValType)
+            if (TYPE_Buffer != (*StackPtr)->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Buffer, found %s\n",
                             TypeFoundPtr));
@@ -990,7 +990,7 @@ PrepStack (char *Types)
             break;
 
         case 'i':                                   /* need If */
-            if (If != (*StackPtr)->ValType)
+            if (TYPE_If != (*StackPtr)->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed If, found %s\n",
                         TypeFoundPtr));
@@ -1008,7 +1008,7 @@ PrepStack (char *Types)
 
             DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
 
-            if (Package != (*StackPtr)->ValType)
+            if (TYPE_Package != (*StackPtr)->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Package, found %s\n",
                             TypeFoundPtr));
