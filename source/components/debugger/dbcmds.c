@@ -707,7 +707,7 @@ DbDisplayObjects (
     char                    *DisplayCountArg)
 {
     UINT32                  DisplayCount;
-    ACPI_OBJECT_TYPE        Type;
+    OBJECT_TYPE_INTERNAL    Type;
 
     
     STRUPR (ObjTypeArg);
