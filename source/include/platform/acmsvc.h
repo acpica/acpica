@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmsvc.h - VC specific defines, etc.
- *       $Revision: 1.9 $
+ *       $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -117,12 +117,21 @@
 #ifndef __ACMSVC_H__
 #define __ACMSVC_H__
 
-#define COMPILER_DEPENDENT_UINT64   unsigned __int64
+#define COMPILER_DEPENDENT_INT64   __int64
+#define COMPILER_DEPENDENT_UINT64  unsigned __int64
 
-/* Calling conventions */
-
+/*
+ * Calling conventions:
+ *
+ * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
+ * ACPI_EXTERNAL_XFACE      - External ACPI interfaces 
+ * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
+ * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
+ */
 #define ACPI_SYSTEM_XFACE           __cdecl
-
+#define ACPI_EXTERNAL_XFACE
+#define ACPI_INTERNAL_XFACE
+#define ACPI_INTERNAL_VAR_XFACE     __cdecl
 
 /*
  * Math helper functions
