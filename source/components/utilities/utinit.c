@@ -179,6 +179,15 @@ CmHardwareInitialize (void)
     FUNCTION_TRACE ("CmHardwareInitialize");
 
 
+    /* Are we running on the actual hardware */
+
+    if (!Gbl_AcpiHardwarePresent)
+    {
+        /* No, just return */
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
     /* We must have an the ACPI tables by the time we get here */
 
     if (!Gbl_FACP)
