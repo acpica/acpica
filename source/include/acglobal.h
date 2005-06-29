@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.106 $
+ *       $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -260,10 +260,6 @@ ACPI_EXTERN UINT32                      AcpiGbl_DeepestNesting;
 
 
 ACPI_EXTERN ACPI_WALK_LIST             *AcpiGbl_CurrentWalkList;
-
-/* Address Space handlers */
-
-ACPI_EXTERN ACPI_ADR_SPACE_INFO         AcpiGbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
 
 /* Control method single step flag */
 
