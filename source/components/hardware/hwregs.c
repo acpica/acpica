@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  ******************************************************************************/
 
@@ -757,7 +757,7 @@ AcpiHwRegisterRead (
      */
     case GPE0_STS_BLOCK: /* 8-bit access */
 
-	BankOffset = REGISTER_BIT_ID(RegisterId);
+        BankOffset = REGISTER_BIT_ID(RegisterId);
         Value = AcpiHwLowLevelRead (8, &AcpiGbl_FADT->XGpe0Blk, BankOffset);
         break;
 
@@ -769,7 +769,7 @@ AcpiHwRegisterRead (
 
     case GPE1_STS_BLOCK: /* 8-bit access */
 
-	BankOffset = REGISTER_BIT_ID(RegisterId);
+        BankOffset = REGISTER_BIT_ID(RegisterId);
         Value = AcpiHwLowLevelRead (8, &AcpiGbl_FADT->XGpe1Blk, BankOffset);
         break;
 
@@ -881,7 +881,7 @@ AcpiHwRegisterWrite (
 
     case GPE0_STS_BLOCK: /* 8-bit access */
 
-	BankOffset = REGISTER_BIT_ID(RegisterId);
+        BankOffset = REGISTER_BIT_ID(RegisterId);
         AcpiHwLowLevelWrite (8, Value, &AcpiGbl_FADT->XGpe0Blk, BankOffset);
         break;
 
@@ -895,7 +895,7 @@ AcpiHwRegisterWrite (
 
     case GPE1_STS_BLOCK: /* 8-bit access */
 
-	BankOffset = REGISTER_BIT_ID(RegisterId);
+        BankOffset = REGISTER_BIT_ID(RegisterId);
         AcpiHwLowLevelWrite (8, Value, &AcpiGbl_FADT->XGpe1Blk, BankOffset);
         break;
 
