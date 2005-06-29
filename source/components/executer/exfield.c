@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.108 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -120,10 +120,6 @@
 #include "acpi.h"
 #include "acdispat.h"
 #include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "achware.h"
-#include "acevents.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -154,7 +150,6 @@ AcpiExReadDataFromField (
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *BufferDesc;
     UINT32                  Length;
-    UINT32                  IntegerSize;
     void                    *Buffer;
     BOOLEAN                 Locked;
 
@@ -196,20 +191,7 @@ AcpiExReadDataFromField (
      * Note: Field.length is in bits.
      */
     Length = ACPI_ROUND_BITS_UP_TO_BYTES (ObjDesc->Field.BitLength);
-
-    /* Handle both ACPI 1.0 and ACPI 2.0 Integer widths */
-
-    IntegerSize = sizeof (ACPI_INTEGER);
-    if (WalkState->MethodNode->Flags & ANOBJ_DATA_WIDTH_32)
-    {
-        /*
-         * We are running a method that exists in a 32-bit ACPI table.
-         * Integer size is 4.
-         */
-        IntegerSize = sizeof (UINT32);
-    }
-
-    if (Length > IntegerSize)
+    if (Length > AcpiGbl_IntegerByteWidth)
     {
         /* Field is too large for an Integer, create a Buffer instead */
 
@@ -242,7 +224,7 @@ AcpiExReadDataFromField (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        Length = IntegerSize;
+        Length = AcpiGbl_IntegerByteWidth;
         BufferDesc->Integer.Value = 0;
         Buffer = &BufferDesc->Integer.Value;
     }
