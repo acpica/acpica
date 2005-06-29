@@ -285,9 +285,9 @@ typedef struct AcpiTableDesc
 {
     struct AcpiTableDesc    *Prev;
     struct AcpiTableDesc    *Next;
+    struct AcpiTableDesc    *InstalledDesc;
     ACPI_TABLE_HEADER       *Pointer;
     void                    *BasePointer;
-    NAME_TABLE_ENTRY        *RootEntry;
     UINT8                   *AmlPointer;
     UINT32                  AmlLength;
     UINT32                  Length;
