@@ -157,11 +157,11 @@ AcpiCmSubsystemShutdown (
  * AcpiCmGlobal - Global data structures and procedures
  */
 
-char *
+INT8 *
 AcpiCmGetMutexName (
     UINT32                  MutexId);
 
-char *
+INT8 *
 AcpiCmGetTypeName (
     UINT32                  Type);
 
@@ -180,55 +180,55 @@ AcpiCmAllocateOwnerId (
 
 NATIVE_UINT
 AcpiCmStrlen (
-    const char              *String);
+    const INT8              *String);
 
-char *
+INT8 *
 AcpiCmStrcpy (
-    char                    *DstString,
-    const char              *SrcString);
+    INT8                    *DstString,
+    const INT8              *SrcString);
 
-char *
+INT8 *
 AcpiCmStrncpy (
-    char                    *DstString,
-    const char              *SrcString,
+    INT8                    *DstString,
+    const INT8              *SrcString,
     NATIVE_UINT             Count);
 
 UINT32
 AcpiCmStrncmp (
-    const char              *String1,
-    const char              *String2,
+    const INT8              *String1,
+    const INT8              *String2,
     NATIVE_UINT             Count);
 
 UINT32
 AcpiCmStrcmp (
-    const char              *String1,
-    const char              *String2);
+    const INT8              *String1,
+    const INT8              *String2);
 
-char *
+INT8 *
 AcpiCmStrcat (
-    char                    *DstString,
-    const char              *SrcString);
+    INT8                    *DstString,
+    const INT8              *SrcString);
 
-char *
+INT8 *
 AcpiCmStrncat (
-    char                    *DstString,
-    const char              *SrcString,
+    INT8                    *DstString,
+    const INT8              *SrcString,
     NATIVE_UINT             Count);
 
 UINT32
 AcpiCmStrtoul (
-    const char              *String,
-    char                    **Terminator,
+    const INT8              *String,
+    INT8                    **Terminator,
     INT32                   Base);
 
-char *
+INT8 *
 AcpiCmStrstr (
-    char                    *String1,
-    char                    *String2);
+    INT8                    *String1,
+    INT8                    *String2);
 
-char *
+INT8 *
 AcpiCmStrupr (
-    char                    *SrcString);
+    INT8                    *SrcString);
 
 void *
 AcpiCmMemcpy (
@@ -259,13 +259,13 @@ ACPI_STATUS
 AcpiCmBuildSimpleObject(
     ACPI_OBJECT_INTERNAL    *Obj,
     ACPI_OBJECT             *UserObj,
-    char                    *DataSpace,
+    INT8                    *DataSpace,
     UINT32                  *BufferSpaceUsed);
 
 ACPI_STATUS
 AcpiCmBuildPackageObject (
     ACPI_OBJECT_INTERNAL    *Obj,
-    char                    *Buffer,
+    INT8                    *Buffer,
     UINT32                  *SpaceUsed);
 
 ACPI_STATUS
@@ -305,7 +305,7 @@ AcpiCmUpdateObjectReference (
 
 ACPI_OBJECT_INTERNAL *
 _CmCreateInternalObject (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
     OBJECT_TYPE_INTERNAL    Type);
@@ -352,7 +352,7 @@ FunctionTraceStr (
     INT32                   LineNumber,
     INT32                   ComponentId,
     ACPI_STRING             FunctionName,
-    char                    *String);
+    INT8                    *String);
 
 void
 FunctionExit (
@@ -383,7 +383,7 @@ FunctionPtrExit (
     INT32                   LineNumber,
     INT32                   ComponentId,
     ACPI_STRING             FunctionName,
-    char                    *Ptr);
+    INT8                    *Ptr);
 
 void
 DebugPrintPrefix (
@@ -396,11 +396,11 @@ DebugPrint (
     INT32                   LineNumber,
     INT32                   ComponentId,
     INT32                   PrintLevel,
-    char                    *Format, ...);
+    ACPI_STRING             Format, ...);
 
 void
 DebugPrintRaw (
-    char                    *Format, ...);
+    ACPI_STRING             Format, ...);
 
 void
 _ReportInfo (
@@ -424,15 +424,8 @@ _ReportWarning (
     ACPI_STRING             Message);
 
 void
-_ReportSuccess (
-    ACPI_STRING             ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
-    ACPI_STRING             Message);
-
-void
 AcpiCmDumpBuffer (
-    char                    *Buffer,
+    INT8                    *Buffer,
     UINT32                  Count,
     UINT32                  Display,
     INT32                   componentId);
@@ -476,7 +469,7 @@ AcpiCmDeleteInternalObjectList (
 
 ACPI_STATUS
 AcpiCmEvaluateNumericObject (
-    char                    *MethodName,
+    INT8                    *MethodName,
     ACPI_NAMED_OBJECT       *AcpiDevice,
     UINT32                  *Address);
 
@@ -500,7 +493,7 @@ AcpiCmExecute_UID (
  * AcpiCmError - exception interfaces
  */
 
-char *
+INT8 *
 AcpiCmFormatException (
     ACPI_STATUS             Status);
 
@@ -543,7 +536,7 @@ AcpiCmReleaseMutex (
 
 void *
 _CmAllocateObjectDesc (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId);
 
@@ -643,7 +636,7 @@ AcpiCmValidAcpiName (
 
 BOOLEAN
 AcpiCmValidAcpiCharacter (
-    char                    Character);
+    INT8                    Character);
 
 
 /*
