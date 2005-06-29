@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -386,6 +386,7 @@ typedef enum
     ASL_ERROR_LOCAL_INIT,
     ASL_ERROR_ARG_INVALID,
     ASL_ERROR_UNSUPPORTED,
+    ASL_ERROR_RESERVED_WORD,
 
 } ASL_ERROR_IDS;
 

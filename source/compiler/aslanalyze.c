@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -119,9 +119,11 @@
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
 
+#include <ctype.h>
 
 
 #define ASL_RSVD_RETURN_VALUE   0x01
+UINT32 AslGbl_ReservedMethods = 0;
 
 typedef struct
 {
@@ -133,8 +135,122 @@ typedef struct
 
 
 ASL_RESERVED_INFO               ReservedMethods[] = {
+    "_AC0",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AC1",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AC2",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AC3",     0,      ASL_RSVD_RETURN_VALUE,
+    "_ADR",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AL0",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AL1",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AL2",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AL3",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BBN",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BCL",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BCM",     1,      0,
+    "_BDN",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BFS",     1,      0,
+    "_BIF",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BST",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BTP",     1,      0,
+    "_CID",     0,      ASL_RSVD_RETURN_VALUE,
+    "_CRS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_CRT",     0,      ASL_RSVD_RETURN_VALUE,
+    "_CST",     0,      ASL_RSVD_RETURN_VALUE,
+    "_DCK",     1,      ASL_RSVD_RETURN_VALUE,
+    "_DCS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_DDC",     1,      ASL_RSVD_RETURN_VALUE,
+    "_DDN",     1,      0,                          /* Spec is ambiguous about this */
+    "_DGS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_DIS",     0,      0,
+    "_DMA",     0,      ASL_RSVD_RETURN_VALUE,
+    "_DOD",     0,      ASL_RSVD_RETURN_VALUE,
+    "_DOS",     1,      0,
+    "_DSS",     1,      0,
+    "_EC_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_EDL",     0,      ASL_RSVD_RETURN_VALUE,
+    "_EJ0",     1,      0,
+    "_EJ1",     1,      0,
+    "_EJ2",     1,      0,
+    "_EJ3",     1,      0,
+    "_EJ4",     1,      0,
+    "_EJD",     0,      ASL_RSVD_RETURN_VALUE,
+    "_FDE",     0,      ASL_RSVD_RETURN_VALUE,
+    "_FDI",     0,      ASL_RSVD_RETURN_VALUE,
+    "_FDM",     1,      0,
+    "_FIX",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GLK",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GPD",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GPE",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GTF",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GTM",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GTS",     1,      0,
+    "_HID",     0,      ASL_RSVD_RETURN_VALUE,
+    "_HOT",     0,      ASL_RSVD_RETURN_VALUE,
+    "_HPP",     0,      ASL_RSVD_RETURN_VALUE,
+    "_INI",     0,      0,
+    "_IRC",     0,      0,
+    "_LCK",     1,      0,
+    "_LID",     0,      ASL_RSVD_RETURN_VALUE,
+    "_MAT",     0,      ASL_RSVD_RETURN_VALUE,
+    "_MSG",     1,      0,
+    "_OFF",     0,      0,
+    "_ON_",     0,      0,
+    "_PCL",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PCT",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PIC",     1,      0,
+    "_PPC",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PR0",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PR1",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PR2",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PRS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PRT",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PRW",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PS0",     0,      0,
+    "_PS1",     0,      0,
+    "_PS2",     0,      0,
+    "_PS3",     0,      0,
+    "_PSC",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PSL",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PSR",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PSS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PSV",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PSW",     1,      0,
+    "_PTC",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PTS",     1,      0,
+    "_PXM",     0,      ASL_RSVD_RETURN_VALUE,
+    "_REG",     2,      0,
+    "_RMV",     0,      ASL_RSVD_RETURN_VALUE,
+    "_ROM",     2,      ASL_RSVD_RETURN_VALUE,
+    "_S0_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S1_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S2_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S3_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S4_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S5_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S1D",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S2D",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S3D",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S4D",     0,      ASL_RSVD_RETURN_VALUE,
+    "_SBS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_SCP",     1,      0,
+    "_SEG",     0,      ASL_RSVD_RETURN_VALUE,
+    "_SPD",     1,      ASL_RSVD_RETURN_VALUE,
+    "_SRS",     1,      0,
+    "_SST",     1,      0,
     "_STA",     0,      ASL_RSVD_RETURN_VALUE,
-    NULL,       0,                          0,
+    "_STM",     3,      0,
+    "_STR",     0,      ASL_RSVD_RETURN_VALUE,
+    "_SUN",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TC1",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TC2",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TMP",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TSP",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TZD",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TZP",     0,      ASL_RSVD_RETURN_VALUE,
+    "_UID",     0,      ASL_RSVD_RETURN_VALUE,
+    "_VPO",     0,      ASL_RSVD_RETURN_VALUE,
+    "_WAK",     1,      ASL_RSVD_RETURN_VALUE,
+    NULL,       0,      0,
 };
 
 char    MsgBuffer[256];
@@ -162,10 +278,22 @@ AnCheckForReservedMethod (
 
 
 
+    /* All reserved names are prefixed with a single underscore */
+
+    if (Node->ExternalName[0] != '_')
+    {
+        return;
+    }
+
+
+    /* Check for a standard reserved method name */
+
     for (i = 0; ReservedMethods[i].Name; i++)
     {
         if (!STRCMP (Node->ExternalName, ReservedMethods[i].Name))
         {
+            AslGbl_ReservedMethods++;
+
             /* Matched a reserved method name */
 
             if (MethodInfo->NumArguments != ReservedMethods[i].NumArguments)
@@ -189,6 +317,46 @@ AnCheckForReservedMethod (
 
             return;
         }
+    }
+
+    /*
+     * Now check for the "special" reserved names --
+     * GPE:  _Lxx
+     * GPE:  _Exx
+     * EC:   _Qxx
+     */
+
+    if ((Node->ExternalName[1] == 'L') ||
+        (Node->ExternalName[1] == 'E') ||
+        (Node->ExternalName[1] == 'Q'))
+    {
+
+        AslGbl_ReservedMethods++;
+
+        /* The next two characters must be hex digits */
+
+        if ((isxdigit (Node->ExternalName[2])) &&
+            (isxdigit (Node->ExternalName[3])) &&
+            (MethodInfo->NumArguments != 0))
+        {
+            sprintf (MsgBuffer, "%s(%d) not %d", 
+                        Node->ExternalName,
+                        0, 
+                        MethodInfo->NumArguments);
+
+            AslWarningMsg (ASL_WARNING_RESERVED_ARG_COUNT, Node->LineNumber, MsgBuffer);
+        }
+
+        return;
+    }
+
+
+    /* Check for the names reserved for the compiler itself: _T_x */
+
+    if ((Node->ExternalName[1] == 'T') &&
+        (Node->ExternalName[2] == '_'))
+    {
+        AslErrorMsg (ASL_ERROR_RESERVED_WORD, Node->LineNumber, Node->ExternalName);
     }
 }
 
