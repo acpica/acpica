@@ -445,6 +445,15 @@ _strtoul (
     char                    **Terminator, 
     INT32                   Base);
 
+char *
+_strstr (
+    char                    *String1,
+    char                    *String2);
+
+char *
+_strupr (
+    char                    *SrcString);
+
 void *
 _memcpy (
     void                    *Dest, 
