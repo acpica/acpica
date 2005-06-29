@@ -497,7 +497,44 @@ CmInitStaticObject (
 #define CmDumpCurrentAllocations(a,b)
 #define CmDumpAllocationInfo()
 
+#define DECREMENT_OBJECT_METRICS()
+#define INCREMENT_OBJECT_METRICS()
+#define INITIALIZE_ALLOCATION_METRICS()
+
 #else
+
+#define INITIALIZE_ALLOCATION_METRICS() \
+	Gbl_CurrentObjectCount = 0; \
+	Gbl_CurrentObjectSize = 0; \
+	Gbl_RunningObjectCount = 0; \
+	Gbl_RunningObjectSize = 0; \
+	Gbl_MaxConcurrentObjectCount = 0; \
+	Gbl_MaxConcurrentObjectSize = 0; \
+	Gbl_CurrentAllocSize = 0; \
+	Gbl_CurrentAllocCount = 0; \
+	Gbl_RunningAllocSize = 0; \
+	Gbl_RunningAllocCount = 0; \
+	Gbl_MaxConcurrentAllocSize = 0; \
+	Gbl_MaxConcurrentAllocCount = 0
+
+#define DECREMENT_OBJECT_METRICS(a) \
+	Gbl_CurrentObjectCount--; \
+	Gbl_CurrentObjectSize -= a
+
+#define INCREMENT_OBJECT_METRICS(a) \
+	Gbl_CurrentObjectCount++; \
+	Gbl_RunningObjectCount++; \
+	if (Gbl_MaxConcurrentObjectCount < Gbl_CurrentObjectCount) \
+	{ \
+		Gbl_MaxConcurrentObjectCount = Gbl_CurrentObjectCount; \
+	} \
+	Gbl_RunningObjectSize += a; \
+	Gbl_CurrentObjectSize += a; \
+	if (Gbl_MaxConcurrentObjectSize < Gbl_CurrentObjectSize) \
+	{ \
+		Gbl_MaxConcurrentObjectSize = Gbl_CurrentObjectSize; \
+	}
+	
 
 void
 CmDumpAllocationInfo (
