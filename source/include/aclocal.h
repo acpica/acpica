@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.87 $
+ *       $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -546,8 +546,7 @@ typedef struct acpi_opcode_info
     UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
     UINT32                  RuntimeArgs;    /* Interpret time arguments */
 
-    DEBUG_ONLY_MEMBERS (
-    NATIVE_CHAR             *Name)          /* op name (debug only) */
+    DEBUG_ONLY_MEMBERS (NATIVE_CHAR *Name)  /* op name (debug only) */
 
 } ACPI_OPCODE_INFO;
 
@@ -574,7 +573,7 @@ typedef union acpi_parse_val
     DEBUG_ONLY_MEMBERS (\
     NATIVE_CHAR             OpName[16])     /* op name (debug only) */\
                                             /* NON-DEBUG members below: */\
-    ACPI_NAMESPACE_NODE     *Node;/* for use by interpreter */\
+    ACPI_NAMESPACE_NODE     *Node;          /* for use by interpreter */\
     ACPI_PARSE_VALUE        Value;          /* Value or args associated with the opcode */\
 
 
