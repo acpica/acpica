@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -698,9 +698,11 @@ LkNamespaceLocateBegin (
             return (AE_OK);
         }
 
+        /* Save the method node in the caller's op */
+
+        Op->Asl.Node = Node;
         if (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_CONDREFOF)
         {
-            Op->Asl.Node = Node;
             return (AE_OK);
         }
 
@@ -710,6 +712,8 @@ LkNamespaceLocateBegin (
          * under the parent node
          */
         Op->Asl.ParseOpcode = PARSEOP_METHODCALL;
+        UtSetParseOpName (Op);
+
         PassedArgs          = 0;
         NextOp              = Op->Asl.Child;
 
@@ -733,41 +737,10 @@ LkNamespaceLocateBegin (
                 if (PassedArgs < Node->OwnerId)
                 {
                     AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_LO, Op, MsgBuffer);
-
-                    if (Node->OwnerId > 7)
-                    {
-                        printf ("too many arguments defined for method [%4.4s]\n", (char *) &Node->Name);
-                        return (AE_BAD_PARAMETER);
-                    }
                 }
                 else
                 {
                     AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_HI, Op, MsgBuffer);
-                }
-            }
-
-            /*
-             * Check if the method caller expects this method to return a value and
-             * if the called method in fact returns a value.
-             */
-            if (!(Op->Asl.CompileFlags & NODE_RESULT_NOT_USED))
-            {
-                /* 1) The result from the method is used (the method is a TermArg) */
-
-                OwningOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
-                if (OwningOp->Asl.CompileFlags & NODE_METHOD_NO_RETVAL)
-                {
-                    /*
-                     * 2) Method NEVER returns a value
-                     */
-                    AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, Op, Op->Asl.ExternalName);
-                }
-                else if (OwningOp->Asl.CompileFlags & NODE_METHOD_SOME_NO_RETVAL)
-                {
-                    /*
-                     * 2) Method SOMETIMES returns a value, SOMETIMES not
-                     */
-                    AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, Op, Op->Asl.ExternalName);
                 }
             }
         }
