@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.94 $
+ *       $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -147,17 +147,6 @@
 #endif
 
 /*
- * Memory allocation tracking.  Used only if
- * 1) This is the debug version
- * 2) This is NOT a 16-bit version of the code (not enough real-mode memory)
- */
-#ifdef ACPI_DEBUG
-#if ACPI_MACHINE_WIDTH != 16
-#define ACPI_DBG_TRACK_ALLOCATIONS
-#endif
-#endif
-
-/*
  * Environment configuration.  The purpose of this file is to interface to the
  * local generation environment.
  *
@@ -242,7 +231,38 @@
 
 #endif
 
+/*
+ * Memory allocation tracking.  Used only if
+ * 1) This is the debug version
+ * 2) This is NOT a 16-bit version of the code (not enough real-mode memory)
+ */
+#ifdef ACPI_DEBUG
+#if ACPI_MACHINE_WIDTH != 16
+#define ACPI_DBG_TRACK_ALLOCATIONS
+#endif
+#endif
+
 /*! [End] no source code translation !*/
+
+
+/*
+ * Debugger threading model
+ * Use single threaded if the entire subsystem is contained in an application
+ * Use multiple threaded when the subsystem is running in the kernel.
+ *
+ * By default the model is single threaded if ACPI_APPLICATION is set,
+ * multi-threaded if ACPI_APPLICATION is not set.
+ */
+#define DEBUGGER_SINGLE_THREADED    0
+#define DEBUGGER_MULTI_THREADED     1
+
+#ifdef ACPI_APPLICATION
+#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
+
+#else
+#define DEBUGGER_THREADING          DEBUGGER_MULTI_THREADED
+#endif
+
 
 /******************************************************************************
  *
