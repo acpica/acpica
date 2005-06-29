@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.34 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -164,6 +164,126 @@ AeLocalGetRootPointer (
     UINT32                  Flags,
     ACPI_POINTER            *Address);
 
+FILE                        *AcpiGbl_OutputFile = stdout;
+
+
+#ifndef _ACPI_EXEC_APP
+/* Used by both iASL and AcpiDump applications */
+
+/******************************************************************************
+ *
+ * FUNCTION:    OsGetTable
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Pointer to the table.  NULL if failure
+ *
+ * DESCRIPTION: Get the DSDT from the Windows registry.
+ *
+ *****************************************************************************/
+
+ACPI_TABLE_HEADER *
+OsGetTable (
+    void )
+{
+    HKEY                Handle;
+    CHAR                s[500];
+    ULONG               i;
+    LONG                Status;
+    ULONG               Type;
+    ULONG               NameSize;
+    ULONG               DataSize;
+    HKEY                SubKey;
+    ACPI_TABLE_HEADER   *Buffer;
+
+
+    /* Get a handle to the DSDT key */
+
+    Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "HARDWARE\\ACPI\\DSDT",
+                0L, KEY_ALL_ACCESS, &Handle);
+
+    if (Status != ERROR_SUCCESS) 
+    {
+        AcpiOsPrintf ("Could not find DSDT in registry\n");
+        return (NULL);
+    }
+
+    /* Actual DSDT is down a couple of levels */
+
+    for (i = 0; ;) 
+    {
+        Status = RegEnumKey (Handle, i, s, sizeof(s));
+        i += 1;
+        if (Status == ERROR_NO_MORE_ITEMS) 
+        {
+            break;
+        }
+
+        Status = RegOpenKey (Handle, s, &SubKey);
+        if (Status != ERROR_SUCCESS) 
+        {
+            AcpiOsPrintf ("Could not Open DSDT entry\n");
+            return (NULL);
+        }
+
+        RegCloseKey (Handle);
+        Handle = SubKey;
+        i = 0;
+    }
+
+    /* Find the DSDT entry */
+
+    for (i = 0; ;) 
+    {
+        NameSize = sizeof (s);
+        Status = RegEnumValue (Handle, i, s, &NameSize,
+                    NULL, &Type, NULL, 0 );
+        if (Status != ERROR_SUCCESS) 
+        {
+            AcpiOsPrintf ("Could not get DSDT registry entry\n");
+            return (NULL);
+        }
+
+        if (Type == REG_BINARY)
+        {
+            break;
+        }
+        i += 1;
+    }
+
+    /* Get the size of the DSDT */
+
+    Status = RegQueryValueEx (Handle, s, NULL, NULL, NULL, &DataSize);
+    if (Status != ERROR_SUCCESS) 
+    {
+        AcpiOsPrintf ("Could not read the DSDT size\n");
+        return (NULL);
+    }
+
+    /* Allocate a new buffer for the DSDT */
+
+    Buffer = AcpiOsAllocate (DataSize);
+    if (!Buffer)
+    {
+        goto Cleanup;
+    }
+
+    /* Get the actual DSDT */
+
+    Status = RegQueryValueEx (Handle, s, NULL, NULL, (UCHAR *) Buffer, &DataSize);
+    if (Status != ERROR_SUCCESS) 
+    {
+        AcpiOsPrintf ("Could not read DSDT data\n");
+        return (NULL);
+    }
+
+Cleanup:
+    RegCloseKey (Handle);
+    return (Buffer);
+}
+
+#endif
+
 
 /******************************************************************************
  *
@@ -260,6 +380,15 @@ AcpiOsTableOverride (
 
         *NewTable = AcpiGbl_DbTablePtr;
     }
+
+#else
+
+    AcpiOsPrintf ("Reading DSDT from registry\n");
+    *NewTable = OsGetTable ();
+    if (*NewTable)
+    {
+        AcpiOsPrintf ("DSDT obtained from registry, %d bytes\n", (*NewTable)->Length);
+    }
 #endif
 
     return (AE_OK);
@@ -339,6 +468,28 @@ AcpiOsWritable (
 }
 
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsRedirectOutput
+ *
+ * PARAMETERS:  Destination         - An open file handle/pointer
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Causes redirect of AcpiOsPrintf and AcpiOsVprintf
+ *
+ *****************************************************************************/
+
+void
+AcpiOsRedirectOutput (
+    void                    *Destination)
+{
+
+    AcpiGbl_OutputFile = Destination;
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsPrintf
@@ -411,7 +562,7 @@ AcpiOsVprintf (
 
     if (Flags & ACPI_DB_CONSOLE_OUTPUT)
     {
-        Count = vprintf (Fmt, Args);
+        Count = vfprintf (AcpiGbl_OutputFile, Fmt, Args);
     }
 
     return;
