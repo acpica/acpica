@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.242 $
+ *       $Revision: 1.243 $
  *
  *****************************************************************************/
 
@@ -520,9 +520,9 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 #define ACPI_TYPE_EXTERNAL_MAX          0x10
 
 /*
- * These are object types that do not map directly to the ACPI 
- * ObjectType() operator. They are used for various internal purposes only.  
- * If new predefined ACPI_TYPEs are added (via the ACPI specification), these 
+ * These are object types that do not map directly to the ACPI
+ * ObjectType() operator. They are used for various internal purposes only.
+ * If new predefined ACPI_TYPEs are added (via the ACPI specification), these
  * internal types must move upwards. (There is code that depends on these
  * values being contiguous with the external types above.)
  */
