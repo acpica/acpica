@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -353,6 +353,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_OBJECTTYPE_OPR
 %token <i> PARSEOP_OBJECTTYPE_PKG
 %token <i> PARSEOP_OBJECTTYPE_POW
+%token <i> PARSEOP_OBJECTTYPE_PRO
 %token <i> PARSEOP_OBJECTTYPE_STR
 %token <i> PARSEOP_OBJECTTYPE_THZ
 %token <i> PARSEOP_OBJECTTYPE_UNK
@@ -2109,6 +2110,7 @@ ObjectTypeKeyword
     | PARSEOP_OBJECTTYPE_MTX                {$$ = TrCreateLeafNode (PARSEOP_OBJECTTYPE_MTX);}
     | PARSEOP_OBJECTTYPE_OPR                {$$ = TrCreateLeafNode (PARSEOP_OBJECTTYPE_OPR);}
     | PARSEOP_OBJECTTYPE_POW                {$$ = TrCreateLeafNode (PARSEOP_OBJECTTYPE_POW);}
+    | PARSEOP_OBJECTTYPE_PRO                {$$ = TrCreateLeafNode (PARSEOP_OBJECTTYPE_PRO);}
     | PARSEOP_OBJECTTYPE_THZ                {$$ = TrCreateLeafNode (PARSEOP_OBJECTTYPE_THZ);}
     | PARSEOP_OBJECTTYPE_BFF                {$$ = TrCreateLeafNode (PARSEOP_OBJECTTYPE_BFF);}
     | PARSEOP_OBJECTTYPE_DDB                {$$ = TrCreateLeafNode (PARSEOP_OBJECTTYPE_DDB);}
