@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -501,35 +501,25 @@ AcpiPsGetOpcodeInfo (
     /*
      * Detect normal 8-bit opcode or extended 16-bit opcode
      */
-    switch ((UINT8) (Opcode >> 8))
+    if (!(Opcode & 0xFF00))
     {
-    case 0:
-
         /* Simple (8-bit) opcode: 0-255, can't index beyond table  */
 
         return (&AcpiGbl_AmlOpInfo [AcpiGbl_ShortOpIndex [(UINT8) Opcode]]);
-
-    case AML_EXTOP:
-
-        /* Extended (16-bit, prefix+opcode) opcode */
-
-        if (((UINT8) Opcode) <= MAX_EXTENDED_OPCODE)
-        {
-            return (&AcpiGbl_AmlOpInfo [AcpiGbl_LongOpIndex [(UINT8) Opcode]]);
-        }
-
-        /* Else fall through to error case below */
-        /*lint -fallthrough */
-
-    default:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Unknown AML opcode [%4.4X]\n", Opcode));
-        break;
     }
 
+    if (((Opcode & 0xFF00) == AML_EXTENDED_OPCODE) &&
+        (((UINT8) Opcode) <= MAX_EXTENDED_OPCODE))
+    {
+        /* Valid extended (16-bit) opcode */
 
-    /* Default is "unknown opcode" */
+        return (&AcpiGbl_AmlOpInfo [AcpiGbl_LongOpIndex [(UINT8) Opcode]]);
+    }
+
+    /* Unknown AML opcode */
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        "Unknown AML opcode [%4.4X]\n", Opcode));
 
     return (&AcpiGbl_AmlOpInfo [_UNK]);
 }
