@@ -145,17 +145,17 @@ extern char                     *Filename;
  */
 typedef struct Region
 {
-	UINT32		Address;
-	UINT32		Length;
-	void		*Buffer;
-	void		*NextRegion;
+    UINT32      Address;
+    UINT32      Length;
+    void        *Buffer;
+    void        *NextRegion;
 
 } REGION;
 
 typedef struct DebugRegions
 {
-	UINT32		NumberOfRegions;
-	REGION		*RegionList;
+    UINT32      NumberOfRegions;
+    REGION      *RegionList;
 
 } DEBUG_REGIONS;
 
@@ -176,7 +176,6 @@ typedef union ptr_ovl
 } PTR_OVL;
 
 
- 
 #define GET_SEGMENT(ptr)                ((UINT16)(_segment)(ptr))
 #define GET_OFFSET(ptr)                 ((UINT16)(UINT32) (ptr))
 #define GET_PHYSICAL_ADDRESS(ptr)       (((((UINT32)GET_SEGMENT(ptr)) << 4)) + GET_OFFSET(ptr))
@@ -188,7 +187,7 @@ typedef union ptr_ovl
 #define TEST_OUTPUT_LEVEL(lvl)          if ((lvl) & OutputLevel)
 
 #define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
-                                            AcpiOsdPrintf PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 
 int
 getopt (
@@ -262,7 +261,6 @@ AdDisplayTables (void);
 
 ACPI_STATUS
 AdDisplayStatistics (void);
-
 
 
 #endif /* _ADCOMMON */

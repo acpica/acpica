@@ -124,10 +124,8 @@
 #include <stdio.h>
 
 
-
 #define _COMPONENT          PARSER
         MODULE_NAME         ("aeexec");
-
 
 
 ACPI_GENERIC_OP             *AcpiGbl_ParsedNamespaceRoot;
@@ -137,7 +135,7 @@ UINT32                      AcpiAmlLength;
 UINT8                       *DsdtPtr;
 UINT32                      AcpiDsdtLength;
 
-DEBUG_REGIONS	            Regions;
+DEBUG_REGIONS               Regions;
 
 
 /******************************************************************************
@@ -149,7 +147,7 @@ DEBUG_REGIONS	            Regions;
  * RETURN:      Status
  *
  * DESCRIPTION: Test handler - Handles some dummy regions via memory that can
- *				be manipulated in Ring 3.
+ *              be manipulated in Ring 3.
  *
  *****************************************************************************/
 
@@ -162,42 +160,42 @@ RegionHandler (
     void                        *Context)
 {
 
-    ACPI_OBJECT_INTERNAL	*RegionObject = (ACPI_OBJECT_INTERNAL *)Context;
-	UINT32					BaseAddress;
-	UINT32					Length;
-	BOOLEAN					BufferExists;
-	REGION					*RegionElement;
+    ACPI_OBJECT_INTERNAL    *RegionObject = (ACPI_OBJECT_INTERNAL *)Context;
+    UINT32                  BaseAddress;
+    UINT32                  Length;
+    BOOLEAN                 BufferExists;
+    REGION                  *RegionElement;
     void                    *BufferValue;
     UINT32                  ByteWidth;
-		
+
     printf ("Received an OpRegion request\n");
 
-	/*
-	 * If the object is not a region, simply return
-	 */
-	if (RegionObject->Region.Type != ACPI_TYPE_REGION)
-	{
-		return AE_OK;
-	}
+    /*
+     * If the object is not a region, simply return
+     */
+    if (RegionObject->Region.Type != ACPI_TYPE_REGION)
+    {
+        return AE_OK;
+    }
 
-	/*
-	 * Find the region's address space and length before searching
-	 *	the linked list.
-	 */
-	BaseAddress = RegionObject->Region.Address;
-	Length = RegionObject->Region.Length;
+    /*
+     * Find the region's address space and length before searching
+     *  the linked list.
+     */
+    BaseAddress = RegionObject->Region.Address;
+    Length = RegionObject->Region.Length;
 
-	/*
-	 * Search through the linked list for this region's buffer
-	 */
+    /*
+     * Search through the linked list for this region's buffer
+     */
     BufferExists = FALSE;
 
     RegionElement = Regions.RegionList;
 
     if (0 != Regions.NumberOfRegions)
-	{
+    {
         while (!BufferExists && RegionElement)
-		{
+        {
             if (RegionElement->Address == BaseAddress &&
                 RegionElement->Length == Length)
             {
@@ -207,60 +205,60 @@ RegionHandler (
             {
                 RegionElement = RegionElement->NextRegion;
             }
-		}
-	}
+        }
+    }
 
-	/*
-	 * If the Region buffer does not exist, create it now
-	 */
-	if (FALSE == BufferExists)
-	{
-		/*
-		 * Do the memory allocations first
-		 */
-		RegionElement = AcpiOsdAllocate (sizeof(REGION));
-		if (!RegionElement)
-		{
-			return AE_NO_MEMORY;
-		}
+    /*
+     * If the Region buffer does not exist, create it now
+     */
+    if (FALSE == BufferExists)
+    {
+        /*
+         * Do the memory allocations first
+         */
+        RegionElement = AcpiOsAllocate (sizeof(REGION));
+        if (!RegionElement)
+        {
+            return AE_NO_MEMORY;
+        }
 
-		RegionElement->Buffer = AcpiOsdAllocate (Length);
-		if (!RegionElement->Buffer)
-		{
-			AcpiOsdFree (RegionElement);
-			return AE_NO_MEMORY;
-		}
+        RegionElement->Buffer = AcpiOsAllocate (Length);
+        if (!RegionElement->Buffer)
+        {
+            AcpiOsFree (RegionElement);
+            return AE_NO_MEMORY;
+        }
 
-		RegionElement->Address = BaseAddress;
-		
-		RegionElement->Length = Length;
-		
-		MEMSET(RegionElement->Buffer, 0, Length);
+        RegionElement->Address = BaseAddress;
 
-		RegionElement->NextRegion = NULL;
+        RegionElement->Length = Length;
 
-		/*
-		 * Increment the number of regions and put this one
-		 *	at the head of the list as it will probably get accessed
-		 *	more often anyway.
-		 */
-		Regions.NumberOfRegions += 1;
-		
+        MEMSET(RegionElement->Buffer, 0, Length);
+
+        RegionElement->NextRegion = NULL;
+
+        /*
+         * Increment the number of regions and put this one
+         *  at the head of the list as it will probably get accessed
+         *  more often anyway.
+         */
+        Regions.NumberOfRegions += 1;
+
         if (NULL != Regions.RegionList)
         {
             RegionElement->NextRegion = Regions.RegionList->NextRegion;
         }
-		
-        Regions.RegionList = RegionElement;
-	}
 
-	/*
-	 * The buffer exists and is pointed to by RegionElement.
-     *	We now need to verify the request is valid and perform the operation.
+        Regions.RegionList = RegionElement;
+    }
+
+    /*
+     * The buffer exists and is pointed to by RegionElement.
+     *  We now need to verify the request is valid and perform the operation.
      *
      * NOTE: RegionElement->Length is in bytes, therefore it is multiplied by
      *  the bitwidth of a byte.
-	 */
+     */
     if ((Address + BitWidth) > (RegionElement->Address + (RegionElement->Length * 8)))
     {
         return AE_BUFFER_OVERFLOW;
@@ -363,7 +361,7 @@ NotifyHandler (
         printf ("**** Method Error 0x%X: Results not equal\n", Value);
         if (DebugFile)
         {
-            AcpiOsdPrintf ("**** Method Error: Results not equal\n");
+            AcpiOsPrintf ("**** Method Error: Results not equal\n");
         }
         break;
 
@@ -372,7 +370,7 @@ NotifyHandler (
         printf ("**** Method Error: Incorrect numeric result\n");
         if (DebugFile)
         {
-            AcpiOsdPrintf ("**** Method Error: Incorrect numeric result\n");
+            AcpiOsPrintf ("**** Method Error: Incorrect numeric result\n");
         }
         break;
 
@@ -381,7 +379,7 @@ NotifyHandler (
         printf ("**** Method Error: An operand was overwritten\n");
         if (DebugFile)
         {
-            AcpiOsdPrintf ("**** Method Error: An operand was overwritten\n");
+            AcpiOsPrintf ("**** Method Error: An operand was overwritten\n");
         }
         break;
 
@@ -390,7 +388,7 @@ NotifyHandler (
         printf ("**** Received a notify, value 0x%X\n", Value);
         if (DebugFile)
         {
-            AcpiOsdPrintf ("**** Received a notify, value 0x%X\n", Value);
+            AcpiOsPrintf ("**** Received a notify, value 0x%X\n", Value);
         }
         break;
     }
@@ -439,12 +437,12 @@ AeInstallHandlers (void)
         }
     }
 
-	/*
-	 * Initialize the global Region Handler space
-	 * MCW 3/23/00
-	 */
-	Regions.NumberOfRegions = 0;
-	Regions.RegionList = NULL;
+    /*
+     * Initialize the global Region Handler space
+     * MCW 3/23/00
+     */
+    Regions.NumberOfRegions = 0;
+    Regions.RegionList = NULL;
 
     return Status;
 }
@@ -518,7 +516,6 @@ AdSecondPassParse (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AdGetTables
@@ -542,7 +539,5 @@ xxxAdGetTables (
 
     return Status;
 }
-
-
 
 
