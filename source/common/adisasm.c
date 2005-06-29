@@ -133,7 +133,22 @@ ACPI_GENERIC_OP         *Gbl_ParsedNamespaceRoot;
 ACPI_GENERIC_OP         *root;
 UINT8                   *AmlPtr;
 UINT32                  AmlLength;
+UINT8                    *DsdtPtr;
+UINT32                   DsdtLength;
 
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AdCreateTableHeaders
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: 
+ *
+ *****************************************************************************/
 
 void
 AdCreateTableHeaders (void)
@@ -144,11 +159,23 @@ AdCreateTableHeaders (void)
 }
 
 
+/******************************************************************************
+ * 
+ * FUNCTION:    AdBlockType
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: 
+ *
+ *****************************************************************************/
+
 #define BLOCK_PAREN 1
 #define BLOCK_BRACE 2
 
 INT32
-AdBlockType (
+c (
     ACPI_GENERIC_OP *Op)
 {
 
@@ -194,13 +221,13 @@ AdDisplayTables (void)
         AdCreateTableHeaders ();
     }
 
-    DbDisplayOp (PsGetChild (Gbl_ParsedNamespaceRoot));
+    DbDisplayOp (PsGetChild (Gbl_ParsedNamespaceRoot), ACPI_UINT32_MAX);
 
     OsdPrintf ("\n\nDSDT Header:\n");
-    CmDumpBuffer ((char *) DsdtPtr, sizeof (ACPI_TABLE_HEADER), 0);
+    CmDumpBuffer ((char *) DsdtPtr, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, 0);
 
     OsdPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
-    CmDumpBuffer ((char *) AmlPtr, AmlLength, 0);
+    CmDumpBuffer ((char *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, 0);
 
     return AE_OK;
 }
