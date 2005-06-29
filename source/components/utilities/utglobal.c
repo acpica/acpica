@@ -280,6 +280,7 @@ char BadType[] = "ERROR: unused type encoding found in table";
 /* 
  * Elements of NsTypeNames should be
  * one-to-one with values of NsType in acpinmsp.h
+
  */
 
 /* 
@@ -457,7 +458,7 @@ CmInitGlobals (void)
 
     Gpe0EnableRegisterSave  = NULL;
     Gpe1EnableRegisterSave  = NULL;
-    OriginalMode            = -1;   /*  original ACPI/legacy mode   */
+    OriginalMode            = SYS_MODE_UNKNOWN;   /*  original ACPI/legacy mode   */
     SciHandle				= 0;
     GpeRegisters            = NULL;
     GpeInfo                 = NULL;
