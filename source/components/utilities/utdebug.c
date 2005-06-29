@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmdebug - Debug print routines
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -455,7 +455,15 @@ DebugPrint (
     {
         va_start (args, Format);
 
-        AcpiOsPrintf ("%8s-%04d[%04X]: ", ModuleName, LineNumber, AcpiOsGetThreadId());
+        if (TRACE_THREADS & AcpiDbgLevel)
+        {
+            AcpiOsPrintf ("%8s-%04d[%04X]: ", ModuleName, LineNumber, AcpiOsGetThreadId());
+        }
+        else
+        {
+            AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+        }
+
         AcpiOsVprintf (Format, args);
     }
 }
