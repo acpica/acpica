@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.33 $
+ *       $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -283,7 +283,6 @@ typedef struct ec_boot_resources
     UINT8                   EcId[1];            /* Full namepath of the EC in the ACPI namespace */
 
 } EC_BOOT_RESOURCES;
-
 
 
 #pragma pack()
