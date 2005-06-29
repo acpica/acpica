@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.198 $
+ *       $Revision: 1.199 $
  *
  *****************************************************************************/
 
@@ -486,10 +486,11 @@ typedef UINT8                           ACPI_OBJECT_TYPE8;
 #define INTERNAL_TYPE_SCOPE             0x20  /* Name, multiple Node */
 #define INTERNAL_TYPE_DEF_ANY           0x21  /* type is Any, suppress search of enclosing scopes */
 #define INTERNAL_TYPE_EXTRA             0x22
+#define INTERNAL_TYPE_DATA              0x23
 
-#define INTERNAL_TYPE_MAX               0x22
+#define INTERNAL_TYPE_MAX               0x23
 
-#define INTERNAL_TYPE_INVALID           0x23
+#define INTERNAL_TYPE_INVALID           0x24
 #define ACPI_TYPE_NOT_FOUND             0xFF
 
 
@@ -771,6 +772,12 @@ void (*ACPI_NOTIFY_HANDLER) (
     ACPI_HANDLE                 Device,
     UINT32                      Value,
     void                        *Context);
+
+typedef
+void (*ACPI_OBJECT_HANDLER) (
+    ACPI_HANDLE                 Object,
+    UINT32                      Function,
+    void                        *Data);
 
 
 /* Address Spaces (Operation Regions */
