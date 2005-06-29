@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -400,8 +400,10 @@ AcpiNsDumpOneObject (
                         AcpiUtGetRegionName (ObjDesc->Region.SpaceId)));
             if (ObjDesc->Region.Flags & AOPOBJ_DATA_VALID)
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Addr %p Len %.4X\n",
-                            ObjDesc->Region.Address, ObjDesc->Region.Length));
+                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Addr %8.8X%8.8X Len %.4X\n",
+                            HIDWORD(ObjDesc->Region.Address),
+                            LODWORD(ObjDesc->Region.Address),
+                            ObjDesc->Region.Length));
             }
             else
             {
