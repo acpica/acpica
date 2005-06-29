@@ -241,7 +241,7 @@ NsScopeStackPushEntry (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("NsScopeStackPushEntry");
+    FUNCTION_TRACE_PTR ("NsScopeStackPushEntry", NewScope);
 
 
     if (!NewScope || 
