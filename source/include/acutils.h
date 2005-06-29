@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.92 $
+ *       $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -217,7 +217,7 @@ AcpiCmAllocateOwnerId (
 
 #ifndef ACPI_USE_SYSTEM_CLIBRARY
 
-NATIVE_UINT
+UINT32
 AcpiCmStrlen (
     const NATIVE_CHAR       *String);
 

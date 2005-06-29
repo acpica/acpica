@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.169 $
+ *       $Revision: 1.170 $
  *
  *****************************************************************************/
 
@@ -631,7 +631,7 @@ typedef struct AcpiObjList
 
 typedef struct
 {
-    NATIVE_UINT                 Length;         /* Length in bytes of the buffer */
+    UINT32                      Length;         /* Length in bytes of the buffer */
     void                        *Pointer;       /* pointer to buffer */
 
 } ACPI_BUFFER;
