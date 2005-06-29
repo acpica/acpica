@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.154 $
+ *       $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -559,12 +559,13 @@ AcpiExResolveObjectToValue (
 
 
 /*
- * exdump - Scanner debug output routines
+ * exdump - Interpreter debug output routines
  */
 
 void
 AcpiExDumpOperand (
-    ACPI_OPERAND_OBJECT     *EntryDesc);
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT32                  Depth);
 
 void
 AcpiExDumpOperands (
