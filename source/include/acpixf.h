@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: acpixf.h - External interfaces to the ACPI subsystem
+ * Name: acxface.h - External interfaces to the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -126,12 +126,8 @@
  */
 
 ACPI_STATUS
-AcpiInitializeSubsystem (
-    void);
-
-ACPI_STATUS
-AcpiEnableSubsystem (
-    UINT32                  Flags);
+AcpiInitialize (
+    ACPI_INIT_DATA          *InitData);
 
 ACPI_STATUS
 AcpiTerminate (
@@ -160,12 +156,8 @@ AcpiFormatException (
  */
 
 ACPI_STATUS
-AcpiFindRootPointer (
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress);
-
-ACPI_STATUS
-AcpiLoadTables (
-    ACPI_PHYSICAL_ADDRESS   RsdpPhysicalAddress);
+AcpiLoadFirmwareTables (
+    void);
 
 ACPI_STATUS
 AcpiLoadTable (
@@ -193,6 +185,10 @@ AcpiGetTable (
  */
 
 ACPI_STATUS
+AcpiLoadNamespace (
+    void);
+
+ACPI_STATUS
 AcpiWalkNamespace (
     ACPI_OBJECT_TYPE        Type,
     ACPI_HANDLE             StartObject,
@@ -200,13 +196,6 @@ AcpiWalkNamespace (
     WALK_CALLBACK           UserFunction,
     void                    *Context,
     void *                  *ReturnValue);
-
-ACPI_STATUS
-AcpiGetDevices (
-    NATIVE_CHAR             *HID,
-    WALK_CALLBACK           UserFunction,
-    void                    *Context,
-    void                    **ReturnValue);
 
 ACPI_STATUS
 AcpiGetName (
@@ -305,14 +294,6 @@ AcpiInstallGpeHandler (
     void                    *Context);
 
 ACPI_STATUS
-AcpiAcquireGlobalLock (
-    void);
-
-ACPI_STATUS
-AcpiReleaseGlobalLock (
-    void);
-
-ACPI_STATUS
 AcpiRemoveGpeHandler (
     UINT32                  GpeNumber,
     GPE_HANDLER             Handler);
@@ -369,11 +350,11 @@ AcpiGetIrqRoutingTable  (
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
-    ACPI_PHYSICAL_ADDRESS   PhysicalAddress);
+    void                    *PhysicalAddress);
 
 ACPI_STATUS
 AcpiGetFirmwareWakingVector (
-    ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
+    void                    **PhysicalAddress);
 
 ACPI_STATUS
 AcpiGetProcessorThrottlingInfo (

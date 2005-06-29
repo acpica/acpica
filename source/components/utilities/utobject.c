@@ -151,9 +151,9 @@
 
 ACPI_OBJECT_INTERNAL *
 _CmCreateInternalObject (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
     OBJECT_TYPE_INTERNAL    Type)
 {
     ACPI_OBJECT_INTERNAL    *Object;
@@ -213,7 +213,7 @@ AcpiCmValidInternalObject (
     {
         DEBUG_PRINT (ACPI_INFO,
             ("CmValidInternalObject: **** Null Object Ptr\n"));
-        return (FALSE);
+        return FALSE;
     }
 
     /* Check for a pointer within one of the ACPI tables */
@@ -222,7 +222,7 @@ AcpiCmValidInternalObject (
     {
         DEBUG_PRINT (ACPI_INFO,
             ("CmValidInternalObject: **** Object %p is a Pcode Ptr\n", Object));
-        return (FALSE);
+        return FALSE;
     }
 
     /* Check the descriptor type field */
@@ -252,13 +252,13 @@ AcpiCmValidInternalObject (
                 Object));
         }
 
-        return (FALSE);
+        return FALSE;
     }
 
 
     /* The object appears to be a valid ACPI_OBJECT_INTERNAL */
 
-    return (TRUE);
+    return TRUE;
 }
 
 
@@ -280,9 +280,9 @@ AcpiCmValidInternalObject (
 
 void *
 _CmAllocateObjectDesc (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId)
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId)
 {
     ACPI_OBJECT_INTERNAL    *Object;
 
@@ -453,7 +453,6 @@ AcpiCmDeleteObjectCache (
 
         AcpiCmFree (AcpiGbl_ObjectCache);
         AcpiGbl_ObjectCache = Next;
-        AcpiGbl_ObjectCacheDepth--;
     }
 
     return_VOID;
@@ -699,7 +698,7 @@ AcpiCmGetPackageObjectSize (
             Status =
                 AcpiCmGetSimpleObjectSize (ThisInternalObj, &ObjectSpace);
 
-            if (ACPI_FAILURE (Status))
+            if (Status != AE_OK)
             {
                 return_ACPI_STATUS (Status);
             }
@@ -813,7 +812,7 @@ AcpiCmGetObjectSize(
             AcpiCmGetSimpleObjectSize (InternalObj, ObjLength);
     }
 
-    return (Status);
+    return Status;
 }
 
 
