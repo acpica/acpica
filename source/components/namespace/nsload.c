@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -191,11 +191,11 @@ AcpiNsLoadNamespace (
  *
  * FUNCTION:    AcpiNsOneParsePass
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -208,7 +208,7 @@ AcpiNsOneCompleteParse (
     ACPI_PARSE_UPWARDS      AscendingCallback;
     ACPI_PARSE_OBJECT       *ParseRoot;
     ACPI_STATUS             Status;
-    
+
 
     FUNCTION_TRACE ("NsOneCompleteParse");
 
@@ -306,8 +306,6 @@ AcpiNsParseTable (
     }
 
 
-
-
     /*
      * AML Parse, pass 2
      *
@@ -323,8 +321,6 @@ AcpiNsParseTable (
     {
         return_ACPI_STATUS (Status);
     }
-
-
 
 
     /* TBD: no longer needed, remove */

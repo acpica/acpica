@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,6 @@
         MODULE_NAME         ("nsinit")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsInitializeObjects
@@ -174,7 +173,7 @@ AcpiNsInitializeObjects (
     }
 
     DEBUG_PRINT_RAW (ACPI_OK,
-        ("\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n", 
+        ("\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n",
         Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit, Info.FieldCount, Info.ObjectCount));
     DEBUG_PRINT (TRACE_DISPATCH,
         ("NsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
@@ -197,7 +196,7 @@ AcpiNsInitializeObjects (
  *              This means running _INI on all present devices.
  *
  *              Also: Install PCI config space handler for all PCI root bridges.
- *              A PCI root bridge is found by searching for devices containing 
+ *              A PCI root bridge is found by searching for devices containing
  *              a HID with the value EISAID("PNP0A03")
  *
  *****************************************************************************/
@@ -233,9 +232,9 @@ AcpiNsInitializeDevices (
     }
 
 
-    DEBUG_PRINT_RAW (ACPI_OK, 
+    DEBUG_PRINT_RAW (ACPI_OK,
         ("\n%d Devices found: %d _STA, %d _INI, %d _HID, %d PCIRoot\n",
-        Info.DeviceCount, Info.Num_STA, Info.Num_INI, 
+        Info.DeviceCount, Info.Num_STA, Info.Num_INI,
         Info.Num_HID, Info.Num_PCI));
 
     return_ACPI_STATUS (Status);
@@ -277,7 +276,6 @@ AcpiNsInitOneObject (
 
 
     Info->ObjectCount++;
-
 
 
     /* And even then, we are only interested in a few object types */
@@ -413,7 +411,7 @@ AcpiNsInitOneDevice (
 #ifdef ACPI_DEBUG
         NATIVE_CHAR *ScopeName = AcpiNsGetTablePathname (ObjHandle);
 
-        DEBUG_PRINT (ACPI_ERROR, ("%s._INI failed: %s\n", 
+        DEBUG_PRINT (ACPI_ERROR, ("%s._INI failed: %s\n",
                 ScopeName, AcpiCmFormatException (Status)));
 
         AcpiCmFree (ScopeName);
@@ -515,7 +513,5 @@ Cleanup:
 
     return_ACPI_STATUS (AE_OK);
 }
-
-
 
 
