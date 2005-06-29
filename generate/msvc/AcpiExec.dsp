@@ -312,7 +312,7 @@ SOURCE=..\..\Subsystem\Parser\psutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Parser\pswalk.c
+SOURCE=..\..\subsystem\Parser\pswalk.c
 # End Source File
 # Begin Source File
 
