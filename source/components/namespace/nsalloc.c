@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -292,7 +292,7 @@ NsDeleteValue (
 {
     NAME_TABLE_ENTRY        *Entry = Object;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    void                    *ObjPointer = NULL;
+
     
     FUNCTION_TRACE ("NsDeleteValue");
 
@@ -314,61 +314,28 @@ NsDeleteValue (
         !IS_NS_HANDLE                   (ObjDesc))*/
     {
 
-        /* Object was allocated, there may be some sub objects that must be deleted */
-
         switch (Entry->Type)
         {
-        case TYPE_DefField:
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Field found %p, container %p (not freeing)\n", 
-                                    ObjDesc, ObjDesc->Field.Container));
-            break;
-
-        case TYPE_String:
-            ObjPointer = ObjDesc->String.Pointer;
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** String found %p, ptr %p\n", 
-                                    ObjDesc, ObjDesc->String.Pointer));
-            break;
-
-        case TYPE_Buffer:
-            ObjPointer = ObjDesc->Buffer.Pointer;
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Buffer found %p, ptr %p\n", 
-                                    ObjDesc, ObjDesc->Buffer.Pointer));
-            break;
-
-        case TYPE_Package:
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Package of count %d\n", 
-                                    ObjDesc->Package.Count));
-            break;
-    
-        case TYPE_Method:
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Method found %p\n", 
-                                    ObjDesc));
-            break;
-
         case TYPE_Lvalue:
-            ObjPointer = ObjDesc->Lvalue.Object;
-            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Lvalue: %p\n", 
-                                    ObjPointer));
+        case TYPE_String:
+        case TYPE_Buffer:
+            /* 
+             * Object was allocated, and there may be some sub objects that must be deleted.
+             * We don't expect a package object to be in a value field, just delete
+             * the simple object.
+             */
+
+            CmDeleteInternalSimpleObject (ObjDesc);
             break;
 
         default:
+
+            /*
+             * Everything else, just delete the thing.
+             */
+            CmFree (ObjDesc);
             break;
         }
-
-        if (ObjPointer)
-        {
-            if (!AmlIsInPCodeBlock ((UINT8 *)    ObjPointer))
-            {
-                DEBUG_PRINT (ACPI_INFO, ("Deleting Object Pointer %p \n", ObjPointer));
-    
-                CmFree (ObjPointer);
-            }
-        }
-
-
-        DEBUG_PRINT (ACPI_INFO, ("Deleting Object %p \n", ObjDesc));
-    
-        CmFree (ObjDesc);
     }
 
     /* Clear the entry in all cases */
