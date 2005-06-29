@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.167 $
+ *              $Revision: 1.169 $
  *
  *****************************************************************************/
 
@@ -186,7 +186,7 @@ AcpiExStore (
     /* Destination object must be a Reference or a Constant object */
 
     switch (ACPI_GET_OBJECT_TYPE (DestDesc))
-    {  
+    {
     case INTERNAL_TYPE_REFERENCE:
         break;
 
@@ -227,6 +227,7 @@ AcpiExStore (
     switch (RefDesc->Reference.Opcode)
     {
     case AML_NAME_OP:
+    case AML_REF_OF_OP:
 
         /* Storing an object into a Name "container" */
 
