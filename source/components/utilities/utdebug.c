@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: cmdebug - Debug print routines
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -118,8 +118,8 @@
 
 #include "acpi.h"
 
-#define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmdebug");
+#define _COMPONENT          ACPI_UTILITIES
+        MODULE_NAME         ("cmdebug")
 
 
 /*****************************************************************************
@@ -210,7 +210,7 @@ FunctionTracePtr (
 
     AcpiGbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s, 0x%p\n",
+                " %2.2ld Entered Function: %s, %p\n",
                 AcpiGbl_NestingLevel, FunctionName, Pointer);
 }
 
@@ -276,7 +276,7 @@ FunctionTraceU32 (
 
     AcpiGbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s, 0x%lX\n",
+                " %2.2ld Entered Function: %s, %lX\n",
                 AcpiGbl_NestingLevel, FunctionName, Integer);
 }
 
@@ -373,11 +373,11 @@ FunctionValueExit (
     UINT32                  LineNumber,
     UINT32                  ComponentId,
     NATIVE_CHAR             *FunctionName,
-    NATIVE_UINT             Value)
+    ACPI_INTEGER            Value)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s, 0x%X\n",
+                " %2.2ld Exiting Function: %s, %X\n",
                 AcpiGbl_NestingLevel, FunctionName, Value);
 
     AcpiGbl_NestingLevel--;
@@ -411,7 +411,7 @@ FunctionPtrExit (
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s, 0x%p\n",
+                " %2.2ld Exiting Function: %s, %p\n",
                 AcpiGbl_NestingLevel, FunctionName, Ptr);
 
     AcpiGbl_NestingLevel--;
@@ -455,7 +455,7 @@ DebugPrint (
     {
         va_start (args, Format);
 
-        AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+        AcpiOsPrintf ("%8s-%04d[%04X]: ", ModuleName, LineNumber, AcpiOsGetThreadId());
         AcpiOsVprintf (Format, args);
     }
 }
