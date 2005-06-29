@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -257,7 +257,6 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     /*"NATIVE_CHAR  ",            "native_char  ",*/
 
     "ACPI_ADR_SPACE_HANDLER",
-    "ACPI_ADR_SPACE_INFO",
     "ACPI_ADR_SPACE_SETUP",
     "ACPI_BUFFER",
     "ACPI_BUS_ATTRIBUTE",
