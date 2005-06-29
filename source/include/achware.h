@@ -203,8 +203,8 @@ enum
 #define SLPBTN_STS_MASK     0x0200
 #define RTC_STS_MASK        0x0400
 #define WAK_STS_MASK        0x8000
-#define ALL_FIXED_STS_BITS  \
-                            (TMR_STS_MASK      |   \
+
+#define ALL_FIXED_STS_BITS  (TMR_STS_MASK      |   \
                             BM_STS_MASK        |   \
                             GBL_STS_MASK       |   \
                             PWRBTN_STS_MASK    |   \
@@ -246,6 +246,11 @@ enum
     #define CLEAR           0
 #endif
 
+
+
+/* Prototypes */
+
+
 ACPI_STATUS
 HwInitialize();
 
@@ -271,9 +276,9 @@ HwGetModeCapabilities (
 
 UINT32
 HwRegisterIO (
-    INT32                   ReadWrite,
-	UINT32					UseLock,	
-    INT32                   RegisterId, ... /* DWORD Value */);
+    NATIVE_UINT             ReadWrite,
+	BOOLEAN					UseLock,	
+    UINT32                  RegisterId, ... /* DWORD Value */);
 
 void 
 HwClearAcpiStatus (
