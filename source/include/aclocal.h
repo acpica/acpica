@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.77 $
+ *       $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -216,7 +216,7 @@ typedef UINT16                      ACPI_OWNER_ID;
 
 /* TBD: [Restructure] get rid of the need for this! */
 
-#define TABLE_ID_DSDT               (ACPI_OWNER_ID) 0xD1D1
+#define TABLE_ID_DSDT               (ACPI_OWNER_ID) 0x8000
 
 /*****************************************************************************
  *
@@ -248,8 +248,8 @@ typedef struct acpi_node
 {
     UINT8                   DataType;
     UINT8                   Type;           /* Type associated with this name */
-    UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
     UINT16                  OwnerId;
+    UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
 
 
     void                    *Object;        /* Pointer to attached ACPI object (optional) */
@@ -634,8 +634,9 @@ typedef struct acpi_parse_state
 #define NEXT_OP_DOWNWARD    1
 #define NEXT_OP_UPWARD      2
 
-#define WALK_METHOD         1
 #define WALK_NON_METHOD     0
+#define WALK_METHOD         1
+#define WALK_METHOD_RESTART 2
 
 typedef struct acpi_walk_state
 {
@@ -698,13 +699,31 @@ typedef struct acpi_walk_list
 
 /* Info used by AcpiPsInitObjects */
 
-typedef struct InitWalkInfo
+typedef struct acpi_init_walk_info
 {
-    UINT32                  MethodCount;
-    UINT32                  OpRegionCount;
+    UINT16                  MethodCount;
+    UINT16                  OpRegionCount;
+    UINT16                  FieldCount;
+    UINT16                  OpRegionInit;
+    UINT16                  FieldInit;
+    UINT16                  ObjectCount;
     ACPI_TABLE_DESC         *TableDesc;
 
-} INIT_WALK_INFO;
+} ACPI_INIT_WALK_INFO;
+
+
+/* Info used by TBD */
+
+typedef struct acpi_device_walk_info
+{
+    UINT16                  DeviceCount;
+    UINT16                  Num_STA;
+    UINT16                  Num_INI;
+    UINT16                  Num_HID;
+    UINT16                  Num_PCI;
+    ACPI_TABLE_DESC         *TableDesc;
+
+} ACPI_DEVICE_WALK_INFO;
 
 
 /* TBD: [Restructure] Merge with struct above */
@@ -724,16 +743,23 @@ typedef struct AcpiWalkInfo
  ****************************************************************************/
 
 
+/* PCI */
+
+#define PCI_ROOT_HID_STRING         "PNP0A03"
+#define PCI_ROOT_HID_VALUE          0x030AD041       /* EISAID("PNP0A03") */
+
+
+
 /* Sleep states */
 
-#define SLWA_DEBUG_LEVEL    4
-#define GTS_CALL            0
-#define GTS_WAKE            1
+#define SLWA_DEBUG_LEVEL            4
+#define GTS_CALL                    0
+#define GTS_WAKE                    1
 
 /* Cx States */
 
-#define MAX_CX_STATE_LATENCY 0xFFFFFFFF
-#define MAX_CX_STATES       4
+#define MAX_CX_STATE_LATENCY        0xFFFFFFFF
+#define MAX_CX_STATES               4
 
 /*
  * The #define's and enum below establish an abstract way of identifying what
@@ -741,17 +767,17 @@ typedef struct AcpiWalkInfo
  * values as they are used in switch statements and offset calculations.
  */
 
-#define REGISTER_BLOCK_MASK     0xFF00
-#define BIT_IN_REGISTER_MASK    0x00FF
-#define PM1_EVT                 0x0100
-#define PM1_CONTROL             0x0200
-#define PM2_CONTROL             0x0300
-#define PM_TIMER                0x0400
-#define PROCESSOR_BLOCK         0x0500
-#define GPE0_STS_BLOCK          0x0600
-#define GPE0_EN_BLOCK           0x0700
-#define GPE1_STS_BLOCK          0x0800
-#define GPE1_EN_BLOCK           0x0900
+#define REGISTER_BLOCK_MASK         0xFF00
+#define BIT_IN_REGISTER_MASK        0x00FF
+#define PM1_EVT                     0x0100
+#define PM1_CONTROL                 0x0200
+#define PM2_CONTROL                 0x0300
+#define PM_TIMER                    0x0400
+#define PROCESSOR_BLOCK             0x0500
+#define GPE0_STS_BLOCK              0x0600
+#define GPE0_EN_BLOCK               0x0700
+#define GPE1_STS_BLOCK              0x0800
+#define GPE1_EN_BLOCK               0x0900
 
 enum
 {
