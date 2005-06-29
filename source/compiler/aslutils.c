@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -506,7 +506,7 @@ UtDisplaySummary (
 
     FlPrintFile (FileId,
         "Compilation complete. %d Errors, %d Warnings, %d Remarks, %d Optimizations\n",
-        Gbl_ExceptionCount[ASL_ERROR], 
+        Gbl_ExceptionCount[ASL_ERROR],
         Gbl_ExceptionCount[ASL_WARNING],
         Gbl_ExceptionCount[ASL_REMARK],
         Gbl_ExceptionCount[ASL_OPTIMIZATION]);
