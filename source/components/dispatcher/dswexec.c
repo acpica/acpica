@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@ static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] = {
                             AcpiExOpcode_3A_1T_1R,
                             AcpiExOpcode_6A_0T_1R};
 
-
+#ifdef ACPI_DEBUG_OUTPUT
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDsDumpMethodInfo
@@ -238,6 +238,7 @@ AcpiDsDumpMethodInfo (
     AcpiDbDisplayArguments ();
     AcpiOsPrintf ("\n");
 }
+#endif
 
 
 /*****************************************************************************
