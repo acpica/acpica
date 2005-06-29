@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.11 $
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,7 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acnamesp.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          ACPI_COMPILER
@@ -128,450 +129,59 @@
 
 
 UINT32 OptTotal = 0;
-
-
 /*******************************************************************************
  *
- * FUNCTION:    OptSearchToRoot
+ * FUNCTION:    LkOptimizeNamedReference
  *
  * PARAMETERS:  Op                  - Current parser op
- *              WalkState           - Current state
- *              CurrentNode         - Where we are in the namespace
- *              TargetNode          - Node to which we are referring
- *              TargetPath          - External full path to the target node
- *              NewPath             - Where the optimized path is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Attempt to optimize a reference to a single 4-character ACPI
- *              name utilizing the search-to-root name resolution algorithm
- *              that is used by AML interpreters.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-OptSearchToRoot (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *CurrentNode,
-    ACPI_NAMESPACE_NODE     *TargetNode,
-    ACPI_BUFFER             *TargetPath,
-    char                    **NewPath)
-{
-    ACPI_NAMESPACE_NODE     *Node;
-    ACPI_GENERIC_STATE      ScopeInfo;
-    ACPI_STATUS             Status;
-    char                    *Path;
-
-
-    ACPI_FUNCTION_NAME ("OptSearchToRoot");
-
-
-    /*
-     * Check if search-to-root can be utilized.  Use the last NameSeg of
-     * the NamePath and 1) See if can be found and 2) If found, make
-     * sure that it is the same node that we want.  If there is another
-     * name in the search path before the one we want, the nodes will
-     * not match, and we cannot use this optimization.
-     */
-    Path = &(((char *) TargetPath->Pointer)[TargetPath->Length - ACPI_NAME_SIZE]),
-    ScopeInfo.Scope.Node = CurrentNode;
-
-    /* Lookup the NameSeg using SEARCH_PARENT (search-to-root) */
-
-    Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-                    ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE,
-                    WalkState, &(Node));
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    /*
-     * We found the name, but we must check to make sure that the node
-     * matches.  Otherwise, there is another identical name in the search
-     * path that precludes the use of this optimization.
-     */
-    if (Node != TargetNode)
-    {
-        /*
-         * This means that another object with the same name was found first,
-         * and we cannot use this optimization.
-         */
-        return (AE_NOT_FOUND);
-    }
-
-    /* Found the node, we can use this optimization */
-
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS,
-        "NAMESEG:   %-24s", Path));
-
-    /* We must allocate a new string for the name (TargetPath gets deleted) */
-
-    *NewPath = ACPI_MEM_CALLOCATE (ACPI_NAME_SIZE + 1);
-    ACPI_STRCPY (*NewPath, Path);
-
-    AslError (ASL_OPTIMIZATION, ASL_MSG_SINGLE_NAME_OPTIMIZATION, Op,
-            *NewPath);
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    OptBuildShortestPath
- *
- * PARAMETERS:  Op                  - Current parser op
- *              WalkState           - Current state
- *              CurrentNode         - Where we are in the namespace
- *              TargetNode          - Node to which we are referring
- *              CurrentPath         - External full path to the current node
- *              TargetPath          - External full path to the target node
- *              AmlNameStringLength - Length of the original namepath
- *              IsDeclaration       - TRUE for declaration, FALSE for reference
- *              ReturnNewPath       - Where the optimized path is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Build an optimal NamePath using carats
- *
- ******************************************************************************/
-
-ACPI_STATUS
-OptBuildShortestPath (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *CurrentNode,
-    ACPI_NAMESPACE_NODE     *TargetNode,
-    ACPI_BUFFER             *CurrentPath,
-    ACPI_BUFFER             *TargetPath,
-    ACPI_SIZE               AmlNameStringLength,
-    UINT8                   IsDeclaration,
-    char                    **ReturnNewPath)
-{
-    UINT32                  NumCommonSegments;
-    UINT32                  MaxCommonSegments;
-    ACPI_NATIVE_UINT        Index;
-    UINT32                  NumCarats;
-    ACPI_NATIVE_UINT        i;
-    char                    *NewPath;
-    char                    *NewPathExternal;
-    ACPI_NAMESPACE_NODE     *Node;
-    ACPI_GENERIC_STATE      ScopeInfo;
-    ACPI_STATUS             Status;
-    BOOLEAN                 SubPath = FALSE;
-
-
-    ACPI_FUNCTION_NAME ("OptBuildShortestPath");
-
-
-    ScopeInfo.Scope.Node = CurrentNode;
-
-    /*
-     * Determine the maximum number of NameSegs that the Target and Current paths
-     * can possibly have in common.  (To optimize, we have to have at least 1)
-     *
-     * Note: The external NamePath string lengths are always a multiple of 5
-     * (ACPI_NAME_SIZE + separator)
-     */
-    MaxCommonSegments = TargetPath->Length / ACPI_PATH_SEGMENT_LENGTH;
-    if (CurrentPath->Length < TargetPath->Length)
-    {
-        MaxCommonSegments = CurrentPath->Length / ACPI_PATH_SEGMENT_LENGTH;
-    }
-
-    /*
-     * Determine how many NameSegs the two paths have in common.
-     * (Starting from the root)
-     */
-    for (NumCommonSegments = 0;
-         NumCommonSegments < MaxCommonSegments;
-         NumCommonSegments++)
-    {
-        /* Compare two single NameSegs */
-
-        if (ACPI_STRNCMP (
-            &((char *) TargetPath->Pointer)[(NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1],
-            &((char *) CurrentPath->Pointer)[(NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1],
-            ACPI_NAME_SIZE))
-        {
-            /* Mismatch */
-
-            break;
-        }
-    }
-
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " COMMON: %d", NumCommonSegments));
-
-    /* There must be at least 1 common NameSeg in order to optimize */
-
-    if (NumCommonSegments == 0)
-    {
-        return (AE_NOT_FOUND);
-    }
-
-    if (NumCommonSegments == MaxCommonSegments)
-    {
-        if (CurrentPath->Length == TargetPath->Length)
-        {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " SAME PATH"));
-            return (AE_NOT_FOUND);
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " SUBPATH"));
-            SubPath = TRUE;
-        }
-    }
-
-    /* Determine how many prefix Carats are required */
-
-    NumCarats = (CurrentPath->Length / ACPI_PATH_SEGMENT_LENGTH) - NumCommonSegments;
-
-    /*
-     * Construct a new target string
-     */
-    NewPathExternal = ACPI_MEM_CALLOCATE (TargetPath->Length + NumCarats);
-
-    /* Insert the Carats into the Target string */
-
-    for (i = 0; i < NumCarats; i++)
-    {
-        NewPathExternal[i] = '^';
-    }
-
-    /* Copy only the necessary (optimal) segments from the original target string */
-
-    Index = (NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1;
-
-    /* Special handling for exact subpath in a name declaration */
-
-    if (IsDeclaration && SubPath && (CurrentPath->Length > TargetPath->Length))
-    {
-        /*
-         * The current path is longer than the target, and the target is a subpath
-         * of the current path.  We must include one more NameSeg of the target path
-         */
-        Index -= ACPI_PATH_SEGMENT_LENGTH;
-    }
-
-    ACPI_STRCPY (&NewPathExternal[i], &((char *) TargetPath->Pointer)[Index]);
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " %-24s", NewPathExternal));
-
-    /*
-     * Internalize the new target string and check it against the original string
-     * to make sure that this is in fact an optimization.  If the original string
-     * is already optimal, there is no point in continuing.
-     */
-    Status = AcpiNsInternalizeName (NewPathExternal, &NewPath);
-
-    if (ACPI_FAILURE (Status))
-    {
-        AslCoreSubsystemError (Op, Status, "Internalizing new NamePath", ASL_NO_ABORT);
-        ACPI_MEM_FREE (NewPathExternal);
-        return (Status);
-    }
-
-    if (ACPI_STRLEN (NewPath) >= AmlNameStringLength)
-    {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " NOT SHORTER (New %d old %d)",
-            ACPI_STRLEN (NewPath), AmlNameStringLength));
-        ACPI_MEM_FREE (NewPathExternal);
-        return (AE_NOT_FOUND);
-    }
-
-    /*
-     * Check to make sure that the optimization finds the node we are
-     * looking for.  This is simply a sanity check on the new
-     * path that has been created.
-     */
-    Status = AcpiNsLookup (&ScopeInfo,  NewPath,
-                    ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-                    ACPI_NS_DONT_OPEN_SCOPE, WalkState, &(Node));
-    if (ACPI_SUCCESS (Status))
-    {
-        /* Found the namepath, but make sure the node is correct */
-
-        if (Node == TargetNode)
-        {
-            /* The lookup matched the node, accept this optimization */
-
-            AslError (ASL_OPTIMIZATION, ASL_MSG_NAME_OPTIMIZATION,
-                Op, NewPathExternal);
-            *ReturnNewPath = NewPath;
-        }
-        else
-        {
-            /* Node is not correct, do not use this optimization */
-
-            Status = AE_NOT_FOUND;
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " ***** WRONG NODE"));
-            AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op,
-                "Not using optimized name - found wrong node");
-        }
-    }
-    else
-    {
-        /* The lookup failed, we obviously cannot use this optimization */
-
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " ***** NOT FOUND"));
-        AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op,
-            "Not using optimized name - did not find node");
-    }
-
-    ACPI_MEM_FREE (NewPathExternal);
-    return (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    OptOptimizeNameDeclaration
- *
- * PARAMETERS:  Op                  - Current parser op
- *              WalkState           - Current state
- *              CurrentNode         - Where we are in the namespace
- *              AmlNameString       - Unoptimized namepath
- *              NewPath             - Where the optimized path is returned
- *
- * RETURN:      Status. AE_OK If path is optimized
- *
- * DESCRIPTION: Perform a simple optimization of removing an extraneous
- *              backslash prefix if we are already at the root scope.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-OptOptimizeNameDeclaration (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *CurrentNode,
-    ACPI_NAMESPACE_NODE     *TargetNode,
-    char                    *AmlNameString,
-    char                    **NewPath)
-{
-    ACPI_STATUS             Status;
-    char                    *NewPathExternal;
-    ACPI_GENERIC_STATE      ScopeInfo;
-    ACPI_NAMESPACE_NODE     *Node;
-
-
-    ACPI_FUNCTION_TRACE ("OptOptimizeNameDeclaration");
-
-
-    if (((CurrentNode == AcpiGbl_RootNode) ||
-        (Op->Common.Parent->Asl.ParseOpcode == PARSEOP_DEFINITIONBLOCK)) &&
-            (AmlNameString[0] == '\\'))
-    {
-        /*
-         * The current scope is the root, and the namepath has a root prefix
-         * that is therefore extraneous.  Remove it.
-         */
-        *NewPath = &AmlNameString[1];
-
-        /* Debug output */
-
-        Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, *NewPath,
-                    NULL, &NewPathExternal);
-        if (ACPI_FAILURE (Status))
-        {
-            AslCoreSubsystemError (Op, Status, "Externalizing NamePath", ASL_NO_ABORT);
-            return (Status);
-        }
-
-        /*
-         * Check to make sure that the optimization finds the node we are
-         * looking for.  This is simply a sanity check on the new
-         * path that has been created.
-         */
-        ScopeInfo.Scope.Node = CurrentNode;
-        Status = AcpiNsLookup (&ScopeInfo, *NewPath,
-                        ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-                        ACPI_NS_DONT_OPEN_SCOPE, WalkState, &(Node));
-        if (ACPI_SUCCESS (Status))
-        {
-            /* Found the namepath, but make sure the node is correct */
-
-            if (Node == TargetNode)
-            {
-                /* The lookup matched the node, accept this optimization */
-
-                AslError (ASL_OPTIMIZATION, ASL_MSG_NAME_OPTIMIZATION,
-                    Op, NewPathExternal);
-
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS,
-                    "AT ROOT:   %-24s", NewPathExternal));
-            }
-            else
-            {
-                /* Node is not correct, do not use this optimization */
-
-                Status = AE_NOT_FOUND;
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " ***** WRONG NODE"));
-                AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op,
-                    "Not using optimized name - found wrong node");
-            }
-        }
-        else
-        {
-            /* The lookup failed, we obviously cannot use this optimization */
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " ***** NOT FOUND"));
-            AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op,
-                "Not using optimized name - did not find node");
-        }
-
-        ACPI_MEM_FREE (NewPathExternal);
-        return (Status);
-    }
-
-    /* Could not optimize */
-
-    return (AE_NOT_FOUND);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    OptOptimizeNamePath
- *
- * PARAMETERS:  Op                  - Current parser op
- *              Flags               - Opcode info flags
  *              WalkState           - Current state
  *              AmlNameString       - Unoptimized namepath
  *              TargetNode          - Node to which AmlNameString refers
  *
  * RETURN:      None.  If path is optimized, the Op is updated with new path
  *
- * DESCRIPTION: Optimize a Named Declaration or Reference to the minimal length.
- *              Must take into account both the current location in the
- *              namespace and the actual reference path.
+ * DESCRIPTION: Optimize a Named Reference to the minimal length.  Must take
+ *              into account both the current location in the namespace and
+ *              the actual reference path.
  *
  ******************************************************************************/
 
 void
-OptOptimizeNamePath (
+LkOptimizeNamePath (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Flags,
     ACPI_WALK_STATE         *WalkState,
-    char                    *AmlNameString,
+    NATIVE_CHAR             *AmlNameString,
     ACPI_NAMESPACE_NODE     *TargetNode)
 {
     ACPI_STATUS             Status;
     ACPI_BUFFER             TargetPath;
     ACPI_BUFFER             CurrentPath;
+    ACPI_SIZE               TargetPathLength;
+    ACPI_SIZE               CurrentPathLength;
     ACPI_SIZE               AmlNameStringLength;
+    UINT32                  NumCommonSegments;
+    UINT32                  MaxCommonSegments;
     ACPI_NAMESPACE_NODE     *CurrentNode;
+    ACPI_NAMESPACE_NODE     *Node = NULL;
     char                    *ExternalNameString;
     char                    *NewPath = NULL;
-    ACPI_SIZE               HowMuchShorter;
-    ACPI_PARSE_OBJECT       *NextOp;
+    char                    *NewPathExternal;
+    UINT32                  OptCount = 0;
+    NATIVE_UINT             Index;
+    UINT32                  NumCarats;
+    NATIVE_UINT             i;
+    ACPI_GENERIC_STATE      ScopeInfo;
 
 
-    ACPI_FUNCTION_TRACE ("OptOptimizeNamePath");
+    ACPI_FUNCTION_TRACE ("LkOptimizeNamedReference");
 
-
+#if 0
+    if (Flags & AML_NAMED)
+    {
+        return_VOID;
+    }
+#endif
     /* This is an optional optimization */
 
     if (!Gbl_ReferenceOptimizationFlag)
@@ -581,85 +191,92 @@ OptOptimizeNamePath (
 
     /* Various required items */
 
-    if (!TargetNode || !WalkState || !Op->Common.Parent)
+    if (!TargetNode || !WalkState)
     {
         return_VOID;
     }
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "%5d [%12.12s] [%12.12s] ",
-        Op->Asl.LogicalLineNumber,
-        AcpiPsGetOpcodeName (Op->Common.Parent->Common.AmlOpcode),
+    /* We don't want to optimize paths for certain opcodes */
+
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "%5d [%12.12s] [%12.12s] ", 
+        Op->Asl.LogicalLineNumber, 
+        AcpiPsGetOpcodeName (Op->Common.Parent->Common.AmlOpcode), 
         AcpiPsGetOpcodeName (Op->Common.AmlOpcode)));
 
-    if (!(Flags & (AML_NAMED | AML_CREATE)))
+    if (Flags & AML_NAMED)
     {
+#if 0
+        if (Op->Common.AmlOpcode == AML_ALIAS_OP)
+        {
+            Flags &= ~AML_NAMED;
+        }
+#endif
+    }
+#if 0
+    else if (Flags & AML_CREATE)
+    {
+    }
+#endif
+    else
+    {
+        /* We don't want to fuss with actual name declaration nodes here */
+
         if (Op->Asl.CompileFlags & NODE_IS_NAME_DECLARATION)
         {
-            /* We don't want to fuss with actual name declaration nodes here */
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS,
-                "******* NAME DECLARATION\n"));
-            return_VOID;
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "******* NAME DECLARATION")); 
+            goto Exit;
         }
     }
 
-    /*
+    /* 
      * The original path must be longer than one NameSeg (4 chars) for there
-     * to be any possibility that it can be optimized to a shorter string
+     * to be any possibility that it can be optimized to a shorter string 
      */
     AmlNameStringLength = ACPI_STRLEN (AmlNameString);
     if (AmlNameStringLength <= ACPI_NAME_SIZE)
     {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS,
-            "NAMESEG %4.4s\n", AmlNameString));
-        return_VOID;
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "NAMESEG %4.4s", AmlNameString)); 
+        goto Exit;
     }
 
-    /*
-     * We need to obtain the node that represents the current scope -- where
-     * we are right now in the namespace.  We will compare this path
-     * against the Namepath, looking for commonality.
-     */
     CurrentNode = AcpiGbl_RootNode;
-    if (WalkState->ScopeInfo)
-    {
-        CurrentNode = WalkState->ScopeInfo->Scope.Node;
-    }
-
     if (Flags & (AML_NAMED | AML_CREATE))
     {
-        /* This is the declaration of a new name */
-
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "NAME"));
-
-        /* The node of interest is the parent of this node (the containing scope) */
-
-        CurrentNode = Op->Asl.Parent->Asl.Node;
-        if (!CurrentNode)
+        if (WalkState->ScopeInfo)
         {
-            CurrentNode = AcpiGbl_RootNode;
+            if (AcpiNsOpensScope (TargetNode->Type))
+            {
+                CurrentNode = AcpiNsGetParentNode (WalkState->ScopeInfo->Scope.Node);
+            }
+            else
+            {
+                CurrentNode = WalkState->ScopeInfo->Scope.Node;
+            }
         }
     }
     else
     {
-        /* This is a reference to an existing named object */
-
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "REF "));
+        if (WalkState->ScopeInfo)
+        {
+            CurrentNode = WalkState->ScopeInfo->Scope.Node;
+        }
     }
 
+    ScopeInfo.Scope.Node = CurrentNode;
+
     /*
-     * Obtain the full paths to the two nodes that we are interested in
-     * (Target and current namespace location) in external
-     * format -- something we can easily manipulate
+     * Convert the namestrings (Target and current namespace location) to
+     * external format -- something we can easily manipulate
      */
     TargetPath.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
     Status = AcpiNsHandleToPathname (TargetNode, &TargetPath);
     if (ACPI_FAILURE (Status))
     {
-        AslCoreSubsystemError (Op, Status, "Getting Target NamePath", ASL_NO_ABORT);
-        return_VOID;
+        AslAbort ();
     }
-    TargetPath.Length--;    /* Subtract one for null terminator */
+    TargetPathLength = ACPI_STRLEN (TargetPath.Pointer);
 
     /* CurrentPath is the path to this scope (where we are in the namespace) */
 
@@ -667,114 +284,233 @@ OptOptimizeNamePath (
     Status = AcpiNsHandleToPathname (CurrentNode, &CurrentPath);
     if (ACPI_FAILURE (Status))
     {
-        AslCoreSubsystemError (Op, Status, "Getting Current NamePath", ASL_NO_ABORT);
-        return_VOID;
+        AslAbort ();
     }
-    CurrentPath.Length--;   /* Subtract one for null terminator */
+    CurrentPathLength = ACPI_STRLEN (CurrentPath.Pointer);
 
     /* Debug output only */
 
-    Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, AmlNameString,
+    Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, AmlNameString, 
                 NULL, &ExternalNameString);
     if (ACPI_FAILURE (Status))
     {
-        AslCoreSubsystemError (Op, Status, "Externalizing NamePath", ASL_NO_ABORT);
-        return_VOID;
+        AslAbort ();
     }
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS,
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, 
         "%37s (%2d) ==> %-32s(%2d) %-32s",
-        (char *) CurrentPath.Pointer, CurrentPath.Length,
-        (char *) TargetPath.Pointer, TargetPath.Length, ExternalNameString));
+        (char *) CurrentPath.Pointer, CurrentPathLength,
+        (char *) TargetPath.Pointer, TargetPathLength, ExternalNameString));
 
     ACPI_MEM_FREE (ExternalNameString);
 
-    /*
-     * Attempt an optmization depending on the type of namepath
-     */
-    if (Flags & (AML_NAMED | AML_CREATE))
+    Status = AE_NOT_FOUND;
+    if (!(Flags & (AML_NAMED | AML_CREATE)))
     {
-        /*
-         * This is a named opcode and the namepath is a name declaration, not
-         * a reference.
+        /* 
+         * Check if search-to-root can be utilized.  Use the last NameSeg of
+         * the NamePath and 1) See if can be found and 2) If found, make
+         * sure that it is the same node that we want.  If there is another
+         * name in the search path before the one we want, the nodes will
+         * not match, and we cannot use this optimization.
          */
-        Status = OptOptimizeNameDeclaration (Op, WalkState, CurrentNode,
-                    TargetNode, AmlNameString, &NewPath);
-        if (ACPI_FAILURE (Status))
+        NewPath = &(((NATIVE_CHAR *) TargetPath.Pointer)[TargetPathLength - ACPI_NAME_SIZE]);
+        NewPathExternal = NewPath;
+
+        /* Lookup the NameSeg using SEARCH_PARENT (search-to-root) */
+
+        Status = AcpiNsLookup (&ScopeInfo,  NewPath,
+                                ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
+                                ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
+        if (ACPI_SUCCESS (Status))
         {
-            /*
-             * 2) now attempt to
-             *    optimize the namestring with carats (up-arrow)
+            /* 
+             * We found the name, but we must check to make sure that the node
+             * matches.  Otherwise, there is another identical name in the search
+             * path that precludes the use of this optimization.
              */
-            Status = OptBuildShortestPath (Op, WalkState, CurrentNode,
-                            TargetNode, &CurrentPath, &TargetPath,
-                            AmlNameStringLength, 1, &NewPath);
+            if (Node == TargetNode)
+            {
+                /* Found the node, we can use this optimization */
+
+                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS,
+                    "NAMESEG:   %-24s", NewPath));
+                OptCount = (AmlNameStringLength - ACPI_NAME_SIZE);
+
+                /* We must allocate a new string for the name (TargetPath gets deleted) */
+
+                NewPath = ACPI_MEM_CALLOCATE (ACPI_NAME_SIZE + 1);
+                ACPI_STRCPY (NewPath, NewPathExternal);
+
+                AslError (ASL_OPTIMIZATION, ASL_MSG_SINGLE_NAME_OPTIMIZATION, Op, 
+                    NewPathExternal);
+            }
+            else
+            {
+                /* This means that another object with the same name was found first */
+
+                Status = AE_NOT_FOUND;
+            }
         }
     }
     else
     {
-        /*
-         * This is a reference to an existing named object
-         *
-         * 1) Check if search-to-root can be utilized using the last
-         *    NameSeg of the NamePath
-         */
-        Status = OptSearchToRoot (Op, WalkState, CurrentNode,
-                        TargetNode, &TargetPath, &NewPath);
-        if (ACPI_FAILURE (Status))
+        if (((CurrentNode == AcpiGbl_RootNode) || 
+            (Op->Common.Parent->Asl.ParseOpcode == PARSEOP_DEFINITIONBLOCK)) && 
+                (AmlNameString[0] == '\\'))
         {
-            /*
-             * 2) Search-to-root could not be used, now attempt to
-             *    optimize the namestring with carats (up-arrow)
-             */
-            Status = OptBuildShortestPath (Op, WalkState, CurrentNode,
-                            TargetNode, &CurrentPath, &TargetPath,
-                            AmlNameStringLength, 0, &NewPath);
+            NewPath = &AmlNameString[1];
+
+            Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, NewPath, 
+                        NULL, &ExternalNameString);
+            if (ACPI_FAILURE (Status))
+            {
+                /* TBD: this simply quietly aborts! */
+
+                AslAbort ();
+            }
+            AslError (ASL_OPTIMIZATION, ASL_MSG_NAME_OPTIMIZATION, Op, ExternalNameString);
+            
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS,
+                "AT ROOT:   %-24s", ExternalNameString));
+
+            ACPI_MEM_FREE (ExternalNameString);
+            OptCount = 1;
+            Status = AE_OK;
         }
     }
 
     /*
-     * Success from above indicates that the NamePath was successfully
-     * optimized.  We need to update the parse op with the new name
+     * If search-to-root could not be used, attempt to optimize the namestring
+     * with carats (up-arrow)
      */
-    if (ACPI_SUCCESS (Status))
+    if (ACPI_FAILURE (Status))
     {
-        HowMuchShorter = (AmlNameStringLength - ACPI_STRLEN (NewPath));
-        OptTotal += HowMuchShorter;
-
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " REDUCED %2d (%d)",
-            HowMuchShorter, OptTotal));
-
-        if (Flags & AML_NAMED)
+        /*
+         * Determine the maximum number of NameSegs that the Target and Current paths
+         * can possibly have in common.  (To optimize, we have to have at least 1) 
+         * 
+         * Note: The external NamePath string lengths are always a multiple of 5 
+         * (ACPI_NAME_SIZE + separator)
+         */
+        MaxCommonSegments = TargetPathLength / PATH_SEGMENT_LENGTH;
+        if (CurrentPathLength < TargetPathLength)
         {
-            if (Op->Asl.AmlOpcode == AML_ALIAS_OP)
+            MaxCommonSegments = CurrentPathLength / PATH_SEGMENT_LENGTH;
+        }
+
+        /* 
+         * Determine how many NameSegs the two paths have in common.
+         * (Starting from the root)
+         */
+        for (NumCommonSegments = 0; 
+             NumCommonSegments < MaxCommonSegments; 
+             NumCommonSegments++)
+        {
+            /* Compare two single NameSegs */
+
+            if (ACPI_STRNCMP (
+                &((NATIVE_CHAR *) TargetPath.Pointer)[(NumCommonSegments * PATH_SEGMENT_LENGTH) + 1],
+                &((NATIVE_CHAR *) CurrentPath.Pointer)[(NumCommonSegments * PATH_SEGMENT_LENGTH) + 1],
+                ACPI_NAME_SIZE))
             {
-                /*
-                 * ALIAS is the only oddball opcode, the name declaration
-                 * (alias name) is the second operand
+                break;
+            }
+        }
+
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " COMMON: %d", NumCommonSegments));
+
+        /* There must be at least 1 common NameSeg in order to optimize */
+
+        if (NumCommonSegments > 0)
+        {
+            /* Determine how many prefix Carats are required */
+
+            NumCarats = (CurrentPathLength / PATH_SEGMENT_LENGTH) - NumCommonSegments;
+            Index = (NumCommonSegments * PATH_SEGMENT_LENGTH) + 1 - NumCarats;
+
+            /* Insert the Carats into the Target string */
+
+            for (i = 0; i < NumCarats; i++)
+            {
+                ((NATIVE_CHAR *) TargetPath.Pointer)[Index + i] = '^';
+            }
+
+            NewPathExternal = &((NATIVE_CHAR *) TargetPath.Pointer)[Index];
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " %-24s", NewPathExternal));
+
+            /*
+             * Internalize the new target string and check it against the original string
+             * to make sure that this is in fact an optimization.  If the original string
+             * is already optimal, there is no point in continuing.
+             */
+            AcpiNsInternalizeName (NewPathExternal, &NewPath);
+
+            if (ACPI_STRLEN (NewPath) < AmlNameStringLength)
+            {
+                /* 
+                 * Check to make sure that the optimization finds the node we are
+                 * looking for.  This is simply a sanity check on the new
+                 * path that has been created.
                  */
-                Op->Asl.Child->Asl.Next->Asl.Value.String = NewPath;
-                Op->Asl.Child->Asl.Next->Asl.AmlLength = ACPI_STRLEN (NewPath);
+                Status = AcpiNsLookup (&ScopeInfo,  NewPath,
+                                        ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
+                                        0, WalkState, &(Node));
+                if (ACPI_SUCCESS (Status))
+                {
+                    /* Found the namepath, but make sure the node is correct */
+
+                    if (Node == TargetNode)
+                    {
+                        /* The lookup matched the node, accept this optimization */
+
+                        OptCount = (AmlNameStringLength - ACPI_STRLEN (NewPath));
+                        AslError (ASL_OPTIMIZATION, ASL_MSG_NAME_OPTIMIZATION, Op, NewPathExternal);
+                    }
+                    else
+                    {
+                        /* Node is not correct, do not use this optimization */
+
+                        Status = AE_NOT_FOUND;
+                        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " WRONG NODE"));
+                        AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op, 
+                            "Not using optimized name - found wrong node");
+                    }
+                }
+                else
+                {
+                    /* The lookup failed, we obviously cannot use this optimization */
+
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " NOT FOUND"));
+                    AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op, 
+                        "Not using optimized name - did not find node");
+                }
             }
             else
             {
-                Op->Asl.Child->Asl.Value.String = NewPath;
-                Op->Asl.Child->Asl.AmlLength = ACPI_STRLEN (NewPath);
+                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " NOT SHORTER (New %d old %d)", 
+                    ACPI_STRLEN (NewPath), AmlNameStringLength));
             }
+        }
+    }
+
+    /* 
+     * Success from above indicates that the NamePath was successfully
+     * optimized
+     */
+    if (ACPI_SUCCESS (Status))
+    {
+        OptTotal += OptCount;
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " REDUCED %2d (%d)", OptCount, OptTotal));
+
+        if (Flags & AML_NAMED)
+        {
+            Op->Asl.Child->Asl.Value.String = NewPath;
+            Op->Asl.Child->Asl.AmlLength = ACPI_STRLEN (NewPath);
         }
         else if (Flags & AML_CREATE)
         {
-            /* Name must appear as the last parameter */
-
-            NextOp = Op->Asl.Child;
-            while (!(NextOp->Asl.CompileFlags & NODE_IS_NAME_DECLARATION))
-            {
-                NextOp = NextOp->Asl.Next;
-            }
-            /* Update the parse node with the new NamePath */
-
-            NextOp->Asl.Value.String = NewPath;
-            NextOp->Asl.AmlLength = ACPI_STRLEN (NewPath);
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " NOT HANDLED - CREATE FIELD"));
         }
         else
         {
@@ -789,12 +525,88 @@ OptOptimizeNamePath (
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " ALREADY OPTIMAL"));
     }
 
-    /* Cleanup path buffers */
-
     ACPI_MEM_FREE (TargetPath.Pointer);
     ACPI_MEM_FREE (CurrentPath.Pointer);
 
+Exit:
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "\n"));
     return_VOID;
 }
+
+#if 0
+/*******************************************************************************
+ *
+ * FUNCTION:    LkOptimizeName
+ *
+ * PARAMETERS:  Op                  - Current parser op
+ *              WalkState           - Current state
+ *              AmlNameString       - Unoptimized namepath
+ *              TargetNode          - Node to which AmlNameString refers
+ *
+ * RETURN:      None.  If path is optimized, the Op is updated with new path
+ *
+ * DESCRIPTION: Optimize a Name to the minimal length.  Must take
+ *              into account both the current location in the namespace and
+ *              the actual path.
+ *
+ ******************************************************************************/
+
+void
+LkOptimizeName (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState,
+    NATIVE_CHAR             *AmlNameString,
+    ACPI_NAMESPACE_NODE     *TargetNode)
+{
+    ACPI_SIZE               AmlNameStringLength;
+    char                    *ExternalNameString;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE ("LkOptimizeName");
+
+
+
+    /* This is an optional optimization */
+
+    if (!Gbl_ReferenceOptimizationFlag)
+    {
+        return_VOID;
+    }
+
+    /* 
+     * The original path must be longer than one NameSeg (4 chars) for there
+     * to be any possibility that it can be optimized to a shorter string 
+     */
+    AmlNameStringLength = ACPI_STRLEN (AmlNameString);
+    if (AmlNameStringLength <= 4)
+    {
+        return_VOID;
+    }
+
+    if (!WalkState->ScopeInfo || 
+        (WalkState->ScopeInfo->Scope.Node == AcpiGbl_RootNode))
+    {
+        if (AmlNameString[0] == '\\')
+        {
+            Op->Asl.Child->Asl.Value.String = &AmlNameString[1];
+            Op->Asl.Child->Asl.AmlLength = AmlNameStringLength - 1;
+
+            Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Asl.Child->Asl.Value.String, 
+                        NULL, &ExternalNameString);
+            if (ACPI_FAILURE (Status))
+            {
+                /* TBD: this simply quietly aborts! */
+
+                AslAbort ();
+            }
+            AslError (ASL_OPTIMIZATION, ASL_MSG_NAME_OPTIMIZATION, Op, ExternalNameString);
+            ACPI_MEM_FREE (ExternalNameString);
+        }
+    }
+
+    return_VOID;
+}
+
+#endif
 
