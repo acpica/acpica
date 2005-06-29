@@ -132,6 +132,11 @@
 #define STACK_TOP                   0
 #define STACK_BOTTOM                (UINT32) -1
 
+/* Constants for global "WhenToParseMethods" */
+
+#define METHOD_PARSE_AT_INIT        0x0
+#define METHOD_PARSE_JUST_IN_TIME   0x1
+#define METHOD_DELETE_AT_COMPLETION 0x2
 
 
 /*
@@ -144,7 +149,7 @@ AmlLoadTable (
 
 ACPI_STATUS
 AmlExecuteMethod (
-    ACPI_OBJECT_INTERNAL    *MethodDesc,
+    NAME_TABLE_ENTRY        *MethodEntry,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
 
@@ -558,9 +563,14 @@ AmlDumpOperands (
 
 void
 AmlDumpObjectDescriptor (
-	ACPI_OBJECT_INTERNAL    *ObjDesc);
+    ACPI_OBJECT_INTERNAL    *Object,
+    UINT32                  Flags);
 
 
+void
+AmlDumpNameTableEntry (
+    NAME_TABLE_ENTRY        *Entry,
+    UINT32                  Flags);
 
 /*
  * isnames - interpreter/scanner name load/execute
