@@ -124,8 +124,8 @@
 #include <events.h>
 
 
-#define _THIS_MODULE        "ieregion.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("ieregion");
 
 
 /*****************************************************************************
@@ -294,15 +294,15 @@ AmlSystemIoSpaceHandler (
         /* I/O Port width */
 
         case 8:
-            *Value = (UINT32) OsdIn8 ((UINT16) Address);
+            *Value = (UINT32) OsdIn8 (Address);
             break;
 
         case 16:
-            *Value = (UINT32) OsdIn16 ((UINT16) Address);
+            *Value = (UINT32) OsdIn16 (Address);
             break;
 
         case 32:
-            *Value = OsdIn32 ((UINT16) Address);
+            *Value = OsdIn32 (Address);
             break;
 
         default:
@@ -323,15 +323,15 @@ AmlSystemIoSpaceHandler (
         {
         /* I/O Port width */
         case 8:
-            OsdOut8 ((UINT16) Address, (UINT8) *Value);
+            OsdOut8 (Address, (UINT8) *Value);
             break;
 
         case 16:
-            OsdOut16 ((UINT16) Address, (UINT16) *Value);
+            OsdOut16 (Address, (UINT16) *Value);
             break;
 
         case 32:
-            OsdOut32 ((UINT16) Address, *Value);
+            OsdOut32 (Address, *Value);
             break;
 
         default:
