@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.93 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -119,10 +119,15 @@
 
 #include "acpi.h"
 #include "acevents.h"
+#include "achware.h"
 #include "acnamesp.h"
+#include "acinterp.h"
+#include "amlcode.h"
+#include "acdebug.h"
+#include "acexcep.h"
 #include "acparser.h"
 #include "acdispat.h"
-#include "acdebug.h"
+
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utxface")

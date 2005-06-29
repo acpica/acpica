@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.76 $
+ *       $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,9 +120,10 @@
 
 #define ACPI_DEBUG_BUFFER_SIZE  4196
 
+
 typedef struct CommandInfo
 {
-    char                    *Name;          /* Command Name */
+    NATIVE_CHAR             *Name;          /* Command Name */
     UINT8                   MinArgs;        /* Minimum arguments required */
 
 } COMMAND_INFO;
@@ -130,7 +131,7 @@ typedef struct CommandInfo
 
 typedef struct ArgumentInfo
 {
-    char                    *Name;          /* Argument Name */
+    NATIVE_CHAR             *Name;          /* Argument Name */
 
 } ARGUMENT_INFO;
 
@@ -142,18 +143,18 @@ typedef struct ArgumentInfo
 #define VERBOSE_PRINT(fp)               DBTEST_OUTPUT_LEVEL(lvl) {\
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
-#define EX_NO_SINGLE_STEP               1
-#define EX_SINGLE_STEP                  2
+#define EX_NO_SINGLE_STEP       1
+#define EX_SINGLE_STEP          2
 
 
 /* Prototypes */
 
 
 /*
- * dbxface - external debugger interfaces
+ * dbapi - external debugger interfaces
  */
 
-ACPI_STATUS
+int
 AcpiDbInitialize (
     void);
 
@@ -167,36 +168,24 @@ AcpiDbSingleStep (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  OpType);
 
-ACPI_STATUS
-AcpiDbStartCommand (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
-
-void
-AcpiDbMethodEnd (
-    ACPI_WALK_STATE         *WalkState);
-
 
 /*
  * dbcmds - debug commands and output routines
  */
 
-ACPI_STATUS
-AcpiDbDisassembleMethod (
-    char                    *Name);
 
 void
 AcpiDbDisplayTableInfo (
-    char                    *TableArg);
+    NATIVE_CHAR             *TableArg);
 
 void
 AcpiDbUnloadAcpiTable (
-    char                    *TableArg,
-    char                    *InstanceArg);
+    NATIVE_CHAR             *TableArg,
+    NATIVE_CHAR             *InstanceArg);
 
 void
 AcpiDbSetMethodBreakpoint (
-    char                    *Location,
+    NATIVE_CHAR             *Location,
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
 
@@ -206,50 +195,46 @@ AcpiDbSetMethodCallBreakpoint (
 
 void
 AcpiDbDisassembleAml (
-    char                    *Statements,
+    NATIVE_CHAR             *Statements,
     ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbDumpNamespace (
-    char                    *StartArg,
-    char                    *DepthArg);
+    NATIVE_CHAR             *StartArg,
+    NATIVE_CHAR             *DepthArg);
 
 void
 AcpiDbDumpNamespaceByOwner (
-    char                    *OwnerArg,
-    char                    *DepthArg);
+    NATIVE_CHAR             *OwnerArg,
+    NATIVE_CHAR             *DepthArg);
 
 void
 AcpiDbSendNotify (
-    char                    *Name,
+    NATIVE_CHAR             *Name,
     UINT32                  Value);
 
 void
 AcpiDbSetMethodData (
-    char                    *TypeArg,
-    char                    *IndexArg,
-    char                    *ValueArg);
+    NATIVE_CHAR             *TypeArg,
+    NATIVE_CHAR             *IndexArg,
+    NATIVE_CHAR             *ValueArg);
 
 ACPI_STATUS
 AcpiDbDisplayObjects (
-    char                    *ObjTypeArg,
-    char                    *DisplayCountArg);
+    NATIVE_CHAR             *ObjTypeArg,
+    NATIVE_CHAR             *DisplayCountArg);
 
 ACPI_STATUS
 AcpiDbFindNameInNamespace (
-    char                    *NameArg);
+    NATIVE_CHAR             *NameArg);
 
 void
 AcpiDbSetScope (
-    char                    *Name);
-
-ACPI_STATUS
-AcpiDbSleep (
-    char                    *ObjectArg);
+    NATIVE_CHAR             *Name);
 
 void
 AcpiDbFindReferences (
-    char                    *ObjectArg);
+    NATIVE_CHAR             *ObjectArg);
 
 void
 AcpiDbDisplayLocks (void);
@@ -257,51 +242,41 @@ AcpiDbDisplayLocks (void);
 
 void
 AcpiDbDisplayResources (
-    char                    *ObjectArg);
+    NATIVE_CHAR             *ObjectArg);
+
+
+/*
+ * dbdisasm - AML disassembler
+ */
 
 void
-AcpiDbDisplayGpes (void);
+AcpiDbDisplayOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Origin,
+    UINT32                  NumOpcodes);
 
 void
-AcpiDbCheckIntegrity (
-    void);
-
-ACPI_STATUS
-AcpiDbIntegrityWalk (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue);
-
-ACPI_STATUS
-AcpiDbWalkAndMatchName (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue);
-
-ACPI_STATUS
-AcpiDbWalkForReferences (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue);
-
-ACPI_STATUS
-AcpiDbWalkForSpecificObjects (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue);
+AcpiDbDisplayNamestring (
+    NATIVE_CHAR             *Name);
 
 void
-AcpiDbGenerateGpe (
-    char                    *GpeArg,
-    char                    *BlockArg);
+AcpiDbDisplayPath (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+AcpiDbDisplayOpcode (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+AcpiDbDecodeInternalObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
 
 /*
  * dbdisply - debug display commands
  */
+
 
 void
 AcpiDbDisplayMethodInfo (
@@ -309,8 +284,8 @@ AcpiDbDisplayMethodInfo (
 
 void
 AcpiDbDecodeAndDisplayObject (
-    char                    *Target,
-    char                    *OutputType);
+    NATIVE_CHAR             *Target,
+    NATIVE_CHAR             *OutputType);
 
 void
 AcpiDbDisplayResultObject (
@@ -319,7 +294,12 @@ AcpiDbDisplayResultObject (
 
 ACPI_STATUS
 AcpiDbDisplayAllMethods (
-    char                    *DisplayCountArg);
+    NATIVE_CHAR             *DisplayCountArg);
+
+void
+AcpiDbDisplayInternalObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState);
 
 void
 AcpiDbDisplayArguments (
@@ -338,21 +318,9 @@ AcpiDbDisplayCallingTree (
     void);
 
 void
-AcpiDbDisplayObjectType (
-    char                    *ObjectArg);
-
-void
 AcpiDbDisplayArgumentObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
-
-void
-AcpiDbDumpParserDescriptor (
-    ACPI_PARSE_OBJECT       *Op);
-
-void *
-AcpiDbGetPointer (
-    void                    *Target);
 
 
 /*
@@ -361,39 +329,15 @@ AcpiDbGetPointer (
 
 void
 AcpiDbExecute (
-    char                    *Name,
-    char                    **Args,
+    NATIVE_CHAR             *Name,
+    NATIVE_CHAR             **Args,
     UINT32                  Flags);
 
 void
 AcpiDbCreateExecutionThreads (
-    char                    *NumThreadsArg,
-    char                    *NumLoopsArg,
-    char                    *MethodNameArg);
-
-ACPI_STATUS
-AcpiDbExecuteMethod (
-    ACPI_DB_METHOD_INFO     *Info,
-    ACPI_BUFFER             *ReturnObj);
-
-void
-AcpiDbExecuteSetup (
-    ACPI_DB_METHOD_INFO     *Info);
-
-UINT32
-AcpiDbGetOutstandingAllocations (
-    void);
-
-void ACPI_SYSTEM_XFACE
-AcpiDbMethodThread (
-    void                    *Context);
-
-ACPI_STATUS
-AcpiDbExecutionWalk (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue);
+    NATIVE_CHAR             *NumThreadsArg,
+    NATIVE_CHAR             *NumLoopsArg,
+    NATIVE_CHAR             *MethodNameArg);
 
 
 /*
@@ -402,12 +346,9 @@ AcpiDbExecutionWalk (
 
 ACPI_OBJECT_TYPE
 AcpiDbMatchArgument (
-    char                    *UserArgument,
+    NATIVE_CHAR             *UserArgument,
     ARGUMENT_INFO           *Arguments);
 
-ACPI_STATUS
-AeLocalLoadTable (
-    ACPI_TABLE_HEADER       *TablePtr);
 
 void
 AcpiDbCloseDebugFile (
@@ -415,21 +356,12 @@ AcpiDbCloseDebugFile (
 
 void
 AcpiDbOpenDebugFile (
-    char                    *Name);
+    NATIVE_CHAR             *Name);
 
 ACPI_STATUS
 AcpiDbLoadAcpiTable (
-    char                    *Filename);
+    NATIVE_CHAR             *Filename);
 
-ACPI_STATUS
-AcpiDbGetTableFromFile (
-    char                    *Filename,
-    ACPI_TABLE_HEADER       **Table);
-
-ACPI_STATUS
-AcpiDbReadTableFromFile (
-    char                    *Filename,
-    ACPI_TABLE_HEADER       **Table);
 
 /*
  * dbhistry - debugger HISTORY command
@@ -437,14 +369,14 @@ AcpiDbReadTableFromFile (
 
 void
 AcpiDbAddToHistory (
-    char                    *CommandLine);
+    NATIVE_CHAR             *CommandLine);
 
 void
 AcpiDbDisplayHistory (void);
 
-char *
+NATIVE_CHAR *
 AcpiDbGetFromHistory (
-    char                    *CommandNumArg);
+    NATIVE_CHAR             *CommandNumArg);
 
 
 /*
@@ -453,39 +385,18 @@ AcpiDbGetFromHistory (
 
 ACPI_STATUS
 AcpiDbCommandDispatch (
-    char                    *InputBuffer,
+    NATIVE_CHAR             *InputBuffer,
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
 
-void ACPI_SYSTEM_XFACE
+void
 AcpiDbExecuteThread (
     void                    *Context);
 
 ACPI_STATUS
 AcpiDbUserCommands (
-    char                    Prompt,
+    NATIVE_CHAR             Prompt,
     ACPI_PARSE_OBJECT       *Op);
-
-void
-AcpiDbDisplayHelp (
-    char                    *HelpType);
-
-char *
-AcpiDbGetNextToken (
-    char                    *String,
-    char                    **Next);
-
-UINT32
-AcpiDbGetLine (
-    char                    *InputBuffer);
-
-UINT32
-AcpiDbMatchCommand (
-    char                    *UserCommand);
-
-void
-AcpiDbSingleThread (
-    void);
 
 
 /*
@@ -500,22 +411,7 @@ AcpiDbGenerateStatistics (
 
 ACPI_STATUS
 AcpiDbDisplayStatistics (
-    char                    *TypeArg);
-
-ACPI_STATUS
-AcpiDbClassifyOneObject (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue);
-
-void
-AcpiDbCountNamespaceObjects (
-    void);
-
-void
-AcpiDbEnumerateObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
+    NATIVE_CHAR             *TypeArg);
 
 
 /*
@@ -537,7 +433,7 @@ AcpiDbDumpObject (
 
 void
 AcpiDbPrepNamestring (
-    char                    *Name);
+    NATIVE_CHAR             *Name);
 
 
 ACPI_STATUS
@@ -546,7 +442,7 @@ AcpiDbSecondPassParse (
 
 ACPI_NAMESPACE_NODE *
 AcpiDbLocalNsLookup (
-    char                    *Name);
+    NATIVE_CHAR             *Name);
 
 
 #endif  /* __ACDEBUG_H__ */

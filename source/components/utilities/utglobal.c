@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.157 $
+ *              $Revision: 1.153 $
  *
  *****************************************************************************/
 
@@ -118,12 +118,14 @@
 #define DEFINE_ACPI_GLOBALS
 
 #include "acpi.h"
+#include "acevents.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 #include "amlcode.h"
+
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utglobal")
-
 
 
 /******************************************************************************
@@ -146,10 +148,8 @@ AcpiFormatException (
     ACPI_STATUS             SubStatus;
 
 
-    ACPI_FUNCTION_NAME ("FormatException");
-
-
     SubStatus = (Status & ~AE_CODE_MASK);
+
 
     switch (Status & AE_CODE_MASK)
     {
@@ -158,56 +158,46 @@ AcpiFormatException (
         if (SubStatus <= AE_CODE_ENV_MAX)
         {
             Exception = AcpiGbl_ExceptionNames_Env [SubStatus];
-            break;
         }
-        goto Unknown;
+        break;
 
     case AE_CODE_PROGRAMMER:
 
         if (SubStatus <= AE_CODE_PGM_MAX)
         {
             Exception = AcpiGbl_ExceptionNames_Pgm [SubStatus -1];
-            break;
         }
-        goto Unknown;
+        break;
 
     case AE_CODE_ACPI_TABLES:
 
         if (SubStatus <= AE_CODE_TBL_MAX)
         {
             Exception = AcpiGbl_ExceptionNames_Tbl [SubStatus -1];
-            break;
         }
-        goto Unknown;
+        break;
 
     case AE_CODE_AML:
 
         if (SubStatus <= AE_CODE_AML_MAX)
         {
             Exception = AcpiGbl_ExceptionNames_Aml [SubStatus -1];
-            break;
         }
-        goto Unknown;
+        break;
 
     case AE_CODE_CONTROL:
 
         if (SubStatus <= AE_CODE_CTRL_MAX)
         {
             Exception = AcpiGbl_ExceptionNames_Ctrl [SubStatus -1];
-            break;
         }
-        goto Unknown;
+        break;
 
     default:
-        goto Unknown;
+        break;
     }
 
 
-    return ((const char *) Exception);
-
-Unknown:
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown exception code: 0x%8.8X\n", Status));
     return ((const char *) Exception);
 }
 
@@ -277,15 +267,15 @@ const NATIVE_CHAR           *AcpiGbl_DbSleepStates[ACPI_NUM_SLEEP_STATES] = {
 
 const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
 {
-    {"_GPE",    INTERNAL_TYPE_DEF_ANY,      NULL},
-    {"_PR_",    INTERNAL_TYPE_DEF_ANY,      NULL},
-    {"_SB_",    ACPI_TYPE_DEVICE,           NULL},
-    {"_SI_",    INTERNAL_TYPE_DEF_ANY,      NULL},
-    {"_TZ_",    INTERNAL_TYPE_DEF_ANY,      NULL},
-    {"_REV",    ACPI_TYPE_INTEGER,          "2"},
-    {"_OS_",    ACPI_TYPE_STRING,           ACPI_OS_NAME},
-    {"_GL_",    ACPI_TYPE_MUTEX,            "0"},
-    {NULL,      ACPI_TYPE_ANY,              NULL}              /* Table terminator */
+    {"_GPE",    INTERNAL_TYPE_DEF_ANY},
+    {"_PR_",    INTERNAL_TYPE_DEF_ANY},
+    {"_SB_",    ACPI_TYPE_DEVICE},
+    {"_SI_",    INTERNAL_TYPE_DEF_ANY},
+    {"_TZ_",    INTERNAL_TYPE_DEF_ANY},
+    {"_REV",    ACPI_TYPE_INTEGER, "2"},
+    {"_OS_",    ACPI_TYPE_STRING, ACPI_OS_NAME},
+    {"_GL_",    ACPI_TYPE_MUTEX, "0"},
+    {NULL,      ACPI_TYPE_ANY}           /* Table terminator */
 };
 
 
@@ -302,16 +292,16 @@ const UINT8                     AcpiGbl_NsProperties[] =
     ACPI_NS_NORMAL,                     /* 01 Number           */
     ACPI_NS_NORMAL,                     /* 02 String           */
     ACPI_NS_NORMAL,                     /* 03 Buffer           */
-    ACPI_NS_NORMAL,                     /* 04 Package          */
+    ACPI_NS_LOCAL,                      /* 04 Package          */
     ACPI_NS_NORMAL,                     /* 05 FieldUnit        */
-    ACPI_NS_NEWSCOPE,                   /* 06 Device           */
-    ACPI_NS_NORMAL,                     /* 07 Event            */
-    ACPI_NS_NEWSCOPE,                   /* 08 Method           */
-    ACPI_NS_NORMAL,                     /* 09 Mutex            */
-    ACPI_NS_NORMAL,                     /* 10 Region           */
-    ACPI_NS_NEWSCOPE,                   /* 11 Power            */
-    ACPI_NS_NEWSCOPE,                   /* 12 Processor        */
-    ACPI_NS_NEWSCOPE,                   /* 13 Thermal          */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 06 Device           */
+    ACPI_NS_LOCAL,                      /* 07 AcpiEvent        */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 08 Method           */
+    ACPI_NS_LOCAL,                      /* 09 Mutex            */
+    ACPI_NS_LOCAL,                      /* 10 Region           */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 11 Power            */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 12 Processor        */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 13 Thermal          */
     ACPI_NS_NORMAL,                     /* 14 BufferField      */
     ACPI_NS_NORMAL,                     /* 15 DdbHandle        */
     ACPI_NS_NORMAL,                     /* 16 Debug Object     */
@@ -358,7 +348,7 @@ const NATIVE_CHAR           AcpiGbl_HexToAscii[] =
  *
  ****************************************************************************/
 
-char
+UINT8
 AcpiUtHexToAsciiChar (
     ACPI_INTEGER            Integer,
     UINT32                  Position)
@@ -528,7 +518,7 @@ AcpiUtGetEventName (
 }
 
 
-#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
+#ifdef ACPI_DEBUG
 
 /*
  * Strings and procedures used for debug only
@@ -767,9 +757,6 @@ AcpiUtAllocateOwnerId (
             AcpiGbl_NextMethodOwnerId = ACPI_FIRST_METHOD_ID;
         }
         break;
-
-    default:
-        break;
     }
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
@@ -802,15 +789,15 @@ AcpiUtInitGlobals (
     ACPI_MEMSET (AcpiGbl_MemoryLists, 0, sizeof (ACPI_MEMORY_LIST) * ACPI_NUM_MEM_LISTS);
 
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].LinkOffset         = (UINT16) ACPI_PTR_DIFF (&(((ACPI_GENERIC_STATE *) NULL)->Common.Next), NULL);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].LinkOffset        = (UINT16) ACPI_PTR_DIFF (&(((ACPI_PARSE_OBJECT *) NULL)->Common.Next), NULL);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].LinkOffset    = (UINT16) ACPI_PTR_DIFF (&(((ACPI_PARSE_OBJECT *) NULL)->Common.Next), NULL);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].LinkOffset        = (UINT16) ACPI_PTR_DIFF (&(((ACPI_PARSE_OBJECT *) NULL)->Next), NULL);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].LinkOffset    = (UINT16) ACPI_PTR_DIFF (&(((ACPI_PARSE2_OBJECT *) NULL)->Next), NULL);
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].LinkOffset       = (UINT16) ACPI_PTR_DIFF (&(((ACPI_OPERAND_OBJECT *) NULL)->Cache.Next), NULL);
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].LinkOffset          = (UINT16) ACPI_PTR_DIFF (&(((ACPI_WALK_STATE *) NULL)->Next), NULL);
 
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].ObjectSize        = sizeof (ACPI_NAMESPACE_NODE);
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].ObjectSize         = sizeof (ACPI_GENERIC_STATE);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].ObjectSize        = sizeof (ACPI_PARSE_OBJ_COMMON);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].ObjectSize    = sizeof (ACPI_PARSE_OBJ_NAMED);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].ObjectSize        = sizeof (ACPI_PARSE_OBJECT);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].ObjectSize    = sizeof (ACPI_PARSE2_OBJECT);
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].ObjectSize       = sizeof (ACPI_OPERAND_OBJECT);
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].ObjectSize          = sizeof (ACPI_WALK_STATE);
 
@@ -870,7 +857,6 @@ AcpiUtInitGlobals (
 
     /* Miscellaneous variables */
 
-    AcpiGbl_TableFlags                  = ACPI_PHYSICAL_POINTER;
     AcpiGbl_RsdpOriginalLocation        = 0;
     AcpiGbl_CmSingleStep                = FALSE;
     AcpiGbl_DbTerminateThreads          = FALSE;
@@ -892,7 +878,7 @@ AcpiUtInitGlobals (
 
     AcpiGbl_RootNode                    = NULL;
 
-    AcpiGbl_RootNodeStruct.Name.Integer = ACPI_ROOT_NAME;
+    AcpiGbl_RootNodeStruct.Name         = ACPI_ROOT_NAME;
     AcpiGbl_RootNodeStruct.Descriptor   = ACPI_DESC_TYPE_NAMED;
     AcpiGbl_RootNodeStruct.Type         = ACPI_TYPE_ANY;
     AcpiGbl_RootNodeStruct.Child        = NULL;

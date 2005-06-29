@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -155,7 +155,7 @@ AcpiTbMatchSignature (
      */
     for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
-        if (!STRNCMP (Signature, AcpiGbl_AcpiTableData[i].Signature,
+        if (!ACPI_STRNCMP (Signature, AcpiGbl_AcpiTableData[i].Signature,
                       AcpiGbl_AcpiTableData[i].SigLength))
         {
             /* Found a signature match, return index if requested */

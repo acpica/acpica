@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.68 $
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -118,8 +118,12 @@
 #define __UTMISC_C__
 
 #include "acpi.h"
+#include "acevents.h"
+#include "achware.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 #include "amlcode.h"
+#include "acdebug.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -1059,10 +1063,6 @@ AcpiUtResolveReference (
                 SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SourceObject->Integer.Value = ACPI_INTEGER_MAX;
                 break;
-
-            default:
-                /* Other types not supported */
-                return (AE_SUPPORT);
             }
         }
         break;
@@ -1075,9 +1075,6 @@ AcpiUtResolveReference (
         Info->NumPackages++;
         State->Pkg.ThisTargetObj = NULL;
         break;
-
-    default:
-        return (AE_BAD_PARAMETER);
     }
 
     return (AE_OK);

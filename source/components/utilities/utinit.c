@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.110 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,7 @@
 #define __UTINIT_C__
 
 #include "acpi.h"
+#include "achware.h"
 #include "acnamesp.h"
 #include "acevents.h"
 
