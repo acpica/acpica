@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.188 $
+ *              $Revision: 1.190 $
  *
  *****************************************************************************/
 
@@ -143,7 +143,7 @@
  *
  ******************************************************************************/
 
-void
+static void
 AcpiExDoDebugObject (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     UINT32                  Level,
@@ -158,10 +158,12 @@ AcpiExDoDebugObject (
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[ACPI Debug] %*s",
         Level, " "));
 
+    /* Display index for package output only */
+
     if (Index > 0)
     {
        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
-           "(%.2u) ", Index));
+           "(%.2u) ", Index -1));
     }
 
     if (!SourceDesc)
@@ -185,6 +187,8 @@ AcpiExDoDebugObject (
     {
     case ACPI_TYPE_INTEGER:
 
+        /* Output correct integer width */
+
         if (AcpiGbl_IntegerByteWidth == 4)
         {
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "0x%8.8X\n",
@@ -197,7 +201,6 @@ AcpiExDoDebugObject (
         }
         break;
 
-
     case ACPI_TYPE_BUFFER:
 
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[0x%.2X]",
@@ -206,13 +209,11 @@ AcpiExDoDebugObject (
             (SourceDesc->Buffer.Length < 32) ? SourceDesc->Buffer.Length : 32);
         break;
 
-
     case ACPI_TYPE_STRING:
 
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[0x%.2X] \"%s\"\n",
             SourceDesc->String.Length, SourceDesc->String.Pointer));
         break;
-
 
     case ACPI_TYPE_PACKAGE:
 
@@ -223,30 +224,49 @@ AcpiExDoDebugObject (
 
         for (i = 0; i < SourceDesc->Package.Count; i++)
         {
-            AcpiExDoDebugObject (SourceDesc->Package.Elements[i], Level+4, i+1);
+            AcpiExDoDebugObject (SourceDesc->Package.Elements[i],
+                Level+4, i+1);
         }
         break;
 
-
     case ACPI_TYPE_LOCAL_REFERENCE:
 
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[%s]\n",
-            AcpiPsGetOpcodeName (SourceDesc->Reference.Opcode)));
+        if (SourceDesc->Reference.Opcode == AML_INDEX_OP)
+        {
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[%s, 0x%X]\n",
+                AcpiPsGetOpcodeName (SourceDesc->Reference.Opcode),
+                SourceDesc->Reference.Offset));
+        }
+        else
+        {
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[%s]\n",
+                AcpiPsGetOpcodeName (SourceDesc->Reference.Opcode)));
+        }
+
 
         if (SourceDesc->Reference.Object)
         {
-            AcpiExDoDebugObject (SourceDesc->Reference.Object, Level+4, 0);
+            if (ACPI_GET_DESCRIPTOR_TYPE (SourceDesc->Reference.Object) == ACPI_DESC_TYPE_NAMED)
+            {
+                AcpiExDoDebugObject (((ACPI_NAMESPACE_NODE *) SourceDesc->Reference.Object)->Object,
+                    Level+4, 0);
+            }
+            else
+            {
+                AcpiExDoDebugObject (SourceDesc->Reference.Object, Level+4, 0);
+            }
         }
         else if (SourceDesc->Reference.Node)
         {
-            AcpiExDoDebugObject ((SourceDesc->Reference.Node)->Object, Level+4, 0);
+            AcpiExDoDebugObject ((SourceDesc->Reference.Node)->Object,
+                Level+4, 0);
         }
         break;
 
     default:
 
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%p\n",
-            SourceDesc));
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%p %s\n",
+            SourceDesc, AcpiUtGetObjectTypeName (SourceDesc)));
         break;
     }
 
@@ -360,8 +380,9 @@ AcpiExStore (
 
         /* Storing an object into a Name "container" */
 
-        Status = AcpiExStoreObjectToNode (SourceDesc, RefDesc->Reference.Object,
-                        WalkState, ACPI_IMPLICIT_CONVERSION);
+        Status = AcpiExStoreObjectToNode (SourceDesc,
+                    RefDesc->Reference.Object,
+                    WalkState, ACPI_IMPLICIT_CONVERSION);
         break;
 
 
@@ -379,7 +400,7 @@ AcpiExStore (
         /* Store to a method local/arg  */
 
         Status = AcpiDsStoreObjectToLocal (RefDesc->Reference.Opcode,
-                        RefDesc->Reference.Offset, SourceDesc, WalkState);
+                    RefDesc->Reference.Offset, SourceDesc, WalkState);
         break;
 
 
@@ -425,7 +446,7 @@ AcpiExStore (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiExStoreObjectToIndex (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *IndexDesc,
@@ -642,7 +663,8 @@ AcpiExStoreObjectToNode (
         /*
          * For fields, copy the source data to the target field.
          */
-        Status = AcpiExWriteDataToField (SourceDesc, TargetDesc, &WalkState->ResultObj);
+        Status = AcpiExWriteDataToField (SourceDesc, TargetDesc,
+                    &WalkState->ResultObj);
         break;
 
 
@@ -656,7 +678,8 @@ AcpiExStoreObjectToNode (
          *
          * Copy and/or convert the source object to a new target object
          */
-        Status = AcpiExStoreObjectToObject (SourceDesc, TargetDesc, &NewDesc, WalkState);
+        Status = AcpiExStoreObjectToObject (SourceDesc, TargetDesc,
+                    &NewDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -691,7 +714,8 @@ AcpiExStoreObjectToNode (
 
         /* No conversions for all other types.  Just attach the source object */
 
-        Status = AcpiNsAttachObject (Node, SourceDesc, ACPI_GET_OBJECT_TYPE (SourceDesc));
+        Status = AcpiNsAttachObject (Node, SourceDesc,
+                    ACPI_GET_OBJECT_TYPE (SourceDesc));
         break;
     }
 
