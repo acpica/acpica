@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.41 $
+ *       $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -444,7 +444,7 @@ AcpiDsScopeStackClear (
     ACPI_WALK_STATE         *WalkState);
 
 
-/* AcpiDswstate - parser WALK_STATE management routines */
+/* dswstate - parser WALK_STATE management routines */
 
 ACPI_WALK_STATE *
 AcpiDsCreateWalkState (
@@ -452,6 +452,15 @@ AcpiDsCreateWalkState (
     ACPI_PARSE_OBJECT       *Origin,
     ACPI_OPERAND_OBJECT     *MthDesc,
     ACPI_WALK_LIST          *WalkList);
+
+ACPI_STATUS
+AcpiDsInitAmlWalk (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_NAMESPACE_NODE     *MethodNode,
+    UINT8                   *AmlStart,
+    UINT32                  AmlLength,
+    UINT32                  PassNumber);
 
 ACPI_STATUS
 AcpiDsObjStackDeleteAll (
@@ -468,6 +477,11 @@ AcpiDsDeleteWalkState (
 
 ACPI_WALK_STATE *
 AcpiDsPopWalkState (
+    ACPI_WALK_LIST          *WalkList);
+
+void
+AcpiDsPushWalkState (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_WALK_LIST          *WalkList);
 
 ACPI_STATUS
