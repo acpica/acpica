@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.37 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
 ACPI_PARSE_OBJECT           *root;
 UINT8                       *AmlPtr;
-UINT32                      AcpiAmlLength;
+UINT32                      AmlLength;
 UINT8                       *DsdtPtr;
 UINT32                      AcpiDsdtLength;
 
@@ -152,7 +152,7 @@ static char                 *AcpiGbl_RegionNames[] =    /* printable names of AC
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmFormatSpaceId
+ * FUNCTION:    AcpiUtFormatSpaceId
  *
  * PARAMETERS:  Status              - Acpi status to be formatted
  *
@@ -163,7 +163,7 @@ static char                 *AcpiGbl_RegionNames[] =    /* printable names of AC
  ****************************************************************************/
 
 char *
-AcpiCmFormatSpaceId (
+AcpiUtFormatSpaceId (
     UINT32                  SpaceId)
 {
 
@@ -208,6 +208,9 @@ RegionHandler (
     UINT32                  ByteWidth;
 
 
+    PROC_NAME ("RegionHandler");
+
+
     /*
      * If the object is not a region, simply return
      */
@@ -216,8 +219,8 @@ RegionHandler (
         return AE_OK;
     }
 
-    DEBUG_PRINT (TRACE_OPREGION, ("Operation Region request on %s at 0x%X\n",
-            AcpiCmFormatSpaceId (RegionObject->Region.SpaceId),
+    ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION, "Operation Region request on %s at 0x%X\n",
+            AcpiUtFormatSpaceId (RegionObject->Region.SpaceId),
             Address));
 
 
@@ -311,7 +314,7 @@ RegionHandler (
     if (((ACPI_INTEGER) Address + ByteWidth) >
         ((ACPI_INTEGER)(RegionElement->Address) + RegionElement->Length))
     {
-        DEBUG_PRINT (ACPI_WARN, ("Request on [%4.4s] is beyond region limit Req-%lX+%lX, Base=%lX, Len-%lX\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Request on [%4.4s] is beyond region limit Req-%lX+%lX, Base=%lX, Len-%lX\n",
                 &((RegionObject->Region.Node)->Name), (UINT32) Address, ByteWidth, (UINT32)(RegionElement->Address),
                 RegionElement->Length));
 
