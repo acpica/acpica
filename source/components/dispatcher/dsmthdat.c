@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.63 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -120,6 +120,7 @@
 #include "acdispat.h"
 #include "amlcode.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_DISPATCHER
@@ -378,6 +379,7 @@ AcpiDsMethodDataGetNode (
  * RETURN:      Status
  *
  * DESCRIPTION: Insert an object onto the method stack at entry Opcode:Index.
+ *              Note: There is no "implicit conversion" for locals.
  *
  ******************************************************************************/
 
@@ -390,10 +392,16 @@ AcpiDsMethodDataSetValue (
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *NewDesc = Object;
 
 
     ACPI_FUNCTION_TRACE ("DsMethodDataSetValue");
 
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, 
+        "obj %X op %X, ref count = %d [%s]\n", Object, 
+        Opcode, Object->Common.ReferenceCount, 
+        AcpiUtGetTypeName (Object->Common.Type)));
 
     /* Get the namespace node for the arg/local */
 
@@ -403,14 +411,33 @@ AcpiDsMethodDataSetValue (
         return_ACPI_STATUS (Status);
     }
 
-    /* Increment ref count so object can't be deleted while installed */
+    /*
+     * If the object has just been created and is not attached to anything,
+     * (the reference count is 1), then we can just store it directly into
+     * the arg/local.  Otherwise, we must copy it.
+     */
+    if (Object->Common.ReferenceCount > 1)
+    {
+        Status = AcpiUtCopyIobjectToIobject (Object, &NewDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
 
-    AcpiUtAddReference (Object);
+       ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Object Copied %X, new %X\n", 
+           Object, NewDesc));
+    }
+    else
+    {
+        /* Increment ref count so object can't be deleted while installed */
 
-    /* Install the object into the stack entry */
+        AcpiUtAddReference (NewDesc);
+    }
 
-    Node->Object = Object;
-    return_ACPI_STATUS (AE_OK);
+    /* Install the object */
+
+    Node->Object = NewDesc;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -676,7 +703,8 @@ AcpiDsStoreObjectToLocal (
     CurrentObjDesc = AcpiNsGetAttachedObject (Node);
     if (CurrentObjDesc == ObjDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p already installed!\n", ObjDesc));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p already installed!\n", 
+            ObjDesc));
         return_ACPI_STATUS (Status);
     }
 
@@ -722,23 +750,19 @@ AcpiDsStoreObjectToLocal (
              * If we have a valid reference object that came from RefOf(), do the
              * indirect store
              */
-            if ((CurrentObjDesc->Common.Type == INTERNAL_TYPE_REFERENCE) &&
+            if ((CurrentObjDesc->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
                 (CurrentObjDesc->Reference.Opcode == AML_REF_OF_OP))
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                     "Arg (%p) is an ObjRef(Node), storing in node %p\n",
                     ObjDesc, CurrentObjDesc));
 
-                /* Detach an existing object from the referenced Node */
-
-                AcpiNsDetachObject (CurrentObjDesc->Reference.Object);
-
                 /*
-                 * Store this object into the Node
+                 * Store this object to the Node
                  * (perform the indirect store)
                  */
-                Status = AcpiNsAttachObject (CurrentObjDesc->Reference.Object,
-                                ObjDesc, ACPI_GET_OBJECT_TYPE (ObjDesc));
+                Status = AcpiExStoreObjectToNode (ObjDesc, 
+                            CurrentObjDesc->Reference.Object, WalkState);
                 return_ACPI_STATUS (Status);
             }
         }
