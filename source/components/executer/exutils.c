@@ -141,9 +141,7 @@ typedef struct Internal_Search_st
 INTERNAL_PKG_SEARCH_INFO        CopyLevel[MAX_PACKAGE_DEPTH];
 
 
-
 static char                 hex[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-
 
 
 /*****************************************************************************
@@ -249,6 +247,10 @@ AcpiAmlAppendOperandDiag (
     INT32                   NumOperands)
 {
 
+    /*
+     * This function outputs debug information only 
+     */
+
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
                     FileName, LineNum, AcpiPsGetOpcodeName (OpCode), NULL));
 
@@ -258,7 +260,6 @@ AcpiAmlAppendOperandDiag (
                         NumOperands, "after PrepStack failed");
     }
 }
-
 
 
 /*****************************************************************************
@@ -284,7 +285,6 @@ AcpiAmlBufSeq (void)
 }
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiAmlAcquireGlobalLock
@@ -304,6 +304,7 @@ AcpiAmlAcquireGlobalLock (
     UINT32                  Rule)
 {
     BOOLEAN                 Locked = FALSE;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlAcquireGlobalLock");
@@ -315,15 +316,13 @@ AcpiAmlAcquireGlobalLock (
     {
         /*  OK to get the lock   */
 
-        if (AcpiEvAcquireGlobalLock () != AE_OK)
+        Status = AcpiEvAcquireGlobalLock ()
+        if (ACPI_FAILURE (Status))
         {
-            /*
-             * lock ownership failed
-             */
             DEBUG_PRINT (ACPI_ERROR, ("Get Global Lock Failed!!\n"));
         }
 
-        else
+        if (ACPI_SUCCESS (Status))
         {
             AcpiGbl_GlobalLockSet = TRUE;
             Locked = TRUE;
@@ -371,8 +370,6 @@ AcpiAmlReleaseGlobalLock (
 
         else
         {
-            /* Sorry, the lock wasn't set, according to our records */
-
             DEBUG_PRINT (ACPI_ERROR, ("Global lock was not set\n"));
         }
     }
@@ -493,7 +490,6 @@ AcpiAmlEisaIdToString (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiAmlBuildCopyInternalPackageObject
@@ -521,7 +517,6 @@ AcpiAmlBuildCopyInternalPackageObject (
     ACPI_OBJECT_INTERNAL        *ThisDestObj;
     ACPI_OBJECT_INTERNAL        *ThisSourceObj;
     INTERNAL_PKG_SEARCH_INFO    *LevelPtr;
-
 
 
     FUNCTION_TRACE ("AmlBuildCopyInternalPackageObject");
@@ -657,6 +652,5 @@ AcpiAmlBuildCopyInternalPackageObject (
      */
     return_ACPI_STATUS (AE_OK);
 }
-
 
 
