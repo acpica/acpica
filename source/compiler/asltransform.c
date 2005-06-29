@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.30 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -122,13 +122,53 @@
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("asltransform")
 
+/* Local prototypes */
+
+static void
+TrTransformSubtree (
+    ACPI_PARSE_OBJECT       *Op);
+
+static char *
+TrAmlGetNextTempName (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   *TempCount);
+
+static void
+TrAmlInitLineNumbers (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *Neighbor);
+
+static void
+TrAmlInitNode (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT16                  ParseOpcode);
+
+static void
+TrAmlSetSubtreeParent (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *Parent);
+
+static void
+TrAmlInsertPeer (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *NewPeer);
+
+static void
+TrDoDefinitionBlock (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+TrDoSwitch (
+    ACPI_PARSE_OBJECT       *StartNode);
+
 
 /*******************************************************************************
  *
  * FUNCTION:    TrAmlGetNextTempName
  *
- * PARAMETERS:  TempCount       - Current temporary counter. Was originally
- *                                per-module; Currently per method, could be 
+ * PARAMETERS:  Op              - Current parse op
+ *              TempCount       - Current temporary counter. Was originally
+ *                                per-module; Currently per method, could be
  *                                expanded to per-scope.
  *
  * RETURN:      A pointer to name (allocated here).
@@ -138,7 +178,7 @@
  *
  ******************************************************************************/
 
-char *
+static char *
 TrAmlGetNextTempName (
     ACPI_PARSE_OBJECT       *Op,
     UINT8                   *TempCount)
@@ -189,7 +229,7 @@ TrAmlGetNextTempName (
  *
  ******************************************************************************/
 
-void
+static void
 TrAmlInitLineNumbers (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_PARSE_OBJECT       *Neighbor)
@@ -216,7 +256,7 @@ TrAmlInitLineNumbers (
  *
  ******************************************************************************/
 
-void
+static void
 TrAmlInitNode (
     ACPI_PARSE_OBJECT       *Op,
     UINT16                  ParseOpcode)
@@ -240,7 +280,7 @@ TrAmlInitNode (
  *
  ******************************************************************************/
 
-void
+static void
 TrAmlSetSubtreeParent (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_PARSE_OBJECT       *Parent)
@@ -270,7 +310,7 @@ TrAmlSetSubtreeParent (
  *
  ******************************************************************************/
 
-void
+static void
 TrAmlInsertPeer (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_PARSE_OBJECT       *NewPeer)
@@ -320,7 +360,7 @@ TrAmlTransformWalk (
  *
  ******************************************************************************/
 
-void
+static void
 TrTransformSubtree (
     ACPI_PARSE_OBJECT           *Op)
 {
@@ -342,8 +382,10 @@ TrTransformSubtree (
 
     case PARSEOP_METHOD:
 
-        /* Zero the tempname (_T_x) count. Probably shouldn't be a global, however */
-
+        /*
+         * TBD: Zero the tempname (_T_x) count. Probably shouldn't be a global,
+         * however
+         */
         Gbl_TempCount = 0;
         break;
 
@@ -368,7 +410,7 @@ TrTransformSubtree (
  *
  ******************************************************************************/
 
-void
+static void
 TrDoDefinitionBlock (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -383,9 +425,9 @@ TrDoDefinitionBlock (
         if (i == 0)
         {
             /*
-             * This is the table signature. Only the DSDT can be assumed to
-             * be at the root of the namespace;  Therefore, namepath optimization
-             * can only be performed on the DSDT.
+             * This is the table signature. Only the DSDT can be assumed
+             * to be at the root of the namespace;  Therefore, namepath
+             * optimization can only be performed on the DSDT.
              */
             if (ACPI_STRNCMP (Next->Asl.Value.String, "DSDT", 4))
             {
@@ -412,7 +454,7 @@ TrDoDefinitionBlock (
  *
  ******************************************************************************/
 
-void
+static void
 TrDoSwitch (
     ACPI_PARSE_OBJECT       *StartNode)
 {
@@ -447,8 +489,10 @@ TrDoSwitch (
 
     Next = StartNode->Asl.Child;
 
-    /* Examine the return type of the Switch Value - must be Integer/Buffer/String */
-
+    /*
+     * Examine the return type of the Switch Value -
+     * must be Integer/Buffer/String
+     */
     Index = (UINT16) (Next->Asl.ParseOpcode - ASL_PARSE_OPCODE_BASE);
     Btype = AslKeywordMapping[Index].AcpiBtype;
     if ((Btype != ACPI_BTYPE_INTEGER) &&
@@ -473,6 +517,10 @@ TrDoSwitch (
             {
                 /* Add an ELSE to complete the previous CASE */
 
+                if (!Conditional)
+                {
+                    return;
+                }
                 NewOp             = TrCreateLeafNode (PARSEOP_ELSE);
                 NewOp->Asl.Parent = Conditional->Asl.Parent;
                 TrAmlInitLineNumbers (NewOp, NewOp->Asl.Parent);
@@ -489,12 +537,14 @@ TrDoSwitch (
             Conditional->Asl.Child->Asl.Next = NULL;
             Predicate = CaseOp->Asl.Child;
 
-            if (Predicate->Asl.ParseOpcode == PARSEOP_PACKAGE)
+            if ((Predicate->Asl.ParseOpcode == PARSEOP_PACKAGE) ||
+                (Predicate->Asl.ParseOpcode == PARSEOP_VAR_PACKAGE))
             {
                 /*
                  * Convert the package declaration to this form:
                  *
-                 * If (LNotEqual (Match (Package(<size>){<data>}, MEQ, _T_x, MTR, Zero, Zero), Ones))
+                 * If (LNotEqual (Match (Package(<size>){<data>},
+                 *                       MEQ, _T_x, MTR, Zero, Zero), Ones))
                  */
                 NewOp2              = TrCreateLeafNode (PARSEOP_MATCHTYPE_MEQ);
                 Predicate->Asl.Next = NewOp2;
@@ -560,7 +610,7 @@ TrDoSwitch (
                  * CaseOp->Child->Peer is the beginning of the case block
                  */
                 NewOp = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
-                                (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValueName));
+                            (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValueName));
                 NewOp->Asl.Next = Predicate;
                 TrAmlInitLineNumbers (NewOp, Predicate);
 
@@ -640,6 +690,10 @@ TrDoSwitch (
         {
             /* Convert the DEFAULT node to an ELSE */
 
+            if (!Conditional)
+            {
+                return;
+            }
             TrAmlInitNode (DefaultOp, PARSEOP_ELSE);
             DefaultOp->Asl.Parent = Conditional->Asl.Parent;
 
@@ -675,18 +729,23 @@ TrDoSwitch (
     switch (Btype)
     {
     case ACPI_BTYPE_INTEGER:
-        NewOp2->Asl.Next  = TrCreateValuedLeafNode (PARSEOP_ZERO, (ACPI_INTEGER) 0);
+        NewOp2->Asl.Next  = TrCreateValuedLeafNode (PARSEOP_ZERO,
+                                (ACPI_INTEGER) 0);
         break;
 
     case ACPI_BTYPE_STRING:
-        NewOp2->Asl.Next = TrCreateValuedLeafNode (PARSEOP_STRING_LITERAL, (ACPI_INTEGER) "");
+        NewOp2->Asl.Next = TrCreateValuedLeafNode (PARSEOP_STRING_LITERAL,
+                                (ACPI_INTEGER) "");
         break;
 
     case ACPI_BTYPE_BUFFER:
-        TrLinkPeerNode (NewOp2, TrCreateValuedLeafNode (PARSEOP_BUFFER, (ACPI_INTEGER) 0));
+        (void) TrLinkPeerNode (NewOp2, TrCreateValuedLeafNode (PARSEOP_BUFFER,
+                                    (ACPI_INTEGER) 0));
         Next = NewOp2->Asl.Next;
-        TrLinkChildren (Next, 1, TrCreateValuedLeafNode (PARSEOP_ZERO, (ACPI_INTEGER) 1));
-        TrLinkPeerNode (Next->Asl.Child, TrCreateValuedLeafNode (PARSEOP_DEFAULT_ARG, (ACPI_INTEGER) 0));
+        (void) TrLinkChildren (Next, 1, TrCreateValuedLeafNode (PARSEOP_ZERO,
+                                    (ACPI_INTEGER) 1));
+        (void) TrLinkPeerNode (Next->Asl.Child,
+            TrCreateValuedLeafNode (PARSEOP_DEFAULT_ARG, (ACPI_INTEGER) 0));
 
         TrAmlSetSubtreeParent (Next->Asl.Child, Next);
         break;
@@ -698,8 +757,9 @@ TrDoSwitch (
     TrAmlSetSubtreeParent (NewOp2, NewOp);
 
     /*
-     * Create and insert a new Store() node which will be used to save the Switch() value.
-     * The store is of the form: Store (Value, _T_x) where _T_x is the temp variable.
+     * Create and insert a new Store() node which will be used to save the
+     * Switch() value.  The store is of the form: Store (Value, _T_x)
+     * where _T_x is the temp variable.
      */
     Next = TrCreateLeafNode (PARSEOP_STORE);
     TrAmlInsertPeer (StartNode, Next);
