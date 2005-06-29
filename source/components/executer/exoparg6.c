@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.18 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -150,6 +150,14 @@
  * fully resolved operands.
 !*/
 
+/* Local prototypes */
+
+static BOOLEAN
+AcpiExDoMatch (
+    UINT32                  MatchOp,
+    ACPI_OPERAND_OBJECT     *PackageObj,
+    ACPI_OPERAND_OBJECT     *MatchObj);
+
 
 /*******************************************************************************
  *
@@ -167,7 +175,7 @@
  *
  ******************************************************************************/
 
-BOOLEAN
+static BOOLEAN
 AcpiExDoMatch (
     UINT32                  MatchOp,
     ACPI_OPERAND_OBJECT     *PackageObj,
@@ -301,7 +309,8 @@ AcpiExOpcode_6A_0T_1R (
     ACPI_OPERAND_OBJECT     *ThisElement;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_6A_0T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_6A_0T_1R",
+        AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     switch (WalkState->Opcode)
@@ -403,12 +412,11 @@ AcpiExOpcode_6A_0T_1R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("AcpiExOpcode_6A_0T_1R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
-
 
     WalkState->ResultObj = ReturnDesc;
 
