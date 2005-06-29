@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.77 $
+ *       $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -204,7 +204,7 @@ typedef struct /* NUMBER - has value */
 
     ACPI_INTEGER                Value;
 
-} ACPI_OBJECT_NUMBER;
+} ACPI_OBJECT_INTEGER;
 
 
 typedef struct /* STRING - has length and pointer - Null terminated, ASCII characters only */
@@ -446,7 +446,7 @@ typedef struct /* Reference - Local object type */
     ACPI_OBJECT_COMMON_HEADER
 
     UINT8                       TargetType;         /* Used for IndexOp */
-    UINT16                      OpCode;
+    UINT16                      Opcode;
     UINT32                      Offset;             /* Used for ArgOp, LocalOp, and IndexOp */
 
     void                        *Object;            /* NameOp=>HANDLE to obj, IndexOp=>ACPI_OPERAND_OBJECT  */
@@ -487,7 +487,7 @@ typedef union acpi_operand_obj
 {
     ACPI_OBJECT_COMMON          Common;
     ACPI_OBJECT_CACHE_LIST      Cache;
-    ACPI_OBJECT_NUMBER          Number;
+    ACPI_OBJECT_INTEGER         Integer;
     ACPI_OBJECT_STRING          String;
     ACPI_OBJECT_BUFFER          Buffer;
     ACPI_OBJECT_PACKAGE         Package;
