@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -359,7 +359,6 @@ ACPI_STATUS
 LkCrossReferenceNamespace (void)
 {
     ACPI_WALK_STATE         *WalkState;
-    ACPI_WALK_LIST          WalkList;
 
 
     DbgPrint (ASL_DEBUG_OUTPUT, "\nCross referencing namespace\n\n");
@@ -369,8 +368,7 @@ LkCrossReferenceNamespace (void)
      * within the namespace (Passed as context to the callbacks)
      */
 
-    WalkList.WalkState = NULL;
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, NULL);
     if (!WalkState)
     {
         return AE_NO_MEMORY;
