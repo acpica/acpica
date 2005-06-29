@@ -291,32 +291,35 @@ AmlReadField (
     {
         MergedDatum = PreviousRawDatum;
 
+        MergedDatum = (MergedDatum >> ObjDesc->Field.BitOffset);
+
         ValidFieldBits = ((ObjDesc->FieldUnit.Length % BitGranularity) + ObjDesc->Field.BitOffset);
         
-        Mask = (((UINT32) 1 << ValidFieldBits) - (UINT32) 1);
+        if (ValidFieldBits)
+        {
+            Mask = (((UINT32) 1 << ValidFieldBits) - (UINT32) 1);
+            MergedDatum &= Mask;
+        }
+
 
         /* Place the MergedDatum into the proper format and return buffer field */
         switch (ByteGranularity)
         {
         case 1:
-            MergedDatum = (MergedDatum >> ObjDesc->Field.BitOffset) & Mask;
             ((UINT8 *) Buffer) [ThisFieldDatumOffset] = (UINT8) MergedDatum;
             break;
 
         case 2:
-            MergedDatum = (MergedDatum >> ObjDesc->Field.BitOffset) & Mask;
             ((UINT16 *) Buffer) [ThisFieldDatumOffset] = (UINT16) MergedDatum;
             break;
 
         case 4:
-            MergedDatum = (MergedDatum >> ObjDesc->Field.BitOffset) & Mask;
             ((UINT32 *) Buffer) [ThisFieldDatumOffset] = (UINT32) MergedDatum;
             break;
         }
-    
+
         ThisFieldByteOffset = 1;
         ThisFieldDatumOffset = 1;
-
     }
 
     else
