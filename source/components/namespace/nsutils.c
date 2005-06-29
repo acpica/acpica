@@ -308,8 +308,9 @@ NsInternalizeName (
 {
     char                    *Result = NULL;
     char                    *InternalName;
-    ACPI_SIZE               i;
+    ACPI_SIZE               NumSegments;
     BOOLEAN                 FullyQualified = FALSE;
+    UINT32                  Length;
 
 
     FUNCTION_TRACE ("NsInternalizeName");
@@ -336,9 +337,31 @@ NsInternalizeName (
         DottedName++;
     }
 
-    i = (strlen (DottedName) + 1) / PATH_SEGMENT_LENGTH;    /* i = number of NameSegs in the path */
+    Length = strlen (DottedName);
+    NumSegments = (Length + 1) / PATH_SEGMENT_LENGTH;    /* Number of NameSegs in the path */
 
-    InternalName = CmCallocate ((ACPI_NAME_SIZE * i) + 4);
+    /* Name must be at least 4 characters */
+
+    if (Length < 4)
+    {
+        FUNCTION_STATUS_EXIT (AE_BAD_PATHNAME);
+        return AE_BAD_PATHNAME;
+    }
+
+    /* Pathname must be an exact multiple of segments */
+
+    if (Length > 4)
+    {
+        if ((Length + 1) % PATH_SEGMENT_LENGTH)
+        {
+            FUNCTION_STATUS_EXIT (AE_BAD_PATHNAME);
+            return AE_BAD_PATHNAME;
+        }
+    }
+
+    /* We need a segment to store the internal version of the name */
+
+    InternalName = CmCallocate ((ACPI_NAME_SIZE * NumSegments) + 4);
     if (!InternalName)
     {
         FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
@@ -352,20 +375,20 @@ NsInternalizeName (
     {
         InternalName[0] = '\\';
         InternalName[1] = AML_MultiNamePrefixOp;
-        InternalName[2] = i;
+        InternalName[2] = NumSegments;
         Result = &InternalName[3];
     }
     else
     {
         InternalName[0] = AML_MultiNamePrefixOp;
-        InternalName[1] = i;
+        InternalName[1] = NumSegments;
         Result = &InternalName[2];
     }
 
 
     /* Build the name (minus path separators) */
 
-    for (; i; i--)
+    for (; NumSegments; NumSegments--)
     {
         strncpy (Result, DottedName, ACPI_NAME_SIZE);
         Result += ACPI_NAME_SIZE;
