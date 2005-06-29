@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.249 $
+ *       $Revision: 1.251 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -924,7 +924,7 @@ typedef struct acpi_obj_info_header
 } ACPI_OBJ_INFO_HEADER;
 
 
-typedef struct
+typedef struct acpi_device_info
 {
     ACPI_COMMON_OBJ_INFO;
 
@@ -933,6 +933,7 @@ typedef struct
     char                        UniqueId[9];        /*  _UID value if any */
     ACPI_INTEGER                Address;            /*  _ADR value if any */
     UINT32                      CurrentStatus;      /*  _STA value */
+
 } ACPI_DEVICE_INFO;
 
 
