@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.138 $
+ *       $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -178,6 +178,8 @@ ACPI_EXTERN ACPI_COMMON_FACS            AcpiGbl_CommonFACS;
  */
 ACPI_EXTERN UINT8                       AcpiGbl_IntegerBitWidth;
 ACPI_EXTERN UINT8                       AcpiGbl_IntegerByteWidth;
+ACPI_EXTERN ACPI_GENERIC_ADDRESS        AcpiGbl_XPm1aEnable;
+ACPI_EXTERN ACPI_GENERIC_ADDRESS        AcpiGbl_XPm1bEnable;
 
 /*
  * Since there may be multiple SSDTs and PSDTS, a single pointer is not
@@ -207,8 +209,8 @@ ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_AcpiMutexInfo [NUM_MTX];
 
 
 ACPI_EXTERN ACPI_MEMORY_LIST            AcpiGbl_MemoryLists[ACPI_NUM_MEM_LISTS];
-ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_DrvNotify;
-ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_SysNotify;
+ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_DeviceNotify;
+ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_SystemNotify;
 ACPI_EXTERN ACPI_INIT_HANDLER           AcpiGbl_InitHandler;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GlobalLockSemaphore;
@@ -309,6 +311,7 @@ extern      ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EV
 ACPI_EXTERN ACPI_FIXED_EVENT_HANDLER    AcpiGbl_FixedEventHandlers[ACPI_NUM_FIXED_EVENTS];
 ACPI_EXTERN ACPI_GPE_XRUPT_INFO         *AcpiGbl_GpeXruptListHead;
 ACPI_EXTERN ACPI_GPE_BLOCK_INFO         *AcpiGbl_GpeFadtBlocks[ACPI_MAX_GPE_BLOCKS];
+ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeLock;
 
 
 /*****************************************************************************
