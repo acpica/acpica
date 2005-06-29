@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.142 $
+ *       $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -740,7 +740,7 @@ ACPI_STATUS (*WALK_CALLBACK) (
 #define ACPI_COMMON_OBJ_INFO \
     ACPI_OBJECT_TYPE            Type;           /* ACPI object type */ \
     ACPI_NAME                   Name            /* ACPI object Name */
-    
+
 
 typedef struct
 {
