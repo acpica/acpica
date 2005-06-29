@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.57 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -117,11 +117,9 @@
 
 #include <stdio.h>
 #include "aslcompiler.h"
-#include "acnamesp.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslcompile")
-
 
 
 /*******************************************************************************
@@ -179,10 +177,10 @@ AslCompilerSignon (
     /* Compiler signon with copyright */
 
     FlPrintFile (FileId,
-        "%s\n%s%s %s [%s]\n%sIncludes ACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0a\n%s\n",
+        "%s\n%s%s\n%s%s version %X [%s]\n%s%s\n%sSupports ACPI Specification Revision 2.0b\n%s\n",
         Prefix,
-        Prefix, CompilerId, CompilerVersion, __DATE__,
-        Prefix, ACPI_CA_VERSION,
+        Prefix, IntelAcpiCA,
+        Prefix, CompilerId, ACPI_CA_VERSION, __DATE__,
         Prefix, CompilerCopyright,
         Prefix,
         Prefix);
@@ -267,6 +265,34 @@ AslCompilerFileHeader (
 
 /*******************************************************************************
  *
+ * FUNCTION:    CmFlushSourceCode
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Read in any remaining source code after the parse tree
+ *              has been constructed.
+ *
+ ******************************************************************************/
+
+void
+CmFlushSourceCode (void)
+{
+    char                    Buffer;
+
+
+    while (FlReadFile (ASL_FILE_INPUT, &Buffer, 1) != AE_ERROR)
+    {
+        InsertLineBuffer ((int) Buffer);
+    }
+
+    ResetCurrentLineBuffer ();
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    CmDoCompile
  *
  * PARAMETERS:  None
@@ -311,6 +337,18 @@ CmDoCompile (void)
     AslCompilerparse();
     UtEndEvent (i++);
 
+    /* Flush out any remaining source after parse tree is complete */
+
+    CmFlushSourceCode ();
+
+    /* Did the parse tree get successfully constructed? */
+
+    if (!RootNode)
+    {
+        CmCleanupAndExit ();
+        return -1;
+    }
+
     OpcGetIntegerWidth (RootNode);
 
     /* Pre-process parse tree for any operator transforms */
@@ -324,6 +362,18 @@ CmDoCompile (void)
     DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating AML opcodes\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
     UtEndEvent (i++);
+
+    /*
+     * Now that the input is parsed, we can open the AML output file.
+     * Note: by default, the name of this file comes from the table descriptor
+     * within the input file.
+     */
+    Status = FlOpenAmlOutputFile (Gbl_OutputFilenamePrefix);
+    if (ACPI_FAILURE (Status))
+    {
+        AePrintErrorLog (ASL_FILE_STDERR);
+        return -1;
+    }
 
     /* Interpret and generate all compile-time constants */
 
@@ -424,17 +474,6 @@ CmDoCompile (void)
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
     UtEndEvent (i++);
 
-    /*
-     * Now that the input is parsed, we can open the AML output file.
-     * Note: by default, the name of this file comes from the table descriptor
-     * within the input file.
-     */
-    Status = FlOpenAmlOutputFile (Gbl_OutputFilenamePrefix);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (ASL_FILE_STDERR);
-        return -1;
-    }
 
     /* Code generation - emit the AML */
 
@@ -443,6 +482,17 @@ CmDoCompile (void)
     UtEndEvent (i++);
 
     UtBeginEvent (i, "Write optional output files");
+    CmDoOutputFiles ();
+    UtEndEvent (i++);
+
+    UtEndEvent (13);
+    CmCleanupAndExit ();
+    return 0;
+}
+
+void
+CmDoOutputFiles (void)
+{
 
     /* Create listings and hex files */
 
@@ -452,11 +502,6 @@ CmDoCompile (void)
     /* Dump the namespace to the .nsp file if requested */
 
     LsDisplayNamespace ();
-    UtEndEvent (i++);
-
-    UtEndEvent (13);
-    CmCleanupAndExit ();
-    return 0;
 }
 
 
@@ -551,6 +596,11 @@ CmCleanupAndExit (void)
     if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
     {
         unlink (Gbl_Files[ASL_FILE_AML_OUTPUT].Filename);
+    }
+
+    if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
+    {
+        printf ("\nMaximum error count (%d) exceeded.\n", ASL_MAX_ERROR_COUNT);
     }
 
     UtDisplaySummary (ASL_FILE_STDOUT);

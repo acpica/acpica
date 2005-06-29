@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,7 @@
 #include "acapps.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 
@@ -201,17 +202,28 @@ char                        FilenameBuf[20];
  ******************************************************************************/
 
 char *
-AdGenerateFilename (char *TableId)
+AdGenerateFilename (
+    char                    *Prefix,
+    char                    *TableId)
 {
     NATIVE_UINT              i;
+    NATIVE_UINT              j;
 
 
-    for (i = 0; i < 8 && TableId[i] != ' ' && TableId[i] != 0; i++)
+    for (i = 0; Prefix[i]; i++)
     {
-        FilenameBuf [i] = TableId[i];
+        FilenameBuf[i] = Prefix[i];
     }
 
-    FilenameBuf [i] = 0;
+    FilenameBuf[i] = '_';
+    i++;
+
+    for (j = 0; j < 8 && (TableId[j] != ' ') && (TableId[j] != 0); i++, j++)
+    {
+        FilenameBuf[i] = TableId[j];
+    }
+
+    FilenameBuf[i] = 0;
     strcat (FilenameBuf, ACPI_TABLE_FILE_SUFFIX);
     return FilenameBuf;
 }
@@ -254,7 +266,7 @@ AdWriteBuffer (
 
 /******************************************************************************
  *
- * FUNCTION:    AfDumpTables
+ * FUNCTION:    AfWriteTable
  *
  * PARAMETERS:
  *
@@ -265,23 +277,21 @@ AdWriteBuffer (
  ******************************************************************************/
 
 void
-AdWriteDsdt (void)
+AdWriteTable (
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  Length,
+    char                    *TableName,
+    char                    *OemTableId)
 {
     char                    *Filename;
 
 
-    if (!AcpiGbl_DSDT)
-    {
-        AcpiOsPrintf ("No DSDT!\n");
-        return;
-    }
 
-
-    Filename = AdGenerateFilename (AcpiGbl_DSDT->OemTableId);
+    Filename = AdGenerateFilename (TableName, OemTableId);
     AdWriteBuffer (Filename,
-            (char *) AcpiGbl_DSDT, AcpiGbl_DSDT->Length);
+            (char *) Table, Length);
 
-    AcpiOsPrintf ("DSDT AML written to \"%s\"\n", Filename);
+    AcpiOsPrintf ("Table [%s] written to \"%s\"\n", TableName, Filename);
 }
 
 
@@ -369,6 +379,82 @@ FlGenerateFilename (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    FlSplitInputPathname
+ *
+ * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
+ *                                    compiled
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Split the input path into a directory and filename part
+ *              1) Directory part used to open include files
+ *              2) Filename part used to generate output filenames
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+FlSplitInputPathname (
+    char                    *InputPath,
+    char                    **OutDirectoryPath,
+    char                    **OutFilename)
+{
+    char                    *Substring;
+    char                    *DirectoryPath;
+    char                    *Filename;
+
+
+    *OutDirectoryPath = NULL;
+    *OutFilename = NULL;
+
+    if (!InputPath)
+    {
+        return (AE_OK);
+    }
+
+    /* Get the path to the input filename's directory */
+
+    DirectoryPath = strdup (InputPath);
+    if (!DirectoryPath)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    Substring = strrchr (DirectoryPath, '\\');
+    if (!Substring)
+    {
+        Substring = strrchr (DirectoryPath, '/');
+        if (!Substring)
+        {
+            Substring = strrchr (DirectoryPath, ':');
+        }
+    }
+
+    if (!Substring)
+    {
+        DirectoryPath[0] = 0;
+        Filename = strdup (InputPath);
+    }
+    else
+    {
+        Filename = strdup (Substring + 1);
+        *(Substring+1) = 0;
+    }
+
+    if (!Filename)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    *OutDirectoryPath = DirectoryPath;
+    *OutFilename = Filename;
+
+    return (AE_OK);
+}
+
+
+
 /******************************************************************************
  *
  * FUNCTION:    AdAmlDisassemble
@@ -386,15 +472,19 @@ ACPI_STATUS
 AdAmlDisassemble (
     BOOLEAN                 OutToFile,
     char                    *Filename,
-    char                    **OutFilename)
+    char                    *Prefix,
+    char                    **OutFilename,
+    BOOLEAN                 GetAllTables)
 {
     ACPI_STATUS             Status;
     char                    *DisasmFilename = NULL;
     FILE                    *File = NULL;
 
 
-    /* Get the ACPI Tables (always) */
-
+    /*
+     * AML Input:
+     * Either from a file, or via GetTables (memory or registry)
+     */
     if (Filename)
     {
         Status = AcpiDbLoadAcpiTable (Filename);
@@ -405,7 +495,7 @@ AdAmlDisassemble (
     }
     else
     {
-        Status = AdGetTables (Filename);
+        Status = AdGetTables (Filename, GetAllTables);
         if (ACPI_FAILURE (Status))
         {
             AcpiOsPrintf ("Could not get ACPI tables, %s\n",
@@ -419,23 +509,27 @@ AdAmlDisassemble (
         }
 
         AcpiOsPrintf ("\nDisassembly of DSDT\n");
-        Filename = AdGenerateFilename (AcpiGbl_DSDT->OemTableId);
-        *OutFilename = Filename;
+        Prefix = AdGenerateFilename ("dsdt", AcpiGbl_DSDT->OemTableId);
     }
 
+    /*
+     * ASL Output:
+     * Redirect to a file if requested
+     */
     if (OutToFile)
     {
         /* Create/Open a disassembly output file */
 
-        DisasmFilename = FlGenerateFilename (Filename, FILE_SUFFIX_DISASSEMBLY);
+        DisasmFilename = FlGenerateFilename (Prefix, FILE_SUFFIX_DISASSEMBLY);
         if (!OutFilename)
         {
             fprintf (stderr, "Could not generate output filename\n");
         }
+
         File = fopen (DisasmFilename, "w+");
         if (!File)
         {
-            fprintf (stderr, "Could not open output filen\n");
+            fprintf (stderr, "Could not open output file\n");
         }
 
         AcpiOsRedirectOutput (File);
@@ -824,12 +918,15 @@ AdParseDeferredOps (
 
 ACPI_STATUS
 AdGetTables (
-    char                    *Filename)
+    char                    *Filename,
+    BOOLEAN                 GetAllTables)
 {
     FILE                    *fp;
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       TableHeader;
     ACPI_TABLE_HEADER       *NewTable;
+    UINT32                  NumTables;
+    UINT32                  PointerSize;
 
 
     if (Filename)
@@ -850,16 +947,70 @@ AdGetTables (
     }
     else
     {
+        if (GetAllTables)
+        {
+            ACPI_STRNCPY (TableHeader.Signature, "RSDT", 4);
+            AcpiOsTableOverride (&TableHeader, &NewTable);
+
+#if ACPI_MACHINE_WIDTH != 64
+
+            if (!ACPI_STRNCMP (NewTable->Signature, "RSDT", 4))
+            {
+                PointerSize = sizeof (UINT32);
+            }
+            else
+#endif
+            {
+                PointerSize = sizeof (UINT64);
+            }
+
+            /*
+             * Determine the number of tables pointed to by the RSDT/XSDT.
+             * This is defined by the ACPI Specification to be the number of
+             * pointers contained within the RSDT/XSDT.  The size of the pointers
+             * is architecture-dependent.
+             */
+            NumTables = (NewTable->Length - sizeof (ACPI_TABLE_HEADER)) / PointerSize;
+            AcpiOsPrintf ("There are %d tables defined in the %4.4s\n\n",
+                NumTables, NewTable->Signature);
+
+            /* Get the FADT */
+
+            ACPI_STRNCPY (TableHeader.Signature, "FADT", 4);
+            AcpiOsTableOverride (&TableHeader, &NewTable);
+            if (NewTable)
+            {
+                AcpiGbl_FADT = (void *) NewTable;
+                AdWriteTable (NewTable, NewTable->Length, 
+                    "FADT", NewTable->OemTableId);
+            }
+            AcpiOsPrintf ("\n");
+
+            /* Get the FACS */
+
+            ACPI_STRNCPY (TableHeader.Signature, "FACS", 4);
+            AcpiOsTableOverride (&TableHeader, &NewTable);
+            if (NewTable)
+            {
+                AcpiGbl_FACS = (void *) NewTable;
+                AdWriteTable (NewTable, AcpiGbl_FACS->Length, 
+                    "FACS", AcpiGbl_FADT->Header.OemTableId);
+            }
+            AcpiOsPrintf ("\n");
+        }
+
+        /* Always get the DSDT */
+
         ACPI_STRNCPY (TableHeader.Signature, DSDT_SIG, 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
-
         if (NewTable)
         {
             Status = AE_OK;
             AcpiGbl_DSDT = NewTable;
             DsdtPtr = (UINT8 *) AcpiGbl_DSDT;
             DsdtLength = AcpiGbl_DSDT->Length;
-            AdWriteDsdt ();
+            AdWriteTable (AcpiGbl_DSDT, AcpiGbl_DSDT->Length, 
+                "DSDT", AcpiGbl_DSDT->OemTableId);
         }
         else
         {
