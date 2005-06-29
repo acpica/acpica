@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -608,9 +608,9 @@ AcpiDsMapOpcodeToDataType (
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    OpType = ACPI_GET_OP_TYPE (OpInfo);
+    OpType = OpInfo->Type;
 
-    switch (ACPI_GET_OP_CLASS (OpInfo))
+    switch (OpInfo->Class)
     {
     case AML_CLASS_ARGUMENT:
 
@@ -686,8 +686,8 @@ AcpiDsMapOpcodeToDataType (
 
         switch (OpType)
         {
-        case AML_TYPE_EX_1A_0T_0R:
-        case AML_TYPE_EX_2A_0T_0R:
+        case AML_TYPE_EXEC_1A_0T_0R:
+        case AML_TYPE_EXEC_2A_0T_0R:
             break;
 
         default:
