@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
- *              $Revision: 1.83 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -289,7 +289,7 @@ ACPI_STATUS
 AcpiEvAddressSpaceDispatch (
     ACPI_OPERAND_OBJECT     *RegionObj,
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_INTEGER            Address,
     UINT32                  BitWidth,
     UINT32                  *Value)
 {
@@ -360,6 +360,8 @@ AcpiEvAddressSpaceDispatch (
                 AcpiCmFormatException (Status), RegionObj->Region.SpaceId));
             return_ACPI_STATUS(Status);
         }
+
+        RegionObj->Region.Flags |= AOPOBJ_INITIALIZED;
 
         /*
          *  Save the returned context for use in all accesses to
@@ -501,6 +503,8 @@ AcpiEvDisassociateRegionFromHandler(
                     ("EvDisassociateRegionFromHandler: %s from region init, SpaceID %d\n",
                     AcpiCmFormatException (Status), RegionObj->Region.SpaceId));
             }
+
+            RegionObj->Region.Flags &= ~(AOPOBJ_INITIALIZED);
 
             /*
              *  Remove handler reference in the region
