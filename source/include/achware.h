@@ -215,7 +215,7 @@ AcpiHwSetCx (
 
 ACPI_STATUS
 AcpiHwGetCxInfo (
-    UINT32                  CxStates[MAX_CX_STATES]);
+    UINT32                  CxStates[]);
 
 
 /* Throttling Prototypes */
