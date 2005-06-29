@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  ******************************************************************************/
 
@@ -653,24 +653,12 @@ AcpiDbDisplayMethodInfo (
             NumRemainingOps++;
         }
 
-        OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-        if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
-        {
-            /* Bad opcode or ASCII character */
-
-            continue;
-        }
-
-
         /* Decode the opcode */
 
+        OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
         switch (ACPI_GET_OP_CLASS (OpInfo))
         {
-        case OPTYPE_CONSTANT:           /* argument type only */
-        case OPTYPE_LITERAL:            /* argument type only */
-        case OPTYPE_DATA_TERM:          /* argument type only */
-        case OPTYPE_LOCAL_VARIABLE:     /* argument type only */
-        case OPTYPE_METHOD_ARGUMENT:    /* argument type only */
+        case AML_CLASS_ARGUMENT:
             if (CountRemaining)
             {
                 NumRemainingOperands++;
@@ -678,6 +666,11 @@ AcpiDbDisplayMethodInfo (
 
             NumOperands++;
             break;
+
+        case AML_CLASS_UNKNOWN:
+            /* Bad opcode or ASCII character */
+
+            continue;
 
         default:
             if (CountRemaining)
