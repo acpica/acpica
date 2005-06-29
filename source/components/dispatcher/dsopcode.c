@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -291,7 +291,7 @@ AcpiDsGetRegionArguments (
     Node = ObjDesc->Region.Node;
 
     DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "  [Operation Region]"));
-        
+
     DEBUG_PRINT (TRACE_EXEC,
         ("DsGetRegionArguments: [%4.4s] OpRegion Init at AML %p[%x]\n",
         &Node->Name, ExtraDesc->Extra.Pcode, *(UINT32*) ExtraDesc->Extra.Pcode));
