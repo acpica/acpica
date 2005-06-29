@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.65 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -200,7 +200,6 @@ AcpiDsGetPredicateValue (
      * Result of predicate evaluation currently must
      * be a number
      */
-
     if (ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -220,7 +219,6 @@ AcpiDsGetPredicateValue (
      * Save the result of the predicate evaluation on
      * the control stack
      */
-
     if (ObjDesc->Integer.Value)
     {
         WalkState->ControlState->Common.Value = TRUE;
@@ -232,7 +230,6 @@ AcpiDsGetPredicateValue (
          * Predicate is FALSE, we will just toss the
          * rest of the package
          */
-
         WalkState->ControlState->Common.Value = FALSE;
         Status = AE_CTRL_FALSE;
     }
@@ -251,11 +248,9 @@ Cleanup:
      * Delete the predicate result object (we know that
      * we don't need it anymore)
      */
-
     AcpiUtRemoveReference (ObjDesc);
 
     WalkState->ControlState->Common.State = CONTROL_NORMAL;
-
     return_ACPI_STATUS (Status);
 }
 
@@ -283,7 +278,7 @@ AcpiDsExecBeginOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       **OutOp)
 {
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
     ACPI_STATUS             Status = AE_OK;
     UINT8                   OpcodeClass;
 
@@ -317,7 +312,6 @@ AcpiDsExecBeginOp (
      * must be the beginning of the associated predicate.
      * Save this knowledge in the current scope descriptor
      */
-
     if ((WalkState->ControlState) &&
         (WalkState->ControlState->Common.State ==
             CONTROL_CONDITIONAL_EXECUTING))
@@ -346,7 +340,6 @@ AcpiDsExecBeginOp (
     /*
      * Handle the opcode based upon the opcode type
      */
-
     switch (OpcodeClass)
     {
     case OPTYPE_CONTROL:
@@ -372,7 +365,6 @@ AcpiDsExecBeginOp (
              * will be deleted upon completion of the execution
              * of this method.
              */
-
             Status = AcpiDsLoad2BeginOp (Op->Opcode, Op, WalkState, NULL);
         }
 
@@ -443,7 +435,7 @@ AcpiDsExecEndOp (
     ACPI_PARSE_OBJECT       *NextOp;
     ACPI_PARSE_OBJECT       *FirstArg;
     ACPI_OPERAND_OBJECT     *ResultObj = NULL;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     FUNCTION_TRACE_PTR ("DsExecEndOp", Op);
@@ -530,6 +522,23 @@ AcpiDsExecEndOp (
         {
             goto Cleanup;
         }
+
+        /* Resolve all operands */
+
+        Status = AcpiExResolveOperands (Opcode, 
+                        &(WalkState->Operands [WalkState->NumOperands -1]), 
+                        WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            /* TBD: must pop and delete operands */
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "[%s]: Could not resolve operands, %s\n",
+                AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
+            goto Cleanup;
+        }
+
+        DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
+                        WalkState->NumOperands, "after ExResolveOperands");
 
         switch (Optype)
         {
@@ -669,7 +678,6 @@ AcpiDsExecEndOp (
          * references here (Local variables, arguments
          * to *this* method, etc.)
          */
-
         Status = AcpiDsResolveOperands (WalkState);
         if (ACPI_FAILURE (Status))
         {
@@ -692,7 +700,7 @@ AcpiDsExecEndOp (
 
     case OPTYPE_CREATE_FIELD:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
             "Executing CreateField Buffer/Index Op=%X\n", Op));
 
         Status = AcpiDsLoad2EndOp (WalkState, Op);
@@ -752,7 +760,7 @@ AcpiDsExecEndOp (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Unimplemented opcode, type=%X Opcode=%X Op=%X\n",
             Optype, Op->Opcode, Op));
 
