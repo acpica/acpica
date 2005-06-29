@@ -117,6 +117,7 @@
 #include <acpi.h>
 #include <parser.h>
 #include <amlcode.h>
+#include <dispatch.h>
 #include <namesp.h>
 #include <parser.h>
 #include <events.h>
@@ -390,7 +391,7 @@ DbDisplayInternalObject (
     ACPI_WALK_STATE         *WalkState;
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
 
     OsdPrintf ("%p ", ObjDesc);
 
@@ -423,8 +424,8 @@ DbDisplayInternalObject (
 
         switch (ObjDesc->Common.Type)
         {
-        case INTERNAL_TYPE_Lvalue:
-            switch (ObjDesc->Lvalue.OpCode)
+        case INTERNAL_TYPE_Reference:
+            switch (ObjDesc->Reference.OpCode)
             {
             case AML_ZeroOp:
                 OsdPrintf ("[Const]     Number 0x%.8X", 0);
@@ -439,19 +440,19 @@ DbDisplayInternalObject (
                 break;
 
             case AML_LocalOp:
-                OsdPrintf ("[Local%d]", ObjDesc->Lvalue.Offset);
+                OsdPrintf ("[Local%d]", ObjDesc->Reference.Offset);
                 if (WalkState)
                 {
-                    ObjDesc = WalkState->LocalVariables[ObjDesc->Lvalue.Offset].Object;
+                    ObjDesc = WalkState->LocalVariables[ObjDesc->Reference.Offset].Object;
                     DbDecodeInternalObject (ObjDesc);
                 }
                 break;
 
             case AML_ArgOp:
-                OsdPrintf ("[Arg%d]  ", ObjDesc->Lvalue.Offset);
+                OsdPrintf ("[Arg%d]  ", ObjDesc->Reference.Offset);
                 if (WalkState)
                 {
-                    ObjDesc = WalkState->Arguments[ObjDesc->Lvalue.Offset].Object;
+                    ObjDesc = WalkState->Arguments[ObjDesc->Reference.Offset].Object;
                     DbDecodeInternalObject (ObjDesc);
                 }
                 break;
@@ -462,7 +463,7 @@ DbDisplayInternalObject (
 
             case AML_IndexOp:
                 OsdPrintf ("[Index]  ");
-                DbDecodeInternalObject (ObjDesc->Lvalue.Object);
+                DbDecodeInternalObject (ObjDesc->Reference.Object);
                 break;
 
             default:
@@ -521,7 +522,7 @@ DbDisplayMethodInfo (
 
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");
@@ -621,7 +622,7 @@ DbDisplayLocals (void)
 
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");
@@ -667,7 +668,7 @@ DbDisplayArguments (void)
     NAME_TABLE_ENTRY        *Entry;
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");
@@ -714,7 +715,7 @@ DbDisplayResults (void)
     NAME_TABLE_ENTRY        *Entry;
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");
@@ -758,7 +759,7 @@ DbDisplayCallingTree (void)
     NAME_TABLE_ENTRY        *Entry;
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");
