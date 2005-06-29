@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.85 $
+ *       $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -168,8 +168,8 @@
 #define ACPI_COMMON_FIELD_INFO              /* SIZE/ALIGNMENT: 24 bits + three 32-bit values */\
     UINT8                       Granularity;\
     UINT16                      BitLength;          /* Length of field in bits */\
-    UINT32                      Offset;             /* Byte offset within containing object */\
-    UINT8                       BitOffset;          /* Bit offset within min read/write data unit */\
+    UINT32                      ByteOffset;         /* Byte offset within containing object */\
+    UINT8                       BitOffset;          /* Bit offset within min read/write data unit (0-63) */\
     UINT8                       Access;             /* AccessType (ByteAccess, WordAccess, etc*/\
     UINT8                       LockRule;           /* Global Lock: Must Lock = 1 */\
     UINT8                       UpdateRule;         /* How neighboring bits are handled */\
