@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -886,6 +886,7 @@ literal (void)
     char                StringChar;
     UINT32              State = ASL_NORMAL_CHAR;
     UINT32              i;
+    UINT8               Digit;
     char                ConvertBuffer[4];
 
 
@@ -1002,19 +1003,22 @@ DoCharacter:
                  * string and resume processing of the next character
                  */
                 ConvertBuffer[i] = 0;
-                *s = (char) STRTOUL (ConvertBuffer, NULL, 8);
+                Digit = (UINT8) STRTOUL (ConvertBuffer, NULL, 8);
 
-                /*
-                 * Check for a NULL, this terminates the string
-                 */
-                if ((*s == 0) || (*s > ACPI_ASCII_MAX))
+                /* Check for NULL or non-ascii character (ignore if so) */
+
+                if ((Digit == 0) || (Digit > ACPI_ASCII_MAX))
                 {
                     AslCommonError (ASL_WARNING, ASL_MSG_INVALID_STRING,
                                     Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                                     Gbl_CurrentLineOffset, Gbl_CurrentColumn,
                                     Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
                 }
-                s++;
+                else
+                {
+                    *s = (char) Digit;
+                    s++;
+                }
 
                 State = ASL_NORMAL_CHAR;
                 goto DoCharacter;
@@ -1040,19 +1044,22 @@ DoCharacter:
                  * string and resume processing of the next character
                  */
                 ConvertBuffer[i] = 0;
-                *s = (char) STRTOUL (ConvertBuffer, NULL, 16);
+                Digit = (UINT8) STRTOUL (ConvertBuffer, NULL, 16);
 
-                /*
-                 * Check for a NULL, this terminates the string
-                 */
-                if ((*s == 0) || (*s > ACPI_ASCII_MAX))
+                /* Check for NULL or non-ascii character (ignore if so) */
+
+                if ((Digit == 0) || (Digit > ACPI_ASCII_MAX))
                 {
                     AslCommonError (ASL_WARNING, ASL_MSG_INVALID_STRING,
                                     Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                                     Gbl_CurrentLineOffset, Gbl_CurrentColumn,
                                     Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
                 }
-                s++;
+                else
+                {
+                    *s = (char) Digit;
+                    s++;
+                }
 
                 State = ASL_NORMAL_CHAR;
                 goto DoCharacter;
