@@ -375,7 +375,7 @@ PsGetOpcodeName (
  * All AML opcodes and the runtime arguments for each.  Used by the AML interpreter  Each list is compressed
  * into a 32-bit number and stored in the master opcode table at the end of this file.
  *
- * TBD: These lists will be used to develop a better AmlPrepOperands procedure
+ * (Used by AmlPrepOperands procedure)
  */
 
 #define ARGI_ZeroOp                     ARG_NONE
