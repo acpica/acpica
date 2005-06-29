@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.154 $
+ *              $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -193,7 +193,7 @@ AcpiExDumpOperand (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%p ", ObjDesc));
 
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case INTERNAL_TYPE_REFERENCE:
 
@@ -225,7 +225,7 @@ AcpiExDumpOperand (
             AcpiOsPrintf ("Reference: Arg%d",
                         ObjDesc->Reference.Offset);
 
-            if (ACPI_TYPE_INTEGER == ObjDesc->Common.Type)
+            if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
             {
                 /* Value is a Number */
 
@@ -243,7 +243,7 @@ AcpiExDumpOperand (
             AcpiOsPrintf ("Reference: Local%d",
                         ObjDesc->Reference.Offset);
 
-            if (ACPI_TYPE_INTEGER == ObjDesc->Common.Type)
+            if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
             {
 
                 /* Value is a Number */
@@ -425,8 +425,7 @@ AcpiExDumpOperand (
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "*NULL* \n"));
         }
-        else if (ACPI_TYPE_BUFFER !=
-                     ObjDesc->BufferField.BufferObj->Common.Type)
+        else if (ACPI_GET_OBJECT_TYPE (ObjDesc->BufferField.BufferObj) != ACPI_TYPE_BUFFER)
         {
             AcpiOsPrintf ("*not a Buffer* \n");
         }
@@ -484,9 +483,9 @@ AcpiExDumpOperand (
 
 
     default:
-        /* Unknown ObjDesc->Common.Type value */
+        /* Unknown Type */
 
-        AcpiOsPrintf ("Unknown Type %X\n", ObjDesc->Common.Type);
+        AcpiOsPrintf ("Unknown Type %X\n", ACPI_GET_OBJECT_TYPE (ObjDesc));
         break;
     }
 
@@ -688,13 +687,13 @@ AcpiExDumpObjectDescriptor (
 
     /* Common Fields */
 
-    AcpiExOutString  ("Type",            AcpiUtGetTypeName (ObjDesc->Common.Type));
+    AcpiExOutString  ("Type",            AcpiUtGetObjectTypeName (ObjDesc));
     AcpiExOutInteger ("Reference Count", ObjDesc->Common.ReferenceCount);
     AcpiExOutInteger ("Flags",           ObjDesc->Common.Flags);
 
     /* Object-specific Fields */
 
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_INTEGER:
 
@@ -734,7 +733,7 @@ AcpiExDumpObjectDescriptor (
                 AcpiOsPrintf ("[%.3d] %p", i, ObjDesc->Package.Elements[i]);
                 if (ObjDesc->Package.Elements[i])
                 {
-                    AcpiOsPrintf (" %s", AcpiUtGetTypeName ((ObjDesc->Package.Elements[i])->Common.Type));
+                    AcpiOsPrintf (" %s", AcpiUtGetObjectTypeName (ObjDesc->Package.Elements[i]));
                 }
                 AcpiOsPrintf ("\n");
             }
@@ -830,7 +829,7 @@ AcpiExDumpObjectDescriptor (
         AcpiExOutInteger ("EndBufValidBits", ObjDesc->CommonField.EndBufferValidBits);
         AcpiExOutPointer ("ParentNode",      ObjDesc->CommonField.Node);
 
-        switch (ObjDesc->Common.Type)
+        switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
         {
         case ACPI_TYPE_BUFFER_FIELD:
             AcpiExOutPointer ("BufferObj",       ObjDesc->BufferField.BufferObj);
@@ -898,15 +897,10 @@ AcpiExDumpObjectDescriptor (
     case INTERNAL_TYPE_DEF_ANY:
     case INTERNAL_TYPE_EXTRA:
     case INTERNAL_TYPE_DATA:
-
-        AcpiOsPrintf ("ExDumpObjectDescriptor: Display not implemented for object type %X\n",
-            ObjDesc->Common.Type);
-        break;
-
-
     default:
 
-        AcpiOsPrintf ("ExDumpObjectDescriptor: Unknown object type %X\n", ObjDesc->Common.Type);
+        AcpiOsPrintf ("ExDumpObjectDescriptor: Display not implemented for object type %s\n",
+            AcpiUtGetObjectTypeName (ObjDesc));
         break;
     }
 
