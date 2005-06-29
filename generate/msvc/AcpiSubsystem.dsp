@@ -37,8 +37,8 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "AcpiSubsystem"
-# PROP Intermediate_Dir "AcpiSubsystem"
+# PROP Output_Dir "\Acpi\Components\Generate\VC\AcpiSubsystem"
+# PROP Intermediate_Dir "\Acpi\Components\Generate\VC\AcpiSubsystem"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /Gz /MT /W4 /GX /O2 /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /YX /FD /c
@@ -67,8 +67,8 @@ PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\librarie
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "AcpiSubsystem"
-# PROP Intermediate_Dir "AcpiSubsystem"
+# PROP Output_Dir "\Acpi\Components\Generate\VC\AcpiSubsystem"
+# PROP Intermediate_Dir "\Acpi\Components\Generate\VC\AcpiSubsystem"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /Gz /MT /W4 /GX /Z7 /Od /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "ACPI_DEBUG" /D "ENABLE_DEBUGGER" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
@@ -559,7 +559,11 @@ SOURCE=..\..\Subsystem\Include\acpi.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\acpiosd.h
+SOURCE=..\..\subsystem\Include\acpiosxf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acpixf.h
 # End Source File
 # Begin Source File
 
@@ -576,10 +580,6 @@ SOURCE=..\..\Subsystem\Include\actbl64.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\actypes.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\subsystem\Include\acxface.h
 # End Source File
 # Begin Source File
 
