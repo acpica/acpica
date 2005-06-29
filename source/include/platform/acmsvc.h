@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmsvc.h - VC specific defines, etc.
- *       $Revision: 1.20 $
+ *       $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -183,13 +183,15 @@
 /* warn C4131: uses old-style declarator (iASL compiler only) */
 #pragma warning(disable:4131)
 
-/* This macro is used to tag functions as "printf-like" because
+/*
+ * This macro is used to tag functions as "printf-like" because
  * some compilers can catch printf format string problems. MSVC
  * doesn't, so this is proprocessed away.
  */
 #define ACPI_PRINTF_LIKE_FUNC
 
-/* Some compilers complain about unused variables. Sometimes we don't want to
+/*
+ * Some compilers complain about unused variables. Sometimes we don't want to
  * use all the variables (most specifically for _THIS_MODULE). This allow us
  * to to tell the compiler warning in a per-variable manner that a variable
  * is unused. However, MSVC doesn't do this.

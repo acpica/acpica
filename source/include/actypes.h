@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.277 $
+ *       $Revision: 1.278 $
  *
  *****************************************************************************/
 
@@ -557,7 +557,6 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 #define ACPI_TYPE_INVALID               0x1E
 #define ACPI_TYPE_NOT_FOUND             0xFF
 
-
 /*
  * Bitmapped ACPI types.  Used internally only
  */
@@ -887,7 +886,6 @@ typedef struct acpi_system_info
 /*
  * Types specific to the OS service interfaces
  */
-
 typedef UINT32
 (ACPI_SYSTEM_XFACE *ACPI_OSD_HANDLER) (
     void                    *Context);
