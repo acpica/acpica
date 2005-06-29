@@ -1,5 +1,4 @@
-/*
-  __________________________________________________________________________
+/*__________________________________________________________________________
  |
  |
  |           Copyright (C) Intel Corporation 1994-1996
@@ -11,59 +10,9 @@
  | otherwise, without the prior written permission of Intel Corporation.
  |__________________________________________________________________________
  |
- | Read/write access functions for the various ACPI
- | control and status registers.
+ | ModuleName: dvregs - Read/write access functions for the various ACPI
+ |                      control and status registers.
  |__________________________________________________________________________
- |
- | $Revision: 1.12 $
- | $Date: 2005/06/29 16:54:12 $
- | $Log: hwregs.c,v $
- | Revision 1.12  2005/06/29 16:54:12  aystarik
- | Major header file consolidation
- |
- | 
- | date	99.04.07.22.33.00;	author rmoore1;	state Exp;
- |
- * 
- * 12    4/07/99 3:33p Rmoore1
- * Major header file consolidation
- * 
- * 11    4/05/99 4:09p Rmoore1
- * Header cleanup;  Split debug switch into component_id and level
- * 
- * 10    4/02/99 2:40p Rmoore1
- * New version of DEBUG_PRINT
- * 
- * 9     3/31/99 2:32p Rmoore1
- * Integrated with 03/99 OPSD code
- * 
- * 8     3/09/99 4:05p Rmoore1
- * 16/32/64-bit common data types
- * 
- * 7     2/16/99 9:35a Rmosgrov
- * Anti-Polish Complete - Compiles
- * 
- * 6     2/11/99 5:51p Rmosgrov
- * Anti-Polish
- * 
- * 5     1/20/99 9:38a Rmoore1
- * Major Cleanup
- * 
- * 4     1/13/99 2:53p Rmoore1
- * includes acpiasm.h
- * 
- * 3     1/13/99 2:39p Grsmith1
- * 
- * 2     1/11/99 4:07p Grsmith1
- * Detabified.
- * 
- * 1     1/11/99 2:07p Rmoore1
- * Hardware Specific Modules
-//
-//    Rev 1.0   Apr 14 1997 14:10:58   kdbranno
-// Initial revision.
- |__________________________________________________________________________
-
 */
 
 #define __DVREGS_C__
@@ -148,187 +97,121 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
 
     switch (RegisterId & REGISTER_BLOCK_MASK)
     {
-        case PM1_EVT:
-            if (RegisterId < (INT32) TMR_EN)
-            {   
-                /* status register */
-                
-                RegisterValue = (UINT32) OsdIn16 ((UINT16) FACP->Pm1aEvtBlk);
-                
-                if (FACP->Pm1bEvtBlk)
-                {
-                    RegisterValue |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bEvtBlk);
-                }
+    case PM1_EVT:
+        if (RegisterId < (INT32) TMR_EN)
+        {   
+            /* status register */
+            
+            RegisterValue = (UINT32) OsdIn16 ((UINT16) FACP->Pm1aEvtBlk);
+            DEBUG_PRINT (TRACE_IO, ("PM1a status: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm1aEvtBlk));
+            
+            if (FACP->Pm1bEvtBlk)
+            {
+                RegisterValue |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bEvtBlk);
+                DEBUG_PRINT (TRACE_IO, ("PM1b status: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm1bEvtBlk));
+            }
 
-                switch (RegisterId)
-                {
-                    case TMR_STS:
-                        Mask = TMR_STS_MASK;
-                        break;
-                    
-                    case BM_STS:
-                        Mask = BM_STS_MASK;
-                        break;
-                    
-                    case GBL_STS:
-                        Mask = GBL_STS_MASK;
-                        break;
-                    
-                    case PWRBTN_STS:
-                        Mask = PWRBTN_STS_MASK;
-                        break;
-                    
-                    case SLPBTN_STS:
-                        Mask = SLPBTN_STS_MASK;
-                        break;
-                    
-                    case RTC_STS:
-                        Mask = RTC_STS_MASK;
-                        break;
-                    
-                    case WAK_STS:
-                        Mask = WAK_STS_MASK;
-                        break;
-                    
-                    default:
-                        Mask = 0;
-                        break;
-                }
-                
-                if (ReadWrite == ACPI_WRITE)
-                {
-                    /* 
-                     * status registers are different from the rest.  Clear by writing 1, writing 0
-                     * has no effect.  So, the only relevent information is the single bit we're
-                     * interested in, all others should be written as 0 so they will be left
-                     * unchanged 
-                     */
-                    
-                    Value <<= GetBitShift (Mask);
-                    Value &= Mask;
-                    
-                    if (Value)
-                    {
-                        DEBUG_PRINT (ACPI_INFO, ("About to write %04X to %04X\n", (UINT16) Value, 
-                                    (UINT16) FACP->Pm1aEvtBlk));
-                        OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) Value);
-                        
-                        if (FACP->Pm1bEvtBlk)
-                        {
-                            OsdOut16 ((UINT16) FACP->Pm1bEvtBlk, (UINT16) Value);
-                        }
-                        
-                        RegisterValue = 0;
-                    }
-                }
+            switch (RegisterId)
+            {
+            case TMR_STS:
+                Mask = TMR_STS_MASK;
+                break;
+            
+            case BM_STS:
+                Mask = BM_STS_MASK;
+                break;
+            
+            case GBL_STS:
+                Mask = GBL_STS_MASK;
+                break;
+            
+            case PWRBTN_STS:
+                Mask = PWRBTN_STS_MASK;
+                break;
+            
+            case SLPBTN_STS:
+                Mask = SLPBTN_STS_MASK;
+                break;
+            
+            case RTC_STS:
+                Mask = RTC_STS_MASK;
+                break;
+            
+            case WAK_STS:
+                Mask = WAK_STS_MASK;
+                break;
+            
+            default:
+                Mask = 0;
+                break;
             }
             
-            else
-            {   
-                /* enable register */
+            if (ReadWrite == ACPI_WRITE)
+            {
+                /* 
+                 * status registers are different from the rest.  Clear by writing 1, writing 0
+                 * has no effect.  So, the only relevent information is the single bit we're
+                 * interested in, all others should be written as 0 so they will be left
+                 * unchanged 
+                 */
                 
-                RegisterValue = (UINT32) OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
+                Value <<= GetBitShift (Mask);
+                Value &= Mask;
                 
-                if (FACP->Pm1bEvtBlk)
+                if (Value)
                 {
-                    RegisterValue |= (UINT32) OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2));
-                }
-
-                switch (RegisterId)
-                {
-                    case TMR_EN:
-                        Mask = TMR_EN_MASK;
-                        break;
-                    
-                    case GBL_EN:
-                        Mask = GBL_EN_MASK;
-                        break;
-                    
-                    case PWRBTN_EN:
-                        Mask = PWRBTN_EN_MASK;
-                        break;
-                    
-                    case SLPBTN_EN:
-                        Mask = SLPBTN_EN_MASK;
-                        break;
-                    
-                    case RTC_EN:
-                        Mask = RTC_EN_MASK;
-                        break;
-                    
-                    default:
-                        Mask = 0;
-                        break;
-                }
-                
-                if (ReadWrite == ACPI_WRITE)
-                {
-                    RegisterValue  &= ~Mask;
-                    Value          <<= GetBitShift (Mask);
-                    Value          &= Mask;
-                    RegisterValue  |= Value;
-
-                    DEBUG_PRINT (ACPI_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                                (UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2)));
-
-                    OsdOut16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2), 
-                            (UINT16) RegisterValue);
+                    DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) Value, 
+                                (UINT16) FACP->Pm1aEvtBlk));
+                    OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) Value);
                     
                     if (FACP->Pm1bEvtBlk)
                     {
-                        OsdOut16 ((UINT16)(FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2), 
-                                (UINT16) RegisterValue);
+                        OsdOut16 ((UINT16) FACP->Pm1bEvtBlk, (UINT16) Value);
                     }
+                    
+                    RegisterValue = 0;
                 }
             }
-            break;
+        }
         
-        case PM1_CONTROL:
-            RegisterValue = 0;
+        else
+        {   
+            /* enable register */
             
-            if (RegisterId != (INT32) SLP_TYPb)   
+            RegisterValue = (UINT32) OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
+            DEBUG_PRINT (TRACE_IO, ("PM1a enable: Read 0x%X from 0x%X\n", RegisterValue, (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2)));
+            
+            if (FACP->Pm1bEvtBlk)
             {
-                /* 
-                 * SLP_TYPx registers are written differently
-                 * than any other control registers with
-                 * respect to A and B registers.  The value
-                 * for A may be different than the value for B 
-                 */
-
-                RegisterValue = (UINT32) OsdIn16 ((UINT16)  FACP->Pm1aCntBlk);
-            }
-
-            if (FACP->Pm1bEvtBlk && RegisterId != (INT32) SLP_TYPa)
-            {
-                RegisterValue |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bCntBlk);
+                RegisterValue |= (UINT32) OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2));
+                DEBUG_PRINT (TRACE_IO, ("PM1b enable: Read 0x%X from 0x%X\n", RegisterValue, (FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2)));
             }
 
             switch (RegisterId)
             {
-                case SCI_EN:
-                    Mask = SCI_EN_MASK;
-                    break;
-                
-                case BM_RLD:
-                    Mask = BM_RLD_MASK;
-                    break;
-                
-                case GBL_RLS:
-                    Mask = GBL_RLS_MASK;
-                    break;
-                
-                case SLP_TYPa:
-                case SLP_TYPb:
-                    Mask = SLP_TYPx_MASK;
-                    break;
-                
-                case SLP_EN:
-                    Mask = SLP_EN_MASK;
-                    break;
-
-                default:
-                    Mask = 0;
-                    break;
+            case TMR_EN:
+                Mask = TMR_EN_MASK;
+                break;
+            
+            case GBL_EN:
+                Mask = GBL_EN_MASK;
+                break;
+            
+            case PWRBTN_EN:
+                Mask = PWRBTN_EN_MASK;
+                break;
+            
+            case SLPBTN_EN:
+                Mask = SLPBTN_EN_MASK;
+                break;
+            
+            case RTC_EN:
+                Mask = RTC_EN_MASK;
+                break;
+            
+            default:
+                Mask = 0;
+                break;
             }
             
             if (ReadWrite == ACPI_WRITE)
@@ -337,148 +220,225 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                 Value          <<= GetBitShift (Mask);
                 Value          &= Mask;
                 RegisterValue  |= Value;
-                
-                /* 
-                 * SLP_TYPx registers are written differently
-                 * than any other control registers with
-                 * respect to A and B registers.  The value
-                 * for A may be different than the value for B
-                 */
-                
-                if (RegisterId != (INT32) SLP_TYPb)
-                {
-                    if (Mask == SLP_EN_MASK)
-                    {
-                        disable();  /* disable interrupts */
-                    }
 
-                    OsdOut16 ((UINT16) FACP->Pm1aCntBlk, (UINT16) RegisterValue);
-                    
-                    if (Mask == SLP_EN_MASK)
-                    {
-                        /* 
-                         * enable interrupts, the SCI handler is likely going to be invoked as
-                         * soon as interrupts are enabled, since gpe's and most fixed resume
-                         * events also generate SCI's. 
-                         */
-                        enable();
-                    }
-                }
-                    
-                if (FACP->Pm1bEvtBlk && RegisterId != (INT32) SLP_TYPa)
+                DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
+                            (UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2)));
+
+                OsdOut16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2), 
+                        (UINT16) RegisterValue);
+                
+                if (FACP->Pm1bEvtBlk)
                 {
-                    OsdOut16 ((UINT16) FACP->Pm1bCntBlk, (UINT16) RegisterValue);
+                    OsdOut16 ((UINT16)(FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2), 
+                            (UINT16) RegisterValue);
                 }
             }
+        }
+        break;
+    
+    case PM1_CONTROL:
+        RegisterValue = 0;
+        
+        if (RegisterId != (INT32) SLP_TYPb)   
+        {
+            /* 
+             * SLP_TYPx registers are written differently
+             * than any other control registers with
+             * respect to A and B registers.  The value
+             * for A may be different than the value for B 
+             */
+
+            RegisterValue = (UINT32) OsdIn16 ((UINT16)  FACP->Pm1aCntBlk);
+            DEBUG_PRINT (TRACE_IO, ("PM1a control: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm1aCntBlk));
+        }
+
+        if (FACP->Pm1bEvtBlk && RegisterId != (INT32) SLP_TYPa)
+        {
+            RegisterValue |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bCntBlk);
+            DEBUG_PRINT (TRACE_IO, ("PM1b control: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm1bCntBlk));
+        }
+
+        switch (RegisterId)
+        {
+        case SCI_EN:
+            Mask = SCI_EN_MASK;
             break;
         
-        case PM2_CONTROL:
-            RegisterValue = (UINT32) OsdIn16 ((UINT16) FACP->Pm2CntBlk);
-            
-            switch (RegisterId)
-            {
-                case ARB_DIS:
-                    Mask = ARB_DIS_MASK;
-                    break;
-                
-                default:
-                    Mask = 0;
-                    break;
-            }
-            
-            if (ReadWrite == ACPI_WRITE)
-            {
-                RegisterValue  &= ~Mask;
-                Value          <<= GetBitShift (Mask);
-                Value          &= Mask;
-                RegisterValue  |= Value;
-
-                DEBUG_PRINT (ACPI_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                            (UINT16) FACP->Pm2CntBlk));
-
-                OsdOut16 ((UINT16) FACP->Pm2CntBlk, (UINT16) RegisterValue);
-            }
+        case BM_RLD:
+            Mask = BM_RLD_MASK;
             break;
         
-        case PM_TIMER:
-            RegisterValue = OsdIn32 ((UINT16) FACP->PmTmrBlk);
-            Mask = 0xFFFFFFFF;
+        case GBL_RLS:
+            Mask = GBL_RLS_MASK;
             break;
         
-        case GPE1_EN_BLOCK:
-            GpeReg = (FACP->Gpe1Blk + (UINT32) FACP->Gpe1Base) + (GpeReg + 
-                        ((UINT32) ((FACP->Gpe1BlkLen) / 2)));
-        
-        case GPE1_STS_BLOCK:
-            if (!GpeReg)
-            {
-                GpeReg = (FACP->Gpe1Blk + (UINT32) FACP->Gpe1Base);
-            }
-
-        case GPE0_EN_BLOCK:
-            if (!GpeReg)
-            {
-                GpeReg = FACP->Gpe0Blk + ((UINT32) ((FACP->Gpe0BlkLen) / 2));
-            }
-        
-        case GPE0_STS_BLOCK:
-            if (!GpeReg)
-            {
-                GpeReg = FACP->Gpe0Blk;
-            }
-
-            /* Determine the bit to be accessed */
-            
-            Mask = (((UINT32) RegisterId) & BIT_IN_REGISTER_MASK);
-            Mask = 1 << (Mask-1);
-            
-            /* The base address of the GPE 0 Register Block */
-            /* Plus 1/2 the length of the GPE 0 Register Block */
-            /* The enable register is the register following the Status Register */
-            /* and each register is defined as 1/2 of the total Register Block */
-            
-            /* This sets the bit within wEnableBit that needs to be written to */
-            /* the register indicated in Mask to a 1, all others are 0 */
-            
-            if (Mask > LOW_BYTE)
-            {
-                /* Shift the value 1 byte to the right and add 1 to the register */
-                
-                Mask >>= ONE_BYTE;
-                GpeReg++;
-            }
-            
-            /* Now get the current Enable Bits in the selected Reg */
-            
-            RegisterValue = (UINT32) OsdIn8 ((UINT16) GpeReg);
-            
-            if (ReadWrite == ACPI_WRITE)
-            {               
-                RegisterValue  &= ~Mask;
-                Value          <<= GetBitShift (Mask);
-                Value          &= Mask;
-                RegisterValue  |= Value;
-               
-                /* This write will put the iAction state into the General Purpose */
-                /* Enable Register indexed by the value in Mask */
-
-                DEBUG_PRINT (ACPI_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                            (UINT16) GpeReg));
-
-                OsdOut8 ((UINT16) GpeReg, (UINT8) RegisterValue);
-                RegisterValue = (UINT32) OsdIn8 ((UINT16) GpeReg);          
-            }
+        case SLP_TYPa:
+        case SLP_TYPb:
+            Mask = SLP_TYPx_MASK;
             break;
         
-        case PROCESSOR_BLOCK:
+        case SLP_EN:
+            Mask = SLP_EN_MASK;
+            break;
+
         default:
             Mask = 0;
             break;
+        }
+        
+        if (ReadWrite == ACPI_WRITE)
+        {
+            RegisterValue  &= ~Mask;
+            Value          <<= GetBitShift (Mask);
+            Value          &= Mask;
+            RegisterValue  |= Value;
+            
+            /* 
+             * SLP_TYPx registers are written differently
+             * than any other control registers with
+             * respect to A and B registers.  The value
+             * for A may be different than the value for B
+             */
+            
+            if (RegisterId != (INT32) SLP_TYPb)
+            {
+                if (Mask == SLP_EN_MASK)
+                {
+                    disable();  /* disable interrupts */
+                }
+
+                OsdOut16 ((UINT16) FACP->Pm1aCntBlk, (UINT16) RegisterValue);
+                
+                if (Mask == SLP_EN_MASK)
+                {
+                    /* 
+                     * enable interrupts, the SCI handler is likely going to be invoked as
+                     * soon as interrupts are enabled, since gpe's and most fixed resume
+                     * events also generate SCI's. 
+                     */
+                    enable();
+                }
+            }
+                
+            if (FACP->Pm1bEvtBlk && RegisterId != (INT32) SLP_TYPa)
+            {
+                OsdOut16 ((UINT16) FACP->Pm1bCntBlk, (UINT16) RegisterValue);
+            }
+        }
+        break;
+    
+    case PM2_CONTROL:
+        RegisterValue = (UINT32) OsdIn16 ((UINT16) FACP->Pm2CntBlk);
+        DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm2CntBlk));
+        
+        switch (RegisterId)
+        {
+        case ARB_DIS:
+            Mask = ARB_DIS_MASK;
+            break;
+        
+        default:
+            Mask = 0;
+            break;
+        }
+        
+        if (ReadWrite == ACPI_WRITE)
+        {
+            RegisterValue  &= ~Mask;
+            Value          <<= GetBitShift (Mask);
+            Value          &= Mask;
+            RegisterValue  |= Value;
+
+            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
+                        (UINT16) FACP->Pm2CntBlk));
+
+            OsdOut16 ((UINT16) FACP->Pm2CntBlk, (UINT16) RegisterValue);
+        }
+        break;
+    
+    case PM_TIMER:
+        RegisterValue = OsdIn32 ((UINT16) FACP->PmTmrBlk);
+        DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read 0x%X from 0x%X\n", RegisterValue, FACP->PmTmrBlk));
+
+        Mask = 0xFFFFFFFF;
+        break;
+    
+    case GPE1_EN_BLOCK:
+        GpeReg = (FACP->Gpe1Blk + (UINT32) FACP->Gpe1Base) + (GpeReg + 
+                    ((UINT32) ((FACP->Gpe1BlkLen) / 2)));
+    
+    case GPE1_STS_BLOCK:
+        if (!GpeReg)
+        {
+            GpeReg = (FACP->Gpe1Blk + (UINT32) FACP->Gpe1Base);
+        }
+
+    case GPE0_EN_BLOCK:
+        if (!GpeReg)
+        {
+            GpeReg = FACP->Gpe0Blk + ((UINT32) ((FACP->Gpe0BlkLen) / 2));
+        }
+    
+    case GPE0_STS_BLOCK:
+        if (!GpeReg)
+        {
+            GpeReg = FACP->Gpe0Blk;
+        }
+
+        /* Determine the bit to be accessed */
+        
+        Mask = (((UINT32) RegisterId) & BIT_IN_REGISTER_MASK);
+        Mask = 1 << (Mask-1);
+        
+        /* The base address of the GPE 0 Register Block */
+        /* Plus 1/2 the length of the GPE 0 Register Block */
+        /* The enable register is the register following the Status Register */
+        /* and each register is defined as 1/2 of the total Register Block */
+        
+        /* This sets the bit within wEnableBit that needs to be written to */
+        /* the register indicated in Mask to a 1, all others are 0 */
+        
+        if (Mask > LOW_BYTE)
+        {
+            /* Shift the value 1 byte to the right and add 1 to the register */
+            
+            Mask >>= ONE_BYTE;
+            GpeReg++;
+        }
+        
+        /* Now get the current Enable Bits in the selected Reg */
+        
+        RegisterValue = (UINT32) OsdIn8 ((UINT16) GpeReg);
+        DEBUG_PRINT (TRACE_IO, ("GPE Enable bits: Read 0x%X from 0x%X\n", RegisterValue, GpeReg));
+        
+        if (ReadWrite == ACPI_WRITE)
+        {               
+            RegisterValue  &= ~Mask;
+            Value          <<= GetBitShift (Mask);
+            Value          &= Mask;
+            RegisterValue  |= Value;
+           
+            /* This write will put the iAction state into the General Purpose */
+            /* Enable Register indexed by the value in Mask */
+
+            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
+                        (UINT16) GpeReg));
+
+            OsdOut8 ((UINT16) GpeReg, (UINT8) RegisterValue);
+            RegisterValue = (UINT32) OsdIn8 ((UINT16) GpeReg);          
+        }
+        break;
+    
+    case PROCESSOR_BLOCK:
+    default:
+        Mask = 0;
+        break;
     }
 
     RegisterValue &= Mask;
     RegisterValue >>= GetBitShift (Mask);
 
+    DEBUG_PRINT (TRACE_IO, ("Register I/O: returning 0x%X\n", RegisterValue));
     return (RegisterValue);
 }
 
@@ -507,7 +467,7 @@ ClearAllAcpiChipsetStatusBits (void)
     FUNCTION_TRACE ("ClearAllAcpiChipsetStatusBits");
 
 
-    DEBUG_PRINT (ACPI_INFO, ("About to write %04X to %04X\n", 
+    DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", 
                     ALL_FIXED_STS_BITS, (UINT16) FACP->Pm1aEvtBlk));
 
     OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
