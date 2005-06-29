@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  ******************************************************************************/
 
@@ -1039,7 +1039,8 @@ AcpiDbDisplayResources (
     /* Prepare for a return object of arbitrary size */
 
     ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = BUFFER_SIZE;
+    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
+
 
     /* _PRT */
 
@@ -1049,54 +1050,61 @@ AcpiDbDisplayResources (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not obtain _PRT: %s\n", AcpiFormatException (Status));
-        goto GoCRS;
+        goto GetCrs;
     }
 
     ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = BUFFER_SIZE;
+    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
 
     Status = AcpiGetIrqRoutingTable (ObjDesc, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("GetIrqRoutingTable failed: %s\n", AcpiFormatException (Status));
-        goto GoCRS;
+    }
+
+    else
+    {
+        AcpiRsDumpIrqList ((UINT8 *) AcpiGbl_DbBuffer);
     }
 
 
-    AcpiRsDumpIrqList ((UINT8 *) AcpiGbl_DbBuffer);
-
     /* _CRS */
-GoCRS:
+
+GetCrs:
     AcpiOsPrintf ("Evaluating _CRS\n");
 
     ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = BUFFER_SIZE;
+    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
 
     Status = AcpiEvaluateObject (ObjDesc, "_CRS", NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not obtain _CRS: %s\n", AcpiFormatException (Status));
-        goto GoPRS;
+        goto GetPrs;
     }
 
     ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = BUFFER_SIZE;
+    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
 
     Status = AcpiGetCurrentResources (ObjDesc, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("AcpiGetCurrentResources failed: %s\n", AcpiFormatException (Status));
-        goto GoPRS;
     }
 
-    AcpiRsDumpResourceList ((ACPI_RESOURCE *) AcpiGbl_DbBuffer);
+    else
+    {
+        AcpiRsDumpResourceList ((ACPI_RESOURCE *) AcpiGbl_DbBuffer);
+    }
+
 
     /* _PRS */
-GoPRS:
+
+GetPrs:
     AcpiOsPrintf ("Evaluating _PRS\n");
 
     ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = BUFFER_SIZE;
+    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
 
     Status = AcpiEvaluateObject (ObjDesc, "_PRS", NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
@@ -1106,16 +1114,18 @@ GoPRS:
     }
 
     ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = BUFFER_SIZE;
+    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
 
     Status = AcpiGetPossibleResources (ObjDesc, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("AcpiGetPossibleResources failed: %s\n", AcpiFormatException (Status));
-        goto Cleanup;
     }
 
-    AcpiRsDumpResourceList ((ACPI_RESOURCE *) AcpiGbl_DbBuffer);
+    else
+    {
+        AcpiRsDumpResourceList ((ACPI_RESOURCE *) AcpiGbl_DbBuffer);
+    }
 
 
 Cleanup:

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  ******************************************************************************/
 
@@ -196,7 +196,7 @@ AcpiDbExecuteMethod (
     /* Prepare for a return object of arbitrary size */
 
     ReturnObj->Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj->Length            = BUFFER_SIZE;
+    ReturnObj->Length            = ACPI_DEBUG_BUFFER_SIZE;
 
 
     /* Do the actual method execution */
