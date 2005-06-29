@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -144,8 +144,9 @@ AcpiEvNotifyDispatch (
     UINT32                  NotifyValue)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OPERAND_OBJECT     *HandlerObj;
-    NOTIFY_HANDLER          Handler;
+    ACPI_OPERAND_OBJECT     *HandlerObj = NULL;
+    NOTIFY_HANDLER          GlobalHandler = NULL;
+    void                    *GlobalContext = NULL;
 
 
     /*
@@ -154,7 +155,6 @@ AcpiEvNotifyDispatch (
      * For value 0x80 (Status Change) on the power button or sleep button,
      * initiate soft-off or sleep operation?
      */
-
 
     DEBUG_PRINT (ACPI_INFO,
         ("Dispatching Notify(%X) on device %p\n", NotifyValue, Device));
@@ -184,7 +184,7 @@ AcpiEvNotifyDispatch (
 
 
     /*
-     * Invoke a global notify handler if installed.
+     * We will invoke a global notify handler if installed.
      * This is done _before_ we invoke the per-device handler attached to the device.
      */
 
@@ -194,8 +194,8 @@ AcpiEvNotifyDispatch (
 
         if (AcpiGbl_SysNotify.Handler)
         {
-            AcpiGbl_SysNotify.Handler (Device, NotifyValue,
-                                        AcpiGbl_SysNotify.Context);
+            GlobalHandler = AcpiGbl_SysNotify.Handler;
+            GlobalContext = AcpiGbl_SysNotify.Context;
         }
     }
 
@@ -205,54 +205,67 @@ AcpiEvNotifyDispatch (
 
         if (AcpiGbl_DrvNotify.Handler)
         {
-            AcpiGbl_DrvNotify.Handler (Device, NotifyValue,
-                                        AcpiGbl_DrvNotify.Context);
+            GlobalHandler = AcpiGbl_DrvNotify.Handler;
+            GlobalContext = AcpiGbl_DrvNotify.Context;
         }
     }
 
 
     /*
-     * Get the notify object which must be attached to the device Node
+     * Get the notify object attached to the device Node
      */
 
     ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Device);
-    if (!ObjDesc)
+    if (ObjDesc)
     {
-        /* There can be no notify handler for this device */
+        /* We have the notify object, Get the right handler */
 
-        DEBUG_PRINT (ACPI_INFO,
-            ("No notify handler for device %p \n", Device));
-        return;
+        if (NotifyValue <= MAX_SYS_NOTIFY)
+        {
+            HandlerObj = ObjDesc->Device.SysHandler;
+        }
+        else
+        {
+            HandlerObj = ObjDesc->Device.DrvHandler;
+        }
     }
 
 
-    /* We have the notify object, Get the right handler */
+    /* Invoke the handler(s) if present */
 
-    if (NotifyValue <= MAX_SYS_NOTIFY)
+    if (GlobalHandler || HandlerObj)
     {
-        HandlerObj = ObjDesc->Device.SysHandler;
-    }
-    else
-    {
-        HandlerObj = ObjDesc->Device.DrvHandler;
-    }
+        /* We have the interpreter locked, release it */
 
-    /* Validate the handler */
+        AcpiAmlExitInterpreter ();
+
+        /* Invoke the system handler first, if present */
+
+        if (GlobalHandler)
+        {
+            GlobalHandler (Device, NotifyValue, GlobalContext);
+        }
+
+        /* Now invoke the per-device handler, if present */
+
+        if (HandlerObj)
+        {
+            HandlerObj->NotifyHandler.Handler (Device, NotifyValue, 
+                            HandlerObj->NotifyHandler.Context);
+        }
+
+        /* Now we must re-acquire the interpreter */
+
+        AcpiAmlEnterInterpreter ();
+    }
 
     if (!HandlerObj)
     {
-        /* There is no notify handler for this device */
+        /* There is no per-device notify handler for this device */
 
         DEBUG_PRINT (ACPI_INFO,
             ("No notify handler for device %p \n", Device));
-        return;
     }
-
-    /* There is a handler, invoke it */
-
-    Handler = HandlerObj->NotifyHandler.Handler;
-    Handler (Device, NotifyValue, HandlerObj->NotifyHandler.Context);
-
 }
 
 
