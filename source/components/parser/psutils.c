@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.58 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -291,6 +291,7 @@ AcpiPsFreeOp (
 }
 
 
+#ifdef ACPI_ENABLE_OBJECT_CACHE
 /*******************************************************************************
  *
  * FUNCTION:    AcpiPsDeleteParseCache
@@ -314,6 +315,7 @@ AcpiPsDeleteParseCache (
     AcpiUtDeleteGenericCache (ACPI_MEM_LIST_PSNODE_EXT);
     return_VOID;
 }
+#endif
 
 
 /*******************************************************************************
