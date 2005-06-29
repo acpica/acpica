@@ -168,6 +168,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         {   
             /*  allocation failure  */
             
+            FUNCTION_EXIT;
             return AE_NO_MEMORY;
         }
         else
@@ -184,7 +185,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             Status = AmlPushIfExec (MODE_Exec);
             if (AE_OK != Status)
             {
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
+                DestDesc = NULL;
             }
             else
             {
@@ -218,6 +220,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
     if (AE_OK != Status)
     {
+        FUNCTION_EXIT;
         return Status;   /*  temporary hack  */
     }
 
@@ -247,7 +250,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                         NsTypeNames[NsGetType(TempHandle)]));
             Status = AE_OK;
 #endif
-            DELETE (DestDesc);
+            OsdFree (DestDesc);
+            DestDesc = NULL;
             break;
 
         case TYPE_BankField:
@@ -259,7 +263,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             if ((ValDesc->ValType != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
+                DestDesc = NULL;
             }
 
             else if (ValDesc->ValType != TYPE_Number)
@@ -267,7 +272,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore: Value assigned to BankField must be Number, not %d\n",
                         ValDesc->ValType));
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
+                DestDesc = NULL;
                 Status = AE_AML_ERROR;
             }
 
@@ -278,7 +284,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                  * and point to descriptor for name's value instead.
                  */
 
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
                 DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
@@ -361,7 +367,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             if ((ValDesc->ValType != TYPE_Number) && 
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
+                DestDesc = NULL;
             }
 
             else if (ValDesc->ValType != TYPE_Number)
@@ -369,7 +376,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/DefField: Value assigned to Field must be Number, not %d\n",
                         ValDesc->ValType));
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
+                DestDesc = NULL;
                 Status = AE_AML_ERROR;
             }
 
@@ -380,7 +388,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                  * and point to descriptor for name's value instead.
                  */
 
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
                 DestDesc = NsGetValue (TempHandle);
             
                 if (!DestDesc)
@@ -444,7 +452,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             if ((ValDesc->ValType != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
+                DestDesc = NULL;
             }
 
             else if (ValDesc->ValType != TYPE_Number)
@@ -452,7 +461,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore: Value assigned to IndexField must be Number, not %d\n",
                         ValDesc->ValType));
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
+                DestDesc = NULL;
                 Status = AE_AML_ERROR;
             }
 
@@ -463,7 +473,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                  * and point to descriptor for name's value instead.
                  */
 
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
                 DestDesc = NsGetValue (TempHandle);
             
                 if (!DestDesc)
@@ -540,7 +550,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             if ((ValDesc->ValType != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
+                DestDesc = NULL;
             }
 
             else if (ValDesc->ValType != TYPE_Number)
@@ -548,7 +559,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
                           ValDesc->ValType));
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
+                DestDesc = NULL;
                 Status = AE_AML_ERROR;
             }
 
@@ -559,7 +571,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                  * Delete descriptor that points to name,
                  * and point to descriptor for name's value instead.
                  */
-                DELETE (DestDesc);
+                OsdFree (DestDesc);
                 DestDesc = NsGetValue (TempHandle);
             
                 if (!DestDesc)
@@ -714,7 +726,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
          * Storing to a constant is a no-op -- see spec sec 15.2.3.3.1.
          * Delete the result descriptor.
          */
-        DELETE (DestDesc);
+        OsdFree (DestDesc);
+        DestDesc = NULL;
         break;
 
 
@@ -741,7 +754,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         DEBUG_PRINT (ACPI_INFO, ("DebugOp: \n"));
         DUMP_STACK_ENTRY (ValDesc);
 
-        DELETE (DestDesc);
+        OsdFree (DestDesc);
+        DestDesc = NULL;
         break;
 
 #if 0
@@ -758,7 +772,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
         DUMP_BUFFER (DestDesc, sizeof (OBJECT_DESCRIPTOR),0);
 
-        DELETE (DestDesc);
+        OsdFree (DestDesc);
+        DestDesc = NULL;
         Status = AE_AML_ERROR;
     
     }   /* switch(DestDesc->Lvalue.OpCode) */
@@ -776,6 +791,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         ObjStackTop--;
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -817,6 +833,7 @@ AmlExecMonadic1 (UINT16 opcode)
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 1);
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -836,9 +853,11 @@ AmlExecMonadic1 (UINT16 opcode)
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
                     ObjDesc->ValType));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
+        FUNCTION_EXIT;
         return (OsReleaseOpRqst (ObjDesc));
 
 
@@ -849,9 +868,11 @@ AmlExecMonadic1 (UINT16 opcode)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->ValType));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
+        FUNCTION_EXIT;
         return (OsResetOpRqst (ObjDesc));
 
 
@@ -862,8 +883,10 @@ AmlExecMonadic1 (UINT16 opcode)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->ValType));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
+        FUNCTION_EXIT;
         return (OsSignalOpRqst (ObjDesc));
 
 
@@ -885,12 +908,14 @@ AmlExecMonadic1 (UINT16 opcode)
     
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1: Unknown monadic opcode %02x\n", opcode));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     
     } /* switch */
 
 
-    DELETE (ObjDesc);
+    OsdFree (ObjDesc);
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -934,6 +959,7 @@ AmlExecMonadic2R (UINT16 opcode)
         if (Status != AE_OK)
         {
             AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
+            FUNCTION_EXIT;
             return Status;
         }
     }
@@ -992,6 +1018,7 @@ AmlExecMonadic2R (UINT16 opcode)
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic2R/FromBCDOp: improper BCD digit %d %d %d %d\n",
                     d3, d2, d1, d0));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
         
@@ -1006,6 +1033,7 @@ AmlExecMonadic2R (UINT16 opcode)
         {
             DEBUG_PRINT (ACPI_ERROR, ("iExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
                     ObjDesc->Number.Number));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
         
@@ -1028,6 +1056,7 @@ AmlExecMonadic2R (UINT16 opcode)
         
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n",
                 (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
 
     case AML_StoreOp:
@@ -1036,6 +1065,7 @@ AmlExecMonadic2R (UINT16 opcode)
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: internal error: Unknown monadic opcode %02x\n",
                     opcode));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
     
@@ -1044,6 +1074,7 @@ AmlExecMonadic2R (UINT16 opcode)
 
     DEBUG_PRINT (TRACE_EXEC, ("leave iExecMonadic2R: %s\n", ExceptionNames[Status]));
     
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -1085,6 +1116,7 @@ AmlExecMonadic2 (UINT16 opcode)
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 1);
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -1112,6 +1144,7 @@ AmlExecMonadic2 (UINT16 opcode)
         if ((Status = AmlPushIfExec (MODE_Exec)) != AE_OK)
         {
             REPORT_ERROR (&KDT[2]);
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
@@ -1129,6 +1162,7 @@ AmlExecMonadic2 (UINT16 opcode)
         
         else
         {
+            FUNCTION_EXIT;
             return AE_NO_MEMORY;
         }
 
@@ -1138,6 +1172,7 @@ AmlExecMonadic2 (UINT16 opcode)
         if (Status != AE_OK)
         {
             AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 1);
+            FUNCTION_EXIT;
             return Status;
         }
 
@@ -1164,6 +1199,7 @@ AmlExecMonadic2 (UINT16 opcode)
         
         Status = AmlExecStore (ObjDesc, ResDesc);
         ObjStackTop--;
+        FUNCTION_EXIT;
         return Status;
 
 
@@ -1198,6 +1234,7 @@ AmlExecMonadic2 (UINT16 opcode)
 
             case AML_IndexOp:
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2/TypeOp: determining type of Index result is not implemented\n"));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
 
             case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
@@ -1214,6 +1251,7 @@ AmlExecMonadic2 (UINT16 opcode)
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x\n",
                         ObjDesc->Lvalue.OpCode));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
         }
@@ -1230,6 +1268,7 @@ AmlExecMonadic2 (UINT16 opcode)
             ObjDesc = AllocateObjectDesc (&KDT[4]);
             if (!ObjDesc)
             {
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
 
@@ -1269,6 +1308,7 @@ AmlExecMonadic2 (UINT16 opcode)
         default:
            DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->ValType));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
         break;
@@ -1282,15 +1322,18 @@ AmlExecMonadic2 (UINT16 opcode)
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: %s unimplemented\n",
                 (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
         ObjStackTop++;  /*  dummy return value  */
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
 
     default:
         DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic2:internal error: Unknown monadic opcode %02x\n",
                     opcode));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
 
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -1328,6 +1371,7 @@ AmlExecDyadic1 (UINT16 opcode)
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -1374,6 +1418,7 @@ AmlExecDyadic1 (UINT16 opcode)
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecDyadic1/NotifyOp: unexpected notify object type %d\n",
                         ObjDesc->ValType));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
         }
@@ -1381,21 +1426,23 @@ AmlExecDyadic1 (UINT16 opcode)
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic1: Unknown dyadic opcode %02x\n", opcode));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
 
     if (ValDesc)
     {
-        DELETE (ValDesc);
+        OsdFree (ValDesc);
     }
 
     if (ObjDesc)
     {
-        DELETE (ObjDesc);
+        OsdFree (ObjDesc);
     }
     
     ObjStack[--ObjStackTop] = NULL;
 
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -1461,6 +1508,7 @@ AmlExecDyadic2R (UINT16 opcode)
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -1528,6 +1576,7 @@ AmlExecDyadic2R (UINT16 opcode)
         if ((UINT32) 0 == ObjDesc2->Number.Number)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R/DivideOp: divide by zero\n"));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
@@ -1573,6 +1622,7 @@ AmlExecDyadic2R (UINT16 opcode)
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2R/ConcatOp: operand type mismatch %d %d\n",
                     ObjDesc->ValType, ObjDesc2->ValType));
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
@@ -1587,6 +1637,7 @@ AmlExecDyadic2R (UINT16 opcode)
             if (!NewBuf)
             {
                 REPORT_ERROR (&KDT[5]);
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
             
@@ -1613,12 +1664,14 @@ AmlExecDyadic2R (UINT16 opcode)
                 if (ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen < 1024)
                 {
                     REPORT_ERROR (&KDT[0]);
+                    FUNCTION_EXIT;
                     return AE_AML_ERROR;
                 }
 
                 DEBUG_PRINT (ACPI_ERROR, (
                             "AmlExecDyadic2R/ConcatOp: Buffer allocation failure %d\n",
                             ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen));
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1635,12 +1688,14 @@ AmlExecDyadic2R (UINT16 opcode)
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R: Unknown dyadic opcode %02x\n", opcode));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
     
     if ((Status = AmlExecStore (ObjDesc, ResDesc)) != AE_OK)
     {
         ObjStackTop -= NumOperands - 1;
+        FUNCTION_EXIT;
         return Status;
     }
     
@@ -1654,9 +1709,10 @@ AmlExecDyadic2R (UINT16 opcode)
      * remainder on stack
      */
     
-    DELETE (ObjDesc2);
+    OsdFree (ObjDesc2);
     ObjStackTop -= NumOperands - 1;
     
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -1749,13 +1805,15 @@ AmlExecDyadic2S (UINT16 opcode)
 
         /*  delete TimeOut object descriptor before removing it from object stack   */
     
-        DELETE (TimeDesc);
+        OsdFree (TimeDesc);
 
         /*  remove TimeOut parameter from object stack  */
 
         ObjStackTop--;
     
     }
+
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -1794,6 +1852,7 @@ AmlExecDyadic2 (UINT16 opcode)
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -1858,6 +1917,7 @@ AmlExecDyadic2 (UINT16 opcode)
     
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2: Unknown dyadic opcode %02x\n", opcode));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
 
@@ -1872,9 +1932,10 @@ AmlExecDyadic2 (UINT16 opcode)
         ObjDesc->Number.Number = 0;
     }
 
-    DELETE (ObjDesc2);
+    OsdFree (ObjDesc2);
     ObjStackTop--;
     
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -1984,6 +2045,7 @@ AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
 
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
