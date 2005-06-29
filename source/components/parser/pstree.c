@@ -160,7 +160,7 @@ PsGetArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!OpInfo->HasArgs)
+    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -215,7 +215,7 @@ PsAppendArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!OpInfo->HasArgs)
+    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -516,7 +516,7 @@ PsFetchName (
     UINT32                  Name = 0;
     char                    *nm;
     UINT32                  i;
-    INT32                   ch;
+    char                    ch;
 
 
     if (io)
@@ -635,8 +635,8 @@ PsFindName (
 ACPI_GENERIC_OP*
 PsFind (
     ACPI_GENERIC_OP         *Scope, 
-    UINT8                   *Path,
-    UINT32                  Opcode,
+    char                    *Path,
+    UINT16                  Opcode,
     UINT32                  Create)
 {
     UINT32                  segCount;
@@ -646,14 +646,16 @@ PsFind (
     ACPI_GENERIC_OP         *Op = NULL;
 
 
-    FUNCTION_TRACE ("PsFind");
+    FUNCTION_TRACE_PTR ("PsFind", Scope);
 
 
 
     if (!Scope || !Path)
     {
+        DEBUG_PRINT (TRACE_PARSE, ("PsFind: Null path (%p) or scope (%p)!\n", Path, Scope));
         return_VALUE (NULL);
     }
+
 
     /* Handle all prefixes in the name path */
 
@@ -693,14 +695,6 @@ PsFind (
 
         unprefixed = 0;
         Path++;
-
-        /*
-         * TBD: Somebody puts a path separator after a carat!!
-         */
-        if (GET8 (Path) == '.')
-        {
-            Path++;
-        }
     }
 
     /* get name segment count */
@@ -709,6 +703,21 @@ PsFind (
     {
     case '\0':
         segCount = 0;
+
+        /* Null name case */
+
+        if (unprefixed)
+        {
+            Op = NULL;
+        }
+        else
+        {
+            Op = Scope;
+        }
+
+
+        DEBUG_PRINT (TRACE_PARSE, ("PsFind: Null path, returning current root scope Op=%p\n", Op));
+        return_PTR (Op);
         break;
 
     case AML_DualNamePrefix:
@@ -726,6 +735,8 @@ PsFind (
         break;
     }
         
+    DEBUG_PRINT (TRACE_PARSE, ("PsFind: Search scope %p Segs=%d Opcode=%4.4X Create=%d\n", Scope, segCount, Opcode, Create));
+
     /* match each name segment */
 
     while (Scope && segCount)
@@ -744,6 +755,10 @@ PsFind (
         }
 
         Op = PsFindName (Scope, Name, NameOp);
+        if (Op)
+        {
+            DEBUG_PRINT (TRACE_PARSE, ("PsFind: [%4.4s] Found! Op=%X Opcode=%4.4X\n", &Name, Op, Op->Opcode));
+        }
 
         if (!Op)
         {
@@ -751,11 +766,21 @@ PsFind (
             {
                 /* Create a new Scope level */
 
-                Op = PsAllocOp (segCount ? AML_ScopeOp : Opcode);
+                if (segCount)
+                {
+                    Op = PsAllocOp (AML_ScopeOp);
+                }
+                else
+                {
+                    Op = PsAllocOp (Opcode);
+                }
+
                 if (Op)
                 {
                     PsSetName (Op, Name);
                     PsAppendArg (Scope, Op);
+
+                    DEBUG_PRINT (TRACE_PARSE, ("PsFind: [%4.4s] Not found, created Op=%X Opcode=%4.4X\n", &Name, Op, Opcode));
                 }
             }
 
@@ -767,7 +792,16 @@ PsFind (
                 {
                     Scope = Scope->Parent;
                     Op = PsFindName (Scope, Name, Opcode);
+                    if (Op)
+                    {
+                        DEBUG_PRINT (TRACE_PARSE, ("PsFind: [%4.4s] Found in parent tree! Op=%X Opcode=%4.4X\n", &Name, Op, Op->Opcode));
+                    }
                 }
+            }
+
+            else
+            {
+                DEBUG_PRINT (TRACE_PARSE, ("PsFind: Segment [%4.4s] Not Found in scope %p!\n", &Name, Scope));
             }
         }
 
@@ -775,6 +809,6 @@ PsFind (
         Scope = Op;
     }
 
-    return_VALUE (Op);
+    return_PTR (Op);
 }
 
