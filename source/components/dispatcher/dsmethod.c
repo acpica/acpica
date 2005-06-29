@@ -147,10 +147,7 @@
 
 ACPI_STATUS
 PsxParseMethod (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
-    void                    *Context,
-    void                    **ReturnValue)
+    ACPI_HANDLE             ObjHandle)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -161,9 +158,6 @@ PsxParseMethod (
     DEBUG_PRINT (TRACE_PARSE, ("PsParseMethod: [%4.4s] Nte=%X\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
 
-    /* Update counter */
-
-    (*((UINT32 *) Context))++;
 
     /* Extract the method object from the method NTE */
 
@@ -214,47 +208,6 @@ PsxParseMethod (
     ObjDesc->Method.ParserOp = Op;
 
     return Status;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    PsxParseAllMethods
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Parse all control methods that are loaded in the namespace
- *
- ******************************************************************************/
-
-ACPI_STATUS
-PsxParseAllMethods (void)
-{
-    ACPI_STATUS             Status;
-    UINT32                  MethodCount = 0;
-
-
-    FUNCTION_TRACE ("PsxParseAllMethods");
-
-    DEBUG_PRINT (TRACE_PARSE, ("PsxParseAllMethods: **** Starting control method parsing ****\n"));
-
-
-    /* Pass 2: Parse the Control Method bodies */
-
-    /* Walk entire namespace from the root */
-
-
-    Status = AcpiWalkNamespace (ACPI_TYPE_Method, Gbl_RootObject, ACPI_INT_MAX, PsxParseMethod, 
-                                &MethodCount, NULL);
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxParseAllMethods: WalkNamespace failed! %x\n", Status));
-    }
-
-    DEBUG_PRINT (TRACE_PARSE, ("PsxParseAllMethods: %d methods parsed\n", MethodCount));
-    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -338,9 +291,6 @@ PsxCallControlMethod (
     /* The next op will be the beginning of the method */
 
     NextWalkState->NextOp = (ACPI_GENERIC_OP *) Method;
-
-
-    /*TBD: MUst return new WALK STATE!  */
 
 
     DEBUG_PRINT (TRACE_PARSE, ("PsxCall, starting nested execution, newstate=%p\n", NextWalkState));
