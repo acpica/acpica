@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.25 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -126,11 +126,11 @@
  */
 
 #ifdef _DECLARE_GLOBALS
-#define EXTERN
-#define INIT_GLOBAL(a,b)        a=b
+#define ASL_EXTERN
+#define ASL_INIT_GLOBAL(a,b)        (a)=(b)
 #else
-#define EXTERN                  extern
-#define INIT_GLOBAL(a,b)        a
+#define ASL_EXTERN                  extern
+#define ASL_INIT_GLOBAL(a,b)        (a)
 #endif
 
 
@@ -142,9 +142,6 @@ extern FILE                     *AslCompilerin;
 extern int                      AslCompilerdebug;
 extern const ASL_MAPPING_ENTRY  AslKeywordMapping[];
 extern char                     *AslCompilertext;
-extern FILE                     *AslCompilerin;
-extern int                      optind;
-extern char                     *optarg;
 extern char                     hex[];
 
 #define ASL_LINE_BUFFER_SIZE    512
@@ -153,104 +150,114 @@ extern char                     hex[];
 
 /* Source code buffers and pointers for error reporting */
 
-EXTERN char                     Gbl_CurrentLineBuffer[ASL_LINE_BUFFER_SIZE];
-EXTERN int                      INIT_GLOBAL (Gbl_CurrentColumn, 0);
-EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineNumber, 1);
-EXTERN int                      INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
-EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineOffset, 0);
-EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
+ASL_EXTERN char                     Gbl_CurrentLineBuffer[ASL_LINE_BUFFER_SIZE];
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentColumn, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentLineNumber, 1);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentLineOffset, 0);
+ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
 
 
 /* Exception reporting */
 
-EXTERN ASL_ERROR_MSG            INIT_GLOBAL (*Gbl_ErrorLog,NULL);
-EXTERN ASL_ERROR_MSG            INIT_GLOBAL (*Gbl_NextError,NULL);
-extern UINT32                   Gbl_ExceptionCount[];
+ASL_EXTERN ASL_ERROR_MSG            ASL_INIT_GLOBAL (*Gbl_ErrorLog,NULL);
+ASL_EXTERN ASL_ERROR_MSG            ASL_INIT_GLOBAL (*Gbl_NextError,NULL);
+extern UINT32                       Gbl_ExceptionCount[];
 
 
 /* Option flags */
 
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_UseDefaultAmlFilename, TRUE);
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_NsOutputFlag, FALSE);
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_DebugFlag, FALSE);
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_AsmOutputFlag, FALSE);
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_C_OutputFlag, FALSE);
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ParseOnlyFlag, FALSE);
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_CompileTimesFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_UseDefaultAmlFilename, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_NsOutputFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DebugFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_AsmOutputFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_C_OutputFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_ListingFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_ParseOnlyFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CompileTimesFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_FoldConstants, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_VerboseErrors, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DisasmFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_GetAllTables, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_IntegerOptimizationFlag, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_ReferenceOptimizationFlag, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DisplayRemarks, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DisplayOptimizations, FALSE);
+
 
 #define HEX_OUTPUT_NONE         0
 #define HEX_OUTPUT_C            1
 #define HEX_OUTPUT_ASM          2
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HexOutputFlag, HEX_OUTPUT_NONE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_HexOutputFlag, HEX_OUTPUT_NONE);
 
 
 /* Files */
 
-EXTERN ASL_FILE_INFO            Gbl_Files [ASL_NUM_FILES];
+ASL_EXTERN ASL_FILE_INFO            Gbl_Files [ASL_NUM_FILES];
 
-EXTERN char                     *Gbl_DirectoryPath;
-EXTERN char                     INIT_GLOBAL (*Gbl_IncludeFilename, NULL);
-EXTERN char                     INIT_GLOBAL (*Gbl_OutputFilenamePrefix, NULL);
-EXTERN char                     *Gbl_CurrentInputFilename;
+ASL_EXTERN char                     *Gbl_DirectoryPath;
+ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_IncludeFilename, NULL);
+ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_OutputFilenamePrefix, NULL);
+ASL_EXTERN char                     *Gbl_CurrentInputFilename;
 
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HasIncludeFiles, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_HasIncludeFiles, FALSE);
 
 
 /* Statistics */
 
-EXTERN UINT32                   INIT_GLOBAL (Gbl_InputByteCount, 0);
-EXTERN UINT32                   INIT_GLOBAL (Gbl_NsLookupCount, 0);
-EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
-EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
-EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
-EXTERN UINT32                   INIT_GLOBAL (TotalParseNodes, 0);
-EXTERN UINT32                   INIT_GLOBAL (TotalMethods, 0);
-EXTERN UINT32                   INIT_GLOBAL (TotalAllocations, 0);
-EXTERN UINT32                   INIT_GLOBAL (TotalAllocated, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_InputByteCount, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_NsLookupCount, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalKeywords, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalNamedObjects, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalExecutableOpcodes, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalParseNodes, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalMethods, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalAllocations, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalAllocated, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalFolds, 0);
 
 
 /* Misc */
 
-EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
-EXTERN UINT32                   INIT_GLOBAL (Gbl_TableLength, 0);
-EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
-EXTERN ASL_LISTING_NODE         INIT_GLOBAL (*Gbl_ListingNode, NULL);
-EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheNext, NULL);
-EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheLast, NULL);
-EXTERN NATIVE_CHAR              INIT_GLOBAL (*Gbl_StringCacheNext, NULL);
-EXTERN NATIVE_CHAR              INIT_GLOBAL (*Gbl_StringCacheLast, NULL);
-EXTERN UINT32                   INIT_GLOBAL (Gbl_TempCount, 0);
-EXTERN ASL_PARSE_NODE           *Gbl_FirstLevelInsertionNode;
+ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*RootNode, NULL);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_TableLength, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_SourceLine, 0);
+ASL_EXTERN ASL_LISTING_NODE         ASL_INIT_GLOBAL (*Gbl_ListingNode, NULL);
+ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_NodeCacheNext, NULL);
+ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_NodeCacheLast, NULL);
+ASL_EXTERN NATIVE_CHAR              ASL_INIT_GLOBAL (*Gbl_StringCacheNext, NULL);
+ASL_EXTERN NATIVE_CHAR              ASL_INIT_GLOBAL (*Gbl_StringCacheLast, NULL);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_TempCount, 0);
+ASL_EXTERN ACPI_PARSE_OBJECT        *Gbl_FirstLevelInsertionNode;
 
 
-EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentHexColumn, 0);
-EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentAmlOffset, 0);
-EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentLine, 0);
-EXTERN UINT8                    INIT_GLOBAL (Gbl_HexBytesWereWritten, FALSE);
-EXTERN UINT32                   INIT_GLOBAL (Gbl_NumNamespaceObjects, 0);
-EXTERN UINT32                   INIT_GLOBAL (Gbl_ReservedMethods, 0);
-EXTERN char                     INIT_GLOBAL (*Gbl_TableSignature, "NO_SIG");
-EXTERN char                     INIT_GLOBAL (*Gbl_TableId, "NO_ID");
-EXTERN FILE                     *AcpiGbl_DebugFile; /* Placeholder for oswinxf only */
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentHexColumn, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentAmlOffset, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentLine, 0);
+ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_HexBytesWereWritten, FALSE);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_NumNamespaceObjects, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_ReservedMethods, 0);
+ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_TableSignature, "NO_SIG");
+ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_TableId, "NO_ID");
+ASL_EXTERN FILE                     *AcpiGbl_DebugFile; /* Placeholder for oswinxf only */
 
 
 /* Static structures */
 
-EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
-EXTERN ACPI_TABLE_HEADER        TableHeader;
-extern const ASL_RESERVED_INFO  ReservedMethods[];
-EXTERN ASL_EVENT_INFO           AslGbl_Events[20];
+ASL_EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
+ASL_EXTERN ACPI_TABLE_HEADER        TableHeader;
+extern const ASL_RESERVED_INFO      ReservedMethods[];
+ASL_EXTERN ASL_EVENT_INFO           AslGbl_Events[21];
 
 
 /* Scratch buffers */
 
-EXTERN UINT8                    Gbl_AmlBuffer[16];
-EXTERN char                     MsgBuffer[ASL_MSG_BUFFER_SIZE];
-EXTERN char                     StringBuffer[ASL_MSG_BUFFER_SIZE];
-EXTERN char                     StringBuffer2[ASL_MSG_BUFFER_SIZE];
+ASL_EXTERN UINT8                    Gbl_AmlBuffer[16];
+ASL_EXTERN char                     MsgBuffer[ASL_MSG_BUFFER_SIZE];
+ASL_EXTERN char                     StringBuffer[ASL_MSG_BUFFER_SIZE];
+ASL_EXTERN char                     StringBuffer2[ASL_MSG_BUFFER_SIZE];
 
 #endif /* __ASLGLOBAL_H */
 
