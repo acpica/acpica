@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -122,18 +122,19 @@
 
 
 #define _COMPONENT          TABLE_MANAGER
-        MODULE_NAME         ("tbutils");
+        MODULE_NAME         ("tbutils")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbSystemTablePointer
+ * FUNCTION:    AcpiTbHandleToObject
  *
- * PARAMETERS:  *Where              - Pointer to be examined
+ * PARAMETERS:  TableId             - Id for which the function is searching
+ *              TableDesc           - Pointer to return the matching table
+ *                                      descriptor.
  *
- * RETURN:      TRUE if Where is within the AML stream (in one of the ACPI
- *              system tables such as the DSDT or an SSDT.)
- *              FALSE otherwise
+ * RETURN:      Search the tables to find one with a matching TableId and
+ *              return a pointer to that table descriptor.
  *
  ******************************************************************************/
 
@@ -202,7 +203,8 @@ AcpiTbSystemTablePointer (
 
     /* Check for a pointer within the DSDT */
 
-    if (IS_IN_ACPI_TABLE (Where, AcpiGbl_DSDT))
+    if ((AcpiGbl_DSDT) &&
+        (IS_IN_ACPI_TABLE (Where, AcpiGbl_DSDT)))
     {
         return (TRUE);
     }
@@ -294,7 +296,7 @@ AcpiTbValidateTableHeader (
             ("Table signature at %p [%X] has invalid characters\n",
             TableHeader, &Signature));
 
-        REPORT_WARNING ("Invalid table signature found");
+        REPORT_WARNING (("Invalid table signature found\n"));
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_SIGNATURE);
     }
@@ -308,7 +310,7 @@ AcpiTbValidateTableHeader (
             ("Invalid length in table header %p name %4.4s\n",
             TableHeader, &Signature));
 
-        REPORT_WARNING ("Invalid table header length found");
+        REPORT_WARNING (("Invalid table header length found\n"));
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_HEADER);
     }
@@ -417,7 +419,7 @@ ACPI_STATUS
 AcpiTbVerifyTableChecksum (
     ACPI_TABLE_HEADER       *TableHeader)
 {
-    UINT8                   CheckSum;
+    UINT8                   Checksum;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -426,16 +428,14 @@ AcpiTbVerifyTableChecksum (
 
     /* Compute the checksum on the table */
 
-    CheckSum = AcpiTbChecksum (TableHeader, TableHeader->Length);
+    Checksum = AcpiTbChecksum (TableHeader, TableHeader->Length);
 
     /* Return the appropriate exception */
 
-    if (CheckSum)
+    if (Checksum)
     {
-        REPORT_ERROR ("Invalid ACPI table checksum");
-        DEBUG_PRINT (ACPI_INFO,
-            ("TbVerifyTableChecksum: Invalid checksum (%X) in %4.4s\n",
-            CheckSum, &TableHeader->Signature));
+        REPORT_WARNING (("Invalid checksum (%X) in table %4.4s\n",
+            Checksum, &TableHeader->Signature));
 
         Status = AE_BAD_CHECKSUM;
     }
