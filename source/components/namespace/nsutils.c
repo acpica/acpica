@@ -589,6 +589,7 @@ NsConvertHandleToEntry (
     return (NAME_TABLE_ENTRY *) Handle;
 }
 
+
 /****************************************************************************
  *
  * FUNCTION:    NsConvertEntryToHandle
@@ -605,7 +606,6 @@ ACPI_HANDLE
 NsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
 {
 
-    return (ACPI_HANDLE) Nte;
 
     /* 
      * Simple implementation for now;
@@ -613,6 +613,11 @@ NsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
      * and keep all pointers within this subsystem!
      */
 
+    return (ACPI_HANDLE) Nte;
+
+
+/* ---------------------------------------------------
+ 
     if (!Nte)
     {
         return NULL;
@@ -624,17 +629,10 @@ NsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
     }
 
 
-/* TBD: no longer needed ??
-
-    if (Nte == Gbl_RootObject->Scope)
-    {
-        return ACPI_ROOT_SCOPE;
-    }
-*/
-
-
     return (ACPI_HANDLE) Nte;
+------------------------------------------------------*/
 }
+
 
 
 /******************************************************************************
@@ -653,35 +651,35 @@ void
 NsTerminate (void)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
+    NAME_TABLE_ENTRY        *Entry;
 
 
     FUNCTION_TRACE ("NsTerminate");
 
 
+    Entry = Gbl_RootObject;
+
     /*
      * 1) Free the entire namespace -- all objects, tables, and stacks
      */
+    /* Delete all objects linked to the root (additional table descriptors) */
 
-    NsDeleteNamespace (Gbl_RootObject);
+    NsDeleteNamespaceSubtree (Entry);
 
     /* Detach any object(s) attached to the root */
-    
-    ObjDesc = NsGetAttachedObject (Gbl_RootObject);
+
+    ObjDesc = NsGetAttachedObject (Entry);
     if (ObjDesc)
     {
-        NsDetachObject (Gbl_RootObject);
-        CmDeleteInternalObject (ObjDesc);
+        NsDetachObject (Entry);
+        CmRemoveReference (ObjDesc);
     }
 
-    NsDeleteScope (Gbl_RootObject->Scope);
-    Gbl_RootObject->Scope = NULL;
+    NsDeleteScope (Entry->Scope);
+    Entry->Scope = NULL;
+
 
     REPORT_SUCCESS ("Entire namespace and objects deleted");
-
-
-    NsScopeStackClear ();
-    CmFree (Gbl_CurrentScope);      /* Free the root scope */
-
     DEBUG_PRINT (ACPI_INFO, ("NsTerminate: Namespace freed\n"));
 
 
