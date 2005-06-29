@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,6 @@
 #define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsdump")
 
-
 #if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
 
 /*******************************************************************************
@@ -251,12 +250,10 @@ AcpiNsDumpOneObject (
         return (AE_OK);
     }
 
-
     /* Indent the object according to the level */
 
     while (LevelTmp--)
     {
-
         /* Print appropriate characters to form tree structure */
 
         if (LevelTmp)
@@ -272,7 +269,6 @@ AcpiNsDumpOneObject (
 
             WhichBit <<= 1;
         }
-
         else
         {
             if (AcpiNsExistDownstreamSibling (ThisNode + 1))
@@ -300,7 +296,6 @@ AcpiNsDumpOneObject (
             }
         }
     }
-
 
     /* Check the integrity of our data */
 
@@ -413,8 +408,8 @@ AcpiNsDumpOneObject (
             break;
 
         case ACPI_TYPE_BUFFER_FIELD:
-
-            /* TBD: print Buffer name when we can easily get it */
+            AcpiOsPrintf (" Buf [%4.4s]",
+                    (char *) &ObjDesc->CommonField.Node->Name);
             break;
 
         case INTERNAL_TYPE_REGION_FIELD:
@@ -423,17 +418,18 @@ AcpiNsDumpOneObject (
             break;
 
         case INTERNAL_TYPE_BANK_FIELD:
-            AcpiOsPrintf (" Rgn [%4.4s]",
-                    (char *) &ObjDesc->CommonField.RegionObj->Region.Node->Name);
+            AcpiOsPrintf (" Rgn [%4.4s] Bnk [%4.4s]",
+                    (char *) &ObjDesc->CommonField.RegionObj->Region.Node->Name,
+                    (char *) &ObjDesc->BankField.BankRegisterObj->CommonField.Node->Name);
             break;
 
         case INTERNAL_TYPE_INDEX_FIELD:
-            AcpiOsPrintf (" Rgn [%4.4s]",
-                    (char *) &ObjDesc->IndexField.IndexObj->CommonField.RegionObj->Region.Node->Name);
+            AcpiOsPrintf (" Idx [%4.4s] Dat [%4.4s]",
+                    (char *) &ObjDesc->IndexField.IndexObj->CommonField.Node->Name,
+                    (char *) &ObjDesc->IndexField.DataObj->CommonField.Node->Name);
             break;
 
         default:
-
             AcpiOsPrintf (" Object %p\n", ObjDesc);
             break;
         }
