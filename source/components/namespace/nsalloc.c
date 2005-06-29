@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.44 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,7 +122,7 @@
 #include "acinterp.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsalloc")
 
 
@@ -130,11 +130,11 @@
  *
  * FUNCTION:    AcpiNsCreateNode
  *
- * PARAMETERS:
+ * PARAMETERS:  AcpiName        - Name of the new node
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Create a namespace node
  *
  ******************************************************************************/
 
@@ -144,16 +144,17 @@ AcpiNsCreateNode (
 {
     ACPI_NAMESPACE_NODE     *Node;
 
+
     FUNCTION_TRACE ("NsCreateNode");
 
 
-    Node = AcpiCmCallocate (sizeof (ACPI_NAMESPACE_NODE));
+    Node = ACPI_MEM_CALLOCATE (sizeof (ACPI_NAMESPACE_NODE));
     if (!Node)
     {
         return_PTR (NULL);
     }
 
-    INCREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMESPACE_NODE));
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].TotalAllocated++);
 
     Node->DataType       = ACPI_DESC_TYPE_NAMED;
     Node->Name           = AcpiName;
@@ -167,11 +168,11 @@ AcpiNsCreateNode (
  *
  * FUNCTION:    AcpiNsDeleteNode
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Node to be deleted
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Delete a namespace node
  *
  ******************************************************************************/
 
@@ -185,6 +186,7 @@ AcpiNsDeleteNode (
 
 
     FUNCTION_TRACE_PTR ("NsDeleteNode", Node);
+
 
     ParentNode = AcpiNsGetParentObject (Node);
 
@@ -211,20 +213,17 @@ AcpiNsDeleteNode (
     }
 
 
-    DECREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMESPACE_NODE));
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].TotalFreed++);
 
     /*
      * Detach an object if there is one
      */
-
     if (Node->Object)
     {
         AcpiNsDetachObject (Node);
     }
 
-    AcpiCmFree (Node);
-
-
+    ACPI_MEM_FREE (Node);
     return_VOID;
 }
 
@@ -235,7 +234,7 @@ AcpiNsDeleteNode (
  *
  * PARAMETERS:  WalkState       - Current state of the walk
  *              ParentNode      - The parent of the new Node
- *              Node        - The new Node to install
+ *              Node            - The new Node to install
  *              Type            - ACPI object type of the new Node
  *
  * RETURN:      None
@@ -248,8 +247,8 @@ void
 AcpiNsInstallNode (
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     *ParentNode,    /* Parent */
-    ACPI_NAMESPACE_NODE     *Node,      /* New Child*/
-    OBJECT_TYPE_INTERNAL    Type)
+    ACPI_NAMESPACE_NODE     *Node,          /* New Child*/
+    ACPI_OBJECT_TYPE8       Type)
 {
     UINT16                  OwnerId = TABLE_ID_DSDT;
     ACPI_NAMESPACE_NODE     *ChildNode;
@@ -305,9 +304,8 @@ AcpiNsInstallNode (
      * add the region in order to define fields in it, we
      * have a forward reference.
      */
-
     if ((ACPI_TYPE_ANY == Type) ||
-        (INTERNAL_TYPE_DEF_FIELD_DEFN == Type) ||
+        (INTERNAL_TYPE_FIELD_DEFN == Type) ||
         (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
     {
         /*
@@ -315,19 +313,15 @@ AcpiNsInstallNode (
          * We will fill in the actual type when the
          * real definition is found later.
          */
-
-        DEBUG_PRINT (ACPI_INFO,
-            ("NsInstallNode: [%4.4s] is a forward reference\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "[%4.4s] is a forward reference\n",
             &Node->Name));
-
     }
 
     /*
      * The DefFieldDefn and BankFieldDefn cases are actually
      * looking up the Region in which the field will be defined
      */
-
-    if ((INTERNAL_TYPE_DEF_FIELD_DEFN == Type) ||
+    if ((INTERNAL_TYPE_FIELD_DEFN == Type) ||
         (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
     {
         Type = ACPI_TYPE_REGION;
@@ -339,7 +333,6 @@ AcpiNsInstallNode (
      * being looked up.  Save any other value of Type as the type of
      * the entry.
      */
-
     if ((Type != INTERNAL_TYPE_SCOPE) &&
         (Type != INTERNAL_TYPE_DEF_ANY) &&
         (Type != INTERNAL_TYPE_INDEX_FIELD_DEFN))
@@ -347,15 +340,13 @@ AcpiNsInstallNode (
         Node->Type = (UINT8) Type;
     }
 
-    DEBUG_PRINT (TRACE_NAMES,
-        ("NsInstallNode: %4.4s added to %p at %p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "%4.4s added to %p at %p\n",
         &Node->Name, ParentNode, Node));
 
     /*
      * Increment the reference count(s) of all parents up to
      * the root!
      */
-
     while ((Node = AcpiNsGetParentObject (Node)) != NULL)
     {
         Node->ReferenceCount++;
@@ -387,7 +378,7 @@ AcpiNsDeleteChildren (
     UINT8                   Flags;
 
 
-    FUNCTION_TRACE_PTR ("AcpiNsDeleteChildren", ParentNode);
+    FUNCTION_TRACE_PTR ("NsDeleteChildren", ParentNode);
 
 
     if (!ParentNode)
@@ -417,29 +408,26 @@ AcpiNsDeleteChildren (
 
         if (ChildNode->Child)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("NsDeleteChildren: Found a grandchild! P=%X C=%X\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Found a grandchild! P=%X C=%X\n",
                 ParentNode, ChildNode));
         }
 
         /* Now we can free this child object */
 
-        DECREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMESPACE_NODE));
+        ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].TotalFreed++);
 
-        DEBUG_PRINT (ACPI_INFO,
-            ("AcpiNsDeleteChildren: Object %p, Remaining %X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object %p, Remaining %X\n",
             ChildNode, AcpiGbl_CurrentNodeCount));
 
         /*
          * Detach an object if there is one
          */
-
         if (ChildNode->Object)
         {
             AcpiNsDetachObject (ChildNode);
         }
 
-        AcpiCmFree (ChildNode);
+        ACPI_MEM_FREE (ChildNode);
 
         /* And move on to the next child in the list */
 
@@ -460,7 +448,7 @@ AcpiNsDeleteChildren (
  *
  * FUNCTION:    AcpiNsDeleteNamespaceSubtree
  *
- * PARAMETERS:  None.
+ * PARAMETERS:  ParentNode      - Root of the subtree to be deleted
  *
  * RETURN:      None.
  *
@@ -494,14 +482,12 @@ AcpiNsDeleteNamespaceSubtree (
      * Traverse the tree of objects until we bubble back up
      * to where we started.
      */
-
     while (Level > 0)
     {
         /*
          * Get the next typed object in this scope.
          * Null returned if not found
          */
-
         ChildNode = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentNode,
                                             ChildNode);
         if (ChildNode)
@@ -510,12 +496,11 @@ AcpiNsDeleteNamespaceSubtree (
              * Found an object - delete the object within
              * the Value field
              */
-
             ObjDesc = AcpiNsGetAttachedObject (ChildNode);
             if (ObjDesc)
             {
                 AcpiNsDetachObject (ChildNode);
-                AcpiCmRemoveReference (ObjDesc);
+                AcpiUtRemoveReference (ObjDesc);
             }
 
 
@@ -527,7 +512,6 @@ AcpiNsDeleteNamespaceSubtree (
                  * There is at least one child of this object,
                  * visit the object
                  */
-
                 Level++;
                 ParentNode    = ChildNode;
                 ChildNode     = 0;
@@ -568,7 +552,7 @@ AcpiNsDeleteNamespaceSubtree (
  * FUNCTION:    AcpiNsRemoveReference
  *
  * PARAMETERS:  Node           - Named object whose reference count is to be
- *                                decremented
+ *                               decremented
  *
  * RETURN:      None.
  *
@@ -583,6 +567,9 @@ AcpiNsRemoveReference (
     ACPI_NAMESPACE_NODE     *Node)
 {
     ACPI_NAMESPACE_NODE     *NextNode;
+
+
+    FUNCTION_ENTRY ();
 
 
     /*
@@ -617,9 +604,9 @@ AcpiNsRemoveReference (
  *
  * FUNCTION:    AcpiNsDeleteNamespaceByOwner
  *
- * PARAMETERS:  None.
+ * PARAMETERS:  OwnerId     - All nodes with this owner will be deleted
  *
- * RETURN:      None.
+ * RETURN:      Status
  *
  * DESCRIPTION: Delete entries within the namespace that are owned by a
  *              specific ID.  Used to delete entire ACPI tables.  All
@@ -637,7 +624,7 @@ AcpiNsDeleteNamespaceByOwner (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
+    FUNCTION_TRACE ("NsDeleteNamespaceByOwner");
 
 
     ParentNode  = AcpiGbl_RootNode;
@@ -648,14 +635,12 @@ AcpiNsDeleteNamespaceByOwner (
      * Traverse the tree of objects until we bubble back up
      * to where we started.
      */
-
     while (Level > 0)
     {
         /*
          * Get the next typed object in this scope.
          * Null returned if not found
          */
-
         ChildNode = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentNode,
                                             ChildNode);
 
@@ -667,12 +652,11 @@ AcpiNsDeleteNamespaceByOwner (
                  * Found an object - delete the object within
                  * the Value field
                  */
-
                 ObjDesc = AcpiNsGetAttachedObject (ChildNode);
                 if (ObjDesc)
                 {
                     AcpiNsDetachObject (ChildNode);
-                    AcpiCmRemoveReference (ObjDesc);
+                    AcpiUtRemoveReference (ObjDesc);
                 }
             }
 

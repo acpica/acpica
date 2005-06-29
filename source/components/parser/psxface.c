@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.38 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,11 +124,11 @@
 #include "acnamesp.h"
 
 
-#define _COMPONENT          PARSER
+#define _COMPONENT          ACPI_PARSER
         MODULE_NAME         ("psxface")
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiPsxExecute
  *
@@ -144,7 +144,7 @@
  *
  * DESCRIPTION: Execute a control method
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiPsxExecute (
@@ -176,7 +176,7 @@ AcpiPsxExecute (
 
     /* Init for new method, wait on concurrency semaphore */
 
-    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc);
+    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc, NULL);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -188,10 +188,9 @@ AcpiPsxExecute (
          * The caller "owns" the parameters, so give each one an extra
          * reference
          */
-
         for (i = 0; Params[i]; i++)
         {
-            AcpiCmAddReference (Params[i]);
+            AcpiUtAddReference (Params[i]);
         }
     }
 
@@ -199,9 +198,8 @@ AcpiPsxExecute (
      * Perform the first pass parse of the method to enter any
      * named objects that it creates into the namespace
      */
-
-    DEBUG_PRINT (ACPI_INFO,
-        ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "**** Begin Method Execution **** Entry=%p obj=%p\n",
         MethodNode, ObjDesc));
 
     /* Create and init a Root Node */
@@ -227,6 +225,12 @@ AcpiPsxExecute (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+
+    /* Init new op with the method name and pointer back to the NS node */
+
+    AcpiPsSetName (Op, MethodNode->Name);
+    Op->Node = MethodNode;
+
     /*
      * The walk of the parse tree is where we actually execute the method
      */
@@ -243,20 +247,18 @@ AcpiPsxExecute (
 
         for (i = 0; Params[i]; i++)
         {
-            AcpiCmUpdateObjectReference (Params[i], REF_DECREMENT);
+            AcpiUtUpdateObjectReference (Params[i], REF_DECREMENT);
         }
     }
 
 
     /*
-     * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been
-     * executed, or with Status == AE_PENDING at end of AML block (end of
-     * Method code)
+     * If the method has returned an object, signal this to the caller with
+     * a control exception code
      */
-
     if (*ReturnObjDesc)
     {
-        DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Method returned ObjDesc=%X\n",
             *ReturnObjDesc));
         DUMP_STACK_ENTRY (*ReturnObjDesc);
 
