@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  ******************************************************************************/
 
@@ -187,14 +187,16 @@ AcpiDbWalkForReferences (
 
     if (Node == (void *) ObjDesc)
     {
-        AcpiOsPrintf ("Object is a Node [%4.4s]\n", Node->Name.Ascii);
+        AcpiOsPrintf ("Object is a Node [%4.4s]\n",
+            AcpiUtGetNodeName (Node));
     }
 
     /* Check for match against the object attached to the node */
 
     if (AcpiNsGetAttachedObject (Node) == ObjDesc)
     {
-        AcpiOsPrintf ("Reference at Node->Object %p [%4.4s]\n", Node, Node->Name.Ascii);
+        AcpiOsPrintf ("Reference at Node->Object %p [%4.4s]\n",
+            Node, AcpiUtGetNodeName (Node));
     }
 
     return (AE_OK);
