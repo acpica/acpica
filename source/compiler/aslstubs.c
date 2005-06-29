@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.3 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -146,7 +146,7 @@ AcpiEvReleaseGlobalLock(
 {
     return (AE_OK);
 }
-
+/************************************************
 ACPI_STATUS
 AcpiDsLoad2BeginOp (
     ACPI_WALK_STATE         *WalkState,
@@ -161,6 +161,22 @@ AcpiDsLoad2EndOp (
 {
     return (AE_OK);
 }
+ACPI_STATUS
+AcpiNsLoadTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_NAMESPACE_NODE     *Node)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiNsLoadNamespace (
+    void)
+{
+    return (AE_OK);
+}
+
+****************************************************/
 
 ACPI_STATUS
 AeLocalGetRootPointer (
@@ -168,14 +184,6 @@ AeLocalGetRootPointer (
     ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
 {
     return AE_ERROR;
-}
-
-ACPI_STATUS
-AcpiNsLoadTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMESPACE_NODE     *Node)
-{
-    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -227,13 +235,6 @@ AcpiDsMethodDataGetType (
 }
 
 ACPI_STATUS
-AcpiNsLoadNamespace (
-    void)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
 AcpiEvQueueNotifyRequest (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue)
@@ -259,40 +260,12 @@ AcpiDsStoreObjectToLocal (
 }
 
 ACPI_STATUS
-AcpiDsInitAmlWalk (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    UINT8                   *AmlStart,
-    UINT32                  AmlLength,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObjDesc,
-    UINT32                  PassNumber)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
 AcpiDsParseMethod (
     ACPI_HANDLE             ObjHandle)
 {
     return (AE_OK);
 }
 
-
-void
-AcpiPsDeleteParseTree (
-    ACPI_PARSE_OBJECT       *root)
-{
-    return;
-}
-
-ACPI_STATUS
-AcpiPsParseAml (
-    ACPI_WALK_STATE         *WalkState)
-{
-    return (AE_OK);
-}
 
 ACPI_STATUS
 AcpiWalkNamespace (
@@ -306,12 +279,37 @@ AcpiWalkNamespace (
     return (AE_OK);
 }
 
-ACPI_PARSE_OBJECT *
-AcpiPsGetArg(
-    ACPI_PARSE_OBJECT       *op,
-    UINT32                   argn)
+ACPI_STATUS
+AcpiTbFindTable (
+    NATIVE_CHAR             *Signature,
+    NATIVE_CHAR             *OemId,
+    NATIVE_CHAR             *OemTableId,
+    ACPI_TABLE_HEADER       **TablePtr)
 {
-    return NULL;
+    return (AE_SUPPORT);
+}
+
+
+/*
+void
+AcpiPsDeleteParseTree (
+    ACPI_PARSE_OBJECT       *root)
+{
+    return;
+}
+
+ACPI_STATUS
+AcpiDsInitAmlWalk (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_NAMESPACE_NODE     *MethodNode,
+    UINT8                   *AmlStart,
+    UINT32                  AmlLength,
+    ACPI_OPERAND_OBJECT     **Params,
+    ACPI_OPERAND_OBJECT     **ReturnObjDesc,
+    UINT32                  PassNumber)
+{
+    return (AE_OK);
 }
 
 void
@@ -336,16 +334,6 @@ AcpiTbInstallTable (
 }
 
 ACPI_STATUS
-AcpiTbFindTable (
-    NATIVE_CHAR             *Signature,
-    NATIVE_CHAR             *OemId,
-    NATIVE_CHAR             *OemTableId,
-    ACPI_TABLE_HEADER       **TablePtr)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
 AcpiTbMatchSignature (
     NATIVE_CHAR             *Signature,
     ACPI_TABLE_DESC         *TableInfo,
@@ -355,11 +343,21 @@ AcpiTbMatchSignature (
 }
 
 
-/*
-void
-AcpiTbDeleteAcpiTables (void)
+ACPI_STATUS
+AcpiPsParseAml (
+    ACPI_WALK_STATE         *WalkState)
 {
+    return (AE_OK);
 }
+
+ACPI_PARSE_OBJECT *
+AcpiPsGetArg(
+    ACPI_PARSE_OBJECT       *op,
+    UINT32                   argn)
+{
+    return NULL;
+}
+
 
 */
 
