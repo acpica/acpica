@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.110 $
+ *       $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@
 #define ACPI_ROOT_NAME          (UINT32) 0x2F202020     /* Root name is     "/   " */
 #define ACPI_SYS_BUS_NAME       (UINT32) 0x5F53425F     /* Sys bus name is  "_SB_" */
 
-#define NS_ROOT_PATH            "/"
+#define NS_ROOT_PATH            "\\"
 #define NS_SYSTEM_BUS           "_SB_"
 
 
