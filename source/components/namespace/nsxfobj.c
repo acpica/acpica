@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.77 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -725,13 +725,13 @@ AcpiNsGetDeviceCallback (
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     Node = AcpiNsConvertHandleToEntry (ObjHandle);
-    if (!Node)
-    {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-        return (AE_BAD_PARAMETER);
-    }
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+
+    if (!Node)
+    {
+        return (AE_BAD_PARAMETER);
+    }
 
     /*
      * Run _STA to determine if device is present
