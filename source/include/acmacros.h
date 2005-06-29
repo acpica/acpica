@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.70 $
+ *       $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -285,8 +285,24 @@
 #define ROUND_PTR_UP_TO_8(a,b)          ((b *)(((NATIVE_UINT)(a) + 7) & ~7))
 
 #define ROUND_BITS_UP_TO_BYTES(a)       DIV_8((a) + 7)
+#define ROUND_BITS_DOWN_TO_BYTES(a)     DIV_8((a))
 
 #define ROUND_UP_TO_1K(a)               (((a) + 1023) >> 10)
+
+/* Generic (non-power-of-two) rounding */
+
+#define ROUND_UP_TO(value,boundary)     (((value) + ((boundary)-1)) / (boundary))
+
+/* 
+ * Bitmask creation
+ * Bit positions start at zero.
+ * MASK_BITS_ABOVE creates a mask starting AT the position and above
+ * MASK_BITS_BELOW creates a mask starting one bit BELOW the position
+ */
+
+
+#define MASK_BITS_ABOVE(position)       (~(((UINT32)(-1)) << ((UINT32) (position))))
+#define MASK_BITS_BELOW(position)       (((UINT32)(-1)) << ((UINT32) (position)))
 
 #ifdef DEBUG_ASSERT
 #undef DEBUG_ASSERT
@@ -330,6 +346,10 @@
 /* Macro to check the table flags for SINGLE or MULTIPLE tables are allowed */
 
 #define IS_SINGLE_TABLE(x)              (((x) & 0x01) == ACPI_TABLE_SINGLE ? 1 : 0)
+
+/* Check if ACPI has been initialized properly */
+
+#define ACPI_IS_INITIALIZATION_COMPLETE(s)  {if (AcpiGbl_RootNode) s = AE_OK; else s=AE_NO_NAMESPACE;}
 
 /*
  * Macro to check if a pointer is within an ACPI table.
