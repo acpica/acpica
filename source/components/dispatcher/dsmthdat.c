@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -398,7 +398,7 @@ AcpiDsMethodDataSetValue (
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "obj %p op %X, ref count = %d [%s]\n", Object,
+        "NewObj %p Opcode %X, Refs=%d [%s]\n", Object,
         Opcode, Object->Common.ReferenceCount,
         AcpiUtGetTypeName (Object->Common.Type)));
 
@@ -667,7 +667,7 @@ AcpiDsStoreObjectToLocal (
 
 
     ACPI_FUNCTION_TRACE ("DsStoreObjectToLocal");
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode=%d Idx=%d Obj=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode=%X Index=%d Obj=%p\n",
         Opcode, Index, ObjDesc));
 
     /* Parameter validation */
