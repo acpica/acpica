@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.48 $
+ *              $Revision: 1.51 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -231,7 +231,7 @@ AcpiDbSingleStep (
             if ((WalkState->ControlState) &&
                 (WalkState->ControlState->Common.State == CONTROL_PREDICATE_EXECUTING))
             {
-                /* 
+                /*
                  * We are executing the predicate of an IF or WHILE statement
                  * Search upwards for the containing IF or WHILE so that the
                  * entire predicate can be displayed.
@@ -402,16 +402,20 @@ int
 AcpiDbInitialize (void)
 {
 
-
     /* Init globals */
 
-    AcpiGbl_DbBuffer = AcpiOsCallocate (ACPI_DEBUG_BUFFER_SIZE);
+    AcpiGbl_DbBuffer = AcpiOsAllocate (ACPI_DEBUG_BUFFER_SIZE);
+    if (!AcpiGbl_DbBuffer)
+    {
+        return 0;
+    }
+    MEMSET (AcpiGbl_DbBuffer, 0, ACPI_DEBUG_BUFFER_SIZE);
 
     /* Initial scope is the root */
 
     AcpiGbl_DbScopeBuf [0] = '\\';
     AcpiGbl_DbScopeBuf [1] =  0;
-
+    AcpiGbl_DbScopeNode = AcpiGbl_RootNode;
 
     /*
      * If configured for multi-thread support, the debug executor runs in
