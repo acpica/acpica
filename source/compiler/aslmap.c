@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -244,6 +244,7 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_EJ3",     1,      0},
     {"_EJ4",     1,      0},
     {"_EJD",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_ERR",     2,      ASL_RSVD_RETURN_VALUE},
     {"_FDE",     0,      ASL_RSVD_RETURN_VALUE},
     {"_FDI",     0,      ASL_RSVD_RETURN_VALUE},
     {"_FDM",     1,      0},
