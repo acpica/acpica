@@ -250,11 +250,11 @@ BREAKPOINT3;
          * not been defined and there is nothing to execute.
          */
 
-        Why = "Name space not initialized ==> method not defined";
+        DEBUG_PRINT (ACPI_ERROR, ("Name space not initialized ==> method not defined\n"));
     }
     else if (!MethodName)
     {
-        Why = "AcpiExecuteMethod: MethodName==NULL";
+        DEBUG_PRINT (ACPI_ERROR, ("AcpiExecuteMethod: MethodName is NULL\n"));
     }
 
 
@@ -277,7 +277,7 @@ BREAKPOINT3;
 
         if (NOTFOUND == MethodPtr)
         {
-            Why = "Method not found";
+            DEBUG_PRINT (ACPI_ERROR, ("Method [%s] was not found\n", MethodName));
         }
     }
 
@@ -317,7 +317,7 @@ BREAKPOINT3;
 
             if (!MethodPtr->ptrVal)
             {
-                Why = "Method is undefined";
+                DEBUG_PRINT (ACPI_ERROR, ("Method is undefined\n"));
             }
 
             else
@@ -393,7 +393,7 @@ BREAKPOINT3;
             ObjDesc = AllocateObjectDesc (&KDT[3]);
             if (!ObjDesc)
             {               
-                Why = "AcpiExecuteMethod: Descriptor Allocation Failure";
+                DEBUG_PRINT (ACPI_ERROR, ("AcpiExecuteMethod: Descriptor Allocation Failure\n"));
             }
             
             else
