@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -211,6 +211,9 @@ main (
     AcpiDbgLevel = NORMAL_DEFAULT;
     AcpiDbgLayer = 0xFFFFFFFF;
 
+    /* Init ACPI and start debugger thread */
+
+    AcpiInitializeSubsystem ();
 
     printf ("ACPI AML Execution/Debug Utility ");
 
@@ -264,9 +267,6 @@ main (
         return -1;
     }
 
-    /* Init ACPI and start debugger thread */
-
-    AcpiInitializeSubsystem ();
 
     InitFlags = (ACPI_NO_HANDLER_INIT | ACPI_NO_ACPI_ENABLE);
     if (!AcpiGbl_DbOpt_ini_methods)
