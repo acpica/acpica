@@ -222,8 +222,7 @@
 
 /* Macro to test the object type */
 
-#define VALID_OBJECT_TYPE(d,t)          (((ACPI_OBJECT_INTERNAL *)d)->Common.Type == (UINT8)t)
-
+#define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OBJECT_INTERNAL *)d)->Common.Type == (UINT8)t)
 
 
 /* 
@@ -245,6 +244,16 @@
 
 #define IS_IN_ACPI_TABLE(a,b)           (((UINT8 *)(a) >= (UINT8 *)(b + 1)) &&\
                                         ((UINT8 *)(a) < ((UINT8 *)b + b->Length)))
+
+
+
+
+#ifdef ACPI_DEBUG
+#define OP_INFO_ENTRY(Opcode,Type,ArgBool,Reserved,Name,Args)     {Opcode,Type,ArgBool,Reserved,Args,Name}
+#else
+#define OP_INFO_ENTRY(Opcode,Type,ArgBool,Reserved,Name,Args)     {Opcode,Type,ArgBool,Reserved,Args}
+#endif
+
 
 
 /*
@@ -320,7 +329,10 @@
 /* Conditional execution */
 
 #define DEBUG_EXEC(a)                   a;
+#define NORMAL_EXEC(a)
+
 #define DEBUG_DEFINE(a)                 a;
+#define DEBUG_ONLY_MEMBERS(a)           a;
 
 
 /* Stack and buffer dumping */
@@ -329,6 +341,7 @@
 #define DUMP_STACK(a,b,c,d)             AmlDumpObjStack(a,b,c,d)
 #define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
+#define DUMP_PATHNAME(a,b,c,d)          NsDumpPathname(a,b,c,d)
 #define BREAK_MSG(a)                    {DEBUG_PRINT (ACPI_INFO, (a)); BREAKPOINT3}
 
 /*
@@ -384,7 +397,10 @@
 #define _THIS_MODULE ""
 
 #define DEBUG_EXEC(a)  
+#define NORMAL_EXEC(a)                  a;
+
 #define DEBUG_DEFINE(a)                     
+#define DEBUG_ONLY_MEMBERS(a)
 #define FUNCTION_TRACE(a)
 #define FUNCTION_TRACE_PTR(a,b)
 #define FUNCTION_TRACE_U32(a,b)
@@ -396,6 +412,7 @@
 #define DUMP_STACK(a,b,c,d)
 #define DUMP_ENTRY(a,b)
 #define DUMP_TABLES(a,b)
+#define DUMP_PATHNAME(a,b,c,d)
 #define DEBUG_PRINT(l,f)
 #define DEBUG_PRINT_RAW(l,f) 
 #define BREAK_MSG(a)
