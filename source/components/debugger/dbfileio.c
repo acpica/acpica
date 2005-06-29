@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.33 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -125,7 +125,7 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbfileio")
 
 
@@ -155,7 +155,7 @@ FILE                        *DebugFile = NULL;
  *
  ******************************************************************************/
 
-OBJECT_TYPE_INTERNAL
+ACPI_OBJECT_TYPE8
 AcpiDbMatchArgument (
     NATIVE_CHAR             *UserArgument,
     ARGUMENT_INFO           *Arguments)
@@ -172,7 +172,7 @@ AcpiDbMatchArgument (
     {
         if (STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
         {
-            return ((OBJECT_TYPE_INTERNAL) i);
+            return ((ACPI_OBJECT_TYPE8) i);
         }
     }
 
@@ -240,6 +240,10 @@ AcpiDbOpenDebugFile (
         STRCPY (DebugFilename, Name);
         OutputToFile = TRUE;
     }
+    else
+    {
+        AcpiOsPrintf ("Could not open debug file %s\n", Name);
+    }
 
 #endif
 }
@@ -286,7 +290,7 @@ AcpiDbLoadTable(
 
     Status = AcpiTbValidateTableHeader (&TableHeader);
     if ((ACPI_FAILURE (Status)) ||
-        (TableHeader.Length > (1024 * 1024)))
+        (TableHeader.Length > 524288))  /* 1/2 Mbyte should be enough */
     {
         AcpiOsPrintf ("Table header is invalid!\n");
         return (AE_ERROR);
@@ -307,10 +311,11 @@ AcpiDbLoadTable(
     /* Allocate a buffer for the table */
 
     *TableLength = TableHeader.Length;
-    *TablePtr = (ACPI_TABLE_HEADER *) AcpiCmAllocate ((size_t) *TableLength);
+    *TablePtr = ACPI_MEM_ALLOCATE ((size_t) *TableLength);
     if (!*TablePtr)
     {
-        AcpiOsPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
+        AcpiOsPrintf ("Could not allocate memory for ACPI table %4.4s (size=%X)\n", 
+                    TableHeader.Signature, TableHeader.Length);
         return (AE_NO_MEMORY);
     }
 
@@ -332,13 +337,13 @@ AcpiDbLoadTable(
 
     if (Actual > 0)
     {
-        AcpiOsPrintf ("Warning - reading table, asked for %d got %d\n", AmlLength, Actual);
+        AcpiOsPrintf ("Warning - reading table, asked for %X got %X\n", AmlLength, Actual);
        return (AE_OK);
     }
 
 
     AcpiOsPrintf ("Error - could not read the table file\n");
-    AcpiCmFree (*TablePtr);
+    ACPI_MEM_FREE (*TablePtr);
     *TablePtr = NULL;
     *TableLength = 0;
 
@@ -465,12 +470,14 @@ AcpiDbLoadAcpiTable (
             AcpiOsPrintf ("Table %4.4s is already installed\n",
                             &TablePtr->Signature);
         }
+
         else
         {
             AcpiOsPrintf ("Could not install table, %s\n",
-                            AcpiCmFormatException (Status));
+                            AcpiFormatException (Status));
         }
-        AcpiCmFree (TablePtr);
+
+        ACPI_MEM_FREE (TablePtr);
         return (Status);
     }
 

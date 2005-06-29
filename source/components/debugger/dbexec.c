@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.26 $
+ *              $Revision: 1.28 $
  *
  ******************************************************************************/
 
@@ -257,6 +257,26 @@ AcpiDbExecuteSetup (
 }
 
 
+UINT32
+AcpiDbGetOutstandingAllocations (void)
+{
+    UINT32                  i;
+    UINT32                  Outstanding = 0;
+
+
+    for (i = ACPI_MEM_LIST_FIRST_CACHE_LIST; i < ACPI_NUM_MEM_LISTS; i++)
+    {
+        Outstanding += (AcpiGbl_MemoryLists[i].TotalAllocated - 
+                        AcpiGbl_MemoryLists[i].TotalFreed - 
+                        AcpiGbl_MemoryLists[i].CacheDepth);
+    }
+
+
+    return (Outstanding);
+}
+
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbExecute
@@ -284,15 +304,12 @@ AcpiDbExecute (
 
 #ifdef ACPI_DEBUG
     UINT32                  PreviousAllocations;
-    UINT32                  PreviousSize;
     UINT32                  Allocations;
-    UINT32                  Size;
 
 
     /* Memory allocation tracking */
 
-    PreviousAllocations = AcpiGbl_CurrentAllocCount;
-    PreviousSize = AcpiGbl_CurrentAllocSize;
+    PreviousAllocations = AcpiDbGetOutstandingAllocations ();
 #endif
 
     Info.Name = Name;
@@ -302,27 +319,32 @@ AcpiDbExecute (
     AcpiDbExecuteSetup (&Info);
     Status = AcpiDbExecuteMethod (&Info, &ReturnObj);
 
+    /*
+     * Allow any handlers in separate threads to complete.
+     * (Such as Notify handlers invoked from AML executed above).
+     */
+    AcpiOsSleep (0, 10);
+
 
 #ifdef ACPI_DEBUG
 
     /* Memory allocation tracking */
 
-    Allocations = AcpiGbl_CurrentAllocCount - PreviousAllocations;
-    Size = AcpiGbl_CurrentAllocSize - PreviousSize;
+    Allocations = AcpiDbGetOutstandingAllocations () - PreviousAllocations;
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
 
     if (Allocations > 0)
     {
-        AcpiOsPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
-                        Allocations, Size);
+        AcpiOsPrintf ("Outstanding: %ld allocations after execution\n",
+                        Allocations);
     }
 #endif
 
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Execution of %s failed with status %s\n", 
-            Info.Pathname, AcpiUtFormatException (Status));
+            Info.Pathname, AcpiFormatException (Status));
     }
 
     else
@@ -429,7 +451,7 @@ AcpiDbCreateExecutionThreads (
     Status = AcpiOsCreateSemaphore (1, 0, &ThreadGate);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not create semaphore, %s\n", AcpiUtFormatException (Status));
+        AcpiOsPrintf ("Could not create semaphore, %s\n", AcpiFormatException (Status));
         return;
     }
 
