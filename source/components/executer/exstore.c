@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -315,7 +315,7 @@ AcpiAmlExecStore (
  * FUNCTION:    AcpiAmlStoreObjectToIndex
  *
  * PARAMETERS:  *ValDesc            - Value to be stored
- *              *Node           - Named object to recieve the value
+ *              *Node               - Named object to receive the value
  *
  * RETURN:      Status
  *
