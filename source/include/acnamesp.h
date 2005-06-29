@@ -203,6 +203,11 @@ NsDumpPathname (
     UINT32              Level, 
     UINT32              Component);
 
+void
+NsDumpRootDevices (
+    void);
+
+
 
 /*
  * Namespace evaluation functions - nseval
