@@ -9,6 +9,14 @@
 
 extern const char * const       yytname[];
 
+char *
+TgGetOpName (
+    UINT32              ParseOpcode)
+{
+    return (char *) yytname [ParseOpcode - 255];
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    
@@ -81,11 +89,15 @@ TgAddNode (
  ******************************************************************************/
 
 char *
-TgUpdateNode (
+_TgUpdateNode (
     UINT32                  ParseOpcode,
     ASL_PARSE_NODE          *Node)
 {
 
+
+    DbgPrint ("\nUpdateNode: Old - %s, New - %s\n\n",
+                TgGetOpName (Node->ParseOpcode),
+                TgGetOpName (ParseOpcode));
 
     Node->ParseOpcode = ParseOpcode;
     return (char *) Node;
@@ -123,7 +135,8 @@ TgCreateNode (
 
     Node = TgAllocateNode (ParseOpcode);
 
-    DbgPrint ("\nCreateNode  NewNode %p  Opcode %X  ", Node, ParseOpcode);
+    DbgPrint ("\nCreateNode  NewParent %p Child %d Op %s  ", 
+                Node, NumChildren, TgGetOpName(ParseOpcode));
     RootNode = Node;
 
 
@@ -231,31 +244,14 @@ TgCreateLeafNode (
 
     Node = TgAllocateNode (ParseOpcode);
 
-    DbgPrint ("\nCreateLeafNode  NewNode %p  Opcode %X  Value %X  ", Node, ParseOpcode, Value);
-    Node->Value = Value;
+    DbgPrint ("\nCreateLeafNode  NewNode %p  Op %s  Value %X  ", 
+                Node, TgGetOpName(ParseOpcode), Value);
+    Node->Value.Pointer = Value;
 
     switch (ParseOpcode)
     {
     case STRING_LITERAL:
         DbgPrint ("STRING->%s", Value);
-        break;
-
-    case INTEGER:
-        DbgPrint ("INTEGER->0x%X", Value);
-        break;
-
-    case BYTECONST:
-        DbgPrint ("BYTECONST->0x%02.2X", Value);
-        Node->Value = (void *) (((UINT32) Value) & 0xFF);
-        break;
-
-    case WORDCONST:
-        DbgPrint ("WORDCONST->0x%04.4X", Value);
-        Node->Value = (void *) (((UINT32) Value) & 0xFFFF);
-        break;
-
-    case DWORDCONST:
-        DbgPrint ("DWORDCONST->0x%08.8X", Value);
         break;
 
     case NAMESEG:
@@ -266,88 +262,12 @@ TgCreateLeafNode (
         DbgPrint ("NAMESTRING->%s", Value);
         break;
 
-    case ZERO:
-        DbgPrint ("ZERO Op");
-        break;
-
-    case ONE:
-        DbgPrint ("ONE Op");
-        break;
-
-    case ONES:
-        DbgPrint ("ONES Op");
-        break;
-
-    case DEBUG:
-        DbgPrint ("DEBUG Op");
-        break;
-
-    case ARG0:
-        DbgPrint ("ARG0 Op");
-        break;
-
-    case ARG1:
-        DbgPrint ("ARG1 Op");
-        break;
-
-    case ARG2:
-        DbgPrint ("ARG2 Op");
-        break;
-
-    case ARG3:
-        DbgPrint ("ARG3 Op");
-        break;
-
-    case ARG4:
-        DbgPrint ("ARG4 Op");
-        break;
-
-    case ARG5:
-        DbgPrint ("ARG5 Op");
-        break;
-
-    case ARG6:
-        DbgPrint ("ARG6 Op");
-        break;
-
-    case LOCAL0:
-        DbgPrint ("LOCAL0 Op");
-        break;
-
-    case LOCAL1:
-        DbgPrint ("LOCAL1 Op");
-        break;
-
-    case LOCAL2:
-        DbgPrint ("LOCAL2 Op");
-        break;
-
-    case LOCAL3:
-        DbgPrint ("LOCAL3 Op");
-        break;
-
-    case LOCAL4:
-        DbgPrint ("LOCAL4 Op");
-        break;
-
-    case LOCAL5:
-        DbgPrint ("LOCAL5 Op");
-        break;
-
-    case LOCAL6:
-        DbgPrint ("LOCAL6 Op");
-        break;
-
-    case LOCAL7:
-        DbgPrint ("LOCAL7 Op");
-        break;
-
     case EISAID:
         DbgPrint ("EISAID->%s", Value);
         break;
 
     default: 
-        DbgPrint ("UNKNOWN type");
+        break;
     }
 
     DbgPrint ("\n\n");
@@ -374,8 +294,11 @@ _TgLinkPeerNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2)
 {
+    ASL_PARSE_NODE          *Next;
 
-    DbgPrint ("LinkPeerNode: 1=%p, 2=%p\n", Node1, Node2);
+    DbgPrint ("\nLinkPeerNode: 1=%p (%s), 2=%p (%s)\n\n", 
+        Node1, Node1 ? TgGetOpName(Node1->ParseOpcode) : NULL, 
+        Node2, Node2 ? TgGetOpName(Node2->ParseOpcode) : NULL);
 
     if (!Node1 || !Node2)
     {
@@ -383,7 +306,21 @@ _TgLinkPeerNode (
     }
 
     Node1->Parent = Node2->Parent;
-    Node1->Peer = Node2;
+
+    
+    /* 
+     * Node 1 may already have a peer list (such as an IF/ELSE pair),
+     * so we must walk to the end of the list and attach the new
+     * peer at the end
+     */
+
+    Next = Node1;
+    while (Next->Peer)
+    {
+        Next = Next->Peer;
+    }
+     
+    Next->Peer = Node2;
 
     return Node1;
 
@@ -396,8 +333,12 @@ _TgLinkChildNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2)
 {
+    ASL_PARSE_NODE          *Next;
 
-    DbgPrint ("LinkChildNode: Parent=%p, Child=%p\n", Node1, Node2);
+
+    DbgPrint ("\nLinkChildNode: Parent=%p (%s), Child=%p (%s)\n\n", 
+        Node1, Node1 ? TgGetOpName(Node1->ParseOpcode): NULL,
+        Node2, Node2 ? TgGetOpName(Node2->ParseOpcode): NULL);
 
     if (!Node1 || !Node2)
     {
@@ -405,7 +346,15 @@ _TgLinkChildNode (
     }
 
     Node1->Child = Node2;
-    Node2->Parent = Node1;
+
+    /* Set the child and all peers of the child to point to the parent */
+
+    Next = Node2;
+    while (Next)
+    {
+        Next->Parent = Node1;
+        Next = Next->Peer;
+    }
 
     return Node1;
 
