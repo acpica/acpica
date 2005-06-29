@@ -570,15 +570,12 @@ AcpiEvDisassociateRegionFromHandler(
             HandlerObj->AddrHandler.Context = RegionContext;
 
             /*
-             *  Init routine may fail
+             *  Init routine may fail, Just ignore errors 
              */
             if (ACPI_FAILURE (Status))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("EvDisassociateRegionFromHandler: %s from region init, SpaceID %d\n",
                                 AcpiCmFormatException (Status), RegionObj->Region.SpaceId));
-                /*
-                 *  Just ignore failures for now
-                 */
             }
 
             /*
