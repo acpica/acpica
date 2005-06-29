@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -269,6 +269,14 @@ AcpiAmlPrepCommonFieldObject (
     /* Access granularity based fields */
 
     ObjDesc->CommonField.Granularity      = (UINT8) Granularity;
+
+    if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
+    {
+        /* Buffer field access can be on any byte boundary */
+
+        Granularity = 8;
+    }
+
     ObjDesc->CommonField.BitOffset        = (UINT8) (FieldPosition % Granularity);
     ObjDesc->CommonField.Offset           = (UINT32) FieldPosition / Granularity;
 
