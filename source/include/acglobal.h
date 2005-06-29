@@ -196,8 +196,8 @@ extern PREDEFINED_NAMES         PreDefinedNames [NUM_PREDEFINED_NAMES];
 
 
 ACPI_EXTERN INT32               NamedObjectErr;     /* indicate if inc_error should be called */
-ACPI_EXTERN nte                 RootObjStruct;
-ACPI_EXTERN nte                 *RootObject;
+ACPI_EXTERN NAME_TABLE_ENTRY    RootObjStruct;
+ACPI_EXTERN NAME_TABLE_ENTRY    *RootObject;
 
 
 
