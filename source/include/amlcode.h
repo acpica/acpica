@@ -316,18 +316,31 @@ typedef enum
 #define METHOD_SYNCHRONIZED     8
 
 
-#ifndef DEFINE_AML_GLOBALS
-extern UINT8        Aml[256];
-extern UINT16       Pfx[256];
-extern char         *ShortOps[256];
-extern char         *LongOps[256];
-extern char         *RegionTypes[5];
-extern char         *MatchOps[];
-extern char         *AccessTypes[];
-extern char         *UpdateRules[];
+/* Array sizes.  Used for range checking also */
+
+#define NUM_REGION_TYPES        5
+#define NUM_ACCESS_TYPES        7
+#define NUM_UPDATE_RULES        3
+#define NUM_MATCH_OPS           7
+#define NUM_OPCODES             256
+
+/* External declarations of the AML tables */
+
+extern UINT8                    Aml             [NUM_OPCODES];
+extern UINT16                   Pfx             [NUM_OPCODES];
+extern char                     *ShortOps       [NUM_OPCODES];
+extern char                     *LongOps        [NUM_OPCODES];
+extern char                     *RegionTypes    [NUM_REGION_TYPES];
+extern char                     *MatchOps       [NUM_MATCH_OPS];
+extern char                     *AccessTypes    [NUM_ACCESS_TYPES];
+extern char                     *UpdateRules    [NUM_UPDATE_RULES];
 
 
-#else
+/*
+ * AML tables
+ */
+
+#ifdef DEFINE_AML_GLOBALS
 
 /* Data used in keeping track of fields */
 
@@ -351,8 +364,9 @@ char *RegionTypes[5] =
 };
 
 
-char *MatchOps[] = 
-{   "Error", 
+char *MatchOps[NUM_MATCH_OPS] = 
+{   
+    "Error", 
     "MTR", 
     "MEQ", 
     "MLE", 
@@ -364,7 +378,7 @@ char *MatchOps[] =
 
 /* Access type decoding */
 
-char *AccessTypes[] = 
+char *AccessTypes[NUM_ACCESS_TYPES] = 
 {   
     "AnyAcc",
     "ByteAcc",
@@ -378,7 +392,7 @@ char *AccessTypes[] =
 
 /* Update rule decoding */
 
-char *UpdateRules[] = 
+char *UpdateRules[NUM_UPDATE_RULES] = 
 {   
     "Preserve",
     "WriteAsOnes",
@@ -389,7 +403,7 @@ char *UpdateRules[] =
 
 /* primary decoder */
 
-UINT8 Aml[256] = 
+UINT8 Aml[NUM_OPCODES] = 
 {
 /*          x0                      x1                      x2                      x3          */
 /*          x4                      x5                      x6                      x7          */
@@ -465,7 +479,7 @@ UINT8 Aml[256] =
 
 /* prefixed decoder */
 
-UINT16 Pfx[256] = 
+UINT16 Pfx[NUM_OPCODES] = 
 {
 /*          x0                      x1                      x2                      x3          */
 /*          x4                      x5                      x6                      x7          */
@@ -541,7 +555,7 @@ UINT16 Pfx[256] =
 
 /* primary op names */
 
-char *ShortOps[256] = 
+char *ShortOps[NUM_OPCODES] = 
 {
 /*          x0                  x1                  x2                  x3          */
 /*          x4                  x5                  x6                  x7          */
@@ -617,7 +631,7 @@ char *ShortOps[256] =
 
 /* prefixed op names */
 
-char *LongOps[256] = 
+char *LongOps[NUM_OPCODES] = 
 {
 /*          x0                  x1                  x2                  x3          */
 /*          x4                  x5                  x6                  x7          */
