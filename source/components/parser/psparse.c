@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -765,10 +765,14 @@ AcpiPsParseLoop (
                 /* The opcode is unrecognized.  Just skip unknown opcodes */
 
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("ParseLoop: Found unknown opcode 0x%lX at offset 0x%X, ignoring\n",
-                    Opcode, ParserState->Aml));
+                    ("ParseLoop: Found unknown opcode 0x%lX at AML offset 0x%X, ignoring\n",
+                    Opcode, AmlOffset));
 
-                ParserState->Aml += AcpiPsGetOpcodeSize (Opcode);
+                DUMP_BUFFER (ParserState->Aml, 128);
+
+                /* Assume one-byte bad opcode */
+
+                ParserState->Aml++;
                 continue;
             }
 
