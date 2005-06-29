@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -197,9 +197,9 @@ AcpiAmlSystemMemorySpaceHandler (
      *    2) Address beyond the current mapping?
      */
 
-    if ((Address < (ACPI_INTEGER) MemInfo->MappedPhysicalAddress) ||
+    if ((Address < MemInfo->MappedPhysicalAddress) ||
         ((Address + Length) >
-            (ACPI_INTEGER) (MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))
+            (MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))
     {
         /*
          * The request cannot be resolved by the current memory mapping;
@@ -227,7 +227,7 @@ AcpiAmlSystemMemorySpaceHandler (
 
         /* TBD: should these pointers go to 64-bit in all cases ? */
 
-        MemInfo->MappedPhysicalAddress = (UINT8 *) (UINT32) Address;
+        MemInfo->MappedPhysicalAddress = Address;
         MemInfo->MappedLength = SYSMEM_REGION_WINDOW_SIZE;
     }
 
