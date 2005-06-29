@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.11 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -203,7 +203,7 @@ AcpiNsInitializeObjects (
 
 ACPI_STATUS
 AcpiNsInitializeDevices (
-    UINT32                  Flags)
+    void)
 {
     ACPI_STATUS             Status;
     ACPI_DEVICE_WALK_INFO   Info;
@@ -212,7 +212,6 @@ AcpiNsInitializeDevices (
     FUNCTION_TRACE ("NsInitializeDevices");
 
 
-    Info.Flags = Flags;
     Info.DeviceCount = 0;
     Info.Num_STA = 0;
     Info.Num_INI = 0;
