@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -215,7 +215,7 @@ AcpiEvQueueNotifyRequest (
     }
     else
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Notify value: 0x2.2X **Device Specific**\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Notify value: 0x%2.2X **Device Specific**\n",
                 NotifyValue));
     }
 
