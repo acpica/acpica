@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.30 $
+ *              $Revision: 1.38 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -127,7 +127,7 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbxface")
 
 
@@ -154,6 +154,7 @@ AcpiDbSingleStep (
     ACPI_PARSE_OBJECT       *Next;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  OriginalDebugLevel;
+    ACPI_PARSE_OBJECT       *DisplayOp;
 
 
     /* Is there a breakpoint set? */
@@ -166,7 +167,7 @@ AcpiDbSingleStep (
         {
             /* Hit the breakpoint, resume single step, reset breakpoint */
 
-            AcpiOsPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
+            AcpiOsPrintf ("***Break*** at AML offset %X\n", Op->AmlOffset);
             AcpiGbl_CmSingleStep = TRUE;
             AcpiGbl_StepToNextCall = FALSE;
             WalkState->MethodBreakpoint = 0;
@@ -179,7 +180,7 @@ AcpiDbSingleStep (
      * namely, opcodes that have arguments
      */
 
-    if (Op->Opcode == AML_NAMEDFIELD_OP)
+    if (Op->Opcode == AML_INT_NAMEDFIELD_OP)
     {
         return (AE_OK);
     }
@@ -198,7 +199,7 @@ AcpiDbSingleStep (
     case OPTYPE_NAMED_OBJECT:
         switch (Op->Opcode)
         {
-        case AML_NAMEPATH_OP:
+        case AML_INT_NAMEPATH_OP:
             return (AE_OK);
             break;
         }
@@ -211,10 +212,10 @@ AcpiDbSingleStep (
 
     if ((OutputToFile)                      ||
         (AcpiGbl_CmSingleStep)              ||
-        (AcpiDbgLevel & TRACE_PARSE))
+        (AcpiDbgLevel & ACPI_LV_PARSE))
     {
         if ((OutputToFile)                  ||
-            (AcpiDbgLevel & TRACE_PARSE))
+            (AcpiDbgLevel & ACPI_LV_PARSE))
         {
             AcpiOsPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
         }
@@ -226,13 +227,24 @@ AcpiDbSingleStep (
          */
 
         OriginalDebugLevel = AcpiDbgLevel;
-        AcpiDbgLevel &= ~(TRACE_PARSE | TRACE_FUNCTIONS);
+        AcpiDbgLevel &= ~(ACPI_LV_PARSE | ACPI_LV_FUNCTIONS);
         Next = Op->Next;
         Op->Next = NULL;
 
+
+        DisplayOp = Op;
+        if (Op->Parent)
+        {
+            if ((Op->Parent->Opcode == AML_IF_OP) ||
+                (Op->Parent->Opcode == AML_WHILE_OP))
+            {
+                DisplayOp = Op->Parent;
+            }
+        }
+
         /* Now we can display it */
 
-        AcpiDbDisplayOp (Op, ACPI_UINT32_MAX);
+        AcpiDbDisplayOp (WalkState, DisplayOp, ACPI_UINT32_MAX);
 
         if ((Op->Opcode == AML_IF_OP) ||
             (Op->Opcode == AML_WHILE_OP))
@@ -276,7 +288,7 @@ AcpiDbSingleStep (
 
     if (AcpiGbl_StepToNextCall)
     {
-        if (Op->Opcode != AML_METHODCALL_OP)
+        if (Op->Opcode != AML_INT_METHODCALL_OP)
         {
             /* Not a method call, just keep executing */
 
@@ -294,7 +306,7 @@ AcpiDbSingleStep (
      * by default.
      */
 
-    if (Op->Opcode == AML_METHODCALL_OP)
+    if (Op->Opcode == AML_INT_METHODCALL_OP)
     {
         AcpiGbl_CmSingleStep = FALSE;  /* No more single step while executing called method */
 
@@ -302,13 +314,13 @@ AcpiDbSingleStep (
 
         /* TBD: [Future] don't kill the user breakpoint! */
 
-        WalkState->MethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
+        WalkState->MethodBreakpoint = /* Op->AmlOffset + */ 1;  /* Must be non-zero! */
     }
 
 
     /* TBD: [Investigate] what are the namespace locking issues here */
 
-    /* AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE); */
+    /* AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE); */
 
     /* Go into the command loop and await next user command */
 
@@ -320,8 +332,8 @@ AcpiDbSingleStep (
         {
             /* Handshake with the front-end that gets user command lines */
 
-            AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
-            AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+            AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+            AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
         }
 
         else
@@ -351,7 +363,7 @@ AcpiDbSingleStep (
         Status = AcpiDbCommandDispatch (LineBuf, WalkState, Op);
     }
 
-    /* AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE); */
+    /* AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE); */
 
 
     /* User commands complete, continue execution of the interrupted method */
@@ -397,8 +409,8 @@ AcpiDbInitialize (void)
     {
         /* These were created with one unit, grab it */
 
-        AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
-        AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+        AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+        AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
 
         /* Create the debug execution thread to execute commands */
 
