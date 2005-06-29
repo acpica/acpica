@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.67 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,12 +118,14 @@
 #define __DSWSTATE_C__
 
 #include "acpi.h"
+#include "amlcode.h"
 #include "acparser.h"
 #include "acdispat.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 
 #define _COMPONENT          ACPI_DISPATCHER
-        ACPI_MODULE_NAME    ("dswstate")
+        MODULE_NAME         ("dswstate")
 
 
 /*******************************************************************************
@@ -148,7 +150,7 @@ AcpiDsResultInsert (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_NAME ("DsResultInsert");
+    PROC_NAME ("DsResultInsert");
 
 
     State = WalkState->Results;
@@ -180,7 +182,7 @@ AcpiDsResultInsert (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
         "Obj=%p [%s] State=%p Num=%X Cur=%X\n",
-        Object, Object ? AcpiUtGetObjectTypeName ((ACPI_OPERAND_OBJECT *) Object) : "NULL",
+        Object, Object ? AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *) Object)->Common.Type) : "NULL",
         WalkState, State->Results.NumResults, WalkState->CurrentResult));
 
     return (AE_OK);
@@ -210,7 +212,7 @@ AcpiDsResultRemove (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_NAME ("DsResultRemove");
+    PROC_NAME ("DsResultRemove");
 
 
     State = WalkState->Results;
@@ -221,12 +223,13 @@ AcpiDsResultRemove (
         return (AE_NOT_EXIST);
     }
 
-    if (Index >= OBJ_MAX_OPERAND)
+    if (Index >= OBJ_NUM_OPERANDS)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Index out of range: %X State=%p Num=%X\n",
             Index, WalkState, State->Results.NumResults));
     }
+
 
     /* Check for a valid result object */
 
@@ -247,7 +250,7 @@ AcpiDsResultRemove (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
         "Obj=%p [%s] Index=%X State=%p Num=%X\n",
-        *Object, (*Object) ? AcpiUtGetObjectTypeName (*Object) : "NULL",
+        *Object, (*Object) ? AcpiUtGetTypeName ((*Object)->Common.Type) : "NULL",
         Index, WalkState, State->Results.NumResults));
 
     return (AE_OK);
@@ -277,7 +280,7 @@ AcpiDsResultPop (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_NAME ("DsResultPop");
+    PROC_NAME ("DsResultPop");
 
 
     State = WalkState->Results;
@@ -307,7 +310,7 @@ AcpiDsResultPop (
             State->Results.ObjDesc [Index -1] = NULL;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s] Index=%X State=%p Num=%X\n",
-                *Object, (*Object) ? AcpiUtGetObjectTypeName (*Object) : "NULL",
+                *Object, (*Object) ? AcpiUtGetTypeName ((*Object)->Common.Type) : "NULL",
                 Index -1, WalkState, State->Results.NumResults));
 
             return (AE_OK);
@@ -337,11 +340,11 @@ AcpiDsResultPopFromBottom (
     ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState)
 {
-    NATIVE_UINT             Index;
+    UINT32                  Index;
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_NAME ("DsResultPopFromBottom");
+    PROC_NAME ("DsResultPopFromBottom");
 
 
     State = WalkState->Results;
@@ -351,6 +354,7 @@ AcpiDsResultPopFromBottom (
             "Warning: No result object pushed! State=%p\n", WalkState));
         return (AE_NOT_EXIST);
     }
+
 
     if (!State->Results.NumResults)
     {
@@ -376,12 +380,12 @@ AcpiDsResultPopFromBottom (
     if (!*Object)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null operand! State=%p #Ops=%X, Index=%X\n",
-            WalkState, State->Results.NumResults, (UINT32) Index));
+            WalkState, State->Results.NumResults, Index));
         return (AE_AML_NO_RETURN_VALUE);
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s], Results=%p State=%p\n",
-        *Object, (*Object) ? AcpiUtGetObjectTypeName (*Object) : "NULL",
+        *Object, (*Object) ? AcpiUtGetTypeName ((*Object)->Common.Type) : "NULL",
         State, WalkState));
 
 
@@ -410,7 +414,7 @@ AcpiDsResultPush (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_NAME ("DsResultPush");
+    PROC_NAME ("DsResultPush");
 
 
     State = WalkState->Results;
@@ -435,11 +439,12 @@ AcpiDsResultPush (
         return (AE_BAD_PARAMETER);
     }
 
+
     State->Results.ObjDesc [State->Results.NumResults] = Object;
     State->Results.NumResults++;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s] State=%p Num=%X Cur=%X\n",
-        Object, Object ? AcpiUtGetObjectTypeName ((ACPI_OPERAND_OBJECT *) Object) : "NULL",
+        Object, Object ? AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *) Object)->Common.Type) : "NULL",
         WalkState, State->Results.NumResults, WalkState->CurrentResult));
 
     return (AE_OK);
@@ -465,7 +470,7 @@ AcpiDsResultStackPush (
 {
     ACPI_GENERIC_STATE      *State;
 
-    ACPI_FUNCTION_NAME ("DsResultStackPush");
+    PROC_NAME ("DsResultStackPush");
 
 
     State = AcpiUtCreateGenericState ();
@@ -502,7 +507,7 @@ AcpiDsResultStackPop (
 {
     ACPI_GENERIC_STATE      *State;
 
-    ACPI_FUNCTION_NAME ("DsResultStackPop");
+    PROC_NAME ("DsResultStackPop");
 
 
     /* Check for stack underflow */
@@ -547,7 +552,7 @@ AcpiDsObjStackDeleteAll (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsObjStackDeleteAll", WalkState);
+    FUNCTION_TRACE_PTR ("DsObjStackDeleteAll", WalkState);
 
 
     /* The stack size is configurable, but fixed */
@@ -583,7 +588,7 @@ AcpiDsObjStackPush (
     void                    *Object,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_FUNCTION_NAME ("DsObjStackPush");
+    PROC_NAME ("DsObjStackPush");
 
 
     /* Check for stack overflow */
@@ -602,7 +607,7 @@ AcpiDsObjStackPush (
     WalkState->NumOperands++;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s] State=%p #Ops=%X\n",
-                    Object, AcpiUtGetObjectTypeName ((ACPI_OPERAND_OBJECT *) Object),
+                    Object, AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *) Object)->Common.Type),
                     WalkState, WalkState->NumOperands));
 
     return (AE_OK);
@@ -629,7 +634,7 @@ AcpiDsObjStackPopObject (
     ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_FUNCTION_NAME ("DsObjStackPopObject");
+    PROC_NAME ("DsObjStackPopObject");
 
 
     /* Check for stack underflow */
@@ -664,7 +669,7 @@ AcpiDsObjStackPopObject (
     WalkState->Operands [WalkState->NumOperands] = NULL;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s] State=%p #Ops=%X\n",
-                    *Object, AcpiUtGetObjectTypeName (*Object),
+                    *Object, AcpiUtGetTypeName ((*Object)->Common.Type),
                     WalkState, WalkState->NumOperands));
 
     return (AE_OK);
@@ -692,7 +697,7 @@ AcpiDsObjStackPop (
 {
     UINT32                  i;
 
-    ACPI_FUNCTION_NAME ("DsObjStackPop");
+    PROC_NAME ("DsObjStackPop");
 
 
     for (i = 0; i < PopCount; i++)
@@ -742,7 +747,7 @@ AcpiDsObjStackPopAndDelete (
     UINT32                  i;
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
-    ACPI_FUNCTION_NAME ("DsObjStackPopAndDelete");
+    PROC_NAME ("DsObjStackPopAndDelete");
 
 
     for (i = 0; i < PopCount; i++)
@@ -796,7 +801,7 @@ AcpiDsObjStackGetValue (
     ACPI_WALK_STATE         *WalkState)
 {
 
-    ACPI_FUNCTION_TRACE_PTR ("DsObjStackGetValue", WalkState);
+    FUNCTION_TRACE_PTR ("DsObjStackGetValue", WalkState);
 
 
     /* Can't do it if the stack is empty */
@@ -812,6 +817,7 @@ AcpiDsObjStackGetValue (
     {
         return_PTR (NULL);
     }
+
 
     return_PTR (WalkState->Operands[(NATIVE_UINT)(WalkState->NumOperands - 1) -
                     Index]);
@@ -836,7 +842,7 @@ AcpiDsGetCurrentWalkState (
     ACPI_THREAD_STATE       *Thread)
 
 {
-    ACPI_FUNCTION_NAME ("DsGetCurrentWalkState");
+    PROC_NAME ("DsGetCurrentWalkState");
 
 
     if (!Thread)
@@ -846,6 +852,7 @@ AcpiDsGetCurrentWalkState (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "DsGetCurrentWalkState, =%p\n",
         Thread->WalkStateList));
+
 
     return (Thread->WalkStateList);
 }
@@ -869,7 +876,7 @@ AcpiDsPushWalkState (
     ACPI_WALK_STATE         *WalkState,
     ACPI_THREAD_STATE       *Thread)
 {
-    ACPI_FUNCTION_TRACE ("DsPushWalkState");
+    FUNCTION_TRACE ("DsPushWalkState");
 
 
     WalkState->Next       = Thread->WalkStateList;
@@ -900,7 +907,7 @@ AcpiDsPopWalkState (
     ACPI_WALK_STATE         *WalkState;
 
 
-    ACPI_FUNCTION_TRACE ("DsPopWalkState");
+    FUNCTION_TRACE ("DsPopWalkState");
 
 
     WalkState = Thread->WalkStateList;
@@ -931,7 +938,7 @@ AcpiDsPopWalkState (
  *
  * RETURN:      Pointer to the new walk state.
  *
- * DESCRIPTION: Allocate and initialize a new walk state.  The current walk
+ * DESCRIPTION: Allocate and initialize a new walk state.  The current walk 
  *              state is set to this new state.
  *
  ******************************************************************************/
@@ -947,7 +954,7 @@ AcpiDsCreateWalkState (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("DsCreateWalkState");
+    FUNCTION_TRACE ("DsCreateWalkState");
 
 
     WalkState = AcpiUtAcquireFromCache (ACPI_MEM_LIST_WALK);
@@ -964,7 +971,7 @@ AcpiDsCreateWalkState (
 
     /* Init the method args/local */
 
-#if (!defined (ACPI_NO_METHOD_EXECUTION) && !defined (ACPI_CONSTANT_EVAL_ONLY))
+#ifndef _ACPI_ASL_COMPILER
     AcpiDsMethodDataInit (WalkState);
 #endif
 
@@ -987,6 +994,7 @@ AcpiDsCreateWalkState (
 }
 
 
+#ifndef _ACPI_ASL_COMPILER
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsInitAmlWalk
@@ -1014,7 +1022,7 @@ AcpiDsInitAmlWalk (
     ACPI_PARSE_STATE        *ParserState = &WalkState->ParserState;
 
 
-    ACPI_FUNCTION_TRACE ("DsInitAmlWalk");
+    FUNCTION_TRACE ("DsInitAmlWalk");
 
 
     WalkState->ParserState.Aml      =
@@ -1037,9 +1045,10 @@ AcpiDsInitAmlWalk (
     if (MethodNode)
     {
         WalkState->ParserState.StartNode    = MethodNode;
-        WalkState->WalkType                 = ACPI_WALK_METHOD;
+        WalkState->WalkType                 = WALK_METHOD;
         WalkState->MethodNode               = MethodNode;
         WalkState->MethodDesc               = AcpiNsGetAttachedObject (MethodNode);
+
 
         /* Push start scope on scope stack and make it current  */
 
@@ -1051,17 +1060,14 @@ AcpiDsInitAmlWalk (
 
         /* Init the method arguments */
 
-        Status = AcpiDsMethodDataInitArgs (Params, MTH_NUM_ARGS, WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        AcpiDsMethodDataInitArgs (Params, MTH_NUM_ARGS, WalkState);
     }
+
     else
     {
         /* Setup the current scope */
 
-        ParserState->StartNode = ParserState->StartOp->Common.Node;
+        ParserState->StartNode = ParserState->StartOp->Node;
         if (ParserState->StartNode)
         {
             /* Push start scope on scope stack and make it current  */
@@ -1075,9 +1081,11 @@ AcpiDsInitAmlWalk (
         }
     }
 
-    Status = AcpiDsInitCallbacks (WalkState, PassNumber);
-    return_ACPI_STATUS (Status);
+    AcpiDsInitCallbacks (WalkState, PassNumber);
+
+    return_ACPI_STATUS (AE_OK);
 }
+#endif
 
 
 /*******************************************************************************
@@ -1099,7 +1107,7 @@ AcpiDsDeleteWalkState (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsDeleteWalkState", WalkState);
+    FUNCTION_TRACE_PTR ("DsDeleteWalkState", WalkState);
 
 
     if (!WalkState)
@@ -1112,6 +1120,7 @@ AcpiDsDeleteWalkState (
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%p is not a valid walk state\n", WalkState));
         return;
     }
+
 
     if (WalkState->ParserState.Scope)
     {
@@ -1170,7 +1179,7 @@ void
 AcpiDsDeleteWalkStateCache (
     void)
 {
-    ACPI_FUNCTION_TRACE ("DsDeleteWalkStateCache");
+    FUNCTION_TRACE ("DsDeleteWalkStateCache");
 
 
     AcpiUtDeleteGenericCache (ACPI_MEM_LIST_WALK);

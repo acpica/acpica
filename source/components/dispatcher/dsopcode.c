@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -186,8 +186,6 @@ AcpiDsExecuteArguments (
         AcpiDsDeleteWalkState (WalkState);
         return_ACPI_STATUS (Status);
     }
-
-    /* TBD: No Walk flags?? */
 
     WalkState->ParseFlags = 0;
 
@@ -583,7 +581,7 @@ AcpiDsEvalBufferFieldOperands (
 
     default:
 
-        if ((SrcDesc->Common.Type > (UINT8) INTERNAL_TYPE_REFERENCE) || !AcpiUtValidObjectType (SrcDesc->Common.Type)) /* TBD: This line MUST be a single line until AcpiSrc can handle it (block deletion) */
+        if ((SrcDesc->Common.Type > (UINT8) INTERNAL_TYPE_REFERENCE) || !AcpiUtValidObjectType (SrcDesc->Common.Type)) /* This line MUST be a single line until AcpiSrc can handle it (block deletion) */
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Tried to create field in invalid object type %X\n",
@@ -794,8 +792,6 @@ AcpiDsExecBeginControlOp (
          */
         WalkState->ControlState->Control.AmlPredicateStart =
                     WalkState->ParserState.Aml - 1;
-                    /* TBD: can this be removed? */
-                    /*AcpiPsPkgLengthEncodingSize (GET8 (WalkState->ParserState->Aml));*/
         break;
 
     case AML_ELSE_OP:
