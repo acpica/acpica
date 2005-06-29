@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.6 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,7 @@
 
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
+#include "aslresource.h"
 #include "amlcode.h"
 
 
@@ -385,11 +386,11 @@ CgWriteTableHeader (
 
     /* Compiler ID */
 
-    strncpy (TableHeader.AslCompilerId, "iASL", 4);
+    strncpy (TableHeader.AslCompilerId, CompilerCreatorId, 4);
 
     /* Compiler version */
 
-    TableHeader.AslCompilerRevision = 0x22221111;
+    TableHeader.AslCompilerRevision = CompilerCreatorRevision;
 
 
     fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, Gbl_OutputAmlFile);
@@ -415,7 +416,7 @@ CgCloseTable (void)
     UINT8               FileByte;
 
 
-    TableHeader.Length = TableLength;
+    TableHeader.Length = Gbl_TableLength;
     TableHeader.Checksum = 0;
 
     /* Write the header at the start of the file */
@@ -458,6 +459,9 @@ void
 CgWriteNode (
     ASL_PARSE_NODE          *Node)
 {
+    ASL_RESOURCE_NODE       *Rnode;
+
+
 
     /* TEMP FIX: always check for DEFAULT_ARG */
 
@@ -466,20 +470,37 @@ CgWriteNode (
         return;
     }
 
-    if ((Node->AmlOpcode == AML_RAW_DATA_BYTE) ||
-        (Node->AmlOpcode == AML_RAW_DATA_WORD) ||
-        (Node->AmlOpcode == AML_RAW_DATA_DWORD) ||
-        (Node->AmlOpcode == AML_RAW_DATA_QWORD))
+
+
+    switch (Node->AmlOpcode)
     {
+    case AML_RAW_DATA_BYTE:
+    case AML_RAW_DATA_WORD:
+    case AML_RAW_DATA_DWORD:
+    case AML_RAW_DATA_QWORD:
+
         fwrite (&Node->Value.Integer, Node->AmlLength, 1, Gbl_OutputAmlFile);
+        return;
+
+
+    case AML_RAW_DATA_BUFFER:
+
+        fwrite (Node->Value.Pointer, Node->AmlLength, 1, Gbl_OutputAmlFile);
+        return;
+
+
+    case AML_RAW_DATA_CHAIN:
+        
+        Rnode = Node->Value.Pointer;
+        while (Rnode)
+        {
+            fwrite (Rnode->Buffer, Rnode->BufferLength, 1, Gbl_OutputAmlFile);
+            Rnode = Rnode->Next;
+        }
         return;
     }
 
-    if (Node->AmlOpcode == AML_RAW_DATA_BUFFER)
-    {
-        fwrite (Node->Value.Pointer, Node->AmlLength, 1, Gbl_OutputAmlFile);
-        return;
-    }
+
 
 
     switch (Node->ParseOpcode)
