@@ -266,7 +266,8 @@ CmAddElementToAllocList (
     Gbl_TailAllocPtr->AllocType = AllocType;
     Gbl_TailAllocPtr->Component = Component;
     Gbl_TailAllocPtr->Line      = Line;
-    STRCPY (Gbl_TailAllocPtr->Module, Module);
+
+    STRNCPY (Gbl_TailAllocPtr->Module, Module, sizeof (Gbl_TailAllocPtr->Module));
     
     CmReleaseMutex (MTX_MEMORY);
     return_VOID;
