@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -228,8 +228,8 @@ LdLoadFieldElements (
     {
         switch (Child->AmlOpcode)
         {
-        case AML_RESERVEDFIELD_OP:
-        case AML_ACCESSFIELD_OP:
+        case AML_INT_RESERVEDFIELD_OP:
+        case AML_INT_ACCESSFIELD_OP:
             break;
 
         default:
