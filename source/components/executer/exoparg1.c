@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -832,37 +832,70 @@ AcpiExOpcode_1A_0T_1R (
         break;
 
 
-    case AML_DEREF_OF_OP:           /* DerefOf (ObjReference) */
+    case AML_DEREF_OF_OP:           /* DerefOf (ObjReference | String) */
 
-        /* Check for a method local or argument */
+        /* Check for a method local or argument, or standalone String */
 
         if (ACPI_GET_DESCRIPTOR_TYPE (Operand[0]) != ACPI_DESC_TYPE_NAMED)
         {
-            /*
-             * Must resolve/dereference the local/arg reference first
-             */
-            switch (Operand[0]->Reference.Opcode)
+            switch (ACPI_GET_OBJECT_TYPE (Operand[0]))
             {
-            case AML_LOCAL_OP:
-            case AML_ARG_OP:
-
-                /* Set Operand[0] to the value of the local/arg */
-
-                AcpiDsMethodDataGetValue (Operand[0]->Reference.Opcode,
-                        Operand[0]->Reference.Offset, WalkState, &TempDesc);
-
+            case INTERNAL_TYPE_REFERENCE:
                 /*
-                 * Delete our reference to the input object and
-                 * point to the object just retrieved
+                 * This is a DerefOf (LocalX | ArgX)
+                 *
+                 * Must resolve/dereference the local/arg reference first
                  */
-                AcpiUtRemoveReference (Operand[0]);
-                Operand[0] = TempDesc;
+                switch (Operand[0]->Reference.Opcode)
+                {
+                case AML_LOCAL_OP:
+                case AML_ARG_OP:
+
+                    /* Set Operand[0] to the value of the local/arg */
+
+                    AcpiDsMethodDataGetValue (Operand[0]->Reference.Opcode,
+                            Operand[0]->Reference.Offset, WalkState, &TempDesc);
+
+                    /*
+                     * Delete our reference to the input object and
+                     * point to the object just retrieved
+                     */
+                    AcpiUtRemoveReference (Operand[0]);
+                    Operand[0] = TempDesc;
+                    break;
+
+                default:
+
+                    /* Must be an Index op - handled below */
+                    break;
+                }
                 break;
+
+
+            case ACPI_TYPE_STRING:
+    
+                /*
+                 * This is a DerefOf (String).  The string is a reference to a named ACPI object.
+                 *
+                 * 1) Find the owning Node
+                 * 2) Dereference the node to an actual object.  Could be a Field, so we nee
+                 *    to resolve the node to a value.
+                 */
+                Status = AcpiNsGetNodeByPath (Operand[0]->String.Pointer, WalkState->ScopeInfo->Scope.Node, 
+                                NS_SEARCH_PARENT, (ACPI_NAMESPACE_NODE **) &ReturnDesc);
+                if (ACPI_FAILURE (Status))
+                {
+                    goto Cleanup;
+                }
+
+                Status = AcpiExResolveNodeToValue ((ACPI_NAMESPACE_NODE **) &ReturnDesc, WalkState);
+                goto Cleanup;
+
 
             default:
 
-                /* Must be an Index op - handled below */
-                break;
+                Status = AE_AML_OPERAND_TYPE;
+                goto Cleanup;
             }
         }
 
@@ -870,18 +903,17 @@ AcpiExOpcode_1A_0T_1R (
 
         if (ACPI_GET_DESCRIPTOR_TYPE (Operand[0]) == ACPI_DESC_TYPE_NAMED)
         {
-            /* Get the actual object from the Node (This is the dereference) */
-
+            /*
+             * This is a DerefOf (ObjectReference)
+             * Get the actual object from the Node (This is the dereference).
+             * -- This case may only happen when a LocalX or ArgX is dereferenced above.
+             */
             ReturnDesc = AcpiNsGetAttachedObject ((ACPI_NAMESPACE_NODE *) Operand[0]);
-
-            /* Returning a pointer to the object, add another reference! */
-
-            AcpiUtAddReference (ReturnDesc);
         }
         else
         {
             /*
-             * This must be a reference produced by either the Index() or 
+             * This must be a reference object produced by either the Index() or 
              * RefOf() operator
              */
             switch (Operand[0]->Reference.Opcode)
