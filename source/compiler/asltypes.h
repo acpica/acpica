@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -314,6 +314,8 @@ typedef enum
     ASL_MSG_PACKAGE_LENGTH,
     ASL_MSG_RETURN_TYPES,
     ASL_MSG_NOT_FOUND,
+    ASL_MSG_NOT_REACHABLE,
+    ASL_MSG_NOT_EXIST,
     ASL_MSG_NESTED_COMMENT,
     ASL_MSG_RESERVED_ARG_COUNT_HI,
     ASL_MSG_RESERVED_ARG_COUNT_LO,

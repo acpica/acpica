@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,9 @@
 #include "AslCompiler.y.h"
 #include "amlcode.h"
 #include "acnamesp.h"
+
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("asloperands")
 
 
 /*******************************************************************************

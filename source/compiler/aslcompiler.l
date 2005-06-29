@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -130,6 +130,8 @@ YYSTYPE AslCompilerlval;
  * -i: Scanner must be case-insensitive
  */
 
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslscan")
 void
 comment (void);
 void
@@ -479,10 +481,10 @@ NamePathTail                [.]{NameSeg}
 
 "*" |
 "/"                         { count (1);
-                                AslCompilererror ("parse error, expecting ASL keyword or name");}
+                                AslCompilererror ("Parse error, expecting ASL keyword or name");}
 
 .                           { count (1);
-                                AslCompilererror ("invalid character, expecting ASL keyword or name");}
+                                AslCompilererror ("Invalid character, expecting ASL keyword or name");}
 
 <<EOF>>                     { if (AslPopInputFileStack ())
                                 yyterminate();
@@ -613,7 +615,7 @@ AslPopInputFileStack (void)
 
     /* All done with this node */
 
-    free (Fnode);
+    AcpiCmFree (Fnode);
     return 0;
 }
 

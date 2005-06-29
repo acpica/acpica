@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,10 @@
 #include "AslCompiler.y.h"
 #include "aslresource.h"
 #include "amlcode.h"
+
+
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslresource")
 
 
 /*******************************************************************************

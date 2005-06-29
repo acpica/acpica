@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -122,6 +122,9 @@
 #include "amlcode.h"
 
 #include <ctype.h>
+
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslanalyze")
 
 
 /*******************************************************************************
@@ -880,7 +883,7 @@ AnMethodAnalysisWalkEnd (
          * and correct number of arguments
          */
         AnCheckForReservedMethod (Node, MethodInfo);
-        free (MethodInfo);
+        AcpiCmFree (MethodInfo);
 
         break;
 

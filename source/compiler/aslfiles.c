@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,9 @@
 
 #include "AslCompiler.h"
 
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslfiles")
+
 
 /*******************************************************************************
  *
@@ -178,11 +181,13 @@ FlOpenIncludeFile (
     }
 
 
-//    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
-//    {
-          fprintf (Gbl_SourceOutputFile, "\n");
-          Gbl_LogicalLineNumber++;
-//    }
+    /*
+     * Flush out the "include ()" statement on this line, start
+     * the actual include file on the next line
+     */
+    ResetCurrentLineBuffer ();
+    fprintf (Gbl_SourceOutputFile, "\n");
+    Gbl_CurrentLineOffset++;
 
     /* Prepend the directory pathname and open the include file */
 

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -129,6 +129,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "acpi.h"
+
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslparse")
 
 
 /*

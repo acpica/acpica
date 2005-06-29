@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,8 @@
 #include "AslCompiler.h"
 #include "acnamesp.h"
 
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslutils")
 
 extern const char * const       yytname[];
 
@@ -144,7 +146,7 @@ UtLocalCalloc (
     void                    *Allocated;
 
 
-    Allocated = calloc (Size, 1);
+    Allocated = AcpiCmCallocate (Size);
     if (!Allocated)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
@@ -390,7 +392,7 @@ UtCheckIntegerRange (
     {
         sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
         AslCompilererror (Buffer);
-        free (Node);
+        AcpiCmFree (Node);
         return NULL;
     }
 

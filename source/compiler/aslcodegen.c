@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,9 @@
 #include "aslresource.h"
 #include "amlcode.h"
 #include "acparser.h"
+
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslcodegen")
 
 
 /*******************************************************************************

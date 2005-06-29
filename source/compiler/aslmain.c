@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,10 @@
 
 #include "AslCompiler.h"
 
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslmain")
+
+
 
 UINT32                   Gbl_ExceptionCount[2] = {0,0};
 char                     hex[] = {'0','1','2','3','4','5','6','7',
@@ -194,8 +198,12 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "d:hilno:ps")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "a:d:hilno:ps")) != EOF) switch (j)
     {
+    case 'a':
+        AcpiDbgLevel = strtoul (optarg, NULL, 16);
+        break;
+
     case 'd':
         switch (optarg[0])
         {

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,9 @@
 #include "amlcode.h"
 
 #include "acnamesp.h"
+
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslopcodes")
 
 
 /*******************************************************************************
@@ -279,7 +282,7 @@ OpcDoUnicode (
         UnicodeString[i] = AsciiString[i];
     }
 
-    free (AsciiString);
+    AcpiCmFree (AsciiString);
 
     /*
      * Just set the buffer size node to be the buffer length, regardless

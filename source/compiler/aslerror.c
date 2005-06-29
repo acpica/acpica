@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,9 @@
 
 #include "AslCompiler.h"
 
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslerror")
+
 
 char                        *AslMessages [] = {
     NULL,
@@ -140,7 +143,9 @@ char                        *AslMessages [] = {
     "Effective AML buffer length is zero",
     "Effective AML package length is zero",
     "Mixed return types in method",
-    "Cannot find/access object",
+    "Object not found or not accessable from scope",
+    "Object not accessable from this scope",
+    "Object does not exist",
     "Nested comment found",
     "Reserved method has too many arguments",
     "Reserved method has too few arguments",

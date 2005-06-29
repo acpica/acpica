@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,9 @@
 #include "AslCompiler.y.h"
 #include "aslresource.h"
 #include "amlcode.h"
+
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslrestype2")
 
 
 /*******************************************************************************

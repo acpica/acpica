@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,10 @@
 #include "AslCompiler.h"
 #include "acnamesp.h"
 #include "acdebug.h"
+
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslcompile")
+
 
 #undef HIWORD
 #undef LOWORD
@@ -348,7 +352,6 @@ CmDoCompile (void)
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnMethodAnalysisWalkBegin,
                         AnMethodAnalysisWalkEnd, &AnalysisWalkInfo);
     ASL_END_EVENT (6);
-
 
     /* Namespace lookup */
 

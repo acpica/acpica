@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -114,7 +114,6 @@
  *
  *****************************************************************************/
 
-#define __DSWLOAD_C__
 
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
@@ -125,8 +124,8 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dswload")
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("asllookup")
 
 
 /*****************************************************************************
@@ -269,6 +268,77 @@ LsDisplayNamespace (void)
 
 /*****************************************************************************
  *
+ * FUNCTION:    LsCompareOneNamespaceObject
+ *
+ * PARAMETERS:  ACPI_WALK_CALLBACK
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compare name of one object.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+LsCompareOneNamespaceObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+
+
+    /* Simply check the name */
+
+    if (*((UINT32 *) (Context)) == Node->Name)
+    {
+        /* Abort walk if we found one instance */
+
+        return (AE_CTRL_TRUE);
+    }
+
+    return (AE_OK);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    LkObjectExists
+ *
+ * PARAMETERS:  Name            - 4 char ACPI name
+ *
+ * RETURN:      TRUE if name exists in namespace
+ *
+ * DESCRIPTION: Walk the namespace to find an object
+ *
+ ****************************************************************************/
+
+BOOLEAN
+LkObjectExists (
+    char                    *Name)
+{
+    ACPI_STATUS             Status;
+
+
+    /* Walk entire namespace from the supplied root */
+
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+                                ACPI_UINT32_MAX, FALSE, LsCompareOneNamespaceObject,
+                                Name, NULL);
+
+    if (Status == AE_CTRL_TRUE)
+    {
+        /* At least one instance of the name was found */
+
+        return (TRUE);
+    }
+
+    return (FALSE);
+}
+
+
+/*****************************************************************************
+ *
  * FUNCTION:    LkCrossReferenceNamespace
  *
  * PARAMETERS:  None
@@ -402,7 +472,46 @@ LkNamespaceLocateBegin (
     {
         if (Status == AE_NOT_FOUND)
         {
-            AslError (ASL_WARNING, ASL_MSG_NOT_FOUND, PsNode, PsNode->ExternalName);
+            /*
+             * We didn't find the name reference by path -- we can qualify this
+             * a little better before we print an error message 
+             */
+
+            if (strlen (Path) == ACPI_NAME_SIZE)
+            {
+                /* A simple, one-segment ACPI name */
+
+                if (LkObjectExists (Path))
+                {
+                    /* There exists such a name, but we couldn't get to it from this scope */
+
+                    AslError (ASL_WARNING, ASL_MSG_NOT_REACHABLE, PsNode, PsNode->ExternalName);
+                }
+                else
+                {
+                    /* The name doesn't exist, period */
+
+                    AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, PsNode, PsNode->ExternalName);
+                }
+            }
+
+            else
+            {
+                /* Check for a fully qualified path */
+
+                if (Path[0] == AML_ROOT_PREFIX)
+                {
+                    /* Gave full path, the object does not exist */
+
+                    AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, PsNode, PsNode->ExternalName);
+                }
+                else
+                {
+                    /* We can't tell whether it doesn't exist or just can't be reached. */
+
+                    AslError (ASL_WARNING, ASL_MSG_NOT_FOUND, PsNode, PsNode->ExternalName);
+                }
+            }
         }
         return (Status);
     }
@@ -417,7 +526,7 @@ LkNamespaceLocateBegin (
          * AML code generation
          */
 
-        free (PsNode->Value.String);
+        AcpiCmFree (PsNode->Value.String);
 
         PsNode->ParseOpcode     = INTEGER;
         PsNode->AmlOpcode       = AML_DWORD_OP;

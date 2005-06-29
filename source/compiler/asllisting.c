@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -122,6 +122,9 @@
 #include "amlcode.h"
 #include "acparser.h"
 
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslisting")
+
 
 /*******************************************************************************
  *
@@ -203,7 +206,7 @@ LsPopNode (void)
 
     Gbl_ListingNode = Lnode->Next;
 
-    free (Lnode);
+    AcpiCmFree (Lnode);
 
     /* New "Current" node is the new head */
 

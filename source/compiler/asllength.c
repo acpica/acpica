@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "acnamesp.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          COMPILER
         MODULE_NAME         ("asllength")
 
 

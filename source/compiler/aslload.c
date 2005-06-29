@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 #include "AslCompiler.y.h"
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          COMPILER
         MODULE_NAME         ("aslload")
 
 

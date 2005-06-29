@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,11 @@
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
 #include "amlcode.h"
+
+
+#define _COMPONENT          COMPILER
+        MODULE_NAME         ("aslmap")
+
 
 
 /*******************************************************************************
@@ -536,9 +541,6 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 
 };
 
-
-#define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("aslmap")
 
 
 #include "amlcode.h"
