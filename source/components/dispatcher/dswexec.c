@@ -327,6 +327,7 @@ DsExecEndOp (
     case OPTYPE_DYADIC2:
     case OPTYPE_DYADIC2R:
     case OPTYPE_DYADIC2S:
+    case OPTYPE_RECONFIGURATION:
     case OPTYPE_INDEX:
     case OPTYPE_MATCH:
     case OPTYPE_CREATE_FIELD:
@@ -347,7 +348,7 @@ DsExecEndOp (
 
             /* 1 Operand, 0 ExternalResult, 0 InternalResult */
 
-            Status = AmlExecMonadic1 (Opcode, &WalkState->Operands [OperandIndex]);
+            Status = AmlExecMonadic1 (Opcode, WalkState);
             break;
 
 
@@ -355,10 +356,10 @@ DsExecEndOp (
 
             /* 1 Operand, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecMonadic2 (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
+            Status = AmlExecMonadic2 (Opcode, WalkState, &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                DsResultStackPush (ResultObj, WalkState);
+                Status = DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -368,10 +369,10 @@ DsExecEndOp (
 
             /* 1 Operand, 1 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecMonadic2R (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
+            Status = AmlExecMonadic2R (Opcode, WalkState, &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                DsResultStackPush (ResultObj, WalkState);
+                Status = DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -381,7 +382,7 @@ DsExecEndOp (
 
             /* 2 Operands, 0 ExternalResult, 0 InternalResult */
 
-            Status = AmlExecDyadic1 (Opcode, &WalkState->Operands [OperandIndex]);
+            Status = AmlExecDyadic1 (Opcode, WalkState);
 
             break;
 
@@ -390,10 +391,10 @@ DsExecEndOp (
 
             /* 2 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecDyadic2 (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
+            Status = AmlExecDyadic2 (Opcode, WalkState, &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                DsResultStackPush (ResultObj, WalkState);
+                Status = DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -403,10 +404,14 @@ DsExecEndOp (
 
             /* 2 Operands, 1 or 2 ExternalResults, 1 InternalResult */
 
-            Status = AmlExecDyadic2R (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
+
+            /* NEW INTERFACE:
+             * Pass in WalkState, keep result obj  but let interpreter push the result */
+
+            Status = AmlExecDyadic2R (Opcode, WalkState, &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                DsResultStackPush (ResultObj, WalkState);
+                Status = DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -416,12 +421,20 @@ DsExecEndOp (
 
             /* 2 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecDyadic2S (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
+            Status = AmlExecDyadic2S (Opcode, WalkState, &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                DsResultStackPush (ResultObj, WalkState);
+                Status = DsResultStackPush (ResultObj, WalkState);
             }
 
+            break;
+
+
+        case OPTYPE_RECONFIGURATION:
+
+            /* 1 or 2 operands, 0 Internal Result */
+
+            Status = AmlExecReconfiguration (Opcode, WalkState);
             break;
 
 
@@ -429,8 +442,7 @@ DsExecEndOp (
 
             /* 3 or 4 Operands, 0 ExternalResult, 0 InternalResult */
 
-            Status = AmlExecCreateField (Opcode, &WalkState->Operands [OperandIndex]);
-
+            Status = AmlExecCreateField (Opcode, WalkState);
             break;
 
 
@@ -438,7 +450,7 @@ DsExecEndOp (
 
             /* 3 Operands, 0 ExternalResult, 0 InternalResult */
 
-            Status = AmlExecFatal (&WalkState->Operands [OperandIndex]);
+            Status = AmlExecFatal (WalkState);
             break;
 
 
@@ -446,10 +458,10 @@ DsExecEndOp (
 
             /* 3 Operands, 1 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecIndex (&WalkState->Operands [OperandIndex], &ResultObj);
+            Status = AmlExecIndex (WalkState, &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                DsResultStackPush (ResultObj, WalkState);
+                Status = DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -459,8 +471,11 @@ DsExecEndOp (
 
             /* 6 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecMatch (&WalkState->Operands [OperandIndex], &ResultObj);
-            DsResultStackPush (ResultObj, WalkState);
+            Status = AmlExecMatch (WalkState, &ResultObj);
+            if (ACPI_SUCCESS (Status))
+            {
+                Status = DsResultStackPush (ResultObj, WalkState);
+            }
 
             break;
         }
@@ -529,15 +544,6 @@ DsExecEndOp (
         /* Return now; we don't want to disturb anything, especially the operand count! */
 
         return_ACPI_STATUS (Status);
-        break;
-
-
-    case OPTYPE_RECONFIGURATION:
-
-        DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Unimplemented reconfig opcode=%X Op=%X\n",
-                        Op->Opcode, Op));
-
-        Status = AE_NOT_IMPLEMENTED;
         break;
 
 
@@ -628,7 +634,7 @@ DsExecEndOp (
                 goto Cleanup;
             }
 
-            Status = AmlGetRvalue (&WalkState->Operands [0]);
+            Status = AmlResolveToValue (&WalkState->Operands [0]);
             if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
@@ -677,10 +683,10 @@ DsExecEndOp (
 
         /* Delete the predicate result object (we know that we don't need it anymore) and cleanup the stack */
 
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ObjDesc);
         ResultObj = NULL;
 
-        DsObjStackPop (1, WalkState);
+        //DsObjStackPop (1, WalkState);
 
         WalkState->ControlState->Exec = CONTROL_NORMAL;
     }
