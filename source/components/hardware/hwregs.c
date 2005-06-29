@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  ******************************************************************************/
 
@@ -243,7 +243,7 @@ AcpiGetSleepTypeData (
                     NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_ERROR (("%s while evaluating SleepState [%s]\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s while evaluating SleepState [%s]\n",
             AcpiFormatException (Status), AcpiGbl_DbSleepStates[SleepState]));
 
         return_ACPI_STATUS (Status);
