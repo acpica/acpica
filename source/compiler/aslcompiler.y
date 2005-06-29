@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -657,6 +657,10 @@ AslLocalAllocate (unsigned int Size);
 %type <n> PackageList
 %type <n> PackageListTail
 %type <n> PackageElement
+/*
+%type <n> VarPackageTerm
+*/
+
 
 %type <n> EISAIDTerm
 %type <n> ResourceTemplateTerm
