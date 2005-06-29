@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace / OpRegion init
- *              $Revision: 1.24 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -149,16 +149,11 @@ AcpiEvSystemMemoryRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
-
-
     FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
 
 
     if (Function == ACPI_REGION_DEACTIVATE)
     {
-        RegionObj->Region.Flags &= ~(AOPOBJ_INITIALIZED);
-
         if (*RegionContext)
         {
             AcpiCmFree (*RegionContext);
@@ -175,10 +170,6 @@ AcpiEvSystemMemoryRegionSetup (
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
-
-    /* Init.  (Mapping fields are all set to zeros above) */
-
-    RegionObj->Region.Flags |= AOPOBJ_INITIALIZED;
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -206,19 +197,15 @@ AcpiEvIoSpaceRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
-
     FUNCTION_TRACE ("EvIoSpaceRegionSetup");
 
     if (Function == ACPI_REGION_DEACTIVATE)
     {
         *RegionContext = NULL;
-        RegionObj->Region.Flags &= ~(AOPOBJ_INITIALIZED);
     }
     else
     {
         *RegionContext = HandlerContext;
-        RegionObj->Region.Flags |= AOPOBJ_INITIALIZED;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -250,12 +237,12 @@ AcpiEvPciConfigRegionSetup (
     void                    **RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  Temp;
+    ACPI_INTEGER            Temp;
     PCI_HANDLER_CONTEXT     *PciContext = *RegionContext;
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
-
+    DEVICE_ID               ObjectHID;
 
     FUNCTION_TRACE ("EvPciConfigRegionSetup");
 
@@ -274,8 +261,6 @@ AcpiEvPciConfigRegionSetup (
 
     if (Function == ACPI_REGION_DEACTIVATE)
     {
-        RegionObj->Region.Flags &= ~(AOPOBJ_INITIALIZED);
-
         if (PciContext)
         {
             AcpiCmFree (PciContext);
@@ -320,7 +305,7 @@ AcpiEvPciConfigRegionSetup (
         /*
          *  Got it..
          */
-        PciContext->DevFunc = Temp;
+        PciContext->DevFunc = (UINT32) Temp;
     }
 
     /*
@@ -331,15 +316,48 @@ AcpiEvPciConfigRegionSetup (
      *  This is the device the handler has been registered to handle.
      */
 
-    Node = HandlerObj->AddrHandler.Node;
+    /*
+     *  If the AddrHandler.Node is still pointing to the root, we need
+     *  to scan upward for a PCI Root bridge and re-associate the OpRegion
+     *  handlers with that device.
+     */
+    if (HandlerObj->AddrHandler.Node == AcpiGbl_RootNode)
+    {
+        /*
+         * Node is currently the parent object
+         */
+        while (Node != AcpiGbl_RootNode)
+        {
+            Status = AcpiCmExecute_HID(Node, &ObjectHID);
+            
+            if (ACPI_SUCCESS (Status))
+            {
+                if (!(STRNCMP(ObjectHID.Buffer, PCI_ROOT_HID_STRING, 
+                                    sizeof (PCI_ROOT_HID_STRING))))
+                {
+                    AcpiInstallAddressSpaceHandler(Node,
+                                        ADDRESS_SPACE_PCI_CONFIG,
+                                        ACPI_DEFAULT_HANDLER, NULL, NULL);
+                    
+                    break;
+                }
+            }
 
+            Node = AcpiNsGetParentObject(Node);
+        }
+    }
+    else
+    {
+        Node = HandlerObj->AddrHandler.Node;
+    }
+    
     Status = AcpiCmEvaluateNumericObject (METHOD_NAME__SEG, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         /*
          *  Got it..
          */
-        PciContext->Seg = Temp;
+        PciContext->Seg = (UINT32) Temp;
     }
 
     Status = AcpiCmEvaluateNumericObject (METHOD_NAME__BBN, Node, &Temp);
@@ -348,13 +366,10 @@ AcpiEvPciConfigRegionSetup (
         /*
          *  Got it..
          */
-        PciContext->Bus = Temp;
+        PciContext->Bus = (UINT32) Temp;
     }
 
     *RegionContext = PciContext;
-
-
-    RegionObj->Region.Flags |= AOPOBJ_INITIALIZED;
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -382,20 +397,15 @@ AcpiEvDefaultRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
-
-
     FUNCTION_TRACE ("EvDefaultRegionSetup");
 
     if (Function == ACPI_REGION_DEACTIVATE)
     {
         *RegionContext = NULL;
-        RegionObj->Region.Flags &= ~(AOPOBJ_INITIALIZED);
     }
     else
     {
         *RegionContext = HandlerContext;
-        RegionObj->Region.Flags |= AOPOBJ_INITIALIZED;
     }
 
     return_ACPI_STATUS (AE_OK);
