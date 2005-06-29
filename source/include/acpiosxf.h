@@ -256,7 +256,7 @@ AcpiOsSleep (
     UINT32                  Milliseconds);
 
 void
-AcpiOsSleepUsec (
+AcpiOsStall (
     UINT32                  Microseconds);
 
 
