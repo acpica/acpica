@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Name: actbl32.h - ACPI tables specific to IA32
- *       $Revision: 1.12 $
+ * Name: actbl1.h - ACPI 1.0 tables
+ *       $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -114,22 +114,27 @@
  *
  *****************************************************************************/
 
-#ifndef __ACTBL32_H__
-#define __ACTBL32_H__
+#ifndef __ACTBL1_H__
+#define __ACTBL1_H__
 
+#pragma pack(1)
 
-/* IA32 Root System Description Table */
-
+/*************************************/
+/* ACPI Specification Rev 1.0 for    */
+/* the Root System Description Table */
+/*************************************/
 typedef struct
 {
     ACPI_TABLE_HEADER       header;                 /* Table header */
     UINT32                  TableOffsetEntry [1];   /* Array of pointers to other */
                                                     /* ACPI tables */
-} RSDT_DESCRIPTOR;
+} RSDT_DESCRIPTOR_REV1;
 
 
-/* IA32 Firmware ACPI Control Structure */
-
+/***************************************/
+/* ACPI Specification Rev 1.0 for      */
+/* the Firmware ACPI Control Structure */
+/***************************************/
 typedef struct
 {
     NATIVE_CHAR             Signature[4];           /* signature "FACS" */
@@ -141,32 +146,34 @@ typedef struct
     UINT32_BIT              Reserved1       : 31;   /* must be 0 */
     UINT8                   Resverved3 [40];        /* reserved - must be zero */
 
-} FACS_DESCRIPTOR;
+} FACS_DESCRIPTOR_REV1;
 
 
-/* IA32 Fixed ACPI Description Table */
-
+/************************************/
+/* ACPI Specification Rev 1.0 for   */
+/* the Fixed ACPI Description Table */
+/************************************/
 typedef struct
 {
-    ACPI_TABLE_HEADER       header;                 /* table header */
-    ACPI_TBLPTR             FirmwareCtrl;           /* Physical address of FACS */
-    ACPI_TBLPTR             Dsdt;                   /* Physical address of DSDT */
+    ACPI_TABLE_HEADER       Header;                 /* table header */
+    UINT32                  FirmwareCtrl;           /* Physical address of FACS */
+    UINT32                  Dsdt;                   /* Physical address of DSDT */
     UINT8                   Model;                  /* System Interrupt Model */
     UINT8                   Reserved1;              /* reserved */
     UINT16                  SciInt;                 /* System vector of SCI interrupt */
-    ACPI_IO_ADDRESS         SmiCmd;                 /* Port address of SMI command port */
+    UINT32                  SmiCmd;                 /* Port address of SMI command port */
     UINT8                   AcpiEnable;             /* value to write to smi_cmd to enable ACPI */
     UINT8                   AcpiDisable;            /* value to write to smi_cmd to disable ACPI */
     UINT8                   S4BiosReq;              /* Value to write to SMI CMD to enter S4BIOS state */
     UINT8                   Reserved2;              /* reserved - must be zero */
-    ACPI_IO_ADDRESS         Pm1aEvtBlk;             /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
-    ACPI_IO_ADDRESS         Pm1bEvtBlk;             /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
-    ACPI_IO_ADDRESS         Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
-    ACPI_IO_ADDRESS         Pm1bCntBlk;             /* Port address of Power Mgt 1b Control Reg Blk */
-    ACPI_IO_ADDRESS         Pm2CntBlk;              /* Port address of Power Mgt 2 Control Reg Blk */
-    ACPI_IO_ADDRESS         PmTmrBlk;               /* Port address of Power Mgt Timer Ctrl Reg Blk */
-    ACPI_IO_ADDRESS         Gpe0Blk;                /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
-    ACPI_IO_ADDRESS         Gpe1Blk;                /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
+    UINT32                  Pm1aEvtBlk;             /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
+    UINT32                  Pm1bEvtBlk;             /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
+    UINT32                  Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
+    UINT32                  Pm1bCntBlk;             /* Port address of Power Mgt 1b Control Reg Blk */
+    UINT32                  Pm2CntBlk;              /* Port address of Power Mgt 2 Control Reg Blk */
+    UINT32                  PmTmrBlk;               /* Port address of Power Mgt Timer Ctrl Reg Blk */
+    UINT32                  Gpe0Blk;                /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
+    UINT32                  Gpe1Blk;                /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
     UINT8                   Pm1EvtLen;              /* Byte Length of ports at pm1X_evt_blk */
     UINT8                   Pm1CntLen;              /* Byte Length of ports at pm1X_cnt_blk */
     UINT8                   Pm2CntLen;              /* Byte Length of ports at pm2_cnt_blk */
@@ -198,9 +205,10 @@ typedef struct
     UINT32_BIT              TmrValExt       : 1;    /* tmr_val is 32 bits */
     UINT32_BIT              Reserved5       : 23;   /* reserved - must be zero */
 
-}  FADT_DESCRIPTOR;
+}  FADT_DESCRIPTOR_REV1;
 
+#pragma pack()
 
-#endif /* __ACTBL32_H__ */
+#endif /* __ACTBL1_H__ */
 
 

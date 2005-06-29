@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.49 $
+ *       $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -200,6 +200,8 @@ typedef struct  /* ACPI common table header */
 
 typedef struct  /* Common FACS for internal use */
 {
+    NATIVE_CHAR             Signature[4];           /* signature "FACS" */
+    UINT32                  Length;                 /* length of structure, in bytes */
     UINT32                  *GlobalLock;
     UINT64                  *FirmwareWakingVector;
     UINT8                   VectorWidth;
@@ -209,7 +211,7 @@ typedef struct  /* Common FACS for internal use */
 
 typedef struct  /* APIC Table */
 {
-    ACPI_TABLE_HEADER       header;                 /* table header */
+    ACPI_TABLE_HEADER       Header;                 /* table header */
     UINT32                  LocalApicAddress;       /* Physical address for accessing local APICs */
     UINT32_BIT              PCATCompat      : 1;    /* a one indicates system also has dual 8259s */
     UINT32_BIT              Reserved1       : 31;
@@ -227,7 +229,7 @@ typedef struct  /* APIC Header */
 
 typedef struct  /* Processor APIC */
 {
-    APIC_HEADER             header;
+    APIC_HEADER             Header;
     UINT8                   ProcessorApicId;        /* ACPI processor id */
     UINT8                   LocalApicId;            /* processor's local APIC id */
     UINT32_BIT              ProcessorEnabled: 1;    /* Processor is usable if set */
@@ -238,7 +240,7 @@ typedef struct  /* Processor APIC */
 
 typedef struct  /* IO APIC */
 {
-    APIC_HEADER             header;
+    APIC_HEADER             Header;
     UINT8                   IoApicId;               /* I/O APIC ID */
     UINT8                   Reserved;               /* reserved - must be zero */
     UINT32                  IoApicAddress;          /* APIC's physical address */
@@ -257,7 +259,7 @@ typedef struct  /* IO APIC */
 */
 typedef struct  /* Smart Battery Description Table */
 {
-    ACPI_TABLE_HEADER       header;
+    ACPI_TABLE_HEADER       Header;
     UINT32                  WarningLevel;
     UINT32                  LowLevel;
     UINT32                  CriticalLevel;
@@ -301,8 +303,7 @@ typedef struct _AcpiTableSupport
  * Get the architecture-specific tables
  */
 
-#include "actbl1.h"   /* Acpi 1.0 table defintions */
-#include "actbl71.h"  /* Acpi 0.71 IA-64 Extension table defintions */
+#include "actbl1.h"   /* Acpi 1.0 table definitions */
 #include "actbl2.h"   /* Acpi 2.0 table definitions */
 
 #endif /* __ACTBL_H__ */
