@@ -429,7 +429,7 @@ typedef union acpi_op_value
     DEBUG_ONLY_MEMBERS (\
     char                    OpName[16])     /* op name (debug only) */\
                                             /* NON-DEBUG members below: */\
-    void                    *ResultObj;     /* for use by interpreter */\
+    void                    *NameTableEntry;/* for use by interpreter */\
     ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
 
 
@@ -490,6 +490,7 @@ typedef struct acpi_parse_state
     UINT8                   *Aml;           /* next AML byte */
     UINT8                   *AmlEnd;        /* (last + 1) AML byte */
     UINT8                   *PkgEnd;        /* current package end */
+    ACPI_GENERIC_OP         *StartOp;       /* root of parse tree */
     struct acpi_parse_scope *Scope;         /* current scope */
     struct acpi_parse_scope *ScopeAvail;    /* unused (extra) scope structs */
     struct acpi_parse_state *Next;
@@ -513,6 +514,13 @@ typedef struct acpi_parse_scope
 } ACPI_PARSE_SCOPE;
 
 
+
+
+/*****************************************************************************
+ * 
+ * Tree walking typedefs and structs
+ *
+ ****************************************************************************/
 
 
 #define CONTROL_NORMAL                        0xC0
@@ -552,6 +560,7 @@ typedef struct acpi_walk_state
     ACPI_GENERIC_OP         *PrevOp;                            /* Last op that was processed */
     ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
     ACPI_CTRL_STATE         *ControlState;                      /* List of control states (nested IFs) */
+	SCOPE_STACK				*ScopeInfo;							/* Stack of nested scopes */
     struct NameTableEntry   Arguments[MTH_NUM_ARGS];            /* Control method arguments */
     struct NameTableEntry   LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
     union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
