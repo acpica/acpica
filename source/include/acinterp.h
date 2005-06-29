@@ -105,29 +105,6 @@
 #include <acpiobj.h>
 
 
-/*
- * CheckTrash macros
- * define _CHECK_TRASH to enable trash tracing
- */
-
-/* TBD: obsolete?? */
-
-#ifndef _CHECK_TRASH
-
-/* Usual case: discard calls to these functions */
-
-#define CheckTrash(a)
-#define CheckTrashA(a,b,c,d,e,f,g,h)
-
-#else 
-
-extern void CheckTrash(char *Where);
-extern void CheckTrashA(char *Where,
-                unsigned long *pulP, unsigned long ulC1, unsigned long ulC2,
-                int *piP, int iC1, int iC2, void *nNt);
-#endif
-
-
 /* 
  * Macro to test for out-of-range subscript
  * No parens needed around Array in expansion since the actual parameter
