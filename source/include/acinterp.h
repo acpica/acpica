@@ -139,6 +139,12 @@
 #define METHOD_DELETE_AT_COMPLETION 0x2
 
 
+ACPI_STATUS
+AmlResolveOperands (
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    **StackPtr);
+
+
 /*
  * iapi - External interpreter interfaces
  */
