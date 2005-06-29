@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.47 $
+ *              $Revision: 1.49 $
  *
  ******************************************************************************/
 
@@ -241,6 +241,24 @@ AcpiDsIsResultUsed (
 
     case OPTYPE_NAMED_OBJECT:   /* Scope, method, etc. */
 
+        /* 
+         * These opcodes allow TermArg(s) as operands and therefore
+         * method calls.  The result is used.
+         */
+        if ((Op->Parent->Opcode == AML_REGION_OP)       ||
+            (Op->Parent->Opcode == AML_CREATE_FIELD_OP) ||
+            (Op->Parent->Opcode == AML_BIT_FIELD_OP)    ||
+            (Op->Parent->Opcode == AML_BYTE_FIELD_OP)   ||
+            (Op->Parent->Opcode == AML_WORD_FIELD_OP)   ||
+            (Op->Parent->Opcode == AML_DWORD_FIELD_OP)  ||
+            (Op->Parent->Opcode == AML_QWORD_FIELD_OP))
+        {
+            DEBUG_PRINT (TRACE_DISPATCH,
+                ("DsIsResultUsed: Result used, [Region or CreateField] opcode=%X Op=%X\n",
+                Op->Opcode, Op));
+            return_VALUE (TRUE);
+        }
+
         DEBUG_PRINT (TRACE_DISPATCH,
             ("DsIsResultUsed: Result not used, Parent opcode=%X Op=%X\n",
             Op->Opcode, Op));
@@ -392,6 +410,7 @@ AcpiDsCreateOperand (
         ParentOp = Arg->Parent;
         if ((AcpiPsIsNodeOp (ParentOp->Opcode)) &&
             (ParentOp->Opcode != AML_METHODCALL_OP) &&
+            (ParentOp->Opcode != AML_REGION_OP) &&
             (ParentOp->Opcode != AML_NAMEPATH_OP))
         {
             /* Enter name into namespace if not found */
