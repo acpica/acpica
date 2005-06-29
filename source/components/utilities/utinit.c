@@ -128,6 +128,7 @@
         MODULE_NAME         ("cminit");
 
 
+
 /*******************************************************************************
  *
  * FUNCTION:    CmFacpRegisterError
@@ -146,15 +147,12 @@
 void
 CmFacpRegisterError (
     char                    *RegisterName, 
-    UINT32                  Value,
-    INT32                   AcpiTestSpecSection, 
-    INT32                   AcpiAssertion)
+    UINT32                  Value)
 {
     
     REPORT_ERROR ("Invalid FACP register value");
     
-    DEBUG_PRINT (ACPI_ERROR, ("  Assertion %d.%d.%d Failed  %s=%08lXh\n",
-                ACPI_CHAPTER, AcpiTestSpecSection, AcpiAssertion, RegisterName, Value));
+    DEBUG_PRINT (ACPI_ERROR, ("Invalid FACP register value, %s = 0x%X\n", RegisterName, Value));
 }
 
 
@@ -190,7 +188,7 @@ CmHardwareInitialize (void)
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* We must have an the ACPI tables by the time we get here */
+    /* We must have the ACPI tables by the time we get here */
 
     if (!Gbl_FACP)
     {
@@ -207,7 +205,7 @@ CmHardwareInitialize (void)
     {
         RestoreAcpiChipset = FALSE;
 
-        DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: Supported modes unitialized!\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: Supported modes uninitialized!\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
@@ -309,7 +307,7 @@ CmHardwareInitialize (void)
 
         if (Gbl_FACP->Gpe1Blk && Gbl_FACP->Gpe1BlkLen)
         {
-            /* GPE1 defined    */
+            /* GPE1 defined */
 
             Gbl_Gpe1EnableRegisterSave = CmAllocate ((ACPI_SIZE) (Gbl_FACP->Gpe1BlkLen / 2));
             if (!Gbl_Gpe1EnableRegisterSave)
@@ -333,50 +331,58 @@ CmHardwareInitialize (void)
     
     
         /* 
-         * Verify Fixed ACPI Description Table fields per ACPI 1.0 sections
-         * 4.7.1.2 and 5.2.5 (assertions #410, 415, 435-440)
+         * Verify Fixed ACPI Description Table fields,
+         * but don't abort on any problems, just display error
          */
 
         if (Gbl_FACP->Pm1EvtLen < 4)
-            CmFacpRegisterError ("PM1_EVT_LEN", (UINT32) Gbl_FACP->Pm1EvtLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 410); /* #410 == #435    */
+        {
+            CmFacpRegisterError ("PM1_EVT_LEN", (UINT32) Gbl_FACP->Pm1EvtLen);
+        }
 
         if (!Gbl_FACP->Pm1CntLen)
-            CmFacpRegisterError ("PM1_CNT_LEN", (UINT32) Gbl_FACP->Pm1CntLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 415); /* #415 == #436    */
+        {
+            CmFacpRegisterError ("PM1_CNT_LEN", (UINT32) Gbl_FACP->Pm1CntLen);
+        }
 
         if (!Gbl_FACP->Pm1aEvtBlk)
-            CmFacpRegisterError ("PM1a_EVT_BLK", Gbl_FACP->Pm1aEvtBlk,
-                ACPI_TABLE_NAMESPACE_SECTION, 432);
+        {
+            CmFacpRegisterError ("PM1a_EVT_BLK", Gbl_FACP->Pm1aEvtBlk);
+        }
 
         if (!Gbl_FACP->Pm1aCntBlk)
-            CmFacpRegisterError ("PM1a_CNT_BLK", Gbl_FACP->Pm1aCntBlk,
-                ACPI_TABLE_NAMESPACE_SECTION, 433);
+        {
+            CmFacpRegisterError ("PM1a_CNT_BLK", Gbl_FACP->Pm1aCntBlk);
+        }
 
         if (!Gbl_FACP->PmTmrBlk)
-            CmFacpRegisterError ("PM_TMR_BLK", Gbl_FACP->PmTmrBlk,
-                ACPI_TABLE_NAMESPACE_SECTION, 434);
+        {
+            CmFacpRegisterError ("PM_TMR_BLK", Gbl_FACP->PmTmrBlk);
+        }
 
         if (Gbl_FACP->Pm2CntBlk && !Gbl_FACP->Pm2CntLen)
-            CmFacpRegisterError ("PM2_CNT_LEN", (UINT32) Gbl_FACP->Pm2CntLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 437);
+        {
+            CmFacpRegisterError ("PM2_CNT_LEN", (UINT32) Gbl_FACP->Pm2CntLen);
+        }
 
         if (Gbl_FACP->PmTmLen < 4)
-            CmFacpRegisterError ("PM_TM_LEN", (UINT32) Gbl_FACP->PmTmLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 438);
+        {
+            CmFacpRegisterError ("PM_TM_LEN", (UINT32) Gbl_FACP->PmTmLen);
+        }
 
         if (Gbl_FACP->Gpe0Blk && (Gbl_FACP->Gpe0BlkLen & 1))    /* length not multiple of 2    */
-            CmFacpRegisterError ("GPE0_BLK_LEN", (UINT32) Gbl_FACP->Gpe0BlkLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 439);
+        {
+            CmFacpRegisterError ("GPE0_BLK_LEN", (UINT32) Gbl_FACP->Gpe0BlkLen);
+        }
 
         if (Gbl_FACP->Gpe1Blk && (Gbl_FACP->Gpe1BlkLen & 1))    /* length not multiple of 2    */
-            CmFacpRegisterError ("GPE1_BLK_LEN", (UINT32) Gbl_FACP->Gpe1BlkLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 440);
+        {
+            CmFacpRegisterError ("GPE1_BLK_LEN", (UINT32) Gbl_FACP->Gpe1BlkLen);
+        }
     }
 
 
-BREAKPOINT3;
-    return_ACPI_STATUS ((Status));
+    return_ACPI_STATUS (Status);
 }
 
 
