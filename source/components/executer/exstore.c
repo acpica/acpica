@@ -14,15 +14,18 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.9 $
- | $Date: 2005/06/29 17:50:50 $
+ | $Revision: 1.10 $
+ | $Date: 2005/06/29 17:50:52 $
  | $Log: exstore.c,v $
- | Revision 1.9  2005/06/29 17:50:50  aystarik
- | New names for I/O and PCI OSD interfaces
+ | Revision 1.10  2005/06/29 17:50:52  aystarik
+ | New xface to KFatalError
  |
  | 
- | date	99.03.10.00.08.00;	author rmoore1;	state Exp;
+ | date	99.03.10.21.19.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 10    3/10/99 1:19p Rmoore1
+ * New xface to KFatalError
  * 
  * 9     3/09/99 4:08p Rmoore1
  * New names for I/O and PCI OSD interfaces
@@ -4381,9 +4384,9 @@ ExecDyadic2R (UINT16 opcode)
                                                     + ObjDesc2->String.StrLen + 1));
                 if ((char *) 0 == NewBuf)
                 {
-                    KFatalError ("0022", (
+                    KFatalError ("0022", 
                         "ExecDyadic2R/ConcatOp: String allocation failure %d",
-                        ObjDesc->String.StrLen + ObjDesc2->String.StrLen + 1));
+                        ObjDesc->String.StrLen + ObjDesc2->String.StrLen + 1);
                     
                     Why = WhyBuf;
                     return S_ERROR;
@@ -4409,9 +4412,9 @@ ExecDyadic2R (UINT16 opcode)
                     
                     if (ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen < 1024)
                     {
-                        KFatalError ("0023", (
+                        KFatalError ("0023", 
                                 "ExecDyadic2R/ConcatOp: Buffer allocation failure %d",
-                                ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen));
+                                ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen);
                     }
 
                     sprintf (WhyBuf,
