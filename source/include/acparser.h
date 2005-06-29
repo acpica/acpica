@@ -147,6 +147,12 @@ PsxExecute (
 
 
 
+BOOLEAN
+PsIsNamespaceObjectOp (
+    UINT16                  Opcode);
+BOOLEAN
+PsIsNamespaceOp (
+    UINT16                  Opcode);
 
 
 /******************************************************************************
