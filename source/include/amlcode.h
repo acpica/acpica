@@ -287,40 +287,45 @@
 
 /*
  * Argument types for the AML Parser 
+ * Each field in the ArgTypes UINT32 is 5 bits, allowing for a maximum of 6 arguments.
+ * There can be up to 31 unique argument types
  */
 
-#define ARGP_CHARLIST               0x1
-#define ARGP_BYTEDATA               0x2
-#define ARGP_BYTELIST               0x3
-#define ARGP_WORDDATA               0x4
-#define ARGP_DWORDDATA              0x5
-#define ARGP_DATAOBJ                0x6
-#define ARGP_DATAOBJLIST            0x7
-#define ARGP_FIELDLIST              0x8
-#define ARGP_NAMESTRING             0x9
-#define ARGP_OBJLIST                0xA
-#define ARGP_PKGLENGTH              0xB
-#define ARGP_SUPERNAME              0xC
-#define ARGP_TARGET                 0xD
-#define ARGP_TERMARG                0xE
-#define ARGP_TERMLIST               0xF
+#define ARGP_BYTEDATA               0x01
+#define ARGP_BYTELIST               0x02
+#define ARGP_CHARLIST               0x03
+#define ARGP_DATAOBJ                0x04
+#define ARGP_DATAOBJLIST            0x05
+#define ARGP_DWORDDATA              0x06
+#define ARGP_FIELDLIST              0x07
+#define ARGP_NAME                   0x08
+#define ARGP_NAMESTRING             0x09
+#define ARGP_OBJLIST                0x0A
+#define ARGP_PKGLENGTH              0x0B
+#define ARGP_SUPERNAME              0x0C
+#define ARGP_TARGET                 0x0D
+#define ARGP_TERMARG                0x0E
+#define ARGP_TERMLIST               0x0F
+#define ARGP_WORDDATA               0x10
 
 /*
  * Resolved argument types for the AML Interpreter
+ * Each field in the ArgTypes UINT32 is 5 bits, allowing for a maximum of 6 arguments.
+ * There can be up to 31 unique argument types
  */
 
-#define ARGI_ANYTYPE                0x1
-#define ARGI_TARGETREF              0x2
-#define ARGI_LVALUE                 0x3
-#define ARGI_IF                     0x4
-#define ARGI_NUMBER                 0x5
-#define ARGI_STRING                 0x6
-#define ARGI_BUFFER                 0x7
-#define ARGI_PACKAGE                0x8
-#define ARGI_DATAOBJECT             0x9     /* Buffer, string, or package */
-#define ARGI_COMPLEXOBJ             0xA     /* Buffer or package */
-#define ARGI_MUTEX                  0xB
-#define ARGI_EVENT                  0xC
+#define ARGI_ANYTYPE                0x01
+#define ARGI_TARGETREF              0x02
+#define ARGI_LVALUE                 0x03
+#define ARGI_IF                     0x04
+#define ARGI_NUMBER                 0x05
+#define ARGI_STRING                 0x06
+#define ARGI_BUFFER                 0x07
+#define ARGI_PACKAGE                0x08
+#define ARGI_DATAOBJECT             0x09     /* Buffer, string, or package */
+#define ARGI_COMPLEXOBJ             0x0A     /* Buffer or package */
+#define ARGI_MUTEX                  0x0B
+#define ARGI_EVENT                  0x0C
 
 #define ARGI_INVALID_OPCODE         0xFFFFFFFF
 
