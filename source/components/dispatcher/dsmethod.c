@@ -303,6 +303,9 @@ PsxCallControlMethod (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+
+    /* TBD: Do the operands always start at index 0? */
+
     /* 
      * Initialize the arguments for the method.  The resolved arguments were put 
      * on the previous walk state's operand stack
@@ -318,11 +321,9 @@ PsxCallControlMethod (
 
     for (i = 0; i < NumArgs; i++)
     {
-        CmDeleteInternalObject (ThisWalkState->Operands [ThisWalkState->NumOperands]);
+        CmDeleteInternalObject (ThisWalkState->Operands [i]);
         PsxObjStackPop (1, ThisWalkState);
     }
-
-    /* TBD: REMOVE PsxObjStackDeleteAll (ThisWalkState); */
 
     /* The next op will be the beginning of the method */
 
