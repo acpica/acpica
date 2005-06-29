@@ -767,7 +767,7 @@ AcpiRsDumpResourceList (
     BOOLEAN             Done = FALSE;
 
 
-    if (DebugLevel & TRACE_RESOURCES && _COMPONENT & DebugLayer)
+    if (AcpiDbgLevel & TRACE_RESOURCES && _COMPONENT & AcpiDbgLayer)
     {
         while (!Done)
         {
@@ -861,7 +861,7 @@ AcpiRsDumpResourceList (
 
 void
 AcpiRsDumpIrqList (
-    UINT8   *RouteTable)
+    UINT8               *RouteTable)
 {
     UINT8               *Buffer = RouteTable;
     INT8                Count = 0;
@@ -869,7 +869,7 @@ AcpiRsDumpIrqList (
     PCI_ROUTING_TABLE   *PrtElement;
 
 
-    if (DebugLevel & TRACE_RESOURCES && _COMPONENT & DebugLayer)
+    if (AcpiDbgLevel & TRACE_RESOURCES && _COMPONENT & AcpiDbgLayer)
     {
         PrtElement = (PCI_ROUTING_TABLE *)Buffer;
 
