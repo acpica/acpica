@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.60 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -147,7 +147,7 @@
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiDsMethodDataInit (
     ACPI_WALK_STATE         *WalkState)
 {
@@ -182,7 +182,7 @@ AcpiDsMethodDataInit (
         WalkState->LocalVariables[i].Flags         = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_LOCAL;
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 
@@ -192,14 +192,14 @@ AcpiDsMethodDataInit (
  *
  * PARAMETERS:  WalkState           - Current walk state object
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Delete method locals and arguments.  Arguments are only
  *              deleted if this method was called from another method.
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiDsMethodDataDeleteAll (
     ACPI_WALK_STATE         *WalkState)
 {
@@ -239,7 +239,7 @@ AcpiDsMethodDataDeleteAll (
         }
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 
@@ -461,7 +461,7 @@ AcpiDsMethodDataGetType (
 
     /* Get the object type */
 
-    return_VALUE (Object->Common.Type);
+    return_VALUE (ACPI_GET_OBJECT_TYPE (Object));
 }
 
 
@@ -569,14 +569,14 @@ AcpiDsMethodDataGetValue (
  *              Index               - Which localVar or argument to delete
  *              WalkState           - Current walk state object
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Delete the entry at Opcode:Index on the method stack.  Inserts
  *              a null into the stack slot after the object is deleted.
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiDsMethodDataDeleteValue (
     UINT16                  Opcode,
     UINT32                  Index,
@@ -595,7 +595,7 @@ AcpiDsMethodDataDeleteValue (
     Status = AcpiDsMethodDataGetNode (Opcode, Index, WalkState, &Node);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        return_VOID;
     }
 
     /* Get the associated object */
@@ -610,7 +610,7 @@ AcpiDsMethodDataDeleteValue (
     Node->Object = NULL;
 
     if ((Object) &&
-        (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_INTERNAL))
+        (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_OPERAND))
     {
         /*
          * There is a valid object.
@@ -620,7 +620,7 @@ AcpiDsMethodDataDeleteValue (
         AcpiUtRemoveReference (Object);
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 
@@ -704,24 +704,43 @@ AcpiDsStoreObjectToLocal (
          *
          * Weird, but true.
          */
-        if ((Opcode == AML_ARG_OP) &&
-            (ACPI_GET_DESCRIPTOR_TYPE (CurrentObjDesc) == ACPI_DESC_TYPE_NAMED))
+        if (Opcode == AML_ARG_OP)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                "Arg (%p) is an ObjRef(Node), storing in node %p\n",
-                ObjDesc, CurrentObjDesc));
-
-            /* Detach an existing object from the Node */
-
-            AcpiNsDetachObject ((ACPI_NAMESPACE_NODE *) CurrentObjDesc);
-
-            /*
-             * Store this object into the Node
-             * (perform the indirect store)
+            /* 
+             * Make sure that the object is the correct type.  This may be overkill, but
+             * it is here because references were NS nodes in the past.  Now they are
+             * operand objects of type Reference.
              */
-            Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) CurrentObjDesc,
-                            ObjDesc, ObjDesc->Common.Type);
-            return_ACPI_STATUS (Status);
+            if (ACPI_GET_DESCRIPTOR_TYPE (CurrentObjDesc) != ACPI_DESC_TYPE_OPERAND)
+            {
+                ACPI_REPORT_ERROR (("Invalid descriptor type while storing to method arg: %X\n", 
+                    CurrentObjDesc->Common.Type));
+                return_ACPI_STATUS (AE_AML_INTERNAL);
+            }
+
+            /* 
+             * If we have a valid reference object that came from RefOf(), do the
+             * indirect store
+             */
+            if ((CurrentObjDesc->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
+                (CurrentObjDesc->Reference.Opcode == AML_REF_OF_OP))
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+                    "Arg (%p) is an ObjRef(Node), storing in node %p\n",
+                    ObjDesc, CurrentObjDesc));
+
+                /* Detach an existing object from the referenced Node */
+
+                AcpiNsDetachObject (CurrentObjDesc->Reference.Object);
+
+                /*
+                 * Store this object into the Node
+                 * (perform the indirect store)
+                 */
+                Status = AcpiNsAttachObject (CurrentObjDesc->Reference.Object,
+                                ObjDesc, ACPI_GET_OBJECT_TYPE (ObjDesc));
+                return_ACPI_STATUS (Status);
+            }
         }
 
         /*

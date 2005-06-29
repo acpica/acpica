@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
- *              $Revision: 1.51 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 
 
 #define _COMPONENT          ACPI_DISPATCHER
-        MODULE_NAME         ("dswscope")
+        ACPI_MODULE_NAME    ("dswscope")
 
 
 #define STACK_POP(head) head
@@ -145,7 +145,7 @@ AcpiDsScopeStackClear (
 {
     ACPI_GENERIC_STATE      *ScopeInfo;
 
-    PROC_NAME ("DsScopeStackClear");
+    ACPI_FUNCTION_NAME ("DsScopeStackClear");
 
 
     while (WalkState->ScopeInfo)
@@ -156,7 +156,7 @@ AcpiDsScopeStackClear (
         WalkState->ScopeInfo = ScopeInfo->Scope.Next;
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "Popped object type %X\n", ScopeInfo->Common.Value));
+            "Popped object type (%s)\n", AcpiUtGetTypeName (ScopeInfo->Common.Value)));
         AcpiUtDeleteGenericState (ScopeInfo);
     }
 }
@@ -183,22 +183,22 @@ AcpiDsScopeStackPush (
     ACPI_GENERIC_STATE      *ScopeInfo;
 
 
-    FUNCTION_TRACE ("DsScopeStackPush");
+    ACPI_FUNCTION_TRACE ("DsScopeStackPush");
 
 
     if (!Node)
     {
         /* Invalid scope   */
 
-        REPORT_ERROR (("DsScopeStackPush: null scope passed\n"));
+        ACPI_REPORT_ERROR (("DsScopeStackPush: null scope passed\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /* Make sure object type is valid */
 
-    if (!AcpiExValidateObjectType (Type))
+    if (!AcpiUtValidObjectType (Type))
     {
-        REPORT_WARNING (("DsScopeStackPush: type code out of range\n"));
+        ACPI_REPORT_WARNING (("DsScopeStackPush: type code out of range\n"));
     }
 
 
@@ -248,7 +248,7 @@ AcpiDsScopeStackPop (
     ACPI_GENERIC_STATE      *ScopeInfo;
 
 
-    FUNCTION_TRACE ("DsScopeStackPop");
+    ACPI_FUNCTION_TRACE ("DsScopeStackPop");
 
 
     /*
@@ -261,7 +261,7 @@ AcpiDsScopeStackPop (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "Popped object type %X\n", ScopeInfo->Common.Value));
+        "Popped object type (%s)\n", AcpiUtGetTypeName (ScopeInfo->Common.Value)));
 
     AcpiUtDeleteGenericState (ScopeInfo);
 

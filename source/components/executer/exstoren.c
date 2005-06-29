@@ -3,7 +3,7 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.48 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -160,9 +160,9 @@ AcpiExResolveObject (
     switch (TargetType)
     {
     case ACPI_TYPE_BUFFER_FIELD:
-    case INTERNAL_TYPE_REGION_FIELD:
-    case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_INDEX_FIELD:
+    case ACPI_TYPE_LOCAL_REGION_FIELD:
+    case ACPI_TYPE_LOCAL_BANK_FIELD:
+    case ACPI_TYPE_LOCAL_INDEX_FIELD:
         /*
          * These cases all require only Integers or values that
          * can be converted to Integers (Strings or Buffers)
@@ -177,7 +177,7 @@ AcpiExResolveObject (
          * are all essentially the same.  This case handles the
          * "interchangeable" types Integer, String, and Buffer.
          */
-        if (SourceDesc->Common.Type == INTERNAL_TYPE_REFERENCE)
+        if (ACPI_GET_OBJECT_TYPE (SourceDesc) == ACPI_TYPE_LOCAL_REFERENCE)
         {
             /* Resolve a reference object first */
 
@@ -191,23 +191,23 @@ AcpiExResolveObject (
         /*
          * Must have a Integer, Buffer, or String
          */
-        if ((SourceDesc->Common.Type != ACPI_TYPE_INTEGER)     &&
-            (SourceDesc->Common.Type != ACPI_TYPE_BUFFER)      &&
-            (SourceDesc->Common.Type != ACPI_TYPE_STRING))
+        if ((ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_INTEGER)     &&
+            (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_BUFFER)      &&
+            (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_STRING))
         {
             /*
              * Conversion successful but still not a valid type
              */
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Cannot assign type %s to %s (must be type Int/Str/Buf)\n",
-                AcpiUtGetTypeName (SourceDesc->Common.Type),
+                AcpiUtGetObjectTypeName (SourceDesc),
                 AcpiUtGetTypeName (TargetType)));
             Status = AE_AML_OPERAND_TYPE;
         }
         break;
 
 
-    case INTERNAL_TYPE_ALIAS:
+    case ACPI_TYPE_LOCAL_ALIAS:
 
         /*
          * Aliases are resolved by AcpiExPrepOperands
@@ -292,7 +292,7 @@ AcpiExStoreObjectToObject (
         return_ACPI_STATUS (Status);
     }
 
-    if (SourceDesc->Common.Type != DestDesc->Common.Type)
+    if (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_GET_OBJECT_TYPE (DestDesc))
     {
         /*
          * The source type does not match the type of the destination.
@@ -303,11 +303,21 @@ AcpiExStoreObjectToObject (
          * Otherwise, ActualSrcDesc is a temporary object to hold the
          * converted object.
          */
-        Status = AcpiExConvertToTargetType (DestDesc->Common.Type, SourceDesc,
+        Status = AcpiExConvertToTargetType (ACPI_GET_OBJECT_TYPE (DestDesc), SourceDesc,
                         &ActualSrcDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
+        }
+
+        if (SourceDesc == ActualSrcDesc)
+        {
+            /* 
+             * No conversion was performed.  Return the SourceDesc as the
+             * new object.
+             */
+            *NewDesc = SourceDesc;
+            return_ACPI_STATUS (AE_OK);
         }
     }
 
@@ -315,7 +325,7 @@ AcpiExStoreObjectToObject (
      * We now have two objects of identical types, and we can perform a
      * copy of the *value* of the source object.
      */
-    switch (DestDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (DestDesc))
     {
     case ACPI_TYPE_INTEGER:
 
@@ -323,7 +333,7 @@ AcpiExStoreObjectToObject (
 
         /* Truncate value if we are executing from a 32-bit ACPI table */
 
-        AcpiExTruncateFor32bitTable (DestDesc, WalkState);
+        AcpiExTruncateFor32bitTable (DestDesc);
         break;
 
     case ACPI_TYPE_STRING:
@@ -346,7 +356,7 @@ AcpiExStoreObjectToObject (
          * All other types come here.
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Store into type %s not implemented\n",
-            AcpiUtGetTypeName (DestDesc->Common.Type)));
+            AcpiUtGetObjectTypeName (DestDesc)));
 
         Status = AE_NOT_IMPLEMENTED;
         break;

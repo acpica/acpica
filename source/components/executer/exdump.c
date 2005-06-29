@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.148 $
+ *              $Revision: 1.161 $
  *
  *****************************************************************************/
 
@@ -130,101 +130,7 @@
  * The following routines are used for debug output only
  */
 
-#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiExShowHexValue
- *
- * PARAMETERS:  ByteCount           - Number of bytes to print (1, 2, or 4)
- *              *AmlStart             - Address in AML stream of bytes to print
- *              InterpreterMode     - Current running mode (load1/Load2/Exec)
- *              LeadSpace           - # of spaces to print ahead of value
- *                                    0 => none ahead but one behind
- *
- * DESCRIPTION: Print ByteCount byte(s) starting at AmlStart as a single
- *              value, in hex.  If ByteCount > 1 or the value printed is > 9, also
- *              print in decimal.
- *
- ****************************************************************************/
-
-void
-AcpiExShowHexValue (
-    UINT32                  ByteCount,
-    UINT8                   *AmlStart,
-    UINT32                  LeadSpace)
-{
-    ACPI_INTEGER            Value;                  /*  Value retrieved from AML stream */
-    UINT32                  ShowDecimalValue;
-    UINT32                  Length;                 /*  Length of printed field */
-    UINT8                   *CurrentAmlPtr = NULL;  /*  Pointer to current byte of AML value    */
-
-
-    ACPI_FUNCTION_TRACE ("ExShowHexValue");
-
-
-    if (!((ACPI_LV_LOAD & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
-    {
-        return;
-    }
-
-    if (!AmlStart)
-    {
-        ACPI_REPORT_ERROR (("ExShowHexValue: null pointer\n"));
-        return;
-    }
-
-    /*
-     * AML numbers are always stored little-endian,
-     * even if the processor is big-endian.
-     */
-    for (CurrentAmlPtr = AmlStart + ByteCount,
-            Value = 0;
-            CurrentAmlPtr > AmlStart; )
-    {
-        Value = (Value << 8) + (UINT32)* --CurrentAmlPtr;
-    }
-
-    Length = LeadSpace * ByteCount + 2;
-    if (ByteCount > 1)
-    {
-        Length += (ByteCount - 1);
-    }
-
-    ShowDecimalValue = (ByteCount > 1 || Value > 9);
-    if (ShowDecimalValue)
-    {
-        Length += 3 + AcpiExDigitsNeeded (Value, 10);
-    }
-
-    for (Length = LeadSpace; Length; --Length )
-    {
-        AcpiOsPrintf (" ");
-    }
-
-    while (ByteCount--)
-    {
-        AcpiOsPrintf ("%02x", *AmlStart++);
-        if (ByteCount)
-        {
-            AcpiOsPrintf (" ");
-        }
-    }
-
-    if (ShowDecimalValue)
-    {
-        AcpiOsPrintf (" [%d]", Value);
-    }
-
-    if (0 == LeadSpace)
-    {
-        AcpiOsPrintf (" ");
-    }
-
-    AcpiOsPrintf ("\n");
-    return_VOID;
-}
-
+#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
 /*****************************************************************************
  *
@@ -238,13 +144,15 @@ AcpiExShowHexValue (
  *
  ****************************************************************************/
 
-ACPI_STATUS
+void
 AcpiExDumpOperand (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     UINT8                   *Buf = NULL;
     UINT32                  Length;
     UINT32                  i;
+    ACPI_OPERAND_OBJECT     **Element;
+    UINT16                  ElementIndex;
 
 
     ACPI_FUNCTION_NAME ("ExDumpOperand")
@@ -252,7 +160,7 @@ AcpiExDumpOperand (
 
     if (!((ACPI_LV_EXEC & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
     {
-        return (AE_OK);
+        return;
     }
 
     if (!ObjDesc)
@@ -263,57 +171,33 @@ AcpiExDumpOperand (
          * code that dumps the stack expects something to be there!
          */
         AcpiOsPrintf ("Null stack entry ptr\n");
-        return (AE_OK);
+        return;
     }
 
     if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_NAMED)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%p NS Node: ", ObjDesc));
         ACPI_DUMP_ENTRY (ObjDesc, ACPI_LV_EXEC);
-        return (AE_OK);
+        return;
     }
 
-    if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_INTERNAL)
+    if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%p is not a local object\n", ObjDesc));
         ACPI_DUMP_BUFFER (ObjDesc, sizeof (ACPI_OPERAND_OBJECT));
-        return (AE_OK);
+        return;
     }
 
     /*  ObjDesc is a valid object  */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%p ", ObjDesc));
 
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
-    case INTERNAL_TYPE_REFERENCE:
+    case ACPI_TYPE_LOCAL_REFERENCE:
 
         switch (ObjDesc->Reference.Opcode)
         {
-        case AML_ZERO_OP:
-
-            AcpiOsPrintf ("Reference: Zero\n");
-            break;
-
-
-        case AML_ONE_OP:
-
-            AcpiOsPrintf ("Reference: One\n");
-            break;
-
-
-        case AML_ONES_OP:
-
-            AcpiOsPrintf ("Reference: Ones\n");
-            break;
-
-
-        case AML_REVISION_OP:
-
-            AcpiOsPrintf ("Reference: Revision\n");
-            break;
-
-
         case AML_DEBUG_OP:
 
             AcpiOsPrintf ("Reference: Debug\n");
@@ -335,12 +219,19 @@ AcpiExDumpOperand (
             break;
 
 
+        case AML_REF_OF_OP:
+
+            AcpiOsPrintf ("Reference: (RefOf) %p\n",
+                        ObjDesc->Reference.Object);
+            break;
+
+
         case AML_ARG_OP:
 
             AcpiOsPrintf ("Reference: Arg%d",
                         ObjDesc->Reference.Offset);
 
-            if (ACPI_TYPE_INTEGER == ObjDesc->Common.Type)
+            if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
             {
                 /* Value is a Number */
 
@@ -358,7 +249,7 @@ AcpiExDumpOperand (
             AcpiOsPrintf ("Reference: Local%d",
                         ObjDesc->Reference.Offset);
 
-            if (ACPI_TYPE_INTEGER == ObjDesc->Common.Type)
+            if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
             {
 
                 /* Value is a Number */
@@ -373,15 +264,17 @@ AcpiExDumpOperand (
 
 
         case AML_INT_NAMEPATH_OP:
+
             AcpiOsPrintf ("Reference.Node->Name %X\n",
                         ObjDesc->Reference.Node->Name.Integer);
             break;
+
 
         default:
 
             /*  unknown opcode  */
 
-            AcpiOsPrintf ("Unknown opcode=%X\n",
+            AcpiOsPrintf ("Unknown Reference opcode=%X\n",
                 ObjDesc->Reference.Opcode);
             break;
 
@@ -427,22 +320,6 @@ AcpiExDumpOperand (
         break;
 
 
-    case INTERNAL_TYPE_IF:
-
-        AcpiOsPrintf ("If [Integer] %8.8X%8.8X\n",
-                    ACPI_HIDWORD (ObjDesc->Integer.Value),
-                    ACPI_LODWORD (ObjDesc->Integer.Value));
-        break;
-
-
-    case INTERNAL_TYPE_WHILE:
-
-        AcpiOsPrintf ("While [Integer] %8.8X%8.8X\n",
-                    ACPI_HIDWORD (ObjDesc->Integer.Value),
-                    ACPI_LODWORD (ObjDesc->Integer.Value));
-        break;
-
-
     case ACPI_TYPE_PACKAGE:
 
         AcpiOsPrintf ("Package count %X @ %p\n",
@@ -456,9 +333,6 @@ AcpiExDumpOperand (
             ObjDesc->Package.Elements &&
             AcpiDbgLevel > 1)
         {
-            ACPI_OPERAND_OBJECT**Element;
-            UINT16              ElementIndex;
-
             for (ElementIndex = 0, Element = ObjDesc->Package.Elements;
                   ElementIndex < ObjDesc->Package.Count;
                   ++ElementIndex, ++Element)
@@ -508,13 +382,13 @@ AcpiExDumpOperand (
         break;
 
 
-    case INTERNAL_TYPE_BANK_FIELD:
+    case ACPI_TYPE_LOCAL_BANK_FIELD:
 
         AcpiOsPrintf ("BankField\n");
         break;
 
 
-    case INTERNAL_TYPE_REGION_FIELD:
+    case ACPI_TYPE_LOCAL_REGION_FIELD:
 
         AcpiOsPrintf (
             "RegionField: Bits=%X AccWidth=%X Lock=%X Update=%X at byte=%X bit=%X of below:\n",
@@ -526,7 +400,7 @@ AcpiExDumpOperand (
         break;
 
 
-    case INTERNAL_TYPE_INDEX_FIELD:
+    case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
         AcpiOsPrintf ("IndexField\n");
         break;
@@ -543,8 +417,7 @@ AcpiExDumpOperand (
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "*NULL* \n"));
         }
-        else if (ACPI_TYPE_BUFFER !=
-                     ObjDesc->BufferField.BufferObj->Common.Type)
+        else if (ACPI_GET_OBJECT_TYPE (ObjDesc->BufferField.BufferObj) != ACPI_TYPE_BUFFER)
         {
             AcpiOsPrintf ("*not a Buffer* \n");
         }
@@ -602,13 +475,13 @@ AcpiExDumpOperand (
 
 
     default:
-        /* Unknown ObjDesc->Common.Type value */
+        /* Unknown Type */
 
-        AcpiOsPrintf ("Unknown Type %X\n", ObjDesc->Common.Type);
+        AcpiOsPrintf ("Unknown Type %X\n", ACPI_GET_OBJECT_TYPE (ObjDesc));
         break;
     }
 
-    return (AE_OK);
+    return;
 }
 
 
@@ -652,7 +525,6 @@ AcpiExDumpOperands (
         Note = "?";
     }
 
-
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
         "************* Operand Stack Contents (Opcode [%s], %d Operands)\n",
         Ident, NumLevels));
@@ -662,16 +534,12 @@ AcpiExDumpOperands (
         NumLevels = 1;
     }
 
-    /* Dump the stack starting at the top, working down */
+    /* Dump the operand stack starting at the top */
 
     for (i = 0; NumLevels > 0; i--, NumLevels--)
     {
         ObjDesc = &Operands[i];
-
-        if (ACPI_FAILURE (AcpiExDumpOperand (*ObjDesc)))
-        {
-            break;
-        }
+        AcpiExDumpOperand (*ObjDesc);
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
@@ -724,7 +592,7 @@ AcpiExOutAddress (
     ACPI_PHYSICAL_ADDRESS   Value)
 {
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
     AcpiOsPrintf ("%20s : %p\n", Title, Value);
 #else
     AcpiOsPrintf ("%20s : %8.8X%8.8X\n", Title,
@@ -760,7 +628,6 @@ AcpiExDumpNode (
             return;
         }
     }
-
 
     AcpiOsPrintf ("%20s : %4.4s\n",       "Name", Node->Name.Ascii);
     AcpiExOutString  ("Type",             AcpiUtGetTypeName (Node->Type));
@@ -800,29 +667,37 @@ AcpiExDumpObjectDescriptor (
     {
         if (!((ACPI_LV_OBJECTS & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
         {
-            return;
+            return_VOID;
         }
     }
 
-    if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_INTERNAL)
+    if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_NAMED)
+    {
+        AcpiExDumpNode ((ACPI_NAMESPACE_NODE *) ObjDesc, Flags);
+        AcpiOsPrintf ("\nAttached Object (%p):\n", ((ACPI_NAMESPACE_NODE *) ObjDesc)->Object);
+        AcpiExDumpObjectDescriptor (((ACPI_NAMESPACE_NODE *) ObjDesc)->Object, Flags);
+        return;
+    }
+
+    if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND)
     {
         AcpiOsPrintf ("ExDumpObjectDescriptor: %p is not a valid ACPI object\n", ObjDesc);
-        return;
+        return_VOID;
     }
 
     /* Common Fields */
 
-    AcpiExOutString  ("Type",            AcpiUtGetTypeName (ObjDesc->Common.Type));
+    AcpiExOutString  ("Type",            AcpiUtGetObjectTypeName (ObjDesc));
     AcpiExOutInteger ("Reference Count", ObjDesc->Common.ReferenceCount);
     AcpiExOutInteger ("Flags",           ObjDesc->Common.Flags);
 
     /* Object-specific Fields */
 
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf ("%20s : %X%8.8X\n", "Value",
+        AcpiOsPrintf ("%20s : %8.8X%8.8X\n", "Value",
                         ACPI_HIDWORD (ObjDesc->Integer.Value),
                         ACPI_LODWORD (ObjDesc->Integer.Value));
         break;
@@ -858,7 +733,7 @@ AcpiExDumpObjectDescriptor (
                 AcpiOsPrintf ("[%.3d] %p", i, ObjDesc->Package.Elements[i]);
                 if (ObjDesc->Package.Elements[i])
                 {
-                    AcpiOsPrintf (" %s", AcpiUtGetTypeName ((ObjDesc->Package.Elements[i])->Common.Type));
+                    AcpiOsPrintf (" %s", AcpiUtGetObjectTypeName (ObjDesc->Package.Elements[i]));
                 }
                 AcpiOsPrintf ("\n");
             }
@@ -924,7 +799,7 @@ AcpiExDumpObjectDescriptor (
 
         AcpiExOutInteger ("Processor ID",    ObjDesc->Processor.ProcId);
         AcpiExOutInteger ("Length",          ObjDesc->Processor.Length);
-        AcpiExOutInteger ("Address",         ObjDesc->Processor.Address);
+        AcpiExOutAddress ("Address",         (ACPI_PHYSICAL_ADDRESS) ObjDesc->Processor.Address);
         AcpiExOutPointer ("SysHandler",      ObjDesc->Processor.SysHandler);
         AcpiExOutPointer ("DrvHandler",      ObjDesc->Processor.DrvHandler);
         AcpiExOutPointer ("AddrHandler",     ObjDesc->Processor.AddrHandler);
@@ -940,9 +815,9 @@ AcpiExDumpObjectDescriptor (
 
 
     case ACPI_TYPE_BUFFER_FIELD:
-    case INTERNAL_TYPE_REGION_FIELD:
-    case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_INDEX_FIELD:
+    case ACPI_TYPE_LOCAL_REGION_FIELD:
+    case ACPI_TYPE_LOCAL_BANK_FIELD:
+    case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
         AcpiExOutInteger ("FieldFlags",      ObjDesc->CommonField.FieldFlags);
         AcpiExOutInteger ("AccessByteWidth", ObjDesc->CommonField.AccessByteWidth);
@@ -954,23 +829,23 @@ AcpiExDumpObjectDescriptor (
         AcpiExOutInteger ("EndBufValidBits", ObjDesc->CommonField.EndBufferValidBits);
         AcpiExOutPointer ("ParentNode",      ObjDesc->CommonField.Node);
 
-        switch (ObjDesc->Common.Type)
+        switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
         {
         case ACPI_TYPE_BUFFER_FIELD:
             AcpiExOutPointer ("BufferObj",       ObjDesc->BufferField.BufferObj);
             break;
 
-        case INTERNAL_TYPE_REGION_FIELD:
+        case ACPI_TYPE_LOCAL_REGION_FIELD:
             AcpiExOutPointer ("RegionObj",       ObjDesc->Field.RegionObj);
             break;
 
-        case INTERNAL_TYPE_BANK_FIELD:
+        case ACPI_TYPE_LOCAL_BANK_FIELD:
             AcpiExOutInteger ("Value",           ObjDesc->BankField.Value);
             AcpiExOutPointer ("RegionObj",       ObjDesc->BankField.RegionObj);
             AcpiExOutPointer ("BankObj",         ObjDesc->BankField.BankObj);
             break;
 
-        case INTERNAL_TYPE_INDEX_FIELD:
+        case ACPI_TYPE_LOCAL_INDEX_FIELD:
             AcpiExOutInteger ("Value",           ObjDesc->IndexField.Value);
             AcpiExOutPointer ("Index",           ObjDesc->IndexField.IndexObj);
             AcpiExOutPointer ("Data",            ObjDesc->IndexField.DataObj);
@@ -983,7 +858,7 @@ AcpiExDumpObjectDescriptor (
         break;
 
 
-    case INTERNAL_TYPE_REFERENCE:
+    case ACPI_TYPE_LOCAL_REFERENCE:
 
         AcpiExOutInteger ("TargetType",      ObjDesc->Reference.TargetType);
         AcpiExOutString  ("Opcode",          (AcpiPsGetOpcodeInfo (ObjDesc->Reference.Opcode))->Name);
@@ -994,7 +869,7 @@ AcpiExDumpObjectDescriptor (
         break;
 
 
-    case INTERNAL_TYPE_ADDRESS_HANDLER:
+    case ACPI_TYPE_LOCAL_ADDRESS_HANDLER:
 
         AcpiExOutInteger ("SpaceId",         ObjDesc->AddrHandler.SpaceId);
         AcpiExOutPointer ("Next",            ObjDesc->AddrHandler.Next);
@@ -1004,33 +879,20 @@ AcpiExDumpObjectDescriptor (
         break;
 
 
-    case INTERNAL_TYPE_NOTIFY:
+    case ACPI_TYPE_LOCAL_NOTIFY:
 
         AcpiExOutPointer ("Node",            ObjDesc->NotifyHandler.Node);
         AcpiExOutPointer ("Context",         ObjDesc->NotifyHandler.Context);
         break;
 
 
-    case INTERNAL_TYPE_ALIAS:
-    case INTERNAL_TYPE_FIELD_DEFN:
-    case INTERNAL_TYPE_BANK_FIELD_DEFN:
-    case INTERNAL_TYPE_INDEX_FIELD_DEFN:
-    case INTERNAL_TYPE_IF:
-    case INTERNAL_TYPE_ELSE:
-    case INTERNAL_TYPE_WHILE:
-    case INTERNAL_TYPE_SCOPE:
-    case INTERNAL_TYPE_DEF_ANY:
-    case INTERNAL_TYPE_EXTRA:
-    case INTERNAL_TYPE_DATA:
-
-        AcpiOsPrintf ("ExDumpObjectDescriptor: Display not implemented for object type %X\n",
-            ObjDesc->Common.Type);
-        break;
-
-
+    case ACPI_TYPE_LOCAL_ALIAS:
+    case ACPI_TYPE_LOCAL_EXTRA:
+    case ACPI_TYPE_LOCAL_DATA:
     default:
 
-        AcpiOsPrintf ("ExDumpObjectDescriptor: Unknown object type %X\n", ObjDesc->Common.Type);
+        AcpiOsPrintf ("ExDumpObjectDescriptor: Display not implemented for object type %s\n",
+            AcpiUtGetObjectTypeName (ObjDesc));
         break;
     }
 

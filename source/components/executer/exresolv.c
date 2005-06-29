@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.110 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,7 @@
 #include "amlcode.h"
 #include "acdispat.h"
 #include "acinterp.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -164,7 +165,7 @@ AcpiExResolveToValue (
      * 1) A valid ACPI_OPERAND_OBJECT, or
      * 2) A ACPI_NAMESPACE_NODE (NamedObj)
      */
-    if (ACPI_GET_DESCRIPTOR_TYPE (*StackPtr) == ACPI_DESC_TYPE_INTERNAL)
+    if (ACPI_GET_DESCRIPTOR_TYPE (*StackPtr) == ACPI_DESC_TYPE_OPERAND)
     {
         Status = AcpiExResolveObjectToValue (StackPtr, WalkState);
         if (ACPI_FAILURE (Status))
@@ -179,7 +180,8 @@ AcpiExResolveToValue (
      */
     if (ACPI_GET_DESCRIPTOR_TYPE (*StackPtr) == ACPI_DESC_TYPE_NAMED)
     {
-        Status = AcpiExResolveNodeToValue ((ACPI_NAMESPACE_NODE **) StackPtr,
+        Status = AcpiExResolveNodeToValue (
+                        ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE, StackPtr),
                         WalkState);
         if (ACPI_FAILURE (Status))
         {
@@ -226,9 +228,9 @@ AcpiExResolveObjectToValue (
 
     /* This is an ACPI_OPERAND_OBJECT  */
 
-    switch (StackDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (StackDesc))
     {
-    case INTERNAL_TYPE_REFERENCE:
+    case ACPI_TYPE_LOCAL_REFERENCE:
 
         Opcode = StackDesc->Reference.Opcode;
 
@@ -277,58 +279,6 @@ AcpiExResolveObjectToValue (
                 StackDesc->Reference.Offset, ObjDesc));
             break;
 
-        /*
-         * For constants, we must change the reference/constant object
-         * to a real integer object
-         */
-        case AML_ZERO_OP:
-        case AML_ONE_OP:
-        case AML_ONES_OP:
-        case AML_REVISION_OP:
-
-            /* Create a new integer object */
-
-            ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-            if (!ObjDesc)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            switch (Opcode)
-            {
-            case AML_ZERO_OP:
-                ObjDesc->Integer.Value = 0;
-                break;
-
-            case AML_ONE_OP:
-                ObjDesc->Integer.Value = 1;
-                break;
-
-            case AML_ONES_OP:
-                ObjDesc->Integer.Value = ACPI_INTEGER_MAX;
-
-                /* Truncate value if we are executing from a 32-bit ACPI table */
-
-                AcpiExTruncateFor32bitTable (ObjDesc, WalkState);
-                break;
-
-            case AML_REVISION_OP:
-                ObjDesc->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
-                break;
-
-            default:
-                /* No other opcodes can get here */
-                break;
-            }
-
-            /*
-             * Remove a reference from the original reference object
-             * and put the new object in its place
-             */
-            AcpiUtRemoveReference (StackDesc);
-            *StackPtr = ObjDesc;
-            break;
-
 
         case AML_INDEX_OP:
 
@@ -341,6 +291,7 @@ AcpiExResolveObjectToValue (
 
 
             case ACPI_TYPE_PACKAGE:
+
                 ObjDesc = *StackDesc->Reference.Where;
                 if (ObjDesc)
                 {
@@ -366,7 +317,9 @@ AcpiExResolveObjectToValue (
                 }
                 break;
 
+
             default:
+
                 /* Invalid reference object */
 
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -378,22 +331,22 @@ AcpiExResolveObjectToValue (
             break;
 
 
+        case AML_REF_OF_OP:
         case AML_DEBUG_OP:
 
             /* Just leave the object as-is */
+
             break;
 
 
         default:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference object subtype %02X in %p\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference opcode %X in %p\n",
                 Opcode, StackDesc));
             Status = AE_AML_INTERNAL;
             break;
-
-        }   /* switch (Opcode) */
-
-        break; /* case INTERNAL_TYPE_REFERENCE */
+        }
+        break;
 
 
     case ACPI_TYPE_BUFFER:
@@ -412,12 +365,12 @@ AcpiExResolveObjectToValue (
      * These cases may never happen here, but just in case..
      */
     case ACPI_TYPE_BUFFER_FIELD:
-    case INTERNAL_TYPE_REGION_FIELD:
-    case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_INDEX_FIELD:
+    case ACPI_TYPE_LOCAL_REGION_FIELD:
+    case ACPI_TYPE_LOCAL_BANK_FIELD:
+    case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "FieldRead SourceDesc=%p Type=%X\n",
-            StackDesc, StackDesc->Common.Type));
+            StackDesc, ACPI_GET_OBJECT_TYPE (StackDesc)));
 
         Status = AcpiExReadDataFromField (WalkState, StackDesc, &ObjDesc);
         *StackPtr = (void *) ObjDesc;
@@ -428,6 +381,190 @@ AcpiExResolveObjectToValue (
     }
 
     return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExResolveMultiple
+ *
+ * PARAMETERS:  WalkState           - Current state (contains AML opcode)
+ *              Operand             - Starting point for resolution
+ *              ReturnType          - Where the object type is returned
+ *              ReturnDesc          - Where the resolved object is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Return the base object and type.  Traverse a reference list if
+ *              necessary to get to the base object.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExResolveMultiple (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OPERAND_OBJECT     *Operand,
+    ACPI_OBJECT_TYPE        *ReturnType,
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
+{
+    ACPI_OPERAND_OBJECT     *ObjDesc = (void *) Operand;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OBJECT_TYPE        Type;
+
+
+    ACPI_FUNCTION_TRACE ("AcpiExResolveMultiple");
+
+
+    /*
+     * For reference objects created via the RefOf or Index operators,
+     * we need to get to the base object (as per the ACPI specification 
+     * of the ObjectType and SizeOf operators).  This means traversing 
+     * the list of possibly many nested references.
+     */
+    while (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_REFERENCE)
+    {
+        switch (ObjDesc->Reference.Opcode)
+        {
+        case AML_REF_OF_OP:
+
+            /* Dereference the reference pointer */
+
+            Node = ObjDesc->Reference.Object;
+
+            /* All "References" point to a NS node */
+
+            if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
+            {
+                return_ACPI_STATUS (AE_AML_INTERNAL);
+            }
+
+            /* Get the attached object */
+
+            ObjDesc = AcpiNsGetAttachedObject (Node);
+            if (!ObjDesc)
+            {
+                /* No object, use the NS node type */
+
+                Type = AcpiNsGetType (Node);
+                goto Exit;
+            }
+
+            /* Check for circular references */
+
+            if (ObjDesc == Operand)
+            {
+                return_ACPI_STATUS (AE_AML_CIRCULAR_REFERENCE);
+            }
+            break;
+
+
+        case AML_INDEX_OP:
+
+            /* Get the type of this reference (index into another object) */
+
+            Type = ObjDesc->Reference.TargetType;
+            if (Type != ACPI_TYPE_PACKAGE)
+            {
+                goto Exit;
+            }
+
+            /*
+             * The main object is a package, we want to get the type
+             * of the individual package element that is referenced by
+             * the index.
+             *
+             * This could of course in turn be another reference object.
+             */
+            ObjDesc = *(ObjDesc->Reference.Where);
+            break;
+
+
+        case AML_INT_NAMEPATH_OP:
+
+            /* Dereference the reference pointer */
+
+            Node = ObjDesc->Reference.Node;
+
+            /* All "References" point to a NS node */
+
+            if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
+            {
+                return_ACPI_STATUS (AE_AML_INTERNAL);
+            }
+
+            /* Get the attached object */
+
+            ObjDesc = AcpiNsGetAttachedObject (Node);
+            if (!ObjDesc)
+            {
+                /* No object, use the NS node type */
+
+                Type = AcpiNsGetType (Node);
+                goto Exit;
+            }
+
+            /* Check for circular references */
+
+            if (ObjDesc == Operand)
+            {
+                return_ACPI_STATUS (AE_AML_CIRCULAR_REFERENCE);
+            }
+            break;
+
+
+        case AML_DEBUG_OP:
+
+            /* The Debug Object is of type "DebugObject" */
+
+            Type = ACPI_TYPE_DEBUG_OBJECT;
+            goto Exit;
+
+
+        default:
+
+            ACPI_REPORT_ERROR (("AcpiExResolveMultiple: Unknown Reference subtype %X\n",
+                ObjDesc->Reference.Opcode));
+            return_ACPI_STATUS (AE_AML_INTERNAL);
+        }
+    }
+
+    /*
+     * Now we are guaranteed to have an object that has not been created
+     * via the RefOf or Index operators.
+     */
+    Type = ACPI_GET_OBJECT_TYPE (ObjDesc);
+
+
+Exit:
+    /* Convert internal types to external types */
+
+    switch (Type)
+    {
+    case ACPI_TYPE_LOCAL_REGION_FIELD:
+    case ACPI_TYPE_LOCAL_BANK_FIELD:
+    case ACPI_TYPE_LOCAL_INDEX_FIELD:
+
+        Type = ACPI_TYPE_FIELD_UNIT;
+        break;
+
+    case ACPI_TYPE_LOCAL_SCOPE:
+
+        /* Per ACPI Specification, Scope is untyped */
+
+        Type = ACPI_TYPE_ANY;
+        break;
+
+    default:
+        /* No change to Type required */
+        break;
+    }
+
+    *ReturnType = Type;
+    if (ReturnDesc)
+    {
+        *ReturnDesc = ObjDesc;
+    }
+    return_ACPI_STATUS (AE_OK);
 }
 
 

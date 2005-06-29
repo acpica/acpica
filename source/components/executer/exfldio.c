@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.85 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -157,10 +157,12 @@ AcpiExSetupRegion (
 
     RgnDesc = ObjDesc->CommonField.RegionObj;
 
-    if (ACPI_TYPE_REGION != RgnDesc->Common.Type)
+    if (ACPI_GET_OBJECT_TYPE (RgnDesc) != ACPI_TYPE_REGION)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Needed Region, found type %x %s\n",
-            RgnDesc->Common.Type, AcpiUtGetTypeName (RgnDesc->Common.Type)));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Needed Region, found type %X (%s)\n",
+            ACPI_GET_OBJECT_TYPE (RgnDesc),
+            AcpiUtGetObjectTypeName (RgnDesc)));
+
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
@@ -405,7 +407,7 @@ AcpiExFieldDatumIo (
      * BankFields   - Write to a Bank Register, then read/write from/to an OpRegion
      * IndexFields  - Write to an Index Register, then read/write from/to a Data Register
      */
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_BUFFER_FIELD:
         /*
@@ -448,7 +450,7 @@ AcpiExFieldDatumIo (
         break;
 
 
-    case INTERNAL_TYPE_BANK_FIELD:
+    case ACPI_TYPE_LOCAL_BANK_FIELD:
 
         /* Ensure that the BankValue is not beyond the capacity of the register */
 
@@ -478,7 +480,7 @@ AcpiExFieldDatumIo (
         /*lint -fallthrough */
 
 
-    case INTERNAL_TYPE_REGION_FIELD:
+    case ACPI_TYPE_LOCAL_REGION_FIELD:
         /*
          * For simple RegionFields, we just directly access the owning
          * Operation Region.
@@ -494,7 +496,7 @@ AcpiExFieldDatumIo (
         break;
 
 
-    case INTERNAL_TYPE_INDEX_FIELD:
+    case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
 
         /* Ensure that the IndexValue is not beyond the capacity of the register */
@@ -535,7 +537,7 @@ AcpiExFieldDatumIo (
     default:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%p, Wrong object type - %s\n",
-            ObjDesc, AcpiUtGetTypeName (ObjDesc->Common.Type)));
+            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
         Status = AE_AML_INTERNAL;
         break;
     }
@@ -632,7 +634,7 @@ AcpiExWriteWithUpdateRule (
 
         default:
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "WriteWithUpdateRule: Unknown UpdateRule setting: %x\n",
+                "WriteWithUpdateRule: Unknown UpdateRule setting: %X\n",
                 (ObjDesc->CommonField.FieldFlags & AML_FIELD_UPDATE_RULE_MASK)));
             return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
         }
@@ -819,7 +821,7 @@ AcpiExExtractFromField (
                               ObjDesc->CommonField.AccessByteWidth);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-        "ByteLen=%x, DatumLen=%x, ByteGran=%x\n",
+        "ByteLen=%X, DatumLen=%X, ByteGran=%X\n",
         ByteFieldLength, DatumCount,ObjDesc->CommonField.AccessByteWidth));
 
     /*
@@ -1008,7 +1010,7 @@ AcpiExInsertIntoField (
     DatumCount = ACPI_ROUND_UP_TO (ByteFieldLength, ObjDesc->CommonField.AccessByteWidth);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-        "ByteLen=%x, DatumLen=%x, ByteGran=%x\n",
+        "ByteLen=%X, DatumLen=%X, ByteGran=%X\n",
         ByteFieldLength, DatumCount, ObjDesc->CommonField.AccessByteWidth));
 
     /*

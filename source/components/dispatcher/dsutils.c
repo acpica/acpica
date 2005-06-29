@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.91 $
+ *              $Revision: 1.96 $
  *
  ******************************************************************************/
 
@@ -127,6 +127,7 @@
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dsutils")
 
+#ifndef ACPI_NO_METHOD_EXECUTION
 
 /*******************************************************************************
  *
@@ -212,6 +213,11 @@ AcpiDsIsResultUsed (
             {
                 goto ResultUsed;
             }
+            break;
+
+        default:
+            /* Ignore other control opcodes */
+            break;
         }
 
         /* The general control opcode returns no result */
@@ -335,6 +341,49 @@ AcpiDsDeleteResultIfNotUsed (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDsResolveOperands
+ *
+ * PARAMETERS:  WalkState           - Current walk state with operands on stack
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Resolve all operands to their values.  Used to prepare
+ *              arguments to a control method invocation (a call from one
+ *              method to another.)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsResolveOperands (
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT32                  i;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE_PTR ("DsResolveOperands", WalkState);
+
+
+    /*
+     * Attempt to resolve each of the valid operands
+     * Method arguments are passed by value, not by reference
+     */
+    for (i = 0; i < WalkState->NumOperands; i++)
+    {
+        Status = AcpiExResolveToValue (&WalkState->Operands[i], WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            break;
+        }
+    }
+
+    return_ACPI_STATUS (Status);
+}
+#endif
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDsCreateOperand
  *
  * PARAMETERS:  WalkState
@@ -363,7 +412,6 @@ AcpiDsCreateOperand (
     UINT16                  Opcode;
     ACPI_INTERPRETER_MODE   InterpreterMode;
     const ACPI_OPCODE_INFO  *OpInfo;
-    char                    *Name;
 
 
     ACPI_FUNCTION_TRACE_PTR ("DsCreateOperand", Arg);
@@ -420,7 +468,7 @@ AcpiDsCreateOperand (
                                 ACPI_TYPE_ANY, InterpreterMode,
                                 ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE,
                                 WalkState,
-                                (ACPI_NAMESPACE_NODE **) &ObjDesc);
+                                ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE, &ObjDesc));
         /*
          * The only case where we pass through (ignore) a NOT_FOUND
          * error is for the CondRefOf opcode.
@@ -435,7 +483,7 @@ AcpiDsCreateOperand (
                  * indicate this to the interpreter, set the
                  * object to the root
                  */
-                ObjDesc = (ACPI_OPERAND_OBJECT  *) AcpiGbl_RootNode;
+                ObjDesc = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, AcpiGbl_RootNode);
                 Status = AE_OK;
             }
 
@@ -446,13 +494,12 @@ AcpiDsCreateOperand (
                  * very serious error at this point
                  */
                 Status = AE_AML_NAME_NOT_FOUND;
-
-                Name = NULL;
-                AcpiNsExternalizeName (ACPI_UINT32_MAX, NameString, NULL, &Name);
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                        "Object name [%s] was not found in namespace\n", Name));
-                ACPI_MEM_FREE (Name);
             }
+        }
+
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_REPORT_NSERROR (NameString, Status);
         }
 
         /* Free the namestring created above */
@@ -486,8 +533,8 @@ AcpiDsCreateOperand (
             /*
              * If the name is null, this means that this is an
              * optional result parameter that was not specified
-             * in the original ASL.  Create an Reference for a
-             * placeholder
+             * in the original ASL.  Create a Zero Constant for a
+             * placeholder.  (Store to a constant is a Noop.)
              */
             Opcode = AML_ZERO_OP;       /* Has no arguments! */
 
@@ -502,7 +549,7 @@ AcpiDsCreateOperand (
         /* Get the object type of the argument */
 
         OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-        if (OpInfo->ObjectType == INTERNAL_TYPE_INVALID)
+        if (OpInfo->ObjectType == ACPI_TYPE_INVALID)
         {
             return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
         }
@@ -623,52 +670,11 @@ Cleanup:
      * pop everything off of the operand stack and delete those
      * objects
      */
-    AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
+    (void) AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "While creating Arg %d - %s\n",
         (ArgCount + 1), AcpiFormatException (Status)));
     return_ACPI_STATUS (Status);
 }
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDsResolveOperands
- *
- * PARAMETERS:  WalkState           - Current walk state with operands on stack
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Resolve all operands to their values.  Used to prepare
- *              arguments to a control method invocation (a call from one
- *              method to another.)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiDsResolveOperands (
-    ACPI_WALK_STATE         *WalkState)
-{
-    UINT32                  i;
-    ACPI_STATUS             Status = AE_OK;
-
-
-    ACPI_FUNCTION_TRACE_PTR ("DsResolveOperands", WalkState);
-
-
-    /*
-     * Attempt to resolve each of the valid operands
-     * Method arguments are passed by value, not by reference
-     */
-    for (i = 0; i < WalkState->NumOperands; i++)
-    {
-        Status = AcpiExResolveToValue (&WalkState->Operands[i], WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            break;
-        }
-    }
-
-    return_ACPI_STATUS (Status);
-}
 
