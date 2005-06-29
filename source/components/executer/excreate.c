@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -365,7 +365,7 @@ AcpiAmlExecCreateField_original (
     }
 
 
-    Offset = OffDesc->Number.Value;
+    Offset = (UINT32) OffDesc->Number.Value;
 
 
     /*

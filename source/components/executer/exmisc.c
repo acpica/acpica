@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.68 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -210,8 +210,7 @@ Cleanup:
 
     /* If we get back from the OS call, we might as well keep going. */
 
-    REPORT_WARNING ("An AML FatalOp was executed");
-    DEBUG_PRINT (ACPI_INFO, ("AmlExecFatal: FatalOp executed\n"));
+    REPORT_WARNING (("An AML \"Fatal\" Opcode (FatalOp) was executed\n"));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -357,7 +356,7 @@ AcpiAmlExecIndex (
         RetDesc->Reference.OpCode       = AML_INDEX_OP;
         RetDesc->Reference.TargetType   = ACPI_TYPE_BUFFER_FIELD;
         RetDesc->Reference.Object       = ObjDesc;
-        RetDesc->Reference.Offset       = IdxDesc->Number.Value;
+        RetDesc->Reference.Offset       = (UINT32) IdxDesc->Number.Value;
 
         Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
     }
@@ -470,7 +469,7 @@ AcpiAmlExecMatch (
         goto Cleanup;
     }
 
-    Index = StartDesc->Number.Value;
+    Index = (UINT32) StartDesc->Number.Value;
     if (Index >= (UINT32) PkgDesc->Package.Count)
     {
         DEBUG_PRINT (ACPI_ERROR,
