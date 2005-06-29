@@ -216,7 +216,8 @@ PsDeleteParseTree (
 
 ACPI_STATUS
 PsParseLoop (
-    ACPI_PARSE_STATE        *ParserState);
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_WALK_STATE         *WalkState);
 
 
 ACPI_STATUS
