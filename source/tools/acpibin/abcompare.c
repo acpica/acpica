@@ -2,7 +2,7 @@
 /******************************************************************************
  * 
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -116,6 +116,7 @@
  *****************************************************************************/
 
 #include "acpibin.h"
+#include <stdlib.h>
 
 
 FILE                *File1;
@@ -245,8 +246,113 @@ AbCompareAmlFiles (
 }
 
 
+struct stat              Gbl_StatBuf;
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsGetFile  
+ *
+ * DESCRIPTION: Open a file and read it entirely into a an allocated buffer 
+ *
+ ******************************************************************************/
+
+char *
+AbGetFile (
+    char                    *Filename,
+    UINT32                  *FileSize)
+{
+
+    int                     FileHandle;
+    UINT32                  Size;
+    char                    *Buffer = NULL;
 
 
 
+    /* Binary mode leaves CR/LF pairs */
+
+    FileHandle = open (Filename, O_BINARY | O_RDONLY);
+    if (!FileHandle)
+    {
+        printf ("Could not open %s\n", Filename);
+        return NULL;
+    }
+
+    if (fstat (FileHandle, &Gbl_StatBuf))
+    {
+        printf ("Could not get file status for %s\n", Filename);
+        goto ErrorExit;
+    }
+
+    /* 
+     * Create a buffer for the entire file 
+     * Add 10% extra to accomodate string replacements
+     */
+
+    Size = Gbl_StatBuf.st_size;
+    Buffer = calloc (Size + (Size / 10), 1);
+    if (!Buffer)
+    {
+        printf ("Could not allocate buffer of size %d\n", Size + (Size / 10));
+        goto ErrorExit;
+    }
+
+    /* Read the entire file */
+
+    Size = read (FileHandle, Buffer, Size);
+    if (Size == -1)
+    {
+        printf ("Could not read the input file %s\n", Filename);
+        free (Buffer);
+        Buffer = NULL;
+        goto ErrorExit;
+    }
+
+    *FileSize = Size;
+
+ErrorExit:
+    close (FileHandle);
+
+    return (Buffer);
+}
+
+
+int
+AbDumpAmlFile (
+    char                    *File1Path)
+{
+    char                    *FileBuffer;
+    UINT32                  FileSize;
+
+
+
+    FileBuffer = AbGetFile (File1Path, &FileSize);
+    printf ("File %s contains 0x%X bytes\n\n", File1Path, FileSize);
+
+    AcpiDbgLevel = ACPI_UINT32_MAX;
+    AcpiCmDumpBuffer (FileBuffer, FileSize, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+
+    return 0;
+}
+
+#define DB_CONSOLE_OUTPUT       0x02
+
+FILE                        *DebugFile = NULL;
+UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
+
+
+ACPI_STATUS
+AcpiCmReleaseMutex (
+    ACPI_MUTEX_HANDLE       MutexId)
+{
+    return AE_OK;
+}
+
+ACPI_STATUS
+AcpiCmAcquireMutex (
+    ACPI_MUTEX_HANDLE       MutexId)
+{
+    return AE_OK;
+}
 
 

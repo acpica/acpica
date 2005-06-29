@@ -2,7 +2,7 @@
 /******************************************************************************
  * 
  * Module Name: acpibinh - Include file for AcpiBin utility
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -154,5 +154,10 @@ int
 AbCompareAmlFiles (
     char                    *File1Path,
     char                    *File2Path);
+
+
+int
+AbDumpAmlFile (
+    char                    *File1Path);
 
 

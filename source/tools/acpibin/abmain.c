@@ -2,7 +2,7 @@
 /******************************************************************************
  * 
  * Module Name: abmain - Main module for the acpi binary utility
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -136,7 +136,9 @@ void
 AbDisplayUsage (void)
 {
 
-    printf ("Usage: acpibin [-c ] <File1> <File2>\n\n");
+    printf ("Usage: acpibin [-cd] <File1> [<File2>]\n\n");
+    printf ("Options:  -c               Compare AML files\n");
+    printf ("          -d               Dump AML file\n");
     printf ("\n");
     return;
 }
@@ -169,16 +171,18 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "c")) != EOF) switch(j) 
+    while ((j = getopt (argc, argv, "cd")) != EOF) switch(j) 
     {
     case 'c':
         /* Compare Files */
 
         AbCompareAmlFiles (argv[optind], argv[optind+1]);
-
         break;
 
+    case 'd':
 
+        AbDumpAmlFile (argv[optind]);
+        break;
 
     default:    
         AbDisplayUsage ();
