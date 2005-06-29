@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.55 $
+ *       $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -180,7 +180,7 @@
 /*
  * Debugger threading model
  * Use single threaded if the entire subsystem is contained in an application
- * Use multiple threaded when the the subsystem is running in the kernel.
+ * Use multiple threaded when the subsystem is running in the kernel.
  *
  * By default the model is single threaded if ACPI_APPLICATION is set,
  * multi-threaded if ACPI_APPLICATION is not set.
