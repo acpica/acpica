@@ -428,8 +428,7 @@ AcpiPsCompleteThisOp (
     ACPI_GENERIC_OP         *ReplacementOp = NULL;
 
 
-    DEBUG_PRINT (TRACE_PARSE,
-        ("CompleteThisOp:  Completing Op=%p\n", Op));
+    FUNCTION_TRACE_PTR ("PsCompleteThisOp", Op);
 
 
     OpInfo      = AcpiPsGetOpcodeInfo (Op->Opcode);
@@ -468,7 +467,7 @@ AcpiPsCompleteThisOp (
                 ReplacementOp = AcpiPsAllocOp (AML_RETURN_VALUE_OP);
                 if (!ReplacementOp)
                 {
-                    return FALSE;
+                    return_VALUE (FALSE);
                 }
             }
 
@@ -523,20 +522,13 @@ AcpiPsCompleteThisOp (
 
         /* Now we can actually delete the subtree rooted at op */
 
-        if (Op->Opcode == AML_STORE_OP)
-        {
-            AcpiPsDeleteParseTree (Op);
-        }
-
-        else {
         AcpiPsDeleteParseTree (Op);
-        }
 
-        return (TRUE);
+        return_VALUE (TRUE);
     }
 #endif
 
-    return (FALSE);
+    return_VALUE (FALSE);
 }
 
 
@@ -619,11 +611,12 @@ AcpiPsNextParseState (
          * level.
          */
 
-        ParserState->Aml = ParserState->PkgEnd;
+        ParserState->Aml = ParserState->Scope->PkgEnd;
 
         /* In the case of a BREAK, just force a predicate (if any) to FALSE */
 
         WalkState->ControlState->Common.Value = FALSE;
+        Status = AE_CTRL_END;
         break;
 
 
@@ -1005,7 +998,17 @@ CloseThisOp:
             }
 
 
-            if (ACPI_FAILURE (Status))
+            if (Status == AE_CTRL_END)
+            {
+                AcpiPsPopScope (ParserState, &Op, &ArgTypes);
+                Status = WalkState->AscendingCallback (WalkState, Op);
+                Status = AcpiPsNextParseState (WalkState, Op, Status);
+                AcpiPsCompleteThisOp (WalkState, Op);
+                Op = NULL;
+                Status = AE_OK;
+            }
+
+            else if (ACPI_FAILURE (Status))
             {
                 if (Op == NULL)
                 {
@@ -1025,12 +1028,12 @@ CloseThisOp:
                     /* Clean up */
                     do
                     {
-                        AcpiPsPopScope (ParserState, &Op, &ArgTypes);
                         if (Op)
                         {
                             AcpiPsCompleteThisOp (WalkState, Op);
                         }
 
+                        AcpiPsPopScope (ParserState, &Op, &ArgTypes);
                     } while (Op);
                 }
                 return_ACPI_STATUS (Status);
@@ -1070,6 +1073,8 @@ CloseThisOp:
      * of open scopes (such as when several AML blocks are closed with
      * sequential closing braces).  We want to terminate each one cleanly.
      */
+
+    DEBUG_PRINT (TRACE_PARSE, ("PsParseLoop: Package complete at Op %p\n", Op));
     do
     {
         if (Op)
@@ -1083,7 +1088,25 @@ CloseThisOp:
                     Status = AE_OK;
                     goto CloseThisOp;
                 }
-                if (ACPI_FAILURE (Status))
+
+                if (Status == AE_CTRL_TERMINATE)
+                {
+                    Status = AE_OK;
+
+                    /* Clean up */
+                    do
+                    {
+                        if (Op)
+                        {
+                            AcpiPsCompleteThisOp (WalkState, Op);
+                        }
+
+                        AcpiPsPopScope (ParserState, &Op, &ArgTypes);
+                    } while (Op);
+                    return_ACPI_STATUS (Status);
+                }
+
+                else if (ACPI_FAILURE (Status))
                 {
                     AcpiPsCompleteThisOp (WalkState, Op);
                     return_ACPI_STATUS (Status);

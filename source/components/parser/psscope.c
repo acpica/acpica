@@ -115,7 +115,7 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psscope");
@@ -137,7 +137,7 @@ ACPI_GENERIC_OP *
 AcpiPsGetParentScope (
     ACPI_PARSE_STATE        *ParserState)
 {
-    return ParserState->Scope->Op;
+    return (ParserState->Scope->Op);
 }
 
 
@@ -159,8 +159,8 @@ BOOLEAN
 AcpiPsHasCompletedScope (
     ACPI_PARSE_STATE        *ParserState)
 {
-    return (BOOLEAN) ((ParserState->Aml >= ParserState->Scope->ArgEnd ||
-                        !ParserState->Scope->ArgCount));
+    return ((BOOLEAN) ((ParserState->Aml >= ParserState->Scope->ArgEnd ||
+                        !ParserState->Scope->ArgCount)));
 }
 
 
@@ -188,7 +188,7 @@ AcpiPsInitScope (
     Scope = AcpiCmCallocate (sizeof (ACPI_PARSE_SCOPE));
     if (!Scope)
     {
-        return AE_NO_MEMORY;
+        return (AE_NO_MEMORY);
     }
 
     Scope->Op               = Root;
@@ -198,7 +198,7 @@ AcpiPsInitScope (
     ParserState->Scope      = Scope;
     ParserState->StartOp    = Root;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -227,7 +227,7 @@ AcpiPsPushScope (
     ACPI_PARSE_SCOPE        *Scope = ParserState->ScopeAvail;
 
 
-    FUNCTION_TRACE ("PsPushScope");
+    FUNCTION_TRACE_PTR ("PsPushScope", Op);
 
 
     if (Scope)
@@ -327,6 +327,8 @@ AcpiPsPopScope (
         *ArgList                = 0;
     }
 
+
+    DEBUG_PRINT (TRACE_PARSE, ("PsPopScope:  Popped Op %p\n", *Op));
     return_VOID;
 }
 

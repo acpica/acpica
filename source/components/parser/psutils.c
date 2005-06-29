@@ -122,10 +122,11 @@
         MODULE_NAME         ("psutils");
 
 
-#define PARSEOP_GENERIC     1
-#define PARSEOP_NAMED       2
-#define PARSEOP_DEFERRED    3
-#define PARSEOP_BYTELIST    4
+#define PARSEOP_GENERIC     0x01
+#define PARSEOP_NAMED       0x02
+#define PARSEOP_DEFERRED    0x03
+#define PARSEOP_BYTELIST    0x04
+#define PARSEOP_IN_CACHE    0x80
 
 
 /*******************************************************************************
@@ -153,13 +154,10 @@ AcpiPsInitOp (
     Op->DataType = ACPI_DESC_TYPE_PARSER;
     Op->Opcode = Opcode;
 
-
     AmlOp = AcpiPsGetOpcodeInfo (Opcode);
-    if (AmlOp)
-    {
-        DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, AmlOp->Name,
-                            sizeof (Op->OpName)));
-    }
+
+    DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, AmlOp->Name,
+                        sizeof (Op->OpName)));
 }
 
 
@@ -233,6 +231,9 @@ AcpiPsAllocOp (
             /* Clear the previously used Op */
 
             MEMSET (Op, 0, sizeof (ACPI_GENERIC_OP));
+
+            DEBUG_PRINT (TRACE_PARSE,
+                            ("PsAllocOp: Op %p from Parse Cache\n", Op));
         }
         AcpiCmReleaseMutex (ACPI_MTX_CACHES);
     }
@@ -251,7 +252,7 @@ AcpiPsAllocOp (
         Op->Flags = Flags;
     }
 
-    return Op;
+    return (Op);
 }
 
 
@@ -274,6 +275,11 @@ AcpiPsFreeOp (
 {
 
 
+    if (Op->Opcode == AML_RETURN_VALUE_OP)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("Free retval op: %p\n", Op));
+    }
+
     if (Op->Flags == PARSEOP_GENERIC)
     {
         /* Is the cache full? */
@@ -281,6 +287,11 @@ AcpiPsFreeOp (
         if (AcpiGbl_ParseCacheDepth < MAX_PARSE_CACHE_DEPTH)
         {
             /* Put a GENERIC_OP back into the cache */
+
+            /* Clear the previously used Op */
+
+            MEMSET (Op, 0, sizeof (ACPI_GENERIC_OP));
+            Op->Flags = PARSEOP_IN_CACHE;
 
             AcpiCmAcquireMutex (ACPI_MTX_CACHES);
             AcpiGbl_ParseCacheDepth++;
