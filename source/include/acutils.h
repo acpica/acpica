@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.133 $
+ *       $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -173,7 +173,7 @@ ACPI_STATUS
 AcpiUtHardwareInitialize (
     void);
 
-ACPI_STATUS
+void
 AcpiUtSubsystemShutdown (
     void);
 
