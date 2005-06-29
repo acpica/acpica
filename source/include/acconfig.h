@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.43 $
+ *       $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -145,16 +145,6 @@
 /* Version string */
 
 #define ACPI_CA_VERSION             __DATE__
-
-/* Name of host operating system (returned by the _OS_ namespace object) */
-
-#ifdef _LINUX
-#define ACPI_OS_NAME                "Linux"
-#else
-#ifndef ACPI_OS_NAME
-#define ACPI_OS_NAME                "Intel ACPI/CA Core Subsystem"
-#endif
-#endif
 
 
 /*
