@@ -1050,9 +1050,29 @@ AmlExecCreateMethod (
     /* First argument is the Method Flags (contains parameter count for the method) */
 
     ObjDesc->Method.MethodFlags = (UINT8) MethodFlags;
-    ObjDesc->Method.ParamCount  = (UINT8) (MethodFlags & ACPI_METHOD_ARG_MASK);
+    ObjDesc->Method.ParamCount  = (UINT8) (MethodFlags & METHOD_FLAGS_ARG_COUNT);
     
-    /* Method is not parsed yet */
+    /* 
+     * Get the concurrency count
+     * TBD:  for APCI 2.0, this will be a value, not just a flag.
+     */
+    if (MethodFlags & METHOD_FLAGS_SERIALIZED)
+    {
+        ObjDesc->Method.Concurrency = 1;
+    }
+    else
+    {
+        ObjDesc->Method.Concurrency = INFINITE_CONCURRENCY;
+    }
+
+
+    /* If there is a concurrency limit, TBD: DO SOMETHING */
+
+    if (ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY)
+    {
+    }
+
+    /* Mark the Method as not parsed yet */
 
     ObjDesc->Method.ParserOp    = NULL;
 
