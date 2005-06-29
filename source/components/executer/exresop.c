@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -730,6 +730,8 @@ AcpiExResolveOperands (
 
                 if (TargetOp == AML_DEBUG_OP)
                 {
+                    /* Allow store of any object to the Debug object */
+
                     break;
                 }
 
