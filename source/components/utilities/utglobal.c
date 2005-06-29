@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.158 $
+ *              $Revision: 1.160 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "amlcode.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utglobal")
@@ -642,6 +641,11 @@ AcpiUtGetTypeName (
 }
 
 
+/* Various strings for future use */
+
+#if 0
+#include "amlcode.h"
+
 /* Data used in keeping track of fields */
 
 static const NATIVE_CHAR *AcpiGbl_FENames[NUM_FIELD_NAMES] =
@@ -684,6 +688,7 @@ static const NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
     "WriteAsOnes",
     "WriteAsZeros"
 };
+#endif /* Future use */
 
 #endif
 
@@ -853,6 +858,7 @@ AcpiUtInitGlobals (
 
     AcpiGbl_SysNotify.Handler           = NULL;
     AcpiGbl_DrvNotify.Handler           = NULL;
+    AcpiGbl_InitHandler                 = NULL;
 
     /* Global "typed" ACPI table pointers */
 
