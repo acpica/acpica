@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -352,7 +352,7 @@ AcpiPsGetNextNamepath (
         /* Null name case, create a null namepath object */
 
         AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
-        Arg->Value.Name = Path;
+        Arg->Common.Value.Name = Path;
         return_VOID;
     }
 
@@ -371,7 +371,7 @@ AcpiPsGetNextNamepath (
 
         if (Op)
         {
-            if (Op->Opcode == AML_METHOD_OP)
+            if (Op->AmlOpcode == AML_METHOD_OP)
             {
                 /*
                  * The name refers to a control method, so this namepath is a
@@ -380,7 +380,7 @@ AcpiPsGetNextNamepath (
                  * object into a METHODCALL object.
                  */
                 Count = AcpiPsGetArg (Op, 0);
-                if (Count && Count->Opcode == AML_BYTE_OP)
+                if (Count && Count->AmlOpcode == AML_BYTE_OP)
                 {
                     NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
                     if (NameOp)
@@ -389,11 +389,11 @@ AcpiPsGetNextNamepath (
 
                         AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
 
-                        NameOp->Value.Name = Path;
+                        NameOp->Common.Value.Name = Path;
 
                         /* Point METHODCALL/NAME to the METHOD Node */
 
-                        NameOp->Node = (ACPI_NAMESPACE_NODE *) Op;
+                        NameOp->Common.Node = (ACPI_NAMESPACE_NODE *) Op;
                         AcpiPsAppendArg (Arg, NameOp);
 
                         *ArgCount = (UINT32) Count->Value.Integer &
@@ -418,7 +418,7 @@ AcpiPsGetNextNamepath (
      * pathname
      */
     AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
-    Arg->Value.Name = Path;
+    Arg->Common.Value.Name = Path;
 
 
     return_VOID;
@@ -452,7 +452,7 @@ AcpiPsGetNextNamepath (
         /* Null name case, create a null namepath object */
 
         AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
-        Arg->Value.Name = Path;
+        Arg->Common.Value.Name = Path;
         return_VOID;
     }
 
@@ -493,11 +493,11 @@ AcpiPsGetNextNamepath (
 
                     AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
 
-                    NameOp->Value.Name = Path;
+                    NameOp->Common.Value.Name = Path;
 
                     /* Point METHODCALL/NAME to the METHOD Node */
 
-                    NameOp->Node = MethodNode;
+                    NameOp->Common.Node = MethodNode;
                     AcpiPsAppendArg (Arg, NameOp);
 
                     if (!AcpiNsGetAttachedObject (MethodNode))
@@ -525,7 +525,7 @@ AcpiPsGetNextNamepath (
      * pathname.
      */
     AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
-    Arg->Value.Name = Path;
+    Arg->Common.Value.Name = Path;
 
 
     return_VOID;
@@ -563,7 +563,7 @@ AcpiPsGetNextSimpleArg (
     case ARGP_BYTEDATA:
 
         AcpiPsInitOp (Arg, AML_BYTE_OP);
-        Arg->Value.Integer = (UINT32) ACPI_GET8 (ParserState->Aml);
+        Arg->Common.Value.Integer = (UINT32) ACPI_GET8 (ParserState->Aml);
         ParserState->Aml++;
         break;
 
@@ -574,7 +574,7 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 2 bytes from the AML stream */
 
-        ACPI_MOVE_UNALIGNED16_TO_32 (&Arg->Value.Integer, ParserState->Aml);
+        ACPI_MOVE_UNALIGNED16_TO_32 (&Arg->Common.Value.Integer, ParserState->Aml);
         ParserState->Aml += 2;
         break;
 
@@ -585,7 +585,7 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 4 bytes from the AML stream */
 
-        ACPI_MOVE_UNALIGNED32_TO_32 (&Arg->Value.Integer, ParserState->Aml);
+        ACPI_MOVE_UNALIGNED32_TO_32 (&Arg->Common.Value.Integer, ParserState->Aml);
         ParserState->Aml += 4;
         break;
 
@@ -596,7 +596,7 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 8 bytes from the AML stream */
 
-        ACPI_MOVE_UNALIGNED64_TO_64 (&Arg->Value.Integer, ParserState->Aml);
+        ACPI_MOVE_UNALIGNED64_TO_64 (&Arg->Common.Value.Integer, ParserState->Aml);
         ParserState->Aml += 8;
         break;
 
@@ -604,7 +604,7 @@ AcpiPsGetNextSimpleArg (
     case ARGP_CHARLIST:
 
         AcpiPsInitOp (Arg, AML_STRING_OP);
-        Arg->Value.String = (char *) ParserState->Aml;
+        Arg->Common.Value.String = (char *) ParserState->Aml;
 
         while (ACPI_GET8 (ParserState->Aml) != '\0')
         {
@@ -618,7 +618,7 @@ AcpiPsGetNextSimpleArg (
     case ARGP_NAMESTRING:
 
         AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
-        Arg->Value.Name = AcpiPsGetNextNamestring (ParserState);
+        Arg->Common.Value.Name = AcpiPsGetNextNamestring (ParserState);
         break;
     }
 
@@ -683,7 +683,7 @@ AcpiPsGetNextField (
     Field = AcpiPsAllocOp (Opcode);
     if (Field)
     {
-        Field->AmlOffset = AmlOffset;
+        Field->Common.AmlOffset = AmlOffset;
 
         /* Decode the field type */
 
@@ -699,7 +699,7 @@ AcpiPsGetNextField (
 
             /* Get the length which is encoded as a package length */
 
-            Field->Value.Size = AcpiPsGetNextPackageLength (ParserState);
+            Field->Common.Value.Size = AcpiPsGetNextPackageLength (ParserState);
             break;
 
 
@@ -707,7 +707,7 @@ AcpiPsGetNextField (
 
             /* Get the length which is encoded as a package length */
 
-            Field->Value.Size = AcpiPsGetNextPackageLength (ParserState);
+            Field->Common.Value.Size = AcpiPsGetNextPackageLength (ParserState);
             break;
 
 
@@ -717,9 +717,9 @@ AcpiPsGetNextField (
              * Get AccessType and AccessAttrib and merge into the field Op
              * AccessType is first operand, AccessAttribute is second
              */
-            Field->Value.Integer32 = (ACPI_GET8 (ParserState->Aml) << 8);
+            Field->Common.Value.Integer32 = (ACPI_GET8 (ParserState->Aml) << 8);
             ParserState->Aml++;
-            Field->Value.Integer32 |= ACPI_GET8 (ParserState->Aml);
+            Field->Common.Value.Integer32 |= ACPI_GET8 (ParserState->Aml);
             ParserState->Aml++;
             break;
         }
@@ -803,7 +803,7 @@ AcpiPsGetNextArg (
 
                 if (Prev)
                 {
-                    Prev->Next = Field;
+                    Prev->Common.Next = Field;
                 }
 
                 else
@@ -832,8 +832,8 @@ AcpiPsGetNextArg (
             {
                 /* fill in bytelist data */
 
-                Arg->Value.Size = (ParserState->PkgEnd - ParserState->Aml);
-                ((ACPI_PARSE2_OBJECT *) Arg)->Data = ParserState->Aml;
+                Arg->Common.Value.Size = (ParserState->PkgEnd - ParserState->Aml);
+                Arg->Named.Data = ParserState->Aml;
             }
 
             /* skip to End of byte data */
