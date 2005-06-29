@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.70 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -306,7 +306,7 @@ AslCommandLine (
     char                    **argv)
 {
     BOOLEAN                 BadCommandLine = FALSE;
-    NATIVE_UINT             j;
+    ACPI_NATIVE_UINT        j;
 
 
     /* Minimum command line contains at least one option or an input file */
@@ -723,7 +723,7 @@ main (
         /* This is where the disassembly happens */
 
         AcpiGbl_DbOpt_disasm = TRUE;
-        Status = AdAmlDisassemble (AslToFile, 
+        Status = AdAmlDisassemble (AslToFile,
                         Gbl_Files[ASL_FILE_INPUT].Filename,
                         Gbl_OutputFilenamePrefix,
                         &Gbl_Files[ASL_FILE_INPUT].Filename,

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.40 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -623,7 +623,7 @@ OpnDoBuffer (
 
 
     default:
-        AslError (ASL_ERROR, ASL_MSG_INVALID_OPERAND, InitializerOp, 
+        AslError (ASL_ERROR, ASL_MSG_INVALID_OPERAND, InitializerOp,
             "Unknown buffer initializer opcode");
         printf ("Unknown buffer initializer opcode [%s]\n",
                         UtGetOpName (InitializerOp->Asl.ParseOpcode));
@@ -833,7 +833,7 @@ OpnDoDefinitionBlock (
 {
     ACPI_PARSE_OBJECT       *Child;
     ACPI_SIZE               Length;
-    NATIVE_UINT             i;
+    ACPI_NATIVE_UINT        i;
 
 
     /*
@@ -968,7 +968,6 @@ OpnAttachNameToNode (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *Child = NULL;
-    ACPI_STATUS             Status;
 
 
     if (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL)
@@ -1023,11 +1022,7 @@ OpnAttachNameToNode (
 
     if (Child)
     {
-        Op->Asl.ExternalName = Child->Asl.Value.String;
-        Status = UtInternalizeName (Child->Asl.Value.String, &Op->Asl.Namepath);
-        if (ACPI_FAILURE (Status))
-        {
-        }
+        UtAttachNamepathToOwner (Op, Child);
     }
 }
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.59 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -197,12 +197,16 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_AL1",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AL2",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AL3",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_ALN",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_ASI",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_BAS",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_BBN",     0,      ASL_RSVD_RETURN_VALUE},
     {"_BCL",     0,      ASL_RSVD_RETURN_VALUE},
     {"_BCM",     1,      0},
     {"_BDN",     0,      ASL_RSVD_RETURN_VALUE},
     {"_BFS",     1,      0},
     {"_BIF",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_BM_",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_BST",     0,      ASL_RSVD_RETURN_VALUE},
     {"_BTP",     1,      0},
     {"_CID",     0,      ASL_RSVD_RETURN_VALUE},
@@ -212,7 +216,8 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_DCK",     1,      ASL_RSVD_RETURN_VALUE},
     {"_DCS",     0,      ASL_RSVD_RETURN_VALUE},
     {"_DDC",     1,      ASL_RSVD_RETURN_VALUE},
-    {"_DDN",     1,      0},                          /* Spec is ambiguous about this */
+    {"_DDN",     0,      0},
+    {"_DEC",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_DGS",     0,      ASL_RSVD_RETURN_VALUE},
     {"_DIS",     0,      0},
     {"_DMA",     0,      ASL_RSVD_RETURN_VALUE},
@@ -231,23 +236,36 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_FDI",     0,      ASL_RSVD_RETURN_VALUE},
     {"_FDM",     1,      0},
     {"_FIX",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_GL_",     0,      ASL_RSVD_RETURN_VALUE},
     {"_GLK",     0,      ASL_RSVD_RETURN_VALUE},
     {"_GPD",     0,      ASL_RSVD_RETURN_VALUE},
     {"_GPE",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_GRA",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_GTF",     0,      ASL_RSVD_RETURN_VALUE},
     {"_GTM",     0,      ASL_RSVD_RETURN_VALUE},
     {"_GTS",     1,      0},
+    {"_HE_",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_HID",     0,      ASL_RSVD_RETURN_VALUE},
     {"_HOT",     0,      ASL_RSVD_RETURN_VALUE},
     {"_HPP",     0,      ASL_RSVD_RETURN_VALUE},
     {"_INI",     0,      0},
+    {"_INT",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_IRC",     0,      0},
     {"_LCK",     1,      0},
+    {"_LEN",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_LID",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_LL_",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_MAF",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_MAT",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_MAX",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_MEM",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_MIF",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_MIN",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_MSG",     1,      0},
     {"_OFF",     0,      0},
     {"_ON_",     0,      0},
+    {"_OS_",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_OSI",     1,      ASL_RSVD_RETURN_VALUE},
     {"_PCL",     0,      ASL_RSVD_RETURN_VALUE},
     {"_PCT",     0,      ASL_RSVD_RETURN_VALUE},
     {"_PIC",     1,      0},
@@ -271,9 +289,14 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_PTC",     0,      ASL_RSVD_RETURN_VALUE},
     {"_PTS",     1,      0},
     {"_PXM",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_RBO",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_RBW",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_REG",     2,      0},
+    {"_REV",     0,      ASL_RSVD_RETURN_VALUE},
     {"_RMV",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_RNG",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_ROM",     2,      ASL_RSVD_RETURN_VALUE},
+    {"_RW_",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_S0_",     0,      ASL_RSVD_RETURN_VALUE},
     {"_S1_",     0,      ASL_RSVD_RETURN_VALUE},
     {"_S2_",     0,      ASL_RSVD_RETURN_VALUE},
@@ -284,9 +307,13 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_S2D",     0,      ASL_RSVD_RETURN_VALUE},
     {"_S3D",     0,      ASL_RSVD_RETURN_VALUE},
     {"_S4D",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_SB_",     0,      ASL_RSVD_SCOPE},
     {"_SBS",     0,      ASL_RSVD_RETURN_VALUE},
     {"_SCP",     1,      0},
     {"_SEG",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_SHR",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_SI_",     0,      ASL_RSVD_SCOPE},
+    {"_SIZ",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_SPD",     1,      ASL_RSVD_RETURN_VALUE},
     {"_SRS",     1,      0},
     {"_SST",     1,      0},
@@ -297,7 +324,12 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_TC1",     0,      ASL_RSVD_RETURN_VALUE},
     {"_TC2",     0,      ASL_RSVD_RETURN_VALUE},
     {"_TMP",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_TRA",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_TRS",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_TSP",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_TTP",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_TYP",     0,      ASL_RSVD_RESOURCE_NAME},
+    {"_TZ_",     0,      ASL_RSVD_SCOPE},
     {"_TZD",     0,      ASL_RSVD_RETURN_VALUE},
     {"_TZP",     0,      ASL_RSVD_RETURN_VALUE},
     {"_UID",     0,      ASL_RSVD_RETURN_VALUE},
@@ -307,10 +339,9 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
 };
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    MpDisplayReservedNames 
+ * FUNCTION:    MpDisplayReservedNames
  *
  * PARAMETERS:  None
  *
@@ -330,15 +361,27 @@ MpDisplayReservedNames (
 
     for (i = 0; ReservedMethods[i].Name; i++)
     {
-        printf ("%s   %d arguments, ", ReservedMethods[i].Name,
-                               ReservedMethods[i].NumArguments);
-        if (ReservedMethods[i].Flags & ASL_RSVD_RETURN_VALUE)
+        printf ("%s    ", ReservedMethods[i].Name);
+
+        if (ReservedMethods[i].Flags & ASL_RSVD_SCOPE)
         {
-            printf ("must return a value\n");
+            printf ("Reserved scope name\n");
+        }
+        else if (ReservedMethods[i].Flags & ASL_RSVD_RESOURCE_NAME)
+        {
+            printf ("Resource data type reserved field name\n");
         }
         else
         {
-            printf ("no return value\n");
+            printf ("Method with %d arguments, ", ReservedMethods[i].NumArguments);
+            if (ReservedMethods[i].Flags & ASL_RSVD_RETURN_VALUE)
+            {
+                printf ("must return a value\n");
+            }
+            else
+            {
+                printf ("no return value\n");
+            }
         }
     }
 }
@@ -370,11 +413,14 @@ MpDisplayReservedNames (
 
 const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 {
+/*! [Begin] no source code translation (keep the table structure) */
+
 
 /* ACCESSAS */                  OP_TABLE_ENTRY (AML_INT_ACCESSFIELD_OP,     0,                              0,                  0),
 /* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BLOCK,     0,                  0),
+/* ACCESSATTRIB_BLOCK_CALL */   OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BLOCK_CALL,0,                  0),
 /* ACCESSATTRIB_BYTE */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BYTE,      0,                  0),
-/* ACCESSATTRIB_CALL */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_CALL,      0,                  0),
+/* ACCESSATTRIB_WORD_CALL */    OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_WORD_CALL, 0,                  0),
 /* ACCESSATTRIB_QUICK */        OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_QUICK,     0,                  0),
 /* ACCESSATTRIB_SND_RCV */      OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_SEND_RCV,  0,                  0),
 /* ACCESSATTRIB_WORD */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_WORD,      0,                  0),
@@ -602,7 +648,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* TRANSLATIONTYPE_SPARSE */    OP_TABLE_ENTRY (AML_BYTE_OP,                1,                              0,                  0),
 /* TYPE_STATIC */               OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* TYPE_TRANSLATION */          OP_TABLE_ENTRY (AML_BYTE_OP,                1,                              0,                  0),
-/* UNICODE */                   OP_TABLE_ENTRY (AML_BUFFER_OP,              0,                              0,                  0),
+/* UNICODE */                   OP_TABLE_ENTRY (AML_BUFFER_OP,              0,                              NODE_AML_PACKAGE,   0),
 /* UNLOAD */                    OP_TABLE_ENTRY (AML_UNLOAD_OP,              0,                              0,                  0),
 /* UPDATERULE_ONES */           OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_UPDATE_WRITE_AS_ONES, 0,                  0),
 /* UPDATERULE_PRESERVE */       OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_UPDATE_PRESERVE,      0,                  0),
@@ -621,43 +667,8 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* XOR */                       OP_TABLE_ENTRY (AML_BIT_XOR_OP,             0,                              0,                  ACPI_BTYPE_INTEGER),
 /* ZERO */                      OP_TABLE_ENTRY (AML_ZERO_OP,                0,                              0,                  ACPI_BTYPE_INTEGER),
 
+/*! [End] no source code translation !*/
+
 };
-
-
-
-/*
- * TBD:
- *
- * This function is here temporarily until it is segregated out into separate
- * modules in the main subsystem source.
- */
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExValidateObjectType
- *
- * PARAMETERS:  Type            Object type to validate
- *
- * DESCRIPTION: Determine if a type is a valid ACPI object type
- *
- ******************************************************************************/
-
-#if 0
-BOOLEAN
-AcpiExValidateObjectType (
-    ACPI_OBJECT_TYPE        Type)
-{
-
-    if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
-        (Type > INTERNAL_TYPE_MAX))
-    {
-        return (FALSE);
-    }
-
-    return (TRUE);
-}
-
-
-#endif
 
 
