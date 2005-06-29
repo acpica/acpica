@@ -1,5 +1,5 @@
 # Microsoft Developer Studio Project File - Name="Subsystem" - Package Owner=<4>
-# Microsoft Developer Studio Generated Build File, Format Version 5.00
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
@@ -22,9 +22,11 @@ CFG=Subsystem - Win32 Debug
 !MESSAGE 
 
 # Begin Project
+# PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi Components/Subsystem", CQBAAAAA"
 # PROP Scc_LocalPath "."
 CPP=cl.exe
+RSC=rc.exe
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
 
@@ -38,11 +40,10 @@ CPP=cl.exe
 # PROP Output_Dir "bin"
 # PROP Intermediate_Dir "bin"
 # PROP Target_Dir ""
-RSC=rc.exe
-# ADD BASE RSC /l 0x409 /d "NDEBUG"
-# ADD RSC /l 0x409 /d "NDEBUG"
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /Gz /MT /W3 /GX /O2 /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /YX /FD /c
+# ADD BASE RSC /l 0x409 /d "NDEBUG"
+# ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -50,7 +51,7 @@ LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"Release\acpilib.lib"
 # Begin Special Build Tool
-SOURCE=$(InputPath)
+SOURCE="$(InputPath)"
 PostBuild_Desc=Copying built library [Release Version]
 PostBuild_Cmds=copy release\acpilib.lib ..\..\libraries\acpilib.lib
 # End Special Build Tool
@@ -67,11 +68,10 @@ PostBuild_Cmds=copy release\acpilib.lib ..\..\libraries\acpilib.lib
 # PROP Output_Dir "bin"
 # PROP Intermediate_Dir "bin"
 # PROP Target_Dir ""
-RSC=rc.exe
+# ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+# ADD CPP /nologo /Gz /MT /W3 /GX /Z7 /Od /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "ACPI_DEBUG" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
-# ADD BASE CPP /nologo /W3 /GX /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /ZI /GZ /c
-# ADD CPP /nologo /Gz /MT /W3 /GX /Z7 /Od /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "ACPI_DEBUG" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -79,7 +79,7 @@ LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"bin\acpilib.lib"
 # Begin Special Build Tool
-SOURCE=$(InputPath)
+SOURCE="$(InputPath)"
 PreLink_Desc=deleting old library
 PreLink_Cmds=del ..\..\libraries\acpilib.lib
 PostBuild_Desc=Copying built library [Debug Version]
