@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.38 $
+ *       $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -153,6 +153,15 @@ AcpiTbGetTableCount (
 /*
  * tbget - Table "get" routines
  */
+
+void
+AcpiTbTableOverride (
+    ACPI_TABLE_DESC         *TableInfo);
+
+ACPI_STATUS
+AcpiTbGetTableWithOverride (
+    ACPI_POINTER            *Address,
+    ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 AcpiTbGetTablePtr (
