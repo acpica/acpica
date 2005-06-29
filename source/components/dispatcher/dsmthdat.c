@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  ******************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "acnamesp.h"
 
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsmthdat")
 
 
@@ -312,7 +312,7 @@ AcpiDsMethodDataInitArgs (
              * Set the current method argument to the
              * Params[Pindex++] argument object descriptor
              */
-            Status = AcpiDsMethodDataSetValue (MTH_TYPE_ARG, Mindex,
+            Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Mindex,
                                                 Params[Pindex], WalkState);
             if (ACPI_FAILURE (Status))
             {
@@ -338,7 +338,7 @@ AcpiDsMethodDataInitArgs (
  *
  * FUNCTION:    AcpiDsMethodDataGetEntry
  *
- * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
+ * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
  *              Index               - Which localVar or argument to get
  *              Entry               - Pointer to where a pointer to the stack
  *                                    entry is returned.
@@ -346,13 +346,13 @@ AcpiDsMethodDataInitArgs (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Get the address of the stack entry given by Type:Index
+ * DESCRIPTION: Get the address of the object entry given by Opcode:Index
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsMethodDataGetEntry (
-    UINT32                  Type,
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState,
     ACPI_OPERAND_OBJECT     ***Entry)
@@ -363,13 +363,13 @@ AcpiDsMethodDataGetEntry (
 
     /*
      * Get the requested object.
-     * The stack "Type" is either a LocalVariable or an Argument
+     * The stack "Opcode" is either a LocalVariable or an Argument
      */
 
-    switch (Type)
+    switch (Opcode)
     {
 
-    case MTH_TYPE_LOCAL:
+    case AML_LOCAL_OP:
 
         if (Index > MTH_MAX_LOCAL)
         {
@@ -379,12 +379,12 @@ AcpiDsMethodDataGetEntry (
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
-        *Entry =
-            (ACPI_OPERAND_OBJECT  **) &WalkState->LocalVariables[Index].Object;
+        *Entry = (ACPI_OPERAND_OBJECT  **) 
+                    &WalkState->LocalVariables[Index].Object;
         break;
 
 
-    case MTH_TYPE_ARG:
+    case AML_ARG_OP:
 
         if (Index > MTH_MAX_ARG)
         {
@@ -394,15 +394,15 @@ AcpiDsMethodDataGetEntry (
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
-        *Entry =
-            (ACPI_OPERAND_OBJECT  **) &WalkState->Arguments[Index].Object;
+        *Entry = (ACPI_OPERAND_OBJECT  **) 
+                    &WalkState->Arguments[Index].Object;
         break;
 
 
     default:
         DEBUG_PRINT (ACPI_ERROR,
-            ("DsMethodDataGetEntry: Stack type %d is invalid\n",
-            Type));
+            ("DsMethodDataGetEntry: Opcode %d is invalid\n",
+            Opcode));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -415,20 +415,20 @@ AcpiDsMethodDataGetEntry (
  *
  * FUNCTION:    AcpiDsMethodDataSetEntry
  *
- * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
+ * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
  *              Index               - Which localVar or argument to get
  *              Object              - Object to be inserted into the stack entry
  *              WalkState           - Current walk state object
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Insert an object onto the method stack at entry Type:Index.
+ * DESCRIPTION: Insert an object onto the method stack at entry Opcode:Index.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsMethodDataSetEntry (
-    UINT32                  Type,
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_OPERAND_OBJECT     *Object,
     ACPI_WALK_STATE         *WalkState)
@@ -441,7 +441,7 @@ AcpiDsMethodDataSetEntry (
 
     /* Get a pointer to the stack entry to set */
 
-    Status = AcpiDsMethodDataGetEntry (Type, Index, WalkState, &Entry);
+    Status = AcpiDsMethodDataGetEntry (Opcode, Index, WalkState, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -463,7 +463,7 @@ AcpiDsMethodDataSetEntry (
  *
  * FUNCTION:    AcpiDsMethodDataGetType
  *
- * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
+ * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
  *              Index               - Which localVar or argument whose type
  *                                      to get
  *              WalkState           - Current walk state object
@@ -475,7 +475,7 @@ AcpiDsMethodDataSetEntry (
 
 OBJECT_TYPE_INTERNAL
 AcpiDsMethodDataGetType (
-    UINT32                  Type,
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -489,7 +489,7 @@ AcpiDsMethodDataGetType (
 
     /* Get a pointer to the requested stack entry */
 
-    Status = AcpiDsMethodDataGetEntry (Type, Index, WalkState, &Entry);
+    Status = AcpiDsMethodDataGetEntry (Opcode, Index, WalkState, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_VALUE ((ACPI_TYPE_NOT_FOUND));
@@ -513,9 +513,9 @@ AcpiDsMethodDataGetType (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDsMethodDataGetNte
+ * FUNCTION:    AcpiDsMethodDataGetNode
  *
- * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
+ * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
  *              Index               - Which localVar or argument whose type
  *                                      to get
  *              WalkState           - Current walk state object
@@ -525,26 +525,26 @@ AcpiDsMethodDataGetType (
  ******************************************************************************/
 
 ACPI_NAMESPACE_NODE *
-AcpiDsMethodDataGetNte (
-    UINT32                  Type,
+AcpiDsMethodDataGetNode (
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_NAMESPACE_NODE     *Node = NULL;
 
 
-    FUNCTION_TRACE ("DsMethodDataGetNte");
+    FUNCTION_TRACE ("DsMethodDataGetNode");
 
 
-    switch (Type)
+    switch (Opcode)
     {
 
-    case MTH_TYPE_LOCAL:
+    case AML_LOCAL_OP:
 
         if (Index > MTH_MAX_LOCAL)
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("DsMethodDataGetEntry: LocalVar index %d is invalid (max %d)\n",
+                ("DsMethodDataGetNode: LocalVar index %d is invalid (max %d)\n",
                 Index, MTH_MAX_LOCAL));
             return_PTR (Node);
         }
@@ -553,12 +553,12 @@ AcpiDsMethodDataGetNte (
         break;
 
 
-    case MTH_TYPE_ARG:
+    case AML_ARG_OP:
 
         if (Index > MTH_MAX_ARG)
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("DsMethodDataGetEntry: Argument index %d is invalid (max %d)\n",
+                ("DsMethodDataGetNode: Argument index %d is invalid (max %d)\n",
                 Index, MTH_MAX_ARG));
             return_PTR (Node);
         }
@@ -569,8 +569,8 @@ AcpiDsMethodDataGetNte (
 
     default:
         DEBUG_PRINT (ACPI_ERROR,
-            ("DsMethodDataGetEntry: Stack type %d is invalid\n",
-            Type));
+            ("DsMethodDataGetEntry: Opcode %d is invalid\n",
+            Opcode));
         break;
     }
 
@@ -583,7 +583,7 @@ AcpiDsMethodDataGetNte (
  *
  * FUNCTION:    AcpiDsMethodDataGetValue
  *
- * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
+ * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
  *              Index               - Which localVar or argument to get
  *              WalkState           - Current walk state object
  *              *DestDesc           - Ptr to Descriptor into which selected Arg
@@ -599,7 +599,7 @@ AcpiDsMethodDataGetNte (
 
 ACPI_STATUS
 AcpiDsMethodDataGetValue (
-    UINT32                  Type,
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState,
     ACPI_OPERAND_OBJECT     **DestDesc)
@@ -624,7 +624,7 @@ AcpiDsMethodDataGetValue (
 
     /* Get a pointer to the requested method stack entry */
 
-    Status = AcpiDsMethodDataGetEntry (Type, Index, WalkState, &Entry);
+    Status = AcpiDsMethodDataGetEntry (Opcode, Index, WalkState, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -647,9 +647,9 @@ AcpiDsMethodDataGetValue (
          * before it was initialized.  Either case is an error.
          */
 
-        switch (Type)
+        switch (Opcode)
         {
-        case MTH_TYPE_ARG:
+        case AML_ARG_OP:
 
             DEBUG_PRINT (ACPI_ERROR,
                 ("DsMethodDataGetValue: Uninitialized Arg[%d] at entry %p\n",
@@ -658,7 +658,7 @@ AcpiDsMethodDataGetValue (
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_ARG);
             break;
 
-        case MTH_TYPE_LOCAL:
+        case AML_LOCAL_OP:
 
             DEBUG_PRINT (ACPI_ERROR,
                 ("DsMethodDataGetValue: Uninitialized Local[%d] at entry %p\n",
@@ -686,20 +686,20 @@ AcpiDsMethodDataGetValue (
  *
  * FUNCTION:    AcpiDsMethodDataDeleteValue
  *
- * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
+ * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
  *              Index               - Which localVar or argument to delete
  *              WalkState           - Current walk state object
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Delete the entry at Type:Index on the method stack.  Inserts
+ * DESCRIPTION: Delete the entry at Opcode:Index on the method stack.  Inserts
  *              a null into the stack slot after the object is deleted.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsMethodDataDeleteValue (
-    UINT32                  Type,
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -713,7 +713,7 @@ AcpiDsMethodDataDeleteValue (
 
     /* Get a pointer to the requested entry */
 
-    Status = AcpiDsMethodDataGetEntry (Type, Index, WalkState, &Entry);
+    Status = AcpiDsMethodDataGetEntry (Opcode, Index, WalkState, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -749,9 +749,9 @@ AcpiDsMethodDataDeleteValue (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDsMethodDataSetValue
+ * FUNCTION:    AcpiDsStoreObjectToLocal
  *
- * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
+ * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
  *              Index               - Which localVar or argument to set
  *              SrcDesc             - Value to be stored
  *              WalkState           - Current walk state
@@ -765,8 +765,8 @@ AcpiDsMethodDataDeleteValue (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiDsMethodDataSetValue (
-    UINT32                  Type,
+AcpiDsStoreObjectToLocal (
+    UINT16                  Opcode,
     UINT32                  Index,
     ACPI_OPERAND_OBJECT     *SrcDesc,
     ACPI_WALK_STATE         *WalkState)
@@ -777,8 +777,8 @@ AcpiDsMethodDataSetValue (
 
     FUNCTION_TRACE ("DsMethodDataSetValue");
     DEBUG_PRINT (TRACE_EXEC,
-        ("DsMethodDataSetValue: Type=%d Idx=%d Obj=%p\n",
-        Type, Index, SrcDesc));
+        ("DsMethodDataSetValue: Opcode=%d Idx=%d Obj=%p\n",
+        Opcode, Index, SrcDesc));
 
 
     /* Parameter validation */
@@ -791,7 +791,7 @@ AcpiDsMethodDataSetValue (
 
     /* Get a pointer to the requested method stack entry */
 
-    Status = AcpiDsMethodDataGetEntry (Type, Index, WalkState, &Entry);
+    Status = AcpiDsMethodDataGetEntry (Opcode, Index, WalkState, &Entry);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -832,7 +832,7 @@ AcpiDsMethodDataSetValue (
          * Weird, but true.
          */
 
-        if ((Type == MTH_TYPE_ARG) &&
+        if ((Opcode == AML_ARG_OP) &&
             (VALID_DESCRIPTOR_TYPE (*Entry, ACPI_DESC_TYPE_NAMED)))
         {
             DEBUG_PRINT (TRACE_EXEC,
@@ -857,17 +857,20 @@ AcpiDsMethodDataSetValue (
          * Perform "Implicit conversion" of the new object to the type of the
          * existing object
          */
-        Status = AcpiAmlConvertToTargetType ((*Entry)->Common.Type, &SrcDesc, WalkState);
-        if (ACPI_FAILURE (Status))
+        if (!(WalkState->MethodNode->Flags & ANOBJ_DATA_WIDTH_32))
         {
-            goto Cleanup;
+            Status = AcpiAmlConvertToTargetType ((*Entry)->Common.Type, &SrcDesc, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                goto Cleanup;
+            }
         }
 
         /*
          * Delete the existing object
          * before storing the new one
          */
-        AcpiDsMethodDataDeleteValue (Type, Index, WalkState);
+        AcpiDsMethodDataDeleteValue (Opcode, Index, WalkState);
     }
 
 
@@ -877,7 +880,7 @@ AcpiDsMethodDataSetValue (
      * Install the new object in the stack entry
      * (increments the object reference count by one)
      */
-    Status = AcpiDsMethodDataSetEntry (Type, Index, SrcDesc, WalkState);
+    Status = AcpiDsMethodDataSetEntry (Opcode, Index, SrcDesc, WalkState);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
