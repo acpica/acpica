@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -491,13 +491,15 @@ AcpiEvGpeInitialize (void)
         }
     }
 
-    /* Warn and exit if there are no GPE registers */
+    /* Exit if there are no GPE registers */
 
     AcpiGbl_GpeRegisterCount = AcpiGbl_GpeBlockInfo[0].RegisterCount +
                                AcpiGbl_GpeBlockInfo[1].RegisterCount;
     if (!AcpiGbl_GpeRegisterCount)
     {
-        ACPI_REPORT_WARNING (("There are no GPE blocks defined in the FADT\n"));
+        /* GPEs are not required by ACPI, this is OK */
+
+        ACPI_REPORT_INFO (("There are no GPE blocks defined in the FADT\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -622,6 +624,8 @@ AcpiEvGpeInitialize (void)
 
         if (i)
         {
+            /* Dump info about this valid GPE block */
+
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d: %X registers at %8.8X%8.8X\n",
                 (INT32) GpeBlock, AcpiGbl_GpeBlockInfo[0].RegisterCount,
                 ACPI_HIDWORD (ACPI_GET_ADDRESS (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address)),
