@@ -114,13 +114,11 @@
  *****************************************************************************/
 
 
-
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psscope");
-
 
 
 /*******************************************************************************
@@ -285,7 +283,8 @@ AcpiPsPushScope (
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              Op                  - Where the popped op is returned
- *              NextArg             - Where the popped "next argument" is returned
+ *              NextArg             - Where the popped "next argument" is
+ *                                    returned
  *
  * RETURN:      Status
  *

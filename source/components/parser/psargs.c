@@ -116,9 +116,9 @@
 #define __PSARGS_C__
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "namesp.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psargs");

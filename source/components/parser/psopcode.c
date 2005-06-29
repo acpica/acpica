@@ -115,17 +115,12 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-
 
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psopcode");
-
-
-
-
 
 
 /*******************************************************************************
@@ -167,7 +162,6 @@ AcpiPsGetOpcodeInfo (
 
         Hash = (Opcode + AML_EXTOP_HASH_OFFSET) & 0xff;
         break;
-
 
 
     case AML_LNOT_OP:
@@ -370,7 +364,6 @@ AcpiPsGetOpcodeName (
 #define ARGP_STATICSTRING_OP            ARGP_LIST1 (ARGP_NAMESTRING)
 
 
-
 /*
  * All AML opcodes and the runtime arguments for each.  Used by the AML interpreter  Each list is compressed
  * into a 32-bit number and stored in the master opcode table at the end of this file.
@@ -484,10 +477,6 @@ AcpiPsGetOpcodeName (
 #define ARGI_NAMEDFIELD_OP              ARGI_INVALID_OPCODE
 #define ARGI_ACCESSFIELD_OP             ARGI_INVALID_OPCODE
 #define ARGI_STATICSTRING_OP            ARGI_INVALID_OPCODE
-
-
-
-
 
 
 /*

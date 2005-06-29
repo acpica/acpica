@@ -115,7 +115,7 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
 
 #define _COMPONENT          PARSER
@@ -137,7 +137,8 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on opcode
+ * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on
+ *              opcode
  *
  ******************************************************************************/
 
@@ -149,14 +150,15 @@ AcpiPsInitOp (
     ACPI_OP_INFO             *AmlOp;
 
 
-    Op->DataType = DESC_TYPE_PARSER;
+    Op->DataType = ACPI_DESC_TYPE_PARSER;
     Op->Opcode = Opcode;
 
 
     AmlOp = AcpiPsGetOpcodeInfo (Opcode);
     if (AmlOp)
     {
-        DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, AmlOp->Name, sizeof (Op->OpName)));
+        DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, AmlOp->Name,
+                            sizeof (Op->OpName)));
     }
 }
 
@@ -169,9 +171,9 @@ AcpiPsInitOp (
  *
  * RETURN:      Pointer to the new Op.
  *
- * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on opcode
- *              A cache of opcodes is available for the pure GENERIC_OP, since this
- *              is by far the most commonly used.
+ * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on
+ *              opcode.  A cache of opcodes is available for the pure
+ *              GENERIC_OP, since this is by far the most commonly used.
  *
  ******************************************************************************/
 
@@ -210,13 +212,13 @@ AcpiPsAllocOp (
         Flags = PARSEOP_GENERIC;
 
         /*
-         * The generic op is by far the most common (16 to 1), and therefore the op cache is
-         * implemented with this type.
+         * The generic op is by far the most common (16 to 1), and therefore
+         * the op cache is implemented with this type.
          *
          * Check if there is an Op already available in the cache
          */
 
-        AcpiCmAcquireMutex (MTX_CACHES);
+        AcpiCmAcquireMutex (ACPI_MTX_CACHES);
         AcpiGbl_ParseCacheRequests++;
         if (AcpiGbl_ParseCache)
         {
@@ -232,7 +234,7 @@ AcpiPsAllocOp (
 
             MEMSET (Op, 0, sizeof (ACPI_GENERIC_OP));
         }
-        AcpiCmReleaseMutex (MTX_CACHES);
+        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
     }
 
     /* Allocate a new Op if necessary */
@@ -251,7 +253,6 @@ AcpiPsAllocOp (
 
     return Op;
 }
-
 
 
 /*******************************************************************************
@@ -281,13 +282,13 @@ AcpiPsFreeOp (
         {
             /* Put a GENERIC_OP back into the cache */
 
-            AcpiCmAcquireMutex (MTX_CACHES);
+            AcpiCmAcquireMutex (ACPI_MTX_CACHES);
             AcpiGbl_ParseCacheDepth++;
 
             Op->Next = AcpiGbl_ParseCache;
             AcpiGbl_ParseCache = Op;
 
-            AcpiCmReleaseMutex (MTX_CACHES);
+            AcpiCmReleaseMutex (ACPI_MTX_CACHES);
             return;
         }
     }
@@ -298,7 +299,6 @@ AcpiPsFreeOp (
 
     AcpiCmFree (Op);
 }
-
 
 
 /*******************************************************************************
@@ -338,9 +338,6 @@ AcpiPsDeleteParseCache (
 }
 
 
-
-
-
 /*******************************************************************************
  *
  * FUNCTION:    Utility functions
@@ -352,7 +349,6 @@ AcpiPsDeleteParseCache (
  * 2) Some can be simplified
  *
  ******************************************************************************/
-
 
 
 /*
@@ -429,8 +425,6 @@ AcpiPsIsNamespaceOp (
             Opcode == AML_REGION_OP         ||
             Opcode == AML_NAMEDFIELD_OP));
 }
-
-
 
 
 /*
@@ -541,7 +535,6 @@ AcpiPsIsCreateFieldOp (
             Opcode == AML_WORD_FIELD_OP     ||
             Opcode == AML_DWORD_FIELD_OP));
 }
-
 
 
 /*

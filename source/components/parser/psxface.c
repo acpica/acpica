@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: psapi - Parser external interfaces
+ * Module Name: psxface - Parser external interfaces
  *
  *****************************************************************************/
 
@@ -114,22 +114,21 @@
  *
  *****************************************************************************/
 
-#define __PSAPI_C__
+#define __PSXFACE_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("psapi");
+        MODULE_NAME         ("psxface");
 
 
 char    *AcpiGbl_ParserId = "Non-recursive AML Parser";
-
 
 
 /*****************************************************************************
@@ -150,7 +149,7 @@ char    *AcpiGbl_ParserId = "Non-recursive AML Parser";
 
 ACPI_STATUS
 AcpiPsxExecute (
-    NAME_TABLE_ENTRY        *MethodEntry,
+    ACPI_NAMED_OBJECT       *MethodEntry,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
@@ -185,7 +184,10 @@ AcpiPsxExecute (
 
     if (Params)
     {
-        /* The caller "owns" the parameters, so give them an extra reference */
+        /*
+         * The caller "owns" the parameters, so give each one an extra
+         * reference
+         */
 
         for (i = 0; Params[i]; i++)
         {
@@ -198,11 +200,15 @@ AcpiPsxExecute (
      * The walk of the parse tree is where we actually execute the method
      */
 
-    DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
-                    MethodEntry, ObjDesc));
+    DEBUG_PRINT (ACPI_INFO,
+        ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
+        MethodEntry, ObjDesc));
 
-    Status = AcpiPsWalkParsedAml (ObjDesc->Method.ParserOp, ObjDesc->Method.ParserOp, ObjDesc, MethodEntry->Scope, Params,
-                                ReturnObjDesc, ObjDesc->Method.OwningId, AcpiDsExecBeginOp, AcpiDsExecEndOp);
+    Status = AcpiPsWalkParsedAml (ObjDesc->Method.ParserOp,
+                    ObjDesc->Method.ParserOp, ObjDesc,
+                    MethodEntry->ChildTable, Params, ReturnObjDesc,
+                    ObjDesc->Method.OwningId, AcpiDsExecBeginOp,
+                    AcpiDsExecEndOp);
 
     if (Params)
     {
@@ -216,13 +222,15 @@ AcpiPsxExecute (
 
 
     /*
-     * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
-     * or with Status == AE_PENDING at end of AML block (end of Method code)
+     * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been
+     * executed, or with Status == AE_PENDING at end of AML block (end of
+     * Method code)
      */
 
     if (*ReturnObjDesc)
     {
-        DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n", *ReturnObjDesc));
+        DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n",
+            *ReturnObjDesc));
         DUMP_STACK_ENTRY (*ReturnObjDesc);
 
         Status = AE_CTRL_RETURN_VALUE;
@@ -231,7 +239,5 @@ AcpiPsxExecute (
 
     return_ACPI_STATUS (Status);
 }
-
-
 
 
