@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.12 $
+ *       $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -136,6 +136,9 @@
 #else
 
 #include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #endif
 
