@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  ******************************************************************************/
 
@@ -454,7 +454,7 @@ AcpiIsEisaId (
 
     /* We are looking for _HID */
 
-    if (ACPI_STRNCMP ((char *) &Name, "_HID", 4))
+    if (ACPI_STRNCMP ((char *) &Name, METHOD_NAME__HID, 4))
     {
         return;
     }
