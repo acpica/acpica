@@ -325,7 +325,7 @@ TbValidateTableHeader (
  *              *Size                   - Size of the table.  If zero, the size
  *                                        from the table header is used.  Actual
  *                                        size is returned here.
- *				**LogicalAddress		- Logical address of mapped table
+ *              **LogicalAddress        - Logical address of mapped table
  *
  * RETURN:      Logical address of the mapped table.
  *
@@ -337,11 +337,11 @@ ACPI_STATUS
 TbMapAcpiTable (
     void                    *PhysicalAddress,
     UINT32                  *Size,
-	void					**LogicalAddress)
+    void                    **LogicalAddress)
 {
     ACPI_TABLE_HEADER       *Table;
     UINT32                  TableSize = *Size;
-	ACPI_STATUS				Status = AE_OK;
+    ACPI_STATUS             Status = AE_OK;
 
 
 
@@ -352,10 +352,10 @@ TbMapAcpiTable (
         /* Get the table header so we can extract the table length */
 
         Status = OsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER), (void **)&Table);
-		if (ACPI_FAILURE (Status))
-		{
-			return Status;
-		}
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
 
         /* Extract the full table length before we delete the mapping */
 
@@ -384,18 +384,18 @@ TbMapAcpiTable (
     /* Map the physical memory for the correct length */
 
     Status = OsdMapMemory (PhysicalAddress, TableSize, (void **)&Table);
-	if (ACPI_FAILURE (Status))
-	{
-		return Status;
-	}
+    if (ACPI_FAILURE (Status))
+    {
+        return Status;
+    }
 
-	DEBUG_PRINT (ACPI_INFO, ("Mapped memory for ACPI table, length=%d(0x%X) at %p\n",
+    DEBUG_PRINT (ACPI_INFO, ("Mapped memory for ACPI table, length=%d(0x%X) at %p\n",
                     TableSize, TableSize, Table));
 
     *Size = TableSize;
-	*LogicalAddress = Table;
+    *LogicalAddress = Table;
 
-	return Status;
+    return Status;
 }
 
 
