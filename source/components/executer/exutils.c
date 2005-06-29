@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: isutils - interpreter/scanner utilities
+ *
+ * Module Name: amutils - interpreter/scanner utilities
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,25 +114,93 @@
  *
  *****************************************************************************/
 
-#define __ISUTILS_C__
+#define __AMUTILS_C__
 
-#include <acpi.h>
-#include <parser.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "parser.h"
+#include "interp.h"
+#include "amlcode.h"
+#include "namesp.h"
+#include "events.h"
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("isutils");
-
-static char                 hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+        MODULE_NAME         ("amutils");
 
 
+typedef struct Internal_Search_st
+{
+    ACPI_OBJECT_INTERNAL        *DestObj;
+    UINT32                      Index;
+    ACPI_OBJECT_INTERNAL        *SourceObj;
+
+} INTERNAL_PKG_SEARCH_INFO;
+
+
+/* Used to traverse nested packages when copying*/
+
+INTERNAL_PKG_SEARCH_INFO        CopyLevel[MAX_PACKAGE_DEPTH];
+
+
+static char                 hex[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlValidateObjectType
+ *
+ * FUNCTION:    AcpiAmlEnterInterpreter
+ *
+ * PARAMETERS:  None
+ *
+ * DESCRIPTION: Enter the interpreter execution region
+ *
+ ****************************************************************************/
+
+void
+AcpiAmlEnterInterpreter (void)
+{
+    FUNCTION_TRACE ("AmlEnterInterpreter");
+
+
+    AcpiCmAcquireMutex (MTX_EXECUTE);
+
+    return_VOID;
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiAmlExitInterpreter
+ *
+ * PARAMETERS:  None
+ *
+ * DESCRIPTION: Exit the interpreter execution region
+ *
+ * Cases where the interpreter is unlocked:
+ *      1) Completion of the execution of a control method
+ *      2) Method blocked on a Sleep() AML opcode
+ *      3) Method blocked on an Acquire() AML opcode
+ *      4) Method blocked on a Wait() AML opcode
+ *      5) Method blocked to acquire the global lock
+ *      6) Method blocked to execute a serialized control method that is
+ *          already executing
+ *      7) About to invoke a user-installed opregion handler
+ *
+ ****************************************************************************/
+
+void
+AcpiAmlExitInterpreter (void)
+{
+    FUNCTION_TRACE ("AmlExitInterpreter");
+
+
+    AcpiCmReleaseMutex (MTX_EXECUTE);
+
+    return_VOID;
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiAmlValidateObjectType
  *
  * PARAMETERS:  Type            Object type to validate
  *
@@ -141,7 +209,7 @@ static char                 hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8'
  ****************************************************************************/
 
 BOOLEAN
-AmlValidateObjectType (
+AcpiAmlValidateObjectType (
     ACPI_OBJECT_TYPE        Type)
 {
 
@@ -156,8 +224,8 @@ AmlValidateObjectType (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlAppendOperandDiag
+ *
+ * FUNCTION:    AcpiAmlAppendOperandDiag
  *
  * PARAMETERS:  *FileName       - Name of source file
  *              LineNum         - Line Number in file
@@ -171,33 +239,32 @@ AmlValidateObjectType (
  ****************************************************************************/
 
 void
-AmlAppendOperandDiag (
-    char                    *FileName, 
-    INT32                   LineNum, 
-    UINT16                  OpCode, 
+AcpiAmlAppendOperandDiag (
+    char                    *FileName,
+    INT32                   LineNum,
+    UINT16                  OpCode,
     ACPI_OBJECT_INTERNAL    **Operands,
     INT32                   NumOperands)
 {
-/* TBD:    ACPI_OBJECT_INTERNAL    MthDesc; */
 
-
-/* TBD: Rparser only    AmlGetCurrentLocation (&MthDesc); */
+    /*
+     * This function outputs debug information only
+     */
 
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
-                    FileName, LineNum, PsGetOpcodeName (OpCode), NULL /*MthDesc.Method.Pcode*/));
+                    FileName, LineNum, AcpiPsGetOpcodeName (OpCode), NULL));
 
     if (GetDebugLevel () > 0)
     {
-        DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (OpCode),
-                      NumOperands, "after PrepStack failed");
+        DUMP_OPERANDS (Operands, IMODE_EXECUTE, AcpiPsGetOpcodeName (OpCode),
+                        NumOperands, "after PrepStack failed");
     }
 }
 
 
-
 /*****************************************************************************
  *
- * FUNCTION:    AmlBufSeq
+ * FUNCTION:    AcpiAmlBufSeq
  *
  * RETURN:      The next buffer descriptor sequence number
  *
@@ -210,18 +277,17 @@ AmlAppendOperandDiag (
  *
  ****************************************************************************/
 
-UINT32 
-AmlBufSeq (void)
+UINT32
+AcpiAmlBufSeq (void)
 {
-    
-    return ++Gbl_BufSeq;
-}
 
+    return ++AcpiGbl_BufSeq;
+}
 
 
 /*****************************************************************************
  *
- * FUNCTION:    AmlAcquireGlobalLock
+ * FUNCTION:    AcpiAmlAcquireGlobalLock
  *
  * PARAMETERS:  Rule            - Lock rule: AlwaysLock, NeverLock
  *
@@ -234,32 +300,31 @@ AmlBufSeq (void)
  ****************************************************************************/
 
 BOOLEAN
-AmlAcquireGlobalLock (
+AcpiAmlAcquireGlobalLock (
     UINT32                  Rule)
 {
     BOOLEAN                 Locked = FALSE;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlAcquireGlobalLock");
 
 
     /*  Only attempt lock if the Rule says so */
-    
-    if (Rule == (UINT32) GLOCK_AlwaysLock)
-    {   
+
+    if (Rule == (UINT32) GLOCK_ALWAYS_LOCK)
+    {
         /*  OK to get the lock   */
-        
-        if (OsGetGlobalLock () != AE_OK)
+
+        Status = AcpiEvAcquireGlobalLock ();
+        if (ACPI_FAILURE (Status))
         {
-            /*  
-             * lock ownership failed
-             */
             DEBUG_PRINT (ACPI_ERROR, ("Get Global Lock Failed!!\n"));
         }
 
-        else
+        if (ACPI_SUCCESS (Status))
         {
-            Gbl_GlobalLockSet = TRUE;
+            AcpiGbl_GlobalLockSet = TRUE;
             Locked = TRUE;
         }
     }
@@ -270,7 +335,7 @@ AmlAcquireGlobalLock (
 
 /*****************************************************************************
  *
- * FUNCTION:    AmlReleaseGlobalLock
+ * FUNCTION:    AcpiAmlReleaseGlobalLock
  *
  * PARAMETERS:  LockedByMe      - Return value from corresponding call to
  *                                AcquireGlobalLock.
@@ -282,7 +347,7 @@ AmlAcquireGlobalLock (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlReleaseGlobalLock (
+AcpiAmlReleaseGlobalLock (
     BOOLEAN                 LockedByMe)
 {
 
@@ -295,18 +360,16 @@ AmlReleaseGlobalLock (
     {
         /* Double check against the global flag */
 
-        if (Gbl_GlobalLockSet)
+        if (AcpiGbl_GlobalLockSet)
         {
             /* OK, now release the lock */
 
-            OsReleaseGlobalLock ();
-            Gbl_GlobalLockSet = FALSE;
+            AcpiEvReleaseGlobalLock ();
+            AcpiGbl_GlobalLockSet = FALSE;
         }
 
         else
         {
-            /* Sorry, the lock wasn't set, according to our records */
-
             DEBUG_PRINT (ACPI_ERROR, ("Global lock was not set\n"));
         }
     }
@@ -317,8 +380,8 @@ AmlReleaseGlobalLock (
 
 
 /******************************************************************************
- * 
- * FUNCTION:    AmlDigitsNeeded
+ *
+ * FUNCTION:    AcpiAmlDigitsNeeded
  *
  * PARAMETERS:  val             - Value to be represented
  *              base            - Base of representation
@@ -328,8 +391,8 @@ AmlReleaseGlobalLock (
  *****************************************************************************/
 
 INT32
-AmlDigitsNeeded (
-    INT32                   val, 
+AcpiAmlDigitsNeeded (
+    INT32                   val,
     INT32                   base)
 {
     INT32                   NumDigits = 0;
@@ -339,7 +402,7 @@ AmlDigitsNeeded (
 
 
     if (base < 1)
-    {   
+    {
         /*  impossible base */
 
         REPORT_ERROR ("AmlDigitsNeeded: Impossible base");
@@ -356,7 +419,7 @@ AmlDigitsNeeded (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    ntohl
  *
  * PARAMETERS:  Value           - Value to be converted
@@ -369,17 +432,17 @@ UINT32
 _ntohl (
     UINT32                  Value)
 {
-    union 
+    union
     {
         UINT32              Value;
         char                Bytes[4];
-    } Out; 
+    } Out;
 
     union
     {
         UINT32              Value;
         char                Bytes[4];
-    } In; 
+    } In;
 
 
     In.Value = Value;
@@ -394,8 +457,8 @@ _ntohl (
 
 
 /******************************************************************************
- * 
- * FUNCTION:    AmlEisaIdToString
+ *
+ * FUNCTION:    AcpiAmlEisaIdToString
  *
  * PARAMETERS:  NumericId       - EISA ID to be converted
  *              OutString       - Where to put the converted string (8 bytes)
@@ -405,24 +468,189 @@ _ntohl (
  *****************************************************************************/
 
 ACPI_STATUS
-AmlEisaIdToString (
+AcpiAmlEisaIdToString (
     UINT32                  NumericId,
     char                    *OutString)
 {
     UINT32                  id;
 
-    
+
     id = _ntohl (NumericId);                    /* swap to big-endian to get contiguous bits */
-    
-    OutString[0] = '@' + ((id >> 26) & 0x1f);
-    OutString[1] = '@' + ((id >> 21) & 0x1f);
-    OutString[2] = '@' + ((id >> 16) & 0x1f);
+
+    OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
+    OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
+    OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
     OutString[3] = hex[(id >> 12) & 0xf];
     OutString[4] = hex[(id >> 8) & 0xf];
     OutString[5] = hex[(id >> 4) & 0xf];
     OutString[6] = hex[id & 0xf];
-    OutString[7] = '\0';
-    
+    OutString[7] = 0;
+
     return AE_OK;
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlBuildCopyInternalPackageObject
+ *
+ * PARAMETERS:  *SourceObj      - Pointer to the source package object
+ *              *DestObj        - Where the internal object is returned
+ *
+ * RETURN:      Status          - the status of the call
+ *
+ * DESCRIPTION: This function is called to copy an internal package object
+ *              into another internal package object.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiAmlBuildCopyInternalPackageObject (
+    ACPI_OBJECT_INTERNAL    *SourceObj,
+    ACPI_OBJECT_INTERNAL    *DestObj)
+{
+    UINT32                      CurrentDepth = 0;
+    ACPI_STATUS                 Status = AE_OK;
+    UINT32                      Length = 0;
+    UINT32                      ThisIndex;
+    UINT32                      ObjectSpace = 0;
+    ACPI_OBJECT_INTERNAL        *ThisDestObj;
+    ACPI_OBJECT_INTERNAL        *ThisSourceObj;
+    INTERNAL_PKG_SEARCH_INFO    *LevelPtr;
+
+
+    FUNCTION_TRACE ("AmlBuildCopyInternalPackageObject");
+
+    /*
+     * Initialize the working variables
+     */
+
+    MEMSET ((void *) CopyLevel, 0, sizeof(CopyLevel));
+
+    CopyLevel[0].DestObj    = DestObj;
+    CopyLevel[0].SourceObj  = SourceObj;
+    LevelPtr                = &CopyLevel[0];
+    CurrentDepth            = 0;
+
+    DestObj->Common.Type        = SourceObj->Common.Type;
+    DestObj->Package.Count      = SourceObj->Package.Count;
+
+
+    /*
+     * Build an array of ACPI_OBJECTS in the buffer
+     * and move the free space past it
+     */
+
+    DestObj->Package.Elements   = AcpiCmCallocate ((ACPI_SIZE) (DestObj->Package.Count + 1) *
+                                                     sizeof (void *));
+    if (!DestObj->Package.Elements)
+    {
+        /* Package vector allocation failure   */
+
+        REPORT_ERROR ("AmlBuildCopyInternalPackageObject: Package vector allocation failure");
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    DestObj->Package.NextElement = DestObj->Package.Elements;
+
+
+    while (1)
+    {
+        ThisIndex       = LevelPtr->Index;
+        ThisDestObj     = (ACPI_OBJECT_INTERNAL *) LevelPtr->DestObj->Package.Elements[ThisIndex];
+        ThisSourceObj   = (ACPI_OBJECT_INTERNAL *) LevelPtr->SourceObj->Package.Elements[ThisIndex];
+
+        if (IS_THIS_OBJECT_TYPE (ThisSourceObj, ACPI_TYPE_PACKAGE))
+        {
+            /*
+             * If this object is a package then we go one deeper
+             */
+            if (CurrentDepth >= MAX_PACKAGE_DEPTH-1)
+            {
+                /*
+                 * Too many nested levels of packages for us to handle
+                 */
+                DEBUG_PRINT (ACPI_ERROR, ("AmlBuildCopyInternalPackageObject: Pkg nested too deep (max %d)\n",
+                                            MAX_PACKAGE_DEPTH));
+                return_ACPI_STATUS (AE_LIMIT);
+            }
+
+            /*
+             * Build the package object
+             */
+            ThisDestObj = AcpiCmCreateInternalObject (ACPI_TYPE_PACKAGE);
+            LevelPtr->DestObj->Package.Elements[ThisIndex] = ThisDestObj;
+
+
+            ThisDestObj->Common.Type        = ACPI_TYPE_PACKAGE;
+            ThisDestObj->Package.Count      = ThisDestObj->Package.Count;
+
+            /*
+             * Save space for the array of objects (Package elements)
+             * update the buffer length counter
+             */
+            ObjectSpace             = ThisDestObj->Package.Count * sizeof (ACPI_OBJECT_INTERNAL);
+            Length                  += ObjectSpace;
+
+            CurrentDepth++;
+            LevelPtr                = &CopyLevel[CurrentDepth];
+            LevelPtr->DestObj       = ThisDestObj;
+            LevelPtr->SourceObj     = ThisSourceObj;
+            LevelPtr->Index         = 0;
+
+        }   /* if object is a package */
+
+        else
+        {
+
+            ThisDestObj = AcpiCmCreateInternalObject (ThisSourceObj->Common.Type);
+            LevelPtr->DestObj->Package.Elements[ThisIndex] = ThisDestObj;
+
+            Status = AcpiAmlStoreObjectToObject(ThisSourceObj, ThisDestObj);
+
+            if (Status != AE_OK)
+            {
+                /*
+                 * Failure get out
+                 */
+                return_ACPI_STATUS (Status);
+            }
+
+            Length      +=ObjectSpace;
+
+            LevelPtr->Index++;
+            while (LevelPtr->Index >= LevelPtr->DestObj->Package.Count)
+            {
+                /*
+                 * We've handled all of the objects at this level,  This means that we
+                 * have just completed a package.  That package may have contained one
+                 * or more packages itself
+                 */
+                if (CurrentDepth == 0)
+                {
+                    /*
+                     * We have handled all of the objects in the top level package
+                     * just add the length of the package objects and get out
+                     */
+                    return_ACPI_STATUS (AE_OK);
+                }
+
+                /*
+                 * go back up a level and move the index past the just completed
+                 * package object.
+                 */
+                CurrentDepth--;
+                LevelPtr = &CopyLevel[CurrentDepth];
+                LevelPtr->Index++;
+            }
+        }   /* else object is NOT a package */
+    }   /* while (1)  */
+
+
+    /*
+     * We'll never get here, but the compiler whines about return value
+     */
+    return_ACPI_STATUS (AE_OK);
+}
+
 
