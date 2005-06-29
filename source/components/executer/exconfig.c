@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -133,7 +133,288 @@
 
 /*****************************************************************************
  *
+ * FUNCTION:    AcpiTbFindTable
+ *
+ * PARAMETERS:  Signature           - String with ACPI table signature
+ *              OemId               - String with the table OEM ID
+ *              OemTableId          - String with the OEM Table ID.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Load an ACPI table
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiTbFindTable (
+    NATIVE_CHAR             *Signature,
+    NATIVE_CHAR             *OemId,
+    NATIVE_CHAR             *OemTableId,
+    ACPI_TABLE_HEADER       **TablePtr)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_HEADER       *Table;
+
+
+    FUNCTION_TRACE ("TbFindTable");
+
+
+    /* Validate string lengths */
+
+    if ((STRLEN (Signature)  > 4) ||
+        (STRLEN (OemId)      > 6) ||
+        (STRLEN (OemTableId) > 8))
+    {
+        return_ACPI_STATUS (AE_AML_STRING_LIMIT);
+    }
+
+    /* Find the table */
+
+    Status = AcpiGetFirmwareTable (Signature, 1, 
+                        ACPI_LOGICAL_ADDRESSING, &Table);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Check OemId and OemTableId */
+
+    if ((OemId[0]      && STRCMP (OemId, Table->OemId)) ||
+        (OemTableId[0] && STRCMP (OemTableId, Table->OemTableId)))
+    {
+        return_ACPI_STATUS (AE_AML_NAME_NOT_FOUND)
+    }
+
+    *TablePtr = Table;
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiNsAddTable
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiNsAddTable (
+    ACPI_TABLE_HEADER       *Table,
+    ACPI_NAMESPACE_NODE     *ParentNode,
+    ACPI_OPERAND_OBJECT     **DdbHandle)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_DESC         TableInfo;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+
+
+    FUNCTION_TRACE ("NsAddTable");
+ 
+    
+    /* Create an object to be the table handle */
+
+    ObjDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* Install the new table into the local data structures */
+
+    TableInfo.Pointer      = Table;
+    TableInfo.Length       = Table->Length;
+    TableInfo.Allocation   = ACPI_MEM_ALLOCATED;
+    TableInfo.BasePointer  = Table;
+
+    Status = AcpiTbInstallTable (NULL, &TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+
+    /* Add the table to the namespace */
+
+    Status = AcpiNsLoadTable (TableInfo.InstalledDesc, ParentNode);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Uninstall table on error */
+
+        AcpiTbUninstallTable (TableInfo.InstalledDesc);
+        goto Cleanup;
+    }
+
+
+    /* We need a pointer to the table desc */
+
+    /* Init the table handle */
+
+    ObjDesc->Reference.Opcode = AML_LOAD_OP;
+    ObjDesc->Reference.Object = TableInfo.InstalledDesc;
+    *DdbHandle = ObjDesc;
+    return_ACPI_STATUS (AE_OK);
+
+
+Cleanup:
+    AcpiUtRemoveReference (ObjDesc);
+    return_ACPI_STATUS (Status);
+}
+
+
+
+/*****************************************************************************
+ *
  * FUNCTION:    AcpiExLoadTableOp
+ *
+ * PARAMETERS:  WalkState           - Current state with operands
+ *              ReturnDesc          - Where to store the return object
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Load an ACPI table
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiExLoadTableOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
+{
+    ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
+    ACPI_TABLE_HEADER       *Table;
+    ACPI_NAMESPACE_NODE     *ParentNode;
+    ACPI_NAMESPACE_NODE     *StartNode;
+    ACPI_NAMESPACE_NODE     *ParameterNode;
+    NATIVE_CHAR             *InternalPath = NULL;
+    ACPI_OPERAND_OBJECT     *DdbHandle;
+    ACPI_GENERIC_STATE      ScopeInfo;
+
+
+    FUNCTION_TRACE ("ExLoadTableOp");
+
+
+    /* 
+     * Make sure that the signature does not match one of the tables that
+     * is already loaded.
+     */
+    Status = AcpiTbMatchSignature (Operand[0]->String.Pointer, NULL);
+    if (Status == AE_OK)
+    {
+        /* Signature matched -- don't allow override */
+
+        return_ACPI_STATUS (AE_ALREADY_EXISTS);
+    }
+
+    /* Find the ACPI table */
+
+    Status = AcpiTbFindTable (Operand[0]->String.Pointer,
+                              Operand[1]->String.Pointer,
+                              Operand[2]->String.Pointer,
+                              &Table);
+    if (ACPI_FAILURE (Status))
+    {
+        if (Status != AE_NOT_FOUND)
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        /* Not found, return an Integer=0 and AE_OK */
+
+        DdbHandle = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+        if (!DdbHandle)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        DdbHandle->Integer.Value = 0;
+        *ReturnDesc = DdbHandle;
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Convert the RootPathString to internal (AML) format */
+
+    Status = AcpiNsInternalizeName (Operand[3]->String.Pointer, &InternalPath);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Find the node corresponding to the RootPathString parameter */
+
+    Status = AcpiNsLookup (WalkState->ScopeInfo, InternalPath,
+                    ACPI_TYPE_ANY, IMODE_EXECUTE,
+                    NS_SEARCH_PARENT, WalkState, &ParentNode);
+    ACPI_MEM_FREE (InternalPath);
+
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Build the path to the parameter object */
+
+    /* WBD: check for NULL case (optional parameter) */
+
+    if ((Operand[4]->String.Pointer[0] != '\\') &&
+        (Operand[4]->String.Pointer[0] != '^'))
+    {
+        StartNode = ParentNode;
+    }
+    else
+    {
+        StartNode = WalkState->ScopeInfo->Scope.Node;
+    }
+
+    /* Convert the ParameterPath string to internal format */
+
+    Status = AcpiNsInternalizeName (Operand[4]->String.Pointer, &InternalPath);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Find the parameter object */
+
+    ScopeInfo.Scope.Node = StartNode;
+    Status = AcpiNsLookup (&ScopeInfo, InternalPath,
+                    ACPI_TYPE_ANY, IMODE_EXECUTE,
+                    NS_SEARCH_PARENT, WalkState, &ParameterNode);
+    ACPI_MEM_FREE (InternalPath);
+
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Load the table into the namespace */
+
+    Status = AcpiNsAddTable (Table, ParentNode, &DdbHandle);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Store the parameter data into the parameter object */
+
+    Status = AcpiExStore (Operand[5], (ACPI_OPERAND_OBJECT *) ParameterNode, WalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Unload the table? */
+    }
+
+    return_ACPI_STATUS  (Status);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiExLoadOp
  *
  * PARAMETERS:  RgnDesc         - Op region where the table will be obtained
  *              DdbHandle       - Where a handle to the table will be returned
@@ -147,14 +428,13 @@
 ACPI_STATUS
 AcpiExLoadOp (
     ACPI_OPERAND_OBJECT     *RgnDesc,
-    ACPI_OPERAND_OBJECT     *DdbHandle)
+    ACPI_OPERAND_OBJECT     *Target)
 {
     ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     *TableDesc = NULL;
+    ACPI_OPERAND_OBJECT     *DdbHandle;
     UINT8                   *TablePtr;
     UINT8                   *TableDataPtr;
     ACPI_TABLE_HEADER       TableHeader;
-    ACPI_TABLE_DESC         TableInfo;
     UINT32                  i;
 
 
@@ -217,51 +497,19 @@ AcpiExLoadOp (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
-            (char*)TableHeader.Signature));
+            (char *) &TableHeader.Signature));
         Status = AE_BAD_SIGNATURE;
-        goto Cleanup;
-    }
-
-    /* Create an object to be the table handle */
-
-    TableDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
-    if (!TableDesc)
-    {
-        Status = AE_NO_MEMORY;
         goto Cleanup;
     }
 
     /* Install the new table into the local data structures */
 
-    TableInfo.Pointer      = (ACPI_TABLE_HEADER *) TablePtr;
-    TableInfo.Length       = TableHeader.Length;
-    TableInfo.Allocation   = ACPI_MEM_ALLOCATED;
-    TableInfo.BasePointer  = TablePtr;
-
-    Status = AcpiTbInstallTable (NULL, &TableInfo);
+    Status = AcpiNsAddTable ((ACPI_TABLE_HEADER *) TablePtr, AcpiGbl_RootNode, &DdbHandle);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
     }
 
-    /* Add the table to the namespace */
-
-    Status = AcpiNsLoadTable (TableInfo.InstalledDesc, AcpiGbl_RootNode);
-    if (ACPI_FAILURE (Status))
-    {
-        /* Uninstall table and free the buffer */
-
-        AcpiTbUninstallTable (TableInfo.InstalledDesc);
-        goto Cleanup;
-    }
-
-
-    /* We need a pointer to the table desc */
-
-    /* Init the table handle */
-
-    TableDesc->Reference.Opcode = AML_LOAD_OP;
-    TableDesc->Reference.Object = TableInfo.InstalledDesc;
 
     /* Store the tabledesc into the DdbHandle target */
     /* DdbHandle = TableDesc; */
@@ -271,7 +519,6 @@ AcpiExLoadOp (
 
 Cleanup:
 
-    ACPI_MEM_FREE (TableDesc);
     ACPI_MEM_FREE (TablePtr);
     return_ACPI_STATUS (Status);
 }
