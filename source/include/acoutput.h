@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acoutput.h -- debug output
- *       $Revision: 1.75 $
+ *       $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -173,6 +173,7 @@
 
 /* Trace level -- also used in the global "DebugLevel" */
 
+#define TRACE_THREADS               0x00000080
 #define TRACE_PARSE                 0x00000100
 #define TRACE_DISPATCH              0x00000200
 #define TRACE_LOAD                  0x00000400
@@ -194,7 +195,7 @@
 #define TRACE_MUTEX                 0x04000000
 #define TRACE_INIT                  0x08000000
 
-#define TRACE_ALL                   0x0FFFFF00
+#define TRACE_ALL                   0x0FFFFF80
 
 
 /* Exceptionally verbose output -- also used in the global "DebugLevel"  */
