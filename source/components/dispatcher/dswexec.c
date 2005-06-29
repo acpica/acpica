@@ -294,7 +294,7 @@ AcpiDsExecEndOp (
     /* Call debugger for single step support (DEBUG build only) */
 
     DEBUG_EXEC (Status = AcpiDbSingleStep (WalkState, Op, Optype));
-    DEBUG_EXEC (if (Status != AE_OK) {return_ACPI_STATUS (Status);});
+    DEBUG_EXEC (if (ACPI_FAILURE (Status)) {return_ACPI_STATUS (Status);});
 
 
     /* Decode the opcode */

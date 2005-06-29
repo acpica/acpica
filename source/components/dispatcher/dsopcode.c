@@ -554,7 +554,7 @@ AcpiDsExecEndControlOp (
         break;
 
 
-    case AML_NOOP_CODE:
+    case AML_NOOP_OP:
 
         /* Just do nothing! */
         break;
