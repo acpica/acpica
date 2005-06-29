@@ -106,10 +106,12 @@
 #define _COMPONENT          INTERPRETER
 
 
+/* TBD - this is no longer used.
 static ST_KEY_DESC_TABLE KDT[] = {
     {"0000", 'W', "NOT IMPLEMENTED", "NOT IMPLEMENTED"},
     {NULL, 'I', NULL, NULL}
 };
+*/
 
 
 /******************************************************************************
