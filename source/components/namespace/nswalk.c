@@ -318,10 +318,10 @@ NsWalkNamespace (
                 switch (Status)
                 {
                 case AE_OK:
-                case AE_DEPTH:
+                case AE_CTRL_DEPTH:
                     break;                          /* Just keep going */
 
-                case AE_TERMINATE:
+                case AE_CTRL_TERMINATE:
                     return_ACPI_STATUS (AE_OK);     /* Exit now, with OK status */
                     break;
 
@@ -338,7 +338,7 @@ NsWalkNamespace (
              * or if the user function has specified that the maximum depth has been reached.
              */
 
-            if ((Level < MaxDepth) && (Status != AE_DEPTH))
+            if ((Level < MaxDepth) && (Status != AE_CTRL_DEPTH))
             {
                 if (NsGetNextObject (ACPI_TYPE_Any, ChildHandle, 0))
                 {
