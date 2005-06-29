@@ -317,6 +317,27 @@ INT32                   ObjStackTop = 0;
 
 
 
+
+
+
+/******************************************************************************
+ *
+ * Event globals
+ *
+ ******************************************************************************/
+
+UINT32                  SciHandle;
+FIXED_EVENT_HANDLER     FixedEventHandlers[NUM_FIXED_EVENTS];
+
+
+#ifdef _DEBUG
+UINT32                  EventCount[NUM_FIXED_EVENTS];   
+#endif
+
+
+
+
+
 /****************************************************************************
  *
  * FUNCTION:    InitAcpiLibGlobals
