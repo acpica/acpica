@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.26 $
+ *       $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -142,6 +142,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #if defined(__ia64__) || defined(__x86_64__)
 #define ACPI_MACHINE_WIDTH		64
