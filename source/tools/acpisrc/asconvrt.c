@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -698,10 +698,20 @@ AsLowerCaseIdentifiers (
         if (SubBuffer[0] == '\"')
         {
             SubBuffer++;
-            SubBuffer = AsSkipPastChar (SubBuffer, '\"');
-            if (!SubBuffer)
+            while (1)
             {
-                return;
+                SubBuffer = AsSkipPastChar (SubBuffer, '\"');
+                if (!SubBuffer)
+                {
+                    return;
+                }
+
+                /* Handle escaped quotes */
+
+                if (*(SubBuffer-2) != '\\')
+                {
+                    break;
+                }
             }
         }
 
