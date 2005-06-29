@@ -348,9 +348,7 @@ FunctionPtrExit (
 void
 DebugPrintPrefix (
     ACPI_STRING             ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId);
-
+    INT32                   LineNumber);
 
 void
 DebugPrint (
@@ -393,10 +391,9 @@ _ReportSuccess (
     ACPI_STRING             Message);
 
 void 
-DumpBuffer (
+CmDumpBuffer (
     char                    *Buffer, 
     UINT32                  Count, 
-    INT32                   Flags, 
     INT32                   componentId);
 
 
