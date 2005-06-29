@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.34 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -279,7 +279,7 @@ AcpiNsInitOneObject (
     /* And even then, we are only interested in a few object types */
 
     Type = AcpiNsGetType (ObjHandle);
-    ObjDesc = Node->Object;
+    ObjDesc = AcpiNsGetAttachedObject (Node);
     if (!ObjDesc)
     {
         return (AE_OK);
@@ -456,7 +456,7 @@ AcpiNsInitOneDevice (
         /* Ignore error and move on to next device */
 
 #ifdef ACPI_DEBUG
-        NATIVE_CHAR *ScopeName = AcpiNsGetTablePathname (ObjHandle);
+        NATIVE_CHAR *ScopeName = AcpiNsGetExternalPathname (ObjHandle);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
                 ScopeName, AcpiFormatException (Status)));
