@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -140,7 +140,7 @@
 extern int                      yydebug;
 extern FILE                     *AslCompilerin;
 extern int                      AslCompilerdebug;
-extern ASL_MAPPING_ENTRY        AslKeywordMapping[];
+extern const ASL_MAPPING_ENTRY  AslKeywordMapping[];
 extern char                     *AslCompilertext;
 extern FILE                     *AslCompilerin;
 extern int                      optind;
@@ -234,7 +234,7 @@ EXTERN FILE                     *DebugFile; /* Placeholder for oswinxf only */
 
 EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
 EXTERN ACPI_TABLE_HEADER        TableHeader;
-extern ASL_RESERVED_INFO        ReservedMethods[];
+extern const ASL_RESERVED_INFO  ReservedMethods[];
 EXTERN ASL_EVENT_INFO           AslGbl_Events[20];
 
 
