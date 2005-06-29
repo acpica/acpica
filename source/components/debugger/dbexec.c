@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -408,7 +408,7 @@ AcpiDbExecute (
 
     if (Allocations > 0)
     {
-        AcpiOsPrintf ("Outstanding: %u allocations after execution\n",
+        AcpiOsPrintf ("Outstanding: 0x%X allocations after execution\n",
                         Allocations);
     }
 #endif
