@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.76 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 #include "acdebug.h"
 #include "acinterp.h"
 
-#define _COMPONENT          PARSER
+#define _COMPONENT          ACPI_PARSER
         MODULE_NAME         ("psparse")
 
 
@@ -252,7 +252,7 @@ AcpiPsCreateState (
     ParserState = AcpiCmCallocate (sizeof (ACPI_PARSE_STATE));
     if (!ParserState)
     {
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     ParserState->Aml       = Aml;
