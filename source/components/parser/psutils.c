@@ -339,6 +339,7 @@ PsIsFieldOp (
     UINT32                  Opcode)
 {
     return (Opcode == AML_CreateFieldOp
+            || Opcode == AML_DefFieldOp
             || Opcode == AML_IndexFieldOp
             || Opcode == AML_BankFieldOp);
 }
@@ -381,24 +382,13 @@ PsToBytelistOp (
 
 
 /*
- * Cast away const-ness
- */
-ACPI_GENERIC_OP*
-PsToNonconstOp (
-    ACPI_GENERIC_OP         *Op)
-{
-    return (ACPI_GENERIC_OP*) Op;
-}
-
-
-/*
  * Get op's name (4-byte name segment) or 0 if unnamed
  */
 UINT32
 PsGetName (
     ACPI_GENERIC_OP         *Op)
 {
-    ACPI_NAMED_OP               *Named = PsToNamedOp (PsToNonconstOp (Op));
+    ACPI_NAMED_OP               *Named = PsToNamedOp (Op);
 
     return (Named ? Named->Name : 0);
 }
