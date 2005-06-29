@@ -138,7 +138,24 @@ char            *ExceptionNames[] =
     "AE_OK", 
     "AE_PENDING", 
     "AE_AML_ERROR",
-    "AE_RETURN_VALUE" 
+    "AE_RETURN_VALUE",
+    "AE_ERROR",
+    "AE_NO_ACPI_TABLES",
+    "AE_NO_NAMESPACE",
+    "AE_NO_MEMORY",
+    "AE_BAD_HEADER",
+    "AE_BAD_CHECKSUM",
+    "AE_BAD_PARAMETER",
+    "AE_BAD_CHARACTER",
+    "AE_NOT_FOUND",
+    "AE_NULL_ENTRY",
+    "AE_FILE_NOT_EXIST",
+    "AE_BUFFER_OVERFLOW",
+    "AE_HANDLER_EXISTS",
+    "AE_TERMINATED",
+    "AE_CONTEXT",
+    "AE_NOT_IMPLEMENTED",
+    "AE_UNKNOWN_STATUS"
 };
 
 
@@ -355,7 +372,7 @@ InitAcpiLibGlobals (void)
     FUNCTION_TRACE ("InitAcpiLibGlobals");
 
     
-    /* table pointers */
+    /* Table pointers */
     
     RSDP                    = NULL;
     RSDT                    = NULL;
@@ -367,19 +384,17 @@ InitAcpiLibGlobals (void)
     SSDT                    = NULL;
     SBDT                    = NULL;
     
-    /* miscellaneous variables */
+    /* Miscellaneous variables */
     
     Capabilities            = 0;
     GlobalLockSet           = FALSE;
     
-    /* file handles and names */
+    /* File handles and names */
     
     DsdtFile                = NULL;
     OutputFile              = NULL;
     InputFile               = NULL;
     
-    NameString              = NULL;
-    NameStringSize          = 0;
     RsdpOriginalLocation    = 0;
     
     /* Interpreter */
