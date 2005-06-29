@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -141,17 +141,17 @@
 
 ACPI_GPE_EVENT_INFO *
 AcpiEvGetGpeEventInfo (
-    UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *OwningGpeBlock)
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber)
 {
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
-    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
     ACPI_NATIVE_UINT        i;
 
 
     /* A NULL GpeBlock means use the FADT-defined GPE block(s) */
 
-    if (!OwningGpeBlock)
+    if (!GpeDevice)
     {
         /* Examine GPE Block 0 and 1 (These blocks are permanent) */
 
@@ -174,36 +174,16 @@ AcpiEvGetGpeEventInfo (
     }
 
     /* 
-     * A Non-null OwningGpeBlock means this is a GPE Block Device.
-     * Validate OwningGpeBlock by traversing lists
+     * A Non-null GpeDevice means this is a GPE Block Device.
      */
-
-    /* Walk the interrupt level descriptor list */
-    /* No need for spin lock since we are not changing any list elements here */
-
-    GpeXruptInfo = AcpiGbl_GpeXruptListHead;
-    while (GpeXruptInfo)
+    ObjDesc = AcpiNsGetAttachedObject ((ACPI_NAMESPACE_NODE *) GpeDevice);
+    if (!ObjDesc ||
+        !ObjDesc->Device.GpeBlock)
     {
-        /* Walk all Gpe Blocks attached to this interrupt level */
-
-        GpeBlock = GpeXruptInfo->GpeBlockListHead;
-        while (GpeBlock)
-        {
-            if (GpeBlock == OwningGpeBlock)
-            {
-                goto ValidGpeBlock;
-            }
-            GpeBlock = GpeBlock->Next;
-        }
-        GpeXruptInfo = GpeXruptInfo->Next;
+        return (NULL);
     }
 
-    /* Block not found */
-
-    return (NULL);
-
-
-ValidGpeBlock:
+    GpeBlock = ObjDesc->Device.GpeBlock;
 
     if ((GpeNumber >= GpeBlock->BlockBaseNumber) &&
         (GpeNumber < GpeBlock->BlockBaseNumber + (GpeBlock->RegisterCount * 8)))

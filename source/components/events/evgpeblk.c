@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,6 @@ AcpiEvValidGpeEvent (
 {
     ACPI_GPE_XRUPT_INFO     *GpeXruptBlock;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
-    BOOLEAN                 IsValid = FALSE;
 
 
     /* No need for spin lock since we are not changing any list elements */
@@ -156,8 +155,7 @@ AcpiEvValidGpeEvent (
             if ((&GpeBlock->EventInfo[0] <= GpeEventInfo) &&
                 (&GpeBlock->EventInfo[GpeBlock->RegisterCount * 8] > GpeEventInfo))
             {
-                IsValid = TRUE;
-                goto UnlockAndExit;
+                return (TRUE);
             }
 
             GpeBlock = GpeBlock->Next;
@@ -166,9 +164,7 @@ AcpiEvValidGpeEvent (
         GpeXruptBlock = GpeXruptBlock->Next;
     }
 
-UnlockAndExit:
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
-    return (IsValid);
+    return (FALSE);
 }
 
 
@@ -341,7 +337,8 @@ AcpiEvSaveMethodInfo (
         return (Status);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Registered GPE method %s as GPE number 0x%.2X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+        "Registered GPE method %s as GPE number 0x%.2X\n",
         Name, GpeNumber));
     return (AE_OK);
 }
@@ -615,7 +612,6 @@ AcpiEvCreateGpeInfoBlocks (
 
 
 ErrorExit:
-
     if (GpeRegisterInfo)
     {
         ACPI_MEM_FREE (GpeRegisterInfo);
