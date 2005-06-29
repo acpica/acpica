@@ -321,7 +321,7 @@ AmlShowHexValue (
 
 /*****************************************************************************
  * 
- * FUNCTION:    AmlDumpObjStackEntry
+ * FUNCTION:    AmlDumpOperand
  *
  * PARAMETERS:  *EntryDesc          - Pointer to entry to be dumped
  *
@@ -332,7 +332,7 @@ AmlShowHexValue (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDumpObjStackEntry (
+AmlDumpOperand (
     ACPI_OBJECT_INTERNAL    *EntryDesc)
 {
     UINT8                   *Buf = NULL;
@@ -346,20 +346,20 @@ AmlDumpObjStackEntry (
          * This usually indicates that something serious is wrong -- since most (if not all) 
          * code that dumps the stack expects something to be there! 
          */
-        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: *** Possible error: Null stack entry ptr\n"));
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpOperand: *** Possible error: Null stack entry ptr\n"));
         return AE_OK;
     }
 
     if (VALID_DESCRIPTOR_TYPE (EntryDesc, DESC_TYPE_NTE))
     {
-        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Name Table Entry (NTE): \n"));
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpOperand: Name Table Entry (NTE): \n"));
         DUMP_ENTRY (EntryDesc, ACPI_INFO);
         return AE_OK;
     }
 
     if (TbSystemTablePointer (EntryDesc))
     {
-        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: %p is a Pcode pointer\n",
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpOperand: %p is a Pcode pointer\n",
                         EntryDesc));
         return AE_OK;
     }
@@ -367,7 +367,7 @@ AmlDumpObjStackEntry (
 
     /*  EntryDesc is a valid object  */
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: %p ", EntryDesc));
+    DEBUG_PRINT (ACPI_INFO, ("AmlDumpOperand: %p ", EntryDesc));
 
     switch (EntryDesc->Common.Type)
     {
@@ -455,7 +455,7 @@ AmlDumpObjStackEntry (
 
             /*  unknown opcode  */
 
-            REPORT_ERROR ("AmlDumpObjStackEntry: Unknown AML Opcode");
+            REPORT_ERROR ("AmlDumpOperand: Unknown AML Opcode");
             break;
 
         }
@@ -533,7 +533,7 @@ AmlDumpObjStackEntry (
                   ElementIndex < EntryDesc->Package.Count;
                   ++ElementIndex, ++Element)
             {
-                AmlDumpObjStackEntry (*Element);
+                AmlDumpOperand (*Element);
             }
         }
 
@@ -690,7 +690,7 @@ AmlDumpObjStackEntry (
     default:
         /*  unknown EntryDesc->Common.Type value    */
 
-        REPORT_ERROR ("AmlDumpObjStackEntry: Unknown Type");
+        REPORT_ERROR ("AmlDumpOperand: Unknown Type");
         
 /* Gbl_Aml table pertains to old parser only */
 /* TBD: fix for new parser or remove this code */
@@ -699,7 +699,7 @@ AmlDumpObjStackEntry (
         if (AML_UNASSIGNED != Gbl_Aml[(INT32) EntryDesc->Common.Type])
         {
             DEBUG_PRINT_RAW (ACPI_ERROR,
-                          ("AmlDumpObjStackEntry: Unhandled opcode (AML %s) \n", 
+                          ("AmlDumpOperand: Unhandled opcode (AML %s) \n", 
                           Gbl_ShortOps[Gbl_Aml[(INT32) EntryDesc->Common.Type]]));
         }
 
@@ -725,7 +725,7 @@ AmlDumpObjStackEntry (
 
 /*****************************************************************************
  * 
- * FUNCTION:    _AmlDumpObjStack
+ * FUNCTION:    AmlDumpOperands
  *
  * PARAMETERS:  InterpreterMode      - Load or Exec
  *              *Ident              - Identification
@@ -737,7 +737,7 @@ AmlDumpObjStackEntry (
  ****************************************************************************/
 
 void
-_AmlDumpObjStack (
+AmlDumpOperands (
     ACPI_OBJECT_INTERNAL    **Operands,
     OPERATING_MODE          InterpreterMode, 
     char                    *Ident, 
@@ -774,7 +774,7 @@ _AmlDumpObjStack (
     {
         EntryDesc = &Operands[i];
 
-        if (AE_OK != AmlDumpObjStackEntry (*EntryDesc))
+        if (AE_OK != AmlDumpOperand (*EntryDesc))
         {
             break;
         }
