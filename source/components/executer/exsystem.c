@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -302,7 +302,7 @@ AcpiExSystemAcquireMutex (
      */
     if (ObjDesc->Mutex.Semaphore == AcpiGbl_GlobalLockSemaphore)
     {
-        Status = AcpiEvAcquireGlobalLock ();
+        Status = AcpiEvAcquireGlobalLock ((UINT32) TimeDesc->Integer.Value);
         return_ACPI_STATUS (Status);
     }
 
