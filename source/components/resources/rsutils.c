@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  ******************************************************************************/
 
@@ -288,11 +288,6 @@ AcpiRsGetCrsMethodData (
                                    RetBuffer->Pointer,
                                    &BufferSpaceNeeded);
 
-
-    if (ACPI_SUCCESS (Status))
-    {
-        DUMP_RESOURCE_LIST(RetBuffer->Pointer);
-    }
 
     /*
      * Tell the user how much of the buffer we have used or is needed

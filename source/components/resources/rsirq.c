@@ -4,7 +4,7 @@
  *                      AcpiRsIrqStream
  *                      AcpiRsExtendedIrqResource
  *                      AcpiRsExtendedIrqStream
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  ******************************************************************************/
 
@@ -401,6 +401,7 @@ AcpiRsExtendedIrqResource (
     RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
+    NATIVE_CHAR             *TempPtr;
     UINT8                   Index;
     UINT32                  StructSize = sizeof (EXTENDED_IRQ_RESOURCE) +
                                          RESOURCE_LENGTH_NO_DATA;
@@ -471,7 +472,7 @@ AcpiRsExtendedIrqResource (
      * Add any additional structure size to properly calculate
      *  the next pointer at the end of this function
      */
-     StructSize += (Temp8 - 1) * 4;
+    StructSize += (Temp8 - 1) * 4;
 
     /*
      * Point to Byte5 (First IRQ Number)
@@ -505,12 +506,20 @@ AcpiRsExtendedIrqResource (
         /* Dereference the Index */
 
         Temp8 = *Buffer;
-        OutputStruct->Data.ExtendedIrq.ResourceSourceIndex =
-                (UINT32)Temp8;
+        OutputStruct->Data.ExtendedIrq.ResourceSource.Index =
+                (UINT32) Temp8;
 
         /* Point to the String */
 
         Buffer += 1;
+
+        /* 
+         * Point the String pointer to the end of this structure.
+         */
+        OutputStruct->Data.ExtendedIrq.ResourceSource.StringPtr = 
+                (NATIVE_CHAR *)(OutputStruct + StructSize);
+
+        TempPtr = OutputStruct->Data.ExtendedIrq.ResourceSource.StringPtr;
 
         /* Copy the string into the buffer */
 
@@ -518,9 +527,9 @@ AcpiRsExtendedIrqResource (
 
         while (0x00 != *Buffer)
         {
-            OutputStruct->Data.ExtendedIrq.ResourceSource[Index] =
-                    *Buffer;
+            *TempPtr = *Buffer;
 
+            TempPtr += 1;
             Buffer += 1;
             Index += 1;
         }
@@ -528,8 +537,9 @@ AcpiRsExtendedIrqResource (
         /*
          * Add the terminating null
          */
-        OutputStruct->Data.ExtendedIrq.ResourceSource[Index] = 0x00;
-        OutputStruct->Data.ExtendedIrq.ResourceSourceStringLength =
+        *TempPtr = 0x00;
+
+        OutputStruct->Data.ExtendedIrq.ResourceSource.StringLength =
                 Index + 1;
 
         /*
@@ -538,14 +548,13 @@ AcpiRsExtendedIrqResource (
          *  StructSize to the next 32-bit boundry.
          */
         Temp8 = (UINT8) (Index + 1);
-        Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
+        StructSize += ROUND_UP_TO_32BITS (Temp8);
     }
-
     else
     {
-        OutputStruct->Data.ExtendedIrq.ResourceSourceIndex = 0x00;
-        OutputStruct->Data.ExtendedIrq.ResourceSourceStringLength = 0;
-        OutputStruct->Data.ExtendedIrq.ResourceSource[0] = 0x00;
+        OutputStruct->Data.ExtendedIrq.ResourceSource.Index = 0x00;
+        OutputStruct->Data.ExtendedIrq.ResourceSource.StringLength = 0;
+        OutputStruct->Data.ExtendedIrq.ResourceSource.StringPtr = NULL;
     }
 
     /*
@@ -648,9 +657,9 @@ AcpiRsExtendedIrqStream (
     /*
      * Resource Source Index and Resource Source are optional
      */
-    if (0 != LinkedList->Data.ExtendedIrq.ResourceSourceStringLength)
+    if (0 != LinkedList->Data.ExtendedIrq.ResourceSource.StringLength)
     {
-        *Buffer = (UINT8) LinkedList->Data.ExtendedIrq.ResourceSourceIndex;
+        *Buffer = (UINT8) LinkedList->Data.ExtendedIrq.ResourceSource.Index;
         Buffer += 1;
 
         TempPointer = (NATIVE_CHAR *) Buffer;
@@ -658,13 +667,13 @@ AcpiRsExtendedIrqStream (
         /*
          * Copy the string
          */
-        STRCPY (TempPointer, LinkedList->Data.ExtendedIrq.ResourceSource);
+        STRCPY (TempPointer, LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr);
 
         /*
          * Buffer needs to be set to the length of the sting + one for the
          *  terminating null
          */
-        Buffer += (STRLEN (LinkedList->Data.ExtendedIrq.ResourceSource) + 1);
+        Buffer += (STRLEN (LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr) + 1);
     }
 
     /*

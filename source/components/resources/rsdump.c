@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions do dump out the resource structures.
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  ******************************************************************************/
 
@@ -673,12 +673,12 @@ AcpiRsDumpAddress16 (
     AcpiOsPrintf ("\t\tAddress Length: %08X\n",
                 Address16Data->AddressLength);
 
-    if (0xFF != Address16Data->ResourceSourceIndex)
+    if (0xFF != Address16Data->ResourceSource.Index)
     {
         AcpiOsPrintf ("\t\tResource Source Index: %X\n",
-                    Address16Data->ResourceSourceIndex);
+                    Address16Data->ResourceSource.Index);
         AcpiOsPrintf ("\t\tResource Source: %s\n",
-                    Address16Data->ResourceSource);
+                    Address16Data->ResourceSource.StringPtr);
     }
 
     return;
@@ -816,12 +816,155 @@ AcpiRsDumpAddress32 (
     AcpiOsPrintf ("\t\tAddress Length: %08X\n",
                 Address32Data->AddressLength);
 
-    if(0xFF != Address32Data->ResourceSourceIndex)
+    if(0xFF != Address32Data->ResourceSource.Index)
     {
         AcpiOsPrintf ("\t\tResource Source Index: %X\n",
-                    Address32Data->ResourceSourceIndex);
+                    Address32Data->ResourceSource.Index);
         AcpiOsPrintf ("\t\tResource Source: %s\n",
-                    Address32Data->ResourceSource);
+                    Address32Data->ResourceSource.StringPtr);
+    }
+
+    return;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsDumpAddress64
+ *
+ * PARAMETERS:  Data            - pointer to the resource structure to dump.
+ *
+ * RETURN:
+ *
+ * DESCRIPTION: Prints out the various members of the Data structure type.
+ *
+ ******************************************************************************/
+
+void
+AcpiRsDumpAddress64 (
+    RESOURCE_DATA           *Data)
+{
+    ADDRESS64_RESOURCE      *Address64Data = (ADDRESS64_RESOURCE*) Data;
+
+
+    AcpiOsPrintf ("\t64-Bit Address Space Resource\n");
+
+    switch (Address64Data->ResourceType)
+    {
+    case MEMORY_RANGE:
+
+        AcpiOsPrintf ("\t\tResource Type: Memory Range\n");
+
+        switch (Address64Data->Attribute.Memory.CacheAttribute)
+        {
+        case NON_CACHEABLE_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
+                            "Noncacheable memory\n");
+            break;
+
+        case CACHABLE_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
+                            "Cacheable memory\n");
+            break;
+
+        case WRITE_COMBINING_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
+                            "Write-combining memory\n");
+            break;
+
+        case PREFETCHABLE_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
+                            "Prefetchable memory\n");
+            break;
+
+        default:
+            AcpiOsPrintf ("\t\tType Specific: "
+                            "Invalid cache attribute\n");
+            break;
+        }
+
+        AcpiOsPrintf ("\t\tType Specific: Read%s\n",
+            READ_WRITE_MEMORY ==
+            Address64Data->Attribute.Memory.ReadWriteAttribute ?
+            "/Write" : " Only");
+        break;
+
+    case IO_RANGE:
+
+        AcpiOsPrintf ("\t\tResource Type: Io Range\n");
+
+        switch (Address64Data->Attribute.Io.RangeAttribute)
+            {
+            case NON_ISA_ONLY_RANGES:
+                AcpiOsPrintf ("\t\tType Specific: "
+                                "Non-ISA Io Addresses\n");
+                break;
+
+            case ISA_ONLY_RANGES:
+                AcpiOsPrintf ("\t\tType Specific: "
+                                "ISA Io Addresses\n");
+                break;
+
+            case ENTIRE_RANGE:
+                AcpiOsPrintf ("\t\tType Specific: "
+                                "ISA and non-ISA Io Addresses\n");
+                break;
+
+            default:
+                AcpiOsPrintf ("\t\tType Specific: "
+                                "Invalid Range attribute");
+                break;
+            }
+        break;
+
+    case BUS_NUMBER_RANGE:
+
+        AcpiOsPrintf ("\t\tResource Type: Bus Number Range\n");
+        break;
+
+    default:
+
+        AcpiOsPrintf ("\t\tInvalid Resource Type..exiting.\n");
+        return;
+    }
+
+    AcpiOsPrintf ("\t\tResource %s\n",
+                CONSUMER == Address64Data->ProducerConsumer ?
+                "Consumer" : "Producer");
+
+    AcpiOsPrintf ("\t\t%s decode\n",
+                SUB_DECODE == Address64Data->Decode ?
+                "Subtractive" : "Positive");
+
+    AcpiOsPrintf ("\t\tMin address is %s fixed\n",
+                ADDRESS_FIXED == Address64Data->MinAddressFixed ?
+                "" : "not ");
+
+    AcpiOsPrintf ("\t\tMax address is %s fixed\n",
+                ADDRESS_FIXED == Address64Data->MaxAddressFixed ?
+                "" : "not ");
+
+    AcpiOsPrintf ("\t\tGranularity: %16X\n",
+                Address64Data->Granularity);
+
+    AcpiOsPrintf ("\t\tAddress range min: %16X\n",
+                Address64Data->MinAddressRange);
+
+    AcpiOsPrintf ("\t\tAddress range max: %16X\n",
+                Address64Data->MaxAddressRange);
+
+    AcpiOsPrintf ("\t\tAddress translation offset: %16X\n",
+                Address64Data->AddressTranslationOffset);
+
+    AcpiOsPrintf ("\t\tAddress Length: %16X\n",
+                Address64Data->AddressLength);
+
+    if(0xFF != Address64Data->ResourceSource.Index)
+    {
+        AcpiOsPrintf ("\t\tResource Source Index: %X\n",
+                    Address64Data->ResourceSource.Index);
+        AcpiOsPrintf ("\t\tResource Source: %s\n",
+                    Address64Data->ResourceSource.StringPtr);
     }
 
     return;
@@ -876,12 +1019,12 @@ AcpiRsDumpExtendedIrq (
 
     AcpiOsPrintf (")\n");
 
-    if(0xFF != ExtIrqData->ResourceSourceIndex)
+    if(0xFF != ExtIrqData->ResourceSource.Index)
     {
         AcpiOsPrintf ("\t\tResource Source Index: %X",
-                    ExtIrqData->ResourceSourceIndex);
+                    ExtIrqData->ResourceSource.Index);
         AcpiOsPrintf ("\t\tResource Source: %s",
-                    ExtIrqData->ResourceSource);
+                    ExtIrqData->ResourceSource.StringPtr);
     }
 
     return;
@@ -969,6 +1112,10 @@ AcpiRsDumpResourceList (
 
             case Address32:
                 AcpiRsDumpAddress32 (&Resource->Data);
+                break;
+
+            case Address64:
+                AcpiRsDumpAddress64 (&Resource->Data);
                 break;
 
             case ExtendedIrq:

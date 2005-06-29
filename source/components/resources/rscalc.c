@@ -2,7 +2,7 @@
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.23 $
+ *              $Revision: 1.25 $
  *
  ******************************************************************************/
 
@@ -304,10 +304,10 @@ AcpiRsCalculateByteStreamLength (
              */
             SegmentSize = 16;
 
-            if(NULL != LinkedList->Data.Address16.ResourceSource)
+            if(NULL != LinkedList->Data.Address16.ResourceSource.StringPtr)
             {
                 SegmentSize += (1 +
-                    LinkedList->Data.Address16.ResourceSourceStringLength);
+                    LinkedList->Data.Address16.ResourceSource.StringLength);
             }
             break;
 
@@ -323,10 +323,29 @@ AcpiRsCalculateByteStreamLength (
              */
             SegmentSize = 26;
 
-            if(NULL != LinkedList->Data.Address16.ResourceSource)
+            if(NULL != LinkedList->Data.Address32.ResourceSource.StringPtr)
             {
                 SegmentSize += (1 +
-                    LinkedList->Data.Address16.ResourceSourceStringLength);
+                    LinkedList->Data.Address32.ResourceSource.StringLength);
+            }
+            break;
+
+        case Address64:
+            /*
+             * 64-Bit Address Resource
+             */
+            /*
+             * The base size of this byte stream is 46. If a Resource
+             *  Source string is not NULL, add 1 for the Index + the
+             *  length of the null terminated string Resource Source +
+             *  1 for the null.
+             */
+            SegmentSize = 46;
+
+            if(NULL != LinkedList->Data.Address64.ResourceSource.StringPtr)
+            {
+                SegmentSize += (1 +
+                    LinkedList->Data.Address64.ResourceSource.StringLength);
             }
             break;
 
@@ -348,10 +367,10 @@ AcpiRsCalculateByteStreamLength (
                 (LinkedList->Data.ExtendedIrq.NumberOfInterrupts -
                  1) * 4;
 
-            if(NULL != ExIrq->ResourceSource)
+            if(NULL != ExIrq->ResourceSource.StringPtr)
             {
                 SegmentSize += (1 +
-                    LinkedList->Data.ExtendedIrq.ResourceSourceStringLength);
+                    LinkedList->Data.ExtendedIrq.ResourceSource.StringLength);
             }
             break;
 
@@ -493,6 +512,46 @@ AcpiRsCalculateListLength (
 
                 StructureSize = sizeof(FIXED_MEMORY32_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA;
+                break;
+
+            case QWORD_ADDRESS_SPACE:
+                /*
+                 * 64-Bit Address Resource
+                 */
+                Buffer = ByteStreamBuffer;
+
+                ++Buffer;
+                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+
+                BytesConsumed = Temp16 + 3;
+
+                /*
+                 * Resource Source Index and Resource Source are
+                 *  optional elements.  Check the length of the
+                 *  Bytestream.  If it is greater than 43, that
+                 *  means that an Index exists and is followed by
+                 *  a null termininated string.  Therefore, set
+                 *  the temp variable to the length minus the minimum
+                 *  byte stream length plus the byte for the Index to
+                 *  determine the size of the NULL terminiated string.
+                 */
+                if (43 < Temp16)
+                {
+                    Temp8 = (UINT8) (Temp16 - 44);
+                }
+                else
+                {
+                    Temp8 = 0;
+                }
+
+                /*
+                 * Ensure a 64-bit boundary for the structure
+                 */
+                Temp8 = (UINT8) ROUND_UP_TO_64BITS (Temp8);
+
+                StructureSize = sizeof (ADDRESS64_RESOURCE) +
+                                RESOURCE_LENGTH_NO_DATA +
+                                (Temp8 * sizeof (UINT8));
                 break;
 
             case DWORD_ADDRESS_SPACE:
@@ -908,9 +967,6 @@ AcpiRsCalculatePciRoutingTableLength (
      * structures.  Additional space for the strings is added below.
      * The minus one is to subtract the size of the UINT8 Source[1]
      * member because it is added below.
-     *
-     * NOTE: The NumberOfElements is incremented by one to add an end
-     * table structure that is essentially a structure of zeros.
      */
 
     /*
@@ -997,7 +1053,10 @@ AcpiRsCalculatePciRoutingTableLength (
     }
 
 
-    *BufferSizeNeeded = TempSizeNeeded;
+    /*
+     * Adding an extra element to the end of the list, essentially a NULL terminator
+     */
+    *BufferSizeNeeded = TempSizeNeeded + sizeof (PCI_ROUTING_TABLE);
 
     return_ACPI_STATUS (AE_OK);
 }

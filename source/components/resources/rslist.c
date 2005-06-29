@@ -2,7 +2,7 @@
  *
  * Module Name: rslist - AcpiRsByteStreamToList
  *                       AcpiListToByteStream
- *              $Revision: 1.12 $
+ *              $Revision: 1.14 $
  *
  ******************************************************************************/
 
@@ -220,6 +220,17 @@ AcpiRsByteStreamToList (
 
                 break;
 
+            case QWORD_ADDRESS_SPACE:
+                /*
+                 * 64-Bit Address Resource
+                 */
+                Status = AcpiRsAddress64Resource(ByteStreamBuffer,
+                                                 &BytesConsumed,
+                                                 Buffer,
+                                                 &StructureSize);
+
+                break;
+
             case DWORD_ADDRESS_SPACE:
                 /*
                  * 32-Bit Address Resource
@@ -252,12 +263,6 @@ AcpiRsByteStreamToList (
                                                    &StructureSize);
 
                 break;
-
-/* TBD: [Future] 64-bit not currently supported */
-/*
-            case 0x8A:
-                break;
-*/
 
             default:
                 /*
@@ -378,6 +383,11 @@ AcpiRsByteStreamToList (
 
             } /* switch */
         }  /* end else */
+
+        if (!ACPI_SUCCESS(Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
 
         /*
          * Update the return value and counter
@@ -569,6 +579,15 @@ AcpiRsListToByteStream (
                                             &BytesConsumed);
             break;
 
+        case Address64:
+            /*
+             * 64-Bit Address Descriptor Resource
+             */
+            Status = AcpiRsAddress64Stream (LinkedList,
+                                            &Buffer,
+                                            &BytesConsumed);
+            break;
+
         case ExtendedIrq:
             /*
              * Extended IRQ Resource
@@ -588,6 +607,11 @@ AcpiRsListToByteStream (
 
         } /* switch (LinkedList->Id) */
 
+        if (!ACPI_SUCCESS(Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
         /*
          * Set the Buffer to point to the open byte
          */
@@ -600,6 +624,6 @@ AcpiRsListToByteStream (
                      (NATIVE_UINT) LinkedList->Length);
     }
 
-    return_ACPI_STATUS  (AE_OK);
+    return_ACPI_STATUS (AE_OK);
 }
 
