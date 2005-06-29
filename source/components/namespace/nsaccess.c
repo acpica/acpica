@@ -262,24 +262,25 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 INT32
-AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR **ReturnValue,
+AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnValue,
                     OBJECT_DESCRIPTOR **Params)
 {
     nte             *MethodPtr = NULL;
     char            *FullyQualifiedName = NULL;
     INT32           Excep = E_ERROR;
-
-
+    
     FUNCTION_TRACE ("AcpiExecuteMethod");
 
 
 BREAKPOINT3;
 
+    /*
     if (ReturnValue)
     {
         *ReturnValue = NULL;
     }
-
+	*/
+		
     if (!RootObject->Scope)
     {
         /* 
@@ -484,7 +485,7 @@ BREAKPOINT3;
 
             if (ReturnValue)
             {
-                *ReturnValue = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+                (*ReturnValue) = *((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);
             }
         
             else
