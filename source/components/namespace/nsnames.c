@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -323,9 +323,9 @@ AcpiNsHandleToPathname (
 
     RequiredSize = AcpiNsGetPathnameLength (Node);
 
-    /* Validate caller buffer */
+    /* Validate/Allocate/Clear caller buffer */
 
-    Status = AcpiUtValidateBufferSize (Buffer, RequiredSize);
+    Status = AcpiUtInitializeBuffer (Buffer, RequiredSize);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
