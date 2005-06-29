@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfldio - Aml Field I/O
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -454,7 +454,7 @@ Cleanup:
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlWriteFieldData (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  FieldByteOffset,
@@ -545,7 +545,7 @@ AcpiAmlWriteFieldData (
  *
  ****************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlWriteFieldDataWithUpdateRule (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  Mask,
