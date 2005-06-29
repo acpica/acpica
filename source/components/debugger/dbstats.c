@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -264,7 +264,7 @@ AcpiDbClassifyOneObject (
     AcpiGbl_NumNodes++;
 
     Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
-    ObjDesc = ((ACPI_NAMESPACE_NODE *) ObjHandle)->Object;
+    ObjDesc = AcpiNsGetAttachedObject (Node);
 
     AcpiDbEnumerateObject (ObjDesc);
 
