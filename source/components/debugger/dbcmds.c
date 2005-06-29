@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  ******************************************************************************/
 
@@ -1288,7 +1288,7 @@ AcpiDbGenerateGpe (
     UINT32                  GpeNumber;
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
 
-    
+
     GpeNumber   = ACPI_STRTOUL (GpeArg, NULL, 10);
     BlockNumber = ACPI_STRTOUL (BlockArg, NULL, 10);
 
