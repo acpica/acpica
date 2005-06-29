@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.257 $
+ *       $Revision: 1.258 $
  *
  *****************************************************************************/
 
@@ -486,7 +486,7 @@ typedef UINT32                          ACPI_TABLE_TYPE;
 #define ACPI_TABLE_SSDT                 (ACPI_TABLE_TYPE) 5
 #define ACPI_TABLE_XSDT                 (ACPI_TABLE_TYPE) 6
 #define ACPI_TABLE_MAX                  6
-#define NUM_ACPI_TABLES                 (ACPI_TABLE_MAX+1)
+#define NUM_ACPI_TABLE_TYPES            (ACPI_TABLE_MAX+1)
 
 
 /*
@@ -833,7 +833,7 @@ typedef struct acpi_system_info
     UINT32                      DebugLevel;
     UINT32                      DebugLayer;
     UINT32                      NumTableTypes;
-    ACPI_TABLE_INFO             TableInfo [NUM_ACPI_TABLES];
+    ACPI_TABLE_INFO             TableInfo [NUM_ACPI_TABLE_TYPES];
 
 } ACPI_SYSTEM_INFO;
 
