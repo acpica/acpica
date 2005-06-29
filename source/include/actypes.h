@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.229 $
+ *       $Revision: 1.230 $
  *
  *****************************************************************************/
 
@@ -123,9 +123,6 @@
  * Data types - Fixed across all compilation models
  *
  * BOOLEAN      Logical Boolean.
- *              1 byte value containing a 0 for FALSE or a 1 for TRUE.
- *              Other values are undefined.
- *
  * INT8         8-bit  (1 byte) signed value
  * UINT8        8-bit  (1 byte) unsigned value
  * INT16        16-bit (2 byte) signed value
@@ -153,6 +150,9 @@ typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
 typedef INT64                           NATIVE_INT;
 typedef UINT64                          NATIVE_UINT;
+
+typedef UINT32                          NATIVE_UINT_MAX32;
+typedef UINT64                          NATIVE_UINT_MIN32;
 
 typedef UINT64                          ACPI_TBLPTR;
 typedef UINT64                          ACPI_IO_ADDRESS;
@@ -185,6 +185,9 @@ typedef struct
 typedef UINT16                          NATIVE_UINT;
 typedef INT16                           NATIVE_INT;
 
+typedef UINT16                          NATIVE_UINT_MAX32;
+typedef UINT32                          NATIVE_UINT_MIN32;
+
 typedef UINT32                          ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 typedef char                            *ACPI_PHYSICAL_ADDRESS;
@@ -216,6 +219,9 @@ typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
 typedef INT32                           NATIVE_INT;
 typedef UINT32                          NATIVE_UINT;
+
+typedef UINT32                          NATIVE_UINT_MAX32;
+typedef UINT32                          NATIVE_UINT_MIN32;
 
 typedef UINT64                          ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
