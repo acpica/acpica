@@ -16,15 +16,18 @@
  | library initialization and some types of table access
  |__________________________________________________________________________
  |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 19:15:02 $
+ | $Revision: 1.7 $
+ | $Date: 2005/06/29 19:15:03 $
  | $Log: utinit.c,v $
- | Revision 1.6  2005/06/29 19:15:02  aystarik
- | Header cleanup;  Split debug switch into component_id and level
+ | Revision 1.7  2005/06/29 19:15:03  aystarik
+ | Major header file consolidation
  |
  | 
- | date	99.04.05.23.10.00;	author rmoore1;	state Exp;
+ | date	99.04.07.22.34.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 7     4/07/99 3:34p Rmoore1
+ * Major header file consolidation
  * 
  * 6     4/05/99 4:10p Rmoore1
  * Header cleanup;  Split debug switch into component_id and level
@@ -50,8 +53,8 @@
 #define __NSTABLES_C__
 
 #include <acpi.h>
-#include <acpilgcy.h>
-#include <acpinmsp.h>
+#include <devices.h>
+#include <namespace.h>
 #include <display.h>
 #include <string.h>
 
