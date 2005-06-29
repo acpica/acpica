@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.44 $
+ *       $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -247,14 +247,14 @@
 /* Names within the namespace are 4 bytes long */
 
 #define ACPI_NAME_SIZE              4
-#define PATH_SEGMENT_LENGTH         5       /* 4 chars for name + 1 INT8 for separator */
+#define PATH_SEGMENT_LENGTH         5           /* 4 chars for name + 1 INT8 for separator */
 #define PATH_SEPARATOR              '.'
 
 
 /* Constants used in searching for the RSDP in low memory */
 
-#define LO_RSDP_WINDOW_BASE         (void *) 0
-#define HI_RSDP_WINDOW_BASE         (void *) 0xE0000
+#define LO_RSDP_WINDOW_BASE         0           /* Physical Address */
+#define HI_RSDP_WINDOW_BASE         0xE0000     /* Physical Address */
 #define LO_RSDP_WINDOW_SIZE         0x400
 #define HI_RSDP_WINDOW_SIZE         0x20000
 #define RSDP_SCAN_STEP              16
