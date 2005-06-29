@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  ******************************************************************************/
 
@@ -198,7 +198,7 @@ AcpiNsEvaluateRelative (
 
     /* Lookup the name in the namespace */
 
-    ScopeInfo.Scope.Node = PrefixNode->Child;
+    ScopeInfo.Scope.Node = PrefixNode;
     Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY,
                             IMODE_EXECUTE, NS_NO_UPSEARCH, NULL,
                             &Node);
