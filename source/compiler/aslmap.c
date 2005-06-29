@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -601,117 +601,116 @@ AcpiDsMapOpcodeToDataType (
     ACPI_OBJECT_TYPE8       DataType = INTERNAL_TYPE_INVALID;
     const ACPI_OPCODE_INFO  *OpInfo;
     UINT32                  Flags = 0;
+    UINT32                  OpType;
 
 
     PROC_NAME ("DsMapOpcodeToDataType");
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
-    {
-        /* Unknown opcode */
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown AML opcode: %x\n",
-            Opcode));
-
-        return (DataType);
-    }
+    OpType = ACPI_GET_OP_TYPE (OpInfo);
 
     switch (ACPI_GET_OP_CLASS (OpInfo))
     {
+    case AML_CLASS_ARGUMENT:
 
-    case OPTYPE_LITERAL:
-
-        switch (Opcode)
+        switch (OpType)
         {
-        case AML_BYTE_OP:
-        case AML_WORD_OP:
-        case AML_DWORD_OP:
-        case AML_QWORD_OP:
+        case AML_TYPE_LITERAL:
 
-            DataType = ACPI_TYPE_INTEGER;
+            switch (Opcode)
+            {
+            case AML_BYTE_OP:
+            case AML_WORD_OP:
+            case AML_DWORD_OP:
+            case AML_QWORD_OP:
+
+                DataType = ACPI_TYPE_INTEGER;
+                break;
+
+
+            case AML_STRING_OP:
+
+                DataType = ACPI_TYPE_STRING;
+                break;
+
+            case AML_INT_NAMEPATH_OP:
+                DataType = INTERNAL_TYPE_REFERENCE;
+                break;
+
+            default:
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Unknown (type LITERAL) AML opcode: %x\n",
+                    Opcode));
+                break;
+            }
             break;
 
 
-        case AML_STRING_OP:
+        case AML_TYPE_DATA_TERM:
 
-            DataType = ACPI_TYPE_STRING;
+            switch (Opcode)
+            {
+            case AML_BUFFER_OP:
+
+                DataType = ACPI_TYPE_BUFFER;
+                break;
+
+            case AML_PACKAGE_OP:
+            case AML_VAR_PACKAGE_OP:
+
+                DataType = ACPI_TYPE_PACKAGE;
+                break;
+
+            default:
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Unknown (type DATA_TERM) AML opcode: %x\n",
+                    Opcode));
+                break;
+            }
             break;
 
-        case AML_INT_NAMEPATH_OP:
+
+        case AML_TYPE_CONSTANT:
+        case AML_TYPE_METHOD_ARGUMENT:
+        case AML_TYPE_LOCAL_VARIABLE:
+
             DataType = INTERNAL_TYPE_REFERENCE;
             break;
-
-        default:
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Unknown (type LITERAL) AML opcode: %x\n",
-                Opcode));
-            break;
         }
         break;
 
 
-    case OPTYPE_DATA_TERM:
+    case AML_CLASS_EXECUTE:
+    case AML_CLASS_RETURN_VALUE:
 
-        switch (Opcode)
+        switch (OpType)
         {
-        case AML_BUFFER_OP:
-
-            DataType = ACPI_TYPE_BUFFER;
-            break;
-
-        case AML_PACKAGE_OP:
-        case AML_VAR_PACKAGE_OP:
-
-            DataType = ACPI_TYPE_PACKAGE;
+        case AML_TYPE_EX_1A_0T_0R:
+        case AML_TYPE_EX_2A_0T_0R:
             break;
 
         default:
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Unknown (type DATA_TERM) AML opcode: %x\n",
-                Opcode));
+            Flags = OP_HAS_RETURN_VALUE;
+            DataType = ACPI_TYPE_ANY;
             break;
         }
         break;
 
-
-    case OPTYPE_CONSTANT:
-    case OPTYPE_METHOD_ARGUMENT:
-    case OPTYPE_LOCAL_VARIABLE:
-
-        DataType = INTERNAL_TYPE_REFERENCE;
-        break;
-
-
-    case OPTYPE_MONADIC2:
-    case OPTYPE_MONADIC2R:
-    case OPTYPE_DYADIC2:
-    case OPTYPE_DYADIC2R:
-    case OPTYPE_DYADIC_T21:
-    case OPTYPE_TRIADIC:
-    case OPTYPE_QUADRADIC:
-    case OPTYPE_HEXADIC:
-    case OPTYPE_RETURN:
-
-        Flags = OP_HAS_RETURN_VALUE;
-        DataType = ACPI_TYPE_ANY;
-        break;
-
-    case OPTYPE_METHOD_CALL:
+    case AML_CLASS_METHOD_CALL:
 
         Flags = OP_HAS_RETURN_VALUE;
         DataType = ACPI_TYPE_METHOD;
         break;
 
 
-    case OPTYPE_NAMED_OBJECT:
+    case AML_CLASS_NAMED_OBJECT:
 
         DataType = AcpiDsMapNamedOpcodeToDataType (Opcode);
         break;
 
 
-    case OPTYPE_DYADIC1:
-    case OPTYPE_CONTROL:
+    case AML_CLASS_CONTROL:
 
         /* No mapping needed at this time */
 
