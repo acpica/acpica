@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acfreebsd.h - OS specific defines, etc.
- *       $Revision: 1.14 $
+ *       $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -117,12 +117,6 @@
 #ifndef __ACFREEBSD_H__
 #define __ACFREEBSD_H__
 
-/*
- * Some systems' ASL may have problems because they look for names
- * of Microsoft operating systems.  To override this, set hw.acpi.os_name
- * to the appropriate string.
- */
-#define ACPI_OS_NAME                "FreeBSD"
 
 /* FreeBSD uses GCC */
 
@@ -162,6 +156,10 @@
 #define ACPI_USE_STANDARD_HEADERS
 #define ACPI_FLUSH_CPU_CACHE()
 #include <sys/types.h>
+
+#if __STDC_HOSTED__
+#include <ctype.h>
+#endif
 
 #define __cli()
 #define __sti()
