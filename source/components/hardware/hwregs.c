@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.80 $
+ *              $Revision: 1.83 $
  *
  ******************************************************************************/
 
@@ -132,7 +132,6 @@ NATIVE_CHAR                 *SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\
                                                   "\\_S4_","\\_S4B","\\_S5_"};
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiHwGetBitShift
@@ -186,7 +185,7 @@ AcpiHwClearAcpiStatus (void)
 
 
     DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n",
-                    ALL_FIXED_STS_BITS, 
+                    ALL_FIXED_STS_BITS,
                     (UINT16) AcpiGbl_FADT->XPm1aEvtBlk.Address));
 
 
@@ -209,7 +208,7 @@ AcpiHwClearAcpiStatus (void)
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            AcpiOsOut8 ((ACPI_IO_ADDRESS) (AcpiGbl_FADT->XGpe0Blk.Address + Index), 
+            AcpiOsOut8 ((ACPI_IO_ADDRESS) (AcpiGbl_FADT->XGpe0Blk.Address + Index),
                             (UINT8) 0xff);
         }
     }
@@ -220,7 +219,7 @@ AcpiHwClearAcpiStatus (void)
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            AcpiOsOut8 ((ACPI_IO_ADDRESS) (AcpiGbl_FADT->XGpe1Blk.Address + Index), 
+            AcpiOsOut8 ((ACPI_IO_ADDRESS) (AcpiGbl_FADT->XGpe1Blk.Address + Index),
                             (UINT8) 0xff);
         }
     }
@@ -534,7 +533,7 @@ AcpiHwRegisterBitAccess (
          */
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, PM1_CONTROL);
 
-        DEBUG_PRINT (TRACE_IO, ("PM1 control: Read 0x%X\n", RegisterValue));
+        DEBUG_PRINT (TRACE_IO, ("PM1 control: Read %X\n", RegisterValue));
 
         if (ReadWrite == ACPI_WRITE)
         {
@@ -548,10 +547,13 @@ AcpiHwRegisterBitAccess (
              * than any other control Registers with
              * respect to A and B Registers.  The value
              * for A may be different than the value for B
+             *
+             * Therefore, pass the RegisterId, not just generic PM1_CONTROL,
+             * because we need to do different things. Yuck.
              */
 
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                PM1_CONTROL, (UINT16) RegisterValue);
+                RegisterId, (UINT16) RegisterValue);
         }
         break;
 
@@ -571,7 +573,7 @@ AcpiHwRegisterBitAccess (
 
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, PM2_CONTROL);
 
-        DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n",
+        DEBUG_PRINT (TRACE_IO, ("PM2 control: Read %X from %p\n",
                         RegisterValue, AcpiGbl_FADT->XPm2CntBlk.Address));
 
         if (ReadWrite == ACPI_WRITE)
@@ -582,7 +584,7 @@ AcpiHwRegisterBitAccess (
             RegisterValue  |= Value;
 
             DEBUG_PRINT (TRACE_IO,
-                ("About to write %04X to %04X\n", RegisterValue,
+                ("About to write %04X to %p\n", RegisterValue,
                 AcpiGbl_FADT->XPm2CntBlk.Address));
 
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
@@ -596,7 +598,7 @@ AcpiHwRegisterBitAccess (
         Mask = TMR_VAL_MASK;
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
                                             PM_TIMER);
-        DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read 0x%X from 0x%X\n",
+        DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read %X from %p\n",
                         RegisterValue, AcpiGbl_FADT->XPmTmrBlk.Address));
 
         break;
@@ -638,7 +640,7 @@ AcpiHwRegisterBitAccess (
         /* Now get the current Enable Bits in the selected Reg */
 
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, RegisterId);
-        DEBUG_PRINT (TRACE_IO, ("GPE Enable bits: Read 0x%X from 0x%X\n",
+        DEBUG_PRINT (TRACE_IO, ("GPE Enable bits: Read %X from %X\n",
                                 RegisterValue, RegisterId));
 
         if (ReadWrite == ACPI_WRITE)
@@ -677,7 +679,7 @@ AcpiHwRegisterBitAccess (
     RegisterValue &= Mask;
     RegisterValue >>= AcpiHwGetBitShift (Mask);
 
-    DEBUG_PRINT (TRACE_IO, ("Register I/O: returning 0x%X\n", RegisterValue));
+    DEBUG_PRINT (TRACE_IO, ("Register I/O: returning %X\n", RegisterValue));
     return_VALUE (RegisterValue);
 }
 
@@ -1160,5 +1162,3 @@ AcpiHwLowLevelWrite (
         break;
     }
 }
-
-
