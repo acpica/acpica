@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.25 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -121,7 +121,7 @@
 #include "acparser.h"
 #include "amlcode.h"
 
-#define _COMPONENT          PARSER
+#define _COMPONENT          ACPI_PARSER
         MODULE_NAME         ("pstree")
 
 
@@ -283,7 +283,7 @@ AcpiPsGetChild (
     case AML_ELSE_OP:
     case AML_DEVICE_OP:
     case AML_THERMAL_ZONE_OP:
-    case AML_METHODCALL_OP:
+    case AML_INT_METHODCALL_OP:
 
         Child = AcpiPsGetArg (Op, 0);
         break;
@@ -294,7 +294,7 @@ AcpiPsGetChild (
     case AML_METHOD_OP:
     case AML_IF_OP:
     case AML_WHILE_OP:
-    case AML_DEF_FIELD_OP:
+    case AML_FIELD_OP:
 
         Child = AcpiPsGetArg (Op, 1);
         break;
