@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -540,6 +540,12 @@ AcpiExGetNameString (
         ACPI_REPORT_ERROR (
             ("ExDoName: Malformed Name at %p\n", NameString));
         Status = AE_AML_BAD_NAME;
+    }
+
+    if ((ACPI_FAILURE (Status)) && NameString)
+    {
+        ACPI_MEM_FREE (NameString);
+        return_ACPI_STATUS (Status);
     }
 
     *OutNameString = NameString;
