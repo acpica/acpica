@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  ******************************************************************************/
 
@@ -189,7 +189,7 @@ AcpiHwClearAcpiStatus (void)
         (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm1aEvtBlk.Address)));
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
+    AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
 
     AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, PM1_STS, ALL_FIXED_STS_BITS);
 
@@ -226,7 +226,7 @@ AcpiHwClearAcpiStatus (void)
         }
     }
 
-    AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
+    AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     return_VOID;
 }
 
@@ -294,7 +294,7 @@ AcpiHwObtainSleepTypeRegisterData (
     /* Even though AcpiEvaluateObject resolves package references,
      * NsEvaluate dpesn't. So, we do it here.
      */
-    Status = AcpiCmResolvePackageReferences(ObjDesc);
+    Status = AcpiUtResolvePackageReferences(ObjDesc);
 
     if (ObjDesc->Package.Count < 2)
     {
@@ -333,7 +333,7 @@ AcpiHwObtainSleepTypeRegisterData (
             ObjDesc, ObjDesc->Common.Type));
     }
 
-    AcpiCmRemoveReference (ObjDesc);
+    AcpiUtRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
@@ -381,7 +381,7 @@ AcpiHwRegisterBitAccess (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
+        AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
     }
 
     /*
@@ -680,7 +680,7 @@ AcpiHwRegisterBitAccess (
     }
 
     if (ACPI_MTX_LOCK == UseLock) {
-        AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
+        AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     }
 
 
@@ -720,7 +720,7 @@ AcpiHwRegisterRead (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
+        AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
     }
 
 
@@ -800,7 +800,7 @@ AcpiHwRegisterRead (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
+        AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     }
 
     return_VALUE (Value);
@@ -834,7 +834,7 @@ AcpiHwRegisterWrite (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
+        AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
     }
 
 
@@ -929,7 +929,7 @@ AcpiHwRegisterWrite (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
+        AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     }
 
     return_VOID;

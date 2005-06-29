@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: exstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.32 $
+ * Module Name: exmutex - ASL Mutex Acquire/Release functions
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -115,155 +115,274 @@
  *
  *****************************************************************************/
 
-#define __EXSTOROB_C__
+#define __EXMUTEX_C__
 
 #include "acpi.h"
-#include "acparser.h"
-#include "acdispat.h"
 #include "acinterp.h"
-#include "amlcode.h"
 #include "acnamesp.h"
-#include "actables.h"
-
+#include "achware.h"
+#include "acevents.h"
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exstorob")
+        MODULE_NAME         ("exmutex")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExCopyBufferToBuffer
+ * FUNCTION:    AcpiExUnlinkMutex
  *
- * PARAMETERS:  SourceDesc          - Source object to copy
- *              TargetDesc          - Destination object of the copy
+ * PARAMETERS:  *ObjDesc            - The mutex to be unlinked
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Copy a buffer object to another buffer object.
+ * DESCRIPTION: Remove a mutex from the "AcquiredMutex" list
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiExCopyBufferToBuffer (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc)
+void
+AcpiExUnlinkMutex (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    UINT32                  Length;
-    UINT8                   *Buffer;
 
-
-    /*
-     * We know that SourceDesc is a buffer by now
-     */
-    Buffer = (UINT8 *) SourceDesc->Buffer.Pointer;
-    Length = SourceDesc->Buffer.Length;
-
-    /*
-     * If target is a buffer of length zero, allocate a new
-     * buffer of the proper length
-     */
-    if (TargetDesc->Buffer.Length == 0)
+    if (ObjDesc->Mutex.Next)
     {
-        TargetDesc->Buffer.Pointer = AcpiUtAllocate (Length);
-        if (!TargetDesc->Buffer.Pointer)
-        {
-            return (AE_NO_MEMORY);
-        }
-
-        TargetDesc->Buffer.Length = Length;
+        (ObjDesc->Mutex.Next)->Mutex.Prev = ObjDesc->Mutex.Prev;
     }
-
-    /*
-     * Buffer is a static allocation,
-     * only place what will fit in the buffer.
-     */
-    if (Length <= TargetDesc->Buffer.Length)
+    if (ObjDesc->Mutex.Prev)
     {
-        /* Clear existing buffer and copy in the new one */
-
-        MEMSET(TargetDesc->Buffer.Pointer, 0, TargetDesc->Buffer.Length);
-        MEMCPY(TargetDesc->Buffer.Pointer, Buffer, Length);
+        (ObjDesc->Mutex.Prev)->Mutex.Next = ObjDesc->Mutex.Next;
     }
-
-    else
-    {
-        /*
-         * Truncate the source, copy only what will fit
-         */
-        MEMCPY(TargetDesc->Buffer.Pointer, Buffer, TargetDesc->Buffer.Length);
-
-        DEBUG_PRINT (ACPI_INFO,
-            ("ExCopyBufferToBuffer: Truncating src buffer from %X to %X\n",
-            Length, TargetDesc->Buffer.Length));
-    }
-
-    return (AE_OK);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExCopyStringToString
+ * FUNCTION:    AcpiExLinkMutex
  *
- * PARAMETERS:  SourceDesc          - Source object to copy
- *              TargetDesc          - Destination object of the copy
+ * PARAMETERS:  *ObjDesc            - The mutex to be linked
+ *              *ListHead           - head of the "AcquiredMutex" list
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Copy a String object to another String object
+ * DESCRIPTION: Add a mutex to the "AcquiredMutex" list for this walk
+ *
+ ******************************************************************************/
+
+void
+AcpiExLinkMutex (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ListHead)
+{
+
+    /* This object will be the first object in the list */
+
+    ObjDesc->Mutex.Prev = ListHead;
+    ObjDesc->Mutex.Next = ListHead->Mutex.Next;
+
+    /* Update old first object to point back to this object */
+
+    if (ListHead->Mutex.Next)
+    {
+        (ListHead->Mutex.Next)->Mutex.Prev = ObjDesc;
+    }
+
+    /* Update list head */
+
+    ListHead->Mutex.Next = ObjDesc;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExAcquireMutex
+ *
+ * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
+ *              *ObjDesc            - The object descriptor for this op
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Acquire an AML mutex
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExCopyStringToString (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc)
+AcpiExAcquireMutex (
+    ACPI_OPERAND_OBJECT     *TimeDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
-    UINT32                  Length;
-    UINT8                   *Buffer;
+    ACPI_STATUS             Status;
 
 
-    /*
-     * We know that SourceDesc is a string by now.
-     */
-    Buffer = (UINT8 *) SourceDesc->String.Pointer;
-    Length = SourceDesc->String.Length;
+    FUNCTION_TRACE_PTR ("AcpiExAcquireMutex", ObjDesc);
 
-    /*
-     * Setting a string value replaces the old string
-     */
-    if (Length < TargetDesc->String.Length)
+    if (!ObjDesc)
     {
-        /* Clear old string and copy in the new one */
-
-        MEMSET(TargetDesc->String.Pointer, 0, TargetDesc->String.Length);
-        MEMCPY(TargetDesc->String.Pointer, Buffer, Length);
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    else
+    /*
+     * Current Sync must be less than or equal to the sync level of the
+     * mutex.  This mechanism provides some deadlock prevention
+     */
+    if (WalkState->CurrentSyncLevel > ObjDesc->Mutex.SyncLevel)
     {
-        /*
-         * Free the current buffer, then allocate a buffer
-         * large enough to hold the value
-         */
-        if (TargetDesc->String.Pointer &&
-            !AcpiTbSystemTablePointer (TargetDesc->String.Pointer))
-        {
-            /*
-             * Only free if not a pointer into the DSDT
-             */
-            AcpiUtFree(TargetDesc->String.Pointer);
-        }
+        return_ACPI_STATUS (AE_AML_MUTEX_ORDER);
+    }
 
-        TargetDesc->String.Pointer = AcpiUtAllocate (Length + 1);
-        if (!TargetDesc->String.Pointer)
-        {
-            return (AE_NO_MEMORY);
-        }
-        TargetDesc->String.Length = Length;
+    /*
+     * If the mutex is already owned by this thread,
+     * just increment the acquisition depth
+     */
+    if (ObjDesc->Mutex.Owner == WalkState)
+    {
+        ObjDesc->Mutex.AcquisitionDepth++;
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Acquire the mutex, wait if necessary */
+
+    Status = AcpiExSystemAcquireMutex (TimeDesc, ObjDesc);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Includes failure from a timeout on TimeDesc */
+
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Have the mutex, update mutex and walk info */
+
+    ObjDesc->Mutex.Owner = WalkState;
+    ObjDesc->Mutex.AcquisitionDepth = 1;
+    WalkState->CurrentSyncLevel = ObjDesc->Mutex.SyncLevel;
+
+    /* Link the mutex to the walk state for force-unlock at method exit */
+
+    AcpiExLinkMutex (ObjDesc, (ACPI_OPERAND_OBJECT *)
+                &(WalkState->WalkList->AcquiredMutexList));
+
+    return_ACPI_STATUS (AE_OK);
+}
 
 
-        MEMCPY(TargetDesc->String.Pointer, Buffer, Length);
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExReleaseMutex
+ *
+ * PARAMETERS:  *ObjDesc            - The object descriptor for this op
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Release a previously acquired Mutex.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExReleaseMutex (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AcpiExReleaseMutex");
+
+
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /*  The mutex must have been previously acquired in order to release it */
+
+    if (!ObjDesc->Mutex.Owner)
+    {
+        return_ACPI_STATUS (AE_AML_MUTEX_NOT_ACQUIRED);
+    }
+
+    /* The Mutex is owned, but this thread must be the owner */
+
+    if (ObjDesc->Mutex.Owner != WalkState)
+    {
+        return_ACPI_STATUS (AE_AML_NOT_OWNER);
+    }
+
+    /*
+     * The sync level of the mutex must be less than or
+     * equal to the current sync level
+     */
+    if (ObjDesc->Mutex.SyncLevel > WalkState->CurrentSyncLevel)
+    {
+        return_ACPI_STATUS (AE_AML_MUTEX_ORDER);
+    }
+
+    /*
+     * Match multiple Acquires with multiple Releases
+     */
+    ObjDesc->Mutex.AcquisitionDepth--;
+    if (ObjDesc->Mutex.AcquisitionDepth != 0)
+    {
+        /* Just decrement the depth and return */
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+
+    /* Release the mutex */
+
+    Status = AcpiExSystemReleaseMutex (ObjDesc);
+
+    /* Update the mutex and walk state */
+
+    ObjDesc->Mutex.Owner = NULL;
+    WalkState->CurrentSyncLevel = ObjDesc->Mutex.SyncLevel;
+
+    /* Unlink the mutex from the owner's list */
+
+    AcpiExUnlinkMutex (ObjDesc);
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExReleaseAllMutexes
+ *
+ * PARAMETERS:  *MutexList            - Head of the mutex list
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Release all mutexes in the list
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExReleaseAllMutexes (
+    ACPI_OPERAND_OBJECT     *ListHead)
+{
+    ACPI_OPERAND_OBJECT     *Next = ListHead->Mutex.Next;
+    ACPI_OPERAND_OBJECT     *This;
+
+
+    /*
+     * Traverse the list of owned mutexes, releasing each one.
+     */
+    while (Next)
+    {
+        This = Next;
+        Next = This->Mutex.Next;
+
+        /* Mark mutex un-owned */
+
+        This->Mutex.Owner = NULL;
+        This->Mutex.Prev = NULL;
+        This->Mutex.Next = NULL;
+        This->Mutex.AcquisitionDepth = 0;
+
+         /* Release the mutex */
+
+        AcpiExSystemReleaseMutex (This);
     }
 
     return (AE_OK);

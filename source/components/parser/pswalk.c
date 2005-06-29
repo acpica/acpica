@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
- * Module Name: exstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.32 $
+ * Module Name: pswalk - Parser routines to walk parsed op tree(s)
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -115,158 +114,278 @@
  *
  *****************************************************************************/
 
-#define __EXSTOROB_C__
 
 #include "acpi.h"
+#include "amlcode.h"
 #include "acparser.h"
 #include "acdispat.h"
-#include "acinterp.h"
-#include "amlcode.h"
 #include "acnamesp.h"
-#include "actables.h"
+#include "acinterp.h"
 
-
-#define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exstorob")
+#define _COMPONENT          ACPI_PARSER
+        MODULE_NAME         ("pswalk")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExCopyBufferToBuffer
+ * FUNCTION:    AcpiPsGetNextWalkOp
  *
- * PARAMETERS:  SourceDesc          - Source object to copy
- *              TargetDesc          - Destination object of the copy
+ * PARAMETERS:  WalkState           - Current state of the walk
+ *              Op                  - Current Op to be walked
+ *              AscendingCallback   - Procedure called when Op is complete
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Copy a buffer object to another buffer object.
+ * DESCRIPTION: Get the next Op in a walk of the parse tree.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExCopyBufferToBuffer (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc)
+AcpiPsGetNextWalkOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_UPWARDS      AscendingCallback)
 {
-    UINT32                  Length;
-    UINT8                   *Buffer;
+    ACPI_PARSE_OBJECT       *Next;
+    ACPI_PARSE_OBJECT       *Parent;
+    ACPI_PARSE_OBJECT       *GrandParent;
+    ACPI_STATUS             Status;
 
 
-    /*
-     * We know that SourceDesc is a buffer by now
-     */
-    Buffer = (UINT8 *) SourceDesc->Buffer.Pointer;
-    Length = SourceDesc->Buffer.Length;
+    FUNCTION_TRACE_PTR ("PsGetNextWalkOp", Op);
 
-    /*
-     * If target is a buffer of length zero, allocate a new
-     * buffer of the proper length
-     */
-    if (TargetDesc->Buffer.Length == 0)
+
+    /* Check for a argument only if we are descending in the tree */
+
+    if (WalkState->NextOpInfo != NEXT_OP_UPWARD)
     {
-        TargetDesc->Buffer.Pointer = AcpiUtAllocate (Length);
-        if (!TargetDesc->Buffer.Pointer)
+        /* Look for an argument or child of the current op */
+
+        Next = AcpiPsGetArg (Op, 0);
+        if (Next)
         {
-            return (AE_NO_MEMORY);
+            /* Still going downward in tree (Op is not completed yet) */
+
+            WalkState->PrevOp       = Op;
+            WalkState->NextOp       = Next;
+            WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;
+
+            return_ACPI_STATUS (AE_OK);
         }
 
-        TargetDesc->Buffer.Length = Length;
-    }
 
-    /*
-     * Buffer is a static allocation,
-     * only place what will fit in the buffer.
-     */
-    if (Length <= TargetDesc->Buffer.Length)
-    {
-        /* Clear existing buffer and copy in the new one */
+        /*
+         * No more children, this Op is complete.  Save Next and Parent
+         * in case the Op object gets deleted by the callback routine
+         */
 
-        MEMSET(TargetDesc->Buffer.Pointer, 0, TargetDesc->Buffer.Length);
-        MEMCPY(TargetDesc->Buffer.Pointer, Buffer, Length);
+        Next    = Op->Next;
+        Parent  = Op->Parent;
+
+        Status = AscendingCallback (WalkState, Op);
+
+        /*
+         * If we are back to the starting point, the walk is complete.
+         */
+        if (Op == WalkState->Origin)
+        {
+            /* Reached the point of origin, the walk is complete */
+
+            WalkState->PrevOp       = Op;
+            WalkState->NextOp       = NULL;
+
+            return_ACPI_STATUS (Status);
+        }
+
+        /*
+         * Check for a sibling to the current op.  A sibling means
+         * we are still going "downward" in the tree.
+         */
+
+        if (Next)
+        {
+            /* There is a sibling, it will be next */
+
+            WalkState->PrevOp       = Op;
+            WalkState->NextOp       = Next;
+            WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;
+
+            /* Continue downward */
+
+            return_ACPI_STATUS (Status);
+        }
+
+
+        /*
+         * Drop into the loop below because we are moving upwards in
+         * the tree
+         */
     }
 
     else
     {
         /*
-         * Truncate the source, copy only what will fit
+         * We are resuming a walk, and we were (are) going upward in the tree.
+         * So, we want to drop into the parent loop below.
          */
-        MEMCPY(TargetDesc->Buffer.Pointer, Buffer, TargetDesc->Buffer.Length);
 
-        DEBUG_PRINT (ACPI_INFO,
-            ("ExCopyBufferToBuffer: Truncating src buffer from %X to %X\n",
-            Length, TargetDesc->Buffer.Length));
+        Parent = Op;
     }
 
+
+    /*
+     * Look for a sibling of the current Op's parent
+     * Continue moving up the tree until we find a node that has not been
+     * visited, or we get back to where we started.
+     */
+    while (Parent)
+    {
+        /* We are moving up the tree, therefore this parent Op is complete */
+
+        GrandParent = Parent->Parent;
+        Next        = Parent->Next;
+
+        Status = AscendingCallback (WalkState, Parent);
+
+        /*
+         * If we are back to the starting point, the walk is complete.
+         */
+        if (Parent == WalkState->Origin)
+        {
+            /* Reached the point of origin, the walk is complete */
+
+            WalkState->PrevOp       = Parent;
+            WalkState->NextOp       = NULL;
+
+            return_ACPI_STATUS (Status);
+        }
+
+        /*
+         * If there is a sibling to this parent (it is not the starting point
+         * Op), then we will visit it.
+         */
+        if (Next)
+        {
+            /* found sibling of parent */
+
+            WalkState->PrevOp       = Parent;
+            WalkState->NextOp       = Next;
+            WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;
+
+            return_ACPI_STATUS (Status);
+        }
+
+        /* No siblings, no errors, just move up one more level in the tree */
+
+        Op                  = Parent;
+        Parent              = GrandParent;
+        WalkState->PrevOp   = Op;
+    }
+
+
+    /* Got all the way to the top of the tree, we must be done! */
+    /* However, the code should have terminated in the loop above */
+
+    WalkState->NextOp       = NULL;
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsDeleteCompletedOp
+ *
+ * PARAMETERS:  State           - Walk state
+ *              Op              - Completed op
+ *
+ * RETURN:      AE_OK
+ *
+ * DESCRIPTION: Callback function for AcpiPsGetNextWalkOp().  Used during
+ *              AcpiPsDeleteParse tree to delete Op objects when all sub-objects
+ *              have been visited (and deleted.)
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiPsDeleteCompletedOp (
+    ACPI_WALK_STATE         *State,
+    ACPI_PARSE_OBJECT       *Op)
+{
+
+    AcpiPsFreeOp (Op);
     return (AE_OK);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExCopyStringToString
+ * FUNCTION:    AcpiPsDeleteParseTree
  *
- * PARAMETERS:  SourceDesc          - Source object to copy
- *              TargetDesc          - Destination object of the copy
+ * PARAMETERS:  SubtreeRoot         - Root of tree (or subtree) to delete
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION: Copy a String object to another String object
+ * DESCRIPTION: Delete a portion of or an entire parse tree.
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiExCopyStringToString (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc)
+void
+AcpiPsDeleteParseTree (
+    ACPI_PARSE_OBJECT       *SubtreeRoot)
 {
-    UINT32                  Length;
-    UINT8                   *Buffer;
+    ACPI_WALK_STATE         *WalkState;
+    ACPI_WALK_LIST          WalkList;
 
 
-    /*
-     * We know that SourceDesc is a string by now.
-     */
-    Buffer = (UINT8 *) SourceDesc->String.Pointer;
-    Length = SourceDesc->String.Length;
+    FUNCTION_TRACE_PTR ("PsDeleteParseTree", SubtreeRoot);
 
-    /*
-     * Setting a string value replaces the old string
-     */
-    if (Length < TargetDesc->String.Length)
+
+    if (!SubtreeRoot)
     {
-        /* Clear old string and copy in the new one */
-
-        MEMSET(TargetDesc->String.Pointer, 0, TargetDesc->String.Length);
-        MEMCPY(TargetDesc->String.Pointer, Buffer, Length);
+        return_VOID;
     }
 
-    else
+    /* Create and initialize a new walk list */
+
+    WalkList.WalkState = NULL;
+    WalkList.AcquiredMutexList.Prev = NULL;
+    WalkList.AcquiredMutexList.Next = NULL;
+
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
+    if (!WalkState)
     {
-        /*
-         * Free the current buffer, then allocate a buffer
-         * large enough to hold the value
-         */
-        if (TargetDesc->String.Pointer &&
-            !AcpiTbSystemTablePointer (TargetDesc->String.Pointer))
-        {
-            /*
-             * Only free if not a pointer into the DSDT
-             */
-            AcpiUtFree(TargetDesc->String.Pointer);
-        }
-
-        TargetDesc->String.Pointer = AcpiUtAllocate (Length + 1);
-        if (!TargetDesc->String.Pointer)
-        {
-            return (AE_NO_MEMORY);
-        }
-        TargetDesc->String.Length = Length;
-
-
-        MEMCPY(TargetDesc->String.Pointer, Buffer, Length);
+        return_VOID;
     }
 
-    return (AE_OK);
+    WalkState->ParserState          = NULL;
+    WalkState->ParseFlags           = 0;
+    WalkState->DescendingCallback   = NULL;
+    WalkState->AscendingCallback    = NULL;
+
+
+    WalkState->Origin = SubtreeRoot;
+    WalkState->NextOp = SubtreeRoot;
+
+
+    /* Head downward in the tree */
+
+    WalkState->NextOpInfo = NEXT_OP_DOWNWARD;
+
+    /* Visit all nodes in the subtree */
+
+    while (WalkState->NextOp)
+    {
+        AcpiPsGetNextWalkOp (WalkState, WalkState->NextOp,
+                                AcpiPsDeleteCompletedOp);
+    }
+
+    /* We are done with this walk */
+
+    AcpiExReleaseAllMutexes ((ACPI_OPERAND_OBJECT *) &WalkList.AcquiredMutexList);
+    AcpiDsDeleteWalkState (WalkState);
+
+    return_VOID;
 }
 
 

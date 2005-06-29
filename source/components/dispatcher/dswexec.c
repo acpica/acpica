@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.42 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -126,8 +126,140 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dswexec")
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiDsGetPredicateValue
+ *
+ * PARAMETERS:  WalkState       - Current state of the parse tree walk
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Get the result of a predicate evaluation
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiDsGetPredicateValue (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  HasResultObj)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+
+
+    FUNCTION_TRACE_PTR ("DsGetPredicateValue", WalkState);
+
+
+    WalkState->ControlState->Common.State = 0;
+
+    if (HasResultObj)
+    {
+        Status = AcpiDsResultPop (&ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            DEBUG_PRINT (ACPI_ERROR,
+                ("DsGetPredicateValue: Could not get result from predicate evaluation, %s\n",
+                AcpiUtFormatException (Status)));
+
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    else
+    {
+        Status = AcpiDsCreateOperand (WalkState, Op, 0);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        Status = AcpiExResolveToValue (&WalkState->Operands [0], WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        ObjDesc = WalkState->Operands [0];
+    }
+
+    if (!ObjDesc)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("ExecEndOp: No predicate ObjDesc=%X State=%X\n",
+            ObjDesc, WalkState));
+
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
+    }
+
+
+    /*
+     * Result of predicate evaluation currently must
+     * be a number
+     */
+
+    if (ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("ExecEndOp: Bad predicate (not a number) ObjDesc=%X State=%X Type=%X\n",
+            ObjDesc, WalkState, ObjDesc->Common.Type));
+
+        Status = AE_AML_OPERAND_TYPE;
+        goto Cleanup;
+    }
+
+
+    /* Truncate the predicate to 32-bits if necessary */
+
+    AcpiExTruncateFor32bitTable (ObjDesc, WalkState);
+
+    /*
+     * Save the result of the predicate evaluation on
+     * the control stack
+     */
+
+    if (ObjDesc->Integer.Value)
+    {
+        WalkState->ControlState->Common.Value = TRUE;
+    }
+
+    else
+    {
+        /*
+         * Predicate is FALSE, we will just toss the
+         * rest of the package
+         */
+
+        WalkState->ControlState->Common.Value = FALSE;
+        Status = AE_CTRL_FALSE;
+    }
+
+
+Cleanup:
+
+    DEBUG_PRINT (TRACE_EXEC,
+        ("ExecEndOp: Completed a predicate eval=%X Op=%X\n",
+        WalkState->ControlState->Common.Value, Op));
+
+     /* Break to debugger to display result */
+
+    DEBUGGER_EXEC (AcpiDbDisplayResultObject (ObjDesc, WalkState));
+
+    /*
+     * Delete the predicate result object (we know that
+     * we don't need it anymore)
+     */
+
+    AcpiUtRemoveReference (ObjDesc);
+
+    WalkState->ControlState->Common.State = CONTROL_NORMAL;
+
+    return_ACPI_STATUS (Status);
+}
 
 
 /*****************************************************************************
@@ -206,7 +338,7 @@ AcpiDsExecBeginOp (
 
     /* We want to send namepaths to the load code */
 
-    if (Op->Opcode == AML_NAMEPATH_OP)
+    if (Op->Opcode == AML_INT_NAMEPATH_OP)
     {
         OpInfo->Flags = OPTYPE_NAMED_OBJECT;
     }
@@ -219,6 +351,12 @@ AcpiDsExecBeginOp (
     switch (ACPI_GET_OP_CLASS (OpInfo))
     {
     case OPTYPE_CONTROL:
+
+        Status = AcpiDsResultStackPush (WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
 
         Status = AcpiDsExecBeginControlOp (WalkState, Op);
         break;
@@ -238,6 +376,34 @@ AcpiDsExecBeginOp (
 
             Status = AcpiDsLoad2BeginOp (Op->Opcode, Op, WalkState, NULL);
         }
+
+
+        if (Op->Opcode == AML_REGION_OP)
+        {
+            Status = AcpiDsResultStackPush (WalkState);
+        }
+
+        break;
+
+
+    /* most operators with arguments */
+
+    case OPTYPE_MONADIC1:
+    case OPTYPE_DYADIC1:
+    case OPTYPE_MONADIC2:
+    case OPTYPE_MONADIC2R:
+    case OPTYPE_DYADIC2:
+    case OPTYPE_DYADIC2R:
+    case OPTYPE_DYADIC2S:
+    case OPTYPE_RECONFIGURATION:
+    case OPTYPE_INDEX:
+    case OPTYPE_MATCH:
+    case OPTYPE_FATAL:
+    case OPTYPE_CREATE_FIELD:
+
+        /* Start a new result/operand state */
+
+        Status = AcpiDsResultStackPush (WalkState);
         break;
 
 
@@ -275,13 +441,10 @@ AcpiDsExecEndOp (
     ACPI_STATUS             Status = AE_OK;
     UINT16                  Opcode;
     UINT8                   Optype;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_PARSE_OBJECT       *NextOp;
-    ACPI_NAMESPACE_NODE     *Node;
     ACPI_PARSE_OBJECT       *FirstArg;
     ACPI_OPERAND_OBJECT     *ResultObj = NULL;
     ACPI_OPCODE_INFO        *OpInfo;
-    UINT32                  OperandIndex;
 
 
     FUNCTION_TRACE_PTR ("DsExecEndOp", Op);
@@ -306,6 +469,8 @@ AcpiDsExecEndOp (
 
     WalkState->NumOperands = 0;
     WalkState->ReturnDesc = NULL;
+    WalkState->OpInfo = OpInfo;
+    WalkState->Opcode = Opcode;
 
 
     /* Call debugger for single step support (DEBUG build only) */
@@ -352,9 +517,10 @@ AcpiDsExecEndOp (
     case OPTYPE_RECONFIGURATION:
     case OPTYPE_INDEX:
     case OPTYPE_MATCH:
-    case OPTYPE_CREATE_FIELD:
     case OPTYPE_FATAL:
 
+
+        /* Build resolved operand stack */
 
         Status = AcpiDsCreateOperands (WalkState, FirstArg);
         if (ACPI_FAILURE (Status))
@@ -362,16 +528,21 @@ AcpiDsExecEndOp (
             goto Cleanup;
         }
 
-        OperandIndex = WalkState->NumOperands - 1;
+        /* Done with this result state (Now that operand stack is built) */
+
+        Status = AcpiDsResultStackPop (WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Cleanup;
+        }
 
         switch (Optype)
         {
-
         case OPTYPE_MONADIC1:
 
             /* 1 Operand, 0 ExternalResult, 0 InternalResult */
 
-            Status = AcpiAmlExecMonadic1 (Opcode, WalkState);
+            Status = AcpiExMonadic1 (Opcode, WalkState);
             break;
 
 
@@ -379,12 +550,7 @@ AcpiDsExecEndOp (
 
             /* 1 Operand, 0 ExternalResult, 1 InternalResult */
 
-            Status = AcpiAmlExecMonadic2 (Opcode, WalkState, &ResultObj);
-            if (ACPI_SUCCESS (Status))
-            {
-                Status = AcpiDsResultStackPush (ResultObj, WalkState);
-            }
-
+            Status = AcpiExMonadic2 (Opcode, WalkState, &ResultObj);
             break;
 
 
@@ -392,12 +558,7 @@ AcpiDsExecEndOp (
 
             /* 1 Operand, 1 ExternalResult, 1 InternalResult */
 
-            Status = AcpiAmlExecMonadic2R (Opcode, WalkState, &ResultObj);
-            if (ACPI_SUCCESS (Status))
-            {
-                Status = AcpiDsResultStackPush (ResultObj, WalkState);
-            }
-
+            Status = AcpiExMonadic2R (Opcode, WalkState, &ResultObj);
             break;
 
 
@@ -405,8 +566,7 @@ AcpiDsExecEndOp (
 
             /* 2 Operands, 0 ExternalResult, 0 InternalResult */
 
-            Status = AcpiAmlExecDyadic1 (Opcode, WalkState);
-
+            Status = AcpiExDyadic1 (Opcode, WalkState);
             break;
 
 
@@ -414,12 +574,7 @@ AcpiDsExecEndOp (
 
             /* 2 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AcpiAmlExecDyadic2 (Opcode, WalkState, &ResultObj);
-            if (ACPI_SUCCESS (Status))
-            {
-                Status = AcpiDsResultStackPush (ResultObj, WalkState);
-            }
-
+            Status = AcpiExDyadic2 (Opcode, WalkState, &ResultObj);
             break;
 
 
@@ -427,18 +582,7 @@ AcpiDsExecEndOp (
 
             /* 2 Operands, 1 or 2 ExternalResults, 1 InternalResult */
 
-
-            /* NEW INTERFACE:
-             * Pass in WalkState, keep result obj  but let interpreter
-             * push the result
-             */
-
-            Status = AcpiAmlExecDyadic2R (Opcode, WalkState, &ResultObj);
-            if (ACPI_SUCCESS (Status))
-            {
-                Status = AcpiDsResultStackPush (ResultObj, WalkState);
-            }
-
+            Status = AcpiExDyadic2R (Opcode, WalkState, &ResultObj);
             break;
 
 
@@ -446,36 +590,7 @@ AcpiDsExecEndOp (
 
             /* 2 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AcpiAmlExecDyadic2S (Opcode, WalkState, &ResultObj);
-            if (ACPI_SUCCESS (Status))
-            {
-                Status = AcpiDsResultStackPush (ResultObj, WalkState);
-            }
-
-            break;
-
-
-        case OPTYPE_RECONFIGURATION:
-
-            /* 1 or 2 operands, 0 Internal Result */
-
-            Status = AcpiAmlExecReconfiguration (Opcode, WalkState);
-            break;
-
-
-        case OPTYPE_CREATE_FIELD:
-
-            /* 3 or 4 Operands, 0 ExternalResult, 0 InternalResult */
-
-            Status = AcpiAmlExecCreateField (Opcode, WalkState);
-            break;
-
-
-        case OPTYPE_FATAL:
-
-            /* 3 Operands, 0 ExternalResult, 0 InternalResult */
-
-            Status = AcpiAmlExecFatal (WalkState);
+            Status = AcpiExDyadic2S (Opcode, WalkState, &ResultObj);
             break;
 
 
@@ -483,12 +598,7 @@ AcpiDsExecEndOp (
 
             /* 3 Operands, 1 ExternalResult, 1 InternalResult */
 
-            Status = AcpiAmlExecIndex (WalkState, &ResultObj);
-            if (ACPI_SUCCESS (Status))
-            {
-                Status = AcpiDsResultStackPush (ResultObj, WalkState);
-            }
-
+            Status = AcpiExIndex (WalkState, &ResultObj);
             break;
 
 
@@ -496,13 +606,34 @@ AcpiDsExecEndOp (
 
             /* 6 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AcpiAmlExecMatch (WalkState, &ResultObj);
-            if (ACPI_SUCCESS (Status))
-            {
-                Status = AcpiDsResultStackPush (ResultObj, WalkState);
-            }
-
+            Status = AcpiExMatch (WalkState, &ResultObj);
             break;
+
+
+        case OPTYPE_RECONFIGURATION:
+
+            /* 1 or 2 operands, 0 Internal Result */
+
+            Status = AcpiExReconfiguration (Opcode, WalkState);
+            break;
+
+
+        case OPTYPE_FATAL:
+
+            /* 3 Operands, 0 ExternalResult, 0 InternalResult */
+
+            Status = AcpiExFatal (WalkState);
+            break;
+        }
+
+        /*
+         * If a result object was returned from above, push it on the
+         * current result stack
+         */
+        if (ACPI_SUCCESS (Status) &&
+            ResultObj)
+        {
+            Status = AcpiDsResultPush (ResultObj, WalkState);
         }
 
         break;
@@ -514,6 +645,7 @@ AcpiDsExecEndOp (
 
         Status = AcpiDsExecEndControlOp (WalkState, Op);
 
+        AcpiDsResultStackPop (WalkState);
         break;
 
 
@@ -527,17 +659,16 @@ AcpiDsExecEndOp (
          * the method Node pointer
          */
         /* NextOp points to the op that holds the method name */
+
         NextOp = FirstArg;
-        Node = NextOp->Node;
 
         /* NextOp points to first argument op */
-        NextOp = NextOp->Next;
 
+        NextOp = NextOp->Next;
 
         /*
          * Get the method's arguments and put them on the operand stack
          */
-
         Status = AcpiDsCreateOperands (WalkState, NextOp);
         if (ACPI_FAILURE (Status))
         {
@@ -557,48 +688,43 @@ AcpiDsExecEndOp (
             break;
         }
 
-        /* Open new scope on the scope stack */
-/*
-        Status = AcpiNsScopeStackPushEntry (Node);
-        if (ACPI_FAILURE (Status))
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("ExecEndOp: Could not push Scope Stack\n"));
-            break;
-        }
-*/
-
-        /* Tell the walk loop to preempt this running method and
-        execute the new method */
-
+        /*
+         * Tell the walk loop to preempt this running method and
+         * execute the new method
+         */
         Status = AE_CTRL_TRANSFER;
 
-        /* Return now; we don't want to disturb anything,
-        especially the operand count! */
-
+        /*
+         * Return now; we don't want to disturb anything,
+         * especially the operand count!
+         */
         return_ACPI_STATUS (Status);
         break;
 
 
-    case OPTYPE_NAMED_OBJECT:
+    case OPTYPE_CREATE_FIELD:
 
+        DEBUG_PRINT (TRACE_EXEC,
+            ("ExecEndOp: Executing CreateField Buffer/Index Op=%X\n",
+            Op));
 
         Status = AcpiDsLoad2EndOp (WalkState, Op);
         if (ACPI_FAILURE (Status))
         {
             break;
         }
-/*
-        if ((WalkState->Origin->Opcode == AML_METHOD_OP) &&
-            (WalkState->Origin != Op))
+
+        Status = AcpiDsEvalBufferFieldOperands (WalkState, Op);
+        break;
+
+
+    case OPTYPE_NAMED_OBJECT:
+
+        Status = AcpiDsLoad2EndOp (WalkState, Op);
+        if (ACPI_FAILURE (Status))
         {
-            Status = AcpiDsLoad2EndOp (WalkState, Op);
-            if (ACPI_FAILURE (Status))
-            {
-                break;
-            }
+            break;
         }
-*/
 
         switch (Op->Opcode)
         {
@@ -609,12 +735,16 @@ AcpiDsExecEndOp (
                 Op));
 
             Status = AcpiDsEvalRegionOperands (WalkState, Op);
+            if (ACPI_FAILURE (Status))
+            {
+                break;
+            }
 
+            Status = AcpiDsResultStackPop (WalkState);
             break;
 
 
         case AML_METHOD_OP:
-
             break;
 
 
@@ -646,6 +776,12 @@ AcpiDsExecEndOp (
 
 
     /*
+     * ACPI 2.0 support for 64-bit integers:
+     * Truncate numeric result value if we are executing from a 32-bit ACPI table
+     */
+    AcpiExTruncateFor32bitTable (ResultObj, WalkState);
+
+    /*
      * Check if we just completed the evaluation of a
      * conditional predicate
      */
@@ -655,91 +791,12 @@ AcpiDsExecEndOp (
             CONTROL_PREDICATE_EXECUTING) &&
         (WalkState->ControlState->Control.PredicateOp == Op))
     {
-        /* Completed the predicate, the result must be a number */
-
-        WalkState->ControlState->Common.State = 0;
-
-        if (ResultObj)
-        {
-            Status = AcpiDsResultStackPop (&ObjDesc, WalkState);
-            if (ACPI_FAILURE (Status))
-            {
-                goto Cleanup;
-            }
-        }
-
-        else
-        {
-            Status = AcpiDsCreateOperand (WalkState, Op);
-            if (ACPI_FAILURE (Status))
-            {
-                goto Cleanup;
-            }
-
-            Status = AcpiAmlResolveToValue (&WalkState->Operands [0], WalkState);
-            if (ACPI_FAILURE (Status))
-            {
-                goto Cleanup;
-            }
-
-            ObjDesc = WalkState->Operands [0];
-        }
-
-        if (!ObjDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("ExecEndOp: No predicate ObjDesc=%X State=%X\n",
-                ObjDesc, WalkState));
-
-            Status = AE_AML_NO_OPERAND;
-            goto Cleanup;
-        }
-
-        if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("ExecEndOp: Bad predicate (not a number) ObjDesc=%X State=%X Type=%X\n",
-                ObjDesc, WalkState, ObjDesc->Common.Type));
-
-            Status = AE_AML_OPERAND_TYPE;
-            goto Cleanup;
-        }
-        /* Save the result of the predicate evaluation on
-        the control stack */
-
-        if (ObjDesc->Number.Value)
-        {
-            WalkState->ControlState->Common.Value = TRUE;
-        }
-        else
-        {
-            /* Predicate is FALSE, we will just toss the
-            rest of the package */
-
-            WalkState->ControlState->Common.Value = FALSE;
-            Status = AE_CTRL_FALSE;
-        }
-
-        DEBUG_PRINT (TRACE_EXEC,
-            ("ExecEndOp: Completed a predicate eval=%X Op=%X\n",
-            WalkState->ControlState->Common.Value, Op));
-
-         /* Break to debugger to display result */
-
-        DEBUGGER_EXEC (AcpiDbDisplayResultObject (ObjDesc, WalkState));
-
-        /* Delete the predicate result object (we know that
-        we don't need it anymore) and cleanup the stack */
-
-        AcpiCmRemoveReference (ObjDesc);
+        Status = AcpiDsGetPredicateValue (WalkState, Op, (UINT32) ResultObj);
         ResultObj = NULL;
-
-        WalkState->ControlState->Common.State = CONTROL_NORMAL;
     }
 
 
 Cleanup:
-
     if (ResultObj)
     {
         /* Break to debugger to display result */

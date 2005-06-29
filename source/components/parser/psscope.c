@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
- * Module Name: exstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.32 $
+ * Module Name: psscope - Parser scope stack management routines
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -115,158 +114,262 @@
  *
  *****************************************************************************/
 
-#define __EXSTOROB_C__
 
 #include "acpi.h"
 #include "acparser.h"
-#include "acdispat.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "actables.h"
 
-
-#define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exstorob")
+#define _COMPONENT          ACPI_PARSER
+        MODULE_NAME         ("psscope")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExCopyBufferToBuffer
+ * FUNCTION:    AcpiPsGetParentScope
  *
- * PARAMETERS:  SourceDesc          - Source object to copy
- *              TargetDesc          - Destination object of the copy
+ * PARAMETERS:  ParserState         - Current parser state object
  *
- * RETURN:      Status
+ * RETURN:      Pointer to an Op object
  *
- * DESCRIPTION: Copy a buffer object to another buffer object.
+ * DESCRIPTION: Get parent of current op being parsed
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiExCopyBufferToBuffer (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc)
+ACPI_PARSE_OBJECT *
+AcpiPsGetParentScope (
+    ACPI_PARSE_STATE        *ParserState)
 {
-    UINT32                  Length;
-    UINT8                   *Buffer;
-
-
-    /*
-     * We know that SourceDesc is a buffer by now
-     */
-    Buffer = (UINT8 *) SourceDesc->Buffer.Pointer;
-    Length = SourceDesc->Buffer.Length;
-
-    /*
-     * If target is a buffer of length zero, allocate a new
-     * buffer of the proper length
-     */
-    if (TargetDesc->Buffer.Length == 0)
-    {
-        TargetDesc->Buffer.Pointer = AcpiUtAllocate (Length);
-        if (!TargetDesc->Buffer.Pointer)
-        {
-            return (AE_NO_MEMORY);
-        }
-
-        TargetDesc->Buffer.Length = Length;
-    }
-
-    /*
-     * Buffer is a static allocation,
-     * only place what will fit in the buffer.
-     */
-    if (Length <= TargetDesc->Buffer.Length)
-    {
-        /* Clear existing buffer and copy in the new one */
-
-        MEMSET(TargetDesc->Buffer.Pointer, 0, TargetDesc->Buffer.Length);
-        MEMCPY(TargetDesc->Buffer.Pointer, Buffer, Length);
-    }
-
-    else
-    {
-        /*
-         * Truncate the source, copy only what will fit
-         */
-        MEMCPY(TargetDesc->Buffer.Pointer, Buffer, TargetDesc->Buffer.Length);
-
-        DEBUG_PRINT (ACPI_INFO,
-            ("ExCopyBufferToBuffer: Truncating src buffer from %X to %X\n",
-            Length, TargetDesc->Buffer.Length));
-    }
-
-    return (AE_OK);
+    return (ParserState->Scope->ParseScope.Op);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExCopyStringToString
+ * FUNCTION:    AcpiPsHasCompletedScope
  *
- * PARAMETERS:  SourceDesc          - Source object to copy
- *              TargetDesc          - Destination object of the copy
+ * PARAMETERS:  ParserState         - Current parser state object
+ *
+ * RETURN:      Boolean, TRUE = scope completed.
+ *
+ * DESCRIPTION: Is parsing of current argument complete?  Determined by
+ *              1) AML pointer is at or beyond the end of the scope
+ *              2) The scope argument count has reached zero.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiPsHasCompletedScope (
+    ACPI_PARSE_STATE        *ParserState)
+{
+    return ((BOOLEAN) ((ParserState->Aml >= ParserState->Scope->ParseScope.ArgEnd ||
+                        !ParserState->Scope->ParseScope.ArgCount)));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsInitScope
+ *
+ * PARAMETERS:  ParserState         - Current parser state object
+ *              Root                - the Root Node of this new scope
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Copy a String object to another String object
+ * DESCRIPTION: Allocate and init a new scope object
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExCopyStringToString (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc)
+AcpiPsInitScope (
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_PARSE_OBJECT       *RootOp)
 {
-    UINT32                  Length;
-    UINT8                   *Buffer;
+    ACPI_GENERIC_STATE      *Scope;
 
 
-    /*
-     * We know that SourceDesc is a string by now.
-     */
-    Buffer = (UINT8 *) SourceDesc->String.Pointer;
-    Length = SourceDesc->String.Length;
+    FUNCTION_TRACE_PTR ("PsInitScope", RootOp);
 
-    /*
-     * Setting a string value replaces the old string
-     */
-    if (Length < TargetDesc->String.Length)
+
+    Scope = AcpiUtCreateGenericState ();
+    if (!Scope)
     {
-        /* Clear old string and copy in the new one */
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
 
-        MEMSET(TargetDesc->String.Pointer, 0, TargetDesc->String.Length);
-        MEMCPY(TargetDesc->String.Pointer, Buffer, Length);
+    Scope->ParseScope.Op        = RootOp;
+    Scope->ParseScope.ArgCount  = ACPI_VAR_ARGS;
+    Scope->ParseScope.ArgEnd    = ParserState->AmlEnd;
+    Scope->ParseScope.PkgEnd    = ParserState->AmlEnd;
+
+    ParserState->Scope          = Scope;
+    ParserState->StartOp        = RootOp;
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsPushScope
+ *
+ * PARAMETERS:  ParserState         - Current parser state object
+ *              Op                  - Current op to be pushed
+ *              RemainingArgs       - List of args remaining
+ *              ArgCount            - Fixed or variable number of args
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Push current op to begin parsing its argument
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiPsPushScope (
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  RemainingArgs,
+    UINT32                  ArgCount)
+{
+    ACPI_GENERIC_STATE      *Scope;
+
+
+    FUNCTION_TRACE_PTR ("PsPushScope", Op);
+
+
+    Scope = AcpiUtCreateGenericState ();
+    if (!Scope)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+
+    Scope->ParseScope.Op           = Op;
+    Scope->ParseScope.ArgList      = RemainingArgs;
+    Scope->ParseScope.ArgCount     = ArgCount;
+    Scope->ParseScope.PkgEnd       = ParserState->PkgEnd;
+
+    /* Push onto scope stack */
+
+    AcpiUtPushGenericState (&ParserState->Scope, Scope);
+
+
+    if (ArgCount == ACPI_VAR_ARGS)
+    {
+        /* multiple arguments */
+
+        Scope->ParseScope.ArgEnd = ParserState->PkgEnd;
     }
 
     else
     {
-        /*
-         * Free the current buffer, then allocate a buffer
-         * large enough to hold the value
-         */
-        if (TargetDesc->String.Pointer &&
-            !AcpiTbSystemTablePointer (TargetDesc->String.Pointer))
-        {
-            /*
-             * Only free if not a pointer into the DSDT
-             */
-            AcpiUtFree(TargetDesc->String.Pointer);
-        }
+        /* single argument */
 
-        TargetDesc->String.Pointer = AcpiUtAllocate (Length + 1);
-        if (!TargetDesc->String.Pointer)
-        {
-            return (AE_NO_MEMORY);
-        }
-        TargetDesc->String.Length = Length;
-
-
-        MEMCPY(TargetDesc->String.Pointer, Buffer, Length);
+        Scope->ParseScope.ArgEnd = ACPI_MAX_AML;
     }
 
-    return (AE_OK);
+    return_ACPI_STATUS (AE_OK);
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsPopScope
+ *
+ * PARAMETERS:  ParserState         - Current parser state object
+ *              Op                  - Where the popped op is returned
+ *              ArgList             - Where the popped "next argument" is
+ *                                    returned
+ *              ArgCount            - Count of objects in ArgList
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Return to parsing a previous op
+ *
+ ******************************************************************************/
+
+void
+AcpiPsPopScope (
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_PARSE_OBJECT       **Op,
+    UINT32                  *ArgList,
+    UINT32                  *ArgCount)
+{
+    ACPI_GENERIC_STATE      *Scope = ParserState->Scope;
+
+
+    FUNCTION_TRACE ("PsPopScope");
+
+    /*
+     * Only pop the scope if there is in fact a next scope
+     */
+    if (Scope->Common.Next)
+    {
+        Scope = AcpiUtPopGenericState (&ParserState->Scope);
+
+
+        /* return to parsing previous op */
+
+        *Op                     = Scope->ParseScope.Op;
+        *ArgList                = Scope->ParseScope.ArgList;
+        *ArgCount               = Scope->ParseScope.ArgCount;
+        ParserState->PkgEnd     = Scope->ParseScope.PkgEnd;
+
+        /* All done with this scope state structure */
+
+        AcpiUtDeleteGenericState (Scope);
+    }
+
+    else
+    {
+        /* empty parse stack, prepare to fetch next opcode */
+
+        *Op                     = NULL;
+        *ArgList                = 0;
+        *ArgCount               = 0;
+    }
+
+
+    DEBUG_PRINT (TRACE_PARSE,
+        ("PsPopScope:  Popped Op %p Args %X\n", *Op, *ArgCount));
+    return_VOID;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsCleanupScope
+ *
+ * PARAMETERS:  ParserState         - Current parser state object
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Destroy available list, remaining stack levels, and return
+ *              root scope
+ *
+ ******************************************************************************/
+
+void
+AcpiPsCleanupScope (
+    ACPI_PARSE_STATE        *ParserState)
+{
+    ACPI_GENERIC_STATE      *Scope;
+
+    FUNCTION_TRACE_PTR ("PsCleanupScope", ParserState);
+
+
+    if (!ParserState)
+    {
+        return;
+    }
+
+
+    /* Delete anything on the scope stack */
+
+    while (ParserState->Scope)
+    {
+        Scope = AcpiUtPopGenericState (&ParserState->Scope);
+        AcpiUtDeleteGenericState (Scope);
+    }
+
+    return_VOID;
+}
 

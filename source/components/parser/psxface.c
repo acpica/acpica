@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
- * Module Name: exstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.32 $
+ * Module Name: psxface - Parser external interfaces
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -115,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __EXSTOROB_C__
+#define __PSXFACE_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -123,150 +122,155 @@
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
-#include "actables.h"
 
 
-#define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exstorob")
+#define _COMPONENT          ACPI_PARSER
+        MODULE_NAME         ("psxface")
 
 
-/*******************************************************************************
+/*****************************************************************************
  *
- * FUNCTION:    AcpiExCopyBufferToBuffer
+ * FUNCTION:    AcpiPsxExecute
  *
- * PARAMETERS:  SourceDesc          - Source object to copy
- *              TargetDesc          - Destination object of the copy
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Copy a buffer object to another buffer object.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExCopyBufferToBuffer (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc)
-{
-    UINT32                  Length;
-    UINT8                   *Buffer;
-
-
-    /*
-     * We know that SourceDesc is a buffer by now
-     */
-    Buffer = (UINT8 *) SourceDesc->Buffer.Pointer;
-    Length = SourceDesc->Buffer.Length;
-
-    /*
-     * If target is a buffer of length zero, allocate a new
-     * buffer of the proper length
-     */
-    if (TargetDesc->Buffer.Length == 0)
-    {
-        TargetDesc->Buffer.Pointer = AcpiUtAllocate (Length);
-        if (!TargetDesc->Buffer.Pointer)
-        {
-            return (AE_NO_MEMORY);
-        }
-
-        TargetDesc->Buffer.Length = Length;
-    }
-
-    /*
-     * Buffer is a static allocation,
-     * only place what will fit in the buffer.
-     */
-    if (Length <= TargetDesc->Buffer.Length)
-    {
-        /* Clear existing buffer and copy in the new one */
-
-        MEMSET(TargetDesc->Buffer.Pointer, 0, TargetDesc->Buffer.Length);
-        MEMCPY(TargetDesc->Buffer.Pointer, Buffer, Length);
-    }
-
-    else
-    {
-        /*
-         * Truncate the source, copy only what will fit
-         */
-        MEMCPY(TargetDesc->Buffer.Pointer, Buffer, TargetDesc->Buffer.Length);
-
-        DEBUG_PRINT (ACPI_INFO,
-            ("ExCopyBufferToBuffer: Truncating src buffer from %X to %X\n",
-            Length, TargetDesc->Buffer.Length));
-    }
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExCopyStringToString
- *
- * PARAMETERS:  SourceDesc          - Source object to copy
- *              TargetDesc          - Destination object of the copy
+ * PARAMETERS:  MethodNode          - A method object containing both the AML
+ *                                    address and length.
+ *              **Params            - List of parameters to pass to method,
+ *                                    terminated by NULL. Params itself may be
+ *                                    NULL if no parameters are being passed.
+ *              **ReturnObjDesc     - Return object from execution of the
+ *                                    method.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Copy a String object to another String object
+ * DESCRIPTION: Execute a control method
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiExCopyStringToString (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc)
+AcpiPsxExecute (
+    ACPI_NAMESPACE_NODE     *MethodNode,
+    ACPI_OPERAND_OBJECT     **Params,
+    ACPI_OPERAND_OBJECT     **ReturnObjDesc)
 {
-    UINT32                  Length;
-    UINT8                   *Buffer;
+    ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    UINT32                  i;
+    ACPI_PARSE_OBJECT       *Op;
 
 
-    /*
-     * We know that SourceDesc is a string by now.
-     */
-    Buffer = (UINT8 *) SourceDesc->String.Pointer;
-    Length = SourceDesc->String.Length;
+    FUNCTION_TRACE ("PsxExecute");
 
-    /*
-     * Setting a string value replaces the old string
-     */
-    if (Length < TargetDesc->String.Length)
+
+    /* Validate the Node and get the attached object */
+
+    if (!MethodNode)
     {
-        /* Clear old string and copy in the new one */
-
-        MEMSET(TargetDesc->String.Pointer, 0, TargetDesc->String.Length);
-        MEMCPY(TargetDesc->String.Pointer, Buffer, Length);
+        return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-    else
+    ObjDesc = AcpiNsGetAttachedObject (MethodNode);
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_NULL_OBJECT);
+    }
+
+    /* Init for new method, wait on concurrency semaphore */
+
+    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    if (Params)
     {
         /*
-         * Free the current buffer, then allocate a buffer
-         * large enough to hold the value
+         * The caller "owns" the parameters, so give each one an extra
+         * reference
          */
-        if (TargetDesc->String.Pointer &&
-            !AcpiTbSystemTablePointer (TargetDesc->String.Pointer))
+
+        for (i = 0; Params[i]; i++)
         {
-            /*
-             * Only free if not a pointer into the DSDT
-             */
-            AcpiUtFree(TargetDesc->String.Pointer);
+            AcpiUtAddReference (Params[i]);
         }
-
-        TargetDesc->String.Pointer = AcpiUtAllocate (Length + 1);
-        if (!TargetDesc->String.Pointer)
-        {
-            return (AE_NO_MEMORY);
-        }
-        TargetDesc->String.Length = Length;
-
-
-        MEMCPY(TargetDesc->String.Pointer, Buffer, Length);
     }
 
-    return (AE_OK);
+    /*
+     * Perform the first pass parse of the method to enter any
+     * named objects that it creates into the namespace
+     */
+
+    DEBUG_PRINT (ACPI_INFO,
+        ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
+        MethodNode, ObjDesc));
+
+    /* Create and init a Root Node */
+
+    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!Op)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
+                                ObjDesc->Method.PcodeLength,
+                                ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
+                                MethodNode, Params, ReturnObjDesc,
+                                AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
+    AcpiPsDeleteParseTree (Op);
+
+    /* Create and init a Root Node */
+
+    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!Op)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+
+    /* Init new op with the method name and pointer back to the NS node */
+
+    AcpiPsSetName (Op, MethodNode->Name);
+    Op->Node = MethodNode;
+
+    /*
+     * The walk of the parse tree is where we actually execute the method
+     */
+    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
+                                ObjDesc->Method.PcodeLength,
+                                ACPI_PARSE_EXECUTE | ACPI_PARSE_DELETE_TREE,
+                                MethodNode, Params, ReturnObjDesc,
+                                AcpiDsExecBeginOp, AcpiDsExecEndOp);
+    AcpiPsDeleteParseTree (Op);
+
+    if (Params)
+    {
+        /* Take away the extra reference that we gave the parameters above */
+
+        for (i = 0; Params[i]; i++)
+        {
+            AcpiUtUpdateObjectReference (Params[i], REF_DECREMENT);
+        }
+    }
+
+
+    /*
+     * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been
+     * executed, or with Status == AE_PENDING at end of AML block (end of
+     * Method code)
+     */
+
+    if (*ReturnObjDesc)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n",
+            *ReturnObjDesc));
+        DUMP_STACK_ENTRY (*ReturnObjDesc);
+
+        Status = AE_CTRL_RETURN_VALUE;
+    }
+
+
+    return_ACPI_STATUS (Status);
 }
 
 

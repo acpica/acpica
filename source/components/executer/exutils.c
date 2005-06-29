@@ -1,7 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: amutils - interpreter/scanner utilities
+ * Module Name: exutils - interpreter/scanner utilities
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -9,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -114,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __AMUTILS_C__
+#define __EXUTILS_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -123,53 +124,37 @@
 #include "acnamesp.h"
 #include "acevents.h"
 
-#define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amutils");
-
-
-typedef struct Internal_Search_st
-{
-    ACPI_OBJECT_INTERNAL        *DestObj;
-    UINT32                      Index;
-    ACPI_OBJECT_INTERNAL        *SourceObj;
-
-} INTERNAL_PKG_SEARCH_INFO;
-
-
-/* Used to traverse nested packages when copying*/
-
-INTERNAL_PKG_SEARCH_INFO        CopyLevel[MAX_PACKAGE_DEPTH];
-
-
-static char                 hex[] =
-    {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+#define _COMPONENT          ACPI_EXECUTER
+        MODULE_NAME         ("exutils")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlEnterInterpreter
+ * FUNCTION:    AcpiExEnterInterpreter
  *
  * PARAMETERS:  None
  *
  * DESCRIPTION: Enter the interpreter execution region
+ *              TBD: should be a macro
  *
  ******************************************************************************/
 
-void
-AcpiAmlEnterInterpreter (void)
+ACPI_STATUS
+AcpiExEnterInterpreter (void)
 {
-    FUNCTION_TRACE ("AmlEnterInterpreter");
+    ACPI_STATUS             Status;
+
+    FUNCTION_TRACE ("ExEnterInterpreter");
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_EXECUTE);
-
-    return_VOID;
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EXECUTE);
+    return_ACPI_STATUS (Status);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlExitInterpreter
+ * FUNCTION:    AcpiExExitInterpreter
  *
  * PARAMETERS:  None
  *
@@ -185,15 +170,17 @@ AcpiAmlEnterInterpreter (void)
  *          already executing
  *      7) About to invoke a user-installed opregion handler
  *
+ *              TBD: should be a macro
+ *
  ******************************************************************************/
 
 void
-AcpiAmlExitInterpreter (void)
+AcpiExExitInterpreter (void)
 {
-    FUNCTION_TRACE ("AmlExitInterpreter");
+    FUNCTION_TRACE ("ExExitInterpreter");
 
 
-    AcpiCmReleaseMutex (ACPI_MTX_EXECUTE);
+    AcpiUtReleaseMutex (ACPI_MTX_EXECUTE);
 
     return_VOID;
 }
@@ -201,7 +188,7 @@ AcpiAmlExitInterpreter (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlValidateObjectType
+ * FUNCTION:    AcpiExValidateObjectType
  *
  * PARAMETERS:  Type            Object type to validate
  *
@@ -210,85 +197,67 @@ AcpiAmlExitInterpreter (void)
  ******************************************************************************/
 
 BOOLEAN
-AcpiAmlValidateObjectType (
+AcpiExValidateObjectType (
     ACPI_OBJECT_TYPE        Type)
 {
 
     if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
         (Type > INTERNAL_TYPE_MAX))
     {
-        return FALSE;
+        return (FALSE);
     }
 
-    return TRUE;
+    return (TRUE);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlAppendOperandDiag
+ * FUNCTION:    AcpiExTruncateFor32bitTable
  *
- * PARAMETERS:  *FileName       - Name of source file
- *              LineNum         - Line Number in file
- *              OpCode          - OpCode being executed
- *              NumOperands     - Number of operands PrepStack tried to check
+ * PARAMETERS:  ObjDesc         - Object to be truncated
+ *              WalkState       - Current walk state
+ *                                (A method must be executing)
  *
- * DESCRIPTION: Print diagnostic information about operands.
- *              This function is intended to be called after PrepStack
- *              has returned S_ERROR.
+ * RETURN:      none
+ *
+ * DESCRIPTION: Truncate a number to 32-bits if the currently executing method
+ *              belongs to a 32-bit ACPI table.
  *
  ******************************************************************************/
 
 void
-AcpiAmlAppendOperandDiag (
-    char                    *FileName,
-    INT32                   LineNum,
-    UINT16                  OpCode,
-    ACPI_OBJECT_INTERNAL    **Operands,
-    INT32                   NumOperands)
+AcpiExTruncateFor32bitTable (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
 
     /*
-     * This function outputs debug information only
+     * Object must be a valid number and we must be executing
+     * a control method
      */
 
-    DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
-                    FileName, LineNum, AcpiPsGetOpcodeName (OpCode), NULL));
-
-    if (GetDebugLevel () > 0)
+    if ((!ObjDesc) ||
+        (ObjDesc->Common.Type != ACPI_TYPE_INTEGER) ||
+        (!WalkState->MethodNode))
     {
-        DUMP_OPERANDS (Operands, IMODE_EXECUTE, AcpiPsGetOpcodeName (OpCode),
-                        NumOperands, "after PrepStack failed");
+        return;
+    }
+
+    if (WalkState->MethodNode->Flags & ANOBJ_DATA_WIDTH_32)
+    {
+        /*
+         * We are running a method that exists in a 32-bit ACPI table.
+         * Truncate the value to 32 bits by zeroing out the upper 32-bit field
+         */
+        ObjDesc->Integer.Value &= (ACPI_INTEGER) ACPI_UINT32_MAX;
     }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlBufSeq
- *
- * RETURN:      The next buffer descriptor sequence number
- *
- * DESCRIPTION: Provide a unique sequence number for each Buffer descriptor
- *              allocated during the interpreter's existence.  These numbers
- *              are used to relate FieldUnit descriptors to the Buffers
- *              within which the fields are defined.
- *
- *              Just increment the global counter and return it.
- *
- ******************************************************************************/
-
-UINT32
-AcpiAmlBufSeq (void)
-{
-
-    return ++AcpiGbl_BufSeq;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlAcquireGlobalLock
+ * FUNCTION:    AcpiExAcquireGlobalLock
  *
  * PARAMETERS:  Rule            - Lock rule: AlwaysLock, NeverLock
  *
@@ -301,32 +270,33 @@ AcpiAmlBufSeq (void)
  ******************************************************************************/
 
 BOOLEAN
-AcpiAmlAcquireGlobalLock (
+AcpiExAcquireGlobalLock (
     UINT32                  Rule)
 {
     BOOLEAN                 Locked = FALSE;
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AmlAcquireGlobalLock");
+    FUNCTION_TRACE ("ExAcquireGlobalLock");
 
 
-    /*  Only attempt lock if the Rule says so */
+    /* Only attempt lock if the Rule says so */
 
     if (Rule == (UINT32) GLOCK_ALWAYS_LOCK)
     {
-        /*  OK to get the lock   */
+        /* We should attempt to get the lock */
 
         Status = AcpiEvAcquireGlobalLock ();
-        if (ACPI_FAILURE (Status))
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("Get Global Lock Failed!!\n"));
-        }
-
         if (ACPI_SUCCESS (Status))
         {
-            AcpiGbl_GlobalLockSet = TRUE;
             Locked = TRUE;
+        }
+
+        else
+        {
+            DEBUG_PRINT (ACPI_ERROR,
+                ("Could not acquire Global Lock, %s\n",
+                AcpiUtFormatException (Status)));
         }
     }
 
@@ -336,7 +306,7 @@ AcpiAmlAcquireGlobalLock (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlReleaseGlobalLock
+ * FUNCTION:    AcpiExReleaseGlobalLock
  *
  * PARAMETERS:  LockedByMe      - Return value from corresponding call to
  *                                AcquireGlobalLock.
@@ -348,31 +318,20 @@ AcpiAmlAcquireGlobalLock (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlReleaseGlobalLock (
+AcpiExReleaseGlobalLock (
     BOOLEAN                 LockedByMe)
 {
 
-    FUNCTION_TRACE ("AmlReleaseGlobalLock");
+    FUNCTION_TRACE ("ExReleaseGlobalLock");
 
 
     /* Only attempt unlock if the caller locked it */
 
     if (LockedByMe)
     {
-        /* Double check against the global flag */
+        /* OK, now release the lock */
 
-        if (AcpiGbl_GlobalLockSet)
-        {
-            /* OK, now release the lock */
-
-            AcpiEvReleaseGlobalLock ();
-            AcpiGbl_GlobalLockSet = FALSE;
-        }
-
-        else
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("Global lock was not set\n"));
-        }
+        AcpiEvReleaseGlobalLock ();
     }
 
 
@@ -382,7 +341,7 @@ AcpiAmlReleaseGlobalLock (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlDigitsNeeded
+ * FUNCTION:    AcpiExDigitsNeeded
  *
  * PARAMETERS:  val             - Value to be represented
  *              base            - Base of representation
@@ -391,27 +350,28 @@ AcpiAmlReleaseGlobalLock (
  *
  ******************************************************************************/
 
-INT32
-AcpiAmlDigitsNeeded (
-    INT32                   val,
-    INT32                   base)
+UINT32
+AcpiExDigitsNeeded (
+    ACPI_INTEGER            val,
+    UINT32                  base)
 {
-    INT32                   NumDigits = 0;
+    UINT32                  NumDigits = 0;
 
 
-    FUNCTION_TRACE ("AmlDigitsNeeded");
+    FUNCTION_TRACE ("ExDigitsNeeded");
 
 
     if (base < 1)
     {
-        /*  impossible base */
-
-        REPORT_ERROR ("AmlDigitsNeeded: Impossible base");
+        REPORT_ERROR (("ExDigitsNeeded: Internal error - Invalid base\n"));
     }
 
     else
     {
-        for (NumDigits = 1 + (val < 0) ; val /= base ; ++NumDigits)
+        /*
+         * ACPI_INTEGER is unsigned, which is why we don't worry about the '-'
+         */
+        for (NumDigits = 1; (val = ACPI_DIVIDE (val,base)); ++NumDigits)
         { ; }
     }
 
@@ -425,24 +385,24 @@ AcpiAmlDigitsNeeded (
  *
  * PARAMETERS:  Value           - Value to be converted
  *
- * RETURN:      Convert a 32-bit value to big-endian (swap the bytes)
+ * DESCRIPTION: Convert a 32-bit value to big-endian (swap the bytes)
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 _ntohl (
     UINT32                  Value)
 {
     union
     {
         UINT32              Value;
-        char                Bytes[4];
+        UINT8               Bytes[4];
     } Out;
 
     union
     {
         UINT32              Value;
-        char                Bytes[4];
+        UINT8               Bytes[4];
     } In;
 
 
@@ -453,25 +413,25 @@ _ntohl (
     Out.Bytes[2] = In.Bytes[1];
     Out.Bytes[3] = In.Bytes[0];
 
-    return Out.Value;
+    return (Out.Value);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlEisaIdToString
+ * FUNCTION:    AcpiExEisaIdToString
  *
  * PARAMETERS:  NumericId       - EISA ID to be converted
  *              OutString       - Where to put the converted string (8 bytes)
  *
- * RETURN:      Convert a numeric EISA ID to string representation
+ * DESCRIPTION: Convert a numeric EISA ID to string representation
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlEisaIdToString (
+AcpiExEisaIdToString (
     UINT32                  NumericId,
-    char                    *OutString)
+    NATIVE_CHAR             *OutString)
 {
     UINT32                  id;
 
@@ -482,182 +442,47 @@ AcpiAmlEisaIdToString (
     OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
     OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
     OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
-    OutString[3] = hex[(id >> 12) & 0xf];
-    OutString[4] = hex[(id >> 8) & 0xf];
-    OutString[5] = hex[(id >> 4) & 0xf];
-    OutString[6] = hex[id & 0xf];
+    OutString[3] = AcpiGbl_HexToAscii[(id >> 12) & 0xf];
+    OutString[4] = AcpiGbl_HexToAscii[(id >> 8) & 0xf];
+    OutString[5] = AcpiGbl_HexToAscii[(id >> 4) & 0xf];
+    OutString[6] = AcpiGbl_HexToAscii[id & 0xf];
     OutString[7] = 0;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlBuildCopyInternalPackageObject
+ * FUNCTION:    AcpiExUnsignedIntegerToString
  *
- * PARAMETERS:  *SourceObj      - Pointer to the source package object
- *              *DestObj        - Where the internal object is returned
+ * PARAMETERS:  Value           - Value to be converted
+ *              OutString       - Where to put the converted string (8 bytes)
  *
- * RETURN:      Status          - the status of the call
- *
- * DESCRIPTION: This function is called to copy an internal package object
- *              into another internal package object.
+ * RETURN:      Convert a number to string representation
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlBuildCopyInternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *SourceObj,
-    ACPI_OBJECT_INTERNAL    *DestObj)
+AcpiExUnsignedIntegerToString (
+    ACPI_INTEGER            Value,
+    NATIVE_CHAR             *OutString)
 {
-    UINT32                      CurrentDepth = 0;
-    ACPI_STATUS                 Status = AE_OK;
-    UINT32                      Length = 0;
-    UINT32                      ThisIndex;
-    UINT32                      ObjectSpace = 0;
-    ACPI_OBJECT_INTERNAL        *ThisDestObj;
-    ACPI_OBJECT_INTERNAL        *ThisSourceObj;
-    INTERNAL_PKG_SEARCH_INFO    *LevelPtr;
+    UINT32                  Count;
+    UINT32                  DigitsNeeded;
 
 
-    FUNCTION_TRACE ("AmlBuildCopyInternalPackageObject");
+    DigitsNeeded = AcpiExDigitsNeeded (Value, 10);
 
+    OutString[DigitsNeeded] = '\0';
 
-    /*
-     * Initialize the working variables
-     */
-
-    MEMSET ((void *) CopyLevel, 0, sizeof(CopyLevel));
-
-    CopyLevel[0].DestObj    = DestObj;
-    CopyLevel[0].SourceObj  = SourceObj;
-    LevelPtr                = &CopyLevel[0];
-    CurrentDepth            = 0;
-
-    DestObj->Common.Type        = SourceObj->Common.Type;
-    DestObj->Package.Count      = SourceObj->Package.Count;
-
-
-    /*
-     * Build an array of ACPI_OBJECTS in the buffer
-     * and move the free space past it
-     */
-
-    DestObj->Package.Elements   = AcpiCmCallocate (
-                                        (DestObj->Package.Count + 1) *
-                                        sizeof (void *));
-    if (!DestObj->Package.Elements)
+    for (Count = DigitsNeeded; Count > 0; Count--)
     {
-        /* Package vector allocation failure   */
-
-        REPORT_ERROR ("AmlBuildCopyInternalPackageObject: Package vector allocation failure");
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        OutString[Count-1] = (NATIVE_CHAR) ('0' + (ACPI_MODULO (Value, 10)));
+        Value = ACPI_DIVIDE (Value, 10);
     }
 
-    DestObj->Package.NextElement = DestObj->Package.Elements;
-
-
-    while (1)
-    {
-        ThisIndex       = LevelPtr->Index;
-        ThisDestObj     = (ACPI_OBJECT_INTERNAL *) LevelPtr->DestObj->Package.Elements[ThisIndex];
-        ThisSourceObj   = (ACPI_OBJECT_INTERNAL *) LevelPtr->SourceObj->Package.Elements[ThisIndex];
-
-        if (IS_THIS_OBJECT_TYPE (ThisSourceObj, ACPI_TYPE_PACKAGE))
-        {
-            /*
-             * If this object is a package then we go one deeper
-             */
-            if (CurrentDepth >= MAX_PACKAGE_DEPTH-1)
-            {
-                /*
-                 * Too many nested levels of packages for us to handle
-                 */
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlBuildCopyInternalPackageObject: Pkg nested too deep (max %d)\n",
-                    MAX_PACKAGE_DEPTH));
-                return_ACPI_STATUS (AE_LIMIT);
-            }
-
-            /*
-             * Build the package object
-             */
-            ThisDestObj = AcpiCmCreateInternalObject (ACPI_TYPE_PACKAGE);
-            LevelPtr->DestObj->Package.Elements[ThisIndex] = ThisDestObj;
-
-
-            ThisDestObj->Common.Type        = ACPI_TYPE_PACKAGE;
-            ThisDestObj->Package.Count      = ThisDestObj->Package.Count;
-
-            /*
-             * Save space for the array of objects (Package elements)
-             * update the buffer length counter
-             */
-            ObjectSpace             = ThisDestObj->Package.Count *
-                                        sizeof (ACPI_OBJECT_INTERNAL);
-            Length                  += ObjectSpace;
-            CurrentDepth++;
-            LevelPtr                = &CopyLevel[CurrentDepth];
-            LevelPtr->DestObj       = ThisDestObj;
-            LevelPtr->SourceObj     = ThisSourceObj;
-            LevelPtr->Index         = 0;
-
-        }   /* if object is a package */
-
-        else
-        {
-
-            ThisDestObj = AcpiCmCreateInternalObject (
-                                ThisSourceObj->Common.Type);
-            LevelPtr->DestObj->Package.Elements[ThisIndex] = ThisDestObj;
-
-            Status = AcpiAmlStoreObjectToObject(ThisSourceObj, ThisDestObj);
-
-            if (Status != AE_OK)
-            {
-                /*
-                 * Failure get out
-                 */
-                return_ACPI_STATUS (Status);
-            }
-
-            Length      +=ObjectSpace;
-
-            LevelPtr->Index++;
-            while (LevelPtr->Index >= LevelPtr->DestObj->Package.Count)
-            {
-                /*
-                 * We've handled all of the objects at this level,  This means
-                 * that we have just completed a package.  That package may
-                 * have contained one or more packages itself
-                 */
-                if (CurrentDepth == 0)
-                {
-                    /*
-                     * We have handled all of the objects in the top level
-                     * package just add the length of the package objects
-                     * and exit
-                     */
-                    return_ACPI_STATUS (AE_OK);
-                }
-
-                /*
-                 * Go back up a level and move the index past the just
-                 * completed package object.
-                 */
-                CurrentDepth--;
-                LevelPtr = &CopyLevel[CurrentDepth];
-                LevelPtr->Index++;
-            }
-        }   /* else object is NOT a package */
-    }   /* while (1)  */
-
-
-    /*
-     * We'll never get here, but the compiler whines about return value
-     */
-    return_ACPI_STATUS (AE_OK);
+    return (AE_OK);
 }
 
 

@@ -1,6 +1,8 @@
+
 /******************************************************************************
  *
- * Module Name: amregion - ACPI default OpRegion (address space) handlers
+ * Module Name: exregion - ACPI default OpRegion (address space) handlers
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -8,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -114,7 +116,7 @@
  *****************************************************************************/
 
 
-#define __AMREGION_C__
+#define __EXREGION_C__
 
 #include "acpi.h"
 #include "acinterp.h"
@@ -124,19 +126,21 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amregion");
+#define _COMPONENT          ACPI_EXECUTER
+        MODULE_NAME         ("exregion")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlSystemMemorySpaceHandler
+ * FUNCTION:    AcpiExSystemMemorySpaceHandler
  *
  * PARAMETERS:  Function            - Read or Write operation
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
- *              Context             - Context pointer
+ *              HandlerContext      - Pointer to Handler's context
+ *              RegionContext       - Pointer to context specific to the
+ *                                      accessed region
  *
  * RETURN:      Status
  *
@@ -145,20 +149,21 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlSystemMemorySpaceHandler (
+AcpiExSystemMemorySpaceHandler (
     UINT32                  Function,
-    UINT32                  Address, /* TBD: [Future] Should this be A POINTER for 64-bit support? */
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context)
+    void                    *HandlerContext,
+    void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
     void                    *LogicalAddrPtr = NULL;
-    MEM_HANDLER_CONTEXT     *MemInfo = Context;
+    ACPI_MEM_SPACE_CONTEXT  *MemInfo = RegionContext;
     UINT32                  Length;
 
 
-    FUNCTION_TRACE ("AmlSystemMemorySpaceHandler");
+    FUNCTION_TRACE ("ExSystemMemorySpaceHandler");
 
 
     /* Validate and translate the bit width */
@@ -179,7 +184,7 @@ AcpiAmlSystemMemorySpaceHandler (
 
     default:
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlSystemMemorySpaceHandler: Invalid SystemMemory width %d\n",
+            ("ExSystemMemorySpaceHandler: Invalid SystemMemory width %d\n",
             BitWidth));
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
         break;
@@ -192,9 +197,9 @@ AcpiAmlSystemMemorySpaceHandler (
      *    2) Address beyond the current mapping?
      */
 
-    if (((char *) Address < MemInfo->MappedPhysicalAddress) ||
-        (((char *) Address + Length) >
-            (MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))
+    if ((Address < MemInfo->MappedPhysicalAddress) ||
+        (((ACPI_INTEGER) Address + Length) >
+            ((ACPI_INTEGER) MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))
     {
         /*
          * The request cannot be resolved by the current memory mapping;
@@ -213,14 +218,16 @@ AcpiAmlSystemMemorySpaceHandler (
 
         /* Create a new mapping starting at the address given */
 
-        Status = AcpiOsMapMemory ((void *) Address, SYSMEM_REGION_WINDOW_SIZE,
+        Status = AcpiOsMapMemory (Address, SYSMEM_REGION_WINDOW_SIZE,
                                     (void **) &MemInfo->MappedLogicalAddress);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
 
-        MemInfo->MappedPhysicalAddress = (char *) Address;
+        /* TBD: should these pointers go to 64-bit in all cases ? */
+
+        MemInfo->MappedPhysicalAddress = Address;
         MemInfo->MappedLength = SYSMEM_REGION_WINDOW_SIZE;
     }
 
@@ -230,18 +237,20 @@ AcpiAmlSystemMemorySpaceHandler (
      * access
      */
 
+    /* TBD: should these pointers go to 64-bit in all cases ? */
+
     LogicalAddrPtr = MemInfo->MappedLogicalAddress +
-                    ((char *) Address - MemInfo->MappedPhysicalAddress);
+                    ((ACPI_INTEGER) Address - (ACPI_INTEGER) MemInfo->MappedPhysicalAddress);
 
     /* Perform the memory read or write */
 
     switch (Function)
     {
 
-    case ADDRESS_SPACE_READ:
+    case ACPI_READ_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Read (%d width) Address:0x%X\n", BitWidth, Address));
+            ("Read (%d width) Address=%p\n", BitWidth, Address));
 
         switch (BitWidth)
         {
@@ -261,10 +270,10 @@ AcpiAmlSystemMemorySpaceHandler (
         break;
 
 
-    case ADDRESS_SPACE_WRITE:
+    case ACPI_WRITE_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Write (%d width) Address:0x%p Value 0x%X\n",
+            ("Write (%d width) Address=%p Value %X\n",
             BitWidth, Address, *Value));
 
         switch (BitWidth)
@@ -296,13 +305,15 @@ AcpiAmlSystemMemorySpaceHandler (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlSystemIoSpaceHandler
+ * FUNCTION:    AcpiExSystemIoSpaceHandler
  *
  * PARAMETERS:  Function            - Read or Write operation
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
- *              Context             - Context pointer
+ *              HandlerContext      - Pointer to Handler's context
+ *              RegionContext       - Pointer to context specific to the
+ *                                      accessed region
  *
  * RETURN:      Status
  *
@@ -311,17 +322,18 @@ AcpiAmlSystemMemorySpaceHandler (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlSystemIoSpaceHandler (
+AcpiExSystemIoSpaceHandler (
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context)
+    void                    *HandlerContext,
+    void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("AmlSystemIoSpaceHandler");
+    FUNCTION_TRACE ("ExSystemIoSpaceHandler");
 
 
     /* Decode the function parameter */
@@ -329,10 +341,10 @@ AcpiAmlSystemIoSpaceHandler (
     switch (Function)
     {
 
-    case ADDRESS_SPACE_READ:
+    case ACPI_READ_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Read(%d width) Address:0x%08x\n", BitWidth, Address));
+            ("Read(%d width) Address=%p\n", BitWidth, Address));
 
         switch (BitWidth)
         {
@@ -352,7 +364,7 @@ AcpiAmlSystemIoSpaceHandler (
 
         default:
             DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlSystemIoSpaceHandler: Invalid SystemIO width %d\n",
+                    ("ExSystemIoSpaceHandler: Invalid SystemIO width %d\n",
                     BitWidth));
             Status = AE_AML_OPERAND_VALUE;
         }
@@ -360,10 +372,10 @@ AcpiAmlSystemIoSpaceHandler (
         break;
 
 
-    case ADDRESS_SPACE_WRITE:
+    case ACPI_WRITE_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Write(%d width) Address:0x%08x Value 0x%08x\n",
+            ("Write(%d width) Address=%p Value %X\n",
             BitWidth, Address, *Value));
 
         switch (BitWidth)
@@ -383,7 +395,7 @@ AcpiAmlSystemIoSpaceHandler (
 
         default:
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlSystemIoSpaceHandler: Invalid SystemIO width %d\n",
+                    "ExSystemIoSpaceHandler: Invalid SystemIO width %d\n",
                     BitWidth));
             Status = AE_AML_OPERAND_VALUE;
         }
@@ -401,13 +413,15 @@ AcpiAmlSystemIoSpaceHandler (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlPciConfigSpaceHandler
+ * FUNCTION:    AcpiExPciConfigSpaceHandler
  *
  * PARAMETERS:  Function            - Read or Write operation
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
- *              Context             - Context pointer
+ *              HandlerContext      - Pointer to Handler's context
+ *              RegionContext       - Pointer to context specific to the
+ *                                      accessed region
  *
  * RETURN:      Status
  *
@@ -416,21 +430,22 @@ AcpiAmlSystemIoSpaceHandler (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlPciConfigSpaceHandler (
+AcpiExPciConfigSpaceHandler (
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context)
+    void                    *HandlerContext,
+    void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  PciBus;
     UINT32                  DevFunc;
     UINT8                   PciReg;
-    PCI_HANDLER_CONTEXT    *PCIContext;
+    ACPI_PCI_SPACE_CONTEXT  *PCIContext;
 
 
-    FUNCTION_TRACE ("AmlPciConfigSpaceHandler");
+    FUNCTION_TRACE ("ExPciConfigSpaceHandler");
 
     /*
      *  The arguments to AcpiOs(Read|Write)PciCfg(Byte|Word|Dword) are:
@@ -447,10 +462,10 @@ AcpiAmlPciConfigSpaceHandler (
      *
      */
 
-    PCIContext = (PCI_HANDLER_CONTEXT *) Context;
+    PCIContext = (ACPI_PCI_SPACE_CONTEXT *) RegionContext;
 
-    PciBus = LOWORD(PCIContext->Seg) << 16;
-    PciBus |= LOWORD(PCIContext->Bus);
+    PciBus  = LOWORD (PCIContext->Seg) << 16;
+    PciBus |= LOWORD (PCIContext->Bus);
 
     DevFunc = PCIContext->DevFunc;
 
@@ -459,7 +474,7 @@ AcpiAmlPciConfigSpaceHandler (
     switch (Function)
     {
 
-    case ADDRESS_SPACE_READ:
+    case ACPI_READ_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("R%d S(%04x) B(%04x) DF(%08x) R(%04x)\n", BitWidth,
@@ -488,7 +503,7 @@ AcpiAmlPciConfigSpaceHandler (
 
         default:
             DEBUG_PRINT (ACPI_ERROR,
-                ("AmlPciConfigSpaceHandler: Invalid PCIConfig width %d\n",
+                ("ExPciConfigSpaceHandler: Invalid PCIConfig width %d\n",
                 BitWidth));
             Status = AE_AML_OPERAND_VALUE;
 
@@ -497,12 +512,7 @@ AcpiAmlPciConfigSpaceHandler (
         break;
 
 
-    case ADDRESS_SPACE_WRITE:
-
-        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("R%d S(%04x) B(%04x) DF(%08x) R(%04x)\n", BitWidth,
-            PCIContext->Seg,PCIContext->Bus,PCIContext->DevFunc, PciReg));
-
+    case ACPI_WRITE_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("W%d S(%04x) B(%04x) DF(%08x) R(%04x) D(%08x)\n", BitWidth,
@@ -530,7 +540,7 @@ AcpiAmlPciConfigSpaceHandler (
 
         default:
             DEBUG_PRINT (ACPI_ERROR, (
-                "AmlPciConfigSpaceHandler: Invalid PCIConfig width %d\n",
+                "ExPciConfigSpaceHandler: Invalid PCIConfig width %d\n",
                 BitWidth));
             Status = AE_AML_OPERAND_VALUE;
 
