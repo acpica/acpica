@@ -275,7 +275,7 @@ AdDisplayTables (void)
         AdCreateTableHeaders ();
     }
 
-    AcpiDbDisplayOp (AcpiPsGetChild (AcpiGbl_ParsedNamespaceRoot), ACPI_UINT32_MAX);
+    AcpiDbDisplayOp (NULL, AcpiPsGetChild (AcpiGbl_ParsedNamespaceRoot), ACPI_UINT32_MAX);
 
     AcpiOsPrintf ("\n\nDSDT Header:\n");
     AcpiCmDumpBuffer ((UINT8 *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
