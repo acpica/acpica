@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -193,7 +193,7 @@ AcpiEvWalkGpeList (
     ACPI_FUNCTION_TRACE ("EvWalkGpeList");
 
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_HANDLER);
+    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_ISR);
 
     /* Walk the interrupt level descriptor list */
 
@@ -220,7 +220,7 @@ AcpiEvWalkGpeList (
     }
     
 UnlockAndExit:
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_HANDLER);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_ISR);
     return_ACPI_STATUS (Status);
 }
 
@@ -393,7 +393,7 @@ AcpiEvGetGpeXruptBlock (
 
     /* Install new interrupt descriptor with spin lock */
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
     if (AcpiGbl_GpeXruptListHead)
     {
         NextGpeXrupt = AcpiGbl_GpeXruptListHead;
@@ -409,7 +409,7 @@ AcpiEvGetGpeXruptBlock (
     {
         AcpiGbl_GpeXruptListHead = GpeXrupt;
     }
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
 
 
     /* Install new interrupt handler if not SCI_INT */
@@ -462,7 +462,7 @@ AcpiEvInstallGpeBlock (
 
     /* Install the new block at the end of the list for this interrupt with lock */
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
     if (GpeXruptBlock->GpeBlockListHead)
     {
         NextGpeBlock = GpeXruptBlock->GpeBlockListHead;
@@ -478,7 +478,7 @@ AcpiEvInstallGpeBlock (
     {
         GpeXruptBlock->GpeBlockListHead = GpeBlock;
     }
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
 
 UnlockAndExit:
     Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
