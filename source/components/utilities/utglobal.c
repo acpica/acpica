@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -192,9 +192,6 @@ char            *ExceptionNames[] =
 };
 
 
-ACPI_TABLE_INFO         AcpiTables[NUM_ACPI_TABLES];
-
-
 /******************************************************************************
  *
  * Namespace globals
@@ -348,7 +345,7 @@ char *NsTypeNames[] = { /* printable names of types */
  * per level, 0-7 are Local# and 8-14 are Arg#
  */
 
-ACPI_OBJECT_INTERNAL    *MethodStack[AML_METHOD_MAX_NEST][MTH_ENTRY_SIZE];
+METHOD_STACK            MethodStack[AML_METHOD_MAX_NEST];
 INT32                   MethodStackTop = -1;
 
 
@@ -388,6 +385,46 @@ UINT32                  EventCount[NUM_FIXED_EVENTS];
 
 
 
+
+
+/******************************************************************************
+ *
+ * Table globals
+ *
+ ******************************************************************************/
+
+
+ACPI_TABLE_DESC         AcpiTables[NUM_ACPI_TABLES];
+
+
+UINT8   AcpiTableFlags[NUM_ACPI_TABLES] =
+{
+    ACPI_TABLE_SINGLE,      /* RSDP */
+    ACPI_TABLE_SINGLE,      /* APIC */
+    ACPI_TABLE_SINGLE,      /* DSDT */
+    ACPI_TABLE_SINGLE,      /* FACP */
+    ACPI_TABLE_SINGLE,      /* FACS */
+    ACPI_TABLE_MULTIPLE,    /* PSDT */
+    ACPI_TABLE_SINGLE,      /* RSDT */
+    ACPI_TABLE_MULTIPLE,    /* SSDT */
+    ACPI_TABLE_SINGLE       /* SBDT */
+};
+
+char *AcpiTableNames[] = 
+{
+        "RSDP",
+        APIC_SIG,
+        DSDT_SIG,
+        FACP_SIG,
+        FACS_SIG,
+        PSDT_SIG,
+        RSDT_SIG,
+        SSDT_SIG,
+        SBDT_SIG
+};
+
+
+
 /****************************************************************************
  *
  * FUNCTION:    CmInitGlobals
@@ -403,17 +440,6 @@ void
 CmInitGlobals (void)
 {
     UINT32                  i;
-    char * TblNames[] = {
-        "RSDP",
-        APIC_SIG,
-        DSDT_SIG,
-        FACP_SIG,
-        FACS_SIG,
-        PSDT_SIG,
-        RSDT_SIG,
-        SSDT_SIG,
-        SBDT_SIG
-    };
 
     FUNCTION_TRACE ("CmInitGlobals");
 
@@ -422,18 +448,21 @@ CmInitGlobals (void)
 
     for (i = 0; i < ACPI_TABLE_MAX; i++)
     {
-        AcpiTables[i].Pointer    = NULL;
-        AcpiTables[i].Allocation = ACPI_MEM_NOT_ALLOCATED;
-        AcpiTables[i].Length     = 0;
-        strncpy(&AcpiTables[i].Name[0], TblNames[i], sizeof(AcpiTables[0].Name));
+        AcpiTables[i].Prev          = &AcpiTables[i];
+        AcpiTables[i].Next          = &AcpiTables[i];
+        AcpiTables[i].Pointer       = NULL;
+        AcpiTables[i].Length        = 0;
+        AcpiTables[i].Allocation    = ACPI_MEM_NOT_ALLOCATED;
+        AcpiTables[i].Count         = 0;
     }
+      
 
     /* Address Space handler array */
 
     for (i = 0; i < ACPI_MAX_ADDRESS_SPACE; i++)
     {
-        AddressSpaces[i].Handler = NULL;
-        AddressSpaces[i].Context = NULL;
+        AddressSpaces[i].Handler    = NULL;
+        AddressSpaces[i].Context    = NULL;
     }
 
     /* Global "typed" ACPI table pointers */
@@ -444,8 +473,6 @@ CmInitGlobals (void)
     FACP                    = NULL;
     APIC                    = NULL;
     DSDT                    = NULL;
-    PSDT                    = NULL;
-    SSDT                    = NULL;
     SBDT                    = NULL;
 
 
@@ -487,9 +514,9 @@ CmInitGlobals (void)
     RootObject->NextEntry       = NULL;
     RootObject->PrevEntry       = NULL;
     RootObject->Type            = TYPE_Any;
-    RootObject->Value           = NULL;
+    RootObject->Object          = NULL;
 
-    FUNCTION_EXIT;
+    return_VOID;
 }   
 
 
@@ -525,7 +552,7 @@ CmTerminate (void)
     }
 
 
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
  
