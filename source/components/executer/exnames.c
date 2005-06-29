@@ -424,7 +424,7 @@ AmlExecNameSegment (
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecNameSegment: Bad char %02x in name, at %p\n", *AmlAddress, AmlAddress));
     }   
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlExecNameSegment %s \n", Gbl_ExceptionNames[Status]));
+    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlExecNameSegment %s \n", CmFormatException (Status)));
 
     *InAmlAddress = AmlAddress;
 
