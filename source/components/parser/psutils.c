@@ -158,7 +158,7 @@ PsInitOp (
     {
         /* Debug only! */
 
-        DEBUG_EXEC (STRNCPY (Op->OpName, AmlOp->Name, sizeof (Op->OpName)));
+        DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, AmlOp->Name, sizeof (Op->OpName)));
     }
 }
 
