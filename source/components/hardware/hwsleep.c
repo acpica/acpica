@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.51 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -308,7 +308,7 @@ AcpiEnterSleepState (
 
     /* Clear wake status */
 
-    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_LOCK);
+    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_DO_NOT_LOCK);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -322,7 +322,7 @@ AcpiEnterSleepState (
 
     /* Disable BM arbitration */
 
-    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 1, ACPI_MTX_LOCK);
+    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 1, ACPI_MTX_DO_NOT_LOCK);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -454,7 +454,7 @@ AcpiEnterSleepStateS4bios (
 
 
     ACPI_FUNCTION_TRACE ("AcpiEnterSleepStateS4bios");
-    
+
     AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_DO_NOT_LOCK);
     AcpiHwClearAcpiStatus();
 
