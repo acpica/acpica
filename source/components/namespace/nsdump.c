@@ -167,7 +167,7 @@ NsDumpPathname (
 
     if (ACPI_SUCCESS (NsHandleToPathname (Handle, PATHNAME_MAX, Buffer)))
     {
-        OsdPrintf (NULL, "%s %s (%p)\n", Msg, Buffer, Handle);
+        OsdPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
     }
 
     OsdFree (Buffer);
