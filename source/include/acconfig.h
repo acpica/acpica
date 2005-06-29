@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.155 $
+ *       $Revision: 1.156 $
  *
  *****************************************************************************/
 
@@ -235,10 +235,11 @@
 
 /* Constants used in searching for the RSDP in low memory */
 
-#define ACPI_LO_RSDP_WINDOW_BASE        0           /* Physical Address */
-#define ACPI_HI_RSDP_WINDOW_BASE        0xE0000     /* Physical Address */
-#define ACPI_LO_RSDP_WINDOW_SIZE        0x400
-#define ACPI_HI_RSDP_WINDOW_SIZE        0x20000
+#define ACPI_EBDA_PTR_LOCATION          0x0000040E     /* Physical Address */
+#define ACPI_EBDA_PTR_LENGTH            2
+#define ACPI_EBDA_WINDOW_SIZE           1024
+#define ACPI_HI_RSDP_WINDOW_BASE        0x000E0000     /* Physical Address */
+#define ACPI_HI_RSDP_WINDOW_SIZE        0x00020000
 #define ACPI_RSDP_SCAN_STEP             16
 
 /* Operation regions */
