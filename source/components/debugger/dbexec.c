@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.38 $
+ *              $Revision: 1.40 $
  *
  ******************************************************************************/
 
@@ -116,15 +116,7 @@
 
 
 #include "acpi.h"
-#include "acparser.h"
-#include "acdispat.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "acparser.h"
-#include "acevents.h"
-#include "acinterp.h"
 #include "acdebug.h"
-#include "actables.h"
 
 #ifdef ENABLE_DEBUGGER
 
@@ -389,7 +381,7 @@ AcpiDbExecute (
  *
  ******************************************************************************/
 
-void
+void ACPI_SYSTEM_XFACE
 AcpiDbMethodThread (
     void                    *Context)
 {

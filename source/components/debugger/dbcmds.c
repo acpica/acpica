@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  ******************************************************************************/
 
@@ -116,15 +116,11 @@
 
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acdispat.h"
 #include "amlcode.h"
 #include "acnamesp.h"
-#include "acparser.h"
 #include "acevents.h"
-#include "acinterp.h"
 #include "acdebug.h"
-#include "actables.h"
 #include "acresrc.h"
 
 #ifdef ENABLE_DEBUGGER
@@ -190,14 +186,14 @@ AcpiDbWalkForReferences (
 
     if (Node == (void *) ObjDesc)
     {
-        AcpiOsPrintf ("Object is a Node [%4.4s]\n", &Node->Name);
+        AcpiOsPrintf ("Object is a Node [%4.4s]\n", Node->Name.Ascii);
     }
 
     /* Check for match against the object attached to the node */
 
     if (AcpiNsGetAttachedObject (Node) == ObjDesc)
     {
-        AcpiOsPrintf ("Reference at Node->Object %p [%4.4s]\n", Node, &Node->Name);
+        AcpiOsPrintf ("Reference at Node->Object %p [%4.4s]\n", Node, Node->Name.Ascii);
     }
 
     return (AE_OK);
@@ -698,7 +694,7 @@ AcpiDbSetMethodData (
 
         /* Set a method argument */
 
-        if (Index > MTH_NUM_ARGS)
+        if (Index > MTH_MAX_ARG)
         {
             AcpiOsPrintf ("Arg%d - Invalid argument name\n", Index);
             return;
@@ -715,7 +711,7 @@ AcpiDbSetMethodData (
 
         /* Set a method local */
 
-        if (Index > MTH_NUM_LOCALS)
+        if (Index > MTH_MAX_LOCAL)
         {
             AcpiOsPrintf ("Local%d - Invalid local variable name\n", Index);
             return;
@@ -889,7 +885,7 @@ AcpiDbWalkAndMatchName (
         /* Wildcard support */
 
         if ((RequestedName[i] != '?') &&
-            (RequestedName[i] != ((NATIVE_CHAR *) (&((ACPI_NAMESPACE_NODE *) ObjHandle)->Name))[i]))
+            (RequestedName[i] != ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii[i]))
         {
             /* No match, just exit */
 

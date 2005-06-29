@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -116,12 +116,10 @@
 
 
 #include "acpi.h"
-#include "acparser.h"
 #include "amlcode.h"
 #include "acdispat.h"
 #include "acnamesp.h"
 #include "acparser.h"
-#include "acevents.h"
 #include "acinterp.h"
 #include "acdebug.h"
 
@@ -494,7 +492,7 @@ AcpiDbDisplayInternalObject (
     case ACPI_DESC_TYPE_NAMED:
 
         AcpiOsPrintf ("<Node>            Name %4.4s Type-%s",
-                        &((ACPI_NAMESPACE_NODE *)ObjDesc)->Name,
+                        ((ACPI_NAMESPACE_NODE *)ObjDesc)->Name.Ascii,
                         AcpiUtGetTypeName (((ACPI_NAMESPACE_NODE *) ObjDesc)->Type));
 
         if (((ACPI_NAMESPACE_NODE *) ObjDesc)->Flags & ANOBJ_METHOD_ARG)
@@ -640,7 +638,7 @@ AcpiDbDisplayMethodInfo (
     NumArgs     = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
-    AcpiOsPrintf ("Currently executing control method is [%4.4s]\n", &Node->Name);
+    AcpiOsPrintf ("Currently executing control method is [%4.4s]\n", Node->Name.Ascii);
     AcpiOsPrintf ("%X arguments, max concurrency = %X\n", NumArgs, Concurrency);
 
 
@@ -735,7 +733,7 @@ AcpiDbDisplayLocals (void)
 
     ObjDesc = WalkState->MethodDesc;
     Node = WalkState->MethodNode;
-    AcpiOsPrintf ("Local Variables for method [%4.4s]:\n", &Node->Name);
+    AcpiOsPrintf ("Local Variables for method [%4.4s]:\n", Node->Name.Ascii);
 
     for (i = 0; i < MTH_NUM_LOCALS; i++)
     {
@@ -783,7 +781,7 @@ AcpiDbDisplayArguments (void)
     Concurrency = ObjDesc->Method.Concurrency;
 
     AcpiOsPrintf ("Method [%4.4s] has %X arguments, max concurrency = %X\n",
-            &Node->Name, NumArgs, Concurrency);
+            Node->Name.Ascii, NumArgs, Concurrency);
 
     for (i = 0; i < NumArgs; i++)
     {
@@ -832,7 +830,7 @@ AcpiDbDisplayResults (void)
     }
 
     AcpiOsPrintf ("Method [%4.4s] has %X stacked result objects\n",
-        &Node->Name, NumResults);
+        Node->Name.Ascii, NumResults);
 
     for (i = 0; i < NumResults; i++)
     {
@@ -877,7 +875,7 @@ AcpiDbDisplayCallingTree (void)
     {
         Node = WalkState->MethodNode;
 
-        AcpiOsPrintf ("    [%4.4s]\n", &Node->Name);
+        AcpiOsPrintf ("    [%4.4s]\n", Node->Name.Ascii);
 
         WalkState = WalkState->Next;
     }
