@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.36 $
+ *              $Revision: 1.40 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -656,7 +656,7 @@ AcpiRsDumpAddress16 (
             break;
         }
 
-        AcpiOsPrintf ("  Type Specific: %s Translation\n",
+        AcpiOsPrintf ("    Type Specific: %s Translation\n",
             ACPI_SPARSE_TRANSLATION ==
             Address16Data->Attribute.Io.TranslationAttribute ?
             "Sparse" : "Dense");
@@ -669,8 +669,8 @@ AcpiRsDumpAddress16 (
 
     default:
 
-        AcpiOsPrintf ("Invalid resource type. Exiting.\n");
-        return;
+        AcpiOsPrintf ("0x%2.2X\n", Address16Data->ResourceType);
+        break;
     }
 
     AcpiOsPrintf ("    Resource %s\n",
@@ -820,8 +820,8 @@ AcpiRsDumpAddress32 (
 
     default:
 
-        AcpiOsPrintf ("    Invalid Resource Type..exiting.\n");
-        return;
+        AcpiOsPrintf ("    Resource Type: 0x%2.2X\n", Address32Data->ResourceType);
+        break;
     }
 
     AcpiOsPrintf ("    Resource %s\n",
@@ -958,7 +958,7 @@ AcpiRsDumpAddress64 (
             break;
         }
 
-        AcpiOsPrintf ("  Type Specific: %s Translation\n",
+        AcpiOsPrintf ("    Type Specific: %s Translation\n",
             ACPI_SPARSE_TRANSLATION ==
             Address64Data->Attribute.Io.TranslationAttribute ?
             "Sparse" : "Dense");
@@ -971,8 +971,8 @@ AcpiRsDumpAddress64 (
 
     default:
 
-        AcpiOsPrintf ("    Invalid Resource Type..exiting.\n");
-        return;
+        AcpiOsPrintf ("    Resource Type: 0x%2.2X\n", Address64Data->ResourceType);
+        break;
     }
 
     AcpiOsPrintf ("    Resource %s\n",
@@ -992,26 +992,24 @@ AcpiRsDumpAddress64 (
                 "" : "not ");
 
     AcpiOsPrintf ("    Granularity: %8.8X%8.8X\n",
-                ACPI_HIDWORD (Address64Data->Granularity),
-                ACPI_LODWORD (Address64Data->Granularity));
+                ACPI_FORMAT_UINT64 (Address64Data->Granularity));
 
     AcpiOsPrintf ("    Address range min: %8.8X%8.8X\n",
-                ACPI_HIDWORD (Address64Data->MinAddressRange),
-                ACPI_HIDWORD (Address64Data->MinAddressRange));
+                ACPI_FORMAT_UINT64 (Address64Data->MinAddressRange));
 
     AcpiOsPrintf ("    Address range max: %8.8X%8.8X\n",
-                ACPI_HIDWORD (Address64Data->MaxAddressRange),
-                ACPI_HIDWORD (Address64Data->MaxAddressRange));
+                ACPI_FORMAT_UINT64 (Address64Data->MaxAddressRange));
 
     AcpiOsPrintf ("    Address translation offset: %8.8X%8.8X\n",
-                ACPI_HIDWORD (Address64Data->AddressTranslationOffset),
-                ACPI_HIDWORD (Address64Data->AddressTranslationOffset));
+                ACPI_FORMAT_UINT64 (Address64Data->AddressTranslationOffset));
 
     AcpiOsPrintf ("    Address Length: %8.8X%8.8X\n",
-                ACPI_HIDWORD (Address64Data->AddressLength),
-                ACPI_HIDWORD (Address64Data->AddressLength));
+                ACPI_FORMAT_UINT64 (Address64Data->AddressLength));
 
-    if(0xFF != Address64Data->ResourceSource.Index)
+    AcpiOsPrintf ("    Type Specific Attributes: %8.8X%8.8X\n",
+                ACPI_FORMAT_UINT64 (Address64Data->TypeSpecificAttributes));
+
+    if (0xFF != Address64Data->ResourceSource.Index)
     {
         AcpiOsPrintf ("    Resource Source Index: %X\n",
                     Address64Data->ResourceSource.Index);
@@ -1227,8 +1225,7 @@ AcpiRsDumpIrqList (
             AcpiOsPrintf ("PCI IRQ Routing Table structure %X.\n", Count++);
 
             AcpiOsPrintf ("    Address: %8.8X%8.8X\n",
-                        ACPI_HIDWORD (PrtElement->Address),
-                        ACPI_LODWORD (PrtElement->Address));
+                        ACPI_FORMAT_UINT64 (PrtElement->Address));
 
             AcpiOsPrintf ("    Pin: %X\n", PrtElement->Pin);
 

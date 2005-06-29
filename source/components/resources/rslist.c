@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.27 $
+ *              $Revision: 1.36 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -197,7 +197,7 @@ AcpiRsByteStreamToList (
     UINT8                   *OutputBuffer)
 {
     ACPI_STATUS             Status;
-    UINT32                  BytesParsed = 0;
+    ACPI_SIZE               BytesParsed = 0;
     UINT8                   ResourceType = 0;
     ACPI_SIZE               BytesConsumed = 0;
     UINT8                   *Buffer = OutputBuffer;
@@ -255,6 +255,7 @@ AcpiRsByteStreamToList (
 
 
         case ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE:
+        case ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE:
             /*
              * 64-Bit Address Resource
              */
@@ -365,9 +366,9 @@ AcpiRsByteStreamToList (
 
         default:
             /*
-             * Invalid/Unknowns resource type
+             * Invalid/Unknown resource type
              */
-            Status = AE_AML_ERROR;
+            Status = AE_AML_INVALID_RESOURCE_TYPE;
             break;
         }
 
@@ -390,8 +391,8 @@ AcpiRsByteStreamToList (
          * Set the Buffer to the next structure
          */
         Resource = ACPI_CAST_PTR (ACPI_RESOURCE, Buffer);
-        Resource->Length = ACPI_ALIGN_RESOURCE_SIZE(Resource->Length);
-        Buffer += ACPI_ALIGN_RESOURCE_SIZE(StructureSize);
+        Resource->Length = (UINT32) ACPI_ALIGN_RESOURCE_SIZE (Resource->Length);
+        Buffer += ACPI_ALIGN_RESOURCE_SIZE (StructureSize);
 
     } /*  end while */
 
@@ -400,7 +401,7 @@ AcpiRsByteStreamToList (
      */
     if (!EndTagProcessed)
     {
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -414,7 +415,7 @@ AcpiRsByteStreamToList (
  * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              ByteSteamSizeNeeded     - Calculated size of the byte stream
  *                                        needed from calling
- *                                        AcpiRsCalculateByteStreamLength()
+ *                                        AcpiRsGetByteStreamLength()
  *                                        The size of the OutputBuffer is
  *                                        guaranteed to be >=
  *                                        ByteStreamSizeNeeded
@@ -431,7 +432,7 @@ AcpiRsByteStreamToList (
 ACPI_STATUS
 AcpiRsListToByteStream (
     ACPI_RESOURCE           *LinkedList,
-    UINT32                  ByteStreamSizeNeeded,
+    ACPI_SIZE               ByteStreamSizeNeeded,
     UINT8                   *OutputBuffer)
 {
     ACPI_STATUS             Status;
@@ -570,6 +571,8 @@ AcpiRsListToByteStream (
              * If we get here, everything is out of sync,
              *  so exit with an error
              */
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid descriptor type (%X) in resource list\n",
+                LinkedList->Id));
             Status = AE_BAD_DATA;
             break;
 
