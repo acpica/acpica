@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.155 $
+ *              $Revision: 1.156 $
  *
  *****************************************************************************/
 
@@ -150,6 +150,73 @@
  * The AcpiExOpcode* functions are called via the Dispatcher component with
  * fully resolved operands.
 !*/
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExOpcode_0A_0T_1R
+ *
+ * PARAMETERS:  WalkState           - Current state (contains AML opcode)
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute Type 1 monadic operator with numeric operand on
+ *              object stack
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExOpcode_0A_0T_1R (
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
+
+
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_0A_0T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+
+    /* Examine the AML opcode */
+
+    switch (WalkState->Opcode)
+    {
+    case AML_TIMER_OP:      /*  Timer () */
+
+        /* Create a return object of type Integer */
+
+        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+        if (!ReturnDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
+        }
+
+        ReturnDesc->Integer.Value = AcpiOsGetTimer ();
+        break;
+
+    default:                /*  Unknown opcode  */
+
+        ACPI_REPORT_ERROR (("AcpiExOpcode_0A_0T_1R: Unknown opcode %X\n",
+            WalkState->Opcode));
+        Status = AE_AML_BAD_OPCODE;
+        break;
+    }
+
+Cleanup:
+
+    if (!WalkState->ResultObj)
+    {
+        WalkState->ResultObj = ReturnDesc;
+    }
+
+    /* Delete return object on error */
+
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiUtRemoveReference (ReturnDesc);
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
 
 /*******************************************************************************
  *
