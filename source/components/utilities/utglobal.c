@@ -238,47 +238,50 @@ PREDEFINED_NAMES            Gbl_PreDefinedNames[] =
 
 INT32                       Gbl_NsProperties[] =    /* properties of types */
 {
-    0,                      /* Any              */
-    0,                      /* Number           */
-    0,                      /* String           */
-    0,                      /* Buffer           */
-    LOCAL,                  /* Package          */
-    0,                      /* FieldUnit        */
-    NEWSCOPE | LOCAL,       /* Device           */
-    LOCAL,                  /* Event            */
-    NEWSCOPE | LOCAL,       /* Method           */
-    LOCAL,                  /* Mutex            */
-    LOCAL,                  /* Region           */
-    NEWSCOPE | LOCAL,       /* Power            */
-    NEWSCOPE | LOCAL,       /* Processor        */
-    NEWSCOPE | LOCAL,       /* Thermal          */
-    0,                      /* Alias            */
-    0,                      /* Notify           */
-    0,                      /* Address Handler  */
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0,
-    0,                      /* DefField         */
-    0,                      /* BankField        */
-    0,                      /* IndexField       */
-    0,                      /* DefFieldDefn     */
-    0,                      /* BankFieldDefn    */
-    0,                      /* IndexFieldDefn   */
-    0,                      /* If               */
-    0,                      /* Else             */
-    0,                      /* While            */
-    NEWSCOPE,               /* Scope            */
-    LOCAL,                  /* DefAny           */
-    0,                      /* Lvalue           */
-    0                       /* Invalid          */
+    0,                      /* 00 Any              */
+    0,                      /* 01 Number           */
+    0,                      /* 02 String           */
+    0,                      /* 03 Buffer           */
+    LOCAL,                  /* 04 Package          */
+    0,                      /* 05 FieldUnit        */
+    NEWSCOPE | LOCAL,       /* 06 Device           */
+    LOCAL,                  /* 07 Event            */
+    NEWSCOPE | LOCAL,       /* 08 Method           */
+    LOCAL,                  /* 09 Mutex            */
+    LOCAL,                  /* 10 Region           */
+    NEWSCOPE | LOCAL,       /* 11 Power            */
+    NEWSCOPE | LOCAL,       /* 12 Processor        */
+    NEWSCOPE | LOCAL,       /* 13 Thermal          */
+    0,                      /* 14 BufferField      */
+    0,                      /* 15 DdbHandle        */
+    0,                      /* 16 reserved         */
+    0,                      /* 17 reserved         */
+    0,                      /* 18 reserved         */
+    0,                      /* 19 reserved         */
+    0,                      /* 20 reserved         */
+    0,                      /* 21 reserved         */
+    0,                      /* 22 reserved         */
+    0,                      /* 23 reserved         */
+    0,                      /* 24 reserved         */
+    0,                      /* 25 DefField         */
+    0,                      /* 26 BankField        */
+    0,                      /* 27 IndexField       */
+    0,                      /* 28 DefFieldDefn     */
+    0,                      /* 29 BankFieldDefn    */
+    0,                      /* 30 IndexFieldDefn   */
+    0,                      /* 31 If               */
+    0,                      /* 32 Else             */
+    0,                      /* 33 While            */
+    NEWSCOPE,               /* 34 Scope            */
+    LOCAL,                  /* 35 DefAny           */
+    0,                      /* 36 Lvalue           */
+    0,                      /* 37 Alias            */
+    0,                      /* 38 Notify           */
+    0,                      /* 39 Address Handler  */
+    0                       /* 40 Invalid          */
 };
 
-char                        Gbl_BadType[] = "ERROR: Unused type value";
+char                        Gbl_BadType[] = "Undefined";
 
 
 /* 
@@ -295,7 +298,7 @@ char                        Gbl_BadType[] = "ERROR: Unused type value";
 
 char                        *Gbl_NsTypeNames[] =  /* printable names of types */
 {
-    "Unknown",
+    "Any/Unknown",
     "Number",
     "String",
     "Buffer",
@@ -309,9 +312,9 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
     "Power",
     "Processor",
     "Thermal",
-    "Alias",
-    "Notify", 
-    "AddressHandler", 
+    "BufferField",
+    "DdbHandle", 
+     Gbl_BadType, 
      Gbl_BadType, 
      Gbl_BadType, 
      Gbl_BadType,
@@ -332,6 +335,9 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
     "Scope",
     "DefAny",
     "Lvalue",
+    "Alias",
+    "Notify", 
+    "AddressHandler", 
     "Invalid"
 };
 
