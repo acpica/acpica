@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiDbStartCommand (
 
     /* Go into the command loop and await next user command */
 
-    
+
     AcpiGbl_MethodExecuting = TRUE;
     Status = AE_CTRL_TRUE;
     while (Status == AE_CTRL_TRUE)
@@ -206,7 +206,6 @@ AcpiDbStartCommand (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbMethodEnd
@@ -215,7 +214,7 @@ AcpiDbStartCommand (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -233,7 +232,6 @@ AcpiDbMethodEnd (
 
     AcpiDbStartCommand (WalkState, NULL);
 }
-
 
 
 /*******************************************************************************
