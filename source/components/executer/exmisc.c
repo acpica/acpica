@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.129 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -218,8 +218,9 @@ AcpiExGetObjectReference (
     ReferenceObj->Reference.Object = ReferencedObj;
     *ReturnDesc = ReferenceObj;
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Object %p Type [%s], returning Reference %p\n",
-            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc), *ReturnDesc));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+        "Object %p Type [%s], returning Reference %p\n",
+        ObjDesc, AcpiUtGetObjectTypeName (ObjDesc), *ReturnDesc));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -385,7 +386,7 @@ AcpiExDoConcatenate (
         /* Result of two Integers is a Buffer */
         /* Need enough buffer space for two integers */
 
-        ReturnDesc = AcpiUtCreateBufferObject (
+        ReturnDesc = AcpiUtCreateBufferObject ((ACPI_SIZE)
                             ACPI_MUL_2 (AcpiGbl_IntegerByteWidth));
         if (!ReturnDesc)
         {
@@ -546,7 +547,7 @@ AcpiExDoMathOp (
         return (Integer0 * Integer1);
 
 
-    case AML_SHIFT_LEFT_OP:         /* ShiftLeft (Operand, ShiftCount, Result) */
+    case AML_SHIFT_LEFT_OP:         /* ShiftLeft (Operand, ShiftCount, Result)*/
 
         return (Integer0 << Integer1);
 
