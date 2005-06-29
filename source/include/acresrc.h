@@ -145,7 +145,7 @@ AcpiRsSetSrsMethodData (
 
 ACPI_STATUS
 AcpiRsCreateResourceList (
-    ACPI_OBJECT_INTERNAL    *ByteStreamBuffer,
+    ACPI_OPERAND_OBJECT     *ByteStreamBuffer,
     UINT8                   *OutputBuffer,
     UINT32                  *OutputBufferLength);
 
@@ -157,7 +157,7 @@ AcpiRsCreateByteStream (
 
 ACPI_STATUS
 AcpiRsCreatePciRoutingTable (
-    ACPI_OBJECT_INTERNAL    *MethodReturnObject,
+    ACPI_OPERAND_OBJECT     *MethodReturnObject,
     UINT8                   *OutputBuffer,
     UINT32                  *OutputBufferLength);
 
@@ -193,7 +193,7 @@ AcpiRsCalculateByteStreamLength (
 
 ACPI_STATUS
 AcpiRsCalculatePciRoutingTableLength (
-    ACPI_OBJECT_INTERNAL    *PackageObject,
+    ACPI_OPERAND_OBJECT     *PackageObject,
     UINT32                  *BufferSizeNeeded);
 
 ACPI_STATUS
