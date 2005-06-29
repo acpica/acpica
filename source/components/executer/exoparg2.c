@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.107 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -403,7 +403,7 @@ AcpiExOpcode_2A_1T_1R (
          * guaranteed to be either Integer/String/Buffer by the operand
          * resolution mechanism above.
          */
-        switch (Operand[0]->Common.Type)
+        switch (ACPI_GET_OBJECT_TYPE (Operand[0]))
         {
         case ACPI_TYPE_INTEGER:
             Status = AcpiExConvertToInteger (Operand[1], &Operand[1], WalkState);
@@ -464,18 +464,19 @@ AcpiExOpcode_2A_1T_1R (
         /*
          * At this point, the Source operand is either a Package or a Buffer
          */
-        if (Operand[0]->Common.Type == ACPI_TYPE_PACKAGE)
+        if (ACPI_GET_OBJECT_TYPE (Operand[0]) == ACPI_TYPE_PACKAGE)
         {
             /* Object to be indexed is a Package */
 
             if (Index >= Operand[0]->Package.Count)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index value beyond package end\n"));
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index value (%X) beyond package end (%X)\n",
+                    Index, Operand[0]->Package.Count));
                 Status = AE_AML_PACKAGE_LIMIT;
                 goto Cleanup;
             }
 
-            if ((Operand[2]->Common.Type == ACPI_TYPE_INTEGER) &&
+            if ((ACPI_GET_OBJECT_TYPE (Operand[2]) == ACPI_TYPE_INTEGER) &&
                 (Operand[2]->Common.Flags & AOPOBJ_AML_CONSTANT))
             {
                 /*
@@ -494,7 +495,7 @@ AcpiExOpcode_2A_1T_1R (
                  */
                 TempDesc                         = Operand[0]->Package.Elements [Index];
                 ReturnDesc->Reference.Opcode     = AML_INDEX_OP;
-                ReturnDesc->Reference.TargetType = TempDesc->Common.Type;
+                ReturnDesc->Reference.TargetType = ACPI_GET_OBJECT_TYPE (TempDesc);
                 ReturnDesc->Reference.Object     = TempDesc;
 
                 Status = AcpiExStore (ReturnDesc, Operand[2], WalkState);
@@ -516,7 +517,8 @@ AcpiExOpcode_2A_1T_1R (
 
             if (Index >= Operand[0]->Buffer.Length)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index value beyond end of buffer\n"));
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index value (%X) beyond end of buffer (%X)\n",
+                    Index, Operand[0]->Buffer.Length));
                 Status = AE_AML_BUFFER_LIMIT;
                 goto Cleanup;
             }
@@ -645,7 +647,8 @@ AcpiExOpcode_2A_0T_1R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown opcode %X\n", WalkState->Opcode));
+        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown opcode %X\n", 
+            WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
