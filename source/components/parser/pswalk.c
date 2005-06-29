@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -133,8 +133,6 @@
  * PARAMETERS:  WalkState           - Current state of the walk
  *              Op                  - Current Op to be walked
  *              AscendingCallback   - Procedure called when Op is complete
- *              PrevOp              - Where the previous Op is stored
- *              NextOp              - Where the next Op in the walk is stored
  *
  * RETURN:      Status
  *
