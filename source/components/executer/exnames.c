@@ -485,6 +485,7 @@ AmlDoName (
     ACPI_OBJECT_INTERNAL    *MthDesc;
     ACPI_HANDLE             MethodScope;
     char                    *NameString = NULL;
+    UINT32                  i;
 
 
     FUNCTION_TRACE ("AmlDoName");
@@ -492,9 +493,9 @@ AmlDoName (
 
 BREAKPOINT3;
 
-    if (TYPE_DefField == DataType    || 
-        TYPE_BankField == DataType   || 
-        TYPE_IndexField == DataType)
+    if (INTERNAL_TYPE_DefField == DataType    || 
+        INTERNAL_TYPE_BankField == DataType   || 
+        INTERNAL_TYPE_IndexField == DataType)
     {   
         /* Disallow prefixes for types associated with field names */
 
@@ -687,8 +688,8 @@ BREAKPOINT3;
         {   
             /* Not first pass load */
 
-            if (TYPE_Any == DataType && 
-                TYPE_Method == NsGetType (Handle))
+            if (ACPI_TYPE_Any == DataType && 
+                ACPI_TYPE_Method == NsGetType (Handle))
             {   
                 /* 
                  * Method reference call 
@@ -726,7 +727,8 @@ BREAKPOINT3;
                         {   
                             /* Get all arguments */
 
-                            while (ArgCount-- && (AE_OK == Status))
+                            i = ArgCount;
+                            while (i-- && (AE_OK == Status))
                             {   
                                 /* Get each argument */
                                 
@@ -771,11 +773,13 @@ BREAKPOINT3;
                             CurrentStackTop = AmlObjStackLevel ();
                             StackOffset = CurrentStackTop - PreviousStackTop;
 
-                            DEBUG_PRINT (TRACE_LOAD, ("Calling %4.4s, PreviousTOS=%d  CurrentTOS=%d\n",
-                                            &(((NAME_TABLE_ENTRY *) MethodScope)->Name), 
-                                            PreviousStackTop, CurrentStackTop));
-
-                            AmlDumpObjStack (InterpreterMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
+                            DEBUG_PRINT (TRACE_LOAD, ("Execute method [%4.4s] Args=%d PreviousTOS=%d CurrentTOS=%d\n",
+                                                        &(((NAME_TABLE_ENTRY *) MethodScope)->Name), ArgCount,
+                                                        PreviousStackTop, CurrentStackTop));
+                            if (ArgCount > 0)
+                            {
+                                AmlDumpObjStack (InterpreterMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
+                            }
 
                             /* Execute the Method, passing the stacked args */
                             
@@ -809,7 +813,7 @@ BREAKPOINT3;
 
                             /* Pop scope stack */
                             
-                            NsPopCurrent (TYPE_Any);
+                            NsPopCurrent (ACPI_TYPE_Any);
 
                         } /* Execution mode  */
 
