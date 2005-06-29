@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.59 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -364,7 +364,7 @@ AcpiRsCreatePciRoutingTable (
         ObjDesc = SubObjectList[2];
         switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
         {
-        case INTERNAL_TYPE_REFERENCE:
+        case ACPI_TYPE_LOCAL_REFERENCE:
 
             if (ObjDesc->Reference.Opcode != AML_INT_NAMEPATH_OP)
             {
@@ -385,7 +385,7 @@ AcpiRsCreatePciRoutingTable (
 
             Status = AcpiNsHandleToPathname ((ACPI_HANDLE) Node, &PathBuffer);
 
-            UserPrt->Length += ACPI_STRLEN (UserPrt->Source) + 1; /* include null terminator */
+            UserPrt->Length += (UINT32) ACPI_STRLEN (UserPrt->Source) + 1; /* include null terminator */
             break;
 
 
