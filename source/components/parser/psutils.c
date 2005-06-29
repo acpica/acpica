@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -232,13 +232,13 @@ AcpiPsAllocOp (
     {
         /* The generic op (default) is by far the most common (16 to 1) */
 
-        AcpiOsAcquireObject (AcpiGbl_PsNodeCache, &Op);
+        Op = AcpiOsAcquireObject (AcpiGbl_PsNodeCache);
     }
     else
     {
         /* Extended parseop */
 
-        AcpiOsAcquireObject (AcpiGbl_PsNodeExtCache, &Op);
+        Op = AcpiOsAcquireObject (AcpiGbl_PsNodeExtCache);
     }
 
     /* Initialize the Op */
