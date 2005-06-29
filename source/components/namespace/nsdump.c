@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.132 $
+ *              $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -643,7 +643,7 @@ AcpiNsDumpOneObject (
             else
             {
                 AcpiOsPrintf ("(Ptr to ACPI Object type %2.2X [%s])\n",
-                                    ObjType, AcpiUtGetTypeName (ObjType));
+                                    (UINT32) ObjType, AcpiUtGetTypeName (ObjType));
                 BytesToDump = sizeof (ACPI_OPERAND_OBJECT);
             }
             break;
