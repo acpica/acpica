@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -145,7 +145,7 @@ NATIVE_CHAR                 *SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiHwGetBitShift (
     UINT32                  Mask)
 {
