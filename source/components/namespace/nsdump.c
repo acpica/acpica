@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.143 $
+ *              $Revision: 1.144 $
  *
  *****************************************************************************/
 
@@ -248,22 +248,14 @@ AcpiNsDumpOneObject (
     ACPI_OBJECT_TYPE        ObjType;
     ACPI_OBJECT_TYPE        Type;
     UINT32                  BytesToDump;
-    UINT32                  DownstreamSiblingMask = 0;
-    UINT32                  LevelTmp;
-    UINT32                  WhichBit;
-    UINT32                  i;
     UINT32                  DbgLevel;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_NAME ("NsDumpOneObject");
 
 
-    ThisNode = AcpiNsMapHandleToNode (ObjHandle);
-
-    LevelTmp    = Level;
-    Type        = ThisNode->Type;
-    WhichBit    = 1;
-
+    /* Is output enabled? */
 
     if (!(AcpiDbgLevel & Info->DebugLevel))
     {
@@ -276,6 +268,9 @@ AcpiNsDumpOneObject (
         return (AE_OK);
     }
 
+    ThisNode = AcpiNsMapHandleToNode (ObjHandle);
+    Type = ThisNode->Type;
+
     /* Check if the owner matches */
 
     if ((Info->OwnerId != ACPI_UINT32_MAX) &&
@@ -286,52 +281,9 @@ AcpiNsDumpOneObject (
 
     /* Indent the object according to the level */
 
-    while (LevelTmp--)
-    {
-        /* Print appropriate characters to form tree structure */
+    AcpiOsPrintf ("%2d%*s", Level - 1, Level * 2, " ");
 
-        if (LevelTmp)
-        {
-            if (DownstreamSiblingMask & WhichBit)
-            {
-                AcpiOsPrintf ("|");
-            }
-            else
-            {
-                AcpiOsPrintf (" ");
-            }
-
-            WhichBit <<= 1;
-        }
-        else
-        {
-            if (AcpiNsExistDownstreamSibling (ThisNode + 1))
-            {
-                DownstreamSiblingMask |= ((UINT32) 1 << (Level - 1));
-                AcpiOsPrintf ("+");
-            }
-            else
-            {
-                DownstreamSiblingMask &= ACPI_UINT32_MAX ^ ((UINT32) 1 << (Level - 1));
-                AcpiOsPrintf ("+");
-            }
-
-            if (ThisNode->Child == NULL)
-            {
-                AcpiOsPrintf ("-");
-            }
-            else if (AcpiNsExistDownstreamSibling (ThisNode->Child))
-            {
-                AcpiOsPrintf ("+");
-            }
-            else
-            {
-                AcpiOsPrintf ("-");
-            }
-        }
-    }
-
-    /* Check the integrity of our data */
+    /* Check the node type and name */
 
     if (Type > ACPI_TYPE_LOCAL_MAX)
     {
@@ -346,7 +298,7 @@ AcpiNsDumpOneObject (
     /*
      * Now we can print out the pertinent information
      */
-    AcpiOsPrintf (" %4.4s %-12s %p ",
+    AcpiOsPrintf ("%4.4s %-12s %p ",
             ThisNode->Name.Ascii, AcpiUtGetTypeName (Type), ThisNode);
 
     DbgLevel = AcpiDbgLevel;
@@ -379,7 +331,7 @@ AcpiNsDumpOneObject (
 
         case ACPI_TYPE_DEVICE:
 
-            AcpiOsPrintf ("Notification object: %p", ObjDesc);
+            AcpiOsPrintf ("Notify object: %p", ObjDesc);
             break;
 
 
@@ -443,15 +395,7 @@ AcpiNsDumpOneObject (
         case ACPI_TYPE_STRING:
 
             AcpiOsPrintf ("Len %.2X", ObjDesc->String.Length);
-
-            if (ObjDesc->String.Length > 0)
-            {
-                AcpiOsPrintf (" = \"%.32s\"", ObjDesc->String.Pointer);
-                if (ObjDesc->String.Length > 32)
-                {
-                    AcpiOsPrintf ("...");
-                }
-            }
+            AcpiUtPrintString (ObjDesc->String.Pointer, 32);
             AcpiOsPrintf ("\n");
             break;
 
