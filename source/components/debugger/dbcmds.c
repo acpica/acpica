@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  ******************************************************************************/
 
@@ -249,10 +249,10 @@ AcpiDbDisplayLocks (void)
     UINT32                  i;
 
 
-    for (i = 0; i < MAX_MTX; i++)
+    for (i = 0; i < MAX_MUTEX; i++)
     {
         AcpiOsPrintf ("%26s : %s\n", AcpiUtGetMutexName (i),
-                    AcpiGbl_AcpiMutexInfo[i].OwnerId == ACPI_MUTEX_NOT_ACQUIRED
+                    AcpiGbl_MutexInfo[i].OwnerId == ACPI_MUTEX_NOT_ACQUIRED
                         ? "Locked" : "Unlocked");
     }
 }
@@ -276,15 +276,17 @@ AcpiDbDisplayTableInfo (
     char                    *TableArg)
 {
     UINT32                  i;
+    ACPI_TABLE_DESC         *TableDesc;
 
 
-    for (i = 0; i < NUM_ACPI_TABLES; i++)
+    for (i = 0; i < NUM_ACPI_TABLE_TYPES; i++)
     {
-        if (AcpiGbl_AcpiTables[i].Pointer)
+        TableDesc = AcpiGbl_TableLists[i].Next;
+        if (TableDesc)
         {
-            AcpiOsPrintf ("%s at %p length %X\n", AcpiGbl_AcpiTableData[i].Name,
-                        AcpiGbl_AcpiTables[i].Pointer,
-                        (UINT32) AcpiGbl_AcpiTables[i].Length);
+            AcpiOsPrintf ("%s at %p length %X\n", AcpiGbl_TableData[i].Name,
+                        TableDesc->Pointer,
+                        (UINT32) TableDesc->Length);
         }
     }
 }
@@ -316,10 +318,10 @@ AcpiDbUnloadAcpiTable (
 
     /* Search all tables for the target type */
 
-    for (i = 0; i < NUM_ACPI_TABLES; i++)
+    for (i = 0; i < NUM_ACPI_TABLE_TYPES; i++)
     {
-        if (!ACPI_STRNCMP (TableArg, AcpiGbl_AcpiTableData[i].Signature,
-                AcpiGbl_AcpiTableData[i].SigLength))
+        if (!ACPI_STRNCMP (TableArg, AcpiGbl_TableData[i].Signature,
+                AcpiGbl_TableData[i].SigLength))
         {
             /* Found the table, unload it */
 
