@@ -153,12 +153,11 @@ PsxParseMethod (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *Op;
     NAME_TABLE_ENTRY        *Entry;
-/*    INIT_WALK_INFO          Info; */
 
 
     FUNCTION_TRACE ("PsxParseMethod");
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsxParseMethod: [%4.4s] Nte=%p\n", 
+    DEBUG_PRINT (ACPI_INFO, ("PsxParseMethod: **** Parsing [%4.4s] **** Nte=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
 
 
@@ -196,40 +195,16 @@ PsxParseMethod (
         return_ACPI_STATUS (Status);
     }
 
-    /* 
-     * Walk the method parse tree to enter any named objects declared within the
-     * method into the namespace.  Don't include the method op in the walk, start with
-     * first arg.
-     */
-/*    PsWalkParsedAml (PsGetArg (Op, 0), Op, NULL, NULL, PsxLoadBeginMethodOp, PsxLoadEndOp); */
 
-
-    /*
-     * Now walk the namespace under the method to initialize any objects that have been declared
-     */
-
-
-    DEBUG_PRINT (TRACE_PARSE, ("PsParseMethod: [%4.4s] Nte=%p About to Walk new NS \n", 
-                    &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
-
-/*
-BREAKPOINT3;
-    Info.MethodCount = 0;
-    Info.OpRegionCount = 0;
-    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Entry, ACPI_INT32_MAX, PsxInitOneObject, 
-                                &Info, NULL);
-
-    if (Info.MethodCount > 0)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxParseMethod:  Found a method declared within a method! Nte=%p\n", Entry));
-    }
-*/
     NsScopeStackPop (ACPI_TYPE_Any);
 
 
     /* Install the parsed tree in the method object */
 
     ObjDesc->Method.ParserOp = Op;
+
+    DEBUG_PRINT (ACPI_INFO, ("PsxParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n", 
+                    &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle, Op));
 
     return_ACPI_STATUS (Status);
 }
@@ -269,6 +244,7 @@ PsxCallControlMethod (
                         ThisWalkState->PrevOp, ThisWalkState));
     BREAKPOINT3;
 
+
     /* TBD: Move this code to the ParseAml procedure? */
 
     /*
@@ -276,28 +252,35 @@ PsxCallControlMethod (
      * Get the NTE entry (in the METHOD_CALL->NAME Op) and the corresponding METHOD Op
      */
 
-    MethodNte = (ThisWalkState->PrevOp->Value.Arg)->ResultObj;
-    Method = ((ACPI_OBJECT_INTERNAL *) MethodNte->Object)->Method.ParserOp;
-    if (!Method)
+    MethodNte   = (ThisWalkState->PrevOp->Value.Arg)->ResultObj;
+    MethodDesc  = NsGetAttachedObject (MethodNte);
+
+    /*
+     * If the method isn't parsed yet (no parse tree), we must parse it.
+     */
+    if (!MethodDesc->Method.ParserOp)
     {
         DEBUG_PRINT (TRACE_PARSE, ("PsxCall, parsing control method\n"));
 
-        DEBUG_PRINT (ACPI_ERROR, ("PsxCall, Method not parsed!!! \n"));
-
-        /* Method has not been parsed! */
-        /* TBD: Parse method */
+        Status = PsxParseMethod (MethodNte);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
-    MethodDesc = NsGetAttachedObject (MethodNte);
-    NumArgs = MethodDesc->Method.MethodFlags & METHOD_ARG_COUNT_MASK;
+    /* Get the parse tree and parameter count */
 
-    /* Save the Op for when this walk is restarted */
+    Method      = MethodDesc->Method.ParserOp;
+    NumArgs     = MethodDesc->Method.ParamCount;
+
+    /* Save the (current) Op for when this walk is restarted */
 
     ThisWalkState->PrevOp = Op;
 
     /* Create a new state for the preempting walk */
 
-    NextWalkState = PsCreateWalkState ((ACPI_GENERIC_OP *) Method, WalkList);
+    NextWalkState = PsCreateWalkState ((ACPI_GENERIC_OP *) Method, MethodDesc, WalkList);
     if (!NextWalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
