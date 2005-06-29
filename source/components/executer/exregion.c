@@ -238,11 +238,11 @@ AmlSystemMemorySpaceHandler (
             break;
 
         case 16:
-            *Value = (UINT32)* (UINT16 *) LogicalAddrPtr;
+            STORE16TO32 (Value, LogicalAddrPtr);
             break;
 
         case 32:
-            *Value = * (UINT32 *) LogicalAddrPtr;
+            STORE32TO32 (Value, LogicalAddrPtr);
             break;
         }
 
@@ -261,11 +261,11 @@ AmlSystemMemorySpaceHandler (
             break;
 
         case 16:
-            *(UINT16 *) LogicalAddrPtr = (UINT16) *Value;
+            STORE16TO16 (LogicalAddrPtr, Value);
             break;
 
         case 32:
-            *(UINT32 *) LogicalAddrPtr = *Value;
+            STORE32TO32 (LogicalAddrPtr, Value);
             break;
         }
 
