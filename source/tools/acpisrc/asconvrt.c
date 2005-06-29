@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.13 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -587,23 +587,55 @@ AsBracesOnSameLine (
     UINT32                  Length;
     char                    *SubBuffer = Buffer;
     char                    *Beginning;
-    BOOLEAN                 FunctionBegin = TRUE;
+    char                    *StartOfThisLine;
+    BOOLEAN                 BlockBegin = TRUE;
 
 
     while (*SubBuffer)
     {
+        /* Ignore comments */
+
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*'))
+        {
+            SubBuffer = strstr (SubBuffer, "*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            SubBuffer += 2;
+            continue;
+        }
+
+        /* Ignore quoted strings */
+
+        if (*SubBuffer == '\"')
+        {
+            SubBuffer++;
+            SubBuffer = AsSkipPastChar (SubBuffer, '\"');
+            if (!SubBuffer)
+            {
+                return;
+            }
+        }
+
         if (!strncmp ("\n}", SubBuffer, 2))
         {
-            FunctionBegin = TRUE;
+            /*
+             * A newline followed by a closing brace closes a function 
+             * or struct or initializer block
+             */
+            BlockBegin = TRUE;
         }
 
         /* Move every standalone brace up to the previous line */
 
         if (*SubBuffer == '{')
         {
-            if (FunctionBegin)
+            if (BlockBegin)
             {
-                FunctionBegin = FALSE;
+                BlockBegin = FALSE;
             }
 
             else
@@ -619,15 +651,33 @@ AsBracesOnSameLine (
                     Beginning--;
                 }
 
+                StartOfThisLine = Beginning;
+                while (*StartOfThisLine != '\n')
+                {
+                    StartOfThisLine--;
+                }
 
-                Beginning++;
-                *Beginning = 0;
+                /*
+                 * Move the brace up to the previous line, UNLESS:
+                 * 
+                 * 1) There is a conditional compile on the line (starts with '#')
+                 * 2) Previous line ends with an '=' (Start of initializer block)
+                 * 3) Previous line ends with a comma (part of an init list)
+                 *
+                 */
+                if ((StartOfThisLine[1] != '#') &&
+                    (*Beginning != '=') &&
+                    (*Beginning != ','))
+                {
+                    Beginning++;
+                    *Beginning = 0;
 
-                SubBuffer++;
-                Length = strlen (SubBuffer);
+                    SubBuffer++;
+                    Length = strlen (SubBuffer);
 
-                memmove (Beginning + 2, SubBuffer, Length+3);
-                memmove (Beginning, " {", 2);
+                    memmove (Beginning + 2, SubBuffer, Length+3);
+                    memmove (Beginning, " {", 2);
+                }
             }
         }
 
@@ -1106,6 +1156,9 @@ AsTabify8 (
     {
         if (*SubBuffer == '\n')
         {
+            /* This is a standalone blank line */
+
+            FirstNonBlank = NULL;
             Column = 0;
             SpaceCount = 0;
             TabCount = 0;
@@ -1113,63 +1166,76 @@ AsTabify8 (
             continue;
         }
 
-        else
+        if (!FirstNonBlank)
         {
-            if (!FirstNonBlank)
+            /* Find the first non-blank character on this line */
+
+            FirstNonBlank = SubBuffer;
+            while (*FirstNonBlank == ' ')
             {
-                /* Find the first non-blank character on this line */
-
-                FirstNonBlank = SubBuffer;
-                while (*FirstNonBlank == ' ')
-                {
-                    FirstNonBlank++;
-                }
-
-                /*
-                 * This mechanism limits the difference in tab counts from 
-                 * line to line.  It helps avoid the situation where a second
-                 * continuation line (which was indented correctly for tabs=4) would
-                 * get indented off the screen if we just blindly converted to tabs.
-                 */
-
-                ThisColumnStart = FirstNonBlank - SubBuffer;
-
-                if (LastLineTabCount == 0)
-                {
-                    ThisTabCount = 0;
-                }
-
-                else if (ThisColumnStart == LastLineColumnStart)
-                {
-                    ThisTabCount = LastLineTabCount -1;
-                }
-
-                else
-                {
-
-                    ThisTabCount = LastLineTabCount + 1;
-                }
+                FirstNonBlank++;
             }
 
-            Column++;
-        }
+            /*
+             * This mechanism limits the difference in tab counts from 
+             * line to line.  It helps avoid the situation where a second
+             * continuation line (which was indented correctly for tabs=4) would
+             * get indented off the screen if we just blindly converted to tabs.
+             */
 
+            ThisColumnStart = FirstNonBlank - SubBuffer;
 
-        if (CommentEnd)
-        {
-            if (SubBuffer == CommentEnd)
+            if (LastLineTabCount == 0)
             {
-                SpaceCount = 0;
-                SubBuffer += 2;
-                CommentEnd = NULL;
+                ThisTabCount = 0;
+            }
+
+            else if (ThisColumnStart == LastLineColumnStart)
+            {
+                ThisTabCount = LastLineTabCount -1;
+            }
+
+            else
+            {
+
+                ThisTabCount = LastLineTabCount + 1;
             }
         }
 
-        /* Ignore comments */
+        Column++;
+
+
+        /* Check if we are in a comment */
+
+        if ((SubBuffer[0] == '*') &&
+            (SubBuffer[1] == '/'))
+        {
+            SpaceCount = 0;
+            SubBuffer += 2;
+
+
+            if (*SubBuffer == '\n')
+            {
+                if (TabCount > 0)
+                {
+                    LastLineTabCount = TabCount;
+                    TabCount = 0;
+                }
+                FirstNonBlank = NULL;
+                LastLineColumnStart = ThisColumnStart;
+                SubBuffer++;
+            }
+
+            continue;
+        }
+
+        /* Check for comment open */
 
         if ((SubBuffer[0] == '/') &&
             (SubBuffer[1] == '*'))
         {
+            /* Find the end of the comment, it must exist */
+
             CommentEnd = strstr (SubBuffer, "*/");
             if (!CommentEnd)
             {
@@ -1189,6 +1255,7 @@ AsTabify8 (
                 if (TabCount > 0)
                 {
                     LastLineTabCount = TabCount;
+                    TabCount = 0;
                 }
                 FirstNonBlank = NULL;
                 LastLineColumnStart = ThisColumnStart;
@@ -1223,11 +1290,11 @@ AsTabify8 (
             if (TabCount > 0)
             {
                 LastLineTabCount = TabCount;
+                TabCount = 0;
             }
 
             FirstNonBlank = NULL;
             LastLineColumnStart = ThisColumnStart;
-            TabCount = 0;
             Column = 0;
             SpaceCount = 0;
         }
