@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.122 $
+ *       $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -169,6 +169,14 @@ ACPI_EXTERN FADT_DESCRIPTOR            *AcpiGbl_FADT;
 ACPI_EXTERN ACPI_TABLE_HEADER          *AcpiGbl_DSDT;
 ACPI_EXTERN FACS_DESCRIPTOR            *AcpiGbl_FACS;
 ACPI_EXTERN ACPI_COMMON_FACS            AcpiGbl_CommonFACS;
+
+/*
+ * Handle both ACPI 1.0 and ACPI 2.0 Integer widths
+ * If we are running a method that exists in a 32-bit ACPI table.
+ * Use only 32 bits of the Integer for conversion.
+ */
+ACPI_EXTERN UINT8                       AcpiGbl_IntegerBitWidth;
+ACPI_EXTERN UINT8                       AcpiGbl_IntegerByteWidth;
 
 /*
  * Since there may be multiple SSDTs and PSDTS, a single pointer is not
