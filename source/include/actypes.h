@@ -122,51 +122,79 @@
  * Data types - Fixed across all compilation models
  * 
  * BOOLEAN      Logical Boolean. 1 byte value containing a 0 for FALSE or a 1 for TRUE.  Other values are undefined.
- * INT          Signed value. (4 bytes on IA-32, 8 bytes on IA-64)
- * UINT         Unsigned value. (4 bytes on IA-32, 8 bytes on IA-64)
- * INT8         1 byte signed value
- * UINT8        1 byte unsigned value
- * INT16        2 byte signed value
- * UINT16       2 byte unsigned value
- * INT32        4 byte signed value
- * UINT32       4 byte unsigned value
- * INT64        8 byte signed value (not supported or used at this time)
- * UINT64       8 byte unsigned value (not supported or used at this time)
+ * INT8         8-bit  (1 byte) signed value
+ * UINT8        8-bit  (1 byte) unsigned value
+ * INT16        16-bit (2 byte) signed value
+ * UINT16       16-bit (2 byte) unsigned value
+ * INT32        32-bit (4 byte) signed value
+ * UINT32       32-bit (4 byte) unsigned value
+ * INT64        64-bit (8 byte) signed value
+ * UINT64       64-bit (8 byte) unsigned value
+ * NATIVE_INT   32-bit on IA-32, 64-bit on IA-64 signed value
+ * NATIVE_UINT  32-bit on IA-32, 64-bit on IA-64 unsigned value
  * UCHAR        Character. 1 byte unsigned value. 
- * WCHAR        Wide Character. 2 byte unsigned value (not supported or used at this time) 
  */
 
-/* 
- * TBD:  Need a 32-bit vs. 64-bit section !!! 
+#ifndef IA64
+
+/*
+ * IA-32 type definitions
  */
-
-/*  IA-32 type definitions */
-
-typedef unsigned char                   BOOLEAN;
-typedef int                             INT;
-typedef unsigned int                    UINT;
 typedef signed char                     INT8;
 typedef unsigned char                   UINT8;
+typedef unsigned char                   UCHAR;
 typedef short                           INT16;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
 typedef unsigned int                    UINT32;
-typedef unsigned char                   UCHAR;
 
-typedef unsigned char                   UINT8_BIT;
-typedef unsigned short                  UINT16_BIT;
-typedef unsigned long                   UINT32_BIT;
+typedef UINT32                          NATIVE_UINT;
+typedef INT32                           NATIVE_INT;
 
-typedef int                             BIT32;
-typedef short int                       BIT16;
-typedef char                            BIT8;
-
-typedef int                             ACPI_PTRDIFF;
-typedef unsigned int                    ACPI_SIZE;
     
+#else
 
 /*
- * data type ranges
+ * IA-64 type definitions 
+ */
+typedef signed char                     INT8;
+typedef unsigned char                   UINT8;
+typedef unsigned char                   UCHAR;
+typedef short                           INT16;
+typedef unsigned short                  UINT16;
+typedef int                             INT32;
+typedef unsigned int                    UINT32;
+typedef long                            INT64;
+typedef unsigned long                   UINT64;
+
+typedef UINT64                          NATIVE_UINT;
+typedef INT64                           NATIVE_INT;
+
+#endif
+
+
+
+/*
+ * Miscellaneous common types
+ */
+
+typedef UINT8                           BOOLEAN;
+
+typedef INT8                            BIT8;
+typedef INT16                           BIT16;
+typedef INT32                           BIT32;
+typedef UINT8                           UINT8_BIT;
+typedef UINT16                          UINT16_BIT;
+typedef UINT32                          UINT32_BIT;
+
+typedef NATIVE_INT                      ACPI_PTRDIFF;
+typedef NATIVE_UINT                     ACPI_SIZE;
+typedef NATIVE_UINT                     ACPI_TBLPTR;
+
+
+/*
+ * Data type ranges
+ * TBD: should be updated to INT32, UINT32, etc.
  */
 
 #define ACPI_UCHAR_MAX                  0xFF
@@ -242,8 +270,9 @@ typedef UINT32                          ACPI_TABLE_TYPE;
 #define TABLE_RSDT                      (ACPI_TABLE_TYPE) 6
 #define TABLE_SSDT                      (ACPI_TABLE_TYPE) 7
 #define TABLE_SBST                      (ACPI_TABLE_TYPE) 8
-#define ACPI_TABLE_MAX                  8
-#define NUM_ACPI_TABLES                 9
+#define TABLE_BOOT                      (ACPI_TABLE_TYPE) 9
+#define ACPI_TABLE_MAX                  9
+#define NUM_ACPI_TABLES                 10
 
 
 /* 
@@ -335,6 +364,7 @@ typedef UINT32                          ACPI_EVENT_TYPE;
 
 #define MAX_SYS_NOTIFY                  0x7f
 
+
 /* 
  * External ACPI object definition 
  */
@@ -380,8 +410,8 @@ typedef union AcpiObj
 
 typedef struct AcpiObjList
 {
-    UINT32                  Count;
-    ACPI_OBJECT             *Pointer;
+    UINT32                      Count;
+    ACPI_OBJECT                 *Pointer;
 
 } ACPI_OBJECT_LIST, *PACPI_OBJECT_LIST;
 
@@ -393,8 +423,8 @@ typedef struct AcpiObjList
 
 typedef struct 
 {
-    UINT32                  Length;         /* Length in bytes of the buffer */
-    void                    *Pointer;       /* pointer to buffer */
+    UINT32                      Length;         /* Length in bytes of the buffer */
+    void                        *Pointer;       /* pointer to buffer */
 
 } ACPI_BUFFER;
 
@@ -403,10 +433,10 @@ typedef struct
  * Structure and flags for AcpiGetSystemInfo
  */
 
-#define SYS_MODE_UNKNOWN    0x0000
-#define SYS_MODE_ACPI       0x0001
-#define SYS_MODE_LEGACY     0x0002
-#define SYS_MODES_MASK      0x0003
+#define SYS_MODE_UNKNOWN                0x0000
+#define SYS_MODE_ACPI                   0x0001
+#define SYS_MODE_LEGACY                 0x0002
+#define SYS_MODES_MASK                  0x0003
 
 
 /*
@@ -414,7 +444,7 @@ typedef struct
  */
 typedef struct AcpiTableInfo
 {
-    UINT32                  Count;
+    UINT32                      Count;
 
 } ACPI_TABLE_INFO;
 
@@ -425,15 +455,15 @@ typedef struct AcpiTableInfo
 
 typedef struct _AcpiSysInfo 
 {
-    UINT32                  Flags;
+    UINT32                      Flags;
 
-    UINT32                  TimerResolution;
-    UINT32                  Reserved1;
-    UINT32                  Reserved2;
-    UINT32                  DebugLevel;
-    UINT32                  DebugLayer;
-    UINT32                  NumTableTypes;
-    ACPI_TABLE_INFO         TableInfo [NUM_ACPI_TABLES];
+    UINT32                      TimerResolution;
+    UINT32                      Reserved1;
+    UINT32                      Reserved2;
+    UINT32                      DebugLevel;
+    UINT32                      DebugLayer;
+    UINT32                      NumTableTypes;
+    ACPI_TABLE_INFO             TableInfo [NUM_ACPI_TABLES];
 
 } ACPI_SYSTEM_INFO;
 
@@ -446,62 +476,62 @@ typedef struct _AcpiSysInfo
 
 typedef 
 UINT32 (*FIXED_EVENT_HANDLER) (
-    void                    *Context);
+    void                        *Context);
 
 typedef
 void (*GPE_HANDLER) (
-    void                    *Context);
+    void                        *Context);
 
 typedef
 void (*NOTIFY_HANDLER) (
-    UINT32                  Value,
-    void                    *Context);
-
-#define ADDRESS_SPACE_READ      1
-#define ADDRESS_SPACE_WRITE     2
+    UINT32                      Value,
+    void                        *Context);
+    
+#define ADDRESS_SPACE_READ              1
+#define ADDRESS_SPACE_WRITE             2
 
 typedef
 ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
-    UINT32                  Function,
-    UINT32                  Address,
-    UINT32                  BitWidth,
-    UINT32                  *Value,
-    void                    *Context);
+    UINT32                      Function,
+    UINT32                      Address,
+    UINT32                      BitWidth,
+    UINT32                      *Value,
+    void                        *Context);
 
-#define ACPI_DEFAULT_HANDLER     ((ADDRESS_SPACE_HANDLER) NULL)
+#define ACPI_DEFAULT_HANDLER            ((ADDRESS_SPACE_HANDLER) NULL)
 
 typedef
 ACPI_STATUS (*WALK_CALLBACK) (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue);
+    ACPI_HANDLE                 ObjHandle,
+    UINT32                      NestingLevel,
+    void                        *Context,
+    void                        **ReturnValue);
 
 /* Interrupt handler return values (must be unique bits) */
 
-#define INTERRUPT_HANDLED       0x01
-#define INTERRUPT_NOT_HANDLED   0x02
-#define INTERRUPT_ERROR         0x04
+#define INTERRUPT_HANDLED               0x01
+#define INTERRUPT_NOT_HANDLED           0x02
+#define INTERRUPT_ERROR                 0x04
 
 
 
 /* Structure and flags for AcpiGetDeviceInfo */
 
-#define ACPI_VALID_HID          0x1
-#define ACPI_VALID_UID          0x2
-#define ACPI_VALID_ADR          0x4
-#define ACPI_VALID_STA          0x8
+#define ACPI_VALID_HID                  0x1
+#define ACPI_VALID_UID                  0x2
+#define ACPI_VALID_ADR                  0x4
+#define ACPI_VALID_STA                  0x8
 
 
 #define ACPI_COMMON_OBJ_INFO \
-    ACPI_OBJECT_TYPE        Type;           /* ACPI object type */\
-    ACPI_NAME               Name;           /* ACPI object Name */\
+    ACPI_OBJECT_TYPE            Type;           /* ACPI object type */\
+    ACPI_NAME                   Name;           /* ACPI object Name */\
     /*\
      *  BUGBUG:Do we want or need these next two??\
      */\
-    ACPI_HANDLE             Parent;         /* Parent object */\
-    ACPI_HANDLE             Children;       /* Linked list of children */\
-    UINT32                  Valid           /* ?????    */
+    ACPI_HANDLE                 Parent;         /* Parent object */\
+    ACPI_HANDLE                 Children;       /* Linked list of children */\
+    UINT32                      Valid           /* ?????    */
 
 typedef struct 
 {
@@ -515,18 +545,11 @@ typedef struct
     /*
      *  BUGBUG: a HID or a _UID can return either a number or a string
      */
-    UINT32                  HardwareId;     /*  _HID value if any */
-    UINT32                  UniqueId;       /*  _UID value if any */
-    UINT32                  Address;        /*  _ADR value if any */
-    UINT32                  CurrentStatus;  /*  _STA value */
+    UINT32                      HardwareId;     /*  _HID value if any */
+    UINT32                      UniqueId;       /*  _UID value if any */
+    UINT32                      Address;        /*  _ADR value if any */
+    UINT32                      CurrentStatus;  /*  _STA value */
 } ACPI_DEVICE_INFO;
-
-
-
-
-/* TBD: remove! */
-
-//#include <internal.h>
 
 
 
@@ -537,78 +560,78 @@ typedef struct
 /* 
  *  Memory Attributes 
  */
-#define READ_ONLY_MEMORY            (UINT8) 0x00
-#define READ_WRITE_MEMORY           (UINT8) 0x01
+#define READ_ONLY_MEMORY                (UINT8) 0x00
+#define READ_WRITE_MEMORY               (UINT8) 0x01
 
-#define NON_CACHEABLE_MEMORY        (UINT8) 0x00
-#define CACHABLE_MEMORY             (UINT8) 0x01
-#define WRITE_COMBINING_MEMORY      (UINT8) 0x02
-#define PREFETCHABLE_MEMORY         (UINT8) 0x03
+#define NON_CACHEABLE_MEMORY            (UINT8) 0x00
+#define CACHABLE_MEMORY                 (UINT8) 0x01
+#define WRITE_COMBINING_MEMORY          (UINT8) 0x02
+#define PREFETCHABLE_MEMORY             (UINT8) 0x03
 
 /* 
  *  IO Attributes 
  *  The ISA IO ranges are: n000-n0FFh,  n400-n4FFh, n800-n8FFh, nC00-nCFFh.
  *  The non-ISA IO ranges are: n100-n3FFh,  n500-n7FFh, n900-nBFFh, nCD0-nFFFh.
  */
-#define NON_ISA_ONLY_RANGES         (UINT8) 0x01
-#define ISA_ONLY_RANGES             (UINT8) 0x02
-#define ENTIRE_RANGE                (NON_ISA_ONLY_RANGES | ISA_ONLY_RANGES)
+#define NON_ISA_ONLY_RANGES             (UINT8) 0x01
+#define ISA_ONLY_RANGES                 (UINT8) 0x02
+#define ENTIRE_RANGE                    (NON_ISA_ONLY_RANGES | ISA_ONLY_RANGES)
 
 /*
  *  IO Port Descriptor Decode
  */
-#define DECODE_10                   (UINT8) 0x00    /* 10-bit IO address decode */
-#define DECODE_16                   (UINT8) 0x01    /* 16-bit IO address decode */
+#define DECODE_10                       (UINT8) 0x00    /* 10-bit IO address decode */
+#define DECODE_16                       (UINT8) 0x01    /* 16-bit IO address decode */
 
 /*
  *  IRQ Attributes
  */
-#define EDGE_SENSITIVE              (UINT8) 0x00
-#define LEVEL_SENSITIVE             (UINT8) 0x01
+#define EDGE_SENSITIVE                  (UINT8) 0x00
+#define LEVEL_SENSITIVE                 (UINT8) 0x01
 
-#define ACTIVE_HIGH                 (UINT8) 0x00
-#define ACTIVE_LOW                  (UINT8) 0x01
+#define ACTIVE_HIGH                     (UINT8) 0x00
+#define ACTIVE_LOW                      (UINT8) 0x01
 
-#define EXCLUSIVE                   (UINT8) 0x00
-#define SHARED                      (UINT8) 0x01
+#define EXCLUSIVE                       (UINT8) 0x00
+#define SHARED                          (UINT8) 0x01
 
 /* 
  *  DMA Attributes 
  */
-#define COMPATIBILITY               (UINT8) 0x00
-#define TYPE_A                      (UINT8) 0x01
-#define TYPE_B                      (UINT8) 0x02
-#define TYPE_F                      (UINT8) 0x03
+#define COMPATIBILITY                   (UINT8) 0x00
+#define TYPE_A                          (UINT8) 0x01
+#define TYPE_B                          (UINT8) 0x02
+#define TYPE_F                          (UINT8) 0x03
 
-#define NOT_BUS_MASTER              (UINT8) 0x00
-#define BUS_MASTER                  (UINT8) 0x01
-
-#define TRANSFER_8                  (UINT8) 0x00
-#define TRANSFER_8_16               (UINT8) 0x01
-#define TRANSFER_16                 (UINT8) 0x02
+#define NOT_BUS_MASTER                  (UINT8) 0x00
+#define BUS_MASTER                      (UINT8) 0x01
+    
+#define TRANSFER_8                      (UINT8) 0x00
+#define TRANSFER_8_16                   (UINT8) 0x01
+#define TRANSFER_16                     (UINT8) 0x02
 
 /*
  * Start Dependent Functions Priority definitions
  */
-#define GOOD_CONFIGURATION          (UINT8) 0x00
-#define ACCEPTABLE_CONFIGURATION    (UINT8) 0x01
-#define SUB_OPTIMAL_CONFIGURATION   (UINT8) 0x02
+#define GOOD_CONFIGURATION              (UINT8) 0x00
+#define ACCEPTABLE_CONFIGURATION        (UINT8) 0x01
+#define SUB_OPTIMAL_CONFIGURATION       (UINT8) 0x02
  
 /* 
  *  16, 32 and 64-bit Address Descriptor resource types 
  */
-#define MEMORY_RANGE                (UINT8) 0x00
-#define IO_RANGE                    (UINT8) 0x01
-#define BUS_NUMBER_RANGE            (UINT8) 0x02
+#define MEMORY_RANGE                    (UINT8) 0x00
+#define IO_RANGE                        (UINT8) 0x01
+#define BUS_NUMBER_RANGE                (UINT8) 0x02
 
-#define ADDRESS_NOT_FIXED           (UINT8) 0x00
-#define ADDRESS_FIXED               (UINT8) 0x01
+#define ADDRESS_NOT_FIXED               (UINT8) 0x00
+#define ADDRESS_FIXED                   (UINT8) 0x01
 
-#define POS_DECODE                  (UINT8) 0x00
-#define SUB_DECODE                  (UINT8) 0x01
+#define POS_DECODE                      (UINT8) 0x00
+#define SUB_DECODE                      (UINT8) 0x01
 
-#define PRODUCER                    (UINT8) 0x00
-#define CONSUMER                    (UINT8) 0x01
+#define PRODUCER                        (UINT8) 0x00
+#define CONSUMER                        (UINT8) 0x01
 
 
 /*
@@ -616,26 +639,29 @@ typedef struct
  */
 typedef struct
 {
-    UINT32                  EdgeLevel;
-    UINT32                  ActiveHighLow;
-    UINT32                  SharedExclusive;
-    UINT32                  NumberOfInterrupts;
-    UINT32                  Interrupts[1];
+    UINT32                      EdgeLevel;
+    UINT32                      ActiveHighLow;
+    UINT32                      SharedExclusive;
+    UINT32                      NumberOfInterrupts;
+    UINT32                      Interrupts[1];
+
 } IRQ_RESOURCE;
 
 typedef struct
-{
-    UINT32                  Type;
-    UINT32                  BusMaster;
-    UINT32                  Transfer;
-    UINT32                  NumberOfChannels;
-    UINT32                  Channels[1];
+{   
+    UINT32                      Type;
+    UINT32                      BusMaster;
+    UINT32                      Transfer;
+    UINT32                      NumberOfChannels;
+    UINT32                      Channels[1];
+
 } DMA_RESOURCE;
 
 typedef struct
 {
-    UINT32                  CompatibilityPriority;
-    UINT32                  PerformanceRobustness;
+    UINT32                      CompatibilityPriority;
+    UINT32                      PerformanceRobustness;
+
 } START_DEPENDENT_FUNCTIONS_RESOURCE;
 
 /* 
@@ -645,124 +671,135 @@ typedef struct
 
 typedef struct
 {
-    UINT32                  IoDecode;
-    UINT32                  MinBaseAddress;
-    UINT32                  MaxBaseAddress;
-    UINT32                  Alignment;
-    UINT32                  RangeLength;
+    UINT32                      IoDecode;
+    UINT32                      MinBaseAddress;
+    UINT32                      MaxBaseAddress;
+    UINT32                      Alignment;
+    UINT32                      RangeLength;
+
 } IO_RESOURCE;
 
 typedef struct
 {
-    UINT32                  BaseAddress;
-    UINT32                  RangeLength;
+    UINT32                      BaseAddress;
+    UINT32                      RangeLength;
+
 } FIXED_IO_RESOURCE;
 
 typedef struct
 {
-    UINT32                  Length;
-    UINT8                   Reserved[1];
+    UINT32                      Length;
+    UINT8                       Reserved[1];
+
 } VENDOR_RESOURCE;
 
 typedef struct
 {
-    UINT32                  ReadWriteAttribute;
-    UINT32                  MinBaseAddress;
-    UINT32                  MaxBaseAddress;
-    UINT32                  Alignment;
-    UINT32                  RangeLength;
+    UINT32                      ReadWriteAttribute;
+    UINT32                      MinBaseAddress;
+    UINT32                      MaxBaseAddress;
+    UINT32                      Alignment;
+    UINT32                      RangeLength;
+
 } MEMORY24_RESOURCE;
 
 typedef struct
 {
-    UINT32                  ReadWriteAttribute;
-    UINT32                  MinBaseAddress;
-    UINT32                  MaxBaseAddress;
-    UINT32                  Alignment;
-    UINT32                  RangeLength;
+    UINT32                      ReadWriteAttribute;
+    UINT32                      MinBaseAddress;
+    UINT32                      MaxBaseAddress;
+    UINT32                      Alignment;
+    UINT32                      RangeLength;
+
 } MEMORY32_RESOURCE;
 
 typedef struct
 {
-    UINT32                  ReadWriteAttribute;
-    UINT32                  RangeBaseAddress;
-    UINT32                  RangeLength;
+    UINT32                      ReadWriteAttribute;
+    UINT32                      RangeBaseAddress;
+    UINT32                      RangeLength;
+
 } FIXED_MEMORY32_RESOURCE;
 
 typedef struct
 {
-    UINT16                  CacheAttribute;
-    UINT16                  ReadWriteAttribute;
-} MEMORY_ATTRIBUTE;
+    UINT16                      CacheAttribute;
+    UINT16                      ReadWriteAttribute;
+
+} MEMORY_ATTRIBUTE; 
 
 typedef struct
 {
-    UINT16                  RangeAttribute;
-    UINT16                  Reserved;
+    UINT16                      RangeAttribute;
+    UINT16                      Reserved;
+
 } IO_ATTRIBUTE;
 
 typedef struct
 {
-    UINT16                  Reserved1;
-    UINT16                  Reserved2;
+    UINT16                      Reserved1;
+    UINT16                      Reserved2;
+
 } BUS_ATTRIBUTE; 
 
 typedef union
 {
-    MEMORY_ATTRIBUTE        Memory;
-    IO_ATTRIBUTE            Io;
-    BUS_ATTRIBUTE           Bus;
+    MEMORY_ATTRIBUTE            Memory;
+    IO_ATTRIBUTE                Io;
+    BUS_ATTRIBUTE               Bus;
+
 } ATTRIBUTE_DATA;
 
 typedef struct
 {
-    UINT32                  ResourceType;
-    UINT32                  ProducerConsumer;
-    UINT32                  Decode;
-    UINT32                  MinAddressFixed;
-    UINT32                  MaxAddressFixed;
-    ATTRIBUTE_DATA          Attribute;
-    UINT32                  Granularity;
-    UINT32                  MinAddressRange;
-    UINT32                  MaxAddressRange;
-    UINT32                  AddressTranslationOffset;
-    UINT32                  AddressLength;
-    UINT32                  ResourceSourceIndex;
-    UINT32                  ResourceSourceStringLength;
-    UINT8                   ResourceSource[1];
+    UINT32                      ResourceType;
+    UINT32                      ProducerConsumer;
+    UINT32                      Decode;
+    UINT32                      MinAddressFixed;
+    UINT32                      MaxAddressFixed;
+    ATTRIBUTE_DATA              Attribute;
+    UINT32                      Granularity;
+    UINT32                      MinAddressRange;
+    UINT32                      MaxAddressRange;
+    UINT32                      AddressTranslationOffset;
+    UINT32                      AddressLength;
+    UINT32                      ResourceSourceIndex;
+    UINT32                      ResourceSourceStringLength;
+    UINT8                       ResourceSource[1];
     
 } ADDRESS16_RESOURCE;
 
 typedef struct  
 {
-    UINT32                  ResourceType;
-    UINT32                  ProducerConsumer;
-    UINT32                  Decode;
-    UINT32                  MinAddressFixed;
-    UINT32                  MaxAddressFixed;
-    ATTRIBUTE_DATA          Attribute;
-    UINT32                  Granularity;
-    UINT32                  MinAddressRange;
-    UINT32                  MaxAddressRange;
-    UINT32                  AddressTranslationOffset;
-    UINT32                  AddressLength;
-    UINT32                  ResourceSourceIndex;
-    UINT32                  ResourceSourceStringLength;
-    UINT8                   ResourceSource[1];
+    UINT32                      ResourceType;
+    UINT32                      ProducerConsumer;
+    UINT32                      Decode;
+    UINT32                      MinAddressFixed;
+    UINT32                      MaxAddressFixed;
+    ATTRIBUTE_DATA              Attribute;
+    UINT32                      Granularity;
+    UINT32                      MinAddressRange;
+    UINT32                      MaxAddressRange;
+    UINT32                      AddressTranslationOffset;
+    UINT32                      AddressLength;
+    UINT32                      ResourceSourceIndex;
+    UINT32                      ResourceSourceStringLength;
+    UINT8                       ResourceSource[1];
     
 } ADDRESS32_RESOURCE;
 
 typedef struct
 {
-    UINT32                  ProducerConsumer;
-    UINT32                  EdgeLevel;
-    UINT32                  ActiveHighLow;
-    UINT32                  SharedExclusive;
-    UINT32                  NumberOfInterrupts;
-    UINT32                  Interrupts[1];
-    UINT32                  ResourceSourceIndex;
-    UINT32                  ResourceSourceStringLength;
-    UINT8                   ResourceSource[1];
+    UINT32                      ProducerConsumer;
+    UINT32                      EdgeLevel;
+    UINT32                      ActiveHighLow;
+    UINT32                      SharedExclusive;
+    UINT32                      NumberOfInterrupts;
+    UINT32                      Interrupts[1];
+    UINT32                      ResourceSourceIndex;
+    UINT32                      ResourceSourceStringLength;
+    UINT8                       ResourceSource[1];
+
 } EXTENDED_IRQ_RESOURCE;
 
 typedef enum
@@ -801,13 +838,13 @@ typedef union
 
 typedef struct _resource_tag
 {
-    RESOURCE_TYPE           Id;
-    UINT32                  Length;
-    RESOURCE_DATA           Data;
+    RESOURCE_TYPE               Id;
+    UINT32                      Length;
+    RESOURCE_DATA               Data;
 } RESOURCE;
 
-#define RESOURCE_LENGTH             12
-#define RESOURCE_LENGTH_NO_DATA     8
+#define RESOURCE_LENGTH                 12
+#define RESOURCE_LENGTH_NO_DATA         8
 
 /*
  * END: Definitions for Resource Attributes
@@ -818,17 +855,20 @@ typedef struct _resource_tag
  */
 typedef struct  
 {
-    UINT32                  Address;
-    UINT32                  Pin;
-    UINT32                  SourceIndex;
-    UINT8                   Source[1];
+    UINT32                      Address;
+    UINT32                      Pin;
+    UINT32                      SourceIndex;
+    UINT8                       Source[1];
+
 } PRT_ENTRY;
 
 typedef struct _prt_tag
 {
-    UINT32                  Length;
-    PRT_ENTRY               Data;
+    UINT32                      Length;
+    PRT_ENTRY                   Data;
+
 } PCI_ROUTING_TABLE;
+
 
 /*
  * END: Definitions for PCI Routing tables
