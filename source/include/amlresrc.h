@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource.h - ASL resource descriptors
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -465,27 +465,27 @@ RsAllocateResourceNode (
 
     void
 RsCreateBitField (
-    ASL_PARSE_NODE              *Node,
-    char                        *Name,
-    UINT32                      ByteOffset,
-    UINT32                      BitOffset);
+    ASL_PARSE_NODE          *Node,
+    char                    *Name,
+    UINT32                  ByteOffset,
+    UINT32                  BitOffset);
 
 void
 RsCreateByteField (
-    ASL_PARSE_NODE              *Node,
-    char                        *Name,
-    UINT32                      ByteOffset);
+    ASL_PARSE_NODE          *Node,
+    char                    *Name,
+    UINT32                  ByteOffset);
 
 void
 RsSetFlagBits (
-    UINT8                       *Flags,
-    ASL_PARSE_NODE              *Node,
-    UINT8                       Position,
-    UINT8                       Default);
+    UINT8                   *Flags,
+    ASL_PARSE_NODE          *Node,
+    UINT8                   Position,
+    UINT8                   Default);
 
 ASL_PARSE_NODE *
 RsCompleteNodeAndGetNext (
-    ASL_PARSE_NODE              *Node);
+    ASL_PARSE_NODE          *Node);
 
 ASL_RESOURCE_NODE *
 RsDoOneResourceDescriptor (
@@ -496,6 +496,7 @@ UINT32
 RsLinkDescriptorChain (
     ASL_RESOURCE_NODE       **PreviousRnode,
     ASL_RESOURCE_NODE       *Rnode);
+
 
 /*
  * Small descriptors
