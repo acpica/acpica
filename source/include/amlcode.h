@@ -401,9 +401,8 @@ typedef enum
 
 /* bit fields in MethodFlags byte */
 
-#define METHOD_ARG_COUNT_MASK   7
-#define METHOD_ARG_COUNT_SHIFT  0
-#define METHOD_SYNCHRONIZED     8
+#define METHOD_FLAGS_ARG_COUNT  0x07
+#define METHOD_FLAGS_SERIALIZED 0x08
 
 
 /* Array sizes.  Used for range checking also */
