@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.47 $
+ *       $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 
 extern int                      optind;
 extern NATIVE_CHAR              *optarg;
-extern UINT8                    *AmlPtr;
+extern UINT8                    *AmlStart;
 extern UINT32                   AmlLength;
 
 extern BOOLEAN                  AcpiGbl_DbOpt_tables;
