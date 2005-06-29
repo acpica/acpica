@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.185 $
+ *              $Revision: 1.186 $
  *
  *****************************************************************************/
 
@@ -379,60 +379,49 @@ AcpiExStoreObjectToIndex (
     {
     case ACPI_TYPE_PACKAGE:
         /*
-         * Storing to a package element is not simple.  The source must be
-         * evaluated and converted to the type of the destination and then the
-         * source is copied into the destination - we can't just point to the
-         * source object.
-         */
-        /*
+         * Storing to a package element. Copy the object and replace
+         * any existing object with the new object. No implicit
+         * conversion is performed.
+         *
          * The object at *(IndexDesc->Reference.Where) is the
          * element within the package that is to be modified.
          * The parent package object is at IndexDesc->Reference.Object
          */
         ObjDesc = *(IndexDesc->Reference.Where);
 
-        /* Do the conversion/store */
-
-        Status = AcpiExStoreObjectToObject (SourceDesc, ObjDesc, &NewDesc,
-                                                WalkState);
+        Status = AcpiUtCopyIobjectToIobject (SourceDesc, &NewDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Could not store object to indexed package element\n"));
             return_ACPI_STATUS (Status);
         }
 
-        /*
-         * If a new object was created, we must install it as the new
-         * package element
-         */
-        if (NewDesc != ObjDesc)
+        if (ObjDesc)
         {
-            AcpiUtRemoveReference (ObjDesc);
-            *(IndexDesc->Reference.Where) = NewDesc;
+            /* Decrement reference count by the ref count of the parent package */
 
-            /* If same as the original source, add a reference */
-
-            if (NewDesc == SourceDesc)
+            for (i = 0; i < ((ACPI_OPERAND_OBJECT *) IndexDesc->Reference.Object)->Common.ReferenceCount; i++)
             {
-                AcpiUtAddReference (NewDesc);
-            }
-
-            /* Increment reference count by the ref count of the parent package -1 */
-
-            for (i = 1; i < ((ACPI_OPERAND_OBJECT *) IndexDesc->Reference.Object)->Common.ReferenceCount; i++)
-            {
-                AcpiUtAddReference (NewDesc);
+                AcpiUtRemoveReference (ObjDesc);
             }
         }
+        
+        *(IndexDesc->Reference.Where) = NewDesc;
+
+        /* Increment reference count by the ref count of the parent package -1 */
+
+        for (i = 1; i < ((ACPI_OPERAND_OBJECT *) IndexDesc->Reference.Object)->Common.ReferenceCount; i++)
+        {
+            AcpiUtAddReference (NewDesc);
+        }
+        
         break;
 
 
     case ACPI_TYPE_BUFFER_FIELD:
 
         /*
-         * Store into a Buffer (not actually a real BufferField) at a
-         * location defined by an Index.
+         * Store into a Buffer or String (not actually a real BufferField)
+         * at a location defined by an Index.
          *
          * The first 8-bit element of the source object is written to the
          * 8-bit Buffer location defined by the Index destination object,
@@ -440,10 +429,13 @@ AcpiExStoreObjectToIndex (
          */
 
         /*
-         * Make sure the target is a Buffer
+         * Make sure the target is a Buffer or String. An error should
+         * not happen here, since the ReferenceObject was constructed
+         * by the INDEX_OP code.
          */
         ObjDesc = IndexDesc->Reference.Object;
-        if (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_BUFFER)
+        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_BUFFER) &&
+            (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_STRING))
         {
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
@@ -462,13 +454,11 @@ AcpiExStoreObjectToIndex (
             break;
 
         case ACPI_TYPE_BUFFER:
-
-            Value = SourceDesc->Buffer.Pointer[0];
-            break;
-
         case ACPI_TYPE_STRING:
 
-            Value = (UINT8) SourceDesc->String.Pointer[0];
+            /* Note: Takes advantage of common string/buffer fields */
+
+            Value = SourceDesc->Buffer.Pointer[0];
             break;
 
         default:
