@@ -139,6 +139,10 @@ AcpiTerminate (
     void);
 
 ACPI_STATUS
+AcpiSubsystemStatus (
+    void);
+
+ACPI_STATUS
 AcpiEnable (
     void);
 
@@ -147,7 +151,7 @@ AcpiDisable (
     void);
 
 ACPI_STATUS
-AcpiGetSystemInfo(
+AcpiGetSystemInfo (
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
