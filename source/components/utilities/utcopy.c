@@ -475,8 +475,6 @@ AcpiCmBuildExternalPackageObject (
             LevelPtr->Index         = 0;
         }
     }
-
-    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -630,7 +628,6 @@ AcpiCmBuildInternalPackageObject (
     UINT8                   *FreeSpace;
     ACPI_OBJECT             *ExternalObj;
     UINT32                  CurrentDepth = 0;
-    ACPI_STATUS             Status = AE_OK;
     UINT32                  Length = 0;
     UINT32                  ThisIndex;
     UINT32                  ObjectSpace = 0;
@@ -730,18 +727,6 @@ AcpiCmBuildInternalPackageObject (
 
         else
         {
-/*            Status = AcpiCmBuildSimpleObject(ThisInternalObj,
-                                               ThisExternalObj, FreeSpace,
-                                               &ObjectSpace);
-*/
-            if (ACPI_FAILURE (Status))
-            {
-                /*
-                 * Failure get out
-                 */
-                return_ACPI_STATUS (Status);
-            }
-
             FreeSpace   += ObjectSpace;
             Length      += ObjectSpace;
 
@@ -778,13 +763,6 @@ AcpiCmBuildInternalPackageObject (
             }
         }   /* else object is NOT a package */
     }   /* while (1)  */
-
-
-    /*
-     * We'll never get here, but the compiler whines about
-     * return value
-     */
-    return_ACPI_STATUS (AE_OK);
 }
 
 
