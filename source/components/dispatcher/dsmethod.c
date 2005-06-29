@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -173,7 +173,6 @@ AcpiDsParseMethod (
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Parsing [%4.4s] **** NamedObj=%p\n",
         (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name, ObjHandle));
 
-
     /* Extract the method object from the method Node */
 
     Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
@@ -296,7 +295,6 @@ AcpiDsBeginMethodExecution (
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-
     /*
      * If there is a concurrency limit on this method, we need to
      * obtain a unit from the method semaphore.
@@ -327,13 +325,11 @@ AcpiDsBeginMethodExecution (
                                             WAIT_FOREVER);
     }
 
-
     /*
      * Increment the method parse tree thread count since it has been
      * reentered one more time (even if it is the same thread)
      */
     ObjDesc->Method.ThreadCount++;
-
     return_ACPI_STATUS (Status);
 }
 
@@ -355,7 +351,7 @@ ACPI_STATUS
 AcpiDsCallControlMethod (
     ACPI_THREAD_STATE       *Thread,
     ACPI_WALK_STATE         *ThisWalkState,
-    ACPI_PARSE_OBJECT       *Op)  /* TBD: This operand is obsolete */
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *MethodNode;
@@ -393,7 +389,6 @@ AcpiDsCallControlMethod (
         return_ACPI_STATUS (Status);
     }
 
-
     /* 1) Parse: Create a new walk state for the preempting walk */
 
     NextWalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwningId,
@@ -426,7 +421,6 @@ AcpiDsCallControlMethod (
 
     Status = AcpiPsParseAml (NextWalkState);
     AcpiPsDeleteParseTree (Op);
-
 
     /* 2) Execute: Create a new state for the preempting walk */
 
@@ -523,7 +517,6 @@ AcpiDsRestartControlMethod (
                 return_ACPI_STATUS (Status);
             }
         }
-
         else
         {
             /*
@@ -532,7 +525,6 @@ AcpiDsRestartControlMethod (
              */
             AcpiUtRemoveReference (ReturnDesc);
         }
-
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
@@ -588,7 +580,6 @@ AcpiDsTerminateControlMethod (
      * we have additional cleanup to perform
      */
     AcpiUtAcquireMutex (ACPI_MTX_PARSER);
-
 
     /* Signal completion of the execution of this method if necessary */
 
