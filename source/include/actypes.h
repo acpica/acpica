@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.228 $
+ *       $Revision: 1.229 $
  *
  *****************************************************************************/
 
@@ -151,8 +151,8 @@ typedef unsigned int                    UINT32;
 typedef COMPILER_DEPENDENT_INT64        INT64;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
+typedef INT64                           NATIVE_INT;
 typedef UINT64                          NATIVE_UINT;
-typedef UINT64                          NATIVE_INT;
 
 typedef UINT64                          ACPI_TBLPTR;
 typedef UINT64                          ACPI_IO_ADDRESS;
@@ -214,8 +214,8 @@ typedef unsigned int                    UINT32;
 typedef COMPILER_DEPENDENT_INT64        INT64;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
-typedef UINT32                          NATIVE_UINT;
 typedef INT32                           NATIVE_INT;
+typedef UINT32                          NATIVE_UINT;
 
 typedef UINT64                          ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
