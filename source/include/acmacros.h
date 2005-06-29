@@ -252,26 +252,26 @@
 #endif
 
 #define ARG_TYPE_WIDTH                  5
-#define ARG_1(x)                        (x)
-#define ARG_2(x)                        ((x) << (1 * ARG_TYPE_WIDTH))
-#define ARG_3(x)                        ((x) << (2 * ARG_TYPE_WIDTH))
-#define ARG_4(x)                        ((x) << (3 * ARG_TYPE_WIDTH))
-#define ARG_5(x)                        ((x) << (4 * ARG_TYPE_WIDTH))
-#define ARG_6(x)                        ((x) << (5 * ARG_TYPE_WIDTH))
+#define ARG_1(x)                        ((UINT32)(x))
+#define ARG_2(x)                        ((UINT32)(x) << (1 * ARG_TYPE_WIDTH))
+#define ARG_3(x)                        ((UINT32)(x) << (2 * ARG_TYPE_WIDTH))
+#define ARG_4(x)                        ((UINT32)(x) << (3 * ARG_TYPE_WIDTH))
+#define ARG_5(x)                        ((UINT32)(x) << (4 * ARG_TYPE_WIDTH))
+#define ARG_6(x)                        ((UINT32)(x) << (5 * ARG_TYPE_WIDTH))
 
-#define ARGI_LIST1(a)                    (ARG_1(a))
-#define ARGI_LIST2(a,b)                  (ARG_1(b)|ARG_2(a))
-#define ARGI_LIST3(a,b,c)                (ARG_1(c)|ARG_2(b)|ARG_3(a))
-#define ARGI_LIST4(a,b,c,d)              (ARG_1(d)|ARG_2(c)|ARG_3(b)|ARG_4(a))
-#define ARGI_LIST5(a,b,c,d,e)            (ARG_1(e)|ARG_2(d)|ARG_3(c)|ARG_4(b)|ARG_5(a))
-#define ARGI_LIST6(a,b,c,d,e,f)          (ARG_1(f)|ARG_2(e)|ARG_3(d)|ARG_4(c)|ARG_5(b)|ARG_6(a))
+#define ARGI_LIST1(a)                   (ARG_1(a))
+#define ARGI_LIST2(a,b)                 (ARG_1(b)|ARG_2(a))
+#define ARGI_LIST3(a,b,c)               (ARG_1(c)|ARG_2(b)|ARG_3(a))
+#define ARGI_LIST4(a,b,c,d)             (ARG_1(d)|ARG_2(c)|ARG_3(b)|ARG_4(a))
+#define ARGI_LIST5(a,b,c,d,e)           (ARG_1(e)|ARG_2(d)|ARG_3(c)|ARG_4(b)|ARG_5(a))
+#define ARGI_LIST6(a,b,c,d,e,f)         (ARG_1(f)|ARG_2(e)|ARG_3(d)|ARG_4(c)|ARG_5(b)|ARG_6(a))
 
-#define ARGP_LIST1(a)                    (ARG_1(a))
-#define ARGP_LIST2(a,b)                  (ARG_1(a)|ARG_2(b))
-#define ARGP_LIST3(a,b,c)                (ARG_1(a)|ARG_2(b)|ARG_3(c))
-#define ARGP_LIST4(a,b,c,d)              (ARG_1(a)|ARG_2(b)|ARG_3(c)|ARG_4(d))
-#define ARGP_LIST5(a,b,c,d,e)            (ARG_1(a)|ARG_2(b)|ARG_3(c)|ARG_4(d)|ARG_5(e))
-#define ARGP_LIST6(a,b,c,d,e,f)          (ARG_1(a)|ARG_2(b)|ARG_3(c)|ARG_4(d)|ARG_5(e)|ARG_6(f))
+#define ARGP_LIST1(a)                   (ARG_1(a))
+#define ARGP_LIST2(a,b)                 (ARG_1(a)|ARG_2(b))
+#define ARGP_LIST3(a,b,c)               (ARG_1(a)|ARG_2(b)|ARG_3(c))
+#define ARGP_LIST4(a,b,c,d)             (ARG_1(a)|ARG_2(b)|ARG_3(c)|ARG_4(d))
+#define ARGP_LIST5(a,b,c,d,e)           (ARG_1(a)|ARG_2(b)|ARG_3(c)|ARG_4(d)|ARG_5(e))
+#define ARGP_LIST6(a,b,c,d,e,f)         (ARG_1(a)|ARG_2(b)|ARG_3(c)|ARG_4(d)|ARG_5(e)|ARG_6(f))
 
 #define GET_CURRENT_ARG_TYPE(List)      (List & 0x1F)
 #define INCREMENT_ARG_LIST(List)        (List >>= ARG_TYPE_WIDTH)
@@ -469,8 +469,8 @@
  */
 
 #define ADD_OBJECT_NAME(a,b)            MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
-	                                    STRNCPY (a->Common.Name, Gbl_NsTypeNames[b], sizeof (a->Common.Name))
-	
+                                        STRNCPY (a->Common.Name, Gbl_NsTypeNames[b], sizeof (a->Common.Name))
+    
 #endif
 
 
