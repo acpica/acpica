@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -134,14 +134,14 @@
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiEvFindOnePciRootBus
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  *****************************************************************************/
 
@@ -156,7 +156,7 @@ AcpiEvFindOnePciRootBus (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
 
-    
+
     Entry = (NAME_TABLE_ENTRY *) ObjHandle;
     ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
 
@@ -173,7 +173,7 @@ AcpiEvFindOnePciRootBus (
 
 
     /*
-     * Found an _HID object. 
+     * Found an _HID object.
      * Now we need a HID with the value EISAID("PNP0A03")
      * HID can be either a number or a string.
      */
@@ -210,7 +210,7 @@ AcpiEvFindOnePciRootBus (
      * handler for this PCI device.
      */
 
-    Status = AcpiInstallAddressSpaceHandler (Entry->ParentEntry, ADDRESS_SPACE_PCI_CONFIG, 
+    Status = AcpiInstallAddressSpaceHandler (Entry->ParentEntry, ADDRESS_SPACE_PCI_CONFIG,
                                                 ACPI_DEFAULT_HANDLER, NULL, NULL);
 
     return AE_OK;
@@ -219,14 +219,14 @@ AcpiEvFindOnePciRootBus (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiEvFindPciRootBuses
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  *****************************************************************************/
 
@@ -234,7 +234,7 @@ ACPI_STATUS
 AcpiEvFindPciRootBuses (
     void)
 {
-    
+
     AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                         FALSE, AcpiEvFindOnePciRootBus, NULL, NULL);
 
@@ -247,7 +247,7 @@ AcpiEvFindPciRootBuses (
  *
  * FUNCTION:    AcpiEvInstallDefaultAddressSpaceHandlers
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -260,7 +260,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
     void)
 {
     ACPI_STATUS             Status;
-    
+
 
     FUNCTION_TRACE ("EvInstallDefaultAddressSpaceHandlers");
 
@@ -271,7 +271,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
      *          associated with the address space.  For these we use the root.
      */
 
-    Status = AcpiInstallAddressSpaceHandler (Acpi_GblRootObject, ADDRESS_SPACE_SYSTEM_MEMORY, 
+    Status = AcpiInstallAddressSpaceHandler (Acpi_GblRootObject, ADDRESS_SPACE_SYSTEM_MEMORY,
                                                 ACPI_DEFAULT_HANDLER, NULL, NULL);
     if (ACPI_FAILURE (Status))
     {
@@ -366,7 +366,7 @@ AcpiEvExecuteRegMethod (
      */
     Status = AcpiNsEvaluateByHandle (RegionObj->Region.REGMethod, Params, NULL);
     return_ACPI_STATUS (Status);
-} 
+}
 
 
 /**************************************************************************
@@ -382,7 +382,7 @@ AcpiEvExecuteRegMethod (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Dispatch an address space or operation region access to  
+ * DESCRIPTION: Dispatch an address space or operation region access to
  *              a previously installed handler.
  *
  *************************************************************************/
@@ -420,18 +420,18 @@ AcpiEvAddressSpaceDispatch (
      *  It may be the case that the region has never been initialized
      *  Some types of regions require special init code
      */
-    if (!(RegionObj->Region.RegionFlags & REGION_INITIALIZED)) 
+    if (!(RegionObj->Region.RegionFlags & REGION_INITIALIZED))
     {
         /*
          *  This region has not been initialized yet, do it
          */
         RegionSetup = HandlerDesc->AddrHandler.Setup;
-        if (!RegionSetup) 
+        if (!RegionSetup)
         {
             /*
              *  Bad news, no init routine and not init'd
              */
-            DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: No init routine for region %p\n", 
+            DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: No init routine for region %p\n",
                             RegionObj));
             return_ACPI_STATUS (AE_UNKNOWN_STATUS);
         }
@@ -443,7 +443,7 @@ AcpiEvAddressSpaceDispatch (
          */
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from region init, SpaceID %d\n", 
+            DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from region init, SpaceID %d\n",
                             AcpiCmFormatException (Status), RegionObj->Region.SpaceId));
             return_ACPI_STATUS(Status);
         }
@@ -459,7 +459,7 @@ AcpiEvAddressSpaceDispatch (
      */
     Handler = HandlerDesc->AddrHandler.Handler;
 
-    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO), ("Addrhandler 0x%p (0x%p), Address 0x%p\n", 
+    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO), ("Addrhandler 0x%p (0x%p), Address 0x%p\n",
                     RegionObj->Region.AddrHandler->AddrHandler, Handler, Address));
 
     if (!(HandlerDesc->AddrHandler.Flags & ADDR_HANDLER_DEFAULT_INSTALLED))
@@ -472,14 +472,14 @@ AcpiEvAddressSpaceDispatch (
         AcpiAmlExitInterpreter();
     }
 
-    /* 
+    /*
      *  Invoke the handler.
      */
     Status = Handler (Function, Address, BitWidth, Value, HandlerDesc->AddrHandler.Context);
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from handler, SpaceID %d\n", 
+        DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from handler, SpaceID %d\n",
                         AcpiCmFormatException (Status), RegionObj->Region.SpaceId));
     }
 
@@ -579,7 +579,7 @@ AcpiEvDisassociateRegionFromHandler(
              */
             if (ACPI_FAILURE (Status))
             {
-                DEBUG_PRINT (ACPI_ERROR, ("EvDisassociateRegionFromHandler: %s from region init, SpaceID %d\n", 
+                DEBUG_PRINT (ACPI_ERROR, ("EvDisassociateRegionFromHandler: %s from region init, SpaceID %d\n",
                                 AcpiCmFormatException (Status), RegionObj->Region.SpaceId));
                 /*
                  *  Just ignore failures for now
@@ -647,7 +647,7 @@ AcpiEvAssociateRegionAndHandler(
     FUNCTION_TRACE ("EvAssociateRegionAndHandler");
 
 
-    DEBUG_PRINT (TRACE_OPREGION, ("Adding Region 0x%p to address handler 0x%p\n", 
+    DEBUG_PRINT (TRACE_OPREGION, ("Adding Region 0x%p to address handler 0x%p\n",
                     RegionObj, HandlerObj));
 
     ACPI_ASSERT (RegionObj->Region.SpaceId == HandlerObj->AddrHandler.SpaceId);
@@ -682,7 +682,7 @@ AcpiEvAssociateRegionAndHandler(
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiEvAddrHandlerHelper   
+ * FUNCTION:    AcpiEvAddrHandlerHelper
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              Level               - Nesting level of the handle
@@ -701,8 +701,8 @@ AcpiEvAssociateRegionAndHandler(
 
 ACPI_STATUS
 AcpiEvAddrHandlerHelper (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
     void                    *Context,
     void                    **ReturnValue)
 {
@@ -775,7 +775,7 @@ AcpiEvAddrHandlerHelper (
 
                 DEBUG_PRINT (TRACE_OPREGION, ("Found handler for %s in device 0x%p (0x%p) handler 0x%p\n",
                                 Acpi_GblRegionTypes[HandlerObj->AddrHandler.SpaceId], ObjDesc, TmpObj, HandlerObj));
-                
+
                 /*
                  *  Since the object we found it on was a device, then it
                  *  means that someone has already installed a handler for
