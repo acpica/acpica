@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -273,7 +273,7 @@ AcpiDsResultPop (
     ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState)
 {
-    NATIVE_UINT             Index;
+    ACPI_NATIVE_UINT        Index;
     ACPI_GENERIC_STATE      *State;
 
 
@@ -337,7 +337,7 @@ AcpiDsResultPopFromBottom (
     ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState)
 {
-    NATIVE_UINT             Index;
+    ACPI_NATIVE_UINT        Index;
     ACPI_GENERIC_STATE      *State;
 
 
@@ -813,7 +813,7 @@ AcpiDsObjStackGetValue (
         return_PTR (NULL);
     }
 
-    return_PTR (WalkState->Operands[(NATIVE_UINT)(WalkState->NumOperands - 1) -
+    return_PTR (WalkState->Operands[(ACPI_NATIVE_UINT)(WalkState->NumOperands - 1) -
                     Index]);
 }
 
