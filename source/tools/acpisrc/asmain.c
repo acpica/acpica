@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.57 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -142,6 +142,7 @@ BOOLEAN                 Gbl_DebugStatementsMode = FALSE;
 BOOLEAN                 Gbl_MadeChanges = FALSE;
 BOOLEAN                 Gbl_Overwrite = FALSE;
 BOOLEAN                 Gbl_WidenDeclarations = FALSE;
+BOOLEAN                 Gbl_IgnoreLoneLineFeeds = FALSE;
 
 
 /******************************************************************************
@@ -190,23 +191,41 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" *  Copyright (C) 2000 - 2003, R. Byron Moore\n"
+" * Copyright (C) 2000 - 2003, R. Byron Moore\n"
+" * All rights reserved.\n"
 " *\n"
-" *  This program is free software; you can redistribute it and/or modify\n"
-" *  it under the terms of the GNU General Public License as published by\n"
-" *  the Free Software Foundation; either version 2 of the License, or\n"
-" *  (at your option) any later version.\n"
+" * Redistribution and use in source and binary forms, with or without\n"
+" * modification, are permitted provided that the following conditions\n"
+" * are met:\n"
+" * 1. Redistributions of source code must retain the above copyright\n"
+" *    notice, this list of conditions, and the following disclaimer,\n"
+" *    without modification.\n"
+" * 2. Redistributions in binary form must reproduce at minimum a disclaimer\n"
+" *    substantially similar to the \"NO WARRANTY\" disclaimer below\n"
+" *    (\"Disclaimer\") and any redistribution must be conditioned upon\n"
+" *    including a substantially similar Disclaimer requirement for further\n"
+" *    binary redistribution.\n"
+" * 3. Neither the names of the above-listed copyright holders nor the names\n"
+" *    of any contributors may be used to endorse or promote products derived\n"
+" *    from this software without specific prior written permission.\n"
 " *\n"
-" *  This program is distributed in the hope that it will be useful,\n"
-" *  but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-" *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-" *  GNU General Public License for more details.\n"
+" * Alternatively, this software may be distributed under the terms of the\n"
+" * GNU General Public License (\"GPL\") version 2 as published by the Free\n"
+" * Software Foundation.\n"
 " *\n"
-" *  You should have received a copy of the GNU General Public License\n"
-" *  along with this program; if not, write to the Free Software\n"
-" *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
+" * NO WARRANTY\n"
+" * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n"
+" * \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n"
+" * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR\n"
+" * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n"
+" * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n"
+" * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS\n"
+" * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)\n"
+" * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,\n"
+" * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING\n"
+" * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE\n"
+" * POSSIBILITY OF SUCH DAMAGES.\n"
 " */\n";
-
 
 ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
@@ -259,6 +278,8 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_BUS_ATTRIBUTE",               SRC_TYPE_STRUCT},
     {"ACPI_COMMON_FACS",                 SRC_TYPE_STRUCT},
     {"ACPI_COMMON_STATE",                SRC_TYPE_STRUCT},
+    {"ACPI_COMPATIBLE_ID",               SRC_TYPE_STRUCT},
+    {"ACPI_COMPATIBLE_ID_LIST",          SRC_TYPE_STRUCT},
     {"ACPI_CONTROL_STATE",               SRC_TYPE_STRUCT},
     {"ACPI_CREATE_FIELD_INFO",           SRC_TYPE_STRUCT},
     {"ACPI_DB_METHOD_INFO",              SRC_TYPE_STRUCT},
@@ -280,9 +301,10 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_GENERIC_STATE",               SRC_TYPE_UNION},
     {"ACPI_GET_DEVICES_INFO",            SRC_TYPE_STRUCT},
     {"ACPI_GPE_BLOCK_INFO",              SRC_TYPE_STRUCT},
+    {"ACPI_GPE_XRUPT_INFO",              SRC_TYPE_STRUCT},
+    {"ACPI_GPE_EVENT_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_GPE_HANDLER",                 SRC_TYPE_SIMPLE},
     {"ACPI_GPE_INDEX_INFO",              SRC_TYPE_STRUCT},
-    {"ACPI_GPE_NUMBER_INFO",             SRC_TYPE_STRUCT},
     {"ACPI_GPE_REGISTER_INFO",           SRC_TYPE_STRUCT},
     {"ACPI_HANDLE",                      SRC_TYPE_SIMPLE},
     {"ACPI_INIT_HANDLER",                SRC_TYPE_SIMPLE},
@@ -389,6 +411,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_DESC",                  SRC_TYPE_STRUCT},
     {"ACPI_TABLE_HEADER",                SRC_TYPE_STRUCT},
     {"ACPI_TABLE_INFO",                  SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_LIST",                  SRC_TYPE_STRUCT},
     {"ACPI_TABLE_PTR",                   SRC_TYPE_SIMPLE},
     {"ACPI_TABLE_SUPPORT",               SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TYPE",                  SRC_TYPE_SIMPLE},
@@ -807,6 +830,7 @@ main (
         printf ("Creating Linux source code\n");
         ConversionTable = &LinuxConversionTable;
         Gbl_WidenDeclarations = TRUE;
+        Gbl_IgnoreLoneLineFeeds = TRUE;
         break;
 
     case 'c':

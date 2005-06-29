@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.29 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -264,7 +264,7 @@ AsProcessTree (
     /* Do any subdirectories */
 
     AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_DIRECTORY, "*.*");
+            FILE_TYPE_DIRECTORY, "*");
 
     return 0;
 }
@@ -721,7 +721,7 @@ AsGetFile (
     Buffer = calloc (Size * 2, 1);
     if (!Buffer)
     {
-        printf ("Could not allocate buffer of size %d\n", Size + (Size / 10));
+        printf ("Could not allocate buffer of size %d\n", Size * 2);
         goto ErrorExit;
     }
 
@@ -739,7 +739,7 @@ AsGetFile (
 
     /* Check for unix contamination */
 
-    if (AsDetectLoneLineFeeds (Filename, Buffer))
+    if (!Gbl_IgnoreLoneLineFeeds && AsDetectLoneLineFeeds (Filename, Buffer))
     {
         return -1;
     }
