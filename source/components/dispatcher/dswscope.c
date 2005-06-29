@@ -156,8 +156,8 @@ NsPushCurrentScope (
 
     else
     {
-        if (OUTRANGE (Type, NsTypeNames) || 
-            BadType == NsTypeNames[Type])
+        if ((Type > INTERNAL_TYPE_MAX)     || 
+            (BadType == NsTypeNames[Type]))
         {
             /*  type code out of range  */
 
@@ -257,7 +257,8 @@ NsPopCurrent (
     FUNCTION_TRACE ("NsPopCurrent");
 
 
-    if (OUTRANGE (Type, NsTypeNames) || BadType == NsTypeNames[Type])
+    if ((Type > INTERNAL_TYPE_MAX)      || 
+        (BadType == NsTypeNames[Type]))
     {
         /*  type code out of range  */
 
