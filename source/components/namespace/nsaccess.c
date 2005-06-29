@@ -14,19 +14,21 @@
  | Functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 18:15:24 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 18:15:27 $
  | $Log: nsaccess.c,v $
- | Revision 1.5  2005/06/29 18:15:24  aystarik
- | hNsFindpVal was returning with no value at end of the rountine.  May
- | have never reached the exit, but just because the compiler warned, I fixed it.
+ | Revision 1.6  2005/06/29 18:15:27  aystarik
+ | Anti-Polish clean up
  |
  | 
- | date	99.02.09.19.50.00;	author rmosgrov;	state Exp;
+ | date	99.02.12.23.20.00;	author rmosgrov;	state Exp;
  |
  * 
+ * 6     2/12/99 3:20p Rmosgrov
+ * Anti-Polish clean up
+ * 
  * 5     2/09/99 11:50a Rmosgrov
- * hNsFindpVal was returning with no value at end of the rountine.  May
+ * NsFindpVal was returning with no value at end of the rountine.  May
  * have never reached the exit, but just because the compiler warned, I
  * fixed it.
  * 
@@ -45,15 +47,15 @@
 // Change inc_error() etc. to dKinc_error() etc. (error key logging).
 // 
 //    Rev 1.54   11 Sep 1998 16:26:08   phutchis
-// Rename the iType member of the nte to iNtType to improve readability.
+// Rename the Type member of the nte to NtType to improve readability.
 // 
-// Add support for a Method's nte to have a null pVal field, indicating
+// Add support for a Method's nte to have a null ptrVal field, indicating
 // that the Method is undefined (yet we somehow know that the name is
 // supposed to represent a Method).
 // 
-// Refine debug output fron iNsPopCurrent().
+// Refine debug output fron NsPopCurrent().
 // 
-// Add a comment re an unfixed bug in hGetParentHandle() when the parent
+// Add a comment re an unfixed bug in GetParentHandle() when the parent
 // directory has multiple extents.
 // 
 // Reformat overlength lines.
@@ -71,23 +73,23 @@
 // output control during pass 1 of the loader
 //
 //    Rev 1.49   14 May 1998 16:04:26   phutchis
-// Fixed bug in iExistDownstreamSibling() when checking the last entry of an
+// Fixed bug in ExistDownstreamSibling() when checking the last entry of an
 // extent.
 //
 //    Rev 1.48   13 Mar 1998 14:05:44   phutchis
-// Corrected marking of name tables in vNsMarkNT().
+// Corrected marking of name tables in NsMarkNT().
 //
 //    Rev 1.47   13 Mar 1998 11:16:10   phutchis
 // Corrected handling of types BankField, DefField, FieldUnit, IndexField,
-//   and Region in vNsMarkNT().
-// Call vMarkObjectStack() from iNsMarkNS().
+//   and Region in NsMarkNT().
+// Call vMarkObjectStack() from NsMarkNS().
 //
 //    Rev 1.46   06 Mar 1998 11:41:00   phutchis
 // Added comments concerning garbage collection.
 // No code changes.
 //
 //    Rev 1.45   03 Mar 1998 16:31:24   phutchis
-// Enable vNsSetValue() to set the value to NULL.
+// Enable NsSetValue() to set the value to NULL.
 //
 //    Rev 1.44   02 Mar 1998 19:02:06   phutchis
 // When marking a Name Table, also mark the block(s) occupied by its
@@ -109,11 +111,11 @@
 //    Rev 1.41   05 Feb 1998 11:56:30   phutchis
 // Temporarily reduced name table sizes.
 // Added support for calling a Method from within another Method:
-//   Added vNsPushMethodScope()
+//   Added NsPushMethodScope()
 //   Check for non-empty stacks only at outermost Method exit.
 // Improved storage management
-//   Added hNsFindpVal(), iIsNsValue(), vRegisterStaticBlockPtr(),
-//     and vMarkStaticBlocks().
+//   Added NsFindpVal(), IsNsValue(), RegisterStaticBlockPtr(),
+//     and MarkStaticBlocks().
 //   Delete descriptors when popped from stack or overlaid in name table.
 //
 //    Rev 1.40   18 Dec 1997 21:09:30   kdbranno
@@ -122,7 +124,7 @@
 // make it entirely dynamic rather than having a static size.
 //
 //    Rev 1.39   11 Dec 1997 12:08:02   kdbranno
-// Fixed bug in nsSearchTable where false failure occured if ROOTSIZE and TABLSIZE were the same.
+// Fixed bug in SearchTable where false failure occured if ROOTSIZE and TABLSIZE were the same.
 // Also enabled logging of forward reference problems even when debug level is 0.
 // Changed ROOTSIZE and TABLSIZE both to 25
 //
@@ -132,7 +134,7 @@
 //    Rev 1.37   10 Dec 1997 10:45:04   phutchis
 // Corrected comments.
 // Removed unneeded {}.
-// Fixed OpMode parameter to nsSearchTable() call in hNsGetHandle().
+// Fixed OpMode parameter to SearchTable() call in NsGetHandle().
 //
 //    Rev 1.36   10 Dec 1997 09:27:54   kdbranno
 // Added vFatalError calls to some malloc_bu validations rather than passing NULL back to caller.
@@ -152,7 +154,7 @@
 //
 //    Rev 1.31   26 Nov 1997 16:19:40   phutchis
 // Code inspection rework:
-//   Made acBadType[] public so other modules can check for it in apcNsTypeNames[].
+//   Made BadType[] public so other modules can check for it in NsTypeNames[].
 //
 //    Rev 1.30   06 Nov 1997 10:10:06   phutchis
 // Added some parameter checking and a few more comments.
@@ -162,70 +164,70 @@
 //
 //    Rev 1.28   04 Nov 1997 14:18:36   phutchis
 // Fix problems in rev 1.27:
-//   Restore increment of pcDottedName in pcInternalizeName (lost when the
+//   Restore increment of DottedName in InternalizeName (lost when the
 //     return buffer was changed from static to HWM allocation).
-//   Change 4th parameter in recursive call of nsSearchTable to correspond
+//   Change 4th parameter in recursive call of SearchTable to correspond
 //     with the change of that parameter from (int) to (OpMode).
-// Add debug output when vNsSetValue cannot determine the correct type and
-//   sets bValTyp to DefAny.
+// Add debug output when NsSetValue cannot determine the correct type and
+//   sets ValTyp to DefAny.
 // Improved comments.
 //
 //    Rev 1.27   31 Oct 1997 15:43:18   phutchis
 // Rework from code inspection:
 //   Added/revised comments throughout.
 //   Added #include <stddef.h> to get typedef for ptrdiff_t.
-//   Replaced empty strings in apcNsTypeNames[] with error message.
-//   Renamed nte.ulNamSeg to nte.dNameSeg.
-//   Renamed nte.nChildren to nte.nChildScope.
-//   Renamed sCurrentScope[] to sScopeStack[].
-//   Renamed vNsSetCurrent() to vNsPushCurrentScope().
+//   Replaced empty strings in NsTypeNames[] with error message.
+//   Renamed nte.ulNamSeg to nte.NameSeg.
+//   Renamed nte.nChildren to nte.ChildScope.
+//   Renamed sCurrentScope[] to ScopeStack[].
+//   Renamed vNsSetCurrent() to NsPushCurrentScope().
 //   Removed vReporter() parameter from several functions.
-//   Added calls to vKFatalError(()) for numerous catastrophic failures.
-//   Changed name buffer used by pcInternalizeName() from static to HWM alloc.
+//   Added calls to KFatalError(()) for numerous catastrophic failures.
+//   Changed name buffer used by InternalizeName() from static to HWM alloc.
 //   Changed printf control %ls to %p when printing pointers.
 //   Changed return-value symbols SUCCESS, FAILURE, ERROR, and RETURN to
 //     S_SUCCESS, S_FAILURE, S_ERROR, and S_RETURN to forestall collisions
 //     with other subsystems.
-//   Delete allocated return value if caller of iAcpiExecuteMethod() did not
+//   Delete allocated return value if caller of AcpiExecuteMethod() did not
 //     provide a place to store the descriptor.
 //   Added warnings to various functions for invalid parameters.
-//   Replaced "int iAdd" parameter of nsSearchTable() with "OpMode iLE".
-//   Fixed major bug in nsSearchTable when USE_HASHING was not #defined.
+//   Replaced "int iAdd" parameter of SearchTable() with "OpMode LoadMode".
+//   Fixed major bug in SearchTable when USE_HASHING was not #defined.
 //   Initial values which are strings now get copied to allocated space
 //     instead of being left in compiler-allocated static storage.
-//   Changed vNsPopCurrent() to iNsPopCurrent, returning the number of frames
+//   Changed vNsPopCurrent() to NsPopCurrent, returning the number of frames
 //     popped (or an error indication).
-//   Replaced "int iLoading" parameter of hNsEnter() with "OpMode iLE".
-//   Revised pcFindParentName() to call hGetParentHandle() instead of
+//   Replaced "int iLoading" parameter of NsEnter() with "OpMode LoadMode".
+//   Revised FindParentName() to call GetParentHandle() instead of
 //     duplicating its logic.
 //   Changed empty formal parameter lists to "(void)".
 //   Changed values which are offsets from (int) to (ptrdiff_t).
-//   Improved parameter diagnostics in vNsSetMethod() and vNsSetValue().
-//   Revised iExistDownstreamSibling() to eliminate unneeded local variables.
+//   Improved parameter diagnostics in NsSetMethod() and NsSetValue().
+//   Revised ExistDownstreamSibling() to eliminate unneeded local variables.
 //   Ensure correct table size is passed to various functions depending on
 //     whether the root, or some other scope, is being processed.
-//   Improve NOTFOUND handling in hNsGetHandle().
-//   Made iExistDownstreamSibling() static.
+//   Improve NOTFOUND handling in NsGetHandle().
+//   Made ExistDownstreamSibling() static.
 //
 //    Rev 1.26   24 Sep 1997 15:10:26   phutchis
-// Add #include of bu_plumr.h, and functions vNsMarkNT() and iNsMarkNS(),
+// Add #include of bu_plumr.h, and functions NsMarkNT() and NsMarkNS(),
 //   to audit allocation and find leaks.
 // Add allocation comments to function headers.
 //
 //    Rev 1.25   16 Sep 1997 10:37:18   phutchis
-// Renamed nParent member of nte to nParentScope to better reflect its use
-// Added scope-related tracing in iAcpiExecuteMethod() and nsSearchTable()
-// Handle case where vReporter() parameter to hNsEnter() is NULL
-// Corrected oversimplification in hGetParentHandle()
-// Corrected handling of subtree search in phNsFindNames()
-// Added function pcNsNameOfScope() [generalization of pcNsNameOfCurrentScope()]
-// Added function hNsGetHandle()
+// Renamed nParent member of nte to ParentScope to better reflect its use
+// Added scope-related tracing in AcpiExecuteMethod() and SearchTable()
+// Handle case where vReporter() parameter to NsEnter() is NULL
+// Corrected oversimplification in GetParentHandle()
+// Corrected handling of subtree search in NsFindNames()
+// Added function NsNameOfScope() [generalization of NsNameOfCurrentScope()]
+// Added function NsGetHandle()
 //
 //    Rev 1.24   04 Aug 1997 16:14:04   kdbranno
-// Added function hGetParentHandle.
+// Added function GetParentHandle.
 //
 //    Rev 1.23   29 Jul 1997 14:35:16   phutchis
-// Add ppsParams parameter to iAcpiExecuteMethod()
+// Add Params parameter to AcpiExecuteMethod()
 // Ensure correct setting of current scope when a method starts execution
 // Improve reporting of "name table overflow" and "name not found" conditions
 //
@@ -239,11 +241,11 @@
 // erroneous cases.
 //
 //    Rev 1.20   11 Jul 1997 16:05:12   phutchis
-// Add iIsNsHandle() macro, some comments re typedef nte, and a function
-// header for pcInternalizeName
+// Add IsNsHandle() macro, some comments re typedef nte, and a function
+// header for InternalizeName
 //
 //    Rev 1.19   08 Jul 1997 17:02:30   phutchis
-// Add ppsReturnValue parameter to iAcpiExecuteMethod().
+// Add ReturnValue parameter to AcpiExecuteMethod().
 //
 //    Rev 1.18   03 Jul 1997 16:26:22   phutchis
 // fixed typo !!??$$##%%!!!
@@ -262,18 +264,18 @@
 // Caused the file header to end prematurely...
 //
 //    Rev 1.15   18 Jun 1997 09:35:36   phutchis
-// Add hSearchBase and iMaxDepth parameters to vNsDumpTables()
+// Add SearchBase and MaxDepth parameters to NsDumpTables()
 // and phFindNames()
 // Replace (XXX) debugging hack with (Trace & TraceNames)
 // Clean up some XXX commented areas
 //
 //    Rev 1.14   12 Jun 1997 10:00:20   phutchis
-// Add parameter to phNsFindNames() to enable searching a subtree.
+// Add parameter to NsFindNames() to enable searching a subtree.
 //
 //    Rev 1.13   11 Jun 1997 15:47:38   phutchis
 // Adjust scope rules to agree with Memphis OS.
 // Add capability to preload namespace.
-// When a non-method object is passed to iAcpiExecuteMethod,
+// When a non-method object is passed to AcpiExecuteMethod,
 //   return the object as the result.
 // When a search specifying "Any" type finds an object of known type,
 //   make subsequent scope-related decisions according to the type found.
@@ -292,7 +294,7 @@
 //
 //    Rev 1.9   16 Apr 1997 15:02:32   kdbranno
 // returned declarations for "meth" and "nte" to apcinmsp.c from acpinmsp.h.
-// Changed prototpye of iExistDownstreamSibling to take NsHandle rather than
+// Changed prototpye of ExistDownstreamSibling to take NsHandle rather than
 // nte.
 // Changed include brackets to quotes for .h files from ACPILIB
 //
@@ -300,10 +302,10 @@
 // Moved typedef for nte and meth to acpinmsp.h
 //
 //    Rev 1.7   Apr 14 1997 15:49:08   kdbranno
-// Added #include <display.h>.  Implemented function iExistDownstreamSibling().
-// Used iExistDownstreamSibling() to make intellegent choice of line drawing
-// characters when outputing nametree. Added iDisplayBitFlags parameter to
-// vNsDumpTables().
+// Added #include <display.h>.  Implemented function ExistDownstreamSibling().
+// Used ExistDownstreamSibling() to make intellegent choice of line drawing
+// characters when outputing nametree. Added DisplayBitFlags parameter to
+// NsDumpTables().
 //
 //    Rev 1.6   18 Mar 1997 09:29:56   phutchis
 // Work around ic386 breakage where enum != int
@@ -311,9 +313,9 @@
 // Cast params of calloc() and NcOK() to proper types
 //
 //    Rev 1.5   14 Mar 1997 17:44:20   phutchis
-// Renamed vNsEnter to hNsEnter to correspond to its return value
+// Renamed vNsEnter to NsEnter to correspond to its return value
 // type (handle), and added iLoading parameter.
-// iAcpiExecuteMethod() now finds the passed name in the name space,
+// AcpiExecuteMethod() now finds the passed name in the name space,
 // locates the method's p-code, and (temporarily) processes it through
 // the dumper.  Actual interpretation of the p-code is not yet provided.
 //
@@ -342,7 +344,7 @@
 
 
 /* 
- * Defining FETCH_VALUES enables iAcpiExecuteMethod() to "execute"
+ * Defining FETCH_VALUES enables AcpiExecuteMethod() to "execute"
  * a name which is not a Method by fetching and returning its value.
  */
 #define FETCH_VALUES
@@ -350,7 +352,7 @@
 
 /* 
  * set non-zero to enable some flow tracing
- * in vNsDumpTable() and vNsDumpEntry()
+ * in NsDumpTable() and NsDumpEntry()
  */
 static int TRACE = 1;
 
@@ -403,10 +405,10 @@ static int TRACE = 1;
  * To avoid type punning, both are specified as strings in this table.
  */
 static struct InitVal {
-    char        *pcName;
-    NsType      iType;
-    char        *pcVal;
-} asPreDefinedNames[] = {
+    char        *Name;
+    NsType      Type;
+    char        *Val;
+} PreDefinedNames[] = {
     {"_GPE", DefAny},
     {"_PR_", DefAny},
     {"_SB_", DefAny},
@@ -420,13 +422,13 @@ static struct InitVal {
 
 
 /* 
- * Elements of aiNsProperties are bit significant
+ * Elements of NsProperties are bit significant
  * and should be one-to-one with values of NsType in acpinmsp.h
  */
 #define NEWSCOPE    1               /* a definition of this type opens a name scope */
 #define LOCAL       2               /* suppress search of enclosing scopes */
 
-static int aiNsProperties[] = {     /* properties of types */
+static int NsProperties[] = {     /* properties of types */
     0,                      /* Any              */
     0,                      /* Number           */
     0,                      /* String           */
@@ -457,11 +459,11 @@ static int aiNsProperties[] = {     /* properties of types */
     0                       /* Lvalue           */
 };
 
-char acBadType[] = "ERROR: unused type encoding found in table";
+char BadType[] = "ERROR: unused type encoding found in table";
 
 
 /* 
- * Elements of apcNsTypeNames should be
+ * Elements of NsTypeNames should be
  * one-to-one with values of NsType in acpinmsp.h
  */
 
@@ -471,7 +473,7 @@ char acBadType[] = "ERROR: unused type encoding found in table";
  * what type is actually going to be stored for this entry.
  */
 
-char *apcNsTypeNames[] = { /* printable names of types */
+char *NsTypeNames[] = { /* printable names of types */
     "Unknown",
     "Number",
     "String",
@@ -487,8 +489,8 @@ char *apcNsTypeNames[] = { /* printable names of types */
     "Processor",
     "Thermal",
     "Alias",
-    acBadType, acBadType, acBadType, acBadType, acBadType,
-    acBadType, acBadType, acBadType, acBadType, acBadType,
+    BadType, BadType, BadType, BadType, BadType,
+    BadType, BadType, BadType, BadType, BadType,
     "DefField",
     "BankField",
     "IndexField",
@@ -516,19 +518,19 @@ char *apcNsTypeNames[] = { /* printable names of types */
  * ways: as pointer to an individual nte and as pointer to an entire name
  * table (which is an array of nte, sometimes referred to as a scope).  In
  * the latter case, the specific nte pointed to may be unused; however its
- * nParentScope member will be valid.
+ * ParentScope member will be valid.
  */
 
 typedef struct nte
 {
-    DWORD           dNameSeg;       /* name segment, always 4 chars per ACPI spec.
-                                     * dNameSeg must be the first field in the nte
-                                     * -- see the iIsNsHandle macro in acpinmsp.h
+    DWORD           NameSeg;       /* name segment, always 4 chars per ACPI spec.
+                                     * NameSeg must be the first field in the nte
+                                     * -- see the IsNsHandle macro in acpinmsp.h
                                      */
-    struct nte      *nChildScope;   /* next level of names */
-    struct nte      *nParentScope;  /* previous level of names */
-    NsType          iNtType;        /* type associated with name */
-    void            *pVal;          /* pointer to value */
+    struct nte      *ChildScope;   /* next level of names */
+    struct nte      *ParentScope;  /* previous level of names */
+    NsType          NtType;        /* type associated with name */
+    void            *ptrVal;          /* pointer to value */
 } nte;
 
 #define NOTFOUND (nte *)0
@@ -539,14 +541,14 @@ typedef struct nte
  * of nte's in the scope.
  */
 #ifndef USE_HASHING
-#define NEXTSEG(nNT) ((nte **)nNT)[-1]
+#define NEXTSEG(NameTbl) ((nte **)NameTbl)[-1]
 #endif
 
-static nte      *psRoot = (nte *)0;
-static int      iNsRootSize;        /* set from ROOTSIZE -- could potentially
+static nte      *Root = (nte *)0;
+static int      NsRootSize;        /* set from ROOTSIZE -- could potentially
                                      * support dynamic sizing of root NT
                                      */
-static int      iNsCurrentSize;     /* will be either ROOTSIZE or TABLSIZE
+static int      NsCurrentSize;     /* will be either ROOTSIZE or TABLSIZE
                                      * depending on whether the current scope
                                      * is the root
                                      */
@@ -562,12 +564,12 @@ static FILE     *LogFile;
 
 static struct
 {
-    nte         *psScope;
-    NsType      iType;      /* Type of scope, typically the same as the type of
+    nte         *Scope;
+    NsType      Type;      /* Type of scope, typically the same as the type of
                              * its parent's entry (but not the same as the type
                              * of its parent's scope).
                              */
-} sScopeStack[MAXNEST], *psCurrentScope;
+} ScopeStack[MAXNEST], *CurrentScope;
 
 
 
@@ -575,62 +577,62 @@ static struct
 
 #define MAX_STATIC_BLOCKS 10
 
-static void     **appvStaticBlockList[MAX_STATIC_BLOCKS];
-static int      iNumStaticBlocks = 0;
+static void     **StaticBlockList[MAX_STATIC_BLOCKS];
+static int      NumStaticBlocks = 0;
 
 
 
 /****************************************************************************
  *
- * FUNCTION:    vRegisterStaticBlockPtr
+ * FUNCTION:    RegisterStaticBlockPtr
  *
- * PARAMETERS:  void    **ppvBP         Addr of static pointer to be registered
+ * PARAMETERS:  void    **BlkPtr         Addr of static pointer to be registered
  *
  * DESCRIPTION: If compiled with bu_plumr.h, add the pointer whose address
- *              is passed to the registry.  vMarkStaticBlocks() will then
+ *              is passed to the registry.  MarkStaticBlocks() will then
  *              "mark" each block pointed to by a registered pointer.
  *
  ***************************************************************************/
 
 void
-vRegisterStaticBlockPtr (void **ppvBP)
+RegisterStaticBlockPtr (void **BlkPtr)
 {
 
 
-    if (iNumStaticBlocks < MAX_STATIC_BLOCKS)
+    if (NumStaticBlocks < MAX_STATIC_BLOCKS)
     {
-        appvStaticBlockList[iNumStaticBlocks++] = (void **) ppvBP;
+        StaticBlockList[NumStaticBlocks++] = (void **) BlkPtr;
     }
 
     else
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                        "vRegisterStaticBlockPtr: too many static blocks");
-        _dKinc_warning ("0001", PRINT, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                        "RegisterStaticBlockPtr: too many static blocks");
+        _dKinc_warning ("0001", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
     }
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    vMarkStaticBlocks
+ * FUNCTION:    MarkStaticBlocks
  *
- * PARAMETERS:  int *piCount        Count of blocks marked
+ * PARAMETERS:  int *Count        Count of blocks marked
  *
  * DESCRIPTION: "Mark" all blocks pointed to by registered static pointers
  *
  ***************************************************************************/
 
 void
-vMarkStaticBlocks (int *piCount)
+MarkStaticBlocks (int *Count)
 {
     int             i;
 
 
-    for (i = 0; i < iNumStaticBlocks; ++i)
+    for (i = 0; i < NumStaticBlocks; ++i)
     {
-        ++*piCount;
-        vMarkBlock (*appvStaticBlockList[i]);
+        ++*Count;
+        MarkBlock (*StaticBlockList[i]);
     }
 }
 
@@ -639,9 +641,9 @@ vMarkStaticBlocks (int *piCount)
 
 /****************************************************************************
  *
- * FUNCTION:    nAllocNT
+ * FUNCTION:    AllocNT
  *
- * PARAMETERS:  int iSize       # of nte in table
+ * PARAMETERS:  int Size       # of nte in table
  *
  * DESCRIPTION: Allocate an array of nte, including prepended link space
  *
@@ -650,41 +652,41 @@ vMarkStaticBlocks (int *piCount)
  ***************************************************************************/
 
 static nte *
-nAllocNT (int iSize)
+AllocNT (int Size)
 {
-    nte             *nNewNT;
-    size_t          stAllocSize = (size_t) iSize * sizeof (nte);
+    nte             *NewNT;
+    size_t          AllocSize = (size_t) Size * sizeof (nte);
 
 
 #ifndef USE_HASHING
     
     /* Allow room for link to appendage */
     
-    stAllocSize += sizeof (nte *);
+    AllocSize += sizeof (nte *);
 #endif
 
     
-    nNewNT = (nte *) OsdCallocate (stAllocSize, 1);
+    NewNT = (nte *) OsdCallocate (AllocSize, 1);
 
 #ifndef USE_HASHING
-    if (nNewNT)
+    if (NewNT)
     {
         /* Move past the appendage pointer */
         
-        nNewNT = (nte *) (((BYTE *) nNewNT) + sizeof (nte *));
+        NewNT = (nte *) (((BYTE *) NewNT) + sizeof (nte *));
     }
 #endif
 
-    return nNewNT;
+    return NewNT;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    vNsPushCurrentScope
+ * FUNCTION:    NsPushCurrentScope
  *
- * PARAMETERS:  nte     *nNewScope,             name to be made current
- *              NsType  iType,                  type of frame being pushed
+ * PARAMETERS:  nte     *NewScope,             name to be made current
+ *              NsType  Type,                  type of frame being pushed
  *
  * DESCRIPTION: Push the current scope on the scope stack, and make the
  *              passed nte current.
@@ -692,53 +694,53 @@ nAllocNT (int iSize)
  ***************************************************************************/
 
 static void
-vNsPushCurrentScope (nte *nNewScope, NsType iType)
+NsPushCurrentScope (nte *NewScope, NsType Type)
 {
 
-    FUNCTION_TRACE ("vNsPushCurrentScope");
+    FUNCTION_TRACE ("NsPushCurrentScope");
 
 
-    if ((nte *) 0 == nNewScope)
+    if ((nte *) 0 == NewScope)
     {
-        vKFatalError ("0002", ("vNsPushCurrentScope: null scope passed"));
+        KFatalError ("0002", ("NsPushCurrentScope: null scope passed"));
     }
 
-    if (OUTRANGE (iType, apcNsTypeNames) || acBadType == apcNsTypeNames[iType])
+    if (OUTRANGE (Type, NsTypeNames) || BadType == NsTypeNames[Type])
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                        "vNsPushCurrentScope: type code %d out of range", iType);
-        _dKinc_warning ("0003", PRINT, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                        "NsPushCurrentScope: type code %d out of range", Type);
+        _dKinc_warning ("0003", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
     }
 
-    if (psCurrentScope < &sScopeStack[MAXNEST-1])   /* check for overflow */
+    if (CurrentScope < &ScopeStack[MAXNEST-1])   /* check for overflow */
     {
-        ++psCurrentScope;
-        psCurrentScope->psScope = nNewScope;
-        psCurrentScope->iType = iType;
+        ++CurrentScope;
+        CurrentScope->Scope = NewScope;
+        CurrentScope->Type = Type;
 
-        if (psCurrentScope->psScope == psRoot)
+        if (CurrentScope->Scope == Root)
         {
-            iNsCurrentSize = iNsRootSize;
+            NsCurrentSize = NsRootSize;
         }
         
         else
         {
-            iNsCurrentSize = TABLSIZE;
+            NsCurrentSize = TABLSIZE;
         }
     }
     
     else
     {
-        vKFatalError ("0004", ("Scope stack overflow"));
+        KFatalError ("0004", ("Scope stack overflow"));
     }
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    vNsPushMethodScope
+ * FUNCTION:    NsPushMethodScope
  *
- * PARAMETERS:  NsHandle nNewScope,             name to be made current
+ * PARAMETERS:  NsHandle NewScope,             name to be made current
  *
  * DESCRIPTION: Push the current scope on the scope stack, and make the
  *              passed nte current.
@@ -746,25 +748,25 @@ vNsPushCurrentScope (nte *nNewScope, NsType iType)
  ***************************************************************************/
 
 void
-vNsPushMethodScope(NsHandle nNewScope)
+NsPushMethodScope(NsHandle NewScope)
 {
 
-    FUNCTION_TRACE ("vNsPushMethodScope");
+    FUNCTION_TRACE ("NsPushMethodScope");
 
 
-    if ((nte *) 0 == nNewScope || (nte *) 0 == ((nte *) nNewScope)->nChildScope)
+    if ((nte *) 0 == NewScope || (nte *) 0 == ((nte *) NewScope)->ChildScope)
     {
-        vKFatalError ("0005", ("vNsPushMethodScope: null scope passed"));
+        KFatalError ("0005", ("NsPushMethodScope: null scope passed"));
     }
 
-    if (psCurrentScope < &sScopeStack[MAXNEST-1])   /* check for overflow */
+    if (CurrentScope < &ScopeStack[MAXNEST-1])   /* check for overflow */
     {
-        vNsPushCurrentScope (((nte *) nNewScope)->nChildScope, Method);
+        NsPushCurrentScope (((nte *) NewScope)->ChildScope, Method);
     }
     
     else
     {
-        vKFatalError ("0006", ("Scope stack overflow"));
+        KFatalError ("0006", ("Scope stack overflow"));
     }
 }
 
@@ -774,7 +776,7 @@ vNsPushMethodScope(NsHandle nNewScope)
 /* REMOVE THIS !!! */
 
 void
-vNoMsg(char * pcMessage)
+NoMsg(char * pcMessage)
 {
 
     FUNCTION_TRACE ("vNoMsg");
@@ -784,9 +786,9 @@ vNoMsg(char * pcMessage)
 
 /****************************************************************************
  *
- * FUNCTION:    pcInternalizeName
+ * FUNCTION:    InternalizeName
  *
- * PARAMETERS:  char *pcDottedName -        external representation of name
+ * PARAMETERS:  char *DottedName -        external representation of name
  *
  * RETURN:      Internal representation of name
  *
@@ -795,23 +797,23 @@ vNoMsg(char * pcMessage)
  *
  * ALLOCATION:
  * Reference   Size              Pool  Owner                Description
- * pcIN{sl}    iINsiz{sl:HWM}    bu    pcInternalizeName    Internal name
+ * pcIN{sl}    INsiz{sl:HWM}     bu    InternalizeName      Internal name
  *
  ****************************************************************************/
 
 static char *
-pcInternalizeName (char *pcDottedName)
+InternalizeName (char *DottedName)
 {
     char            *pcResult;
     size_t          i;
     static char     *pcIN = (char *) 0;
-    static          size_t iINsiz = 0;
+    static          size_t INsiz = 0;
 
 
-    FUNCTION_TRACE ("pcInternalizeName");
+    FUNCTION_TRACE ("InternalizeName");
 
 
-    i = strlen (pcDottedName++) / 5;
+    i = strlen (DottedName++) / 5;
 
     /* 
      * Required length is 4 bytes per segment, plus 1 each for RootPrefix,
@@ -819,7 +821,7 @@ pcInternalizeName (char *pcDottedName)
      * needed, but no there's harm in putting it there)
      */
 
-    if (iINsiz < 4 * i + 4)
+    if (INsiz < 4 * i + 4)
     {
         if (pcIN != (char *) 0)
         {
@@ -828,29 +830,29 @@ pcInternalizeName (char *pcDottedName)
         
         else
         {
-            vRegisterStaticBlockPtr(&pcIN);
+            RegisterStaticBlockPtr(&pcIN);
         }
 
         pcIN = OsdCallocate (1, 4 * i + 4);
         if ((char *) 0 == pcIN)
         {
-            vKFatalError("0007", ("pcInternalizeName: allocation failure"));
+            KFatalError("0007", ("InternalizeName: allocation failure"));
         }
         
-        iINsiz = 4 * i + 4;
+        INsiz = 4 * i + 4;
     }
 
     strcpy (pcIN, "\\/");
     for (pcIN[2] = i, pcResult = &pcIN[3]; i; --i)
     {
-        strncpy (pcResult, pcDottedName, 4);
+        strncpy (pcResult, DottedName, 4);
         pcResult += 4;
-        pcDottedName += 5;
+        DottedName += 5;
     }
 
     *pcResult = '\0';
 
-    /* fprintf(fLstFile, "pcInternalizeName: returning %p => %s\n", pcIN, pcIN); */
+    /* fprintf(fLstFile, "InternalizeName: returning %p => %s\n", pcIN, pcIN); */
     
     return pcIN;
 }
@@ -858,20 +860,20 @@ pcInternalizeName (char *pcDottedName)
 
 /****************************************************************************
  *
- * FUNCTION:    iAcpiExecuteMethod
+ * FUNCTION:    AcpiExecuteMethod
  *
- * PARAMETERS:  char *pcMethodName      name of method to execute
+ * PARAMETERS:  char *MethodName        name of method to execute
  *              OBJECT_DESCRIPTOR       where to put method's return
- *              **ppsReturnValue        value (if any).
- *                                      ppsReturnValue must not be
+ *              **ReturnValue           value (if any).
+ *                                      ReturnValue must not be
  *                                      passed in as NULL because
- *                                      *ppsReturnValue will always
+ *                                      *ReturnValue will always
  *                                      be set (to NULL if there is
  *                                      no return value).
  *              OBJECT_DESCRIPTOR 
- *              **ppsParams             list of parameters to pass to
+ *              **Params                list of parameters to pass to
  *                                      method, terminated by NULL.
- *                                      ppsParams itself may be NULL
+ *                                      Params itself may be NULL
  *                                      if no parameters are being
  *                                      passed.
  *
@@ -882,82 +884,82 @@ pcInternalizeName (char *pcDottedName)
  *
  * ALLOCATION:
  * Reference       Size                 Pool Owner       Description
- * *ppsReturnValue s(OBJECT_DESCRIPTOR) bu   CALLER      returned value
+ * *ReturnValue s(OBJECT_DESCRIPTOR) bu   CALLER      returned value
  *
  ****************************************************************************/
 
 int
-AcpiExecuteMethod (char * pcMethodName, OBJECT_DESCRIPTOR **ppsReturnValue,
-                    OBJECT_DESCRIPTOR **ppsParams)
+AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR **ReturnValue,
+                    OBJECT_DESCRIPTOR **Params)
 {
-    nte             *hMethod;
-    int             iRv;
+    nte             *Method;
+    int             RetVal;
 
 
-    FUNCTION_TRACE ("iAcpiExecuteMethod");
+    FUNCTION_TRACE ("AcpiExecuteMethod");
 
 
 BREAKPOINT3;
 
-    if ((OBJECT_DESCRIPTOR **) 0 != ppsReturnValue)
+    if ((OBJECT_DESCRIPTOR **) 0 != ReturnValue)
     {
-        *ppsReturnValue = (OBJECT_DESCRIPTOR *) 0;
+        *ReturnValue = (OBJECT_DESCRIPTOR *) 0;
     }
 
-    if ((nte *) 0 == psRoot)
+    if ((nte *) 0 == Root)
     {
         /* 
          * If the name space has not been initialized, the Method has surely
          * not been defined and there is nothing to execute.
          */
 
-        pcWhy = "Name space not initialized";
+        Why = "Name space not initialized";
         return E_ERROR;
     }
 
-    if (pcMethodName[0] != '\\' || pcMethodName[1] != '/')
+    if (MethodName[0] != '\\' || MethodName[1] != '/')
     {
-        pcMethodName = pcInternalizeName (pcMethodName);
+        MethodName = InternalizeName (MethodName);
     }
 
 
     /* See comment near top of file re significance of FETCH_VALUES */
 
 #ifdef FETCH_VALUES
-    hMethod = (nte *) hNsEnter (pcMethodName, Any, Exec);
+    Method = (nte *) NsEnter (MethodName, Any, Exec);
 #else 
-    hMethod = (nte *) hNsEnter (pcMethodName, Method, Exec);
+    Method = (nte *) NsEnter (MethodName, Method, Exec);
 #endif
 
-    if (NOTFOUND == hMethod)
+    if (NOTFOUND == Method)
     {
-        pcWhy = "Method not found";
+        Why = "Method not found";
         return E_ERROR;
     }
 
 #ifdef FETCH_VALUES
-    if (iNsValType (hMethod) == Method)
+    if (NsValType (Method) == Method)
     {
         /* Name found is in fact a Method */
         
         if (debug_level () > 0)
         {
             LineSet (55, Exec);
-            fprintf_bu (iLstFileHandle, LOGFILE,
-                        "[%s hMethod %p pVal %p ",
-                        pcMethodName, hMethod, hMethod->pVal);
+            fprintf_bu (LstFileHandle, LOGFILE,
+                        "[%s Method %p ptrVal %p ",
+                        MethodName, Method, Method->ptrVal);
 
-            if (hMethod->pVal)
+            if (Method->ptrVal)
             {
-                fprintf_bu (iLstFileHandle, LOGFILE,
-                            "iOffset %x lLength %lx]",
-                            ((meth *) hMethod->pVal)->iOffset + 1,
-                            ((meth *) hMethod->pVal)->lLength - 1);
+                fprintf_bu (LstFileHandle, LOGFILE,
+                            "Offset %x Length %lx]",
+                            ((meth *) Method->ptrVal)->Offset + 1,
+                            ((meth *) Method->ptrVal)->Length - 1);
             }
             
             else
             {
-                fprintf_bu(iLstFileHandle, LOGFILE, "*Undefined*]");
+                fprintf_bu(LstFileHandle, LOGFILE, "*Undefined*]");
             }
         }
 #endif
@@ -968,58 +970,58 @@ BREAKPOINT3;
          * case, set the current scope to that of the Method, and execute it.
          */
 
-        if (!hMethod->pVal)
+        if (!Method->ptrVal)
         {
-            pcWhy = "Method is undefined";
+            Why = "Method is undefined";
             return E_ERROR;
         }
 
         if (Trace & TraceNames)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE, "Set scope %s ",
-                          pcNsFullyQualifiedName(hMethod->nChildScope));
+            fprintf_bu (LstFileHandle, LOGFILE, "Set scope %s ",
+                          NsFullyQualifiedName(Method->ChildScope));
         }
         
-        psCurrentScope = &sScopeStack[0];
-        vNsPushCurrentScope (hMethod->nChildScope, Method);
+        CurrentScope = &ScopeStack[0];
+        NsPushCurrentScope (Method->ChildScope, Method);
         
         if (Trace & TraceNames)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE, "Exec Method %s ",
-                          pcNsFullyQualifiedName (hMethod));
+            fprintf_bu (LstFileHandle, LOGFILE, "Exec Method %s ",
+                          NsFullyQualifiedName (Method));
         }
         
-        vClearPkgStack ();
-        iObjStackTop = 0;                                           /* Clear object stack */
-        iRv = iAmlExec (((meth *) hMethod->pVal)->iOffset + 1,
-                            ((meth *) hMethod->pVal)->lLength - 1,
-                            ppsParams);
+        ClearPkgStack ();
+        ObjStackTop = 0;                                           /* Clear object stack */
+        RetVal = AmlExec (((meth *) Method->ptrVal)->Offset + 1,
+                            ((meth *) Method->ptrVal)->Length - 1,
+                            Params);
 
-        if (debug_level () > 0 && iPkgNested ())
+        if (debug_level () > 0 && PkgNested ())
         {
-            fprintf_bu (iLstFileHandle, LOGFILE,
+            fprintf_bu (LstFileHandle, LOGFILE,
                             "Package stack not empty at method exit");
-            _dKinc_info ("0008", PACRLF, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+            _dKinc_info ("0008", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         }
 
-        if (iGetMethodDepth () > -1)
+        if (GetMethodDepth () > -1)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE,
+            fprintf_bu (LstFileHandle, LOGFILE,
                             "Method stack not empty at method exit");
-            _dKinc_error("0009", PACRLF, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+            _dKinc_error("0009", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         }
 
-        if (debug_level () > 0 && iObjStackTop)
+        if (debug_level () > 0 && ObjStackTop)
         {
-            int             iSaveTrace = Trace;
+            int             SaveTrace = Trace;
 
-            fprintf_bu (iLstFileHandle, LOGFILE,
+            fprintf_bu (LstFileHandle, LOGFILE,
                             "Object stack not empty at method exit");
-            _dKinc_info ("0010", PACRLF, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+            _dKinc_info ("0010", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
             
-            Trace |= TraceExec;         /* enable output from vDumpStack */
-            vDumpStack (Exec, "Remaining Object Stack entries", -1, "");
-            Trace = iSaveTrace;
+            Trace |= TraceExec;         /* enable output from DumpStack */
+            DumpStack (Exec, "Remaining Object Stack entries", -1, "");
+            Trace = SaveTrace;
         }
 
 #ifdef FETCH_VALUES
@@ -1035,8 +1037,8 @@ BREAKPOINT3;
 
         if (debug_level () > 0)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE, "Value: ");
-            vNsDumpEntry (hMethod, LOGFILE);
+            fprintf_bu (LstFileHandle, LOGFILE, "Value: ");
+            NsDumpEntry (Method, LOGFILE);
         }
 
         pOD = NEW (OBJECT_DESCRIPTOR);
@@ -1044,35 +1046,35 @@ BREAKPOINT3;
         {
             /* Construct a descriptor pointing to the name */
             
-            pOD->sLvalue.bValTyp = (BYTE) Lvalue;
-            pOD->sLvalue.bOpCode = (BYTE) NameOp;
-            pOD->sLvalue.pvRef = (void *) hMethod;
+            pOD->sLvalue.ValTyp = (BYTE) Lvalue;
+            pOD->sLvalue.OpCode = (BYTE) NameOp;
+            pOD->sLvalue.Ref = (void *) Method;
 
             /* 
-             * Put it on the stack, and use iGetRvalue() to get the value.
-             * Note that iObjStackTop points to the top valid entry, not to
+             * Put it on the stack, and use GetRvalue() to get the value.
+             * Note that ObjStackTop points to the top valid entry, not to
              * the first unused position.
              */
 
-            vDeleteObject ((OBJECT_DESCRIPTOR **) &apObjStack[iObjStackTop]);
-            apObjStack[iObjStackTop] = (void *) pOD;
-            iRv = iGetRvalue ((OBJECT_DESCRIPTOR **) &apObjStack[iObjStackTop]);
+            DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+            ObjStack[ObjStackTop] = (void *) pOD;
+            RetVal = GetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
 
             /* 
-             * If iGetRvalue() succeeded, treat the top stack entry as
+             * If GetRvalue() succeeded, treat the top stack entry as
              * a return value.
              */
 
-            if (S_SUCCESS == iRv)
+            if (S_SUCCESS == RetVal)
             {
-                iRv = S_RETURN;
+                RetVal = S_RETURN;
             }
         }
         
         else
         {
-            pcWhy = "iAcpiExecuteMethod: Descriptor Allocation Failure";
-            iRv = S_ERROR;
+            Why = "AcpiExecuteMethod: Descriptor Allocation Failure";
+            RetVal = S_ERROR;
         }
     }
 #endif
@@ -1080,7 +1082,7 @@ BREAKPOINT3;
 
 BREAKPOINT3;
 
-    if (S_ERROR == iRv)
+    if (S_ERROR == RetVal)
     {
         return E_ERROR;
     }
@@ -1092,16 +1094,16 @@ BREAKPOINT3;
          * to store a returned value, pass back the returned value.
          */
 
-        if (S_RETURN == iRv)
+        if (S_RETURN == RetVal)
         {
-            if ((OBJECT_DESCRIPTOR **) 0 != ppsReturnValue)
+            if ((OBJECT_DESCRIPTOR **) 0 != ReturnValue)
             {
-                *ppsReturnValue = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
+                *ReturnValue = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
             }
             
             else
             {
-                DELETE (apObjStack[iObjStackTop]);
+                DELETE (ObjStack[ObjStackTop]);
             }
         }
 
@@ -1112,7 +1114,7 @@ BREAKPOINT3;
 
 /****************************************************************************
  *
- * FUNCTION:    iAcpiLoadNameSpace
+ * FUNCTION:    AcpiLoadNameSpace
  *
  * PARAMETERS:  none
  *
@@ -1123,12 +1125,12 @@ BREAKPOINT3;
  ****************************************************************************/
 
 int
-iAcpiLoadNameSpace (void)
+AcpiLoadNameSpace (void)
 {
-    FUNCTION_TRACE ("iAcpiLoadNameSpace");
+    FUNCTION_TRACE ("AcpiLoadNameSpace");
 
 
-    if ((nte *) 0 == psRoot)
+    if ((nte *) 0 == Root)
     {
         return E_ERROR;
     }
@@ -1139,7 +1141,7 @@ iAcpiLoadNameSpace (void)
 
 /****************************************************************************
  *
- *  FUNCTION:       int iAcpiUnloadNameSpace (void)
+ *  FUNCTION:       int AcpiUnloadNameSpace (void)
  *
  *  PARAMETERS:     none
  *
@@ -1151,12 +1153,12 @@ iAcpiLoadNameSpace (void)
  ****************************************************************************/
 
 int
-iAcipUnloadNameSpace (void)
+AcipUnloadNameSpace (void)
 {
-    FUNCTION_TRACE ("iAcipUnloadNameSpace");
+    FUNCTION_TRACE ("AcipUnloadNameSpace");
 
 
-    if ((nte *)0 == psRoot)
+    if ((nte *)0 == Root)
     {
         return E_ERROR;
     }
@@ -1167,9 +1169,9 @@ iAcipUnloadNameSpace (void)
 
 /****************************************************************************
  *
- * FUNCTION:    iNsOpensScope
+ * FUNCTION:    NsOpensScope
  *
- * PARAMETERS:  NsType iType
+ * PARAMETERS:  NsType Type
  *
  * RETURN:      NEWSCOPE if the passed type "opens a name scope" according
  *              to the ACPI specification, else 0
@@ -1177,28 +1179,28 @@ iAcipUnloadNameSpace (void)
  ***************************************************************************/
 
 static int
-iNsOpensScope (NsType iType)
+NsOpensScope (NsType Type)
 {
-    FUNCTION_TRACE ("iNsOpensScope");
+    FUNCTION_TRACE ("NsOpensScope");
 
 
-    if (OUTRANGE (iType, aiNsProperties))
+    if (OUTRANGE (Type, NsProperties))
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                        "iNsOpensScope: type code %d out of range", iType);
-        _dKinc_warning ("0011", PRINT, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                        "NsOpensScope: type code %d out of range", Type);
+        _dKinc_warning ("0011", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         return 0;
     }
 
-    return aiNsProperties[iType] & NEWSCOPE;
+    return NsProperties[Type] & NEWSCOPE;
 }
 
 
 /****************************************************************************
  *
- *  FUNCTION:   iNsLocal
+ *  FUNCTION:   NsLocal
  *
- *  PARAMETERS: NsType iType
+ *  PARAMETERS: NsType Type
  *
  *  RETURN: LOCAL if names must be found locally in objects of the
  *              passed type
@@ -1207,74 +1209,74 @@ iNsOpensScope (NsType iType)
  ***************************************************************************/
 
 static int
-iNsLocal (NsType iType)
+NsLocal (NsType Type)
 {
-    FUNCTION_TRACE ("iNsLocal");
+    FUNCTION_TRACE ("NsLocal");
 
 
-    if (OUTRANGE (iType, aiNsProperties))
+    if (OUTRANGE (Type, NsProperties))
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                        "iNsLocal: type code %d out of range", iType);
-        _dKinc_warning ("0012", PRINT, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                        "NsLocal: type code %d out of range", Type);
+        _dKinc_warning ("0012", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
          return 0;
     }
 
-    return aiNsProperties[iType] & LOCAL;
+    return NsProperties[Type] & LOCAL;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    iNsValType
+ * FUNCTION:    NsValType
  *
  * PARAMETERS:  NsHandle h          Handle of nte to be examined
  *
- * RETURN:      iType field from nte whose handle is passed
+ * RETURN:      Type field from nte whose handle is passed
  *
  ***************************************************************************/
 
 NsType
-iNsValType (NsHandle h)
+NsValType (NsHandle h)
 {
-    FUNCTION_TRACE ("iNsValType");
+    FUNCTION_TRACE ("NsValType");
 
 
     if ((NsHandle) 0 == h)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE, "iNsValType: Null handle");
-        _dKinc_warning ("0013", PRINT, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE, "NsValType: Null handle");
+        _dKinc_warning ("0013", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         return Any;
     }
 
-    return ((nte *) h)->iNtType;
+    return ((nte *) h)->NtType;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    pvNsValPtr
+ * FUNCTION:    NsValPtr
  *
  * PARAMETERS:  NsHandle h              Handle of nte to be examined
  *
- * RETURN:      pVal field from nte whose handle is passed
+ * RETURN:      ptrVal field from nte whose handle is passed
  *
  ***************************************************************************/
 
 void *
-pvNsValPtr (NsHandle h)
+NsValPtr (NsHandle h)
 {
-    FUNCTION_TRACE ("pvNsValPtr");
+    FUNCTION_TRACE ("NsValPtr");
 
 
     if ((NsHandle) 0 == h)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE, "pvNsValPtr: Null handle");
-        _dKinc_warning ("0014", PRINT, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE, "NsValPtr: Null handle");
+        _dKinc_warning ("0014", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         return (void *) 0;
     }
 
-    return ((nte *) h)->pVal;
+    return ((nte *) h)->ptrVal;
 }
 
 
@@ -1282,70 +1284,70 @@ pvNsValPtr (NsHandle h)
  * XXX - Absent recursion, should not need prototype for
  * XXX - a locally-defined function; try to reorder definitions
  */
-static char * pcNsNameOfScope (nte *nLook);
+static char * NsNameOfScope (nte *Look);
 
 
 /****************************************************************************
  *
- * FUNCTION:    nsSearchTable
+ * FUNCTION:    SearchTable
  *
- * PARAMETERS:  char    *pcNamSeg       name segment to find or insert
- *              nte     *nNt            name table to search
- *              int     iTableSize      # of slots in table,
+ * PARAMETERS:  char    *NamSeg         name segment to find or insert
+ *              nte     *NameTbl        name table to search
+ *              int     TableSiz e      # of slots in table,
  *                                      must be prime if USE_HASHING
- *              OpMode  iLE             Add names only in Load mode
- *              NsType  iType           Type associated with name
+ *              OpMode  LoadMode        Add names only in Load mode
+ *              NsType  Type            Type associated with name
  *
  * RETURN:      pointer to found or added nte, or NOTFOUND
  *
  * DESCRIPTION: Search for a name segment in a single name table,
  *              optionally adding it if it is not found.  If the passed
- *              iType is not Any and the type previously stored in the
+ *              Type is not Any and the type previously stored in the
  *              entry was Any (i.e. unknown), update the stored type.
  *
  ***************************************************************************/
 
 static nte *
-nsSearchTable(char *pcNamSeg, nte *nNt, int iTableSize, OpMode iLE, NsType iType)
+SearchTable(char *NamSeg, nte *NameTbl, int TableSize, OpMode LoadMode, NsType Type)
 {
-    DWORD               ulHash;     /* hashed value of name */
-    WORD                uiPos;      /* position in table */
-    int                 iTries;     /* number of positions not yet searched */
+    DWORD               Hash;     /* hashed value of name */
+    WORD                Position;      /* position in table */
+    int                 Tries;     /* number of positions not yet searched */
 
 
-    FUNCTION_TRACE ("nsSearchTable");
+    FUNCTION_TRACE ("SearchTable");
 
 
-    vCheckTrash ("enter nsSearchTable");
+    CheckTrash ("enter SearchTable");
 
-    if ((nte *) 0 == nNt)
+    if ((nte *) 0 == NameTbl)
     {
-        vKFatalError ("0015", ("nsSearchTable: null scope passed"));
+        KFatalError ("0015", ("SearchTable: null scope passed"));
     }
 
     if (Trace & TraceNames)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                    "nsSearchTable: search %s [%p] for %4.4s ... ",
-                    pcNsNameOfScope (nNt), nNt, pcNamSeg);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                    "SearchTable: search %s [%p] for %4.4s ... ",
+                    NsNameOfScope (NameTbl), NameTbl, NamSeg);
     }
 
-    if (!NcOK ((int) pcNamSeg[0]) || !NcOK ((int) pcNamSeg[1])
-     || !NcOK ((int) pcNamSeg[2]) || !NcOK ((int) pcNamSeg[3]))
+    if (!NcOK ((int) NamSeg[0]) || !NcOK ((int) NamSeg[1])
+     || !NcOK ((int) NamSeg[2]) || !NcOK ((int) NamSeg[3]))
     {
-        sprintf (acWhyBuf, "*** bad name %08lx *** ", *(DWORD *) pcNamSeg);
-        pcWhy = acWhyBuf;
-        fprintf_bu (iLstFileHandle, LOGFILE, pcWhy)
-        vCheckTrash ("leave nsSearchTable BADNAME");
+        sprintf (WhyBuf, "*** bad name %08lx *** ", *(DWORD *) NamSeg);
+        Why = WhyBuf;
+        fprintf_bu (LstFileHandle, LOGFILE, Why)
+        CheckTrash ("leave SearchTable BADNAME");
         return NOTFOUND;
     }
 
-    if (nNt == psRoot && iTableSize != ROOTSIZE
-     || nNt != psRoot && iTableSize != TABLSIZE)
+    if (NameTbl == Root && TableSize != ROOTSIZE
+     || NameTbl != Root && TableSize != TABLSIZE)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE, " *** NAME TABLE SIZE ERROR *** ");
-        pcWhy = "*** NAME TABLE SIZE ERROR ***";
-        vCheckTrash ("leave nsSearchTable BADSIZE");
+        fprintf_bu (LstFileHandle, LOGFILE, " *** NAME TABLE SIZE ERROR *** ");
+        Why = "*** NAME TABLE SIZE ERROR ***";
+        CheckTrash ("leave SearchTable BADSIZE");
         return NOTFOUND;
     }
 
@@ -1369,22 +1371,22 @@ nsSearchTable(char *pcNamSeg, nte *nNt, int iTableSize, OpMode iLE, NsType iType
      * just use those bits as the hash value.
      */
 
-    ulHash = *(DWORD *) pcNamSeg;
-    uiPos = (WORD) (ulHash % (DWORD) iTableSize);
+    Hash = *(DWORD *) NamSeg;
+    Position = (WORD) (Hash % (DWORD) TableSize);
 #else
 
     /* start linear search at top of table */
     
-    ulHash = (DWORD) 0;
-    uiPos = (WORD) ulHash;
+    Hash = (DWORD) 0;
+    Position = (WORD) Hash;
 #endif
 
 #ifdef NSLOGFILE
-    fprintf (LogFile, "search %p size %d\n", nNt, iTableSize);
+    fprintf (LogFile, "search %p size %d\n", NameTbl, TableSize);
 #endif
 
     /* 
-     * Search for name in table, starting at uiPos.  Stop searching upon
+     * Search for name in table, starting at Position.  Stop searching upon
      * finding an unused entry or after examining all entries in the table.
      *
      * Moving to the "next" entry is done at the bottom of the loop instead
@@ -1392,11 +1394,11 @@ nsSearchTable(char *pcNamSeg, nte *nNt, int iTableSize, OpMode iLE, NsType iType
      * whether or not USE_HASHING is in effect.
      */
 
-    for (iTries = iTableSize; iTries && 0 != nNt[uiPos].dNameSeg; --iTries)
+    for (Tries = TableSize; Tries && 0 != NameTbl[Position].NameSeg; --Tries)
     {
-        vCheckTrash ("top of nsSearchTable loop");
+        CheckTrash ("top of SearchTable loop");
         
-        if (nNt[uiPos].dNameSeg == *(DWORD *) pcNamSeg)
+        if (NameTbl[Position].NameSeg == *(DWORD *) NamSeg)
         {
             /* 
              * Found matching entry.  Capture type if appropriate before
@@ -1408,31 +1410,31 @@ nsSearchTable(char *pcNamSeg, nte *nNt, int iTableSize, OpMode iLE, NsType iType
              * looking up the Region in which the field will be defined
              */
 
-            if (DefFieldDefn == iType || BankFieldDefn == iType)
+            if (DefFieldDefn == Type || BankFieldDefn == Type)
             {
-                iType = Region;
+                Type = Region;
             }
 
             /* 
              * Scope, DefAny, and IndexFieldDefn are bogus "types" which do
              * not actually have anything to do with the type of the name
-             * being looked up.  For any other value of iType, if the type
+             * being looked up.  For any other value of Type, if the type
              * stored in the entry is Any (i.e. unknown), save the actual type.
              */
 
-            if (iType != Scope && iType != DefAny
-             && iType != IndexFieldDefn && nNt[uiPos].iNtType == Any)
+            if (Type != Scope && Type != DefAny
+             && Type != IndexFieldDefn && NameTbl[Position].NtType == Any)
             {
-                nNt[uiPos].iNtType = iType;
+                NameTbl[Position].NtType = Type;
             }
 
             if (Trace & TraceNames)
             {
-                fprintf_bu (iLstFileHandle, LOGFILE, "found at %p", &nNt[uiPos]);
+                fprintf_bu (LstFileHandle, LOGFILE, "found at %p", &NameTbl[Position]);
             }
             
-            vCheckTrash ("leave nsSearchTable FOUND");
-            return &nNt[uiPos];
+            CheckTrash ("leave SearchTable FOUND");
+            return &NameTbl[Position];
         }
 
 #ifdef USE_HASHING
@@ -1447,65 +1449,65 @@ nsSearchTable(char *pcNamSeg, nte *nNt, int iTableSize, OpMode iLE, NsType iType
          * first character will often be '_'
          */
 
-        uiPos = (uiPos + pcNamSeg[1]) % iTableSize;
+        Position = (Position + NamSeg[1]) % TableSize;
 #else
 
-        if (1 == iTries && NEXTSEG (nNt) != (nte *)0)
+        if (1 == Tries && NEXTSEG (NameTbl) != (nte *)0)
         {
             /* 
              * Just examined last slot, but table has an appendage.
              * All appendages, even to the root NT, contain TABLSIZE entries.
              */
 
-            nNt = NEXTSEG (nNt);
-            uiPos = 0;
-            iTries += TABLSIZE;
+            NameTbl = NEXTSEG (NameTbl);
+            Position = 0;
+            Tries += TABLSIZE;
         }
         
         else
         {
-            ++uiPos;
+            ++Position;
         }
 #endif
     }
 
     /* 
      * Name not found.  Before adding it or giving up, ACPI scope rules
-     * require searching enclosing scopes in cases identified by iNsLocal()
+     * require searching enclosing scopes in cases identified by NsLocal()
      */
 
     /* 
-     * nNt[0] will be an unused entry if the table being searched is empty,
+     * NameTbl[0] will be an unused entry if the table being searched is empty,
      * and will often be unused even in a non-empty table if USE_HASHING is
-     * in effect; however its nParentScope member will have been filled in
+     * in effect; however its ParentScope member will have been filled in
      * when the table was allocated (unless it is the root name table).
      */
 
-    if (!iNsLocal (iType) && nNt[0].nParentScope != (nte *) 0)
+    if (!NsLocal (Type) && NameTbl[0].ParentScope != (nte *) 0)
     {
-        int         iSize = (nNt[0].nParentScope == psRoot) ? iNsRootSize : iTableSize;
+        int         Size = (NameTbl[0].ParentScope == Root) ? NsRootSize : TableSize;
         nte         *rv;
 
 
         if (Trace & TraceNames)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE, "searching parent");
-            iIncIndent ();
+            fprintf_bu (LstFileHandle, LOGFILE, "searching parent");
+            IncIndent ();
         }
 
-        vCheckTrash ("before recursive nsSearchTable");
-        rv = nsSearchTable (pcNamSeg, nNt[0].nParentScope, iSize, Exec, Any);
-        vCheckTrash ("after  recursive nsSearchTable");
+        CheckTrash ("before recursive SearchTable");
+        rv = SearchTable (NamSeg, NameTbl[0].ParentScope, Size, Exec, Any);
+        CheckTrash ("after  recursive SearchTable");
         
-        if ((Trace & TraceNames) && (Load1 != iLE))
+        if ((Trace & TraceNames) && (Load1 != LoadMode))
         {
-            iDecIndent ();
-            fprintf_bu (iLstFileHandle, LOGFILE, "\n");
+            DecIndent ();
+            fprintf_bu (LstFileHandle, LOGFILE, "\n");
         }
         
         if (rv != NOTFOUND)
         {
-            vCheckTrash ("leave nsSearchTable FOUND in parent");
+            CheckTrash ("leave SearchTable FOUND in parent");
             return rv;
         }
     }
@@ -1514,14 +1516,14 @@ nsSearchTable(char *pcNamSeg, nte *nNt, int iTableSize, OpMode iLE, NsType iType
     {
         if (Trace & TraceNames)
         {
-            if ((nte *) 0 == nNt[0].nParentScope)
+            if ((nte *) 0 == NameTbl[0].ParentScope)
             {
-                fprintf_bu (iLstFileHandle, LOGFILE, "no parent, ");
+                fprintf_bu (LstFileHandle, LOGFILE, "no parent, ");
             }
-            else if (iNsLocal (iType))
+            else if (NsLocal (Type))
             {
-                fprintf_bu (iLstFileHandle, LOGFILE,
-                            "%s is local, ", apcNsTypeNames[iType]);
+                fprintf_bu (LstFileHandle, LOGFILE,
+                            "%s is local, ", NsTypeNames[Type]);
             }
         }
     }
@@ -1533,49 +1535,49 @@ nsSearchTable(char *pcNamSeg, nte *nNt, int iTableSize, OpMode iLE, NsType iType
      */
 #ifndef USE_HASHING
 
-    if ((Load1 == iLE || Load == iLE) && 0 == iTries)
+    if ((Load1 == LoadMode || Load == LoadMode) && 0 == Tries)
     {
-        nte         *nPS = nNt[0].nParentScope;
+        nte         *nPS = NameTbl[0].ParentScope;
 
 
         /* Allocate and chain an appendage to the filled table */
         
-        NEXTSEG (nNt) = nAllocNT (TABLSIZE);
+        NEXTSEG (NameTbl) = AllocNT (TABLSIZE);
         
-        if (!NEXTSEG (nNt))
+        if (!NEXTSEG (NameTbl))
         {
-            vKFatalError ("0016", ("Name Table appendage allocation failure"));
+            KFatalError ("0016", ("Name Table appendage allocation failure"));
         }
 
-        nNt = NEXTSEG (nNt);
-        nNt[0].nParentScope = nPS;
-        uiPos = 0;
-        iTries += TABLSIZE;
+        NameTbl = NEXTSEG (NameTbl);
+        NameTbl[0].ParentScope = nPS;
+        Position = 0;
+        Tries += TABLSIZE;
     }
 
 #endif
 
-    if ((Load1 == iLE || Load == iLE) && iTries > 0)
+    if ((Load1 == LoadMode || Load == LoadMode) && Tries > 0)
     {
-        vCheckTrash ("nsSearchTable about to add");
-        nNt[uiPos].dNameSeg = *(DWORD *) pcNamSeg;
-        nNt[uiPos].nParentScope = nNt[0].nParentScope;
-        vCheckTrash ("nsSearchTable added name");
+        CheckTrash ("SearchTable about to add");
+        NameTbl[Position].NameSeg = *(DWORD *) NamSeg;
+        NameTbl[Position].ParentScope = NameTbl[0].ParentScope;
+        CheckTrash ("SearchTable added name");
 
         /* 
          * If adding a name with unknown type, or having to add the region in
          * order to define fields in it, we have an improper forward reference
          */
 
-        if (Any == iType || DefFieldDefn == iType || BankFieldDefn == iType)
+        if (Any == Type || DefFieldDefn == Type || BankFieldDefn == Type)
         {
-            fprintf_bu (iLstFileHandle != NO_LOG_HANDLE ? iLstFileHandle : GetMasterLogHandle (),
+            fprintf_bu (LstFileHandle != NO_LOG_HANDLE ? LstFileHandle : GetMasterLogHandle (),
                         LOGFILE | SCREEN, "Unknown reference in name space \"%4.4s\"",
-                            pcNamSeg);
+                            NamSeg);
             _dKinc_error ("0017", PRINT, __LINE__, __FILE__,
-                        iLstFileHandle != NO_LOG_HANDLE ? iLstFileHandle : GetMasterLogHandle(),
+                        LstFileHandle != NO_LOG_HANDLE ? LstFileHandle : GetMasterLogHandle(),
                         LOGFILE | SCREEN);
-            LineSet (0, iLE);        /* start new line in listing */
+            LineSet (0, LoadMode);        /* start new line in listing */
         }
 
         /* 
@@ -1583,49 +1585,49 @@ nsSearchTable(char *pcNamSeg, nte *nNt, int iTableSize, OpMode iLE, NsType iType
          * looking up the Region in which the field will be defined
          */
 
-        if (DefFieldDefn == iType || BankFieldDefn == iType)
+        if (DefFieldDefn == Type || BankFieldDefn == Type)
         {
-            iType = Region;
+            Type = Region;
         }
 
         /* 
          * Scope, DefAny, and IndexFieldDefn are bogus "types" which do
          * not actually have anything to do with the type of the name
-         * being looked up.  Save any other value of iType as the type of
+         * being looked up.  Save any other value of Type as the type of
          * the entry.
          */
 
-        if (iType != Scope && iType != DefAny && iType != IndexFieldDefn)
+        if (Type != Scope && Type != DefAny && Type != IndexFieldDefn)
         {
-            nNt[uiPos].iNtType = iType;
-            vCheckTrashA ("nsSearchTable added type",
-                            &nNt[uiPos].dNameSeg, nNt[uiPos].dNameSeg, ulHash,
-                            &nNt[uiPos].iNtType, nNt[uiPos].iNtType, iType, (void *) nNt);
+            NameTbl[Position].NtType = Type;
+            CheckTrashA ("SearchTable added type",
+                            &NameTbl[Position].NameSeg, NameTbl[Position].NameSeg, Hash,
+                            &NameTbl[Position].NtType, NameTbl[Position].NtType, Type, (void *) NameTbl);
         }
 
         if (Trace & TraceNames)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE,
-                        "added to %p at %p", nNt, &nNt[uiPos]);
+            fprintf_bu (LstFileHandle, LOGFILE,
+                        "added to %p at %p", NameTbl, &NameTbl[Position]);
         }
         
-        vCheckTrash ("leave nsSearchTable ADDED");
-        return &nNt[uiPos];
+        CheckTrash ("leave SearchTable ADDED");
+        return &NameTbl[Position];
     }
 
     if (Trace & TraceNames)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE, "not found in %p ", nNt);
+        fprintf_bu (LstFileHandle, LOGFILE, "not found in %p ", NameTbl);
     }
     
-    vCheckTrash ("leave nsSearchTable NOTFOUND");
+    CheckTrash ("leave SearchTable NOTFOUND");
     return NOTFOUND;
 }
 
 
 /****************************************************************************
  * 
- * FUNCTION:    vNsSetup()
+ * FUNCTION:    NsSetup()
  *
  * PARAMETERS:  none
  *
@@ -1633,61 +1635,61 @@ nsSearchTable(char *pcNamSeg, nte *nNt, int iTableSize, OpMode iLE, NsType iType
  *
  * ALLOCATION:
  * Reference      Size                 Pool  Owner       Description
- * psRoot         iNsRootSize*s(nte)   bu    acpinmsp    Root Name Table
- * nte.pVal       s(OBJECT_DESCRIPTOR) bu    acpinmsp    initialized value
- * nte.pVal->pbString   varies         bu    acpinmsp    string value
+ * Root         NsRootSize*s(nte)   bu    acpinmsp    Root Name Table
+ * nte.ptrVal       s(OBJECT_DESCRIPTOR) bu    acpinmsp    initialized value
+ * nte.ptrVal->pbString   varies         bu    acpinmsp    string value
  *
  ***************************************************************************/
 
 void
-vNsSetup (void)
+NsSetup (void)
 {
-    struct InitVal          *psNT;
+    struct InitVal          *InitVal;
 
 
-    FUNCTION_TRACE ("vNsSetup");
+    FUNCTION_TRACE ("NsSetup");
 
 
     /* 
-     * psRoot is initially NULL, so a non-NULL value indicates
-     * that vNsSetup() has already been called; just return.
+     * Root is initially NULL, so a non-NULL value indicates
+     * that NsSetup() has already been called; just return.
      */
 
-    if (psRoot)
+    if (Root)
     {
         return;
     }
 
-    iNsCurrentSize = iNsRootSize = ROOTSIZE;
-    psRoot = nAllocNT (iNsRootSize);
-    if ((nte *) 0 == psRoot)
+    NsCurrentSize = NsRootSize = ROOTSIZE;
+    Root = AllocNT (NsRootSize);
+    if ((nte *) 0 == Root)
     {
-        vKFatalError ("0018", ("root name table allocation failure"));
+        KFatalError ("0018", ("root name table allocation failure"));
     }
 
     /* Push the root name table on the scope stack */
     
-    sScopeStack[0].psScope = psRoot;
-    sScopeStack[0].iType = Any;
-    psCurrentScope = &sScopeStack[0];
+    ScopeStack[0].Scope = Root;
+    ScopeStack[0].Type = Any;
+    CurrentScope = &ScopeStack[0];
 
 #ifdef NSLOGFILE
     LogFile = fopen ("ns.log", "wtc");
-    fprintf (LogFile, "root = %08x size %d\n", psRoot, iNsRootSize);
+    fprintf (LogFile, "root = %08x size %d\n", Root, NsRootSize);
 #endif
 
     /* Enter the pre-defined names in the name table */
     
-    for (psNT = asPreDefinedNames ; psNT->pcName ; ++psNT)
+    for (InitVal = PreDefinedNames ; InitVal->Name ; ++InitVal)
     {
-        NsHandle hN = hNsEnter (psNT->pcName, psNT->iType, Load);
+        NsHandle hN = NsEnter (InitVal->Name, InitVal->Type, Load);
 
         /* 
          * if name entered successfully
-         *  && its entry in asPreDefinedNames[] specifies an initial value
+         *  && its entry in PreDefinedNames[] specifies an initial value
          */
         
-        if (hN && psNT->pcVal)
+        if (hN && InitVal->Val)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
@@ -1696,24 +1698,24 @@ vNsSetup (void)
 
             if ((OBJECT_DESCRIPTOR *) 0 == pOD)
             {
-                vKFatalError("0019", ("Initial value descriptor allocation failure"));
+                KFatalError("0019", ("Initial value descriptor allocation failure"));
             }
 
-            pOD->bValTyp = (BYTE) psNT->iType;
+            pOD->ValTyp = (BYTE) InitVal->Type;
 
             /* 
              * Convert value string from table entry to internal representation.
              * Only types actually used for initial values are implemented here.
              */
 
-            switch (psNT->iType)
+            switch (InitVal->Type)
             {
                 case Number:
-                    pOD->sNumber.dNumber = (DWORD) atol (psNT->pcVal);
+                    pOD->sNumber.dNumber = (DWORD) atol (InitVal->Val);
                     break;
 
                 case String:
-                    pOD->sString.wStrLen = (WORD) strlen (psNT->pcVal);
+                    pOD->sString.wStrLen = (WORD) strlen (InitVal->Val);
 
                     /* 
                      * XXX - if this malloc_bu() causes a garbage collection pass,
@@ -1724,10 +1726,10 @@ vNsSetup (void)
                     pOD->sString.pbString = OsdAllocate ((size_t) (pOD->sString.wStrLen + 1));
                     if ((BYTE *) 0 == pOD->sString.pbString)
                     {
-                        vKFatalError ("0020", ("Initial value string allocation failure"));
+                        KFatalError ("0020", ("Initial value string allocation failure"));
                     }
                     
-                    strcpy ((char *) pOD->sString.pbString, psNT->pcVal);
+                    strcpy ((char *) pOD->sString.pbString, InitVal->Val);
                     break;
 
                 default:
@@ -1737,21 +1739,21 @@ vNsSetup (void)
 
             /* Store pointer to value descriptor in nte */
             
-            vNsSetValue(hN, pOD, pOD->bValTyp);
+            NsSetValue(hN, pOD, pOD->ValTyp);
         }
     }
 
 #ifdef PLUMBER
-    vRegisterMarkingFunction (iNsMarkNS);
+    RegisterMarkingFunction (NsMarkNS);
 #endif
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    iNsPopCurrent
+ * FUNCTION:    NsPopCurrent
  *
- * PARAMETERS:  NsType iType    The type of frame to be found
+ * PARAMETERS:  NsType Type    The type of frame to be found
  *
  * DESCRIPTION: Pop the scope stack until a frame of the requested type
  *              is found.
@@ -1765,49 +1767,49 @@ vNsSetup (void)
  ***************************************************************************/
 
 int
-iNsPopCurrent (NsType iType)
+NsPopCurrent (NsType Type)
 {
-    int             iCount = 0;
+    int             Count = 0;
 
 
-    FUNCTION_TRACE ("iNsPopCurrent");
+    FUNCTION_TRACE ("NsPopCurrent");
 
 
-    if (OUTRANGE (iType, apcNsTypeNames) || acBadType == apcNsTypeNames[iType])
+    if (OUTRANGE (Type, NsTypeNames) || BadType == NsTypeNames[Type])
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                        "iNsPopCurrent: type code %d out of range", iType);
-        _dKinc_warning ("0021", PRINT, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                        "NsPopCurrent: type code %d out of range", Type);
+        _dKinc_warning ("0021", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
     }
 
-    printfd_bu (TRACE_LEVEL, "Popping Scope till type (%i) is found\n", iType);
+    printfd_bu (TRACE_LEVEL, "Popping Scope till type (%i) is found\n", Type);
 
-    while (psCurrentScope > &sScopeStack[0])
+    while (CurrentScope > &ScopeStack[0])
     {
-        --psCurrentScope;
-        ++iCount;
-        printfd_bu (TRACE_LEVEL,"Popped %i ", (psCurrentScope+1)->iType);
+        --CurrentScope;
+        ++Count;
+        printfd_bu (TRACE_LEVEL,"Popped %i ", (CurrentScope+1)->Type);
 
-        if (Any == iType || iType == (psCurrentScope + 1)->iType)
+        if (Any == Type || Type == (CurrentScope + 1)->Type)
         {
-            printfd_bu (TRACE_LEVEL,"Found %i\n", iType);
-            return iCount;
+            printfd_bu (TRACE_LEVEL,"Found %i\n", Type);
+            return Count;
         }
     }
 
-    printfd_bu (TRACE_LEVEL,"%i Not Found\n", iType);
-    return -iCount;
+    printfd_bu (TRACE_LEVEL,"%i Not Found\n", Type);
+    return -Count;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    hNsEnter
+ * FUNCTION:    NsEnter
  *
- * PARAMETERS:  char    *pcName     name to be entered, in internal format
+ * PARAMETERS:  char    *Name     name to be entered, in internal format
  *                                  as represented in the AML stream
- *              NsType  iType       type associated with name
- *              OpMode  iLE         Load => add name if not found
+ *              NsType  Type       type associated with name
+ *              OpMode  LoadMode         Load => add name if not found
  *
  * RETURN:      Handle to the nte for the passed name
  *
@@ -1816,22 +1818,22 @@ iNsPopCurrent (NsType iType)
  *
  * ALLOCATION:
  * Reference         Size                 Pool  Owner       Description
- * nte.nChildScope   TABLSIZE*s(nte)      bu    acpinmsp    Name Table
+ * nte.ChildScope   TABLSIZE*s(nte)      bu    acpinmsp    Name Table
  *
  ***************************************************************************/
 
 NsHandle
-hNsEnter (char *pcName, NsType iType, OpMode iLE)
+NsEnter (char *Name, NsType Type, OpMode LoadMode)
 {
-    nte             *nLook, *nThis;
-    int             iSize, iNumSeg;
-    NsType          iTTCF;              /* Type To Check For */
+    nte             *Look, *This;
+    int             Size, NumSeg;
+    NsType          TTCF;              /* Type To Check For */
 
 
-    FUNCTION_TRACE ("hNsEnter");
+    FUNCTION_TRACE ("NsEnter");
 
 
-    if ((nte *) 0 == psRoot)
+    if ((nte *) 0 == Root)
     {
         /* 
          * If the name space has not been initialized:
@@ -1840,9 +1842,9 @@ hNsEnter (char *pcName, NsType iType, OpMode iLE)
          * -  In Exec mode, there are no names to be found.
          */
 
-        if (Load1 == iLE)
+        if (Load1 == LoadMode)
         {
-            vNsSetup ();
+            NsSetup ();
         }
         else
         {
@@ -1852,22 +1854,22 @@ hNsEnter (char *pcName, NsType iType, OpMode iLE)
 
     if (Trace & TraceNames)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                    " hNsEnter: %02x %02x %02x %02x %02x %02x ",
-                    pcName[0], pcName[1], pcName[2], pcName[3], pcName[4], pcName[5]);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                    " NsEnter: %02x %02x %02x %02x %02x %02x ",
+                    Name[0], Name[1], Name[2], Name[3], Name[4], Name[5]);
     }
 
-    vCheckTrash ("enter hNsEnter");
+    CheckTrash ("enter NsEnter");
 
     /* DefFieldDefn and BankFieldDefn define fields in a Region */
     
-    if (DefFieldDefn == iType || BankFieldDefn == iType)
+    if (DefFieldDefn == Type || BankFieldDefn == Type)
     {
-        iTTCF = Region;
+        TTCF = Region;
     }
     else
     {
-        iTTCF = iType;
+        TTCF = Type;
     }
 
     /* 
@@ -1885,163 +1887,163 @@ hNsEnter (char *pcName, NsType iType, OpMode iLE)
      *    segments and the segments themselves.
      */
 
-    if (*pcName == RootPrefix)
+    if (*Name == RootPrefix)
     {
         /* Name is fully qualified, look in root NT */
         
         if (Trace & TraceNames)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE, "root ");
+            fprintf_bu (LstFileHandle, LOGFILE, "root ");
         }
         
-        nLook = psRoot;
-        iSize = iNsRootSize;
-        ++pcName;   /* point to segment part */
+        Look = Root;
+        Size = NsRootSize;
+        ++Name;   /* point to segment part */
     }
     
     else
     {
-        char        *pcOrigName = pcName;
+        char        *OrigName = Name;
 
 
         /* Name is relative to current scope, start there */
         
-        nLook = psCurrentScope->psScope;
-        iSize = iNsCurrentSize;
+        Look = CurrentScope->Scope;
+        Size = NsCurrentSize;
 
-        while (*pcName == ParentPrefix)
+        while (*Name == ParentPrefix)
         {
             if (Trace & TraceNames)
             {
-                fprintf_bu (iLstFileHandle, LOGFILE, "parent ");
+                fprintf_bu (LstFileHandle, LOGFILE, "parent ");
             }
             
-            ++pcName;                   /* point to segment part or next ParentPrefix */
-            nLook = nLook->nParentScope;
+            ++Name;                   /* point to segment part or next ParentPrefix */
+            Look = Look->ParentScope;
             
-            if (nLook == (nte *) 0)
+            if (Look == (nte *) 0)
             {
                 /* Scope has no parent */
                 
-                LineSet ((int) strlen (pcOrigName) + 18, iLE);
-                fprintf_bu (iLstFileHandle, LOGFILE, "*Too many ^ in <%s>*",
-                            pcOrigName);
-                _dKinc_error ("0022", PRINT, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
-                LineSet (0, iLE);
-                vCheckTrash ("leave hNsEnter NOTFOUND 1");
+                LineSet ((int) strlen (OrigName) + 18, LoadMode);
+                fprintf_bu (LstFileHandle, LOGFILE, "*Too many ^ in <%s>*",
+                            OrigName);
+                _dKinc_error ("0022", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+                LineSet (0, LoadMode);
+                CheckTrash ("leave NsEnter NOTFOUND 1");
 
                 return (NsHandle) NOTFOUND;
             }
         }
 
-        if (nLook->nParentScope == (nte *) 0)
+        if (Look->ParentScope == (nte *) 0)
         {
             /* backed up all the way to the root */
             
-            iSize = iNsRootSize;
+            Size = NsRootSize;
         }
     }
 
-    if (*pcName == DualNamePrefix)
+    if (*Name == DualNamePrefix)
     {
         if (Trace & TraceNames)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE, "dual ");
+            fprintf_bu (LstFileHandle, LOGFILE, "dual ");
         }
 
-        iNumSeg = 2;
-        ++pcName;   /* point to first segment */
+        NumSeg = 2;
+        ++Name;   /* point to first segment */
     }
     
-    else if (*pcName == MultiNamePrefixOp)
+    else if (*Name == MultiNamePrefixOp)
     {
         if (Trace & TraceNames)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE, "multi %d ", pcName[1]);
+            fprintf_bu (LstFileHandle, LOGFILE, "multi %d ", Name[1]);
         }
         
-        iNumSeg = (int)* (BYTE *) ++pcName;
-        ++pcName;                           /* point to first segment */
+        NumSeg = (int)* (BYTE *) ++Name;
+        ++Name;                           /* point to first segment */
     }
     else
     {
         /* 
          * No Dual or Multi prefix, hence there is only one
-         * segment and pcName is already pointing to it.
+         * segment and Name is already pointing to it.
          */
-        iNumSeg = 1;
+        NumSeg = 1;
     }
 
     if (Trace & TraceNames)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE, "seg = %d ", iNumSeg);
+        fprintf_bu (LstFileHandle, LOGFILE, "seg = %d ", NumSeg);
     }
 
-    while (iNumSeg-- && nLook)
+    while (NumSeg-- && Look)
     {
 #if 0
         int         SaveTrace = Trace;
 
-        if (*(DWORD *) "LDN_" == *(DWORD *) pcName)
+        if (*(DWORD *) "LDN_" == *(DWORD *) Name)
         {
             Trace |= TraceNames;
         }
-        if (*(DWORD *) "LNKC" == *(DWORD *) pcName && Exec == iLE)
+        if (*(DWORD *) "LNKC" == *(DWORD *) Name && Exec == LoadMode)
         {
             Trace |= TraceNames;
         }
 #endif
         
-        vCheckTrash ("before nsSearchTable");
+        CheckTrash ("before SearchTable");
         
         /* 
          * Search for the current segment in the table where it should be.
          * Type is significant only at the last level.
          */
 
-        nThis = nsSearchTable (pcName, nLook, iSize, iLE,
-                                iNumSeg == 0 ? iType : Any);
-        vCheckTrash ("after  nsSearchTable");
+        This = SearchTable (Name, Look, Size, LoadMode,
+                                NumSeg == 0 ? Type : Any);
+        CheckTrash ("after  SearchTable");
 
 #if 0
-        if (*(DWORD *) "LDN_" == *(DWORD *) pcName)
+        if (*(DWORD *) "LDN_" == *(DWORD *) Name)
         {
             Trace = SaveTrace;
         }
 #endif
-        if (nThis == NOTFOUND)
+        if (This == NOTFOUND)
         {
-            if (Load1 == iLE || Load == iLE)
+            if (Load1 == LoadMode || Load == LoadMode)
             {
-                vKFatalError ("0023", ("\nname table overflow adding %4.4s to %s",
-                                pcName, pcNsFullyQualifiedName(nLook)));
+                KFatalError ("0023", ("\nname table overflow adding %4.4s to %s",
+                                Name, NsFullyQualifiedName(Look)));
             }
 
             else
             {
-                fprintf_bu (iLstFileHandle, LOGFILE,
+                fprintf_bu (LstFileHandle, LOGFILE,
                             "name %4.4s not found in %s",
-                            pcName, pcNsFullyQualifiedName(nLook));
-                _dKinc_error ("0024", PACRLF, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+                            Name, NsFullyQualifiedName(Look));
+                _dKinc_error ("0024", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
             }
 
-            vCheckTrash ("leave hNsEnter NOTFOUND 2");
+            CheckTrash ("leave NsEnter NOTFOUND 2");
             return (NsHandle) NOTFOUND;
         }
 
-        if (0 == iNumSeg                    /* if last segment                  */
-         && iTTCF != Any                    /* and looking for a specific type  */
-         && iTTCF != DefAny                 /* which is not a phoney type       */
-         && iTTCF != Scope                  /*   "   "   "  "   "     "         */
-         && iTTCF != IndexFieldDefn         /*   "   "   "  "   "     "         */
-         && nThis->iNtType != Any           /* and type of entry is known       */
-         && nThis->iNtType != iTTCF)        /* and entry does not match request */
+        if (0 == NumSeg                    /* if last segment                  */
+         && TTCF != Any                    /* and looking for a specific type  */
+         && TTCF != DefAny                 /* which is not a phoney type       */
+         && TTCF != Scope                  /*   "   "   "  "   "     "         */
+         && TTCF != IndexFieldDefn         /*   "   "   "  "   "     "         */
+         && This->NtType != Any           /* and type of entry is known       */
+         && This->NtType != TTCF)        /* and entry does not match request */
         {                                   /* complain.                        */
             
-            fprintf_bu (iLstFileHandle, LOGFILE,
+            fprintf_bu (LstFileHandle, LOGFILE,
                         "Type mismatch, wanted %s, found %s\n",
-                        apcNsTypeNames[iTTCF], apcNsTypeNames[nThis->iNtType]);
-            _dKinc_warning ("0025", PACRLF, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+                        NsTypeNames[TTCF], NsTypeNames[This->NtType]);
+            _dKinc_warning ("0025", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         }
 
         /*
@@ -2049,9 +2051,9 @@ hNsEnter (char *pcName, NsType iType, OpMode iLE)
          * found entry is known, use that type to see if it opens a scope.
          */
 
-        if (0 == iNumSeg && Any == iType)
+        if (0 == NumSeg && Any == Type)
         {
-            iType = nThis->iNtType;
+            Type = This->NtType;
         }
 
         /* 
@@ -2059,55 +2061,55 @@ hNsEnter (char *pcName, NsType iType, OpMode iLE)
          * be an enclosed scope, and the next scope has not been allocated ...
          */
 
-        if ((iNumSeg || iNsOpensScope (iType))
-         && nThis->nChildScope == (nte *) 0)
+        if ((NumSeg || NsOpensScope (Type))
+         && This->ChildScope == (nte *) 0)
         {
-            if (Load1 == iLE || Load == iLE)
+            if (Load1 == LoadMode || Load == LoadMode)
             {
                 /* Allocate the next scope */
                 
                 if (Trace & TraceNames)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE, "add level ");
+                    fprintf_bu (LstFileHandle, LOGFILE, "add level ");
                 }
 
-                nThis->nChildScope = nAllocNT(TABLSIZE);
+                This->ChildScope = AllocNT(TABLSIZE);
             }
 
             /* Now complain if there is no next scope */
             
-            if (nThis->nChildScope == (nte *) 0)
+            if (This->ChildScope == (nte *) 0)
             {
-                if (Load1 == iLE || Load == iLE)
+                if (Load1 == LoadMode || Load == LoadMode)
                 {
-                    vKFatalError ("0026", ("Name Table allocation failure"));
+                    KFatalError ("0026", ("Name Table allocation failure"));
                 }
                 else
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE, " Name not found");
+                    fprintf_bu (LstFileHandle, LOGFILE, " Name not found");
                 }
                 
-                _dKinc_error ("0027", PACRLF, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
-                vCheckTrash ("leave hNsEnter NOTFOUND 3");
+                _dKinc_error ("0027", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+                CheckTrash ("leave NsEnter NOTFOUND 3");
                 
                 return (NsHandle) NOTFOUND;
             }
 
 #ifdef NSLOGFILE
             fprintf (LogFile, "%s = %08x size %d\n",
-                        pcName, nThis->nChildScope, TABLSIZE);
+                        Name, This->ChildScope, TABLSIZE);
 #endif
-            if (Load1 == iLE || Load == iLE)
+            if (Load1 == LoadMode || Load == LoadMode)
             {
                 /* Set newly-created child scope's parent scope */
                 
-                nThis->nChildScope->nParentScope = nLook;
+                This->ChildScope->ParentScope = Look;
             }
         }
 
-        iSize = TABLSIZE;
-        nLook = nThis->nChildScope;
-        pcName += 4;                        /* point to next name segment */
+        Size = TABLSIZE;
+        Look = This->ChildScope;
+        Name += 4;                        /* point to next name segment */
     }
 
     /* 
@@ -2115,57 +2117,57 @@ hNsEnter (char *pcName, NsType iType, OpMode iLE)
      * push the new scope on the scope stack.
      */
 
-    if (iNsOpensScope (iTTCF))
+    if (NsOpensScope (TTCF))
     {
-        vCheckTrash ("before vNsPushCurrentScope");
-        vNsPushCurrentScope (nThis->nChildScope, iType);
-        vCheckTrash ("after  vNsPushCurrentScope");
+        CheckTrash ("before NsPushCurrentScope");
+        NsPushCurrentScope (This->ChildScope, Type);
+        CheckTrash ("after  NsPushCurrentScope");
     }
 
-    return (NsHandle) nThis;
+    return (NsHandle) This;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    hGetParentHandle(NsHandle hLook)
+ * FUNCTION:    GetParentHandle(NsHandle Look)
  *
- * PARAMETERS:  NsHandle hLook -    Handle whose parent is to be returned
+ * PARAMETERS:  NsHandle Look -    Handle whose parent is to be returned
  *
- * RETURN:      Parent of parameter. NOTFOUND if hLook is invalid
- *              or hLook refers to the root.
+ * RETURN:      Parent of parameter. NOTFOUND if Look is invalid
+ *              or Look refers to the root.
  *
  ***************************************************************************/
 
- NsHandle hGetParentHandle(NsHandle hLook)
+ NsHandle GetParentHandle(NsHandle Look)
 {
-    nte             *nLook, *nThis, *nNextSeg;
-    int             iSize;
+    nte             *Look, *This, *NextSeg;
+    int             Size;
 
 
-    FUNCTION_TRACE ("hGetParentHandle");
+    FUNCTION_TRACE ("GetParentHandle");
 
 
-    if (hLook == (NsHandle)0 || ((nte *) hLook)->nParentScope == (nte *) 0)
+    if (Look == (NsHandle)0 || ((nte *) Look)->ParentScope == (nte *) 0)
     {
         return NOTFOUND;
     }
 
     /* Look for the handle passed as a parameter */
     
-    nLook = (nte *) hLook;
+    Look = (nte *) Look;
 
     /* Look in its parent scope */
     
-    nThis = nLook->nParentScope;
+    This = Look->ParentScope;
 
     /* Locate appendage, if any, before losing original scope pointer */
     
-    nNextSeg = NEXTSEG(nThis);
+    NextSeg = NEXTSEG(This);
 
     /* For every entry in the parent scope */
     
-    for (iSize = (nThis == psRoot ? iNsRootSize : TABLSIZE) ; iSize ; --iSize)
+    for (Size = (This == Root ? NsRootSize : TABLSIZE) ; Size ; --Size)
     {
         /* 
          * If the entry's ChildScope segment matches our segment
@@ -2175,29 +2177,29 @@ hNsEnter (char *pcName, NsType iType, OpMode iLE)
          */
 
 /* !!!! REMOVED FOR FLAT MODEL.
-      if (sPtrSelector(nThis->nChildScope) == sPtrSelector(nLook)
+      if (sPtrSelector(This->ChildScope) == sPtrSelector(Look)
 */
             
-        if (nThis->nChildScope <= nLook
-         && nLook < nThis->nChildScope + TABLSIZE)
+        if (This->ChildScope <= Look
+         && Look < This->ChildScope + TABLSIZE)
         {
             /* Return the matching entry */
             
-            return (NsHandle) nThis;
+            return (NsHandle) This;
         }
 
-        if (1 == iSize && nNextSeg)
+        if (1 == Size && NextSeg)
         {
             /* Just examined last entry, but table has an appendage.  */
             
-            nThis = nNextSeg;
-            iSize += TABLSIZE;
-            nNextSeg = NEXTSEG(nThis);
+            This = NextSeg;
+            Size += TABLSIZE;
+            NextSeg = NEXTSEG(This);
         }
         
         else
         {
-            ++nThis;    /* next entry in parent scope */
+            ++This;    /* next entry in parent scope */
         }
     }
 
@@ -2207,9 +2209,9 @@ hNsEnter (char *pcName, NsType iType, OpMode iLE)
 
 /****************************************************************************
  *
- * FUNCTION:    pcFindParentName
+ * FUNCTION:    FindParentName
  *
- * PARAMETERS:  nte *nLook          nte whose name is to be found
+ * PARAMETERS:  nte *Look          nte whose name is to be found
  *
  * RETURN:      pointer to the name
  *
@@ -2220,26 +2222,26 @@ hNsEnter (char *pcName, NsType iType, OpMode iLE)
  ***************************************************************************/
 
 static char *
-pcFindParentName (nte *nLook, int iTrace)
+FindParentName (nte *Look, int Trace)
 {
-    NsHandle            hParent = hGetParentHandle (nLook);
+    NsHandle            hParent = GetParentHandle (Look);
 
 
-    FUNCTION_TRACE ("pcFindParentName");
+    FUNCTION_TRACE ("FindParentName");
 
 
     if (NOTFOUND != hParent)
     {
         nte         *nParent = (nte *) hParent;
 
-        if (iTrace)
+        if (Trace)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE, "%p->", nParent);
+            fprintf_bu (LstFileHandle, LOGFILE, "%p->", nParent);
         }
 
-        if (nParent->dNameSeg)
+        if (nParent->NameSeg)
         {
-            return (char *) &nParent->dNameSeg;
+            return (char *) &nParent->NameSeg;
         }
     }
 
@@ -2249,17 +2251,17 @@ pcFindParentName (nte *nLook, int iTrace)
 
 /****************************************************************************
  *
- * FUNCTION:    pcNsNameOfScope
+ * FUNCTION:    NsNameOfScope
  *
- * PARAMETERS:  nte *nLook          Scope whose name is needed
+ * PARAMETERS:  nte *Look          Scope whose name is needed
  *
  * RETURN:      Pointer to storage containing the fully qualified name of
  *              the scope, in Label format (all segments strung together
  *              with no separators)
  *
- * DESCRIPTION: Used via pcNsNameOfCurrentScope() and pcLastFQN()
+ * DESCRIPTION: Used via NsNameOfCurrentScope() and pcLastFQN()
  *              for label generation in amlscan.c, and for debug
- *              printing in NsSearchTable().
+ *              printing in SearchTable().
  *
  * ALLOCATION:
  * Reference      Size                 Pool  Owner       Description
@@ -2268,18 +2270,18 @@ pcFindParentName (nte *nLook, int iTrace)
  ***************************************************************************/
 
 static char *
-pcNsNameOfScope (nte *nLook)
+NsNameOfScope (nte *Look)
 {
-    nte                 *nTemp;
+    nte                 *Temp;
     static char         *pcFQN = (char *) 0;
     static size_t       iFQNsiz = 0;
-    size_t              iSize;
+    size_t              Size;
 
 
-    FUNCTION_TRACE ("pcNsNameOfScope");
+    FUNCTION_TRACE ("NsNameOfScope");
 
 
-    if ((nte *) 0 == psRoot || (nte *)0 == nLook)
+    if ((nte *) 0 == Root || (nte *)0 == Look)
     {
         /* 
          * If the name space has not been initialized,
@@ -2290,14 +2292,14 @@ pcNsNameOfScope (nte *nLook)
 
     /* Calculate required buffer size based on depth below root NT */
     
-    for (iSize = 1, nTemp = nLook;
-            nTemp->nParentScope;
-            nTemp = nTemp->nParentScope)
+    for (Size = 1, Temp = Look;
+            Temp->ParentScope;
+            Temp = Temp->ParentScope)
     {
-        iSize += 4;
+        Size += 4;
     }
 
-    if (iFQNsiz < iSize + 1)
+    if (iFQNsiz < Size + 1)
     {
         /* Current buffer is too small; release it and allocate a larger one */
         
@@ -2307,36 +2309,36 @@ pcNsNameOfScope (nte *nLook)
         }
         else
         {
-            vRegisterStaticBlockPtr (&pcFQN);
+            RegisterStaticBlockPtr (&pcFQN);
         }
 
-        pcFQN = OsdCallocate (1, iSize + 1);
+        pcFQN = OsdCallocate (1, Size + 1);
         if ((char *) 0 == pcFQN)
         {
-            vKFatalError("0028", ("pcNsNameOfScope: allocation failure"));
+            KFatalError("0028", ("NsNameOfScope: allocation failure"));
         }
         
-        iFQNsiz = iSize + 1;
+        iFQNsiz = Size + 1;
     }
 
     /* Store terminator byte, then build name backwards */
     
-    pcFQN[iSize] = '\0';
-    while (iSize > 4 && nLook->nParentScope != (nte *) 0)
+    pcFQN[Size] = '\0';
+    while (Size > 4 && Look->ParentScope != (nte *) 0)
     {
-        iSize -= 4;
-        *(DWORD *) (pcFQN + iSize) = *(DWORD *) pcFindParentName (nLook, 0);
-        nLook = nLook->nParentScope;
+        Size -= 4;
+        *(DWORD *) (pcFQN + Size) = *(DWORD *) FindParentName (Look, 0);
+        Look = Look->ParentScope;
     }
 
-    pcFQN[--iSize] = RootPrefix;
-    return &pcFQN[iSize];
+    pcFQN[--Size] = RootPrefix;
+    return &pcFQN[Size];
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    pcNsNameOfCurrentScope()
+ * FUNCTION:    NsNameOfCurrentScope()
  *
  * PARAMETERS:  none
  *
@@ -2345,26 +2347,26 @@ pcNsNameOfScope (nte *nLook)
  ***************************************************************************/
 
 char *
-pcNsNameOfCurrentScope (void)
+NsNameOfCurrentScope (void)
 {
-    FUNCTION_TRACE ("pcNsNameOfCurrentScope");
+    FUNCTION_TRACE ("NsNameOfCurrentScope");
 
 
-    if (psCurrentScope && psCurrentScope->psScope)
+    if (CurrentScope && CurrentScope->Scope)
     {
-        return pcNsNameOfScope (psCurrentScope->psScope);
+        return NsNameOfScope (CurrentScope->Scope);
     }
     
-    vKFatalError ("0029", ("Current scope pointer trashed"));
+    KFatalError ("0029", ("Current scope pointer trashed"));
     return (char *) 0;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    pcNsFullyQualifiedName
+ * FUNCTION:    NsFullyQualifiedName
  *
- * PARAMETERS:  NsHandle hLook          handle of nte whose name is to be found
+ * PARAMETERS:  NsHandle Look          handle of nte whose name is to be found
  *
  * RETURN:      pointer to storage containing the name, in external format
  *
@@ -2377,20 +2379,20 @@ pcNsNameOfCurrentScope (void)
  ***************************************************************************/
 
 char *
-pcNsFullyQualifiedName (NsHandle hLook)
+NsFullyQualifiedName (NsHandle Look)
 {
-    nte                 *nLook = (nte *) hLook;
-    nte                 *nTemp;
+    nte                 *Look = (nte *) Look;
+    nte                 *Temp;
     static char         *pcFQN = (char *) 0;
     static size_t       iFQNsiz = 0;
-    size_t              iSize;
-    int                 iTraceFQN = 0;
+    size_t              Size;
+    int                 TraceFQN = 0;
 
 
-    FUNCTION_TRACE ("pcNsFullyQualifiedName");
+    FUNCTION_TRACE ("NsFullyQualifiedName");
 
 
-    if ((nte *) 0 == psRoot || (nte *) 0 == nLook)
+    if ((nte *) 0 == Root || (nte *) 0 == Look)
     {
         /* 
          * If the name space has not been initialized,
@@ -2402,14 +2404,14 @@ pcNsFullyQualifiedName (NsHandle hLook)
 
     /* Compute length of FQN as 5 * number of segments */
     
-    for (iSize = 5, nTemp = nLook;
-          nTemp->nParentScope;
-          nTemp = nTemp->nParentScope)
+    for (Size = 5, Temp = Look;
+          Temp->ParentScope;
+          Temp = Temp->ParentScope)
     {
-        iSize += 5;
+        Size += 5;
     }
     
-    if (iFQNsiz < iSize + 1)
+    if (iFQNsiz < Size + 1)
     {
         if (pcFQN != (char *) 0)
         {
@@ -2418,133 +2420,133 @@ pcNsFullyQualifiedName (NsHandle hLook)
         
         else
         {
-            vRegisterStaticBlockPtr (&pcFQN);
+            RegisterStaticBlockPtr (&pcFQN);
         }
         
-        pcFQN = OsdCallocate (1, iSize + 1);
+        pcFQN = OsdCallocate (1, Size + 1);
         if ((char *) 0 == pcFQN)
         {
-            vKFatalError ("0030", ("pcNsFullyQualifiedName: allocation failure"));
+            KFatalError ("0030", ("NsFullyQualifiedName: allocation failure"));
         }
-        iFQNsiz = iSize + 1;
+        iFQNsiz = Size + 1;
     }
 
 #if 0
     
     /* Debug hack: if dealing with segment "_PSC" turn on tracing */
     
-    if (0x4353505f == nLook->dNameSeg)
+    if (0x4353505f == Look->NameSeg)
     {
-        iTraceFQN = 1;
-        fprintf_bu (iLstFileHandle, LOGFILE,
+        TraceFQN = 1;
+        fprintf_bu (LstFileHandle, LOGFILE,
                     "NsFQN: nte @ %p, name %08lx, parent @ %p, SizeOfFQN = %d ",
-                    nLook, nLook->dNameSeg, nLook->nParentScope, iSize);
+                    Look, Look->NameSeg, Look->ParentScope, Size);
     }
 #endif
 
     /* Store null termination */
     
-    pcFQN[iSize] = '\0';
-    iSize -= 4;
+    pcFQN[Size] = '\0';
+    Size -= 4;
     
-    if (iTraceFQN)
+    if (TraceFQN)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                        "%d:%08lx ", iSize, nLook->dNameSeg);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                        "%d:%08lx ", Size, Look->NameSeg);
     }
     
-    *(DWORD *) (pcFQN + iSize) = nLook->dNameSeg;
-    pcFQN[--iSize] = '.';
+    *(DWORD *) (pcFQN + Size) = Look->NameSeg;
+    pcFQN[--Size] = '.';
 
     /* Build name backwards, putting "." between segments */
     
-    while (iSize > 4 && nLook != (nte *) 0)
+    while (Size > 4 && Look != (nte *) 0)
     {
-        iSize -= 4;
-        *(DWORD *) (pcFQN + iSize) = *(DWORD *) pcFindParentName (nLook, iTraceFQN);
+        Size -= 4;
+        *(DWORD *) (pcFQN + Size) = *(DWORD *) FindParentName (Look, TraceFQN);
         
-        if (iTraceFQN)
+        if (TraceFQN)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE,
-                            "%d:%08lx ", iSize, *(DWORD *)(pcFQN + iSize));
+            fprintf_bu (LstFileHandle, LOGFILE,
+                            "%d:%08lx ", Size, *(DWORD *)(pcFQN + Size));
         }
-        pcFQN[--iSize] = '.';
-        nLook = nLook->nParentScope;
+        pcFQN[--Size] = '.';
+        Look = Look->ParentScope;
     }
 
     /* Overlay the "." preceding the first segment with root name "\" */
     
-    pcFQN[iSize] = '\\';
-    return &pcFQN[iSize];
+    pcFQN[Size] = '\\';
+    return &pcFQN[Size];
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    vNsSetMethod
+ * FUNCTION:    NsSetMethod
  *
  * PARAMETERS:  NsHandle    h           handle of nte to be set
- *              ptrdiff_t   iOffset     value to be set
- *              long        lLength     length associated with value
+ *              ptrdiff_t   Offset     value to be set
+ *              long        Length     length associated with value
  *
  * DESCRIPTION: Record the given offset and p-code length of the method
  *              whose handle is passed
  *
  * ALLOCATION:
  * Reference      Size                 Pool  Owner       Description
- * nte.pVal       s(meth)              bu    acpinmsp    Method AML descrip
+ * nte.ptrVal       s(meth)              bu    acpinmsp    Method AML descrip
  *
  ***************************************************************************/
 
 void
-vNsSetMethod (NsHandle h, ptrdiff_t iOffset, long lLength)
+NsSetMethod (NsHandle h, ptrdiff_t Offset, long Length)
 {
     meth            *pM = NEW (meth);
 
 
-    FUNCTION_TRACE ("vNsSetMethod");
+    FUNCTION_TRACE ("NsSetMethod");
 
 
     if ((meth *) 0 == pM)
     {
-        vKFatalError ("0031", ("vNsSetMethod: allocation failure"));
+        KFatalError ("0031", ("NsSetMethod: allocation failure"));
     }
     
-    if ((nte *) 0 == psRoot)
+    if ((nte *) 0 == Root)
     {
-        vKFatalError ("0032", ("vNsSetMethod: name space not initialized"));
+        KFatalError ("0032", ("NsSetMethod: name space not initialized"));
     }
     
     if ((NsHandle) 0 == h)
     {
-        vKFatalError ("0033", ("vNsSetMethod: null name handle"));
+        KFatalError ("0033", ("NsSetMethod: null name handle"));
     }
 
-    pM->iOffset = iOffset;
-    pM->lLength = lLength;
+    pM->Offset = Offset;
+    pM->Length = Length;
     
-    ((nte *) h)->pVal = (void *) pM;
+    ((nte *) h)->ptrVal = (void *) pM;
 
 #if 0
     LineSet (55, Load);
-    fprintf_bu (iLstFileHandle, LOGFILE,
-                    "[hMethod %p pVal %p iOffset %x lLength %lx]",
-                    h, pM, pM->iOffset, pM->lLength);
+    fprintf_bu (LstFileHandle, LOGFILE,
+                    "[Method %p ptrVal %p Offset %x Length %lx]",
+                    h, pM, pM->Offset, pM->Length);
 #endif
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    vNsSetValue
+ * FUNCTION:    NsSetValue
  *
  * PARAMETERS:  NsHandle            hN          handle of nte to be set
  *              ACPI_OBJECT_HANDLE  hV          value to be set
- *              BYTE                bValTyp     type of value,
+ *              BYTE                ValTyp     type of value,
  *                                              or Any if not known
  *
  * DESCRIPTION: Record the given object as the value associated with the
- *              name whose NsHandle is passed.  If hV is NULL and bValTyp
+ *              name whose NsHandle is passed.  If hV is NULL and ValTyp
  *              is Any, set the name as having no value.
  *
  * ALLOCATION:  This function must not call NEW() or [mc]alloc_bu because
@@ -2554,60 +2556,60 @@ vNsSetMethod (NsHandle h, ptrdiff_t iOffset, long lLength)
  ***************************************************************************/
 
 void
-vNsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE bValTyp)
+NsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE ValTyp)
 {
-    void                *pvTemp;
+    void                *Temp;
 
 
-    FUNCTION_TRACE ("vNsSetValue");
+    FUNCTION_TRACE ("NsSetValue");
 
 
-    if ((nte *) 0 == psRoot)
+    if ((nte *) 0 == Root)
     {
-        vKFatalError ("0034", ("vNsSetValue: name space not initialized"));
+        KFatalError ("0034", ("NsSetValue: name space not initialized"));
     }
     
     if ((NsHandle) 0 == hN)
     {
-        vKFatalError ("0035", ("vNsSetValue: null name handle"));
+        KFatalError ("0035", ("NsSetValue: null name handle"));
     }
     
-    if ((ACPI_OBJECT_HANDLE) 0 == hV && Any != bValTyp)
+    if ((ACPI_OBJECT_HANDLE) 0 == hV && Any != ValTyp)
     {
-        vKFatalError ("0036", ("vNsSetValue: null value handle"));
+        KFatalError ("0036", ("NsSetValue: null value handle"));
     }
     
-    if (!iIsNsHandle (hN))
+    if (!IsNsHandle (hN))
     {
-        vKFatalError ("0037", ("vNsSetValue: \"name handle\" param isn't a name handle"));
+        KFatalError ("0037", ("NsSetValue: \"name handle\" param isn't a name handle"));
     }
 
     /* 
-     * Delete the old value.  Must set the pVal field to NULL first
-     * so that vDeleteObject() doesn't find the descriptor reachable.
+     * Delete the old value.  Must set the ptrVal field to NULL first
+     * so that DeleteObject() doesn't find the descriptor reachable.
      */
     
-    pvTemp = ((nte *) hN)->pVal;
-    ((nte *) hN)->pVal = (void *) 0;
-    vDeleteObject ((OBJECT_DESCRIPTOR **) &pvTemp);
+    Temp = ((nte *) hN)->ptrVal;
+    ((nte *) hN)->ptrVal = (void *) 0;
+    DeleteObject ((OBJECT_DESCRIPTOR **) &Temp);
 
     /* If the new value is NULL, done */
     
-    if ((ACPI_OBJECT_HANDLE) 0 == hV && Any == bValTyp)
+    if ((ACPI_OBJECT_HANDLE) 0 == hV && Any == ValTyp)
     {
-        ((nte *) hN)->iNtType = (NsType) bValTyp;
+        ((nte *) hN)->NtType = (NsType) ValTyp;
         return;
     }
 
     /* Set the new value */
     
-    ((nte *) hN)->pVal = hV;
+    ((nte *) hN)->ptrVal = hV;
 
     /* Set the type if given, or if it can be discerned */
     
-    if (Any != bValTyp)
+    if (Any != ValTyp)
     {
-        ((nte *) hN)->iNtType = (NsType) bValTyp;
+        ((nte *) hN)->NtType = (NsType) ValTyp;
     }
     
     else if (iIsInPCodeBlock ((BYTE *) hV))
@@ -2628,19 +2630,19 @@ vNsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE bValTyp)
             
             case ZeroOp: case OnesOp: case OneOp:
             case ByteOp: case WordOp: case DWordOp:
-                ((nte *) hN)->iNtType = Number;
+                ((nte *) hN)->NtType = Number;
                 break;
 
             case StringOp:
-                ((nte *) hN)->iNtType = String;
+                ((nte *) hN)->NtType = String;
                 break;
 
             case BufferOp:
-                ((nte *) hN)->iNtType = Buffer;
+                ((nte *) hN)->NtType = Buffer;
                 break;
 
             case PackageOp:
-                ((nte *) hN)->iNtType = Package;
+                ((nte *) hN)->NtType = Package;
                 break;
 
             default:
@@ -2648,14 +2650,14 @@ vNsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE bValTyp)
         }
     }
 
-    else if (iIsNsHandle (hV) && ((nte *) hV)->pVal != (void *) 0)
+    else if (IsNsHandle (hV) && ((nte *) hV)->ptrVal != (void *) 0)
     {
         /* 
          * Value passed is a name handle and that name has a non-null value.
          * Use that name's value and type.
          */
 
-        vNsSetValue(hN, ((nte *) hV)->pVal, (BYTE) ((nte *) hV)->iNtType);
+        NsSetValue(hN, ((nte *) hV)->ptrVal, (BYTE) ((nte *) hV)->NtType);
     }
     
     else
@@ -2667,42 +2669,42 @@ vNsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE bValTyp)
 
         if (debug_level () > 0)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE,
-                        "vNsSetValue:confused:setting bogus type for %s from ",
-                        pcNsFullyQualifiedName (hN));
+            fprintf_bu (LstFileHandle, LOGFILE,
+                        "NsSetValue:confused:setting bogus type for %s from ",
+                        NsFullyQualifiedName (hN));
 
             if (iIsInPCodeBlock((BYTE *)hV))
             {
-                fprintf_bu (iLstFileHandle, LOGFILE,
+                fprintf_bu (LstFileHandle, LOGFILE,
                             "AML-stream code %02x\n", *(BYTE *) hV);
             }
             
-            else if (iIsNsHandle (hV))
+            else if (IsNsHandle (hV))
             {
-                fprintf_bu (iLstFileHandle, LOGFILE,
-                            "name %s\n", pcNsFullyQualifiedName (hV));
+                fprintf_bu (LstFileHandle, LOGFILE,
+                            "name %s\n", NsFullyQualifiedName (hV));
             }
             
             else
             {
-                fprintf_bu (iLstFileHandle, LOGFILE,
-                            "object %p:", pcNsFullyQualifiedName (hV));
-                iDumpStackEntry (hV);
+                fprintf_bu (LstFileHandle, LOGFILE,
+                            "object %p:", NsFullyQualifiedName (hV));
+                DumpStackEntry (hV);
             }
         }
 
-        ((nte *) hN)->iNtType = DefAny;
+        ((nte *) hN)->NtType = DefAny;
     }
 }
 
 
 /****************************************************************************
  * 
- * FUNCTION:    iExistDownstreamSibling
+ * FUNCTION:    ExistDownstreamSibling
  *
- * PARAMETERS:  nte     *nThis          pointer to first nte to examine
- *              int     iSize           # of entries remaining in table
- *              nte     *nNextSeg       addr of NT's appendage, or NULL
+ * PARAMETERS:  nte     *This          pointer to first nte to examine
+ *              int     Size           # of entries remaining in table
+ *              nte     *NextSeg       addr of NT's appendage, or NULL
  *
  * RETURN:      TRUE if sibling is found, FALSE otherwise
  *
@@ -2715,45 +2717,45 @@ vNsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE bValTyp)
  ***************************************************************************/
 
 static int
-iExistDownstreamSibling (nte *nThis, int iSize, nte *nNextSeg)
+ExistDownstreamSibling (nte *This, int Size, nte *NextSeg)
 {
 
-    FUNCTION_TRACE ("iExistDownstreamSibling");
+    FUNCTION_TRACE ("ExistDownstreamSibling");
 
 
-    if ((nte *) 0 == nThis)
+    if ((nte *) 0 == This)
     {
         return FALSE;
     }
 
-    if (0 == iSize && nNextSeg)
+    if (0 == Size && NextSeg)
     {
         /* Trying to examine (last entry + 1), but table has an appendage.  */
         
-        nThis = nNextSeg;
-        iSize += TABLSIZE;
-        nNextSeg = NEXTSEG (nThis);
+        This = NextSeg;
+        Size += TABLSIZE;
+        NextSeg = NEXTSEG (This);
     }
 
-    while (iSize--)
+    while (Size--)
     {
-        if (nThis->dNameSeg)
+        if (This->NameSeg)
         {
             return TRUE;
         }
         
-        if (0 == iSize && nNextSeg)
+        if (0 == Size && NextSeg)
         {
             /* Just examined last entry, but table has an appendage.  */
             
-            nThis = nNextSeg;
-            iSize += TABLSIZE;
-            nNextSeg = NEXTSEG (nThis);
+            This = NextSeg;
+            Size += TABLSIZE;
+            NextSeg = NEXTSEG (This);
         }
         
         else
         {
-            ++nThis;
+            ++This;
         }
     }
 
@@ -2763,31 +2765,31 @@ iExistDownstreamSibling (nte *nThis, int iSize, nte *nNextSeg)
 
 /****************************************************************************
  * 
- * FUNCTION:    vNsDumpTable
+ * FUNCTION:    NsDumpTable
  *
- * PARAMETERS:  nte *nThis                  table to be dumped
- *              int iSize                   size of table
- *              int iLevel                  Number of ancestor levels
- *              int iDisplayBitFlags        See description in vNsDumpTables()
- *              int iUseGraphicCharSet      See description in vNsDumpTables()
- *              int iMaxDepth               See description in vNsDumpTables()
+ * PARAMETERS:  nte *This                  table to be dumped
+ *              int Size                   size of table
+ *              int Level                  Number of ancestor levels
+ *              int DisplayBitFlags        See description in NsDumpTables()
+ *              int UseGraphicCharSet      See description in NsDumpTables()
+ *              int MaxDepth               See description in NsDumpTables()
  *
  * DESCRIPTION: Dump a name table and its descendents
  *
  ***************************************************************************/
 
 static void
-vNsDumpTable (nte *nThis, int iSize, int iLevel, int iDisplayBitFlags,
-                int iUseGraphicCharSet, int iMaxDepth)
+NsDumpTable (nte *This, int Size, int Level, int DisplayBitFlags,
+                int UseGraphicCharSet, int MaxDepth)
 {
-    nte                 *nNextSeg;
-    static              DWORD dDownstreamSiblingMask = 0;
+    nte                 *NextSeg;
+    static              DWORD DownstreamSiblingMask = 0;
 
 
-    FUNCTION_TRACE ("vNsDumpTable");
+    FUNCTION_TRACE ("NsDumpTable");
 
 
-    if (0 == iMaxDepth || (nte *)0 == nThis)
+    if (0 == MaxDepth || (nte *)0 == This)
     {
         /* reached requested depth, or nothing to dump */
         
@@ -2796,184 +2798,184 @@ vNsDumpTable (nte *nThis, int iSize, int iLevel, int iDisplayBitFlags,
 
     if (TRACE)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                    "enter vNsDumpTable (%p, %d, %d, %d, %d)\n                   %p",
-                    nThis, iSize, iLevel, iDisplayBitFlags, iUseGraphicCharSet,
-                    nThis->dNameSeg);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                    "enter NsDumpTable (%p, %d, %d, %d, %d)\n                   %p",
+                    This, Size, Level, DisplayBitFlags, UseGraphicCharSet,
+                    This->NameSeg);
     }
 
 
     /* Locate appendage, if any, before losing original scope pointer */
     
-    if (1 == iSize)
+    if (1 == Size)
     {
-        nNextSeg = (nte *) 0;
+        NextSeg = (nte *) 0;
     }
     else
     {
-        nNextSeg = NEXTSEG (nThis);
+        NextSeg = NEXTSEG (This);
     }
 
 
     /* for each entry in table */
     
-    while (iSize--)
+    while (Size--)
     {
-        if (nThis->dNameSeg)
+        if (This->NameSeg)
         {
             /* non-empty entry */
             
-            int             iL              = iLevel;
-            NsType          iType           = nThis->iNtType;
-            DWORD           dWhichBit   = 1;
+            int             LevelTmp              = Level;
+            NsType          Type           = This->NtType;
+            DWORD           WhichBit   = 1;
 
             /* print appropriate graphic characters to form tree structure */
             
-            while (iL--)
+            while (LevelTmp--)
             {
-                if (iL)
+                if (LevelTmp)
                 {
-                    if (dDownstreamSiblingMask & dWhichBit)
+                    if (DownstreamSiblingMask & WhichBit)
                     {    
-                        fprintf_bu (iLstFileHandle, iDisplayBitFlags & OUTPUT_DATA,
-                                    iUseGraphicCharSet ? "³  " : "|  ");
+                        fprintf_bu (LstFileHandle, DisplayBitFlags & OUTPUT_DATA,
+                                    UseGraphicCharSet ? "³  " : "|  ");
                     }
                     
                     else
                     {
-                        fprintf_bu (iLstFileHandle, iDisplayBitFlags & OUTPUT_DATA,
+                        fprintf_bu (LstFileHandle, DisplayBitFlags & OUTPUT_DATA,
                                     "   ");
                     }
                     
-                    dWhichBit <<= 1;
+                    WhichBit <<= 1;
                 }
                 
                 else
                 {
-                    if (iExistDownstreamSibling (nThis + 1, iSize, nNextSeg))
+                    if (ExistDownstreamSibling (This + 1, Size, NextSeg))
                     {
-                        dDownstreamSiblingMask |= (1 << (iLevel - 1));
-                        fprintf_bu (iLstFileHandle, iDisplayBitFlags & OUTPUT_DATA,
-                                    iUseGraphicCharSet ? "ÃÄÄ" : "+--");
+                        DownstreamSiblingMask |= (1 << (Level - 1));
+                        fprintf_bu (LstFileHandle, DisplayBitFlags & OUTPUT_DATA,
+                                    UseGraphicCharSet ? "ÃÄÄ" : "+--");
                     }
                     
                     else
                     {
-                        dDownstreamSiblingMask &= 0xffffffff ^ (1 << (iLevel - 1));
-                        fprintf_bu (iLstFileHandle, iDisplayBitFlags & OUTPUT_DATA,
-                                    iUseGraphicCharSet ? "ÀÄÄ" : "+--");
+                        DownstreamSiblingMask &= 0xffffffff ^ (1 << (Level - 1));
+                        fprintf_bu (LstFileHandle, DisplayBitFlags & OUTPUT_DATA,
+                                    UseGraphicCharSet ? "ÀÄÄ" : "+--");
                     }
 
-                    if (nThis->nChildScope == NULL)
+                    if (This->ChildScope == NULL)
                     {
-                        fprintf_bu (iLstFileHandle, iDisplayBitFlags & OUTPUT_DATA,
-                                    iUseGraphicCharSet ? "Ä " : "- ");
+                        fprintf_bu (LstFileHandle, DisplayBitFlags & OUTPUT_DATA,
+                                    UseGraphicCharSet ? "Ä " : "- ");
                     }
                     
-                    else if (iExistDownstreamSibling (nThis->nChildScope, TABLSIZE,
-                                                        NEXTSEG (nThis->nChildScope)))
+                    else if (ExistDownstreamSibling (This->ChildScope, TABLSIZE,
+                                                        NEXTSEG (This->ChildScope)))
                     {
-                        fprintf_bu (iLstFileHandle, iDisplayBitFlags & OUTPUT_DATA,
-                                    iUseGraphicCharSet ? "Â " : "+ ");
+                        fprintf_bu (LstFileHandle, DisplayBitFlags & OUTPUT_DATA,
+                                    UseGraphicCharSet ? "Â " : "+ ");
                     }
                     
                     else
                     {
-                        fprintf_bu (iLstFileHandle, iDisplayBitFlags & OUTPUT_DATA,
-                                    iUseGraphicCharSet ? "Ä " : "- ");
+                        fprintf_bu (LstFileHandle, DisplayBitFlags & OUTPUT_DATA,
+                                    UseGraphicCharSet ? "Ä " : "- ");
                     }
                 }
             }
 
-            if (OUTRANGE (iType, apcNsTypeNames))
+            if (OUTRANGE (Type, NsTypeNames))
             {
-                iType = DefAny;                                 /* prints as *ERROR* */
+                Type = DefAny;                                 /* prints as *ERROR* */
             }
             
-            if (!NcOK ((int)* (char *) &nThis->dNameSeg))
+            if (!NcOK ((int)* (char *) &This->NameSeg))
             {
-                fprintf_bu (iLstFileHandle, LOGFILE,
-                            "*** bad name %08lx at %p *** ", nThis->dNameSeg, nThis);
-                _dKinc_error ("0038", PACRLF, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+                fprintf_bu (LstFileHandle, LOGFILE,
+                            "*** bad name %08lx at %p *** ", This->NameSeg, This);
+                _dKinc_error ("0038", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
             }
 
-            if (Method == iType && nThis->pVal != (void *)0)
+            if (Method == Type && This->ptrVal != (void *)0)
             {
                 /* name is a Method and its AML offset/length are set */
                 
                 if (debug_level () > 0)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE, "%p: ", nThis);
+                    fprintf_bu (LstFileHandle, LOGFILE, "%p: ", This);
                 }
                 
-                fprintf_bu (iLstFileHandle, LOGFILE, "%4.4s [%s %04x:%04lx]",
-                            &nThis->dNameSeg, apcNsTypeNames[iType],
-                            ((meth *) nThis->pVal)->iOffset,
-                            ((meth *) nThis->pVal)->lLength);
+                fprintf_bu (LstFileHandle, LOGFILE, "%4.4s [%s %04x:%04lx]",
+                            &This->NameSeg, NsTypeNames[Type],
+                            ((meth *) This->ptrVal)->Offset,
+                            ((meth *) This->ptrVal)->Length);
                 
                 if (debug_level() > 0)
                 {
-                    fprintf_bu(iLstFileHandle, LOGFILE, " C:%p P:%p",
-                            nThis->nChildScope, nThis->nParentScope);
+                    fprintf_bu(LstFileHandle, LOGFILE, " C:%p P:%p",
+                            This->ChildScope, This->ParentScope);
                 }
 
-                /* fprintf_bu(iLstFileHandle, LOGFILE, "\n"); */
+                /* fprintf_bu(LstFileHandle, LOGFILE, "\n"); */
             }
             
             else
             {
                 /* name is not a Method, or the AML offset/length are not set */
                 
-                BYTE            *pbVal = nThis->pVal;
+                BYTE            *Value = This->ptrVal;
 
 
                 if (debug_level () > 0)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE, "%p: ", nThis);
+                    fprintf_bu (LstFileHandle, LOGFILE, "%p: ", This);
                 }
                 
-                fprintf_bu (iLstFileHandle, LOGFILE,
-                            "%4.4s [%s]", &nThis->dNameSeg, apcNsTypeNames[iType]);
+                fprintf_bu (LstFileHandle, LOGFILE,
+                            "%4.4s [%s]", &This->NameSeg, NsTypeNames[Type]);
                 
                 if (debug_level() > 0)
                 {
-                    fprintf_bu(iLstFileHandle, LOGFILE, " C:%p P:%p V:%p",
-                            nThis->nChildScope, nThis->nParentScope, nThis->pVal);
+                    fprintf_bu(LstFileHandle, LOGFILE, " C:%p P:%p V:%p",
+                            This->ChildScope, This->ParentScope, This->ptrVal);
                 }
 
-                /* fprintf_bu(iLstFileHandle, LOGFILE, "\n");a*/
+                /* fprintf_bu(LstFileHandle, LOGFILE, "\n");a*/
 #if 0
                 /* debug code used to show parents */
                 
-                if (IndexField == iType && 0 == iSize && 0 == iLevel
-                 && nThis->nParentScope)
+                if (IndexField == Type && 0 == Size && 0 == Level
+                 && This->ParentScope)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE, "  in ");
+                    fprintf_bu (LstFileHandle, LOGFILE, "  in ");
                     ++TRACE;
-                    fprintf_bu (iLstFileHandle, LOGFILE,
-                                "call vNsDumpEntry %p\n", nThis->nParentScope);
+                    fprintf_bu (LstFileHandle, LOGFILE,
+                                "call NsDumpEntry %p\n", This->ParentScope);
                     
-                    vNsDumpEntry ((NsHandle) nThis->nParentScope, iDisplayBitFlags);
-                    fprintf_bu (iLstFileHandle, LOGFILE,
-                                "ret from vNsDumpEntry %p\n", nThis->nParentScope);
+                    NsDumpEntry ((NsHandle) This->ParentScope, DisplayBitFlags);
+                    fprintf_bu (LstFileHandle, LOGFILE,
+                                "ret from NsDumpEntry %p\n", This->ParentScope);
                     --TRACE;
                 }
 #endif
                 /* if debug turned on, display values */
                 
-                while (pbVal && debug_level () > 0)
+                while (Value && debug_level () > 0)
                 {
-                    BYTE                bT = ((OBJECT_DESCRIPTOR *) pbVal)->bValTyp;
+                    BYTE                bT = ((OBJECT_DESCRIPTOR *) Value)->ValTyp;
 
 
-                    fprintf_bu (iLstFileHandle, LOGFILE,
+                    fprintf_bu (LstFileHandle, LOGFILE,
                                 "                 %p  %02x %02x %02x %02x %02x %02x",
-                                pbVal, pbVal[0], pbVal[1], pbVal[2], pbVal[3], pbVal[4],
-                                pbVal[5]);
-                    fprintf_bu  (iLstFileHandle, LOGFILE,
+                                Value, Value[0], Value[1], Value[2], Value[3], Value[4],
+                                Value[5]);
+                    fprintf_bu  (LstFileHandle, LOGFILE,
                                 " %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-                                pbVal[6], pbVal[7], pbVal[8], pbVal[9], pbVal[10],
-                                pbVal[11], pbVal[12], pbVal[13], pbVal[14], pbVal[15]);
+                                Value[6], Value[7], Value[8], Value[9], Value[10],
+                                Value[11], Value[12], Value[13], Value[14], Value[15]);
                     
                     if (bT == String || bT == Buffer || bT == Package
                      || bT == FieldUnit || bT == DefField || bT == BankField
@@ -2984,7 +2986,7 @@ vNsDumpTable (nte *nThis, int iSize, int iLevel, int iDisplayBitFlags,
                          * the above-listed variants of OBJECT_DESCRIPTOR have
                          * compatible mappings.
                          */
-                        pbVal = ((OBJECT_DESCRIPTOR *)pbVal)->sBuffer.pbBuffer;
+                        Value = ((OBJECT_DESCRIPTOR *)Value)->sBuffer.pbBuffer;
                     }
                     else
                     {
@@ -2993,48 +2995,48 @@ vNsDumpTable (nte *nThis, int iSize, int iLevel, int iDisplayBitFlags,
                 }
             }
 
-            if (nThis->nChildScope && iMaxDepth > 1)
+            if (This->ChildScope && MaxDepth > 1)
             {
                 /* dump next scope level */
                 
-                vNsDumpTable (nThis->nChildScope, TABLSIZE, iLevel+1,
-                                iDisplayBitFlags, iUseGraphicCharSet, iMaxDepth - 1);
+                NsDumpTable (This->ChildScope, TABLSIZE, Level+1,
+                                DisplayBitFlags, UseGraphicCharSet, MaxDepth - 1);
             }
         }
 
-        if (0 == iSize && nNextSeg)
+        if (0 == Size && NextSeg)
         {
             /* Just examined last entry, but table has an appendage.  */
             
-            nThis = nNextSeg;
-            iSize += TABLSIZE;
-            nNextSeg = NEXTSEG (nThis);
+            This = NextSeg;
+            Size += TABLSIZE;
+            NextSeg = NEXTSEG (This);
         }
         else
         {
-            ++nThis;
+            ++This;
         }
     }
 
     if (TRACE)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE, "leave vNsDumpTable %p", nThis);
+        fprintf_bu (LstFileHandle, LOGFILE, "leave NsDumpTable %p", This);
     }
 }
 
 
 /****************************************************************************
  * 
- * FUNCTION:    vNsDumpTables
+ * FUNCTION:    NsDumpTables
  *
- * PARAMETERS:  int iDisplayBitFlags        See definitions of OUTPUT_DATA
+ * PARAMETERS:  int DisplayBitFlags        See definitions of OUTPUT_DATA
  *                                          and related symbols in display.h
- *              int iUseGraphicCharSet      1 => use graphic character set to
+ *              int UseGraphicCharSet      1 => use graphic character set to
  *                                          draw links in name space tree
  *                                          0 => use +, -, and | to draw links
- *              NsHandle hSearchBase        Root of subtree to be dumped, or
+ *              NsHandle SearchBase        Root of subtree to be dumped, or
  *                                          NS_ALL to dump the entire namespace
- *              int     iMaxDepth           Maximum depth of dump.  Use INT_MAX
+ *              int     MaxDepth           Maximum depth of dump.  Use INT_MAX
  *                                          for an effectively unlimited depth.
  *
  * DESCRIPTION: Dump the name space, or a portion of it.
@@ -3042,14 +3044,14 @@ vNsDumpTable (nte *nThis, int iSize, int iLevel, int iDisplayBitFlags,
  ***************************************************************************/
 
 void
-vNsDumpTables (int iDisplayBitFlags, int iUseGraphicCharSet,
-                NsHandle hSearchBase, int iMaxDepth)
+NsDumpTables (int DisplayBitFlags, int UseGraphicCharSet,
+                NsHandle SearchBase, int MaxDepth)
 {
 
-    FUNCTION_TRACE ("vNsDumpTables");
+    FUNCTION_TRACE ("NsDumpTables");
 
 
-    if ((nte *) 0 == psRoot)
+    if ((nte *) 0 == Root)
     {      
         /* 
          * If the name space has not been initialized,
@@ -3058,20 +3060,20 @@ vNsDumpTables (int iDisplayBitFlags, int iUseGraphicCharSet,
         return;
     }
 
-    if (NS_ALL == hSearchBase)
+    if (NS_ALL == SearchBase)
     {
-        hSearchBase = psRoot;
-        fprintf_bu (iLstFileHandle, LOGFILE, "\\");
+        SearchBase = Root;
+        fprintf_bu (LstFileHandle, LOGFILE, "\\");
     }
 
-    vNsDumpTable (hSearchBase, hSearchBase == psRoot ? iNsRootSize : TABLSIZE,
-                    1, iDisplayBitFlags, iUseGraphicCharSet, iMaxDepth);
+    NsDumpTable (SearchBase, SearchBase == Root ? NsRootSize : TABLSIZE,
+                    1, DisplayBitFlags, UseGraphicCharSet, MaxDepth);
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    vNsDumpEntry    
+ * FUNCTION:    NsDumpEntry    
  *
  * PARAMETERS:  NsHandle h          Entry to be dumped
  *
@@ -3080,61 +3082,61 @@ vNsDumpTables (int iDisplayBitFlags, int iUseGraphicCharSet,
  ***************************************************************************/
 
 void
-vNsDumpEntry (NsHandle h, int iDisplayBitFlags)
+NsDumpEntry (NsHandle h, int DisplayBitFlags)
 {
 
-    FUNCTION_TRACE ("vNsDumpEntry");
+    FUNCTION_TRACE ("NsDumpEntry");
 
 
     if (TRACE)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE, "enter vNsDumpEntry %p", h);
+        fprintf_bu (LstFileHandle, LOGFILE, "enter NsDumpEntry %p", h);
     }
     
-    vNsDumpTable ((nte *) h, 1, 0, iDisplayBitFlags, 0, 1);
+    NsDumpTable ((nte *) h, 1, 0, DisplayBitFlags, 0, 1);
     
     if (TRACE)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE, "leave vNsDumpEntry %p", h);
+        fprintf_bu (LstFileHandle, LOGFILE, "leave NsDumpEntry %p", h);
     }
 }
 
 
 /****************************************************************************
  * 
- * FUNCTION:    vNsFindNames
+ * FUNCTION:    NsFindNames
  *
- * PARAMETERS:  nte         *nThis          table to be searched
- *              int         iSize           size of table
- *              char        *pcSearchFor    pattern to be found.
+ * PARAMETERS:  nte         *This          table to be searched
+ *              int         Size           size of table
+ *              char        *SearchFor    pattern to be found.
  *                                          4 bytes, ? matches any character.
- *              int         *piCount        output count of matches found.
+ *              int         *Count        output count of matches found.
  *                                          Outermost caller should preset to 0
- *              NsHandle     anList[]       output array of handles.  If
+ *              NsHandle     List[]       output array of handles.  If
  *                                          null, only the count is obtained.
- *              int         iMaxDepth       Maximum depth of search.  Use
+ *              int         MaxDepth       Maximum depth of search.  Use
  *                                          INT_MAX for an effectively
  *                                          unlimited depth.
  *
  * DESCRIPTION: Traverse the name space finding names which match a search
- *              pattern, and return an array of handles in anList[].
+ *              pattern, and return an array of handles in List[].
  *
  ***************************************************************************/
 
 #define BYTES_PER_SEGMENT 4
 
 static void
-vNsFindNames (nte *nThis, int iSize, char *pcSearchFor,
-                 int *piCount, NsHandle anList[], int iMaxDepth)
+NsFindNames (nte *This, int Size, char *SearchFor,
+                 int *Count, NsHandle List[], int MaxDepth)
 {
-    nte             *nNextSeg;
+    nte             *NextSeg;
 
 
-    FUNCTION_TRACE ("vNsFindNames");
+    FUNCTION_TRACE ("NsFindNames");
 
 
-    if (0 == iMaxDepth || (nte *) 0 == nThis
-     || (char *) 0 == pcSearchFor || (int *) 0 == piCount)
+    if (0 == MaxDepth || (nte *) 0 == This
+     || (char *) 0 == SearchFor || (int *) 0 == Count)
     {
         /* 
          * Reached requested depth, nothing to search,
@@ -3146,13 +3148,13 @@ vNsFindNames (nte *nThis, int iSize, char *pcSearchFor,
 
     /* Locate appendage, if any, before losing original scope pointer */
     
-    nNextSeg = NEXTSEG (nThis);
+    NextSeg = NEXTSEG (This);
 
     /* Loop over entries in NT */
     
-    while (iSize--)
+    while (Size--)
     {
-        if (nThis->dNameSeg)
+        if (This->NameSeg)
         {
             /* non-empty entry */
             
@@ -3160,8 +3162,8 @@ vNsFindNames (nte *nThis, int iSize, char *pcSearchFor,
 
             for (i = 0; i < BYTES_PER_SEGMENT; ++i)
             {
-                if (pcSearchFor[i] != '?'
-                 && pcSearchFor[i] != ((char *) &nThis->dNameSeg)[i])
+                if (SearchFor[i] != '?'
+                 && SearchFor[i] != ((char *) &This->NameSeg)[i])
                 {
                     break;
                 }
@@ -3171,54 +3173,54 @@ vNsFindNames (nte *nThis, int iSize, char *pcSearchFor,
             {
                 /* name matches pattern */
                 
-                if (anList)
+                if (List)
                 {
-                    anList[*piCount] = (NsHandle) nThis;
+                    List[*Count] = (NsHandle) This;
                 }
                 
-                ++*piCount;
+                ++*Count;
             }
 
-            if (nThis->nChildScope)
+            if (This->ChildScope)
             {
-                vNsFindNames (nThis->nChildScope, TABLSIZE, pcSearchFor,
-                                 piCount, anList, iMaxDepth - 1);
+                NsFindNames (This->ChildScope, TABLSIZE, SearchFor,
+                                 Count, List, MaxDepth - 1);
             }
         }
 
-        if (0 == iSize && nNextSeg)
+        if (0 == Size && NextSeg)
         {
             /* Just examined last entry, but table has an appendage.  */
             
-            nThis = nNextSeg;
-            iSize += TABLSIZE;
-            nNextSeg = NEXTSEG (nThis);
+            This = NextSeg;
+            Size += TABLSIZE;
+            NextSeg = NEXTSEG (This);
         }
         else
         {
-            ++nThis;
+            ++This;
         }
     }
 
-    if (anList)
+    if (List)
     {
         /* null-terminate the output array */
         
-        anList[*piCount] = (NsHandle) 0;
+        List[*Count] = (NsHandle) 0;
     }
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    phNsFindNames
+ * FUNCTION:    NsFindNames
  *
- * PARAMETERS:  char        *pcSearchFor    pattern to be found.
+ * PARAMETERS:  char        *SearchFor    pattern to be found.
  *                                          4 bytes, ? matches any character.
  *                                          If NULL, "????" will be used.
- *              NsHandle    hSearchBase     Root of subtree to be searched, or
+ *              NsHandle    SearchBase     Root of subtree to be searched, or
  *                                          NS_ALL to search the entire namespace
- *              int         iMaxDepth       Maximum depth of search.  Use INT_MAX
+ *              int         MaxDepth       Maximum depth of search.  Use INT_MAX
  *                                          for an effectively unlimited depth.
  *
  * DESCRIPTION: Traverse the name space finding names which match a search
@@ -3226,7 +3228,7 @@ vNsFindNames (nte *nThis, int iSize, char *pcSearchFor,
  *              array is marked by the value (NsHandle)0.  A return value
  *              of (NsHandle *)0 indicates that no matching names were
  *              found or that space for the list could not be allocated.
- *              if hSearchBase is NS_ALL (null) search from the root,
+ *              if SearchBase is NS_ALL (null) search from the root,
  *              else it is a handle whose children are to be searched.
  *
  * ALLOCATION:
@@ -3236,16 +3238,16 @@ vNsFindNames (nte *nThis, int iSize, char *pcSearchFor,
  ***************************************************************************/
 
 NsHandle *
-phNsFindNames (char *pcSearchFor, NsHandle hSearchBase, int iMaxDepth)
+NsFindNames (char *SearchFor, NsHandle SearchBase, int MaxDepth)
 {
-    NsHandle            *pnList;
-    int                 iCount, iBaseSize;
+    NsHandle            *List;
+    int                 Count, BaseSize;
 
 
-    FUNCTION_TRACE ("phNsFindNames");
+    FUNCTION_TRACE ("NsFindNames");
 
 
-    if ((nte *) 0 == psRoot)
+    if ((nte *) 0 == Root)
     {
         /* 
          * If the name space has not been initialized,
@@ -3255,14 +3257,14 @@ phNsFindNames (char *pcSearchFor, NsHandle hSearchBase, int iMaxDepth)
         return (NsHandle *) 0;
     }
 
-    if (NS_ALL == hSearchBase)
+    if (NS_ALL == SearchBase)
     {
-        hSearchBase = psRoot;
+        SearchBase = Root;
     }
     
-    else if ((NsHandle) 0 != ((nte *) hSearchBase)->nChildScope)
+    else if ((NsHandle) 0 != ((nte *) SearchBase)->ChildScope)
     {
-        hSearchBase = ((nte *) hSearchBase)->nChildScope;
+        SearchBase = ((nte *) SearchBase)->ChildScope;
     }
     
     else
@@ -3275,66 +3277,66 @@ phNsFindNames (char *pcSearchFor, NsHandle hSearchBase, int iMaxDepth)
         return (NsHandle *) 0;
     }
 
-    if (hSearchBase == psRoot)
+    if (SearchBase == Root)
     {
-        iBaseSize = iNsRootSize;
+        BaseSize = NsRootSize;
     }
     
     else
     {
-        iBaseSize = TABLSIZE;
+        BaseSize = TABLSIZE;
     }
 
-    if ((char *)0 == pcSearchFor)
+    if ((char *)0 == SearchFor)
     {
-        pcSearchFor = "????";
+        SearchFor = "????";
     }
 
     
     /* Pass 1.  Get required buffer size, don't try to build list */
     
-    iCount = 0;
-    vCheckTrash ("phNsFindNames before count");
-    vNsFindNames (hSearchBase, iBaseSize, pcSearchFor, &iCount, (NsHandle *)0,
-                    iMaxDepth);
-    vCheckTrash ("phNsFindNames after count");
+    Count = 0;
+    CheckTrash ("NsFindNames before count");
+    NsFindNames (SearchBase, BaseSize, SearchFor, &Count, (NsHandle *)0,
+                    MaxDepth);
+    CheckTrash ("NsFindNames after count");
     
-    if (0 == iCount)
+    if (0 == Count)
     {
         return (NsHandle *) 0;
     }
 
-    ++iCount;               /* Allow for trailing null */
-    pnList = (NsHandle *) OsdCallocate ((size_t)iCount, sizeof(NsHandle));
-    if ((NsHandle *) 0 == pnList)
+    ++Count;               /* Allow for trailing null */
+    List = (NsHandle *) OsdCallocate ((size_t)Count, sizeof(NsHandle));
+    if ((NsHandle *) 0 == List)
     {
-        vKFatalError("0039", ("phNsFindNames: allocation failure"));
+        KFatalError("0039", ("NsFindNames: allocation failure"));
     }
 
     /* Pass 2.  Fill buffer */
     
-    iCount = 0;
-    vCheckTrash ("phNsFindNames before list");
-    vNsFindNames (hSearchBase, iBaseSize, pcSearchFor, &iCount, pnList,
-                    iMaxDepth);
-    vCheckTrash ("phNsFindNames after list");
+    Count = 0;
+    CheckTrash ("NsFindNames before list");
+    NsFindNames (SearchBase, BaseSize, SearchFor, &Count, List,
+                    MaxDepth);
+    CheckTrash ("NsFindNames after list");
 
-    return pnList;
+    return List;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    hNsGetHandle
+ * FUNCTION:    NsGetHandle
  *
- * PARAMETERS:  char        *pcName     Name to be found, in external (ASL)
+ * PARAMETERS:  char        *Name     Name to be found, in external (ASL)
  *                                      format.  The \ and ^ prefixes, and the
  *                                      . to separate segments, are supported.
  *
- *              NsHandle    hScope      Root of subtree to be searched, or
+ *              NsHandle    Scope      Root of subtree to be searched, or
  *                                      NS_ALL for the root of the name space.
- *                                      If pcName is fully qualified (first char
- *                                      is '\'), the passed value of hScope will
+ *                                      If Name is fully qualified (first char
+ *                                      is '\'), the passed value of Scope will
  *                                      not be accessed.
  *
  * DESCRIPTION: Look up a name relative to a given scope and return the
@@ -3343,15 +3345,15 @@ phNsFindNames (char *pcSearchFor, NsHandle hSearchBase, int iMaxDepth)
  ***************************************************************************/
 
 NsHandle
-hNsGetHandle (char *pcName, NsHandle hScope)
+NsGetHandle (char *Name, NsHandle Scope)
 {
-    int                 iSize;
+    int                 Size;
 
 
-    FUNCTION_TRACE ("hNsGetHandle");
+    FUNCTION_TRACE ("NsGetHandle");
 
 
-    if ((nte *) 0 == psRoot || (char *) 0 == pcName)
+    if ((nte *) 0 == Root || (char *) 0 == Name)
     {
         /* 
          * If the name space has not been initialized,
@@ -3361,87 +3363,87 @@ hNsGetHandle (char *pcName, NsHandle hScope)
         return (NsHandle) NOTFOUND;
     }
 
-    if ('\\' == *pcName)
+    if ('\\' == *Name)
     {
         /* Name is fully qualified -- start at the root */
         
-        ++pcName;
-        hScope = psRoot;
+        ++Name;
+        Scope = Root;
     }
 
     else
     {
-        /* Name is relative to hScope -- handle any ^ prefixes */
+        /* Name is relative to Scope -- handle any ^ prefixes */
         
-        while ('^' == *pcName)
+        while ('^' == *Name)
         {
-            if (psRoot == hScope || (NsHandle) 0 == hScope)
+            if (Root == Scope || (NsHandle) 0 == Scope)
             {
                 return (NsHandle)NOTFOUND;
             }
             
-            hScope = (NsHandle) ((nte *) hScope)->nParentScope;
-            ++pcName;
+            Scope = (NsHandle) ((nte *) Scope)->ParentScope;
+            ++Name;
         }
     }
 
     /* Handle NS_ALL case */
     
-    if (NS_ALL == hScope)
+    if (NS_ALL == Scope)
     {
-        hScope = psRoot;
+        Scope = Root;
     }
 
-    iSize = hScope == psRoot ? iNsRootSize : TABLSIZE;
+    Size = Scope == Root ? NsRootSize : TABLSIZE;
 
     do
     {
-        hScope = (NsHandle) nsSearchTable (pcName, (nte *) hScope, iSize, Exec, DefAny);
-        pcName += 4;
-        iSize = TABLSIZE;
+        Scope = (NsHandle) SearchTable (Name, (nte *) Scope, Size, Exec, DefAny);
+        Name += 4;
+        Size = TABLSIZE;
 
-    } while (hScope && '.' == *pcName++);
+    } while (Scope && '.' == *Name++);
 
-    if (*pcName)
+    if (*Name)
     {
         /* ran out of levels, or there is a char following last segment */
         
         return (NsHandle) NOTFOUND;
     }
 
-    return hScope;
+    return Scope;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    hNsFindpVal
+ * FUNCTION:    NsFindpVal
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR   *pOD        value to be found in pVal field.
- *              NsHandle            hSearchBase Root of subtree to be searched, or
+ * PARAMETERS:  OBJECT_DESCRIPTOR   *pOD        value to be found in ptrVal field.
+ *              NsHandle            SearchBase Root of subtree to be searched, or
  *                                              NS_ALL to search the entire namespace
- *              int                 iMaxDepth   Maximum depth of search.  Use INT_MAX
+ *              int                 MaxDepth   Maximum depth of search.  Use INT_MAX
  *                                              for an effectively unlimited depth.
  *
- * DESCRIPTION: Traverse the name space until finding a name whose pVal
+ * DESCRIPTION: Traverse the name space until finding a name whose ptrVal
  *              matches the pOD parameter, and return a handle to that
  *              name, or (NsHandle)0 if none exists.
- *              if hSearchBase is NS_ALL (null) search from the root,
+ *              if SearchBase is NS_ALL (null) search from the root,
  *              else it is a handle whose children are to be searched.
  *
  ***************************************************************************/
 
 static NsHandle
-hNsFindpVal (OBJECT_DESCRIPTOR *pOD, NsHandle hSearchBase, int iMaxDepth)
+NsFindpVal (OBJECT_DESCRIPTOR *pOD, NsHandle SearchBase, int MaxDepth)
 {
-    nte             *nThis, *nNextSeg;
-    int             iSize;
+    nte             *This, *NextSeg;
+    int             Size;
 
 
-    FUNCTION_TRACE ("hNsFindpVal");
+    FUNCTION_TRACE ("NsFindpVal");
 
 
-    if ((nte *) 0 == psRoot)
+    if ((nte *) 0 == Root)
     {
         /* 
          * If the name space has not been initialized,
@@ -3451,14 +3453,14 @@ hNsFindpVal (OBJECT_DESCRIPTOR *pOD, NsHandle hSearchBase, int iMaxDepth)
         return (NsHandle *) 0;
     }
 
-    if (NS_ALL == hSearchBase)
+    if (NS_ALL == SearchBase)
     {
-        hSearchBase = psRoot;
+        SearchBase = Root;
     }
     
-    else if ((NsHandle) 0 != ((nte *) hSearchBase)->nChildScope)
+    else if ((NsHandle) 0 != ((nte *) SearchBase)->ChildScope)
     {
-        hSearchBase = ((nte *) hSearchBase)->nChildScope;
+        SearchBase = ((nte *) SearchBase)->ChildScope;
     }
     
     else
@@ -3470,13 +3472,13 @@ hNsFindpVal (OBJECT_DESCRIPTOR *pOD, NsHandle hSearchBase, int iMaxDepth)
         return (NsHandle *)0;
     }
 
-    if (hSearchBase == psRoot)
+    if (SearchBase == Root)
     {
-        iSize = iNsRootSize;
+        Size = NsRootSize;
     }
     else
     {
-        iSize = TABLSIZE;
+        Size = TABLSIZE;
     }
 
     if ((OBJECT_DESCRIPTOR *) 0 == pOD)
@@ -3484,54 +3486,54 @@ hNsFindpVal (OBJECT_DESCRIPTOR *pOD, NsHandle hSearchBase, int iMaxDepth)
         return (NsHandle *) 0;
     }
 
-    if (0 == iMaxDepth)
+    if (0 == MaxDepth)
     {
         return (NsHandle *) 0;
     }
 
     /* Loop over entries in NT */
     
-    nThis = (nte *) hSearchBase;
+    This = (nte *) SearchBase;
 
     /* Locate appendage, if any, before losing original scope pointer */
     
-    nNextSeg = NEXTSEG (nThis);
+    NextSeg = NEXTSEG (This);
 
-    while (iSize--)
+    while (Size--)
     {
-        if (nThis->dNameSeg)
+        if (This->NameSeg)
         {
             /* non-empty entry */
             
-            if (nThis->pVal == pOD)
+            if (This->ptrVal == pOD)
             {
-                return (NsHandle) nThis;
+                return (NsHandle) This;
             }
 
-            if (nThis->nChildScope)
+            if (This->ChildScope)
             {
-                nte             *nTemp = hNsFindpVal (pOD, nThis, iMaxDepth - 1);
+                nte             *Temp = NsFindpVal (pOD, This, MaxDepth - 1);
                 
                 
-                if (nTemp)
+                if (Temp)
                 {
-                    return (NsHandle) nTemp;
+                    return (NsHandle) Temp;
                 }
             }
         }
 
-        if (0 == iSize && nNextSeg)
+        if (0 == Size && NextSeg)
         {
             /* Just examined last entry, but table has an appendage.  */
             
-            nThis = nNextSeg;
-            iSize += TABLSIZE;
-            nNextSeg = NEXTSEG (nThis);
+            This = NextSeg;
+            Size += TABLSIZE;
+            NextSeg = NEXTSEG (This);
         }
         
         else
         {
-            ++nThis;
+            ++This;
         }
     }
 
@@ -3541,7 +3543,7 @@ hNsFindpVal (OBJECT_DESCRIPTOR *pOD, NsHandle hSearchBase, int iMaxDepth)
 
 /*****************************************************************************
  *
- * FUNCTION:    iIsNsValue
+ * FUNCTION:    IsNsValue
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *pOD
  *
@@ -3551,13 +3553,13 @@ hNsFindpVal (OBJECT_DESCRIPTOR *pOD, NsHandle hSearchBase, int iMaxDepth)
  ****************************************************************************/
 
 int
-iIsNsValue (OBJECT_DESCRIPTOR *pOD)
+IsNsValue (OBJECT_DESCRIPTOR *pOD)
 {
 
-    FUNCTION_TRACE ("iIsNsValue");
+    FUNCTION_TRACE ("IsNsValue");
 
 
-    return ((NsHandle) 0 != hNsFindpVal (pOD, NS_ALL, INT_MAX));
+    return ((NsHandle) 0 != NsFindpVal (pOD, NS_ALL, INT_MAX));
 }
 
 #ifdef PLUMBER
@@ -3565,11 +3567,11 @@ iIsNsValue (OBJECT_DESCRIPTOR *pOD)
 
 /****************************************************************************
  *
- * FUNCTION:    vNsMarkNT
+ * FUNCTION:    NsMarkNT
  *
- * PARAMETERS:  nte     *nThis          table to be marked
- *              int      iSize          size of table
- *              int     *piCount        output count of blocks marked
+ * PARAMETERS:  nte     *This          table to be marked
+ *              int      Size          size of table
+ *              int     *Count        output count of blocks marked
  *                                      Outermost caller should preset to 0
  *
  * DESCRIPTION: "Mark" a name table and its reachable values,
@@ -3578,43 +3580,43 @@ iIsNsValue (OBJECT_DESCRIPTOR *pOD)
  ***************************************************************************/
 
 static void
-vNsMarkNT (nte *nThis, int iSize, int *piCount)
+NsMarkNT (nte *This, int Size, int *Count)
 {
-    nte                 *nNextSeg;
+    nte                 *NextSeg;
 
 
-    FUNCTION_TRACE ("vNsMarkNT");
+    FUNCTION_TRACE ("NsMarkNT");
 
 
-    if ((nte *) 0 == nThis)
+    if ((nte *) 0 == This)
     {
         return;
     }
 
-    ++*piCount;
-    vMarkBlock ((void *) &NEXTSEG (nThis));
+    ++*Count;
+    MarkBlock ((void *) &NEXTSEG (This));
 
 
     /* Locate appendage, if any, before losing original scope pointer */
     
-    nNextSeg = NEXTSEG (nThis);
+    NextSeg = NEXTSEG (This);
 
     /* for all entries in this NT */
     
-    while (iSize--)
+    while (Size--)
     {
-        if (nThis->dNameSeg)
+        if (This->NameSeg)
         {
             /* non-empty entry -- mark anything it points to */
 
-            switch (iNsValType (nThis))
+            switch (NsValType (This))
             {
-                OBJECT_DESCRIPTOR       *pVal;
+                OBJECT_DESCRIPTOR       *ptrVal;
                 meth                    *pM;
 
 
                 case String:
-                    pVal = (OBJECT_DESCRIPTOR *) pvNsValPtr (nThis);
+                    ptrVal = (OBJECT_DESCRIPTOR *) NsValPtr (This);
                     
                     /* 
                      * Check for the value pointer in the name table entry
@@ -3622,20 +3624,20 @@ vNsMarkNT (nte *nThis, int iSize, int *piCount)
                      * in which case no allocated storage is involved.
                      */
 
-                    if (pVal && StringOp != *(BYTE *) pVal)
+                    if (ptrVal && StringOp != *(BYTE *) ptrVal)
                     {
                         /* Avoid marking value if it is in the AML stream */
                         
-                        if (!iIsInPCodeBlock (pVal->sString.pbString))
+                        if (!IsInPCodeBlock (ptrVal->sString.pbString))
                         {
-                            vMarkBlock (pVal->sString.pbString);
+                            MarkBlock (ptrVal->sString.pbString);
                         }
-                        vMarkBlock (pVal);
+                        MarkBlock (ptrVal);
                     }
                     break;
 
                 case Buffer:
-                    pVal = (OBJECT_DESCRIPTOR *) pvNsValPtr (nThis);
+                    ptrVal = (OBJECT_DESCRIPTOR *) NsValPtr (This);
                     
                     /* 
                      * Check for the value pointer in the name table entry
@@ -3643,15 +3645,15 @@ vNsMarkNT (nte *nThis, int iSize, int *piCount)
                      * in which case no allocated storage is involved.
                      */
                     
-                    if (pVal && BufferOp != *(BYTE *) pVal)
+                    if (ptrVal && BufferOp != *(BYTE *) ptrVal)
                     { 
-                        vMarkBlock (pVal->sBuffer.pbBuffer);
-                        vMarkBlock (pVal);
+                        MarkBlock (ptrVal->sBuffer.pbBuffer);
+                        MarkBlock (ptrVal);
                     }
                     break;
 
                 case Package:
-                    pVal = (OBJECT_DESCRIPTOR *) pvNsValPtr (nThis);
+                    ptrVal = (OBJECT_DESCRIPTOR *) NsValPtr (This);
                     
                     /* 
                      * Check for the value pointer in the name table entry
@@ -3659,17 +3661,17 @@ vNsMarkNT (nte *nThis, int iSize, int *piCount)
                      * in which case no allocated storage is involved.
                      */
 
-                    if (pVal && PackageOp != *(BYTE *) pVal)
+                    if (ptrVal && PackageOp != *(BYTE *) ptrVal)
                     {
-                        vAmlMarkPackage (pVal);
+                        AmlMarkPackage (ptrVal);
                     }
                     break;
 
                 case Method:
-                    pM = (meth *) pvNsValPtr (nThis);
+                    pM = (meth *) NsValPtr (This);
                     if (pM)
                     {
-                        vMarkBlock(pM);
+                        MarkBlock(pM);
                     }
 
                 case BankField:
@@ -3677,10 +3679,10 @@ vNsMarkNT (nte *nThis, int iSize, int *piCount)
                 case FieldUnit:
                 case IndexField:
                 case Region:
-                    pVal = (OBJECT_DESCRIPTOR *) pvNsValPtr (nThis);
-                    if (pVal)
+                    ptrVal = (OBJECT_DESCRIPTOR *) NsValPtr (This);
+                    if (ptrVal)
                     {
-                        vAmlMarkObject (pVal);
+                        AmlMarkObject (ptrVal);
                     }
 
                 default:
@@ -3691,26 +3693,26 @@ vNsMarkNT (nte *nThis, int iSize, int *piCount)
 
             }   /* switch */
 
-            if (nThis->nChildScope)
+            if (This->ChildScope)
             {
-                vNsMarkNT (nThis->nChildScope, TABLSIZE, piCount);
+                NsMarkNT (This->ChildScope, TABLSIZE, Count);
             }
         }
 
-        if (0 == iSize && nNextSeg)
+        if (0 == Size && NextSeg)
         {
             /* Just examined last entry, but table has an appendage.  */
             
-            nThis = nNextSeg;
-            iSize += TABLSIZE;
-            ++*piCount;
-            vMarkBlock ((void *) &NEXTSEG (nThis));
-            nNextSeg = NEXTSEG (nThis);
+            This = NextSeg;
+            Size += TABLSIZE;
+            ++*Count;
+            MarkBlock ((void *) &NEXTSEG (This));
+            NextSeg = NEXTSEG (This);
         }
         
         else
         {
-            ++nThis;
+            ++This;
         }
     }
 }
@@ -3720,7 +3722,7 @@ vNsMarkNT (nte *nThis, int iSize, int *piCount)
 
 /****************************************************************************
  *
- * FUNCTION:    iNsMarkNS()
+ * FUNCTION:    NsMarkNS()
  *
  * PARAMETERS:  none
  *
@@ -3732,16 +3734,16 @@ vNsMarkNT (nte *nThis, int iSize, int *piCount)
  ***************************************************************************/
 
 int
-iNsMarkNS (void)
+NsMarkNS (void)
 {
-    int             iCount = 0;
+    int             Count = 0;
 
 
-    FUNCTION_TRACE ("iNsMarkNS");
+    FUNCTION_TRACE ("NsMarkNS");
 
 
 #ifdef PLUMBER
-    if ((nte *) 0 == psRoot)
+    if ((nte *) 0 == Root)
     {
         /* 
          * If the name space has not been initialized,
@@ -3750,12 +3752,12 @@ iNsMarkNS (void)
         return 0;
     }
 
-    vNsMarkNT (psRoot, iNsRootSize, &iCount);
-    vMarkStaticBlocks (&iCount);
-    vMarkMethodValues (&iCount);
-    vMarkObjectStack (&iCount);
+    NsMarkNT (Root, NsRootSize, &Count);
+    MarkStaticBlocks (&Count);
+    MarkMethodValues (&Count);
+    MarkObjectStack (&Count);
 
 #endif  /* PLUMBER */
 
-    return iCount;
+    return Count;
 }
