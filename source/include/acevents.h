@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.86 $
+ *       $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -192,8 +192,8 @@ AcpiEvValidGpeEvent (
 
 ACPI_GPE_EVENT_INFO *
 AcpiEvGetGpeEventInfo (
-    UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *OwningGpeBlock);
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber);
 
 ACPI_STATUS
 AcpiEvGpeInitialize (
