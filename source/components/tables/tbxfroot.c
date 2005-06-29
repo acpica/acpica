@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -427,7 +427,7 @@ AcpiGetFirmwareTable (
                                         (void **) &AcpiGbl_RSDP);
             if (ACPI_FAILURE (Status))
             {
-                return_ACPI_STATUS (Status)
+                return_ACPI_STATUS (Status);
             }
         }
         else
