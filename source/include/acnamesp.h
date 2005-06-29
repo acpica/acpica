@@ -353,11 +353,12 @@ NsPatternMatch (
     NAME_TABLE_ENTRY        *ObjEntry, 
     char                    *SearchFor);
         
-void *
+ACPI_STATUS
 NsNameCompare (
     ACPI_HANDLE             ObjHandle, 
     UINT32                  Level, 
-    void                    *Context);
+    void                    *Context,
+    void                    **ReturnValue);
 
 void
 NsLowFindNames (
