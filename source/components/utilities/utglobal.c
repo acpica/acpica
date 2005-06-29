@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.195 $
+ *              $Revision: 1.196 $
  *
  *****************************************************************************/
 
@@ -334,14 +334,15 @@ const UINT8                     AcpiGbl_NsProperties[] =
     ACPI_NS_NORMAL,                     /* 19 IndexField       */
     ACPI_NS_NORMAL,                     /* 20 Reference        */
     ACPI_NS_NORMAL,                     /* 21 Alias            */
-    ACPI_NS_NORMAL,                     /* 22 Notify           */
-    ACPI_NS_NORMAL,                     /* 23 Address Handler  */
-    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 24 Resource Desc    */
-    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 25 Resource Field   */
-    ACPI_NS_NEWSCOPE,                   /* 26 Scope            */
-    ACPI_NS_NORMAL,                     /* 27 Extra            */
-    ACPI_NS_NORMAL,                     /* 28 Data             */
-    ACPI_NS_NORMAL                      /* 29 Invalid          */
+    ACPI_NS_NORMAL,                     /* 22 MethodAlias      */
+    ACPI_NS_NORMAL,                     /* 23 Notify           */
+    ACPI_NS_NORMAL,                     /* 24 Address Handler  */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 25 Resource Desc    */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 26 Resource Field   */
+    ACPI_NS_NEWSCOPE,                   /* 27 Scope            */
+    ACPI_NS_NORMAL,                     /* 28 Extra            */
+    ACPI_NS_NORMAL,                     /* 29 Data             */
+    ACPI_NS_NORMAL                      /* 30 Invalid          */
 };
 
 
@@ -582,14 +583,15 @@ static const char           *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 19 */ "IndexField",
     /* 20 */ "Reference",
     /* 21 */ "Alias",
-    /* 22 */ "Notify",
-    /* 23 */ "AddrHandler",
-    /* 24 */ "ResourceDesc",
-    /* 25 */ "ResourceFld",
-    /* 26 */ "Scope",
-    /* 27 */ "Extra",
-    /* 28 */ "Data",
-    /* 39 */ "Invalid"
+    /* 22 */ "MethodAlias",
+    /* 23 */ "Notify",
+    /* 24 */ "AddrHandler",
+    /* 25 */ "ResourceDesc",
+    /* 26 */ "ResourceFld",
+    /* 27 */ "Scope",
+    /* 28 */ "Extra",
+    /* 29 */ "Data",
+    /* 30 */ "Invalid"
 };
 
 
@@ -866,6 +868,7 @@ AcpiUtInitGlobals (
 
     AcpiGbl_CreateOsiMethod = TRUE;
     AcpiGbl_AllMethodsSerialized = FALSE;
+    AcpiGbl_LeaveWakeGpesDisabled = TRUE;
 
     /* Memory allocation and cache lists */
 
