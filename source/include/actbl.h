@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.46 $
+ *       $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -290,10 +290,9 @@ typedef struct _AcpiTableSupport
 {
     NATIVE_CHAR             *Name;
     NATIVE_CHAR             *Signature;
+    void                    **GlobalPtr;
     UINT8                   SigLength;
     UINT8                   Flags;
-    UINT16                  Status;
-    void                    **GlobalPtr;
 
 } ACPI_TABLE_SUPPORT;
 
