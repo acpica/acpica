@@ -419,7 +419,7 @@ AfRecognizeTable (
 
     /* Now get the rest of the table */
 
-    *TableGlobalPtr = AcpiUtAllocate (AcpiTblHeader.Length);
+    *TableGlobalPtr = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
     if (!*TableGlobalPtr)
     {
         AcpiOsPrintf ("Could not allocate buffer for Acpi table of length 0x%lX\n",
@@ -530,7 +530,7 @@ AfGetAllTables (
 
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl), 
                         sizeof (ACPI_TABLE_HEADER));
-    AcpiGbl_FACS = AcpiUtAllocate (AcpiTblHeader.Length);
+    AcpiGbl_FACS = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
     if (!AcpiGbl_FACS)
     {
         AcpiOsPrintf ("Could not allocate buffer for FADT length 0x%lX\n",
@@ -566,7 +566,7 @@ AfGetAllTables (
     /* Get the DSDT */
 
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XDsdt), sizeof (ACPI_TABLE_HEADER));
-    AcpiGbl_DSDT = AcpiUtAllocate (AcpiTblHeader.Length);
+    AcpiGbl_DSDT = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
     if (!AcpiGbl_DSDT)
     {
         AcpiOsPrintf ("Could not allocate buffer for DSDT length 0x%lX\n", AcpiTblHeader.Length);
