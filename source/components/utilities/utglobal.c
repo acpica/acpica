@@ -657,10 +657,10 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
 
     Gbl_RootObject              = &Gbl_RootObjStruct;
 
+    Gbl_RootObject->Name        = ACPI_ROOT_NAME;
     Gbl_RootObject->DataType    = DESC_TYPE_NTE;
     Gbl_RootObject->Type        = ACPI_TYPE_Any;
     Gbl_RootObject->Fill1       = 0;
-    Gbl_RootObject->Name        = * (UINT32 *) NS_ROOT;
     Gbl_RootObject->Scope       = NULL;
     Gbl_RootObject->ParentEntry = NULL;
     Gbl_RootObject->NextEntry   = NULL;
