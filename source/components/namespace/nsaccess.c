@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.178 $
+ *              $Revision: 1.179 $
  *
  ******************************************************************************/
 
@@ -243,7 +243,7 @@ AcpiNsRootInitialize (void)
                                                         (Val, NULL, 10);
                 ObjDesc->Common.Flags |= AOPOBJ_DATA_VALID;
 
-#if defined (_ACPI_ASL_COMPILER)
+#if defined (_ACPI_ASL_COMPILER) || defined (_ACPI_DUMP_APP)
 
                 /* iASL Compiler cheats by putting parameter count in the OwnerID */
 
