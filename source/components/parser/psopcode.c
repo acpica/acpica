@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -554,7 +554,7 @@ static const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
 /* 07 */ ACPI_OP ("String",             ARGP_STRING_OP,            ARGI_STRING_OP,             ACPI_TYPE_STRING,        AML_CLASS_ARGUMENT,        AML_TYPE_LITERAL,         0),
 /* 08 */ ACPI_OP ("Scope",              ARGP_SCOPE_OP,             ARGI_SCOPE_OP,              INTERNAL_TYPE_SCOPE,     AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_NO_OBJ,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
 /* 09 */ ACPI_OP ("Buffer",             ARGP_BUFFER_OP,            ARGI_BUFFER_OP,             ACPI_TYPE_BUFFER,        AML_CLASS_CREATE,          AML_TYPE_CREATE_OBJECT,   AML_HAS_ARGS | AML_DEFER),
-/* 0A */ ACPI_OP ("Package",            ARGP_PACKAGE_OP,           ARGI_PACKAGE_OP,            ACPI_TYPE_PACKAGE,       AML_CLASS_CREATE,          AML_TYPE_CREATE_OBJECT,   AML_HAS_ARGS),
+/* 0A */ ACPI_OP ("Package",            ARGP_PACKAGE_OP,           ARGI_PACKAGE_OP,            ACPI_TYPE_PACKAGE,       AML_CLASS_CREATE,          AML_TYPE_CREATE_OBJECT,   AML_HAS_ARGS | AML_DEFER),
 /* 0B */ ACPI_OP ("Method",             ARGP_METHOD_OP,            ARGI_METHOD_OP,             ACPI_TYPE_METHOD,        AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_COMPLEX,   AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED | AML_DEFER),
 /* 0C */ ACPI_OP ("Local0",             ARGP_LOCAL0,               ARGI_LOCAL0,                INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_LOCAL_VARIABLE,  0),
 /* 0D */ ACPI_OP ("Local1",             ARGP_LOCAL1,               ARGI_LOCAL1,                INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_LOCAL_VARIABLE,  0),
