@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.171 $
+ *       $Revision: 1.172 $
  *
  *****************************************************************************/
 
@@ -1039,6 +1039,14 @@ typedef union
 
 typedef struct
 {
+    UINT32                      Index;
+    UINT32                      StringLength;
+    NATIVE_CHAR                 *StringPtr;
+
+} RESOURCE_SOURCE;
+
+typedef struct
+{
     UINT32                      ResourceType;
     UINT32                      ProducerConsumer;
     UINT32                      Decode;
@@ -1050,9 +1058,7 @@ typedef struct
     UINT32                      MaxAddressRange;
     UINT32                      AddressTranslationOffset;
     UINT32                      AddressLength;
-    UINT32                      ResourceSourceIndex;
-    UINT32                      ResourceSourceStringLength;
-    NATIVE_CHAR                 ResourceSource[1];
+    RESOURCE_SOURCE             ResourceSource;
 
 } ADDRESS16_RESOURCE;
 
@@ -1069,11 +1075,26 @@ typedef struct
     UINT32                      MaxAddressRange;
     UINT32                      AddressTranslationOffset;
     UINT32                      AddressLength;
-    UINT32                      ResourceSourceIndex;
-    UINT32                      ResourceSourceStringLength;
-    NATIVE_CHAR                 ResourceSource[1];
+    RESOURCE_SOURCE             ResourceSource;
 
 } ADDRESS32_RESOURCE;
+
+typedef struct
+{
+    UINT32                      ResourceType;
+    UINT32                      ProducerConsumer;
+    UINT32                      Decode;
+    UINT32                      MinAddressFixed;
+    UINT32                      MaxAddressFixed;
+    ATTRIBUTE_DATA              Attribute;
+    UINT64                      Granularity;
+    UINT64                      MinAddressRange;
+    UINT64                      MaxAddressRange;
+    UINT64                      AddressTranslationOffset;
+    UINT64                      AddressLength;
+    RESOURCE_SOURCE             ResourceSource;
+
+} ADDRESS64_RESOURCE;
 
 typedef struct
 {
@@ -1082,10 +1103,8 @@ typedef struct
     UINT32                      ActiveHighLow;
     UINT32                      SharedExclusive;
     UINT32                      NumberOfInterrupts;
+    RESOURCE_SOURCE             ResourceSource;
     UINT32                      Interrupts[1];
-    UINT32                      ResourceSourceIndex;
-    UINT32                      ResourceSourceStringLength;
-    NATIVE_CHAR                 ResourceSource[1];
 
 } EXTENDED_IRQ_RESOURCE;
 
@@ -1104,6 +1123,7 @@ typedef enum
     FixedMemory32,
     Address16,
     Address32,
+    Address64,
     ExtendedIrq
 } RESOURCE_TYPE;
 
@@ -1120,6 +1140,7 @@ typedef union
     FIXED_MEMORY32_RESOURCE             FixedMemory32;
     ADDRESS16_RESOURCE                  Address16;
     ADDRESS32_RESOURCE                  Address32;
+    ADDRESS64_RESOURCE                  Address64;
     EXTENDED_IRQ_RESOURCE               ExtendedIrq;
 } RESOURCE_DATA;
 
