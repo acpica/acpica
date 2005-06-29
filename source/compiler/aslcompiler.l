@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -486,7 +486,10 @@ NamePathTail                [.]{NameSeg}
                                 AslCompilererror ("Parse error, expecting ASL keyword or name");}
 
 .                           { count (1);
-                                AslCompilererror ("Invalid character, expecting ASL keyword or name");}
+                                sprintf (MsgBuffer, 
+                                    "Invalid character (0x%2.2X), expecting ASL keyword or name",
+                                    *AslCompilertext);
+                                AslCompilererror (MsgBuffer);}
 
 <<EOF>>                     { if (AslPopInputFileStack ())
                                 yyterminate();
