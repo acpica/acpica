@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  ******************************************************************************/
 
@@ -488,7 +488,7 @@ AcpiNsExecuteControlMethod (
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No attached method object\n"));
 
         AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-        return_ACPI_STATUS (AE_ERROR);
+        return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
 
