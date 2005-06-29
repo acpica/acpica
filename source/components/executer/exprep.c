@@ -107,14 +107,6 @@
 #define _THIS_MODULE        "ieprep.c"
 #define _COMPONENT          INTERPRETER
 
-/* 
- * Method Stack, containing locals and args
- * per level, 0-7 are Local# and 8-14 are Arg#
- */
-
-OBJECT_DESCRIPTOR *         MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
-INT32                       MethodStackTop = -1;
-
 
 static ST_KEY_DESC_TABLE KDT[] = {
     {"0000", 'T', "AmlGetMethodType: internal error", "AmlGetMethodType: internal error"},
