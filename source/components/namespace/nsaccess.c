@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.171 $
+ *              $Revision: 1.172 $
  *
  ******************************************************************************/
 
@@ -147,6 +147,7 @@ AcpiNsRootInitialize (void)
     const ACPI_PREDEFINED_NAMES *InitVal = NULL;
     ACPI_NAMESPACE_NODE         *NewNode;
     ACPI_OPERAND_OBJECT         *ObjDesc;
+    ACPI_STRING                 Val = NULL;
 
 
     ACPI_FUNCTION_TRACE ("NsRootInitialize");
@@ -198,9 +199,7 @@ AcpiNsRootInitialize (void)
          */
         if (InitVal->Val)
         {
-            ACPI_STRING Val;
-
-            Status = AcpiOsPredefinedOverride(InitVal, &Val);
+            Status = AcpiOsPredefinedOverride (InitVal, &Val);
             if (ACPI_FAILURE (Status))
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not override predefined %s\n",
