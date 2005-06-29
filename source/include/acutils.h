@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.100 $
+ *       $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -745,10 +745,6 @@ AcpiUtDumpCurrentAllocations (
     NATIVE_CHAR             *Module);
 #endif
 
-
-#define AcpiUtAllocate(a)   _UtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
-#define AcpiUtCallocate(a)  _UtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
-#define AcpiUtFree(a)       _UtFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
 
 
 #endif /* _ACUTILS_H */
