@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.144 $
+ *              $Revision: 1.145 $
  *
  ******************************************************************************/
 
@@ -173,13 +173,13 @@ AcpiNsRootInitialize (void)
 
     /* Enter the pre-defined names in the name table */
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Entering predefined entries into namespace\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
+        "Entering predefined entries into namespace\n"));
 
     for (InitVal = AcpiGbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
         Status = AcpiNsLookup (NULL, InitVal->Name, InitVal->Type,
-                                IMODE_LOAD_PASS2, NS_NO_UPSEARCH,
-                                NULL, &NewNode);
+                        IMODE_LOAD_PASS2, NS_NO_UPSEARCH, NULL, &NewNode);
 
         if (ACPI_FAILURE (Status) || (!NewNode)) /* Must be on same line for code converter */
         {
@@ -504,7 +504,8 @@ AcpiNsLookup (
         {
             /* Extract segment count, point to first segment */
 
-            NumSegments = (UINT32)* (UINT8 *) ++Pathname;
+            Pathname++;
+            NumSegments = (UINT32) (UINT8) *Pathname;
             Pathname++;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
@@ -551,10 +552,8 @@ AcpiNsLookup (
 
         /* Try to find the ACPI name */
 
-        Status = AcpiNsSearchAndEnter (SimpleName, WalkState,
-                                        CurrentNode, InterpreterMode,
-                                        ThisSearchType, LocalFlags,
-                                        &ThisNode);
+        Status = AcpiNsSearchAndEnter (SimpleName, WalkState, CurrentNode, 
+                        InterpreterMode, ThisSearchType, LocalFlags, &ThisNode);
         if (ACPI_FAILURE (Status))
         {
             if (Status == AE_NOT_FOUND)
@@ -563,7 +562,7 @@ AcpiNsLookup (
 
                 ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                     "Name [%4.4s] not found in scope %p\n",
-                    (char*)&SimpleName, CurrentNode));
+                    (char *) &SimpleName, CurrentNode));
             }
 
             return_ACPI_STATUS (Status);
