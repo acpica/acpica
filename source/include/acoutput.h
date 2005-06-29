@@ -261,8 +261,15 @@
 #define DUMP_STACK(a,b,c,d)             AmlDumpObjStack(a,b,c,d)
 #define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
-#define DEBUG_MEMSTAT                   DEBUG_PRINT (ACPI_INFO, ("Memory: %d/%d Mp/Unmp  %d/%d Al/Fr %d/%d Al/Cal\n",\
-                                        Maps, Unmaps, Allocations, Deallocations, Allocs, Callocs))
+
+#define ERROR_BREAK
+#ifdef  ERROR_BREAK
+#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) {\
+                                            DebugPrintRaw ("*** Break on ACPI_ERROR ***\n");\
+                                            BREAKPOINT3;}
+#else
+#define BREAK_ON_ERROR(lvl) 
+#endif
 
 /* 
  * Master debug print macros 
@@ -278,7 +285,8 @@
 
 #define DEBUG_PRINT(lvl,fp)             TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintPrefix (_THIS_MODULE,__LINE__,_COMPONENT);\
-                                            DebugPrintRaw PARAM_LIST(fp);}
+                                            DebugPrintRaw PARAM_LIST(fp);\
+                                            BREAK_ON_ERROR(lvl);}
 
 #define DEBUG_PRINT_RAW(lvl,fp)         TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintRaw PARAM_LIST(fp);}
@@ -304,7 +312,6 @@
 #define DUMP_STACK(a,b,c,d)
 #define DUMP_ENTRY(a,b)
 #define DUMP_TABLES(a,b)
-#define DEBUG_MEMSTAT
 #define DEBUG_PRINT(l,f)
 #define DEBUG_PRINT_RAW(l,f) 
 
