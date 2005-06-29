@@ -767,8 +767,9 @@ AcpiInstallAddressSpaceHandler (
     /*
      *  If the caller hasn't specified a setup routine, use the default
      */
-    if (!RegInit) {
-            RegInit = EvDefaultRegionSetup;
+    if (!RegInit) 
+    {
+        RegInit = EvDefaultRegionSetup;
     }
 
     /*
@@ -895,6 +896,8 @@ AcpiInstallAddressSpaceHandler (
     /*
      *  Place this handler 1st on the list
      */
+
+    HandlerObj->Common.ReferenceCount = (UINT16) (HandlerObj->Common.ReferenceCount + ObjDesc->Common.ReferenceCount - 1);
     ObjDesc->Device.AddrHandler = HandlerObj;
 
 
@@ -1016,8 +1019,9 @@ AcpiRemoveAddressSpaceHandler (
             *LastObjPtr = HandlerObj->AddrHandler.Link;
 
             /*
-             *  Now we can actually delete the object
+             *  Now we can delete the handler object
              */
+            CmRemoveReference (HandlerObj);
             CmRemoveReference (HandlerObj);
 
             goto UnlockAndExit;
