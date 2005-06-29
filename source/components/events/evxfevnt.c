@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -330,15 +330,7 @@ AcpiSetGpeType (
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Disable the GPE if enabled */
-
-    Status = AcpiEvDisableGpe (GpeEventInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Set the new type */
+    /* Set the new type (will disable GPE if currently enabled) */
 
     Status = AcpiEvSetGpeType (GpeEventInfo, Type);
 
