@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -177,6 +177,40 @@ AcpiNsReportError (
     if (Name)
     {
         ACPI_MEM_FREE (Name);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsPrintNodePathname
+ *
+ * PARAMETERS:  Node                - Object
+ *              Msg                 - Prefix message
+ *
+ * DESCRIPTION: Print an object's full namespace pathname
+ *              Manages allocation/freeing of a pathname buffer
+ *
+ ******************************************************************************/
+
+void
+AcpiNsPrintNodePathname (
+    ACPI_NAMESPACE_NODE     *Node,
+    NATIVE_CHAR             *Msg)
+{
+    ACPI_BUFFER             Buffer;
+    ACPI_STATUS             Status;
+
+
+    /* Convert handle to a full pathname and print it (with supplied message) */
+
+    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
+
+    Status = AcpiNsHandleToPathname (Node, &Buffer);
+    if (ACPI_SUCCESS (Status))
+    {
+        AcpiOsPrintf ("%s %s (Node %p)\n", Msg, (char *) Buffer.Pointer, Node);
+        ACPI_MEM_FREE (Buffer.Pointer);
     }
 }
 
