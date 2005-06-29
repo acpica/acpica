@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.26 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,7 @@
 
 #define _DECLARE_GLOBALS
 
-#include "AslCompiler.h"
+#include "aslcompiler.h"
 
 #define _COMPONENT          COMPILER
         MODULE_NAME         ("aslmain")
@@ -147,13 +147,14 @@ Usage (
     void)
 {
     printf ("Usage:    %s <Options> <InputFile>\n\n", CompilerName);
-    printf ("Options:  -d <p|t|b>       Create debug/trace output file (*.txt)\n");
+    printf ("Options:  -d <p|t|b>       Create compiler debug/trace file (*.txt)\n");
     printf ("                             Types: Parse/Tree/Both\n");
-    printf ("          -h               Create ascii hex output file (*.hex)\n");
+    printf ("          -h               Create ascii hex file (*.hex)\n");
     printf ("          -i               Ignore errors, always create AML file\n");
     printf ("          -l               Create listing (mixed source/AML) file (*.lst)\n");
     printf ("          -n               Create namespace file (*.nsp)\n");
-    printf ("          -o <filename>    Specify output file (override table header)\n");
+    printf ("          -o <name>        Specify filename prefix for all output files\n");
+    printf ("                             (including the .aml file)\n");
     printf ("          -p               Parse only, no output generation\n");
     printf ("          -s               Create combined (w/includes) ASL file (*.src)\n");
 }
@@ -251,7 +252,7 @@ main (
     case 'o':
         /* Override default AML output filename */
 
-        Gbl_OutputFilename = optarg;
+        Gbl_OutputFilenamePrefix = optarg;
         Gbl_UseDefaultAmlFilename = FALSE;
         break;
 
@@ -289,6 +290,20 @@ main (
         printf ("\n");
         Usage ();
         return -1;
+    }
+
+    if ((optind + 1) < argc)
+    {
+        printf ("Warning: extra arguments (%d) after input filename are ignored\n\n", argc - optind - 1);
+    }
+
+    /*
+     * If -o not specified, we will use the input filename as the 
+     * output filename prefix
+     */
+    if (Gbl_UseDefaultAmlFilename)
+    {
+        Gbl_OutputFilenamePrefix = Gbl_InputFilename;
     }
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.10 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -116,8 +116,8 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 
@@ -683,7 +683,7 @@ OpnDoDefinitionBlock (
     Child = Node->Child;
     if ((Child->Value.Pointer) && (Gbl_UseDefaultAmlFilename))
     {
-        Gbl_OutputFilename = Child->Value.Pointer;
+        Gbl_OutputFilenamePrefix = Child->Value.Pointer;
     }
     Child->ParseOpcode = DEFAULT_ARG;
 

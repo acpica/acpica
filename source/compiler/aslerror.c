@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.36 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -116,7 +116,7 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
+#include "aslcompiler.h"
 
 #define _COMPONENT          COMPILER
         MODULE_NAME         ("aslerror")
@@ -136,8 +136,8 @@ char                        *AslMessages [] = {
     "Package length too long to encode",
     "Invalid priority value",
     "Invalid performace/robustness value",
-    "Method variable not initialized",
-    "Method argument is invalid",
+    "Method local variable is not initialized",
+    "Method argument is not initialized",
     "Unsupported feature",
     "Use of reserved word",
     "Effective AML buffer length is zero",
@@ -163,12 +163,15 @@ char                        *AslMessages [] = {
     "",
     "Not a control method",
     "Splitting long input line",
+    "Recursive method call",
+    "Not a parameter, used as local only",
 };
 
 
 char                        *AslErrorLevel [] = {
     "Error  ",
     "Warning",
+    "Remark ",
 };
 
 #define ASL_ERROR_LEVEL_LENGTH          7

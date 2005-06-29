@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.13 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -116,7 +116,7 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
+#include "aslcompiler.h"
 
 #define _COMPONENT          COMPILER
         MODULE_NAME         ("aslfiles")
@@ -240,7 +240,7 @@ FlGenerateFilename (
     if (Position)
     {
         /* Tack on the new suffix */
-
+        Position++;
         *Position = 0;
         strcat (Position, Suffix);
     }
@@ -321,7 +321,7 @@ FlOpenInputFile (
  *
  * FUNCTION:    FlOpenAmlOutputFile
  *
- * PARAMETERS:  InputFilename       - The user-specified ASL source file
+ * PARAMETERS:  FilenamePrefix       - The user-specified ASL source file
  *
  * RETURN:      Status
  *
@@ -332,7 +332,7 @@ FlOpenInputFile (
 
 ACPI_STATUS
 FlOpenAmlOutputFile (
-    char                    *InputFilename)
+    char                    *FilenamePrefix)
 {
 
 
@@ -342,7 +342,7 @@ FlOpenAmlOutputFile (
     {
         /* Create the output AML filename */
 
-        Gbl_OutputFilename = FlGenerateFilename (InputFilename, ".aml");
+        Gbl_OutputFilename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_AML_CODE);
         if (!Gbl_OutputFilename)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME, 0, 0, 0, 0, NULL, NULL);
@@ -367,7 +367,7 @@ FlOpenAmlOutputFile (
  *
  * FUNCTION:    FlOpenMiscOutputFiles
  *
- * PARAMETERS:  InputFilename       - The user-specified ASL source file
+ * PARAMETERS:  FilenamePrefix       - The user-specified ASL source file
  *
  * RETURN:      Status
  *
@@ -378,13 +378,13 @@ FlOpenAmlOutputFile (
 
 ACPI_STATUS
 FlOpenMiscOutputFiles (
-    char                    *InputFilename)
+    char                    *FilenamePrefix)
 {
 
 
     /* Create/Open a combined source output file if asked */
 
-    Gbl_SourceOutputFilename = FlGenerateFilename (InputFilename, ".src");
+    Gbl_SourceOutputFilename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_SOURCE);
     if (!Gbl_SourceOutputFilename)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
@@ -405,7 +405,7 @@ FlOpenMiscOutputFiles (
 
     if (Gbl_ListingFlag)
     {
-        Gbl_ListingOutputFilename = FlGenerateFilename (InputFilename, ".lst");
+        Gbl_ListingOutputFilename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_LISTING);
         if (!Gbl_ListingOutputFilename)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
@@ -430,7 +430,7 @@ FlOpenMiscOutputFiles (
 
     if (Gbl_HexOutputFlag)
     {
-        Gbl_HexOutputFilename = FlGenerateFilename (InputFilename, ".hex");
+        Gbl_HexOutputFilename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_HEX_DUMP);
         if (!Gbl_HexOutputFilename)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
@@ -455,7 +455,7 @@ FlOpenMiscOutputFiles (
 
     if (Gbl_NsOutputFlag)
     {
-        Gbl_NamespaceOutputFilename = FlGenerateFilename (InputFilename, ".nsp");
+        Gbl_NamespaceOutputFilename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_NAMESPACE);
         if (!Gbl_NamespaceOutputFilename)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
@@ -480,7 +480,7 @@ FlOpenMiscOutputFiles (
 
     if (Gbl_DebugFlag)
     {
-        Gbl_DebugOutputFilename = FlGenerateFilename (InputFilename, ".txt");
+        Gbl_DebugOutputFilename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_DEBUG);
         if (!Gbl_DebugOutputFilename)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME, 0, 0, 0, 0, NULL, NULL);

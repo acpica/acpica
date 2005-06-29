@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.16 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -116,7 +116,7 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
+#include "aslcompiler.h"
 #include "acnamesp.h"
 #include "acdebug.h"
 
@@ -129,13 +129,18 @@
 #undef HIBYTE
 #undef LOBYTE
 #include <time.h>
+#ifdef WIN32
 #include <windows.h>
 #include <winbase.h>
+#endif
 
 struct tm                   *NewTime;
 time_t                      Aclock;
 
+#ifdef WIN32
 SYSTEMTIME                 SysTime;
+#endif
+
 typedef struct
 {
     time_t                  StartTime;
@@ -147,9 +152,12 @@ typedef struct
 ASL_EVENT_INFO              AslGbl_Events[20];
 
 
+#ifdef WIN32
+
 #define ASL_START_EVENT(a,b)    {AslGbl_Events[a].StartTime = AnGetTimeMs();\
                                   AslGbl_Events[a].EventName = b;}
 #define ASL_END_EVENT(a)        {AslGbl_Events[a].EndTime = AnGetTimeMs();}
+
 
 UINT32
 AnGetTimeMs (void)
@@ -160,11 +168,24 @@ AnGetTimeMs (void)
         SysTime.wMilliseconds);
 }
 
+#else
+
+#define ASL_START_EVENT(a,b)
+#define ASL_END_EVENT(a)
+
+#endif
 
 /*
  * Stubs to simplify linkage to the
  * ACPI Namespace Manager (Unused functions).
  */
+
+
+void
+AcpiAmlUnlinkMutex (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+}
 
 void
 AcpiTbDeleteAcpiTables (void)
@@ -277,7 +298,8 @@ CmDoCompile (void)
         AePrintErrorLog (stderr);
         return -1;
     }
-    Status = FlOpenMiscOutputFiles (Gbl_InputFilename);
+
+    Status = FlOpenMiscOutputFiles (Gbl_OutputFilenamePrefix);
     if (ACPI_FAILURE (Status))
     {
         AePrintErrorLog (stderr);
@@ -398,7 +420,7 @@ CmDoCompile (void)
      * Note: by default, the name of this file comes from the table descriptor
      * within the input file.
      */
-    Status = FlOpenAmlOutputFile (Gbl_InputFilename);
+    Status = FlOpenAmlOutputFile (Gbl_OutputFilenamePrefix);
     if (ACPI_FAILURE (Status))
     {
         AePrintErrorLog (stderr);
