@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.174 $
+ *              $Revision: 1.175 $
  *
  ******************************************************************************/
 
@@ -406,8 +406,8 @@ AcpiNsLookup (
         PrefixNode = ScopeInfo->Scope.Node;
         if (ACPI_GET_DESCRIPTOR_TYPE (PrefixNode) != ACPI_DESC_TYPE_NAMED)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "[%p] Not a namespace node\n",
-                PrefixNode));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%p Not a namespace node [%s]\n",
+                    PrefixNode, AcpiUtGetDescriptorName (PrefixNode)));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
 
