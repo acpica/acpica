@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -283,9 +283,9 @@ AcpiExConcatTemplate (
     ACPI_MEMCPY (NewBuf, ObjDesc1->Buffer.Pointer, Length1);
     ACPI_MEMCPY (NewBuf + Length1, ObjDesc2->Buffer.Pointer, Length2);
 
-    /*
-     * Point the return object to the new buffer
-     */
+    /* Complete the buffer object initialization */
+
+    ReturnDesc->Common.Flags   = AOPOBJ_DATA_VALID;
     ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
     ReturnDesc->Buffer.Length  = (UINT32) (Length1 + Length2);
 
@@ -342,15 +342,16 @@ AcpiExDoConcatenate (
 
     /*
      * There are three cases to handle:
-     * 1) Two Integers concatenated to produce a buffer
-     * 2) Two Strings concatenated to produce a string
-     * 3) Two Buffers concatenated to produce a buffer
+     * 
+     * 1) Two Integers concatenated to produce a new Buffer
+     * 2) Two Strings concatenated to produce a new String
+     * 3) Two Buffers concatenated to produce a new Buffer
      */
     switch (ObjDesc1->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
 
-        /* Result of two integers is a buffer */
+        /* Result of two Integers is a Buffer */
 
         ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
         if (!ReturnDesc)
@@ -358,7 +359,7 @@ AcpiExDoConcatenate (
             return (AE_NO_MEMORY);
         }
 
-        /* Need enough space for two integers */
+        /* Need enough buffer space for two integers */
 
         ReturnDesc->Buffer.Length = AcpiGbl_IntegerByteWidth * 2;
         NewBuf = ACPI_MEM_CALLOCATE (ReturnDesc->Buffer.Length);
@@ -369,8 +370,6 @@ AcpiExDoConcatenate (
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
-
-        ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
 
         /* Convert the first integer */
 
@@ -390,10 +389,16 @@ AcpiExDoConcatenate (
             ThisInteger >>= 8;
         }
 
+        /* Complete the buffer object initialization */
+
+        ReturnDesc->Common.Flags   = AOPOBJ_DATA_VALID;
+        ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
         break;
 
 
     case ACPI_TYPE_STRING:
+
+        /* Result of two Strings is a String */
 
         ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_STRING);
         if (!ReturnDesc)
@@ -413,11 +418,13 @@ AcpiExDoConcatenate (
             goto Cleanup;
         }
 
+        /* Concatenate the strings */
+
         ACPI_STRCPY (NewBuf, ObjDesc1->String.Pointer);
         ACPI_STRCPY (NewBuf + ObjDesc1->String.Length,
                               ObjDesc2->String.Pointer);
 
-        /* Point the return object to the new string */
+        /* Complete the String object initialization */
 
         ReturnDesc->String.Pointer = NewBuf;
         ReturnDesc->String.Length  = ObjDesc1->String.Length +
@@ -427,7 +434,7 @@ AcpiExDoConcatenate (
 
     case ACPI_TYPE_BUFFER:
 
-        /* Operand0 is a buffer */
+        /* Result of two Buffers is a Buffer */
 
         ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
         if (!ReturnDesc)
@@ -445,22 +452,26 @@ AcpiExDoConcatenate (
             goto Cleanup;
         }
 
+        /* Concatenate the buffers */
+
         ACPI_MEMCPY (NewBuf, ObjDesc1->Buffer.Pointer,
                         ObjDesc1->Buffer.Length);
         ACPI_MEMCPY (NewBuf + ObjDesc1->Buffer.Length, ObjDesc2->Buffer.Pointer,
                          ObjDesc2->Buffer.Length);
 
-        /*
-         * Point the return object to the new buffer
-         */
+        /* Complete the buffer object initialization */
 
+        ReturnDesc->Common.Flags   = AOPOBJ_DATA_VALID;
         ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
-        ReturnDesc->Buffer.Length = ObjDesc1->Buffer.Length +
-                                    ObjDesc2->Buffer.Length;
+        ReturnDesc->Buffer.Length  = ObjDesc1->Buffer.Length +
+                                     ObjDesc2->Buffer.Length;
         break;
 
 
     default:
+
+        /* Invalid object type, should not happen here */
+
         Status = AE_AML_INTERNAL;
         ReturnDesc = NULL;
     }
