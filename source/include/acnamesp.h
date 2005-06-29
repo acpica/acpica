@@ -115,10 +115,6 @@
  */
 #define NEXTSEG(NameTbl) ((nte **)NameTbl)[-1]
 
-/* Names are 4 bytes long */
-
-#define ACPI_NAME_SIZE          4
-
 /* 
  * An NsHandle (which is actually an nte *) can appear in some contexts,
  * such as on apObjStack, where a pointer to an OBJECT_DESCRIPTOR can also
