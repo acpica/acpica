@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.152 $
+ *       $Revision: 1.153 $
  *
  *****************************************************************************/
 
@@ -776,21 +776,21 @@ typedef struct acpi_parse_state
 
 
 /* PCI */
-#define PCI_ROOT_HID_STRING             "PNP0A03"
+#define PCI_ROOT_HID_STRING                 "PNP0A03"
 
 /*
- * The #define's and enum below establish an abstract way of identifying what
+ * The #defines and enum below establish an abstract way of identifying what
  * register block and register is to be accessed.  Do not change any of the
  * values as they are used in switch statements and offset calculations.
  */
 
-#define REGISTER_BLOCK_MASK             0xFF00  /* Register Block Id    */
-#define BIT_IN_REGISTER_MASK            0x00FF  /* Bit Id in the Register Block Id    */
-#define BYTE_IN_REGISTER_MASK           0x00FF  /* Register Offset in the Register Block    */
+#define ACPI_REGISTER_BLOCK_MASK            0xFF00  /* Register Block Id    */
+#define ACPI_BIT_IN_REGISTER_MASK           0x00FF  /* Bit Id in the Register Block Id    */
+#define ACPI_BYTE_IN_REGISTER_MASK          0x00FF  /* Register Offset in the Register Block    */
 
-#define REGISTER_BLOCK_ID(RegId)        (RegId & REGISTER_BLOCK_MASK)
-#define REGISTER_BIT_ID(RegId)          (RegId & BIT_IN_REGISTER_MASK)
-#define REGISTER_OFFSET(RegId)          (RegId & BYTE_IN_REGISTER_MASK)
+#define ACPI_GET_REGISTER_BLOCK_ID(RegId)   (RegId & ACPI_REGISTER_BLOCK_MASK)
+#define ACPI_GET_REGISTER_BIT_ID(RegId)     (RegId & ACPI_BIT_IN_REGISTER_MASK)
+#define ACPI_GET_REGISTER_OFFSET(RegId)     (RegId & ACPI_BYTE_IN_REGISTER_MASK)
 
 /*
  * Access Rule
@@ -805,100 +805,100 @@ typedef struct acpi_parse_state
 /*
  * Register Block Id
  */
-#define PM1_STS                         0x0100
-#define PM1_EN                          0x0200
-#define PM1_CONTROL                     0x0300
-#define PM1A_CONTROL                    0x0400
-#define PM1B_CONTROL                    0x0500
-#define PM2_CONTROL                     0x0600
-#define PM_TIMER                        0x0700
-#define PROCESSOR_BLOCK                 0x0800
-#define GPE0_STS_BLOCK                  0x0900
-#define GPE0_EN_BLOCK                   0x0A00
-#define GPE1_STS_BLOCK                  0x0B00
-#define GPE1_EN_BLOCK                   0x0C00
-#define SMI_CMD_BLOCK                   0x0D00
+#define ACPI_PM1_STATUS                     0x0100
+#define ACPI_PM1_ENABLE                     0x0200
+#define ACPI_PM1_CONTROL                    0x0300
+#define ACPI_PM1A_CONTROL                   0x0400
+#define ACPI_PM1B_CONTROL                   0x0500
+#define ACPI_PM2_CONTROL                    0x0600
+#define ACPI_PM_TIMER                       0x0700
+#define ACPI_PROCESSOR_BLOCK                0x0800
+#define ACPI_GPE0_STATUS_BLOCK              0x0900
+#define ACPI_GPE0_ENABLE_BLOCK              0x0A00
+#define ACPI_GPE1_STATUS_BLOCK              0x0B00
+#define ACPI_GPE1_ENABLE_BLOCK              0x0C00
+#define ACPI_SMI_CMD_BLOCK                  0x0D00
 
 /*
  * Address space bitmasks for mmio or io spaces
  */
 
-#define SMI_CMD_ADDRESS_SPACE           0x01
-#define PM1_BLK_ADDRESS_SPACE           0x02
-#define PM2_CNT_BLK_ADDRESS_SPACE       0x04
-#define PM_TMR_BLK_ADDRESS_SPACE        0x08
-#define GPE0_BLK_ADDRESS_SPACE          0x10
-#define GPE1_BLK_ADDRESS_SPACE          0x20
+#define ACPI_SMI_CMD_ADDRESS_SPACE          0x01
+#define ACPI_PM1_BLK_ADDRESS_SPACE          0x02
+#define ACPI_PM2_CNT_BLK_ADDRESS_SPACE      0x04
+#define ACPI_PM_TIMER_BLK_ADDRESS_SPACE     0x08
+#define ACPI_GPE0_BLK_ADDRESS_SPACE         0x10
+#define ACPI_GPE1_BLK_ADDRESS_SPACE         0x20
 
 /*
  * Control bit definitions
  */
-#define TMR_STS                         (PM1_STS | 0x01)
-#define BM_STS                          (PM1_STS | 0x02)
-#define GBL_STS                         (PM1_STS | 0x03)
-#define PWRBTN_STS                      (PM1_STS | 0x04)
-#define SLPBTN_STS                      (PM1_STS | 0x05)
-#define RTC_STS                         (PM1_STS | 0x06)
-#define WAK_STS                         (PM1_STS | 0x07)
+#define ACPI_TIMER_STATUS                   (ACPI_PM1_STATUS | 0x01)
+#define ACPI_BM_STATUS                      (ACPI_PM1_STATUS | 0x02)
+#define ACPI_GBL_LOCK_STATUS                (ACPI_PM1_STATUS | 0x03)
+#define ACPI_POWER_BTN_STATUS               (ACPI_PM1_STATUS | 0x04)
+#define ACPI_SLEEP_BTN_STATUS               (ACPI_PM1_STATUS | 0x05)
+#define ACPI_RT_CLOCK_STATUS                (ACPI_PM1_STATUS | 0x06)
+#define ACPI_WAKE_STATUS                    (ACPI_PM1_STATUS | 0x07)
 
-#define TMR_EN                          (PM1_EN | 0x01)
-                                        /* no BM_EN */
-#define GBL_EN                          (PM1_EN | 0x03)
-#define PWRBTN_EN                       (PM1_EN | 0x04)
-#define SLPBTN_EN                       (PM1_EN | 0x05)
-#define RTC_EN                          (PM1_EN | 0x06)
-#define WAK_EN                          (PM1_EN | 0x07)
+#define ACPI_TIMER_ENABLE                   (ACPI_PM1_ENABLE | 0x01)
+                                            /* no ACPI_BM_ENABLE */
+#define ACPI_GBL_LOCK_ENABLE                (ACPI_PM1_ENABLE | 0x03)
+#define ACPI_POWER_BTN_ENABLE               (ACPI_PM1_ENABLE | 0x04)
+#define ACPI_SLEEP_BTN_ENABLE               (ACPI_PM1_ENABLE | 0x05)
+#define ACPI_RT_CLOCK_ENABLE                (ACPI_PM1_ENABLE | 0x06)
+#define ACPI_WAKE_ENABLE                    (ACPI_PM1_ENABLE | 0x07)
 
-#define SCI_EN                          (PM1_CONTROL | 0x01)
-#define BM_RLD                          (PM1_CONTROL | 0x02)
-#define GBL_RLS                         (PM1_CONTROL | 0x03)
-#define SLP_TYPE_A                      (PM1_CONTROL | 0x04)
-#define SLP_TYPE_B                      (PM1_CONTROL | 0x05)
-#define SLP_EN                          (PM1_CONTROL | 0x06)
+#define ACPI_SCI_ENABLE                     (ACPI_PM1_CONTROL | 0x01)
+#define ACPI_BM_RLD                         (ACPI_PM1_CONTROL | 0x02)
+#define ACPI_GBL_LOCK_RELEASE               (ACPI_PM1_CONTROL | 0x03)
+#define ACPI_SLEEP_TYPE_A                   (ACPI_PM1_CONTROL | 0x04)
+#define ACPI_SLEEP_TYPE_B                   (ACPI_PM1_CONTROL | 0x05)
+#define ACPI_SLEEP_ENABLE                   (ACPI_PM1_CONTROL | 0x06)
 
-#define ARB_DIS                         (PM2_CONTROL | 0x01)
+#define ACPI_ARB_DIS                        (ACPI_PM2_CONTROL | 0x01)
 
-#define TMR_VAL                         (PM_TIMER | 0x01)
+#define ACPI_TIMER_VAL                      (ACPI_PM_TIMER | 0x01)
 
-#define GPE0_STS                        (GPE0_STS_BLOCK | 0x01)
-#define GPE0_EN                         (GPE0_EN_BLOCK  | 0x01)
+#define ACPI_GPE0_STATUS                    (ACPI_GPE0_STATUS_BLOCK | 0x01)
+#define ACPI_GPE0_ENABLE                    (ACPI_GPE0_ENABLE_BLOCK | 0x01)
 
-#define GPE1_STS                        (GPE1_STS_BLOCK | 0x01)
-#define GPE1_EN                         (GPE1_EN_BLOCK  | 0x01)
+#define ACPI_GPE1_STATUS                    (ACPI_GPE1_STATUS_BLOCK | 0x01)
+#define ACPI_GPE1_ENABLE                    (ACPI_GPE1_ENABLE_BLOCK | 0x01)
 
 
-#define TMR_STS_MASK                    0x0001
-#define BM_STS_MASK                     0x0010
-#define GBL_STS_MASK                    0x0020
-#define PWRBTN_STS_MASK                 0x0100
-#define SLPBTN_STS_MASK                 0x0200
-#define RTC_STS_MASK                    0x0400
-#define WAK_STS_MASK                    0x8000
+#define ACPI_TIMER_STATUS_MASK              0x0001
+#define ACPI_BM_STATUS_MASK                 0x0010
+#define ACPI_GBL_LOCK_STATUS_MASK           0x0020
+#define ACPI_POWER_BTN_STATUS_MASK          0x0100
+#define ACPI_SLEEP_BTN_STATUS_MASK          0x0200
+#define ACPI_RT_CLOCK_STATUS_MASK           0x0400
+#define ACPI_WAKE_STATUS_MASK               0x8000
 
-#define ALL_FIXED_STS_BITS              (TMR_STS_MASK   | BM_STS_MASK  | GBL_STS_MASK \
-                                        | PWRBTN_STS_MASK | SLPBTN_STS_MASK \
-                                        | RTC_STS_MASK | WAK_STS_MASK)
+#define ACPI_ALL_FIXED_STATUS_BITS          (ACPI_TIMER_STATUS_MASK   | ACPI_BM_STATUS_MASK  | ACPI_GBL_LOCK_STATUS_MASK \
+                                            | ACPI_POWER_BTN_STATUS_MASK | ACPI_SLEEP_BTN_STATUS_MASK \
+                                            | ACPI_RT_CLOCK_STATUS_MASK | ACPI_WAKE_STATUS_MASK)
 
-#define TMR_EN_MASK                     0x0001
-#define GBL_EN_MASK                     0x0020
-#define PWRBTN_EN_MASK                  0x0100
-#define SLPBTN_EN_MASK                  0x0200
-#define RTC_EN_MASK                     0x0400
+#define ACPI_TIMER_ENABLE_MASK              0x0001
+#define ACPI_GBL_LOCK_ENABLE_MASK           0x0020
+#define ACPI_POWER_BTN_ENABLE_MASK          0x0100
+#define ACPI_SLEEP_BTN_ENABLE_MASK          0x0200
+#define ACPI_RT_CLOCK_ENABLE_MASK           0x0400
 
-#define SCI_EN_MASK                     0x0001
-#define BM_RLD_MASK                     0x0002
-#define GBL_RLS_MASK                    0x0004
-#define SLP_TYPE_X_MASK                 0x1C00
-#define SLP_EN_MASK                     0x2000
+#define ACPI_SCI_ENABLE_MASK                0x0001
+#define ACPI_BM_RLD_MASK                    0x0002
+#define ACPI_GBL_LOCK_RELEASE_MASK          0x0004
+#define ACPI_SLEEP_TYPE_X_MASK              0x1C00
+#define ACPI_SLEEP_ENABLE_MASK              0x2000
 
-#define ARB_DIS_MASK                    0x0001
-#define TMR_VAL_MASK                    0xFFFFFFFF
+#define ACPI_ARB_DIS_MASK                   0x0001
+#define ACPI_TIMER_VAL_MASK                 0xFFFFFFFF
 
-#define GPE0_STS_MASK
-#define GPE0_EN_MASK
+#define ACPI_GPE0_STATUS_MASK
+#define ACPI_GPE0_ENABLE_MASK
 
-#define GPE1_STS_MASK
-#define GPE1_EN_MASK
+#define ACPI_GPE1_STATUS_MASK
+#define ACPI_GPE1_ENABLE_MASK
 
 
 /*****************************************************************************
