@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.1 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -198,7 +198,9 @@ AcpiDsInitOneObject (
 
         Info->MethodCount++;
 
-        if (!(AcpiDbgLevel & ACPI_LV_INIT))
+        /* Print a dot for each method unless we are going to print the entire pathname */
+
+        if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
         {
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
         }
@@ -285,7 +287,7 @@ AcpiDsInitializeObjects (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
         "**** Starting initialization of namespace objects ****\n"));
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "Parsing Methods:"));
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "Parsing all Control Methods:"));
 
     Info.MethodCount    = 0;
     Info.OpRegionCount  = 0;
@@ -303,7 +305,7 @@ AcpiDsInitializeObjects (
             AcpiFormatException (Status)));
     }
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
         "\nTable [%4.4s] - %hd Objects with %hd Devices %hd Methods %hd Regions\n",
         TableDesc->Pointer->Signature, Info.ObjectCount,
         Info.DeviceCount, Info.MethodCount, Info.OpRegionCount));
