@@ -92,7 +92,23 @@ PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\Subsystem\NameSpace\acpiinit.c
+SOURCE=..\..\Subsystem\Common\acpiinit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Common\cmalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Common\cmdebug.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Common\cmerror.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Common\cmglobal.c
 # End Source File
 # Begin Source File
 
@@ -117,10 +133,6 @@ SOURCE=..\..\Subsystem\Event\evregs.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Event\evsci.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Execute\excommon.c
 # End Source File
 # Begin Source File
 
