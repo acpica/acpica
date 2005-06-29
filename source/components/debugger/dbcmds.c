@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  ******************************************************************************/
 
@@ -1300,7 +1300,7 @@ AcpiDbGenerateGpe (
         return;
     }
 
-    AcpiEvGpeDispatch (GpeEventInfo);
+    AcpiEvGpeDispatch (GpeEventInfo, GpeNumber);
 
 }
 
