@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.23 $
+ *       $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -117,11 +117,8 @@
 #ifndef __ACLINUX_H__
 #define __ACLINUX_H__
 
+
 #define ACPI_OS_NAME                "Linux"
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-
-#ifdef __KERNEL__
 
 #include <linux/config.h>
 #include <linux/string.h>
@@ -129,19 +126,6 @@
 #include <linux/ctype.h>
 #include <asm/system.h>
 #include <asm/atomic.h>
-#include <asm/div64.h>
-#include <asm/acpi.h>
-
-#define strtoul simple_strtoul
-
-#else /* !__KERNEL__ */
-
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-
-#endif /* __KERNEL__ */
 
 /* Linux uses GCC */
 
@@ -150,6 +134,20 @@
 #undef DEBUGGER_THREADING
 #define DEBUGGER_THREADING	DEBUGGER_SINGLE_THREADED
 
-#define ACPI_BITS_PER_LONG	BITS_PER_LONG
+#if 0
+
+/* Use native Linux string library */
+
+#define ACPI_USE_SYSTEM_CLIBRARY
+
+/* Special functions */
+
+#define strtoul             simple_strtoul
+
+/* Linux clib doesn't to strupr, but we do. */
+char *
+strupr(char *str);
+
+#endif /* 0 */
 
 #endif /* __ACLINUX_H__ */
