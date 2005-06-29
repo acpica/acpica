@@ -117,12 +117,12 @@
 #define __CMUTILS_C__
 
 #include "acpi.h"
-#include "events.h"
-#include "hardware.h"
-#include "namesp.h"
-#include "interp.h"
+#include "acevents.h"
+#include "achware.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "debugger.h"
+#include "acdebug.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -755,6 +755,7 @@ AcpiCmDeleteGenericStateCache (
         Next = AcpiGbl_GenericStateCache->Common.Next;
         AcpiCmFree (AcpiGbl_GenericStateCache);
         AcpiGbl_GenericStateCache = Next;
+        AcpiGbl_GenericStateCacheDepth--;
     }
 
     return_VOID;

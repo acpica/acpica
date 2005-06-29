@@ -117,9 +117,9 @@
 #define __CMOBJECT_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
-#include "tables.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "actables.h"
 #include "amlcode.h"
 
 
@@ -453,6 +453,7 @@ AcpiCmDeleteObjectCache (
 
         AcpiCmFree (AcpiGbl_ObjectCache);
         AcpiGbl_ObjectCache = Next;
+        AcpiGbl_ObjectCacheDepth--;
     }
 
     return_VOID;
