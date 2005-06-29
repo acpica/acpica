@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.107 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -164,10 +164,10 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2047"
-#define CompilerCreatorRevision     0x02012047  /* Acpi 2.0a, Version # */
+#define CompilerCreatorRevision     ACPI_CA_VERSION
 
-#define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
+#define IntelAcpiCA                 "Intel ACPI Component Architecture"
+#define CompilerId                  "ASL Compiler / AML Disassembler"
 #define CompilerCopyright           "Copyright (C) 2000 - 2002 Intel Corporation"
 #define CompilerCompliance          "ACPI 2.0a"
 #define CompilerName                "iasl"
@@ -221,6 +221,7 @@ getopt (
 #define FILE_SUFFIX_NAMESPACE       "nsp"
 #define FILE_SUFFIX_ASM_SOURCE      "asm"
 #define FILE_SUFFIX_C_SOURCE        "c"
+#define FILE_SUFFIX_DISASSEMBLY     "dsl"
 
 
 /* Misc */
@@ -416,6 +417,9 @@ UINT32
 OpcSetOptimalIntegerSize (
     ACPI_PARSE_OBJECT       *Op);
 
+void
+OpcGetIntegerWidth (
+    ACPI_PARSE_OBJECT       *Op);
 
 /*
  * asloperands - generate AML operands for the AML opcodes
@@ -779,7 +783,8 @@ MpDisplayReservedNames (
 /* Load */
 
 ACPI_STATUS
-LdLoadNamespace (void);
+LdLoadNamespace (
+    ACPI_PARSE_OBJECT       *RootOp);
 
 
 ACPI_STATUS
