@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -327,7 +327,7 @@ AcpiExCreateRegion (
 
     /* Get the Node from the object stack  */
 
-    Node = (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
+    Node = WalkState->Op->Node;
 
     /*
      * If the region object is already attached to this node,
@@ -395,23 +395,6 @@ AcpiExCreateRegion (
         goto Cleanup;
     }
 
-    /*
-     * If we have a valid region, initialize it
-     * Namespace is NOT locked at this point.
-     */
-    Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
-    if (ACPI_FAILURE (Status))
-    {
-        /*
-         *  If AE_NOT_EXIST is returned, it is not fatal
-         *  because many regions get created before a handler
-         *  is installed for said region.
-         */
-        if (AE_NOT_EXIST == Status)
-        {
-            Status = AE_OK;
-        }
-    }
 
 Cleanup:
 
