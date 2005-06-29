@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.54 $
+ *       $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -219,6 +219,11 @@
 #define MUL_16(a)                       _MUL(a,4)
 #define MOD_16(a)                       _MOD(a,16)
 
+/*
+ * Divide and Modulo
+ */
+#define ACPI_DIVIDE(n,d)                ((n) / (d))
+#define ACPI_MODULO(n,d)                ((n) % (d))
 
 /*
  * Rounding macros (Power of two boundaries only)
@@ -234,6 +239,8 @@
 #define ROUND_UP_TO_NATIVE_WORD(a)      ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
 
 #define ROUND_PTR_UP_TO_4(a,b)          ((b *)(((NATIVE_UINT)(a) + 3) & ~3))
+
+#define ROUND_UP_TO_1K(a)               (((a) + 1023) >> 10)
 
 #ifdef DEBUG_ASSERT
 #undef DEBUG_ASSERT
