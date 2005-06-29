@@ -397,7 +397,14 @@ PsxInitObjectFromOp (
             ObjDesc->Lvalue.Offset = Opcode - AML_ArgOp;
             break;
 
-        default: /* CONSTANTs, etc. */
+        default: /* Constants, Literals, etc.. */
+
+            if (Op->Opcode == AML_NAMEPATH)
+            {
+                /* Nte was saved in Op */
+
+                ObjDesc->Lvalue.Nte = Op->ResultObj;
+            }
 
             ObjDesc->Lvalue.OpCode = Opcode;
             break;
@@ -450,15 +457,35 @@ PsxBuildInternalSimpleObj (
     if (Op->Opcode == AML_NAMEPATH)
     {
         /*
-         * This is an object reference.  The name was already looked up and the NTE
-         * is stored in this op.
+         * This is an object reference.  If The name was previously looked up in the NS,
+         * it is stored in this op.  Otherwise, go ahead and look it up now
          */
 
-        *ObjDescPtr = Op->ResultObj;
-        return_ACPI_STATUS (AE_OK);
+        if (!Op->ResultObj)
+        {
+            Status = NsLookup (Gbl_CurrentScope->Scope, Op->Value.String, ACPI_TYPE_Any, IMODE_Execute, 
+                                        NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, &((NAME_TABLE_ENTRY *) Op->ResultObj));
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+        }
+
+        /*
+         * The reference will be an Lvalue
+         * TBD: unless we really need a separate type of INTERNAL_TYPE_reference
+         * TBD: change PsxMapOpcodeToDataType to handle this case 
+         */
+        Type = INTERNAL_TYPE_Lvalue;
     }
 
-    Type = PsxMapOpcodeToDataType (Op->Opcode, NULL);
+    else
+    {
+        Type = PsxMapOpcodeToDataType (Op->Opcode, NULL);
+    }
+
+
+    /* Create and init the internal ACPI object */
 
     ObjDesc = CmCreateInternalObject (Type);
     if (!ObjDesc)
