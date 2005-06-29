@@ -251,7 +251,7 @@ CmUpdateObjectReference (
      * Make sure that this isn't a namespace handle or an AML pointer
      */
 
-    if (IS_NS_HANDLE ((NAME_TABLE_ENTRY *) Object))
+    if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmUpdateObjectReference: Object %p is NS handle\n",
                         Object));
@@ -526,7 +526,7 @@ CmDeleteInternalObj (
     case INTERNAL_TYPE_Lvalue:
         
         if ((Object->Lvalue.Object) &&
-           (!IS_NS_HANDLE (Object->Lvalue.Object)))
+           (!VALID_DESCRIPTOR_TYPE (Object->Lvalue.Object, DESC_TYPE_NTE)))
         {   
             DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Lvalue: %p\n", 
                                 Object->Lvalue.Object));
@@ -617,7 +617,7 @@ CmDeleteInternalObject (
         return_VOID;
     }
 
-    if (IS_NS_HANDLE (Object))
+    if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: **** Object %p is NS handle\n",
                         Object));
@@ -677,7 +677,7 @@ CmDeleteInternalObjectList (
          * need to be deleted separately.
          */
 
-        if ((*InternalObj)->Common.Type == ACPI_TYPE_Package)
+        if (VALID_OBJECT_TYPE ((*InternalObj), ACPI_TYPE_Package))
         {
             /* Delete the package */
             
