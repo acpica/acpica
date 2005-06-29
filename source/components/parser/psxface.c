@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -180,9 +180,8 @@ AcpiPsxExecute (
         return_ACPI_STATUS (Status);
     }
 
-    if (Info &&
-       (Info->ParameterType == ACPI_PARAM_ARGS) &&
-       (Info->Parameters))
+    if ((Info->ParameterType == ACPI_PARAM_ARGS) &&
+        (Info->Parameters))
     {
         /*
          * The caller "owns" the parameters, so give each one an extra
