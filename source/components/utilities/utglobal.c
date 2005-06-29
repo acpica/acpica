@@ -233,7 +233,7 @@ PREDEFINED_NAMES            Gbl_PreDefinedNames[] =
 
 /* 
  * Elements of NsProperties are bit significant
- * and should be one-to-one with values of NsType in acpinmsp.h
+ * and should be one-to-one with values of ACPI_OBJECT_TYPE
  */
 
 INT32                       Gbl_NsProperties[] =    /* properties of types */
@@ -281,24 +281,22 @@ INT32                       Gbl_NsProperties[] =    /* properties of types */
     0                       /* 40 Invalid          */
 };
 
-char                        Gbl_BadType[] = "Undefined";
+char                        Gbl_BadType[] = "UNDEFINED";
 
-
-/* 
- * Elements of NsTypeNames should be
- * one-to-one with values of NsType in acpinmsp.h
-
- */
+#define TYPE_NAME_LENGTH    9                   /* Maximum length of each string */
 
 /* 
- * The type Any is used as a "don't care" when searching; when stored in a
- * table it really means that we have thus far seen no evidence to indicate
- * what type is actually going to be stored for this entry.
+ * Elements of Gbl_NsTypeNames below must match
+ * one-to-one with values of ACPI_OBJECT_TYPE
+ *
+ * The type ACPI_TYPE_Any (Untyped) is used as a "don't care" when searching; when 
+ * stored in a table it really means that we have thus far seen no evidence to 
+ * indicatewhat type is actually going to be stored for this entry.
  */
 
 char                        *Gbl_NsTypeNames[] =  /* printable names of types */
 {
-    "Any/Unknown",
+    "Untyped",
     "Number",
     "String",
     "Buffer",
@@ -312,7 +310,7 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
     "Power",
     "Processor",
     "Thermal",
-    "BufferField",
+    "BufferFld",
     "DdbHandle", 
      Gbl_BadType, 
      Gbl_BadType, 
@@ -324,11 +322,11 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
      Gbl_BadType, 
      Gbl_BadType,
     "DefField",
-    "BankField",
-    "IndexField",
-    "DefFieldDefn",
-    "BankFieldDefn",
-    "IndexFieldDefn",
+    "BnkField",
+    "IdxField",
+    "DefFldDfn",
+    "BnkFldDfn",
+    "IdxFldDfn",
     "If",
     "Else",
     "While",
@@ -337,7 +335,7 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
     "Lvalue",
     "Alias",
     "Notify", 
-    "AddressHandler", 
+    "AddrHndlr", 
     "Invalid"
 };
 
