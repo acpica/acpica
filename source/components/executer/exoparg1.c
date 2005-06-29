@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmonad - ACPI AML execution for monadic (1 operand) operators
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -645,7 +645,7 @@ AcpiExMonadic2R (
 
 
     case AML_TO_HEXSTRING_OP:
-        Status = AcpiExConvertToString (ObjDesc, &RetDesc, WalkState);
+        Status = AcpiExConvertToString (ObjDesc, &RetDesc, ACPI_UINT32_MAX, WalkState);
         break;
 
     case AML_TO_BUFFER_OP:

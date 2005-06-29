@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdyadic - ACPI AML execution for dyadic (2-operand) operators
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -679,7 +679,7 @@ AcpiExDyadic2R (
             break;
 
         case ACPI_TYPE_STRING:
-            Status = AcpiExConvertToString (ObjDesc2, &ObjDesc2, WalkState);
+            Status = AcpiExConvertToString (ObjDesc2, &ObjDesc2, ACPI_UINT32_MAX, WalkState);
             break;
 
         case ACPI_TYPE_BUFFER:
@@ -713,7 +713,8 @@ AcpiExDyadic2R (
 
     case AML_TO_STRING_OP:  /* ACPI 2.0 */
 
-        Status = AcpiExConvertToString (ObjDesc, &RetDesc, WalkState);
+        Status = AcpiExConvertToString (ObjDesc, &RetDesc, 
+                        (UINT32) ObjDesc2->Integer.Value, WalkState);
         break;
 
 
