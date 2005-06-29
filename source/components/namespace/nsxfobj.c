@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  ******************************************************************************/
 
@@ -217,9 +217,8 @@ AcpiEvaluateObject (
          */
         for (i = 0; i < Count; i++)
         {
-            Status =
-                AcpiCmBuildInternalObject (&ParamObjects->Pointer[i],
-                                            ParamPtr[i]);
+            Status = AcpiCmCopyEobjectToIobject (&ParamObjects->Pointer[i],
+                                                ParamPtr[i]);
 
             if (ACPI_FAILURE (Status))
             {
@@ -362,7 +361,7 @@ AcpiEvaluateObject (
                         /*
                          *  We have enough space for the object, build it
                          */
-                        Status = AcpiCmBuildExternalObject (ReturnObj,
+                        Status = AcpiCmCopyIobjectToEobject (ReturnObj,
                                         ReturnBuffer);
                         ReturnBuffer->Length = BufferSpaceNeeded;
                     }

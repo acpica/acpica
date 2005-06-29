@@ -2,7 +2,7 @@
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.11 $
+ *              $Revision: 1.19 $
  *
  ******************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -118,6 +118,9 @@
 #define __RSCALC_C__
 
 #include "acpi.h"
+#include "acresrc.h"
+#include "amlcode.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rscalc")
@@ -884,7 +887,7 @@ AcpiRsCalculatePciRoutingTableLength (
     UINT32                  *BufferSizeNeeded)
 {
     UINT32                  NumberOfElements;
-    UINT32                  TempSizeNeeded;
+    UINT32                  TempSizeNeeded = 0;
     ACPI_OPERAND_OBJECT     **TopObjectList;
     UINT32                  Index;
     ACPI_OPERAND_OBJECT     *PackageElement;
@@ -908,8 +911,6 @@ AcpiRsCalculatePciRoutingTableLength (
      * NOTE: The NumberOfElements is incremented by one to add an end
      * table structure that is essentially a structure of zeros.
      */
-    TempSizeNeeded = (NumberOfElements + 1) *
-                       (sizeof (PCI_ROUTING_TABLE) - 1);
 
     /*
      * But each PRT_ENTRY structure has a pointer to a string and
@@ -937,7 +938,9 @@ AcpiRsCalculatePciRoutingTableLength (
 
         for (TableIndex = 0; TableIndex < 4 && !NameFound; TableIndex++)
         {
-            if (ACPI_TYPE_STRING == (*SubObjectList)->Common.Type)
+            if ((ACPI_TYPE_STRING == (*SubObjectList)->Common.Type) ||
+                ((INTERNAL_TYPE_REFERENCE == (*SubObjectList)->Common.Type) &&
+                    ((*SubObjectList)->Reference.OpCode == AML_NAMEPATH_OP)))
             {
                 NameFound = TRUE;
             }
@@ -951,16 +954,25 @@ AcpiRsCalculatePciRoutingTableLength (
             }
         }
 
+        TempSizeNeeded += (sizeof (PCI_ROUTING_TABLE) - 4);
+
         /*
          * Was a String type found?
          */
         if (TRUE == NameFound)
         {
-            /*
-             * The length String.Length field includes the
-             * terminating NULL
-             */
-            TempSizeNeeded += (*SubObjectList)->String.Length;
+            if (ACPI_TYPE_STRING == (*SubObjectList)->Common.Type)
+            {
+                /*
+                 * The length String.Length field includes the
+                 * terminating NULL
+                 */
+                TempSizeNeeded += (*SubObjectList)->String.Length;
+            }
+            else
+            {
+                TempSizeNeeded += AcpiNsGetPathnameLength ((*SubObjectList)->Reference.Node);
+            }
         }
 
         else
@@ -972,15 +984,19 @@ AcpiRsCalculatePciRoutingTableLength (
             TempSizeNeeded += sizeof(UINT32);
         }
 
+
+        /* Round up the size since each element must be aligned */
+
+        TempSizeNeeded = ROUND_UP_TO_64BITS (TempSizeNeeded);
+
         /*
          * Point to the next ACPI_OPERAND_OBJECT
          */
         TopObjectList++;
     }
 
-    /* Align the count before returning it */
 
-    *BufferSizeNeeded = ROUND_UP_TO_32BITS (TempSizeNeeded);
+    *BufferSizeNeeded = TempSizeNeeded;
 
     return_ACPI_STATUS (AE_OK);
 }
