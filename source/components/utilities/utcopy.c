@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -521,19 +521,44 @@ AcpiUtCopyIobjectToEobject (
 ACPI_STATUS
 AcpiUtCopyEsimpleToIsimple (
     ACPI_OBJECT             *ExternalObject,
-    ACPI_OPERAND_OBJECT     *InternalObject)
+    ACPI_OPERAND_OBJECT     **RetInternalObject)
 {
+    ACPI_OPERAND_OBJECT     *InternalObject;
+
 
     FUNCTION_TRACE ("UtCopyEsimpleToIsimple");
 
 
-    InternalObject->Common.Type = (UINT8) ExternalObject->Type;
 
     /*
      * Simple types supported are: String, Buffer, Integer
      */
     switch (ExternalObject->Type)
     {
+    case ACPI_TYPE_STRING:
+    case ACPI_TYPE_BUFFER:
+    case ACPI_TYPE_INTEGER:
+
+        InternalObject = AcpiUtCreateInternalObject ((UINT8) ExternalObject->Type);
+        if (!InternalObject)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+        break;
+
+    default:
+        /*
+         * Whatever other type -- it is not supported
+         */
+        return_ACPI_STATUS (AE_SUPPORT);
+        break;
+    }
+
+
+    switch (ExternalObject->Type)
+    {
+
+        /* TBD: Must COPY string and buffer contents */
 
     case ACPI_TYPE_STRING:
 
@@ -553,16 +578,10 @@ AcpiUtCopyEsimpleToIsimple (
 
         InternalObject->Integer.Value   = ExternalObject->Integer.Value;
         break;
-
-    default:
-        /*
-         * Whatever other type -- it is not supported
-         */
-        return_ACPI_STATUS (AE_SUPPORT);
-        break;
     }
 
 
+    *RetInternalObject = InternalObject;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -654,7 +673,7 @@ AcpiUtCopyEpackageToIpackage (
 ACPI_STATUS
 AcpiUtCopyEobjectToIobject (
     ACPI_OBJECT             *ExternalObject,
-    ACPI_OPERAND_OBJECT     *InternalObject)
+    ACPI_OPERAND_OBJECT     **InternalObject)
 {
     ACPI_STATUS             Status;
 
@@ -689,10 +708,6 @@ AcpiUtCopyEobjectToIobject (
          * Build a simple object (no nested objects)
          */
         Status = AcpiUtCopyEsimpleToIsimple (ExternalObject, InternalObject);
-        /*
-         * build simple does not include the object size in the length
-         * so we add it in here
-         */
     }
 
     return_ACPI_STATUS (Status);
