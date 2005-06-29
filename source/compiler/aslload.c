@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -245,7 +245,7 @@ LdLoadFieldElements (
             }
 
             Child->NsNode = NsNode;
-            NsNode->Object = Child;
+            NsNode->Object = (ACPI_OPERAND_OBJECT *) Child;
             break;
         }
 
@@ -322,7 +322,7 @@ LdLoadResourceElements (
              */
             NsNode->OwnerId = InitializerNode->Value.Integer16;
             InitializerNode->NsNode = NsNode;
-            NsNode->Object = InitializerNode;
+            NsNode->Object = (ACPI_OPERAND_OBJECT *) InitializerNode;
 
             /* Pass thru the field type (Bitfield or Bytefield) */
 
@@ -483,7 +483,7 @@ LdNamespace1Begin (
      * the NsNode back to the original Parse node
      */
     PsNode->NsNode = NsNode;
-    NsNode->Object = PsNode;
+    NsNode->Object = (ACPI_OPERAND_OBJECT *) PsNode;
 
 
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.39 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -423,6 +423,7 @@ LkNamespaceLocateBegin (
     ASL_PARSE_NODE          *OwningPsNode;
     UINT32                  MinimumLength;
     UINT32                  Temp;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     PROC_NAME ("LkNamespaceLocateBegin");
@@ -431,7 +432,9 @@ LkNamespaceLocateBegin (
 
     /* We are only interested in opcodes that have an associated name */
 
-    if ((!AcpiPsIsNamedOp (PsNode->AmlOpcode)) &&
+    OpInfo = AcpiPsGetOpcodeInfo (PsNode->AmlOpcode);
+
+    if ((!(OpInfo->Flags & AML_NAMED)) &&
         (PsNode->ParseOpcode != NAMESTRING) &&
         (PsNode->ParseOpcode != NAMESEG)    &&
         (PsNode->ParseOpcode != METHODCALL))
@@ -439,7 +442,7 @@ LkNamespaceLocateBegin (
         return (AE_OK);
     }
 
-    if (AcpiPsIsNamedOp (PsNode->AmlOpcode))
+    if (OpInfo->Flags & AML_NAMED)
     {
         Path = PsNode->Child->Value.String;
     }
@@ -667,7 +670,7 @@ LkNamespaceLocateBegin (
             {
                 /* 1) The result from the method is used (the method is a TermArg) */
 
-                OwningPsNode = NsNode->Object;
+                OwningPsNode = (ASL_PARSE_NODE *) NsNode->Object;
                 if (OwningPsNode->Flags & NODE_METHOD_NO_RETVAL)
                 {
                     /*
@@ -762,12 +765,9 @@ LkNamespaceLocateBegin (
                 }
             }
         }
-
     }
 
-
     PsNode->NsNode = NsNode;
-
     return (Status);
 }
 
@@ -793,6 +793,7 @@ LkNamespaceLocateEnd (
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_OBJECT_TYPE8       DataType;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     PROC_NAME ("LkNamespaceLocateEnd");
@@ -800,7 +801,8 @@ LkNamespaceLocateEnd (
 
     /* We are only interested in opcodes that have an associated name */
 
-    if (!AcpiPsIsNamedOp (PsNode->AmlOpcode))
+    OpInfo = AcpiPsGetOpcodeInfo (PsNode->AmlOpcode);
+    if (!(OpInfo->Flags & AML_NAMED))
     {
         return (AE_OK);
     }
