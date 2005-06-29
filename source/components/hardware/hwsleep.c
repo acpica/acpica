@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -279,13 +279,17 @@ AcpiEnterSleepStatePrep (
 
     switch (SleepState)
     {
-    case 1:
-    case 2:
-    case 3:
+    case ACPI_STATE_S0:
+        Arg.Integer.Value = ACPI_SST_WORKING;
+        break;
+
+    case ACPI_STATE_S1:
+    case ACPI_STATE_S2:
+    case ACPI_STATE_S3:
         Arg.Integer.Value = ACPI_SST_SLEEPING;
         break;
 
-    case 4:
+    case ACPI_STATE_S4:
         Arg.Integer.Value = ACPI_SST_SLEEP_CONTEXT;
         break;
 
@@ -612,7 +616,7 @@ AcpiLeaveSleepState (
 
     /* Ignore any errors from these methods */
 
-    Arg.Integer.Value = ACPI_SST_WAKING;  /* Waking */
+    Arg.Integer.Value = ACPI_SST_WAKING;
     Status = AcpiEvaluateObject (NULL, METHOD_NAME__SST, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
@@ -648,7 +652,7 @@ AcpiLeaveSleepState (
         return_ACPI_STATUS (Status);
     }
 
-    Arg.Integer.Value = ACPI_SST_WORKING;  /* Working */
+    Arg.Integer.Value = ACPI_SST_WORKING;
     Status = AcpiEvaluateObject (NULL, METHOD_NAME__SST, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
