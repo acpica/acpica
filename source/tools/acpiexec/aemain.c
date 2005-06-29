@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.43 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -201,7 +201,7 @@ AeDoDivideCheck (void)
 }
 #else
 void
-AeDoDivideCheck (void)  
+AeDoDivideCheck (void)
 {
 }
 #endif
@@ -223,6 +223,16 @@ AcpiGetIrqRoutingTable  (
     ACPI_BUFFER             *RetBuffer)
 {
     return AE_NOT_IMPLEMENTED;
+}
+
+ACPI_STATUS
+AcpiGetFirmwareTable (
+    ACPI_STRING             Signature,
+    UINT32                  Instance,
+    UINT32                  Flags,
+    ACPI_TABLE_HEADER       **TablePointer)
+{
+    return (AE_NOT_IMPLEMENTED);
 }
 #endif
 
@@ -371,7 +381,6 @@ main (
         }
 
 
-
         /* Need a fake FADT so that the hardware component is happy */
 
         ACPI_STORE_ADDRESS (LocalFADT.XGpe0Blk.Address, 0x70);
@@ -386,7 +395,6 @@ main (
 
         AcpiGbl_FADT = &LocalFADT;
         AcpiGbl_FACS = &LocalFACS;
-
 
 
         /* TBD:
