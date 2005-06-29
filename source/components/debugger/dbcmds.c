@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dbcmds - debug commands and output routines
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -135,7 +135,7 @@
 /* These object types map directly to the ACPI_TYPES */
 
 
-ARGUMENT_INFO               AcpiDbObjectTypes [] = 
+ARGUMENT_INFO               AcpiDbObjectTypes [] =
 {
     {"ANY"},
     {"NUMBERS"},
@@ -158,14 +158,14 @@ ARGUMENT_INFO               AcpiDbObjectTypes [] =
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayTableInfo
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  *****************************************************************************/
 
@@ -181,7 +181,7 @@ AcpiDbDisplayTableInfo (
     {
         if (Acpi_GblAcpiTables[i].Pointer)
         {
-            AcpiOsdPrintf ("%s at 0x%p length 0x%X\n", Acpi_GblAcpiTableData[i].Name, 
+            AcpiOsdPrintf ("%s at 0x%p length 0x%X\n", Acpi_GblAcpiTableData[i].Name,
                         Acpi_GblAcpiTables[i].Pointer, Acpi_GblAcpiTables[i].Length);
         }
     }
@@ -189,14 +189,14 @@ AcpiDbDisplayTableInfo (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbUnloadAcpiTable
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  *****************************************************************************/
 
@@ -233,7 +233,7 @@ AcpiDbUnloadAcpiTable (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbSetMethodBreakpoint
  *
  * PARAMETERS:  Location            - AML offset of breakpoint
@@ -241,7 +241,7 @@ AcpiDbUnloadAcpiTable (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Set a breakpoint in a control method at the specified 
+ * DESCRIPTION: Set a breakpoint in a control method at the specified
  *              AML offset
  *
  *****************************************************************************/
@@ -278,7 +278,7 @@ AcpiDbSetMethodBreakpoint (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbSetMethodCallBreakpoint
  *
  * PARAMETERS:  Location            - AML offset of breakpoint
@@ -286,7 +286,7 @@ AcpiDbSetMethodBreakpoint (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Set a breakpoint in a control method at the specified 
+ * DESCRIPTION: Set a breakpoint in a control method at the specified
  *              AML offset
  *
  *****************************************************************************/
@@ -310,7 +310,7 @@ AcpiDbSetMethodCallBreakpoint (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisassembleAml
  *
  * PARAMETERS:  Statements          - Number of statements to disassemble
@@ -348,10 +348,10 @@ AcpiDbDisassembleAml (
 
 
 /******************************************************************************
- * 
- * FUNCTION:    AcpiDbDumpNamespace 
  *
- * PARAMETERS:  
+ * FUNCTION:    AcpiDbDumpNamespace
+ *
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -427,10 +427,10 @@ AcpiDbDumpNamespace (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDumpNamespaceByOwner
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -472,10 +472,10 @@ AcpiDbDumpNamespaceByOwner (
 
 
 /******************************************************************************
- * 
- * FUNCTION:    AcpiDbSendNotify 
  *
- * PARAMETERS:  
+ * FUNCTION:    AcpiDbSendNotify
+ *
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -506,7 +506,7 @@ AcpiDbSendNotify (
     {
     case ACPI_TYPE_DEVICE:
     case ACPI_TYPE_THERMAL:
-            
+
          /* Send the notify */
 
         AcpiEvNotifyDispatch (Entry, Value);
@@ -521,10 +521,10 @@ AcpiDbSendNotify (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbSetMethodData
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -578,7 +578,7 @@ AcpiDbSetMethodData (
     switch (Type)
     {
     case 'A':
-        
+
         /* Set a method argument */
 
         if (Index > MTH_NUM_ARGS)
@@ -616,7 +616,7 @@ AcpiDbSetMethodData (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbWalkMethods
  *
  * PARAMETERS:  Callback from WalkNamespace
@@ -665,7 +665,7 @@ AcpiDbWalkForSpecificObjects (
         case ACPI_TYPE_NUMBER:
             AcpiOsdPrintf ("  Value 0x%X", ObjDesc->Number.Value);
             break;
-    
+
         case ACPI_TYPE_STRING:
             AcpiOsdPrintf ("  \"%s\"", ObjDesc->String.Pointer);
             break;
@@ -690,7 +690,7 @@ AcpiDbWalkForSpecificObjects (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayObjects
  *
  * PARAMETERS:  ObjTypeArg          - Type of object to display
@@ -709,7 +709,7 @@ AcpiDbDisplayObjects (
     UINT32                  DisplayCount;
     OBJECT_TYPE_INTERNAL    Type;
 
-    
+
     STRUPR (ObjTypeArg);
     Type = AcpiDbMatchArgument (ObjTypeArg, AcpiDbObjectTypes);
     if (Type == ACPI_TYPE_NOT_FOUND)
@@ -723,7 +723,7 @@ AcpiDbDisplayObjects (
     {
         DisplayCount = STRTOUL (DisplayCountArg, NULL, 0);
     }
-    
+
     else
     {
         DisplayCount = ACPI_UINT32_MAX;
@@ -743,14 +743,14 @@ AcpiDbDisplayObjects (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbWalkAndMatchName
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  *****************************************************************************/
 
@@ -808,10 +808,10 @@ AcpiDbWalkAndMatchName (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbFindNameInNamespace
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -823,7 +823,7 @@ ACPI_STATUS
 AcpiDbFindNameInNamespace (
     char                    *NameArg)
 {
-    
+
     if (STRLEN (NameArg) > 4)
     {
         AcpiOsdPrintf ("Name must be no longer than 4 characters\n");
@@ -839,14 +839,14 @@ AcpiDbFindNameInNamespace (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbSetScope
  *
  * PARAMETERS:  Name                - New scope path
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Set the "current scope" as maintained by this utility.  
+ * DESCRIPTION: Set the "current scope" as maintained by this utility.
  *              The scope is used as a prefix to ACPI paths.
  *
  *****************************************************************************/
@@ -877,7 +877,7 @@ AcpiDbSetScope (
         STRCAT (ScopeBuf, Name);
         STRCAT (ScopeBuf, "\\");
     }
-  
+
     AcpiOsdPrintf ("New scope: %s\n", ScopeBuf);
 }
 

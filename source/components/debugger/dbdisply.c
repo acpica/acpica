@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dbdisply - debug display commands
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -132,7 +132,7 @@
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDumpParserDescriptor
  *
  * PARAMETERS:  Op              - A parser Op descriptor
@@ -164,10 +164,10 @@ AcpiDbDumpParserDescriptor (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDecodeAndDisplayObject
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -188,7 +188,7 @@ AcpiDbDecodeAndDisplayObject (
     ACPI_STATUS             Status;
     UINT32                  Size;
 
-    
+
     
     if (!Target)
     {
@@ -211,7 +211,7 @@ AcpiDbDecodeAndDisplayObject (
             Display = DB_QWORD_DISPLAY;
         }
     }
-    
+
 
     RetBuf.Length = sizeof (Buffer);
     RetBuf.Pointer = Buffer;
@@ -299,7 +299,7 @@ AcpiDbDecodeAndDisplayObject (
 
         return;
     }
-                    
+
 
     /* The parameter is a name string that must be resolved to an NTE */
 
@@ -345,10 +345,10 @@ DumpNte:
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDecodeInternalObject
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -382,10 +382,10 @@ AcpiDbDecodeInternalObject (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayInternalObject
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -393,7 +393,7 @@ AcpiDbDecodeInternalObject (
  *
  *****************************************************************************/
 
-void 
+void
 AcpiDbDisplayInternalObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
@@ -418,7 +418,7 @@ AcpiDbDisplayInternalObject (
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
-        AcpiOsdPrintf ("<NTE>             Name %4.4s Type %s", &((NAME_TABLE_ENTRY *)ObjDesc)->Name, 
+        AcpiOsdPrintf ("<NTE>             Name %4.4s Type %s", &((NAME_TABLE_ENTRY *)ObjDesc)->Name,
                                                             AcpiCmGetTypeName (((NAME_TABLE_ENTRY *)ObjDesc)->Type));
     }
 
@@ -481,7 +481,7 @@ AcpiDbDisplayInternalObject (
 
             }
             break;
-        
+
         default:
             AcpiOsdPrintf ("        ");
             AcpiDbDecodeInternalObject (ObjDesc);
@@ -499,10 +499,10 @@ AcpiDbDisplayInternalObject (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayMethodInfo
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -602,19 +602,19 @@ AcpiDbDisplayMethodInfo (
         Op = AcpiPsGetDepthNext (StartOp, Op);
     }
 
-    AcpiOsdPrintf ("Method contains:       %d AML Opcodes - %d Operators, %d Operands\n", 
+    AcpiOsdPrintf ("Method contains:       %d AML Opcodes - %d Operators, %d Operands\n",
                 NumOps, NumOperators, NumOperands);
 
-    AcpiOsdPrintf ("Remaining to execute:  %d AML Opcodes - %d Operators, %d Operands\n", 
+    AcpiOsdPrintf ("Remaining to execute:  %d AML Opcodes - %d Operators, %d Operands\n",
                 NumRemainingOps, NumRemainingOperators, NumRemainingOperands);
 }
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayLocals
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -656,10 +656,10 @@ AcpiDbDisplayLocals (void)
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayArguments
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -669,7 +669,7 @@ AcpiDbDisplayLocals (void)
 
 void
 AcpiDbDisplayArguments (void)
-{  
+{
     UINT32                  i;
     ACPI_WALK_STATE         *WalkState;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -704,10 +704,10 @@ AcpiDbDisplayArguments (void)
 
 
 /******************************************************************************
- * 
- * FUNCTION:    AcpiDbDisplayResults 
  *
- * PARAMETERS:  
+ * FUNCTION:    AcpiDbDisplayResults
+ *
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -749,10 +749,10 @@ AcpiDbDisplayResults (void)
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayCallingTree
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -795,10 +795,10 @@ AcpiDbDisplayCallingTree (void)
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayResultObject
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -828,10 +828,10 @@ AcpiDbDisplayResultObject (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayArgumentObject
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *

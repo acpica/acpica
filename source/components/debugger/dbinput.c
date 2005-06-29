@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dbinput - user front-end to the AML debugger
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -156,7 +156,7 @@ BOOLEAN                 opt_disasm      = FALSE;
 BOOLEAN                 opt_stats       = FALSE;
 BOOLEAN                 opt_parse_jit   = FALSE;
 BOOLEAN                 opt_verbose     = TRUE;
-   
+
 
 
 /* This list of commands must match the string table below it */
@@ -206,13 +206,13 @@ enum AcpiAmlDebuggerCommands
     CMD_TERMINATE,
     CMD_THREADS,
     CMD_TREE,
-    CMD_UNLOAD 
+    CMD_UNLOAD
 };
 
 #define CMD_FIRST_VALID     2
 
 
-COMMAND_INFO                Commands[] = 
+COMMAND_INFO                Commands[] =
 {
     {"<NOT FOUND>",  0},
     {"<NULL>",       0},
@@ -265,7 +265,7 @@ COMMAND_INFO                Commands[] =
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayHelp
  *
  * PARAMETERS:  None
@@ -298,7 +298,7 @@ AcpiDbDisplayHelp (
     }
 
 
-    /* 
+    /*
      * Parameter is the command class
      *
      * The idea here is to keep each class of commands smaller than a screenful
@@ -316,7 +316,7 @@ AcpiDbDisplayHelp (
         AcpiOsdPrintf ("History                             Display command history buffer\n");
         AcpiOsdPrintf ("Level [<DebugLevel>] [console]      Get/Set debug level for file or console\n");
         AcpiOsdPrintf ("Quit or Exit                        Exit this command\n");
-        AcpiOsdPrintf ("Stats [Allocations|Memory|Misc\n"); 
+        AcpiOsdPrintf ("Stats [Allocations|Memory|Misc\n");
         AcpiOsdPrintf ("       |Objects|Tables]             Display namespace and memory statistics\n");
         AcpiOsdPrintf ("Tables                              Display info about loaded ACPI tables\n");
         AcpiOsdPrintf ("Unload                              Unload an ACPI table\n");
@@ -372,7 +372,7 @@ AcpiDbDisplayHelp (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbGetNextToken
  *
  * PARAMETERS:  None
@@ -439,7 +439,7 @@ AcpiDbGetNextToken (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbGetLine
  *
  * PARAMETERS:  None
@@ -477,7 +477,7 @@ AcpiDbGetLine (
         This = Next;
     }
 
-  
+
     /* Uppercase the actual command */
 
     if (Args[0])
@@ -494,7 +494,7 @@ AcpiDbGetLine (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbMatchCommand
  *
  * PARAMETERS:  UserCommand             - User command line
@@ -532,10 +532,10 @@ AcpiDbMatchCommand (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbCommandDispatch
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -562,7 +562,7 @@ AcpiDbCommandDispatch (
     {
         return (AE_CTRL_TERMINATE);
     }
-   
+
     ParamCount = AcpiDbGetLine (InputBuffer);
     CommandIndex = AcpiDbMatchCommand (Args[0]);
     Temp = 0;
@@ -571,7 +571,7 @@ AcpiDbCommandDispatch (
 
     if (ParamCount < Commands[CommandIndex].MinArgs)
     {
-        AcpiOsdPrintf ("%d parameters entered, [%s] requires %d parameters\n", 
+        AcpiOsdPrintf ("%d parameters entered, [%s] requires %d parameters\n",
                         ParamCount, Commands[CommandIndex].Name, Commands[CommandIndex].MinArgs);
         return (AE_CTRL_TRUE);
     }
@@ -683,7 +683,7 @@ AcpiDbCommandDispatch (
     case CMD_INTO:
         if (Op)
         {
-            Acpi_GblCmSingleStep = TRUE;             
+            Acpi_GblCmSingleStep = TRUE;
             Acpi_GblMethodBreakpoint = 0;
             return AE_OK;
         }
@@ -733,7 +733,7 @@ AcpiDbCommandDispatch (
     case CMD_LOCALS:
         AcpiDbDisplayLocals ();
         break;
-    
+
     case CMD_METHODS:
         AcpiDbDisplayObjects ("METHOD", Args[1]);
         break;
@@ -766,7 +766,7 @@ AcpiDbCommandDispatch (
     case CMD_RESULTS:
         AcpiDbDisplayResults ();
         break;
- 
+
     case CMD_SET:
         AcpiDbSetMethodData (Args[1], Args[2], Args[3]);
         break;
@@ -839,7 +839,7 @@ AcpiDbCommandDispatch (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbExecuteThread
  *
  * PARAMETERS:  None
@@ -871,7 +871,7 @@ AcpiDbExecuteThread (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbSingleThread
  *
  * PARAMETERS:  None
@@ -900,7 +900,7 @@ AcpiDbSingleThread (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbUserCommands
  *
  * PARAMETERS:  None
@@ -948,7 +948,7 @@ AcpiDbUserCommands (
 
         if (Acpi_GblDebuggerConfiguration & DEBUGGER_MULTI_THREADED)
         {
-            /* 
+            /*
              * Signal the debug thread that we have a command to execute,
              * and wait for the command to complete.
              */
@@ -966,7 +966,7 @@ AcpiDbUserCommands (
     }
 
 
-    /* 
+    /*
      * Only this thread (the original thread) should actually terminate the subsystem,
      * because all the semaphores are deleted during termination
      */

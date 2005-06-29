@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dbutils - AML debugger utilities
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -131,7 +131,7 @@
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbSetOutputDestination
  *
  * PARAMETERS:  Address             - Pointer to the buffer
@@ -146,7 +146,7 @@ void
 AcpiDbSetOutputDestination (
     INT32                   OutputFlags)
 {
-    
+
     Acpi_GblDbOutputFlags = (UINT8) OutputFlags;
 
     if (OutputFlags & DB_REDIRECTABLE_OUTPUT)
@@ -163,8 +163,8 @@ AcpiDbSetOutputDestination (
 }
 
 /******************************************************************************
- * 
- * FUNCTION:    AcpiDbDumpBuffer 
+ *
+ * FUNCTION:    AcpiDbDumpBuffer
  *
  * PARAMETERS:  Address             - Pointer to the buffer
  *
@@ -187,7 +187,7 @@ AcpiDbDumpBuffer (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDumpObject
  *
  * PARAMETERS:  MethodName          - Method that returned the object
@@ -270,10 +270,10 @@ AcpiDbDumpObject (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbPrepNamestring
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -324,7 +324,7 @@ AcpiDbPrepNamestring (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdSecondPassParse
  *
  * PARAMETERS:  Root            - Root of the parse tree
@@ -356,7 +356,7 @@ AcpiDbSecondPassParse (
             Method = (ACPI_DEFERRED_OP *) Op;
             Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0);
 
-          
+
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
             StartOp = (Method->Value.Arg)->Next;
             SearchOp = StartOp;
@@ -390,10 +390,10 @@ AcpiDbSecondPassParse (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbLocalNsLookup
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -426,7 +426,7 @@ AcpiDbLocalNsLookup (
     /* TBD: [Investigate] what scope do we use? */
     /* Use the root scope for the start of the search */
 
-    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE, 
+    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
                                     NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
 
     if (ACPI_FAILURE (Status))

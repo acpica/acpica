@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *                  be used when running the debugger in Ring 0 (Kernel mode)
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -140,7 +140,7 @@ FILE                    *DebugFile = NULL;
 /* NOTE: this is here for lack of a better place.  It is used in all flavors of the debugger, need LCD file */
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbMatchArgument
  *
  * PARAMETERS:  UserArgument             - User command line
@@ -181,7 +181,7 @@ AcpiDbMatchArgument (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbCloseDebugFile
  *
  * PARAMETERS:  None
@@ -212,10 +212,10 @@ AcpiDbCloseDebugFile (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbOpenDebugFile
  *
- * PARAMETERS:  Name                - Filename  
+ * PARAMETERS:  Name                - Filename
  *
  * RETURN:      Status
  *
@@ -245,10 +245,10 @@ AcpiDbOpenDebugFile (
 
 #ifdef ACPI_APPLICATION
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbLoadTable
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -258,8 +258,8 @@ AcpiDbOpenDebugFile (
 
 ACPI_STATUS
 AcpiDbLoadTable(
-    FILE                    *fp, 
-    char                    **TablePtr, 
+    FILE                    *fp,
+    char                    **TablePtr,
     UINT32                  *TableLength)
 {
     ACPI_TABLE_HEADER       TableHeader;
@@ -292,7 +292,7 @@ AcpiDbLoadTable(
         AcpiOsdPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
         return (AE_NO_MEMORY);
     }
-            
+
 
     AmlPtr      = *TablePtr + sizeof (TableHeader);
     AmlLength   = *TableLength - sizeof (TableHeader);
@@ -319,10 +319,10 @@ AcpiDbLoadTable(
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbLoadAcpiTable
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -379,12 +379,12 @@ AcpiDbLoadAcpiTable (
     }
 
 
-    AcpiOsdPrintf ("%s successfully loaded and installed at %p\n", 
+    AcpiOsdPrintf ("%s successfully loaded and installed at %p\n",
                                 Acpi_GblAcpiTableData[TableInfo.Type].Name, TablePtr);
 
     Acpi_GblAcpiHardwarePresent = FALSE;
 
-#endif  /* ACPI_APPLICATION */  
+#endif  /* ACPI_APPLICATION */
     return AE_OK;
 }
 

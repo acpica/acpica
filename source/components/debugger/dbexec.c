@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dbexec - debugger control method execution
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -149,7 +149,7 @@ DB_METHOD_INFO              Info;
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbExecuteMethod
  *
  * PARAMETERS:  Info            - Valid info segment
@@ -157,7 +157,7 @@ DB_METHOD_INFO              Info;
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute a control method.  
+ * DESCRIPTION: Execute a control method.
  *
  *****************************************************************************/
 
@@ -223,7 +223,7 @@ AcpiDbExecuteMethod (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbExecuteSetup
  *
  * PARAMETERS:  Info            - Valid method info
@@ -270,7 +270,7 @@ AcpiDbExecuteSetup (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbExecute
  *
  * PARAMETERS:  Name                - Name of method to execute
@@ -297,7 +297,7 @@ AcpiDbExecute (
     UINT32                  Size;
     ACPI_BUFFER             ReturnObj;
 
-    
+
 
     /* Memory allocation tracking */
 
@@ -348,7 +348,7 @@ AcpiDbExecute (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbMethodThread
  *
  * PARAMETERS:  None
@@ -392,10 +392,10 @@ AcpiDbMethodThread (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbCreateExecutionThreads
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *

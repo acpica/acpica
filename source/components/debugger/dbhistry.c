@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dbhistry - debugger HISTORY command
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -152,7 +152,7 @@ UINT16                      NextHistoryIndex = 0;
 UINT32                      NextCmdNum = 1;
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbAddToHistory
  *
  * PARAMETERS:  None
@@ -199,7 +199,7 @@ AcpiDbAddToHistory (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbDisplayHistory
  *
  * PARAMETERS:  None
@@ -232,7 +232,7 @@ AcpiDbDisplayHistory (void)
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDbGetFromHistory
  *
  * PARAMETERS:  CommandNumArg           - String containing the number of the
@@ -282,7 +282,7 @@ AcpiDbGetFromHistory (
     AcpiOsdPrintf ("Invalid history number: %d\n", HistoryIndex);
     return NULL;
 }
-    
+
 
 #endif
 
