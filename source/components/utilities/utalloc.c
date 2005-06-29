@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.72 $ 
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -427,9 +427,9 @@ AcpiCmDeleteElementFromAllocList (
         MEMSET (Element, 0xEA, sizeof (ALLOCATION_INFO));
 
 
-        if (Size == sizeof (ACPI_OBJECT_INTERNAL))
+        if (Size == sizeof (ACPI_OPERAND_OBJECT))
         {
-            DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmDelete: Freeing size 0x%X (ACPI_OBJECT_INTERNAL)\n", Size));
+            DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmDelete: Freeing size 0x%X (ACPI_OPERAND_OBJECT)\n", Size));
         }
         else
         {
@@ -500,14 +500,14 @@ AcpiCmDumpAllocationInfo (
                     (AcpiGbl_MaxConcurrentObjectSize + 1023) / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                    ("%30s: %4d (%3d Kb)\n", "Current Named Objects",
-                    AcpiGbl_CurrentNamedObjectCount,
-                    (AcpiGbl_CurrentNamedObjectSize + 1023) / 1024));
+                    ("%30s: %4d (%3d Kb)\n", "Current Nodes",
+                    AcpiGbl_CurrentNodeCount,
+                    (AcpiGbl_CurrentNodeSize + 1023) / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                    ("%30s: %4d (%3d Kb)\n", "Max Named Objects",
-                    AcpiGbl_MaxConcurrentNamedObjectCount,
-                    ((AcpiGbl_MaxConcurrentNamedObjectCount * sizeof (ACPI_NAMED_OBJECT)) + 1023) / 1024));
+                    ("%30s: %4d (%3d Kb)\n", "Max Nodes",
+                    AcpiGbl_MaxConcurrentNodeCount,
+                    ((AcpiGbl_MaxConcurrentNodeCount * sizeof (ACPI_NAMESPACE_NODE)) + 1023) / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("%30s: %4d (%3d Kb)\n", "Total (all) internal objects",
@@ -577,25 +577,25 @@ AcpiCmDumpCurrentAllocations (
 
             /* Most of the elements will be internal objects. */
 
-            switch (((ACPI_OBJECT_INTERNAL *)
+            switch (((ACPI_OPERAND_OBJECT  *)
                 (Element->Address))->Common.DataType)
             {
             case ACPI_DESC_TYPE_INTERNAL:
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
                         (" ObjType %s",
-                        AcpiCmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
+                        AcpiCmGetTypeName (((ACPI_OPERAND_OBJECT  *)(Element->Address))->Common.Type)));
                 break;
 
             case ACPI_DESC_TYPE_PARSER:
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
                         (" ParseObj Opcode %04X",
-                        ((ACPI_GENERIC_OP *)(Element->Address))->Opcode));
+                        ((ACPI_PARSE_OBJECT *)(Element->Address))->Opcode));
                 break;
 
             case ACPI_DESC_TYPE_NAMED:
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
-                        (" Named Object %4.4s",
-                        &((ACPI_NAMED_OBJECT*)(Element->Address))->Name));
+                        (" Node %4.4s",
+                        &((ACPI_NAMESPACE_NODE *)(Element->Address))->Name));
                 break;
 
             case ACPI_DESC_TYPE_STATE:

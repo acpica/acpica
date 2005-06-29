@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 typedef struct Search_st
 {
-    ACPI_OBJECT_INTERNAL        *InternalObj;
+    ACPI_OPERAND_OBJECT         *InternalObj;
     UINT32                      Index;
     ACPI_OBJECT                 *ExternalObj;
 
@@ -157,7 +157,7 @@ PKG_SEARCH_INFO                 Level[MAX_PACKAGE_DEPTH];
 
 ACPI_STATUS
 AcpiCmBuildExternalSimpleObject (
-    ACPI_OBJECT_INTERNAL    *InternalObj,
+    ACPI_OPERAND_OBJECT     *InternalObj,
     ACPI_OBJECT             *ExternalObj,
     UINT8                   *DataSpace,
     UINT32                  *BufferSpaceUsed)
@@ -229,7 +229,7 @@ AcpiCmBuildExternalSimpleObject (
          */
 
         ExternalObj->Type = ACPI_TYPE_ANY;
-        ExternalObj->Reference.Handle = InternalObj->Reference.NameDesc;
+        ExternalObj->Reference.Handle = InternalObj->Reference.Node;
         break;
 
 
@@ -298,7 +298,7 @@ AcpiCmBuildExternalSimpleObject (
 
 ACPI_STATUS
 AcpiCmBuildExternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *InternalObj,
+    ACPI_OPERAND_OBJECT     *InternalObj,
     UINT8                   *Buffer,
     UINT32                  *SpaceUsed)
 {
@@ -309,7 +309,7 @@ AcpiCmBuildExternalPackageObject (
     UINT32                  Length = 0;
     UINT32                  ThisIndex;
     UINT32                  ObjectSpace;
-    ACPI_OBJECT_INTERNAL    *ThisInternalObj;
+    ACPI_OPERAND_OBJECT     *ThisInternalObj;
     ACPI_OBJECT             *ThisExternalObj;
     PKG_SEARCH_INFO         *LevelPtr;
 
@@ -358,7 +358,7 @@ AcpiCmBuildExternalPackageObject (
     {
         ThisIndex       = LevelPtr->Index;
         ThisInternalObj =
-                (ACPI_OBJECT_INTERNAL *)
+                (ACPI_OPERAND_OBJECT  *)
                 LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj =
                 (ACPI_OBJECT *)
@@ -366,10 +366,10 @@ AcpiCmBuildExternalPackageObject (
 
 
         /*
-         * Check for 
+         * Check for
          * 1) Null object -- OK, this can happen if package
          *              element is never initialized
-         * 2) Not an internal object - can be NamedObject instead
+         * 2) Not an internal object - can be Node instead
          * 3) Any internal object other than a package.
          *
          * The more complex package case is handled later
@@ -496,7 +496,7 @@ AcpiCmBuildExternalPackageObject (
 
 ACPI_STATUS
 AcpiCmBuildExternalObject (
-    ACPI_OBJECT_INTERNAL    *InternalObj,
+    ACPI_OPERAND_OBJECT     *InternalObj,
     ACPI_BUFFER             *RetBuffer)
 {
     ACPI_STATUS             Status;
@@ -559,7 +559,7 @@ AcpiCmBuildExternalObject (
 ACPI_STATUS
 AcpiCmBuildInternalSimpleObject (
     ACPI_OBJECT             *ExternalObj,
-    ACPI_OBJECT_INTERNAL    *InternalObj)
+    ACPI_OPERAND_OBJECT     *InternalObj)
 {
 
     FUNCTION_TRACE ("CmBuildInternalSimpleObject");
@@ -623,7 +623,7 @@ AcpiCmBuildInternalSimpleObject (
 
 ACPI_STATUS
 AcpiCmBuildInternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *InternalObj,
+    ACPI_OPERAND_OBJECT     *InternalObj,
     UINT8                   *Buffer,
     UINT32                  *SpaceUsed)
 {
@@ -633,7 +633,7 @@ AcpiCmBuildInternalPackageObject (
     UINT32                  Length = 0;
     UINT32                  ThisIndex;
     UINT32                  ObjectSpace = 0;
-    ACPI_OBJECT_INTERNAL    *ThisInternalObj;
+    ACPI_OPERAND_OBJECT     *ThisInternalObj;
     ACPI_OBJECT             *ThisExternalObj;
     PKG_SEARCH_INFO         *LevelPtr;
 
@@ -680,7 +680,7 @@ AcpiCmBuildInternalPackageObject (
     {
         ThisIndex       = LevelPtr->Index;
 
-        ThisInternalObj = (ACPI_OBJECT_INTERNAL *)
+        ThisInternalObj = (ACPI_OPERAND_OBJECT  *)
                     &LevelPtr->InternalObj->Package.Elements[ThisIndex];
 
         ThisExternalObj = (ACPI_OBJECT *)
@@ -784,7 +784,7 @@ AcpiCmBuildInternalPackageObject (
 ACPI_STATUS
 AcpiCmBuildInternalObject (
     ACPI_OBJECT             *ExternalObj,
-    ACPI_OBJECT_INTERNAL    *InternalObj)
+    ACPI_OPERAND_OBJECT     *InternalObj)
 {
     ACPI_STATUS             Status;
 

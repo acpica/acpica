@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -688,7 +688,7 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
     /* Interpreter */
 
     AcpiGbl_BufSeq                      = 0;
-    AcpiGbl_NamedObjectErr              = FALSE;
+    AcpiGbl_NodeErr                     = FALSE;
 
     /* Parser */
 
@@ -704,15 +704,15 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
 
     /* Namespace */
 
-    AcpiGbl_RootObject                  = NULL;
+    AcpiGbl_RootNode                    = NULL;
 
-    AcpiGbl_RootNamedObject.Name        = ACPI_ROOT_NAME;
-    AcpiGbl_RootNamedObject.DataType    = ACPI_DESC_TYPE_NAMED;
-    AcpiGbl_RootNamedObject.Type        = ACPI_TYPE_ANY;
-    AcpiGbl_RootNamedObject.Child       = NULL;
-    AcpiGbl_RootNamedObject.Peer        = NULL;
-    AcpiGbl_RootNamedObject.Object      = NULL;
-    AcpiGbl_RootNamedObject.Flags       = ANOBJ_END_OF_PEER_LIST;
+    AcpiGbl_RootNodeStruct.Name         = ACPI_ROOT_NAME;
+    AcpiGbl_RootNodeStruct.DataType     = ACPI_DESC_TYPE_NAMED;
+    AcpiGbl_RootNodeStruct.Type         = ACPI_TYPE_ANY;
+    AcpiGbl_RootNodeStruct.Child        = NULL;
+    AcpiGbl_RootNodeStruct.Peer         = NULL;
+    AcpiGbl_RootNodeStruct.Object       = NULL;
+    AcpiGbl_RootNodeStruct.Flags        = ANOBJ_END_OF_PEER_LIST;
 
     /* Memory allocation metrics - compiled out in non-debug mode. */
 

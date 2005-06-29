@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -141,7 +141,7 @@
 
 void
 AcpiCmDeleteInternalObj (
-    ACPI_OBJECT_INTERNAL    *Object)
+    ACPI_OPERAND_OBJECT     *Object)
 {
     void                    *ObjPointer = NULL;
 
@@ -299,9 +299,9 @@ AcpiCmDeleteInternalObj (
 
 ACPI_STATUS
 AcpiCmDeleteInternalObjectList (
-    ACPI_OBJECT_INTERNAL    **ObjList)
+    ACPI_OPERAND_OBJECT     **ObjList)
 {
-    ACPI_OBJECT_INTERNAL    **InternalObj;
+    ACPI_OPERAND_OBJECT     **InternalObj;
 
 
     FUNCTION_TRACE ("CmDeleteInternalObjectList");
@@ -354,7 +354,7 @@ AcpiCmDeleteInternalObjectList (
 
 void
 AcpiCmUpdateRefCount (
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     UINT32                  Action)
 {
     UINT16                  Count;
@@ -475,23 +475,23 @@ AcpiCmUpdateRefCount (
  * DESCRIPTION: Increment the object reference count
  *
  * Object references are incremented when:
- * 1) An object is attached to a NamedObject (namespace object)
+ * 1) An object is attached to a Node (namespace object)
  * 2) An object is copied (all subobjects must be incremented)
  *
  * Object references are decremented when:
- * 1) An object is detached from an NamedObject
+ * 1) An object is detached from an Node
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmUpdateObjectReference (
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action)
 {
     ACPI_STATUS             Status;
     UINT32                  i;
-    ACPI_OBJECT_INTERNAL    *Next;
-    ACPI_OBJECT_INTERNAL    *New;
+    ACPI_OPERAND_OBJECT     *Next;
+    ACPI_OPERAND_OBJECT     *New;
     ACPI_GENERIC_STATE       *StateList = NULL;
     ACPI_GENERIC_STATE       *State;
 
@@ -701,7 +701,7 @@ AcpiCmUpdateObjectReference (
 
 void
 AcpiCmAddReference (
-    ACPI_OBJECT_INTERNAL    *Object)
+    ACPI_OPERAND_OBJECT     *Object)
 {
 
     FUNCTION_TRACE_PTR ("CmAddReference", Object);
@@ -741,7 +741,7 @@ AcpiCmAddReference (
 
 void
 AcpiCmRemoveReference (
-    ACPI_OBJECT_INTERNAL    *Object)
+    ACPI_OPERAND_OBJECT     *Object)
 {
 
     FUNCTION_TRACE_PTR ("CmRemoveReference", Object);
