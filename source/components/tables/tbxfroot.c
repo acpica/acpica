@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: tbtable - ACPI tables: FACP, FACS, and RSDP utilities
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -270,7 +270,7 @@ AcpiTbScanMemoryForRsdp (
 
         /* The signature and checksum must both be correct */
 
-        if (STRNCMP (MemRover, RSDP_SIG, sizeof (RSDP_SIG)-1) == 0 &&
+        if (STRNCMP ((NATIVE_CHAR *) MemRover, RSDP_SIG, sizeof (RSDP_SIG)-1) == 0 &&
             AcpiTbChecksum (MemRover,
                 sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER)) == 0)
         {
@@ -339,7 +339,7 @@ AcpiTbFindRsdp (
          *  The signature and checksum must both be correct
          */
 
-        if (STRNCMP (TablePtr, RSDP_SIG, sizeof (RSDP_SIG)-1) != 0)
+        if (STRNCMP ((NATIVE_CHAR *) TablePtr, RSDP_SIG, sizeof (RSDP_SIG)-1) != 0)
         {
             /* Nope, BAD Signature */
             AcpiOsUnmapMemory (TablePtr, sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER));
