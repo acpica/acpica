@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -348,10 +348,38 @@ UINT32
 AcpiEvFixedEventDispatch (
     UINT32                  Event)
 {
+    UINT32 RegisterId;
+
     /* Clear the status bit */
 
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, TMR_STS +
-                            Event, 1);
+    switch (Event)
+    {
+    case ACPI_EVENT_PMTIMER:
+        RegisterId = TMR_STS;
+        break;
+
+    case ACPI_EVENT_GLOBAL:
+        RegisterId = GBL_STS;
+        break;
+
+    case ACPI_EVENT_POWER_BUTTON:
+        RegisterId = PWRBTN_STS;
+        break;
+
+    case ACPI_EVENT_SLEEP_BUTTON:
+        RegisterId = SLPBTN_STS;
+        break;
+
+    case ACPI_EVENT_RTC:
+        RegisterId = RTC_STS;
+        break;
+
+    default:
+        return 0;
+        break;
+    }
+
+    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, RegisterId, 1);
 
     /*
      * Make sure we've got a handler.  If not, report an error.
@@ -359,8 +387,10 @@ AcpiEvFixedEventDispatch (
      */
     if (NULL == AcpiGbl_FixedEventHandlers[Event].Handler)
     {
+        RegisterId = (PM1_EN | REGISTER_BIT_ID(RegisterId));
+
         AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK,
-                                TMR_EN + Event, 0);
+                                RegisterId, 0);
 
         REPORT_ERROR (
             ("EvGpeDispatch: No installed handler for fixed event [0x%08X]\n",
@@ -806,7 +836,7 @@ AcpiEvAsynchExecuteGpeMethod (
      * that edge-triggered events are cleared prior to calling (via DPC)
      * this function.
      */
-    if (GpeInfo.Type | ACPI_EVENT_LEVEL_TRIGGERED)
+    if (GpeInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED)
     {
         AcpiHwClearGpe (GpeNumber);
     }
@@ -870,7 +900,7 @@ AcpiEvGpeDispatch (
      * level-triggered events are cleared after the GPE is serviced
      * (see AcpiEvAsynchExecuteGpeMethod).
      */
-    if (AcpiGbl_GpeInfo[GpeNumber].Type | ACPI_EVENT_EDGE_TRIGGERED)
+    if (AcpiGbl_GpeInfo[GpeNumber].Type & ACPI_EVENT_EDGE_TRIGGERED)
     {
         AcpiHwClearGpe (GpeNumber);
     }
