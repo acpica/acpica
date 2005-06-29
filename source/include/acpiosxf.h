@@ -10,7 +10,7 @@
 
 #define OSD_FILE    void
 
-// FIX THIS !!
+/* FIX THIS !! */
 #ifndef _SIZE_T_DEFINED
 typedef unsigned int size_t;
 #define _SIZE_T_DEFINED
