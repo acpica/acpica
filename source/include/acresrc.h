@@ -148,16 +148,16 @@ RsSetSRSMethodData (
 
 ACPI_STATUS
 RsCreateResourceList (
-    UINT8     * ByteStreamBuffer,
-    UINT8     * OutputBuffer,
-    UINT32    * OutputBufferLength
+    ACPI_OBJECT_INTERNAL    * ByteStreamBuffer,
+    UINT8                   * OutputBuffer,
+    UINT32                  * OutputBufferLength
     );
 
 ACPI_STATUS
 RsCreateByteStream (
-    RESOURCE  * LinkedListBuffer,
-    UINT8     * OutputBuffer,
-    UINT32    * OutputBufferLength
+    RESOURCE                * LinkedListBuffer,
+    UINT8                   * OutputBuffer,
+    UINT32                  * OutputBufferLength
     );
 
 ACPI_STATUS
