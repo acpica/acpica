@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -196,7 +196,10 @@ char                        *AslMessages [] = {
     "Invalid operand",
     "Missing EndDependentFn() macro in dependent resource list",
     "Missing StartDependentFn() macro in dependent resource list",
-    "Dependent function macros cannot be nested"
+    "Dependent function macros cannot be nested",\
+    "NamePath optimized",
+    "NamePath optimized to NameSeg (uses run-time search path)"
+
 };
 
 
@@ -305,6 +308,13 @@ AePrintException (
     FILE                    *OutputFile;
     FILE                    *SourceFile;
 
+
+    /* Ignore remarks if requested */
+
+    if (!Gbl_DisplayRemarks && Enode->Level == ASL_REMARK)
+    {
+        return;
+    }
 
     OutputFile = Gbl_Files[FileId].Handle;
     SourceFile = Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle;
