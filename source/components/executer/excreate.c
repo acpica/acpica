@@ -239,7 +239,7 @@ AmlExecCreateField (
     if (!VALID_DESCRIPTOR_TYPE (ResDesc, DESC_TYPE_NTE))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField (%s): destination must be a Name(NTE)\n", OpName));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
 
@@ -300,7 +300,7 @@ AmlExecCreateField (
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Internal error - unknown field creation opcode %02x\n",
                         Opcode));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
 
@@ -321,7 +321,7 @@ AmlExecCreateField (
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
                             BitOffset + (UINT32) BitCount,
                             8 * (UINT32) SrcDesc->Buffer.Length));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_BUFFER_LIMIT;
             goto Cleanup;
         }
 
@@ -372,7 +372,7 @@ AmlExecCreateField (
                             CmGetTypeName (TypeFound)));
         }
 
-        Status = AE_AML_ERROR;
+        Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     
     } /* switch */
@@ -615,7 +615,7 @@ AmlExecCreateMutex (
         SyncDesc = Operands[0];
         if (!SyncDesc)
         {
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_NO_OPERAND);
         }
 
         /* Attempt to allocate a new object */
@@ -781,7 +781,7 @@ AmlExecCreateRegion (
                 DEBUG_PRINT (ACPI_ERROR, 
                     ("AmlDoNamedObject/RegionOp: Malformed Region/Address\n"));
 
-                Status = AE_AML_ERROR;
+                Status = AE_AML_OPERAND_TYPE;
                 goto Cleanup;
             }
 
@@ -803,7 +803,7 @@ AmlExecCreateRegion (
                 DEBUG_PRINT (ACPI_ERROR, 
                     ("AmlDoNamedObject/RegionOp: Malformed Region/Length\n"));
 
-                Status = AE_AML_ERROR;
+                Status = AE_AML_OPERAND_TYPE;
                 goto Cleanup;
             }
 
@@ -908,7 +908,7 @@ AmlExecCreateProcessor (
 
     if (!Arg)
     {
-        Status = AE_AML_ERROR;
+        Status = AE_AML_NO_OPERAND;
         return_ACPI_STATUS (Status);
     }
 
@@ -921,7 +921,7 @@ AmlExecCreateProcessor (
     Arg = Arg->Next;
     if (!Arg)
     {
-        Status = AE_AML_ERROR;
+        Status = AE_AML_NO_OPERAND;
         return_ACPI_STATUS (Status);
     }
 
@@ -934,7 +934,7 @@ AmlExecCreateProcessor (
     Arg = Arg->Next;
     if (!Arg)
     {
-        Status = AE_AML_ERROR;
+        Status = AE_AML_NO_OPERAND;
         return_ACPI_STATUS (Status);
     }
 
@@ -993,7 +993,7 @@ AmlExecCreatePowerResource (
 
     if (!Arg)
     {
-        Status = AE_AML_ERROR;
+        Status = AE_AML_NO_OPERAND;
         return_ACPI_STATUS (Status);
     }
 
@@ -1006,7 +1006,7 @@ AmlExecCreatePowerResource (
     Arg = Arg->Next;
     if (!Arg)
     {
-        Status = AE_AML_ERROR;
+        Status = AE_AML_NO_OPERAND;
         return_ACPI_STATUS (Status);
     }
 
