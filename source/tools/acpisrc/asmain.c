@@ -131,6 +131,7 @@ struct stat             Gbl_StatBuf;
 char                    *Gbl_FileBuffer;
 UINT32                  Gbl_FileSize;
 BOOLEAN                 Gbl_VerboseMode = FALSE;
+BOOLEAN                 Gbl_BatchMode = FALSE;
 
 
 /******************************************************************************
@@ -286,7 +287,8 @@ AsExaminePaths (
 
     /* Check if source is a file or a directory */
 
-    if (ConversionTable->Flags & FLG_NO_FILE_OUTPUT)
+    if ((ConversionTable->Flags & FLG_NO_FILE_OUTPUT) ||
+        (Gbl_BatchMode))
     {
         return 0;
     }
@@ -297,6 +299,11 @@ AsExaminePaths (
         scanf ("%c", &Response);
 
         /* Check response */
+
+        if ((char) Response != 'y')
+        {
+            return -1;
+        }
     }
 
     else
@@ -308,6 +315,11 @@ AsExaminePaths (
             scanf ("%c", &Response);
 
             /* Check response */
+
+            if ((char) Response != 'y')
+            {
+                return -1;
+            }
         }
     }
 
@@ -355,11 +367,12 @@ AsDisplayUsage (void)
 {
 
     printf ("\n");
-    printf ("Usage: acpisrc [-cl] <SourceDir> <DestinationDir>\n\n");
-    printf ("Where:   -c            Generate cleaned version of the source\n");
-    printf ("         -l            Generate Linux version of the source\n");
-    printf ("         -s            Generate source statistics only\n");
-    printf ("         -v            Verbose mode\n");
+    printf ("Usage: acpisrc [-clsvy] <SourceDir> <DestinationDir>\n\n");
+    printf ("Where: -c          Generate cleaned version of the source\n");
+    printf ("       -l          Generate Linux version of the source\n");
+    printf ("       -s          Generate source statistics only\n");
+    printf ("       -v          Verbose mode\n");
+    printf ("       -y          Suppress file overwrite prompts\n");
     printf ("\n");
     return;
 }
@@ -395,7 +408,7 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "lcsv")) != EOF) switch(j) 
+    while ((j = getopt (argc, argv, "lcsvy")) != EOF) switch(j) 
     {
     case 'l':
         printf ("Creating Linux source code\n");
@@ -412,6 +425,10 @@ main (
 
     case 'v':
         Gbl_VerboseMode = TRUE;
+        break;
+
+    case 'y':
+        Gbl_BatchMode = TRUE;
         break;
 
     default:    

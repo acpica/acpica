@@ -167,6 +167,7 @@ extern struct stat              Gbl_StatBuf;
 extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
 extern BOOLEAN                  Gbl_VerboseMode;
+extern BOOLEAN                  Gbl_BatchMode;
 
 
 extern int                      optind;
