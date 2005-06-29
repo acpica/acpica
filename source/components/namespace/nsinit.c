@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.46 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -165,20 +165,20 @@ AcpiNsInitializeObjects (
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %s\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %s\n",
             AcpiFormatException (Status)));
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
-        "\n Initialized %d/%d Regions %d/%d Fields %d/%d Buffers %d/%d Packages (%d nodes)\n",
-        Info.OpRegionInit,  Info.OpRegionCount, 
-        Info.FieldInit,     Info.FieldCount, 
-        Info.BufferInit,    Info.BufferCount, 
+        "\nInitialized %hd/%hd Regions %hd/%hd Fields %hd/%hd Buffers %hd/%hd Packages (%hd nodes)\n",
+        Info.OpRegionInit,  Info.OpRegionCount,
+        Info.FieldInit,     Info.FieldCount,
+        Info.BufferInit,    Info.BufferCount,
         Info.PackageInit,   Info.PackageCount, Info.ObjectCount));
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%d Control Methods found\n", Info.MethodCount));
+        "%hd Control Methods found\n", Info.MethodCount));
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%d Op Regions found\n", Info.OpRegionCount));
+        "%hd Op Regions found\n", Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -226,12 +226,12 @@ AcpiNsInitializeDevices (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %s\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %s\n",
             AcpiFormatException (Status)));
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
-        "\n%d Devices found containing: %d _STA, %d _INI methods\n",
+        "\n%hd Devices found containing: %hd _STA, %hd _INI methods\n",
         Info.DeviceCount, Info.Num_STA, Info.Num_INI));
 
     return_ACPI_STATUS (Status);
@@ -331,7 +331,7 @@ AcpiNsInitOneObject (
 
     /*
      * Each of these types can contain executable AML code within
-     * the declaration.  
+     * the declaration.
      */
     switch (Type)
     {
@@ -419,7 +419,7 @@ AcpiNsInitOneDevice (
     ACPI_FUNCTION_TRACE ("NsInitOneDevice");
 
 
-    if (!(AcpiDbgLevel & ACPI_LV_INIT))
+    if ((AcpiDbgLevel <= ACPI_LV_ALL_EXCEPTIONS) && (!(AcpiDbgLevel & ACPI_LV_INFO)))
     {
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
     }
@@ -479,7 +479,7 @@ AcpiNsInitOneDevice (
         {
             /* Ignore error and move on to next device */
 
-    #ifdef ACPI_DEBUG
+    #ifdef ACPI_DEBUG_OUTPUT
             NATIVE_CHAR *ScopeName = AcpiNsGetExternalPathname (ObjHandle);
 
             ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
