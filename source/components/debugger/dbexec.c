@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.18 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -182,8 +182,8 @@ AcpiDbExecuteMethod (
     {
         for (i = 0; Info->Args[i] && i < MTH_NUM_ARGS; i++)
         {
-            Params[i].Type              = ACPI_TYPE_NUMBER;
-            Params[i].Number.Value      = STRTOUL (Info->Args[i], NULL, 16);
+            Params[i].Type              = ACPI_TYPE_INTEGER;
+            Params[i].Integer.Value     = STRTOUL (Info->Args[i], NULL, 16);
         }
 
         ParamObjects.Pointer        = Params;
@@ -194,8 +194,8 @@ AcpiDbExecuteMethod (
     {
         /* Setup default parameters */
 
-        Params[0].Type              = ACPI_TYPE_NUMBER;
-        Params[0].Number.Value      = 0x01020304;
+        Params[0].Type              = ACPI_TYPE_INTEGER;
+        Params[0].Integer.Value     = 0x01020304;
 
         Params[1].Type              = ACPI_TYPE_STRING;
         Params[1].String.Length     = 12;
@@ -342,7 +342,8 @@ AcpiDbExecute (
 
         if (ReturnObj.Length)
         {
-            AcpiOsPrintf ("Execution of %s returned object %p\n", Info.Pathname, ReturnObj.Pointer);
+            AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n", 
+                Info.Pathname, ReturnObj.Pointer, ReturnObj.Length);
             AcpiDbDumpObject (ReturnObj.Pointer, 1);
         }
     }
@@ -381,7 +382,8 @@ AcpiDbMethodThread (
         {
             if (ReturnObj.Length)
             {
-                AcpiOsPrintf ("Execution of %s returned object %p\n", Info->Pathname, ReturnObj.Pointer);
+                AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n", 
+                    Info->Pathname, ReturnObj.Pointer, ReturnObj.Length);
                 AcpiDbDumpObject (ReturnObj.Pointer, 1);
             }
         }
@@ -428,7 +430,7 @@ AcpiDbCreateExecutionThreads (
 
     if (!NumThreads || !NumLoops)
     {
-        AcpiOsPrintf ("Bad argument: Threads %d, Loops %d\n", NumThreads, NumLoops);
+        AcpiOsPrintf ("Bad argument: Threads %X, Loops %X\n", NumThreads, NumLoops);
         return;
     }
 
@@ -455,7 +457,7 @@ AcpiDbCreateExecutionThreads (
 
     /* Create the threads */
 
-    AcpiOsPrintf ("Creating %d threads to execute %d times each\n", NumThreads, NumLoops);
+    AcpiOsPrintf ("Creating %X threads to execute %X times each\n", NumThreads, NumLoops);
 
     for (i = 0; i < (NumThreads); i++)
     {
@@ -477,7 +479,7 @@ AcpiDbCreateExecutionThreads (
     AcpiOsDeleteSemaphore (ThreadGate);
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    AcpiOsPrintf ("All threads (%d) have completed\n", NumThreads);
+    AcpiOsPrintf ("All threads (%X) have completed\n", NumThreads);
     AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
