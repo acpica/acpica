@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.67 $
+ *       $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -374,9 +374,11 @@ void
 AcpiPsFreeOp (
     ACPI_PARSE_OBJECT       *Op);
 
+#ifdef ACPI_ENABLE_OBJECT_CACHE
 void
 AcpiPsDeleteParseCache (
     void);
+#endif
 
 BOOLEAN
 AcpiPsIsLeadingChar (
