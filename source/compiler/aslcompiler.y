@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -626,7 +626,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> MatchOpKeyword
 %type <n> SerializeRuleKeyword
 %type <n> DMATypeKeyword
-%type <n> BusMasterKeyword
+%type <n> OptionalBusMasterKeyword
 %type <n> XferTypeKeyword
 %type <n> ResourceTypeKeyword
 %type <n> MinKeyword
@@ -2181,11 +2181,6 @@ DMATypeKeyword
     | PARSEOP_DMATYPE_F                     {$$ = TrCreateLeafNode (PARSEOP_DMATYPE_F);}
     ;
 
-BusMasterKeyword
-    : PARSEOP_BUSMASTERTYPE_MASTER          {$$ = TrCreateLeafNode (PARSEOP_BUSMASTERTYPE_MASTER);}
-    | PARSEOP_BUSMASTERTYPE_NOTMASTER       {$$ = TrCreateLeafNode (PARSEOP_BUSMASTERTYPE_NOTMASTER);}
-    ;
-
 XferTypeKeyword
     : PARSEOP_XFERTYPE_8                    {$$ = TrCreateLeafNode (PARSEOP_XFERTYPE_8);}
     | PARSEOP_XFERTYPE_8_16                 {$$ = TrCreateLeafNode (PARSEOP_XFERTYPE_8_16);}
@@ -2524,11 +2519,11 @@ ResourceMacroTerm
 DMATerm
     : PARSEOP_DMA '('               {$$ = TrCreateLeafNode (PARSEOP_DMA);}
         DMATypeKeyword
-        ',' BusMasterKeyword
+        OptionalBusMasterKeyword
         ',' XferTypeKeyword
         OptionalNameString_Last
         ')' '{'
-            ByteList '}'            {$$ = TrLinkChildren ($<n>3,5,$4,$6,$8,$9,$12);}
+            ByteList '}'            {$$ = TrLinkChildren ($<n>3,5,$4,$5,$7,$8,$11);}
     | PARSEOP_DMA '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -2960,6 +2955,12 @@ NameSeg
 
 AmlPackageLengthTerm
     : Integer                       {$$ = TrUpdateNode (PARSEOP_PACKAGE_LENGTH,(ACPI_PARSE_OBJECT *) $1);}
+    ;
+
+OptionalBusMasterKeyword
+    : ','                                       {$$ = TrCreateLeafNode (PARSEOP_BUSMASTERTYPE_MASTER);}
+    | ',' PARSEOP_BUSMASTERTYPE_MASTER          {$$ = TrCreateLeafNode (PARSEOP_BUSMASTERTYPE_MASTER);}
+    | ',' PARSEOP_BUSMASTERTYPE_NOTMASTER       {$$ = TrCreateLeafNode (PARSEOP_BUSMASTERTYPE_NOTMASTER);}
     ;
 
 OptionalAccessAttribTerm
