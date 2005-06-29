@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdyadic - ACPI AML execution for dyadic (2-operand) operators
- *              $Revision: 1.86 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -159,6 +159,9 @@ AcpiExDoConcatenate (
     UINT32                  IntegerSize = sizeof (ACPI_INTEGER);
 
 
+    FUNCTION_ENTRY ();
+
+
     /*
      * There are three cases to handle:
      * 1) Two Integers concatenated to produce a buffer
@@ -311,8 +314,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiExDyadic1
  *
- * PARAMETERS:  Opcode              - The opcode to be executed
- *              WalkState           - Current walk state
+ * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
@@ -325,11 +327,9 @@ Cleanup:
 
 ACPI_STATUS
 AcpiExDyadic1 (
-    UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
-    ACPI_OPERAND_OBJECT     *ValDesc = NULL;
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status = AE_OK;
 
@@ -337,44 +337,22 @@ AcpiExDyadic1 (
     FUNCTION_TRACE_PTR ("ExDyadic1", WALK_OPERANDS);
 
 
-    /* Resolve all operands */
-
-    Status = AcpiExResolveOperands (Opcode, WALK_OPERANDS, WalkState);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
-                    2, "after AcpiExResolveOperands");
-
-    /* Get the operands */
-
-    Status |= AcpiDsObjStackPopObject (&ValDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        /* Invalid parameters on object stack  */
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) bad operand(s) %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
-
-        goto Cleanup;
-    }
-
 
     /* Examine the opcode */
 
-    switch (Opcode)
+    switch (WalkState->Opcode)
     {
 
-    /* DefNotify   :=  NotifyOp    NotifyObject    NotifyValue */
+    case AML_NOTIFY_OP:         /* Notify (NotifyObject, NotifyValue) */
 
-    case AML_NOTIFY_OP:
+        /* The first operand is a namespace node */
 
-        /* The ObjDesc is actually an Node */
+        Node = (ACPI_NAMESPACE_NODE *) Operand[0];
+        Operand[0] = NULL;
 
-        Node = (ACPI_NAMESPACE_NODE *) ObjDesc;
-        ObjDesc = NULL;
+        /* The node must refer to a device or thermal zone */
 
-        /* Object must be a device or thermal zone */
-
-        if (Node && ValDesc)
+        if (Node && Operand[1])
         {
             switch (Node->Type)
             {
@@ -388,14 +366,13 @@ AcpiExDyadic1 (
                  * from this thread -- because handlers may in turn run other
                  * control methods.
                  */
-
                 Status = AcpiEvQueueNotifyRequest (Node,
-                                        (UINT32) ValDesc->Integer.Value);
+                                        (UINT32) Operand[1]->Integer.Value);
                 break;
 
             default:
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unexpected notify object type %X\n",
-                    ObjDesc->Common.Type));
+                    Node->Type));
 
                 Status = AE_AML_OPERAND_TYPE;
                 break;
@@ -405,17 +382,15 @@ AcpiExDyadic1 (
 
     default:
 
-        REPORT_ERROR (("AcpiExDyadic1: Unknown dyadic opcode %X\n", Opcode));
+        REPORT_ERROR (("AcpiExDyadic1: Unknown dyadic opcode %X\n", WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
     }
 
 
-Cleanup:
-
     /* Always delete both operands */
 
-    AcpiUtRemoveReference (ValDesc);
-    AcpiUtRemoveReference (ObjDesc);
+    AcpiUtRemoveReference (Operand[1]);
+    AcpiUtRemoveReference (Operand[0]);
 
 
     return_ACPI_STATUS (Status);
@@ -426,9 +401,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiExDyadic2R
  *
- * PARAMETERS:  Opcode              - The opcode to be executed
- *              WalkState           - Current walk state
- *              ReturnDesc          - Where to store the return object
+ * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
@@ -441,70 +414,20 @@ Cleanup:
 
 ACPI_STATUS
 AcpiExDyadic2R (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
+    ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc    = NULL;
-    ACPI_OPERAND_OBJECT     *ObjDesc2   = NULL;
-    ACPI_OPERAND_OBJECT     *ResDesc    = NULL;
-    ACPI_OPERAND_OBJECT     *ResDesc2   = NULL;
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_OPERAND_OBJECT     *RetDesc    = NULL;
     ACPI_OPERAND_OBJECT     *RetDesc2   = NULL;
     ACPI_STATUS             Status      = AE_OK;
-    UINT32                  NumOperands;
 
 
-    FUNCTION_TRACE_U32 ("ExDyadic2R", Opcode);
-
-
-    if (Opcode == AML_DIVIDE_OP)
-    {
-        NumOperands = 4;
-    }
-
-    else
-    {
-        NumOperands = 3;
-    }
-
-
-    /* Resolve all operands */
-
-    Status = AcpiExResolveOperands (Opcode, WALK_OPERANDS, WalkState);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
-                    NumOperands, "after AcpiExResolveOperands");
-
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) Could not resolve operand(s) (%s)\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
-
-        goto Cleanup;
-    }
-
-    /* Get all operands */
-
-    if (Opcode == AML_DIVIDE_OP)
-    {
-        Status |= AcpiDsObjStackPopObject (&ResDesc2, WalkState);
-    }
-
-    Status |= AcpiDsObjStackPopObject (&ResDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&ObjDesc2, WalkState);
-    Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) bad operand(s) (%s)\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
-
-        goto Cleanup;
-    }
+    FUNCTION_TRACE_U32 ("ExDyadic2R", WalkState->Opcode);
 
 
     /* Create an internal return object if necessary */
 
-    switch (Opcode)
+    switch (WalkState->Opcode)
     {
     case AML_ADD_OP:
     case AML_BIT_AND_OP:
@@ -533,72 +456,56 @@ AcpiExDyadic2R (
     /*
      * Execute the opcode
      */
-
-    switch (Opcode)
+    switch (WalkState->Opcode)
     {
 
-    /* DefAdd  :=  AddOp   Operand1    Operand2    Result  */
+    case AML_ADD_OP:                /* Add (Operand1, Operand2, Result) */
 
-    case AML_ADD_OP:
-
-        RetDesc->Integer.Value = ObjDesc->Integer.Value +
-                                ObjDesc2->Integer.Value;
+        RetDesc->Integer.Value = Operand[0]->Integer.Value +
+                                 Operand[1]->Integer.Value;
         break;
 
 
-    /* DefAnd  :=  AndOp   Operand1    Operand2    Result  */
+    case AML_BIT_AND_OP:            /* And (Operand1, Operand2, Result) */
 
-    case AML_BIT_AND_OP:
-
-        RetDesc->Integer.Value = ObjDesc->Integer.Value &
-                                ObjDesc2->Integer.Value;
+        RetDesc->Integer.Value = Operand[0]->Integer.Value &
+                                 Operand[1]->Integer.Value;
         break;
 
 
-    /* DefNAnd :=  NAndOp  Operand1    Operand2    Result  */
+    case AML_BIT_NAND_OP:           /* NAnd (Operand1, Operand2, Result) */
 
-    case AML_BIT_NAND_OP:
-
-        RetDesc->Integer.Value = ~(ObjDesc->Integer.Value &
-                                  ObjDesc2->Integer.Value);
+        RetDesc->Integer.Value = ~(Operand[0]->Integer.Value &
+                                   Operand[1]->Integer.Value);
         break;
 
 
-    /* DefOr   :=  OrOp    Operand1    Operand2    Result  */
+    case AML_BIT_OR_OP:             /* Or (Operand1, Operand2, Result) */
 
-    case AML_BIT_OR_OP:
-
-        RetDesc->Integer.Value = ObjDesc->Integer.Value |
-                                ObjDesc2->Integer.Value;
+        RetDesc->Integer.Value = Operand[0]->Integer.Value |
+                                 Operand[1]->Integer.Value;
         break;
 
 
-    /* DefNOr  :=  NOrOp   Operand1    Operand2    Result  */
+    case AML_BIT_NOR_OP:            /* NOr (Operand1, Operand2, Result) */
 
-    case AML_BIT_NOR_OP:
-
-        RetDesc->Integer.Value = ~(ObjDesc->Integer.Value |
-                                  ObjDesc2->Integer.Value);
+        RetDesc->Integer.Value = ~(Operand[0]->Integer.Value |
+                                   Operand[1]->Integer.Value);
         break;
 
 
-    /* DefXOr  :=  XOrOp   Operand1    Operand2    Result  */
+    case AML_BIT_XOR_OP:            /* XOr (Operand1, Operand2, Result) */
 
-    case AML_BIT_XOR_OP:
-
-        RetDesc->Integer.Value = ObjDesc->Integer.Value ^
-                                ObjDesc2->Integer.Value;
+        RetDesc->Integer.Value = Operand[0]->Integer.Value ^
+                                 Operand[1]->Integer.Value;
         break;
 
 
-    /* DefDivide   :=  DivideOp Dividend Divisor Remainder Quotient  */
+    case AML_DIVIDE_OP:             /* Divide (Dividend, Divisor, RemainderResult QuotientRsult) */
 
-    case AML_DIVIDE_OP:
-
-        if (!ObjDesc2->Integer.Value)
+        if (!Operand[1]->Integer.Value)
         {
-            REPORT_ERROR
-                (("DivideOp: Divide by zero\n"));
+            REPORT_ERROR (("DivideOp: Divide by zero\n"));
 
             Status = AE_AML_DIVIDE_BY_ZERO;
             goto Cleanup;
@@ -611,77 +518,63 @@ AcpiExDyadic2R (
             goto Cleanup;
         }
 
-        /* Remainder (modulo) */
+        /* 
+         * RetDesc2 will contain the quotient, 
+         * RetDesc  will contain the remainder
+         */
+        Status = AcpiUtDivide (&Operand[0]->Integer.Value, &Operand[1]->Integer.Value,
+                        &RetDesc2->Integer.Value, &RetDesc->Integer.Value);
 
-        RetDesc->Integer.Value   = ACPI_MODULO (ObjDesc->Integer.Value,
-                                                ObjDesc2->Integer.Value);
-
-        /* Result (what we used to call the quotient) */
-
-        RetDesc2->Integer.Value  = ACPI_DIVIDE (ObjDesc->Integer.Value,
-                                                ObjDesc2->Integer.Value);
         break;
 
 
-    /* DefMod   :=  ModOp Dividend Divisor Remainder  */
+    case AML_MOD_OP:                /* Mod (Dividend, Divisor, RemainderResult (ACPI 2.0) */
 
-    case AML_MOD_OP:    /* ACPI 2.0 */
-
-        if (!ObjDesc2->Integer.Value)
+        if (!Operand[1]->Integer.Value)
         {
-            REPORT_ERROR
-                (("ModOp: Divide by zero\n"));
+            REPORT_ERROR (("ModOp: Divide by zero\n"));
 
             Status = AE_AML_DIVIDE_BY_ZERO;
             goto Cleanup;
         }
 
-        /* Remainder (modulo) */
+        /* RetDesc will contain the remainder */
 
-        RetDesc->Integer.Value   = ACPI_MODULO (ObjDesc->Integer.Value,
-                                                ObjDesc2->Integer.Value);
+        Status = AcpiUtDivide (&Operand[0]->Integer.Value, &Operand[1]->Integer.Value,
+                        NULL, &RetDesc->Integer.Value);
+
         break;
 
 
-    /* DefMultiply :=  MultiplyOp  Operand1    Operand2    Result  */
+    case AML_MULTIPLY_OP:           /* Multiply (Operand1, Operand2, Result) */
 
-    case AML_MULTIPLY_OP:
-
-        RetDesc->Integer.Value = ObjDesc->Integer.Value *
-                                ObjDesc2->Integer.Value;
+        RetDesc->Integer.Value = Operand[0]->Integer.Value *
+                                 Operand[1]->Integer.Value;
         break;
 
 
-    /* DefShiftLeft    :=  ShiftLeftOp Operand ShiftCount  Result  */
+    case AML_SHIFT_LEFT_OP:         /* ShiftLeft (Operand, ShiftCount, Result) */
 
-    case AML_SHIFT_LEFT_OP:
-
-        RetDesc->Integer.Value = ObjDesc->Integer.Value <<
-                                ObjDesc2->Integer.Value;
+        RetDesc->Integer.Value = Operand[0]->Integer.Value <<
+                                 Operand[1]->Integer.Value;
         break;
 
 
-    /* DefShiftRight   :=  ShiftRightOp    Operand ShiftCount  Result  */
+    case AML_SHIFT_RIGHT_OP:        /* ShiftRight (Operand, ShiftCount, Result) */
 
-    case AML_SHIFT_RIGHT_OP:
-
-        RetDesc->Integer.Value = ObjDesc->Integer.Value >>
-                                ObjDesc2->Integer.Value;
+        RetDesc->Integer.Value = Operand[0]->Integer.Value >>
+                                 Operand[1]->Integer.Value;
         break;
 
 
-    /* DefSubtract :=  SubtractOp  Operand1    Operand2    Result  */
+    case AML_SUBTRACT_OP:           /* Subtract (Operand1, Operand2, Result) */
 
-    case AML_SUBTRACT_OP:
-
-        RetDesc->Integer.Value = ObjDesc->Integer.Value -
-                                ObjDesc2->Integer.Value;
+        RetDesc->Integer.Value = Operand[0]->Integer.Value -
+                                 Operand[1]->Integer.Value;
         break;
 
 
-    /* DefConcat   :=  ConcatOp    Data1   Data2   Result  */
-
-    case AML_CONCAT_OP:
+    case AML_CONCAT_OP:              /* Concatenate (Data1, Data2, Result) */
 
         /*
          * Convert the second operand if necessary.  The first operand
@@ -690,18 +583,18 @@ AcpiExDyadic2R (
          * guaranteed to be either Integer/String/Buffer by the operand
          * resolution mechanism above.
          */
-        switch (ObjDesc->Common.Type)
+        switch (Operand[0]->Common.Type)
         {
         case ACPI_TYPE_INTEGER:
-            Status = AcpiExConvertToInteger (ObjDesc2, &ObjDesc2, WalkState);
+            Status = AcpiExConvertToInteger (Operand[1], &Operand[1], WalkState);
             break;
 
         case ACPI_TYPE_STRING:
-            Status = AcpiExConvertToString (ObjDesc2, &ObjDesc2, 16, ACPI_UINT32_MAX, WalkState);
+            Status = AcpiExConvertToString (Operand[1], &Operand[1], 16, ACPI_UINT32_MAX, WalkState);
             break;
 
         case ACPI_TYPE_BUFFER:
-            Status = AcpiExConvertToBuffer (ObjDesc2, &ObjDesc2, WalkState);
+            Status = AcpiExConvertToBuffer (Operand[1], &Operand[1], WalkState);
             break;
 
         default:
@@ -713,13 +606,12 @@ AcpiExDyadic2R (
             goto Cleanup;
         }
 
-
         /*
          * Both operands are now known to be the same object type
          * (Both are Integer, String, or Buffer), and we can now perform the
          * concatenation.
          */
-        Status = AcpiExDoConcatenate (ObjDesc, ObjDesc2, &RetDesc, WalkState);
+        Status = AcpiExDoConcatenate (Operand[0], Operand[1], &RetDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -727,18 +619,14 @@ AcpiExDyadic2R (
         break;
 
 
-    /* DefToString  := Buffer, Length, Result */
+    case AML_TO_STRING_OP:          /* ToString (Buffer, Length, Result) (ACPI 2.0) */
 
-    case AML_TO_STRING_OP:  /* ACPI 2.0 */
-
-        Status = AcpiExConvertToString (ObjDesc, &RetDesc, 16,
-                        (UINT32) ObjDesc2->Integer.Value, WalkState);
+        Status = AcpiExConvertToString (Operand[0], &RetDesc, 16,
+                        (UINT32) Operand[1]->Integer.Value, WalkState);
         break;
 
 
-    /* DefConcatRes := Buffer, Buffer, Result */
-
-    case AML_CONCAT_RES_OP:  /* ACPI 2.0 */
+    case AML_CONCAT_RES_OP:         /* ConcatenateResTemplate (Buffer, Buffer, Result) (ACPI 2.0) */
 
         Status = AE_NOT_IMPLEMENTED;
         goto Cleanup;
@@ -748,40 +636,38 @@ AcpiExDyadic2R (
     default:
 
         REPORT_ERROR (("AcpiExDyadic2R: Unknown dyadic opcode %X\n",
-                Opcode));
+                WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
 
 
     /*
-     * Store the result of the operation (which is now in ObjDesc) into
+     * Store the result of the operation (which is now in Operand[0]) into
      * the result descriptor, or the location pointed to by the result
-     * descriptor (ResDesc).
+     * descriptor (Operand[2]).
      */
-
-    Status = AcpiExStore (RetDesc, ResDesc, WalkState);
+    Status = AcpiExStore (RetDesc, Operand[2], WalkState);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
     }
 
-    if (AML_DIVIDE_OP == Opcode)
+    if (AML_DIVIDE_OP == WalkState->Opcode)
     {
-        Status = AcpiExStore (RetDesc2, ResDesc2, WalkState);
+        Status = AcpiExStore (RetDesc2, Operand[3], WalkState);
 
         /*
          * Since the remainder is not returned, remove a reference to
          * the object we created earlier
          */
-
         AcpiUtRemoveReference (RetDesc);
-        *ReturnDesc = RetDesc2;
+        WalkState->ResultObj = RetDesc2;
     }
 
     else
     {
-        *ReturnDesc = RetDesc;
+        WalkState->ResultObj = RetDesc;
     }
 
 
@@ -789,8 +675,8 @@ Cleanup:
 
     /* Always delete the operands */
 
-    AcpiUtRemoveReference (ObjDesc);
-    AcpiUtRemoveReference (ObjDesc2);
+    AcpiUtRemoveReference (Operand[0]);
+    AcpiUtRemoveReference (Operand[1]);
 
 
     /* Delete return object on error */
@@ -799,8 +685,8 @@ Cleanup:
     {
         /* On failure, delete the result ops */
 
-        AcpiUtRemoveReference (ResDesc);
-        AcpiUtRemoveReference (ResDesc2);
+        AcpiUtRemoveReference (Operand[2]);
+        AcpiUtRemoveReference (Operand[3]);
 
         if (RetDesc)
         {
@@ -821,9 +707,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiExDyadic2S
  *
- * PARAMETERS:  Opcode              - The opcode to be executed
- *              WalkState           - Current walk state
- *              ReturnDesc          - Where to store the return object
+ * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
@@ -835,38 +719,15 @@ Cleanup:
 
 ACPI_STATUS
 AcpiExDyadic2S (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
+    ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OPERAND_OBJECT     *TimeDesc;
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_OPERAND_OBJECT     *RetDesc = NULL;
     ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE_PTR ("ExDyadic2S", WALK_OPERANDS);
 
-
-    /* Resolve all operands */
-
-    Status = AcpiExResolveOperands (Opcode, WALK_OPERANDS, WalkState);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
-                    2, "after AcpiExResolveOperands");
-
-    /* Get all operands */
-
-    Status |= AcpiDsObjStackPopObject (&TimeDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        /* Invalid parameters on object stack  */
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) bad operand(s) %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
-
-        goto Cleanup;
-    }
 
 
     /* Create the internal return object */
@@ -885,28 +746,24 @@ AcpiExDyadic2S (
 
     /* Examine the opcode */
 
-    switch (Opcode)
+    switch (WalkState->Opcode)
     {
 
-    /* DefAcquire  :=  AcquireOp   MutexObject Timeout */
+    case AML_ACQUIRE_OP:            /* Acquire (MutexObject, Timeout) */
 
-    case AML_ACQUIRE_OP:
-
-        Status = AcpiExAcquireMutex (TimeDesc, ObjDesc, WalkState);
+        Status = AcpiExAcquireMutex (Operand[1], Operand[0], WalkState);
         break;
 
 
-    /* DefWait :=  WaitOp  AcpiEventObject Timeout */
+    case AML_WAIT_OP:               /* Wait (EventObject, Timeout) */
 
-    case AML_WAIT_OP:
-
-        Status = AcpiExSystemWaitEvent (TimeDesc, ObjDesc);
+        Status = AcpiExSystemWaitEvent (Operand[1], Operand[0]);
         break;
 
 
     default:
 
-        REPORT_ERROR (("AcpiExDyadic2S: Unknown dyadic synchronization opcode %X\n", Opcode));
+        REPORT_ERROR (("AcpiExDyadic2S: Unknown dyadic synchronization opcode %X\n", WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
@@ -916,7 +773,6 @@ AcpiExDyadic2S (
      * Return a boolean indicating if operation timed out
      * (TRUE) or not (FALSE)
      */
-
     if (Status == AE_TIME)
     {
         RetDesc->Integer.Value = ACPI_INTEGER_MAX;   /* TRUE, op timed out */
@@ -928,8 +784,8 @@ Cleanup:
 
     /* Delete params */
 
-    AcpiUtRemoveReference (TimeDesc);
-    AcpiUtRemoveReference (ObjDesc);
+    AcpiUtRemoveReference (Operand[1]);
+    AcpiUtRemoveReference (Operand[0]);
 
     /* Delete return object on error */
 
@@ -943,7 +799,7 @@ Cleanup:
 
     /* Set the return object and exit */
 
-    *ReturnDesc = RetDesc;
+    WalkState->ResultObj = RetDesc;
     return_ACPI_STATUS (Status);
 }
 
@@ -952,9 +808,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiExDyadic2
  *
- * PARAMETERS:  Opcode              - The opcode to be executed
- *              WalkState           - Current walk state
- *              ReturnDesc          - Where to store the return object
+ * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
@@ -968,39 +822,15 @@ Cleanup:
 
 ACPI_STATUS
 AcpiExDyadic2 (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
+    ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OPERAND_OBJECT     *ObjDesc2;
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_OPERAND_OBJECT     *RetDesc = NULL;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 Lboolean;
 
 
     FUNCTION_TRACE_PTR ("ExDyadic2", WALK_OPERANDS);
-
-
-    /* Resolve all operands */
-
-    Status = AcpiExResolveOperands (Opcode, WALK_OPERANDS, WalkState);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
-                    2, "after AcpiExResolveOperands");
-
-    /* Get all operands */
-
-    Status |= AcpiDsObjStackPopObject (&ObjDesc2, WalkState);
-    Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        /* Invalid parameters on object stack  */
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) bad operand(s) %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
-
-        goto Cleanup;
-    }
 
 
     /* Create the internal return object */
@@ -1013,61 +843,48 @@ AcpiExDyadic2 (
     }
 
     /*
-     * Execute the Opcode
+     * Execute the WalkState->Opcode
      */
-
     Lboolean = FALSE;
-    switch (Opcode)
+    switch (WalkState->Opcode)
     {
 
-    /* DefLAnd :=  LAndOp  Operand1    Operand2    */
+    case AML_LAND_OP:               /* LAnd (Operand1, Operand2) */
 
-    case AML_LAND_OP:
-
-        Lboolean = (BOOLEAN) (ObjDesc->Integer.Value &&
-                              ObjDesc2->Integer.Value);
+        Lboolean = (BOOLEAN) (Operand[0]->Integer.Value &&
+                              Operand[1]->Integer.Value);
         break;
 
 
-    /* DefLEqual   :=  LEqualOp    Operand1    Operand2    */
+    case AML_LEQUAL_OP:             /* LEqual (Operand1, Operand2) */
 
-    case AML_LEQUAL_OP:
-
-        Lboolean = (BOOLEAN) (ObjDesc->Integer.Value ==
-                              ObjDesc2->Integer.Value);
+        Lboolean = (BOOLEAN) (Operand[0]->Integer.Value ==
+                              Operand[1]->Integer.Value);
         break;
 
 
-    /* DefLGreater :=  LGreaterOp  Operand1    Operand2    */
+    case AML_LGREATER_OP:           /* LGreater (Operand1, Operand2) */
 
-    case AML_LGREATER_OP:
-
-        Lboolean = (BOOLEAN) (ObjDesc->Integer.Value >
-                              ObjDesc2->Integer.Value);
+        Lboolean = (BOOLEAN) (Operand[0]->Integer.Value >
+                              Operand[1]->Integer.Value);
         break;
 
 
-    /* DefLLess    :=  LLessOp Operand1    Operand2    */
+    case AML_LLESS_OP:              /* LLess (Operand1, Operand2) */
 
-    case AML_LLESS_OP:
-
-        Lboolean = (BOOLEAN) (ObjDesc->Integer.Value <
-                              ObjDesc2->Integer.Value);
+        Lboolean = (BOOLEAN) (Operand[0]->Integer.Value <
+                              Operand[1]->Integer.Value);
         break;
 
 
-    /* DefLOr  :=  LOrOp   Operand1    Operand2    */
+    case AML_LOR_OP:                 /* LOr (Operand1, Operand2) */
 
-    case AML_LOR_OP:
-
-        Lboolean = (BOOLEAN) (ObjDesc->Integer.Value ||
-                              ObjDesc2->Integer.Value);
+        Lboolean = (BOOLEAN) (Operand[0]->Integer.Value ||
+                              Operand[1]->Integer.Value);
         break;
 
 
-    /* DefCopy  := Source, Destination */
-
-    case AML_COPY_OP:   /* ACPI 2.0 */
+    case AML_COPY_OP:               /* Copy (Source, Target) (ACPI 2.0) */
 
         Status = AE_NOT_IMPLEMENTED;
         goto Cleanup;
@@ -1076,7 +893,7 @@ AcpiExDyadic2 (
 
     default:
 
-        REPORT_ERROR (("AcpiExDyadic2: Unknown dyadic opcode %X\n", Opcode));
+        REPORT_ERROR (("AcpiExDyadic2: Unknown dyadic opcode %X\n", WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
         break;
@@ -1099,8 +916,8 @@ Cleanup:
 
     /* Always delete operands */
 
-    AcpiUtRemoveReference (ObjDesc);
-    AcpiUtRemoveReference (ObjDesc2);
+    AcpiUtRemoveReference (Operand[0]);
+    AcpiUtRemoveReference (Operand[1]);
 
 
     /* Delete return object on error */
@@ -1115,7 +932,7 @@ Cleanup:
 
     /* Set the return object and exit */
 
-    *ReturnDesc = RetDesc;
+    WalkState->ResultObj = RetDesc;
     return_ACPI_STATUS (Status);
 }
 
