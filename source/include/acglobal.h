@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Name: globals.h - Declarations for global variables
+ *
+ * Name: acglobal.h - Declarations for global variables
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,17 +114,15 @@
  *
  *****************************************************************************/
 
-#ifndef __GLOBALS_H__
-#define __GLOBALS_H__
-
-#include <config.h>
-#include <actables.h>
-#include <internal.h>
-#include <acobject.h>
+#ifndef __ACGLOBAL_H__
+#define __ACGLOBAL_H__
 
 
 /*
- * Ensure that the globals are actually defined only once
+ * Ensure that the globals are actually defined only once.
+ *
+ * The use of these defines allows a single list of globals (here) in order
+ * to simplify maintenance of the code.
  */
 #ifdef DEFINE_ACPI_GLOBALS
 #define ACPI_EXTERN
@@ -133,50 +131,29 @@
 #endif
 
 
-extern      char                        *MsgAcpiErrorBreak;
+extern      INT8                        *MsgAcpiErrorBreak;
 
 /*****************************************************************************
- * 
+ *
  * Debug support
  *
  ****************************************************************************/
 
 /* Runtime configuration of debug print levels */
 
-extern      UINT32                      DebugLevel;
-extern      UINT32                      DebugLayer;
+extern      UINT32                      AcpiDbgLevel;
+extern      UINT32                      AcpiDbgLayer;
 
 
 /* Procedure nesting level for debug output */
 
-extern      UINT32                      Gbl_NestingLevel;
-
-
-/* Memory allocation metrics - Debug Only! */
-
-#ifdef ACPI_DEBUG
-
-ACPI_EXTERN UINT32				        Gbl_CurrentAllocSize;
-ACPI_EXTERN UINT32				        Gbl_CurrentAllocCount;
-ACPI_EXTERN UINT32				        Gbl_RunningAllocSize;
-ACPI_EXTERN UINT32				        Gbl_RunningAllocCount;
-ACPI_EXTERN UINT32				        Gbl_MaxConcurrentAllocSize;
-ACPI_EXTERN UINT32				        Gbl_MaxConcurrentAllocCount;
-ACPI_EXTERN UINT32				        Gbl_CurrentObjectCount;
-ACPI_EXTERN UINT32				        Gbl_CurrentObjectSize;
-ACPI_EXTERN UINT32				        Gbl_MaxConcurrentObjectCount;
-ACPI_EXTERN UINT32				        Gbl_MaxConcurrentObjectSize;
-ACPI_EXTERN UINT32				        Gbl_RunningObjectCount;
-ACPI_EXTERN UINT32				        Gbl_RunningObjectSize;
-
-#endif
-
+extern      UINT32                      AcpiGbl_NestingLevel;
 
 
 /*****************************************************************************
- * 
- * ACPI Table globals 
- * 
+ *
+ * ACPI Table globals
+ *
  ****************************************************************************/
 
 /*
@@ -188,15 +165,15 @@ ACPI_EXTERN UINT32				        Gbl_RunningObjectSize;
  * of each in the system.  Each global points to the actual table.
  *
  */
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      *Gbl_RSDP;
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       *Gbl_RSDT;
-ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     *Gbl_FACS;
-ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        *Gbl_FACP;
-ACPI_EXTERN APIC_TABLE                          *Gbl_APIC;
-ACPI_EXTERN ACPI_TABLE_HEADER                   *Gbl_DSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                   *Gbl_SBST;
-/* 
- * Since there may be multiple SSDTs and PSDTS, a single pointer is not 
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      *AcpiGbl_RSDP;
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       *AcpiGbl_RSDT;
+ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     *AcpiGbl_FACS;
+ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        *AcpiGbl_FACP;
+ACPI_EXTERN APIC_TABLE                          *AcpiGbl_APIC;
+ACPI_EXTERN ACPI_TABLE_HEADER                   *AcpiGbl_DSDT;
+ACPI_EXTERN ACPI_TABLE_HEADER                   *AcpiGbl_SBST;
+/*
+ * Since there may be multiple SSDTs and PSDTS, a single pointer is not
  * sufficient; Therefore, there isn't one!
  */
 
@@ -204,160 +181,180 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   *Gbl_SBST;
 /*
  * ACPI Table info arrays
  */
-extern      ACPI_TABLE_DESC             Gbl_AcpiTables[NUM_ACPI_TABLES];
-extern      ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES];
+extern      ACPI_TABLE_DESC             AcpiGbl_AcpiTables[NUM_ACPI_TABLES];
+extern      ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES];
 
 /*
- * Predefined mutex objects.  This array contains the 
+ * Predefined mutex objects.  This array contains the
  * actual OS mutex handles, indexed by the local ACPI_MUTEX_HANDLEs.
  * (The table maps local handles to the real OS handles)
  */
-ACPI_EXTERN ACPI_MUTEX                  Gbl_AcpiMutexTable [NUM_MTX];
-
-
-
-/*****************************************************************************
- * 
- * Miscellaneous globals 
- *
- ****************************************************************************/
-
-ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockSet;
-ACPI_EXTERN INT32                       Gbl_RestoreAcpiChipset;
-ACPI_EXTERN UINT16                      Gbl_Pm1EnableRegisterSave;
-ACPI_EXTERN UINT8                      *Gbl_Gpe0EnableRegisterSave;
-ACPI_EXTERN UINT8                      *Gbl_Gpe1EnableRegisterSave;
-ACPI_EXTERN UINT32                      Gbl_OriginalMode;
-ACPI_EXTERN INT32                       Gbl_EdgeLevelSave;
-ACPI_EXTERN INT32                       Gbl_IrqEnableSave;
-ACPI_EXTERN UINT32                      Gbl_RsdpOriginalLocation; 
-
-
-extern      UINT32                      Gbl_SystemFlags;
-extern      UINT32                      Gbl_StartupFlags;
-extern      char                       *Gbl_ExceptionNames[];
-extern      char                       *Gbl_AcpiCaVersion;
-
-ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_DrvNotify;
-ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_SysNotify;
-
+ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_AcpiMutexInfo [NUM_MTX];
+extern      ACPI_INIT_DATA              AcpiGbl_AcpiInitData;
 
 
 /*****************************************************************************
- * 
- * Namespace globals 
+ *
+ * Miscellaneous globals
  *
  ****************************************************************************/
 
-#define NUM_NS_TYPES                    INTERNAL_TYPE_Invalid+1
+
+ACPI_EXTERN UINT8                      *AcpiGbl_Gpe0EnableRegisterSave;
+ACPI_EXTERN UINT8                      *AcpiGbl_Gpe1EnableRegisterSave;
+ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
+ACPI_EXTERN ACPI_GENERIC_STATE         *AcpiGbl_GenericStateCache;
+ACPI_EXTERN ACPI_GENERIC_OP            *AcpiGbl_ParseCache;
+ACPI_EXTERN ACPI_OBJECT_INTERNAL       *AcpiGbl_ObjectCache;
+ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_WalkStateCache;
+ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GlobalLockSemaphore;
+
+
+ACPI_EXTERN UINT32                      AcpiGbl_GlobalLockThreadCount;
+ACPI_EXTERN UINT32                      AcpiGbl_RestoreAcpiChipset;
+ACPI_EXTERN UINT32                      AcpiGbl_OriginalMode;
+ACPI_EXTERN UINT32                      AcpiGbl_EdgeLevelSave;
+ACPI_EXTERN UINT32                      AcpiGbl_IrqEnableSave;
+ACPI_EXTERN UINT32                      AcpiGbl_RsdpOriginalLocation;
+
+ACPI_EXTERN UINT32                      AcpiGbl_StateCacheRequests;
+ACPI_EXTERN UINT32                      AcpiGbl_StateCacheHits;
+ACPI_EXTERN UINT32                      AcpiGbl_ParseCacheRequests;
+ACPI_EXTERN UINT32                      AcpiGbl_ParseCacheHits;
+ACPI_EXTERN UINT32                      AcpiGbl_ObjectCacheRequests;
+ACPI_EXTERN UINT32                      AcpiGbl_ObjectCacheHits;
+ACPI_EXTERN UINT32                      AcpiGbl_WalkStateCacheRequests;
+ACPI_EXTERN UINT32                      AcpiGbl_WalkStateCacheHits;
+ACPI_EXTERN UINT32                      AcpiGbl_NsLookupCount;
+ACPI_EXTERN UINT32                      AcpiGbl_PsFindCount;
+
+
+ACPI_EXTERN UINT16                      AcpiGbl_GenericStateCacheDepth;
+ACPI_EXTERN UINT16                      AcpiGbl_ParseCacheDepth;
+ACPI_EXTERN UINT16                      AcpiGbl_ObjectCacheDepth;
+ACPI_EXTERN UINT16                      AcpiGbl_WalkStateCacheDepth;
+ACPI_EXTERN UINT16                      AcpiGbl_Pm1EnableRegisterSave;
+ACPI_EXTERN UINT16                      AcpiGbl_NextTableOwnerId;
+ACPI_EXTERN UINT16                      AcpiGbl_NextMethodOwnerId;
+
+ACPI_EXTERN UINT8                       AcpiGbl_DebuggerConfiguration;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockAcquired;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockSet; /* TBD: [Restructure] OBSOLETE?? */
+ACPI_EXTERN BOOLEAN                     AcpiGbl_StepToNextCall;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_AcpiHardwarePresent;
+
+
+ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_DrvNotify;
+ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_SysNotify;
+
+
+extern      BOOLEAN                     AcpiGbl_Shutdown;
+extern      UINT32                      AcpiGbl_SystemFlags;
+extern      UINT32                      AcpiGbl_StartupFlags;
+
+
+/*****************************************************************************
+ *
+ * Namespace globals
+ *
+ ****************************************************************************/
+
+#define NUM_NS_TYPES                    INTERNAL_TYPE_INVALID+1
 #define NUM_PREDEFINED_NAMES            9
 
-/* Scope stack head */
 
-ACPI_EXTERN SCOPE_STACK                *Gbl_CurrentScope;
+ACPI_EXTERN ACPI_NAME_TABLE             AcpiGbl_RootNameTable;
+ACPI_EXTERN ACPI_NAMED_OBJECT          *AcpiGbl_RootObject;
 
-ACPI_EXTERN NAME_TABLE_ENTRY            Gbl_RootObjStruct;
-ACPI_EXTERN NAME_TABLE_ENTRY           *Gbl_RootObject;
-
-extern      char                        Gbl_BadType[];
-extern      char                       *Gbl_NsTypeNames[NUM_NS_TYPES];
-extern      UINT8                       Gbl_NsProperties[NUM_NS_TYPES];
-extern      PREDEFINED_NAMES            Gbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
+extern      UINT8                       AcpiGbl_NsProperties[NUM_NS_TYPES];
+extern      PREDEFINED_NAMES            AcpiGbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
 
 
 /* Used to detect memory leaks (DEBUG ONLY) */
 
 #ifdef ACPI_DEBUG
-ACPI_EXTERN	ALLOCATION_INFO	           *Gbl_HeadAllocPtr;
-ACPI_EXTERN	ALLOCATION_INFO	           *Gbl_TailAllocPtr;
+ACPI_EXTERN ALLOCATION_INFO            *AcpiGbl_HeadAllocPtr;
+ACPI_EXTERN ALLOCATION_INFO            *AcpiGbl_TailAllocPtr;
 #endif
-
 
 
 /*****************************************************************************
- * 
- * Interpreter globals 
+ *
+ * Interpreter globals
  *
  ****************************************************************************/
 
-#ifdef _RPARSER
 
-/* 
- * Package stack.  used for keeping track of nested AML packages.
- * Grows upwards. 
- */
-
-extern      INT32                       Gbl_PkgStackLevel;
-extern      INT32                       Gbl_PkgStack_Len[AML_PKG_MAX_NEST];
-extern      UINT8                      *Gbl_PkgStack_Code[AML_PKG_MAX_NEST];
-
-/* Object stack */
-
-ACPI_EXTERN void                       *Gbl_ObjStack[AML_EXPR_MAX_NEST];
-ACPI_EXTERN INT32                       Gbl_ObjStackTop;
-
-/* Method stack - contains arguments and locals */
-
-ACPI_EXTERN	INT32                       Gbl_MethodStackTop;
-ACPI_EXTERN	METHOD_STACK                *Gbl_MthStackHead;
-
-#endif
-
-ACPI_EXTERN ACPI_WALK_LIST             *Gbl_CurrentWalkList;
+ACPI_EXTERN UINT32                      AcpiGbl_WhenToParseMethods;
+ACPI_EXTERN ACPI_WALK_LIST             *AcpiGbl_CurrentWalkList;
 
 /* Base of AML block, and pointer to current location in it */
 
-ACPI_EXTERN UINT8                      *Gbl_PCodeBase;
-ACPI_EXTERN UINT8                      *Gbl_PCode;
+ACPI_EXTERN UINT8                      *AcpiGbl_PCodeBase;
+ACPI_EXTERN UINT8                      *AcpiGbl_PCode;
 
-/* 
+/*
  * Length of AML block, and remaining length of current package.
  */
-ACPI_EXTERN UINT32                      Gbl_PCodeBlockLen;
-ACPI_EXTERN UINT32                      Gbl_PCodeLen;
+ACPI_EXTERN UINT32                      AcpiGbl_PCodeBlockLen;
+ACPI_EXTERN UINT32                      AcpiGbl_PCodeLen;
 
-ACPI_EXTERN UINT32                      Gbl_BufSeq;             /* Counts allocated Buffer descriptors */
-ACPI_EXTERN INT32                       Gbl_NamedObjectErr;     /* Indicate if inc_error should be called */
+ACPI_EXTERN UINT32                      AcpiGbl_BufSeq;             /* Counts allocated Buffer descriptors */
+ACPI_EXTERN INT32                       AcpiGbl_NamedObjectErr;     /* Indicate if inc_error should be called */
 
-/* 
- * Handle to the last method found - used during pass1 of load 
+/*
+ * Handle to the last method found - used during pass1 of load
  */
-ACPI_EXTERN ACPI_HANDLE                 Gbl_LastMethod;
+ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_LastMethod;
 
 /*
  * Table of Address Space handlers
  */
 
-ACPI_EXTERN ADDRESS_SPACE_INFO          Gbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
+ACPI_EXTERN ACPI_ADDRESS_SPACE_INFO     AcpiGbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
+
+
+/* Control method single step flag */
+
+ACPI_EXTERN UINT8                       AcpiGbl_CmSingleStep;
 
 
 /*****************************************************************************
- * 
- * Parser globals 
+ *
+ * Parser globals
  *
  ****************************************************************************/
 
-ACPI_EXTERN ACPI_GENERIC_OP             *Gbl_ParsedNamespaceRoot;
+ACPI_EXTERN ACPI_GENERIC_OP             *AcpiGbl_ParsedNamespaceRoot;
 
-extern ACPI_OP_INFO                     Gbl_AmlOpInfo[];
-extern UINT8                            Gbl_AmlOpInfoIndex[256];
-extern char                             *Gbl_ParserId;
+extern ACPI_OP_INFO                     AcpiGbl_AmlOpInfo[];
+extern UINT8                            AcpiGbl_AmlOpInfoIndex[256];
 
 
 /*****************************************************************************
- * 
- * Event globals 
+ *
+ * Hardware globals
  *
  ****************************************************************************/
 
-ACPI_EXTERN FIXED_EVENT_INFO            Gbl_FixedEventHandlers[NUM_FIXED_EVENTS];
+extern ACPI_C_STATE_HANDLER             AcpiHwCxHandlers[MAX_CX_STATES];
+extern UINT32                           AcpiHwActiveCxState;
 
-ACPI_EXTERN ACPI_HANDLE                 Gbl_GpeObjHandle;
-ACPI_EXTERN UINT32                      Gbl_GpeRegisterCount;
-ACPI_EXTERN GPE_REGISTERS              *Gbl_GpeRegisters;
-ACPI_EXTERN GPE_LEVEL_INFO             *Gbl_GpeInfo;
 
-/* 
+/*****************************************************************************
+ *
+ * Event globals
+ *
+ ****************************************************************************/
+
+ACPI_EXTERN ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventHandlers[NUM_FIXED_EVENTS];
+
+ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeObjHandle;
+ACPI_EXTERN UINT32                      AcpiGbl_GpeRegisterCount;
+ACPI_EXTERN ACPI_GPE_REGISTERS          *AcpiGbl_GpeRegisters;
+ACPI_EXTERN ACPI_GPE_LEVEL_INFO         *AcpiGbl_GpeInfo;
+
+/*
  * Gpe validation and translation table
  * Indexed by the GPE number, returns GPE_INVALID if the GPE is not supported.
  * Otherwise, returns a valid index into the global GPE table.
@@ -365,14 +362,43 @@ ACPI_EXTERN GPE_LEVEL_INFO             *Gbl_GpeInfo;
  * This table is needed because the GPE numbers supported by block 1 do not
  * have to be contiguous with the GPE numbers supported by block 0.
  */
-ACPI_EXTERN UINT8                       Gbl_GpeValid [NUM_GPE];
+ACPI_EXTERN UINT8                       AcpiGbl_GpeValid [NUM_GPE];
 
-/* Event counter for debug only */
+/* AcpiEvent counter for debug only */
 
 #ifdef ACPI_DEBUG
-ACPI_EXTERN UINT32                      Gbl_EventCount[NUM_FIXED_EVENTS];   
+ACPI_EXTERN UINT32                      AcpiGbl_EventCount[NUM_FIXED_EVENTS];
 #endif
 
 
+/*****************************************************************************
+ *
+ * Debugger globals
+ *
+ ****************************************************************************/
 
-#endif /* __GLOBALS_H__ */
+ACPI_EXTERN BOOLEAN                     AcpiGbl_MethodExecuting;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_DbTerminateThreads;
+
+
+/* Memory allocation metrics - Debug Only! */
+
+#ifdef ACPI_DEBUG
+
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentAllocSize;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentAllocCount;
+ACPI_EXTERN UINT32                      AcpiGbl_RunningAllocSize;
+ACPI_EXTERN UINT32                      AcpiGbl_RunningAllocCount;
+ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentAllocSize;
+ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentAllocCount;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentObjectCount;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentObjectSize;
+ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentObjectCount;
+ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentObjectSize;
+ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectCount;
+ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectSize;
+
+#endif
+
+
+#endif /* __ACGLOBAL_H__ */
