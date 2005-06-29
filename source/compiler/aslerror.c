@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -135,7 +135,7 @@ char                        *AslMessages [] = {
     "Could not open include file",
     "Package length too long to encode",
     "Invalid priority value",
-    "Invalid performace/robustness value",
+    "Invalid performance/robustness value",
     "Method local variable is not initialized",
     "Method argument is not initialized",
     "Unsupported feature",
@@ -175,6 +175,8 @@ char                        *AslMessages [] = {
     "Resource field name cannot be used as a target",
     "Invalid Byte Offset, Bit Offset required",
     "Invalid Bit Offset, Byte Offset required",
+    "Opcode is not implemented in compiler AML code generator",
+    "Internal Compiler Error",
 };
 
 
