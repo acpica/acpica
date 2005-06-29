@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.47 $
+ *              $Revision: 1.30 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -124,7 +124,7 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          ACPI_DEBUGGER
+#define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbdisasm")
 
 
@@ -135,7 +135,7 @@
 #define DB_FULL_OP_INFO     "%5.5X #%4.4X [%2.2d]  "
 
 
-NATIVE_CHAR                 *AcpiGbl_DbDisasmIndent = "....";
+NATIVE_CHAR                 *INDENT_STRING = "....";
 
 
 /*******************************************************************************
@@ -194,6 +194,8 @@ AcpiPsDisplayObjectPathname (
     ACPI_PARSE_OBJECT       *TargetOp;
 
 
+    AcpiOsPrintf ("  (Path ");
+
     /* Search parent tree up to the root if necessary */
 
     TargetOp = AcpiPsFind (Op, Op->Value.Name, 0, 0);
@@ -205,18 +207,18 @@ AcpiPsDisplayObjectPathname (
          * (such as _OS_).  Rather than worry about looking up all
          * the predefined names, just display the name as given
          */
-        AcpiOsPrintf ("  **** Path not found in parse tree");
+
+        AcpiDbDisplayNamestring (Op->Value.Name);
     }
 
     else
     {
         /* The target was found, print the name and complete path */
 
-        AcpiOsPrintf ("  (Path ");
         AcpiDbDisplayPath (TargetOp);
-        AcpiOsPrintf (")");
     }
 
+    AcpiOsPrintf (")");
     return (AE_OK);
 }
 
@@ -298,7 +300,7 @@ AcpiDbDisplayOp (
             /* indentation */
 
             DepthCount = 0;
-            if (!AcpiGbl_DbOpt_verbose)
+            if (!opt_verbose)
             {
                 DepthCount++;
             }
@@ -329,17 +331,13 @@ AcpiDbDisplayOp (
                 VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth));
                 for (i = 0; i < LastDepth; i++)
                 {
-                    AcpiOsPrintf ("%s", AcpiGbl_DbDisasmIndent);
+                    AcpiOsPrintf (INDENT_STRING);
                 }
 
                 if (AcpiDbBlockType (Op) == BLOCK_PAREN)
-                {
                     AcpiOsPrintf ("(\n");
-                }
                 else
-                {
                     AcpiOsPrintf ("{\n");
-                }
             }
 
             /* Close a block if we are nested less than last time */
@@ -351,17 +349,13 @@ AcpiDbDisplayOp (
                     VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth - j));
                     for (i = 0; i < (LastDepth - j - 1); i++)
                     {
-                        AcpiOsPrintf ("%s", AcpiGbl_DbDisasmIndent);
+                        AcpiOsPrintf (INDENT_STRING);
                     }
 
                     if (AcpiDbBlockType (Op) == BLOCK_PAREN)
-                    {
                         AcpiOsPrintf (")\n");
-                    }
                     else
-                    {
                         AcpiOsPrintf ("}\n");
-                    }
                 }
             }
 
@@ -374,7 +368,7 @@ AcpiDbDisplayOp (
 
             for (i = 0; i < DepthCount; i++)
             {
-                AcpiOsPrintf ("%s", AcpiGbl_DbDisasmIndent);
+                AcpiOsPrintf (INDENT_STRING);
             }
 
 
@@ -384,9 +378,9 @@ AcpiDbDisplayOp (
 
             /* Resolve a name reference */
 
-            if ((Op->Opcode == AML_INT_NAMEPATH_OP && Op->Value.Name)  &&
+            if ((Op->Opcode == AML_NAMEPATH_OP && Op->Value.Name)  &&
                 (Op->Parent) &&
-                (AcpiGbl_DbOpt_verbose))
+                (opt_verbose))
             {
                 AcpiPsDisplayObjectPathname (Op);
             }
@@ -413,7 +407,7 @@ AcpiDbDisplayOp (
             VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth - i));
             for (j = 0; j < DepthCount; j++)
             {
-                AcpiOsPrintf ("%s", AcpiGbl_DbDisasmIndent);
+                AcpiOsPrintf (INDENT_STRING);
             }
             AcpiOsPrintf ("}\n");
             DepthCount--;
@@ -521,19 +515,17 @@ AcpiDbDisplayPath (
     UINT32                  Name;
     BOOLEAN                 DoDot = FALSE;
     ACPI_PARSE_OBJECT       *NamePath;
-    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     /* We are only interested in named objects */
 
-    OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (!(OpInfo->Flags & AML_NSNODE))
+    if (!AcpiPsIsNodeOp (Op->Opcode))
     {
         return;
     }
 
 
-    if (OpInfo->Flags & AML_CREATE)
+    if (AcpiPsIsCreateFieldOp (Op->Opcode))
     {
         /* Field creation - check for a fully qualified namepath */
 
@@ -574,46 +566,42 @@ AcpiDbDisplayPath (
             Search = Search->Parent;
         }
 
-        if (Prev)
+        if (Prev && !AcpiPsIsFieldOp (Search->Opcode))
         {
-            OpInfo = AcpiPsGetOpcodeInfo (Search->Opcode);
-            if (!(OpInfo->Flags & AML_FIELD))
+            /* below root scope, append scope name */
+
+            if (DoDot)
             {
-                /* below root scope, append scope name */
+                /* append dot */
 
-                if (DoDot)
+                AcpiOsPrintf (".");
+            }
+
+            if (AcpiPsIsCreateFieldOp (Search->Opcode))
+            {
+                if (Op->Opcode == AML_CREATE_FIELD_OP)
                 {
-                    /* append dot */
-
-                    AcpiOsPrintf (".");
+                    NamePath = AcpiPsGetArg (Op, 3);
                 }
-
-                if (OpInfo->Flags & AML_CREATE)
-                {
-                    if (Op->Opcode == AML_CREATE_FIELD_OP)
-                    {
-                        NamePath = AcpiPsGetArg (Op, 3);
-                    }
-                    else
-                    {
-                        NamePath = AcpiPsGetArg (Op, 2);
-                    }
-
-                    if ((NamePath) &&
-                        (NamePath->Value.String))
-                    {
-                        AcpiOsPrintf ("%4.4s", NamePath->Value.String);
-                    }
-                }
-
                 else
                 {
-                    Name = AcpiPsGetName (Search);
-                    AcpiOsPrintf ("%4.4s", &Name);
+                    NamePath = AcpiPsGetArg (Op, 2);
                 }
 
-                DoDot = TRUE;
+                if ((NamePath) &&
+                    (NamePath->Value.String))
+                {
+                    AcpiOsPrintf ("%4.4s", NamePath->Value.String);
+                }
             }
+
+            else
+            {
+                Name = AcpiPsGetName (Search);
+                AcpiOsPrintf ("%4.4s", &Name);
+            }
+
+            DoDot = TRUE;
         }
 
         Prev = Search;
@@ -644,7 +632,7 @@ AcpiDbDisplayOpcode (
     UINT8                   *ByteData;
     UINT32                  ByteCount;
     UINT32                  i;
-    const ACPI_OPCODE_INFO  *OpInfo = NULL;
+    ACPI_OPCODE_INFO        *Opc = NULL;
     UINT32                  Name;
 
 
@@ -661,14 +649,14 @@ AcpiDbDisplayOpcode (
 
     case AML_BYTE_OP:
 
-        if (AcpiGbl_DbOpt_verbose)
+        if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer8);
+            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer & 0xff);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer8);
+            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer & 0xff);
         }
 
         break;
@@ -676,14 +664,14 @@ AcpiDbDisplayOpcode (
 
     case AML_WORD_OP:
 
-        if (AcpiGbl_DbOpt_verbose)
+        if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer16);
+            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer & 0xffff);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer16);
+            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer & 0xffff);
         }
 
         break;
@@ -691,31 +679,14 @@ AcpiDbDisplayOpcode (
 
     case AML_DWORD_OP:
 
-        if (AcpiGbl_DbOpt_verbose)
+        if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT32) 0x%8.8X", Op->Value.Integer32);
+            AcpiOsPrintf ("(UINT32) 0x%8.8X", Op->Value.Integer);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%8.8X", Op->Value.Integer32);
-        }
-
-        break;
-
-
-    case AML_QWORD_OP:
-
-        if (AcpiGbl_DbOpt_verbose)
-        {
-            AcpiOsPrintf ("(UINT64) 0x%8.8X%8.8X", Op->Value.Integer64.Hi, 
-                                                   Op->Value.Integer64.Lo);
-        }
-
-        else
-        {
-            AcpiOsPrintf ("0x%8.8X%8.8X", Op->Value.Integer64.Hi, 
-                                          Op->Value.Integer64.Lo);
+            AcpiOsPrintf ("0x%8.8X", Op->Value.Integer);
         }
 
         break;
@@ -736,7 +707,7 @@ AcpiDbDisplayOpcode (
         break;
 
 
-    case AML_INT_STATICSTRING_OP:
+    case AML_STATICSTRING_OP:
 
         if (Op->Value.String)
         {
@@ -751,42 +722,42 @@ AcpiDbDisplayOpcode (
         break;
 
 
-    case AML_INT_NAMEPATH_OP:
+    case AML_NAMEPATH_OP:
 
         AcpiDbDisplayNamestring (Op->Value.Name);
         break;
 
 
-    case AML_INT_NAMEDFIELD_OP:
+    case AML_NAMEDFIELD_OP:
 
-        AcpiOsPrintf ("NamedField    (Length 0x%8.8X)  ", Op->Value.Integer32);
+        AcpiOsPrintf ("NamedField    (Length 0x%8.8X)  ", Op->Value.Integer);
         break;
 
 
-    case AML_INT_RESERVEDFIELD_OP:
+    case AML_RESERVEDFIELD_OP:
 
-        AcpiOsPrintf ("ReservedField (Length 0x%8.8X)  ", Op->Value.Integer32);
+        AcpiOsPrintf ("ReservedField (Length 0x%8.8X)  ", Op->Value.Integer);
         break;
 
 
-    case AML_INT_ACCESSFIELD_OP:
+    case AML_ACCESSFIELD_OP:
 
-        AcpiOsPrintf ("AccessField   (Length 0x%8.8X)  ", Op->Value.Integer32);
+        AcpiOsPrintf ("AccessField   (Length 0x%8.8X)  ", Op->Value.Integer);
         break;
 
 
-    case AML_INT_BYTELIST_OP:
+    case AML_BYTELIST_OP:
 
-        if (AcpiGbl_DbOpt_verbose)
+        if (opt_verbose)
         {
-            AcpiOsPrintf ("ByteList      (Length 0x%8.8X)  ", Op->Value.Integer32);
+            AcpiOsPrintf ("ByteList      (Length 0x%8.8X)  ", Op->Value.Integer);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer32);
+            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer);
 
-            ByteCount = Op->Value.Integer32;
+            ByteCount = Op->Value.Integer;
             ByteData = ((ACPI_PARSE2_OBJECT *) Op)->Data;
 
             for (i = 0; i < ByteCount; i++)
@@ -802,23 +773,19 @@ AcpiDbDisplayOpcode (
 
         /* Just get the opcode name and print it */
 
-        OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-        AcpiOsPrintf ("%s", OpInfo->Name);
+        Opc = AcpiPsGetOpcodeInfo (Op->Opcode);
+        DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
 
-
-#ifndef PARSER_ONLY
-        if ((Op->Opcode == AML_INT_RETURN_VALUE_OP) &&
-            (WalkState->Results) &&
-            (WalkState->Results->Results.NumResults))
+        if ((Op->Opcode == AML_RETURN_VALUE_OP) &&
+            (WalkState->NumResults))
         {
-            AcpiDbDecodeInternalObject (WalkState->Results->Results.ObjDesc [WalkState->Results->Results.NumResults-1]);
+            AcpiDbDecodeInternalObject (WalkState->Results [WalkState->NumResults-1]);
         }
-#endif
-
         break;
     }
 
-    if (!OpInfo)
+
+    if (!Opc)
     {
         /* If there is another element in the list, add a comma */
 
@@ -828,16 +795,17 @@ AcpiDbDisplayOpcode (
         }
     }
 
+
     /*
      * If this is a named opcode, print the associated name value
      */
-    OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (Op && (OpInfo->Flags & AML_NAMED))
+
+    if (Op && AcpiPsIsNamedOp (Op->Opcode))
     {
         Name = AcpiPsGetName (Op);
         AcpiOsPrintf (" %4.4s", &Name);
 
-        if (AcpiGbl_DbOpt_verbose)
+        if (opt_verbose)
         {
             AcpiOsPrintf ("  (Path \\");
             AcpiDbDisplayPath (Op);

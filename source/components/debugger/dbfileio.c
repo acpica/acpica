@@ -1,9 +1,10 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
- *                  be used when running the debugger in Ring 0 (Kernel mode)
+ *              be used when running the debugger in Ring 0 (Kernel mode)
+ *              $Revision: 1.27 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -125,33 +126,38 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbfileio");
+        MODULE_NAME         ("dbfileio")
 
-ACPI_GENERIC_OP         *root;
+
+ACPI_PARSE_OBJECT           *root;
 
 #ifdef ACPI_APPLICATION
 #include <stdio.h>
-FILE                    *DebugFile = NULL;
+FILE                        *DebugFile = NULL;
 #endif
 
 
-/* NOTE: this is here for lack of a better place.  It is used in all flavors of the debugger, need LCD file */
+/*
+ * NOTE: this is here for lack of a better place.  It is used in all
+ *  flavors of the debugger, need LCD file
+ */
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbMatchArgument
  *
- * PARAMETERS:  UserArgument             - User command line
+ * PARAMETERS:  UserArgument            - User command line
+ *              Arguments               - Array of commands to match against
  *
- * RETURN:      Index into command array, -1 if not found
+ * RETURN:      Index into command array or ACPI_TYPE_NOT_FOUND if not found
  *
  * DESCRIPTION: Search command array for a command match
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 OBJECT_TYPE_INTERNAL
 AcpiDbMatchArgument (
-    INT8                    *UserArgument,
+    NATIVE_CHAR             *UserArgument,
     ARGUMENT_INFO           *Arguments)
 {
     UINT32                  i;
@@ -176,7 +182,7 @@ AcpiDbMatchArgument (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbCloseDebugFile
  *
@@ -186,7 +192,7 @@ AcpiDbMatchArgument (
  *
  * DESCRIPTION: If open, close the current debug output file
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbCloseDebugFile (
@@ -207,21 +213,21 @@ AcpiDbCloseDebugFile (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbOpenDebugFile
  *
- * PARAMETERS:  Name                - Filename
+ * PARAMETERS:  Name                - Filename to open
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Open a file where debug output will be directed.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbOpenDebugFile (
-    INT8                    *Name)
+    NATIVE_CHAR             *Name)
 {
 
 #ifdef ACPI_APPLICATION
@@ -240,17 +246,19 @@ AcpiDbOpenDebugFile (
 
 
 #ifdef ACPI_APPLICATION
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbLoadTable
  *
- * PARAMETERS:
+ * PARAMETERS:  fp              - File that contains table
+ *              TablePtr        - Return value, buffer with table
+ *              TableLenght     - Return value, length of table
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Load the DSDT from the file pointer
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbLoadTable(
@@ -259,7 +267,7 @@ AcpiDbLoadTable(
     UINT32                  *TableLength)
 {
     ACPI_TABLE_HEADER       TableHeader;
-    INT8                    *AmlPtr;
+    UINT8                   *AmlPtr;
     UINT32                  AmlLength;
 
 
@@ -290,7 +298,7 @@ AcpiDbLoadTable(
     }
 
 
-    AmlPtr      = (INT8 *) *TablePtr + sizeof (TableHeader);
+    AmlPtr      = (UINT8 *) *TablePtr + sizeof (TableHeader);
     AmlLength   = *TableLength - sizeof (TableHeader);
 
     /* Copy the header to the buffer */
@@ -314,29 +322,30 @@ AcpiDbLoadTable(
 #endif
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbLoadAcpiTable
  *
- * PARAMETERS:
+ * PARAMETERS:  Filname         - File where table is located
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Load an ACPI table from a file
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbLoadAcpiTable (
-    INT8                    *Filename)
+    NATIVE_CHAR             *Filename)
 {
 #ifdef ACPI_APPLICATION
     FILE                    *fp;
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       *TablePtr;
     UINT32                  TableLength;
-    ACPI_TABLE_DESC         TableInfo;
 
+
+    /* Open the file */
 
     fp = fopen (Filename, "rb");
     if (!fp)
@@ -344,6 +353,9 @@ AcpiDbLoadAcpiTable (
         AcpiOsPrintf ("Could not open file %s\n", Filename);
         return (AE_ERROR);
     }
+
+
+    /* Get the entire file */
 
     AcpiOsPrintf ("Loading Acpi table from file %s\n", Filename);
     Status = AcpiDbLoadTable (fp, &TablePtr, &TableLength);
@@ -358,25 +370,25 @@ AcpiDbLoadAcpiTable (
 
     /* Attempt to recognize and install the table */
 
-    TableInfo.Pointer = TablePtr;
-    Status = AcpiTbInstallTable (TablePtr, &TableInfo);
+    Status = AcpiLoadTable (TablePtr);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_EXIST)
         {
-            AcpiOsPrintf ("Table is already installed/loaded\n");
+            AcpiOsPrintf ("Table %4.4s is already installed\n",
+                            &TablePtr->Signature);
         }
         else
         {
-            AcpiOsPrintf ("Could not install table, %s\n", AcpiCmFormatException (Status));
+            AcpiOsPrintf ("Could not install table, %s\n",
+                            AcpiCmFormatException (Status));
         }
         free (TablePtr);
         return (Status);
     }
 
-
-    AcpiOsPrintf ("%s successfully loaded and installed at %p\n",
-                                AcpiGbl_AcpiTableData[TableInfo.Type].Name, TablePtr);
+    AcpiOsPrintf ("%4.4s at %p successfully installed and loaded\n",
+                                &TablePtr->Signature, TablePtr);
 
     AcpiGbl_AcpiHardwarePresent = FALSE;
 

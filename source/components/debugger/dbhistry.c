@@ -1,6 +1,7 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dbhistry - debugger HISTORY command
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -37,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,63 +115,67 @@
  *****************************************************************************/
 
 
-#include <acpi.h>
-#include <parser.h>
-#include <dispatch.h>
-#include <amlcode.h>
-#include <namesp.h>
-#include <parser.h>
-#include <events.h>
-#include <interp.h>
-#include <debugger.h>
-#include <tables.h>
+#include "acpi.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "amlcode.h"
+#include "acnamesp.h"
+#include "acparser.h"
+#include "acevents.h"
+#include "acinterp.h"
+#include "acdebug.h"
+#include "actables.h"
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbhistry");
+        MODULE_NAME         ("dbhistry")
 
 
+#define HI_NO_HISTORY       0
+#define HI_RECORD_HISTORY   1
+#define HISTORY_SIZE        20
 
 
 typedef struct HistoryInfo
 {
-    char                    Command[80];
+    NATIVE_CHAR             Command[80];
     UINT32                  CmdNum;
 
 } HISTORY_INFO;
 
 
-#define HI_NO_HISTORY       0
-#define HI_RECORD_HISTORY   1
-
-#define HISTORY_SIZE        20
 HISTORY_INFO                HistoryBuffer[HISTORY_SIZE];
-UINT32                      LoHistory = 0;
-UINT32                      NumHistory = 0;
-UINT32                      NextHistoryIndex = 0;
+UINT16                      LoHistory = 0;
+UINT16                      NumHistory = 0;
+UINT16                      NextHistoryIndex = 0;
 UINT32                      NextCmdNum = 1;
 
-/******************************************************************************
- * 
- * FUNCTION:    DbAddToHistory
+
+/*******************************************************************************
  *
- * PARAMETERS:  None
+ * FUNCTION:    AcpiDbAddToHistory
+ *
+ * PARAMETERS:  CommandLine     - Command to add
  *
  * RETURN:      None
  *
  * DESCRIPTION: Add a command line to the history buffer.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
-DbAddToHistory (
-    char                    *CommandLine)
+AcpiDbAddToHistory (
+    NATIVE_CHAR             *CommandLine)
 {
 
 
+    /* Put command into the next available slot */
+
     STRCPY (HistoryBuffer[NextHistoryIndex].Command, CommandLine);
     HistoryBuffer[NextHistoryIndex].CmdNum = NextCmdNum;
+
+    /* Adjust indexes */
 
     if ((NumHistory == HISTORY_SIZE) &&
         (NextHistoryIndex == LoHistory))
@@ -198,9 +203,9 @@ DbAddToHistory (
 }
 
 
-/******************************************************************************
- * 
- * FUNCTION:    DbDisplayHistory
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbDisplayHistory
  *
  * PARAMETERS:  None
  *
@@ -208,19 +213,22 @@ DbAddToHistory (
  *
  * DESCRIPTION: Display the contents of the history buffer
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
-DbDisplayHistory (void)
+AcpiDbDisplayHistory (void)
 {
-    UINT32                  i;
-    UINT32                  HistoryIndex;
+    NATIVE_UINT             i;
+    UINT16                  HistoryIndex;
 
 
     HistoryIndex = LoHistory;
+
+    /* Dump entire history buffer */
+
     for (i = 0; i < NumHistory; i++)
     {
-        OsdPrintf ("%d  %s\n", HistoryBuffer[HistoryIndex].CmdNum, &HistoryBuffer[HistoryIndex].Command);
+        AcpiOsPrintf ("%ld  %s\n", HistoryBuffer[HistoryIndex].CmdNum, HistoryBuffer[HistoryIndex].Command);
 
         HistoryIndex++;
         if (HistoryIndex >= HISTORY_SIZE)
@@ -231,9 +239,9 @@ DbDisplayHistory (void)
 }
 
 
-/******************************************************************************
- * 
- * FUNCTION:    DbGetFromHistory
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbGetFromHistory
  *
  * PARAMETERS:  CommandNumArg           - String containing the number of the
  *                                        command to be retrieved
@@ -242,14 +250,14 @@ DbDisplayHistory (void)
  *
  * DESCRIPTION: Get a command from the history buffer
  *
- *****************************************************************************/
+ ******************************************************************************/
 
-char *
-DbGetFromHistory (
-    char                    *CommandNumArg)
+NATIVE_CHAR *
+AcpiDbGetFromHistory (
+    NATIVE_CHAR             *CommandNumArg)
 {
-    UINT32                  i;
-    UINT32                  HistoryIndex;
+    NATIVE_UINT             i;
+    UINT16                  HistoryIndex;
     UINT32                  CmdNum;
 
 
@@ -263,11 +271,16 @@ DbGetFromHistory (
         CmdNum = STRTOUL (CommandNumArg, NULL, 0);
     }
 
+
+    /* Search history buffer */
+
     HistoryIndex = LoHistory;
     for (i = 0; i < NumHistory; i++)
     {
         if (HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
         {
+            /* Found the commnad, return it */
+
             return (HistoryBuffer[HistoryIndex].Command);
         }
 
@@ -279,10 +292,10 @@ DbGetFromHistory (
         }
     }
 
-    OsdPrintf ("Invalid history number: %d\n", HistoryIndex);
-    return NULL;
+    AcpiOsPrintf ("Invalid history number: %d\n", HistoryIndex);
+    return (NULL);
 }
-    
 
-#endif
+
+#endif /* ENABLE_DEBUGGER */
 
