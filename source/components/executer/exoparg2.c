@@ -19,7 +19,7 @@
  * you this software, covering your right to use that party's intellectual
  * property rights.
  *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
+ * 2.2. Intel grants,  of charge, to any person ("Licensee") obtaining a
  * copy of the source code appearing in this file ("Covered Code") an
  * irrevocable, perpetual, worldwide license under Intel's copyrights in the
  * base code distributed originally by Intel ("Original Intel Code") to copy,
@@ -148,7 +148,8 @@ AmlExecDyadic1 (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_OBJECT_INTERNAL    *ValDesc = NULL;
-    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *Entry;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("AmlExecDyadic1");
@@ -178,12 +179,16 @@ AmlExecDyadic1 (
 
     case AML_NotifyOp:
 
-BREAKPOINT3;
+        /* The ObjDesc is actually an NTE */
+
+        Entry = (NAME_TABLE_ENTRY *) ObjDesc;
+        ObjDesc = NULL;
+
         /* Object must be a device or thermal zone */
 
-        if (ObjDesc && ValDesc)
+        if (Entry && ValDesc)
         {
-            switch (ObjDesc->Type)
+            switch (Entry->Type)
             {
             case TYPE_Device:
             case TYPE_Thermal:
@@ -192,39 +197,45 @@ BREAKPOINT3;
 
                 /* Dispatch the notify to the appropriate handler */
 
-                EvNotifyDispatch (ObjDesc->Device.Handle, ValDesc->Number.Value);
+                EvNotifyDispatch (Entry, ValDesc->Number.Value);
                 break;
 
             default:
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecDyadic1/NotifyOp: unexpected notify object type %d\n",
                         ObjDesc->Type));
-                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-                return AE_AML_ERROR;
+                
+                Status = AE_AML_ERROR;
             }
         }
         break;
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic1: Unknown dyadic opcode %02x\n", opcode));
-        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-        return AE_AML_ERROR;
+        Status = AE_AML_ERROR;
     }
+
+
+    /* Delete the stack items */
 
     if (ValDesc)
     {
-        OsdFree (ValDesc);
+        CmFree (ValDesc);
     }
 
     if (ObjDesc)
     {
-        OsdFree (ObjDesc);
+        CmFree (ObjDesc);
     }
     
-    ObjStack[--ObjStackTop] = NULL;
+    /* Clear the stack */
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    ObjStack[ObjStackTop] = NULL;
+    ObjStackTop--;
+    ObjStack[ObjStackTop] = NULL;
+
+    FUNCTION_STATUS_EXIT (Status);
+    return Status;
 }
 
 
@@ -375,6 +386,7 @@ AmlExecDyadic2R (
         ObjDesc->Number.Value *= ObjDesc2->Number.Value;
         break;
 
+
         
     /*  DefShiftLeft    :=  ShiftLeftOp Operand ShiftCount  Result  */
 
@@ -415,7 +427,7 @@ AmlExecDyadic2R (
         {
             /*  Operand1 is string  */
 
-            NewBuf = OsdAllocate ((ACPI_SIZE) (ObjDesc->String.Length
+            NewBuf = CmAllocate ((ACPI_SIZE) (ObjDesc->String.Length
                                                 + ObjDesc2->String.Length + 1));
             if (!NewBuf)
             {
@@ -428,7 +440,7 @@ AmlExecDyadic2R (
             strcpy (NewBuf + ObjDesc->String.Length,
                      (char *) ObjDesc2->String.Pointer);
             
-            /* Don't free old ObjDesc->String.Pointer; the operand still exists */
+            /* Don't  old ObjDesc->String.Pointer; the operand still exists */
             
             ObjDesc->String.Pointer = (UINT8 *) NewBuf;
             ObjDesc->String.Length += ObjDesc2->String.Length;
@@ -438,7 +450,7 @@ AmlExecDyadic2R (
         {
             /*  Operand1 is not string ==> buffer   */
 
-            NewBuf = OsdAllocate ((ACPI_SIZE) (ObjDesc->Buffer.Length
+            NewBuf = CmAllocate ((ACPI_SIZE) (ObjDesc->Buffer.Length
                                                 + ObjDesc2->Buffer.Length));
             if (!NewBuf)
             {
@@ -492,7 +504,7 @@ AmlExecDyadic2R (
      * remainder on stack
      */
     
-    OsdFree (ObjDesc2);
+    CmFree (ObjDesc2);
     ObjStackTop -= NumOperands - 1;
     
     FUNCTION_STATUS_EXIT (Status);
@@ -589,7 +601,7 @@ AmlExecDyadic2S (
 
         /*  delete TimeOut object descriptor before removing it from object stack   */
     
-        OsdFree (TimeDesc);
+        CmFree (TimeDesc);
 
         /*  remove TimeOut parameter from object stack  */
 
@@ -717,7 +729,7 @@ AmlExecDyadic2 (
         ObjDesc->Number.Value = 0;
     }
 
-    OsdFree (ObjDesc2);
+    CmFree (ObjDesc2);
     ObjStackTop--;
  
     /* Always return AE_OK here (AE_PENDING was handled above!) */
