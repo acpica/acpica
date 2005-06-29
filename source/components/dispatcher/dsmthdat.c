@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.44 $
+ *              $Revision: 1.47 $
  *
  ******************************************************************************/
 
@@ -154,7 +154,7 @@ AcpiDsMethodDataInit (
 
     /*
      * WalkState fields are initialized to zero by the
-     * AcpiCmCallocate().
+     * ACPI_MEM_CALLOCATE().
      *
      * An Node is assigned to each argument and local so
      * that RefOf() can return a pointer to the Node.
@@ -215,16 +215,14 @@ AcpiDsMethodDataDeleteAll (
 
     /* Delete the locals */
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("MethodDeleteAll: Deleting local variables in %p\n", WalkState));
+    DEBUG_PRINTP (ACPI_INFO, ("Deleting local variables in %p\n", WalkState));
 
     for (Index = 0; Index < MTH_NUM_LOCALS; Index++)
     {
         Object = WalkState->LocalVariables[Index].Object;
         if (Object)
         {
-            DEBUG_PRINT (TRACE_EXEC,
-                ("MethodDeleteAll: Deleting Local%d=%p\n", Index, Object));
+            DEBUG_PRINTP (TRACE_EXEC, ("Deleting Local%d=%p\n", Index, Object));
 
             /* Remove first */
 
@@ -232,23 +230,21 @@ AcpiDsMethodDataDeleteAll (
 
             /* Was given a ref when stored */
 
-            AcpiCmRemoveReference (Object);
+            AcpiUtRemoveReference (Object);
        }
     }
 
 
     /* Delete the arguments */
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("MethodDeleteAll: Deleting arguments in %p\n", WalkState));
+    DEBUG_PRINTP (ACPI_INFO, ("Deleting arguments in %p\n", WalkState));
 
     for (Index = 0; Index < MTH_NUM_ARGS; Index++)
     {
         Object = WalkState->Arguments[Index].Object;
         if (Object)
         {
-            DEBUG_PRINT (TRACE_EXEC,
-                ("MethodDeleteAll: Deleting Arg%d=%p\n", Index, Object));
+            DEBUG_PRINTP (TRACE_EXEC, ("Deleting Arg%d=%p\n", Index, Object));
 
             /* Remove first */
 
@@ -256,7 +252,7 @@ AcpiDsMethodDataDeleteAll (
 
              /* Was given a ref when stored */
 
-            AcpiCmRemoveReference (Object);
+            AcpiUtRemoveReference (Object);
         }
     }
 
@@ -294,8 +290,7 @@ AcpiDsMethodDataInitArgs (
 
     if (!Params)
     {
-        DEBUG_PRINT (TRACE_EXEC,
-            ("DsMethodDataInitArgs: No param list passed to method\n"));
+        DEBUG_PRINTP (TRACE_EXEC, ("No param list passed to method\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -313,7 +308,7 @@ AcpiDsMethodDataInitArgs (
              * Params[Pindex++] argument object descriptor
              */
             Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Mindex,
-                                                Params[Pindex], WalkState);
+                            Params[Pindex], WalkState);
             if (ACPI_FAILURE (Status))
             {
                 break;
@@ -328,8 +323,7 @@ AcpiDsMethodDataInitArgs (
         }
     }
 
-    DEBUG_PRINT (TRACE_EXEC,
-        ("DsMethodDataInitArgs: %d args passed to method\n", Pindex));
+    DEBUG_PRINTP (TRACE_EXEC, ("%d args passed to method\n", Pindex));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -373,8 +367,7 @@ AcpiDsMethodDataGetEntry (
 
         if (Index > MTH_MAX_LOCAL)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("DsMethodDataGetEntry: LocalVar index %d is invalid (max %d)\n",
+            DEBUG_PRINTP (ACPI_ERROR, ("LocalVar index %d is invalid (max %d)\n",
                 Index, MTH_MAX_LOCAL));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -388,8 +381,7 @@ AcpiDsMethodDataGetEntry (
 
         if (Index > MTH_MAX_ARG)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("DsMethodDataGetEntry: Argument index %d is invalid (max %d)\n",
+            DEBUG_PRINTP (ACPI_ERROR, ("Arg index %d is invalid (max %d)\n",
                 Index, MTH_MAX_ARG));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -400,9 +392,7 @@ AcpiDsMethodDataGetEntry (
 
 
     default:
-        DEBUG_PRINT (ACPI_ERROR,
-            ("DsMethodDataGetEntry: Opcode %d is invalid\n",
-            Opcode));
+        DEBUG_PRINTP (ACPI_ERROR, ("Opcode %d is invalid\n", Opcode));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -449,7 +439,7 @@ AcpiDsMethodDataSetEntry (
 
     /* Increment ref count so object can't be deleted while installed */
 
-    AcpiCmAddReference (Object);
+    AcpiUtAddReference (Object);
 
     /* Install the object into the stack entry */
 
@@ -543,8 +533,7 @@ AcpiDsMethodDataGetNode (
 
         if (Index > MTH_MAX_LOCAL)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("DsMethodDataGetNode: LocalVar index %d is invalid (max %d)\n",
+            DEBUG_PRINTP (ACPI_ERROR, ("Local index %d is invalid (max %d)\n",
                 Index, MTH_MAX_LOCAL));
             return_PTR (Node);
         }
@@ -557,8 +546,7 @@ AcpiDsMethodDataGetNode (
 
         if (Index > MTH_MAX_ARG)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("DsMethodDataGetNode: Argument index %d is invalid (max %d)\n",
+            DEBUG_PRINTP (ACPI_ERROR, ("Arg index %d is invalid (max %d)\n",
                 Index, MTH_MAX_ARG));
             return_PTR (Node);
         }
@@ -568,9 +556,7 @@ AcpiDsMethodDataGetNode (
 
 
     default:
-        DEBUG_PRINT (ACPI_ERROR,
-            ("DsMethodDataGetEntry: Opcode %d is invalid\n",
-            Opcode));
+        DEBUG_PRINTP (ACPI_ERROR, ("Opcode %d is invalid\n", Opcode));
         break;
     }
 
@@ -593,7 +579,7 @@ AcpiDsMethodDataGetNode (
  *
  * DESCRIPTION: Retrieve value of selected Arg or Local from the method frame
  *              at the current top of the method stack.
- *              Used only in AcpiAmlResolveToValue().
+ *              Used only in AcpiExResolveToValue().
  *
  ******************************************************************************/
 
@@ -616,8 +602,7 @@ AcpiDsMethodDataGetValue (
 
     if (!DestDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("DsMethodDataGetValue: NULL object descriptor pointer\n"));
+        DEBUG_PRINTP (ACPI_ERROR, ("Null object descriptor pointer\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -651,8 +636,7 @@ AcpiDsMethodDataGetValue (
         {
         case AML_ARG_OP:
 
-            DEBUG_PRINT (ACPI_ERROR,
-                ("DsMethodDataGetValue: Uninitialized Arg[%d] at entry %p\n",
+            DEBUG_PRINTP (ACPI_ERROR, ("Uninitialized Arg[%d] at entry %p\n",
                 Index, Entry));
 
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_ARG);
@@ -660,8 +644,7 @@ AcpiDsMethodDataGetValue (
 
         case AML_LOCAL_OP:
 
-            DEBUG_PRINT (ACPI_ERROR,
-                ("DsMethodDataGetValue: Uninitialized Local[%d] at entry %p\n",
+            DEBUG_PRINTP (ACPI_ERROR, ("Uninitialized Local[%d] at entry %p\n",
                 Index, Entry));
 
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_LOCAL);
@@ -676,7 +659,7 @@ AcpiDsMethodDataGetValue (
      */
 
     *DestDesc = Object;
-    AcpiCmAddReference (Object);
+    AcpiUtAddReference (Object);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -739,7 +722,7 @@ AcpiDsMethodDataDeleteValue (
          * Decrement the reference count by one to balance the
          * increment when the object was stored in the slot.
          */
-        AcpiCmRemoveReference (Object);
+        AcpiUtRemoveReference (Object);
     }
 
 
@@ -776,8 +759,7 @@ AcpiDsStoreObjectToLocal (
 
 
     FUNCTION_TRACE ("DsMethodDataSetValue");
-    DEBUG_PRINT (TRACE_EXEC,
-        ("DsMethodDataSetValue: Opcode=%d Idx=%d Obj=%p\n",
+    DEBUG_PRINTP (TRACE_EXEC, ("Opcode=%d Idx=%d Obj=%p\n",
         Opcode, Index, SrcDesc));
 
 
@@ -799,9 +781,7 @@ AcpiDsStoreObjectToLocal (
 
     if (*Entry == SrcDesc)
     {
-        DEBUG_PRINT (TRACE_EXEC,
-            ("DsMethodDataSetValue: Obj=%p already installed!\n",
-            SrcDesc));
+        DEBUG_PRINTP (TRACE_EXEC, ("Obj=%p already installed!\n", SrcDesc));
         goto Cleanup;
     }
 
@@ -835,8 +815,8 @@ AcpiDsStoreObjectToLocal (
         if ((Opcode == AML_ARG_OP) &&
             (VALID_DESCRIPTOR_TYPE (*Entry, ACPI_DESC_TYPE_NAMED)))
         {
-            DEBUG_PRINT (TRACE_EXEC,
-                ("DsMethodDataSetValue: Arg (%p) is an ObjRef(Node), storing in %p\n",
+            DEBUG_PRINTP (TRACE_EXEC,
+                ("Arg (%p) is an ObjRef(Node), storing in %p\n",
                 SrcDesc, *Entry));
 
             /* Detach an existing object from the Node */
@@ -858,7 +838,7 @@ AcpiDsStoreObjectToLocal (
          * Perform "Implicit conversion" of the new object to the type of the
          * existing object
          */
-        Status = AcpiAmlConvertToTargetType ((*Entry)->Common.Type, &SrcDesc, WalkState);
+        Status = AcpiExConvertToTargetType ((*Entry)->Common.Type, &SrcDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
