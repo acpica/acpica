@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -269,8 +269,7 @@ AcpiCmAddElementToAllocList (
     Element = AcpiCmSearchAllocList (Address);
     if (Element)
     {
-        REPORT_ERROR
-                ("CmAddElementToAllocList: Address already present in list!");
+        REPORT_ERROR (("CmAddElementToAllocList: Address already present in list!\n"));
 
         DEBUG_PRINT (ACPI_ERROR, ("Element %p Address %p\n", Element, Address));
 
@@ -330,7 +329,7 @@ AcpiCmDeleteElementFromAllocList (
         /* Boy we got problems. */
 
         _REPORT_ERROR (Module, Line, Component,
-                "CmDeleteElementFromAllocList: Empty allocation list, nothing to free!");
+                ("CmDeleteElementFromAllocList: Empty allocation list, nothing to free!\n"));
 
         return_VOID;
     }
@@ -348,7 +347,7 @@ AcpiCmDeleteElementFromAllocList (
         if (Address != AcpiGbl_HeadAllocPtr->Address)
         {
             _REPORT_ERROR (Module, Line, Component,
-                "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
+                ("CmDeleteElementFromAllocList: Deleting non-allocated memory\n"));
 
             goto Cleanup;
         }
@@ -360,7 +359,7 @@ AcpiCmDeleteElementFromAllocList (
         AcpiGbl_TailAllocPtr = NULL;
 
         DEBUG_PRINT (TRACE_ALLOCATIONS,
-            ("_CmFree: Allocation list deleted.  There are no outstanding allocations.\n"));
+            ("_CmFree: Allocation list deleted.  There are no outstanding allocations\n"));
 
         goto Cleanup;
     }
@@ -436,7 +435,7 @@ AcpiCmDeleteElementFromAllocList (
     else
     {
         _REPORT_ERROR (Module, Line, Component,
-                "_CmFree: Entry not found in list");
+                ("_CmFree: Entry not found in list\n"));
         DEBUG_PRINT (ACPI_ERROR,
                 ("_CmFree: Entry %p was not found in allocation list\n",
                 Address));
@@ -654,10 +653,8 @@ _CmAllocate (
 
     if (!Size)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-                ("CmAllocate: ** ERROR: Attempt to allocate zero bytes! (%s line %d)\n",
-                Module, Line));
-        REPORT_ERROR ("CmAllocate: Attempt to allocate zero bytes");
+        _REPORT_ERROR (Module, Line, Component, 
+                ("CmAllocate: Attempt to allocate zero bytes\n"));
         Size = 1;
     }
 
@@ -667,9 +664,6 @@ _CmAllocate (
         /* Report allocation error */
 
         _REPORT_ERROR (Module, Line, Component,
-            "CmAllocate: Memory allocation failure");
-
-        DEBUG_PRINT (ACPI_ERROR,
                 ("CmAllocate: Could not allocate size 0x%x\n", Size));
 
         return_VALUE (NULL);
@@ -726,10 +720,8 @@ _CmCallocate (
 
     if (!Size)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-                ("CmCallocate: ** ERROR: Attempt to allocate zero bytes! (%s line %d)\n",
-                Module, Line));
-        REPORT_ERROR ("CmCallocate: Attempt to allocate zero bytes");
+        _REPORT_ERROR (Module, Line, Component, 
+                ("CmCallocate: Attempt to allocate zero bytes\n"));
         return_VALUE (NULL);
     }
 
@@ -741,11 +733,7 @@ _CmCallocate (
         /* Report allocation error */
 
         _REPORT_ERROR (Module, Line, Component,
-            "CmCallocate: Memory allocation failure");
-
-        DEBUG_PRINT (ACPI_ERROR,
                 ("CmCallocate: Could not allocate size 0x%x\n", Size));
-
         return_VALUE (NULL);
     }
 
@@ -794,7 +782,7 @@ _CmFree (
     if (NULL == Address)
     {
         _REPORT_ERROR (Module, Line, Component,
-            "_CmFree: Trying to delete a NULL address.");
+            ("_CmFree: Trying to delete a NULL address\n"));
 
         return_VOID;
     }
