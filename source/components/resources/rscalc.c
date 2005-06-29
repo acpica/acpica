@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.31 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -327,7 +327,7 @@ AcpiRsCalculateByteStreamLength (
              * Index + the length of the null terminated string
              * Resource Source + 1 for the null.
              */
-            SegmentSize = 9 + 
+            SegmentSize = 9 +
                 ((LinkedList->Data.ExtendedIrq.NumberOfInterrupts - 1) * 4);
 
             if (NULL != ExIrq->ResourceSource.StringPtr)
@@ -355,7 +355,7 @@ AcpiRsCalculateByteStreamLength (
         /*
          * Point to the next object
          */
-        LinkedList = POINTER_ADD (ACPI_RESOURCE, 
+        LinkedList = POINTER_ADD (ACPI_RESOURCE,
                         LinkedList, LinkedList->Length);
     }
 
@@ -608,7 +608,7 @@ AcpiRsCalculateListLength (
             Temp8 = *Buffer;
 
             /*
-             * To compensate for multiple interrupt numbers, add 4 bytes for 
+             * To compensate for multiple interrupt numbers, add 4 bytes for
              * each additional interrupts greater than 1
              */
             AdditionalBytes = (UINT8) ((Temp8 - 1) * 4);
@@ -627,7 +627,6 @@ AcpiRsCalculateListLength (
             {
                 Temp8 = (UINT8) (Temp16 - (9 + AdditionalBytes));
             }
-
             else
             {
                 Temp8 = 0;
@@ -656,7 +655,6 @@ AcpiRsCalculateListLength (
             {
                 BytesConsumed = 4;
             }
-
             else
             {
                 BytesConsumed = 3;
@@ -805,7 +803,6 @@ AcpiRsCalculateListLength (
             break;
         }
 
-
         /*
          * Update the return value and counter
          */
@@ -817,7 +814,6 @@ AcpiRsCalculateListLength (
          */
         ByteStreamBuffer += BytesConsumed;
     }
-
 
     /*
      * This is the data the caller needs
@@ -902,7 +898,6 @@ AcpiRsCalculatePciRoutingTableLength (
             {
                 NameFound = TRUE;
             }
-
             else
             {
                 /*
@@ -927,14 +922,12 @@ AcpiRsCalculatePciRoutingTableLength (
                  */
                 TempSizeNeeded += (*SubObjectList)->String.Length;
             }
-
             else
             {
                 TempSizeNeeded += AcpiNsGetPathnameLength (
                                     (*SubObjectList)->Reference.Node);
             }
         }
-
         else
         {
             /*
@@ -953,7 +946,6 @@ AcpiRsCalculatePciRoutingTableLength (
          */
         TopObjectList++;
     }
-
 
     /*
      * Adding an extra element to the end of the list, essentially a NULL terminator
