@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.108 $
+ *       $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -366,14 +366,14 @@ SetDebugLevel (
     UINT32                  level);
 
 void
-FunctionTrace (
+AcpiUtTrace (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
     NATIVE_CHAR             *FunctionName);
 
 void
-FunctionTracePtr (
+AcpiUtTracePtr (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -381,7 +381,7 @@ FunctionTracePtr (
     void                    *Pointer);
 
 void
-FunctionTraceU32 (
+AcpiUtTraceU32 (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -389,7 +389,7 @@ FunctionTraceU32 (
     UINT32                  Integer);
 
 void
-FunctionTraceStr (
+AcpiUtTraceStr (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -397,14 +397,14 @@ FunctionTraceStr (
     NATIVE_CHAR             *String);
 
 void
-FunctionExit (
+AcpiUtExit (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
     NATIVE_CHAR             *FunctionName);
 
 void
-FunctionStatusExit (
+AcpiUtStatusExit (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -412,7 +412,7 @@ FunctionStatusExit (
     ACPI_STATUS             Status);
 
 void
-FunctionValueExit (
+AcpiUtValueExit (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
@@ -420,7 +420,7 @@ FunctionValueExit (
     ACPI_INTEGER            Value);
 
 void
-FunctionPtrExit (
+AcpiUtPtrExit (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
