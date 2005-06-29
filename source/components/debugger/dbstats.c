@@ -181,7 +181,7 @@ UINT32                      SizeOfAcpiObjects;
 
 ACPI_STATUS
 AcpiDbDisplayStatistics (
-    char                    *TypeArg)
+    INT8                    *TypeArg)
 {
     UINT32                  i;
     UINT32                  Type;
@@ -195,7 +195,7 @@ AcpiDbDisplayStatistics (
     if (!TypeArg)
     {
         AcpiOsPrintf ("Use subcommand OBJECTS, MEMORY, MISC, or TABLES\n");
-        return AE_OK;
+        return (AE_OK);
     }
 
     STRUPR (TypeArg);
@@ -203,7 +203,7 @@ AcpiDbDisplayStatistics (
     if (Type == (UINT32) -1)
     {
         AcpiOsPrintf ("Invalid or unsupported argument\n");
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -267,19 +267,23 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("Cache Statistics:\n\n");
         AcpiOsPrintf ("State Cache requests........% 7ld\n", AcpiGbl_StateCacheRequests);
         AcpiOsPrintf ("State Cache hits............% 7ld\n", AcpiGbl_StateCacheHits);
-        AcpiOsPrintf ("State Cache depth...........% 7ld (%d remaining entries)\n", AcpiGbl_GenericStateCacheDepth, 
+        AcpiOsPrintf ("State Cache depth...........% 7ld (%d remaining entries)\n", AcpiGbl_GenericStateCacheDepth,
                                                             MAX_STATE_CACHE_DEPTH - AcpiGbl_GenericStateCacheDepth);
         AcpiOsPrintf ("Parse Cache requests........% 7ld\n", AcpiGbl_ParseCacheRequests);
         AcpiOsPrintf ("Parse Cache hits............% 7ld\n", AcpiGbl_ParseCacheHits);
-        AcpiOsPrintf ("Parse Cache depth...........% 7ld (%d remaining entries)\n", AcpiGbl_ParseCacheDepth, 
+        AcpiOsPrintf ("Parse Cache depth...........% 7ld (%d remaining entries)\n", AcpiGbl_ParseCacheDepth,
                                                             MAX_PARSE_CACHE_DEPTH - AcpiGbl_ParseCacheDepth);
+        AcpiOsPrintf ("Ext Parse Cache requests....% 7ld\n", AcpiGbl_ExtParseCacheRequests);
+        AcpiOsPrintf ("Ext Parse Cache hits........% 7ld\n", AcpiGbl_ExtParseCacheHits);
+        AcpiOsPrintf ("Ext Parse Cache depth.......% 7ld (%d remaining entries)\n", AcpiGbl_ExtParseCacheDepth,
+                                                            MAX_EXTPARSE_CACHE_DEPTH - AcpiGbl_ExtParseCacheDepth);
         AcpiOsPrintf ("Object Cache requests.......% 7ld\n", AcpiGbl_ObjectCacheRequests);
         AcpiOsPrintf ("Object Cache hits...........% 7ld\n", AcpiGbl_ObjectCacheHits);
-        AcpiOsPrintf ("Object Cache depth..........% 7ld (%d remaining entries)\n", AcpiGbl_ObjectCacheDepth, 
+        AcpiOsPrintf ("Object Cache depth..........% 7ld (%d remaining entries)\n", AcpiGbl_ObjectCacheDepth,
                                                             MAX_OBJECT_CACHE_DEPTH - AcpiGbl_ObjectCacheDepth);
         AcpiOsPrintf ("WalkState Cache requests....% 7ld\n", AcpiGbl_WalkStateCacheRequests);
         AcpiOsPrintf ("WalkState Cache hits........% 7ld\n", AcpiGbl_WalkStateCacheHits);
-        AcpiOsPrintf ("WalkState Cache depth.......% 7ld (%d remaining entries)\n", AcpiGbl_WalkStateCacheDepth, 
+        AcpiOsPrintf ("WalkState Cache depth.......% 7ld (%d remaining entries)\n", AcpiGbl_WalkStateCacheDepth,
                                                             MAX_WALK_CACHE_DEPTH - AcpiGbl_WalkStateCacheDepth);
         break;
 
@@ -300,7 +304,7 @@ AcpiDbDisplayStatistics (
     }
 
     AcpiOsPrintf ("\n");
-    return AE_OK;
+    return (AE_OK);
 }
 
 
