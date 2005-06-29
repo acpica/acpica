@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.87 $
+ *       $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -505,15 +505,19 @@
  * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
  */
 
-#define PROC_NAME(a)                    char * _ProcName = a;
-#define FUNCTION_TRACE(a)               char * _ProcName = a;\
-                                        FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define FUNCTION_TRACE_PTR(a,b)         char * _ProcName = a;\
-                                        FunctionTracePtr(_THIS_MODULE,__LINE__,_COMPONENT,a,(void *)b)
-#define FUNCTION_TRACE_U32(a,b)         char * _ProcName = a;\
-                                        FunctionTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
-#define FUNCTION_TRACE_STR(a,b)         char * _ProcName = a;\
-                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(NATIVE_CHAR *)b)
+#define PROC_NAME(a)                    ACPI_DEBUG_PRINT_INFO _Dbg;     \
+                                        _Dbg.ComponentId = _COMPONENT;  \
+                                        _Dbg.ProcName    = a;           \
+                                        _Dbg.ModuleName  = _THIS_MODULE;
+
+#define FUNCTION_TRACE(a)               PROC_NAME(a)\
+                                        AcpiUtTrace(__LINE__,&_Dbg)
+#define FUNCTION_TRACE_PTR(a,b)         PROC_NAME(a)\
+                                        AcpiUtTracePtr(__LINE__,&_Dbg,(void *)b)
+#define FUNCTION_TRACE_U32(a,b)         PROC_NAME(a)\
+                                        AcpiUtTraceU32(__LINE__,&_Dbg,(UINT32)b)
+#define FUNCTION_TRACE_STR(a,b)         PROC_NAME(a)\
+                                        AcpiUtTraceStr(__LINE__,&_Dbg,(NATIVE_CHAR *)b)
 /*
  * Function exit tracing.
  * WARNING: These macros include a return statement.  This is usually considered
@@ -521,10 +525,10 @@
  * One of the FUNCTION_TRACE macros above must be used in conjunction with these macros
  * so that "_ProcName" is defined.
  */
-#define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
-#define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
-#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
-#define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT8 *)s);return(s);}
+#define return_VOID                     {AcpiUtExit(__LINE__,&_Dbg);return;}
+#define return_ACPI_STATUS(s)           {AcpiUtStatusExit(__LINE__,&_Dbg,s);return(s);}
+#define return_VALUE(s)                 {AcpiUtValueExit(__LINE__,&_Dbg,s);return(s);}
+#define return_PTR(s)                   {AcpiUtPtrExit(__LINE__,&_Dbg,(UINT8 *)s);return(s);}
 
 
 /* Conditional execution */
@@ -569,8 +573,8 @@
  *    2) Debug error level or trace level for the print statement is enabled
  */
 
-#define ACPI_DEBUG_PRINT(pl)            AcpiUtDebugPrint PARAM_LIST(pl)
-#define ACPI_DEBUG_PRINT_RAW(pl)        AcpiUtDebugPrintRaw PARAM_LIST(pl)
+#define ACPI_DEBUG_PRINT(pl)            AcpiUtDebugPrint2 PARAM_LIST(pl)
+#define ACPI_DEBUG_PRINT_RAW(pl)        AcpiUtDebugPrintRaw2 PARAM_LIST(pl)
 
 
 #else

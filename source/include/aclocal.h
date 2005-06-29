@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.128 $
+ *       $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -967,6 +967,14 @@ typedef struct dbmethodinfo
  * Debug
  *
  ****************************************************************************/
+
+typedef struct
+{
+    UINT32                  ComponentId;
+    NATIVE_CHAR             *ProcName;
+    NATIVE_CHAR             *ModuleName;
+
+} ACPI_DEBUG_PRINT_INFO;
 
 
 /* Entry for a memory allocation (debug only) */
