@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -271,7 +271,7 @@ AcpiEnterSleepState (
 
     disable();
 
-    /* disable all non-wake GPEs here */
+    /* TODO: disable all non-wake GPEs here */
 
     PM1AControl = (UINT16) AcpiHwRegisterRead(ACPI_MTX_LOCK, PM1_CONTROL);
 
@@ -301,9 +301,7 @@ AcpiEnterSleepState (
     AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
 
     /* 
-     * Wait a second, then try again. This is to get S5 to work on all machines.
-     * Don't do this for S1; since S1 resumes at the next instruction, we'd be
-     * sleeping twice.
+     * Wait a second, then try again. This is to get S4/5 to work on all machines.
      */
     if (SleepState > ACPI_STATE_S3)
     {
@@ -338,11 +336,23 @@ ACPI_STATUS
 AcpiLeaveSleepState (
     UINT8               SleepState)
 {
+    ACPI_OBJECT_LIST    ArgList;
+    ACPI_OBJECT         Arg;
+
     FUNCTION_TRACE ("AcpiLeaveSleepState");
 
-    /* Call _BFS */
 
-    /* Call _WAK */
+    MEMSET(&ArgList, 0, sizeof(ArgList));
+    ArgList.Count = 1;
+    ArgList.Pointer = &Arg;
+
+    MEMSET(&Arg, 0, sizeof(Arg));
+    Arg.Type = ACPI_TYPE_INTEGER;
+    Arg.Integer.Value = SleepState;
+
+    AcpiEvaluateObject(NULL, "\\_BFS", &ArgList, NULL);
+    AcpiEvaluateObject(NULL, "\\_WAK", &ArgList, NULL);
+    /* _WAK returns stuff - do we want to look at it? */
 
     /* Re-enable GPEs */
 
