@@ -162,6 +162,10 @@ ACPI_STATUS
 AcpiPurgeCachedObjects (
     void);
 
+ACPI_STATUS
+AcpiInstallInitializationHandler (
+    ACPI_INIT_HANDLER       Handler,
+    UINT32                  Function);
 
 /*
  * ACPI Memory manager
