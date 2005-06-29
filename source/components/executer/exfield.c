@@ -136,9 +136,12 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldBitWidth)
+AmlSetupField (
+    ACPI_OBJECT         *ObjDesc, 
+    ACPI_OBJECT         *RgnDesc, 
+    INT32               FieldBitWidth)
 {
-    OBJECT_DESCRIPTOR   *ObjValDesc = NULL;
+    ACPI_OBJECT         *ObjValDesc = NULL;
     ACPI_STATUS         Status = AE_OK;
     INT32               FieldByteWidth;
 
@@ -203,7 +206,7 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
                 /* Evaluate the Address opcode */
 
                 if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK && 
-                    (Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
+                    (Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop]))
                                 == AE_OK)
                 {
                     /* Capture the address */
@@ -232,7 +235,7 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
                     /* Evaluate the Length opcode */
 
                     if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK &&
-                        (Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
+                        (Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop]))
                                     == AE_OK)
                     {
                         /* Capture the length */
@@ -317,20 +320,23 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
  ****************************************************************************/
 
 ACPI_STATUS
-AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
+AmlReadField (
+    ACPI_OBJECT         *ObjDesc, 
+    UINT32              *Value, 
+    INT32               FieldBitWidth)
 {
     /* ObjDesc is validated by callers */
 
-    OBJECT_DESCRIPTOR   *RgnDesc = NULL;
+    ACPI_OBJECT         *RgnDesc = NULL;
     ACPI_STATUS         Status;
     UINT32              Address;
     UINT32              LocalValue = 0;
     INT32               FieldByteWidth;
-	void *      		PhysicalAddrPtr = NULL;
-    UINT8       		PciBus = 0;
-    UINT8       		DevFunc = 0;
-    UINT8       		PciReg = 0;
-    UINT8       		PciExcep = 0;
+    void *              PhysicalAddrPtr = NULL;
+    UINT8               PciBus = 0;
+    UINT8               DevFunc = 0;
+    UINT8               PciReg = 0;
+    UINT8               PciExcep = 0;
 
     FUNCTION_TRACE ("AmlReadField");
 
@@ -402,7 +408,7 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
          * Probably should have a mapping cached.
          */
 
-        PhysicalAddrPtr = OsdMapMemory (Address, 4);
+        PhysicalAddrPtr = OsdMapMemory ((void *) Address, 4);
 
         switch (FieldBitWidth)
         {
@@ -529,19 +535,22 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
+AmlWriteField (
+    ACPI_OBJECT             *ObjDesc, 
+    UINT32                  Value, 
+    INT32                   FieldBitWidth)
 {
     /* ObjDesc is validated by callers */
 
-    OBJECT_DESCRIPTOR *     RgnDesc = NULL;
+    ACPI_OBJECT             *RgnDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Address;
     INT32                   FieldByteWidth;
-    void        			*PhysicalAddrPtr = NULL;
-    UINT8       			PciBus = 0;
-    UINT8       			DevFunc = 0;
-    UINT8       			PciReg = 0;
-    UINT8       			PciExcep = 0;
+    void                    *PhysicalAddrPtr = NULL;
+    UINT8                   PciBus = 0;
+    UINT8                   DevFunc = 0;
+    UINT8                   PciReg = 0;
+    UINT8                   PciExcep = 0;
 
 
     FUNCTION_TRACE ("AmlWriteField");
@@ -600,7 +609,7 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
          * Probably should have a mapping cached.
          */
 
-        PhysicalAddrPtr = OsdMapMemory (Address, 4);
+        PhysicalAddrPtr = OsdMapMemory ((void *) Address, 4);
                 
         switch (FieldBitWidth)
         {
@@ -713,9 +722,12 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
+AmlAccessNamedField (
+    INT32                   Mode, 
+    ACPI_HANDLE             NamedField, 
+    UINT32                  *Value)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc = NULL;
+    ACPI_OBJECT             *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_AML_ERROR;
     char                    *Type = NULL;
     INT32                   Granularity = 0;
@@ -948,9 +960,11 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSetNamedFieldValue (NsHandle NamedField, UINT32 Value)
+AmlSetNamedFieldValue (
+    ACPI_HANDLE             NamedField, 
+    UINT32                  Value)
 {
-    ACPI_STATUS         Status = AE_AML_ERROR;
+    ACPI_STATUS             Status = AE_AML_ERROR;
 
 
     FUNCTION_TRACE ("AmlSetNamedFieldValue");
@@ -984,9 +998,11 @@ AmlSetNamedFieldValue (NsHandle NamedField, UINT32 Value)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetNamedFieldValue (NsHandle NamedField, UINT32 *Value)
+AmlGetNamedFieldValue (
+    ACPI_HANDLE             NamedField, 
+    UINT32                  *Value)
 {
-    ACPI_STATUS         Status = AE_AML_ERROR;
+    ACPI_STATUS             Status = AE_AML_ERROR;
 
 
     FUNCTION_TRACE ("AmlGetNamedFieldValue");
