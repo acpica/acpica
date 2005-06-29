@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.163 $
+ *              $Revision: 1.164 $
  *
  ******************************************************************************/
 
@@ -249,6 +249,7 @@ AcpiNsRootInitialize (void)
 
             case ACPI_TYPE_MUTEX:
 
+                ObjDesc->Mutex.Node = NewNode;
                 ObjDesc->Mutex.SyncLevel =
                             (UINT16) ACPI_STRTOUL (InitVal->Val, NULL, 10);
 
@@ -349,6 +350,7 @@ AcpiNsLookup (
     ACPI_NAMESPACE_NODE     *CurrentNode = NULL;
     ACPI_NAMESPACE_NODE     *ThisNode = NULL;
     UINT32                  NumSegments;
+    UINT32                  NumCarats;
     ACPI_NAME               SimpleName;
     ACPI_OBJECT_TYPE        TypeToCheckFor;
     ACPI_OBJECT_TYPE        ThisSearchType;
@@ -468,6 +470,7 @@ AcpiNsLookup (
              * the parent node for each prefix instance.
              */
             ThisNode = PrefixNode;
+            NumCarats = 0;
             while (*Path == (UINT8) AML_PARENT_PREFIX)
             {
                 /* Name is fully qualified, no search rules apply */
@@ -481,6 +484,7 @@ AcpiNsLookup (
 
                 /* Backup to the parent node */
 
+                NumCarats++;
                 ThisNode = AcpiNsGetParentNode (ThisNode);
                 if (!ThisNode)
                 {
@@ -495,7 +499,8 @@ AcpiNsLookup (
             if (SearchParentFlag == ACPI_NS_NO_UPSEARCH)
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                    "Path is absolute with one or more carats\n"));
+                    "Search scope is [%4.4s], path has %d carat(s)\n", 
+                    ThisNode->Name.Ascii, NumCarats));
             }
         }
 
@@ -520,6 +525,7 @@ AcpiNsLookup (
              * have the correct target node and there are no name segments.
              */
             NumSegments  = 0;
+            Type = ThisNode->Type;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Prefix-only Pathname (Zero name segments), Flags=%X\n", Flags));
