@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -1041,8 +1041,23 @@ RsDoVendorSmallDescriptor (
      * Process all child initialization nodes
      */
     InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
-    for (i = 0; (InitializerOp && (i < 7)); i++)
+    for (i = 0; InitializerOp; i++)
     {
+        /* Maximum 7 vendor data bytes allowed (0-6) */
+
+        if (i >= 7)
+        {
+            AslError (ASL_ERROR, ASL_MSG_VENDOR_LIST, InitializerOp, NULL);
+
+            /* Eat the excess initializers */
+
+            while (InitializerOp)
+            {
+                InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
+            }
+            break;
+        }
+
         Descriptor->Smv.VendorDefined[i] = (UINT8) InitializerOp->Asl.Value.Integer;
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -396,7 +396,8 @@ typedef enum
     ASL_MSG_INVALID_UUID,
     ASL_MSG_INTERRUPT_LIST,
     ASL_MSG_DMA_CHANNEL,
-    ASL_MSG_DMA_LIST
+    ASL_MSG_DMA_LIST,
+    ASL_MSG_VENDOR_LIST
 
 } ASL_MESSAGE_IDS;
 
@@ -492,7 +493,8 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_INVALID_UUID */               "UUID string must be of the form \"aabbccdd-eeff-gghh-iijj-kkllmmnnoopp\"",
 /*    ASL_MSG_INTERRUPT_LIST */             "Too many interrupts (255 max)",
 /*    ASL_MSG_DMA_CHANNEL */                "Invalid DMA channel (must be 0-7)",
-/*    ASL_MSG_DMA_LIST */                   "Too many DMA channels (8 max)"
+/*    ASL_MSG_DMA_LIST */                   "Too many DMA channels (8 max)",
+/*    ASL_MSG_VENDOR_LIST */                "Too many vendor data bytes (7 max)"
 };
 
 
