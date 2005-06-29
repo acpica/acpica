@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.33 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "acnamesp.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslisting")
+        ACPI_MODULE_NAME    ("aslisting")
 
 
 /*******************************************************************************
@@ -768,6 +768,8 @@ LsWriteNodeToListing (
     char                    *Pathname;
     UINT32                  Length;
     UINT32                  i;
+    ASL_PARSE_NODE          *SignatureNode;
+    ASL_PARSE_NODE          *TableIdNode;
 
 
     OpInfo  = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
@@ -819,13 +821,21 @@ LsWriteNodeToListing (
     case DEFINITIONBLOCK:
 
         LsWriteSourceLines (Node->EndLine, Node->EndLogicalLine, FileId);
+
+        /* Use the table Signature and TableId to build a unique name */
+
+        SignatureNode = Node->Child->Peer;
+        TableIdNode = SignatureNode->Peer->Peer->Peer;
+
         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "AmlHeader  \\\n");
+            FlPrintFile (FileId, "AmlHeader_%s_%s  \\\n", 
+                SignatureNode->Value.String, TableIdNode->Value.String);
         }
         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "    unsigned char    AmlHeader [] = \n    {\n");
+            FlPrintFile (FileId, "    unsigned char    AmlHeader_%s_%s [] = \n    {\n",
+                SignatureNode->Value.String, TableIdNode->Value.String);
         }
         return;
 
