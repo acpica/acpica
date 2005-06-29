@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: ammisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.74 $
+ * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -116,7 +116,7 @@
  *
  *****************************************************************************/
 
-#define __AMMISC_C__
+#define __EXMISC_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -125,13 +125,13 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ammisc")
+#define _COMPONENT          ACPI_EXECUTER
+        MODULE_NAME         ("exmisc")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlExecFatal
+ * FUNCTION:    AcpiExFatal
  *
  * PARAMETERS:  none
  *
@@ -149,7 +149,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecFatal (
+AcpiExFatal (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     *TypeDesc;
@@ -158,15 +158,15 @@ AcpiAmlExecFatal (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AmlExecFatal");
+    FUNCTION_TRACE ("ExFatal");
 
 
     /* Resolve operands */
 
-    Status = AcpiAmlResolveOperands (AML_FATAL_OP, WALK_OPERANDS, WalkState);
+    Status = AcpiExResolveOperands (AML_FATAL_OP, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
                     AcpiPsGetOpcodeName (AML_FATAL_OP),
-                    3, "after AcpiAmlResolveOperands");
+                    3, "after AcpiExResolveOperands");
 
     /* Get operands */
 
@@ -177,19 +177,16 @@ AcpiAmlExecFatal (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AcpiAmlExecFatal/AML_FATAL_OP: bad operand(s) (Status=%X)\n",
+        DEBUG_PRINTP (ACPI_ERROR, ("bad operand(s) (Status=%X)\n",
             Status));
-
         goto Cleanup;
     }
 
 
     /* DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
 
-
-    DEBUG_PRINT (ACPI_INFO,
-        ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+    DEBUG_PRINTP (ACPI_INFO,
+        ("Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
         TypeDesc->Integer.Value, CodeDesc->Integer.Value, ArgDesc->Integer.Value));
 
 
@@ -203,9 +200,9 @@ Cleanup:
 
     /* Free the operands */
 
-    AcpiCmRemoveReference (ArgDesc);
-    AcpiCmRemoveReference (CodeDesc);
-    AcpiCmRemoveReference (TypeDesc);
+    AcpiUtRemoveReference (ArgDesc);
+    AcpiUtRemoveReference (CodeDesc);
+    AcpiUtRemoveReference (TypeDesc);
 
 
     /* If we get back from the OS call, we might as well keep going. */
@@ -217,167 +214,190 @@ Cleanup:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlExecIndex
+ * FUNCTION:    AcpiExTriadic
  *
- * PARAMETERS:  none
+ * PARAMETERS:  Opcode              - The opcode to be executed
+ *              WalkState           - Current walk state
+ *              ReturnDesc          - Where to store the return object
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute Index operator
+ * DESCRIPTION: Execute Triadic operator (3 operands)
  *
  * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
- *
- *  ACPI SPECIFICATION REFERENCES:
- *  DefIndex    :=  IndexOp BuffPkgObj IndexValue Result
- *  IndexValue  :=  TermArg=>Integer
- *  NameString  :=  <RootChar NamePath> | <PrefixPath NamePath>
- *  Result      :=  SuperName
- *  SuperName   :=  NameString | ArgObj | LocalObj | DebugObj | DefIndex
- *                             Local4Op | Local5Op | Local6Op | Local7Op
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecIndex (
+AcpiExTriadic (
+    UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
     ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OPERAND_OBJECT     *IdxDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc1;
+    ACPI_OPERAND_OBJECT     *ObjDesc2;
     ACPI_OPERAND_OBJECT     *ResDesc;
     ACPI_OPERAND_OBJECT     *RetDesc = NULL;
     ACPI_OPERAND_OBJECT     *TmpDesc;
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AmlExecIndex");
+    FUNCTION_TRACE ("ExTriadic");
 
 
     /* Resolve operands */
     /* First operand can be either a package or a buffer */
 
-    Status = AcpiAmlResolveOperands (AML_INDEX_OP, WALK_OPERANDS, WalkState);
+    Status = AcpiExResolveOperands (AML_INDEX_OP, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
                     AcpiPsGetOpcodeName (AML_INDEX_OP),
-                    3, "after AcpiAmlResolveOperands");
+                    3, "after AcpiExResolveOperands");
 
     /* Get all operands */
 
     Status |= AcpiDsObjStackPopObject (&ResDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&IdxDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&ObjDesc2, WalkState);
+    Status |= AcpiDsObjStackPopObject (&ObjDesc1, WalkState);
     if (ACPI_FAILURE (Status))
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AcpiAmlExecIndex/AML_INDEX_OP: bad operand(s) (Status=%X)\n",
+        DEBUG_PRINTP (ACPI_ERROR, ("bad operand(s) (Status=%X)\n",
             Status));
-
         goto Cleanup;
     }
 
 
-    /* Create the internal return object */
 
-    RetDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_REFERENCE);
-    if (!RetDesc)
+    switch (Opcode)
     {
-        Status = AE_NO_MEMORY;
-        goto Cleanup;
-    }
+
+    case AML_FATAL_OP:
+
+        /* DefFatal    :=  FatalOp  FatalType   FatalCode   FatalArg    */
+
+        DEBUG_PRINTP (ACPI_INFO,
+            ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+            ObjDesc1->Integer.Value, ObjDesc2->Integer.Value, ResDesc->Integer.Value));
 
 
-    /*
-     * At this point, the ObjDesc operand is either a Package or a Buffer
-     */
+        /*
+         * TBD: [Unhandled] call OSD interface to notify OS of fatal error
+         * requiring shutdown!
+         */
+        break;
 
-    if (ObjDesc->Common.Type == ACPI_TYPE_PACKAGE)
-    {
-        /* Object to be indexed is a Package */
 
-        if (IdxDesc->Integer.Value >= ObjDesc->Package.Count)
+
+    case AML_MID_OP:
+
+        /* DefMid       := MidOp Source Index  Length Result */
+
+        /* Create the internal return object (string or buffer) */
+
+        break;
+
+
+    case AML_INDEX_OP:
+
+        /* DefIndex     := IndexOp Source Index Destination */
+
+        /* Create the internal return object */
+
+        RetDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
+        if (!RetDesc)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecIndex: Index value out of range\n"));
-            Status = AE_AML_PACKAGE_LIMIT;
+            Status = AE_NO_MEMORY;
             goto Cleanup;
         }
-
-        if ((ResDesc->Common.Type == INTERNAL_TYPE_REFERENCE) &&
-            (ResDesc->Reference.Opcode == AML_ZERO_OP))
+        /*
+         * At this point, the ObjDesc1 operand is either a Package or a Buffer
+         */
+        if (ObjDesc1->Common.Type == ACPI_TYPE_PACKAGE)
         {
-            /*
-             * There is no actual result descriptor (the ZeroOp Result
-             * descriptor is a placeholder), so just delete the placeholder and
-             * return a reference to the package element
-             */
+            /* Object to be indexed is a Package */
 
-            AcpiCmRemoveReference (ResDesc);
+            if (ObjDesc2->Integer.Value >= ObjDesc1->Package.Count)
+            {
+                DEBUG_PRINTP (ACPI_ERROR, ("Index value beyond package end\n"));
+                Status = AE_AML_PACKAGE_LIMIT;
+                goto Cleanup;
+            }
+
+            if ((ResDesc->Common.Type == INTERNAL_TYPE_REFERENCE) &&
+                (ResDesc->Reference.Opcode == AML_ZERO_OP))
+            {
+                /*
+                 * There is no actual result descriptor (the ZeroOp Result
+                 * descriptor is a placeholder), so just delete the placeholder and
+                 * return a reference to the package element
+                 */
+                AcpiUtRemoveReference (ResDesc);
+            }
+
+            else
+            {
+                /*
+                 * Each element of the package is an internal object.  Get the one
+                 * we are after.
+                 */
+                TmpDesc                       = ObjDesc1->Package.Elements[ObjDesc2->Integer.Value];
+                RetDesc->Reference.Opcode     = AML_INDEX_OP;
+                RetDesc->Reference.TargetType = TmpDesc->Common.Type;
+                RetDesc->Reference.Object     = TmpDesc;
+
+                Status = AcpiExStore (RetDesc, ResDesc, WalkState);
+                RetDesc->Reference.Object     = NULL;
+            }
+
+            /*
+             * The local return object must always be a reference to the package element,
+             * not the element itself.
+             */
+            RetDesc->Reference.Opcode     = AML_INDEX_OP;
+            RetDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
+            RetDesc->Reference.Where      = &ObjDesc1->Package.Elements[ObjDesc2->Integer.Value];
         }
 
         else
         {
-            /*
-             * Each element of the package is an internal object.  Get the one
-             * we are after.
-             */
+            /* Object to be indexed is a Buffer */
 
-            TmpDesc                       = ObjDesc->Package.Elements[IdxDesc->Integer.Value];
-            RetDesc->Reference.Opcode     = AML_INDEX_OP;
-            RetDesc->Reference.TargetType = TmpDesc->Common.Type;
-            RetDesc->Reference.Object     = TmpDesc;
+            if (ObjDesc2->Integer.Value >= ObjDesc1->Buffer.Length)
+            {
+                DEBUG_PRINTP (ACPI_ERROR, ("Index value beyond end of buffer\n"));
+                Status = AE_AML_BUFFER_LIMIT;
+                goto Cleanup;
+            }
 
-            Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
-            RetDesc->Reference.Object     = NULL;
+            RetDesc->Reference.Opcode       = AML_INDEX_OP;
+            RetDesc->Reference.TargetType   = ACPI_TYPE_BUFFER_FIELD;
+            RetDesc->Reference.Object       = ObjDesc1;
+            RetDesc->Reference.Offset       = (UINT32) ObjDesc2->Integer.Value;
+
+            Status = AcpiExStore (RetDesc, ResDesc, WalkState);
         }
-
-        /*
-         * The local return object must always be a reference to the package element,
-         * not the element itself.
-         */
-        RetDesc->Reference.Opcode     = AML_INDEX_OP;
-        RetDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
-        RetDesc->Reference.Where      = &ObjDesc->Package.Elements[IdxDesc->Integer.Value];
+        break;
     }
 
-    else
-    {
-        /* Object to be indexed is a Buffer */
-
-        if (IdxDesc->Integer.Value >= ObjDesc->Buffer.Length)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecIndex: Index value out of range\n"));
-            Status = AE_AML_BUFFER_LIMIT;
-            goto Cleanup;
-        }
-
-        RetDesc->Reference.Opcode       = AML_INDEX_OP;
-        RetDesc->Reference.TargetType   = ACPI_TYPE_BUFFER_FIELD;
-        RetDesc->Reference.Object       = ObjDesc;
-        RetDesc->Reference.Offset       = (UINT32) IdxDesc->Integer.Value;
-
-        Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
-    }
 
 
 Cleanup:
 
     /* Always delete operands */
 
-    AcpiCmRemoveReference (ObjDesc);
-    AcpiCmRemoveReference (IdxDesc);
+    AcpiUtRemoveReference (ObjDesc1);
+    AcpiUtRemoveReference (ObjDesc2);
 
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiCmRemoveReference (ResDesc);
+        AcpiUtRemoveReference (ResDesc);
 
         if (RetDesc)
         {
-            AcpiCmRemoveReference (RetDesc);
+            AcpiUtRemoveReference (RetDesc);
             RetDesc = NULL;
         }
     }
@@ -391,28 +411,21 @@ Cleanup:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlExecMatch
+ * FUNCTION:    AcpiExHexadic
  *
- * PARAMETERS:  none
+ * PARAMETERS:  Opcode              - The opcode to be executed
+ *              WalkState           - Current walk state
+ *              ReturnDesc          - Where to store the return object
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Execute Match operator
  *
- * ACPI SPECIFICATION REFERENCES:
- *  DefMatch    :=  MatchOp SearchPkg   Opcode1     Operand1
- *                              Opcode2 Operand2    StartIndex
- *  Opcode1     :=  ByteData: MTR, MEQ, MLE, MLT, MGE, or MGT
- *  Opcode2     :=  ByteData: MTR, MEQ, MLE, MLT, MGE, or MGT
- *  Operand1    :=  TermArg=>Integer
- *  Operand2    :=  TermArg=>Integer
- *  SearchPkg   :=  TermArg=>PackageObject
- *  StartIndex  :=  TermArg=>Integer
- *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecMatch (
+AcpiExHexadic (
+    UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
     ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
@@ -428,15 +441,15 @@ AcpiAmlExecMatch (
     UINT32                  MatchValue = (UINT32) -1;
 
 
-    FUNCTION_TRACE ("AmlExecMatch");
+    FUNCTION_TRACE ("ExHexadic");
 
 
     /* Resolve all operands */
 
-    Status = AcpiAmlResolveOperands (AML_MATCH_OP, WALK_OPERANDS, WalkState);
+    Status = AcpiExResolveOperands (AML_MATCH_OP, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
                     AcpiPsGetOpcodeName (AML_MATCH_OP),
-                    6, "after AcpiAmlResolveOperands");
+                    6, "after AcpiExResolveOperands");
 
     /* Get all operands */
 
@@ -451,218 +464,224 @@ AcpiAmlExecMatch (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("ExecMatch/AML_MATCH_OP: bad operand(s) (Status=%X)\n",
+        DEBUG_PRINTP (ACPI_ERROR, ("bad operand(s) (Status=%X)\n",
             Status));
-
         goto Cleanup;
     }
 
-    /* Validate match comparison sub-opcodes */
 
-    if ((Op1Desc->Integer.Value > MAX_MATCH_OPERATOR) ||
-        (Op2Desc->Integer.Value > MAX_MATCH_OPERATOR))
+    switch (Opcode)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecMatch: operation encoding out of range\n"));
-        Status = AE_AML_OPERAND_VALUE;
-        goto Cleanup;
-    }
 
-    Index = (UINT32) StartDesc->Integer.Value;
-    if (Index >= (UINT32) PkgDesc->Package.Count)
-    {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecMatch: start position value out of range\n"));
-        Status = AE_AML_PACKAGE_LIMIT;
-        goto Cleanup;
-    }
+        case AML_MATCH_OP:
 
-    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
-    if (!RetDesc)
-    {
-        Status = AE_NO_MEMORY;
-        goto Cleanup;
+        /* Validate match comparison sub-opcodes */
 
-    }
-
-    /*
-     * Examine each element until a match is found.  Within the loop,
-     * "continue" signifies that the current element does not match
-     * and the next should be examined.
-     * Upon finding a match, the loop will terminate via "break" at
-     * the bottom.  If it terminates "normally", MatchValue will be -1
-     * (its initial value) indicating that no match was found.  When
-     * returned as a Number, this will produce the Ones value as specified.
-     */
-
-    for ( ; Index < PkgDesc->Package.Count; ++Index)
-    {
-        /*
-         * Treat any NULL or non-numeric elements as non-matching.
-         * TBD [Unhandled] - if an element is a Name,
-         *      should we examine its value?
-         */
-        if (!PkgDesc->Package.Elements[Index] ||
-            ACPI_TYPE_INTEGER != PkgDesc->Package.Elements[Index]->Common.Type)
+        if ((Op1Desc->Integer.Value > MAX_MATCH_OPERATOR) ||
+            (Op2Desc->Integer.Value > MAX_MATCH_OPERATOR))
         {
-            continue;
+            DEBUG_PRINTP (ACPI_ERROR, ("operation encoding out of range\n"));
+            Status = AE_AML_OPERAND_VALUE;
+            goto Cleanup;
+        }
+
+        Index = (UINT32) StartDesc->Integer.Value;
+        if (Index >= (UINT32) PkgDesc->Package.Count)
+        {
+            DEBUG_PRINTP (ACPI_ERROR, ("Start position value out of range\n"));
+            Status = AE_AML_PACKAGE_LIMIT;
+            goto Cleanup;
+        }
+
+        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+        if (!RetDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
+
         }
 
         /*
-         * Within these switch statements:
-         *      "break" (exit from the switch) signifies a match;
-         *      "continue" (proceed to next iteration of enclosing
-         *          "for" loop) signifies a non-match.
+         * Examine each element until a match is found.  Within the loop,
+         * "continue" signifies that the current element does not match
+         * and the next should be examined.
+         * Upon finding a match, the loop will terminate via "break" at
+         * the bottom.  If it terminates "normally", MatchValue will be -1
+         * (its initial value) indicating that no match was found.  When
+         * returned as a Number, this will produce the Ones value as specified.
          */
-        switch (Op1Desc->Integer.Value)
+
+        for ( ; Index < PkgDesc->Package.Count; ++Index)
         {
-
-        case MATCH_MTR:   /* always true */
-
-            break;
-
-
-        case MATCH_MEQ:   /* true if equal   */
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 != V1Desc->Integer.Value)
+            /*
+             * Treat any NULL or non-numeric elements as non-matching.
+             * TBD [Unhandled] - if an element is a Name,
+             *      should we examine its value?
+             */
+            if (!PkgDesc->Package.Elements[Index] ||
+                ACPI_TYPE_INTEGER != PkgDesc->Package.Elements[Index]->Common.Type)
             {
                 continue;
             }
-            break;
 
-
-        case MATCH_MLE:   /* true if less than or equal  */
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 > V1Desc->Integer.Value)
+            /*
+             * Within these switch statements:
+             *      "break" (exit from the switch) signifies a match;
+             *      "continue" (proceed to next iteration of enclosing
+             *          "for" loop) signifies a non-match.
+             */
+            switch (Op1Desc->Integer.Value)
             {
+
+            case MATCH_MTR:   /* always true */
+
+                break;
+
+
+            case MATCH_MEQ:   /* true if equal   */
+
+                if (PkgDesc->Package.Elements[Index]->Integer.Value
+                     != V1Desc->Integer.Value)
+                {
+                    continue;
+                }
+                break;
+
+
+            case MATCH_MLE:   /* true if less than or equal  */
+
+                if (PkgDesc->Package.Elements[Index]->Integer.Value
+                     > V1Desc->Integer.Value)
+                {
+                    continue;
+                }
+                break;
+
+
+            case MATCH_MLT:   /* true if less than   */
+
+                if (PkgDesc->Package.Elements[Index]->Integer.Value
+                     >= V1Desc->Integer.Value)
+                {
+                    continue;
+                }
+                break;
+
+
+            case MATCH_MGE:   /* true if greater than or equal   */
+
+                if (PkgDesc->Package.Elements[Index]->Integer.Value
+                     < V1Desc->Integer.Value)
+                {
+                    continue;
+                }
+                break;
+
+
+            case MATCH_MGT:   /* true if greater than    */
+
+                if (PkgDesc->Package.Elements[Index]->Integer.Value
+                     <= V1Desc->Integer.Value)
+                {
+                    continue;
+                }
+                break;
+
+
+            default:    /* undefined   */
+
                 continue;
             }
-            break;
 
 
-        case MATCH_MLT:   /* true if less than   */
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 >= V1Desc->Integer.Value)
+            switch(Op2Desc->Integer.Value)
             {
+
+            case MATCH_MTR:
+
+                break;
+
+
+            case MATCH_MEQ:
+
+                if (PkgDesc->Package.Elements[Index]->Integer.Value
+                     != V2Desc->Integer.Value)
+                {
+                    continue;
+                }
+                break;
+
+
+            case MATCH_MLE:
+
+                if (PkgDesc->Package.Elements[Index]->Integer.Value
+                     > V2Desc->Integer.Value)
+                {
+                    continue;
+                }
+                break;
+
+
+            case MATCH_MLT:
+
+                if (PkgDesc->Package.Elements[Index]->Integer.Value
+                     >= V2Desc->Integer.Value)
+                {
+                    continue;
+                }
+                break;
+
+
+            case MATCH_MGE:
+
+                if (PkgDesc->Package.Elements[Index]->Integer.Value
+                     < V2Desc->Integer.Value)
+                {
+                    continue;
+                }
+                break;
+
+
+            case MATCH_MGT:
+
+                if (PkgDesc->Package.Elements[Index]->Integer.Value
+                     <= V2Desc->Integer.Value)
+                {
+                    continue;
+                }
+                break;
+
+
+            default:
+
                 continue;
             }
+
+            /* Match found: exit from loop */
+
+            MatchValue = Index;
             break;
-
-
-        case MATCH_MGE:   /* true if greater than or equal   */
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 < V1Desc->Integer.Value)
-            {
-                continue;
-            }
-            break;
-
-
-        case MATCH_MGT:   /* true if greater than    */
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 <= V1Desc->Integer.Value)
-            {
-                continue;
-            }
-            break;
-
-
-        default:    /* undefined   */
-
-            continue;
         }
 
+        /* MatchValue is the return value */
 
-        switch(Op2Desc->Integer.Value)
-        {
-
-        case MATCH_MTR:
-
-            break;
-
-
-        case MATCH_MEQ:
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 != V2Desc->Integer.Value)
-            {
-                continue;
-            }
-            break;
-
-
-        case MATCH_MLE:
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 > V2Desc->Integer.Value)
-            {
-                continue;
-            }
-            break;
-
-
-        case MATCH_MLT:
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 >= V2Desc->Integer.Value)
-            {
-                continue;
-            }
-            break;
-
-
-        case MATCH_MGE:
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 < V2Desc->Integer.Value)
-            {
-                continue;
-            }
-            break;
-
-
-        case MATCH_MGT:
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 <= V2Desc->Integer.Value)
-            {
-                continue;
-            }
-            break;
-
-
-        default:
-
-            continue;
-        }
-
-        /* Match found: exit from loop */
-
-        MatchValue = Index;
+        RetDesc->Integer.Value = MatchValue;
         break;
+
     }
 
-    /* MatchValue is the return value */
-
-    RetDesc->Integer.Value = MatchValue;
 
 
 Cleanup:
 
     /* Free the operands */
 
-    AcpiCmRemoveReference (StartDesc);
-    AcpiCmRemoveReference (V2Desc);
-    AcpiCmRemoveReference (Op2Desc);
-    AcpiCmRemoveReference (V1Desc);
-    AcpiCmRemoveReference (Op1Desc);
-    AcpiCmRemoveReference (PkgDesc);
+    AcpiUtRemoveReference (StartDesc);
+    AcpiUtRemoveReference (V2Desc);
+    AcpiUtRemoveReference (Op2Desc);
+    AcpiUtRemoveReference (V1Desc);
+    AcpiUtRemoveReference (Op1Desc);
+    AcpiUtRemoveReference (PkgDesc);
 
 
     /* Delete return object on error */
@@ -670,7 +689,7 @@ Cleanup:
     if (ACPI_FAILURE (Status) &&
         (RetDesc))
     {
-        AcpiCmRemoveReference (RetDesc);
+        AcpiUtRemoveReference (RetDesc);
         RetDesc = NULL;
     }
 
