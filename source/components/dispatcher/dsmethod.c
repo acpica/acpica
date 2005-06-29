@@ -257,7 +257,10 @@ PsxCallControlMethod (
     ACPI_STATUS             Status;
     ACPI_DEFERRED_OP        *Method;
     NAME_TABLE_ENTRY        *MethodNte;
+    ACPI_OBJECT_INTERNAL    *MethodDesc;
     ACPI_WALK_STATE         *NextWalkState;
+    UINT32                  NumArgs;
+    UINT32                  i;
 
 
     FUNCTION_TRACE_PTR ("PsxCallControlMethod", ThisWalkState);
@@ -285,6 +288,9 @@ PsxCallControlMethod (
         /* TBD: Parse method */
     }
 
+    MethodDesc = NsGetAttachedObject (MethodNte);
+    NumArgs = MethodDesc->Method.MethodFlags & METHOD_ARG_COUNT_MASK;
+
     /* Save the Op for when this walk is restarted */
 
     ThisWalkState->PrevOp = Op;
@@ -310,7 +316,13 @@ PsxCallControlMethod (
 
     /* Delete the operands on the previous walkstate operand stack (they were copied to new objects) */
 
-    PsxObjStackDeleteAll (ThisWalkState);
+    for (i = 0; i < NumArgs; i++)
+    {
+        CmDeleteInternalObject (ThisWalkState->Operands [ThisWalkState->NumOperands]);
+        PsxObjStackPop (1, ThisWalkState);
+    }
+
+    /* TBD: REMOVE PsxObjStackDeleteAll (ThisWalkState); */
 
     /* The next op will be the beginning of the method */
 
