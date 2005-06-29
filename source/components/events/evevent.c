@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -536,9 +536,12 @@ AcpiEvGpeInitialize (void)
 
             GpeRegisterInfo->BaseGpeNumber = (UINT8) (AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber + (ACPI_MUL_8 (i)));
 
-            GpeRegisterInfo->StatusAddress.Address           = AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address + i;
-            GpeRegisterInfo->EnableAddress.Address           = AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address + i +
-                                                                AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount;
+            ACPI_STORE_ADDRESS (GpeRegisterInfo->StatusAddress.Address, 
+                                (ACPI_GET_ADDRESS (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address) + i));
+
+            ACPI_STORE_ADDRESS (GpeRegisterInfo->EnableAddress.Address,
+                                (ACPI_GET_ADDRESS (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address) + i +
+                                    AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount));
 
             GpeRegisterInfo->StatusAddress.AddressSpaceId    = AcpiGbl_GpeBlockInfo[GpeBlock].AddressSpaceId;
             GpeRegisterInfo->EnableAddress.AddressSpaceId    = AcpiGbl_GpeBlockInfo[GpeBlock].AddressSpaceId;
