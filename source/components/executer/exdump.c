@@ -126,97 +126,6 @@
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("isdump");
 
-
-/*****************************************************************************
- *
- * FUNCTION:    AmlShowHexValue
- *
- * PARAMETERS:  ByteCount           - Number of bytes to print (1, 2, or 4)
- *              *AmlPtr             - Address in AML stream of bytes to print
- *              InterpreterMode     - Current running mode (load1/Load2/Exec)
- *              LeadSpace           - # of spaces to print ahead of value
- *                                    0 => none ahead but one behind
- *
- * DESCRIPTION: Print ByteCount byte(s) starting at AmlPtr as a single value,
- *              in hex.  If ByteCount > 1 or the value printed is > 9, also
- *              print in decimal.
- *
- ****************************************************************************/
-
-void 
-AmlShowHexValue (
-    INT32                   ByteCount, 
-    UINT8                   *AmlPtr, 
-    OPERATING_MODE          InterpreterMode, 
-    INT32                   LeadSpace)
-{
-    INT32                   Value;                  /*  Value retrieved from AML stream */
-    INT32                   ShowDecimalValue;
-    INT32                   Length;                 /*  Length of printed field */
-    UINT8                   *CurrentAmlPtr = NULL;  /*  Pointer to current byte of AML value    */
-
-
-    FUNCTION_TRACE ("AmlShowHexValue");
-
-
-    if (!AmlPtr)
-    {
-        REPORT_ERROR ("AmlShowHexValue: null pointer");
-    }
-
-    /* 
-     * AML numbers are always stored little-endian,
-     * even if the processor is big-endian.
-     */
-    for (CurrentAmlPtr = AmlPtr + ByteCount, Value = 0; CurrentAmlPtr > AmlPtr; )
-    {
-        Value = (Value << 8) + (INT32)* --CurrentAmlPtr;
-    }
-
-    Length = LeadSpace * ByteCount + 2;
-    if (ByteCount > 1)
-    {
-        Length += (ByteCount - 1);
-    }
-
-    ShowDecimalValue = (ByteCount > 1 || Value > 9);
-    if (ShowDecimalValue)
-    {
-        Length += 3 + AmlDigitsNeeded (Value, 10);
-    }
-
-    DEBUG_PRINT (TRACE_LOAD, (""));
-
-    for (Length = LeadSpace; Length; --Length )
-    {
-        DEBUG_PRINT_RAW (TRACE_LOAD, (" "));
-    }
-
-    while (ByteCount--)
-    {
-        DEBUG_PRINT_RAW (TRACE_LOAD, ("%02x", *AmlPtr++));
-
-        if (ByteCount)
-        {
-            DEBUG_PRINT_RAW (TRACE_LOAD, (" "));
-        }
-    }
-
-    if (ShowDecimalValue)
-    {
-        DEBUG_PRINT_RAW (TRACE_LOAD, (" [%ld]", Value));
-    }
-
-    if (0 == LeadSpace)
-    {
-        DEBUG_PRINT_RAW (TRACE_LOAD, (" "));
-    }
-
-    DEBUG_PRINT_RAW (TRACE_LOAD, ("\n"));
-    return_VOID;
-}
-
-
 /* TBD: Move this routine to common code */
 
 /*****************************************************************************
@@ -314,6 +223,101 @@ cleanup:
 }
 
 
+/*
+ * The following routines are used for debug output only 
+ */
+
+#ifdef ACPI_DEBUG
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AmlShowHexValue
+ *
+ * PARAMETERS:  ByteCount           - Number of bytes to print (1, 2, or 4)
+ *              *AmlPtr             - Address in AML stream of bytes to print
+ *              InterpreterMode     - Current running mode (load1/Load2/Exec)
+ *              LeadSpace           - # of spaces to print ahead of value
+ *                                    0 => none ahead but one behind
+ *
+ * DESCRIPTION: Print ByteCount byte(s) starting at AmlPtr as a single value,
+ *              in hex.  If ByteCount > 1 or the value printed is > 9, also
+ *              print in decimal.
+ *
+ ****************************************************************************/
+
+void 
+AmlShowHexValue (
+    INT32                   ByteCount, 
+    UINT8                   *AmlPtr, 
+    OPERATING_MODE          InterpreterMode, 
+    INT32                   LeadSpace)
+{
+    INT32                   Value;                  /*  Value retrieved from AML stream */
+    INT32                   ShowDecimalValue;
+    INT32                   Length;                 /*  Length of printed field */
+    UINT8                   *CurrentAmlPtr = NULL;  /*  Pointer to current byte of AML value    */
+
+
+    FUNCTION_TRACE ("AmlShowHexValue");
+
+
+    if (!AmlPtr)
+    {
+        REPORT_ERROR ("AmlShowHexValue: null pointer");
+    }
+
+    /* 
+     * AML numbers are always stored little-endian,
+     * even if the processor is big-endian.
+     */
+    for (CurrentAmlPtr = AmlPtr + ByteCount, Value = 0; CurrentAmlPtr > AmlPtr; )
+    {
+        Value = (Value << 8) + (INT32)* --CurrentAmlPtr;
+    }
+
+    Length = LeadSpace * ByteCount + 2;
+    if (ByteCount > 1)
+    {
+        Length += (ByteCount - 1);
+    }
+
+    ShowDecimalValue = (ByteCount > 1 || Value > 9);
+    if (ShowDecimalValue)
+    {
+        Length += 3 + AmlDigitsNeeded (Value, 10);
+    }
+
+    DEBUG_PRINT (TRACE_LOAD, (""));
+
+    for (Length = LeadSpace; Length; --Length )
+    {
+        DEBUG_PRINT_RAW (TRACE_LOAD, (" "));
+    }
+
+    while (ByteCount--)
+    {
+        DEBUG_PRINT_RAW (TRACE_LOAD, ("%02x", *AmlPtr++));
+
+        if (ByteCount)
+        {
+            DEBUG_PRINT_RAW (TRACE_LOAD, (" "));
+        }
+    }
+
+    if (ShowDecimalValue)
+    {
+        DEBUG_PRINT_RAW (TRACE_LOAD, (" [%ld]", Value));
+    }
+
+    if (0 == LeadSpace)
+    {
+        DEBUG_PRINT_RAW (TRACE_LOAD, (" "));
+    }
+
+    DEBUG_PRINT_RAW (TRACE_LOAD, ("\n"));
+    return_VOID;
+}
+
 
 /*****************************************************************************
  * 
@@ -336,9 +340,6 @@ AmlDumpObjStackEntry (
     UINT32                  i;
 
 
-    FUNCTION_TRACE_PTR ("AmlDumpObjStackEntry", EntryDesc);
-
-
     if (!EntryDesc)
     {
         /* 
@@ -346,21 +347,21 @@ AmlDumpObjStackEntry (
          * code that dumps the stack expects something to be there! 
          */
         DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: *** Possible error: Null stack entry ptr\n"));
-        return_ACPI_STATUS (AE_OK);
+        return AE_OK;
     }
 
     if (VALID_DESCRIPTOR_TYPE (EntryDesc, DESC_TYPE_NTE))
     {
         DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Name Table Entry (NTE): \n"));
         DUMP_ENTRY (EntryDesc, ACPI_INFO);
-        return_ACPI_STATUS (AE_OK);
+        return AE_OK;
     }
 
     if (TbSystemTablePointer (EntryDesc))
     {
         DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: %p is a Pcode pointer\n",
                         EntryDesc));
-        return_ACPI_STATUS (AE_OK);
+        return AE_OK;
     }
 
 
@@ -718,7 +719,7 @@ AmlDumpObjStackEntry (
 
     }
  
-    return_ACPI_STATUS (AE_OK);
+    return AE_OK;
 }
 
 
@@ -737,6 +738,7 @@ AmlDumpObjStackEntry (
 
 void
 _AmlDumpObjStack (
+    ACPI_OBJECT_INTERNAL    **Operands,
     OPERATING_MODE          InterpreterMode, 
     char                    *Ident, 
     INT32                   NumLevels, 
@@ -744,14 +746,10 @@ _AmlDumpObjStack (
     char                    *ModuleName, 
     INT32                   LineNumber)
 {
-    UINT32                  CurrentStackTop;
     UINT32                  i;
     ACPI_OBJECT_INTERNAL    **EntryDesc;
 
     
-    FUNCTION_TRACE ("AmlDumpObjStack");
-
-
     if (!Ident)
     {
         Ident = "?";
@@ -762,29 +760,19 @@ _AmlDumpObjStack (
         Note = "?";
     }
 
-    CurrentStackTop = AmlObjStackLevel ();
 
-    DEBUG_PRINT (ACPI_INFO, ("*************AmlDumpObjStack**TOS=%d**Mode=%X******************\n", 
-                    CurrentStackTop, InterpreterMode));
+    DEBUG_PRINT (ACPI_INFO, ("************* AmlDumpOperands  Mode=%X ******************\n", 
+                            InterpreterMode));
     DEBUG_PRINT (ACPI_INFO, ("From %12s(%d)  %s: %s\n", ModuleName, LineNumber, Ident, Note));
 
+    if (NumLevels == 0)
+        NumLevels = 1;
 
     /* Dump the stack starting at the top, working down */
 
-    for (i = 0; i <= CurrentStackTop; i++, NumLevels--)
+    for (i = 0; NumLevels > 0; i--, NumLevels--)
     {
-        /* 
-         * When we have counted NumLevels down to zero, print a line.
-         * By convention, callers pass NumLevels as the number of entries
-         * which directly relate to the current operation; thus the line
-         * separates those entries from any older ones which may be present.
-         */
-        if (0 == NumLevels)
-        {
-            DEBUG_PRINT (ACPI_INFO, ("---------------------------------------------\n"));
-        }
-
-        EntryDesc = AmlObjStackGetPtr (i);
+        EntryDesc = &Operands[i];
 
         if (AE_OK != AmlDumpObjStackEntry (*EntryDesc))
         {
@@ -792,8 +780,7 @@ _AmlDumpObjStack (
         }
     }
 
-
-    return_VOID;
+    return;
 }
 
 
@@ -1026,4 +1013,6 @@ AmlDumpObjectDescriptor (
 
     return_VOID;
 }
+
+#endif
 
