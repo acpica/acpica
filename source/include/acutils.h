@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.111 $
+ *       $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -317,12 +317,12 @@ AcpiUtCopyIobjectToEobject (
 ACPI_STATUS
 AcpiUtCopyEsimpleToIsimple(
     ACPI_OBJECT             *UserObj,
-    ACPI_OPERAND_OBJECT     *Obj);
+    ACPI_OPERAND_OBJECT     **ReturnObj);
 
 ACPI_STATUS
 AcpiUtCopyEobjectToIobject (
     ACPI_OBJECT             *Obj,
-    ACPI_OPERAND_OBJECT     *InternalObj);
+    ACPI_OPERAND_OBJECT     **InternalObj);
 
 ACPI_STATUS
 AcpiUtCopyISimpleToIsimple (
@@ -653,8 +653,22 @@ AcpiUtDeleteObjectCache (
     void);
 
 /*
- * Ututils
+ * utmisc
  */
+
+ACPI_STATUS
+AcpiUtDivide (
+    ACPI_INTEGER            *InDividend,
+    ACPI_INTEGER            *InDivisor,
+    ACPI_INTEGER            *OutQuotient,
+    ACPI_INTEGER            *OutRemainder);
+
+ACPI_STATUS
+AcpiUtShortDivide (
+    ACPI_INTEGER            *InDividend,
+    UINT32                  Divisor,
+    ACPI_INTEGER            *OutQuotient,
+    UINT32                  *OutRemainder);
 
 BOOLEAN
 AcpiUtValidAcpiName (
@@ -723,11 +737,6 @@ AcpiUtFree (
     NATIVE_CHAR             *Module,
     UINT32                  Line);
 
-void
-AcpiUtInitStaticObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 void
 AcpiUtDumpAllocationInfo (
@@ -738,7 +747,6 @@ AcpiUtDumpCurrentAllocations (
     UINT32                  Component,
     NATIVE_CHAR             *Module);
 #endif
-
 
 
 #endif /* _ACUTILS_H */
