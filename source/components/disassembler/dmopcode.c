@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.36 $
+ *              $Revision: 1.39 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,7 +124,7 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbdisasm")
 
 
@@ -334,9 +334,13 @@ AcpiDbDisplayOp (
                 }
 
                 if (AcpiDbBlockType (Op) == BLOCK_PAREN)
+                {
                     AcpiOsPrintf ("(\n");
+                }
                 else
+                {
                     AcpiOsPrintf ("{\n");
+                }
             }
 
             /* Close a block if we are nested less than last time */
@@ -352,9 +356,13 @@ AcpiDbDisplayOp (
                     }
 
                     if (AcpiDbBlockType (Op) == BLOCK_PAREN)
+                    {
                         AcpiOsPrintf (")\n");
+                    }
                     else
+                    {
                         AcpiOsPrintf ("}\n");
+                    }
                 }
             }
 
