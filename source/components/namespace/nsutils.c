@@ -120,49 +120,11 @@
 #include <namespace.h>
 #include <interpreter.h>
 #include <amlcode.h>
+#include <tables.h>
 
 
-#define _THIS_MODULE        "nsutils.c"
 #define _COMPONENT          NAMESPACE
-
-
-
-/******************************************************************************
- *
- * FUNCTION:    NsChecksum
- *
- * PARAMETERS:  Buffer              - Buffer to checksum
- *              Length              - Size of the buffer
- *
- * RETURNS      8 bit checksum of buffer
- *
- * DESCRIPTION: Computes an 8 bit checksum of the buffer(length) and returns it. 
- *
- ******************************************************************************/
-
-UINT8
-NsChecksum (
-    void                    *Buffer, 
-    UINT32                  Length)
-{
-    UINT8                   *limit;
-    UINT8                   *rover;
-    UINT8                   sum = 0;
-
-
-    if (Buffer && Length)
-    {   
-        /*  Buffer and Length are valid   */
-        
-        limit = (UINT8 *) Buffer + Length;
-
-        for (rover = Buffer; rover < limit; rover++)
-            sum += *rover;
-    }
-
-    return sum;
-}
-
+        MODULE_NAME         ("nsutils");
 
 
 /****************************************************************************
@@ -220,7 +182,7 @@ NsLocal (
         return_VALUE (0);
     }
 
-    return_VALUE (Gbl_NsProperties[Type] & LOCAL);
+    return_VALUE ((INT32) Gbl_NsProperties[Type] & NSP_LOCAL);
 }
 
 
@@ -464,10 +426,12 @@ NsTerminate (void)
 
 
     /*
-     * 1) Free the entire namespace -- all objects and all tables
+     * 1) Free the entire namespace -- all objects, tables, and stacks
      */
 
     NsDeleteNamespace ();
+    NsScopeStackClear ();
+    CmFree (Gbl_CurrentScope);      /* Free the root scope */
 
     DEBUG_PRINT (ACPI_INFO, ("NsTerminate: Namespace freed\n"));
 
@@ -476,7 +440,7 @@ NsTerminate (void)
      * 2) Now we can delete the ACPI tables 
      */
 
-    NsDeleteAcpiTables ();
+    TbDeleteAcpiTables ();
 
     DEBUG_PRINT (ACPI_INFO, ("NsTerminate: ACPI Tables freed\n"));
 
