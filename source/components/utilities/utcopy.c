@@ -164,7 +164,6 @@ CmBuildExternalSimpleObject (
     UINT8                   *DataSpace,
     UINT32                  *BufferSpaceUsed)
 {
-    ACPI_STATUS             Status = AE_OK;
     UINT32                  Length = 0;
     UINT8                   *SourcePtr = NULL;
 
@@ -179,11 +178,10 @@ CmBuildExternalSimpleObject (
 
     case ACPI_TYPE_String:
 
-        Status = NsExternalizeName(InternalObj->String.Length, InternalObj->String.Pointer, &Length, (char**)&SourcePtr);
-
-        ExternalObj->String.Length = Length;
+        Length = InternalObj->String.Length;
+        ExternalObj->String.Length = InternalObj->String.Length;
         ExternalObj->String.Pointer = DataSpace;
-
+        SourcePtr = InternalObj->String.Pointer;
         break;
 
 
@@ -214,14 +212,6 @@ CmBuildExternalSimpleObject (
          * Copy the return data to the caller's buffer
          */
         MEMCPY ((void *) DataSpace, (void *) SourcePtr, Length);
-
-        /*
-         * Free any memory allocated during the call to NsExternalizeName().
-         */ 
-        if (ExternalObj->Type == ACPI_TYPE_String)
-        {
-            CmFree(SourcePtr);
-        }
     }
 
 
