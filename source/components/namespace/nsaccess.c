@@ -181,7 +181,7 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
     if (MethodName) 
     {
         /*
-         *  Append the method name to the device pathname
+         *  We will append the method name to the device pathname
          */
         MaxObjectPathLength -= (strlen (MethodName) + 1);
     }
@@ -353,11 +353,11 @@ AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
                 NsDumpPathname (MethodPtr->Scope, "AcpiExecuteMethod: Setting scope to", 
                                 TRACE_NAMES, _COMPONENT);
 
-                /*  reset current scope to beginning of scope stack */
+                /* Reset the current scope to the beginning of scope stack */
 
                 CurrentScope = &ScopeStack[0];
 
-                /*  push current scope on scope stack and make hMethod->Scope current  */
+                /* Push current scope on scope stack and make Method->Scope current  */
 
                 NsPushCurrentScope (MethodPtr->Scope, TYPE_Method);
 
@@ -370,8 +370,10 @@ AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
                 AmlClearPkgStack ();
                 ObjStackTop = 0;    /* Clear object stack */
                 
-                /* Excecute the method here */
 
+                /* 
+                 * Excecute the method here 
+                 */
                 Status = AmlExecuteMethod (
                                  ((meth *) MethodPtr->Value)->Offset + 1,
                                  ((meth *) MethodPtr->Value)->Length - 1,
@@ -428,7 +430,7 @@ AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
                  * the first unused position.
                  */
 
-                DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+                LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
                 ObjStack[ObjStackTop] = (void *) ObjDesc;
 
                 /* This causes ObjDesc (allocated above) to always be deleted */
@@ -490,35 +492,6 @@ AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
 
     FUNCTION_EXIT;
     return Status;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiLoadTableInNameSpace
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Expands namespace, typically in response to a docking event
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AcpiLoadTableInNameSpace (void)
-{
-    FUNCTION_TRACE ("AcpiLoadTableInNameSpace");
-
-
-    if (!RootObject->Scope)
-    {
-        FUNCTION_EXIT;
-        return AE_ERROR;
-    }
-    
-    FUNCTION_EXIT;
-    return (AE_OK);
 }
 
 
@@ -989,34 +962,4 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
     FUNCTION_EXIT;
     return AE_OK;
 }
-
-/****************************************************************************
- *
- *  FUNCTION:       PriUnloadNameSpace (void)
- *
- *  PARAMETERS:     None
- *
- *  RETURN:         Status
- *
- *  DESCRIPTION:    Shrinks the namespace, typically in response to an undocking
- *                  event
- *
- ****************************************************************************/
-
-ACPI_STATUS
-PriUnloadNameSpace (void)
-{
-    FUNCTION_TRACE ("PriUnloadNameSpace");
-
-
-    if (!RootObject->Scope)
-    {
-        FUNCTION_EXIT;
-        return AE_ERROR;
-    }
-    
-    FUNCTION_EXIT;
-    return (AE_OK);
-}
-
 
