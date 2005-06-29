@@ -271,8 +271,11 @@ TbValidateTableHeader (
 
     if (!CmValidAcpiName (*(UINT32 *) TableHeader->Signature))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Table signature [%X] contains one or more invalid characters\n", *(UINT32 *) TableHeader->Signature));
+        DEBUG_PRINT (ACPI_ERROR, ("Table signature at %p [%X] has invalid characters\n", 
+                        TableHeader, *(UINT32 *) TableHeader->Signature));
+
         REPORT_WARNING ("Invalid table signature found");
+        DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return AE_BAD_SIGNATURE;
     }
 
@@ -281,8 +284,11 @@ TbValidateTableHeader (
 
     if (TableHeader->Length < (UINT32) sizeof (ACPI_TABLE_HEADER))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Invalid length in header at %08lXh name %4.4s\n", TableHeader, &TableHeader->Signature));
+        DEBUG_PRINT (ACPI_ERROR, ("Invalid length in table header %p name %4.4s\n", 
+                        TableHeader, &TableHeader->Signature));
+
         REPORT_WARNING ("Invalid table header length found");
+        DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return AE_BAD_HEADER;
     }
 
@@ -321,7 +327,7 @@ TbMapAcpiTable (
 
     /* If size is zero, look at the table header to get the actual size */
 
-    if (!*Size)
+    if ((*Size) == 0)
     {
         /* Get the table header so we can extract the table length */
 
@@ -331,19 +337,27 @@ TbMapAcpiTable (
 			return Status;
 		}
 
-        /* Validate the header */
-
-        Status = TbValidateTableHeader (Table);
-        if (ACPI_FAILURE (Status))
-        {
-            OsdUnMapMemory (Table, sizeof (ACPI_TABLE_HEADER));
-            return Status;
-        }
-
-        /* Now we know how large to make the mapping (table + header) */
+        /* Extract the full table length before we delete the mapping */
 
         TableSize = Table->Length;
+
+        /* 
+         * Validate the header and delete the mapping.
+         * We will create a mapping for the full table below.
+         */
+
+        Status = TbValidateTableHeader (Table);
+
+        /* Always unmap the memory for the header */
+
         OsdUnMapMemory (Table, sizeof (ACPI_TABLE_HEADER));
+
+        /* Exit if header invalid */
+
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
     }
 
 
