@@ -62,6 +62,7 @@
 #define TRACE_TABLES                0x00010000
 #define TRACE_FUNCTIONS             0x00020000
 #define TRACE_VALUES                0x00040000
+#define TRACE_OBJECTS               0x00080000
 #define TRACE_ALL                   0x000FFF00
 
 
@@ -151,7 +152,7 @@ _ReportSuccess (
     ST_KEY_DESC_TABLE   *KdtEntry);
 
 void 
-DumpBuf (
+DumpBuffer (
     char               *Buffer, 
     UINT32              Count, 
     INT32               Flags, 
@@ -203,11 +204,6 @@ _LocalCallocate (
 #define AllocateObjectDesc(a)           _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT,a)
 
 
-/* Buffer dump macros */
-
-#define DumpBuffer(Buf,Count,Flags)     DumpBuf((char *) Buf, Count, Flags,_COMPONENT)
-
-
 
 /*
  * Reporting macros that are never compiled out
@@ -227,10 +223,14 @@ _LocalCallocate (
 #define _REPORT_WARNING(a,b,c,d)        _ReportWarning(a,b,c,d)
 
 
+/* Buffer dump macros */
+
+#define DUMP_BUFFER(a,b,c)              DumpBuffer((char *)a,b,c,_COMPONENT)
+
+
 /*
  * Debug macros that are conditionally compiled
  */
-
 
 #ifdef _DEBUG
 
@@ -243,7 +243,6 @@ _LocalCallocate (
 #define DUMP_STACK_ENTRY(a)             DumpStackEntry(a)
 #define DUMP_STACK(a,b,c,d)             DumpStack(a,b,c,d)
 #define DUMP_ENTRY(a)                   NsDumpEntry (a)
-#define DUMP_BUFFER(a,b,c)              DumpBuffer(a,b,c)
 #define DUMP_CODE(a)                    DumpCode(a)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
 
@@ -275,7 +274,6 @@ _LocalCallocate (
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_STACK(a,b,c,d)
 #define DUMP_ENTRY(a)
-#define DUMP_BUFFER(a,b,c)
 #define DUMP_CODE(a)
 #define DUMP_TABLES(a,b)
 
