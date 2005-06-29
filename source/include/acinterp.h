@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: interp.h - Interpreter subcomponent prototypes and defines
+ * Name: acinterp.h - Interpreter subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -114,12 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __INTERP_H__
-#define __INTERP_H__
-
-
-#include "actypes.h"
-#include "acobject.h"
+#ifndef __ACINTERP_H__
+#define __ACINTERP_H__
 
 
 #define WALK_OPERANDS       &(WalkState->Operands [WalkState->NumOperands -1])
@@ -332,7 +328,7 @@ AcpiAmlPrepIndexFieldValue (
 
 ACPI_STATUS
 AcpiAmlPrepOperands (
-    char                    *Types,
+    INT8                    *Types,
     ACPI_OBJECT_INTERNAL    **StackPtr);
 
 
@@ -476,10 +472,10 @@ void
 AcpiAmlDumpOperands (
     ACPI_OBJECT_INTERNAL    **Operands,
     OPERATING_MODE          InterpreterMode,
-    char                    *Ident,
+    INT8                    *Ident,
     INT32                   NumLevels,
-    char                    *Note,
-    char                    *ModuleName,
+    INT8                    *Note,
+    INT8                    *ModuleName,
     INT32                   LineNumber);
 
 void
@@ -498,7 +494,7 @@ AcpiAmlDumpAcpiNamedObject (
  * amnames - interpreter/scanner name load/execute
  */
 
-char *
+INT8 *
 AcpiAmlAllocateNameString (
     UINT32                  PrefixCount,
     UINT32                  NumNameSegs);
@@ -510,13 +506,13 @@ AcpiAmlGoodChar (
 ACPI_STATUS
 AcpiAmlExecNameSegment (
     UINT8                   **InAmlAddress,
-    char                    *NameString);
+    INT8                    *NameString);
 
 ACPI_STATUS
 AcpiAmlGetNameString (
     OBJECT_TYPE_INTERNAL    DataType,
     UINT8                   *InAmlAddress,
-    char                    **OutNameString,
+    INT8                    **OutNameString,
     UINT32                  *OutNameLength);
 
 UINT32
@@ -574,14 +570,6 @@ ACPI_STATUS
 AcpiAmlReleaseGlobalLock (
     BOOLEAN                 Locked);
 
-void
-AcpiAmlAppendOperandDiag(
-    char                    *Name,
-    INT32                   Line,
-    UINT16                  OpCode,
-    ACPI_OBJECT_INTERNAL    **Operands,
-    INT32                   NOperands);
-
 UINT32
 AcpiAmlBufSeq (
     void);
@@ -594,7 +582,7 @@ AcpiAmlDigitsNeeded (
 ACPI_STATUS
 AcpiAmlEisaIdToString (
     UINT32                  NumericId,
-    char                    *OutString);
+    INT8                    *OutString);
 
 
 /*
@@ -607,7 +595,8 @@ AcpiAmlSystemMemorySpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context);
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiAmlSystemIoSpaceHandler (
@@ -615,7 +604,8 @@ AcpiAmlSystemIoSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context);
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiAmlPciConfigSpaceHandler (
@@ -623,7 +613,8 @@ AcpiAmlPciConfigSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context);
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiAmlEmbeddedControllerSpaceHandler (
@@ -631,7 +622,8 @@ AcpiAmlEmbeddedControllerSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context);
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiAmlSmBusSpaceHandler (
@@ -639,7 +631,8 @@ AcpiAmlSmBusSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context);
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 
 #endif /* __INTERP_H__ */
