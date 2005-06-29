@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -267,6 +267,17 @@ AcpiEnableSubsystem (
     }
 
     /*
+     * Enable ACPI on this platform
+     */
+
+    if (!(Flags & ACPI_NO_ACPI_ENABLE))
+    {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Going into ACPI mode\n"));
+
+        AcpiEnable ();
+    }
+
+    /*
      * Note:
      * We must have the hardware AND events initialized before we can execute
      * ANY control methods SAFELY.  Any control method can require ACPI hardware
@@ -284,17 +295,6 @@ AcpiEnableSubsystem (
         }
     }
 
-
-    /*
-     * Enable ACPI on this platform
-     */
-
-    if (!(Flags & ACPI_NO_ACPI_ENABLE))
-    {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Going into ACPI mode\n"));
-
-        AcpiEnable ();
-    }
 
 
     /*
