@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.79 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -454,8 +454,9 @@ AnGetBtype (
         if (!Node)
         {
             DbgPrint (ASL_DEBUG_OUTPUT,
-                "Null attached Nsnode: [%s] at line %d\n",
-                Op->Asl.ParseOpName, Op->Asl.LineNumber);
+                "No attached Nsnode: [%s] at line %d name [%s], ignoring typecheck\n",
+                Op->Asl.ParseOpName, Op->Asl.LineNumber,
+                Op->Asl.ExternalName);
             return ACPI_UINT32_MAX;
         }
 
