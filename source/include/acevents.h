@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.75 $
+ *       $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -148,11 +148,15 @@ AcpiEvFixedEventDispatch (
  * Evmisc
  */
 
+BOOLEAN
+AcpiEvIsNotifyObject (
+    ACPI_NAMESPACE_NODE     *Node);
+
 ACPI_STATUS
 AcpiEvAcquireGlobalLock(
     UINT32                  Timeout);
 
-void
+ACPI_STATUS
 AcpiEvReleaseGlobalLock(
     void);
 
@@ -212,7 +216,7 @@ AcpiEvAddressSpaceDispatch (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    ACPI_INTEGER            *Value);
+    void                    *Value);
 
 ACPI_STATUS
 AcpiEvAddrHandlerHelper (

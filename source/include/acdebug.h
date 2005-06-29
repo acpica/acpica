@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.60 $
+ *       $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -154,7 +154,7 @@ typedef struct ArgumentInfo
  * dbapi - external debugger interfaces
  */
 
-int
+ACPI_STATUS
 AcpiDbInitialize (
     void);
 
@@ -433,7 +433,6 @@ AcpiDbLoadAcpiTable (
 ACPI_STATUS
 AcpiDbGetAcpiTable (
     NATIVE_CHAR             *Filename);
-
 
 /*
  * dbhistry - debugger HISTORY command
