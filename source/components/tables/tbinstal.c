@@ -172,7 +172,7 @@ AcpiTbInstallTable (
 
     /* Lock tables while installing */
 
-    AcpiCmAcquireMutex (MTX_TABLES);
+    AcpiCmAcquireMutex (ACPI_MTX_TABLES);
 
     /* Install the table into the global data structure */
 
@@ -185,7 +185,7 @@ AcpiTbInstallTable (
     DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n",
                                 AcpiGbl_AcpiTableData[TableType].Name, TableHeader));
 
-    AcpiCmReleaseMutex (MTX_TABLES);
+    AcpiCmReleaseMutex (ACPI_MTX_TABLES);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -460,7 +460,7 @@ AcpiTbDeleteAcpiTable (
     }
 
 
-    AcpiCmAcquireMutex (MTX_TABLES);
+    AcpiCmAcquireMutex (ACPI_MTX_TABLES);
 
     /* Free the table */
 
@@ -508,7 +508,7 @@ AcpiTbDeleteAcpiTable (
         break;
     }
 
-    AcpiCmReleaseMutex (MTX_TABLES);
+    AcpiCmReleaseMutex (ACPI_MTX_TABLES);
 
     return_VOID;
 }
