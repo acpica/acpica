@@ -97,6 +97,8 @@
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
 
+#include "config.h"
+#include "acpitables.h"
 
 /*
  * Ensure that the globals are actually defined only once
@@ -141,8 +143,6 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
 
 ACPI_EXTERN BOOLEAN             GlobalLockSet;
 ACPI_EXTERN INT32               Capabilities;
-ACPI_EXTERN INT32               NameStringSize;
-ACPI_EXTERN char                *NameString;
 
 ACPI_EXTERN INT32               RestoreAcpiChipset;
 ACPI_EXTERN UINT16              Pm1EnableRegisterSave;
