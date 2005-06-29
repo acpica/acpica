@@ -291,7 +291,7 @@ AmlDumpObjStackEntry (
 
         DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Entry %p - ", EntryDesc));
 
-        switch (EntryDesc->ValType)
+        switch (EntryDesc->Type)
         {
         case TYPE_Lvalue:
 
@@ -323,16 +323,16 @@ AmlDumpObjStackEntry (
 
             case AML_NameOp:
 
-                NsDumpPathname (EntryDesc->Lvalue.Ref, "Lvalue: Name: ", 
+                NsDumpPathname (EntryDesc->Lvalue.Object, "Lvalue: Name: ", 
                                 ACPI_INFO, _COMPONENT);
-                DUMP_ENTRY (EntryDesc->Lvalue.Ref);
+                DUMP_ENTRY (EntryDesc->Lvalue.Object);
                 break;
  
 
             case AML_IndexOp:
 
                 DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Index %p\n",
-                            EntryDesc->Lvalue.Ref));
+                            EntryDesc->Lvalue.Object));
                 break;
  
 
@@ -342,12 +342,12 @@ AmlDumpObjStackEntry (
                 DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Arg%d",
                             EntryDesc->Lvalue.OpCode - AML_Arg0));
 
-                if (TYPE_Number == EntryDesc->ValType)
+                if (TYPE_Number == EntryDesc->Type)
                 {
                     /* Value is a Number */
                 
                     DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]", 
-                                                EntryDesc->Number.Number));
+                                                EntryDesc->Number.Value));
                 }
 
                 DEBUG_PRINT_RAW (ACPI_INFO, ("\n")); 
@@ -360,12 +360,12 @@ AmlDumpObjStackEntry (
                 DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Local%d",
                             EntryDesc->Lvalue.OpCode - AML_Local0));
 
-                if (TYPE_Number == EntryDesc->ValType)
+                if (TYPE_Number == EntryDesc->Type)
                 {
                     /* Value is a Number */
                 
                     DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]", 
-                                                EntryDesc->Number.Number));
+                                                EntryDesc->Number.Value));
                 }
 
                 DEBUG_PRINT_RAW (ACPI_INFO, ("\n")); 
@@ -386,10 +386,10 @@ AmlDumpObjStackEntry (
         case TYPE_Buffer:
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("Buffer[%d] seq %lx @ %p \n",
-                        EntryDesc->Buffer.BufLen, EntryDesc->Buffer.Sequence,
-                        EntryDesc->Buffer.Buffer));
+                        EntryDesc->Buffer.Length, EntryDesc->Buffer.Sequence,
+                        EntryDesc->Buffer.Pointer));
 
-            Length = EntryDesc->Buffer.BufLen;
+            Length = EntryDesc->Buffer.Length;
 
             if (Length > 64)
             {
@@ -398,11 +398,11 @@ AmlDumpObjStackEntry (
 
             /* Debug only -- dump the buffer contents */
 
-            if (EntryDesc->Buffer.Buffer)
+            if (EntryDesc->Buffer.Pointer)
             {
                 DEBUG_PRINT_RAW (ACPI_INFO, ("Buffer Contents: "));
                                
-                for (Buf = EntryDesc->Buffer.Buffer; Length--; ++Buf)
+                for (Buf = EntryDesc->Buffer.Pointer; Length--; ++Buf)
                 {
                     DEBUG_PRINT_RAW (ACPI_INFO,(Length ? " %02x" : " %02x", *Buf));
                 }
@@ -415,43 +415,43 @@ AmlDumpObjStackEntry (
         case TYPE_Number:
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("Number 0x%lx\n",
-                        EntryDesc->Number.Number));
+                        EntryDesc->Number.Value));
             break;
 
 
         case TYPE_If:
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("If [Number] 0x%lx\n",
-                        EntryDesc->Number.Number));
+                        EntryDesc->Number.Value));
             break;
 
 
         case TYPE_While:
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("While [Number] 0x%lx\n",
-                        EntryDesc->Number.Number));
+                        EntryDesc->Number.Value));
             break;
 
 
         case TYPE_Package:
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("Package[%d] @ %p\n",
-                        EntryDesc->Package.PkgCount, EntryDesc->Package.PackageElems));
+                        EntryDesc->Package.Count, EntryDesc->Package.Elements));
 
 
             /* 
              * If elements exist, package vector pointer is valid,
              * and debug_level exceeds 1, dump package's elements.
              */
-            if (EntryDesc->Package.PkgCount &&
-                EntryDesc->Package.PackageElems &&
+            if (EntryDesc->Package.Count &&
+                EntryDesc->Package.Elements &&
                 GetDebugLevel () > 1)
             {
                 ACPI_OBJECT_INTERNAL**Element;
                 UINT16              ElementIndex;
 
-                for (ElementIndex = 0, Element = EntryDesc->Package.PackageElems;
-                      ElementIndex < EntryDesc->Package.PkgCount;
+                for (ElementIndex = 0, Element = EntryDesc->Package.Elements;
+                      ElementIndex < EntryDesc->Package.Count;
                       ++ElementIndex, ++Element)
                 {
                     AmlDumpObjStackEntry (*Element);
@@ -465,7 +465,7 @@ AmlDumpObjStackEntry (
 
         case TYPE_Region:
 
-            if (OUTRANGE (EntryDesc->Region.SpaceId, RegionTypes))
+            if (EntryDesc->Region.SpaceId >= NUM_REGION_TYPES)
             {
                 OutString = "**UNRECOGNIZED**";
             }
@@ -478,7 +478,7 @@ AmlDumpObjStackEntry (
              * If the address and length have not been evaluated,
              * don't print them.
              */
-            if (0 == EntryDesc->Region.AdrLenValid)
+            if (0 == EntryDesc->Region.DataValid)
             {
                 DEBUG_PRINT_RAW (ACPI_INFO, ("Region %s\n", OutString));
             }
@@ -494,7 +494,7 @@ AmlDumpObjStackEntry (
         case TYPE_String:
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("String[%d] @ %p\n",
-                        EntryDesc->String.StrLen, EntryDesc->String.String));
+                        EntryDesc->String.Length, EntryDesc->String.Pointer));
             break;
 
 
@@ -508,7 +508,7 @@ AmlDumpObjStackEntry (
 
             DEBUG_PRINT_RAW (ACPI_INFO,
                         ("DefField: %d bits acc %d lock %d update %d at byte %lx bit %d of \n",
-                        EntryDesc->Field.DatLen,   EntryDesc->Field.Access,
+                        EntryDesc->Field.Length,   EntryDesc->Field.Access,
                         EntryDesc->Field.LockRule, EntryDesc->Field.UpdateRule,
                         EntryDesc->Field.Offset,   EntryDesc->Field.BitOffset));
             DUMP_STACK_ENTRY (EntryDesc->Field.Container);
@@ -525,7 +525,7 @@ AmlDumpObjStackEntry (
 
             DEBUG_PRINT_RAW (ACPI_INFO,
                         ("FieldUnit: %d bits acc %d lock %d update %d at byte %lx bit %d of \n",
-                        EntryDesc->FieldUnit.DatLen,   EntryDesc->FieldUnit.Access,
+                        EntryDesc->FieldUnit.Length,   EntryDesc->FieldUnit.Access,
                         EntryDesc->FieldUnit.LockRule, EntryDesc->FieldUnit.UpdateRule,
                         EntryDesc->FieldUnit.Offset,   EntryDesc->FieldUnit.BitOffset));
 
@@ -533,17 +533,17 @@ AmlDumpObjStackEntry (
             {
                 DEBUG_PRINT (ACPI_INFO, ("*NULL* \n"));
             }
-            else if (TYPE_Buffer != EntryDesc->FieldUnit.Container->ValType)
+            else if (TYPE_Buffer != EntryDesc->FieldUnit.Container->Type)
             {
                 DEBUG_PRINT_RAW (ACPI_INFO, ("*not a Buffer* \n"));
             }
             else
             {
-                if (EntryDesc->FieldUnit.ConSeq
+                if (EntryDesc->FieldUnit.Sequence
                         != EntryDesc->FieldUnit.Container->Buffer.Sequence)
                 {
                     DEBUG_PRINT_RAW (ACPI_INFO,
-                                  ("[stale] %lx \n", EntryDesc->FieldUnit.ConSeq));
+                                  ("[stale] %lx \n", EntryDesc->FieldUnit.Sequence));
                 }
 
                 DUMP_STACK_ENTRY (EntryDesc->FieldUnit.Container);
@@ -561,7 +561,7 @@ AmlDumpObjStackEntry (
 
             DEBUG_PRINT_RAW (ACPI_INFO,
                         ("Method(%d) @ %p:%lx:%lx\n",
-                        EntryDesc->Method.NumParam, EntryDesc->Method.AmlBase,
+                        EntryDesc->Method.ParamCount, EntryDesc->Method.AmlBase,
                         EntryDesc->Method.AmlOffset, EntryDesc->Method.Length));
             break;
 
@@ -597,15 +597,15 @@ AmlDumpObjStackEntry (
 
 
         default:
-            /*  unknown EntryDesc->ValType value    */
+            /*  unknown EntryDesc->Type value    */
 
-            REPORT_ERROR ("AmlDumpObjStackEntry: Unknown ValType");
+            REPORT_ERROR ("AmlDumpObjStackEntry: Unknown Type");
             
-            if (AML_UNASSIGNED != Aml[(INT32) EntryDesc->ValType])
+            if (AML_UNASSIGNED != Aml[(INT32) EntryDesc->Type])
             {
                 DEBUG_PRINT_RAW (ACPI_ERROR,
                               ("AmlDumpObjStackEntry: Unhandled opcode (AML %s) \n", 
-                              ShortOps[Aml[(INT32) EntryDesc->ValType]]));
+                              ShortOps[Aml[(INT32) EntryDesc->Type]]));
             }
 
 
@@ -734,59 +734,59 @@ AmlDumpObjectDescriptor (
 	
 	FUNCTION_TRACE ("AmlDumpObjectDescriptor");
 		
-	switch (Object->ValType)
+	switch (Object->Type)
 	{
 	case TYPE_Number:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Number"));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Number", Object->Number.Number));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Number"));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Value", Object->Number.Value));
 		break;
  
         
 	case TYPE_String:
 
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "String"));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "StrLen", Object->String.StrLen));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "String", Object->String.String));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "String"));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->String.Length));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Pointer", Object->String.Pointer));
 		break;
 
 
 	case TYPE_Buffer:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Buffer"));
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BufLen", Object->Buffer.BufLen));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Buffer"));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->Buffer.Length));
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Sequence", Object->Buffer.Sequence));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Buffer", Object->Buffer.Buffer));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Pointer", Object->Buffer.Pointer));
 		break;
         
         
 	case TYPE_Package:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Package"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "PkgCount", Object->Package.PkgCount));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "PackageElems", Object->Package.PackageElems));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Package"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Count", Object->Package.Count));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Elements", Object->Package.Elements));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "NextElement", Object->Package.NextElement));
 		break;
         
 
 	case TYPE_FieldUnit:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "FieldUnit"));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "FieldUnit"));
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->FieldUnit.Access));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->FieldUnit.LockRule));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->FieldUnit.UpdateRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DatLen", Object->FieldUnit.DatLen));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->FieldUnit.Length));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->FieldUnit.BitOffset));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Offset", Object->FieldUnit.Offset));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ConSeq", Object->FieldUnit.ConSeq));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Sequence", Object->FieldUnit.Sequence));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Container", Object->FieldUnit.Container));
 	    break;
         
 
 	case TYPE_Device:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Device"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Device", Object->Device.Device));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Device"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Handle", Object->Device.Handle));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Handler", Object->Device.Handler));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Context", Object->Device.Context));
         break;
@@ -794,7 +794,7 @@ AmlDumpObjectDescriptor (
 
 	case TYPE_Event:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Event"));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Event"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SignalCount", Object->Event.SignalCount));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Semaphore", Object->Event.Semaphore));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockCount", Object->Event.LockCount));
@@ -804,8 +804,8 @@ AmlDumpObjectDescriptor (
 
 	case TYPE_Method:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Method"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "NumParam", Object->Method.NumParam));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Method"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ParamCount", Object->Method.ParamCount));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->Method.Length));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AmlOffset", Object->Method.AmlOffset));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AmlBase", Object->Method.AmlBase));
@@ -814,7 +814,7 @@ AmlDumpObjectDescriptor (
 
 	case TYPE_Mutex:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Mutex"));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Mutex"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SyncLevel", Object->Mutex.SyncLevel));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Semaphore", Object->Mutex.Semaphore));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockCount", Object->Mutex.LockCount));
@@ -824,33 +824,33 @@ AmlDumpObjectDescriptor (
 
 	case TYPE_Region:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Region"));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Region"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SpaceId", Object->Region.SpaceId));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AdrLenValid", Object->Region.AdrLenValid));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DataValid", Object->Region.DataValid));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Address", Object->Region.Address));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->Region.Length));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AdrLoc", Object->Region.AdrLoc));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AddressLocation", Object->Region.AddressLocation));
 	    break;
 
 
 	case TYPE_Power:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "PowerResource"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "PowerResource", Object->PowerResource.PowerResource));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "PowerResource"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Handle", Object->PowerResource.Handle));
 	    break;
 
 
 	case TYPE_Processor:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Processor"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Processor", Object->Processor.Processor));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Processor"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Handle", Object->Processor.Handle));
 	    break;
 
 
 	case TYPE_Thermal:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "ThermalZone"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ThermalZone", Object->ThermalZone.ThermalZone));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "ThermalZone"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Handle", Object->ThermalZone.Handle));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Handler", Object->ThermalZone.Handler));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Context", Object->ThermalZone.Context));
 	    break;
@@ -858,14 +858,14 @@ AmlDumpObjectDescriptor (
 
 	case TYPE_BankField:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "BankField"));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "BankField"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->BankField.Access));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->BankField.LockRule));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->BankField.UpdateRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DatLen", Object->BankField.DatLen));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->BankField.Length));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->BankField.BitOffset));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Offset", Object->BankField.Offset));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BankVal", Object->BankField.BankVal));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Value", Object->BankField.Value));
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Container", Object->BankField.Container));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BankSelect", Object->BankField.BankSelect));
 	    break;
@@ -873,13 +873,13 @@ AmlDumpObjectDescriptor (
 
 	case TYPE_IndexField:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "IndexField"));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "IndexField"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->IndexField.Access));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->IndexField.LockRule));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->IndexField.UpdateRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DatLen", Object->IndexField.DatLen));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->IndexField.Length));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->IndexField.BitOffset));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "IndexVal", Object->IndexField.IndexVal));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Value", Object->IndexField.Value));
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Index", Object->IndexField.Index));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Data", Object->IndexField.Data));
 	    break;
@@ -887,9 +887,9 @@ AmlDumpObjectDescriptor (
 
 	case TYPE_Lvalue:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Lvalue"));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Lvalue"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "OpCode", Object->Lvalue.OpCode));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Ref", Object->Lvalue.Ref));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Object", Object->Lvalue.Object));
 		break;
 	
 
@@ -905,13 +905,13 @@ AmlDumpObjectDescriptor (
 	case TYPE_DefAny:
 
 		DEBUG_PRINT (ACPI_ERROR, ("*** Structure display not implemented for type %d! ***\n",
-                        Object->ValType));
+                        Object->Type));
 		break;
 
 
 	default:
 
-		DEBUG_PRINT (ACPI_ERROR, ("*** Cannot display unknown type %d! ***\n", Object->ValType));
+		DEBUG_PRINT (ACPI_ERROR, ("*** Cannot display unknown type %d! ***\n", Object->Type));
 		break;
 	}
 

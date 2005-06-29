@@ -175,16 +175,16 @@ AmlSetupField (
         Status = AE_AML_ERROR;
     }
 
-    else if (TYPE_Region != RgnDesc->ValType)
+    else if (TYPE_Region != RgnDesc->Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Needed Region, found %d %s\n",
-                        RgnDesc->ValType, NsTypeNames[RgnDesc->ValType]));
+                        RgnDesc->Type, NsTypeNames[RgnDesc->Type]));
         Status = AE_AML_ERROR;
     }
 
     if (AE_OK == Status)
     {   
-        /* ObjDesc, RgnDesc, and RgnDesc->ValType valid */
+        /* ObjDesc, RgnDesc, and RgnDesc->Type valid */
         
         FieldByteWidth = FieldBitWidth / 8;     /*  possible values are 1, 2, 4 */
 
@@ -204,7 +204,7 @@ AmlSetupField (
          * If the address and length have not been previously evaluated,
          * evaluate them and save the results.
          */
-        if (0 == RgnDesc->Region.AdrLenValid)
+        if (0 == RgnDesc->Region.DataValid)
         {
             /* 
              * Address and length have not been previously evaluated
@@ -220,7 +220,7 @@ AmlSetupField (
                  * Point to Address opcode in AML stream
                  */
 
-                AmlSetCurrentLocation (&RgnDesc->Region.AdrLoc);
+                AmlSetCurrentLocation (&RgnDesc->Region.AddressLocation);
 
                 /* Evaluate the Address opcode */
 
@@ -233,18 +233,18 @@ AmlSetupField (
 
 
                     if (!ObjValDesc ||
-                        ObjValDesc->ValType != (UINT8) TYPE_Number)
+                        ObjValDesc->Type != (UINT8) TYPE_Number)
                     {
                         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Address "
-                                    "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh\n",
-                                    ObjValDesc, ObjValDesc->ValType, (UINT8) TYPE_Number));
+                                    "ObjValDesc = %p, ObjValDesc->Type = %02Xh, Number = %02Xh\n",
+                                    ObjValDesc, ObjValDesc->Type, (UINT8) TYPE_Number));
 
                         Status = AE_AML_ERROR;
                     }
 
                     else
                     {
-                        RgnDesc->Region.Address = ObjValDesc->Number.Number;
+                        RgnDesc->Region.Address = ObjValDesc->Number.Value;
                     }
                 }
 
@@ -260,7 +260,7 @@ AmlSetupField (
                         ObjValDesc = ObjStack[ObjStackTop];
 
                         if (!ObjValDesc ||
-                            ObjValDesc->ValType != (UINT8) TYPE_Number)
+                            ObjValDesc->Type != (UINT8) TYPE_Number)
                         {
 
                             DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Length \n"));
@@ -271,13 +271,13 @@ AmlSetupField (
                         {
                             /* Region Length valid */
 
-                            RgnDesc->Region.Length = ObjValDesc->Number.Number;
+                            RgnDesc->Region.Length = ObjValDesc->Number.Value;
 
                             /* 
                              * Remember that both Address and Length
                              * have been successfully evaluated and saved.
                              */
-                            RgnDesc->Region.AdrLenValid = 1;
+                            RgnDesc->Region.DataValid = 1;
                         }
                     }
                 }
@@ -390,7 +390,7 @@ AmlReadField (
     Address = RgnDesc->Region.Address
             + (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1));
 
-    if (OUTRANGE (RgnDesc->Region.SpaceId, RegionTypes))
+    if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
     {
         DEBUG_PRINT (TRACE_OPREGION,
                     ("AmlReadField: **** Read from unknown OpRegion SpaceID %d at %08lx width %d ** \n",
@@ -594,7 +594,7 @@ AmlWriteField (
     Address = RgnDesc->Region.Address
                 + (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1));
 
-    if (OUTRANGE (RgnDesc->Region.SpaceId, RegionTypes))
+    if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
     {
         DEBUG_PRINT (TRACE_OPREGION,
                 ("AmlWriteField: **** Store %lx in unknown OpRegion SpaceID %d at %08lx width %d ** \n",
@@ -785,16 +785,16 @@ AmlAccessNamedField (
                     ("AmlAccessNamedField: DefField type and ValPtr OK in nte \n"));
         DUMP_ENTRY (NamedField);
 
-        DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, ObjDesc->ValType=%d\n",
-                    ObjDesc, ObjDesc->ValType));
+        DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, ObjDesc->Type=%d\n",
+                    ObjDesc, ObjDesc->Type));
         DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DatLen=%d, BitOffset=%d\n",
-                    ObjDesc->FieldUnit.DatLen, ObjDesc->FieldUnit.BitOffset));
+                    ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
 
-        if (TYPE_DefField != ObjDesc->ValType)
+        if (TYPE_DefField != ObjDesc->Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlAccessNamedField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                    NamedField, NsGetType (NamedField), ObjDesc->ValType, ObjDesc));
+                    NamedField, NsGetType (NamedField), ObjDesc->Type, ObjDesc));
         }
 
         else
@@ -848,7 +848,7 @@ AmlAccessNamedField (
    {
         /* Field has valid access type */
 
-        if ((UINT32) (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset) > MaxW)
+        if ((UINT32) (ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset) > MaxW)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Field exceeds %s\n", Type));
             Status = AE_AML_ERROR;
@@ -870,7 +870,7 @@ AmlAccessNamedField (
          * divide MaxW by 2.
          */
         while (Granularity < MaxW && 
-               ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset
+               ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset
                     <= (UINT16) MaxW / 2)
         {
             MaxW /= 2;
@@ -881,7 +881,7 @@ AmlAccessNamedField (
             /* Write access */
             /* Construct Mask with 1 bits where the field is, 0 bits elsewhere */
 
-            Mask = (((UINT32) 1 << ObjDesc->FieldUnit.DatLen) - (UINT32) 1)
+            Mask = (((UINT32) 1 << ObjDesc->FieldUnit.Length) - (UINT32) 1)
                                 << ObjDesc->Field.BitOffset;
             
             if (Value)
@@ -892,7 +892,7 @@ AmlAccessNamedField (
             }
 
 
-            if (ObjDesc->FieldUnit.DatLen % Granularity || 
+            if (ObjDesc->FieldUnit.Length % Granularity || 
                 ObjDesc->FieldUnit.BitOffset)
             {
                 /* Write does not fill an integral number of naturally aligned units */
@@ -954,7 +954,7 @@ AmlAccessNamedField (
                  Value)
             {
                 *Value >>= ObjDesc->Field.BitOffset;
-                *Value &= (((UINT32) 1 << ObjDesc->FieldUnit.DatLen) - (UINT32) 1);
+                *Value &= (((UINT32) 1 << ObjDesc->FieldUnit.Length) - (UINT32) 1);
             }
         }
     }

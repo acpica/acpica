@@ -183,11 +183,11 @@ AmlExecMonadic1 (
 
     case AML_ReleaseOp:
 
-        if (TYPE_Mutex != ObjDesc->ValType)
+        if (TYPE_Mutex != ObjDesc->Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
-                    ObjDesc->ValType));
+                    ObjDesc->Type));
             FUNCTION_STATUS_EXIT (AE_AML_ERROR);
            return AE_AML_ERROR;
         }
@@ -201,10 +201,10 @@ AmlExecMonadic1 (
 
     case AML_ResetOp:
 
-        if (TYPE_Event != ObjDesc->ValType)
+        if (TYPE_Event != ObjDesc->Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->ValType));
+                    "AmlExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->Type));
             FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
@@ -218,10 +218,10 @@ AmlExecMonadic1 (
     
     case AML_SignalOp:
 
-        if (TYPE_Event != ObjDesc->ValType)
+        if (TYPE_Event != ObjDesc->Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->ValType));
+                    "AmlExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->Type));
             FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
@@ -235,7 +235,7 @@ AmlExecMonadic1 (
     
     case AML_SleepOp:
 
-        OsDoSuspend (ObjDesc->Number.Number);
+        OsDoSuspend (ObjDesc->Number.Value);
         break;
 
 
@@ -243,7 +243,7 @@ AmlExecMonadic1 (
     
     case AML_StallOp:
 
-        OsdSleepUsec (ObjDesc->Number.Number);
+        OsdSleepUsec (ObjDesc->Number.Value);
         break;
 
 
@@ -322,7 +322,7 @@ AmlExecMonadic2R (
     
     case AML_BitNotOp:
 
-        ObjDesc->Number.Number = ~ObjDesc->Number.Number;
+        ObjDesc->Number.Value = ~ObjDesc->Number.Value;
         break;
 
 
@@ -330,12 +330,12 @@ AmlExecMonadic2R (
 
     case AML_FindSetLeftBitOp:
 
-        for (ResVal = 0; ObjDesc->Number.Number && ResVal < 33; ++ResVal)
+        for (ResVal = 0; ObjDesc->Number.Value && ResVal < 33; ++ResVal)
         {
-            ObjDesc->Number.Number >>= 1;
+            ObjDesc->Number.Value >>= 1;
         }
 
-        ObjDesc->Number.Number = ResVal;
+        ObjDesc->Number.Value = ResVal;
         break;
 
 
@@ -343,12 +343,12 @@ AmlExecMonadic2R (
 
     case AML_FindSetRightBitOp:
 
-        for (ResVal = 0; ObjDesc->Number.Number && ResVal < 33; ++ResVal)
+        for (ResVal = 0; ObjDesc->Number.Value && ResVal < 33; ++ResVal)
         {
-            ObjDesc->Number.Number <<= 1;
+            ObjDesc->Number.Value <<= 1;
         }
 
-        ObjDesc->Number.Number = ResVal == 0 ? 0 : 33 - ResVal;
+        ObjDesc->Number.Value = ResVal == 0 ? 0 : 33 - ResVal;
         break;
 
 
@@ -356,10 +356,10 @@ AmlExecMonadic2R (
 
     case AML_FromBCDOp:
 
-        d0 = (INT32) (ObjDesc->Number.Number & 15);
-        d1 = (INT32) (ObjDesc->Number.Number >> 4 & 15);
-        d2 = (INT32) (ObjDesc->Number.Number >> 8 & 15);
-        d3 = (INT32) (ObjDesc->Number.Number >> 12 & 15);
+        d0 = (INT32) (ObjDesc->Number.Value & 15);
+        d1 = (INT32) (ObjDesc->Number.Value >> 4 & 15);
+        d2 = (INT32) (ObjDesc->Number.Value >> 8 & 15);
+        d3 = (INT32) (ObjDesc->Number.Value >> 12 & 15);
         
         if (d0 > 9 || d1 > 9 || d2 > 9 || d3 > 9)
         {
@@ -370,7 +370,7 @@ AmlExecMonadic2R (
             return AE_AML_ERROR;
         }
         
-        ObjDesc->Number.Number = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
+        ObjDesc->Number.Value = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
         break;
 
 
@@ -378,19 +378,19 @@ AmlExecMonadic2R (
     
     case AML_ToBCDOp:
 
-        if (ObjDesc->Number.Number > 9999)
+        if (ObjDesc->Number.Value > 9999)
         {
             DEBUG_PRINT (ACPI_ERROR, ("iExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
-                    ObjDesc->Number.Number));
+                    ObjDesc->Number.Value));
             FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
         
-        ObjDesc->Number.Number
-            = ObjDesc->Number.Number % 10
-            + (ObjDesc->Number.Number / 10 % 10 << 4)
-            + (ObjDesc->Number.Number / 100 % 10 << 8)
-            + (ObjDesc->Number.Number / 1000 % 10 << 12);
+        ObjDesc->Number.Value
+            = ObjDesc->Number.Value % 10
+            + (ObjDesc->Number.Value / 10 % 10 << 4)
+            + (ObjDesc->Number.Value / 100 % 10 << 8)
+            + (ObjDesc->Number.Value / 1000 % 10 << 12);
         
         break;
 
@@ -484,7 +484,7 @@ AmlExecMonadic2 (
 
     case AML_LNotOp:
 
-        ObjDesc->Number.Number = (!ObjDesc->Number.Number) - (UINT32) 1;
+        ObjDesc->Number.Value = (!ObjDesc->Number.Value) - (UINT32) 1;
         break;
 
 
@@ -538,11 +538,11 @@ AmlExecMonadic2 (
         
         if (AML_IncrementOp == opcode)
         {
-            ObjDesc->Number.Number++;
+            ObjDesc->Number.Value++;
         }
         else
         {
-            ObjDesc->Number.Number--;
+            ObjDesc->Number.Value--;
         }
 
         /* store result */
@@ -564,7 +564,7 @@ AmlExecMonadic2 (
         
         /* This case uses Status to hold the type encoding */
         
-        if (TYPE_Lvalue == ObjDesc->ValType)
+        if (TYPE_Lvalue == ObjDesc->Type)
         {
             /* 
              * Not a Name -- an indirect name pointer would have
@@ -643,41 +643,41 @@ AmlExecMonadic2 (
             ObjStack[ObjStackTop] = (void *) ObjDesc;
         }
         
-        ObjDesc->ValType = (UINT8) TYPE_Number;
-        ObjDesc->Number.Number = (UINT32) Status;
+        ObjDesc->Type = (UINT8) TYPE_Number;
+        ObjDesc->Number.Value = (UINT32) Status;
         break;
 
 
     /*  DefSizeOf   :=  SizeOfOp    SourceObject    */
 
     case AML_SizeOfOp:
-        switch (ObjDesc->ValType)
+        switch (ObjDesc->Type)
         {
         case TYPE_Buffer:
 
-            ObjDesc->Number.Number = ObjDesc->Buffer.BufLen;
-            ObjDesc->ValType = (UINT8) TYPE_Number;
+            ObjDesc->Number.Value = ObjDesc->Buffer.Length;
+            ObjDesc->Type = (UINT8) TYPE_Number;
             break;
 
 
         case TYPE_String:
 
-            ObjDesc->Number.Number = ObjDesc->String.StrLen;
-            ObjDesc->ValType = (UINT8) TYPE_Number;
+            ObjDesc->Number.Value = ObjDesc->String.Length;
+            ObjDesc->Type = (UINT8) TYPE_Number;
             break;
 
 
         case TYPE_Package:
 
-            ObjDesc->Number.Number = ObjDesc->Package.PkgCount;
-            ObjDesc->ValType = (UINT8) TYPE_Number;
+            ObjDesc->Number.Value = ObjDesc->Package.Count;
+            ObjDesc->Type = (UINT8) TYPE_Number;
             break;
 
 
         default:
 
            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->ValType));
+                    "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->Type));
             FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
 
