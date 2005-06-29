@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.88 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -283,7 +283,7 @@ AcpiDsGetBufferFieldArguments (
 
     ACPI_DEBUG_EXEC(AcpiUtDisplayInitPathname (ACPI_TYPE_BUFFER_FIELD, Node, NULL));
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] BufferField Arg Init\n",
-        Node->Name.Ascii));
+        AcpiUtGetNodeName (Node)));
 
     /* Execute the AML code for the TermArg arguments */
 
@@ -434,7 +434,7 @@ AcpiDsGetRegionArguments (
     ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_REGION, Node, NULL));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] OpRegion Arg Init at AML %p\n",
-        Node->Name.Ascii, ExtraDesc->Extra.AmlStart));
+        AcpiUtGetNodeName (Node), ExtraDesc->Extra.AmlStart));
 
     /* Execute the argument AML */
 
@@ -612,9 +612,9 @@ AcpiDsInitBufferField (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Field [%4.4s] size %d exceeds Buffer [%4.4s] size %d (bits)\n",
-            ((ACPI_NAMESPACE_NODE *) ResultDesc)->Name.Ascii,
-             BitOffset + BitCount, 
-             BufferDesc->Buffer.Node->Name.Ascii,
+             AcpiUtGetNodeName (ResultDesc),
+             BitOffset + BitCount,
+             AcpiUtGetNodeName (BufferDesc->Buffer.Node),
              8 * (UINT32) BufferDesc->Buffer.Length));
         Status = AE_AML_BUFFER_LIMIT;
         goto Cleanup;
@@ -848,7 +848,7 @@ AcpiDsEvalRegionOperands (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "RgnObj %p Addr %8.8X%8.8X Len %X\n",
         ObjDesc,
-        ACPI_HIDWORD (ObjDesc->Region.Address), ACPI_LODWORD (ObjDesc->Region.Address),
+        ACPI_FORMAT_UINT64 (ObjDesc->Region.Address),
         ObjDesc->Region.Length));
 
     /* Now the address and length are valid for this opregion */
