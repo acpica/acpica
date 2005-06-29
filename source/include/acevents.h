@@ -113,14 +113,6 @@ extern INT32            OriginalMode;   /*  stores the original ACPI/legacy mode
 #define INTERRUPT_NOT_HANDLED           0x02
 #define INTERRUPT_ERROR                 0x03
 
-/*  InstallSCIHandlerXferToACPI() Flags bitmask options   */
-
-#define ACPI_TABLES_REQUIRED            0x01
-#define HW_OVERRIDE_SUPPORTED           0x02
-#define PROGRAM_SCI_LEVEL_SENSITIVITY   0x04
-#define DISABLE_KNOWN_EVENTS            0x08
-#define	LOAD_ACPI_NAMESPACE             0x10
-
 
 /*  iErrorMask mask bits    */
 
