@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  ******************************************************************************/
 
@@ -145,7 +145,7 @@ BOOLEAN                     AcpiGbl_DbOutputToFile = FALSE;
 UINT32                      AcpiGbl_DbDebugLevel = ACPI_LV_VERBOSITY2;
 UINT32                      AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
 UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
-
+ACPI_NAMESPACE_NODE         *AcpiGbl_DbScopeNode;
 
 BOOLEAN                     AcpiGbl_DbOpt_tables      = FALSE;
 BOOLEAN                     AcpiGbl_DbOpt_disasm      = FALSE;
@@ -716,9 +716,6 @@ AcpiDbCommandDispatch (
         if (Op)
         {
             AcpiGbl_CmSingleStep = TRUE;
-
-/* TBD: Must get current walk state */
-            /* AcpiGbl_MethodBreakpoint = 0; */
             return (AE_OK);
         }
         break;
