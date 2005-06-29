@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.69 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -188,9 +188,10 @@ char                        FilenameBuf[20];
  *
  * FUNCTION:    AfGenerateFilename
  *
- * PARAMETERS:
+ * PARAMETERS:  Prefix      - prefix string
+ *              TableId     - The table ID
  *
- * RETURN:
+ * RETURN:      Pointer to the completed string
  *
  * DESCRIPTION: Build an output filename from an ACPI table ID string
  *
@@ -228,9 +229,11 @@ AdGenerateFilename (
  *
  * FUNCTION:    AfWriteBuffer
  *
- * PARAMETERS:
+ * PARAMETERS:  Filename        - name of file
+ *              Buffer          - data to write
+ *              Length          - length of data
  *
- * RETURN:
+ * RETURN:      Actual number of bytes written
  *
  * DESCRIPTION: Open a file and write out a single buffer
  *
@@ -263,9 +266,12 @@ AdWriteBuffer (
  *
  * FUNCTION:    AfWriteTable
  *
- * PARAMETERS:
+ * PARAMETERS:  Table       - pointer to the ACPI table
+ *              Length      - length of the table
+ *              TableName   - the table signature
+ *              OemTableID  - from the table header
  *
- * RETURN:
+ * RETURN:      None
  *
  * DESCRIPTION: Dump the loaded tables to a file (or files)
  *
@@ -378,6 +384,9 @@ FlGenerateFilename (
  *
  * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
  *                                    compiled
+ *              OutDirectoryPath    - Where the directory path prefix is
+ *                                    returned
+ *              OutFilename         - Where the filename part is returned
  *
  * RETURN:      Status
  *
@@ -451,9 +460,12 @@ FlSplitInputPathname (
  *
  * FUNCTION:    AdAmlDisassemble
  *
- * PARAMETERS:  OutToFile       - TRUE if output should go to a file
- *              Filename        - AML input filename
- *
+ * PARAMETERS:  Filename        - AML input filename
+ *              OutToFile       - TRUE if output should go to a file
+ *              Prefix          - Path prefix for output
+ *              OutFilename     - where the filename is returned
+ *              GetAllTables    - TRUE if all tables are desired
+ *              
  * RETURN:      Status
  *
  * DESCRIPTION: Disassemble an entire ACPI table
@@ -619,6 +631,7 @@ AdCreateTableHeader (
  * FUNCTION:    AdDisplayTables
  *
  * PARAMETERS:  Filename            - Input file for the table
+ *              Table               - Pointer to the raw table
  *
  * RETURN:      Status
  *
@@ -862,9 +875,10 @@ AdParseDeferredOps (
  *
  * FUNCTION:    AdGetLocalTables
  *
- * PARAMETERS:
+ * PARAMETERS:  Filename        - Not used
+ *              GetAllTables    - TRUE if all tables are desired
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Get the ACPI tables from either memory or a file
  *
@@ -982,7 +996,7 @@ AdGetLocalTables (
  *
  * FUNCTION:    AdParseTable
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Table           - Pointer to the raw table
  *
  * RETURN:      Status
  *
