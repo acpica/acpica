@@ -150,7 +150,6 @@ typedef struct acpi_signal_fatal_info
 } ACPI_SIGNAL_FATAL_INFO;
 
 
-
 /*
  * OSL Initialization and shutdown primitives
  */

@@ -300,8 +300,8 @@ AcpiEvaluateObjectTyped (
 
 ACPI_STATUS
 AcpiGetObjectInfo (
-    ACPI_HANDLE             Device,
-    ACPI_DEVICE_INFO        *Info);
+    ACPI_HANDLE             Handle,
+    ACPI_BUFFER             *ReturnBuffer);
 
 ACPI_STATUS
 AcpiGetNextObject (
@@ -440,7 +440,6 @@ AcpiInstallGpeBlock (
 ACPI_STATUS
 AcpiRemoveGpeBlock (
     ACPI_HANDLE             GpeDevice);
-
 
 
 /*
