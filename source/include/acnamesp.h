@@ -133,17 +133,6 @@
  */
 #define NEXTSEG(NameTbl)        ((NAME_TABLE_ENTRY **)NameTbl)[-1]
 
-/* 
- * An ACPI_HANDLE (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
- * such as on apObjStack, where a pointer to an ACPI_OBJECT can also
- * appear.  These macros are used to distinguish them.
- *
- * The DataType field is the first field in both structures.
- */
-
-#define IS_NS_HANDLE(h)         (((NAME_TABLE_ENTRY *)h)->DataType == DESC_TYPE_NTE) 
-#define IS_ACPI_OBJECT(o)       (((NAME_TABLE_ENTRY *)o)->DataType == DESC_TYPE_ACPI_OBJ) 
-
 /* To search the entire name space, pass this as SearchBase */
 
 #define NS_ALL                  ((ACPI_HANDLE)0)
