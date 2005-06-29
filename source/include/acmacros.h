@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.72 $
+ *       $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -315,16 +315,16 @@
 #define ACPI_PCI_FUNCTION_MASK          (UINT64) 0x00000000FFFF0000
 #define ACPI_PCI_REGISTER_MASK          (UINT64) 0x000000000000FFFF
 
-#define ACPI_PCI_FUNCTION(a)            (UINT32) ((((a) & ACPI_PCI_FUNCTION_MASK) >> 16))
-#define ACPI_PCI_DEVICE(a)              (UINT32) ((((a) & ACPI_PCI_DEVICE_MASK) >> 32))
+#define ACPI_PCI_FUNCTION(a)            (UINT16) ((((a) & ACPI_PCI_FUNCTION_MASK) >> 16))
+#define ACPI_PCI_DEVICE(a)              (UINT16) ((((a) & ACPI_PCI_DEVICE_MASK) >> 32))
 
 #ifndef _IA16
-#define ACPI_PCI_REGISTER(a)            (UINT32) (((a) & ACPI_PCI_REGISTER_MASK))
-#define ACPI_PCI_DEVFUN(a)              (UINT32) ((ACPI_PCI_DEVICE(a) << 16) | ACPI_PCI_FUNCTION(a))
+#define ACPI_PCI_REGISTER(a)            (UINT16) (((a) & ACPI_PCI_REGISTER_MASK))
+#define ACPI_PCI_DEVFUN(a)              (UINT16) ((ACPI_PCI_DEVICE(a) << 16) | ACPI_PCI_FUNCTION(a))
 
 #else
-#define ACPI_PCI_REGISTER(a)            (UINT32) (((a) & 0x0000FFFF))
-#define ACPI_PCI_DEVFUN(a)              (UINT32) ((((a) & 0xFFFF0000) >> 16))
+#define ACPI_PCI_REGISTER(a)            (UINT16) (((a) & 0x0000FFFF))
+#define ACPI_PCI_DEVFUN(a)              (UINT16) ((((a) & 0xFFFF0000) >> 16))
 
 #endif
 
@@ -528,6 +528,13 @@
 #define DUMP_RESOURCE_LIST(a)           AcpiRsDumpResourceList(a)
 #define BREAK_MSG(a)                    AcpiOsBreakpoint (a)
 
+
+/* Memory allocation */
+
+#define ACPI_MEM_ALLOCATE(a)            _UtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           _UtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_FREE(a)                _UtFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
+
 /*
  * Generate INT3 on ACPI_ERROR (Debug only!)
  */
@@ -613,6 +620,12 @@
 
 #define ACPI_ASSERT(exp)
 #define DEBUG_ASSERT(msg, exp)
+
+/* Memory allocation */
+
+#define ACPI_MEM_ALLOCATE(a)            AcpiOsAllocate(a)
+#define ACPI_MEM_CALLOCATE(a)           AcpiOsCallocate(a)
+#define ACPI_MEM_FREE(a)                AcpiOsFree(a)
 
 #endif
 
