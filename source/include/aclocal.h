@@ -354,9 +354,17 @@ typedef struct
 typedef struct acpi_op_info
 {
     UINT16                  Opcode;         /* AML opcode */
+
+/* TBD: Squeeze these back into 1 byte without using bit field */
+/*
     UINT8                   Type            : 5;
     UINT8                   HasArgs         : 1;
     UINT8                   ChildLocation   : 2;
+*/
+
+    UINT8                   Type;
+    UINT8                   HasArgs;
+    UINT8                   ChildLocation;
     char                    *Args;          /* argument format */
 
     DEBUG_ONLY_MEMBERS (
