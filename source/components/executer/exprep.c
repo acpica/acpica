@@ -188,7 +188,7 @@ AmlPrepDefFieldValue (
 
     /* ObjDesc and Region valid */
 
-    DUMP_STACK (MODE_Exec, "AmlPrepDefFieldValue", 2, "case DefField");
+    DUMP_STACK (IMODE_Execute, "AmlPrepDefFieldValue", 2, "case DefField");
 
     if (TYPE_DefField != ObjDesc->Field.Type)
     {
@@ -238,7 +238,7 @@ AmlPrepDefFieldValue (
                     AmlObjStackGetValue (0), AmlObjStackGetValue (0), ObjDesc));
 
     DUMP_STACK_ENTRY (ObjDesc);
-    DUMP_ENTRY (Region);
+    DUMP_ENTRY (Region, ACPI_INFO);
     DEBUG_PRINT (ACPI_INFO, ("\t%p \n", ObjDesc->Field.Container));
 
     if (ObjDesc->Field.Container)
@@ -319,7 +319,7 @@ AmlPrepBankFieldValue (
 
     /*  ObjDesc and Region valid    */
 
-    DUMP_STACK (MODE_Exec, "AmlPrepBankFieldValue", 2, "case BankField");
+    DUMP_STACK (IMODE_Execute, "AmlPrepBankFieldValue", 2, "case BankField");
 
     if (TYPE_BankField != ObjDesc->BankField.Type)
     {
@@ -364,8 +364,8 @@ AmlPrepBankFieldValue (
                     AmlObjStackGetValue (0), AmlObjStackGetValue (0), ObjDesc));
     
     DUMP_STACK_ENTRY (ObjDesc);
-    DUMP_ENTRY (Region);
-    DUMP_ENTRY (BankReg);
+    DUMP_ENTRY (Region, ACPI_INFO);
+    DUMP_ENTRY (BankReg, ACPI_INFO);
 
     DEBUG_PRINT (ACPI_INFO,
                 ("============================================================\n"));
@@ -466,8 +466,8 @@ AmlPrepIndexFieldValue (
                     AmlObjStackGetValue (0), AmlObjStackGetValue (0), ObjDesc));
 
     DUMP_STACK_ENTRY (ObjDesc);
-    DUMP_ENTRY (IndexReg);
-    DUMP_ENTRY (DataReg);
+    DUMP_ENTRY (IndexReg, ACPI_INFO);
+    DUMP_ENTRY (DataReg, ACPI_INFO);
 
     DEBUG_PRINT (ACPI_INFO,
                 ("============================================================\n"));
