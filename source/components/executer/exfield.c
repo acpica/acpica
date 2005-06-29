@@ -1,18 +1,98 @@
-/*__________________________________________________________________________
- |
- |
- |           Copyright (C) Intel Corporation 1994-1996
- |
- | All rights reserved.  No part of this program or publication may be
- | reproduced, transmitted, transcribed, stored in a retrieval system, or
- | translated into any language or computer language, in any form or by any
- | means, electronic, mechanical, magnetic, optical, chemical, manual, or
- | otherwise, without the prior written permission of Intel Corporation.
- |__________________________________________________________________________
- |
- | ModuleName: iefield - ACPI AML (p-code) execution - field manipulation
- |__________________________________________________________________________
-*/
+
+/******************************************************************************
+ * 
+ * Module Name: iefield - ACPI AML (p-code) execution - field manipulation
+ *
+ *****************************************************************************/
+
+/******************************************************************************
+ *
+ * 1. Copyright Notice
+ *
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * reserved.
+ *
+ * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
+ *
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
+ *
+ * the above copyright and patent license is granted only if the following 
+ * conditions are met:
+ *
+ * 3. Conditions 
+ *
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
+ *
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
+ *
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * Intel Code.
+ *
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
+ * without prior written authorization from Intel.
+ *
+ * 4. Disclaimer and Export Compliance
+ *
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
+ *
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * LIMITED REMEDY.
+ *
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
+ *
+ *****************************************************************************/
 
 
 #define __IEFIELD_C__
@@ -69,15 +149,14 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
 
     if (!ObjDesc || !RgnDesc)
     {
-        Why = "SetupField:internal error: null handle";
+        DEBUG_PRINT (ACPI_ERROR, ("SetupField: internal error - null handle\n"));
         Excep = S_ERROR;
     }
 
     else if (Region != RgnDesc->ValType)
     {
-        sprintf (WhyBuf, "SetupFld: Needed Region, found %d %s",
-                    RgnDesc->ValType, NsTypeNames[RgnDesc->ValType]);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Needed Region, found %d %s\n",
+                        RgnDesc->ValType, NsTypeNames[RgnDesc->ValType]));
         Excep = S_ERROR;
     }
 
@@ -91,8 +170,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
             (FieldBitWidth != 16) && 
             (FieldBitWidth != 32))
         {
-            sprintf (WhyBuf, "SetupField:internal error: bad width %d", FieldBitWidth);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, ("SetupField:internal error: bad width %d\n", FieldBitWidth));
             Excep = S_ERROR;
         }
     }
@@ -137,8 +215,6 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                     if (!ObjValDesc ||
                         ObjValDesc->ValType != (UINT8) Number)
                     {
-                        Why = "SetupField: Malformed Region/Address";
-
                         DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Address "
                                     "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh\n",
                                     ObjValDesc, ObjValDesc->ValType, (UINT8) Number));
@@ -169,8 +245,6 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                         {
 
                             DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Length \n"));
-
-                            Why = "SetupField: Malformed Region/Length";
                             Excep = S_ERROR;
                         }
 
@@ -212,12 +286,10 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
              * offset rounded up to next multiple of field width
              * exceeds region length, indicate an error
              */
-            sprintf (WhyBuf,
-                    "SetupField: Operation at %08lx width %d bits exceeds region bound %08lx",
-                    ObjDesc->Field.Offset, FieldBitWidth, RgnDesc->Region.Length);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("SetupField: Operation at %08lx width %d bits exceeds region bound %08lx\n",
+                    ObjDesc->Field.Offset, FieldBitWidth, RgnDesc->Region.Length));
 
-            DEBUG_PRINT (ACPI_ERROR, ("SetupFld: field address/width out of bounds\n"));
             DUMP_STACK_ENTRY (RgnDesc);
             DUMP_STACK_ENTRY (ObjDesc);
 
@@ -318,9 +390,8 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
 
         if (Address & 0xFFF00000UL)
         {
-            sprintf(WhyBuf,
-                    "ReadField:implementation limitation: SystemMemory address %08lx over 1MB", Address);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("ReadField:implementation limitation: SystemMemory address %08lx over 1MB\n", Address));
             return S_ERROR;
         }
 
@@ -350,9 +421,8 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
             break;
 
         default:
-            sprintf (WhyBuf,
-                    "ReadField: invalid SystemMemory width %d", FieldBitWidth);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("ReadField: invalid SystemMemory width %d\n", FieldBitWidth));
             OsdUnMapMemory (PhysicalAddrPtr, 4);
             return S_ERROR;
         }
@@ -378,9 +448,8 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
             break;
 
         default:
-            sprintf(WhyBuf,
-                    "ReadField: invalid SystemIO width %d", FieldBitWidth);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("ReadField: invalid SystemIO width %d\n", FieldBitWidth));
             return S_ERROR;
         }
         break;
@@ -407,9 +476,8 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
             break;
 
         default:
-            sprintf (WhyBuf,
-                    "ReadField: invalid PCIConfig width %d", FieldBitWidth);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("ReadField: invalid PCIConfig width %d\n", FieldBitWidth));
             return S_ERROR;
         }
         if (PciExcep)
@@ -423,15 +491,13 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
 
         /* XXX - Actual read should happen here */
 
-        sprintf (WhyBuf, "ReadField: Region type %s not implemented",
-                RegionTypes[RgnDesc->Region.SpaceId]);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("ReadField: Region type %s not implemented\n",
+                RegionTypes[RgnDesc->Region.SpaceId]));
         return S_ERROR;
 
     default:
-        sprintf (WhyBuf, "ReadField: Unknown region SpaceID %d",
-                RgnDesc->Region.SpaceId);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("ReadField: Unknown region SpaceID %d\n",
+                RgnDesc->Region.SpaceId));
         return S_ERROR;
     }
 
@@ -514,9 +580,8 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
 
         if (Address & 0xFFF00000UL)
         {
-            sprintf (WhyBuf,
-                    "WriteField:implementation limitation: SystemMemory address %08lx over 1MB", Address);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "WriteField:implementation limitation: SystemMemory address %08lx over 1MB\n", Address));
             return S_ERROR;
         }
 
@@ -544,9 +609,8 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
             break;
 
         default:
-            sprintf (WhyBuf,
-                    "WriteField: invalid SystemMemory width %d", FieldBitWidth);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "WriteField: invalid SystemMemory width %d\n", FieldBitWidth));
             OsdUnMapMemory (PhysicalAddrPtr, 4);
             Excep = S_ERROR;
         }
@@ -570,9 +634,8 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
             break;
 
         default:
-            sprintf (WhyBuf,
-                    "WriteField: invalid SystemIO width %d", FieldBitWidth);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "WriteField: invalid SystemIO width %d\n", FieldBitWidth));
             Excep = S_ERROR;
         }
         break;
@@ -597,9 +660,8 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
             break;
 
         default:
-            sprintf (WhyBuf,
-                    "WriteField: invalid PCIConfig width %d", FieldBitWidth);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "WriteField: invalid PCIConfig width %d\n", FieldBitWidth));
             Excep = S_ERROR;
         }
 
@@ -614,15 +676,13 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
 
         /* XXX - Actual write should happen here */
 
-        sprintf (WhyBuf, "WriteField: Region type %s not implemented",
-                RegionTypes[RgnDesc->Region.SpaceId]);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("WriteField: Region type %s not implemented\n",
+                        RegionTypes[RgnDesc->Region.SpaceId]));
         Excep = S_ERROR;
 
     default:
-        sprintf (WhyBuf, "WriteField: Unknown region SpaceID %d",
-                RgnDesc->Region.SpaceId);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("WriteField: Unknown region SpaceID %d\n",
+                        RgnDesc->Region.SpaceId));
         Excep = S_ERROR;
     }
 
@@ -663,15 +723,14 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
     ObjDesc = NsValPtr (NamedField);
     if (!ObjDesc)
     {
-        Why = "AccessNamedField:internal error: null value pointer";
+        DEBUG_PRINT (ACPI_ERROR, ("AccessNamedField:internal error: null value pointer\n"));
     }
 
     else if (DefField != NsValType (NamedField))
     {
-        sprintf (WhyBuf,
-                  "AccessNamedField: Name %4.4s type %d is not a defined field",
-                  NamedField, NsValType (NamedField));
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, (
+                  "AccessNamedField: Name %4.4s type %d is not a defined field\n",
+                  NamedField, NsValType (NamedField)));
     }
 
     else
@@ -689,10 +748,9 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
 
         if (DefField != ObjDesc->ValType)
         {
-            sprintf (WhyBuf,
-                    "AccessNamedField:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                    NamedField, NsValType (NamedField), ObjDesc->ValType, ObjDesc);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AccessNamedField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                    NamedField, NsValType (NamedField), ObjDesc->ValType, ObjDesc));
             AmlAppendBlockOwner (ObjDesc);
         }
         else
@@ -733,10 +791,9 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         default:
             /*  invalid field access type   */
 
-            sprintf (WhyBuf,
-                    "AccessNamedField: unknown access type %d",
-                    ObjDesc->Field.Access);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                        "AccessNamedField: unknown access type %d\n",
+                        ObjDesc->Field.Access));
             Excep = S_ERROR;
         }
     }
@@ -749,8 +806,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
 
         if (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset > (UINT16) MaxW)
         {
-            sprintf (WhyBuf, "AccessNamedField: Field exceeds %s", Type);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, ("AccessNamedField: Field exceeds %s\n", Type));
             return S_ERROR;
         }
     }
@@ -769,7 +825,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
                  * lock ownership failed: this is a single threaded implementation
                  * so there is no way some other process should own this.
                  * This means something grabbed the global lock and did not
-                 * release it. (pcWhy will already be set)
+                 * release it.
                  */
                 Excep = S_ERROR;
             else
@@ -840,10 +896,9 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
                     break;
 
                 default:
-                    sprintf (WhyBuf,
-                                "AccessNamedField: Unknown UpdateRule setting %d",
-                                ObjDesc->Field.UpdateRule);
-                    Why = WhyBuf;
+                    DEBUG_PRINT (ACPI_ERROR, (
+                                "AccessNamedField: Unknown UpdateRule setting %d\n",
+                                ObjDesc->Field.UpdateRule));
                     Excep = S_ERROR;
                 }
             }
@@ -909,7 +964,7 @@ SetNamedFieldValue (NsHandle NamedField, UINT32 Value)
 
     if (!NamedField)
     {
-        Why = "SetNamedFieldValue:internal error:null handle";
+        DEBUG_PRINT (ACPI_ERROR, ("SetNamedFieldValue: internal error - null handle\n"));
     }
     else
     {
@@ -944,11 +999,11 @@ GetNamedFieldValue (NsHandle NamedField, UINT32 *Value)
 
     if (!NamedField)
     {
-        Why = "GetNamedFieldValue: internal error: null handle";
+        DEBUG_PRINT (ACPI_ERROR, ("GetNamedFieldValue: internal error: null handle\n"));
     }
     else if (!Value)
     {
-        Why = "GetNamedFieldValue: internal error: null pointer";
+        DEBUG_PRINT (ACPI_ERROR, ("GetNamedFieldValue: internal error: null pointer\n"));
     }
     else
     {

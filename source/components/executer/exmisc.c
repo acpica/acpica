@@ -1,18 +1,98 @@
-/*__________________________________________________________________________
- |
- |
- |           Copyright (C) Intel Corporation 1994-1996
- |
- | All rights reserved.  No part of this program or publication may be
- | reproduced, transmitted, transcribed, stored in a retrieval system, or
- | translated into any language or computer language, in any form or by any
- | means, electronic, mechanical, magnetic, optical, chemical, manual, or
- | otherwise, without the prior written permission of Intel Corporation.
- |__________________________________________________________________________
- |
- | ModuleName: ieopexec - ACPI AML (p-code) execution - specific opcodes
- |__________________________________________________________________________
-*/
+
+/******************************************************************************
+ * 
+ * Module Name: ieopexec - ACPI AML (p-code) execution - specific opcodes
+ *
+ *****************************************************************************/
+
+/******************************************************************************
+ *
+ * 1. Copyright Notice
+ *
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * reserved.
+ *
+ * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
+ *
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
+ *
+ * the above copyright and patent license is granted only if the following 
+ * conditions are met:
+ *
+ * 3. Conditions 
+ *
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
+ *
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
+ *
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * Intel Code.
+ *
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
+ * without prior written authorization from Intel.
+ *
+ * 4. Disclaimer and Export Compliance
+ *
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
+ *
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * LIMITED REMEDY.
+ *
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
+ *
+ *****************************************************************************/
 
 
 #define __IEOPEXEC_C__
@@ -104,7 +184,7 @@ ExecCreateField (UINT16 opcode)
     {
         /*  invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, NumOperands);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
         return Excep;
     }
 
@@ -125,8 +205,7 @@ ExecCreateField (UINT16 opcode)
     
     if (!IsNsHandle (ResDesc))
     {
-        sprintf (WhyBuf, "%s: destination must be a Name", OpName);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("%s: destination must be a Name\n", OpName));
         return S_ERROR;
     }
 
@@ -174,10 +253,9 @@ ExecCreateField (UINT16 opcode)
         break;
 
     default:
-        sprintf (WhyBuf,
-                "ExecCreateField:internal error: Unknown field creation opcode %02x",
-                opcode);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, (
+                "ExecCreateField:internal error: Unknown field creation opcode %02x\n",
+                opcode));
         return S_ERROR;
 
     } /* switch */
@@ -195,10 +273,9 @@ ExecCreateField (UINT16 opcode)
     case Buffer:
         if (BitOffset + (UINT32) BitCount > 8 * (UINT32) SrcDesc->Buffer.BufLen)
         {
-            sprintf (WhyBuf, "ExecCreateField: Field exceeds Buffer %d > %d",
-                    BitOffset + (UINT32)BitCount,
-                    8 * (UINT32)SrcDesc->Buffer.BufLen);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, ("ExecCreateField: Field exceeds Buffer %d > %d\n",
+                            BitOffset + (UINT32)BitCount,
+                            8 * (UINT32)SrcDesc->Buffer.BufLen));
             return S_ERROR;
         }
 
@@ -229,10 +306,9 @@ ExecCreateField (UINT16 opcode)
             TypeFoundPtr = NsTypeNames[bTypeFound];
         }
 
-        sprintf (WhyBuf,
-                "ExecCreateField: Tried to create field in improper object type %s",
-                TypeFoundPtr);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, (
+                "ExecCreateField: Tried to create field in improper object type %s\n",
+                TypeFoundPtr));
         return S_ERROR;
     
     } /* switch */
@@ -321,7 +397,7 @@ ExecFatal (void)
     {
         /*  invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (__FILE__, __LINE__, (UINT16) FatalOp, 3);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) FatalOp, 3);
         return Excep;
     }
 
@@ -339,7 +415,7 @@ ExecFatal (void)
                 TypeDesc->Number.Number, CodeDesc->Number.Number,
                 ArgDesc->Number.Number));
 
-    Why = "ExecFatal: FatalOp executed";
+    DEBUG_PRINT (ACPI_ERROR, ("ExecFatal: FatalOp executed\n"));
     return S_ERROR;
 }
 
@@ -384,7 +460,7 @@ ExecIndex (void)
     {
         /*  invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (__FILE__, __LINE__, (UINT16)IndexOp, 3);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16)IndexOp, 3);
     }
 
     else
@@ -398,7 +474,7 @@ ExecIndex (void)
         if (IdxDesc->Number.Number < 0 || 
             IdxDesc->Number.Number >= (UINT32) PkgDesc->Package.PkgCount)
         {
-            Why = "ExecIndex: Index value out of range";
+            DEBUG_PRINT (ACPI_ERROR, ("ExecIndex: Index value out of range\n"));
             Excep = S_ERROR;
         }
 
@@ -474,7 +550,7 @@ ExecMatch (void)
     {
         /*  invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (__FILE__, __LINE__, (UINT16) MatchOp, 6);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) MatchOp, 6);
         return Excep;
     }
 
@@ -492,14 +568,14 @@ ExecMatch (void)
     if (Op1Desc->Number.Number < 0 || Op1Desc->Number.Number > 5 || 
         Op2Desc->Number.Number < 0 || Op2Desc->Number.Number > 5)
     {
-        Why = "ExecMatch: operation encoding out of range";
+        DEBUG_PRINT (ACPI_ERROR, ("ExecMatch: operation encoding out of range\n"));
         return S_ERROR;
     }
 
     Look = StartDesc->Number.Number;
     if (Look < 0 || Look >= (UINT32) PkgDesc->Package.PkgCount)
     {
-        Why = "ExecMatch: start position value out of range";
+        DEBUG_PRINT (ACPI_ERROR, ("ExecMatch: start position value out of range\n"));
         return S_ERROR;
     }
 
@@ -680,32 +756,31 @@ GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
 
     if (!FieldDesc)
     {
-        Why = "GetFieldUnitValue: internal error: null field pointer";
+        DEBUG_PRINT (ACPI_ERROR, ("GetFieldUnitValue: internal error: null field pointer\n"));
     }
 
     else if (!FieldDesc->FieldUnit.Container)
     {
-        Why = "GetFieldUnitValue: internal error: null container pointer";
+        DEBUG_PRINT (ACPI_ERROR, ("GetFieldUnitValue: internal error: null container pointer\n"));
     }
 
     else if (Buffer != FieldDesc->FieldUnit.Container->ValType)
     {
-        Why = "GetFieldUnitValue: internal error: container is not a Buffer";
+        DEBUG_PRINT (ACPI_ERROR, ("GetFieldUnitValue: internal error: container is not a Buffer\n"));
     }
 
     else if (FieldDesc->FieldUnit.ConSeq
                 != FieldDesc->FieldUnit.Container->Buffer.Sequence)
     {
-        sprintf (WhyBuf,
-                "GetFieldUnitValue: internal error: stale Buffer [%lx != %lx]",
+        DEBUG_PRINT (ACPI_ERROR, (
+                "GetFieldUnitValue: internal error: stale Buffer [%lx != %lx]\n",
                 FieldDesc->FieldUnit.ConSeq,
-                FieldDesc->FieldUnit.Container->Buffer.Sequence);
-        Why = WhyBuf;
+                FieldDesc->FieldUnit.Container->Buffer.Sequence));
     }
 
     else if (!ResultDesc)
     {
-        Why = "GetFieldUnitValue: internal error: null result pointer";
+        DEBUG_PRINT (ACPI_ERROR, ("GetFieldUnitValue: internal error: null result pointer\n"));
     }
 
     else 
@@ -725,7 +800,7 @@ GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
                 /* the ownship failed - Bad Bad Bad, this is a single threaded */
                 /* implementation so there is no way some other process should */
                 /* own this.  This means something grabbed it and did not */
-                /* release the Global Lock! (Why will already be set) */
+                /* release the Global Lock! */
             
                 Excep = S_ERROR;
             }
@@ -746,7 +821,7 @@ GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
 
         if (FieldDesc->FieldUnit.DatLen + FieldDesc->FieldUnit.BitOffset > 32)
         {
-            Why = "GetFieldUnitValue: implementation limitation: Field exceeds UINT32";
+            DEBUG_PRINT (ACPI_ERROR, ("GetFieldUnitValue: implementation limitation: Field exceeds UINT32\n"));
             Excep = S_ERROR;
         }
     }
@@ -821,7 +896,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
     if (!StackPtr || !*StackPtr)
     {
-        Why = "GetRvalue: internal error: null pointer";
+        DEBUG_PRINT (ACPI_ERROR, ("GetRvalue: internal error: null pointer\n"));
         return S_ERROR;
     }
 
@@ -915,9 +990,8 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             break;
 
         default:
-            sprintf (WhyBuf, "GetRvalue: Unknown Lvalue subtype %02x",
-                    (*StackPtr)->Lvalue.OpCode);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, ("GetRvalue: Unknown Lvalue subtype %02x\n",
+                            (*StackPtr)->Lvalue.OpCode));
             Excep = S_ERROR;
 
         }   /* switch ((*StackPtr)->Lvalue.OpCode) */
@@ -999,7 +1073,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
              */
             if (!ValDesc)
             {
-                Why = "GetRvalue/Package:internal error: null ValPtr";
+                DEBUG_PRINT (ACPI_ERROR, ("GetRvalue/Package:internal error: null ValPtr\n"));
                 DEBUG_PRINT (TRACE_EXEC,
                             ("leave iGetRvalue: NULL Package ValuePtr ==> S_ERROR\n"));
 
@@ -1042,7 +1116,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             
             if (!ValDesc || (Package != ValDesc->ValType))
             {
-                Why = "GetRvalue:internal error: Bad package value";
+                DEBUG_PRINT (ACPI_ERROR, ("GetRvalue:internal error: Bad package value\n"));
                 return S_ERROR;
             }
 
@@ -1063,7 +1137,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             
             if (String != ValDesc->ValType)
             {
-                Why = "GetRvalue:internal error: Bad string value";
+                DEBUG_PRINT (ACPI_ERROR, ("GetRvalue:internal error: Bad string value\n"));
                 return S_ERROR;
             }
 
@@ -1081,7 +1155,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         case Buffer:
             if (!ValDesc)
             {
-                Why = "GetRvalue: internal error: null Buffer ValuePtr";
+                DEBUG_PRINT (ACPI_ERROR, ("GetRvalue: internal error: null Buffer ValuePtr\n"));
                 return S_ERROR;
             }
 
@@ -1120,7 +1194,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             
             if (!ValDesc || (Buffer != ValDesc->ValType))
             {
-                Why = "GetRvalue: Bad buffer value";
+                DEBUG_PRINT (ACPI_ERROR, ("GetRvalue: Bad buffer value\n"));
                 return S_ERROR;
             }
 
@@ -1149,7 +1223,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
             if (!ValDesc)
             {
-                Why = "GetRvalue: internal error: null Number ValuePtr";
+                DEBUG_PRINT (ACPI_ERROR, ("GetRvalue: internal error: null Number ValuePtr\n"));
                 return S_ERROR;
             }
 
@@ -1174,7 +1248,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                  */
                 if (!IsInPCodeBlock ((UINT8 *) ValDesc))
                 {
-                    Why = "GetRvalue/Number: internal error: not a Number";
+                    DEBUG_PRINT (ACPI_ERROR, ("GetRvalue/Number: internal error: not a Number\n"));
                     return S_ERROR;
                 }
 
@@ -1218,10 +1292,9 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
                 default:
                     DELETE (ObjDesc);
-                    sprintf (WhyBuf,
-                            "GetRvalue/Number: internal error: Expected AML number, found %02x",
-                            *(UINT8 *) ValDesc);
-                    Why = WhyBuf;
+                   DEBUG_PRINT (ACPI_ERROR, (
+                            "GetRvalue/Number: internal error: Expected AML number, found %02x\n",
+                            *(UINT8 *) ValDesc));
                     return S_ERROR;
                 
                 }   /* switch */
@@ -1258,17 +1331,16 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         case BankField:
             if (!ValDesc)
             {
-                Why = "GetRvalue: internal error: null BankField ValuePtr";
+                DEBUG_PRINT (ACPI_ERROR, ("GetRvalue: internal error: null BankField ValuePtr\n"));
                 return S_ERROR;
             }
 
             if (BankField != ValDesc->ValType)
             {
-                sprintf (WhyBuf,
-                        "GetRvalue/BankField:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                        *StackPtr, BankField, ValDesc->ValType, ValDesc);
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "GetRvalue/BankField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        *StackPtr, BankField, ValDesc->ValType, ValDesc));
                 
-                Why = WhyBuf;
                 AmlAppendBlockOwner (ValDesc);
                 return S_ERROR;
             }
@@ -1285,7 +1357,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     /* the ownship failed - Bad Bad Bad, this is a single threaded */
                     /* implementation so there is no way some other process should */
                     /* own this.  This means something grabbed it and did not */
-                    /* release the Global Lock! (Why will already be set) */
+                    /* release the Global Lock! */
                     
                     return (S_ERROR);
                 }
@@ -1332,17 +1404,16 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         case IndexField:
             if (!ValDesc)
             {
-                Why = "GetRvalue: internal error: null IndexField ValuePtr";
+                DEBUG_PRINT (ACPI_ERROR, ("GetRvalue: internal error: null IndexField ValuePtr\n"));
                 return S_ERROR;
             }
 
             if (IndexField != ValDesc->ValType)
             {
-                sprintf (WhyBuf,
-                        "GetRvalue/IndexField: internal error: Name %4.4s type %d does not match value-type %d at %p",
-                        *StackPtr, IndexField, ValDesc->ValType, ValDesc);
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "GetRvalue/IndexField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        *StackPtr, IndexField, ValDesc->ValType, ValDesc));
                 
-                Why = WhyBuf;
                 AmlAppendBlockOwner (ValDesc);
                 return S_ERROR;
             }
@@ -1359,7 +1430,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     /* the ownship failed - Bad Bad Bad, this is a single threaded */
                     /* implementation so there is no way some other process should */
                     /* own this.  This means something grabbed it and did not */
-                    /* release the Global Lock! (Why will already be set) */
+                    /* release the Global Lock!  */
                     
                     return (S_ERROR);
                 }
@@ -1414,18 +1485,17 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         case FieldUnit:
             if (!ValDesc)
             {
-                Why = "GetRvalue: internal error: null FieldUnit ValuePtr";
+                DEBUG_PRINT (ACPI_ERROR, ("GetRvalue: internal error: null FieldUnit ValuePtr\n"));
                 return S_ERROR;
             }
 
             if (ValDesc->ValType != (UINT8) NsValType ((NsHandle)* StackPtr))
             {
-                sprintf (WhyBuf,
-                        "GetRvalue/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "GetRvalue/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                           *StackPtr, NsValType ((NsHandle)* StackPtr),
-                          ValDesc->ValType, ValDesc);
+                          ValDesc->ValType, ValDesc));
                 
-                Why = WhyBuf;
                 AmlAppendBlockOwner (ValDesc);
                 return S_ERROR;
                 break;
@@ -1469,7 +1539,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
           
 #ifdef HACK
             DEBUG_PRINT (ACPI_WARN,
-                        ("** GetRvalue: Fetch from %s not implemented, using value 0\n",
+                        ("** GetRvalue: Fetch from [%s] not implemented, using value 0\n",
                         NsTypeNames[NsValType ((NsHandle)* StackPtr)]));
             
             ObjDesc = AllocateObjectDesc (&KDT[1]);
@@ -1484,11 +1554,10 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             ObjDesc->Number.Number = 0x0;
             break;
 #else
-            sprintf (WhyBuf,
-                    "GetRvalue: Fetch from %s not implemented",
-                    NsTypeNames[NsValType ((NsHandle)* StackPtr)]);
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "GetRvalue: Fetch from [%s] not implemented\n",
+                    NsTypeNames[NsValType ((NsHandle)* StackPtr)]));
             
-            Why = WhyBuf;
             return S_ERROR;
 #endif /* HACK */
 
@@ -1497,9 +1566,8 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             DEBUG_PRINT (TRACE_EXEC, 
                         ("GetRvalue: case default handle type unexpected: S_ERROR \n"));
 
-            sprintf (WhyBuf, "GetRvalue: Unknown NsType %d",
-                    NsValType ((NsHandle)* StackPtr));
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, ("GetRvalue: Unknown NsType %d\n",
+                            NsValType ((NsHandle)* StackPtr)));
             return S_ERROR;
         }
 
