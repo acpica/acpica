@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.103 $
+ *       $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -725,7 +725,7 @@ AcpiUtInitStaticObject (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
-#ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
 void
 AcpiUtDumpAllocationInfo (
     void);
