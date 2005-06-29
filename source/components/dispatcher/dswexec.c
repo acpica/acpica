@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -692,7 +692,7 @@ AcpiDsExecEndOp (
             CONTROL_PREDICATE_EXECUTING) &&
         (WalkState->ControlState->Control.PredicateOp == Op))
     {
-        Status = AcpiDsGetPredicateValue (WalkState, (UINT32) WalkState->ResultObj);
+        Status = AcpiDsGetPredicateValue (WalkState, WalkState->ResultObj);
         WalkState->ResultObj = NULL;
     }
 
