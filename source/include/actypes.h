@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.225 $
+ *       $Revision: 1.226 $
  *
  *****************************************************************************/
 
@@ -235,30 +235,6 @@ typedef UINT32                          UINT32_BIT;
 typedef NATIVE_UINT                     ACPI_PTRDIFF;
 typedef char                            NATIVE_CHAR;
 
-/*
- * Pointer overlays to avoid lots of typecasting for
- * code that accepts both physical and logical pointers.
- */
-typedef union AcpiPointers
-{
-    ACPI_PHYSICAL_ADDRESS       Physical;
-    void                        *Logical;
-    ACPI_TBLPTR                 Value;
-
-} ACPI_POINTERS;
-
-typedef struct AcpiPointer
-{
-    UINT32                      PointerType;
-    ACPI_POINTERS               Pointer;
-
-} ACPI_POINTER;
-
-/* PointerTypes for above */
-
-#define ACPI_LOGICAL_POINTER            0x01
-#define ACPI_PHYSICAL_POINTER           0x02
-
 
 /*
  * Data type ranges
@@ -282,6 +258,31 @@ typedef UINT32                          u32;
 typedef UINT64                          u64;
 #endif
 /*! [End] no source code translation !*/
+
+
+/*
+ * Pointer overlays to avoid lots of typecasting for
+ * code that accepts both physical and logical pointers.
+ */
+typedef union AcpiPointers
+{
+    ACPI_PHYSICAL_ADDRESS       Physical;
+    void                        *Logical;
+    ACPI_TBLPTR                 Value;
+
+} ACPI_POINTERS;
+
+typedef struct AcpiPointer
+{
+    UINT32                      PointerType;
+    ACPI_POINTERS               Pointer;
+
+} ACPI_POINTER;
+
+/* PointerTypes for above */
+
+#define ACPI_LOGICAL_POINTER            0x01
+#define ACPI_PHYSICAL_POINTER           0x02
 
 
 /*
