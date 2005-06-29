@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.17 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -190,7 +190,7 @@ typedef struct asl_parse_node
 #define NODE_METHOD_SOME_NO_RETVAL  0x0200
 #define NODE_RESULT_NOT_USED        0x0400
 #define NODE_METHOD_TYPED           0x0800
-
+#define NODE_IS_BIT_OFFSET          0x1000
 
 /* Keeps information about individual control methods */
 
@@ -377,6 +377,9 @@ typedef enum
     ASL_MSG_CLOSE,
     ASL_MSG_FIELD_ACCESS_WIDTH,
     ASL_MSG_FIELD_UNIT_OFFSET,
+    ASL_MSG_RESOURCE_FIELD,
+    ASL_MSG_BYTES_TO_BITS,
+    ASL_MSG_BITS_TO_BYTES,
 
 } ASL_MESSAGE_IDS;
 
