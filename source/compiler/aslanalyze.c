@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -1642,6 +1642,11 @@ AnOperandTypecheckWalkEnd (
 
         if (ArgOp->Asl.ParseOpcode == PARSEOP_METHODCALL)
         {
+            if (!ACPI_STRCMP (ArgOp->Asl.ExternalName, "\\_OSI"))
+            {
+                return (AE_OK);
+            }
+
             /* The lone arg is a method call, check it */
 
             RequiredBtypes = AnMapArgTypeToBtype (ARGI_INTEGER);
