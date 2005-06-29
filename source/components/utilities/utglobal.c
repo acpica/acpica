@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.175 $
+ *              $Revision: 1.176 $
  *
  *****************************************************************************/
 
@@ -238,6 +238,7 @@ UINT32                      AcpiGbl_NestingLevel = 0;
 /* Debugger globals */
 
 BOOLEAN                     AcpiGbl_DbTerminateThreads = FALSE;
+BOOLEAN                     AcpiGbl_AbortMethod = FALSE;
 BOOLEAN                     AcpiGbl_MethodExecuting = FALSE;
 
 /* System flags */
