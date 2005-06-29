@@ -528,10 +528,11 @@ Cleanup:
  * FUNCTION:    AcpiInstallNotifyHandler
  *
  * PARAMETERS:  Device          - The device for which notifies will be handled
+ *              HandlerType     - The type of handler:
+ *                                  ACPI_SYSTEM_NOTIFY: SystemHandler (00-7f)
+ *                                  ACPI_DEVICE_NOTIFY: DriverHandler (80-ff)
  *              Handler         - Address of the handler
  *              Context         - Value passed to the handler on each GPE
- *              Type            -   0: SystemHandler (00-7f)
- *                                  1: DriverHandler (80-ff)
  *
  * RETURN:      Status
  *
@@ -541,10 +542,10 @@ Cleanup:
 
 ACPI_STATUS
 AcpiInstallNotifyHandler (
-    ACPI_HANDLE             Device, 
+    ACPI_HANDLE             Device,
+    UINT32                  HandlerType, 
     NOTIFY_HANDLER          Handler, 
-    void                    *Context,
-    UINT32                  Type)
+    void                    *Context)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *NotifyObj;
@@ -557,7 +558,8 @@ AcpiInstallNotifyHandler (
 
     /* Parameter validation */
 
-    if (!Handler)
+    if ((!Handler) ||
+        (HandlerType > ACPI_MAX_NOTIFY_HANDLER_TYPE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -592,8 +594,8 @@ AcpiInstallNotifyHandler (
          *  Make sure the handler is not already installed.
          */
 
-        if (((Type = 0) && ObjDesc->Device.SysHandler) ||
-            ((Type = 1) && ObjDesc->Device.DrvHandler))
+        if (((HandlerType = ACPI_SYSTEM_NOTIFY) && ObjDesc->Device.SysHandler) ||
+            ((HandlerType = ACPI_DEVICE_NOTIFY) && ObjDesc->Device.DrvHandler))
         {
             return_ACPI_STATUS (AE_EXIST);
         }
@@ -646,7 +648,7 @@ AcpiInstallNotifyHandler (
 /* TBRM
     CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
 */
-    if (Type == 0)
+    if (HandlerType == ACPI_SYSTEM_NOTIFY)
     {
         ObjDesc->Device.SysHandler = NotifyObj;
     }
@@ -659,14 +661,16 @@ AcpiInstallNotifyHandler (
     return_ACPI_STATUS (AE_OK);
 }
 
+
 /*****************************************************************************
  *
  * FUNCTION:    AcpiRemoveNotifyHandler
  *
  * PARAMETERS:  Device          - The device for which notifies will be handled
+ *              HandlerType     - The type of handler:
+ *                                  ACPI_SYSTEM_NOTIFY: SystemHandler (00-7f)
+ *                                  ACPI_DEVICE_NOTIFY: DriverHandler (80-ff)
  *              Handler         - Address of the handler
- *              Type            -   0: SystemHandler (00-7f)
- *                                  1: DriverHandler (80-ff)
  * RETURN:      Status
  *
  * DESCRIPTION: Remove a handler for notifies on an ACPI device
@@ -675,9 +679,9 @@ AcpiInstallNotifyHandler (
 
 ACPI_STATUS
 AcpiRemoveNotifyHandler (
-    ACPI_HANDLE             Device, 
-    NOTIFY_HANDLER          Handler,
-    UINT32                  Type)
+    ACPI_HANDLE             Device,
+    UINT32                  HandlerType, 
+    NOTIFY_HANDLER          Handler)
 {
     ACPI_OBJECT_INTERNAL    *NotifyObj;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -689,7 +693,8 @@ AcpiRemoveNotifyHandler (
 
     /* Parameter validation */
 
-    if (!Handler)
+    if ((!Handler) ||
+        (HandlerType > ACPI_MAX_NOTIFY_HANDLER_TYPE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -729,7 +734,7 @@ AcpiRemoveNotifyHandler (
      *  Make sure the handler is installed.
      */
 
-    if (Type == 0)
+    if (HandlerType == ACPI_SYSTEM_NOTIFY)
     {
         NotifyObj = ObjDesc->Device.SysHandler;
     }
@@ -752,7 +757,7 @@ AcpiRemoveNotifyHandler (
 
     /* TBD: Mutex?? */
 
-    if (Type == 0)
+    if (HandlerType == ACPI_SYSTEM_NOTIFY)
     {
         ObjDesc->Device.SysHandler = NULL;
     }
@@ -773,7 +778,6 @@ AcpiRemoveNotifyHandler (
 
     return_ACPI_STATUS (AE_OK);
 }
-
 
 
 /******************************************************************************
