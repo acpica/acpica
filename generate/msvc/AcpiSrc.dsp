@@ -115,7 +115,11 @@ SOURCE=..\..\Tools\AcpiSrc\asmain.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Tools\AcpiSrc\astree.c
+SOURCE=..\..\Tools\AcpiSrc\asutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Tools\Common\getopt.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
