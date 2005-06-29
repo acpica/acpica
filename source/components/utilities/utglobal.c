@@ -349,6 +349,7 @@ InitAcpiLibGlobals (void)
     /* miscellaneous variables */
     
     Capabilities            = 0;
+    GlobalLockSet           = FALSE;
     
     /* file handles and names */
     
