@@ -136,7 +136,8 @@ char        *HeaderBegin = "/***************************************************
 
 void
 AsTrimLines (
-    char                    *Buffer)
+    char                    *Buffer,
+    char                    *Filename)
 {
     UINT32                  Length;
     char                    *SubBuffer = Buffer;
@@ -184,7 +185,7 @@ AsTrimLines (
 Exit:
     if (SpaceCount)
     {
-        printf ("Eliminated %d extraneous spaces\n", SpaceCount);
+        printf ("Eliminated %d extraneous spaces in \"%s\"\n", SpaceCount, Filename);
     }
 }
 
@@ -273,7 +274,8 @@ AsReplaceString (
     char                    *Replacement,
     char                    *Buffer)
 {
-    char                    *SubString;
+    char                    *SubString1;
+    char                    *SubString2;
     char                    *SubBuffer;
     int                     TargetLength;
     int                     ReplacementLength;
@@ -285,15 +287,39 @@ AsReplaceString (
     ReplacementLength = strlen (Replacement);
 
     SubBuffer = Buffer;
-    SubString = Buffer;
+    SubString1 = Buffer;
 
 
-    while (SubString)
+    while (SubString1)
     {
-        SubString = strstr (SubBuffer, Target);
-        if (SubString)
+        /* Find the target string */
+
+        SubString1 = strstr (SubBuffer, Target);
+
+        /* 
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+
+        SubString2 = strstr (SubBuffer, "/*!");
+
+        if ((SubString2) &&
+            (SubString2 < SubString1))
         {
-            SubBuffer = AsReplaceData (SubString, TargetLength, Replacement, ReplacementLength);
+            SubString2 = strstr (SubBuffer, "!*/");
+            if (!SubString2)
+            {
+                return ReplaceCount;
+            }
+
+            SubBuffer = SubString2;
+        }
+
+        /* Do the actual replace if the target was found */
+
+        else if (SubString1)
+        {
+            SubBuffer = AsReplaceData (SubString1, TargetLength, Replacement, ReplacementLength);
             ReplaceCount++;
         }
     }
@@ -1011,8 +1037,8 @@ AsCountSourceLines (
     Gbl_WhiteLines += WhiteCount;
     Gbl_CommentLines += CommentCount;
 
-    printf ("%d Lines, %d Comment %d White %d Code\n", 
-                LineCount+WhiteCount+CommentCount, CommentCount, WhiteCount, LineCount);
+    VERBOSE_PRINT (("%d Lines, %d Comment %d White %d Code\n", 
+                LineCount+WhiteCount+CommentCount, CommentCount, WhiteCount, LineCount));
 }
 
 

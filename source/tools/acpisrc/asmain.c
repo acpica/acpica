@@ -117,18 +117,20 @@
 
 #include "acpisrc.h"
 
+
 /* Globals */
 
-UINT32                      Gbl_Tabs = 0;
-UINT32                      Gbl_NonAnsiComments = 0;
-UINT32                      Gbl_Files = 0;
-UINT32                      Gbl_WhiteLines = 0;
-UINT32                      Gbl_CommentLines = 0;
-UINT32                      Gbl_SourceLines = 0;
+UINT32                  Gbl_Tabs = 0;
+UINT32                  Gbl_NonAnsiComments = 0;
+UINT32                  Gbl_Files = 0;
+UINT32                  Gbl_WhiteLines = 0;
+UINT32                  Gbl_CommentLines = 0;
+UINT32                  Gbl_SourceLines = 0;
 
-struct stat                 Gbl_StatBuf;
-char                        *Gbl_FileBuffer;
-UINT32                      Gbl_FileSize;
+struct stat             Gbl_StatBuf;
+char                    *Gbl_FileBuffer;
+UINT32                  Gbl_FileSize;
+BOOLEAN                 Gbl_VerboseMode = FALSE;
 
 
 /******************************************************************************
@@ -244,8 +246,74 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
 };
 
 
+ACPI_CONVERSION_TABLE       StatsConversionTable = {
+
+    NULL,
+    FLG_NO_FILE_OUTPUT,
+
+    /* C source files */
+
+    NULL,
+    NULL,
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
+
+    /* C header files */
+
+    NULL,
+    NULL,
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
+};
 
 
+
+
+int
+AsExaminePaths (
+    ACPI_CONVERSION_TABLE   *ConversionTable,
+    char                    *Source,
+    char                    *Target)
+{
+    int                     Status;
+    int                     Response;
+
+
+    Status = stat (Source, &Gbl_StatBuf);
+    if (Status)
+    {
+        printf ("Source path \"%s\" does not exist\n", Source);
+        return -1;
+    }
+
+    /* Check if source is a file or a directory */
+
+    if (ConversionTable->Flags & FLG_NO_FILE_OUTPUT)
+    {
+        return 0;
+    }
+
+    if (!stricmp (Source, Target))
+    {
+        printf ("Target path is the same as the source path, overwrite?\n");
+        scanf ("%c", &Response);
+
+        /* Check response */
+    }
+
+    else
+    {
+        Status = stat (Target, &Gbl_StatBuf);
+        if (!Status)
+        {
+            printf ("Target path already exists, overwrite?\n");
+            scanf ("%c", &Response);
+
+            /* Check response */
+        }
+    }
+
+    
+    return 0;
+}
 
 
 /******************************************************************************
@@ -260,6 +328,7 @@ void
 AsDisplayStats (void)
 {
 
+    printf ("\nAcpiSrc statistics:\n\n");
     printf ("%d Files processed\n", Gbl_Files);
     printf ("%d Tabs found\n", Gbl_Tabs);
     printf ("%d Non-ANSI comments found\n", Gbl_NonAnsiComments);
@@ -287,8 +356,10 @@ AsDisplayUsage (void)
 
     printf ("\n");
     printf ("Usage: acpisrc [-cl] <SourceDir> <DestinationDir>\n\n");
-    printf ("Where: -l            Generate Linux version of the source\n");
-    printf ("       -c            Generate cleaned version of the source\n");
+    printf ("Where:   -c            Generate cleaned version of the source\n");
+    printf ("         -l            Generate Linux version of the source\n");
+    printf ("         -s            Generate source statistics only\n");
+    printf ("         -v            Verbose mode\n");
     printf ("\n");
     return;
 }
@@ -308,8 +379,9 @@ main (
     char                    *argv[])
 {
     int                     j;
-    ACPI_CONVERSION_TABLE   *ConversionTable;
-    UINT32                  i = 1;
+    ACPI_CONVERSION_TABLE   *ConversionTable = NULL;
+    char                    *SourcePath;
+    char                    *TargetPath;
 
     
     printf ("ACPI Source Code Conversion Utility ");
@@ -323,18 +395,23 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "lc")) != EOF) switch(j) 
+    while ((j = getopt (argc, argv, "lcsv")) != EOF) switch(j) 
     {
     case 'l':
         printf ("Creating Linux source code\n");
         ConversionTable = &LinuxConversionTable;
-        i++;
         break;
 
     case 'c':
         printf ("Code cleanup\n");
         ConversionTable = &CleanupConversionTable;
-        i++;
+        break;
+
+    case 's':
+        break;
+
+    case 'v':
+        Gbl_VerboseMode = TRUE;
         break;
 
     default:    
@@ -342,17 +419,28 @@ main (
         return -1;
     }
 
+    SourcePath = argv[optind];
+    TargetPath = argv[optind+1];
+
     if (!ConversionTable)
     {
-        printf ("Code cleanup\n");
-        ConversionTable = &CleanupConversionTable;
-        i++;
+        /* Just generate statistics.  Ignore target path */
+
+        TargetPath = SourcePath;
+
+        printf ("Source code statistics only\n");
+        ConversionTable = &StatsConversionTable;
     }
 
 
+    if (AsExaminePaths (ConversionTable, SourcePath, TargetPath))
+    {
+        return -1;
+    }
+
     /* Process the directory tree */
 
-    AsProcessTree (ConversionTable, argv[i], argv[i+1]);
+    AsProcessTree (ConversionTable, SourcePath, TargetPath);
 
     AsDisplayStats ();
 

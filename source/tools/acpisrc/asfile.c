@@ -144,17 +144,20 @@ AsProcessTree (
 
     MaxPathLength = max (strlen (SourcePath), strlen (TargetPath));
 
-    if (mkdir (TargetPath))
+    if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
     {
-        if (errno != EEXIST)
+        VERBOSE_PRINT (("Creating Directory \"%s\"\n", TargetPath));
+        if (mkdir (TargetPath))
         {
-            printf ("Could not create target directory\n");
-            return -1;
+            if (errno != EEXIST)
+            {
+                printf ("Could not create target directory\n");
+                return -1;
+            }
         }
     }
 
     /* Do the C source files */
-
 
     FileSpec = calloc (strlen (SourcePath) + 5, 1);
     if (!FileSpec)
@@ -166,17 +169,17 @@ AsProcessTree (
     strcpy (FileSpec, SourcePath);
     strcat (FileSpec, "/*.c");
 
-    printf ("Source path: %s\n", FileSpec);
+    VERBOSE_PRINT (("Checking for C source files in path \"%s\"\n", FileSpec));
 
     FindHandle = _findfirst (FileSpec, &FindInfo);
     if (FindHandle != -1)
     {
-        printf ("File: %s\n", FindInfo.name);
+        VERBOSE_PRINT (("File: %s\n", FindInfo.name));
         AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
 
         while (_findnext (FindHandle, &FindInfo) == 0)
         {
-            printf ("File: %s\n", FindInfo.name);
+            VERBOSE_PRINT (("File: %s\n", FindInfo.name));
             AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
        }
 
@@ -189,17 +192,17 @@ AsProcessTree (
     strcpy (FileSpec, SourcePath);
     strcat (FileSpec, "/*.h");
 
-    printf ("Source path: %s\n", FileSpec);
+    VERBOSE_PRINT (("Checking for C header files in path \"%s\"\n", FileSpec));
 
     FindHandle = _findfirst (FileSpec, &FindInfo);
     if (FindHandle != -1)
     {
-        printf ("File: %s\n", FindInfo.name);
+        VERBOSE_PRINT (("File: %s\n", FindInfo.name));
         AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_HEADER);
 
         while (_findnext (FindHandle, &FindInfo) == 0)
         {
-            printf ("File: %s\n", FindInfo.name);
+            VERBOSE_PRINT (("File: %s\n", FindInfo.name));
             AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_HEADER);
         }
 
@@ -212,14 +215,11 @@ AsProcessTree (
     strcpy (FileSpec, SourcePath);
     strcat (FileSpec, "/*.*");
 
-    printf ("Source path: %s\n", FileSpec);
+    VERBOSE_PRINT (("Checking for subdirectories in path \"%s\"\n", FileSpec));
 
     FindHandle = _findfirst (FileSpec, &FindInfo);
     if (FindHandle != -1)
     {
-
-        printf ("File: %s\n", FindInfo.name);
-
         if (!AsCheckForDirectory (SourcePath, TargetPath, &FindInfo, &SourceDirPath, &TargetDirPath))
         {
             AsProcessTree (ConversionTable, SourceDirPath, TargetDirPath);
@@ -229,8 +229,6 @@ AsProcessTree (
 
         while (_findnext (FindHandle, &FindInfo) == 0)
         {
-            printf ("File: %s\n", FindInfo.name);
-
             if (!AsCheckForDirectory (SourcePath, TargetPath, &FindInfo, &SourceDirPath, &TargetDirPath))
             {
                 AsProcessTree (ConversionTable, SourceDirPath, TargetDirPath);
@@ -261,6 +259,7 @@ void
 AsConvertFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *FileBuffer,
+    char                    *Filename,
     NATIVE_INT              FileType)
 {
     UINT32                  i;
@@ -290,7 +289,7 @@ AsConvertFile (
 
 
     Gbl_Files++;
-    printf ("Processing %d bytes\n", strlen (FileBuffer));
+    VERBOSE_PRINT (("Processing %d bytes\n", strlen (FileBuffer)));
 
 
     /* Process all the string replacements */
@@ -341,7 +340,7 @@ AsConvertFile (
 
         case CVT_TRIM_LINES:
 
-            AsTrimLines (FileBuffer);
+            AsTrimLines (FileBuffer, Filename);
             break;
 
 
@@ -448,15 +447,18 @@ AsProcessOneFile (
 
     /* Process the file in the buffer */
 
-    AsConvertFile (ConversionTable, Gbl_FileBuffer, FileType);
+    AsConvertFile (ConversionTable, Gbl_FileBuffer, Pathname, FileType);
 
-    /* Generate the target pathname and write the file */
+    if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
+    {
+        /* Generate the target pathname and write the file */
 
-    strcpy (Pathname, TargetPath);
-    strcat (Pathname, "/");
-    strcat (Pathname, Filename);
+        strcpy (Pathname, TargetPath);
+        strcat (Pathname, "/");
+        strcat (Pathname, Filename);
 
-    AsPutFile (Pathname, Gbl_FileBuffer, ConversionTable->Flags);
+        AsPutFile (Pathname, Gbl_FileBuffer, ConversionTable->Flags);
+    }
 
     free (Gbl_FileBuffer);
     free (Pathname);
@@ -639,7 +641,7 @@ AsPutFile (
 
     /* Create the target file */
 
-    OpenFlags = O_TRUNC | O_CREAT | O_WRONLY, _S_IREAD | _S_IWRITE;
+    OpenFlags = O_TRUNC | O_CREAT | O_WRONLY;
 
     if (SystemFlags & FLG_NO_CARRIAGE_RETURNS)
     {
@@ -650,7 +652,7 @@ AsPutFile (
         OpenFlags |= O_TEXT;
     }
 
-    DestHandle = open  (Pathname, OpenFlags);
+    DestHandle = open (Pathname, OpenFlags, _S_IREAD | _S_IWRITE);
     if (DestHandle == -1)
     {
         perror ("Could not create destination file");

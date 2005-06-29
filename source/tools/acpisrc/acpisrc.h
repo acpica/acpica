@@ -152,6 +152,7 @@
 
 #define FLG_DEFAULT_FLAGS                   0x00000000
 #define FLG_NO_CARRIAGE_RETURNS             0x00000001
+#define FLG_NO_FILE_OUTPUT                  0x00000002
 
 
 /* Globals */
@@ -165,10 +166,14 @@ extern UINT32                   Gbl_CommentLines;
 extern struct stat              Gbl_StatBuf;
 extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
+extern BOOLEAN                  Gbl_VerboseMode;
 
 
 extern int                      optind;
 extern char                     *optarg;
+
+#define PARAM_LIST(pl)          pl
+#define VERBOSE_PRINT(a)        if (Gbl_VerboseMode) printf PARAM_LIST(a)
 
 
 /* Conversion table structs */
@@ -244,7 +249,8 @@ AsRemoveLine (
 
 void
 AsTrimLines (
-    char                    *Buffer);
+    char                    *Buffer,
+    char                    *Filename);
 
 void
 AsMixedCaseToUnderscores (
@@ -306,6 +312,7 @@ void
 AsConvertFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *FileBuffer,
+    char                    *Filename,
     NATIVE_INT              FileType);
 
 NATIVE_INT
