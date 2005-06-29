@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -964,7 +964,7 @@ AcpiExExtractFromField (
         {
             /*
              * This is the last iteration of the loop.  We need to clear
-             * any unused bits (bits that are not part of this field) before 
+             * any unused bits (bits that are not part of this field) before
              * we store the final merged datum into the caller buffer.
              */
             ThisRawDatum &=
