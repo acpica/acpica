@@ -318,8 +318,9 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 #define ACPI_TYPE_Thermal               (ACPI_OBJECT_TYPE) 13 /* 0x0D  Name, multiple NamedObject */
 #define ACPI_TYPE_BufferField           (ACPI_OBJECT_TYPE) 14 /* 0x0E  */
 #define ACPI_TYPE_DdbHandle             (ACPI_OBJECT_TYPE) 15 /* 0x0F  */
+#define ACPI_TYPE_DebugObject           (ACPI_OBJECT_TYPE) 16 /* 0x10  */
 
-#define ACPI_TYPE_MAX                   15
+#define ACPI_TYPE_MAX                   16
 
     /* 
      * This section contains object types that do not relate to the ACPI ObjectType operator.
@@ -345,10 +346,11 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 #define INTERNAL_TYPE_AddressHandler    (ACPI_OBJECT_TYPE) 39 /* 0x27  */
 #define INTERNAL_TYPE_MethodArgument    (ACPI_OBJECT_TYPE) 40 /* 0x28  */
 #define INTERNAL_TYPE_MethodLocalVar    (ACPI_OBJECT_TYPE) 41 /* 0x29  */
+#define INTERNAL_TYPE_Reference         (ACPI_OBJECT_TYPE) 42 /* 0x2A  */
 
-#define INTERNAL_TYPE_MAX               41
+#define INTERNAL_TYPE_MAX               42
 
-#define INTERNAL_TYPE_Invalid           (ACPI_OBJECT_TYPE) 42
+#define INTERNAL_TYPE_Invalid           (ACPI_OBJECT_TYPE) 43
 
 
 /* 
