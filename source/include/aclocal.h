@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.138 $
+ *       $Revision: 1.139 $
  *
  *****************************************************************************/
 
@@ -666,15 +666,16 @@ ACPI_STATUS (*ACPI_EXECUTE_OP) (
  */
 typedef struct acpi_opcode_info
 {
+#ifdef _OPCODE_NAMES
+    NATIVE_CHAR             *Name;          /* Opcode name (debug only) */
+#endif
     UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
     UINT32                  RuntimeArgs;    /* Interpret time arguments */
-    UINT16                  Flags;          /* Misc flags */
+    UINT32                  Flags;          /* Misc flags */
+    UINT8                   ObjectType;     /* Corresponding internal object type */
     UINT8                   Class;          /* Opcode class */
     UINT8                   Type;           /* Opcode type */
 
-#ifdef _OPCODE_NAMES
-    NATIVE_CHAR             *Name;          /* op name (debug only) */
-#endif
 
 } ACPI_OPCODE_INFO;
 

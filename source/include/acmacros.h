@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.97 $
+ *       $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -385,9 +385,9 @@
  * Macros for the master AML opcode table
  */
 #ifdef ACPI_DEBUG
-#define ACPI_OP(Name,PArgs,IArgs,Class,Type,Flags)     {PArgs,IArgs,Flags,Class,Type,Name}
+#define ACPI_OP(Name,PArgs,IArgs,ObjType,Class,Type,Flags)     {Name,PArgs,IArgs,Flags,ObjType,Class,Type}
 #else
-#define ACPI_OP(Name,PArgs,IArgs,Class,Type,Flags)     {PArgs,IArgs,Flags,Class,Type}
+#define ACPI_OP(Name,PArgs,IArgs,ObjType,Class,Type,Flags)     {PArgs,IArgs,Flags,ObjType,Class,Type}
 #endif
 
 #define ARG_TYPE_WIDTH                  5
