@@ -180,6 +180,8 @@ NsPushCurrentScope (nte *NewScope, NsType Type)
             REPORT_ERROR (&KDT[2]);
         }
     }
+
+    FUNCTION_EXIT;
 }
 
 
@@ -223,6 +225,8 @@ NsPushMethodScope (NsHandle NewScope)
             REPORT_ERROR (&KDT[4]);
         }
     }
+
+    FUNCTION_EXIT;
 }
 
 /****************************************************************************
@@ -281,11 +285,13 @@ NsPopCurrent (NsType Type)
         if ((TYPE_Any == Type) || (Type == (CurrentScope + 1)->Type))
         {
             DEBUG_PRINT (TRACE_EXEC, ("Found %d\n", Type));
+            FUNCTION_EXIT;
             return Count;
         }
     }
 
     DEBUG_PRINT (TRACE_EXEC,("%d Not Found\n", Type));
+    FUNCTION_EXIT;
     return -Count;
 }
 
