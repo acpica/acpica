@@ -162,8 +162,7 @@ NsNameOfScope (
          * If the name space has not been initialized,
          * this function should not have been called.
          */
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     /* Calculate required buffer size based on depth below root NT */
@@ -182,8 +181,7 @@ NsNameOfScope (
     if (!NameBuffer)
     {
         REPORT_ERROR ("NsNameOfScope: allocation failure");
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
     
 
@@ -204,8 +202,7 @@ NsNameOfScope (
         DEBUG_PRINT (ACPI_ERROR, ("NsNameOfScope:  Bad pointer returned; size = %d\n", Size));
     }
 
-    FUNCTION_EXIT;
-    return NameBuffer;
+    return_VALUE (NameBuffer);
 }
 
 
@@ -222,19 +219,21 @@ NsNameOfScope (
 char *
 NsNameOfCurrentScope (void)
 {
+    char                    *ScopeName;
+
+
     FUNCTION_TRACE ("NsNameOfCurrentScope");
 
 
     if (CurrentScope && CurrentScope->Scope)
     {
-        FUNCTION_EXIT;
-        return NsNameOfScope (CurrentScope->Scope);
+        ScopeName = NsNameOfScope (CurrentScope->Scope);
+        return_VALUE (ScopeName);
     }
     
-    REPORT_ERROR ("Current scope pointer trashed");
+    REPORT_ERROR ("Current scope pointer is invalid");
 
-    FUNCTION_EXIT;
-    return NULL;
+    return_VALUE (NULL);
 }
 
 
@@ -275,14 +274,12 @@ NsHandleToPathname (
          * this function should not have been called.
          */
 
-        FUNCTION_STATUS_EXIT (AE_NO_NAMESPACE);
-        return AE_NO_NAMESPACE;
+        return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
     if (!(EntryToSearch = NsConvertHandleToEntry (TargetHandle)))
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /* 
@@ -306,8 +303,7 @@ NsHandleToPathname (
 
     if (PathLength > UserBufSize)
     {
-        FUNCTION_STATUS_EXIT (AE_BUFFER_OVERFLOW);
-        return AE_BUFFER_OVERFLOW;
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
           
     /* Store null terminator */
@@ -338,8 +334,7 @@ NsHandleToPathname (
     DEBUG_PRINT (ACPI_INFO, ("NsHandleToPathname: Len=%d, %s \n", 
                                 PathLength, UserBuffer));
     
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -468,8 +463,7 @@ NsLowFindNames (
          * nothing to search for, or count pointer bad 
          */
         
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
 
     /* Init the context structure used by compare routine */
@@ -489,8 +483,7 @@ NsLowFindNames (
         List[*Count] = (ACPI_HANDLE) 0;
     }
 
-    FUNCTION_EXIT;
-    return;
+    return_VOID;
 }
 
 
@@ -536,8 +529,7 @@ NsFindNames (
          * If the name space has not been initialized,
          * there surely are no matching names.
          */
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     if (NS_ALL == StartHandle)
@@ -560,8 +552,7 @@ NsFindNames (
          * If base is not the root and has no children,
          * there is nothing to search.
          */
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     if (!SearchFor)
@@ -579,8 +570,7 @@ NsFindNames (
     
     if (0 == Count)
     {
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     Count++;                                            /* Allow for trailing null */
@@ -588,8 +578,7 @@ NsFindNames (
     if (!List)
     {
         REPORT_ERROR ("NsFindNames: allocation failure");
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     /* Pass 2.  Fill buffer */
@@ -597,8 +586,7 @@ NsFindNames (
     Count = 0;
     NsLowFindNames (StartHandle, SearchFor, &Count, List, MaxDepth);
 
-    FUNCTION_EXIT;
-    return List;
+    return_VALUE (List);
 }
 
 
