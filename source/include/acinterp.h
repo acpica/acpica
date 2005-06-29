@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.155 $
+ *       $Revision: 1.157 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -290,8 +290,8 @@ AcpiExOpcode_6A_0T_1R (
 BOOLEAN
 AcpiExDoMatch (
     UINT32                  MatchOp,
-    ACPI_INTEGER            PackageValue,
-    ACPI_INTEGER            MatchValue);
+    ACPI_OPERAND_OBJECT     *PackageObj,
+    ACPI_OPERAND_OBJECT     *MatchObj);
 
 ACPI_STATUS
 AcpiExGetObjectReference (
@@ -689,6 +689,7 @@ AcpiExStoreObjectToObject (
 
 ACPI_STATUS
 AcpiExStoreBufferToBuffer (
+    ACPI_OBJECT_TYPE        OriginalSrcType,
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc);
 
