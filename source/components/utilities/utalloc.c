@@ -378,7 +378,7 @@ CmDeleteElementFromAllocList (
 
         if (Element->Size > sizeof (void *))
         {
-            DwordLen = Element->Size / 4;
+            DwordLen = Element->Size / sizeof (void *);
 
             for (i = 0; i < DwordLen; i++)
             {
@@ -428,22 +428,22 @@ CmDumpAllocationInfo (
     FUNCTION_TRACE ("CmDumpAllocationInfo");
     
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	("Current outstanding allocations: %d (%d b / %d Kb)\n",
+    	("Current outstanding allocations: %d (%d b, %d Kb)\n",
     	Gbl_CurrentAllocCount, Gbl_CurrentAllocSize, Gbl_CurrentAllocSize / 1024));
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-		("Maximum concurrent allocations thus far: %d (%d b / %d Kb)\n",
+		("Maximum concurrent allocations thus far: %d (%d b, %d Kb)\n",
 		Gbl_MaxConcurrentAllocCount, Gbl_MaxConcurrentAllocSize, Gbl_MaxConcurrentAllocSize / 1024));
 	DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	("Current number of allocated internal objects: %d (%d b / %d Kb)\n",
+    	("Current number of allocated internal objects: %d (%d b, %d Kb)\n",
     	Gbl_CurrentObjectCount, Gbl_CurrentObjectSize, Gbl_CurrentObjectSize / 1024));
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	("Maximum concurrent number of allocated internal objects: %d (%d b / %d Kb)\n",
+    	("Maximum concurrent number of allocated internal objects: %d (%d b, %d Kb)\n",
     	Gbl_MaxConcurrentObjectCount, Gbl_MaxConcurrentObjectSize, Gbl_MaxConcurrentObjectSize / 1024));
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	("Total number of allocated internal objects: %d (%d b / %d Kb)\n",
+    	("Total number of allocated internal objects: %d (%d b, %d Kb)\n",
     	Gbl_RunningObjectCount, Gbl_RunningObjectSize, Gbl_RunningObjectSize / 1024));
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	("Total number of allocations: %d (%d b / %d Kb)\n",
+    	("Total number of allocations: %d (%d b, %d Kb)\n",
     	Gbl_RunningAllocCount, Gbl_RunningAllocSize, Gbl_RunningAllocSize / 1024));
 
 	return_VOID;
