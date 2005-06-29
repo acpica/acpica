@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  ******************************************************************************/
 
@@ -125,15 +125,6 @@
 #define _COMPONENT          ACPI_EVENTS
         MODULE_NAME         ("evsci")
 
-
-/*
- * Elements correspond to counts for TMR, NOT_USED, GBL, PWR_BTN, SLP_BTN, RTC,
- * and GENERAL respectively.  These counts are modified by the ACPI interrupt
- * handler.
- *
- * TBD: [Investigate] Note that GENERAL should probably be split out into
- * one element for each bit in the GPE registers
- */
 
 
 /*******************************************************************************
@@ -283,11 +274,9 @@ AcpiEvRestoreAcpiState (void)
                 AcpiGbl_Pm1EnableRegisterSave);
         }
 
-
         /* Ensure that all status bits are clear */
 
         AcpiHwClearAcpiStatus ();
-
 
         /* Now restore the GPEs */
 
@@ -301,7 +290,7 @@ AcpiEvRestoreAcpiState (void)
             }
         }
 
-        /* GPE 1 present? */
+        /* GPE Block 1 present? */
 
         if (AcpiGbl_FADT->Gpe1BlkLen)
         {
