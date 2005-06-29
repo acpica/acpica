@@ -49,7 +49,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *
  *****************************************************************************/
 
-VOID
+void
 DumpCode (OpMode LoadExecMode)
 {
     UINT8           *Code;
@@ -277,7 +277,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
                 OBJECT_DESCRIPTOR   **Element;
                 UINT16              ElementIndex;
 
-                (VOID) IncIndent ();
+                (void) IncIndent ();
 
                 for (ElementIndex = 0, Element = EntryDesc->Package.PackageElems;
                       ElementIndex < EntryDesc->Package.PkgCount;
@@ -464,7 +464,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
  *
  ****************************************************************************/
 
-VOID
+void
 DumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
 {
     OBJECT_DESCRIPTOR   **EntryDesc;
