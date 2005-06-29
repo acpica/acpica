@@ -117,9 +117,9 @@
 #define __CMDELETE_C__
 
 #include <acpi.h>
-#include <acpiobj.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <acobject.h>
+#include <interp.h>
+#include <namesp.h>
 #include <tables.h>
 #include <parser.h>
 
@@ -544,6 +544,24 @@ CmDeleteInternalObj (
 /* TBD       
         CmDeleteInternalObj (Object->Region.AddrHandler);        
 */
+        break;
+
+
+    case ACPI_TYPE_Mutex:
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Mutex %p, Semaphore %p\n", 
+                                Object, Object->Mutex.Semaphore));
+
+        OsdDeleteSemaphore (Object->Mutex.Semaphore);
+        break;
+
+
+    case ACPI_TYPE_Event:
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Event %p, Semaphore %p\n", 
+                                Object, Object->Event.Semaphore));
+
+        OsdDeleteSemaphore (Object->Event.Semaphore);
         break;
 
 
