@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.88 $
+ *       $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -856,7 +856,6 @@ typedef struct acpi_get_devices_info
 
 #define GPE1_STS    (GPE1_STS_BLOCK | 0x01)
 #define GPE1_EN     (GPE1_EN_BLOCK  | 0x01)
-
 
 
 #define TMR_STS_MASK        0x0001
