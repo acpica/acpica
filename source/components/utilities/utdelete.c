@@ -130,6 +130,73 @@
 
 /******************************************************************************
  * 
+ * FUNCTION:    CmIsValidInternalObject
+ *
+ * PARAMETERS:  Operand             - Object to be validated
+ *
+ * RETURN:      Validate a pointer to be an ACPI_OBJECT_INTERNAL
+ *
+ *****************************************************************************/
+
+BOOLEAN
+CmIsValidInternalObject (
+    void                    *Object)
+{
+
+    /* Check for a null pointer */
+
+    if (!Object)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("CmIsValidInternalObject: **** Null Object Ptr\n"));
+        return FALSE;
+    }
+
+    /* Check for a pointer within one of the ACPI tables */
+
+    if (TbSystemTablePointer (Object))
+    {
+        DEBUG_PRINT (ACPI_INFO, ("CmIsValidInternalObject: **** Object %p is a Pcode Ptr\n",
+                        Object));
+        return FALSE;
+    }
+
+    /* Check the descriptor type field */
+
+    if (!VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_ACPI_OBJ))
+    {
+        /* Not an ACPI internal object, do some further checking */
+
+        if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
+        {
+            DEBUG_PRINT (ACPI_INFO, ("CmIsValidInternalObject: **** Object %p is NS handle\n",
+                            Object));
+        }
+
+        else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_PARSER))
+        {
+            DEBUG_PRINT (ACPI_INFO, ("CmIsValidInternalObject: **** Object %p is a parser object\n",
+                            Object));
+        }
+
+        else
+        {
+            DEBUG_PRINT (ACPI_INFO, ("CmIsValidInternalObject: **** Object %p is of unknown type\n",
+                            Object));
+        }
+
+        return FALSE;
+    }
+
+
+    /* The object appears to be a valid ACPI_OBJECT_INTERNAL */
+
+    return TRUE;
+}
+
+
+
+/******************************************************************************
+ * 
  * FUNCTION:    CmDeleteOperand
  *
  * PARAMETERS:  Operand         - Pointer to the object to be deleted
@@ -174,6 +241,10 @@ CmUpdateRefCount (
     UINT32                  NewCount = Count;
 
 
+
+    /*
+     * Reference count action (increment, decrement, or force delete)
+     */
 
     switch (Action)
     {
@@ -224,6 +295,11 @@ CmUpdateRefCount (
         break;
     }
 
+
+    /*
+     * Sanity check the reference count, for debug purposes only.
+     * (A deleted object will have a huge reference count)
+     */
 
     if (Count > MAX_REFERENCE_COUNT)
     {
@@ -336,14 +412,12 @@ CmUpdateObjectReference (
          */
         for (i = 0; i < Object->Package.Count; i++)
         {
-            /* Check for end-of-list (partially constructed package) */
+            /* There can be null elements within the package */
 
-            if (!Object->Package.Elements[i])
+            if (Object->Package.Elements[i])
             {
-                break;
+                CmUpdateObjectReference (Object->Package.Elements[i], Action);
             }
-
-            CmUpdateObjectReference (Object->Package.Elements[i], Action);
         }
         break;
 
@@ -418,11 +492,11 @@ CmDeleteInternalObj (
 
     FUNCTION_TRACE_PTR ("CmDeleteInternalObj", Object);
 
+
     if (!Object)
     {
         return_VOID;
     }
-
 
     /* Only delete the object when the reference count reaches  zero */
 
@@ -435,7 +509,10 @@ CmDeleteInternalObj (
     }
 
     
-    /* Handle sub-objects and buffers within the object */
+    /* 
+     * Handle sub-objects and buffers within the object,
+     * based upon the object type
+     */
 
     switch (Object->Common.Type)
     {
@@ -472,6 +549,7 @@ CmDeleteInternalObj (
         }
         break;
 
+
     case ACPI_TYPE_String:
 
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** String %p, ptr %p\n", 
@@ -503,14 +581,13 @@ CmDeleteInternalObj (
 
         for (i = 0; i < Object->Package.Count; i++)
         {
-            /* Check for end-of-list (partially constructed package) */
+            /* Uninitialized package elements are allowed, the slot will be null */
 
-            if (!Object->Package.Elements[i])
+            if (Object->Package.Elements[i])
             {
-                break;
+                CmDeleteInternalObj (Object->Package.Elements[i]);
             }
 
-            CmDeleteInternalObj (Object->Package.Elements[i]);
         }
 
         /* Free the (variable length) element pointer array */
@@ -636,16 +713,17 @@ CmDeleteInternalObj (
 
     if (Object->Common.Flags & AO_STATIC_ALLOCATION)
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Obj %p [%s] static allocation!\n",
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Object %p [%s] static allocation, no delete\n",
                                 Object, CmGetTypeName (Object->Common.Type)));
     }
 
     else
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj %p [%s]\n",
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting object %p [%s]\n",
                                 Object, CmGetTypeName (Object->Common.Type)));
 
-        /* Memory allocation metrics.  Call the macro here since we only
+        /* 
+         * Memory allocation metrics.  Call the macro here since we only
          * care about dynamically allocated objects.
          */
         DECREMENT_OBJECT_METRICS(Object->Common.Size);
@@ -657,15 +735,16 @@ CmDeleteInternalObj (
     return_VOID;
 }
 
+
 /******************************************************************************
  *
  * FUNCTION:    CmAddReference
  *
- * PARAMETERS:  *Object        - Pointer to the list to be deleted
+ * PARAMETERS:  *Object        - Object whose reference count is to be incremented
  * 
  * RETURN:      None
  * 
- * DESCRIPTION: This function deletes a simple (non-package) object.
+ * DESCRIPTION: Add one reference to an ACPI object
  *
  ******************************************************************************/
 
@@ -676,26 +755,20 @@ CmAddReference (
 
     FUNCTION_TRACE_PTR ("CmAddReference", Object);
 
-    if (!Object)
+
+    /*
+     * Ensure that we have a valid object
+     */
+
+    if (!CmIsValidInternalObject (Object))
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmAddReference: **** Null Object Ptr\n"));
         return_VOID;
     }
 
-    if (TbSystemTablePointer (Object))
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmAddReference: **** Object %p is Pcode Ptr\n",
-                        Object));
-        return_VOID;
-    }
 
-    if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmAddReference: **** Object %p is NS handle\n",
-                        Object));
-        return_VOID;
-    }
-
+    /*
+     * We have a valid ACPI internal object, now increment the reference count
+     */
 
     CmUpdateObjectReference  (Object, REF_INCREMENT);
 
@@ -707,11 +780,11 @@ CmAddReference (
  *
  * FUNCTION:    CmRemoveReference
  *
- * PARAMETERS:  *Object        - Pointer to the list to be deleted
+ * PARAMETERS:  *Object        - Object whose ref count will be decremented
  * 
  * RETURN:      None
  * 
- * DESCRIPTION: This function deletes a simple (non-package) object.
+ * DESCRIPTION: Decrement the reference count of an ACPI internal object
  *
  ******************************************************************************/
 
@@ -724,32 +797,16 @@ CmRemoveReference (
 
 
     /*
-     * TBD: Most of this code should be deleted when object reference
-     * counts are completely implemented!
+     * Ensure that we have a valid object
      */
 
-    if (!Object)
+    if (!CmIsValidInternalObject (Object))
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: **** Null Object Ptr\n"));
-        return_VOID;
-    }
-
-    if (TbSystemTablePointer (Object))
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: **** Object %p is Pcode Ptr\n",
-                        Object));
-        return_VOID;
-    }
-
-    if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: **** Object %p is NS handle\n",
-                        Object));
         return_VOID;
     }
 
     DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%X\n", 
-                            Object, Object->Common.ReferenceCount));
+                                Object, Object->Common.ReferenceCount));
 
     /*
      * Decrement the reference count, and only actually delete the object
@@ -759,9 +816,10 @@ CmRemoveReference (
 
     CmUpdateObjectReference  (Object, REF_DECREMENT);
 
-    /* Now attempt to delete the object and all sub-objects */
-
-    /* Only delete the object when the reference count reaches zero */
+    /*
+     * If the reference count has reached zero,
+     * delete the object and all sub-objects contained within it
+     */
 
     if (Object->Common.ReferenceCount == 0)
     {
