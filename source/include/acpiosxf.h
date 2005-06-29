@@ -121,10 +121,7 @@
 #define __ACPIOSD_H__
 
 #include <environment.h>
-#include <datatypes.h>
-#include <acpiasm.h>
-#include <acpiexcep.h>
-#include <output.h>
+#include <acpitypes.h>
 
 
 /* Priorities for OsdQueueForExecution */
@@ -295,46 +292,14 @@ OsdWritePciCfgDword (
 
 INT32 
 OsdPrintf (
-    OSD_FILE                *Stream, 
     const char              *Format, 
     ...);
 
 INT32
 OsdVprintf (
-    OSD_FILE                *Stream, 
     const char              *Format, 
     va_list                 Args);
 
-
-/* 
- * File I/O 
- * TBD: These may be removed completely since it is not always
- * possible to do file I/O from a kernel mode driver, especially
- * during system initialization!
- */
-
-OSD_FILE *
-OsdOpen (
-    const char              *Filename, 
-    const char              *Mode);
-
-INT32 
-OsdClose (
-    OSD_FILE                *Stream);
-
-UINT32 
-OsdRead (
-    void                    *Buffer, 
-    UINT32                  Size, 
-    UINT32                  Count, 
-    OSD_FILE                *Stream);
-
-UINT32 
-OsdWrite (
-    const void              *Buffer, 
-    UINT32                  Size, 
-    UINT32                  Count, 
-    OSD_FILE                *Stream); 
 
 
 /*

@@ -123,7 +123,7 @@
  * in the rest of the source code again and again.
  */
 #include <environment.h>    /* Target environment specific items */
-#include <datatypes.h>      /* Fundamental data types */
+#include <acpitypes.h>      /* Fundamental data types */
 #include <internal.h>       /* Internal data types */
 #include <acpiexcep.h>      /* Local exception codes */
 #include <config.h>         /* Configuration constants */
