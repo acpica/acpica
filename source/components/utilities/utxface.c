@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.102 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -333,8 +333,8 @@ AcpiInitializeObjects (
 
     /*
      * Initialize the objects that remain uninitialized.  This
-     * runs the executable AML that may be part of the declaration of these 
-     * objects: OperationRegions, BufferFields, Buffers, and Packages. 
+     * runs the executable AML that may be part of the declaration of these
+     * objects: OperationRegions, BufferFields, Buffers, and Packages.
      */
     if (!(Flags & ACPI_NO_OBJECT_INIT))
     {
@@ -536,10 +536,10 @@ AcpiGetSystemInfo (
 
     /* Current status of the ACPI tables, per table type */
 
-    InfoPtr->NumTableTypes = NUM_ACPI_TABLES;
-    for (i = 0; i < NUM_ACPI_TABLES; i++)
+    InfoPtr->NumTableTypes = NUM_ACPI_TABLE_TYPES;
+    for (i = 0; i < NUM_ACPI_TABLE_TYPES; i++)
     {
-        InfoPtr->TableInfo[i].Count = AcpiGbl_AcpiTables[i].Count;
+        InfoPtr->TableInfo[i].Count = AcpiGbl_TableLists[i].Count;
     }
 
     return_ACPI_STATUS (AE_OK);
