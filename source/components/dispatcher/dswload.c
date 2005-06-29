@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -222,16 +222,6 @@ AcpiDsLoad1BeginOp (
     {
         if (!(WalkState->OpInfo->Flags & AML_NAMED))
         {
-#if 0
-            if ((WalkState->OpInfo->Class == AML_CLASS_EXECUTE) ||
-                (WalkState->OpInfo->Class == AML_CLASS_CONTROL))
-            {
-                AcpiOsPrintf ("\n\n***EXECUTABLE OPCODE %s***\n\n",
-                    WalkState->OpInfo->Name);
-                *OutOp = Op;
-                return (AE_CTRL_SKIP);
-            }
-#endif
             *OutOp = Op;
             return (AE_OK);
         }
@@ -588,6 +578,17 @@ AcpiDsLoad2BeginOp (
 
     if (Op)
     {
+        if ((AcpiGbl_EnableInterpreterSlack) &&
+            (WalkState->ControlState) &&
+            (WalkState->ControlState->Common.State ==
+                ACPI_CONTROL_CONDITIONAL_EXECUTING))
+        {
+            /* We are executing a while loop outside of a method */
+
+            Status = AcpiDsExecBeginOp (WalkState, OutOp);
+            return_ACPI_STATUS (Status);
+        }
+
         /* We only care about Namespace opcodes here */
 
         if ((!(WalkState->OpInfo->Flags & AML_NSOPCODE)   &&
@@ -597,9 +598,23 @@ AcpiDsLoad2BeginOp (
             if ((WalkState->OpInfo->Class == AML_CLASS_EXECUTE) ||
                 (WalkState->OpInfo->Class == AML_CLASS_CONTROL))
             {
-                ACPI_REPORT_WARNING ((
-                    "Encountered executable code at module level, [%s]\n",
-                    AcpiPsGetOpcodeName (WalkState->Opcode)));
+                if (!AcpiGbl_EnableInterpreterSlack)
+                {
+                    ACPI_REPORT_WARNING ((
+                        "Encountered executable code at module level, [%s]\n",
+                        AcpiPsGetOpcodeName (WalkState->Opcode)));
+                }
+                else
+                {
+                    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
+                        "Begin/EXEC: %s (fl %8.8X)\n", WalkState->OpInfo->Name,
+                        WalkState->OpInfo->Flags));
+
+                    /* Executing a type1 or type2 opcode outside of a method */
+
+                    Status = AcpiDsExecBeginOp (WalkState, OutOp);
+                    return_ACPI_STATUS (Status);
+                }
             }
             return_ACPI_STATUS (AE_OK);
         }
@@ -774,8 +789,10 @@ AcpiDsLoad2BeginOp (
             break;
         }
 
+        /* Add new entry into namespace */
+
         Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
-                        ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH,
+                        ACPI_IMODE_LOAD_PASS2, ACPI_NS_NO_UPSEARCH,
                         WalkState, &(Node));
         break;
     }
@@ -785,7 +802,6 @@ AcpiDsLoad2BeginOp (
         ACPI_REPORT_NSERROR (BufferPtr, Status);
         return_ACPI_STATUS (Status);
     }
-
 
     if (!Op)
     {
@@ -803,10 +819,7 @@ AcpiDsLoad2BeginOp (
         {
             Op->Named.Name = Node->Name.Integer;
         }
-        if (OutOp)
-        {
-            *OutOp = Op;
-        }
+        *OutOp = Op;
     }
 
     /*
@@ -853,11 +866,30 @@ AcpiDsLoad2EndOp (
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Opcode [%s] Op %p State %p\n",
             WalkState->OpInfo->Name, Op, WalkState));
 
-    /* Only interested in opcodes that have namespace objects */
+    /* Check if opcode had an associated namespace object */
 
     if (!(WalkState->OpInfo->Flags & AML_NSOBJECT))
     {
-        return_ACPI_STATUS (AE_OK);
+#ifndef ACPI_NO_METHOD_EXECUTION
+        /* No namespace object. Executable opcode? */
+
+        if ((WalkState->OpInfo->Class == AML_CLASS_EXECUTE) ||
+            (WalkState->OpInfo->Class == AML_CLASS_CONTROL))
+        {
+            if (AcpiGbl_EnableInterpreterSlack)
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
+                    "End/EXEC:   %s (fl %8.8X)\n", WalkState->OpInfo->Name,
+                    WalkState->OpInfo->Flags));
+
+                /* Executing a type1 or type2 opcode outside of a method */
+
+                Status = AcpiDsExecEndOp (WalkState);
+                return_ACPI_STATUS (Status);
+            }
+        }
+#endif
+        return_ACPI_STATUS (AE_OK);        
     }
 
     if (Op->Common.AmlOpcode == AML_SCOPE_OP)
@@ -865,7 +897,6 @@ AcpiDsLoad2EndOp (
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
             "Ending scope Op=%p State=%p\n", Op, WalkState));
     }
-
 
     ObjectType = WalkState->OpInfo->ObjectType;
 
@@ -1135,5 +1166,11 @@ Cleanup:
     WalkState->NumOperands = 0;
     return_ACPI_STATUS (Status);
 }
+
+
+
+
+
+
 
 
