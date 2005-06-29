@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -289,7 +289,7 @@ AcpiExResolveNodeToValue (
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "FieldRead Node=%p SourceDesc=%p Type=%X\n",
             Node, SourceDesc, EntryType));
 
-        Status = AcpiExReadDataFromField (SourceDesc, &ObjDesc);
+        Status = AcpiExReadDataFromField (WalkState, SourceDesc, &ObjDesc);
         break;
 
     /*
