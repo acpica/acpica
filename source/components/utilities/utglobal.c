@@ -287,7 +287,7 @@ ACPI_INIT_DATA AcpiGbl_AcpiInitData;
  *
  ******************************************************************************/
 
-char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
+INT8                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
 
 
 /*****************************************************************************
@@ -302,7 +302,7 @@ char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n"
  *
  ****************************************************************************/
 
-char *
+INT8 *
 AcpiCmGetMutexName (
     UINT32                  MutexId)
 {
@@ -325,10 +325,10 @@ AcpiCmGetMutexName (
  * indicatewhat type is actually going to be stored for this entry.
  */
 
-static char                 AcpiGbl_BadType[] = "UNDEFINED";
+static INT8                 AcpiGbl_BadType[] = "UNDEFINED";
 #define TYPE_NAME_LENGTH    9                       /* Maximum length of each string */
 
-static char                 *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
+static INT8                 *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
 {
     "Untyped",
     "Number",
@@ -386,7 +386,7 @@ static char                 *AcpiGbl_NsTypeNames[] =    /* printable names of AC
  *
  ****************************************************************************/
 
-char *
+INT8 *
 AcpiCmGetTypeName (
     UINT32                  Type)
 {
@@ -424,11 +424,11 @@ AcpiCmValidObjectType (
         if ((Type < INTERNAL_TYPE_BEGIN) ||
             (Type > INTERNAL_TYPE_MAX))
         {
-            return FALSE;
+            return (FALSE);
         }
     }
 
-    return TRUE;
+    return (TRUE);
 }
 
 
@@ -444,14 +444,14 @@ AcpiCmValidObjectType (
  *
  ****************************************************************************/
 
-char *
+INT8 *
 AcpiCmFormatException (
     ACPI_STATUS             Status)
 {
 
     if (Status > ACPI_MAX_STATUS)
     {
-        return "UNKNOWN_STATUS";
+        return ("UNKNOWN_STATUS");
     }
 
     return (AcpiGbl_ExceptionNames [Status]);
