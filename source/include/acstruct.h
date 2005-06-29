@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.30 $
+ *       $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,6 @@
  * Walk state - current state of a parse tree walk.  Used for both a leisurely stroll through
  * the tree (for whatever reason), and for control method execution.
  */
-
 #define ACPI_NEXT_OP_DOWNWARD       1
 #define ACPI_NEXT_OP_UPWARD         2
 
@@ -152,7 +151,7 @@ typedef struct acpi_walk_state
     UINT8                       ReturnUsed;
     UINT16                      Opcode;                             /* Current AML opcode */
     UINT8                       ScopeDepth;
-    UINT8                       Reserved1;
+    UINT8                       PassNumber;                         /* Parse pass during table load */
     UINT32                      ArgCount;                           /* push for fixed or var args */
     UINT32                      AmlOffset;
     UINT32                      ArgTypes;
