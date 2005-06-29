@@ -459,6 +459,7 @@ AmlDoName (NsType DataType, OpMode LoadExecMode)
     INT32           NumSegments;
     INT32           PrefixCount = 0;
     UINT8           Prefix = 0;
+    NsHandle        handle;
 
 
     FUNCTION_TRACE ("AmlDoName");
@@ -591,11 +592,9 @@ BREAKPOINT3;
 
     if (AE_OK == Status)
     {
-        NsHandle        handle;
-
         /* All prefixes have been handled, and the name is in NameString */
 
-        DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+        LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
         Status = NsEnter (NameString, DataType, LoadExecMode, &ObjStack[ObjStackTop]);
 
         /* Help view ObjStack during debugging */
@@ -629,7 +628,7 @@ BREAKPOINT3;
                  * The arg count is in the MethodFlags, which is the first
                  * byte of the Method's AML.
                  */
-                meth        *MethodPtr = (meth *) NsGetValue (ObjStack[ObjStackTop]);
+                METHOD_INFO     *MethodPtr = (METHOD_INFO *) NsGetValue (ObjStack[ObjStackTop]);
 
                 if (MethodPtr)
                 {   
@@ -693,7 +692,7 @@ BREAKPOINT3;
                             /* execution mode  */
                             /* Mark end of arg list */
 
-                            DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+                            LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
                             ObjStack[ObjStackTop] = NULL;
 
                             /* Establish Method's scope as current */
@@ -721,7 +720,7 @@ BREAKPOINT3;
 
                                 if (StackBeforeArgs < ObjStackTop)
                                 {
-                                    DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[StackBeforeArgs]);
+                                    LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[StackBeforeArgs]);
                                     ObjStack[StackBeforeArgs] = ObjStack[ObjStackTop--];
                                 }
 
@@ -738,7 +737,7 @@ BREAKPOINT3;
                         
                         while (ObjStackTop > StackBeforeArgs)
                         {
-                            DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+                            LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
 
                             /* Zero out the slot and move on */
 
