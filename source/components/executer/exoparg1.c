@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.159 $
+ *              $Revision: 1.160 $
  *
  *****************************************************************************/
 
@@ -365,7 +365,7 @@ AcpiExOpcode_1A_1T_1R (
     ACPI_OPERAND_OBJECT     *ReturnDesc2 = NULL;
     UINT32                  Temp32;
     UINT32                  i;
-    UINT32                  PowerOfTen;
+    ACPI_INTEGER            PowerOfTen;
     ACPI_INTEGER            Digit;
 
 
@@ -469,7 +469,8 @@ AcpiExOpcode_1A_1T_1R (
 
                 /* Sum the digit into the result with the current power of 10 */
 
-                ReturnDesc->Integer.Value += (((ACPI_INTEGER) Temp32) * PowerOfTen);
+                ReturnDesc->Integer.Value += (((ACPI_INTEGER) Temp32) * 
+                                              PowerOfTen);
 
                 /* Shift to next BCD digit */
 
@@ -495,15 +496,17 @@ AcpiExOpcode_1A_1T_1R (
 
                 /* Insert the BCD digit that resides in the remainder from above */
 
-                ReturnDesc->Integer.Value |= (((ACPI_INTEGER) Temp32) << ACPI_MUL_4 (i));
+                ReturnDesc->Integer.Value |= (((ACPI_INTEGER) Temp32) << 
+                                                ACPI_MUL_4 (i));
             }
 
             /* Overflow if there is any data left in Digit */
 
             if (Digit > 0)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Integer too large to convert to BCD: %8.8X%8.8X\n",
-                        ACPI_FORMAT_UINT64 (Operand[0]->Integer.Value)));
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Integer too large to convert to BCD: %8.8X%8.8X\n",
+                    ACPI_FORMAT_UINT64 (Operand[0]->Integer.Value)));
                 Status = AE_AML_NUMERIC_OVERFLOW;
                 goto Cleanup;
             }
