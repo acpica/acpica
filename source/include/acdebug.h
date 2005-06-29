@@ -300,7 +300,7 @@ DbDisplayOp (
 
 void
 DbDisplayNamestring (
-    UINT8                   *Name);
+    char                    *Name);
 
 void
 DbDisplayPath (
