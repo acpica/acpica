@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -218,7 +218,7 @@ AcpiDsCreateField (
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
-                            INTERNAL_TYPE_FIELD, IMODE_LOAD_PASS1,
+                            INTERNAL_TYPE_REGION_FIELD, IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                             NULL, &Node);
             if (ACPI_FAILURE (Status))
@@ -231,7 +231,7 @@ AcpiDsCreateField (
              * the object stack
              */
 
-            Status = AcpiAmlPrepDefFieldValue (Node, RegionNode, FieldFlags,
+            Status = AcpiAmlPrepRegionFieldValue (Node, RegionNode, FieldFlags,
                             AccessAttribute, FieldBitPosition, Arg->Value.Size);
             if (ACPI_FAILURE (Status))
             {
@@ -352,7 +352,7 @@ AcpiDsCreateBankField (
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
-                            INTERNAL_TYPE_FIELD, IMODE_LOAD_PASS1,
+                            INTERNAL_TYPE_REGION_FIELD, IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                             NULL, &Node);
             if (ACPI_FAILURE (Status))
