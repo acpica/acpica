@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -569,6 +569,8 @@ AcpiPsNextParseState (
 {
     ACPI_PARSE_STATE        *ParserState = WalkState->ParserState;
     ACPI_STATUS             Status = AE_CTRL_PENDING;
+    UINT8                   *Start;
+    UINT32                  PackageLength;
 
 
     FUNCTION_TRACE_PTR ("PsNextParseState", Op);
@@ -610,10 +612,12 @@ AcpiPsNextParseState (
              * Predicate of an IF was true, and we are at the matching ELSE.
              * Just close out this package
              *
-             * ParserState->Aml is modified by the package length procedure
+             * Note: ParserState->Aml is modified by the package length procedure
+             * TBD: [Investigate] perhaps it shouldn't, too much trouble
              */
-        ParserState->Aml =  (ParserState->Aml +
-                                AcpiPsGetNextPackageLength (ParserState)) -1;
+        Start = ParserState->Aml;
+        PackageLength = AcpiPsGetNextPackageLength (ParserState);
+        ParserState->Aml = Start + PackageLength;
         break;
 
 
