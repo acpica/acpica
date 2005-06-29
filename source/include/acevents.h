@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.71 $
+ *       $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,10 @@
 
 ACPI_STATUS
 AcpiEvInitialize (
+    void);
+
+ACPI_STATUS
+AcpiEvHandlerInitialize (
     void);
 
 
