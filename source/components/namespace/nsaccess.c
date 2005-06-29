@@ -14,15 +14,18 @@
  | Functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.14 $
- | $Date: 2005/06/29 18:15:37 $
+ | $Revision: 1.15 $
+ | $Date: 2005/06/29 18:15:38 $
  | $Log: nsaccess.c,v $
- | Revision 1.14  2005/06/29 18:15:37  aystarik
- | Header cleanup;  Split debug switch into component_id and level
+ | Revision 1.15  2005/06/29 18:15:38  aystarik
+ | Major header file consolidation
  |
  | 
- | date	99.04.05.23.10.00;	author rmoore1;	state Exp;
+ | date	99.04.07.22.34.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 15    4/07/99 3:34p Rmoore1
+ * Major header file consolidation
  * 
  * 14    4/05/99 4:10p Rmoore1
  * Header cleanup;  Split debug switch into component_id and level
@@ -74,8 +77,9 @@
 #define __NSACCESS_C__
 
 #include <acpi.h>
-#include <aml.h>
-#include <amldsio.h>
+#include <amlcode.h>
+#include <interpreter.h>
+#include <namespace.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
