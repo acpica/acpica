@@ -144,16 +144,10 @@ AcpiInit (
  */
 
 ACPI_STATUS
-AcpiExecuteMethod (
-    char                *MethodName, 
-    OBJECT_DESCRIPTOR   *ReturnValue,
-    OBJECT_DESCRIPTOR   **Params);
-
-ACPI_STATUS
-AcpiExecuteRelativeMethod (
-    NsHandle            Handle,
-    char                *MethodName,
-    OBJECT_DESCRIPTOR   *ReturnValue,
+AcpiEvaluateObject (
+    NsHandle            Handle, 
+    char                *Pathname, 
+    OBJECT_DESCRIPTOR   *ReturnObject,
     OBJECT_DESCRIPTOR   **Params);
 
 
