@@ -59,13 +59,29 @@ Package=<4>
 
 ###############################################################################
 
-Project: "app"=..\..\Test\App\Wdm\app.dsp - Package Owner=<4>
+Project: "app"=..\..\Test\app\Wdm\app.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/Test/App", GECAAAAA
-    ..\..\app
+    "$/Acpi Components/test/app/wdm", GECAAAAA
+    ..\..\test\app\wdm
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "wdm"=..\..\Test\Driver\Wdm\wdm.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/test/driver/wdm", DBDAAAAA
+    ..\..\test\driver\wdm
     end source code control
 }}}
 
