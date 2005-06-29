@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -204,7 +204,8 @@ AnMapArgTypeToBtype (
 
         /* Buffer, string, package or reference to a Op - Used only by SizeOf operator*/
 
-        return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE);
+        return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | 
+            ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE);
 
     case ARGI_COMPLEXOBJ:
 
@@ -217,6 +218,10 @@ AnMapArgTypeToBtype (
 
     case ARGI_REGION_OR_FIELD:
         return (ACPI_BTYPE_REGION | ACPI_BTYPE_FIELD_UNIT);
+
+    case ARGI_DATAREFOBJ:
+        return (ACPI_BTYPE_INTEGER |ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | 
+            ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE | ACPI_BTYPE_DDB_HANDLE);
 
     default:
         break;
