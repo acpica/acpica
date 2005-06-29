@@ -219,7 +219,7 @@ NsSetup (void)
                 switch (InitVal->Type)
                 {
                 case TYPE_Number:
-                    ObjDesc->Number.Number = (UINT32) atol (InitVal->Val);
+                    ObjDesc->Number.Number = (UINT32) strtoul (InitVal->Val, NULL, 10);
                     break;
 
                 case TYPE_String:
