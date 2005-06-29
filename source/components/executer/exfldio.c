@@ -293,8 +293,8 @@ AmlReadField (
 
         MergedDatum = (MergedDatum >> ObjDesc->Field.BitOffset);
 
-        ValidFieldBits = ((ObjDesc->FieldUnit.Length % BitGranularity) + ObjDesc->Field.BitOffset);
-        
+        ValidFieldBits = ObjDesc->FieldUnit.Length % BitGranularity;
+//        ValidFieldBits = ((ObjDesc->FieldUnit.Length % BitGranularity) + ObjDesc->Field.BitOffset);        
         if (ValidFieldBits)
         {
             Mask = (((UINT32) 1 << ValidFieldBits) - (UINT32) 1);
