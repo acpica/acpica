@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  ******************************************************************************/
 
@@ -906,7 +906,6 @@ AcpiUtReleaseMutex (
     ACPI_MUTEX_HANDLE       MutexId)
 {
     ACPI_STATUS             Status;
-    UINT32                  i;
     UINT32                  ThisThreadId;
 
 
@@ -935,28 +934,35 @@ AcpiUtReleaseMutex (
         return (AE_NOT_ACQUIRED);
     }
 
-    /*
-     * Deadlock prevention.  Check if this thread owns any mutexes of value
-     * greater than this one.  If so, the thread has violated the mutex
-     * ordering rule.  This indicates a coding error somewhere in
-     * the ACPI subsystem code.
-     */
-    for (i = MutexId; i < MAX_MUTEX; i++)
+#ifdef ACPI_MUTEX_DEBUG
     {
-        if (AcpiGbl_MutexInfo[i].OwnerId == ThisThreadId)
+        UINT32                  i;
+        /*
+         * Mutex debug code, for internal debugging only.
+         *
+         * Deadlock prevention.  Check if this thread owns any mutexes of value
+         * greater than this one.  If so, the thread has violated the mutex
+         * ordering rule.  This indicates a coding error somewhere in
+         * the ACPI subsystem code.
+         */
+        for (i = MutexId; i < MAX_MUTEX; i++)
         {
-            if (i == MutexId)
+            if (AcpiGbl_MutexInfo[i].OwnerId == ThisThreadId)
             {
-                continue;
+                if (i == MutexId)
+                {
+                    continue;
+                }
+
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Invalid release order: owns [%s], releasing [%s]\n",
+                    AcpiUtGetMutexName (i), AcpiUtGetMutexName (MutexId)));
+
+                return (AE_RELEASE_DEADLOCK);
             }
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Invalid release order: owns [%s], releasing [%s]\n",
-                AcpiUtGetMutexName (i), AcpiUtGetMutexName (MutexId)));
-
-            return (AE_RELEASE_DEADLOCK);
         }
     }
+#endif
 
     /* Mark unlocked FIRST */
 
