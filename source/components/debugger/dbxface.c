@@ -176,6 +176,12 @@ DbSingleStep (
      * Check if this is an opcode that we are interested in --
      * namely, opcodes that have arguments
      */
+
+    if (Op->Opcode == AML_NAMEDFIELD_OP)
+    {
+        return AE_OK;
+    }
+
     switch (OpType)
     {
     case OPTYPE_UNDEFINED:
