@@ -131,6 +131,9 @@
         MODULE_NAME         ("dbinput");
 
 
+/*
+ * Globals that are specific to the debugger
+ */
 
 char                    LineBuf[80];
 char                    ParsedBuf[80];
@@ -139,13 +142,13 @@ char                    DebugFilename[40];
 char                    *Args[DB_MAX_ARGS];
 char                    *Buffer;
 char                    *Filename = NULL;
+BOOLEAN                 OutputToFile = FALSE;
+
+
 UINT32                  Gbl_DbDebugLevel = 0x0FFFFFFF;
 UINT32                  Gbl_DbConsoleDebugLevel = DEBUG_DEFAULT;
-UINT32                  Gbl_MethodBreakpoint = 0;
-BOOLEAN                 Gbl_MethodExecuting = FALSE;
-BOOLEAN                 OutputToFile = FALSE;
 UINT8                   Gbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
-BOOLEAN                 Gbl_DbTerminateThreads = FALSE;
+UINT32                  Gbl_MethodBreakpoint = 0;
 
 
 BOOLEAN                 opt_tables      = FALSE;
