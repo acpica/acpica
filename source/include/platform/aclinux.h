@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.9 $
+ *       $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,10 @@
 
 #define ACPI_OS_NAME                "Linux"
 
+#undef ACPI_USE_SYSTEM_CLIBRARY
+
+#ifdef __KERNEL__
+
 #include <linux/config.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
@@ -126,6 +130,12 @@
 #include <asm/system.h>
 #include <asm/atomic.h>
 #include <asm/div64.h>
+
+#else
+
+#include <stdarg.h>
+
+#endif
 
 /* Linux uses GCC */
 
