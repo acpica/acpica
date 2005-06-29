@@ -458,14 +458,17 @@ PsParseLoop (
                 else
                     Args++;
 
-                /* TBD: Should be NsLookup after parsed NS is deleted? */
+
+                /* Find the name in the parse tree */
+                /* TBD: what if a control method references outside its scope? */
+                /* ie - should we be using nslookup here? */
 
                 Op = PsFind (PsGetParentScope (ParserState),
                              PsGetNextNamestring (ParserState), Opcode, 1);
 
                 if (!Op)
                 {
-                    return_ACPI_STATUS (AE_NO_MEMORY);
+                    return_ACPI_STATUS (AE_NOT_FOUND);
                 }
 
                 Gbl_Depth++;
