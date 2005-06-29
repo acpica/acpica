@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -185,6 +185,7 @@ NamePathTail                [.]{NameSeg}
 
 "Include"                   { count (1); return (INCLUDE); }
 "#include"                  { count (1); return (INCLUDE_CSTYLE); }
+"#line"						{ count (1); return (LINE_CSTYLE); }
 "External"                  { count (1); return (EXTERNAL); }
 
 
@@ -1099,5 +1100,6 @@ CompletedString:
     ACPI_STRCPY (CleanString, MsgBuffer);
     AslCompilerlval.s = CleanString;
 }
+
 
 

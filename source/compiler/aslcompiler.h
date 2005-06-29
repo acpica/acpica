@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2039"
-#define CompilerCreatorRevision     0x02002039  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2040"
+#define CompilerCreatorRevision     0x02002040  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000 - 2002 Intel Corporation"
@@ -680,6 +680,9 @@ FlPrintFile (
     char                    *Format,
     ...);
 
+void
+FlSetLineNumber (
+    ASL_PARSE_NODE          *Node);
 
 void
 FlOpenIncludeFile (
