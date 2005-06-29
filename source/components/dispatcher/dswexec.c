@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.50 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -213,9 +213,9 @@ AcpiDsGetPredicateValue (
     }
 
 
-    /* TBD: 64/32-bit */
+    /* Truncate the predicate to 32-bits if necessary */
 
-    ObjDesc->Number.Value &= (UINT64) 0x00000000FFFFFFFF;
+    AcpiAmlTruncateFor32bitTable (ObjDesc, WalkState);
 
     /*
      * Save the result of the predicate evaluation on
