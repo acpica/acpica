@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -699,7 +699,8 @@ AcpiEvInitGpeControlMethods (void)
  *
  * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
  *
- * DESCRIPTION: Detect if any GP events have occurred
+ * DESCRIPTION: Detect if any GP events have occurred.  This function is 
+ *              executed at interrupt level.
  *
  ******************************************************************************/
 
@@ -839,15 +840,9 @@ AcpiEvAsynchExecuteGpeMethod (
  *
  * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
  *
- * DESCRIPTION: Handle and dispatch a General Purpose AcpiEvent.
- *              Clears the status bit for the requested event, handling the
- *              edge vs. level triggered cases.
- *
- * Note: Installed GPE handlers are invoked directly (here) from interrupt
- *       level, therefore they cannot do much more than queue something for
- *       execution later.  GPE methods (_Lxx or _Exx) are queued for execution
- *       later, since we do not want to run the interpreter in the context of
- *       an interrupt handler.
+ * DESCRIPTION: Dispatch a General Purpose Event to either a function (e.g. EC)
+ *              or method (e.g. _Lxx/_Exx) handler.  This function executes
+ *              at interrupt level.
  *
  ******************************************************************************/
 
@@ -861,24 +856,15 @@ AcpiEvGpeDispatch (
     FUNCTION_TRACE ("EvGpeDispatch");
 
 
-    /*
-     * Valid GPE number?
-     */
     if (AcpiGbl_GpeValid[GpeNumber] == ACPI_GPE_INVALID)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid GPE bit [%X].\n", GpeNumber));
         return_VALUE (INTERRUPT_NOT_HANDLED);
     }
 
-    /*
-     * Disable the GPE.
-     */
-    AcpiHwDisableGpe (GpeNumber);
     GpeInfo = AcpiGbl_GpeInfo [GpeNumber];
 
     /*
-     * Edge-Triggered?
-     * ---------------
      * If edge-triggered, clear the GPE status bit now.  Note that
      * level-triggered events are cleared after the GPE is serviced.
      */
@@ -888,28 +874,21 @@ AcpiEvGpeDispatch (
     }
 
     /*
-     * Function Handler (e.g. EC)?
+     * Function Handler?
+     * -----------------
+     * e.g. Embedded Controller
      */
     if (GpeInfo.Handler)
     {
         /* Invoke function handler (at interrupt level) */
 
         GpeInfo.Handler (GpeInfo.Context);
-
-        /* Level-Triggered? */
-
-        if (GpeInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED)
-        {
-            AcpiHwClearGpe (GpeNumber);
-        }
-
-        /* Enable GPE */
-
-        AcpiHwEnableGpe (GpeNumber);
     }
 
     /*
-     * Method Handler (e.g. _Exx/_Lxx)?
+     * Method Handler?
+     * ---------------
+     * e.g. _Exx/_Lxx
      */
     else if (GpeInfo.MethodHandle)
     {
@@ -917,27 +896,40 @@ AcpiEvGpeDispatch (
             AcpiEvAsynchExecuteGpeMethod, ACPI_TO_POINTER (GpeNumber))))
         {
             /*
-             * Shoudn't occur, but if it does report an error. Note that
-             * the GPE will remain disabled until the ACPI Core Subsystem
-             * is restarted, or the handler is removed/reinstalled.
+             * Shoudn't occur, but if it does report an error.
              */
             REPORT_ERROR (("AcpiEvGpeDispatch: Unable to queue handler for GPE bit [%X]\n", GpeNumber));
+
+            /*
+             * Disable the GPE.  The GPE will remain disabled until the ACPI
+             * Core Subsystem is restarted, or the handler is reinstalled.
+             */
+            AcpiHwDisableGpe (GpeNumber);
         }
     }
 
     /*
-     * No Handler? Report an error and leave the GPE disabled.
+     * No Handler? 
+     * -----------
+     * Report an error and leave the GPE disabled.
      */
     else
     {
         REPORT_ERROR (("AcpiEvGpeDispatch: No installed handler for GPE [%X]\n", GpeNumber));
 
-        /* Level-Triggered? */
+        /*
+         * Disable the GPE.  The GPE will remain disabled until the ACPI
+         * Core Subsystem is restarted, or the handler is reinstalled.
+         */
+        AcpiHwDisableGpe (GpeNumber);
+    }
 
-        if (GpeInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED)
-        {
-            AcpiHwClearGpe (GpeNumber);
-        }
+    /*
+     * Now its safe to clear level-triggered evnets.
+     */
+    if (GpeInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED)
+    {
+        AcpiHwClearGpe (GpeNumber);
     }
 
     return_VALUE (INTERRUPT_HANDLED);
