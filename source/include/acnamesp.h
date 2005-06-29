@@ -135,14 +135,11 @@
 #define LOCAL                   2   /* suppress search of enclosing scopes */
 
 
-/* UINT32 definitions of the predefined namespace names (Must be reversed!) */
+/* Definitions of the predefined namespace names  */
 
-#define NS_ROOT                 '/   '
-#define NS_SYSTEM_BUS           '_BS_'
-
-/* Char * definitions of common namespace names */
-
+#define NS_ROOT                 "/   "
 #define NS_ROOT_PATH            "/"
+#define NS_SYSTEM_BUS           "_SB_"
 
 
 /* Flags for NsLookup, NsSearchAndEnter */
