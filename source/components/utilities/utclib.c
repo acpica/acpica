@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.37 $
+ * $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -150,7 +150,7 @@
 
 
 UINT32
-AcpiCmStrlen (
+AcpiUtStrlen (
     const NATIVE_CHAR       *String)
 {
     UINT32                  Length = 0;
@@ -182,7 +182,7 @@ AcpiCmStrlen (
  ******************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmStrcpy (
+AcpiUtStrcpy (
     NATIVE_CHAR             *DstString,
     const NATIVE_CHAR       *SrcString)
 {
@@ -222,7 +222,7 @@ AcpiCmStrcpy (
  ******************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmStrncpy (
+AcpiUtStrncpy (
     NATIVE_CHAR             *DstString,
     const NATIVE_CHAR       *SrcString,
     NATIVE_UINT             Count)
@@ -264,7 +264,7 @@ AcpiCmStrncpy (
  ******************************************************************************/
 
 UINT32
-AcpiCmStrcmp (
+AcpiUtStrcmp (
     const NATIVE_CHAR       *String1,
     const NATIVE_CHAR       *String2)
 {
@@ -298,7 +298,7 @@ AcpiCmStrcmp (
  ******************************************************************************/
 
 UINT32
-AcpiCmStrncmp (
+AcpiUtStrncmp (
     const NATIVE_CHAR       *String1,
     const NATIVE_CHAR       *String2,
     NATIVE_UINT             Count)
@@ -332,7 +332,7 @@ AcpiCmStrncmp (
  ******************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmStrcat (
+AcpiUtStrcat (
     NATIVE_CHAR             *DstString,
     const NATIVE_CHAR       *SrcString)
 {
@@ -344,7 +344,7 @@ AcpiCmStrcat (
     for (String = DstString; *String++; )
     { ; }
 
-    /* Concatinate the string */
+    /* Concatenate the string */
 
     for (--String; (*String++ = *SrcString++); )
     { ; }
@@ -369,7 +369,7 @@ AcpiCmStrcat (
  ******************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmStrncat (
+AcpiUtStrncat (
     NATIVE_CHAR             *DstString,
     const NATIVE_CHAR       *SrcString,
     NATIVE_UINT             Count)
@@ -384,7 +384,7 @@ AcpiCmStrncat (
         for (String = DstString; *String++; )
         { ; }
 
-        /* Concatinate the string */
+        /* Concatenate the string */
 
         for (--String; (*String++ = *SrcString++) && --Count; )
         { ; }
@@ -416,7 +416,7 @@ AcpiCmStrncat (
  ******************************************************************************/
 
 void *
-AcpiCmMemcpy (
+AcpiUtMemcpy (
     void                    *Dest,
     const void              *Src,
     NATIVE_UINT             Count)
@@ -452,7 +452,7 @@ AcpiCmMemcpy (
  ******************************************************************************/
 
 void *
-AcpiCmMemset (
+AcpiUtMemset (
     void                    *Dest,
     NATIVE_UINT             Value,
     NATIVE_UINT             Count)
@@ -635,7 +635,7 @@ static const UINT8 _acpi_ctype[257] = {
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmToUpper
+ * FUNCTION:    AcpiUtToUpper
  *
  * PARAMETERS:
  *
@@ -646,7 +646,7 @@ static const UINT8 _acpi_ctype[257] = {
  ******************************************************************************/
 
 UINT32
-AcpiCmToUpper (
+AcpiUtToUpper (
     UINT32                  c)
 {
 
@@ -656,7 +656,7 @@ AcpiCmToUpper (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmToLower
+ * FUNCTION:    AcpiUtToLower
  *
  * PARAMETERS:
  *
@@ -667,7 +667,7 @@ AcpiCmToUpper (
  ******************************************************************************/
 
 UINT32
-AcpiCmToLower (
+AcpiUtToLower (
     UINT32                  c)
 {
 
@@ -691,14 +691,14 @@ AcpiCmToLower (
  ******************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmStrstr (
+AcpiUtStrstr (
     NATIVE_CHAR             *String1,
     NATIVE_CHAR             *String2)
 {
     NATIVE_CHAR             *String;
 
 
-    if (AcpiCmStrlen (String2) > AcpiCmStrlen (String1))
+    if (AcpiUtStrlen (String2) > AcpiUtStrlen (String1))
     {
         return (NULL);
     }
@@ -736,7 +736,7 @@ AcpiCmStrstr (
  ******************************************************************************/
 
 UINT32
-AcpiCmStrtoul (
+AcpiUtStrtoul (
     const NATIVE_CHAR       *String,
     NATIVE_CHAR             **Terminator,
     UINT32                  Base)
@@ -789,7 +789,7 @@ AcpiCmStrtoul (
     {
         if (*String == '0')
         {
-            if (AcpiCmToLower (*(++String)) == 'x')
+            if (AcpiUtToLower (*(++String)) == 'x')
             {
                 Base = 16;
                 ++String;
@@ -827,7 +827,7 @@ AcpiCmStrtoul (
 
     if (Base == 16 &&
         *String == '0' &&
-        AcpiCmToLower (*(++String)) == 'x')
+        AcpiUtToLower (*(++String)) == 'x')
     {
         String++;
     }
@@ -845,7 +845,7 @@ AcpiCmStrtoul (
 
         else
         {
-            index = AcpiCmToUpper (*String);
+            index = AcpiUtToUpper (*String);
             if (IS_UPPER (index))
             {
                 index = index - 'A' + 10;
