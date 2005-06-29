@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psscope - Parser scope stack management routines
- *              $Revision: 1.26 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -328,8 +328,7 @@ AcpiPsPopScope (
     }
 
 
-    DEBUG_PRINT (TRACE_PARSE,
-        ("PsPopScope:  Popped Op %p Args %X\n", *Op, *ArgCount));
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Popped Op %p Args %X\n", *Op, *ArgCount));
     return_VOID;
 }
 

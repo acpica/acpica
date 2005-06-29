@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.57 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -157,7 +157,7 @@ AcpiDsIsResultUsed (
 
     if (!Op)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("DsIsResultUsed: Null Op\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null Op\n"));
         return_VALUE (TRUE);
     }
 
@@ -181,10 +181,7 @@ AcpiDsIsResultUsed (
     ParentInfo = AcpiPsGetOpcodeInfo (Op->Parent->Opcode);
     if (ACPI_GET_OP_TYPE (ParentInfo) != ACPI_OP_TYPE_OPCODE)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("DsIsResultUsed: Unknown parent opcode. Op=%X\n",
-            Op));
-
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown parent opcode. Op=%X\n", Op));
         return_VALUE (FALSE);
     }
 
@@ -209,9 +206,8 @@ AcpiDsIsResultUsed (
 
             /* Never delete the return value associated with a return opcode */
 
-            DEBUG_PRINT (TRACE_DISPATCH,
-                ("DsIsResultUsed: Result used, [RETURN] opcode=%X Op=%X\n",
-                Op->Opcode, Op));
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
+                "Result used, [RETURN] opcode=%X Op=%X\n", Op->Opcode, Op));
             return_VALUE (TRUE);
             break;
 
@@ -226,8 +222,8 @@ AcpiDsIsResultUsed (
             if ((WalkState->ControlState->Common.State == CONTROL_PREDICATE_EXECUTING) &&
                 (WalkState->ControlState->Control.PredicateOp == Op))
             {
-                DEBUG_PRINT (TRACE_DISPATCH,
-                    ("DsIsResultUsed: Result used as a predicate, [IF/WHILE] opcode=%X Op=%X\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+                    "Result used as a predicate, [IF/WHILE] opcode=%X Op=%X\n",
                     Op->Opcode, Op));
                 return_VALUE (TRUE);
             }
@@ -253,15 +249,14 @@ AcpiDsIsResultUsed (
             (Op->Parent->Opcode == AML_CREATE_DWORD_FIELD_OP)   ||
             (Op->Parent->Opcode == AML_CREATE_QWORD_FIELD_OP))
         {
-            DEBUG_PRINT (TRACE_DISPATCH,
-                ("DsIsResultUsed: Result used, [Region or CreateField] opcode=%X Op=%X\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+                "Result used, [Region or CreateField] opcode=%X Op=%X\n",
                 Op->Opcode, Op));
             return_VALUE (TRUE);
         }
 
-        DEBUG_PRINT (TRACE_DISPATCH,
-            ("DsIsResultUsed: Result not used, Parent opcode=%X Op=%X\n",
-            Op->Opcode, Op));
+        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
+            "Result not used, Parent opcode=%X Op=%X\n", Op->Opcode, Op));
 
         return_VALUE (FALSE);
         break;
@@ -310,9 +305,7 @@ AcpiDsDeleteResultIfNotUsed (
 
     if (!Op)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("DsDeleteResultIfNotUsed: Null Op=%X\n",
-            Op));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null Op\n"));
         return_VOID;
     }
 
@@ -325,14 +318,15 @@ AcpiDsDeleteResultIfNotUsed (
     if (!AcpiDsIsResultUsed (Op, WalkState))
     {
         /*
-         * Must pop the result stack (ObjDesc should be equal
-         *  to ResultObj)
+         * Must pop the result stack (ObjDesc should be equal to ResultObj)
          */
-
         Status = AcpiDsResultPop (&ObjDesc, WalkState);
         if (ACPI_SUCCESS (Status))
         {
-            AcpiUtRemoveReference (ResultObj);
+//            if (ResultObj->Common.ReferenceCount == 1)
+            {
+                AcpiUtRemoveReference (ResultObj);
+            }
         }
     }
 
@@ -381,15 +375,12 @@ AcpiDsCreateOperand (
     if ((Arg->Opcode == AML_INT_NAMEPATH_OP) &&
         (Arg->Value.String))
     {
-        DEBUG_PRINT (TRACE_DISPATCH,
-            ("DsCreateOperand: Getting a name: Arg=%p\n", Arg));
+        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Getting a name: Arg=%p\n", Arg));
 
         /* Get the entire name string from the AML stream */
 
-        Status = AcpiExGetNameString (ACPI_TYPE_ANY,
-                                        Arg->Value.Buffer,
-                                        &NameString,
-                                        &NameLength);
+        Status = AcpiExGetNameString (ACPI_TYPE_ANY, Arg->Value.Buffer,
+                        &NameString, &NameLength);
 
         if (ACPI_FAILURE (Status))
         {
@@ -407,7 +398,6 @@ AcpiDsCreateOperand (
          * IMODE_EXECUTE) in order to support the creation of
          * namespace objects during the execution of control methods.
          */
-
         ParentOp = Arg->Parent;
         if ((AcpiPsIsNodeOp (ParentOp->Opcode)) &&
             (ParentOp->Opcode != AML_INT_METHODCALL_OP) &&
@@ -434,7 +424,7 @@ AcpiDsCreateOperand (
 
         /* Free the namestring created above */
 
-        AcpiUtFree (NameString);
+        ACPI_MEM_FREE (NameString);
 
         /*
          * The only case where we pass through (ignore) a NOT_FOUND
@@ -497,8 +487,7 @@ AcpiDsCreateOperand (
              */
             Opcode = AML_ZERO_OP;       /* Has no arguments! */
 
-            DEBUG_PRINT (TRACE_DISPATCH,
-                ("DsCreateOperand: Null namepath: Arg=%p\n", Arg));
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Null namepath: Arg=%p\n", Arg));
 
             /*
              * TBD: [Investigate] anything else needed for the
@@ -522,8 +511,8 @@ AcpiDsCreateOperand (
 
         if (Flags & OP_HAS_RETURN_VALUE)
         {
-            DEBUG_PRINT (TRACE_DISPATCH,
-                ("DsCreateOperand: Argument previously created, already stacked \n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+                "Argument previously created, already stacked \n"));
 
             DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1], WalkState));
 
@@ -531,7 +520,6 @@ AcpiDsCreateOperand (
              * Use value that was already previously returned
              * by the evaluation of this argument
              */
-
             Status = AcpiDsResultPopFromBottom (&ObjDesc, WalkState);
             if (ACPI_FAILURE (Status))
             {
@@ -539,8 +527,8 @@ AcpiDsCreateOperand (
                  * Only error is underflow, and this indicates
                  * a missing or null operand!
                  */
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("DsCreateOperand: Missing or null operand, %s\n", AcpiUtFormatException (Status)));
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Missing or null operand, %s\n", 
+                    AcpiFormatException (Status)));
                 return_ACPI_STATUS (Status);
             }
 
@@ -619,8 +607,7 @@ AcpiDsCreateOperands (
             goto Cleanup;
         }
 
-        DEBUG_PRINT (TRACE_DISPATCH,
-            ("DsCreateOperands: Arg #%d (%p) done, Arg1=%p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Arg #%d (%p) done, Arg1=%p\n",
             ArgCount, Arg, FirstArg));
 
         /* Move on to next argument, if any */
@@ -641,9 +628,8 @@ Cleanup:
 
     AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
 
-    DEBUG_PRINT (ACPI_ERROR,
-        ("DsCreateOperands: Error while creating Arg %d - %s\n",
-        (ArgCount + 1), AcpiUtFormatException (Status)));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "While creating Arg %d - %s\n",
+        (ArgCount + 1), AcpiFormatException (Status)));
     return_ACPI_STATUS (Status);
 }
 
@@ -721,15 +707,15 @@ AcpiDsMapOpcodeToDataType (
     UINT32                  Flags = 0;
 
 
+    PROC_NAME ("DsMapOpcodeToDataType");
+
+
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
     if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
         /* Unknown opcode */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("MapOpcode: Unknown AML opcode: %x\n",
-            Opcode));
-
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown AML opcode: %x\n", Opcode));
         return (DataType);
     }
 
@@ -743,6 +729,7 @@ AcpiDsMapOpcodeToDataType (
         case AML_BYTE_OP:
         case AML_WORD_OP:
         case AML_DWORD_OP:
+        case AML_QWORD_OP:
 
             DataType = ACPI_TYPE_INTEGER;
             break;
@@ -758,9 +745,8 @@ AcpiDsMapOpcodeToDataType (
             break;
 
         default:
-            DEBUG_PRINT (ACPI_ERROR,
-                ("MapOpcode: Unknown (type LITERAL) AML opcode: %x\n",
-                Opcode));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                "Unknown (type LITERAL) AML opcode: %x\n", Opcode));
             break;
         }
         break;
@@ -776,14 +762,14 @@ AcpiDsMapOpcodeToDataType (
             break;
 
         case AML_PACKAGE_OP:
+        case AML_VAR_PACKAGE_OP:
 
             DataType = ACPI_TYPE_PACKAGE;
             break;
 
         default:
-            DEBUG_PRINT (ACPI_ERROR,
-                ("MapOpcode: Unknown (type DATA_TERM) AML opcode: %x\n",
-                Opcode));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Unknown (type DATA_TERM) AML opcode: %x\n", Opcode));
             break;
         }
         break;
@@ -802,13 +788,15 @@ AcpiDsMapOpcodeToDataType (
     case OPTYPE_DYADIC2:
     case OPTYPE_DYADIC2R:
     case OPTYPE_DYADIC2S:
-    case OPTYPE_INDEX:
-    case OPTYPE_MATCH:
+    case OPTYPE_TRIADIC:
+    case OPTYPE_QUADRADIC:
+    case OPTYPE_HEXADIC:
     case OPTYPE_RETURN:
 
         Flags = OP_HAS_RETURN_VALUE;
         DataType = ACPI_TYPE_ANY;
         break;
+
 
     case OPTYPE_METHOD_CALL:
 
@@ -833,9 +821,8 @@ AcpiDsMapOpcodeToDataType (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("MapOpcode: Unimplemented data type opcode: %x\n",
-            Opcode));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Unimplemented data type opcode: %x\n", Opcode));
         break;
     }
 

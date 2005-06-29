@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: exdyadic - ACPI AML (p-code) execution for dyadic operators
- *              $Revision: 1.76 $
+ * Module Name: exdyadic - ACPI AML execution for dyadic (2-operand) operators
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -134,8 +134,9 @@
  *
  * FUNCTION:    AcpiExDoConcatenate
  *
- * PARAMETERS:  *ObjDesc        - Object to be converted.  Must be an
- *                                Integer, Buffer, or String
+ * PARAMETERS:  *ObjDesc            - Object to be converted.  Must be an
+ *                                    Integer, Buffer, or String
+ *              WalkState           - Current walk state
  *
  * RETURN:      Status
  *
@@ -191,7 +192,7 @@ AcpiExDoConcatenate (
         /* Need enough space for two integers */
 
         RetDesc->Buffer.Length = IntegerSize * 2;
-        NewBuf = AcpiUtCallocate (RetDesc->Buffer.Length);
+        NewBuf = ACPI_MEM_CALLOCATE (RetDesc->Buffer.Length);
         if (!NewBuf)
         {
             REPORT_ERROR
@@ -233,8 +234,8 @@ AcpiExDoConcatenate (
 
         /* Operand1 is string  */
 
-        NewBuf = AcpiUtAllocate (ObjDesc->String.Length +
-                                 ObjDesc2->String.Length + 1);
+        NewBuf = ACPI_MEM_ALLOCATE (ObjDesc->String.Length +
+                                    ObjDesc2->String.Length + 1);
         if (!NewBuf)
         {
             REPORT_ERROR
@@ -265,8 +266,8 @@ AcpiExDoConcatenate (
             return (AE_NO_MEMORY);
         }
 
-        NewBuf = AcpiUtAllocate (ObjDesc->Buffer.Length +
-                                 ObjDesc2->Buffer.Length);
+        NewBuf = ACPI_MEM_ALLOCATE (ObjDesc->Buffer.Length +
+                                    ObjDesc2->Buffer.Length);
         if (!NewBuf)
         {
             REPORT_ERROR
@@ -311,6 +312,7 @@ Cleanup:
  * FUNCTION:    AcpiExDyadic1
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
+ *              WalkState           - Current walk state
  *
  * RETURN:      Status
  *
@@ -349,9 +351,8 @@ AcpiExDyadic1 (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("ExecDyadic1/%s: bad operand(s) (Status=%X)\n",
-            AcpiPsGetOpcodeName (Opcode), Status));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) bad operand(s) %s\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
 
         goto Cleanup;
     }
@@ -393,8 +394,7 @@ AcpiExDyadic1 (
                 break;
 
             default:
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("ExDyadic1/NotifyOp: unexpected notify object type %X\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unexpected notify object type %X\n",
                     ObjDesc->Common.Type));
 
                 Status = AE_AML_OPERAND_TYPE;
@@ -405,8 +405,7 @@ AcpiExDyadic1 (
 
     default:
 
-        REPORT_ERROR (("AcpiExDyadic1: Unknown dyadic opcode %X\n",
-            Opcode));
+        REPORT_ERROR (("AcpiExDyadic1: Unknown dyadic opcode %X\n", Opcode));
         Status = AE_AML_BAD_OPCODE;
     }
 
@@ -428,6 +427,8 @@ Cleanup:
  * FUNCTION:    AcpiExDyadic2R
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
+ *              WalkState           - Current walk state
+ *              ReturnDesc          - Where to store the return object
  *
  * RETURN:      Status
  *
@@ -463,6 +464,14 @@ AcpiExDyadic2R (
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
                     NumOperands, "after AcpiExResolveOperands");
 
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) Could not resolve operand(s) (%s)\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
+
+        goto Cleanup;
+    }
+
     /* Get all operands */
 
     if (AML_DIVIDE_OP == Opcode)
@@ -476,9 +485,8 @@ AcpiExDyadic2R (
     Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("ExecDyadic2R/%s: bad operand(s) (Status=%X)\n",
-            AcpiPsGetOpcodeName (Opcode), Status));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) bad operand(s) (%s)\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
 
         goto Cleanup;
     }
@@ -495,6 +503,7 @@ AcpiExDyadic2R (
     case AML_BIT_NOR_OP:
     case AML_BIT_XOR_OP:
     case AML_DIVIDE_OP:
+    case AML_MOD_OP:
     case AML_MULTIPLY_OP:
     case AML_SHIFT_LEFT_OP:
     case AML_SHIFT_RIGHT_OP:
@@ -579,7 +588,7 @@ AcpiExDyadic2R (
         if (!ObjDesc2->Integer.Value)
         {
             REPORT_ERROR
-                (("ExDyadic2R/DivideOp: Divide by zero\n"));
+                (("DivideOp: Divide by zero\n"));
 
             Status = AE_AML_DIVIDE_BY_ZERO;
             goto Cleanup;
@@ -600,6 +609,26 @@ AcpiExDyadic2R (
         /* Result (what we used to call the quotient) */
 
         RetDesc2->Integer.Value  = ACPI_DIVIDE (ObjDesc->Integer.Value,
+                                                ObjDesc2->Integer.Value);
+        break;
+
+
+    /* DefMod   :=  ModOp Dividend Divisor Remainder  */
+
+    case AML_MOD_OP:    /* ACPI 2.0 */
+
+        if (!ObjDesc2->Integer.Value)
+        {
+            REPORT_ERROR
+                (("ModOp: Divide by zero\n"));
+
+            Status = AE_AML_DIVIDE_BY_ZERO;
+            goto Cleanup;
+        }
+
+        /* Remainder (modulo) */
+
+        RetDesc->Integer.Value   = ACPI_MODULO (ObjDesc->Integer.Value,
                                                 ObjDesc2->Integer.Value);
         break;
 
@@ -644,7 +673,6 @@ AcpiExDyadic2R (
 
     case AML_CONCAT_OP:
 
-
         /*
          * Convert the second operand if necessary.  The first operand
          * determines the type of the second operand, (See the Data Types
@@ -652,19 +680,18 @@ AcpiExDyadic2R (
          * guaranteed to be either Integer/String/Buffer by the operand
          * resolution mechanism above.
          */
-
         switch (ObjDesc->Common.Type)
         {
         case ACPI_TYPE_INTEGER:
-            Status = AcpiExConvertToInteger (&ObjDesc2, WalkState);
+            Status = AcpiExConvertToInteger (ObjDesc2, &ObjDesc2, WalkState);
             break;
 
         case ACPI_TYPE_STRING:
-            Status = AcpiExConvertToString (&ObjDesc2, WalkState);
+            Status = AcpiExConvertToString (ObjDesc2, &ObjDesc2, 16, ACPI_UINT32_MAX, WalkState);
             break;
 
         case ACPI_TYPE_BUFFER:
-            Status = AcpiExConvertToBuffer (&ObjDesc2, WalkState);
+            Status = AcpiExConvertToBuffer (ObjDesc2, &ObjDesc2, WalkState);
             break;
 
         default:
@@ -687,6 +714,24 @@ AcpiExDyadic2R (
         {
             goto Cleanup;
         }
+        break;
+
+
+    /* DefToString  := Buffer, Length, Result */
+
+    case AML_TO_STRING_OP:  /* ACPI 2.0 */
+
+        Status = AcpiExConvertToString (ObjDesc, &RetDesc, 16,
+                        (UINT32) ObjDesc2->Integer.Value, WalkState);
+        break;
+
+
+    /* DefConcatRes := Buffer, Buffer, Result */
+
+    case AML_CONCAT_RES_OP:  /* ACPI 2.0 */
+
+        Status = AE_NOT_IMPLEMENTED;
+        goto Cleanup;
         break;
 
 
@@ -762,6 +807,8 @@ Cleanup:
  * FUNCTION:    AcpiExDyadic2S
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
+ *              WalkState           - Current walk state
+ *              ReturnDesc          - Where to store the return object
  *
  * RETURN:      Status
  *
@@ -800,9 +847,8 @@ AcpiExDyadic2S (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("ExecDyadic2S/%s: bad operand(s) (Status=%X)\n",
-            AcpiPsGetOpcodeName (Opcode), Status));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) bad operand(s) %s\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
 
         goto Cleanup;
     }
@@ -892,6 +938,8 @@ Cleanup:
  * FUNCTION:    AcpiExDyadic2
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
+ *              WalkState           - Current walk state
+ *              ReturnDesc          - Where to store the return object
  *
  * RETURN:      Status
  *
@@ -933,9 +981,8 @@ AcpiExDyadic2 (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("ExecDyadic2/%s: bad operand(s) (Status=%X)\n",
-            AcpiPsGetOpcodeName (Opcode), Status));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) bad operand(s) %s\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
 
         goto Cleanup;
     }
@@ -1000,6 +1047,15 @@ AcpiExDyadic2 (
 
         Lboolean = (BOOLEAN) (ObjDesc->Integer.Value ||
                               ObjDesc2->Integer.Value);
+        break;
+
+
+    /* DefCopy  := Source, Destination */
+
+    case AML_COPY_OP:   /* ACPI 2.0 */
+
+        Status = AE_NOT_IMPLEMENTED;
+        goto Cleanup;
         break;
 
 

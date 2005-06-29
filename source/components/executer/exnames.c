@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.78 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -184,7 +184,7 @@ AcpiExAllocateNameString (
      * This buffer must be deleted by the caller!
      */
 
-    NameString = AcpiUtAllocate (SizeNeeded);
+    NameString = ACPI_MEM_ALLOCATE (SizeNeeded);
     if (!NameString)
     {
         REPORT_ERROR (("ExAllocateNameString: name allocation failure\n"));
@@ -266,24 +266,22 @@ AcpiExNameSegment (
      * If first character is a digit, then we know that we aren't looking at a
      * valid name segment
      */
-
     CharBuf[0] = *AmlAddress;
 
     if ('0' <= CharBuf[0] && CharBuf[0] <= '9')
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("ExNameSegment: leading digit: %c\n", CharBuf[0]));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "leading digit: %c\n", CharBuf[0]));
         return_ACPI_STATUS (AE_CTRL_PENDING);
     }
 
-    DEBUG_PRINT (TRACE_LOAD, ("ExNameSegment: Bytes from stream:\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "Bytes from stream:\n"));
 
     for (Index = 4;
         (Index > 0) && (AcpiUtValidAcpiCharacter (*AmlAddress));
         --Index)
     {
         CharBuf[4 - Index] = *AmlAddress++;
-        DEBUG_PRINT (TRACE_LOAD, ("%c\n", CharBuf[4 - Index]));
+        ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "%c\n", CharBuf[4 - Index]));
     }
 
 
@@ -298,14 +296,14 @@ AcpiExNameSegment (
         if (NameString)
         {
             STRCAT (NameString, CharBuf);
-            DEBUG_PRINT (TRACE_NAMES,
-                ("ExNameSegment: Appended to - %s \n", NameString));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                "Appended to - %s \n", NameString));
         }
 
         else
         {
-            DEBUG_PRINT (TRACE_NAMES,
-                ("ExNameSegment: No Name string - %s \n", CharBuf));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                "No Name string - %s \n", CharBuf));
         }
     }
 
@@ -315,8 +313,8 @@ AcpiExNameSegment (
          * First character was not a valid name character,
          * so we are looking at something other than a name.
          */
-        DEBUG_PRINT (ACPI_INFO,
-            ("ExNameSegment: Leading INT8 not alpha: %02Xh (not a name)\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Leading character is not alpha: %02Xh (not a name)\n",
             CharBuf[0]));
         Status = AE_CTRL_PENDING;
     }
@@ -326,16 +324,11 @@ AcpiExNameSegment (
         /* Segment started with one or more valid characters, but fewer than 4 */
 
         Status = AE_AML_BAD_NAME;
-        DEBUG_PRINT (ACPI_ERROR,
-            ("ExNameSegment: Bad INT8 %02x in name, at %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad character %02x in name, at %p\n",
             *AmlAddress, AmlAddress));
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave AcpiExNameSegment %s \n",
-        AcpiUtFormatException (Status)));
-
     *InAmlAddress = AmlAddress;
-
     return_ACPI_STATUS (Status);
 }
 
@@ -402,7 +395,7 @@ AcpiExGetNameString (
         case AML_ROOT_PREFIX:
 
             Prefix = *AmlAddress++;
-            DEBUG_PRINT (TRACE_LOAD, ("RootPrefix: %x\n", Prefix));
+            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "RootPrefix: %x\n", Prefix));
 
             /*
              * Remember that we have a RootPrefix --
@@ -420,7 +413,7 @@ AcpiExGetNameString (
             do
             {
                 Prefix = *AmlAddress++;
-                DEBUG_PRINT (TRACE_LOAD, ("ParentPrefix: %x\n", Prefix));
+                ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "ParentPrefix: %x\n", Prefix));
 
                 ++PrefixCount;
 
@@ -443,7 +436,7 @@ AcpiExGetNameString (
         case AML_DUAL_NAME_PREFIX:
 
             Prefix = *AmlAddress++;
-            DEBUG_PRINT (TRACE_LOAD, ("DualNamePrefix: %x\n", Prefix));
+            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "DualNamePrefix: %x\n", Prefix));
 
             NameString = AcpiExAllocateNameString (PrefixCount, 2);
             if (!NameString)
@@ -466,7 +459,7 @@ AcpiExGetNameString (
         case AML_MULTI_NAME_PREFIX_OP:
 
             Prefix = *AmlAddress++;
-            DEBUG_PRINT (TRACE_LOAD, ("MultiNamePrefix: %x\n", Prefix));
+            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "MultiNamePrefix: %x\n", Prefix));
 
             /* Fetch count of segments remaining in name path */
 
@@ -497,8 +490,7 @@ AcpiExGetNameString (
 
             if (-1 == PrefixCount)
             {
-                DEBUG_PRINT (TRACE_EXEC,
-                    ("ExDoName: NameSeg is \"\\\" followed by NULL\n"));
+                ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "NameSeg is \"\\\" followed by NULL\n"));
             }
 
             /* Consume the NULL byte */

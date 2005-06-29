@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.88 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -191,7 +191,7 @@ AcpiExReadDataFromField (
 
         /* Create the actual read buffer */
 
-        BufferDesc->Buffer.Pointer = AcpiUtCallocate (Length);
+        BufferDesc->Buffer.Pointer = ACPI_MEM_CALLOCATE (Length);
         if (!BufferDesc->Buffer.Pointer)
         {
             AcpiUtRemoveReference (BufferDesc);
@@ -596,87 +596,39 @@ AcpiExCommonAccessField (
     UINT32                  BufferLength)
 {
     ACPI_STATUS             Status;
-    UINT32                  BitGranularity;
-    UINT32                  ByteGranularity;
-    UINT32                  DatumLength;
-    UINT32                  ActualByteLength;
-    UINT32                  ByteFieldLength;
 
 
     FUNCTION_TRACE_PTR ("ExCommonAccessField", ObjDesc);
 
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("CommonAccessField: Obj=%p Type=%X Buf=%p Len=%X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Obj=%p Type=%X Buf=%p Len=%X\n",
         ObjDesc, ObjDesc->Common.Type, Buffer, BufferLength));
-    DEBUG_PRINT (ACPI_INFO,
-        ("CommonAccessField: Mode=%d BitLen=%X BitOff=%X ByteOff=%X\n",
-        Mode, ObjDesc->CommonField.BitLength, ObjDesc->CommonField.BitOffset,
-        ObjDesc->CommonField.ByteOffset));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode=%d BitLen=%X BitOff=%X ByteOff=%X\n",
+        Mode, ObjDesc->CommonField.BitLength, 
+        ObjDesc->CommonField.StartFieldBitOffset,
+        ObjDesc->CommonField.BaseByteOffset));
 
 
-    /*
-     * Granularity was decoded from the field access type
-     * (AnyAcc will be the same as ByteAcc)
-     */
 
-    BitGranularity = ObjDesc->CommonField.Granularity;
-    ByteGranularity = DIV_8 (BitGranularity);
-
-    /*
-     * Check if request is too large for the field, and silently truncate
-     * the request to fit the field (if necessary).  This allows full
-     * Integer writes to small bit fields (lower bits of integer are used)
-     */
-
-    /* TBD: what about reads?  Should this code be in the write code only? */
-
-    ByteFieldLength = ROUND_BITS_UP_TO_BYTES (ObjDesc->CommonField.BitLength);
-    ActualByteLength = BufferLength;
-
-    if (BufferLength > ByteFieldLength)
-    {
-        DEBUG_PRINT (ACPI_INFO,
-            ("ExCommonAccessField: Byte length %X truncated to %X\n",
-            ActualByteLength, ByteFieldLength));
-
-        ActualByteLength = ByteFieldLength;
-    }
-
-
-    /* Convert byte count to datum count, round up if necessary */
-
-    DatumLength = (ActualByteLength + (ByteGranularity-1)) / ByteGranularity;
-
-    DEBUG_PRINT (ACPI_INFO,
-        ("ByteLen=%x, DatumLen=%x, BitGran=%x, ByteGran=%x\n",
-        ActualByteLength, DatumLength, BitGranularity, ByteGranularity));
-
-
-    /* Perform the actual read or write of the buffer */
+    /* Perform the actual read or write of the field */
 
     switch (Mode)
     {
     case ACPI_READ:
 
-        Status = AcpiExExtractFromField (ObjDesc, Buffer, BufferLength,
-                                    ActualByteLength, DatumLength,
-                                    BitGranularity, ByteGranularity);
+        Status = AcpiExExtractFromField (ObjDesc, Buffer, BufferLength);
         break;
 
 
     case ACPI_WRITE:
 
-        Status = AcpiExInsertIntoField (ObjDesc, Buffer, BufferLength,
-                                    ActualByteLength, DatumLength,
-                                    BitGranularity, ByteGranularity);
+        Status = AcpiExInsertIntoField (ObjDesc, Buffer, BufferLength);
         break;
 
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AccessNamedField: Unknown I/O Mode: %X\n", Mode));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown I/O Mode: %X\n", Mode));
         Status = AE_BAD_PARAMETER;
         break;
     }

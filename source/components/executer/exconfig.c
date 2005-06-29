@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.33 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -179,7 +179,7 @@ AcpiExLoadTableOp (
 
     /* Allocate a buffer for the entire table */
 
-    TablePtr = AcpiUtAllocate (TableHeader.Length);
+    TablePtr = ACPI_MEM_ALLOCATE (TableHeader.Length);
     if (!TablePtr)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -214,8 +214,8 @@ AcpiExLoadTableOp (
                     AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].SigLength)))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
             TableHeader.Signature));
         Status = AE_BAD_SIGNATURE;
         goto Cleanup;
@@ -273,8 +273,8 @@ AcpiExLoadTableOp (
 
 Cleanup:
 
-    AcpiUtFree (TableDesc);
-    AcpiUtFree (TablePtr);
+    ACPI_MEM_FREE (TableDesc);
+    ACPI_MEM_FREE (TablePtr);
     return_ACPI_STATUS (Status);
 
 }
@@ -393,9 +393,8 @@ AcpiExReconfiguration (
         Status |= AcpiDsObjStackPopObject (&RegionDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("ExecReconfiguration/AML_LOAD_OP: bad operand(s) (%X)\n",
-                Status));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "bad operand(s) (Load) (%s)\n",
+                AcpiFormatException (Status)));
 
             AcpiUtRemoveReference (RegionDesc);
             return_ACPI_STATUS (Status);
@@ -409,9 +408,8 @@ AcpiExReconfiguration (
 
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("ExecReconfiguration/AML_UNLOAD_OP: bad operand(s) (%X)\n",
-                Status));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "bad operand(s) (unload) (%s)\n",
+                AcpiFormatException (Status)));
 
             return_ACPI_STATUS (Status);
         }
@@ -422,9 +420,7 @@ AcpiExReconfiguration (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, ("ExReconfiguration: bad opcode=%X\n",
-                        Opcode));
-
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "bad opcode=%X\n", Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
     }

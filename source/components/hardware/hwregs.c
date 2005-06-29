@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  ******************************************************************************/
 
@@ -184,7 +184,7 @@ AcpiHwClearAcpiStatus (void)
     FUNCTION_TRACE ("HwClearAcpiStatus");
 
 
-    DEBUG_PRINTP (TRACE_IO, ("About to write %04X to %04X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %04X\n",
         ALL_FIXED_STS_BITS,
         (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm1aEvtBlk.Address)));
 
@@ -329,7 +329,7 @@ AcpiHwObtainSleepTypeRegisterData (
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Bad Sleep object %p type %X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad Sleep object %p type %X\n",
             ObjDesc, ObjDesc->Common.Type));
     }
 
@@ -539,7 +539,7 @@ AcpiHwRegisterBitAccess (
          */
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, PM1_CONTROL);
 
-        DEBUG_PRINT (TRACE_IO, ("PM1 control: Read %X\n", RegisterValue));
+        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM1 control: Read %X\n", RegisterValue));
 
         if (ReadWrite == ACPI_WRITE)
         {
@@ -579,7 +579,7 @@ AcpiHwRegisterBitAccess (
 
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, PM2_CONTROL);
 
-        DEBUG_PRINT (TRACE_IO, ("PM2 control: Read %X from %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM2 control: Read %X from %p\n",
             RegisterValue, ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm2CntBlk.Address)));
 
         if (ReadWrite == ACPI_WRITE)
@@ -589,7 +589,7 @@ AcpiHwRegisterBitAccess (
             Value          &= Mask;
             RegisterValue  |= Value;
 
-            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %p\n", RegisterValue,
+            ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %p\n", RegisterValue,
                 AcpiGbl_FADT->XPm2CntBlk.Address));
 
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
@@ -603,7 +603,7 @@ AcpiHwRegisterBitAccess (
         Mask = TMR_VAL_MASK;
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
                                             PM_TIMER);
-        DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read %X from %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM_TIMER: Read %X from %p\n",
             RegisterValue, ACPI_GET_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address)));
 
         break;
@@ -645,7 +645,7 @@ AcpiHwRegisterBitAccess (
         /* Now get the current Enable Bits in the selected Reg */
 
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, RegisterId);
-        DEBUG_PRINT (TRACE_IO, ("GPE Enable bits: Read %X from %X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "GPE Enable bits: Read %X from %X\n",
             RegisterValue, RegisterId));
 
         if (ReadWrite == ACPI_WRITE)
@@ -658,7 +658,7 @@ AcpiHwRegisterBitAccess (
             /* This write will put the Action state into the General Purpose */
             /* Enable Register indexed by the value in Mask */
 
-            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %04X\n",
                 RegisterValue, RegisterId));
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId,
                 (UINT8) RegisterValue);
@@ -686,7 +686,7 @@ AcpiHwRegisterBitAccess (
     RegisterValue &= Mask;
     RegisterValue >>= AcpiHwGetBitShift (Mask);
 
-    DEBUG_PRINT (TRACE_IO, ("Register I/O: returning %X\n", RegisterValue));
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Register I/O: returning %X\n", RegisterValue));
     return_VALUE (RegisterValue);
 }
 

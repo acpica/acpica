@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.43 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
         MODULE_NAME         ("psxface")
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiPsxExecute
  *
@@ -144,7 +144,7 @@
  *
  * DESCRIPTION: Execute a control method
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiPsxExecute (
@@ -199,9 +199,8 @@ AcpiPsxExecute (
      * Perform the first pass parse of the method to enter any
      * named objects that it creates into the namespace
      */
-
-    DEBUG_PRINT (ACPI_INFO,
-        ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "**** Begin Method Execution **** Entry=%p obj=%p\n",
         MethodNode, ObjDesc));
 
     /* Create and init a Root Node */
@@ -255,14 +254,12 @@ AcpiPsxExecute (
 
 
     /*
-     * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been
-     * executed, or with Status == AE_PENDING at end of AML block (end of
-     * Method code)
+     * If the method has returned an object, signal this to the caller with
+     * a control exception code
      */
-
     if (*ReturnObjDesc)
     {
-        DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Method returned ObjDesc=%X\n",
             *ReturnObjDesc));
         DUMP_STACK_ENTRY (*ReturnObjDesc);
 

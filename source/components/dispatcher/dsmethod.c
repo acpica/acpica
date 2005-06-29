@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.62 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -169,8 +169,7 @@ AcpiDsParseMethod (
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("DsParseMethod: **** Parsing [%4.4s] **** NamedObj=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Parsing [%4.4s] **** NamedObj=%p\n",
         &((ACPI_NAMESPACE_NODE *)ObjHandle)->Name, ObjHandle));
 
 
@@ -216,8 +215,7 @@ AcpiDsParseMethod (
     /*
      * Parse the method, first pass
      *
-     * The first pass load is
-     * where newly declared named objects are
+     * The first pass load is where newly declared named objects are
      * added into the namespace.  Actual evaluation of
      * the named objects (what would be called a "second
      * pass") happens during the actual execution of the
@@ -240,15 +238,13 @@ AcpiDsParseMethod (
     OwnerId = AcpiUtAllocateOwnerId (OWNER_TYPE_METHOD);
     ObjDesc->Method.OwningId = OwnerId;
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("DsParseMethod: **** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
         &((ACPI_NAMESPACE_NODE *)ObjHandle)->Name, ObjHandle, Op));
 
     /* Install the parsed tree in the method object */
     /* TBD: [Restructure] Obsolete field? */
 
     AcpiPsDeleteParseTree (Op);
-
 
     return_ACPI_STATUS (Status);
 }
@@ -360,8 +356,7 @@ AcpiDsCallControlMethod (
 
     FUNCTION_TRACE_PTR ("DsCallControlMethod", ThisWalkState);
 
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("DsCall, execute method %p, currentstate=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Execute method %p, currentstate=%p\n",
         ThisWalkState->PrevOp, ThisWalkState));
 
     /*
@@ -458,7 +453,7 @@ AcpiDsCallControlMethod (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
+    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode, 
                                 ObjDesc->Method.PcodeLength,
                                 ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
                                 MethodNode, NULL, NULL,
@@ -481,8 +476,8 @@ AcpiDsCallControlMethod (
     ThisWalkState->NumOperands = 0;
 
 
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("DsCall, starting nested execution, newstate=%p\n", NextWalkState));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Starting nested execution, newstate=%p\n", 
+        NextWalkState));
 
     return_ACPI_STATUS (AE_OK);
 
@@ -548,8 +543,8 @@ AcpiDsRestartControlMethod (
 
     }
 
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("DsRestart: Method=%p Return=%p ReturnUsed?=%X ResStack=%p State=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "Method=%p Return=%p ReturnUsed?=%X ResStack=%p State=%p\n",
         WalkState->MethodCallOp, ReturnDesc, WalkState->ReturnUsed,
         WalkState->Results, WalkState));
 
