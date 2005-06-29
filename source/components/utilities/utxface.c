@@ -238,6 +238,8 @@ AcpiGetSystemInfo (
     ACPI_BUFFER             *OutBuffer)
 {
     ACPI_SYSTEM_INFO        *InfoPtr;
+    UINT32                  i;
+
 
     FUNCTION_TRACE ("AcpiGetSystemInfo");
 
@@ -286,6 +288,14 @@ AcpiGetSystemInfo (
 
     InfoPtr->DebugLayer         = DebugLayer;
     InfoPtr->DebugLevel         = DebugLevel;
+
+    /* Current status of the ACPI tables, per table type */
+
+    InfoPtr->NumTableTypes = NUM_ACPI_TABLES;
+    for (i = 0; i < NUM_ACPI_TABLES; i++);
+    {
+        InfoPtr->TableInfo[i].Count = AcpiTables[i].Count;
+    }
 
     return_ACPI_STATUS (AE_OK);
 }
