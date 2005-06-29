@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -383,7 +383,7 @@ AcpiDbInitialize (void)
 
     /* Init globals */
 
-    AcpiGbl_DbBuffer = ACPI_MEM_CALLOCATE (ACPI_DEBUG_BUFFER_SIZE);
+    AcpiGbl_DbBuffer = AcpiOsCallocate (ACPI_DEBUG_BUFFER_SIZE);
 
     /* Initial scope is the root */
 
@@ -437,11 +437,11 @@ AcpiDbTerminate (void)
 
     if (AcpiGbl_DbTablePtr)
     {
-        ACPI_MEM_FREE (AcpiGbl_DbTablePtr);
+        AcpiOsFree (AcpiGbl_DbTablePtr);
     }
     if (AcpiGbl_DbBuffer)
     {
-        ACPI_MEM_FREE (AcpiGbl_DbBuffer);
+        AcpiOsFree (AcpiGbl_DbBuffer);
     }
 }
 

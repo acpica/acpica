@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  ******************************************************************************/
 
@@ -1007,7 +1007,6 @@ AcpiDbUserCommands (
      * Only this thread (the original thread) should actually terminate the subsystem,
      * because all the semaphores are deleted during termination
      */
-    AcpiDbTerminate ();
     AcpiTerminate ();
     return (Status);
 }
