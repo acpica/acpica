@@ -310,6 +310,34 @@ RegionHandler (
 
 /******************************************************************************
  * 
+ * FUNCTION:    RegionInit
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Opregion init function.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+RegionInit (
+    ACPI_HANDLE                 RegionHandle,
+    UINT32                      Function,
+    void                        *HandlerContext,
+    void                        **ReturnContext)
+{
+    /*
+     * Real simple, set the ReturnContext to the RegionHandle
+     */
+    *ReturnContext = RegionHandle;
+    
+    return AE_OK;
+}
+
+
+/******************************************************************************
+ * 
  * FUNCTION:    NotifyHandler 
  *
  * PARAMETERS:  Standard notify handler parameters
@@ -406,7 +434,7 @@ AeInstallHandlers (void)
         /* Install handler at the root object. 
          * TBD: all default handlers should be installed here!
          */
-        Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, i, RegionHandler, NULL, NULL);
+        Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, i, RegionHandler, RegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");
@@ -422,8 +450,6 @@ AeInstallHandlers (void)
 
     return Status;
 }
-
-
 
 
 /******************************************************************************
