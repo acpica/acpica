@@ -232,6 +232,21 @@ EvDisassociateRegionFromHandler(
     ACPI_OBJECT_INTERNAL   *RegionObj);
 
 
+/* Global Lock support - evglock */
+
+ACPI_STATUS
+EvAcquireGlobalLock(
+    void);
+
+void
+EvReleaseGlobalLock(
+    void);
+
+ACPI_STATUS
+EvInitGlobalLockHandler (
+    void);
+
+
 
 /* Debug stuff */
 
