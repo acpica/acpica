@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -144,12 +144,13 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInitializeSubsystem (ACPI_INIT_DATA *InitData)
+AcpiInitializeSubsystem (
+    ACPI_INIT_DATA          *InitData)
 {
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiInitialize");
+    FUNCTION_TRACE ("AcpiInitializeSubsystem");
 
     DEBUG_PRINT_RAW (ACPI_OK,
         ("ACPI Subsystem version [%s]\n", ACPI_CA_VERSION));
@@ -182,12 +183,127 @@ AcpiInitializeSubsystem (ACPI_INIT_DATA *InitData)
         return_ACPI_STATUS (Status);
     }
 
+    /* 
+     * Initialize the namespace manager and 
+     * the root of the namespace tree 
+     */
+
+    Status = AcpiNsRootInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Namespace initialization failure, %s\n", AcpiCmFormatException (Status)));
+        REPORT_ERROR ("Namespace initialization failure");
+        return_ACPI_STATUS (Status);
+    }
+
+
+
     /* If configured, initialize the AML debugger */
 
     DEBUGGER_EXEC (AcpiDbInitialize ());
 
     return_ACPI_STATUS (Status);
 }
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEnableSubsystem
+ *
+ * PARAMETERS:  Flags           - Init/enable Options
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Completes the subsystem initialization including hardware.
+ *              Puts system into ACPI mode if it isn't already.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEnableSubsystem (
+    UINT32                  Flags)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_TRACE ("AcpiEnableSubsystem");
+
+
+    /* This simply sanity checks the FACP, and prints error messages */
+
+    AcpiCmValidateFacp ();
+
+    /*
+     * Install the default OpRegion handlers.  These are
+     * installed unless other handlers have already been
+     * installed via the InstallAddressSpaceHandler interface
+     */
+
+    if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
+    {
+        AcpiEvInstallDefaultAddressSpaceHandlers ();
+    }
+
+    /* 
+     * We must initialize the hardware before we can enable ACPI.  
+     */
+
+    if (!(Flags & ACPI_NO_HARDWARE_INIT))
+    {
+        Status = AcpiHwInitialize ();
+    }
+
+    /* 
+     * Note: 
+     * We must have the hardware AND events initialized before we can execute 
+     * ANY control methods SAFELY.  Any control method can require ACPI hardware
+     * support, so the hardware MUST be initialized before execution!
+     */
+
+    if (!(Flags & ACPI_NO_EVENT_INIT))
+    {
+        Status = AcpiEvInitialize ();
+    }
+
+
+    /*
+     * Enable ACPI on this platform
+     */
+
+    if (!(Flags & ACPI_NO_ACPI_ENABLE))
+    {
+        AcpiEnable ();
+    }
+
+
+    /*
+     * Initialize all device objects in the namespace
+     * This runs the _STA, _INI, and _HID methods, and detects
+     * the PCI root bus(es)
+     */
+
+    if (!(Flags & ACPI_NO_DEVICE_INIT))
+    {
+        Status = AcpiNsInitializeDevices (Flags & ACPI_NO_PCI_INIT);
+    }
+
+
+    /*
+     * Initialize the objects that remain unitialized.  This
+     * runs the executable AML that is part of the declaration of OpRegions
+     * and Fields.
+     */
+
+    if (!(Flags & ACPI_NO_OBJECT_INIT))
+    {
+        Status = AcpiNsInitializeObjects ();
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
 
 
 /*******************************************************************************
