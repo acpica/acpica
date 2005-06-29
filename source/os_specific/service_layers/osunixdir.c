@@ -128,7 +128,7 @@
 typedef struct ExternalFindInfo
 {
     char                        *DirPathname;
-    DIR				*DirPtr;
+    DIR                         *DirPtr;
     char                        temp_buffer[128];
     char                        *WildcardSpec;
     char                        RequestedFileType;
@@ -157,7 +157,7 @@ AcpiOsOpenDirectory (
     char                    RequestedFileType)
 {
     EXTERNAL_FIND_INFO      *ExternalInfo;
-    DIR			    *dir;
+    DIR                     *dir;
 
 
     /* Allocate the info struct that will be returned to the caller */
@@ -173,7 +173,7 @@ AcpiOsOpenDirectory (
     dir = opendir(DirPathname);
     if (!dir)
     {
-	free(ExternalInfo);
+    free(ExternalInfo);
         return NULL;
     }
 
