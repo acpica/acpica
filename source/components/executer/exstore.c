@@ -131,8 +131,8 @@
  * 
  * FUNCTION:    AmlExecuteMethod
  *
- * PARAMETERS:  Offset              - Offset to method in code block
- *              Length              - Length of method
+ * PARAMETERS:  Pcode               - Pointer to the pcode stream
+ *              PcodeLength         - Length of pcode that comprises the method
  *              **Params            - List of parameters to pass to method, 
  *                                    terminated by NULL. Params itself may be 
  *                                    NULL if no parameters are being passed.
@@ -145,8 +145,8 @@
 
 ACPI_STATUS
 AmlExecuteMethod (
-    INT32                   Offset, 
-    INT32                   Length, 
+    UINT8                   *Pcode, 
+    UINT32                  PcodeLength, 
     ACPI_OBJECT_INTERNAL    **Params)
 {
     ACPI_STATUS             Status;
@@ -157,7 +157,7 @@ AmlExecuteMethod (
 
     /* Prepare the package stack */
 
-    Status = AmlPrepExec (Offset, Length);
+    Status = AmlPrepExec (Pcode, PcodeLength);
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Exec Stack Overflow\n"));
@@ -183,7 +183,7 @@ AmlExecuteMethod (
 
         if (AE_OK == Status)
         {
-            while ((Status = AmlDoCode (MODE_Exec)) == AE_OK)
+            while ((Status = AmlDoCode (IMODE_Execute)) == AE_OK)
             {;}
         }
 
@@ -287,7 +287,7 @@ AmlExecStore (
              * to protect it from garbage collection
              */
 
-            Status = AmlObjStackPushIfExec (MODE_Exec);
+            Status = AmlObjStackPush ();
             if (AE_OK != Status)
             {
                 CmDeleteInternalObject (DestDesc);
@@ -321,7 +321,7 @@ AmlExecStore (
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
-        DUMP_STACK (MODE_Exec, "AmlExecStore", 2, "target not Lvalue");
+        DUMP_STACK (IMODE_Execute, "AmlExecStore", 2, "target not Lvalue");
 
         Status = AE_AML_ERROR;
     }
