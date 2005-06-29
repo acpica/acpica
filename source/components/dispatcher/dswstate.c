@@ -276,7 +276,8 @@ DsObjStackDeleteAll (
     {
         if (WalkState->Operands[i])
         {
-            CmDeleteOperand (&WalkState->Operands[i]);
+            CmRemoveReference (WalkState->Operands[i]);
+            WalkState->Operands[i] = NULL;
         }
     }
 
@@ -572,7 +573,7 @@ void
 DsDeleteWalkState (
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_CTRL_STATE         *ControlState;
+    ACPI_GENERIC_STATE      *ControlState;
 
 
     FUNCTION_TRACE_PTR ("DsDeleteWalkState", WalkState);
@@ -581,9 +582,9 @@ DsDeleteWalkState (
     while (WalkState->ControlState)
     {
         ControlState = WalkState->ControlState;
-        WalkState->ControlState = ControlState->Next;
+        WalkState->ControlState = ControlState->Common.Next;
 
-        CmFree (ControlState);
+        CmDeleteGenericState (ControlState);
     }
 
     CmFree (WalkState);
