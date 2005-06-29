@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.58 $
+ *       $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -493,9 +493,7 @@ typedef enum
     ACCESS_WORD_ACC                 = 2,
     ACCESS_DWORD_ACC                = 3,
     ACCESS_QWORD_ACC                = 4,    /* ACPI 2.0 */
-    ACCESS_BLOCK_ACC                = 4,
-    ACCESS_SMBSEND_RECV_ACC         = 5,
-    ACCESS_SMBQUICK_ACC             = 6
+    ACCESS_BUFFER_ACC               = 5,    /* ACPI 2.0 */
 
 } AML_ACCESS_TYPE;
 
@@ -536,15 +534,13 @@ typedef enum
 
 /* Array sizes.  Used for range checking also */
 
-#define NUM_REGION_TYPES            7
-#define NUM_ACCESS_TYPES            7
+#define NUM_ACCESS_TYPES            6
 #define NUM_UPDATE_RULES            3
 #define NUM_MATCH_OPS               7
 #define NUM_OPCODES                 256
 #define NUM_FIELD_NAMES             2
 
 
-#define USER_REGION_BEGIN           0x80
 
 
 #endif /* __AMLCODE_H__ */
