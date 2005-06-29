@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.88 $
+ *       $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -164,16 +164,27 @@
 
 /*
  * Common bitfield for the field objects
+ * "Field Datum"    -- a datum from the actual field object
+ * "Buffer Datum"   -- a datum from a user buffer, read from or to be written to the field
  */
 #define ACPI_COMMON_FIELD_INFO              /* SIZE/ALIGNMENT: 24 bits + three 32-bit values */\
-    UINT8                       Granularity;\
+    UINT8                       AccessFlags;\
     UINT16                      BitLength;          /* Length of field in bits */\
-    UINT32                      ByteOffset;         /* Byte offset within containing object */\
-    UINT8                       BitOffset;          /* Bit offset within min read/write data unit (0-63) */\
-    UINT8                       Access;             /* AccessType (ByteAccess, WordAccess, etc*/\
-    UINT8                       LockRule;           /* Global Lock: Must Lock = 1 */\
-    UINT8                       UpdateRule;         /* How neighboring bits are handled */\
+    UINT32                      BaseByteOffset;     /* Byte offset within containing object */\
+    UINT8                       AccessBitWidth;     /* Read/Write size in bits (from ASL AccessType)*/\
+    UINT8                       AccessByteWidth;    /* Read/Write size in bytes */\
+    UINT8                       UpdateRule;         /* How neighboring field bits are handled */\
+    UINT8                       LockRule;           /* Global Lock: 1 = "Must Lock" */\
+    UINT8                       StartFieldBitOffset;/* Bit offset within first field datum (0-63) */\
+    UINT8                       DatumValidBits;     /* Valid bit in first "Field datum" */\
+    UINT8                       EndFieldValidBits;  /* Valid bits in the last "field datum" */\
+    UINT8                       EndBufferValidBits; /* Valid bits in the last "buffer datum" */\
     UINT32                      Value;              /* Value to store into the Bank or Index register */
+
+
+/* Access flag bits */
+
+#define AFIELD_SINGLE_DATUM         0x1
 
 
 /******************************************************************************
