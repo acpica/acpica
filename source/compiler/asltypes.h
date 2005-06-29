@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.19 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,9 @@
 
 #ifndef __ASLTYPES_H
 #define __ASLTYPES_H
+
+
+#include <time.h>
 
 
 /*******************************************************************************
@@ -321,6 +324,16 @@ ACPI_STATUS (*ASL_WALK_CALLBACK) (
     void                        *Context);
 
 
+typedef struct
+{
+    time_t                      StartTime;
+    time_t                      EndTime;
+    char                        *EventName;
+    BOOLEAN                     Valid;
+
+} ASL_EVENT_INFO;
+
+
 #define ASL_ERROR               0
 #define ASL_WARNING             1
 #define ASL_REMARK              2
@@ -359,7 +372,7 @@ typedef enum
     ASL_MSG_ARG_COUNT_LO,
     ASL_MSG_NO_RETVAL,
     ASL_MSG_SOME_NO_RETVAL,
-    ASL_MSG_INTERNAL,
+    ASL_MSG_COMPILER_INTERNAL,
     ASL_MSG_BACKWARDS_OFFSET,
     ASL_MSG_UNKNOWN_RESERVED_NAME,
     ASL_MSG_NAME_EXISTS,
@@ -380,6 +393,7 @@ typedef enum
     ASL_MSG_RESOURCE_FIELD,
     ASL_MSG_BYTES_TO_BITS,
     ASL_MSG_BITS_TO_BYTES,
+    ASL_MSG_AML_NOT_IMPLEMENTED,
 
 } ASL_MESSAGE_IDS;
 
