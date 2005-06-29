@@ -1,15 +1,16 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
+ *              $Revision: 1.57 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -118,44 +119,39 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acnamesp.h"
-#include "acparser.h"
-#include "acevents.h"
-#include "acinterp.h"
 #include "acdebug.h"
 #include "acdispat.h"
 
 
-#ifdef ENABLE_DEBUGGER
+#ifdef ACPI_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbutils");
+#define _COMPONENT          ACPI_CA_DEBUGGER
+        ACPI_MODULE_NAME    ("dbutils")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbSetOutputDestination
  *
- * PARAMETERS:  Address             - Pointer to the buffer
+ * PARAMETERS:  OutputFlags         - Current flags word
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print a portion of a buffer
+ * DESCRIPTION: Set the current destination for debugger output.  Alos sets
+ *              the debug output level accordingly.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbSetOutputDestination (
-    INT32                   OutputFlags)
+    UINT32                  OutputFlags)
 {
 
     AcpiGbl_DbOutputFlags = (UINT8) OutputFlags;
 
-    if (OutputFlags & DB_REDIRECTABLE_OUTPUT)
+    if ((OutputFlags & ACPI_DB_REDIRECTABLE_OUTPUT) && AcpiGbl_DbOutputToFile)
     {
-        if (OutputToFile)
-        {
-            AcpiDbgLevel = AcpiGbl_DbDebugLevel;
-        }
+        AcpiDbgLevel = AcpiGbl_DbDebugLevel;
     }
     else
     {
@@ -163,7 +159,8 @@ AcpiDbSetOutputDestination (
     }
 }
 
-/******************************************************************************
+
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDumpBuffer
  *
@@ -173,32 +170,32 @@ AcpiDbSetOutputDestination (
  *
  * DESCRIPTION: Print a portion of a buffer
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDumpBuffer (
     UINT32                  Address)
 {
 
-    AcpiOsPrintf ("\nLocation 0x%X:\n", Address);
+    AcpiOsPrintf ("\nLocation %X:\n", Address);
 
-    AcpiDbgLevel |= TRACE_TABLES;
-    AcpiCmDumpBuffer ((INT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiDbgLevel |= ACPI_LV_TABLES;
+    AcpiUtDumpBuffer (ACPI_TO_POINTER (Address), 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDumpObject
  *
- * PARAMETERS:  MethodName          - Method that returned the object
- *              ReturnObj           - The object to dump
+ * PARAMETERS:  ObjDesc         - External ACPI object to dump
+ *              Level           - Nesting level.
  *
  * RETURN:      None
  *
  * DESCRIPTION: Dump the contents of an ACPI external object
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDumpObject (
@@ -223,12 +220,15 @@ AcpiDbDumpObject (
     {
     case ACPI_TYPE_ANY:
 
-        AcpiOsPrintf ("[Object Reference]  Value: %p\n", ObjDesc->Reference.Handle);
+        AcpiOsPrintf ("[Object Reference] = %p\n", ObjDesc->Reference.Handle);
         break;
 
 
-    case ACPI_TYPE_NUMBER:
-        AcpiOsPrintf ("[Number]  Value: %ld (0x%lX)\n", ObjDesc->Number.Value, ObjDesc->Number.Value);
+    case ACPI_TYPE_INTEGER:
+
+        AcpiOsPrintf ("[Integer] = %8.8X%8.8X\n",
+                    ACPI_HIDWORD (ObjDesc->Integer.Value),
+                    ACPI_LODWORD (ObjDesc->Integer.Value));
         break;
 
 
@@ -245,8 +245,8 @@ AcpiDbDumpObject (
 
     case ACPI_TYPE_BUFFER:
 
-        AcpiOsPrintf ("[Buffer]  Value: ");
-        AcpiCmDumpBuffer ((INT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        AcpiOsPrintf ("[Buffer] Length %.2X = ", ObjDesc->Buffer.Length);
+        AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         break;
 
 
@@ -261,29 +261,47 @@ AcpiDbDumpObject (
         break;
 
 
+    case ACPI_TYPE_LOCAL_REFERENCE:
+
+        AcpiOsPrintf ("[Object Reference] = %p\n", ObjDesc->Reference.Handle);
+        break;
+
+
+    case ACPI_TYPE_PROCESSOR:
+
+        AcpiOsPrintf ("[Processor]\n");
+        break;
+
+
+    case ACPI_TYPE_POWER:
+
+        AcpiOsPrintf ("[Power Resource]\n");
+        break;
+
+
     default:
 
-        AcpiOsPrintf ("[Unknown Type] 0x%X \n", ObjDesc->Type);
+        AcpiOsPrintf ("[Unknown Type] %X \n", ObjDesc->Type);
         break;
     }
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbPrepNamestring
  *
- * PARAMETERS:
+ * PARAMETERS:  Name            - String to prepare
  *
  * RETURN:      None
  *
  * DESCRIPTION: Translate all forward slashes and dots to backslashes.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbPrepNamestring (
-    INT8                    *Name)
+    NATIVE_CHAR             *Name)
 {
 
 
@@ -292,7 +310,7 @@ AcpiDbPrepNamestring (
         return;
     }
 
-    STRUPR (Name);
+    ACPI_STRUPR (Name);
 
     /* Convert a leading forward slash to a backslash */
 
@@ -323,54 +341,79 @@ AcpiDbPrepNamestring (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AdSecondPassParse
+ * FUNCTION:    AcpiDbSecondPassParse
  *
  * PARAMETERS:  Root            - Root of the parse tree
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Need to wait until second pass to parse the control methods
+ * DESCRIPTION: Second pass parse of the ACPI tables.  We need to wait until
+ *              second pass to parse the control methods
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbSecondPassParse (
-    ACPI_GENERIC_OP         *Root)
+    ACPI_PARSE_OBJECT       *Root)
 {
-    ACPI_GENERIC_OP         *Op = Root;
-    ACPI_EXTENDED_OP        *Method;
-    ACPI_GENERIC_OP         *SearchOp;
-    ACPI_GENERIC_OP         *StartOp;
+    ACPI_PARSE_OBJECT       *Op = Root;
+    ACPI_PARSE_OBJECT       *Method;
+    ACPI_PARSE_OBJECT       *SearchOp;
+    ACPI_PARSE_OBJECT       *StartOp;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  BaseAmlOffset;
+    ACPI_WALK_STATE         *WalkState;
+
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     AcpiOsPrintf ("Pass two parse ....\n");
 
     while (Op)
     {
-        if (Op->Opcode == AML_METHOD_OP)
+        if (Op->Common.AmlOpcode == AML_METHOD_OP)
         {
-            Method = (ACPI_EXTENDED_OP *) Op;
-            Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
-                        NULL, NULL, NULL, AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
+            Method = Op;
 
+            /* Create a new walk state for the parse */
 
-            BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
-            StartOp = (Method->Value.Arg)->Next;
+            WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
+                                            NULL, NULL, NULL);
+            if (!WalkState)
+            {
+                return (AE_NO_MEMORY);
+            }
+
+            /* Init the Walk State */
+
+            WalkState->ParserState.Aml          =
+            WalkState->ParserState.AmlStart     = Method->Named.Data;
+            WalkState->ParserState.AmlEnd       =
+            WalkState->ParserState.PkgEnd       = Method->Named.Data + Method->Named.Length;
+            WalkState->ParserState.StartScope   = Op;
+
+            WalkState->DescendingCallback       = AcpiDsLoad1BeginOp;
+            WalkState->AscendingCallback        = AcpiDsLoad1EndOp;
+
+            /* Perform the AML parse */
+
+            Status = AcpiPsParseAml (WalkState);
+
+            BaseAmlOffset = (Method->Common.Value.Arg)->Common.AmlOffset + 1;
+            StartOp = (Method->Common.Value.Arg)->Common.Next;
             SearchOp = StartOp;
 
             while (SearchOp)
             {
-                SearchOp->AmlOffset += BaseAmlOffset;
+                SearchOp->Common.AmlOffset += BaseAmlOffset;
                 SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
             }
-
         }
 
-        if (Op->Opcode == AML_REGION_OP)
+        if (Op->Common.AmlOpcode == AML_REGION_OP)
         {
             /* TBD: [Investigate] this isn't quite the right thing to do! */
             /*
@@ -382,7 +425,7 @@ AcpiDbSecondPassParse (
 
         if (ACPI_FAILURE (Status))
         {
-            return (Status);
+            break;
         }
 
         Op = AcpiPsGetDepthNext (Root, Op);
@@ -392,25 +435,28 @@ AcpiDbSecondPassParse (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbLocalNsLookup
  *
- * PARAMETERS:
+ * PARAMETERS:  Name            - Name to lookup
  *
- * RETURN:      None
+ * RETURN:      Pointer to a namespace node
  *
  * DESCRIPTION: Lookup a name in the ACPI namespace
  *
- *****************************************************************************/
+ * Note: Currently begins search from the root.  Could be enhanced to use
+ * the current prefix (scope) node as the search beginning point.
+ *
+ ******************************************************************************/
 
-ACPI_NAMED_OBJECT*
+ACPI_NAMESPACE_NODE *
 AcpiDbLocalNsLookup (
-    INT8                    *Name)
+    NATIVE_CHAR             *Name)
 {
-    INT8                    *InternalPath;
+    NATIVE_CHAR             *InternalPath;
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *Entry = NULL;
+    ACPI_NAMESPACE_NODE     *Node = NULL;
 
 
     AcpiDbPrepNamestring (Name);
@@ -424,26 +470,22 @@ AcpiDbLocalNsLookup (
         return (NULL);
     }
 
-    /* Lookup the name */
-
-    /* TBD: [Investigate] what scope do we use? */
-    /* Use the root scope for the start of the search */
-
-    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
-                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
-
+    /*
+     * Lookup the name.
+     * (Uses root node as the search starting point)
+     */
+    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
+                                    ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiFormatException (Status));
     }
 
-
-    AcpiCmFree (InternalPath);
-
-    return (Entry);
+    ACPI_MEM_FREE (InternalPath);
+    return (Node);
 }
 
 
-#endif /* ENABLE_DEBUGGER */
+#endif /* ACPI_DEBUGGER */
 
 
