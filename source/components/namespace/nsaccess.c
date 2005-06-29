@@ -145,7 +145,7 @@
 ACPI_STATUS
 NsSetup (void)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     PREDEFINED_NAMES        *InitVal = NULL;
     NAME_TABLE_ENTRY        *NewEntry;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -185,22 +185,14 @@ NsSetup (void)
      */
     NsInitializeTable (Gbl_RootObject->Scope, NULL, Gbl_RootObject);
 
-    /* Push the root name table on the scope stack */
-    
-    Status = NsScopeStackPush (Gbl_RootObject->Scope, ACPI_TYPE_Any);
-    if (ACPI_FAILURE (Status))
-    {
-        goto UnlockAndExit;
-    }
-
     /* Enter the pre-defined names in the name table */
     
     DEBUG_PRINT (ACPI_INFO, ("Entering predefined name table into namespace\n"));
 
     for (InitVal = Gbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
-        Status = NsLookup (Gbl_CurrentScope->Scope, InitVal->Name, InitVal->Type, 
-                                    IMODE_LoadPass2, NS_NO_UPSEARCH, &NewEntry);
+        Status = NsLookup (NULL, InitVal->Name, InitVal->Type, 
+                                    IMODE_LoadPass2, NS_NO_UPSEARCH, NULL, &NewEntry);
 
         /* 
          * if name entered successfully
@@ -319,13 +311,15 @@ UnlockAndExit:
 
 ACPI_STATUS
 NsLookup (
-    NAME_TABLE_ENTRY        *PrefixScope,
+    SCOPE_STACK             *ScopeInfo,
     char                    *Name, 
     ACPI_OBJECT_TYPE        Type, 
     OPERATING_MODE          InterpreterMode,
-    UINT32                  Flags,
+	UINT32					Flags,
+    ACPI_WALK_STATE			*WalkState,
     NAME_TABLE_ENTRY        **RetEntry)
 {
+    NAME_TABLE_ENTRY        *PrefixScope;
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *EntryToSearch = NULL;
     NAME_TABLE_ENTRY        *ThisEntry = NULL;
@@ -371,6 +365,18 @@ NsLookup (
     }
 
 
+    /* Get the prefix scope */
+
+    if (!ScopeInfo)
+    {
+        PrefixScope = Gbl_RootObject->Scope;
+    }
+    else
+    {
+        PrefixScope = ScopeInfo->Scope;
+    }
+
+
     /* DefFieldDefn and BankFieldDefn define fields in a Region */
 
     if (INTERNAL_TYPE_DefFieldDefn == Type ||
@@ -394,7 +400,7 @@ NsLookup (
         NumSegments = 0;
         ThisEntry = Gbl_RootObject;
 
-        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Null Name (Zero segments),  Flags=%x\n"));
+        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Null Name (Zero segments),  Flags=%x\n", Flags));
     }
 
     else
@@ -622,7 +628,7 @@ NsLookup (
     }
 
 
-    if (!(Flags & NS_DONT_OPEN_SCOPE))
+    if (!(Flags & NS_DONT_OPEN_SCOPE) && (WalkState))
     {
         /* 
          * If entry is a type which opens a scope,
@@ -642,7 +648,7 @@ NsLookup (
                 ScopeToPush = ThisEntry->Scope;
             }
 
-            Status = NsScopeStackPush (ScopeToPush, Type);
+            Status = NsScopeStackPush (ScopeToPush, Type, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
