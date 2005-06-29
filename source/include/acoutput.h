@@ -138,9 +138,10 @@
 #define MISCELLANEOUS               0x00000040
 #define OS_DEPENDENT                0x00000080
 #define OS_APP_INTERFACE            0x00000100
+#define OSPM						0x00000200
 
 
-#define ALL_COMPONENTS              0x000001FF
+#define ALL_COMPONENTS              0x000002FF
 
 
 /* Exception level or Trace level -- used in the global "DebugLevel" */
