@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.76 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -126,7 +126,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          ACPI_DEBUGGER
-        MODULE_NAME         ("dbinput")
+        ACPI_MODULE_NAME    ("dbinput")
 
 
 /*
@@ -770,7 +770,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_TERMINATE:
-        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
         AcpiUtSubsystemShutdown ();
 
         /* TBD: [Restructure] Need some way to re-initialize without re-creating the semaphores! */
@@ -843,6 +843,7 @@ AcpiDbExecuteThread (
     void                    *Context)
 {
     ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             MStatus;
 
 
     while (Status != AE_CTRL_TERMINATE)
@@ -850,9 +851,19 @@ AcpiDbExecuteThread (
         AcpiGbl_MethodExecuting = FALSE;
         AcpiGbl_StepToNextCall = FALSE;
 
-        AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+        MStatus = AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+        if (ACPI_FAILURE (MStatus)
+        {
+            return;
+        }
+
         Status = AcpiDbCommandDispatch (AcpiGbl_DbLineBuf, NULL, NULL);
-        AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+
+        MStatus = AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+        if (ACPI_FAILURE (MStatus)
+        {
+            return;
+        }
     }
 }
 
@@ -903,7 +914,7 @@ AcpiDbUserCommands (
     NATIVE_CHAR             Prompt,
     ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
 
 
     /* TBD: [Restructure] Need a separate command line buffer for step mode */
@@ -912,7 +923,7 @@ AcpiDbUserCommands (
     {
         /* Force output to console until a command is entered */
 
-        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+        AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 
         /* Different prompt if method is executing */
 
@@ -938,8 +949,17 @@ AcpiDbUserCommands (
              * Signal the debug thread that we have a command to execute,
              * and wait for the command to complete.
              */
-            AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
-            AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+            Status = AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            Status = AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
         }
         else
         {

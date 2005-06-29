@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.52 $
+ *              $Revision: 1.54 $
  *
  ******************************************************************************/
 
@@ -128,7 +128,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          ACPI_DEBUGGER
-        MODULE_NAME         ("dbxface")
+        ACPI_MODULE_NAME    ("dbxface")
 
 
 /*******************************************************************************
@@ -158,7 +158,7 @@ AcpiDbSingleStep (
     ACPI_PARSE_OBJECT       *ParentOp;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
     /* Check for single-step breakpoint */
 
@@ -229,7 +229,7 @@ AcpiDbSingleStep (
         if (ParentOp)
         {
             if ((WalkState->ControlState) &&
-                (WalkState->ControlState->Common.State == CONTROL_PREDICATE_EXECUTING))
+                (WalkState->ControlState->Common.State == ACPI_CONTROL_PREDICATE_EXECUTING))
             {
                 /*
                  * We are executing the predicate of an IF or WHILE statement
@@ -347,8 +347,16 @@ AcpiDbSingleStep (
         {
             /* Handshake with the front-end that gets user command lines */
 
-            AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
-            AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+            Status = AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            Status = AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
         }
 
         else
@@ -357,7 +365,7 @@ AcpiDbSingleStep (
 
             /* Force output to console until a command is entered */
 
-            AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
+            AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 
             /* Different prompt if method is executing */
 
@@ -410,7 +418,7 @@ AcpiDbInitialize (void)
 
     AcpiGbl_DbDebugLevel        = ACPI_LV_VERBOSITY2;
     AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
-    AcpiGbl_DbOutputFlags       = DB_CONSOLE_OUTPUT;
+    AcpiGbl_DbOutputFlags       = ACPI_DB_CONSOLE_OUTPUT;
 
     AcpiGbl_DbOpt_tables        = FALSE;
     AcpiGbl_DbOpt_disasm        = FALSE;
