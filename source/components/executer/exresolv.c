@@ -391,24 +391,8 @@ AmlResolveObjectToValue (
 
             switch (StackDesc->Reference.TargetType)
             {
-            case ACPI_TYPE_Buffer:
-                ObjDesc = StackDesc->Reference.Object;
-                if (ObjDesc)
-                {
-                    /*
-                     * Valid obj descriptor, copy pointer to return value
-                     */
-                    *StackPtr = ObjDesc;
-                    Status = AE_OK;
-                }
-
-                else
-                {
-                    /* Invalid obj descriptor */
-
-                    DEBUG_PRINT (ACPI_ERROR, ("AmlResolveObjectToValue: Null buffer ptr in obj %p\n", StackDesc));
-                    Status = AE_AML_INTERNAL;
-                }
+            case ACPI_TYPE_BufferField:
+                /* Just return - leave the Reference on the stack */
                 break;
 
             case ACPI_TYPE_Package:

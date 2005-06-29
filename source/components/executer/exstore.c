@@ -690,6 +690,7 @@ AmlExecStore (
     ACPI_OBJECT_INTERNAL    *DeleteDestDesc = NULL;
     ACPI_OBJECT_INTERNAL    *TmpDesc;
     NAME_TABLE_ENTRY        *Entry = NULL;
+    UINT8                   Value = 0;
 
 
     FUNCTION_TRACE ("AmlExecStore");
@@ -799,25 +800,65 @@ AmlExecStore (
             break;
         }
 
+        /*
+         * Check that the destination is a Buffer Field type
+         */
+        if (DestDesc->Reference.TargetType != ACPI_TYPE_BufferField)
+        {
+            DeleteDestDesc = DestDesc;
+            Status = AE_AML_OPERAND_TYPE;
+            break;
+        }
+        
         /* 
-         * Storing a number into a buffer at a location defined by an Index.
+         * Storing into a buffer at a location defined by an Index.
          * This is a little more complex than the package case.
          *
          * If value is not a Number, try to resolve it to one.
          */
-        if ((ValDesc->Common.Type != ACPI_TYPE_Number) &&
-           ((Status = AmlResolveToValue (&ValDesc)) != AE_OK))
+        switch (ValDesc->Common.Type) 
         {
-            DeleteDestDesc = DestDesc;
+        /*
+         * TBD: Verify that this truncation behavior is correct
+         */
+        case ACPI_TYPE_Number:
+            Value = (UINT8)ValDesc->Number.Value;
+            break;
+
+        /*
+         * TBD: Should the buffer replace only the single element?
+         */
+        case ACPI_TYPE_Buffer:
+        case ACPI_TYPE_String:
+            Value = *(ValDesc->Buffer.Pointer);
+            break;
+
+        /*
+         * If value is not a Number, try to resolve it to one.
+         */
+        default:
+            if ((ValDesc->Common.Type != ACPI_TYPE_Number) &&
+               ((Status = AmlResolveToValue (&ValDesc)) != AE_OK))
+            {
+                DeleteDestDesc = DestDesc;
+            }
+
+            else if (ValDesc->Common.Type != ACPI_TYPE_Number)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Index value must be Number, not %d\n",
+                                ValDesc->Common.Type));
+
+                DeleteDestDesc = DestDesc;
+                Status = AE_AML_OPERAND_TYPE;
+            }
+            break;
         }
 
-        else if (ValDesc->Common.Type != ACPI_TYPE_Number)
+        /*
+         * If we had an error, break out of this case statement.
+         */
+        if(AE_OK != Status)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Index value must be Number, not %d\n",
-                            ValDesc->Common.Type));
-
-            DeleteDestDesc = DestDesc;
-            Status = AE_AML_OPERAND_TYPE;
             break;
         }
 
@@ -828,21 +869,6 @@ AmlExecStore (
 
         DeleteDestDesc = DestDesc;
 
-        DestDesc = NsGetAttachedObject (Entry);
-        if (!DestDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Internal error - null old-value pointer\n"));
-            Status = AE_AML_INTERNAL;
-            break;
-        }
-
-        else
-        {
-            DEBUG_PRINT (ACPI_INFO, ("AmlExecStore/Index: Value DestDesc=%p, Type=0x%X\n",
-                            DestDesc, DestDesc->Common.Type));
-        }
-
-
         /*
          * Valid source value and destination reference pointer.
          *
@@ -850,25 +876,20 @@ AmlExecStore (
          * Destination should point to either a buffer or a package
          */
 
-        if (DestDesc->Common.Type == ACPI_TYPE_Any)
-        {
-            DestDesc->Common.Type = ACPI_TYPE_Number;
-        }
+        /*
+         *  Dereference the Buffer Field and set it equal to the ValDesc value
+         */
+        TmpDesc = DestDesc->Reference.Object;
 
-        if (DestDesc->Common.Type != ACPI_TYPE_Number)
+        if (TmpDesc->Common.Type != ACPI_TYPE_Buffer)
         {
-            DEBUG_PRINT (ACPI_INFO, ("AmlExecStore/Index: Dest type must be a number - DestDesc=%p, Type=0x%X\n",
-                            DestDesc, DestDesc->Common.Type));
-            
             Status = AE_AML_OPERAND_TYPE;
+            break;
         }
 
-        else
-        {
-            /* Destination is a number, as it should be.  Store the value */
+        TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
 
-            DestDesc->Number.Value = ValDesc->Number.Value;
-        }
+        DestDesc = TmpDesc;
 
         break;
 
