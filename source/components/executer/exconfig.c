@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.75 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -160,7 +160,7 @@ AcpiExAddTable (
 
     /* Create an object to be the table handle */
 
-    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_LOCAL_REFERENCE);
+    ObjDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -168,14 +168,12 @@ AcpiExAddTable (
 
     /* Install the new table into the local data structures */
 
-    ACPI_MEMSET (&TableInfo, 0, sizeof (ACPI_TABLE_DESC));
-
-    TableInfo.Type         = 5;
     TableInfo.Pointer      = Table;
-    TableInfo.Length       = (ACPI_SIZE) Table->Length;
+    TableInfo.Length       = Table->Length;
     TableInfo.Allocation   = ACPI_MEM_ALLOCATED;
+    TableInfo.BasePointer  = Table;
 
-    Status = AcpiTbInstallTable (&TableInfo);
+    Status = AcpiTbInstallTable (NULL, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -236,7 +234,6 @@ AcpiExLoadTableOp (
     ACPI_FUNCTION_TRACE ("ExLoadTableOp");
 
 
-#if 0
     /*
      * Make sure that the signature does not match one of the tables that
      * is already loaded.
@@ -248,7 +245,6 @@ AcpiExLoadTableOp (
 
         return_ACPI_STATUS (AE_ALREADY_EXISTS);
     }
-#endif
 
     /* Find the ACPI table */
 
@@ -262,7 +258,7 @@ AcpiExLoadTableOp (
             return_ACPI_STATUS (Status);
         }
 
-        /* Table not found, return an Integer=0 and AE_OK */
+        /* Not found, return an Integer=0 and AE_OK */
 
         DdbHandle = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!DdbHandle)
@@ -341,11 +337,9 @@ AcpiExLoadTableOp (
         if (ACPI_FAILURE (Status))
         {
             (void) AcpiExUnloadTable (DdbHandle);
-            return_ACPI_STATUS (Status);
         }
     }
 
-    *ReturnDesc = DdbHandle;
     return_ACPI_STATUS  (Status);
 }
 
@@ -389,7 +383,7 @@ AcpiExLoadOp (
     case ACPI_TYPE_REGION:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Region %p %s\n",
-            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
+            ObjDesc, AcpiUtGetTypeName (ObjDesc->Common.Type)));
 
         /* Get the table header */
 
@@ -433,12 +427,13 @@ AcpiExLoadOp (
         break;
 
 
-    case ACPI_TYPE_LOCAL_REGION_FIELD:
-    case ACPI_TYPE_LOCAL_BANK_FIELD:
-    case ACPI_TYPE_LOCAL_INDEX_FIELD:
+    case ACPI_TYPE_BUFFER_FIELD:
+    case INTERNAL_TYPE_REGION_FIELD:
+    case INTERNAL_TYPE_BANK_FIELD:
+    case INTERNAL_TYPE_INDEX_FIELD:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Field %p %s\n",
-            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
+            ObjDesc, AcpiUtGetTypeName (ObjDesc->Common.Type)));
 
         /*
          * The length of the field must be at least as large as the table.
@@ -462,11 +457,11 @@ AcpiExLoadOp (
     /* The table must be either an SSDT or a PSDT */
 
     if ((!ACPI_STRNCMP (TablePtr->Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_PSDT].Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_PSDT].SigLength)) &&
+                    AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].Signature,
+                    AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].SigLength)) &&
         (!ACPI_STRNCMP (TablePtr->Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_SSDT].Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_SSDT].SigLength)))
+                    AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].Signature,
+                    AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].SigLength)))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
@@ -524,7 +519,7 @@ ACPI_STATUS
 AcpiExUnloadTable (
     ACPI_OPERAND_OBJECT     *DdbHandle)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status = AE_NOT_IMPLEMENTED;
     ACPI_OPERAND_OBJECT     *TableDesc = DdbHandle;
     ACPI_TABLE_DESC         *TableInfo;
 
@@ -540,7 +535,8 @@ AcpiExUnloadTable (
      */
     if ((!DdbHandle) ||
         (ACPI_GET_DESCRIPTOR_TYPE (DdbHandle) != ACPI_DESC_TYPE_OPERAND) ||
-        (ACPI_GET_OBJECT_TYPE (DdbHandle) != ACPI_TYPE_LOCAL_REFERENCE))
+        (((ACPI_OPERAND_OBJECT  *)DdbHandle)->Common.Type !=
+                INTERNAL_TYPE_REFERENCE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
