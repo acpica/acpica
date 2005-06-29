@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.133 $
+ *              $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -501,7 +501,7 @@ AcpiUtGetTypeName (
 
 /* Region type decoding */
 
-const NATIVE_CHAR *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
+const NATIVE_CHAR *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
 {
     "SystemMemory",
     "SystemIO",
@@ -530,12 +530,12 @@ AcpiUtGetRegionName (
     UINT8                   SpaceId)
 {
 
-    if (SpaceId >= USER_REGION_BEGIN)
+    if (SpaceId >= ACPI_USER_REGION_BEGIN)
     {
         return ("UserDefinedRegion");
     }
 
-    else if (SpaceId >= NUM_REGION_TYPES)
+    else if (SpaceId >= ACPI_NUM_PREDEFINED_REGIONS)
     {
         return ("InvalidSpaceID");
     }
@@ -573,9 +573,8 @@ const NATIVE_CHAR *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
     "ByteAcc",
     "WordAcc",
     "DWordAcc",
-    "BlockAcc",
-    "SMBSendRecvAcc",
-    "SMBQuickAcc"
+    "QWordAcc",
+    "BufferAcc",
 };
 
 
@@ -737,15 +736,6 @@ AcpiUtInitGlobals (
         AcpiGbl_AcpiTables[i].Length        = 0;
         AcpiGbl_AcpiTables[i].Allocation    = ACPI_MEM_NOT_ALLOCATED;
         AcpiGbl_AcpiTables[i].Count         = 0;
-    }
-
-
-    /* Address Space handler array */
-
-    for (i = 0; i < ACPI_NUM_ADDRESS_SPACES; i++)
-    {
-        AcpiGbl_AddressSpaces[i].Handler    = NULL;
-        AcpiGbl_AddressSpaces[i].Context    = NULL;
     }
 
     /* Mutex locked flags */
