@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -174,7 +174,6 @@ AcpiEvGpeInitialize (void)
     AcpiGbl_GpeBlockInfo[0].BlockBaseNumber = 0;
     AcpiGbl_GpeBlockInfo[1].BlockBaseNumber = AcpiGbl_FADT->Gpe1Base;
 
-
     /*
      * Determine the maximum GPE number for this machine.
      *
@@ -183,19 +182,24 @@ AcpiEvGpeInitialize (void)
      * If EITHER the register length OR the block address are zero, then that
      * particular block is not supported.
      */
-    if (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth && ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address))
+    if (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth && 
+        ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address))
     {
         /* GPE block 0 exists (has both length and address > 0) */
 
-        AcpiGbl_GpeBlockInfo[0].RegisterCount = (UINT16) (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth / (ACPI_GPE_REGISTER_WIDTH * 2));
-        AcpiGbl_GpeNumberMax                  = (AcpiGbl_GpeBlockInfo[0].RegisterCount * ACPI_GPE_REGISTER_WIDTH) - 1;
+        AcpiGbl_GpeBlockInfo[0].RegisterCount = (UINT16) (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth / 
+                                                         (ACPI_GPE_REGISTER_WIDTH * 2));
+
+        AcpiGbl_GpeNumberMax = (AcpiGbl_GpeBlockInfo[0].RegisterCount * ACPI_GPE_REGISTER_WIDTH) - 1;
     }
 
-    if (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth && ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address))
+    if (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth && 
+        ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address))
     {
         /* GPE block 1 exists (has both length and address > 0) */
 
-        AcpiGbl_GpeBlockInfo[1].RegisterCount   = (UINT16) (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth / (ACPI_GPE_REGISTER_WIDTH * 2));
+        AcpiGbl_GpeBlockInfo[1].RegisterCount = (UINT16) (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth / 
+                                                          (ACPI_GPE_REGISTER_WIDTH * 2));
 
         /* Check for GPE0/GPE1 overlap (if both banks exist) */
 
@@ -205,7 +209,8 @@ AcpiEvGpeInitialize (void)
             ACPI_REPORT_ERROR ((
                 "GPE0 block (GPE 0 to %d) overlaps the GPE1 block (GPE %d to %d) - Ignoring GPE1\n",
                 AcpiGbl_GpeNumberMax, AcpiGbl_FADT->Gpe1Base,
-                AcpiGbl_FADT->Gpe1Base + ((AcpiGbl_GpeBlockInfo[1].RegisterCount * ACPI_GPE_REGISTER_WIDTH) - 1)));
+                AcpiGbl_FADT->Gpe1Base + 
+                ((AcpiGbl_GpeBlockInfo[1].RegisterCount * ACPI_GPE_REGISTER_WIDTH) - 1)));
 
             /* Ignore GPE1 block by setting the register count to zero */
 
@@ -338,13 +343,15 @@ AcpiEvGpeInitialize (void)
              * are cleared by writing a '1', while enable registers are cleared
              * by writing a '0'.
              */
-            Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0x00, &GpeRegisterInfo->EnableAddress, 0);
+            Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0x00, 
+                        &GpeRegisterInfo->EnableAddress, 0);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0xFF, &GpeRegisterInfo->StatusAddress, 0);
+            Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0xFF, 
+                        &GpeRegisterInfo->StatusAddress, 0);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -577,14 +584,16 @@ AcpiEvGpeDetect (void)
     {
         GpeRegisterInfo = &AcpiGbl_GpeRegisterInfo[i];
 
-        Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue, &GpeRegisterInfo->StatusAddress, 0);
+        Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue, 
+                    &GpeRegisterInfo->StatusAddress, 0);
         GpeRegisterInfo->Status = (UINT8) InValue;
         if (ACPI_FAILURE (Status))
         {
             return (ACPI_INTERRUPT_NOT_HANDLED);
         }
 
-        Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue, &GpeRegisterInfo->EnableAddress, 0);
+        Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue, 
+                    &GpeRegisterInfo->EnableAddress, 0);
         GpeRegisterInfo->Enable = (UINT8) InValue;
         if (ACPI_FAILURE (Status))
         {
@@ -751,7 +760,8 @@ AcpiEvGpeDispatch (
     GpeNumberInfo = AcpiEvGetGpeNumberInfo (GpeNumber);
     if (!GpeNumberInfo)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "GPE[%X] is not a valid event\n", GpeNumber));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "GPE[%X] is not a valid event\n", 
+            GpeNumber));
         return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
     }
 
@@ -764,7 +774,8 @@ AcpiEvGpeDispatch (
         Status = AcpiHwClearGpe (GpeNumber);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to clear GPE[%2.2X]\n", GpeNumber));
+            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to clear GPE[%2.2X]\n", 
+                GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
     }
@@ -791,7 +802,8 @@ AcpiEvGpeDispatch (
         Status = AcpiHwDisableGpe (GpeNumber);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to disable GPE[%2.2X]\n", GpeNumber));
+            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to disable GPE[%2.2X]\n", 
+                GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
 
@@ -802,14 +814,18 @@ AcpiEvGpeDispatch (
                                 AcpiEvAsynchExecuteGpeMethod,
                                 ACPI_TO_POINTER (GpeNumber))))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to queue handler for GPE[%2.2X], event is disabled\n", GpeNumber));
+            ACPI_REPORT_ERROR ((
+                "AcpiEvGpeDispatch: Unable to queue handler for GPE[%2.2X], event is disabled\n", 
+                GpeNumber));
         }
     }
     else
     {
         /* No handler or method to run! */
 
-        ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: No handler or method for GPE[%2.2X], disabling event\n", GpeNumber));
+        ACPI_REPORT_ERROR ((
+            "AcpiEvGpeDispatch: No handler or method for GPE[%2.2X], disabling event\n", 
+            GpeNumber));
 
         /*
          * Disable the GPE.  The GPE will remain disabled until the ACPI
@@ -818,7 +834,8 @@ AcpiEvGpeDispatch (
         Status = AcpiHwDisableGpe (GpeNumber);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to disable GPE[%2.2X]\n", GpeNumber));
+            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to disable GPE[%2.2X]\n", 
+                GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
     }
@@ -831,7 +848,8 @@ AcpiEvGpeDispatch (
         Status = AcpiHwClearGpe (GpeNumber);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to clear GPE[%2.2X]\n", GpeNumber));
+            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to clear GPE[%2.2X]\n", 
+                GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
     }
