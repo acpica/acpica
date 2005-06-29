@@ -795,11 +795,14 @@ CmInitStaticObject (
      * 1) This is an ACPI_OBJECT_INTERNAL descriptor
      * 2) The size is the full object (worst case)
      * 3) The flags field indicates static allocation 
+     * 4) Reference count starts at one (not really necessary since the
+     *    object can't be deleted, but keeps everything sane)
      */
 
-    ObjDesc->Common.DataType = DESC_TYPE_ACPI_OBJ;
-    ObjDesc->Common.Size = sizeof (ACPI_OBJECT_INTERNAL);
-    ObjDesc->Common.Flags = AO_STATIC_ALLOCATION;
+    ObjDesc->Common.DataType        = DESC_TYPE_ACPI_OBJ;
+    ObjDesc->Common.Size            = sizeof (ACPI_OBJECT_INTERNAL);
+    ObjDesc->Common.Flags           = AO_STATIC_ALLOCATION;
+    ObjDesc->Common.ReferenceCount  = 1;
 
     return_VOID;
 }
