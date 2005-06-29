@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -1176,7 +1176,7 @@ AnSemanticAnalysisWalkEnd (
     case OPTYPE_MONADIC2R:
     case OPTYPE_DYADIC2:
     case OPTYPE_DYADIC2R:
-    case OPTYPE_DYADIC2S:
+    case OPTYPE_DYADIC_T21:
     case OPTYPE_TRIADIC:
     case OPTYPE_QUADRADIC:
     case OPTYPE_HEXADIC:
@@ -1196,7 +1196,6 @@ AnSemanticAnalysisWalkEnd (
         i = 1;
         while ((ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes2)))
         {
-
             RequiredBtypes = AnMapArgTypeToBtype (ArgType);
 
             ThisNodeBtype = AnGetBtype (ArgNode);
