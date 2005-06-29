@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -521,12 +521,16 @@ AdAmlDisassemble (
         if (!OutFilename)
         {
             fprintf (stderr, "Could not generate output filename\n");
+            Status = AE_ERROR;
+            goto Cleanup;
         }
 
         File = fopen (DisasmFilename, "w+");
         if (!File)
         {
             fprintf (stderr, "Could not open output file\n");
+            Status = AE_ERROR;
+            goto Cleanup;
         }
 
         AcpiOsRedirectOutput (File);
@@ -560,7 +564,7 @@ Cleanup:
     }
 
     AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
-    return AE_OK;
+    return Status;
 }
 
 
