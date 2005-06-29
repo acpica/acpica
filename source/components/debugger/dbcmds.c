@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  ******************************************************************************/
 
@@ -430,7 +430,7 @@ AcpiDbDisassembleAml (
     }
 
 
-    AcpiDbDisplayOp (Op, NumStatements);
+    AcpiDbDisplayOp (NULL, Op, NumStatements);
 }
 
 

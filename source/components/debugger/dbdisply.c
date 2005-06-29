@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -777,7 +777,7 @@ AcpiDbDisplayResults (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Node = WalkState->Origin->Node;
+    Node = WalkState->MethodNode;
     NumResults = WalkState->NumResults - WalkState->CurrentResult;
 
     AcpiOsPrintf ("Method [%4.4s] has %d stacked result objects\n", &Node->Name, NumResults);
