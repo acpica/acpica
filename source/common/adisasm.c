@@ -464,13 +464,14 @@ AdGetTables (
 
     else
     {
-#ifdef _IA16
+#ifdef _IA16 
+#include "16bit.h"
         printf ("Scanning for DSDT\n");
 
-        Status = AdFindDsdt (&DsdtPtr, &DsdtLength);
+        Status = AfFindDsdt (&DsdtPtr, &DsdtLength);
 
         printf ("About to dump DSDT\n");
-        AdDumpTables ();
+        AfDumpTables ();
         printf ("Dumped DSDT\n");
 #else
         printf ("Must supply filename for ACPI tables, cannot scan memory\n");
