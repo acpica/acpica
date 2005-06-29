@@ -282,14 +282,10 @@ PsxMthStackDeleteArgs (
         if (Object)
         {
             CmUpdateObjectReference (Object, REF_DECREMENT);   /* Removed from Stack */
-
-            /*
-             * Only delete the argument if this method was called from another method
-             * Otherwise, the arguments will never get deleted.
-             */
-            
-            if (WalkState->Next)
+            if (Object->Common.ReferenceCount <= 1)
             {
+                /* Delete the object since it has no owner  */
+
                 CmDeleteInternalObject (Object);
             }
         }
