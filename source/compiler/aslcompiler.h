@@ -7,7 +7,7 @@
 #define ASL_PARSE_OPCODE_BASE       ACCESSAS        /* First Lex type */   
 
 
-/* TBD: define new opcodes */
+/* TBD: define new (2.0) opcodes  - move to amlcode.h */
 
 #define AML_BREAKPOINT_OP           (UINT16) 0x00FE
 #define AML_BUFF_OP                 (UINT16) 0x00FE
@@ -112,6 +112,11 @@ void (*ASL_WALK_CALLBACK) (
     void                    *Context);
 
 
+
+/*
+ * Global variables.  Declared in aslmain.c only
+ */
+
 #ifdef _DECLARE_GLOBALS
 #define EXTERN
 #define INIT_GLOBAL(a,b)        a=b
@@ -126,21 +131,46 @@ extern FILE                     *AslCompilerin;
 extern int                      AslCompilerparse(void);
 extern int                      AslCompilerdebug;
 extern ASL_MAPPING_ENTRY        AslKeywordMapping[];
+extern int                      yydebug;
 
 
 
-EXTERN char                     INIT_GLOBAL (*OutputFilename, NULL);
-EXTERN FILE                     *AmlFile;
-EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
-EXTERN ACPI_TABLE_HEADER        TableHeader;
-EXTERN UINT32                   INIT_GLOBAL (TableLength, 0);
-EXTERN UINT32                   INIT_GLOBAL (InputLines, 0);
+EXTERN int                      INIT_GLOBAL (Gbl_CurrentColumn, 0);
+EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineNumber, 1);
+EXTERN char                     Gbl_CurrentLineBuffer[256];
+EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
+
+/* Option flags */
+
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_DebugFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
+
+/* Files */
+
+EXTERN char                     INIT_GLOBAL (*Gbl_InputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_OutputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_ListingFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_DebugFilename, NULL);
+EXTERN FILE                     *Gbl_AslInputFile;
+EXTERN FILE                     *Gbl_OutputAmlFile;
+EXTERN FILE                     *Gbl_DebugFile;
+EXTERN FILE                     *Gbl_ListingFile;
+
+/* Statistics */
+
 EXTERN UINT32                   INIT_GLOBAL (InputChars, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
 EXTERN UINT32                   INIT_GLOBAL (ErrorCount, 0);
 EXTERN UINT32                   INIT_GLOBAL (WarningCount, 0);
+
+/* Misc */
+
+
+EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
+EXTERN ACPI_TABLE_HEADER        TableHeader;
+EXTERN UINT32                   INIT_GLOBAL (TableLength, 0);
 
 
 
@@ -156,7 +186,14 @@ typedef enum
 
 typedef enum 
 {
-    ASL_ERROR_ENCODING_LENGTH = 0,
+    ASL_ERROR_INPUT_FILE_OPEN = 0,
+    ASL_ERROR_OUTPUT_FILENAME,
+    ASL_ERROR_OUTPUT_FILE_OPEN,
+    ASL_ERROR_LISTING_FILENAME,
+    ASL_ERROR_LISTING_FILE_OPEN,
+    ASL_ERROR_DEBUG_FILENAME,
+    ASL_ERROR_DEBUG_FILE_OPEN,
+    ASL_ERROR_ENCODING_LENGTH,
 
 } ASL_ERROR_IDS;
 
@@ -231,8 +268,8 @@ CgGenerateAmlOperands (
 
 
 void
-CgGenerateOutput (
-    char                    *InputFilename);
+CgGenerateOutput(
+    void);
 
 void
 CgCloseTable (void);

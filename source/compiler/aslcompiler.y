@@ -1,7 +1,8 @@
 
 %{
 #define YYDEBUG 1
-#define YYERROR_VERBOSE 1
+#define YYERROR_VERBOSE
+
 
 /*
  * State stack - compiler will fault if it overflows.   (Default was 200)
@@ -25,6 +26,7 @@ extern char     *AslCompilertext;
 #define static
 %}
 
+
 /*
  * Declare the type of values in the grammar
  */
@@ -39,7 +41,6 @@ extern char     *AslCompilertext;
 /*
  * Token types: These are returned by the lexer
  */
-
 
 %token <i> ACCESSAS
 %token <i> ACCESSATTRIB_BLOCK
@@ -936,30 +937,6 @@ IndexFieldTerm
             {$$ = TgCreateNode (INDEXFIELD,6,$3,$5,$7,$9,$11,$14);}
     ;
 
-
-/*
-MethodTerm
-    : METHOD '('
-        NameString ','
-        ByteConstExpr ','
-        SerializeRuleKeyword ','
-        ByteConstExpr
-        ')' '{' TermList '}' {$$ = TgCreateNode (METHOD,5,$3,$5,$7,$9,$12);}
-    | METHOD '('
-        NameString ','
-        ByteConstExpr ','
-        SerializeRuleKeyword
-        ')' '{' TermList '}' {$$ = TgCreateNode (METHOD,5,$3,$5,$7,NULL,$10);}
-    | METHOD '('
-        NameString ','
-        ByteConstExpr
-        ')' '{' TermList '}' {$$ = TgCreateNode (METHOD,5,$3,$5,NULL,NULL,$8);}
-    | METHOD '('
-        NameString
-        ')' '{' TermList '}' {$$ = TgCreateNode (METHOD,5,$3,NULL,NULL,NULL,$6);}
-    ;
-*/
-
 MethodTerm
     : METHOD '('
         NameString
@@ -968,7 +945,6 @@ MethodTerm
         OptionalByteConstExpr
         ')' '{' TermList '}' {$$ = TgCreateNode (METHOD,5,$3,$4,$5,$6,$9);}
     ;
-
 
 MutexTerm
     : MUTEX '('
@@ -1812,8 +1788,6 @@ PackageElement
     | NameString {}
     ;
 
-/* TBD: Don't know if this works */
-
 EISAIDTerm
     : EISAID '(' 
         StringData ')' {$$ = TgCreateLeafNode (EISAID, $3);}
@@ -1868,17 +1842,8 @@ NameSeg
     : NAMESEG {$$ = TgCreateLeafNode (NAMESEG, AslCompilerlval.s);}
     ;
 
-/*
- * Extra things not in the actual grammar
- */
 
-/* UserTerm is for this...
-MethodCall
-    : NameString '('
-        ArgList
-        ')' {}
-    ;
-*/
+
 %%
 
 /* programs */
@@ -1892,27 +1857,6 @@ AslCompilerwrap()
   return 1;
 }
 
-extern const short yypact[];
-
-extern int yystate;
-
-/*
- * Report an error situation discovered in a production
- *
- * This does not do anything since we report all error situations through
- * idl_global->err() operations
- */
-int
-AslCompilererror(char *s)
-{
 
 
-    fprintf (stderr, "Syntax Error - %s ", s);
-    if (AslCompilerdebug)
-        printf ("Syntax Error - %s ", s);
-
-    ErrorCount++;
-    ErrorContext ();
-	return 0;
-}
 

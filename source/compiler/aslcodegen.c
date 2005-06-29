@@ -15,47 +15,6 @@ extern const char * const       yytname[];
 
 
 
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-ACPI_STATUS
-CgOpenOutputFile (
-    char                    *InputFilename)
-{
-    char                    *Position;
-
-
-    OutputFilename = calloc (strlen (InputFilename) + 4, 1);
-
-    Position = strrchr (InputFilename, '.');
-    if (Position)
-    {
-        *Position = 0;
-    }
-
-    strcpy (OutputFilename, InputFilename);
-    strcat (OutputFilename, ".aml");
-
-    /* We must open the file in binary mode! */
-
-	AmlFile = fopen (OutputFilename, "w+b");
-    if (!AmlFile)
-    {
-        return AE_ERROR;
-    }
-
-    return AE_OK;
-}
-
 
 /*******************************************************************************
  *
@@ -71,7 +30,7 @@ CgOpenOutputFile (
 
 void
 CgGenerateOutput(
-    char                    *InputFilename)
+    void)
 {
 
 
@@ -79,8 +38,6 @@ CgGenerateOutput(
     {
         return;
     }
-
-    CgOpenOutputFile (InputFilename);
 
 
     DbgPrint ("\nGenerating AML opcodes\n\n");
@@ -95,7 +52,7 @@ CgGenerateOutput(
 
 
     CgCloseTable ();
-    fclose (AmlFile);
+    fclose (Gbl_OutputAmlFile);
 }
 
 
@@ -183,10 +140,10 @@ CgWriteAmlOpcode (
         {
             /* Write the high byte first */
 
-            fwrite (&Aml.OpcodeBytes[1], 1, 1, AmlFile);
+            fwrite (&Aml.OpcodeBytes[1], 1, 1, Gbl_OutputAmlFile);
         }
 
-        fwrite (&Aml.OpcodeBytes[0], 1, 1, AmlFile);
+        fwrite (&Aml.OpcodeBytes[0], 1, 1, Gbl_OutputAmlFile);
 
         /* Subtreelength doesn't include length of package length bytes */
 
@@ -203,7 +160,7 @@ CgWriteAmlOpcode (
         {
             /* Simplest case -- no bytes to follow, just write the count */
 
-            fwrite (&PkgLen.LenBytes[0], 1, 1, AmlFile);
+            fwrite (&PkgLen.LenBytes[0], 1, 1, Gbl_OutputAmlFile);
         }
 
         else
@@ -216,7 +173,7 @@ CgWriteAmlOpcode (
             PkgLenFirstByte = ((Node->AmlPkgLenBytes - 1) << 6) |
                                 (PkgLen.LenBytes[0] & 0x0F);
 
-            fwrite (&PkgLenFirstByte, 1, 1, AmlFile);
+            fwrite (&PkgLenFirstByte, 1, 1, Gbl_OutputAmlFile);
 
             /* Shift the length over by the 4 bits we just stuffed in the first byte */
 
@@ -226,7 +183,7 @@ CgWriteAmlOpcode (
 
             for (i = 0; i < (UINT32) (Node->AmlPkgLenBytes - 1); i++)
             {
-                fwrite (&PkgLen.LenBytes[i], 1, 1, AmlFile);
+                fwrite (&PkgLen.LenBytes[i], 1, 1, Gbl_OutputAmlFile);
             }
         }   
     }
@@ -234,19 +191,19 @@ CgWriteAmlOpcode (
     switch (Aml.Opcode)
     {
     case AML_BYTE_OP:
-        fwrite (&Node->Value.Integer8, 1, 1, AmlFile);
+        fwrite (&Node->Value.Integer8, 1, 1, Gbl_OutputAmlFile);
         break;
 
     case AML_WORD_OP:
-        fwrite (&Node->Value.Integer16, 2, 1, AmlFile);
+        fwrite (&Node->Value.Integer16, 2, 1, Gbl_OutputAmlFile);
        break;
 
     case AML_DWORD_OP:
-        fwrite (&Node->Value.Integer32, 4, 1, AmlFile);
+        fwrite (&Node->Value.Integer32, 4, 1, Gbl_OutputAmlFile);
         break;
 
     case AML_STRING_OP:
-        fwrite (Node->Value.String, Node->AmlLength, 1, AmlFile);
+        fwrite (Node->Value.String, Node->AmlLength, 1, Gbl_OutputAmlFile);
     }
 }
 
@@ -278,7 +235,7 @@ CgWriteTableHeader (
     /* Signature */
 
     Child = Child->Peer;
-    strncpy (TableHeader.Signature, (char *) &Child->Value.Integer32, 4);
+    strncpy (TableHeader.Signature, Child->Value.String, 4);
 
     /* Revision */
 
@@ -309,7 +266,7 @@ CgWriteTableHeader (
     TableHeader.AslCompilerRevision = 0x22221111;
 
 
-    fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, AmlFile);
+    fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, Gbl_OutputAmlFile);
 }
 
 
@@ -337,15 +294,15 @@ CgCloseTable (void)
 
     /* Write the header at the start of the file */
 
-    fseek (AmlFile, 0, SEEK_SET);
-    fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, AmlFile);
+    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
+    fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, Gbl_OutputAmlFile);
 
     /* Calculate the checksum over the entire file */
 
-    fseek (AmlFile, 0, SEEK_SET);
+    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
 
     Sum = 0;
-    while (fread (&FileByte, 1, 1, AmlFile))
+    while (fread (&FileByte, 1, 1, Gbl_OutputAmlFile))
     {
         Sum += FileByte;
     }
@@ -354,8 +311,8 @@ CgCloseTable (void)
 
     TableHeader.Checksum = (0 - Sum);
 
-    fseek (AmlFile, 0, SEEK_SET);
-    fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, AmlFile);
+    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
+    fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, Gbl_OutputAmlFile);
 }
 
 
@@ -388,7 +345,7 @@ CgWriteNode (
         (Node->AmlOpcode == AML_RAW_DATA_DWORD) ||
         (Node->AmlOpcode == AML_RAW_DATA_QWORD))
     {
-        fwrite (&Node->Value.Integer, Node->AmlLength, 1, AmlFile);
+        fwrite (&Node->Value.Integer, Node->AmlLength, 1, Gbl_OutputAmlFile);
         return;
     }
 
@@ -404,7 +361,7 @@ CgWriteNode (
 
     case NAMESEG:
     case NAMESTRING:
-        fwrite (Node->Value.String, Node->AmlLength, 1, AmlFile);
+        fwrite (Node->Value.String, Node->AmlLength, 1, Gbl_OutputAmlFile);
         break;
 
     default:
