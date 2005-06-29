@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -275,7 +275,7 @@ AcpiGetTimerDuration (
      *
      * TimeElapsed = (DeltaTicks * 1000000) / PM_TIMER_FREQUENCY;
      */
-    NormalizedTicks.Full = DeltaTicks * 1000000;
+    NormalizedTicks.Full = ((UINT64) DeltaTicks) * 1000000;
     Divisor = PM_TIMER_FREQUENCY;
 
     ACPI_DIV_64_BY_32 (NormalizedTicks.Part.Hi, NormalizedTicks.Part.Lo, Divisor,
