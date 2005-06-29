@@ -137,6 +137,10 @@ getopt (
     char                    *opts);
 
 
+ACPI_STATUS
+AdInitialize (
+    void);
+
 char *
 FlGenerateFilename (
     char                    *InputFilename,
@@ -144,6 +148,7 @@ FlGenerateFilename (
 
 ACPI_STATUS
 AdAmlDisassemble (
+    BOOLEAN                 OutToFile,
     char                    *Filename);
 
 void
