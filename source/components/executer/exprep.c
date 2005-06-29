@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -133,6 +133,7 @@
  * FUNCTION:    AcpiAmlDecodeFieldAccessType
  *
  * PARAMETERS:  Access          - Encoded field access bits
+ *              Length          - Field length.
  *
  * RETURN:      Field granularity (8, 16, or 32)
  *
@@ -161,10 +162,10 @@ AcpiAmlDecodeFieldAccessType (
         {
             return (32);
         }
-        else
-        {
-            return (8);
-        }
+
+        /* Default is 8 (byte) */
+
+        return (8);
         break;
 
     case ACCESS_BYTE_ACC:
@@ -363,10 +364,12 @@ AcpiAmlPrepDefFieldValue (
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (Region, ACPI_INFO);
     DEBUG_PRINT (ACPI_INFO, ("\t%p \n", ObjDesc->Field.Container));
+
     if (ObjDesc->Field.Container)
     {
         DUMP_STACK_ENTRY (ObjDesc->Field.Container);
     }
+
     DEBUG_PRINT (ACPI_INFO,
         ("============================================================\n"));
 
