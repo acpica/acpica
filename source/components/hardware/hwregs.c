@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  ******************************************************************************/
 
@@ -714,7 +714,7 @@ AcpiHwRegisterRead (
     UINT32                  BankOffset;
 
 
-    FUNCTION_TRACE ("AcpiHwRegisterRead");
+    FUNCTION_TRACE ("HwRegisterRead");
 
 
     if (ACPI_MTX_LOCK == UseLock)
@@ -830,7 +830,7 @@ AcpiHwRegisterWrite (
 {
     UINT32                  BankOffset;
 
-    FUNCTION_TRACE ("AcpiHwRegisterWrite");
+    FUNCTION_TRACE ("HwRegisterWrite");
 
 
     if (ACPI_MTX_LOCK == UseLock)
