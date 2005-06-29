@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acoutput.h -- debug output
- *       $Revision: 1.72 $
+ *       $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -141,7 +141,7 @@
 #define BUS_MANAGER                 0x00001000
 #define POWER_CONTROL               0x00002000
 #define EMBEDDED_CONTROLLER         0x00004000
-#define PROCESSOR                   0x00008000
+#define PROCESSOR_CONTROL           0x00008000
 #define AC_ADAPTER                  0x00010000
 #define BATTERY                     0x00020000
 #define BUTTON                      0x00040000
