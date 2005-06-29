@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  ******************************************************************************/
 
@@ -196,7 +196,7 @@ AcpiNsSearchNode (
              */
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Name %4.4s Type [%s] found in scope [%4.4s] %p\n",
-                (char *) &TargetName, AcpiUtGetTypeName (NextNode->Type), 
+                (char *) &TargetName, AcpiUtGetTypeName (NextNode->Type),
                 NextNode->Name.Ascii, NextNode));
 
             *ReturnNode = NextNode;
@@ -221,9 +221,9 @@ AcpiNsSearchNode (
 
     /* Searched entire namespace level, not found */
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, 
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
         "Name %4.4s Type [%s] not found in search in scope [%4.4s] %p first child %p\n",
-        (char *) &TargetName, AcpiUtGetTypeName (Type), 
+        (char *) &TargetName, AcpiUtGetTypeName (Type),
         Node->Name.Ascii, Node, Node->Child));
 
     return_ACPI_STATUS (AE_NOT_FOUND);
