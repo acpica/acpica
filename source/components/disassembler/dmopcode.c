@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  ******************************************************************************/
 
@@ -703,7 +703,7 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT32) 0x%8.8X%8.8X", Op->Value.Integer64.Hi, 
+            AcpiOsPrintf ("(UINT64) 0x%8.8X%8.8X", Op->Value.Integer64.Hi, 
                                                    Op->Value.Integer64.Lo);
         }
 
