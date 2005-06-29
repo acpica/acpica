@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -404,11 +404,10 @@ void
 TrDoElseif (
     ACPI_PARSE_OBJECT       *ElseNode)
 {
-    ACPI_PARSE_OBJECT       *IfNode = NULL;
-    ACPI_PARSE_OBJECT       *NextNode;
+    ACPI_PARSE_OBJECT       *IfNode;
 
 
-    /* Change the ELSEIF into an ELSE */
+    /* Change the ELSEIF into an ELSE (Maintains NEXT peer list) */
 
     TrAmlInitNode (ElseNode, PARSEOP_ELSE);
 
@@ -418,23 +417,16 @@ TrDoElseif (
     IfNode->Asl.Parent = ElseNode;
     TrAmlInitLineNumbers (IfNode, ElseNode);
 
-    /* Insert the the IF node first in the ELSE child list */
-
+    /* 
+     * Insert the IF node as the only ELSE child and make the original ELSEIF
+     * child tree a child of the IF node.
+     *
+     * Note: The new IF node has no NEXT peer, and the ELSE node maintains the 
+     * original peer list (NEXT).
+     */
     IfNode->Asl.Child   = ElseNode->Asl.Child;
     ElseNode->Asl.Child = IfNode;
 
-    /* Go to the end of the IF <Predicate><TermList> block */
-
-    NextNode = IfNode->Asl.Child;       /* Next = Predicate */
-    NextNode = NextNode->Asl.Next;      /* Nest = TermList  */
-
-    /* Make the next node after the IF the rest of the original tree */
-
-    IfNode->Asl.Next = NextNode->Asl.Next;
-
-    /* Terminate the IF subtree and set IF node as the parent for all nodes */
-
-    NextNode->Asl.Next = NULL;
     TrAmlSetSubtreeParent (IfNode->Asl.Child, IfNode);
 }
 
