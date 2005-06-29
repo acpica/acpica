@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.76 $
+ *       $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -156,7 +156,7 @@ ACPI_STATUS
 AcpiEvAcquireGlobalLock(
     UINT32                  Timeout);
 
-void
+ACPI_STATUS
 AcpiEvReleaseGlobalLock(
     void);
 
