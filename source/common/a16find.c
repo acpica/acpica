@@ -588,7 +588,6 @@ AfFindDsdt(
     UINT8                   **DsdtPtr,
     UINT32                  *DsdtLength)
 {
-    UINT32                  NumberOfTables;
     ACPI_TABLE_DESC         TableInfo;
     BOOLEAN                 Found;
     ACPI_STATUS             Status;
@@ -669,19 +668,21 @@ AfFindDsdt(
     TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
     TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
     TableInfo.BasePointer   = AcpiGbl_XSDT;
-
-    Status = AcpiTbConvertToXsdt (&TableInfo, &NumberOfTables);
+   
+    AcpiGbl_RsdtTableCount = AcpiTbGetTableCount (AcpiGbl_RSDP, TableInfo.Pointer);
+   
+    Status = AcpiTbConvertToXsdt (&TableInfo);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
 
     AcpiGbl_XSDT = (XSDT_DESCRIPTOR *) TableInfo.Pointer;
-    AcpiOsPrintf ("Number of tables: %d\n", NumberOfTables);
+    AcpiOsPrintf ("Number of tables: %d\n", AcpiGbl_RsdtTableCount);
 
     /* Get the rest of the required tables (DSDT, FADT) */
 
-    Status = AfGetAllTables (NumberOfTables, NULL);
+    Status = AfGetAllTables (AcpiGbl_RsdtTableCount, NULL);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
