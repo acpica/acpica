@@ -597,18 +597,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 DestDesc->FieldUnit.ConSeq
                     != DestDesc->FieldUnit.Container->Buffer.Sequence))
             {
-                char *FullyQN = NsFullyQualifiedName (TempHandle);
-
-
-                DEBUG_PRINT (ACPI_ERROR,
-                            ("ExecStore/FieldUnit: bad container in %s (%p)\n",
-                             FullyQN, TempHandle));
+                NsDumpPathname (TempHandle, "ExecStore/FieldUnit: bad container in: ", 
+                                ACPI_ERROR, _COMPONENT);
                 DUMP_ENTRY (TempHandle);
-
-
-                DEBUG_PRINT (ACPI_ERROR, (
-                            "ExecStore/FieldUnit: bad container %p in %s\n",
-                            DestDesc->FieldUnit.Container, FullyQN));
                 Excep = S_ERROR;
             }
 
@@ -710,8 +701,8 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             if (Stacked)
             {
-                DEBUG_PRINT (ACPI_INFO, ("ExecStore: set %s (%p)\n",
-                             NsFullyQualifiedName (TempHandle), TempHandle));
+                NsDumpPathname (TempHandle, "ExecStore: set ", ACPI_INFO, _COMPONENT);
+
                 DUMP_ENTRY (TempHandle);
                 DUMP_STACK_ENTRY (DestDesc);
             }
