@@ -572,7 +572,7 @@ ACPI_STATUS
 AcpiOsWaitSemaphore (
     ACPI_HANDLE         Handle,
     UINT32              Units,
-    UINT32              Timeout)
+    UINT16              Timeout)
 {
 
 
