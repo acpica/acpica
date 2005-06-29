@@ -163,7 +163,7 @@ PsDeleteCompletedOp (
 }
 
 
-#ifndef RING3_APPLICATION
+#ifndef PARSER_ONLY
 /*******************************************************************************
  *
  * FUNCTION:    PsDeleteParseTree
@@ -753,7 +753,7 @@ PsParseTable (
         return_ACPI_STATUS (Status);
     }
 
-#ifndef RING3_APPLICATION
+#ifndef PARSER_ONLY
 
     DEBUG_PRINT (TRACE_PARSE, ("PsParseTable: Building Internal Namespace\n"));
 BREAKPOINT3;
@@ -769,6 +769,7 @@ BREAKPOINT3;
 
     DEBUG_PRINT (TRACE_PARSE, ("PsParseTable: Deleting Parsed Namespace\n"));
 BREAKPOINT3;
+
 
     PsDeleteParseTree (Gbl_ParsedNamespaceRoot);
     Gbl_ParsedNamespaceRoot = NULL;
