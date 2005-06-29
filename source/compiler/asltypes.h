@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.48 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -132,22 +132,23 @@
 
 /* Op flags for the ACPI_PARSE_OBJECT */
 
-#define NODE_VISITED                0x0001
-#define NODE_AML_PACKAGE            0x0002
-#define NODE_IS_TARGET              0x0004
-#define NODE_IS_RESOURCE_DESC       0x0008
-#define NODE_IS_RESOURCE_FIELD      0x0010
-#define NODE_HAS_NO_EXIT            0x0020
-#define NODE_IF_HAS_NO_EXIT         0x0040
-#define NODE_NAME_INTERNALIZED      0x0080
-#define NODE_METHOD_NO_RETVAL       0x0100
-#define NODE_METHOD_SOME_NO_RETVAL  0x0200
-#define NODE_RESULT_NOT_USED        0x0400
-#define NODE_METHOD_TYPED           0x0800
-#define NODE_IS_BIT_OFFSET          0x1000
-#define NODE_COMPILE_TIME_CONST     0x2000
-#define NODE_IS_TERM_ARG            0x4000
-#define NODE_WAS_ONES_OP            0x8000
+#define NODE_VISITED                0x00000001
+#define NODE_AML_PACKAGE            0x00000002
+#define NODE_IS_TARGET              0x00000004
+#define NODE_IS_RESOURCE_DESC       0x00000008
+#define NODE_IS_RESOURCE_FIELD      0x00000010
+#define NODE_HAS_NO_EXIT            0x00000020
+#define NODE_IF_HAS_NO_EXIT         0x00000040
+#define NODE_NAME_INTERNALIZED      0x00000080
+#define NODE_METHOD_NO_RETVAL       0x00000100
+#define NODE_METHOD_SOME_NO_RETVAL  0x00000200
+#define NODE_RESULT_NOT_USED        0x00000400
+#define NODE_METHOD_TYPED           0x00000800
+#define NODE_IS_BIT_OFFSET          0x00001000
+#define NODE_COMPILE_TIME_CONST     0x00002000
+#define NODE_IS_TERM_ARG            0x00004000
+#define NODE_WAS_ONES_OP            0x00008000
+#define NODE_IS_NAME_DECLARATION    0x00010000
 
 /* Keeps information about individual control methods */
 
@@ -377,9 +378,111 @@ typedef enum
     ASL_MSG_DEPENDENT_NESTING,
     ASL_MSG_NAME_OPTIMIZATION,
     ASL_MSG_SINGLE_NAME_OPTIMIZATION,
-    ASL_MSG_INTEGER_OPTIMIZATION
+    ASL_MSG_INTEGER_OPTIMIZATION,
+    ASL_MSG_SCOPE_TYPE,
+    ASL_MSG_CORE_EXCEPTION
 
 } ASL_MESSAGE_IDS;
+
+#ifdef ASL_EXCEPTIONS
+
+char                        *AslMessages [] = {
+    NULL,
+    "Memory allocation failure",
+    "Could not open input file",
+    "Could not create output filename",
+    "Could not open output AML file",
+    "Could not create listing filename",
+    "Could not open listing file",
+    "Could not create debug filename",
+    "Could not open debug file",
+    "Could not open include file",
+    "Package length too long to encode",
+    "Invalid priority value",
+    "Invalid performance/robustness value",
+    "Method local variable is not initialized",
+    "Method argument is not initialized",
+    "Unsupported feature",
+    "Use of reserved word",
+    "Effective AML buffer length is zero",
+    "Effective AML package length is zero",
+    "Mixed return types in method",
+    "Object not found or not accessible from scope",
+    "Object not accessible from this scope",
+    "Object does not exist",
+    "Nested comment found",
+    "Reserved method has too many arguments",
+    "Reserved method has too few arguments",
+    "Reserved method must return a value",
+    "Too many arguments",
+    "Too few arguments",
+    "Called method returns no value",
+    "Called method may not always return a value",
+    "Internal compiler error",
+    "Invalid backwards offset",
+    "Unknown reserved name",
+    "Name already exists in scope",
+    "Invalid type",
+    "Multiple types",
+    "",
+    "Not a control method, cannot invoke",
+    "Splitting long input line",
+    "Recursive method call",
+    "Not a parameter, used as local only",
+    "Could not open file",
+    "Could not read file",
+    "Could not write file",
+    "Could not seek file",
+    "Could not close file",
+    "Access width is greater than region size",
+    "Host Operation Region requires ByteAcc access",
+    "Host Operation Region requires BufferAcc access",
+    "Field Unit extends beyond region limit",
+    "Access width of Field Unit extends beyond region limit",
+    "Resource field name cannot be used as a target",
+    "Invalid Byte Offset, Bit Offset required",
+    "Invalid Bit Offset, Byte Offset required",
+    "Opcode is not implemented in compiler AML code generator",
+    "No enclosing While statement",
+    "Invalid or unknown escape sequence",
+    "Invalid Hex/Octal Escape - Non-ASCII or NULL",
+    "Invalid Table Signature",
+    "Too many resource items (internal error)",
+    "Target operand not allowed in constant expression",
+    "Invalid operator in constant expression (not type 3/4/5)",
+    "Could not evaluate constant expression",
+    "Constant expression evaluated and reduced",
+    "EISAID string must be of the form \"UUUXXXX\" (3 uppercase, 4 hex digits)",
+    "Invalid operand type for reserved name, must be",
+    "Reserved name must be a control method",
+    "String must be entirely alphanumeric",
+    "Invalid use of reserved name",
+    "Invalid operand",
+    "Missing EndDependentFn() macro in dependent resource list",
+    "Missing StartDependentFn() macro in dependent resource list",
+    "Dependent function macros cannot be nested",\
+    "NamePath optimized",
+    "NamePath optimized to NameSeg (uses run-time search path)",
+    "Integer optimized to single-byte AML opcode",
+    "Existing object has invalid type for Scope operator",
+    "From ACPI CA Subsystem"
+};
+
+
+char                    *AslErrorLevel [ASL_NUM_REPORT_LEVELS] = {
+    "Error   ",
+    "Warning ",
+    "Remark  ",
+    "Optimize"
+};
+
+#define ASL_ERROR_LEVEL_LENGTH          8       /* Length of strings above */
+
+/* Exception counters */
+
+UINT32                  Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0,0};
+
+#endif
 
 
 #endif  /* __ASLTYPES_H */
