@@ -665,7 +665,7 @@ ACPI_STATUS (*WALK_CALLBACK) (
     ACPI_OBJECT_TYPE            Type;           /* ACPI object type */\
     ACPI_NAME                   Name;           /* ACPI object Name */\
     /*\
-     *  TBD:Do we want or need these next two??\
+     *  TBD: [Restructure] Do we want or need these next two??\
      */\
     ACPI_HANDLE                 Parent;         /* Parent object */\
     ACPI_HANDLE                 Children;       /* Linked list of children */\
@@ -682,7 +682,7 @@ typedef struct
     ACPI_COMMON_OBJ_INFO;
 
     /*
-     *  TBD: a HID or a _UID can return either a number or a string
+     *  TBD: [Restructure]: a HID or a _UID can return either a number or a string
      */
     char                        HardwareId [9];     /*  _HID value if any */
     char                        UniqueId[9];        /*  _UID value if any */
