@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.12 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -139,8 +139,12 @@ extern char     *AslCompilertext;
  * we can access some of the parser tables from other modules
  */
 #define static
+#undef alloca
+#define alloca      AslLocalAllocate
 #define YYERROR_VERBOSE     1
 
+void *
+AslLocalAllocate (unsigned int Size);
 
 /*
  * The windows version of bison defines this incorrectly as "32768" (Not negative).
@@ -755,7 +759,7 @@ Term
 CompilerDirective
     : IncludeTerm               {}
     | IncludeCStyleTerm         {$$= NULL}
-    | ExternalTerm              {$$= NULL}
+    | ExternalTerm              {}
     ;
 
 ObjectList
@@ -1007,21 +1011,21 @@ Type6Opcode
 
 IncludeTerm
     : INCLUDE '(' 
-        String                  {UtOpenIncludeFile ($3);}
+        String                  {FlOpenIncludeFile ($3);}
         ')'
         TermList                {$$ = $6}                     
     ;
 
 IncludeCStyleTerm
-    : INCLUDE_CSTYLE 
-        String                  {UtOpenIncludeFile ($2);}
+    : INCLUDE_CSTYLE
+        String                  {FlOpenIncludeFile ($2);}
     ;
 
 ExternalTerm
     : EXTERNAL '('
         String ','
         ObjectTypeKeyword
-        ')'                     {}
+        ')'                     {$$ = TgCreateNode (EXTERNAL,2,$3,$5);}
     ;
 
 
@@ -1674,10 +1678,14 @@ OrTerm
         ')'                     {$$ = TgCreateNode (OR,3,$3,$5,$6);}
     ;
 
+/*
+ * In RefOf, the node isn't really a target, but we can't keep track of it after
+ * we've taken a pointer to it. (hard to tell if a local becomes initialized this way.)
+ */
 RefOfTerm
     : REFOF '(' 
         SuperName
-        ')'                     {$$ = TgCreateNode (REFOF,1,$3);}
+        ')'                     {$$ = TgCreateNode (REFOF,1,TgSetNodeFlags ($3, NODE_IS_TARGET));}
     ;
 
 ShiftLeftTerm
@@ -2635,6 +2643,24 @@ int
 AslCompilerwrap()
 {
   return 1;
+}
+
+void *
+AslLocalAllocate (unsigned int Size)
+{
+    void                *Mem;
+
+
+    DbgPrint ("\nAslLocalAllocate: Expanding Stack to %d\n\n", Size);
+
+    Mem = _CmCallocate (Size, 0, "", 0);
+    if (!Mem)
+    {
+        AslError (ASL_ERROR_MEMORY_ALLOCATION, Gbl_CurrentLineNumber);
+        exit (1);
+    }
+
+    return (Mem);
 }
 
 
