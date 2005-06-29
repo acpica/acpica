@@ -399,7 +399,7 @@ AmlDumpOperand (
             break;
 
 
-        case Debug1:
+        case AML_DebugOp:
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Debug\n"));
             break;
@@ -420,11 +420,10 @@ AmlDumpOperand (
             break;
 
 
-        case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
-        case AML_Arg4: case AML_Arg5: case AML_Arg6:
+        case AML_ArgOp:
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Arg%d",
-                        EntryDesc->Lvalue.OpCode - AML_Arg0));
+                        EntryDesc->Lvalue.Offset));
 
             if (ACPI_TYPE_Number == EntryDesc->Common.Type)
             {
@@ -438,11 +437,10 @@ AmlDumpOperand (
             break;
 
 
-        case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
-        case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
+        case AML_LocalOp:
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Local%d",
-                        EntryDesc->Lvalue.OpCode - AML_Local0));
+                        EntryDesc->Lvalue.Offset));
 
             if (ACPI_TYPE_Number == EntryDesc->Common.Type)
             {
