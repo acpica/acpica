@@ -125,6 +125,13 @@
 #define REF_DECREMENT       -1
 #define REF_FORCE_DELETE    0x80000000
 
+/* CmDumpBuffer */
+
+#define DB_BYTE_DISPLAY     1
+#define DB_WORD_DISPLAY     2
+#define DB_DWORD_DISPLAY    4
+#define DB_QWORD_DISPLAY    8
+
 
 /* Global initialization interfaces */
 
@@ -394,6 +401,7 @@ void
 CmDumpBuffer (
     char                    *Buffer, 
     UINT32                  Count, 
+    UINT32                  Display,
     INT32                   componentId);
 
 
