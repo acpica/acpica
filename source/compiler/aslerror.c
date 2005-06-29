@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.67 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -183,7 +183,11 @@ char                        *AslMessages [] = {
     "Invalid Escape Sequence",
     "Invalid Hex/Octal Escape - Non-ASCII or NULL",
     "Invalid Table Signature",
-    "Too many resource items (internal error)"
+    "Too many resource items (internal error)",
+    "Target operand not allowed in constant expression",
+    "Invalid operator (not type 3/4/5) in constant expression",
+    "Could not evaluate constant expression",
+    "Constant expression evaluated and reduced"
 };
 
 
@@ -301,26 +305,38 @@ AePrintException (
 
     if (Enode->Filename)
     {
-        fprintf (OutputFile, "%6s", Enode->Filename);
-
-        if (Enode->LineNumber)
+        if (Gbl_VerboseErrors)
         {
-            fprintf (OutputFile, "%6u: ", Enode->LineNumber);
+            fprintf (OutputFile, "%6s", Enode->Filename);
 
-            /*
-             * Seek to the offset in the combined source file, read the source
-             * line, and write it to the output.
-             */
-            fseek (SourceFile, (long) Enode->LogicalByteOffset, SEEK_SET);
-
-            Actual = fread (&SourceByte, 1, 1, SourceFile);
-            while (Actual && SourceByte && (SourceByte != '\n'))
+            if (Enode->LineNumber)
             {
-                fwrite (&SourceByte, 1, 1, OutputFile);
-                Actual = fread (&SourceByte, 1, 1, SourceFile);
-            }
+                fprintf (OutputFile, "%6u: ", Enode->LineNumber);
 
-            fprintf (OutputFile, "\n");
+                /*
+                 * Seek to the offset in the combined source file, read the source
+                 * line, and write it to the output.
+                 */
+                fseek (SourceFile, (long) Enode->LogicalByteOffset, SEEK_SET);
+
+                Actual = fread (&SourceByte, 1, 1, SourceFile);
+                while (Actual && SourceByte && (SourceByte != '\n'))
+                {
+                    fwrite (&SourceByte, 1, 1, OutputFile);
+                    Actual = fread (&SourceByte, 1, 1, SourceFile);
+                }
+
+                fprintf (OutputFile, "\n");
+            }
+        }
+        else
+        {
+            fprintf (OutputFile, "%s", Enode->Filename);
+
+            if (Enode->LineNumber)
+            {
+                fprintf (OutputFile, "(%u) : ", Enode->LineNumber);
+            }
         }
     }
 
@@ -352,11 +368,11 @@ AePrintException (
                 ExtraMessage = NULL;
             }
 
-            SourceColumn = Enode->Column + Enode->FilenameLength + 6 + 2;
-            ErrorColumn = ASL_ERROR_LEVEL_LENGTH + 5 + 2 + 1;
-
-            if (SourceColumn < 80)
+            if (Gbl_VerboseErrors)
             {
+                SourceColumn = Enode->Column + Enode->FilenameLength + 6 + 2;
+                ErrorColumn = ASL_ERROR_LEVEL_LENGTH + 5 + 2 + 1;
+
                 if ((MsgLength + ErrorColumn) < (SourceColumn - 1))
                 {
                     fprintf (OutputFile, "%*s%s",
@@ -372,9 +388,7 @@ AePrintException (
             }
             else
             {
-                fprintf (OutputFile, " ^ %s   %s\n\n",
-                            MainMessage,
-                            ExtraMessage);
+                fprintf (OutputFile, " %s", MainMessage);
             }
 
             /* Print the extra info message if present */
@@ -383,7 +397,12 @@ AePrintException (
             {
                 fprintf (OutputFile, " (%s)", ExtraMessage);
             }
-            fprintf (OutputFile, "\n\n");
+
+            fprintf (OutputFile, "\n");
+            if (Gbl_VerboseErrors)
+            {
+                fprintf (OutputFile, "\n");
+            }
         }
         else
         {
