@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.58 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -130,36 +130,81 @@
  ******************************************************************************/
 
 
-/* Op flags for the ACPI_PARSE_OBJECT */
+/* Value union for the parse node */
 
-#define NODE_VISITED                0x00000001
-#define NODE_AML_PACKAGE            0x00000002
-#define NODE_IS_TARGET              0x00000004
-#define NODE_IS_RESOURCE_DESC       0x00000008
-#define NODE_IS_RESOURCE_FIELD      0x00000010
-#define NODE_HAS_NO_EXIT            0x00000020
-#define NODE_IF_HAS_NO_EXIT         0x00000040
-#define NODE_NAME_INTERNALIZED      0x00000080
-#define NODE_METHOD_NO_RETVAL       0x00000100
-#define NODE_METHOD_SOME_NO_RETVAL  0x00000200
-#define NODE_RESULT_NOT_USED        0x00000400
-#define NODE_METHOD_TYPED           0x00000800
-#define NODE_IS_BIT_OFFSET          0x00001000
-#define NODE_COMPILE_TIME_CONST     0x00002000
-#define NODE_IS_TERM_ARG            0x00004000
-#define NODE_WAS_ONES_OP            0x00008000
-#define NODE_IS_NAME_DECLARATION    0x00010000
+typedef union asl_node_value
+{
+    UINT64                      Integer;        /* Generic integer is largest integer */
+    UINT64                      Integer64;
+    UINT32                      Integer32;
+    UINT16                      Integer16;
+    UINT8                       Integer8;
+    void                        *Pointer;
+    char                        *String;
+
+} ASL_NODE_VALUE;
+
+
+/* The parse node is the fundamental element of the parse tree */
+
+typedef struct asl_parse_node
+{
+    struct asl_parse_node       *Parent;
+    struct asl_parse_node       *Peer;
+    struct asl_parse_node       *Child;
+    struct asl_parse_node       *ParentMethod;
+    ACPI_NAMESPACE_NODE         *NsNode;
+    char                        *Filename;
+    char                        *ExternalName;
+    char                        *Namepath;
+    union asl_node_value        Value;
+    UINT32                      ExtraValue;
+    UINT32                      Column;
+    UINT32                      LineNumber;
+    UINT32                      LogicalLineNumber;
+    UINT32                      LogicalByteOffset;
+    UINT32                      EndLine;
+    UINT32                      EndLogicalLine;
+    UINT16                      AmlOpcode;
+    UINT16                      ParseOpcode;
+    UINT32                      AcpiBtype;
+    UINT32                      AmlLength;
+    UINT32                      AmlSubtreeLength;
+    UINT8                       AmlOpcodeLength;
+    UINT8                       AmlPkgLenBytes;
+    UINT16                      Flags;
+    UINT8                       Extra;
+    char                        ParseOpName[12];
+    char                        AmlOpName[12];
+
+} ASL_PARSE_NODE;
+
+/* Node flags for the ASL_PARSE_NODE */
+
+#define NODE_VISITED                0x0001
+#define NODE_AML_PACKAGE            0x0002
+#define NODE_IS_TARGET              0x0004
+#define NODE_IS_RESOURCE_DESC       0x0008
+#define NODE_IS_RESOURCE_FIELD      0x0010
+#define NODE_HAS_NO_EXIT            0x0020
+#define NODE_IF_HAS_NO_EXIT         0x0040
+#define NODE_NAME_INTERNALIZED      0x0080
+#define NODE_METHOD_NO_RETVAL       0x0100
+#define NODE_METHOD_SOME_NO_RETVAL  0x0200
+#define NODE_RESULT_NOT_USED        0x0400
+#define NODE_METHOD_TYPED           0x0800
+#define NODE_IS_BIT_OFFSET          0x1000
 
 /* Keeps information about individual control methods */
 
 typedef struct asl_method_info
 {
     UINT8                   NumArguments;
-    UINT8                   LocalInitialized[ACPI_METHOD_NUM_LOCALS];
-    UINT8                   ArgInitialized[ACPI_METHOD_NUM_ARGS];
+    UINT8                   LocalInitialized[MTH_NUM_LOCALS];
+    UINT8                   ArgInitialized[MTH_NUM_ARGS];
     UINT32                  NumReturnNoValue;
     UINT32                  NumReturnWithValue;
-    ACPI_PARSE_OBJECT       *Op;
+    ASL_PARSE_NODE          *Node;
     struct asl_method_info  *Next;
     UINT8                   HasBeenTyped;
 
@@ -190,10 +235,8 @@ typedef struct asl_mapping_entry
 /* An entry in the Reserved Name information table */
 
 #define ASL_RSVD_RETURN_VALUE   0x01
-#define ASL_RSVD_RESOURCE_NAME  0x02
-#define ASL_RSVD_SCOPE          0x04
 
-typedef struct asl_reserved_info
+typedef struct
 {
     char                        *Name;
     UINT8                       NumArguments;
@@ -206,7 +249,7 @@ typedef struct asl_reserved_info
 
 typedef struct asl_walk_info
 {
-    ACPI_PARSE_OBJECT           **NodePtr;
+    ASL_PARSE_NODE              **NodePtr;
     UINT32                      *LevelPtr;
 
 } ASL_WALK_INFO;
@@ -235,16 +278,12 @@ typedef enum
     ASL_FILE_HEX_OUTPUT,
     ASL_FILE_NAMESPACE_OUTPUT,
     ASL_FILE_DEBUG_OUTPUT,
-    ASL_FILE_ASM_SOURCE_OUTPUT,
-    ASL_FILE_C_SOURCE_OUTPUT,
-    ASL_FILE_ASM_INCLUDE_OUTPUT,
-    ASL_FILE_C_INCLUDE_OUTPUT
 
 } ASL_FILE_TYPES;
 
 
-#define ASL_MAX_FILE_TYPE       12
-#define ASL_NUM_FILES           (ASL_MAX_FILE_TYPE + 1)
+#define ASL_MAX_FILE            8
+#define ASL_NUM_FILES           (ASL_MAX_FILE + 1)
 
 
 /* An entry in the exception list, one for each error/warning */
@@ -280,12 +319,12 @@ typedef struct asl_listing_node
 
 typedef
 ACPI_STATUS (*ASL_WALK_CALLBACK) (
-    ACPI_PARSE_OBJECT           *Op,
+    ASL_PARSE_NODE              *Node,
     UINT32                      Level,
     void                        *Context);
 
 
-typedef struct asl_event_info
+typedef struct
 {
     time_t                      StartTime;
     time_t                      EndTime;
@@ -298,8 +337,6 @@ typedef struct asl_event_info
 #define ASL_ERROR               0
 #define ASL_WARNING             1
 #define ASL_REMARK              2
-#define ASL_OPTIMIZATION        3
-#define ASL_NUM_REPORT_LEVELS   4
 
 
 typedef enum
@@ -335,7 +372,7 @@ typedef enum
     ASL_MSG_ARG_COUNT_LO,
     ASL_MSG_NO_RETVAL,
     ASL_MSG_SOME_NO_RETVAL,
-    ASL_MSG_COMPILER_INTERNAL,
+    ASL_MSG_INTERNAL,
     ASL_MSG_BACKWARDS_OFFSET,
     ASL_MSG_UNKNOWN_RESERVED_NAME,
     ASL_MSG_NAME_EXISTS,
@@ -352,145 +389,12 @@ typedef enum
     ASL_MSG_SEEK,
     ASL_MSG_CLOSE,
     ASL_MSG_FIELD_ACCESS_WIDTH,
-    ASL_MSG_REGION_BYTE_ACCESS,
-    ASL_MSG_REGION_BUFFER_ACCESS,
     ASL_MSG_FIELD_UNIT_OFFSET,
-    ASL_MSG_FIELD_UNIT_ACCESS_WIDTH,
     ASL_MSG_RESOURCE_FIELD,
     ASL_MSG_BYTES_TO_BITS,
     ASL_MSG_BITS_TO_BYTES,
-    ASL_MSG_AML_NOT_IMPLEMENTED,
-    ASL_MSG_NO_WHILE,
-    ASL_MSG_INVALID_ESCAPE,
-    ASL_MSG_INVALID_STRING,
-    ASL_MSG_TABLE_SIGNATURE,
-    ASL_MSG_RESOURCE_LIST,
-    ASL_MSG_INVALID_TARGET,
-    ASL_MSG_INVALID_CONSTANT_OP,
-    ASL_MSG_CONSTANT_EVALUATION,
-    ASL_MSG_CONSTANT_FOLDED,
-    ASL_MSG_INVALID_EISAID,
-    ASL_MSG_RESERVED_OPERAND_TYPE,
-    ASL_MSG_RESERVED_METHOD,
-    ASL_MSG_ALPHANUMERIC_STRING,
-    ASL_MSG_RESERVED_USE,
-    ASL_MSG_INVALID_OPERAND,
-    ASL_MSG_MISSING_ENDDEPENDENT,
-    ASL_MSG_MISSING_STARTDEPENDENT,
-    ASL_MSG_DEPENDENT_NESTING,
-    ASL_MSG_NAME_OPTIMIZATION,
-    ASL_MSG_SINGLE_NAME_OPTIMIZATION,
-    ASL_MSG_INTEGER_OPTIMIZATION,
-    ASL_MSG_SCOPE_TYPE,
-    ASL_MSG_CORE_EXCEPTION,
-    ASL_MSG_UNREACHABLE_CODE,
-    ASL_MSG_EARLY_EOF,
-    ASL_MSG_SCOPE_FWD_REF
 
 } ASL_MESSAGE_IDS;
-
-#ifdef ASL_EXCEPTIONS
-
-char                        *AslMessages [] = {
-/*    ASL_MSG_NULL                */        NULL,
-/*    ASL_MSG_MEMORY_ALLOCATION, */         "Memory allocation failure",
-/*    ASL_MSG_INPUT_FILE_OPEN, */           "Could not open input file",
-/*    ASL_MSG_OUTPUT_FILENAME, */           "Could not create output filename",
-/*    ASL_MSG_OUTPUT_FILE_OPEN, */          "Could not open output AML file",
-/*    ASL_MSG_LISTING_FILENAME, */          "Could not create listing filename",
-/*    ASL_MSG_LISTING_FILE_OPEN, */         "Could not open listing file",
-/*    ASL_MSG_DEBUG_FILENAME, */            "Could not create debug filename",
-/*    ASL_MSG_DEBUG_FILE_OPEN, */           "Could not open debug file",
-/*    ASL_MSG_INCLUDE_FILE_OPEN, */         "Could not open include file",
-/*    ASL_MSG_ENCODING_LENGTH, */           "Package length too long to encode",
-/*    ASL_MSG_INVALID_PRIORITY, */          "Invalid priority value",
-/*    ASL_MSG_INVALID_PERFORMANCE, */       "Invalid performance/robustness value",
-/*    ASL_MSG_LOCAL_INIT, */                "Method local variable is not initialized",
-/*    ASL_MSG_ARG_INIT, */                  "Method argument is not initialized",
-/*    ASL_MSG_UNSUPPORTED, */               "Unsupported feature",
-/*    ASL_MSG_RESERVED_WORD, */             "Use of reserved word",
-/*    ASL_MSG_BUFFER_LENGTH, */             "Effective AML buffer length is zero",
-/*    ASL_MSG_PACKAGE_LENGTH, */            "Effective AML package length is zero",
-/*    ASL_MSG_RETURN_TYPES, */              "Not all control paths return a value",
-/*    ASL_MSG_NOT_FOUND, */                 "Object not found or not accessible from scope",
-/*    ASL_MSG_NOT_REACHABLE, */             "Object not accessible from this scope",
-/*    ASL_MSG_NOT_EXIST, */                 "Object does not exist",
-/*    ASL_MSG_NESTED_COMMENT, */            "Nested comment found",
-/*    ASL_MSG_RESERVED_ARG_COUNT_HI, */     "Reserved method has too many arguments",
-/*    ASL_MSG_RESERVED_ARG_COUNT_LO, */     "Reserved method has too few arguments",
-/*    ASL_MSG_RESERVED_RETURN_VALUE, */     "Reserved method must return a value",
-/*    ASL_MSG_ARG_COUNT_HI, */              "Too many arguments",
-/*    ASL_MSG_ARG_COUNT_LO, */              "Too few arguments",
-/*    ASL_MSG_NO_RETVAL, */                 "Called method returns no value",
-/*    ASL_MSG_SOME_NO_RETVAL, */            "Called method may not always return a value",
-/*    ASL_MSG_COMPILER_INTERNAL, */         "Internal compiler error",
-/*    ASL_MSG_BACKWARDS_OFFSET, */          "Invalid backwards offset",
-/*    ASL_MSG_UNKNOWN_RESERVED_NAME, */     "Unknown reserved name",
-/*    ASL_MSG_NAME_EXISTS, */               "Name already exists in scope",
-/*    ASL_MSG_INVALID_TYPE, */              "Invalid type",
-/*    ASL_MSG_MULTIPLE_TYPES, */            "Multiple types",
-/*    ASL_MSG_SYNTAX, */                    "",
-/*    ASL_MSG_NOT_METHOD, */                "Not a control method, cannot invoke",
-/*    ASL_MSG_LONG_LINE, */                 "Splitting long input line",
-/*    ASL_MSG_RECURSION, */                 "Recursive method call",
-/*    ASL_MSG_NOT_PARAMETER, */             "Not a parameter, used as local only",
-/*    ASL_MSG_OPEN, */                      "Could not open file",
-/*    ASL_MSG_READ, */                      "Could not read file",
-/*    ASL_MSG_WRITE, */                     "Could not write file",
-/*    ASL_MSG_SEEK, */                      "Could not seek file",
-/*    ASL_MSG_CLOSE, */                     "Could not close file",
-/*    ASL_MSG_FIELD_ACCESS_WIDTH, */        "Access width is greater than region size",
-/*    ASL_MSG_REGION_BYTE_ACCESS, */        "Host Operation Region requires ByteAcc access",
-/*    ASL_MSG_REGION_BUFFER_ACCESS, */      "Host Operation Region requires BufferAcc access",
-/*    ASL_MSG_FIELD_UNIT_OFFSET, */         "Field Unit extends beyond region limit",
-/*    ASL_MSG_FIELD_UNIT_ACCESS_WIDTH, */   "Access width of Field Unit extends beyond region limit",
-/*    ASL_MSG_RESOURCE_FIELD, */            "Resource field name cannot be used as a target",
-/*    ASL_MSG_BYTES_TO_BITS, */             "Field offset is in bytes, but a bit offset is required",
-/*    ASL_MSG_BITS_TO_BYTES, */             "Field offset is in bits, but a byte offset is required",
-/*    ASL_MSG_AML_NOT_IMPLEMENTED, */       "Opcode is not implemented in compiler AML code generator",
-/*    ASL_MSG_NO_WHILE, */                  "No enclosing While statement",
-/*    ASL_MSG_INVALID_ESCAPE, */            "Invalid or unknown escape sequence",
-/*    ASL_MSG_INVALID_STRING, */            "Invalid Hex/Octal Escape - Non-ASCII or NULL",
-/*    ASL_MSG_TABLE_SIGNATURE, */           "Invalid Table Signature",
-/*    ASL_MSG_RESOURCE_LIST, */             "Too many resource items (internal error)",
-/*    ASL_MSG_INVALID_TARGET, */            "Target operand not allowed in constant expression",
-/*    ASL_MSG_INVALID_CONSTANT_OP, */       "Invalid operator in constant expression (not type 3/4/5)",
-/*    ASL_MSG_CONSTANT_EVALUATION, */       "Could not evaluate constant expression",
-/*    ASL_MSG_CONSTANT_FOLDED, */           "Constant expression evaluated and reduced",
-/*    ASL_MSG_INVALID_EISAID, */            "EISAID string must be of the form \"UUUXXXX\" (3 uppercase, 4 hex digits)",
-/*    ASL_MSG_RESERVED_OPERAND_TYPE, */     "Invalid operand type for reserved name, must be",
-/*    ASL_MSG_RESERVED_METHOD, */           "Reserved name must be a control method",
-/*    ASL_MSG_ALPHANUMERIC_STRING, */       "String must be entirely alphanumeric",
-/*    ASL_MSG_RESERVED_USE, */              "Invalid use of reserved name",
-/*    ASL_MSG_INVALID_OPERAND, */           "Invalid operand",
-/*    ASL_MSG_MISSING_ENDDEPENDENT, */      "Missing EndDependentFn() macro in dependent resource list",
-/*    ASL_MSG_MISSING_STARTDEPENDENT, */    "Missing StartDependentFn() macro in dependent resource list",
-/*    ASL_MSG_DEPENDENT_NESTING, */         "Dependent function macros cannot be nested",\
-/*    ASL_MSG_NAME_OPTIMIZATION, */         "NamePath optimized",
-/*    ASL_MSG_SINGLE_NAME_OPTIMIZATION, */  "NamePath optimized to NameSeg (uses run-time search path)",
-/*    ASL_MSG_INTEGER_OPTIMIZATION, */      "Integer optimized to single-byte AML opcode",
-/*    ASL_MSG_SCOPE_TYPE, */                "Existing object has invalid type for Scope operator",
-/*    ASL_MSG_CORE_EXCEPTION, */            "From ACPI CA Subsystem",
-/*    ASL_MSG_UNREACHABLE_CODE, */          "Statement is unreachable",
-/*    ASL_MSG_EARLY_EOF */                  "Premature end-of-file reached",
-/*    ASL_MSG_SCOPE_FWD_REF */              "Forward references from Scope() not allowed"
-};
-
-
-char                    *AslErrorLevel [ASL_NUM_REPORT_LEVELS] = {
-    "Error   ",
-    "Warning ",
-    "Remark  ",
-    "Optimize"
-};
-
-#define ASL_ERROR_LEVEL_LENGTH          8       /* Length of strings above */
-
-/* Exception counters */
-
-UINT32                  Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0,0};
-
-#endif
 
 
 #endif  /* __ASLTYPES_H */
