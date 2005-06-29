@@ -262,6 +262,88 @@ static ST_KEY_DESC_TABLE KDT[] = {
 };
 
 
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiExecuteRelativeMethod
+ *
+ * PARAMETERS:  Handle              - Handle of containing object
+ *              *MethodName         - Name of method to execute, If NULL, the
+ *                                    handle is the object to execute
+ *              *ReturnValue        - Where to put method's return value (if 
+ *                                    any).  If NULL, no value is returned.
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Find and execute the requested method using the handle as a
+ *              scope
+ *
+ ****************************************************************************/
+ACPI_STATUS
+AcpiExecuteRelativeMethod (NsHandle Handle,
+                           char * MethodName,
+                           OBJECT_DESCRIPTOR *ReturnValue,
+                           OBJECT_DESCRIPTOR **Params)
+{
+    char NameBuffer[PATHNAME_MAX];
+    ACPI_STATUS RetValue;
+    UINT32  MaxObjectPathLength = PATHNAME_MAX - 1;
+
+    FUNCTION_TRACE ("AcpiExecuteRelativeMethod");
+
+    /*
+     *  Must have a valid handle
+     */
+    if (!Handle) {
+        return AE_BAD_PARAMETER;
+    }
+
+    /*
+     *  If the caller specified a method then it must be a path relative to
+     *  the object indicated by the handle we need to reserve space in the
+     *  buffer to append the CM name later
+     */
+    if (MethodName) {
+        /*
+         *  Append the method name to the device pathname
+         */
+        MaxObjectPathLength -= strlen(MethodName);
+    }
+
+    /*
+     *  Get the device pathname
+     */
+    RetValue = NsHandleToPathname (Handle, MaxObjectPathLength, NameBuffer);
+
+    if (RetValue != AE_OK) {
+        /*
+         *  Failed the conversion
+         */
+        return RetValue;
+    }
+
+    /*
+     *  If the caller specified a method then it must be a path relative to
+     *  the object indicated by the handle
+     */
+    if (MethodName) {
+        /*
+         *  Append the method name to the device pathname
+         */
+        (void) strcat( NameBuffer, MethodName);
+    }
+
+    /*
+     *  Execute the method
+     */
+    RetValue = AcpiExecuteMethod(NameBuffer, ReturnValue, Params);
+
+    return RetValue;
+}
 
 /****************************************************************************
  *
