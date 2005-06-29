@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.101 $
+ *       $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -463,14 +463,38 @@ typedef struct acpi_update_state
 /*
  * Copy state - used to copy Internal<-->External objects (and packages)
  */
-typedef struct acpi_copy_state
+typedef struct acpi_ecopy_state
 {
     ACPI_STATE_COMMON
     union acpi_operand_obj  *InternalObject;
     union AcpiObj           *ExternalObject;
     UINT16                  Index;
 
-} ACPI_COPY_STATE;
+} ACPI_EXT_COPY_STATE;
+
+/*
+ * Copy state - used to copy Internal<-->External objects (and packages)
+ */
+typedef struct acpi_icopy_state
+{
+    ACPI_STATE_COMMON
+    union acpi_operand_obj  *SourceObject;
+    union acpi_operand_obj  *DestObject;
+    UINT16                  Index;
+
+} ACPI_INT_COPY_STATE;
+
+
+typedef struct acpi_pkg_state
+{
+    ACPI_STATE_COMMON
+    union acpi_operand_obj  *SourceObject;
+    union acpi_operand_obj  *DestObject;
+    struct acpi_walk_state  *WalkState;
+    void                    *ThisTargetObj;
+    UINT16                  Index;
+
+} ACPI_PKG_STATE;
 
 
 /*
@@ -530,10 +554,12 @@ typedef union acpi_gen_state
 {
     ACPI_COMMON_STATE       Common;
     ACPI_CONTROL_STATE      Control;
-    ACPI_COPY_STATE         Copy;
+    ACPI_EXT_COPY_STATE     Copy;
+    ACPI_INT_COPY_STATE     Icopy;
     ACPI_UPDATE_STATE       Update;
     ACPI_SCOPE_STATE        Scope;
     ACPI_PSCOPE_STATE       ParseScope;
+    ACPI_PKG_STATE          Pkg;
     ACPI_RESULT_VALUES      Results;
 
 } ACPI_GENERIC_STATE;
