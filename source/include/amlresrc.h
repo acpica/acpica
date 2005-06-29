@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amlresrc.h - AML resource descriptors
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,7 @@
 #define ASL_RESNAME_ALIGNMENT                   "_ALN"
 #define ASL_RESNAME_ADDRESSSPACE                "_ASI"
 #define ASL_RESNAME_ACCESSSIZE                  "_ASZ"
+#define ASL_RESNAME_TYPESPECIFICATTRIBUTES      "_ATT"
 #define ASL_RESNAME_BASEADDRESS                 "_BAS"
 #define ASL_RESNAME_BUSMASTER                   "_BM_"  /* Master(1), Slave(0) */
 #define ASL_RESNAME_DECODE                      "_DEC"
@@ -312,6 +313,27 @@ typedef struct asl_fixed_memory_32_desc
 } ASL_FIXED_MEMORY_32_DESC;
 
 
+typedef struct asl_extended_address_desc
+{
+    UINT8                       DescriptorType;
+    UINT16                      Length;
+    UINT8                       ResourceType;
+    UINT8                       Flags;
+    UINT8                       SpecificFlags;
+    UINT8                       RevisionID;
+    UINT8                       Reserved;
+    UINT64                      Granularity;
+    UINT64                      AddressMin;
+    UINT64                      AddressMax;
+    UINT64                      TranslationOffset;
+    UINT64                      AddressLength;
+    UINT64                      TypeSpecificAttributes;
+
+} ASL_EXTENDED_ADDRESS_DESC;
+
+#define ASL_EXTENDED_ADDRESS_DESC_REVISION          1       /* ACPI 3.0 */
+
+
 typedef struct asl_qword_address_desc
 {
     UINT8                       DescriptorType;
@@ -411,6 +433,7 @@ typedef union asl_resource_desc
     ASL_QWORD_ADDRESS_DESC      Qas;
     ASL_DWORD_ADDRESS_DESC      Das;
     ASL_WORD_ADDRESS_DESC       Was;
+    ASL_EXTENDED_ADDRESS_DESC   Eas;
     ASL_EXTENDED_XRUPT_DESC     Exx;
     ASL_GENERAL_REGISTER_DESC   Grg;
     UINT32                      U32Item;
