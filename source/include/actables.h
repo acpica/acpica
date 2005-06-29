@@ -127,12 +127,6 @@
 #define SIZE_IN_HEADER          0
 
 
-/* Used if RSDT is loaded from a buffer */
-/* TBD: is this obsolete? */
-
-#define ACPILIB_DATA_FILE_VERSION "ADF-001"
-
-
 
 ACPI_STATUS
 TbHandleToObject (
