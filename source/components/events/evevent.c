@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -209,7 +209,7 @@ AcpiEvInitialize (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_FATAL,
-            ("EvInitialize: Unable initialize Gpe control methods\n"));
+            ("EvInitialize: Unable to initialize Gpe control methods\n"));
         return_ACPI_STATUS (Status);
     }
 
@@ -219,7 +219,7 @@ AcpiEvInitialize (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_FATAL,
-            ("EvInitialize: Unable initialize Global Lock handler\n"));
+            ("EvInitialize: Unable to initialize Global Lock handler\n"));
         return_ACPI_STATUS (Status);
     }
 
