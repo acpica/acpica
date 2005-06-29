@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  ******************************************************************************/
 
@@ -182,6 +182,8 @@ AcpiRsGetPrtMethodData (
      */
     if (ACPI_TYPE_PACKAGE != RetObj->Common.Type)
     {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_PRT did not return a Package, returned %s\n", 
+                AcpiUtGetTypeName (RetObj->Common.Type)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
@@ -258,6 +260,8 @@ AcpiRsGetCrsMethodData (
      */
     if (ACPI_TYPE_BUFFER != RetObj->Common.Type)
     {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_CRS did not return a Buffer, returned %s\n", 
+                AcpiUtGetTypeName (RetObj->Common.Type)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
@@ -335,6 +339,8 @@ AcpiRsGetPrsMethodData (
      */
     if (ACPI_TYPE_BUFFER != RetObj->Common.Type)
     {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_PRS did not return a Buffer, returned %s\n", 
+                AcpiUtGetTypeName (RetObj->Common.Type)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
