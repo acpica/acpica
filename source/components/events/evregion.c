@@ -115,7 +115,8 @@
  *************************************************************************/
 
 void
-EvOpRegionDispatch (UINT32 Region)
+EvOpRegionDispatch (
+    UINT32                  Region)
 {
 
 }
