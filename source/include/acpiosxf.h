@@ -120,6 +120,7 @@
 #ifndef __ACPIOSD_H__
 #define __ACPIOSD_H__
 
+#include <environment.h>
 #include <acpitypes.h>
 
 
