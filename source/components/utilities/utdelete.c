@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -754,6 +754,14 @@ AcpiUtRemoveReference (
 
     FUNCTION_TRACE_PTR ("UtRemoveReference", Object);
 
+    /*
+     * Allow a NULL pointer to be passed in, just ignore it.  This saves
+     * each caller from having to check
+     */
+    if (!Object)
+    {
+        return_VOID;
+    }
 
     /*
      * Ensure that we have a valid object
