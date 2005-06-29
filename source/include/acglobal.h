@@ -119,6 +119,8 @@
 
 #include "config.h"
 #include "acpitables.h"
+#include "internal.h"
+
 
 /*
  * Ensure that the globals are actually defined only once
