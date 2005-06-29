@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.107 $
+ *       $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -428,23 +428,6 @@ FunctionPtrExit (
     UINT8                   *Ptr);
 
 void
-DebugPrintPrefix (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber);
-
-void
-DebugPrint (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    UINT32                  PrintLevel,
-    NATIVE_CHAR             *Format, ...);
-
-void
-DebugPrintRaw (
-    NATIVE_CHAR             *Format, ...);
-
-void
 _ReportInfo (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
@@ -468,7 +451,6 @@ AcpiUtDumpBuffer (
     UINT32                  Count,
     UINT32                  Display,
     UINT32                  componentId);
-
 
 void
 AcpiUtDebugPrint (
