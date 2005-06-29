@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.190 $
+ *       $Revision: 1.191 $
  *
  *****************************************************************************/
 
@@ -390,20 +390,20 @@ typedef struct acpi_create_field_info
  *
  ****************************************************************************/
 
-/* Information about each particular GPE level */
+/* Information about a GPE, one per each GPE in an array */
 
 typedef struct acpi_gpe_event_info
 {
     ACPI_NAMESPACE_NODE             *MethodNode;    /* Method node for this GPE level */
     ACPI_GPE_HANDLER                Handler;        /* Address of handler, if any */
     void                            *Context;       /* Context to be passed to handler */
-    struct acpi_gpe_register_info   *RegisterInfo;
-    UINT8                           Type;           /* Level or Edge */
-    UINT8                           BitMask;
+    struct acpi_gpe_register_info   *RegisterInfo;  /* Backpointer to register info */
+    UINT8                           Flags;          /* Level or Edge */
+    UINT8                           BitMask;        /* This GPE within the register */
 
 } ACPI_GPE_EVENT_INFO;
 
-/* Information about a particular GPE register pair */
+/* Information about a GPE register pair, one per each status/enable pair in an array */
 
 typedef struct acpi_gpe_register_info
 {
@@ -416,33 +416,30 @@ typedef struct acpi_gpe_register_info
 
 } ACPI_GPE_REGISTER_INFO;
 
-
-#define ACPI_GPE_LEVEL_TRIGGERED        1
-#define ACPI_GPE_EDGE_TRIGGERED         2
-
-/* Information about each GPE register block */
-
+/* 
+ * Information about a GPE register block, one per each installed block --
+ * GPE0, GPE1, and one per each installed GPE Block Device.
+ */
 typedef struct acpi_gpe_block_info
 {
     struct acpi_gpe_block_info      *Previous;
     struct acpi_gpe_block_info      *Next;
-    struct acpi_gpe_block_info      *NextOnInterrupt;
-    ACPI_GPE_REGISTER_INFO          *RegisterInfo;
-    ACPI_GPE_EVENT_INFO             *EventInfo;
-    ACPI_GENERIC_ADDRESS            BlockAddress;
-    UINT32                          RegisterCount;
-    UINT8                           BlockBaseNumber;
+    ACPI_GPE_REGISTER_INFO          *RegisterInfo;  /* One per GPE register pair */
+    ACPI_GPE_EVENT_INFO             *EventInfo;     /* One for each GPE */
+    ACPI_GENERIC_ADDRESS            BlockAddress;   /* Base address of the block */
+    UINT32                          RegisterCount;  /* Number of register pairs in block */
+    UINT8                           BlockBaseNumber;/* Base GPE number for this block */
 
 } ACPI_GPE_BLOCK_INFO;
 
-/* Information about GPE interrupt handlers */
+/* Information about GPE interrupt handlers, one per each interrupt level used for GPEs */
 
 typedef struct acpi_gpe_xrupt_info
 {
     struct acpi_gpe_xrupt_info      *Previous;
     struct acpi_gpe_xrupt_info      *Next;
-    UINT32                          InterruptLevel;
-    ACPI_GPE_BLOCK_INFO             *GpeBlockListHead;
+    ACPI_GPE_BLOCK_INFO             *GpeBlockListHead;  /* List of GPE blocks for this xrupt */
+    UINT32                          InterruptLevel;     /* System interrupt level */
 
 } ACPI_GPE_XRUPT_INFO;
 
