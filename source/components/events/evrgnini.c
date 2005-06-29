@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: evrgnini- ACPI AddressSpace / OpRegion init
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,11 +116,11 @@
 
 #define __EVRGNINI_C__
 
-#include <acpi.h>
-#include <events.h>
-#include <namesp.h>
-#include <interp.h>
-#include <amlcode.h>
+#include "acpi.h"
+#include "events.h"
+#include "namesp.h"
+#include "interp.h"
+#include "amlcode.h"
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evrgnini");
@@ -128,8 +128,8 @@
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    EvSystemMemoryRegionSetup
+ *
+ * FUNCTION:    AcpiEvSystemMemoryRegionSetup
  *
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
@@ -143,7 +143,7 @@
  ****************************************************************************/
 
 ACPI_STATUS
-EvSystemMemoryRegionSetup (
+AcpiEvSystemMemoryRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
@@ -156,7 +156,7 @@ EvSystemMemoryRegionSetup (
     FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
 
 
-    if (Function == ACPI_REGION_DEACTIVATE) 
+    if (Function == ACPI_REGION_DEACTIVATE)
     {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
 
@@ -166,7 +166,7 @@ EvSystemMemoryRegionSetup (
             MemContext = HandlerContext;
             *ReturnContext = MemContext->HandlerContext;
 
-            CmFree (MemContext);
+            AcpiCmFree (MemContext);
         }
         return_ACPI_STATUS (AE_OK);
     }
@@ -174,7 +174,7 @@ EvSystemMemoryRegionSetup (
 
     /* Activate.  Create a new context */
 
-    MemContext = CmCallocate (sizeof (MEM_HANDLER_CONTEXT));
+    MemContext = AcpiCmCallocate (sizeof (MEM_HANDLER_CONTEXT));
     if (!MemContext)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -191,8 +191,8 @@ EvSystemMemoryRegionSetup (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    EvIoSpaceRegionSetup
+ *
+ * FUNCTION:    AcpiEvIoSpaceRegionSetup
  *
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
@@ -206,7 +206,7 @@ EvSystemMemoryRegionSetup (
  ****************************************************************************/
 
 ACPI_STATUS
-EvIoSpaceRegionSetup (
+AcpiEvIoSpaceRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
@@ -218,12 +218,12 @@ EvIoSpaceRegionSetup (
     FUNCTION_TRACE ("EvIoSpaceRegionSetup");
 
 
-    if (Function == ACPI_REGION_DEACTIVATE) 
+    if (Function == ACPI_REGION_DEACTIVATE)
     {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
         *ReturnContext = HandlerContext;
         return_ACPI_STATUS (AE_OK);
-    } 
+    }
 
     /* Activate the region */
 
@@ -235,8 +235,8 @@ EvIoSpaceRegionSetup (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    EvPciConfigRegionSetup
+ *
+ * FUNCTION:    AcpiEvPciConfigRegionSetup
  *
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
@@ -246,13 +246,13 @@ EvIoSpaceRegionSetup (
  * RETURN:      Status
  *
  * DESCRIPTION: Do any prep work for region handling
- *              
+ *
  * MUTEX:       Assumes namespace is locked
  *
  ****************************************************************************/
 
 ACPI_STATUS
-EvPciConfigRegionSetup (
+AcpiEvPciConfigRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
@@ -271,17 +271,17 @@ EvPciConfigRegionSetup (
 
     HandlerObj = RegionObj->Region.AddrHandler;
 
-    if (!HandlerObj) 
+    if (!HandlerObj)
     {
         /*
-         *  No installed handler. This shouldn't happen because the dispatch routine 
+         *  No installed handler. This shouldn't happen because the dispatch routine
          *  checks before we get here, but we check again just in case.
          */
         DEBUG_PRINT (TRACE_OPREGION, ("Attempting to init a region 0x%X, with no handler\n", RegionObj));
         return_ACPI_STATUS(AE_EXIST);
     }
 
-    if (Function == ACPI_REGION_DEACTIVATE) 
+    if (Function == ACPI_REGION_DEACTIVATE)
     {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
 
@@ -291,7 +291,7 @@ EvPciConfigRegionSetup (
             PciContext = HandlerContext;
             *ReturnContext = PciContext->HandlerContext;
 
-            CmFree (PciContext);
+            AcpiCmFree (PciContext);
         }
 
         return_ACPI_STATUS (Status);
@@ -300,7 +300,7 @@ EvPciConfigRegionSetup (
 
     /* Create a new context */
 
-    PciContext = CmAllocate (sizeof(PCI_HANDLER_CONTEXT));
+    PciContext = AcpiCmAllocate (sizeof(PCI_HANDLER_CONTEXT));
     if (!PciContext)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -320,11 +320,11 @@ EvPciConfigRegionSetup (
     SearchScope = RegionObj->Region.Nte->ParentEntry;
 
 
-    CmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (MTX_NAMESPACE);
 
-    /* Evaluate the _ADR object */
+    /* AcpiEvaluate the _ADR object */
 
-    Status = CmEvaluateNumericObject (METHOD_NAME__ADR, SearchScope, &Temp);
+    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__ADR, SearchScope, &Temp);
     /*
      *  The default is zero, since the allocation above zeroed the data, just
      *  do nothing on failures.
@@ -346,7 +346,7 @@ EvPciConfigRegionSetup (
 
     SearchScope = HandlerObj->AddrHandler.Nte;
 
-    Status = CmEvaluateNumericObject (METHOD_NAME__SEG, SearchScope, &Temp);
+    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__SEG, SearchScope, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         /*
@@ -355,7 +355,7 @@ EvPciConfigRegionSetup (
         PciContext->Seg = Temp;
     }
 
-    Status = CmEvaluateNumericObject (METHOD_NAME__BBN, SearchScope, &Temp);
+    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__BBN, SearchScope, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         /*
@@ -364,7 +364,7 @@ EvPciConfigRegionSetup (
         PciContext->Bus = Temp;
     }
 
-    CmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (MTX_NAMESPACE);
 
     *ReturnContext = PciContext;
 
@@ -374,8 +374,8 @@ EvPciConfigRegionSetup (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    EvDefaultRegionSetup
+ *
+ * FUNCTION:    AcpiEvDefaultRegionSetup
  *
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
@@ -389,7 +389,7 @@ EvPciConfigRegionSetup (
  ****************************************************************************/
 
 ACPI_STATUS
-EvDefaultRegionSetup (
+AcpiEvDefaultRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
@@ -401,12 +401,12 @@ EvDefaultRegionSetup (
     FUNCTION_TRACE ("EvDefaultRegionSetup");
 
 
-    if (Function == ACPI_REGION_DEACTIVATE) 
+    if (Function == ACPI_REGION_DEACTIVATE)
     {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
         *ReturnContext = NULL;
-    } 
-    else 
+    }
+    else
     {
         RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
         *ReturnContext = HandlerContext;
@@ -418,7 +418,7 @@ EvDefaultRegionSetup (
 
 /******************************************************************************
  *
- * FUNCTION:    EvInitializeRegion
+ * FUNCTION:    AcpiEvInitializeRegion
  *
  * PARAMETERS:  RegionObj  - Region we are initializing
  *
@@ -438,13 +438,13 @@ EvDefaultRegionSetup (
  ******************************************************************************/
 
 ACPI_STATUS
-EvInitializeRegion (
+AcpiEvInitializeRegion (
     ACPI_OBJECT_INTERNAL    *RegionObj,
-    BOOLEAN                 NsLocked)
+    BOOLEAN                 AcpiNsLocked)
 {
     ACPI_OBJECT_INTERNAL   *HandlerObj;
     ACPI_OBJECT_INTERNAL   *ObjDesc;
-    UINT32                  SpaceId; 
+    UINT32                  SpaceId;
     NAME_TABLE_ENTRY       *Nte;        /* Namespace Object */
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY       *RegEntry;
@@ -471,7 +471,7 @@ EvInitializeRegion (
     /*
      *  Find any "_REG" associated with this region definition
      */
-    Status = NsSearchOneScope (*RegNamePtr, Nte->Scope, ACPI_TYPE_Method, &RegEntry, NULL);
+    Status = AcpiNsSearchOneScope (*RegNamePtr, Nte->Scope, ACPI_TYPE_METHOD, &RegEntry, NULL);
     if (Status == AE_OK)
     {
         /*
@@ -484,7 +484,7 @@ EvInitializeRegion (
 
     /*
      *  The following loop depends upon the root nte having no parent
-     *  ie: Gbl_RootObject->ParentEntry being set to NULL
+     *  ie: Acpi_GblRootObject->ParentEntry being set to NULL
      */
     while (Nte)
     {
@@ -492,25 +492,25 @@ EvInitializeRegion (
          *  Check to see if a handler exists
          */
         HandlerObj = NULL;
-        ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) Nte);
-        if (ObjDesc) 
+        ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Nte);
+        if (ObjDesc)
         {
             /*
              *  can only be a handler if the object exists
              */
             switch (Nte->Type)
             {
-            case ACPI_TYPE_Device:
+            case ACPI_TYPE_DEVICE:
 
                 HandlerObj = ObjDesc->Device.AddrHandler;
                 break;
 
-            case ACPI_TYPE_Processor:
+            case ACPI_TYPE_PROCESSOR:
 
                 HandlerObj = ObjDesc->Processor.AddrHandler;
                 break;
 
-            case ACPI_TYPE_Thermal:
+            case ACPI_TYPE_THERMAL:
 
                 HandlerObj = ObjDesc->ThermalZone.AddrHandler;
                 break;
@@ -520,17 +520,17 @@ EvInitializeRegion (
             {
                 /*
                  *  This guy has at least one address handler
-                 *  see if it has the type we want 
+                 *  see if it has the type we want
                  */
                 if (HandlerObj->AddrHandler.SpaceId == SpaceId)
                 {
                     DEBUG_PRINT (TRACE_OPREGION, ("Found handler (0x%X) for region 0x%X in obj 0x%X\n",
                                     HandlerObj, RegionObj, ObjDesc));
-                    
+
                     /*
                      *  Found it! Now update the region and the handler
                      */
-                    EvAssociateRegionAndHandler(HandlerObj, RegionObj);
+                    AcpiEvAssociateRegionAndHandler(HandlerObj, RegionObj);
                     return_ACPI_STATUS (AE_OK);
                 }
 

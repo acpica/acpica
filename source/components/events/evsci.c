@@ -1,10 +1,10 @@
-/*******************************************************************************
+
+/******************************************************************************
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.65 $
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
@@ -117,30 +117,31 @@
  *****************************************************************************/
 
 #include "acpi.h"
-#include "acnamesp.h"
-#include "achware.h"
-#include "acevents.h"
+#include "namesp.h"
+#include "hardware.h"
+#include "events.h"
 
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evsci")
+        MODULE_NAME         ("evsci");
 
 
 /*
- * Elements correspond to counts for TMR, NOT_USED, GBL, PWR_BTN, SLP_BTN, RTC,
- * and GENERAL respectively.  These counts are modified by the ACPI interrupt
- * handler.
- *
- * TBD: [Investigate] Note that GENERAL should probably be split out into
- * one element for each bit in the GPE registers
+ * Elements correspond to counts for
+ * TMR, NOT_USED, GBL, PWR_BTN, SLP_BTN, RTC,
+ * and GENERAL respectively.  These counts
+ * are modified by the ACPI interrupt handler...
+ * Note that GENERAL should probably be split out
+ * into one element for each bit in the GPE
+ * registers
  */
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiEvSciHandler
  *
- * PARAMETERS:  Context   - Calling Context
+ * PARAMETERS:  none
  *
  * RETURN:      Status code indicates whether interrupt was handled.
  *
@@ -150,23 +151,22 @@
  *
  ******************************************************************************/
 
-static UINT32
+UINT32
 AcpiEvSciHandler (void *Context)
 {
-    UINT32                  InterruptHandled = INTERRUPT_NOT_HANDLED;
-
+    UINT32 InterruptHandled = INTERRUPT_NOT_HANDLED;
 
     FUNCTION_TRACE("EvSciHandler");
 
-
     /*
+     * ACPI Enabled?
+     * -------------
      * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
      * required to treat the SCI interrupt as sharable, level, active low.
      */
-    if (!AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_DO_NOT_LOCK, SCI_EN))
+    if (!AcpiHwRegisterIO (ACPI_READ, MTX_DO_NOT_LOCK, (INT32)SCI_EN))
     {
-        /* ACPI is not enabled;  this interrupt cannot be for us */
-
+        REPORT_ERROR ("Received and SCI but ACPI is not enabled.");
         return_VALUE (INTERRUPT_NOT_HANDLED);
     }
 
@@ -203,15 +203,14 @@ AcpiEvSciHandler (void *Context)
 UINT32
 AcpiEvInstallSciHandler (void)
 {
-    UINT32                  Except = AE_OK;
-
+    UINT32 Except = AE_OK;
 
     FUNCTION_TRACE ("EvInstallSciHandler");
 
-
-    Except = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
-                                            AcpiEvSciHandler,
-                                            NULL);
+    Except = AcpiOsdInstallInterruptHandler (
+        (UINT32) Acpi_GblFACP->SciInt,
+        AcpiEvSciHandler,
+        NULL);
 
     return_ACPI_STATUS (Except);
 }
@@ -238,52 +237,55 @@ AcpiEvRemoveSciHandler (void)
     FUNCTION_TRACE ("EvRemoveSciHandler");
 
 #if 0
-    /* TBD:[Investigate] Figure this out!!  Disable all events first ???  */
+        /* TBD:[Investigate] Figure this out!!  Disable all events first ???  */
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (TMR_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (TMR_FIXED_EVENT);
-    }
+        if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (TMR_FIXED_EVENT))
+        {
+            AcpiEventDisableEvent (TMR_FIXED_EVENT);
+        }
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (GBL_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (GBL_FIXED_EVENT);
-    }
+        if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (GBL_FIXED_EVENT))
+        {
+            AcpiEventDisableEvent (GBL_FIXED_EVENT);
+        }
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (PWR_BTN_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
-    }
+        if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (PWR_BTN_FIXED_EVENT))
+        {
+            AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
+        }
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (SLP_BTN_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
-    }
+        if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (SLP_BTN_FIXED_EVENT))
+        {
+            AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
+        }
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (RTC_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (RTC_FIXED_EVENT);
-    }
+        if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (RTC_FIXED_EVENT))
+        {
+            AcpiEventDisableEvent (RTC_FIXED_EVENT);
+        }
 
-    OriginalFixedEnableBitStatus = 0;
+        OriginalFixedEnableBitStatus = 0;
 
 #endif
-
-    AcpiOsRemoveInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
-                                    AcpiEvSciHandler);
+      
+    AcpiOsdRemoveInterruptHandler (
+        (UINT32) Acpi_GblFACP->SciInt,
+        AcpiEvSciHandler);
 
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiEvSciCount
  *
- * PARAMETERS:  Event       Event that generated an SCI.
+ * PARAMETERS:  char * EventName        name (fully qualified name from namespace
+ *                                      or one of the fixed event names defined above)
+ *                                      of the event to check if it's generated an SCI.
  *
- * RETURN:      Number of SCI's for requested event since last time
- *              SciOccured() was called for this event.
+ * RETURN:      Number of SCI's for requested event since last time iSciOccured()
+ *              was called for this event.
  *
  * DESCRIPTION: Checks to see if SCI has been generated from requested source
  *              since the last time this function was called.
@@ -292,11 +294,11 @@ AcpiEvRemoveSciHandler (void)
 
 #ifdef ACPI_DEBUG
 
-UINT32
+INT32
 AcpiEvSciCount (
     UINT32                  Event)
 {
-    UINT32                  Count;
+    INT32                   Count;
 
     FUNCTION_TRACE ("EvSciCount");
 
@@ -307,11 +309,11 @@ AcpiEvSciCount (
 
     if (Event >= NUM_FIXED_EVENTS)
     {
-        Count = (UINT32) -1;
+        Count = -1;
     }
     else
     {
-        Count = AcpiGbl_EventCount[Event];
+        Count = Acpi_GblEventCount[Event];
     }
 
     return_VALUE (Count);
@@ -320,7 +322,7 @@ AcpiEvSciCount (
 #endif
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiEvRestoreAcpiState
  *
@@ -335,7 +337,7 @@ AcpiEvSciCount (
 void
 AcpiEvRestoreAcpiState (void)
 {
-    UINT32                  Index;
+    INT32                   Index;
 
 
     FUNCTION_TRACE ("EvRestoreAcpiState");
@@ -343,24 +345,20 @@ AcpiEvRestoreAcpiState (void)
 
     /* Restore the state of the chipset enable bits. */
 
-    if (AcpiGbl_RestoreAcpiChipset == TRUE)
+    if (Acpi_GblRestoreAcpiChipset == TRUE)
     {
         /* Restore the fixed events */
 
-        if (AcpiOsIn16 (AcpiGbl_FADT->Pm1aEvtBlk + 2) !=
-            AcpiGbl_Pm1EnableRegisterSave)
+        if (AcpiOsdIn16 (Acpi_GblFACP->Pm1aEvtBlk + 2) != Acpi_GblPm1EnableRegisterSave)
         {
-            AcpiOsOut16 ((AcpiGbl_FADT->Pm1aEvtBlk + 2),
-                          AcpiGbl_Pm1EnableRegisterSave);
+            AcpiOsdOut16 ((Acpi_GblFACP->Pm1aEvtBlk + 2), Acpi_GblPm1EnableRegisterSave);
         }
 
-        if (AcpiGbl_FADT->Pm1bEvtBlk)
+        if (Acpi_GblFACP->Pm1bEvtBlk)
         {
-            if (AcpiOsIn16 (AcpiGbl_FADT->Pm1bEvtBlk + 2) !=
-                AcpiGbl_Pm1EnableRegisterSave)
+            if (AcpiOsdIn16 (Acpi_GblFACP->Pm1bEvtBlk + 2) != Acpi_GblPm1EnableRegisterSave)
             {
-                AcpiOsOut16 ((AcpiGbl_FADT->Pm1bEvtBlk + 2),
-                              AcpiGbl_Pm1EnableRegisterSave);
+                AcpiOsdOut16 ((Acpi_GblFACP->Pm1bEvtBlk + 2), Acpi_GblPm1EnableRegisterSave);
             }
         }
 
@@ -372,41 +370,34 @@ AcpiEvRestoreAcpiState (void)
 
         /* Now restore the GPEs */
 
-        for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe0BlkLen); Index++)
+        for (Index = 0; Index < DIV_2 (Acpi_GblFACP->Gpe0BlkLen); Index++)
         {
-            if (AcpiOsIn8 (AcpiGbl_FADT->Gpe0Blk +
-                DIV_2 (AcpiGbl_FADT->Gpe0BlkLen)) !=
-                AcpiGbl_Gpe0EnableRegisterSave[Index])
+            if (AcpiOsdIn8 (Acpi_GblFACP->Gpe0Blk + DIV_2 (Acpi_GblFACP->Gpe0BlkLen)) != Acpi_GblGpe0EnableRegisterSave[Index])
             {
-                AcpiOsOut8 ((AcpiGbl_FADT->Gpe0Blk +
-                             DIV_2 (AcpiGbl_FADT->Gpe0BlkLen)),
-                             AcpiGbl_Gpe0EnableRegisterSave[Index]);
+                AcpiOsdOut8 ((Acpi_GblFACP->Gpe0Blk + DIV_2 (Acpi_GblFACP->Gpe0BlkLen)), Acpi_GblGpe0EnableRegisterSave[Index]);
             }
         }
 
-        if (AcpiGbl_FADT->Gpe1Blk && AcpiGbl_FADT->Gpe1BlkLen)
+        if (Acpi_GblFACP->Gpe1Blk && Acpi_GblFACP->Gpe1BlkLen)
         {
-            for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe1BlkLen); Index++)
+            for (Index = 0; Index < DIV_2 (Acpi_GblFACP->Gpe1BlkLen); Index++)
             {
-                if (AcpiOsIn8 (AcpiGbl_FADT->Gpe1Blk +
-                    DIV_2 (AcpiGbl_FADT->Gpe1BlkLen)) !=
-                    AcpiGbl_Gpe1EnableRegisterSave[Index])
+                if (AcpiOsdIn8 (Acpi_GblFACP->Gpe1Blk + DIV_2 (Acpi_GblFACP->Gpe1BlkLen)) != Acpi_GblGpe1EnableRegisterSave[Index])
                 {
-                    AcpiOsOut8 ((AcpiGbl_FADT->Gpe1Blk +
-                                 DIV_2 (AcpiGbl_FADT->Gpe1BlkLen)),
-                                 AcpiGbl_Gpe1EnableRegisterSave[Index]);
+                    AcpiOsdOut8 ((Acpi_GblFACP->Gpe1Blk + DIV_2 (Acpi_GblFACP->Gpe1BlkLen)), Acpi_GblGpe1EnableRegisterSave[Index]);
                 }
             }
         }
 
-        if (AcpiHwGetMode() != AcpiGbl_OriginalMode)
+        if (AcpiHwGetMode() != Acpi_GblOriginalMode)
         {
-            AcpiHwSetMode (AcpiGbl_OriginalMode);
+            AcpiHwSetMode (Acpi_GblOriginalMode);
         }
     }
 
     return_VOID;
 }
+
 
 
 /******************************************************************************
@@ -428,18 +419,17 @@ AcpiEvTerminate (void)
     FUNCTION_TRACE ("EvTerminate");
 
 
-    /*
-     * Free global tables, etc.
-     */
+    /* Free global tables, etc. */
 
-    if (AcpiGbl_GpeRegisters)
+
+    if (Acpi_GblGpeRegisters)
     {
-        AcpiCmFree (AcpiGbl_GpeRegisters);
+        AcpiCmFree (Acpi_GblGpeRegisters);
     }
 
-    if (AcpiGbl_GpeInfo)
+    if (Acpi_GblGpeInfo)
     {
-        AcpiCmFree (AcpiGbl_GpeInfo);
+        AcpiCmFree (Acpi_GblGpeInfo);
     }
 
     return_VOID;
