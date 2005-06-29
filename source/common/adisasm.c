@@ -124,10 +124,8 @@
 #include <stdio.h>
 
 
-
 #define _COMPONENT          PARSER
         MODULE_NAME         ("adexec");
-
 
 
 ACPI_GENERIC_OP         *AcpiGbl_ParsedNamespaceRoot;
@@ -136,7 +134,6 @@ UINT8                   *AmlPtr;
 UINT32                  AmlLength;
 UINT8                   *DsdtPtr;
 UINT32                  DsdtLength;
-
 
 
 /******************************************************************************
@@ -155,8 +152,8 @@ void
 AdCreateTableHeaders (void)
 {
 
-    AcpiOsdPrintf ("%s\n", "DefinitionBlock(\"SE0005B.aml\",\"DSDT\",1,\"Intel\",\"Seattl\",2)");
-    AcpiOsdPrintf ("%s\n", "{");
+    AcpiOsPrintf ("%s\n", "DefinitionBlock(\"SE0005B.aml\",\"DSDT\",1,\"Intel\",\"Seattl\",2)");
+    AcpiOsPrintf ("%s\n", "{");
 }
 
 
@@ -224,10 +221,10 @@ AdDisplayTables (void)
 
     AcpiDbDisplayOp (AcpiPsGetChild (AcpiGbl_ParsedNamespaceRoot), ACPI_UINT32_MAX);
 
-    AcpiOsdPrintf ("\n\nDSDT Header:\n");
+    AcpiOsPrintf ("\n\nDSDT Header:\n");
     AcpiCmDumpBuffer ((char *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
-    AcpiOsdPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
+    AcpiOsPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
     AcpiCmDumpBuffer ((char *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     return AE_OK;
@@ -287,7 +284,6 @@ AdLoadDsdt(
 
     return AE_AML_ERROR;
 }
-
 
 
 /******************************************************************************
@@ -372,7 +368,6 @@ AdSecondPassParse (
 
     return Status;
 }
-
 
 
 /******************************************************************************
@@ -483,6 +478,5 @@ AdParseTables (void)
 
     return Status;
 }
-
 
 
