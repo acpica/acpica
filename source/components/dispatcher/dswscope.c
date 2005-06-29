@@ -122,8 +122,8 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *
  * FUNCTION:    NsPushCurrentScope
  *
- * PARAMETERS:  nte     *NewScope,             name to be made current
- *              NsType  Type,                  type of frame being pushed
+ * PARAMETERS:  *NewScope,              - Name to be made current
+ *              Type,                   - Type of frame being pushed
  *
  * DESCRIPTION: Push the current scope on the scope stack, and make the
  *              passed nte current.
@@ -187,7 +187,7 @@ NsPushCurrentScope (nte *NewScope, NsType Type)
  *
  * FUNCTION:    NsPushMethodScope
  *
- * PARAMETERS:  NsHandle NewScope,             name to be made current
+ * PARAMETERS:  NewScope,               - Name to be made current
  *
  * DESCRIPTION: Push the current scope on the scope stack, and make the
  *              passed nte current.
@@ -229,7 +229,7 @@ NsPushMethodScope (NsHandle NewScope)
  *
  * FUNCTION:    NsPopCurrent
  *
- * PARAMETERS:  NsType Type    The type of frame to be found
+ * PARAMETERS:  Type                - The type of frame to be found
  *
  * DESCRIPTION: Pop the scope stack until a frame of the requested type
  *              is found.
