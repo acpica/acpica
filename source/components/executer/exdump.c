@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.163 $
+ *              $Revision: 1.164 $
  *
  *****************************************************************************/
 
@@ -496,10 +496,10 @@ void
 AcpiExDumpOperands (
     ACPI_OPERAND_OBJECT     **Operands,
     ACPI_INTERPRETER_MODE   InterpreterMode,
-    NATIVE_CHAR             *Ident,
+    char                    *Ident,
     UINT32                  NumLevels,
-    NATIVE_CHAR             *Note,
-    NATIVE_CHAR             *ModuleName,
+    char                    *Note,
+    char                    *ModuleName,
     UINT32                  LineNumber)
 {
     NATIVE_UINT             i;
