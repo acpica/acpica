@@ -139,7 +139,7 @@ FlatMove (
     UINT16              Size);
 
 
-NATIVE_INT
+ACPI_NATIVE_INT
 AfWriteBuffer (
     char                *Filename,
     char                *Buffer,
