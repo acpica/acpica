@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.151 $
+ *       $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -453,7 +453,6 @@ typedef struct
 
 typedef struct
 {
-    UINT8                   RegisterIndex;
     UINT8                   NumberIndex;
 
 } ACPI_GPE_INDEX_INFO;
