@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -859,14 +859,28 @@ LkNamespaceLocateBegin (
     {
 
         /*
+         * A reference to a method within one of these opcodes is not an
+         * invocation of the method, it is simply a reference to the method.
+         */
+        if ((Op->Asl.Parent) &&
+           ((Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_REFOF)      ||
+            (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_DEREFOF)    ||
+            (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_OBJECTTYPE)))
+        {
+            return (AE_OK);
+        }
+        /*
          * There are two types of method invocation:
-         * 1) Invocation with arguments -- the parser recognizes this as a METHODCALL
-         * 2) Invocation with no arguments --the parser cannot determine that this is a method
-         *    invocation, therefore we have to figure it out here.
+         * 1) Invocation with arguments -- the parser recognizes this 
+         *    as a METHODCALL.
+         * 2) Invocation with no arguments --the parser cannot determine that
+         *    this is a method invocation, therefore we have to figure it out
+         *    here.
          */
         if (Node->Type != ACPI_TYPE_METHOD)
         {
-            sprintf (MsgBuffer, "%s is a %s", Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
+            sprintf (MsgBuffer, "%s is a %s", 
+                    Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
 
             AslError (ASL_ERROR, ASL_MSG_NOT_METHOD, Op, MsgBuffer);
             return (AE_OK);
