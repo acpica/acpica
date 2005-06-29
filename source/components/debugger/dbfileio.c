@@ -121,6 +121,7 @@
 #include <namesp.h>
 #include <parser.h>
 #include <events.h>
+#include <tables.h>
 
 #ifdef ACPI_DEBUG
 
@@ -201,7 +202,7 @@ DbOpenDebugFile (
 #ifdef ACPI_APPLICATION
 /******************************************************************************
  * 
- * FUNCTION:    DbLoadDsdt
+ * FUNCTION:    DbLoadTable
  *
  * PARAMETERS:  
  *
@@ -212,67 +213,61 @@ DbOpenDebugFile (
  *****************************************************************************/
 
 ACPI_STATUS
-DbLoadDsdt(
+DbLoadTable(
     FILE                    *fp, 
-    UINT8                   **DsdtPtr, 
-    UINT32                  *DsdtLength)
+    char                    **TablePtr, 
+    UINT32                  *TableLength)
 {
-    ACPI_TABLE_HEADER       dsdt_hdr;
-    UINT8                   *AmlPtr;
-    UINT32                   AmlLength;
+    ACPI_TABLE_HEADER       TableHeader;
+    char                    *AmlPtr;
+    UINT32                  AmlLength;
 
 
     /* Read the table header */
 
-    if (fread (&dsdt_hdr, 1, sizeof (dsdt_hdr), fp) != sizeof (dsdt_hdr))
+    if (fread (&TableHeader, 1, sizeof (TableHeader), fp) != sizeof (TableHeader))
     {
         OsdPrintf ("Couldn't read the table header\n");
         return (AE_BAD_SIGNATURE);
     }
 
-    /* Validate the table signature */
-
-    if (STRNCMP (dsdt_hdr.Signature, "DSDT", 4) != 0)
-    {
-        OsdPrintf ("Invalid table signature: %4.4s\n", &dsdt_hdr.Signature);
-        return (AE_BAD_SIGNATURE);
-    }
-
     /* Get and validate the table length */
 
-    *DsdtLength = dsdt_hdr.Length;
-    if (!*DsdtLength)
+    *TableLength = TableHeader.Length;
+    if (!*TableLength)
     {
         OsdPrintf ("Found a table length of zero!\n");
         return (AE_ERROR);
     }
 
-
     /* Allocate a buffer for the table */
 
-    *DsdtPtr = (UINT8*) malloc ((size_t) *DsdtLength);
-    if (!*DsdtPtr)
+    *TablePtr = (char *) malloc ((size_t) *TableLength);
+    if (!*TablePtr)
     {
-        OsdPrintf ("Could not allocate memory for the table (size=0x%X)\n", dsdt_hdr.Length);
+        OsdPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
         return (AE_NO_MEMORY);
     }
             
 
-    AmlPtr = *DsdtPtr + sizeof (dsdt_hdr);
-    AmlLength = *DsdtLength - sizeof (dsdt_hdr);
+    AmlPtr      = *TablePtr + sizeof (TableHeader);
+    AmlLength   = *TableLength - sizeof (TableHeader);
 
-    memcpy (*DsdtPtr, &dsdt_hdr, sizeof (dsdt_hdr));
+    /* Copy the header to the buffer */
 
-    /* Read in the table */
+    MEMCPY (*TablePtr, &TableHeader, sizeof (TableHeader));
+
+    /* Get the rest of the table */
+
     if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
     {
         return AE_OK;
     }
 
     OsdPrintf ("Error reading the table\n");
-    free(*DsdtPtr);
-    *DsdtPtr = NULL;
-    *DsdtLength = 0;
+    free (*TablePtr);
+    *TablePtr = NULL;
+    *TableLength = 0;
 
     return AE_ERROR;
 }
@@ -298,17 +293,20 @@ DbLoadAcpiTable (
 #ifdef ACPI_APPLICATION
     FILE                    *fp;
     ACPI_STATUS             Status;
+    char                    *TablePtr;
+    UINT32                  TableLength;
+    ACPI_TABLE_DESC         TableInfo;
 
 
     fp = fopen (Filename, "rb");
     if (!fp)
     {
-        OsdPrintf ("Couldn't open file %s\n", Filename);
+        OsdPrintf ("Could not open file %s\n", Filename);
         return AE_ERROR;
     }
 
-    OsdPrintf ("Loading DSDT from file %s\n", Filename);
-    Status = DbLoadDsdt (fp, &DsdtPtr, &DsdtLength);
+    OsdPrintf ("Loading Acpi table from file %s\n", Filename);
+    Status = DbLoadTable (fp, &TablePtr, &TableLength);
     fclose(fp);
 
     if (ACPI_FAILURE (Status))
@@ -317,51 +315,34 @@ DbLoadAcpiTable (
         return Status;
     }
 
-    /* TBD: set real Dsdt ptr here.  BUT FIX this */
 
-    Gbl_DSDT = (ACPI_TABLE_HEADER *) DsdtPtr;
+    /* Attempt to recognize and install the table */
+
+    TableInfo.Pointer = (ACPI_TABLE_HEADER *) TablePtr;                       /* TBD: Fix redundant parameter */
+    Status = TbInstallTable (TablePtr, &TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        if (Status == AE_EXIST)
+        {
+            OsdPrintf ("Table is already installed/loaded\n");
+        }
+        else
+        {
+            OsdPrintf ("Could not install table, %s\n", CmFormatException (Status));
+        }
+        free (TablePtr);
+        return Status;
+    }
 
 
     DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
 
-    AmlPtr = DsdtPtr + sizeof (ACPI_TABLE_HEADER);
-    AmlLength = DsdtLength - sizeof (ACPI_TABLE_HEADER);
+    OsdPrintf ("%s successfully loaded and installed at %p\n", 
+                                Gbl_AcpiTableData[TableInfo.Type].Name, TablePtr);
 
+    Gbl_AcpiHardwarePresent = FALSE;
+    AcpiLoadNamespace ();
 
-    /* 
-     * This code is very similar to AcpiLoadNamespace,
-     * except that we don't initialize the hardware.
-     */
-
-    Status = NsSetup ();
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-
-    Status = PsxLoadTable (AmlPtr, AmlLength);
-    if (ACPI_SUCCESS (Status))
-    {
-        Status = DbSecondPassParse (root);
-    }
-
-
-    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-
-    if (ACPI_SUCCESS (Status))
-    {
-        OsdPrintf ("ACPI Table successfully loaded\n");
-    }
-
-    else
-    {
-        OsdPrintf ("Failure while loading ACPI Table - %s\n", CmFormatException (Status));
-    }
-
-    /* Install the default OpRegion handlers, ignore the return code right now. */
-
-    EvInstallDefaultAddressSpaceHandlers ();
 
     DbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
