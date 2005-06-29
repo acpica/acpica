@@ -118,10 +118,9 @@
 #define __ACENV_H__
 
 
-
 /*
- * Environment configuration.  The purpose of this file is to interface to the 
- * local generation environment. 
+ * Environment configuration.  The purpose of this file is to interface to the
+ * local generation environment.
  *
  * 1) ACPI_USE_SYSTEM_CLIBRARY - Define this if linking to an actual C library.
  *      Otherwise, local versions of string/memory functions will be used.
@@ -157,12 +156,11 @@
  */
 
 
-
-/* 
+/*
  * Environment-specific configuration
  */
 
-#ifdef _LINUX
+#ifdef _LINUXxxx
 
 #include <linux/config.h>
 #include <linux/string.h>
@@ -191,11 +189,9 @@
 #endif
 
 
-
-
 /******************************************************************************
  *
- * C library configuration 
+ * C library configuration
  *
  *****************************************************************************/
 
@@ -359,7 +355,6 @@ typedef char *va_list;
 #endif /* WIN32 */
 
 
-
 #ifdef __GNUC__
 
 #define ACPI_ASM_MACROS
@@ -371,8 +366,7 @@ typedef char *va_list;
 #define wbinvd()
 
 
-
-/*! [Begin] no source code translation 
+/*! [Begin] no source code translation
  *
  * A brief explanation as GNU inline assembly is a bit hairy
  *  %0 is the output parameter in EAX ("=a")
