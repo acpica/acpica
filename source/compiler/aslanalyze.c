@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -466,6 +466,10 @@ AnGetBtype (
         }
 
         ThisNodeBtype = AnMapEtypeToBtype (Node->Type);
+        if (!ThisNodeBtype)
+        {
+            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op, NULL);
+        }
 
         /*
          * Since it was a named reference, enable the
