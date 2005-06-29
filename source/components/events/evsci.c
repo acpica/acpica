@@ -144,7 +144,7 @@ VerifyAcpiTablesPresent (char *TestName)
 
     FUNCTION_TRACE ("VerifyAcpiTablesPresent");
 
-    if (AcpiLibInitStatus == E_NO_ACPI_TBLS)
+    if (AcpiLibInitStatus == AE_NO_ACPI_TABLES)
     {
         /*	ACPI tables are not available	*/
 
@@ -176,10 +176,10 @@ VerifyAcpiTablesPresent (char *TestName)
  *
  *************************************************************************/
 
-INT32        
+ACPI_STATUS
 AcpiEnable (char *TestName, INT32 Flags)
 {
-    INT32 ErrorMask = 0;
+    INT32   ErrorMask = 0;
 
     FUNCTION_TRACE ("AcpiEnable");
 
@@ -193,7 +193,7 @@ AcpiEnable (char *TestName, INT32 Flags)
         ErrorMask |= VerifyAcpiTablesPresent (TestName);
     }
 
-    if (E_OK == ErrorMask)
+    if (AE_OK == ErrorMask)
     {   
         /*  ACPI tables are available or not required   */
 
@@ -252,9 +252,9 @@ AcpiEnable (char *TestName, INT32 Flags)
 			{	
                 /*	legacy mode	*/
 				
-                if (E_OK == AcpiSetMode (ACPI_MODE))
+                if (AE_OK == AcpiSetMode (ACPI_MODE))
                 {
-					DEBUG_PRINT (ACPI_SUCCESS, ("Transition to ACPI mode successful\n"));
+					DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
                 }
 
 				else
@@ -389,16 +389,16 @@ RestoreAcpiState (void)
  *
  *************************************************************************/
 
-INT32        
+ACPI_STATUS     
 AcpiDisable ()
 {
-    INT32 ErrorMask = 0;
+    INT32       ErrorMask = 0;
 
     FUNCTION_TRACE ("AcpiDisable");
 
     /* Restore original ACPI mode   */
 
-    if (E_OK != AcpiSetMode (OriginalMode))
+    if (AE_OK != AcpiSetMode (OriginalMode))
     {
         REPORT_WARNING (&KDT[5]);
         
