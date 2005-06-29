@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.8 $
+ *              $Revision: 1.10 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -453,6 +453,12 @@ AcpiDmDisplayInternalObject (
             case AML_REF_OF_OP:
 
                 AcpiOsPrintf ("[RefOf]          ");
+
+                if (!ObjDesc->Reference.Object)
+                {
+                    AcpiOsPrintf ("Uninitialized reference subobject ptr");
+                    break;
+                }
 
                 /* Reference can be to a Node or an Operand object */
 
