@@ -169,10 +169,6 @@
 #include <asm/system.h>
 #include <asm/atomic.h>
 
-/* Single threaded */
-
-#define ACPI_APPLICATION
-
 /* Use native Linux string library */
 
 #define ACPI_USE_SYSTEM_CLIBRARY
@@ -382,6 +378,9 @@ typedef char *va_list;
 
 
 #ifdef __ia64__
+
+/* Single threaded */
+#define ACPI_APPLICATION
 
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)
