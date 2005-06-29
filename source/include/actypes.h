@@ -577,12 +577,11 @@ ACPI_STATUS (*WALK_CALLBACK) (
     void                        *Context,
     void                        **ReturnValue);
 
-/* Interrupt handler return values (must be unique bits) */
 
+/* Interrupt handler return values */
+
+#define INTERRUPT_NOT_HANDLED           0x00
 #define INTERRUPT_HANDLED               0x01
-#define INTERRUPT_NOT_HANDLED           0x02
-#define INTERRUPT_ERROR                 0x04
-
 
 
 /* Structure and flags for AcpiGetDeviceInfo */
