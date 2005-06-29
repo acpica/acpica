@@ -232,6 +232,7 @@ ErrorExit:
  * FUNCTION:    InitOpenFile
  *
  * PARAMETERS:  Filename                - File to open.  Can be null.
+ *              *FilePtr                - Where file handle is returned
  *
  * RETURN:      Status
  *
@@ -269,9 +270,9 @@ InitOpenFile (char *Filename, OSD_FILE **FilePtr)
  *
  * FUNCTION:    InitCloseFile
  *
- * PARAMETERS:  None
+ * PARAMETERS:  FilePtr         - Handle to open file
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Close an optional ACPI table input file
  *
