@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  ******************************************************************************/
 
@@ -468,6 +468,11 @@ AcpiUtStrtoul64 (
 
     ACPI_FUNCTION_TRACE ("UtStroul64");
 
+
+    if ((!String) || !(*String))
+    {
+        goto ErrorExit;
+    }
 
     switch (Base)
     {
