@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  ******************************************************************************/
 
@@ -430,7 +430,7 @@ AcpiEvaluateObject (
 
     if (Info.ReturnObject)
     {
-        /* 
+        /*
          * Delete the internal return object.  NOTE: Interpreter
          * must be locked to avoid race condition.
          */
