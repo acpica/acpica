@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Name: acpi.h - Master include file, Publics and external data.
+ *       $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -133,6 +133,7 @@
 #include "acpiosxf.h"       /* Interfaces to the Acpi-to-OS layer*/
 #include "acpixf.h"         /* Acpi core external interfaces */
 #include "acobject.h"       /* Acpi internal object */
+#include "acstruct.h"
 #include "acglobal.h"       /* All global variables */
 #include "achware.h"        /* Hardware defines and interfaces */
 #include "accommon.h"       /* Common (global) interfaces */
