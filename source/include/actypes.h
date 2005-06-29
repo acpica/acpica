@@ -620,7 +620,7 @@ ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
 
 
 typedef
-ACPI_STATUS (*REGION_SETUP_FUNCTION) (
+ACPI_STATUS (*ADDRESS_SPACE_SETUP) (
     ACPI_HANDLE                 RegionHandle,
     UINT32                      Function,
     void                        *HandlerContext,
