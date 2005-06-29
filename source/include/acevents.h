@@ -225,10 +225,8 @@ EvWalkNamespace (
     void                    **ReturnValue);
 
 void
-EvDisassociateRegionAndHandler(
-    ACPI_OBJECT_INTERNAL    *HandlerObj,
-    ACPI_OBJECT_INTERNAL    *RegionObj);
-
+EvDisassociateRegionFromHandler(
+    ACPI_OBJECT_INTERNAL   *RegionObj);
 
 /* Debug stuff */
 
