@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.94 $
+ *              $Revision: 1.96 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -1263,6 +1263,44 @@ AcpiDbCheckIntegrity (void)
                     AcpiDbIntegrityWalk, (void *) &Info, NULL);
 
     AcpiOsPrintf ("Verified %d namespace nodes with %d Objects\n", Info.Nodes, Info.Objects);
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbGenerateGpe
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Generate a GPE
+ *
+ ******************************************************************************/
+
+void
+AcpiDbGenerateGpe (
+    char                    *GpeArg,
+    char                    *BlockArg)
+{
+    UINT32                  BlockNumber;
+    UINT32                  GpeNumber;
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+
+    
+    GpeNumber   = ACPI_STRTOUL (GpeArg, NULL, 10);
+    BlockNumber = ACPI_STRTOUL (BlockArg, NULL, 10);
+
+
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber);
+    if (!GpeEventInfo)
+    {
+        AcpiOsPrintf ("Invalid GPE\n");
+        return;
+    }
+
+    AcpiEvGpeDispatch (GpeEventInfo);
 
 }
 
