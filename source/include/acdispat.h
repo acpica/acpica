@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: dispatch.h
+ * Module Name: acdispat.h - dispatcher (parser to interpreter interface)
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *****************************************************************************/
 
 
-#ifndef _DISPATCH_H_
-#define _DISPATCH_H_
+#ifndef _ACDISPAT_H_
+#define _ACDISPAT_H_
 
 
 #define NAMEOF_LOCAL_NTE    "__L0"
@@ -160,19 +160,6 @@ AcpiDsGetRegionArguments (
 
 /* dsctrl - Parser/Interpreter interface, control stack routines */
 
-/*
-ACPI_CTRL_STATE *
-AcpiDsCreateControlState (void);
-
-void
-AcpiDsPushControlState (
-    ACPI_CTRL_STATE         *ControlState,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_CTRL_STATE *
-AcpiDsPopControlState (
-    ACPI_WALK_STATE         *WalkState);
-*/
 
 ACPI_STATUS
 AcpiDsExecBeginControlOp (
@@ -189,8 +176,10 @@ AcpiDsExecEndControlOp (
 
 ACPI_STATUS
 AcpiDsExecBeginOp (
-    ACPI_WALK_STATE         *State,
-    ACPI_GENERIC_OP         *Op);
+    UINT16                  Opcode,
+    ACPI_GENERIC_OP         *Op,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         **OutOp);
 
 ACPI_STATUS
 AcpiDsExecEndOp (
@@ -224,8 +213,10 @@ AcpiDsCreateIndexField (
 
 ACPI_STATUS
 AcpiDsLoad1BeginOp (
+    UINT16                  Opcode,
+    ACPI_GENERIC_OP         *Op,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_GENERIC_OP         **OutOp);
 
 ACPI_STATUS
 AcpiDsLoad1EndOp (
@@ -234,8 +225,10 @@ AcpiDsLoad1EndOp (
 
 ACPI_STATUS
 AcpiDsLoad2BeginOp (
-    ACPI_WALK_STATE         *State,
-    ACPI_GENERIC_OP         *Op);
+    UINT16                  Opcode,
+    ACPI_GENERIC_OP         *Op,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         **OutOp);
 
 ACPI_STATUS
 AcpiDsLoad2EndOp (
@@ -245,6 +238,13 @@ AcpiDsLoad2EndOp (
 
 /* dsmthdat - method data (locals/args) */
 
+
+ACPI_STATUS
+AcpiDsMethodDataGetEntry (
+    UINT32                  Type,
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OBJECT_INTERNAL    ***Entry);
 
 ACPI_STATUS
 AcpiDsMethodDataDeleteAll (
@@ -257,37 +257,50 @@ AcpiDsIsMethodValue (
 OBJECT_TYPE_INTERNAL
 AcpiDsMethodDataGetType (
     UINT32                  Type,
-    UINT32                  Index);
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsMethodDataGetValue (
     UINT32                  Type,
     UINT32                  Index,
-    ACPI_OBJECT_INTERNAL    **ObjDesc);
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OBJECT_INTERNAL    **DestDesc);
 
 ACPI_STATUS
 AcpiDsMethodDataSetValue (
     UINT32                  Type,
     UINT32                  Index,
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
+    ACPI_OBJECT_INTERNAL    *SrcDesc,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsMethodDataDeleteValue (
     UINT32                  Type,
-    UINT32                  Index);
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsMethodDataInitArgs (
     ACPI_OBJECT_INTERNAL    **Params,
-    UINT32                  ParamCount);
+    UINT32                  MaxParamCount,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_NAMED_OBJECT*
 AcpiDsMethodDataGetNte (
     UINT32                  Type,
-    UINT32                  Index);
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsMethodDataInit (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiDsMethodDataSetEntry (
+    UINT32                  Type,
+    UINT32                  Index,
+    ACPI_OBJECT_INTERNAL    *Object,
     ACPI_WALK_STATE         *WalkState);
 
 
@@ -371,6 +384,10 @@ AcpiDsInitializeRegion (
 
 
 /* dsutils - Parser/Interpreter interface utility routines */
+
+BOOLEAN
+AcpiDsIsResultUsed (
+    ACPI_GENERIC_OP         *Op);
 
 void
 AcpiDsDeleteResultIfNotUsed (
@@ -471,4 +488,4 @@ AcpiDsDeleteWalkStateCache (
     void);
 
 
-#endif /* _DISPATCH_H_ */
+#endif /* _ACDISPAT_H_ */
