@@ -193,7 +193,7 @@ AcpiDsExecEndOp (
 ACPI_STATUS
 AcpiDsCreateField (
     ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region,
+    ACPI_NAMED_OBJECT       *Region,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
@@ -362,7 +362,7 @@ AcpiDsInitObjectFromOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **ObjDesc);
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
 AcpiDsCreateNamedObject (
