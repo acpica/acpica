@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.129 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,6 @@
 
 #define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("utglobal")
-
 
 
 /******************************************************************************
@@ -697,9 +696,6 @@ AcpiUtInitGlobals (
 
     FUNCTION_TRACE ("UtInitGlobals");
 
-    AcpiGbl_LowestStackPointer = ACPI_UINT32_MAX;
-
-
     /* Memory allocation and cache lists */
 
     MEMSET (AcpiGbl_MemoryLists, 0, sizeof (ACPI_MEMORY_LIST) * ACPI_NUM_MEM_LISTS);
@@ -814,6 +810,10 @@ AcpiUtInitGlobals (
     AcpiGbl_RootNodeStruct.Object       = NULL;
     AcpiGbl_RootNodeStruct.Flags        = ANOBJ_END_OF_PEER_LIST;
 
+
+#ifdef ACPI_DEBUG
+    AcpiGbl_LowestStackPointer          = ACPI_UINT32_MAX;
+#endif
 
     return_VOID;
 }
