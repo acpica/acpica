@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.36 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -137,23 +137,23 @@
 #include "aslglobal.h"
 
 
-/* TBD: Move to definition of NAMESPACE NODE */
-
-#define ANOBJ_METHOD_NO_RETVAL      0x20
-
-
 /*
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X206"
-#define CompilerCreatorRevision     0x00020206  /* Acpi 2.0, Version# */
+#define CompilerVersion             "X208"
+#define CompilerCreatorRevision     0x00020208  /* Acpi 2.0, Version# */
 
-#define CompilerId                  "ACPI Component Architecture ASL Compiler"
+#define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
+#define CompilerCopyright           "Copyright (C) 2000 Intel Corporation"
+#define CompilerCompliance          "ACPI 2.0"
 #define CompilerName                "iasl"
-#define CompilerCreatorId           "IASL"
+#define CompilerCreatorId           "INTL"
 
 
+/* Configuration constants */
+
+#define ASL_MAX_ERROR_COUNT         200
 
 /*
  * Macros
@@ -184,11 +184,9 @@
 #define AML_DEFAULT_ARG_OP          (UINT16) 0xDDDD
 
 
-
 /* TBD: Is this a real opcode? */
 
 #define AML_CONCAT_TPL_OP           (UINT16) 0x00FE
-
 
 
 /*******************************************************************************
@@ -202,23 +200,21 @@ void
 end_stmt (void);
 
 
-
-
 /* parser */
 
-int                      
+int
 AslCompilerparse( void);
 
 ASL_PARSE_NODE *
 AslDoError (void);
 
-int      
+int
 AslCompilererror(char* s);
 
-int      
+int
 AslCompilerlex();
 
-char     
+char
 *AslCompilertext;
 
 /* aslmain */
@@ -264,6 +260,9 @@ ErrorContext (void);
 
 int
 CmDoCompile (void);
+
+void
+CmCleanupAndExit (void);
 
 
 /* aslerror */
@@ -360,23 +359,6 @@ RsDoResourceTemplate (
     ASL_PARSE_NODE          *Node);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void
 CgGenerateAmlOutput (void);
 void
@@ -410,7 +392,6 @@ CgAmlWriteWalk (
     void                    *Context);
 
 
-
 void
 CgGenerateOutput(
     void);
@@ -424,9 +405,7 @@ CgWriteNode (
     ASL_PARSE_NODE          *Node);
 
 
-
-
-/* 
+/*
  * asltree - parse tree support
  */
 
@@ -517,7 +496,7 @@ AnSemanticAnalysisWalkEnd (
     void                    *Context);
 
 /*
- * aslfiles - File I/O support 
+ * aslfiles - File I/O support
  */
 
 void
@@ -599,7 +578,7 @@ UtPrintFormattedName (
 
 void
 UtDisplaySummary (
-    void);
+    FILE                    *Where);
 
 UINT8
 UtHexCharToValue (
