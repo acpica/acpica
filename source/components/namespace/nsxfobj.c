@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.91 $
+ *              $Revision: 1.93 $
  *
  ******************************************************************************/
 
@@ -165,14 +165,6 @@ AcpiEvaluateObject (
 
     FUNCTION_TRACE ("AcpiEvaluateObject");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /*
      * If there are parameters to be passed to the object
@@ -402,14 +394,6 @@ AcpiGetNextObject (
     ACPI_NAMESPACE_NODE     *ChildNode = NULL;
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
     /* Parameter validation */
 
     if (Type > ACPI_TYPE_MAX)
@@ -490,16 +474,7 @@ AcpiGetType (
     ACPI_OBJECT_TYPE        *RetType)
 {
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_STATUS             Status;
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
 
     /* Parameter Validation */
 
@@ -559,14 +534,6 @@ AcpiGetParent (
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status = AE_OK;
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
 
     if (!RetHandle)
     {
@@ -657,14 +624,6 @@ AcpiWalkNamespace (
 
     FUNCTION_TRACE ("AcpiWalkNamespace");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /* Parameter validation */
 
@@ -811,14 +770,6 @@ AcpiGetDevices (
 
     FUNCTION_TRACE ("AcpiGetDevices");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /* Parameter validation */
 
