@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -148,7 +148,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
 
     FUNCTION_TRACE ("EvInstallDefaultAddressSpaceHandlers");
 
-    /*  
+    /*
      * All address spaces (PCI Config, EC, SMBus) are scope dependent
      * and registration must occur for a specific device.  In the case
      * system memory and IO address spaces there is currently no device
