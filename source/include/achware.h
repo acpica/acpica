@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.70 $
+ *       $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -190,10 +190,6 @@ ACPI_STATUS
 AcpiHwEnableGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
-void
-AcpiHwEnableGpeForWakeup (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
-
 ACPI_STATUS
 AcpiHwDisableGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
@@ -202,10 +198,6 @@ ACPI_STATUS
 AcpiHwDisableGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
     ACPI_GPE_BLOCK_INFO     *GpeBlock);
-
-void
-AcpiHwDisableGpeForWakeup (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
 AcpiHwClearGpe (
@@ -232,6 +224,11 @@ AcpiHwEnableAllRuntimeGpes (
 ACPI_STATUS
 AcpiHwEnableAllWakeupGpes (
     void);
+
+ACPI_STATUS
+AcpiHwEnableRuntimeGpeBlock (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
 
 
 /* ACPI Timer prototypes */
