@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.77 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -157,7 +157,7 @@ AcpiExSystemMemorySpaceHandler (
     void                    *LogicalAddrPtr = NULL;
     ACPI_MEM_SPACE_CONTEXT  *MemInfo = RegionContext;
     UINT32                  Length;
-    UINT32                  WindowSize;
+    ACPI_SIZE               WindowSize;
 #ifndef _HW_ALIGNMENT_SUPPORT
     UINT32                  Remainder;
 #endif
@@ -229,7 +229,7 @@ AcpiExSystemMemorySpaceHandler (
          * Don't attempt to map memory beyond the end of the region, and
          * constrain the maximum mapping size to something reasonable.
          */
-        WindowSize = (UINT32) ((MemInfo->Address + MemInfo->Length) - Address);
+        WindowSize = (ACPI_SIZE) ((MemInfo->Address + MemInfo->Length) - Address);
         if (WindowSize > SYSMEM_REGION_WINDOW_SIZE)
         {
             WindowSize = SYSMEM_REGION_WINDOW_SIZE;
@@ -241,6 +241,8 @@ AcpiExSystemMemorySpaceHandler (
                                     (void **) &MemInfo->MappedLogicalAddress);
         if (ACPI_FAILURE (Status))
         {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not map memory at %8.8X%8.8X, size %X\n",
+                ACPI_HIDWORD (Address), ACPI_LODWORD (Address), (UINT32) WindowSize));
             MemInfo->MappedLength = 0;
             return_ACPI_STATUS (Status);
         }
@@ -289,7 +291,7 @@ AcpiExSystemMemorySpaceHandler (
             *Value = (ACPI_INTEGER) *((UINT32 *) LogicalAddrPtr);
             break;
 
-#ifndef _IA16
+#if ACPI_MACHINE_WIDTH != 16
         case 64:
             *Value = (ACPI_INTEGER) *((UINT64 *) LogicalAddrPtr);
             break;
@@ -316,7 +318,7 @@ AcpiExSystemMemorySpaceHandler (
             *(UINT32 *) LogicalAddrPtr = (UINT32) *Value;
             break;
 
-#ifndef _IA16
+#if ACPI_MACHINE_WIDTH != 16
         case 64:
             *(UINT64 *) LogicalAddrPtr = (UINT64) *Value;
             break;
@@ -446,7 +448,7 @@ AcpiExPciConfigSpaceHandler (
      *
      */
     PciId       = (ACPI_PCI_ID *) RegionContext;
-    PciRegister = (UINT16) (ACPI_SIZE) Address;
+    PciRegister = (UINT16) (UINT32) Address;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "PciConfig %d (%d) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n",
