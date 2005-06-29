@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -483,10 +483,22 @@ CmCleanupAndExit (void)
     DbgPrint (ASL_DEBUG_OUTPUT, "\n\nElapsed time for major events\n\n");
     for (i = 0; i < 13; i++)
     {
-        DbgPrint (ASL_DEBUG_OUTPUT, "%8.8X - %s\n",
+        DbgPrint (ASL_DEBUG_OUTPUT, "%8.8d ms - %s\n",
             AslGbl_Events[i].EndTime -
             AslGbl_Events[i].StartTime,
             AslGbl_Events[i].EventName);
+    }
+
+    if (Gbl_CompileTimesFlag)
+    {
+        printf ("\nElapsed time for major events\n\n");
+        for (i = 0; i < 13; i++)
+        {
+            printf ("%8d ms - %s\n",
+                AslGbl_Events[i].EndTime -
+                AslGbl_Events[i].StartTime,
+                AslGbl_Events[i].EventName);
+        }
     }
 
     if (Gbl_NsLookupCount)
