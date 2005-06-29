@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -277,7 +277,8 @@ AcpiExPrepCommonFieldObject (
     /* BaseByteOffset is the byte address of the start of the field within the region */
 
     NearestByteAddress                        = ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
-    ObjDesc->CommonField.BaseByteOffset       = ROUND_DOWN (NearestByteAddress, AccessBitWidth);
+    ObjDesc->CommonField.BaseByteOffset       = ROUND_DOWN (NearestByteAddress, 
+                                                            ObjDesc->CommonField.AccessByteWidth);
 
     /*
      * StartFieldBitOffset is the offset of the first bit of the field within a field datum.
@@ -290,7 +291,8 @@ AcpiExPrepCommonFieldObject (
     /*
      * DatumValidBits is the number of valid field bits in the first field datum,
      */
-    ObjDesc->CommonField.DatumValidBits       = (UINT8) (AccessBitWidth - ObjDesc->CommonField.StartFieldBitOffset);
+    ObjDesc->CommonField.DatumValidBits       = (UINT8) (AccessBitWidth - 
+                                                         ObjDesc->CommonField.StartFieldBitOffset);
 
 
     /* 
@@ -298,7 +300,8 @@ AcpiExPrepCommonFieldObject (
      * 1) At the end of the field within the region (arbitrary starting bit offset)
      * 2) At the end of a buffer used to contain the field (starting offset always zero)
      */
-    ObjDesc->CommonField.EndFieldValidBits    = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) % AccessBitWidth);
+    ObjDesc->CommonField.EndFieldValidBits    = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset + 
+                                                            FieldBitLength) % AccessBitWidth);
     ObjDesc->CommonField.EndBufferValidBits   = (UINT8) (FieldBitLength % AccessBitWidth); /* StartBufferBitOffset always = 0 */
 
 
