@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.53 $
+ *       $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -212,8 +212,6 @@ AcpiPsGetOpcodeName (
 
 ACPI_STATUS
 AcpiPsFindObject (
-    UINT16                  Opcode,
-    ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       **OutOp);
 
