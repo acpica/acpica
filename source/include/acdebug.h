@@ -118,14 +118,12 @@
 #define __DEBUGGER_H__
 
 
-#define DB_MAX_ARGS             8
+#define DB_MAX_ARGS             8  /* Must be max method args + 1 */
 
 #define DB_COMMAND_PROMPT      '-'
 #define DB_EXECUTE_PROMPT      '%'
 
 
-extern UINT8                    *DsdtPtr;
-extern UINT32                   DsdtLength;
 extern int                      optind;
 extern char                     *optarg;
 extern UINT8                    *AmlPtr;
@@ -182,6 +180,22 @@ extern UINT32                   SizeOfAcpiObjects;
 
 
 
+typedef struct CommandInfo
+{
+    char                    *Name;          /* Command Name */
+    char                    MinArgs;        /* Minimum arguments required */
+
+} COMMAND_INFO;
+
+
+typedef struct ArgumentInfo
+{
+    char                    *Name;          /* Argument Name */
+
+} ARGUMENT_INFO;
+
+
+
 #define PARAM_LIST(pl)                  pl
 
 #define DBTEST_OUTPUT_LEVEL(lvl)        if (opt_verbose)
@@ -192,6 +206,55 @@ extern UINT32                   SizeOfAcpiObjects;
 #define EX_NO_SINGLE_STEP       1
 #define EX_SINGLE_STEP          2
 
+
+INT32
+DbMatchArgument (
+    char                    *UserArgument,
+    ARGUMENT_INFO           *Arguments);
+
+void
+DbDumpNamespaceByOwner (
+    char                    *OwnerArg,
+    char                    *DepthArg);
+
+void
+DbDisplayTableInfo (
+    char                    *TableArg);
+
+void
+DbUnloadAcpiTable (
+    char                    *TableArg,
+    char                    *InstanceArg);
+
+
+void
+DbGenerateStatistics (
+    ACPI_GENERIC_OP         *Root,
+    BOOLEAN                 IsMethod);
+
+void
+DbAddToHistory (
+    char                    *CommandLine);
+
+void
+DbDisplayHistory (void);
+
+char *
+DbGetFromHistory (
+    char                    *CommandNumArg);
+
+void
+DbDisplayArgumentObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+ACPI_STATUS
+DbDisplayObjects (
+    char                    *ObjTypeArg,
+    char                    *DisplayCountArg);
+
+ACPI_STATUS
+DbFindNameInNamespace (
+    char                    *NameArg);
 void
 DbSetOutputDestination (
     INT32                   Where);
@@ -261,7 +324,7 @@ DbDisplayResultObject (
 
 ACPI_STATUS
 DbDisplayStatistics (
-    void);
+    char                    *TypeArg);
 
 void
 DbSetMethodBreakpoint (
@@ -351,13 +414,15 @@ DbSprintOp (
     ACPI_GENERIC_OP         *Op);
 
 
-
 void
-DbDumpNamespace (void);
+DbDumpNamespace (
+    char                    *StartArg,
+    char                    *DepthArg);
 
 void
 DbExecute (
     char                    *Name,
+    char                    **Args,
     UINT32                  Flags);
 
 void

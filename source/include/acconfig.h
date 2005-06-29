@@ -164,14 +164,11 @@
 #define METHOD_PARSE_CONFIGURATION  (METHOD_PARSE_JUST_IN_TIME | METHOD_DELETE_AT_COMPLETION)
 
 
-/* Max number of objects in the state object cache */
+/* Maximum objects in the various object caches */
 
-#define MAX_STATE_CACHE_DEPTH       24
-
-/* Max number of parse objects in the parse cache */
-
-#define MAX_PARSE_CACHE_DEPTH       512
-
+#define MAX_STATE_CACHE_DEPTH       24          /* State objects for stacks */
+#define MAX_PARSE_CACHE_DEPTH       512         /* Parse tree objects */
+#define MAX_OBJECT_CACHE_DEPTH      32          /* Interpreter operand objects */
 
 /* 
  * NameSpace Table size
