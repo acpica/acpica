@@ -309,7 +309,7 @@ AcpiTbFindRsdp (
          *  RSDP address was supplied as part of the initialization data
          */
 
-        Status = AcpiOsdMapMemory(AcpiGbl_AcpiInitData.RSDP_PhysicalAddress,
+        Status = AcpiOsMapMemory(AcpiGbl_AcpiInitData.RSDP_PhysicalAddress,
                                 sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER),
                                 (void **)&TablePtr);
 
@@ -358,7 +358,7 @@ AcpiTbFindRsdp (
      * Search memory for RSDP.  First map low physical memory.
      */
 
-    Status = AcpiOsdMapMemory (LO_RSDP_WINDOW_BASE, LO_RSDP_WINDOW_SIZE, (void **)&TablePtr);
+    Status = AcpiOsMapMemory (LO_RSDP_WINDOW_BASE, LO_RSDP_WINDOW_SIZE, (void **)&TablePtr);
 
     if (ACPI_FAILURE (Status))
     {
@@ -383,14 +383,14 @@ AcpiTbFindRsdp (
 
     /* This mapping is no longer needed */
 
-    AcpiOsdUnmapMemory (TablePtr, LO_RSDP_WINDOW_SIZE);
+    AcpiOsUnmapMemory (TablePtr, LO_RSDP_WINDOW_SIZE);
 
 
     /*
      * 2) Search upper memory: 16-byte boundaries in E0000h-F0000h
      */
 
-    Status = AcpiOsdMapMemory (HI_RSDP_WINDOW_BASE, HI_RSDP_WINDOW_SIZE, (void **)&TablePtr);
+    Status = AcpiOsMapMemory (HI_RSDP_WINDOW_BASE, HI_RSDP_WINDOW_SIZE, (void **)&TablePtr);
 
     if (ACPI_FAILURE (Status))
     {
@@ -411,7 +411,7 @@ AcpiTbFindRsdp (
 
     /* This mapping is no longer needed */
 
-    AcpiOsdUnmapMemory (TablePtr, HI_RSDP_WINDOW_SIZE);
+    AcpiOsUnmapMemory (TablePtr, HI_RSDP_WINDOW_SIZE);
 
 
     /* RSDP signature was not found */

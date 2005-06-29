@@ -579,7 +579,7 @@ AcpiTbDeleteSingleTable (
 
         case ACPI_MEM_MAPPED:
 
-            AcpiOsdUnmapMemory (TableDesc->BasePointer, TableDesc->Length);
+            AcpiOsUnmapMemory (TableDesc->BasePointer, TableDesc->Length);
             break;
         }
     }

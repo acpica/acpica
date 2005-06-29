@@ -277,7 +277,7 @@ AcpiTbValidateTableHeader (
 
     /* Verify that this is a valid address */
 
-    if (!AcpiOsdReadable (TableHeader, sizeof (ACPI_TABLE_HEADER)))
+    if (!AcpiOsReadable (TableHeader, sizeof (ACPI_TABLE_HEADER)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Cannot read table header at %p\n", TableHeader));
         return AE_BAD_ADDRESS;
@@ -348,7 +348,7 @@ AcpiTbMapAcpiTable (
     {
         /* Get the table header so we can extract the table length */
 
-        Status = AcpiOsdMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER), (void **)&Table);
+        Status = AcpiOsMapMemory (PhysicalAddress, sizeof (ACPI_TABLE_HEADER), (void **)&Table);
         if (ACPI_FAILURE (Status))
         {
             return Status;
@@ -367,7 +367,7 @@ AcpiTbMapAcpiTable (
 
         /* Always unmap the memory for the header */
 
-        AcpiOsdUnmapMemory (Table, sizeof (ACPI_TABLE_HEADER));
+        AcpiOsUnmapMemory (Table, sizeof (ACPI_TABLE_HEADER));
 
         /* Exit if header invalid */
 
@@ -380,7 +380,7 @@ AcpiTbMapAcpiTable (
 
     /* Map the physical memory for the correct length */
 
-    Status = AcpiOsdMapMemory (PhysicalAddress, TableSize, (void **)&Table);
+    Status = AcpiOsMapMemory (PhysicalAddress, TableSize, (void **)&Table);
     if (ACPI_FAILURE (Status))
     {
         return Status;
