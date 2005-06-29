@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.48 $
+ *       $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -177,7 +177,7 @@ AcpiDsExecEndControlOp (
 ACPI_STATUS
 AcpiDsGetPredicateValue (
     ACPI_WALK_STATE         *WalkState,
-    UINT32                  HasResultObj);
+    ACPI_OPERAND_OBJECT     *ResultObj);
 
 ACPI_STATUS
 AcpiDsExecBeginOp (
