@@ -14,15 +14,18 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.12 $
- | $Date: 2005/06/29 17:50:56 $
+ | $Revision: 1.13 $
+ | $Date: 2005/06/29 17:50:58 $
  | $Log: exstore.c,v $
- | Revision 1.12  2005/06/29 17:50:56  aystarik
- | Integrated with 03/99 OPSD code
+ | Revision 1.13  2005/06/29 17:50:58  aystarik
+ | New version of DEBUG_PRINT
  |
  | 
- | date	99.03.31.22.33.00;	author rmoore1;	state Exp;
+ | date	99.04.02.22.39.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 13    4/02/99 2:39p Rmoore1
+ * New version of DEBUG_PRINT
  * 
  * 12    3/31/99 2:33p Rmoore1
  * Integrated with 03/99 OPSD code
@@ -410,7 +413,7 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
             }
 
 #ifdef HACK
-            DEBUG_PRINT (AML_WARN, " ** GetMethodValue: ret uninit as 4 **\n");
+            DEBUG_PRINT (AML_WARN, (" ** GetMethodValue: ret uninit as 4 **\n"));
             ObjDesc->Number.ValType = (UINT8) Number;
             ObjDesc->Number.Number = 0x4;
             Excep = S_SUCCESS;
@@ -478,8 +481,8 @@ SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjD
     FUNCTION_TRACE ("SetMethodValue");
 
 
-    DEBUG_PRINT3 (TRACE_EXEC, "Index=%d, ObjDesc=%p, ObjDesc2=%p\n",
-                    Index, ObjDesc, ObjDesc2);
+    DEBUG_PRINT (TRACE_EXEC, ("Index=%d, ObjDesc=%p, ObjDesc2=%p\n",
+                    Index, ObjDesc, ObjDesc2));
 
     if (OUTRANGE (MethodStackTop, MethodStack) ||
         OUTRANGE (Index, MethodStack[MethodStackTop]))
@@ -696,19 +699,19 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (AML_INFO, " ** PrepDefFieldValue: hard 8 **\n");
+        DEBUG_PRINT (AML_INFO, (" ** PrepDefFieldValue: hard 8 **\n"));
 
         ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
         ObjDesc->Field.Container  = NsValPtr (Region);
 
 
-        DEBUG_PRINT3 (AML_INFO, "PrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
-                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc);
+        DEBUG_PRINT (AML_INFO, ("PrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
+                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
 
         DUMP_STACK_ENTRY (ObjDesc);
         DUMP_ENTRY (Region);
-        DEBUG_PRINT1 (AML_INFO, "\t%p \n", ObjDesc->Field.Container);
+        DEBUG_PRINT (AML_INFO, ("\t%p \n", ObjDesc->Field.Container));
 
         if (ObjDesc->Field.Container)
         {
@@ -716,7 +719,7 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
         }
 
         DEBUG_PRINT (AML_INFO,
-                    "============================================================\n");
+                    ("============================================================\n"));
 
         /* 
          * Store the constructed descriptor (ObjDesc) into the nte whose
@@ -817,7 +820,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (AML_INFO, " ** PrepBankFieldValue: hard 8 **\n");
+        DEBUG_PRINT (AML_INFO, (" ** PrepBankFieldValue: hard 8 **\n"));
 
         ObjDesc->BankField.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->BankField.Offset     = (UINT32) FldPos / 8;
@@ -826,15 +829,15 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
         ObjDesc->BankField.BankSelect = NsValPtr (BankReg);
 
 
-        DEBUG_PRINT3 (AML_INFO, "PrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
-                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc);
+        DEBUG_PRINT (AML_INFO, ("PrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
+                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
         
         DUMP_STACK_ENTRY (ObjDesc);
         DUMP_ENTRY (Region);
         DUMP_ENTRY (BankReg);
 
         DEBUG_PRINT (AML_INFO,
-            "============================================================\n");
+                    ("============================================================\n"));
 
         /* 
          * Store the constructed descriptor (ObjDesc) into the nte whose
@@ -926,22 +929,22 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (AML_INFO, " ** PrepIndexFieldValue: hard 8 **\n");
+        DEBUG_PRINT (AML_INFO, (" ** PrepIndexFieldValue: hard 8 **\n"));
 
         ObjDesc->IndexField.BitOffset = (UINT16) FldPos % 8;
         ObjDesc->IndexField.IndexVal  = (UINT32) FldPos / 8;
         ObjDesc->IndexField.Index     = IndexReg;
         ObjDesc->IndexField.Data      = DataReg;
 
-        DEBUG_PRINT3 (AML_INFO, "PrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
-                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc);
+        DEBUG_PRINT (AML_INFO, ("PrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
+                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
 
         DUMP_STACK_ENTRY (ObjDesc);
         DUMP_ENTRY (IndexReg);
         DUMP_ENTRY (DataReg);
 
         DEBUG_PRINT (AML_INFO,
-            "============================================================\n");
+                    ("============================================================\n"));
 
         /* 
          * Store the constructed descriptor (ObjDesc) into the nte whose
@@ -1029,7 +1032,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
     {   
         /* Everything is valid */
 
-        DEBUG_PRINT (AML_INFO, "SetupField: \n");
+        DEBUG_PRINT (AML_INFO, ("SetupField: \n"));
 
         /* 
          * If the address and length have not been previously evaluated,
@@ -1066,9 +1069,9 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                     {
                         Why = "SetupField: Malformed Region/Address";
 
-                        DEBUG_PRINT3 (AML_ERROR, "SetupFld: Malformed Region/Address "
+                        DEBUG_PRINT (AML_ERROR, ("SetupFld: Malformed Region/Address "
                                     "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh\n",
-                                    ObjValDesc, ObjValDesc->ValType, (UINT8) Number);
+                                    ObjValDesc, ObjValDesc->ValType, (UINT8) Number));
 
                         Excep = S_ERROR;
                     }
@@ -1095,7 +1098,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                             ObjValDesc->ValType != (UINT8) Number)
                         {
 
-                            DEBUG_PRINT (AML_ERROR, "SetupFld: Malformed Region/Length \n");
+                            DEBUG_PRINT (AML_ERROR, ("SetupFld: Malformed Region/Length \n"));
 
                             Why = "SetupField: Malformed Region/Length";
                             Excep = S_ERROR;
@@ -1144,7 +1147,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                     ObjDesc->Field.Offset, FieldBitWidth, RgnDesc->Region.Length);
             Why = WhyBuf;
 
-            DEBUG_PRINT (AML_ERROR, "SetupFld: field address/width out of bounds\n");
+            DEBUG_PRINT (AML_ERROR, ("SetupFld: field address/width out of bounds\n"));
             DUMP_STACK_ENTRY (RgnDesc);
             DUMP_STACK_ENTRY (ObjDesc);
 
@@ -1152,7 +1155,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
         }
     }
 
-    DEBUG_PRINT1 (TRACE_EXEC, "Leave iSetupFld: %s\n", RV[Excep]);
+    DEBUG_PRINT (TRACE_EXEC, ("Leave iSetupFld: %s\n", RV[Excep]));
 
     return Excep;
 }
@@ -1216,16 +1219,16 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
 
     if (OUTRANGE (RgnDesc->Region.SpaceId, RegionTypes))
     {
-        DEBUG_PRINT3 (TRACE_OPREGION,
-            "** ReadField: Read from unknown region SpaceID %d at %08lx width %d ** \n",
-                RgnDesc->Region.SpaceId, Address, FieldBitWidth);
+        DEBUG_PRINT (TRACE_OPREGION,
+                    ("** ReadField: Read from unknown region SpaceID %d at %08lx width %d ** \n",
+                    RgnDesc->Region.SpaceId, Address, FieldBitWidth));
     }
 
     else
     {
-        DEBUG_PRINT3 (TRACE_OPREGION,
-                    "** Read from %s at %08lx width %d\n",
-                    RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth);
+        DEBUG_PRINT (TRACE_OPREGION,
+                    ("** Read from %s at %08lx width %d\n",
+                    RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
 
@@ -1362,7 +1365,7 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         return S_ERROR;
     }
 
-    DEBUG_PRINT1 (TRACE_OPREGION, " val %08lx \n", *Value);
+    DEBUG_PRINT (TRACE_OPREGION, (" val %08lx \n", *Value));
 
     return S_SUCCESS;
 }
@@ -1412,15 +1415,15 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
 
     if (OUTRANGE (RgnDesc->Region.SpaceId, RegionTypes))
     {
-        DEBUG_PRINT4 (TRACE_OPREGION,
-            "** WriteField: Store %lx in unknown region SpaceID %d at %08lx width %d ** \n",
-                Value, RgnDesc->Region.SpaceId, Address, FieldBitWidth);
+        DEBUG_PRINT (TRACE_OPREGION,
+                ("** WriteField: Store %lx in unknown region SpaceID %d at %08lx width %d ** \n",
+                Value, RgnDesc->Region.SpaceId, Address, FieldBitWidth));
     }
     else
     {
-        DEBUG_PRINT4 (TRACE_OPREGION,
-                "** Store %lx in %s at %08lx width %d\n",
-                Value, RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth);
+        DEBUG_PRINT (TRACE_OPREGION,
+                ("** Store %lx in %s at %08lx width %d\n",
+                Value, RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
 
@@ -1640,13 +1643,13 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         /* ObjDesc valid and NamedField is defined field    */
 
         DEBUG_PRINT (AML_INFO,
-                    "in AccessNamedField: DefField type and ValPtr OK in nte \n");
+                    ("in AccessNamedField: DefField type and ValPtr OK in nte \n"));
         DUMP_ENTRY (NamedField);
 
-        DEBUG_PRINT2 (AML_INFO, "ObjDesc = %p, ObjDesc->ValType = %d\n",
-                    ObjDesc, ObjDesc->ValType);
-        DEBUG_PRINT2 (AML_INFO, " DatLen = %d, BitOffset = %d\n",
-                    ObjDesc->FieldUnit.DatLen, ObjDesc->FieldUnit.BitOffset);
+        DEBUG_PRINT (AML_INFO, ("ObjDesc = %p, ObjDesc->ValType = %d\n",
+                    ObjDesc, ObjDesc->ValType));
+        DEBUG_PRINT (AML_INFO, (" DatLen = %d, BitOffset = %d\n",
+                    ObjDesc->FieldUnit.DatLen, ObjDesc->FieldUnit.BitOffset));
 
         if (DefField != ObjDesc->ValType)
         {
@@ -1813,7 +1816,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
             if (S_SUCCESS == Excep)
             {
 
-                DEBUG_PRINT (AML_INFO, " invoking WriteField\n");
+                DEBUG_PRINT (AML_INFO, (" invoking WriteField\n"));
 
                 /* perform the update */
 
@@ -1955,8 +1958,8 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
     FUNCTION_TRACE ("ExecStore");
 
-    DEBUG_PRINT2 (AML_INFO, "entered ExecStore: Val=%p, Dest=%p\n", 
-                    ValDesc, DestDesc);
+    DEBUG_PRINT (AML_INFO, ("entered ExecStore: Val=%p, Dest=%p\n", 
+                    ValDesc, DestDesc));
 
     if (!ValDesc || !DestDesc)
     {
@@ -2049,9 +2052,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             Why = WhyBuf;
             Excep = S_ERROR;
 #else
-            DEBUG_PRINT1 (AML_WARN,
-                    "ExecStore/NameOp: Store into %s not implemented\n",
-                      NsTypeNames[NsValType(TempHandle)]);
+            DEBUG_PRINT (AML_WARN,
+                        ("ExecStore/NameOp: Store into %s not implemented\n",
+                        NsTypeNames[NsValType(TempHandle)]));
             Excep = S_SUCCESS;
 #endif
             DELETE (DestDesc);
@@ -2142,8 +2145,8 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 Excep = SetNamedFieldValue (DestDesc->BankField.BankSelect,
                                             DestDesc->BankField.BankVal);
 
-                DEBUG_PRINT1 (AML_INFO,
-                            "ExecStore: set bank select returned %s\n", RV[Excep]);
+                DEBUG_PRINT (AML_INFO,
+                            ("ExecStore: set bank select returned %s\n", RV[Excep]));
             }
 
 
@@ -2153,8 +2156,8 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 
                 Excep = SetNamedFieldValue (DestDesc->BankField.BankSelect,
                                             ValDesc->BankField.BankVal);
-                DEBUG_PRINT1 (AML_INFO,
-                    "ExecStore: set bank select returned %s\n", RV[Excep]);
+                DEBUG_PRINT (AML_INFO,
+                            ("ExecStore: set bank select returned %s\n", RV[Excep]));
             }
             
             break;  /*  Global Lock released below  */
@@ -2327,8 +2330,8 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
                 Excep = SetNamedFieldValue (DestDesc->IndexField.Index,
                                             DestDesc->IndexField.IndexVal);
-                DEBUG_PRINT1 (AML_INFO,
-                            "ExecStore: IndexField: set index returned %s\n", RV[Excep]);
+                DEBUG_PRINT (AML_INFO,
+                            ("ExecStore: IndexField: set index returned %s\n", RV[Excep]));
             }
 
             if (S_SUCCESS == Excep)
@@ -2337,8 +2340,8 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 
                 Excep = SetNamedFieldValue (DestDesc->IndexField.Data,
                                             ValDesc->Number.Number);
-                DEBUG_PRINT1 (AML_INFO,
-                    "ExecStore: IndexField: set data returned %s\n", RV[Excep]);
+                DEBUG_PRINT (AML_INFO,
+                            ("ExecStore: IndexField: set data returned %s\n", RV[Excep]));
             }
 
             break;      /* Global Lock released below   */
@@ -2384,9 +2387,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
                 else
                 {
-                    DEBUG_PRINT2 (AML_INFO,
-                        "ExecStore: FieldUnit: name's value DestDesc=%p, DestDesc->ValType=%02Xh\n",
-                        DestDesc, DestDesc->ValType);
+                    DEBUG_PRINT (AML_INFO,
+                        ("ExecStore: FieldUnit: name's value DestDesc=%p, DestDesc->ValType=%02Xh\n",
+                        DestDesc, DestDesc->ValType));
                 }
             }
 
@@ -2410,9 +2413,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 char *FullyQN = NsFullyQualifiedName (TempHandle);
 
 
-                DEBUG_PRINT2 (AML_ERROR,
-                            "ExecStore/FieldUnit: bad container in %s (%p)\n",
-                             FullyQN, TempHandle);
+                DEBUG_PRINT (AML_ERROR,
+                            ("ExecStore/FieldUnit: bad container in %s (%p)\n",
+                             FullyQN, TempHandle));
                 DUMP_ENTRY (TempHandle);
 
 
@@ -2475,14 +2478,14 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 Mask = ((UINT32) 1 << DestDesc->FieldUnit.DatLen) - (UINT32)1
                                     << DestDesc->FieldUnit.BitOffset;
 
-                DEBUG_PRINT7 (TRACE_BFIELD,
-                        "** Store %lx in buffer %p byte %ld bit %d width %d addr %p mask %08lx\n",
+                DEBUG_PRINT (TRACE_BFIELD,
+                        ("** Store %lx in buffer %p byte %ld bit %d width %d addr %p mask %08lx\n",
                         ValDesc->Number.Number,
                         DestDesc->FieldUnit.Container->Buffer.Buffer,
                         DestDesc->FieldUnit.Offset,
                         DestDesc->FieldUnit.BitOffset,
                         DestDesc->FieldUnit.DatLen,
-                        Location, Mask);
+                        Location, Mask));
 
                 /* zero out the field in the buffer */
                 
@@ -2495,8 +2498,8 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 *(UINT32 *) Location |=
                     (ValDesc->Number.Number << DestDesc->FieldUnit.BitOffset) & Mask;
                 
-                DEBUG_PRINT1 (TRACE_BFIELD,
-                        " val %08lx\n", *(UINT32 *) Location);
+                DEBUG_PRINT (TRACE_BFIELD,
+                            (" val %08lx\n", *(UINT32 *) Location));
             }
             break;  /* Global lock released below */
 
@@ -2521,8 +2524,8 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             if (Stacked)
             {
-                DEBUG_PRINT2 (AML_INFO, "ExecStore: set %s (%p)\n",
-                             NsFullyQualifiedName (TempHandle), TempHandle);
+                DEBUG_PRINT (AML_INFO, ("ExecStore: set %s (%p)\n",
+                             NsFullyQualifiedName (TempHandle), TempHandle));
                 DUMP_ENTRY (TempHandle);
                 DUMP_STACK_ENTRY (DestDesc);
             }
@@ -2563,7 +2566,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see sec. 15.2.3.3.3.
          */
-        DEBUG_PRINT (AML_INFO, "DebugOp: \n");
+        DEBUG_PRINT (AML_INFO, ("DebugOp: \n"));
         DUMP_STACK_ENTRY (ValDesc);
 
         DELETE (DestDesc);
@@ -2580,9 +2583,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                     DestDesc->Lvalue.OpCode);
         Why = WhyBuf;
         
-        DEBUG_PRINT1 (AML_ERROR,
-                    "ExecStore:internal error: Unknown Lvalue subtype %02x\n",
-                    DestDesc->Lvalue.OpCode);
+        DEBUG_PRINT (AML_ERROR,
+                    ("ExecStore:internal error: Unknown Lvalue subtype %02x\n",
+                    DestDesc->Lvalue.OpCode));
         
         _dump_buf (DestDesc, sizeof (OBJECT_DESCRIPTOR), ASCII | HEX,
                          LstFileHandle, LOGFILE);
@@ -2728,13 +2731,13 @@ GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
         ResultDesc->Number.Number
             = *(UINT32 *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
 
-        DEBUG_PRINT7 (AML_INFO,
-            "** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
+        DEBUG_PRINT (AML_INFO,
+            ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
             FieldDesc->FieldUnit.Container->Buffer.Buffer,
             FieldDesc->FieldUnit.Offset,
             FieldDesc->FieldUnit.BitOffset,
             FieldDesc->FieldUnit.DatLen,
-            Location, Mask, ResultDesc->Number.Number);
+            Location, Mask, ResultDesc->Number.Number));
     }
 
     if (Locked)
@@ -2807,50 +2810,50 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
             MvIndex = (*StackPtr)->Lvalue.OpCode - Local0;
 
-            DEBUG_PRINT4 (AML_INFO,
-                        "GetRvalue:Lcl%d: before GetMethodValue %p %p %08lx \n",
+            DEBUG_PRINT (AML_INFO,
+                        ("GetRvalue:Lcl%d: before GetMethodValue %p %p %08lx \n",
                         MvIndex,
-                        StackPtr, *StackPtr, *(UINT32 *)* StackPtr);
+                        StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
 
             Excep = GetMethodValue (LCLBASE + (*StackPtr)->Lvalue.OpCode - Local0,
                                     *StackPtr);
 
-            DEBUG_PRINT5 (AML_INFO,
-                        "GetRvalue:Lcl%d: iGMV Excep=%s %p %p %08lx \n",
+            DEBUG_PRINT (AML_INFO,
+                        ("GetRvalue:Lcl%d: iGMV Excep=%s %p %p %08lx \n",
                         MvIndex, RV[Excep], StackPtr, *StackPtr,
-                        *(UINT32 *)* StackPtr);
+                        *(UINT32 *)* StackPtr));
             
             if (Number == (*StackPtr)->ValType)
             {
                 /* Value is a Number */
                 
-                DEBUG_PRINT1 (AML_INFO,
-                            "[%ld] \n", (*StackPtr)->Number.Number);
+                DEBUG_PRINT (AML_INFO,
+                            ("[%ld] \n", (*StackPtr)->Number.Number));
             }
             break;
 
         case Arg0: case Arg1: case Arg2: case Arg3:
         case Arg4: case Arg5: case Arg6:
 
-            DEBUG_PRINT4 (TRACE_EXEC,
-                        "GetRvalue:Arg%d: before GetMethodValue %p %p %08lx \n",
+            DEBUG_PRINT (TRACE_EXEC,
+                        ("GetRvalue:Arg%d: before GetMethodValue %p %p %08lx \n",
                         MvIndex = (*StackPtr)->Lvalue.OpCode - Arg0,
-                        StackPtr, *StackPtr, *(UINT32 *)* StackPtr);
+                        StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
 
             Excep = GetMethodValue (ARGBASE + (*StackPtr)->Lvalue.OpCode - Arg0,
                                     *StackPtr);
         
-            DEBUG_PRINT5 (TRACE_EXEC,
-                        "GetRvalue:Arg%d: iGMV returned %s %p %p %08lx \n",
+            DEBUG_PRINT (TRACE_EXEC,
+                        ("GetRvalue:Arg%d: iGMV returned %s %p %p %08lx \n",
                         MvIndex, RV[Excep], StackPtr, *StackPtr,
-                        *(UINT32 *)* StackPtr);
+                        *(UINT32 *)* StackPtr));
 
             if (Number == (*StackPtr)->ValType)
             {
                 /* Value is a Number */
                 
-                DEBUG_PRINT1 (AML_INFO,
-                            "[%ld] \n", (*StackPtr)->Number.Number);
+                DEBUG_PRINT (AML_INFO,
+                            ("[%ld] \n", (*StackPtr)->Number.Number));
             }
 
             break;
@@ -2939,12 +2942,12 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             
 
         DEBUG_PRINT (TRACE_EXEC,
-                    "GetRvalue: found direct name ptr \n");
+                    ("GetRvalue: found direct name ptr \n"));
 
         ValDesc = (OBJECT_DESCRIPTOR *) NsValPtr ((NsHandle)* StackPtr);
 
-        DEBUG_PRINT2 (TRACE_EXEC,
-                    "GetRvalue: NsValPtr(%p) returned Val=%p\n", *StackPtr, ValDesc);
+        DEBUG_PRINT (TRACE_EXEC,
+                    ("GetRvalue: NsValPtr(%p) returned Val=%p\n", *StackPtr, ValDesc));
 
         switch (NsValType ((NsHandle)* StackPtr))
         {
@@ -2960,7 +2963,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {
                 Why = "GetRvalue/Package:internal error: null ValPtr";
                 DEBUG_PRINT (TRACE_EXEC,
-                    "leave iGetRvalue: NULL Package ValuePtr ==> S_ERROR\n");
+                            ("leave iGetRvalue: NULL Package ValuePtr ==> S_ERROR\n"));
 
                 return S_ERROR;
             }
@@ -3097,14 +3100,14 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             
             ObjDesc->Buffer.Sequence = AmlBufSeq();
             
-            DEBUG_PRINT2 (TRACE_BFIELD,
-                        "GetRvalue: new Buffer descriptor seq %ld @ %p \n",
-                        ObjDesc->Buffer.Sequence, ObjDesc);
+            DEBUG_PRINT (TRACE_BFIELD,
+                        ("GetRvalue: new Buffer descriptor seq %ld @ %p \n",
+                        ObjDesc->Buffer.Sequence, ObjDesc));
 
             break;
 
         case Number:
-            DEBUG_PRINT (TRACE_EXEC, "GetRvalue: case Number \n");
+            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue: case Number \n"));
 
             if (!ValDesc)
             {
@@ -3423,13 +3426,13 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         case Region:        /* XXX - unimplemented, may not be needed */
 
         case Any:
-            DEBUG_PRINT1 (TRACE_EXEC, "case %s \n",
-                        NsTypeNames[NsValType ((NsHandle)* StackPtr)]);
+            DEBUG_PRINT (TRACE_EXEC, ("case %s \n",
+                        NsTypeNames[NsValType ((NsHandle)* StackPtr)]));
           
 #ifdef HACK
-            DEBUG_PRINT1 (AML_WARN,
-                        "** GetRvalue: Fetch from %s not implemented, using value 0\n",
-                        NsTypeNames[NsValType ((NsHandle)* StackPtr)]);
+            DEBUG_PRINT (AML_WARN,
+                        ("** GetRvalue: Fetch from %s not implemented, using value 0\n",
+                        NsTypeNames[NsValType ((NsHandle)* StackPtr)]));
             
             ObjDesc = AllocateObjectDesc (&KDT[7]);
             if (!ObjDesc)
@@ -3454,7 +3457,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         default:
 
             DEBUG_PRINT (TRACE_EXEC, 
-                    "GetRvalue: case default handle type unexpected: S_ERROR \n");
+                        ("GetRvalue: case default handle type unexpected: S_ERROR \n"));
 
             sprintf (WhyBuf, "GetRvalue: Unknown NsType %d",
                     NsValType ((NsHandle)* StackPtr));
@@ -3465,7 +3468,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         *StackPtr = (void *) ObjDesc;
     }
 
-    DEBUG_PRINT (TRACE_EXEC, "leave GetRvalue: S_SUCCESS\n");
+    DEBUG_PRINT (TRACE_EXEC, ("leave GetRvalue: S_SUCCESS\n"));
 
     return S_SUCCESS;
 }
@@ -3631,8 +3634,8 @@ PrepStack (char *Types)
         case 'n':                                   /* need Number */
             Excep = GetRvalue (StackPtr);
 
-            DEBUG_PRINT1 (TRACE_EXEC,
-                          "PrepStack:n: GetRvalue returned %s\n", RV[Excep]);
+            DEBUG_PRINT (TRACE_EXEC,
+                          ("PrepStack:n: GetRvalue returned %s\n", RV[Excep]));
 
             if (S_SUCCESS != Excep)
             {
@@ -3657,7 +3660,7 @@ PrepStack (char *Types)
                 return Excep;
             }
 
-            DEBUG_PRINT (TRACE_EXEC,"GetRvalue returned S_SUCCESS\n");
+            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
 
             if (String != (*StackPtr)->ValType &&
                 Buffer != (*StackPtr)->ValType)
@@ -3678,7 +3681,7 @@ PrepStack (char *Types)
                 return Excep;
             }
 
-            DEBUG_PRINT (TRACE_EXEC,"GetRvalue returned S_SUCCESS\n");
+            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
 
             if (Buffer != (*StackPtr)->ValType)
             {
@@ -3708,7 +3711,7 @@ PrepStack (char *Types)
                 return Excep;
             }
 
-            DEBUG_PRINT (TRACE_EXEC, "GetRvalue returned S_SUCCESS\n");
+            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
 
             if (Package != (*StackPtr)->ValType)
             {
@@ -4085,8 +4088,7 @@ ExecMonadic2R (UINT16 opcode)
     Excep = ExecStore (ObjDesc, ResDesc);
     ObjStackTop--;
 
-    DEBUG_PRINT1 (TRACE_EXEC,
-            "leave iExecMonadic2R: %s\n", RV[Excep]);
+    DEBUG_PRINT (TRACE_EXEC, ("leave iExecMonadic2R: %s\n", RV[Excep]));
     
     return Excep;
 }
@@ -5170,8 +5172,8 @@ ExecCreateField (UINT16 opcode)
     case FieldUnit:
     case IndexField:
 
-        DEBUG_PRINT2 (TRACE_BFIELD, "ExecCreateField: clobber %s (%p) \n",
-                     NsFullyQualifiedName (ResDesc), ResDesc);
+        DEBUG_PRINT (TRACE_BFIELD, ("ExecCreateField: clobber %s (%p) \n",
+                     NsFullyQualifiedName (ResDesc), ResDesc));
 
         DUMP_ENTRY (ResDesc);
         DUMP_STACK_ENTRY (NsValPtr (ResDesc));
@@ -5241,10 +5243,10 @@ ExecFatal (void)
     CodeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
     TypeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
 
-    DEBUG_PRINT3 (AML_INFO,
-                "FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+    DEBUG_PRINT (AML_INFO,
+                ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
                 TypeDesc->Number.Number, CodeDesc->Number.Number,
-                ArgDesc->Number.Number);
+                ArgDesc->Number.Number));
 
     Why = "ExecFatal: FatalOp executed";
     return S_ERROR;
@@ -5654,9 +5656,9 @@ AmlExec (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
         {
             if (S_RETURN == Excep)
             {
-                DEBUG_PRINT (AML_INFO, "Method returned: \n");
+                DEBUG_PRINT (AML_INFO, ("Method returned: \n"));
                 DUMP_STACK_ENTRY ((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);
-                DEBUG_PRINT1 (AML_INFO," at stack level %d\n", ObjStackTop);
+                DEBUG_PRINT (AML_INFO, (" at stack level %d\n", ObjStackTop));
             }
 
             PopExec ();            /* package stack -- inverse of AmlPrepExec() */
