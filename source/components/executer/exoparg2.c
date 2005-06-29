@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdyadic - ACPI AML (p-code) execution for dyadic operators
- *              $Revision: 1.70 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,16 +126,15 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amdyadic")
-
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlDoConcatenate
  *
- * PARAMETERS:  *ObjDesc        - Object to be converted.  Must be an 
+ * PARAMETERS:  *ObjDesc        - Object to be converted.  Must be an
  *                                Integer, Buffer, or String
  *
  * RETURN:      Status
@@ -167,7 +166,7 @@ AcpiAmlDoConcatenate (
      */
     switch (ObjDesc->Common.Type)
     {
-    case ACPI_TYPE_NUMBER:
+    case ACPI_TYPE_INTEGER:
 
         /* Handle both ACPI 1.0 and ACPI 2.0 Integer widths */
 
@@ -175,7 +174,7 @@ AcpiAmlDoConcatenate (
         {
             /*
              * We are running a method that exists in a 32-bit ACPI table.
-             * Truncate the value to 32 bits by zeroing out the upper 
+             * Truncate the value to 32 bits by zeroing out the upper
              * 32-bit field
              */
             IntegerSize = sizeof (UINT32);
@@ -205,7 +204,7 @@ AcpiAmlDoConcatenate (
 
         /* Convert the first integer */
 
-        ThisInteger = ObjDesc->Number.Value;
+        ThisInteger = ObjDesc->Integer.Value;
         for (i = 0; i < IntegerSize; i++)
         {
             NewBuf[i] = (UINT8) ThisInteger;
@@ -214,13 +213,13 @@ AcpiAmlDoConcatenate (
 
         /* Convert the second integer */
 
-        ThisInteger = ObjDesc2->Number.Value;
+        ThisInteger = ObjDesc2->Integer.Value;
         for (; i < (IntegerSize * 2); i++)
         {
             NewBuf[i] = (UINT8) ThisInteger;
             ThisInteger >>= 8;
         }
-        
+
         break;
 
 
@@ -381,14 +380,16 @@ AcpiAmlExecDyadic1 (
             case ACPI_TYPE_DEVICE:
             case ACPI_TYPE_THERMAL:
 
-                /*
-                 * Requires that Device and ThermalZone be compatible
-                 * mappings
+                /* 
+                 * Dispatch the notify to the appropriate handler
+                 * NOTE: the request is queued for execution after this method
+                 * completes.  The notify handlers are NOT invoked synchronously
+                 * from this thread -- because handlers may in turn run other
+                 * control methods.
                  */
 
-                /* Dispatch the notify to the appropriate handler */
-
-                AcpiEvNotifyDispatch (Node, (UINT32) ValDesc->Number.Value);
+                Status = AcpiEvQueueNotifyRequest (Node, 
+                                        (UINT32) ValDesc->Integer.Value);
                 break;
 
             default:
@@ -397,6 +398,7 @@ AcpiAmlExecDyadic1 (
                     ObjDesc->Common.Type));
 
                 Status = AE_AML_OPERAND_TYPE;
+                break;
             }
         }
         break;
@@ -498,7 +500,7 @@ AcpiAmlExecDyadic2R (
     case AML_SHIFT_RIGHT_OP:
     case AML_SUBTRACT_OP:
 
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
@@ -520,8 +522,8 @@ AcpiAmlExecDyadic2R (
 
     case AML_ADD_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value +
-                                ObjDesc2->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value +
+                                ObjDesc2->Integer.Value;
         break;
 
 
@@ -529,8 +531,8 @@ AcpiAmlExecDyadic2R (
 
     case AML_BIT_AND_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value &
-                                ObjDesc2->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value &
+                                ObjDesc2->Integer.Value;
         break;
 
 
@@ -538,8 +540,8 @@ AcpiAmlExecDyadic2R (
 
     case AML_BIT_NAND_OP:
 
-        RetDesc->Number.Value = ~(ObjDesc->Number.Value &
-                                  ObjDesc2->Number.Value);
+        RetDesc->Integer.Value = ~(ObjDesc->Integer.Value &
+                                  ObjDesc2->Integer.Value);
         break;
 
 
@@ -547,8 +549,8 @@ AcpiAmlExecDyadic2R (
 
     case AML_BIT_OR_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value |
-                                ObjDesc2->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value |
+                                ObjDesc2->Integer.Value;
         break;
 
 
@@ -556,8 +558,8 @@ AcpiAmlExecDyadic2R (
 
     case AML_BIT_NOR_OP:
 
-        RetDesc->Number.Value = ~(ObjDesc->Number.Value |
-                                  ObjDesc2->Number.Value);
+        RetDesc->Integer.Value = ~(ObjDesc->Integer.Value |
+                                  ObjDesc2->Integer.Value);
         break;
 
 
@@ -565,8 +567,8 @@ AcpiAmlExecDyadic2R (
 
     case AML_BIT_XOR_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value ^
-                                ObjDesc2->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value ^
+                                ObjDesc2->Integer.Value;
         break;
 
 
@@ -574,7 +576,7 @@ AcpiAmlExecDyadic2R (
 
     case AML_DIVIDE_OP:
 
-        if (!ObjDesc2->Number.Value)
+        if (!ObjDesc2->Integer.Value)
         {
             REPORT_ERROR
                 (("AmlExecDyadic2R/DivideOp: Divide by zero\n"));
@@ -583,7 +585,7 @@ AcpiAmlExecDyadic2R (
             goto Cleanup;
         }
 
-        RetDesc2 = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+        RetDesc2 = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!RetDesc2)
         {
             Status = AE_NO_MEMORY;
@@ -592,13 +594,13 @@ AcpiAmlExecDyadic2R (
 
         /* Remainder (modulo) */
 
-        RetDesc->Number.Value   = ACPI_MODULO (ObjDesc->Number.Value,
-                                                ObjDesc2->Number.Value);
+        RetDesc->Integer.Value   = ACPI_MODULO (ObjDesc->Integer.Value,
+                                                ObjDesc2->Integer.Value);
 
         /* Result (what we used to call the quotient) */
 
-        RetDesc2->Number.Value  = ACPI_DIVIDE (ObjDesc->Number.Value,
-                                                ObjDesc2->Number.Value);
+        RetDesc2->Integer.Value  = ACPI_DIVIDE (ObjDesc->Integer.Value,
+                                                ObjDesc2->Integer.Value);
         break;
 
 
@@ -606,8 +608,8 @@ AcpiAmlExecDyadic2R (
 
     case AML_MULTIPLY_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value *
-                                ObjDesc2->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value *
+                                ObjDesc2->Integer.Value;
         break;
 
 
@@ -615,8 +617,8 @@ AcpiAmlExecDyadic2R (
 
     case AML_SHIFT_LEFT_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value <<
-                                ObjDesc2->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value <<
+                                ObjDesc2->Integer.Value;
         break;
 
 
@@ -624,8 +626,8 @@ AcpiAmlExecDyadic2R (
 
     case AML_SHIFT_RIGHT_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value >>
-                                ObjDesc2->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value >>
+                                ObjDesc2->Integer.Value;
         break;
 
 
@@ -633,8 +635,8 @@ AcpiAmlExecDyadic2R (
 
     case AML_SUBTRACT_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value -
-                                ObjDesc2->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value -
+                                ObjDesc2->Integer.Value;
         break;
 
 
@@ -643,17 +645,17 @@ AcpiAmlExecDyadic2R (
     case AML_CONCAT_OP:
 
 
-        /* 
-         * Convert the second operand if necessary.  The first operand 
-         * determines the type of the second operand, (See the Data Types 
-         * section of the ACPI specification.)  Both object types are 
-         * guaranteed to be either Integer/String/Buffer by the operand 
+        /*
+         * Convert the second operand if necessary.  The first operand
+         * determines the type of the second operand, (See the Data Types
+         * section of the ACPI specification.)  Both object types are
+         * guaranteed to be either Integer/String/Buffer by the operand
          * resolution mechanism above.
          */
 
         switch (ObjDesc->Common.Type)
         {
-        case ACPI_TYPE_NUMBER:
+        case ACPI_TYPE_INTEGER:
             Status = AcpiAmlConvertToInteger (&ObjDesc2, WalkState);
             break;
 
@@ -675,7 +677,7 @@ AcpiAmlExecDyadic2R (
         }
 
 
-        /* 
+        /*
          * Both operands are now known to be the same object type
          * (Both are Integer, String, or Buffer), and we can now perform the
          * concatenation.
@@ -690,7 +692,7 @@ AcpiAmlExecDyadic2R (
 
     default:
 
-        REPORT_ERROR (("AcpiAmlExecDyadic2R: Unknown dyadic opcode %X\n", 
+        REPORT_ERROR (("AcpiAmlExecDyadic2R: Unknown dyadic opcode %X\n",
                 Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
@@ -808,7 +810,7 @@ AcpiAmlExecDyadic2S (
 
     /* Create the internal return object */
 
-    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
     if (!RetDesc)
     {
         Status = AE_NO_MEMORY;
@@ -817,7 +819,7 @@ AcpiAmlExecDyadic2S (
 
     /* Default return value is FALSE, operation did not time out */
 
-    RetDesc->Number.Value = 0;
+    RetDesc->Integer.Value = 0;
 
 
     /* Examine the opcode */
@@ -829,7 +831,7 @@ AcpiAmlExecDyadic2S (
 
     case AML_ACQUIRE_OP:
 
-        Status = AcpiAmlSystemAcquireMutex (TimeDesc, ObjDesc);
+        Status = AcpiAmlAcquireMutex (TimeDesc, ObjDesc, WalkState);
         break;
 
 
@@ -856,7 +858,7 @@ AcpiAmlExecDyadic2S (
 
     if (Status == AE_TIME)
     {
-        RetDesc->Number.Value = ACPI_INTEGER_MAX;   /* TRUE, op timed out */
+        RetDesc->Integer.Value = ACPI_INTEGER_MAX;   /* TRUE, op timed out */
         Status = AE_OK;
     }
 
@@ -941,7 +943,7 @@ AcpiAmlExecDyadic2 (
 
     /* Create the internal return object */
 
-    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
     if (!RetDesc)
     {
         Status = AE_NO_MEMORY;
@@ -960,8 +962,8 @@ AcpiAmlExecDyadic2 (
 
     case AML_LAND_OP:
 
-        Lboolean = (BOOLEAN) (ObjDesc->Number.Value &&
-                              ObjDesc2->Number.Value);
+        Lboolean = (BOOLEAN) (ObjDesc->Integer.Value &&
+                              ObjDesc2->Integer.Value);
         break;
 
 
@@ -969,8 +971,8 @@ AcpiAmlExecDyadic2 (
 
     case AML_LEQUAL_OP:
 
-        Lboolean = (BOOLEAN) (ObjDesc->Number.Value ==
-                              ObjDesc2->Number.Value);
+        Lboolean = (BOOLEAN) (ObjDesc->Integer.Value ==
+                              ObjDesc2->Integer.Value);
         break;
 
 
@@ -978,8 +980,8 @@ AcpiAmlExecDyadic2 (
 
     case AML_LGREATER_OP:
 
-        Lboolean = (BOOLEAN) (ObjDesc->Number.Value >
-                              ObjDesc2->Number.Value);
+        Lboolean = (BOOLEAN) (ObjDesc->Integer.Value >
+                              ObjDesc2->Integer.Value);
         break;
 
 
@@ -987,8 +989,8 @@ AcpiAmlExecDyadic2 (
 
     case AML_LLESS_OP:
 
-        Lboolean = (BOOLEAN) (ObjDesc->Number.Value <
-                              ObjDesc2->Number.Value);
+        Lboolean = (BOOLEAN) (ObjDesc->Integer.Value <
+                              ObjDesc2->Integer.Value);
         break;
 
 
@@ -996,8 +998,8 @@ AcpiAmlExecDyadic2 (
 
     case AML_LOR_OP:
 
-        Lboolean = (BOOLEAN) (ObjDesc->Number.Value ||
-                              ObjDesc2->Number.Value);
+        Lboolean = (BOOLEAN) (ObjDesc->Integer.Value ||
+                              ObjDesc2->Integer.Value);
         break;
 
 
@@ -1014,11 +1016,11 @@ AcpiAmlExecDyadic2 (
 
     if (Lboolean)
     {
-        RetDesc->Number.Value = ACPI_INTEGER_MAX;
+        RetDesc->Integer.Value = ACPI_INTEGER_MAX;
     }
     else
     {
-        RetDesc->Number.Value = 0;
+        RetDesc->Integer.Value = 0;
     }
 
 
