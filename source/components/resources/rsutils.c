@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -418,6 +418,15 @@ AcpiRsSetSrsMethodData (
      * Execute the method, no return value
      */
     Status = AcpiNsEvaluateRelative ("_SRS", &Info);
+    if (ACPI_SUCCESS (Status))
+    {
+        /* Delete any return object (especially if ImplicitReturn is enabled) */
+
+        if (Info.ReturnObject)
+        {
+            AcpiUtRemoveReference (Info.ReturnObject);
+        }
+    }
 
     /*
      * Clean up and return the status from AcpiNsEvaluateRelative
