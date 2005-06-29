@@ -125,19 +125,22 @@
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psxutils");
 
-ACPI_WALK_STATE      *MyWalkState;
-
 
 
 /*****************************************************************************
  *
  * FUNCTION:    PsxDeleteResultIfNotUsed
  *
- * PARAMETERS:  
+ * PARAMETERS:  Op
+ *              ResultObj
+ *              WalkState
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Used after interpretation of an opcode.  If there is an internal
+ *              result descriptor, check if the parent opcode will actually use
+ *              this result.  If not, delete the result now so that it will 
+ *              not become orphaned.
  *
  ****************************************************************************/
 
@@ -169,8 +172,10 @@ PsxDeleteResultIfNotUsed (
 
     if (!Op->Parent)
     {
-        /* If there is no parent, the result can't possibly be used! */
-        /* (An executing method typically has no parent, since each method is parsed separately */
+        /* 
+         * If there is no parent, the result can't possibly be used!
+         * (An executing method typically has no parent, since each method is parsed separately
+         */
 
         /* Must pop the result stack (ObjDesc should be equal to ResultObj) */
 
@@ -256,11 +261,15 @@ PsxDeleteResultIfNotUsed (
  *
  * FUNCTION:    PsxCreateOperand
  *
- * PARAMETERS:  
+ * PARAMETERS:  WalkState
+ *              Arg
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Translate a parse tree object that is an argument to an AML
+ *              opcode to the equivalent interpreter object.  This may include
+ *              looking up a name or entering a new name into the internal
+ *              namespace.
  *
  ****************************************************************************/
 
@@ -274,8 +283,10 @@ PsxCreateOperand (
     UINT32                  NameLength;
     ACPI_OBJECT_TYPE        DataType; 
     ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_GENERIC_OP         *ParentOp;
     UINT32                  Opcode;
     UINT32                  Flags;
+    OPERATING_MODE          InterpreterMode;
 
 
     FUNCTION_TRACE_PTR ("PsxCreateOperand", Arg);
@@ -288,7 +299,6 @@ PsxCreateOperand (
     {
         DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperand: Getting a name: Arg=%p\n", Arg));
 
-
         /* Get the entire name string from the AML stream */
 
         Status = AmlGetNameString (ACPI_TYPE_Any, Arg->Value.String, &NameString, &NameLength);
@@ -300,23 +310,46 @@ PsxCreateOperand (
         /* All prefixes have been handled, and the name is in NameString */
 
         /*
-         * TBD: 02/22/2000:
-         * We probably need to differentiate between a namespace "create" operation versus a "lookup"
-         * operation (IMODE_LoadPass2 vs. IMODE_Execute) in order to support the creation of namespace
+         * Differentiate between a namespace "create" operation versus a "lookup" operation 
+         * (IMODE_LoadPass2 vs. IMODE_Execute) in order to support the creation of namespace
          * objects during the execution of control methods.
-         * 
-         * Proposed: Add a lookup function for the opcode to determine if this argument should be
-         * created if not found, or just return an error if not found
-         *
          */
-        Status = NsLookup (Gbl_CurrentScope->Scope, NameString, ACPI_TYPE_Any, IMODE_LoadPass2, 
+
+        ParentOp = Arg->Parent;
+        if ((PsIsNamedObjectOp (ParentOp->Opcode)) &&
+            (ParentOp->Opcode != AML_METHODCALL) &&
+            (ParentOp->Opcode != AML_NAMEPATH))
+        {
+            /* Enter name into namespace if not found */
+
+            InterpreterMode = IMODE_LoadPass2;
+        }
+
+        else
+        {
+            /* Return a failure if name not found */
+
+            InterpreterMode = IMODE_Execute;
+        }
+
+        Status = NsLookup (Gbl_CurrentScope->Scope, NameString, ACPI_TYPE_Any, InterpreterMode, 
                                     NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) &ObjDesc);
 
-        PsxObjStackPush (ObjDesc, WalkState);
-
-        /* Returned object is already on object stack, we are done! */
+        /* Free the namestring created above */
 
         CmFree (NameString);
+
+        /*
+         * The only case where we pass through (ignore) a NOT_FOUND error is for the 
+         * CondRefOf opcode.
+         */
+
+        if ((Status == AE_NOT_FOUND) &&
+            (ParentOp->Opcode == AML_CondRefOfOp))
+        {
+            ObjDesc = (ACPI_OBJECT_INTERNAL *) Gbl_RootObject;
+            Status = AE_OK;
+        }
 
         /* Check status from the lookup */
 
@@ -324,6 +357,8 @@ PsxCreateOperand (
         {
             return_ACPI_STATUS (Status);
         }
+
+        PsxObjStackPush (ObjDesc, WalkState);
     }
 
 
@@ -373,13 +408,13 @@ PsxCreateOperand (
                 return_ACPI_STATUS (Status);
             }
 
+            /* There must be a valid value on the stack or something is seriously wrong */
+
             if (!ObjDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperand: But result obj is null! Arg=%X\n", Arg));
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
-
-            PsxObjStackPush (ObjDesc, WalkState);
         }
 
         else
@@ -400,11 +435,12 @@ PsxCreateOperand (
                 CmFree (ObjDesc);
                 return_ACPI_STATUS (Status);
             }
-
-            /* Put the operand object on the object stack */
-
-            PsxObjStackPush (ObjDesc, WalkState);
         }
+
+
+        /* Put the operand object on the object stack */
+
+        PsxObjStackPush (ObjDesc, WalkState);
     }
 
 
@@ -434,8 +470,8 @@ PsxCreateOperands (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_OP         *Arg;
-
-    
+    UINT32                  ArgsPushed = 0;
+ 
 
     FUNCTION_TRACE_PTR ("PsxCreateOperands", FirstArg);
 
@@ -455,19 +491,26 @@ PsxCreateOperands (
 
         /* Move on to next argument, if any */
 
-        DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: %p done, Arg1=%p\n", 
-                                Arg, FirstArg));
         Arg = Arg->Next;
+        ArgsPushed++;
+
+        DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: Arg #%d (%p) done, Arg1=%p\n", 
+                        ArgsPushed, Arg, FirstArg));
     }
 
     return_ACPI_STATUS (Status);
 
 
 Cleanup:
+    /* 
+     * We must undo everything done above; meaning that we must pop everything off
+     * of the operand stack and delete those objects 
+     */
 
-    /* TBD: delete all created operands on error */
+    PsxObjStackPopAndDelete (ArgsPushed, WalkState);
 
-    DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperands: Error while creating! Status=%4.4X\n", Status));
+    DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperands: Error while creating Arg %d - %s\n",
+                    (ArgsPushed+1), Gbl_ExceptionNames [Status]));
     return_ACPI_STATUS (Status);
 }
 
@@ -711,23 +754,23 @@ PsxMapNamedOpcodeToDataType (
         DataType = ACPI_TYPE_Processor;
         break;
 
-    case AML_DefFieldOp:                             /* DefFieldOp */
+    case AML_DefFieldOp:                            /* DefFieldOp */
         DataType = INTERNAL_TYPE_DefFieldDefn;
         break;
 
-    case AML_IndexFieldOp:                        /* IndexFieldOp */
+    case AML_IndexFieldOp:                          /* IndexFieldOp */
         DataType = INTERNAL_TYPE_IndexFieldDefn;
         break;
 
-    case AML_BankFieldOp:                         /* BankFieldOp */
+    case AML_BankFieldOp:                           /* BankFieldOp */
         DataType = INTERNAL_TYPE_BankFieldDefn;
         break;
 
-    case AML_NAMEDFIELD:                        /* NO CASE IN ORIGINAL  */
+    case AML_NAMEDFIELD:                            /* NO CASE IN ORIGINAL  */
         DataType = ACPI_TYPE_Any;
         break;
 
-    case AML_NameOp:                              /* NameOp - special code in original */
+    case AML_NameOp:                                /* NameOp - special code in original */
     case AML_NAMEPATH:                    
         DataType = ACPI_TYPE_Any;
         break;
