@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -458,7 +458,7 @@ AcpiDmDisassembleOneOp (
 
     case AML_STRING_OP:
 
-        AcpiDmString (Op->Common.Value.String);
+        AcpiUtPrintString (Op->Common.Value.String, ACPI_UINT8_MAX);
         break;
 
 
