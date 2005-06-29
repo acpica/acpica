@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -214,7 +214,7 @@ AcpiDsInitOneObject (
         }
 
         /*
-         * Always parse methods to detect errors, we may delete
+         * Always parse methods to detect errors, we will delete
          * the parse tree below
          */
         Status = AcpiDsParseMethod (ObjHandle);
@@ -230,7 +230,7 @@ AcpiDsInitOneObject (
         }
 
         /*
-         * Delete the parse tree.  We simple re-parse the method
+         * Delete the parse tree.  We simply re-parse the method
          * for every execution since there isn't much overhead
          */
         AcpiNsDeleteNamespaceSubtree (ObjHandle);
