@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -196,6 +196,16 @@ ACPI_STATUS
 AcpiOsTerminate (void)
 {
     return AE_OK;
+}
+
+
+ACPI_STATUS
+AcpiOsGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+{
+
+    return (AE_NO_ACPI_TABLES);
 }
 
 
