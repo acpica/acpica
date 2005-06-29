@@ -163,7 +163,7 @@ DsInitOneObject (
 
     /* We are only interested in objects owned by the table that was just loaded */
 
-    if (((NAME_TABLE_ENTRY *) ObjHandle)->TableId != Info->TableDesc->TableId)
+    if (((NAME_TABLE_ENTRY *) ObjHandle)->OwnerId != Info->TableDesc->TableId)
     {
         return AE_OK;
     }
@@ -565,8 +565,7 @@ DsBuildInternalPackageObj (
      * Add an extra pointer slot so that the list is always null terminated.
      */
 
-    ObjDesc->Package.Elements   = CmCallocate ((ACPI_SIZE) (ObjDesc->Package.Count + 1) *
-                                                     sizeof (void *));
+    ObjDesc->Package.Elements   = CmCallocate ((ObjDesc->Package.Count + 1) * sizeof (void *));
     if (!ObjDesc->Package.Elements)
     {
         /* Package vector allocation failure   */
