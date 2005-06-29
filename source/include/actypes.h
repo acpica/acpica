@@ -123,19 +123,19 @@
 /* 
  * Data types - Fixed across all compilation models
  * 
- * BOOLEAN	    Logical Boolean. 1 byte value containing a 0 for FALSE or a 1 for TRUE.  Other values are undefined.
- * INT	        Signed value. (4 bytes on IA-32, 8 bytes on IA-64)
- * UINT	        Unsigned value. (4 bytes on IA-32, 8 bytes on IA-64)
- * INT8	        1 byte signed value
- * UINT8	    1 byte unsigned value
- * INT16	    2 byte signed value
- * UINT16	    2 byte unsigned value
- * INT32	    4 byte signed value
- * UINT32	    4 byte unsigned value
+ * BOOLEAN      Logical Boolean. 1 byte value containing a 0 for FALSE or a 1 for TRUE.  Other values are undefined.
+ * INT          Signed value. (4 bytes on IA-32, 8 bytes on IA-64)
+ * UINT         Unsigned value. (4 bytes on IA-32, 8 bytes on IA-64)
+ * INT8         1 byte signed value
+ * UINT8        1 byte unsigned value
+ * INT16        2 byte signed value
+ * UINT16       2 byte unsigned value
+ * INT32        4 byte signed value
+ * UINT32       4 byte unsigned value
  * INT64        8 byte signed value (not supported or used at this time)
- * UINT64	    8 byte unsigned value (not supported or used at this time)
- * UCHAR	    Character. 1 byte unsigned value. 
- * WCHAR	    Wide Character. 2 byte unsigned value (not supported or used at this time) 
+ * UINT64       8 byte unsigned value (not supported or used at this time)
+ * UCHAR        Character. 1 byte unsigned value. 
+ * WCHAR        Wide Character. 2 byte unsigned value (not supported or used at this time) 
  */
 
 /* 
@@ -198,19 +198,19 @@ typedef unsigned int        ACPI_SIZE;
 #define HIBYTE(l)       ((UINT8)((((UINT16)(l)) >> 8) & 0xFF))
 #endif
 
-#define BIT0(x) 	    ((((x) & 0x01) > 0) ? 1 : 0)
-#define BIT1(x)    	    ((((x) & 0x02) > 0) ? 1 : 0)
-#define BIT2(x)   	    ((((x) & 0x04) > 0) ? 1 : 0)
-#define BIT3(x)   	    ((((x) & 0x08) > 0) ? 1 : 0)
-#define BIT4(x)   	    ((((x) & 0x10) > 0) ? 1 : 0)
-#define BIT5(x)    	    ((((x) & 0x20) > 0) ? 1 : 0)
-#define BIT6(x)  	    ((((x) & 0x40) > 0) ? 1 : 0)
-#define BIT7(x)    	    ((((x) & 0x80) > 0) ? 1 : 0)
+#define BIT0(x)         ((((x) & 0x01) > 0) ? 1 : 0)
+#define BIT1(x)         ((((x) & 0x02) > 0) ? 1 : 0)
+#define BIT2(x)         ((((x) & 0x04) > 0) ? 1 : 0)
+#define BIT3(x)         ((((x) & 0x08) > 0) ? 1 : 0)
+#define BIT4(x)         ((((x) & 0x10) > 0) ? 1 : 0)
+#define BIT5(x)         ((((x) & 0x20) > 0) ? 1 : 0)
+#define BIT6(x)         ((((x) & 0x40) > 0) ? 1 : 0)
+#define BIT7(x)         ((((x) & 0x80) > 0) ? 1 : 0)
 
 #define LOW_BASE(w)     ((UINT16) ((w) & 0x0000FFFF))
 #define MID_BASE(b)     ((UINT8) (((b) & 0x00FF0000) >> 16))
 #define HI_BASE(b)      ((UINT8) (((b) & 0xFF000000) >> 24))
-#define LOW_LIMIT(w)  	((UINT16) ((w) & 0x0000FFFF))
+#define LOW_LIMIT(w)    ((UINT16) ((w) & 0x0000FFFF))
 #define HI_LIMIT(b)     ((UINT8) (((b) & 0x00FF0000) >> 16))
 
 
@@ -317,12 +317,12 @@ typedef enum
    TYPE_Thermal          = 13, /* Name, multiple NamedObject */
    TYPE_Alias            = 14,
 
-/* 
- * The remaining values do not relate to the ObjectType operator and are
- * used for various internal purposes.  A gap is provided in case more
- * official ObjectType's are added in the future.  Also, values exceeding
- * the largest ObjectType need to not overlap with defined AML opcodes.
- */
+    /* 
+     * The remaining values do not relate to the ObjectType operator and are
+     * used for various internal purposes.  A gap is provided in case more
+     * official ObjectType's are added in the future.  Also, values exceeding
+     * the largest ObjectType need to not overlap with defined AML opcodes.
+     */
    TYPE_DefField         = 25,
    TYPE_BankField        = 26,
    TYPE_IndexField       = 27,
@@ -334,7 +334,9 @@ typedef enum
    TYPE_While            = 33, /* OpCode, multiple Code */
    TYPE_Scope            = 34, /* Name, multiple NamedObject */
    TYPE_DefAny           = 35, /* type is Any, suppress search of enclosing scopes */
-   TYPE_Lvalue           = 36  /* Arg#, Local#, Name, Debug; used only in descriptors */
+   TYPE_Lvalue           = 36,  /* Arg#, Local#, Name, Debug; used only in descriptors */
+
+   TYPE_Invalid          = 0xFF
 
 } ACPI_OBJECT_TYPE;
 
