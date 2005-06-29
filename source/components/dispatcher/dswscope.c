@@ -131,7 +131,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ***************************************************************************/
 
 void
-NsPushCurrentScope (nte *NewScope, NsType Type)
+NsPushCurrentScope (NAME_TABLE_ENTRY *NewScope, NsType Type)
 {
 
     FUNCTION_TRACE ("NsPushCurrentScope");
@@ -194,7 +194,7 @@ NsPushMethodScope (NsHandle NewScope)
 
 
     if (!NewScope || 
-       (nte *) 0 == ((nte *) NewScope)->Scope)
+       (NAME_TABLE_ENTRY *) 0 == ((NAME_TABLE_ENTRY *) NewScope)->Scope)
     {
         /*  NewScope or NewScope->Scope invalid    */
 
@@ -205,7 +205,7 @@ NsPushMethodScope (NsHandle NewScope)
     {
         if (CurrentScope < &ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
         {
-            NsPushCurrentScope (((nte *) NewScope)->Scope, TYPE_Method);
+            NsPushCurrentScope (((NAME_TABLE_ENTRY *) NewScope)->Scope, TYPE_Method);
         }
     
         else
