@@ -131,6 +131,8 @@ static ST_KEY_DESC_TABLE KDT[] = {
  * 
  * FUNCTION:    AmlGetMethodDepth
  *
+ * PARAMETERS:  None.
+ *
  * RETURN:      The current value of MethodStackTop
  *
  ****************************************************************************/
@@ -147,7 +149,7 @@ AmlGetMethodDepth (void)
  * 
  * FUNCTION:    AmlGetMethodType
  *
- * PARAMETERS:  INT32 Index      index in MethodStack[MethodStackTop]
+ * PARAMETERS:  Index               - Index in MethodStack[MethodStackTop]
  *
  * RETURN:      Data type of selected Arg or Local
  *              Used only in ExecMonadic2()/TypeOp.
@@ -182,21 +184,21 @@ AmlGetMethodType (INT32 Index)
  * 
  * FUNCTION:    AmlGetMethodValue
  *
- * PARAMETERS:  INT32               Index       index in MethodStack[MethodStackTop]
- *              OBJECT_DESCRIPTOR   *ObjDesc    Descriptor into which selected Arg
- *                                              or Local value should be copied
+ * PARAMETERS:  Index               - Index in MethodStack[MethodStackTop]
+ *              *ObjDesc            - Descriptor into which selected Arg
+ *                                    or Local value should be copied
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Retrieve value of selected Arg or Local
  *              Used only in AmlGetRvalue().
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlGetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    INT32           Excep = S_ERROR;
+    ACPI_STATUS         Status = AE_AML_ERROR;
 
 
     FUNCTION_TRACE ("AmlGetMethodValue");
@@ -244,7 +246,7 @@ AmlGetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
             DEBUG_PRINT (ACPI_WARN, (" ** AmlGetMethodValue: ret uninit as 4 **\n"));
             ObjDesc->Number.ValType = (UINT8) Number;
             ObjDesc->Number.Number = 0x4;
-            Excep = S_SUCCESS;
+            Status = AE_OK;
 #endif /* HACK */
 
         }
@@ -264,11 +266,11 @@ AmlGetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
                 ObjDesc->Buffer.Sequence = AmlBufSeq ();
             }
 
-            Excep = S_SUCCESS;
+            Status = AE_OK;
         }
     }
 
-    return Excep;
+    return Status;
 }
 
 
@@ -276,29 +278,25 @@ AmlGetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
  * 
  * FUNCTION:    AmlSetMethodValue
  *
- * PARAMETERS:  INT32               Index       Index in MethodStack[MethodStackTop]
- *              OBJECT_DESCRIPTOR * ObjDesc     Value to be stored
- *                                              May be NULL -- see Description.
- *              OBJECT_DESCRIPTOR * ObjDesc2    Spare descriptor into which *ObjDesc
- *                                              can be copied, or NULL if one must
- *                                              be allocated for the purpose.  If
- *                                              provided, this descriptor will be
- *                                              consumed (either used for the new
- *                                              value or deleted).
+ * PARAMETERS:  Index               - Index in MethodStack[MethodStackTop]
+ *              *ObjDesc            - Value to be stored
+ *                                    May be NULL -- see Description.
+ *              *ObjDesc2           - Spare descriptor into which *ObjDesc
+ *                                    can be copied, or NULL if one must
+ *                                    be allocated for the purpose.  If
+ *                                    provided, this descriptor will be
+ *                                    consumed (either used for the new
+ *                                    value or deleted).
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Store a value in an Arg or Local.
  *              To undefine an entry, pass ObjDesc as NULL; the old descriptor
  *              will be deleted.
  *
- * ALLOCATION:
- *  Reference     Size                    Pool    Owner       Description
- *  MethodStack   s(OBJECT_DESCRIPTOR)    bu      amlexec     Object
- *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjDesc2)
 {
     FUNCTION_TRACE ("AmlSetMethodValue");
@@ -314,7 +312,7 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetMethodValue: Bad method stack index [%d][%d]\n",
                         MethodStackTop, Index));
-        return S_ERROR;
+        return AE_AML_ERROR;
     }
 
     if (!MethodStack[MethodStackTop][Index])
@@ -332,7 +330,7 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
             {
                 /*  allocation failure  */
 
-                return S_ERROR;
+                return AE_NO_MEMORY;
             }
         }
 
@@ -421,7 +419,7 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
         }
     }
 
-    return S_SUCCESS;
+    return AE_OK;
 }
 
 
@@ -429,29 +427,25 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
  * 
  * FUNCTION:    AmlPrepDefFieldValue
  *
- * PARAMETERS:  NsHandle    Region     Region in which field is being defined
- *              UINT8       FldFlg     Access, LockRule, UpdateRule
- *                                     The format of a FieldFlag is described
- *                                     in the ACPI specification and in <aml.h>
- *              INT32       FldPos     field position
- *              INT32       FldLen     field length
+ * PARAMETERS:  Region              - Region in which field is being defined
+ *              FldFlg              - Access, LockRule, or UpdateRule.
+ *                                    The format of a FieldFlag is described
+ *                                    in the ACPI specification and in <aml.h>
+ *              FldPos              - Field position
+ *              FldLen              - Field length
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type DefField and connect
  *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
- * ALLOCATION:
- *  Reference   Size                    Pool    Owner       Description
- *  nte.ValDesc s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
- *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 {
     OBJECT_DESCRIPTOR   *ObjDesc = NULL;
-    INT32               Excep = S_SUCCESS;
+    ACPI_STATUS         Status = AE_OK;
     INT32               Type;
 
 
@@ -461,25 +455,25 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
     if (!Region)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: null Region\n"));
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
 
     else if (Region != (NsHandle)(Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
                     Type, NsTypeNames[Type]));
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
 
     else if (!(ObjDesc = AllocateObjectDesc (&KDT[3])))
     {   
         /*  unable to allocate new object descriptor    */
 
-        Excep = S_ERROR;
+        Status = AE_NO_MEMORY;
     }
 
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {   
         /* ObjDesc and Region valid */
 
@@ -504,11 +498,11 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
             DELETE (ObjDesc);
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
         }
     }
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {   
         /* ObjDesc, Region, and ObjDesc->Field.ValType valid    */
 
@@ -549,7 +543,7 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
                     (UINT8) NsGetType ((NsHandle) ObjStack[ObjStackTop]));
     }
 
-    return Excep;
+    return Status;
 }
 
 
@@ -557,30 +551,26 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
  * 
  * FUNCTION:    AmlPrepBankFieldValue
  *
- * PARAMETERS:  NsHandle    Region     Region in which field is being defined
- *              NsHandle    BankReg    Bank selection register
- *              UINT32      BankVal    Value to store in selection register
- *              UINT8       FldFlg     Access, LockRule, UpdateRule
- *              INT32       FldPos     field position
- *              INT32       FldLen     field length
+ * PARAMETERS:  Region              - Region in which field is being defined
+ *              BankReg             - Bank selection register
+ *              BankVal             - Value to store in selection register
+ *              FldFlg              - Access, LockRule, or UpdateRule
+ *              FldPos              - Field position
+ *              FldLen              - Field length
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type BankField and connect
  *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
- * ALLOCATION:
- *  Reference   Size                    Pool    Owner       Description
- *  nte.ValDesc s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
- *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
                         UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 {
     OBJECT_DESCRIPTOR   *ObjDesc = NULL;
-    INT32               Excep = S_SUCCESS;
+    ACPI_STATUS         Status = AE_OK;
     INT32               Type;
 
 
@@ -590,23 +580,23 @@ AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
     if (!Region)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: null Region\n"));
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
     else if (Region != (NsHandle) (Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: Needed Region, found %d %s\n",
                         Type, NsTypeNames[Type]));
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
     else if (!(ObjDesc = AllocateObjectDesc (&KDT[3])))
     {   
         /*  unable to allocate new object descriptor    */
         
-        Excep = S_ERROR;
+        Status = AE_NO_MEMORY;
     }
 
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {   
         /*  ObjDesc and Region valid    */
 
@@ -623,11 +613,11 @@ AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
             DELETE (ObjDesc);
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
     }
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {   
         /*  ObjDesc, Region, and ObjDesc->BankField.ValTyp valid    */
 
@@ -666,7 +656,7 @@ AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
     }
 
 
-    return Excep;
+    return Status;
 }
 
 
@@ -674,29 +664,25 @@ AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
  * 
  * FUNCTION:    AmlPrepIndexFieldValue
  *
- * PARAMETERS:  NsHandle    IndexReg   Index register
- *              NsHandle    DataReg    Data register
- *              UINT8       FldFlg     Access, LockRule, UpdateRule
- *              INT32       FldPos     field position
- *              INT32       FldLen     field length
+ * PARAMETERS:  IndexReg            - Index register
+ *              DataReg             - Data register
+ *              FldFlg              - Access, LockRule, or UpdateRule
+ *              FldPos              - Field position
+ *              FldLen              - Field length
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type IndexField and connect
  *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
- * ALLOCATION:
- *  Reference   Size                    Pool    Owner       Description
- *  nte.ValDesc s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
- *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
                         UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 {
     OBJECT_DESCRIPTOR   *ObjDesc = NULL;
-    INT32               Excep = S_SUCCESS;
+    ACPI_STATUS         Status = AE_OK;
 
 
     FUNCTION_TRACE ("AmlPrepIndexFieldValue");
@@ -705,17 +691,17 @@ AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
     if (!IndexReg || !DataReg)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepIndexFieldValue: null handle\n"));
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
 
     else if (!(ObjDesc = AllocateObjectDesc (&KDT[4])))
     {   
         /*  unable to allocate new object descriptor    */
 
-        Excep = S_ERROR;
+        Status = AE_NO_MEMORY;
     }
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {   
         /* ObjDesc, IndexRegion, and DataReg valid  */
 
@@ -730,12 +716,12 @@ AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
             DELETE (ObjDesc);
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
     }
 
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {   
         /*  ObjDesc, IndexRegion, and DataReg, and ObjDesc->IndexField.ValTyp valid */
     
@@ -771,16 +757,16 @@ AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
                     (UINT8) NsGetType ((NsHandle) ObjStack[ObjStackTop]));
     }
 
-    return Excep;
+    return Status;
 }
 
 /*****************************************************************************
  * 
  * FUNCTION:    AmlPrepStack
  *
- * PARAMETERS:  char *Types       String showing operand types needed
+ * PARAMETERS:  *Types              - String showing operand types needed
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Convert stack entries to required types
  *
@@ -794,15 +780,15 @@ AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
  *          i => If
  *          p => Package
  *      The corresponding stack entry will be converted to the
- *      required type if possible, else return S_ERROR.
+ *      required type if possible, else return AE_AML_ERROR.
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlPrepStack (char *Types)
 {
     OBJECT_DESCRIPTOR **    StackPtr = (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop];
-    INT32                   Excep;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlPrepStack");
@@ -813,15 +799,15 @@ AmlPrepStack (char *Types)
      * without clobbering top existing entry.
      */
 
-    Excep = AmlPushIfExec (MODE_Exec);
-    if (S_SUCCESS != Excep)
+    Status = AmlPushIfExec (MODE_Exec);
+    if (AE_OK != Status)
     {
-        return Excep;
+        return Status;
     }
 
     /* 
      * Normal exit is with *Types == '\0' at end of string.
-     * Function will return S_ERROR from within the loop upon
+     * Function will return AE_AML_ERROR from within the loop upon
      * finding an entry which is not, and cannot be converted
      * to, the required type; if stack underflows; or upon
      * finding a NULL stack entry (which "should never happen").
@@ -838,7 +824,7 @@ AmlPrepStack (char *Types)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack:internal error: null stack entry\n"));
             ObjStackTop--;
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
 
         bTypeFound = (*StackPtr)->ValType;
@@ -917,7 +903,7 @@ AmlPrepStack (char *Types)
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Lvalue, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
 
             if (AML_NameOp == (*StackPtr)->Lvalue.OpCode)
@@ -931,15 +917,15 @@ AmlPrepStack (char *Types)
             break;
 
         case 'n':                                   /* need Number */
-            Excep = AmlGetRvalue (StackPtr);
+            Status = AmlGetRvalue (StackPtr);
 
             DEBUG_PRINT (TRACE_EXEC,
-                          ("AmlPrepStack:n: AmlGetRvalue returned %s\n", RV[Excep]));
+                          ("AmlPrepStack:n: AmlGetRvalue returned %s\n", ExceptionNames[Status]));
 
-            if (S_SUCCESS != Excep)
+            if (AE_OK != Status)
             {
                 ObjStackTop--;
-                return Excep;
+                return Status;
             }
 
             if (TYPE_Number != (*StackPtr)->ValType)
@@ -947,18 +933,18 @@ AmlPrepStack (char *Types)
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Number, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
             break;
 
         case 's':                                   /* need String (or Buffer) */
-            if ((Excep = AmlGetRvalue (StackPtr)) != S_SUCCESS)
+            if ((Status = AmlGetRvalue (StackPtr)) != AE_OK)
             {
                 ObjStackTop--;
-                return Excep;
+                return Status;
             }
 
-            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue returned S_SUCCESS\n"));
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue returned AE_OK\n"));
 
             if (TYPE_String != (*StackPtr)->ValType &&
                 TYPE_Buffer != (*StackPtr)->ValType)
@@ -967,25 +953,25 @@ AmlPrepStack (char *Types)
                         "AmlPrepStack: Needed String or Buffer, found %s\n",
                         TypeFoundPtr));
                 ObjStackTop--;
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
             break;
 
         case 'b':                                   /* need Buffer */
-            if ((Excep = AmlGetRvalue(StackPtr)) != S_SUCCESS)
+            if ((Status = AmlGetRvalue(StackPtr)) != AE_OK)
             {
                 ObjStackTop--;
-                return Excep;
+                return Status;
             }
 
-            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue returned S_SUCCESS\n"));
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue returned AE_OK\n"));
 
             if (TYPE_Buffer != (*StackPtr)->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Buffer, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
             break;
 
@@ -995,25 +981,25 @@ AmlPrepStack (char *Types)
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed If, found %s\n",
                         TypeFoundPtr));
                 ObjStackTop--;
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
             break;
 
         case 'p':                                   /* need Package */
-            if ((Excep = AmlGetRvalue (StackPtr)) != S_SUCCESS)
+            if ((Status = AmlGetRvalue (StackPtr)) != AE_OK)
             {
                 ObjStackTop--;
-                return Excep;
+                return Status;
             }
 
-            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue returned S_SUCCESS\n"));
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue returned AE_OK\n"));
 
             if (TYPE_Package != (*StackPtr)->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Package, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
             break;
 
@@ -1022,7 +1008,7 @@ AmlPrepStack (char *Types)
                     "AmlPrepStack:internal error Unknown type flag %02x\n",
                     *--Types));
             ObjStackTop--;
-            return S_ERROR;
+            return AE_AML_ERROR;
 
         }   /* switch (*Types++) */
 
@@ -1039,7 +1025,7 @@ AmlPrepStack (char *Types)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: not enough operands\n"));
                 ObjStackTop--;
-                return S_ERROR;
+                return AE_AML_ERROR;
             }
 
             StackPtr--;
@@ -1048,7 +1034,7 @@ AmlPrepStack (char *Types)
     }   /* while (*Types) */
 
     ObjStackTop--;
-    return S_SUCCESS;
+    return AE_OK;
 }
 
 
