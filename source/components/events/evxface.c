@@ -572,10 +572,10 @@ AcpiInstallNotifyHandler (
      * These are the ONLY objects that can receive ACPI notifications
      */
 
-    if ((ObjEntry->Type != TYPE_Device)     &&
-        (ObjEntry->Type != TYPE_Processor)  &&
-        (ObjEntry->Type != TYPE_Power)      &&
-        (ObjEntry->Type != TYPE_Thermal))
+    if ((ObjEntry->Type != ACPI_TYPE_Device)     &&
+        (ObjEntry->Type != ACPI_TYPE_Processor)  &&
+        (ObjEntry->Type != ACPI_TYPE_Power)      &&
+        (ObjEntry->Type != ACPI_TYPE_Thermal))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -625,7 +625,7 @@ AcpiInstallNotifyHandler (
      *  so let's party
      */
 
-    NotifyObj = CmCreateInternalObject (TYPE_Notfy);
+    NotifyObj = CmCreateInternalObject (INTERNAL_TYPE_Notify);
     if (!NotifyObj)
     {
         /* Descriptor allocation failure   */
@@ -703,10 +703,10 @@ AcpiRemoveNotifyHandler (
      * These are the ONLY objects that can receive ACPI notifications
      */
 
-    if ((ObjEntry->Type != TYPE_Device)     &&
-        (ObjEntry->Type != TYPE_Processor)  &&
-        (ObjEntry->Type != TYPE_Power)      &&
-        (ObjEntry->Type != TYPE_Thermal))
+    if ((ObjEntry->Type != ACPI_TYPE_Device)     &&
+        (ObjEntry->Type != ACPI_TYPE_Processor)  &&
+        (ObjEntry->Type != ACPI_TYPE_Power)      &&
+        (ObjEntry->Type != ACPI_TYPE_Thermal))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -824,9 +824,9 @@ AcpiInstallAddressSpaceHandler (
      *  get placed.
      */
 
-    if ((ObjEntry->Type != TYPE_Device)     &&
-        (ObjEntry->Type != TYPE_Processor)  &&
-        (ObjEntry->Type != TYPE_Thermal)    &&
+    if ((ObjEntry->Type != ACPI_TYPE_Device)     &&
+        (ObjEntry->Type != ACPI_TYPE_Processor)  &&
+        (ObjEntry->Type != ACPI_TYPE_Thermal)    &&
         (ObjEntry != Gbl_RootObject))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -869,11 +869,13 @@ AcpiInstallAddressSpaceHandler (
         DEBUG_PRINT (TRACE_OPREGION,
             ("Creating object on device Device 0x%X while installing handler\n", 
                 ObjEntry));
+
         /* ObjDesc DNE: We must create one */
-        if (ObjEntry->Type == TYPE_Any)
+
+        if (ObjEntry->Type == ACPI_TYPE_Any)
         {
-            ObjDesc = CmCreateInternalObject (TYPE_Device);
-            ObjDesc->Common.Type = TYPE_Device;
+            ObjDesc = CmCreateInternalObject (ACPI_TYPE_Device);
+            ObjDesc->Common.Type = ACPI_TYPE_Device;
         }
         else
         {
@@ -909,19 +911,19 @@ AcpiInstallAddressSpaceHandler (
      *  into the list.
      */
 
-    HandlerObj = CmCreateInternalObject (TYPE_AddrHandler);
+    HandlerObj = CmCreateInternalObject (INTERNAL_TYPE_AddressHandler);
     if (!HandlerObj)
     {
         /* Descriptor allocation failure   */
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    HandlerObj->AddrHandler.SpaceId = SpaceId;
-    HandlerObj->AddrHandler.Link = ObjDesc->Device.AddrHandler;
-    HandlerObj->AddrHandler.RegionList = NULL;
-    HandlerObj->AddrHandler.Nte = ObjEntry;
-    HandlerObj->AddrHandler.Handler = Handler;
-    HandlerObj->AddrHandler.Context = Context;
+    HandlerObj->AddrHandler.SpaceId     = SpaceId;
+    HandlerObj->AddrHandler.Link        = ObjDesc->Device.AddrHandler;
+    HandlerObj->AddrHandler.RegionList  = NULL;
+    HandlerObj->AddrHandler.Nte         = ObjEntry;
+    HandlerObj->AddrHandler.Handler     = Handler;
+    HandlerObj->AddrHandler.Context     = Context;
 
 
     /*
@@ -936,7 +938,7 @@ AcpiInstallAddressSpaceHandler (
      *  In either case we back up and search down the remainder
      *  of the branch
      */
-    Status = EvWalkNamespace (TYPE_Any, Device, 100, EvAddrHandlerHelper, 
+    Status = EvWalkNamespace (ACPI_TYPE_Any, Device, 100, EvAddrHandlerHelper, 
                                 HandlerObj, NULL);
 
     /*
