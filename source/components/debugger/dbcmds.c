@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  ******************************************************************************/
 
@@ -775,7 +775,7 @@ AcpiDbWalkForSpecificObjects (
     }
 
     AcpiOsPrintf ("%32s", Buffer.Pointer);
-    AcpiOsFree (Buffer.Pointer);
+    ACPI_MEM_FREE (Buffer.Pointer);
 
 
     /* Display short information about the object */
@@ -914,7 +914,7 @@ AcpiDbWalkAndMatchName (
     {
         AcpiOsPrintf ("%32s (%p) - %s\n", Buffer.Pointer, ObjHandle,
             AcpiUtGetTypeName (((ACPI_NAMESPACE_NODE *) ObjHandle)->Type));
-        AcpiOsFree (Buffer.Pointer);
+        ACPI_MEM_FREE (Buffer.Pointer);
     }
 
     return (AE_OK);
@@ -1105,11 +1105,19 @@ GetCrs:
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("AcpiGetCurrentResources failed: %s\n", AcpiFormatException (Status));
+        goto GetPrs;
     }
 
     else
     {
         AcpiRsDumpResourceList ((ACPI_RESOURCE *) AcpiGbl_DbBuffer);
+    }
+
+    Status = AcpiSetCurrentResources (ObjDesc, &ReturnObj);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("AcpiSetCurrentResources failed: %s\n", AcpiFormatException (Status));
+        goto GetPrs;
     }
 
 
