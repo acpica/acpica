@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmdebug - Debug print routines
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -510,7 +510,7 @@ DebugPrintPrefix (
 
     if (TRACE_THREADS & AcpiDbgLevel)
     {
-        AcpiOsPrintf ("%8s-%04d[%04X]: ", ModuleName, LineNumber, AcpiOsGetThreadId());
+        AcpiOsPrintf ("%8s-%04d[%04X]: ", ModuleName, LineNumber, ThreadId);
     }
     else
     {
