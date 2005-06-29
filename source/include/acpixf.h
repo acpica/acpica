@@ -227,7 +227,7 @@ AcpiEvaluateObject (
     ACPI_BUFFER             *ReturnObjectBuffer);
 
 ACPI_STATUS
-AcpiGetDeviceInfo (
+AcpiGetObjectInfo (
     ACPI_HANDLE             Device, 
     ACPI_DEVICE_INFO        *Info);
 
