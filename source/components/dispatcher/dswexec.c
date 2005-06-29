@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -147,11 +147,13 @@ static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] = {
                                 AcpiExOpcode_3A_1T_1R,
                                 AcpiExOpcode_6A_0T_1R};
 
+
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDsGetPredicateValue
  *
  * PARAMETERS:  WalkState       - Current state of the parse tree walk
+ *              ResultObj       - if non-zero, pop result from result stack
  *
  * RETURN:      Status
  *
@@ -284,7 +286,7 @@ Cleanup:
  * FUNCTION:    AcpiDsExecBeginOp
  *
  * PARAMETERS:  WalkState       - Current state of the parse tree walk
- *              OutOp           - Return op if a new one is created
+ *              OutOp           - Where to return op if a new one is created
  *
  * RETURN:      Status
  *
@@ -396,11 +398,10 @@ AcpiDsExecBeginOp (
         if (WalkState->WalkType == ACPI_WALK_METHOD)
         {
             /*
-             * Found a named object declaration during method
-             * execution;  we must enter this object into the
-             * namespace.  The created object is temporary and
-             * will be deleted upon completion of the execution
-             * of this method.
+             * Found a named object declaration during method execution;
+             * we must enter this object into the namespace.  The created
+             * object is temporary and will be deleted upon completion of
+             * the execution of this method.
              */
             Status = AcpiDsLoad2BeginOp (WalkState, NULL);
         }
@@ -438,8 +439,6 @@ AcpiDsExecBeginOp (
  * FUNCTION:    AcpiDsExecEndOp
  *
  * PARAMETERS:  WalkState       - Current state of the parse tree walk
- *              Op              - Op that has been just been completed in the
- *                                walk;  Arguments have now been evaluated.
  *
  * RETURN:      Status
  *

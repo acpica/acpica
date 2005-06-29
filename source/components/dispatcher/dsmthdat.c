@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  ******************************************************************************/
 
@@ -136,8 +136,8 @@
  * RETURN:      Status
  *
  * DESCRIPTION: Initialize the data structures that hold the method's arguments
- *              and locals.  The data struct is an array of NTEs for each.
- *              This allows RefOf and DeRefOf to work properly for these
+ *              and locals.  The data struct is an array of namespace nodes for
+ *              each - this allows RefOf and DeRefOf to work properly for these
  *              special data types.
  *
  * NOTES:       WalkState fields are initialized to zero by the
@@ -312,11 +312,13 @@ AcpiDsMethodDataInitArgs (
  * FUNCTION:    AcpiDsMethodDataGetNode
  *
  * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
- *              Index               - Which localVar or argument whose type
- *                                      to get
+ *              Index               - Which Local or Arg whose type to get
  *              WalkState           - Current walk state object
+ *              Node                - Where the node is returned.
  *
- * RETURN:      Get the Node associated with a local or arg.
+ * RETURN:      Status and node
+ *
+ * DESCRIPTION: Get the Node associated with a local or arg.
  *
  ******************************************************************************/
 
@@ -379,7 +381,7 @@ AcpiDsMethodDataGetNode (
  * FUNCTION:    AcpiDsMethodDataSetValue
  *
  * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
- *              Index               - Which localVar or argument to get
+ *              Index               - Which Local or Arg to get
  *              Object              - Object to be inserted into the stack entry
  *              WalkState           - Current walk state object
  *
@@ -439,13 +441,11 @@ AcpiDsMethodDataSetValue (
  * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
  *              Index               - Which localVar or argument to get
  *              WalkState           - Current walk state object
- *              *DestDesc           - Ptr to Descriptor into which selected Arg
- *                                    or Local value should be copied
+ *              DestDesc            - Where Arg or Local value is returned
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Retrieve value of selected Arg or Local from the method frame
- *              at the current top of the method stack.
+ * DESCRIPTION: Retrieve value of selected Arg or Local for this method
  *              Used only in AcpiExResolveToValue().
  *
  ******************************************************************************/
@@ -558,7 +558,7 @@ AcpiDsMethodDataGetValue (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Delete the entry at Opcode:Index on the method stack.  Inserts
+ * DESCRIPTION: Delete the entry at Opcode:Index.  Inserts
  *              a null into the stack slot after the object is deleted.
  *
  ******************************************************************************/
@@ -616,7 +616,7 @@ AcpiDsMethodDataDeleteValue (
  * FUNCTION:    AcpiDsStoreObjectToLocal
  *
  * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
- *              Index               - Which localVar or argument to set
+ *              Index               - Which Local or Arg to set
  *              ObjDesc             - Value to be stored
  *              WalkState           - Current walk state
  *
@@ -785,11 +785,12 @@ AcpiDsStoreObjectToLocal (
  * FUNCTION:    AcpiDsMethodDataGetType
  *
  * PARAMETERS:  Opcode              - Either AML_LOCAL_OP or AML_ARG_OP
- *              Index               - Which localVar or argument whose type
- *                                      to get
+ *              Index               - Which Local or Arg whose type to get
  *              WalkState           - Current walk state object
  *
  * RETURN:      Data type of current value of the selected Arg or Local
+ *
+ * DESCRIPTION: Get the type of the object stored in the Local or Arg
  *
  ******************************************************************************/
 

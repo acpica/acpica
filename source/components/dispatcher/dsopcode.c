@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.99 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -133,7 +133,8 @@
  *
  * FUNCTION:    AcpiDsExecuteArguments
  *
- * PARAMETERS:  Node                - Parent NS node
+ * PARAMETERS:  Node                - Object NS node
+ *              ScopeNode           - Parent NS node
  *              AmlLength           - Length of executable AML
  *              AmlStart            - Pointer to the AML
  *
@@ -445,7 +446,7 @@ AcpiDsGetRegionArguments (
  *
  * FUNCTION:    AcpiDsInitializeRegion
  *
- * PARAMETERS:  Op              - A valid region Op object
+ * PARAMETERS:  ObjHandle       - Region namespace node
  *
  * RETURN:      Status
  *
@@ -478,8 +479,8 @@ AcpiDsInitializeRegion (
  *              ObjDesc         - BufferField object
  *              BufferDesc      - Host Buffer
  *              OffsetDesc      - Offset into buffer
- *              Length          - Length of field (CREATE_FIELD_OP only)
- *              Result          - Where to store the result
+ *              LengthDesc      - Length of field (CREATE_FIELD_OP only)
+ *              ResultDesc      - Where to store the result
  *
  * RETURN:      Status
  *
@@ -545,9 +546,19 @@ AcpiDsInitBufferField (
 
         /* Offset is in bits, count is in bits */
 
+        FieldFlags = AML_FIELD_ACCESS_BYTE;
         BitOffset  = Offset;
         BitCount   = (UINT32) LengthDesc->Integer.Value;
-        FieldFlags = AML_FIELD_ACCESS_BYTE;
+
+        /* Must have a valid (>0) bit count */
+
+        if (BitCount == 0)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Attempt to CreateField of length 0\n"));
+            Status = AE_AML_OPERAND_VALUE;
+            goto Cleanup;
+        }
         break;
 
     case AML_CREATE_BIT_FIELD_OP:

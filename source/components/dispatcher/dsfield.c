@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -132,8 +132,7 @@
  *
  * FUNCTION:    AcpiDsCreateBufferField
  *
- * PARAMETERS:  Opcode              - The opcode to be executed
- *              Operands            - List of operands for the opcode
+ * PARAMETERS:  Op                  - Current parse op (CreateXXField)
  *              WalkState           - Current state
  *
  * RETURN:      Status
@@ -144,7 +143,7 @@
  *              CreateWordFieldOp,
  *              CreateDWordFieldOp,
  *              CreateQWordFieldOp,
- *              CreateFieldOp       (all of which define fields in buffers)
+ *              CreateFieldOp       (all of which define a field in a buffer)
  *
  ******************************************************************************/
 

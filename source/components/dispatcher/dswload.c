@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -189,8 +189,7 @@ AcpiDsInitCallbacks (
  * FUNCTION:    AcpiDsLoad1BeginOp
  *
  * PARAMETERS:  WalkState       - Current state of the parse tree walk
- *              Op              - Op that has been just been reached in the
- *                                walk;  Arguments have not been evaluated yet.
+ *              OutOp           - Where to return op if a new one is created
  *
  * RETURN:      Status
  *
@@ -312,7 +311,8 @@ AcpiDsLoad1BeginOp (
              *  Name (DEB, 0)
              *  Scope (DEB) { ... }
              *
-             * Note: silently change the type here.  On the second pass, we will report a warning
+             * Note: silently change the type here.  On the second pass, we will report
+             * a warning
              */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
@@ -434,8 +434,6 @@ AcpiDsLoad1BeginOp (
  * FUNCTION:    AcpiDsLoad1EndOp
  *
  * PARAMETERS:  WalkState       - Current state of the parse tree walk
- *              Op              - Op that has been just been completed in the
- *                                walk;  Arguments have now been evaluated.
  *
  * RETURN:      Status
  *
@@ -562,8 +560,7 @@ AcpiDsLoad1EndOp (
  * FUNCTION:    AcpiDsLoad2BeginOp
  *
  * PARAMETERS:  WalkState       - Current state of the parse tree walk
- *              Op              - Op that has been just been reached in the
- *                                walk;  Arguments have not been evaluated yet.
+ *              OutOp           - Wher to return op if a new one is created
  *
  * RETURN:      Status
  *
@@ -821,8 +818,6 @@ AcpiDsLoad2BeginOp (
  * FUNCTION:    AcpiDsLoad2EndOp
  *
  * PARAMETERS:  WalkState       - Current state of the parse tree walk
- *              Op              - Op that has been just been completed in the
- *                                walk;  Arguments have now been evaluated.
  *
  * RETURN:      Status
  *

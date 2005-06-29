@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -658,11 +658,11 @@ AcpiDsGetCurrentWalkState (
  * FUNCTION:    AcpiDsPushWalkState
  *
  * PARAMETERS:  WalkState       - State to push
- *              WalkList        - The list that owns the walk stack
+ *              Thread          - Thread state object
  *
  * RETURN:      None
  *
- * DESCRIPTION: Place the WalkState at the head of the state list.
+ * DESCRIPTION: Place the Thread state at the head of the state list.
  *
  ******************************************************************************/
 
@@ -685,9 +685,9 @@ AcpiDsPushWalkState (
  *
  * FUNCTION:    AcpiDsPopWalkState
  *
- * PARAMETERS:  WalkList        - The list that owns the walk stack
+ * PARAMETERS:  Thread      - Current thread state
  *
- * RETURN:      A WalkState object popped from the stack
+ * RETURN:      A WalkState object popped from the thread's stack
  *
  * DESCRIPTION: Remove and return the walkstate object that is at the head of
  *              the walk stack for the given walk list.  NULL indicates that
@@ -716,7 +716,7 @@ AcpiDsPopWalkState (
         /*
          * Don't clear the NEXT field, this serves as an indicator
          * that there is a parent WALK STATE
-         *     NO: WalkState->Next = NULL;
+         * Do Not: WalkState->Next = NULL;
          */
     }
 
@@ -728,7 +728,9 @@ AcpiDsPopWalkState (
  *
  * FUNCTION:    AcpiDsCreateWalkState
  *
- * PARAMETERS:  Origin          - Starting point for this walk
+ * PARAMETERS:  OwnerId         - ID for object creation
+ *              Origin          - Starting point for this walk
+ *              MthDesc         - Method object
  *              Thread          - Current thread state
  *
  * RETURN:      Pointer to the new walk state.
@@ -801,8 +803,7 @@ AcpiDsCreateWalkState (
  *              MethodNode      - Control method NS node, if any
  *              AmlStart        - Start of AML
  *              AmlLength       - Length of AML
- *              Params          - Method args, if any
- *              ReturnObjDesc   - Where to store a return object, if any
+ *              Info            - Method info block (params, etc.)
  *              PassNumber      - 1, 2, or 3
  *
  * RETURN:      Status
@@ -836,7 +837,7 @@ AcpiDsInitAmlWalk (
 
     /* The NextOp of the NextWalk will be the beginning of the method */
 
-    WalkState->NextOp               = NULL;
+    WalkState->NextOp = NULL;
 
     if (Info)
     {
@@ -1005,7 +1006,7 @@ AcpiDsDeleteWalkState (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Purge the global state object cache.  Used during subsystem
  *              termination.
@@ -1130,7 +1131,7 @@ AcpiDsObjStackDeleteAll (
  *
  * FUNCTION:    AcpiDsObjStackPopObject
  *
- * PARAMETERS:  PopCount            - Number of objects/entries to pop
+ * PARAMETERS:  Object              - Where to return the popped object
  *              WalkState           - Current Walk state
  *
  * RETURN:      Status
@@ -1195,9 +1196,9 @@ AcpiDsObjStackPopObject (
  *                                    on the top of the stack (index=0 == top)
  *              WalkState           - Current Walk state
  *
- * RETURN:      Status
+ * RETURN:      Pointer to the requested operand
  *
- * DESCRIPTION: Retrieve an object from this walk's object stack.  Index must
+ * DESCRIPTION: Retrieve an object from this walk's operand stack.  Index must
  *              be within the range of the current stack pointer.
  *
  ******************************************************************************/
