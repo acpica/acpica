@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.63 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -131,7 +131,7 @@
 #define BLOCK_PAREN         1
 #define BLOCK_BRACE         2
 #define DB_NO_OP_INFO       "            [%2.2d]  "
-#define DB_FULL_OP_INFO     "%5.5X #%4.4X [%2.2d]  "
+#define DB_FULL_OP_INFO     "%5.5X #%4.4hX [%2.2d]  "
 
 
 NATIVE_CHAR                 *AcpiGbl_DbDisasmIndent = "....";
@@ -408,7 +408,7 @@ AcpiDbDisplayOp (
 
         /* In verbose mode, print the AML offset, opcode and depth count */
 
-        VERBOSE_PRINT ((DB_FULL_OP_INFO, (unsigned) Op->Common.AmlOffset, 
+        VERBOSE_PRINT ((DB_FULL_OP_INFO, (UINT32) Op->Common.AmlOffset, 
                 Op->Common.AmlOpcode, DepthCount));
 
 
@@ -429,7 +429,7 @@ AcpiDbDisplayOp (
             (Op->Common.Parent) &&
             (AcpiGbl_DbOpt_verbose))
         {
-            AcpiPsDisplayObjectPathname (WalkState, Op);
+            (void) AcpiPsDisplayObjectPathname (WalkState, Op);
         }
 
         AcpiOsPrintf ("\n");
@@ -698,11 +698,11 @@ AcpiDbDisplayOpcode (
 
         if (AcpiGbl_DbOpt_verbose)
         {
-            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Common.Value.Integer8);
+            AcpiOsPrintf ("(UINT8)  0x%2.2hX", Op->Common.Value.Integer8);
         }
         else
         {
-            AcpiOsPrintf ("0x%2.2X", Op->Common.Value.Integer8);
+            AcpiOsPrintf ("0x%2.2hX", Op->Common.Value.Integer8);
         }
         break;
 
@@ -711,11 +711,11 @@ AcpiDbDisplayOpcode (
 
         if (AcpiGbl_DbOpt_verbose)
         {
-            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Common.Value.Integer16);
+            AcpiOsPrintf ("(UINT16) 0x%4.4hX", Op->Common.Value.Integer16);
         }
         else
         {
-            AcpiOsPrintf ("0x%4.4X", Op->Common.Value.Integer16);
+            AcpiOsPrintf ("0x%4.4hX", Op->Common.Value.Integer16);
         }
         break;
 
@@ -829,6 +829,7 @@ AcpiDbDisplayOpcode (
 
 #ifndef PARSER_ONLY
         if ((Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP) &&
+            (WalkState) &&
             (WalkState->Results) &&
             (WalkState->Results->Results.NumResults))
         {
@@ -859,7 +860,7 @@ AcpiDbDisplayOpcode (
 
         if ((AcpiGbl_DbOpt_verbose) && (Op->Common.AmlOpcode != AML_INT_NAMEDFIELD_OP))
         {
-            AcpiPsDisplayObjectPathname (WalkState, Op);
+            (void) AcpiPsDisplayObjectPathname (WalkState, Op);
         }
     }
 }
