@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.191 $
+ *       $Revision: 1.192 $
  *
  *****************************************************************************/
 
@@ -557,24 +557,36 @@ typedef UINT32                          ACPI_EVENT_TYPE;
 #define ACPI_EVENT_EDGE_TRIGGERED       (ACPI_EVENT_TYPE) 2
 
 /*
+ * GPEs
+ */
+#define ACPI_EVENT_ENABLE               0x1
+#define ACPI_EVENT_WAKE_ENABLE	        0x2
+
+#define ACPI_EVENT_DISABLE              0x1
+#define ACPI_EVENT_WAKE_DISABLE         0x2
+
+
+/*
  * AcpiEvent Status:
  * -------------
  * The encoding of ACPI_EVENT_STATUS is illustrated below.
  * Note that a set bit (1) indicates the property is TRUE
  * (e.g. if bit 0 is set then the event is enabled).
- * +---------------+-+-+
- * |   Bits 31:2   |1|0|
- * +---------------+-+-+
- *          |       | |
- *          |       | +- Enabled?
- *          |       +--- Set?
+ * +-------------+-+-+-+
+ * |   Bits 31:3 |2|1|0|
+ * +-------------+-+-+-+
+ *          |     | | |
+ *          |     | | +- Enabled?
+ *          |     | +--- Enabled for wake?
+ *          |     +----- Set?
  *          +----------- <Reserved>
  */
 typedef UINT32                          ACPI_EVENT_STATUS;
 
 #define ACPI_EVENT_FLAG_DISABLED        (ACPI_EVENT_STATUS) 0x00
 #define ACPI_EVENT_FLAG_ENABLED         (ACPI_EVENT_STATUS) 0x01
-#define ACPI_EVENT_FLAG_SET             (ACPI_EVENT_STATUS) 0x02
+#define ACPI_EVENT_FLAG_WAKE_ENABLED    (ACPI_EVENT_STATUS) 0x02
+#define ACPI_EVENT_FLAG_SET             (ACPI_EVENT_STATUS) 0x04
 
 
 /* Notify types */
