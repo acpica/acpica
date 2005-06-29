@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -527,7 +527,7 @@ AcpiExResolveOperands (
              * Need an operand of type ACPI_TYPE_STRING,
              * But we can implicitly convert from a BUFFER or INTEGER
              */
-            Status = AcpiExConvertToString (*StackPtr, StackPtr, ACPI_UINT32_MAX, WalkState);
+            Status = AcpiExConvertToString (*StackPtr, StackPtr, 16, ACPI_UINT32_MAX, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
