@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /Za /W3 /Gm /GX /Zi /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /D "_IA64" /FR /FD /c
+# ADD CPP /Gz /Za /W3 /Gm /GX /Zi /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /D "_IA64" /FR /FD /c
 # SUBTRACT CPP /nologo /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -76,7 +76,7 @@ PostBuild_Cmds=copy Release\iasl64.exe ..\..\Libraries
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /Za /W4 /Gm /GX /Zi /Od /I "$(OutDir)" /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "_DEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /D "_IA64" /D "_M_IX86" /FR /FD /GZ /c
+# ADD CPP /Gz /Za /W4 /Gm /GX /Zi /Od /I "$(OutDir)" /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "_DEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /D "_IA64" /D "_M_IX86" /FR /FD /GZ /c
 # SUBTRACT CPP /nologo /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -337,7 +337,7 @@ SOURCE=../../source/compiler/AslCompiler.l
 # Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler64/$(InputName).l.c
 ProjDir=.
 InputPath=../../source/compiler/AslCompiler.l
-InputName=aslcompiler
+InputName=AslCompiler
 
 "$(ProjDir)/AslCompiler64/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(ProjDir)/AslCompiler64/$(InputName).l.c $(InputPath)
@@ -350,7 +350,7 @@ InputName=aslcompiler
 # Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler64/$(InputName).l.c
 ProjDir=.
 InputPath=../../source/compiler/AslCompiler.l
-InputName=aslcompiler
+InputName=AslCompiler
 
 "$(ProjDir)/AslCompiler64/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(ProjDir)/AslCompiler64/$(InputName).l.c $(InputPath)
@@ -371,7 +371,7 @@ SOURCE=../../source/compiler/AslCompiler.y
 WkspDir=.
 ProjDir=.
 InputPath=../../source/compiler/AslCompiler.y
-InputName=aslcompiler
+InputName=AslCompiler
 
 BuildCmds= \
 	$(WkspDir)\..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler64/$(InputName).y.c $(InputPath)
@@ -390,7 +390,7 @@ BuildCmds= \
 WkspDir=.
 ProjDir=.
 InputPath=../../source/compiler/AslCompiler.y
-InputName=aslcompiler
+InputName=AslCompiler
 
 BuildCmds= \
 	$(WkspDir)\..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler64/$(InputName).y.c $(InputPath)
