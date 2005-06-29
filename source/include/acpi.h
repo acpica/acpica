@@ -109,7 +109,7 @@
 /* 
  * Common includes for all ACPI driver files
  * We put them here because we don't want to duplicate them
- * in the rest of the source again and again.
+ * in the rest of the source code again and again.
  */
 #include <datatypes.h>      /* Fundamental data types */
 #include <excep.h>          /* Local exception codes */
@@ -119,16 +119,8 @@
 #include <acpitables.h>     /* ACPI table definitions */
 #include <acpiosd.h>        /* Interfaces to OS-dependent part (OSD) */
 #include <acpisubsys.h>     /* External interfaces to this part */
+#include <globals.h>        /* All global variables */
 
-
-#ifdef DEFINE_ACPI_GLOBALS
-#define ACPI_EXTERN
-#ifndef __GNUC__
-#pragma message ("ACPI_EXTERN variables defined in this module.")
-#endif
-#else
-#define ACPI_EXTERN extern
-#endif
 
 
 /* Version string */
@@ -137,121 +129,6 @@
 #define OS_ACPI_LIB_VER "F" ## ACPI_LIB_VER
 #define ACPILIB_VERSION " ACPILIB-" ## OS_ACPI_LIB_VER
 
-
-
-/* 
- * global data, DEFINE_ACPI_GLOBALS is defined in ACPIPRIV.C,
- * Initialization of all variables occurs in iAcpiInit 
- */
-
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      * RSDP;
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       * RSDT;
-ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     * FACS;
-ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        * FACP;
-ACPI_EXTERN APIC_TABLE                          * MAPIC;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * DSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * PSDT;
-
-
-/* 
- * TBD - There may be multiple SSDTs so a single pointer is not sufficient 
- * to tag them all.  An array or linked list of SSDT pointers will be
- * necessary. 
- */
-
-ACPI_EXTERN ACPI_TABLE_HEADER                   * SSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
-
-
-
-
-/* Misc Globals */
-
-ACPI_EXTERN INT32       Capabilities;
-ACPI_EXTERN OSD_FILE    *fAsmFile;      /* If not null, /A output gets written here */
-ACPI_EXTERN LogHandle   LstFileHandle;  /* /L output gets written here */
-ACPI_EXTERN INT32       NameStringSize;
-ACPI_EXTERN char        *NameString;    /* Runtime AML error message communication */
-
-ACPI_EXTERN INT32       RestoreAcpiChipset;
-ACPI_EXTERN UINT16      Pm1EnableRegisterSave;
-ACPI_EXTERN UINT8       *Gpe0EnableRegisterSave;
-ACPI_EXTERN UINT8       *Gpe1EnableRegisterSave;
-ACPI_EXTERN INT32       OriginalMode;
-ACPI_EXTERN INT32       EdgeLevelSave;
-ACPI_EXTERN INT32       IrqEnableSave;
-ACPI_EXTERN INT32       OriginalMode;
-extern char             *ExceptionNames[];
-
-/* File I/O globals */
-
-ACPI_EXTERN char        *AsmFile;
-ACPI_EXTERN char        *DsdtFile;
-ACPI_EXTERN char        *OutputFile;
-ACPI_EXTERN char        *InputFile;
-
-ACPI_EXTERN INT32       AcpiLibInitStatus;
-ACPI_EXTERN INT32       AcpiHook;           /* strong link that lives in acpilibv.c */
-
-
-/* 
- * Namespace globals 
- */
-
-ACPI_EXTERN INT32       NamedObjectErr;     /* Use to indicate if inc_error should be called */
-ACPI_EXTERN nte         RootObjStruct;
-ACPI_EXTERN nte         *RootObject;
-
-/* set from ROOTSIZE -- could potentially support dynamic sizing of root NT */
-
-ACPI_EXTERN INT32       NsRootSize;        
-
-/* will be either ROOTSIZE or TABLSIZE depending on whether the current scope is the root */
-
-ACPI_EXTERN INT32       NsCurrentSize;      
-
-
-/* Base of AML block, and pointer to current location in it */
-
-ACPI_EXTERN UINT8       *PCodeBase;
-ACPI_EXTERN UINT8       *PCode;
-
-/* 
- * Length of AML block, and remaining length of current package.
- * PCodeBlockLen is used in IsInPCodeBlock()
- */
-ACPI_EXTERN INT32       PCodeBlockLen;
-ACPI_EXTERN INT32       PCodeLen;
-
-/* 
- * Interpreter globals 
- */
-
-ACPI_EXTERN UINT32      BufSeq;         /* Counts allocated Buffer descriptors */
-ACPI_EXTERN INT32       SkipField;
-ACPI_EXTERN INT32       LastPkgLen;
-ACPI_EXTERN UINT8       LastFieldFlag;
-
-/* 
- * global handle to the last method found
- * used during pass1 of load 
- */
-
-ACPI_EXTERN NsHandle    LastMethod;
-
-
-
-/* These must not be ACPI_EXTERN since they need explicit initialization */
-
-/* Runtime configuration of debug print levels */
-
-extern INT32            DebugLevel;
-extern INT32            DebugLayer;
-
-
-/* Interpreter globals */
-
-extern char             *FENames[];
 
 
 #define	ACPI_CHAPTER						3
