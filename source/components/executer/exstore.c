@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.158 $
+ *              $Revision: 1.159 $
  *
  *****************************************************************************/
 
@@ -255,15 +255,15 @@ AcpiExStore (
         {
         case ACPI_TYPE_INTEGER:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "0x%X (%d)\n",
-                (UINT32) SourceDesc->Integer.Value, (UINT32) SourceDesc->Integer.Value));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%8.8X%8.8X\n",
+                    HIWORD (SourceDesc->Integer.Value), LOWORD (SourceDesc->Integer.Value)));
             break;
 
 
         case ACPI_TYPE_BUFFER:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Length 0x%X\n",
-                (UINT32) SourceDesc->Buffer.Length));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Length %.2X\n",
+                    (UINT32) SourceDesc->Buffer.Length));
             break;
 
 
@@ -275,14 +275,15 @@ AcpiExStore (
 
         case ACPI_TYPE_PACKAGE:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Elements - 0x%X\n",
-                (UINT32) SourceDesc->Package.Elements));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Elements Ptr - %p\n",
+                    SourceDesc->Package.Elements));
             break;
 
 
         default:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "@0x%p\n", SourceDesc));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Type %s %p\n",
+                    AcpiUtGetTypeName (SourceDesc->Common.Type), SourceDesc));
             break;
         }
 
