@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -168,6 +168,9 @@ AcpiExAddTable (
 
     /* Install the new table into the local data structures */
 
+    ACPI_MEMSET (&TableInfo, 0, sizeof (ACPI_TABLE_DESC));
+
+    TableInfo.Type         = 5;
     TableInfo.Pointer      = Table;
     TableInfo.Length       = (ACPI_SIZE) Table->Length;
     TableInfo.Allocation   = ACPI_MEM_ALLOCATED;
@@ -521,7 +524,7 @@ ACPI_STATUS
 AcpiExUnloadTable (
     ACPI_OPERAND_OBJECT     *DdbHandle)
 {
-    ACPI_STATUS             Status = AE_NOT_IMPLEMENTED;
+    ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *TableDesc = DdbHandle;
     ACPI_TABLE_DESC         *TableInfo;
 
