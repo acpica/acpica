@@ -268,8 +268,9 @@ AcpiInstallAddressSpaceHandler (
 
     else
     {
-        DEBUG_PRINT (TRACE_OPREGION, ("Creating object on Device 0x%X while installing handler\n",
-                        ObjEntry));
+        DEBUG_PRINT (TRACE_OPREGION,
+            ("Creating object on Device 0x%X while installing handler\n",
+            ObjEntry));
 
         /* ObjDesc does not exist, create one */
 
@@ -311,8 +312,9 @@ AcpiInstallAddressSpaceHandler (
         }
     }
 
-    DEBUG_PRINT (TRACE_OPREGION, ("Installing address handler for %s on Device 0x%p (0x%p)\n",
-                    AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("Installing address handler for %s on Device 0x%p (0x%p)\n",
+        AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
     /*
      *  Now we can install the handler
@@ -328,14 +330,14 @@ AcpiInstallAddressSpaceHandler (
         goto UnlockAndExit;
     }
 
-    HandlerObj->AddrHandler.SpaceId             = (UINT16) SpaceId;
-    HandlerObj->AddrHandler.Hflags              = Flags;
-    HandlerObj->AddrHandler.Link                = ObjDesc->Device.AddrHandler;
-    HandlerObj->AddrHandler.RegionList          = NULL;
-    HandlerObj->AddrHandler.Nte                 = ObjEntry;
-    HandlerObj->AddrHandler.Handler             = Handler;
-    HandlerObj->AddrHandler.Context             = Context;
-    HandlerObj->AddrHandler.Setup               = Setup;
+    HandlerObj->AddrHandler.SpaceId     = (UINT16) SpaceId;
+    HandlerObj->AddrHandler.Hflags      = Flags;
+    HandlerObj->AddrHandler.Link        = ObjDesc->Device.AddrHandler;
+    HandlerObj->AddrHandler.RegionList  = NULL;
+    HandlerObj->AddrHandler.Nte         = ObjEntry;
+    HandlerObj->AddrHandler.Handler     = Handler;
+    HandlerObj->AddrHandler.Context     = Context;
+    HandlerObj->AddrHandler.Setup       = Setup;
 
     /*
      *  Now walk the namespace finding all of the regions this
@@ -349,14 +351,18 @@ AcpiInstallAddressSpaceHandler (
      *  In either case we back up and search down the remainder
      *  of the branch
      */
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Device, ACPI_INT32_MAX, NS_WALK_NO_UNLOCK, AcpiEvAddrHandlerHelper,
-                                HandlerObj, NULL);
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Device,
+                                  ACPI_INT32_MAX, NS_WALK_NO_UNLOCK,
+                                  AcpiEvAddrHandlerHelper,
+                                  HandlerObj, NULL);
 
     /*
      *  Place this handler 1st on the list
      */
 
-    HandlerObj->Common.ReferenceCount = (UINT16) (HandlerObj->Common.ReferenceCount + ObjDesc->Common.ReferenceCount - 1);
+    HandlerObj->Common.ReferenceCount =
+                            (UINT16) (HandlerObj->Common.ReferenceCount +
+                            ObjDesc->Common.ReferenceCount - 1);
     ObjDesc->Device.AddrHandler = HandlerObj;
 
 
@@ -446,8 +452,10 @@ AcpiRemoveAddressSpaceHandler (
             /*
              *  Got it, first dereference this in the Regions
              */
-            DEBUG_PRINT (TRACE_OPREGION, ("Removing address handler 0x%p (0x%p) for %s on Device 0x%p (0x%p)\n",
-                            HandlerObj, Handler, AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
+            DEBUG_PRINT (TRACE_OPREGION,
+                ("Removing address handler 0x%p (0x%p) for %s on Device 0x%p (0x%p)\n",
+                HandlerObj, Handler, AcpiGbl_RegionTypes[SpaceId],
+                ObjEntry, ObjDesc));
 
             RegionObj = HandlerObj->AddrHandler.RegionList;
 

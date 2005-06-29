@@ -273,10 +273,11 @@ AcpiEvPciConfigRegionSetup (
     if (!HandlerObj)
     {
         /*
-         *  No installed handler. This shouldn't happen because the dispatch routine
-         *  checks before we get here, but we check again just in case.
+         *  No installed handler. This shouldn't happen because the dispatch
+         *  routine checks before we get here, but we check again just in case.
          */
-        DEBUG_PRINT (TRACE_OPREGION, ("Attempting to init a region 0x%X, with no handler\n", RegionObj));
+        DEBUG_PRINT (TRACE_OPREGION,
+            ("Attempting to init a region 0x%X, with no handler\n", RegionObj));
         return_ACPI_STATUS(AE_EXIST);
     }
 
@@ -337,7 +338,8 @@ AcpiEvPciConfigRegionSetup (
     }
 
     /*
-     *  Get the _SEG and _BBN values from the device the handler is installed on
+     *  Get the _SEG and _BBN values from the device upon which the handler
+     *  is installed.
      *
      *  We need to get the _SEG and _BBN objects relative to the PCI BUS device.
      *  This is the device the handler has been registered to handle.
@@ -470,7 +472,8 @@ AcpiEvInitializeRegion (
     /*
      *  Find any "_REG" associated with this region definition
      */
-    Status = AcpiNsSearchOneScope (*RegNamePtr, Entry->ChildTable, ACPI_TYPE_METHOD, &RegEntry, NULL);
+    Status = AcpiNsSearchOneScope (*RegNamePtr, Entry->ChildTable,
+                                   ACPI_TYPE_METHOD, &RegEntry, NULL);
     if (Status == AE_OK)
     {
         /*
@@ -523,8 +526,9 @@ AcpiEvInitializeRegion (
                  */
                 if (HandlerObj->AddrHandler.SpaceId == SpaceId)
                 {
-                    DEBUG_PRINT (TRACE_OPREGION, ("Found handler (0x%X) for region 0x%X in obj 0x%X\n",
-                                    HandlerObj, RegionObj, ObjDesc));
+                    DEBUG_PRINT (TRACE_OPREGION,
+                        ("Found handler (0x%X) for region 0x%X in obj 0x%X\n",
+                        HandlerObj, RegionObj, ObjDesc));
 
                     /*
                      *  Found it! Now update the region and the handler
@@ -549,7 +553,8 @@ AcpiEvInitializeRegion (
     /*
      *  If we get here, there is no handler for this region
      */
-    DEBUG_PRINT (TRACE_OPREGION, ("Unable to find handler for region 0x%X\n", RegionObj));
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("Unable to find handler for region 0x%X\n", RegionObj));
 
     return_ACPI_STATUS (AE_NOT_EXIST);
 }

@@ -178,9 +178,11 @@ AcpiInstallFixedEventHandler (
     AcpiGbl_FixedEventHandlers[Event].Handler = Handler;
     AcpiGbl_FixedEventHandlers[Event].Context = Context;
 
-    if (1 != AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, Event + TMR_EN, 1))
+    if (1 != AcpiHwRegisterAccess (ACPI_WRITE,
+                                   ACPI_MTX_LOCK, Event + TMR_EN, 1))
     {
-        DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
+        DEBUG_PRINT (ACPI_WARN,
+            ("Could not write to fixed event enable register.\n"));
 
         /* Remove the handler */
 
@@ -191,7 +193,8 @@ AcpiInstallFixedEventHandler (
         goto Cleanup;
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("Enabled fixed event %d.  Handler: %x\n", Event, Handler));
+    DEBUG_PRINT (ACPI_INFO,
+        ("Enabled fixed event %d.  Handler: %x\n", Event, Handler));
 
 
 Cleanup:
@@ -235,9 +238,11 @@ AcpiRemoveFixedEventHandler (
 
     /* Disable the event before removing the handler - just in case... */
 
-    if (0 != AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, Event + TMR_EN, 0))
+    if (0 != AcpiHwRegisterAccess (ACPI_WRITE,
+                                   ACPI_MTX_LOCK, Event + TMR_EN, 0))
     {
-        DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
+        DEBUG_PRINT (ACPI_WARN,
+            ("Could not write to fixed event enable register.\n"));
         Status = AE_ERROR;
         goto Cleanup;
     }
@@ -319,8 +324,10 @@ AcpiInstallNotifyHandler (
          *  Make sure the handler is not already installed.
          */
 
-        if (((HandlerType == ACPI_SYSTEM_NOTIFY) && AcpiGbl_SysNotify.Handler) ||
-            ((HandlerType == ACPI_DEVICE_NOTIFY) && AcpiGbl_DrvNotify.Handler))
+        if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
+              AcpiGbl_SysNotify.Handler) ||
+            ((HandlerType == ACPI_DEVICE_NOTIFY) &&
+              AcpiGbl_DrvNotify.Handler))
         {
             Status = AE_EXIST;
             goto UnlockAndExit;
@@ -370,8 +377,10 @@ AcpiInstallNotifyHandler (
          *  Make sure the handler is not already installed.
          */
 
-        if (((HandlerType == ACPI_SYSTEM_NOTIFY) && ObjDesc->Device.SysHandler) ||
-            ((HandlerType == ACPI_DEVICE_NOTIFY) && ObjDesc->Device.DrvHandler))
+        if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
+              ObjDesc->Device.SysHandler) ||
+            ((HandlerType == ACPI_DEVICE_NOTIFY) &&
+              ObjDesc->Device.DrvHandler))
         {
             Status = AE_EXIST;
             goto UnlockAndExit;
@@ -701,8 +710,10 @@ AcpiAcquireGlobalLock (
 
     AcpiAmlEnterInterpreter ();
 
-    /* TBD: [Restructure] add timeout param to internal interface, and perhaps INTERPRETER_LOCKED */
-
+    /*
+     * TBD: [Restructure] add timeout param to internal interface, and
+     * perhaps INTERPRETER_LOCKED
+     */
 
     Status = AcpiEvAcquireGlobalLock ();
     AcpiAmlExitInterpreter ();
