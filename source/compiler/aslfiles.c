@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.29 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -211,7 +211,7 @@ FlFileError (
  *              Filename            - file pathname to open
  *              Mode                - Open mode for fopen
  *
- * RETURN:      None
+ * RETURN:      File descriptor
  *
  * DESCRIPTION: Open a file.
  *              NOTE: Aborts compiler on any error.
@@ -250,7 +250,7 @@ FlOpenFile (
  *              Buffer              - Where to place the data
  *              Length              - Amount to read
  *
- * RETURN:      Status.  AE_ERROR indicated EOF.
+ * RETURN:      Status.  AE_ERROR indicates EOF.
  *
  * DESCRIPTION: Read data from an open file.
  *              NOTE: Aborts compiler on any error.
@@ -457,9 +457,9 @@ FlOpenIncludeFile (
             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
             Gbl_InputByteCount, Gbl_CurrentColumn,
             Gbl_Files[ASL_FILE_INPUT].Filename, " - Null parse node");
+
         return;
     }
-
 
     /*
      * Flush out the "include ()" statement on this line, start
@@ -479,7 +479,6 @@ FlOpenIncludeFile (
         AslError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN, Node, MsgBuffer);
         return;
     }
-
 
     /* Push the include file on the open input file stack */
 
@@ -566,6 +565,11 @@ FlOpenInputFile (
     /* Get the path to the input filename's directory */
 
     Gbl_DirectoryPath = strdup (InputFilename);
+    if (!Gbl_DirectoryPath)
+    {
+        return (AE_NO_MEMORY);
+    }
+
     Substring = strrchr (Gbl_DirectoryPath, '\\');
     if (!Substring)
     {
