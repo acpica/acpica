@@ -192,8 +192,8 @@ AmlExecDyadic1 (
         {
             switch (Entry->Type)
             {
-            case TYPE_Device:
-            case TYPE_Thermal:
+            case ACPI_TYPE_Device:
+            case ACPI_TYPE_Thermal:
             
                 /* Requires that Device and ThermalZone be compatible mappings */
 
@@ -432,7 +432,7 @@ AmlExecDyadic2R (
 
         /* Both operands are now known to be the same */
         
-        if (TYPE_String == ObjDesc->Common.Type)
+        if (ACPI_TYPE_String == ObjDesc->Common.Type)
         {
             /* Operand1 is string  */
 
@@ -578,7 +578,7 @@ AmlExecDyadic2S (
         {
             /* No object present, create a Mutex object */
 
-            ObjDesc = CmCreateInternalObject (TYPE_Mutex);
+            ObjDesc = CmCreateInternalObject (ACPI_TYPE_Mutex);
             if (!ObjDesc)
             {
                 Status = AE_NO_MEMORY;
@@ -593,7 +593,7 @@ AmlExecDyadic2S (
             ObjDesc->Mutex.ThreadId  = 0;
 
             ThisEntry->Object = ObjDesc;
-            ThisEntry->Type = TYPE_Mutex;
+            ThisEntry->Type = ACPI_TYPE_Mutex;
         }
 
         /* Extract the valid object */
@@ -611,7 +611,7 @@ AmlExecDyadic2S (
 
     case AML_AcquireOp:
 
-        if (TYPE_Mutex != ObjDesc->Common.Type)
+        if (ACPI_TYPE_Mutex != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2S/AcquireOp: Needed Mutex, found %d\n",
@@ -629,7 +629,7 @@ AmlExecDyadic2S (
 
     case AML_WaitOp:
 
-        if (TYPE_Event != ObjDesc->Common.Type)
+        if (ACPI_TYPE_Event != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2S/WaitOp: Needed Event, found %d\n",

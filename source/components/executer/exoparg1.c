@@ -211,7 +211,7 @@ AmlExecMonadic1 (
 
     case AML_ReleaseOp:
 
-        if (TYPE_Mutex != ObjDesc->Common.Type)
+        if (ACPI_TYPE_Mutex != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
@@ -227,7 +227,7 @@ AmlExecMonadic1 (
 
     case AML_ResetOp:
 
-        if (TYPE_Event != ObjDesc->Common.Type)
+        if (ACPI_TYPE_Event != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->Common.Type));
@@ -242,7 +242,7 @@ AmlExecMonadic1 (
     
     case AML_SignalOp:
 
-        if (TYPE_Event != ObjDesc->Common.Type)
+        if (ACPI_TYPE_Event != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->Common.Type));
@@ -579,7 +579,7 @@ AmlExecMonadic2 (
         
         /* This case uses Status to hold the type encoding */
         
-        if (TYPE_Lvalue == ObjDesc->Common.Type)
+        if (INTERNAL_TYPE_Lvalue == ObjDesc->Common.Type)
         {
             /* 
              * Not a Name -- an indirect name pointer would have
@@ -591,7 +591,7 @@ AmlExecMonadic2 (
                 
                 /* Constants are of type Number */
                 
-                Status = (INT32) TYPE_Number;
+                Status = (INT32) ACPI_TYPE_Number;
                 break;
 
 
@@ -599,7 +599,7 @@ AmlExecMonadic2 (
                 
                 /* Per spec, Debug object is of type Region */
                 
-                Status = (INT32) TYPE_Region;
+                Status = (INT32) ACPI_TYPE_Region;
                 break;
 
 
@@ -641,7 +641,7 @@ AmlExecMonadic2 (
              */
             Status = (INT32) NsGetType ((ACPI_HANDLE) ObjDesc);
 
-            ObjDesc = CmCreateInternalObject (TYPE_Number);
+            ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
             if (!ObjDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -655,7 +655,7 @@ AmlExecMonadic2 (
             AmlObjStackSetValue (STACK_TOP, ObjDesc);
         }
         
-        ObjDesc->Common.Type = (UINT8) TYPE_Number;
+        ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
         ObjDesc->Number.Value = (UINT32) Status;
         break;
 
@@ -667,24 +667,24 @@ AmlExecMonadic2 (
         switch (ObjDesc->Common.Type)
         {
 
-        case TYPE_Buffer:
+        case ACPI_TYPE_Buffer:
 
             ObjDesc->Number.Value = ObjDesc->Buffer.Length;
-            ObjDesc->Common.Type = (UINT8) TYPE_Number;
+            ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
             break;
 
 
-        case TYPE_String:
+        case ACPI_TYPE_String:
 
             ObjDesc->Number.Value = ObjDesc->String.Length;
-            ObjDesc->Common.Type = (UINT8) TYPE_Number;
+            ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
             break;
 
 
-        case TYPE_Package:
+        case ACPI_TYPE_Package:
 
             ObjDesc->Number.Value = ObjDesc->Package.Count;
-            ObjDesc->Common.Type = (UINT8) TYPE_Number;
+            ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
             break;
 
 

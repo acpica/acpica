@@ -238,6 +238,42 @@ AmlAllocateNameString (
 
 /*****************************************************************************
  *
+ * FUNCTION:    AmlGoodName
+ *
+ * PARAMETERS:  Character           - The character to be examined
+ *
+ * RETURN:      1 if Character may appear in a name, else 0
+ *
+ * DESCRIPTION: Check for a printable character
+ *
+ ****************************************************************************/
+
+BOOLEAN 
+AmlGoodName (
+    UINT32                  Name)
+{
+    char                    *NamePtr = (char *) &Name;
+    UINT32                  i;
+
+    
+
+    for (i = 0; i < ACPI_NAME_SIZE; i++)
+    {
+        if (!((NamePtr[i] == '_') || 
+              (NamePtr[i] >= 'A' && NamePtr[i] <= 'Z') ||
+              (NamePtr[i] >= '0' && NamePtr[i] <= '9')))
+        {
+            return FALSE;
+        }
+    }
+
+
+    return TRUE;
+}
+
+
+/*****************************************************************************
+ *
  * FUNCTION:    AmlGoodChar
  *
  * PARAMETERS:  Character           - The character to be examined
@@ -253,8 +289,9 @@ AmlGoodChar (
     INT32                   Character)
 {
 
-    return ((Character == '_') || (Character >= 'A' && Character <= 'Z') ||
-                (Character >= '0' && Character <= '9'));
+    return ((Character == '_') || 
+            (Character >= 'A' && Character <= 'Z') ||
+            (Character >= '0' && Character <= '9'));
 }
 
 
@@ -455,9 +492,9 @@ AmlDoName (
 
 BREAKPOINT3;
 
-    if (TYPE_DefField == DataType    || 
-        TYPE_BankField == DataType   || 
-        TYPE_IndexField == DataType)
+    if (INTERNAL_TYPE_DefField == DataType    || 
+        INTERNAL_TYPE_BankField == DataType   || 
+        INTERNAL_TYPE_IndexField == DataType)
     {   
         /* Disallow prefixes for types associated with field names */
 
@@ -650,8 +687,8 @@ BREAKPOINT3;
         {   
             /* Not first pass load */
 
-            if (TYPE_Any == DataType && 
-                TYPE_Method == NsGetType (Handle))
+            if (ACPI_TYPE_Any == DataType && 
+                ACPI_TYPE_Method == NsGetType (Handle))
             {   
                 /* 
                  * Method reference call 
@@ -735,7 +772,8 @@ BREAKPOINT3;
                             StackOffset = CurrentStackTop - PreviousStackTop;
 
                             DEBUG_PRINT (TRACE_LOAD, ("Calling %4.4s, PreviousTOS=%d  CurrentTOS=%d\n",
-                                            MethodScope, PreviousStackTop, CurrentStackTop));
+                                            &(((NAME_TABLE_ENTRY *) MethodScope)->Name), 
+                                            PreviousStackTop, CurrentStackTop));
 
                             AmlDumpObjStack (InterpreterMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
 
@@ -771,7 +809,7 @@ BREAKPOINT3;
 
                             /* Pop scope stack */
                             
-                            NsPopCurrent (TYPE_Any);
+                            NsPopCurrent (ACPI_TYPE_Any);
 
                         } /* Execution mode  */
 

@@ -176,7 +176,7 @@ BREAKPOINT3;
         Status = AE_AML_ERROR;
     }
 
-    else if (TYPE_Region != RgnDesc->Common.Type)
+    else if (ACPI_TYPE_Region != RgnDesc->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found %d %s\n",
                         RgnDesc->Common.Type, Gbl_NsTypeNames[RgnDesc->Common.Type]));
@@ -240,11 +240,11 @@ BREAKPOINT3;
 
 
                     if (!ObjValDesc ||
-                        ObjValDesc->Common.Type != (UINT8) TYPE_Number)
+                        ObjValDesc->Common.Type != (UINT8) ACPI_TYPE_Number)
                     {
                         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Address "
                                     "ObjValDesc = %p, ObjValDesc->Common.Type = %02Xh, Number = %02Xh\n",
-                                    ObjValDesc, ObjValDesc->Common.Type, (UINT8) TYPE_Number));
+                                    ObjValDesc, ObjValDesc->Common.Type, (UINT8) ACPI_TYPE_Number));
 
                         Status = AE_AML_ERROR;
                     }
@@ -271,7 +271,7 @@ BREAKPOINT3;
                         ObjValDesc = AmlObjStackRemoveValue (STACK_TOP);
 
                         if (!ObjValDesc ||
-                            ObjValDesc->Common.Type != (UINT8) TYPE_Number)
+                            ObjValDesc->Common.Type != (UINT8) ACPI_TYPE_Number)
                         {
 
                             DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Length \n"));
@@ -558,11 +558,11 @@ AmlAccessNamedField (
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    if (TYPE_DefField != NsGetType (NamedField))
+    if (INTERNAL_TYPE_DefField != NsGetType (NamedField))
     {
         DEBUG_PRINT (ACPI_ERROR, (
                   "AmlAccessNamedField: Name %4.4s type %d is not a defined field\n",
-                  NamedField, NsGetType (NamedField)));
+                  &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField)));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
@@ -577,11 +577,11 @@ AmlAccessNamedField (
     DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DatLen=%d, BitOffset=%d\n",
                 ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
 
-    if (TYPE_DefField != ObjDesc->Common.Type)
+    if (INTERNAL_TYPE_DefField != ObjDesc->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlAccessNamedField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                NamedField, NsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
+                &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 

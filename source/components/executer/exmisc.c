@@ -307,7 +307,7 @@ AmlExecCreateField (
     
     /* SourceBuff  :=  TermArg=>Buffer */
 
-    case TYPE_Buffer:
+    case ACPI_TYPE_Buffer:
 
         if (BitOffset + (UINT32) BitCount > 8 * (UINT32) SrcDesc->Buffer.Length)
         {
@@ -325,7 +325,7 @@ AmlExecCreateField (
                             OffDesc, OffDesc->Common.ReferenceCount));
         }
         
-        OffDesc->Common.Type            = (UINT8) TYPE_FieldUnit;
+        OffDesc->Common.Type            = (UINT8) ACPI_TYPE_FieldUnit;
         OffDesc->Common.ReferenceCount  = 1;
         OffDesc->FieldUnit.Access       = (UINT16) ACCESS_AnyAcc;
         OffDesc->FieldUnit.LockRule     = (UINT16) GLOCK_NeverLock;
@@ -349,7 +349,7 @@ AmlExecCreateField (
 
         TypeFound = SrcDesc->Common.Type;
 
-        if ((TypeFound > (UINT8) TYPE_Lvalue) ||
+        if ((TypeFound > (UINT8) INTERNAL_TYPE_Lvalue) ||
             (Gbl_BadType == Gbl_NsTypeNames[TypeFound]))
         {
             DEBUG_PRINT (ACPI_ERROR, (
@@ -391,18 +391,19 @@ AmlExecCreateField (
     switch (ResType)                /* Type of Name's existing value */
     {
 
-    case TYPE_Alias:
-    case TYPE_BankField:
-    case TYPE_DefField:
-    case TYPE_FieldUnit:
-    case TYPE_IndexField:
+    case ACPI_TYPE_FieldUnit:
+
+    case INTERNAL_TYPE_Alias:
+    case INTERNAL_TYPE_BankField:
+    case INTERNAL_TYPE_DefField:
+    case INTERNAL_TYPE_IndexField:
 
         NsDumpPathname (ResDesc, "AmlExecCreateField: clobber ", TRACE_BFIELD, _COMPONENT);
 
         DUMP_ENTRY (ResDesc, TRACE_BFIELD);
         DUMP_STACK_ENTRY (NsGetAttachedObject (ResDesc));
         
-        NsAttachObject (ResDesc, NULL, TYPE_Any);
+        NsAttachObject (ResDesc, NULL, ACPI_TYPE_Any);
         break;
 
 
@@ -428,11 +429,12 @@ AmlExecCreateField (
     switch (ResType)                /* Type of Name's existing value */
     {
 
-    case TYPE_Alias:
-    case TYPE_BankField:
-    case TYPE_DefField:
-    case TYPE_FieldUnit:
-    case TYPE_IndexField:
+    case ACPI_TYPE_FieldUnit:
+
+    case INTERNAL_TYPE_Alias:
+    case INTERNAL_TYPE_BankField:
+    case INTERNAL_TYPE_DefField:
+    case INTERNAL_TYPE_IndexField:
 
         break;
 
@@ -577,7 +579,7 @@ AmlExecIndex (void)
              * TBD - before this pointer is used, the results may be surprising.
              */
             PkgDesc->Lvalue.Object  = (void *) &PkgDesc->Package.Elements[IdxDesc->Number.Value];
-            PkgDesc->Common.Type    = (UINT8) TYPE_Lvalue;
+            PkgDesc->Common.Type    = (UINT8) INTERNAL_TYPE_Lvalue;
             PkgDesc->Lvalue.OpCode  = AML_IndexOp;
 
             Status = AmlExecStore (PkgDesc, ResDesc);
@@ -693,7 +695,7 @@ AmlExecMatch (void)
          * XXX - if an element is a Name, should we examine its value?
          */
         if (!PkgDesc->Package.Elements[Index] ||
-            TYPE_Number != PkgDesc->Package.Elements[Index]->Common.Type)
+            ACPI_TYPE_Number != PkgDesc->Package.Elements[Index]->Common.Type)
         {
             continue;
         }
@@ -837,7 +839,7 @@ AmlExecMatch (void)
         break;
     }
 
-    PkgDesc->Common.Type  = (UINT8) TYPE_Number;
+    PkgDesc->Common.Type  = (UINT8) ACPI_TYPE_Number;
     PkgDesc->Number.Value = MatchValue;
 
     /* Free the operands */

@@ -298,7 +298,7 @@ AmlDumpObjStackEntry (
 
     switch (EntryDesc->Common.Type)
     {
-    case TYPE_Lvalue:
+    case INTERNAL_TYPE_Lvalue:
 
         switch (EntryDesc->Lvalue.OpCode)
         {
@@ -347,7 +347,7 @@ AmlDumpObjStackEntry (
             DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Arg%d",
                         EntryDesc->Lvalue.OpCode - AML_Arg0));
 
-            if (TYPE_Number == EntryDesc->Common.Type)
+            if (ACPI_TYPE_Number == EntryDesc->Common.Type)
             {
                 /* Value is a Number */
             
@@ -365,7 +365,7 @@ AmlDumpObjStackEntry (
             DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Local%d",
                         EntryDesc->Lvalue.OpCode - AML_Local0));
 
-            if (TYPE_Number == EntryDesc->Common.Type)
+            if (ACPI_TYPE_Number == EntryDesc->Common.Type)
             {
 
                 /* Value is a Number */
@@ -389,7 +389,7 @@ AmlDumpObjStackEntry (
         break;
 
 
-    case TYPE_Buffer:
+    case ACPI_TYPE_Buffer:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Buffer[%d] seq %lx @ %p \n",
                     EntryDesc->Buffer.Length, EntryDesc->Buffer.Sequence,
@@ -418,28 +418,28 @@ AmlDumpObjStackEntry (
         break;
 
 
-    case TYPE_Number:
+    case ACPI_TYPE_Number:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Number 0x%lx\n",
                     EntryDesc->Number.Value));
         break;
 
 
-    case TYPE_If:
+    case INTERNAL_TYPE_If:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("If [Number] 0x%lx\n",
                     EntryDesc->Number.Value));
         break;
 
 
-    case TYPE_While:
+    case INTERNAL_TYPE_While:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("While [Number] 0x%lx\n",
                     EntryDesc->Number.Value));
         break;
 
 
-    case TYPE_Package:
+    case ACPI_TYPE_Package:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Package[%d] @ %p\n",
                     EntryDesc->Package.Count, EntryDesc->Package.Elements));
@@ -469,7 +469,7 @@ AmlDumpObjStackEntry (
         break;
 
 
-    case TYPE_Region:
+    case ACPI_TYPE_Region:
 
         if (EntryDesc->Region.SpaceId >= NUM_REGION_TYPES)
         {
@@ -499,20 +499,20 @@ AmlDumpObjStackEntry (
         break;
 
 
-    case TYPE_String:
+    case ACPI_TYPE_String:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("String[%d] @ %p\n",
                     EntryDesc->String.Length, EntryDesc->String.Pointer));
         break;
 
 
-    case TYPE_BankField:
+    case INTERNAL_TYPE_BankField:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("BankField\n"));
         break;
 
 
-    case TYPE_DefField:
+    case INTERNAL_TYPE_DefField:
 
         DEBUG_PRINT_RAW (ACPI_INFO,
                     ("DefField: bits=%d  acc=%d lock=%d update=%d at byte=%lx bit=%d of below:\n",
@@ -523,13 +523,13 @@ AmlDumpObjStackEntry (
         break;
 
 
-    case TYPE_IndexField:
+    case INTERNAL_TYPE_IndexField:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("IndexField\n"));
         break;
 
 
-    case TYPE_FieldUnit:
+    case ACPI_TYPE_FieldUnit:
 
         DEBUG_PRINT_RAW (ACPI_INFO,
                     ("FieldUnit: %d bits acc %d lock %d update %d at byte %lx bit %d of \n",
@@ -542,7 +542,7 @@ AmlDumpObjStackEntry (
             DEBUG_PRINT (ACPI_INFO, ("*NULL* \n"));
         }
 
-        else if (TYPE_Buffer != EntryDesc->FieldUnit.Container->Common.Type)
+        else if (ACPI_TYPE_Buffer != EntryDesc->FieldUnit.Container->Common.Type)
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("*not a Buffer* \n"));
         }
@@ -561,13 +561,13 @@ AmlDumpObjStackEntry (
         break;
 
 
-    case TYPE_Event:
+    case ACPI_TYPE_Event:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Event\n"));
         break;
 
 
-    case TYPE_Method:
+    case ACPI_TYPE_Method:
 
         DEBUG_PRINT_RAW (ACPI_INFO,
                     ("Method(%d) @ %p:%lx:%lx\n",
@@ -576,31 +576,31 @@ AmlDumpObjStackEntry (
         break;
 
 
-    case TYPE_Mutex:
+    case ACPI_TYPE_Mutex:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Mutex\n"));
         break;
 
 
-    case TYPE_Device:
+    case ACPI_TYPE_Device:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Device\n"));
         break;
 
 
-    case TYPE_Power:
+    case ACPI_TYPE_Power:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Power\n"));
         break;
 
 
-    case TYPE_Processor:
+    case ACPI_TYPE_Processor:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Processor\n"));
         break;
 
 
-    case TYPE_Thermal:
+    case ACPI_TYPE_Thermal:
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Thermal\n"));
         break;
@@ -751,14 +751,14 @@ AmlDumpObjectDescriptor (
 	
 	switch (Object->Common.Type)
 	{
-	case TYPE_Number:
+	case ACPI_TYPE_Number:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Number");
         OsdPrintf ("%20s : %x\n", "Value", Object->Number.Value);
 		break;
  
         
-	case TYPE_String:
+	case ACPI_TYPE_String:
 
 	    OsdPrintf ("%20s : %s\n", "Type", "String");
         OsdPrintf ("%20s : %x\n", "Length", Object->String.Length);
@@ -766,7 +766,7 @@ AmlDumpObjectDescriptor (
 		break;
 
 
-	case TYPE_Buffer:
+	case ACPI_TYPE_Buffer:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Buffer");
 		OsdPrintf ("%20s : %x\n", "Length", Object->Buffer.Length);
@@ -775,7 +775,7 @@ AmlDumpObjectDescriptor (
 		break;
         
         
-	case TYPE_Package:
+	case ACPI_TYPE_Package:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Package");
 	    OsdPrintf ("%20s : %x\n", "Count", Object->Package.Count);
@@ -784,7 +784,7 @@ AmlDumpObjectDescriptor (
 		break;
         
 
-	case TYPE_FieldUnit:
+	case ACPI_TYPE_FieldUnit:
 
 		OsdPrintf ("%20s : %s\n", "Type", "FieldUnit");
 		OsdPrintf ("%20s : %x\n", "Access", Object->FieldUnit.Access);
@@ -798,7 +798,7 @@ AmlDumpObjectDescriptor (
 	    break;
         
 
-	case TYPE_Device:
+	case ACPI_TYPE_Device:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Device");
 	    OsdPrintf ("%20s : %x\n", "Handle", Object->Device.Handle);
@@ -807,7 +807,7 @@ AmlDumpObjectDescriptor (
 	    OsdPrintf ("%20s : %p\n", "DrvHandler", Object->Device.DrvHandler);
         break;
 
-	case TYPE_Event:
+	case ACPI_TYPE_Event:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Event");
 	    OsdPrintf ("%20s : %x\n", "SignalCount", Object->Event.SignalCount);
@@ -817,7 +817,7 @@ AmlDumpObjectDescriptor (
 	    break;
 
 
-	case TYPE_Method:
+	case ACPI_TYPE_Method:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Method");
 	    OsdPrintf ("%20s : %x\n", "ParamCount", Object->Method.ParamCount);
@@ -827,7 +827,7 @@ AmlDumpObjectDescriptor (
 	    break;
 	
 
-	case TYPE_Mutex:
+	case ACPI_TYPE_Mutex:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Mutex");
 	    OsdPrintf ("%20s : %x\n", "SyncLevel", Object->Mutex.SyncLevel);
@@ -837,7 +837,7 @@ AmlDumpObjectDescriptor (
 	    break;
 
 
-	case TYPE_Region:
+	case ACPI_TYPE_Region:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Region");
 	    OsdPrintf ("%20s : %x\n", "SpaceId", Object->Region.SpaceId);
@@ -850,7 +850,7 @@ AmlDumpObjectDescriptor (
  	    break;
 
 
-	case TYPE_Power:
+	case ACPI_TYPE_Power:
 
 		OsdPrintf ("%20s : %s\n", "Type", "PowerResource");
 	    OsdPrintf ("%20s : %x\n", "Handle", Object->PowerResource.Handle);
@@ -859,7 +859,7 @@ AmlDumpObjectDescriptor (
 	    break;
 
 
-	case TYPE_Processor:
+	case ACPI_TYPE_Processor:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Processor");
 	    OsdPrintf ("%20s : %x\n", "Handle", Object->Processor.Handle);
@@ -868,7 +868,7 @@ AmlDumpObjectDescriptor (
 	    break;
 
 
-	case TYPE_Thermal:
+	case ACPI_TYPE_Thermal:
 
 		OsdPrintf ("%20s : %s\n", "Type", "ThermalZone");
 	    OsdPrintf ("%20s : %x\n", "Handle", Object->ThermalZone.Handle);
@@ -876,7 +876,7 @@ AmlDumpObjectDescriptor (
 	    OsdPrintf ("%20s : %p\n", "DrvHandler", Object->ThermalZone.DrvHandler);
 	    break;
 
-	case TYPE_BankField:
+	case INTERNAL_TYPE_BankField:
 
 		OsdPrintf ("%20s : %s\n", "Type", "BankField");
 	    OsdPrintf ("%20s : %x\n", "Access", Object->BankField.Access);
@@ -891,7 +891,7 @@ AmlDumpObjectDescriptor (
 	    break;
 
 
-	case TYPE_IndexField:
+	case INTERNAL_TYPE_IndexField:
 
 		OsdPrintf ("%20s : %s\n", "Type", "IndexField");
 	    OsdPrintf ("%20s : %x\n", "Access", Object->IndexField.Access);
@@ -905,7 +905,7 @@ AmlDumpObjectDescriptor (
 	    break;
 
 
-	case TYPE_Lvalue:
+	case INTERNAL_TYPE_Lvalue:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Lvalue");
 	    OsdPrintf ("%20s : %x\n", "OpCode", Object->Lvalue.OpCode);
@@ -913,7 +913,7 @@ AmlDumpObjectDescriptor (
 		break;
 
 
-	case TYPE_AddrHandler:
+	case INTERNAL_TYPE_AddressHandler:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Address Handler");
 	    OsdPrintf ("%20s : %x\n", "SpaceId", Object->AddrHandler.SpaceId);
@@ -924,7 +924,7 @@ AmlDumpObjectDescriptor (
 	    OsdPrintf ("%20s : %x\n", "Context", Object->AddrHandler.Context);
 		break;
 
-	case TYPE_Notfy:
+	case INTERNAL_TYPE_Notify:
 
 		OsdPrintf ("%20s : %s\n", "Type", "Notify Handler");
 	    OsdPrintf ("%20s : %x\n", "Nte", Object->NotifyHandler.Nte);
@@ -933,16 +933,16 @@ AmlDumpObjectDescriptor (
 		break;
 
 
-    case TYPE_Alias:
-	case TYPE_DefField:
-	case TYPE_DefFieldDefn:
-	case TYPE_BankFieldDefn:
-	case TYPE_IndexFieldDefn:
-	case TYPE_If:
-	case TYPE_Else:
-	case TYPE_While:
-	case TYPE_Scope:
-	case TYPE_DefAny:
+    case INTERNAL_TYPE_Alias:
+	case INTERNAL_TYPE_DefField:
+	case INTERNAL_TYPE_DefFieldDefn:
+	case INTERNAL_TYPE_BankFieldDefn:
+	case INTERNAL_TYPE_IndexFieldDefn:
+	case INTERNAL_TYPE_If:
+	case INTERNAL_TYPE_Else:
+	case INTERNAL_TYPE_While:
+	case INTERNAL_TYPE_Scope:
+	case INTERNAL_TYPE_DefAny:
 
 		OsdPrintf ("*** Structure display not implemented for type %d! ***\n",
         	Object->Common.Type);

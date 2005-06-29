@@ -154,6 +154,7 @@ AmlPrepDefFieldValue (
     INT32                   FldLen)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    NAME_TABLE_ENTRY        *ThisEntry;
     INT32                   Type;
 
 
@@ -168,7 +169,7 @@ AmlPrepDefFieldValue (
 
     /* Region typecheck */
 
-    if (TYPE_Region != (Type = NsGetType (Region)))
+    if (ACPI_TYPE_Region != (Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
                     Type, Gbl_NsTypeNames[Type]));
@@ -177,7 +178,7 @@ AmlPrepDefFieldValue (
 
     /* Allocate a new object */
 
-    ObjDesc = CmCreateInternalObject (TYPE_DefField);
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_DefField);
     if (!ObjDesc)
     {   
         /* Unable to allocate new object descriptor    */
@@ -190,7 +191,7 @@ AmlPrepDefFieldValue (
 
     DUMP_STACK (IMODE_Execute, "AmlPrepDefFieldValue", 2, "case DefField");
 
-    if (TYPE_DefField != ObjDesc->Field.Type)
+    if (INTERNAL_TYPE_DefField != ObjDesc->Field.Type)
     {
         /* 
          * The C implementation has done something which is technically legal
@@ -231,11 +232,12 @@ AmlPrepDefFieldValue (
 
     CmUpdateObjectReference (ObjDesc->Field.Container, REF_INCREMENT);
 
+    ThisEntry = AmlObjStackGetValue (0);
 
     /* Debug output only */
 
     DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
-                    AmlObjStackGetValue (0), AmlObjStackGetValue (0), ObjDesc));
+                    ThisEntry, &(ThisEntry->Name), ObjDesc));
 
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (Region, ACPI_INFO);
@@ -253,8 +255,8 @@ AmlPrepDefFieldValue (
      * Store the constructed descriptor (ObjDesc) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
-    NsAttachObject ((ACPI_HANDLE) AmlObjStackGetValue (0), ObjDesc,
-                (UINT8) NsGetType ((ACPI_HANDLE) AmlObjStackGetValue (0)));
+    NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
+                    (UINT8) NsGetType ((ACPI_HANDLE) ThisEntry));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -288,6 +290,7 @@ AmlPrepBankFieldValue (
     INT32                   FldLen)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    NAME_TABLE_ENTRY        *ThisEntry;
     INT32                   Type;
 
 
@@ -309,7 +312,7 @@ AmlPrepBankFieldValue (
 
     /* Allocate a new object */
 
-    ObjDesc = CmCreateInternalObject (TYPE_BankField);
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_BankField);
     if (!ObjDesc)
     {   
         /* Unable to allocate new object descriptor    */
@@ -321,7 +324,7 @@ AmlPrepBankFieldValue (
 
     DUMP_STACK (IMODE_Execute, "AmlPrepBankFieldValue", 2, "case BankField");
 
-    if (TYPE_BankField != ObjDesc->BankField.Type)
+    if (INTERNAL_TYPE_BankField != ObjDesc->BankField.Type)
     {
         /* See comments in AmlPrepDefFieldValue() re: unexpected C behavior */
 
@@ -359,9 +362,10 @@ AmlPrepBankFieldValue (
     CmUpdateObjectReference (ObjDesc->BankField.Container, REF_INCREMENT);
     CmUpdateObjectReference (ObjDesc->BankField.BankSelect, REF_INCREMENT);
 
+    ThisEntry = AmlObjStackGetValue (0);
 
     DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
-                    AmlObjStackGetValue (0), AmlObjStackGetValue (0), ObjDesc));
+                    ThisEntry, &(ThisEntry->Name), ObjDesc));
     
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (Region, ACPI_INFO);
@@ -374,8 +378,8 @@ AmlPrepBankFieldValue (
      * Store the constructed descriptor (ObjDesc) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
-    NsAttachObject ((ACPI_HANDLE) AmlObjStackGetValue (0), ObjDesc,
-                (UINT8) NsGetType ((ACPI_HANDLE) AmlObjStackGetValue (0)));
+    NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
+                    (UINT8) NsGetType ((ACPI_HANDLE) ThisEntry));
 
 
     return_ACPI_STATUS (AE_OK);
@@ -408,6 +412,7 @@ AmlPrepIndexFieldValue (
     INT32                   FldLen)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    NAME_TABLE_ENTRY        *ThisEntry;
 
 
     FUNCTION_TRACE ("AmlPrepIndexFieldValue");
@@ -421,7 +426,7 @@ AmlPrepIndexFieldValue (
 
     /* Allocate a new object descriptor */
 
-    ObjDesc = CmCreateInternalObject (TYPE_IndexField);
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_IndexField);
     if (!ObjDesc)
     {   
         /* Unable to allocate new object descriptor    */
@@ -431,7 +436,7 @@ AmlPrepIndexFieldValue (
 
     /* ObjDesc, IndexRegion, and DataReg valid  */
 
-    if (TYPE_IndexField != ObjDesc->IndexField.Type)
+    if (INTERNAL_TYPE_IndexField != ObjDesc->IndexField.Type)
     {
         /* See comments in AmlPrepDefFieldValue() re unexpected C behavior */
     
@@ -462,8 +467,10 @@ AmlPrepIndexFieldValue (
     ObjDesc->IndexField.Index     = IndexReg;
     ObjDesc->IndexField.Data      = DataReg;
 
+    ThisEntry = AmlObjStackGetValue (0);
+
     DEBUG_PRINT (ACPI_INFO, ("AmlPrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
-                    AmlObjStackGetValue (0), AmlObjStackGetValue (0), ObjDesc));
+                    ThisEntry, &(ThisEntry->Name), ObjDesc));
 
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (IndexReg, ACPI_INFO);
@@ -476,8 +483,8 @@ AmlPrepIndexFieldValue (
      * Store the constructed descriptor (ObjDesc) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
-    NsAttachObject ((ACPI_HANDLE) AmlObjStackGetValue (0), ObjDesc,
-                    (UINT8) NsGetType ((ACPI_HANDLE) AmlObjStackGetValue (0)));
+    NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
+                    (UINT8) NsGetType ((ACPI_HANDLE) ThisEntry));
 
     return_ACPI_STATUS (AE_OK);
 }
