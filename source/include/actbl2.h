@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.22 $
+ *       $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -195,7 +195,7 @@ typedef struct
 
 
 /*
-/* ACPI Specification Rev 2.0 for the Fixed ACPI Description Table
+ * ACPI Specification Rev 2.0 for the Fixed ACPI Description Table
  */
 typedef struct
 {
