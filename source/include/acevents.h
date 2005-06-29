@@ -106,34 +106,14 @@
 #define STATUS_POWER_BUTTON             256
 #define STATUS_SLEEP_BUTTON             512
 
-/* Interrupt handler return values */
+/* Interrupt handler return values (must be unique bits) */
 
 #define INTERRUPT_HANDLED               0x01
 #define INTERRUPT_NOT_HANDLED           0x02
-#define INTERRUPT_ERROR                 0x03
-
-/* 
- * elements correspond to counts for
- * TMR, GBL, PWR_BTN, SLP_BTN, and RTC
- * respectively.  These counts are modified
- * by the ACPI interrupt handler... 
- */
-
-/*
- * External interfaces - TBD: move to acpisubsys.h
- */
-
-ACPI_STATUS
-AcpiEnableFixedEvent (
-    UINT32              Event,
-    FIXED_EVENT_HANDLER Handler);
-    
-ACPI_STATUS
-AcpiDisableFixedEvent (
-    UINT32              Event);
+#define INTERRUPT_ERROR                 0x04
 
 
-/* Local interfaces */
+/* SCI handling - evsci */
     
 UINT32 
 EvInstallSciHandler (
@@ -145,32 +125,14 @@ EvRemoveSciHandler (
 
 INT32 
 EvInitializeSCI (
-    INT32               ProgramSCI);
+    INT32                   ProgramSCI);
 
 void
 EvRestoreAcpiState (
     void);
 
-ACPI_STATUS
-EvGpeInitialize (
-    void);
 
-ACPI_STATUS
-EvInitGpeControlMethods (void);
-
-UINT32
-EvGpeDispatch (
-    UINT32              GpeNumber);
-
-UINT32
-EvGpeDetect (
-    void);
-
-void
-EvNotifyDispatch (
-    NsHandle            Device, 
-    UINT32              NotifyValue);
-
+/* Fixed event handling - evfixed */
 
 UINT32
 EvFixedEventDetect (
@@ -178,7 +140,43 @@ EvFixedEventDetect (
 
 UINT32
 EvFixedEventDispatch (
-    UINT32              Event);
+    ACPI_EVENT_TYPE         Event);
+
+
+/* GPE handling - evgpe */
+
+ACPI_STATUS
+EvGpeInitialize (
+    void);
+
+ACPI_STATUS
+EvInitGpeControlMethods (
+    void);
+
+UINT32
+EvGpeDispatch (
+    UINT32                  GpeNumber);
+
+UINT32
+EvGpeDetect (
+    void);
+
+void
+EvEnableGpe (
+    UINT32                  GpeNumber);
+
+void
+EvDisableGpe (
+    UINT32                  GpeNumber);
+
+
+/* Device Notify handling - evnotify */
+
+void
+EvNotifyDispatch (
+    ACPI_HANDLE             Device, 
+    UINT32                  NotifyValue);
+
 
 
 /* Debug stuff */
@@ -187,7 +185,7 @@ EvFixedEventDispatch (
 
 INT32 
 EvSciCount (
-    UINT32              Event);
+    ACPI_EVENT_TYPE         Event);
 
 #define DEBUG_INCREMENT_EVENT_COUNT(a)   EventCount[a]++;
 

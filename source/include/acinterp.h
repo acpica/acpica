@@ -102,7 +102,7 @@
 #define AML_END_OF_BLOCK    -1
 
 #include <datatypes.h>
-#include <acpiobj.h>            /* For NsType data type only !! */
+#include <acpiobj.h>
 
 
 /*
@@ -126,188 +126,540 @@ extern void CheckTrashA(char *Where,
 #endif
 
 
-/* What are these ?? TBD */
-
-extern INT32        OBJECT_DESCRIPTOR_PER_AMLPRIV;
-extern INT32        OBJECT_DESCRIPTOR_IS_VOID;
-
-
-
-/* Macros to allocate and deallocate structures */
-/* GET RID OF THESE, confusing!! TBD!! */
-
-#define  NEW(type)   ((type *)OsdCallocate (sizeof(type)))
-#ifdef DELETE
-#undef DELETE
-#endif
-#define  DELETE(ptr) OsdFree ((void *)(ptr)), (ptr) = 0
-
 /* 
  * Macro to test for out-of-range subscript
- * No parens needed around aArray in expansion since the actual parameter
+ * No parens needed around Array in expansion since the actual parameter
  * must be the name of a declared array and cannot be an expression.
- * Cast of iSubscript to int required by broken IC386 compiler.
  */
 
 #define OUTRANGE(Subscript, Array) \
-    (sizeof(Array[0]) == 0 || (int)(Subscript) < 0 \
-     || (int)(Subscript) >= sizeof(Array)/sizeof(Array[0]))
-
-
-/* Object Stack */
-
-#ifdef __ISIDATA_C__
-void            *ObjStack[AML_EXPR_MAX_NEST];  /* values are NsHandle or ObjHandle */
-INT32           ObjStackTop = 0;
-
-#else
-extern void     *ObjStack[];  /* values are NsHandle or ObjHandle */
-extern INT32    ObjStackTop;
-#endif
+    (sizeof(Array[0]) == 0 ||\
+    (UINT32)(Subscript) >= (sizeof(Array)/sizeof(Array[0])))
 
 
 #define PUSH_PKG_LENGTH         1
 #define DO_NOT_PUSH_PKG_LENGTH  0
 
 
-/* 
- * Method Stack, containing locals and args
- * per level, 0-7 are Local# and 8-14 are Arg#
- */
-
-#define LCLBASE             0
-#define NUMLCL              8
-#define ARGBASE             (LCLBASE+NUMLCL)
-#define NUMARG              7
-
-extern OBJECT_DESCRIPTOR    *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
-extern INT32                MethodStackTop;
 
 
-/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- * Functions which Load/Dump/Execute Interpreted Data
- * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- */
-
-INT32
-DoMatchOp (
-    OpMode              iLE);
-
-void
-DoOpByte (
-    INT32               nl, 
-    UINT16              op, 
-    OpMode              iLE);
-
-
-/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- * Functions which Load/Dump/Execute Names
- * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- */
-
-char *
-LastFQN (void);
-
-void
-AllocateNameString (
-    INT32               PrefixCount,
-    INT32               NSeg);
-
-INT32
-NcOK (
-    INT32               c);
-
-void
-GenLabel (
-    char                *Name);
-
-/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- * Functions which Load/Dump/Execute Atoms
- * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- */
-
-/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- * Functions which Load/Dump/Execute Expressions
- * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+/*
+ * iefield - ACPI AML (p-code) execution - field manipulation
  */
 
 
-INT32
-DoOpCode (
-    OpMode              iLE);
+ACPI_STATUS
+AmlSetNamedFieldValue (
+    ACPI_HANDLE         NamedField, 
+    UINT32              Value);
+
+ACPI_STATUS
+AmlGetNamedFieldValue (
+    ACPI_HANDLE         NamedField, 
+    UINT32              *Value);
+
+
+/*
+ * ieopexec - ACPI AML (p-code) execution - specific opcodes
+ */
+
+ACPI_STATUS
+AmlExecCreateField (
+    UINT16              op);
+
+ACPI_STATUS
+AmlExecFatal (
+    void);
+
+ACPI_STATUS
+AmlExecIndex (
+    void);
+
+ACPI_STATUS
+AmlExecMatch (
+    void);
+
+
+/*
+ * ievalue - ACPI AML (p-code) execution - get value functions
+ */
 
 INT32
-DoCode (
-    OpMode              iLE);
+AmlGetRvalue (
+    ACPI_OBJECT         **StackPtr);
 
-UINT32 
-AmlBufSeq (void);
-
-INT32
-DoPkg (
-    NsType              Type, 
-    OpMode              iLE);
+BOOLEAN
+AmlIsMethodValue (
+    ACPI_OBJECT         *pOD);
 
 
-INT32
-DoDefinitionBlock (
-    char                *name, 
-    UINT8               *addr, 
-    INT32               len,
-    LogHandle           iLstHandle, 
-    OSD_FILE            *fAsmF);
-
-void
-AmlMarkPackage (
-    OBJECT_DESCRIPTOR   *pOD);
-
-void
-vAmlMarkObject (
-    OBJECT_DESCRIPTOR   *pOD);
-
-void
-MarkObjectStack (
-    INT32               *piCount);
-
-
-
-
-/* P-code execution Prototypes */
+/*
+ * ieprep - ACPI AML (p-code) execution - prep utilities
+ */
 
 INT32
-GetMethodDepth (void);
+AmlGetMethodDepth (
+    void);
 
-INT32
-GetRvalue (
-    OBJECT_DESCRIPTOR   **StackPtr);
+ACPI_OBJECT_TYPE
+AmlGetMethodType (
+    INT32               Index);
 
-INT32
-PrepDefFieldValue (
-    NsHandle            Region, 
+ACPI_STATUS
+AmlGetMethodValue (
+    INT32               Index, 
+    ACPI_OBJECT         *ObjDesc);
+
+ACPI_STATUS
+AmlSetMethodValue (
+    INT32               Index, 
+    ACPI_OBJECT         *ObjDesc, 
+    ACPI_OBJECT         *ObjDesc2);
+
+ACPI_STATUS
+AmlPrepDefFieldValue (
+    ACPI_HANDLE         Region, 
     UINT8               FldFlg, 
     INT32               FldPos, 
     INT32               FldLen);
 
-INT32
-PrepBankFieldValue (
-    NsHandle            Region, 
-    NsHandle            BankReg, 
+ACPI_STATUS
+AmlPrepBankFieldValue (
+    ACPI_HANDLE         Region, 
+    ACPI_HANDLE         BankReg, 
     UINT32              BankVal,
     UINT8               FldFlg, 
     INT32               FldPos, 
     INT32               FldLen);
 
-INT32
-PrepIndexFieldValue(
-    NsHandle            IndexReg, 
-    NsHandle            DataReg,
+ACPI_STATUS
+AmlPrepIndexFieldValue(
+    ACPI_HANDLE         IndexReg, 
+    ACPI_HANDLE         DataReg,
     UINT8               FldFlg, 
     INT32               FldPos, 
     INT32               FldLen);
 
-INT32
-PrepStack (
+ACPI_STATUS
+AmlPrepStack (
     char                *Types);
+
+
+/*
+ * iesystem - Interface to OS services
+ */
+
+UINT16 
+OsThreadId (
+    void);
+
+ACPI_STATUS
+OsDoNotifyOp (
+    ACPI_OBJECT         *val, 
+    ACPI_OBJECT         *obj);
+
+void
+OsDoSuspend(
+    UINT32              Time);
+
+ACPI_STATUS
+OsAcquireOpRqst(
+    ACPI_OBJECT         *Time, 
+    ACPI_OBJECT         *sOb);
+
+ACPI_STATUS
+OsReleaseOpRqst(
+    ACPI_OBJECT         *sOb);
+
+ACPI_STATUS
+OsSignalOpRqst(
+    ACPI_OBJECT         *sOb);
+
+ACPI_STATUS
+OsWaitOpRqst(
+    ACPI_OBJECT         *Time, 
+    ACPI_OBJECT         *sOb);
+
+ACPI_STATUS
+OsResetOpRqst(
+    ACPI_OBJECT         *sOb);
+
+ACPI_STATUS
+OsGetGlobalLock(
+    void);
+
+void
+OsReleaseGlobalLock(
+    void);
+
+
+/*
+ * iexecute - ACPI AML (p-code) execution
+ */
+
+ACPI_STATUS
+AmlExecuteMethod (
+    INT32               Offset, 
+    INT32               Len, 
+    ACPI_OBJECT         **Params);
+
+ACPI_STATUS
+AmlExecStore (
+    ACPI_OBJECT         *op1, 
+    ACPI_OBJECT         *res);
+
+
+/*
+ * iemonadic - ACPI AML (p-code) execution, monadic operators
+ */
+
+ACPI_STATUS
+AmlExecMonadic1 (
+    UINT16              op);
+
+ACPI_STATUS
+AmlExecMonadic2R (
+    UINT16              op);
+
+ACPI_STATUS
+AmlExecMonadic2 (
+    UINT16              op);
+
+
+/*
+ * iedyadic - ACPI AML (p-code) execution, dyadic operators
+ */
+
+ACPI_STATUS
+AmlExecDyadic1 (
+    UINT16              op);
+
+ACPI_STATUS
+AmlExecDyadic2R (
+    UINT16              op);
+
+ACPI_STATUS
+AmlExecDyadic2S (
+    UINT16              op);
+
+ACPI_STATUS
+AmlExecDyadic2 (
+    UINT16              op);
+
+
+/*
+ * isatoms - interpreter/scanner atom load/execute
+ */
+
+ACPI_STATUS 
+AmlDoSuperName (
+    OPERATING_MODE      LoadExecMode, 
+    ACPI_OBJECT_TYPE    Define);
+
+ACPI_STATUS
+AmlDoLiteral (
+    OPERATING_MODE      LoadExecMode);
+
+/*
+ * iscode - Scanner AML code manipulation routines
+ */
+
+INT32
+AmlAvail (
+    size_t              n);
+
+INT32
+AmlPeek (
+    void);
+
+INT32
+AmlGetPCodeByte (
+    ptrdiff_t           Offset);
+
+INT32
+AmlPeekOp (
+    void);
+
+UINT8 *
+AmlConsumeBytes (
+    size_t              Bytes);
+
+size_t
+AmlConsumeStreamBytes (
+    size_t              BytesToGet, 
+    UINT8               *AmlBuffer);
+
+void
+AmlConsumePackage (
+    OPERATING_MODE      LoadExecMode);
+
+INT32
+AmlIsInPCodeBlock (
+    UINT8               *Where);
+
+void
+AmlSetPCodeInput (
+    UINT8               *Base, 
+    INT32               Len);
+
+ACPI_STATUS
+AmlSetMethod (
+    void                *Object);
+
+ACPI_STATUS
+AmlPrepExec (
+    ptrdiff_t           Offset, 
+    INT32               Len);
+
+ACPI_OBJECT_HANDLE
+AmlGetPCodeHandle (
+    void);
+
+void
+AmlGetCurrentLocation (
+    METHOD_INFO         *Method);
+
+void
+AmlSetCurrentLocation (
+    METHOD_INFO         *Method);
+
+
+/*
+ * isdump - Scanner debug output routines
+ */
+
+void
+AmlDumpBuffer (
+    size_t              Length);
+
+
+ACPI_STATUS
+AmlDumpStackEntry (
+    ACPI_OBJECT         *EntryDesc);
+
+void
+AmlDumpStack (
+    OPERATING_MODE      LoadExecMode, 
+    char                *pcIdent, 
+    INT32               NumLevels, 
+    char                *pcNote);
+
+void
+AmlDumpObjectDescriptor (
+	ACPI_OBJECT         *Obj);
+
+
+/*
+ * isdoexp - interpreter/scanner expression load/execute
+ */
+
+ACPI_STATUS
+AmlDoDataTerm (
+    OPERATING_MODE      LoadExecMode);
+
+ACPI_STATUS
+AmlDoCode (
+    OPERATING_MODE      LoadExecMode);
+
+ACPI_STATUS
+AmlDoDefinitionBlock (
+    char                *name, 
+    UINT8               *addr, 
+    INT32               len);
+
+ACPI_STATUS
+AmlDoFieldElement (
+    ACPI_OBJECT_TYPE    DataType, 
+    OPERATING_MODE      LoadExecMode);
+
+
+/*
+ * isdopkg - interpreter/scanner AML package load/execute
+ */
+
+ACPI_STATUS
+AmlDoPkg (
+    ACPI_OBJECT_TYPE    Type, 
+    OPERATING_MODE      LoadExecMode);
+
+
+/*
+ * isdoname - interpreter/scanner named object load/execute
+ */
+
+ACPI_STATUS
+AmlDoNameSpaceModifier (
+    OPERATING_MODE      LoadExecMode);
+
+ACPI_STATUS
+AmlDoNamedObject (
+    OPERATING_MODE      LoadExecMode);
+
+
+/*
+ * isidata - interpreter/scanner interpreted data load/execute
+ */
+
+ACPI_STATUS 
+AmlDoFieldFlag (
+    OPERATING_MODE      LoadExecMode);
+
+ACPI_STATUS
+AmlDoMatchOp (
+    OPERATING_MODE      LoadExecMode);
+
+void
+AmlDoOpByte (
+    INT32               nl, 
+    UINT16              op, 
+    OPERATING_MODE      LoadExecMode);
+
+
+/*
+ * isnames - interpreter/scanner name load/execute
+ */
+
+void
+AmlAllocateNameString (
+    INT32               PrefixCount,
+    INT32               NSeg);
+
+INT32
+AmlGoodChar (
+    INT32               c);
+
+INT32 
+AmlDecodePackageLength (
+    INT32               LastPkgLen);
+
+ACPI_STATUS
+AmlDoName (
+    ACPI_OBJECT_TYPE    DataType, 
+    OPERATING_MODE      LoadExecMode);
+
+
+/*
+ * isdoop - interpreter/scanner expression(opcode) load/execute
+ */
+
+ACPI_STATUS
+AmlDoOpCode (
+    OPERATING_MODE      LoadExecMode);
+
+ACPI_STATUS
+AmlDoRefOpCode (
+    OPERATING_MODE      LoadExecMode);
+
+
+/*
+ * isdoopt1 - interpreter/scanner expression(opcode) load/execute
+ */
+
+ACPI_STATUS
+AmlDoType1OpCode (
+    OPERATING_MODE      LoadExecMode);
+
+
+/*
+ * isdoopt2 - interpreter/scanner expression(opcode) load/execute
+ */
+
+ACPI_STATUS 
+AmlDoType2OpCode (
+    OPERATING_MODE      LoadExecMode);
+
+
+/*
+ * isrdata - interpreter/scanner raw data load/execute
+ */
+
+void 
+AmlShowHexValue (
+    INT32               ByteCount, 
+    UINT8               *AmlPtr, 
+    OPERATING_MODE      LoadExecMode, 
+    INT32               LeadSpace);
+
+ACPI_STATUS
+AmlDoPkgLength (
+    INT32               DoPush, 
+    OPERATING_MODE      LoadExecMode);
+
+ACPI_STATUS
+AmlDoByteConst (
+    OPERATING_MODE      LoadExecMode, 
+    INT32               LeadSpace);
+
+ACPI_STATUS
+AmlDoWordConst (
+    OPERATING_MODE      LoadExecMode, 
+    INT32               LeadSpace);
+
+ACPI_STATUS
+AmlDoDWordConst (
+    OPERATING_MODE      LoadExecMode, 
+    INT32               LeadSpace);
+
+
+/*
+ * isstack - Scanner stack routines
+ */
+
+void
+AmlClearPkgStack (
+    void);
+
+ACPI_STATUS
+AmlPushLength (
+    INT32               len, 
+    OPERATING_MODE      LoadExecMode);
+
+ACPI_STATUS
+AmlPushExecLength (
+    INT32               len);
+
+ACPI_STATUS
+AmlPushExec (
+    UINT8               *Code, 
+    INT32               Len);
+
+ACPI_STATUS
+AmlPopLength (
+    INT32               NoErrUnder, 
+    OPERATING_MODE      LoadExecMode);
+
+ACPI_STATUS
+AmlPopExecLength (
+    void);
+
+ACPI_STATUS
+AmlPopExec (
+    void);
+
+ACPI_STATUS
+AmlPushIfExec (
+    OPERATING_MODE      LoadExecMode);
+
+INT32
+AmlPackageNested (
+     void);
+
+
+/*
+ * isutils - interpreter/scanner utilities
+ */
+
+BOOLEAN
+AmlAcquireGlobalLock (
+    UINT16              Rule);
+
+ACPI_STATUS
+AmlReleaseGlobalLock (
+    BOOLEAN             Locked);
+
+void
+AmlAppendBlockOwner (
+    void                *Owner);
 
 void
 AmlAppendOperandDiag(
@@ -316,97 +668,9 @@ AmlAppendOperandDiag(
     UINT16              OpCode, 
     INT32               NOperands);
 
-INT32
-ExecStore (
-    OBJECT_DESCRIPTOR   *op1, 
-    OBJECT_DESCRIPTOR   *res);
-
-INT32
-ExecMonadic1 (
-    UINT16              op);
-
-INT32
-ExecMonadic2R (
-    UINT16              op);
-
-INT32
-ExecMonadic2 (
-    UINT16              op);
-
-INT32
-ExecDyadic1 (
-    UINT16              op);
-
-INT32
-ExecDyadic2R (
-    UINT16              op);
-
-INT32
-ExecDyadic2S (
-    UINT16              op);
-
-INT32
-ExecCreateField (
-    UINT16              op);
-
-INT32
-ExecFatal (void);
-
-INT32
-ExecIndex (void);
-
-INT32
-ExecMatch (void);
-
-INT32
-ExecDyadic2 (
-    UINT16              op);
-
-INT32
-AmlExec (
-    INT32               Offset, 
-    INT32               Len, 
-    OBJECT_DESCRIPTOR   **Params);
-
-void
-MarkMethodValues (
-    INT32               *Count);
-
-INT32
-IsMethodValue (
-    OBJECT_DESCRIPTOR   *pOD);
-
-
-/* I/O Prototypes */
-/* Prototypes */
-
-void
-ClearPkgStack (void);
-
-void
-SetPCodeInput (
-    UINT8               *Base, 
-    INT32               Len);
-
-void
-SetMethod (
-    void                *Object);
-
-INT32
-AmlPrepExec (
-    ptrdiff_t           Offset, 
-    INT32               Len);
-
-ACPI_OBJECT_HANDLE
-PCodeHandle (void);
-
-void
-GetCurrentLoc (
-    meth                *Method);
-
-void
-SetCurrentLoc (
-    meth                *Method);
+UINT32 
+AmlBufSeq (
+    void);
 
 INT32
 DigitsNeeded (
@@ -416,238 +680,32 @@ DigitsNeeded (
 void
 LineSet (
     INT32               n, 
-    OpMode              LoadExecMode);
+    OPERATING_MODE      LoadExecMode);
 
 void
 Indent (
     INT32               n);
 
-INT32
-PushLen (
-    INT32               len, 
-    OpMode              LoadExecMode);
 
-INT32
-PushExecLen (
-    INT32               len);
-
-INT32
-PushExec (
-    UINT8               *Code, 
-    INT32               Len);
-
-INT32
-PopLen (
-    INT32               NoErrUnder, 
-    OpMode              LoadExecMode);
-
-INT32
-PopExecLen (void);
-
-INT32
-PopExec (void);
-
-INT32
-PkgNested (void);
-
-INT32
-avail (
-    size_t              n);
-
-INT32
-Peek (void);
-
-INT32
-GetPCodeByte (
-    ptrdiff_t           Offset);
-
-INT32
-PeekOp (void);
-
-size_t
-ConsumeAMLStreamBytes (
-    size_t              BytesToGet, 
-    UINT8               *AmlBuffer);
+/* More PLUMBER stuff (in isutils) TBD: what is this? */
 
 void
-ConsumeAMLPackage (
-    OpMode              LoadExecMode);
+AmlMarkPackage (
+    ACPI_OBJECT         *pOD);
 
 void
-DumpAMLBuffer (
-    size_t              Length);
-
-
-INT32
-DumpStackEntry (
-    OBJECT_DESCRIPTOR   *EntryDesc);
+vAmlMarkObject (
+    ACPI_OBJECT         *pOD);
 
 void
-DumpStack (
-    OpMode              LoadExecMode, 
-    char                *pcIdent, 
-    INT32               NumLevels, 
-    char                *pcNote);
-        
-INT32
-PushIfExec (
-    OpMode              LoadExecMode);
-
-INT32
-IsInPCodeBlock (
-    UINT8               *Where);
-
-void
-DeleteObject (
-    OBJECT_DESCRIPTOR   **ppOD);
-
-
-/* OS interfaces */
+MarkObjectStack (
+    INT32               *piCount);
 
 
 void
-DoSuspend(
-    UINT32              Time);
-
-INT32
-DoNotifyOp (
-    OBJECT_DESCRIPTOR   *val, 
-    OBJECT_DESCRIPTOR   *obj);
-
-INT32
-AcquireOpRqst(
-    OBJECT_DESCRIPTOR   *Time, 
-    OBJECT_DESCRIPTOR   *sOb);
-
-INT32
-WaitOpRqst(
-    OBJECT_DESCRIPTOR   *Time, 
-    OBJECT_DESCRIPTOR   *sOb);
-
-INT32
-ReleaseOpRqst(
-    OBJECT_DESCRIPTOR   *sOb);
-
-INT32
-ResetOpRqst(
-    OBJECT_DESCRIPTOR   *sOb);
-
-INT32
-SignalOpRqst(
-    OBJECT_DESCRIPTOR   *sOb);
-
-INT32
-GetGlobalLock(void);
-
-void
-ReleaseGlobalLock(void);
+MarkMethodValues (
+    INT32               *Count);
 
 
 
-INT32 
-DoByteConst (
-    OpMode              LoadExecMode, 
-    INT32               LeadSpace);
-
-INT32 
-DoWordConst (
-    OpMode              LoadExecMode, 
-    INT32               LeadSpace);
-
-INT32 
-DoDWordConst (
-    OpMode              LoadExecMode, 
-    INT32               LeadSpace);
-
-INT32 
-DoName (
-    NsType              DataType, 
-    OpMode              LoadExecMode);
-
-
-INT32 
-DoPkgLength (
-    INT32               DoPush, 
-    OpMode              LoadExecMode);
-
-INT32 
-DoFieldFlag (
-    OpMode              LoadExecMode);
-
-INT32 
-GetEncodedPkgLen (
-    INT32               LastPkgLen);
-
-INT32 
-DoType2OpCode (
-    OpMode              LoadExecMode);
-
-
-INT32 
-DoSuperName (
-    OpMode              LoadExecMode, 
-    NsType              Define);
-
-INT32 
-DoRefOpCode (
-    OpMode              LoadExecMode);
-
-INT32 
-DoLiteral (
-    OpMode              LoadExecMode);
-
-char *
-LastFullyQualifiedName (
-    void);
-
-INT32 
-DoDataTerm (
-    OpMode              LoadExecMode);
-
-INT32 
-DoType1OpCode (
-    OpMode              LoadExecMode);
-
-INT32
-SetNamedFieldValue (
-    NsHandle            NamedField, 
-    UINT32              Value);
-
-INT32
-GetNamedFieldValue (
-    NsHandle            NamedField, 
-    UINT32              *Value);
-
-INT32
-SetMethodValue (
-    INT32               Index, 
-    OBJECT_DESCRIPTOR   *ObjDesc, 
-    OBJECT_DESCRIPTOR   *ObjDesc2);
-
-INT32
-GetMethodValue (
-    INT32               Index, 
-    OBJECT_DESCRIPTOR   *ObjDesc);
-
-NsType
-GetMethodValTyp (
-    INT32               Index);
-
-void
-AmlAppendBlockOwner (
-    void                *Owner);
-
-void 
-ShowHexValue (
-    INT32               ByteCount, 
-    UINT8               *AmlPtr, 
-    OpMode              LoadExecMode, 
-    INT32               LeadSpace);
-
-UINT8 *
-ConsumeAMLByte (
-    size_t              Bytes);
-
-
-
-#endif /* __AML_H__ */
+#endif
