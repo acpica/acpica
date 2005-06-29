@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -327,7 +327,7 @@ AcpiNsBuildInternalName (
     NATIVE_CHAR             *InternalName = Info->InternalName;
     NATIVE_CHAR             *ExternalName = Info->NextExternalChar;
     NATIVE_CHAR             *Result = NULL;
-    NATIVE_UINT             i;
+    NATIVE_UINT_MIN32       i;
 
 
     ACPI_FUNCTION_TRACE ("NsBuildInternalName");
@@ -527,12 +527,12 @@ AcpiNsExternalizeName (
     UINT32                  *ConvertedNameLength,
     char                    **ConvertedName)
 {
-    NATIVE_UINT             PrefixLength = 0;
-    NATIVE_UINT             NamesIndex = 0;
-    NATIVE_UINT             NumSegments = 0;
-    NATIVE_UINT             i = 0;
-    NATIVE_UINT             j = 0;
-    NATIVE_UINT             RequiredLength;
+    NATIVE_UINT_MIN32       PrefixLength = 0;
+    NATIVE_UINT_MIN32       NamesIndex = 0;
+    NATIVE_UINT_MIN32       NumSegments = 0;
+    NATIVE_UINT_MIN32       i = 0;
+    NATIVE_UINT_MIN32       j = 0;
+    NATIVE_UINT_MIN32       RequiredLength;
 
 
     ACPI_FUNCTION_TRACE ("NsExternalizeName");
