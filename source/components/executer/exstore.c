@@ -625,7 +625,7 @@ AmlExecStore (
             {
                 NsDumpPathname (TempHandle, "AmlExecStore/FieldUnit: Bad container in ", 
                                 ACPI_ERROR, _COMPONENT);
-                DUMP_ENTRY (TempHandle);
+                DUMP_ENTRY (TempHandle, ACPI_ERROR);
 
                 DEBUG_PRINT (ACPI_ERROR, ("Container: %p", DestDesc->FieldUnit.Container));
                 if (DestDesc->FieldUnit.Container)
