@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -141,6 +141,8 @@
  * DESCRIPTION: Record the given object as the value associated with the
  *              name whose ACPI_HANDLE is passed.  If Object is NULL
  *              and Type is ACPI_TYPE_ANY, set the name as having no value.
+ *              Note: Future may require that the Node->Flags field be passed
+ *              as a parameter.
  *
  * MUTEX:       Assumes namespace is locked
  *
@@ -154,7 +156,6 @@ AcpiNsAttachObject (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OBJECT_TYPE8       ObjectType = ACPI_TYPE_ANY;
-    UINT8                   Flags;
 
 
     FUNCTION_TRACE ("NsAttachObject");
@@ -197,15 +198,11 @@ AcpiNsAttachObject (
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Get the current flags field of the Node */
-
-    Flags = Node->Flags;
-
     /* If null object, we will just install it */
 
     if (!Object)
     {
-        ObjDesc = NULL;
+        ObjDesc    = NULL;
         ObjectType = ACPI_TYPE_ANY;
     }
 
@@ -220,7 +217,7 @@ AcpiNsAttachObject (
          * Value passed is a name handle and that name has a
          * non-null value.  Use that name's value and type.
          */
-        ObjDesc = ((ACPI_NAMESPACE_NODE *) Object)->Object;
+        ObjDesc    = ((ACPI_NAMESPACE_NODE *) Object)->Object;
         ObjectType = ((ACPI_NAMESPACE_NODE *) Object)->Type;
     }
 
@@ -261,7 +258,6 @@ AcpiNsAttachObject (
 
     Node->Object   = ObjDesc;
     Node->Type     = (UINT8) ObjectType;
-    Node->Flags    |= Flags;
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -300,6 +296,7 @@ AcpiNsDetachObject (
     /* Clear the entry in all cases */
 
     Node->Object = NULL;
+    Node->Type   = ACPI_TYPE_ANY;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object=%p Value=%p Name %4.4s\n",
         Node, ObjDesc, (char *) &Node->Name));
