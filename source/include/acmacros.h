@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.92 $
+ *       $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -288,11 +288,6 @@
 #define MUL_16(a)                       _MUL(a,4)
 #define MOD_16(a)                       _MOD(a,16)
 
-/*
- * Divide and Modulo
- */
-#define ACPI_DIVIDE(n,d)                ((n) / (d))
-#define ACPI_MODULO(n,d)                ((n) % (d))
 
 /*
  * Rounding macros (Power of two boundaries only)
@@ -370,10 +365,6 @@
 
 #define IS_SINGLE_TABLE(x)              (((x) & 0x01) == ACPI_TABLE_SINGLE ? 1 : 0)
 
-/* Check if ACPI has been initialized properly */
-
-#define ACPI_IS_INITIALIZATION_COMPLETE(s)  {if (AcpiGbl_RootNode) s = AE_OK; else s=AE_NO_NAMESPACE;}
-
 /*
  * Macro to check if a pointer is within an ACPI table.
  * Parameter (a) is the pointer to check.  Parameter (b) must be defined
@@ -394,9 +385,9 @@
  * Macros for the master AML opcode table
  */
 #ifdef ACPI_DEBUG
-#define ACPI_OP(Name,PArgs,IArgs,Flags)     {PArgs,IArgs,Flags,Name}
+#define ACPI_OP(Name,PArgs,IArgs,Class,Type,Flags)     {PArgs,IArgs,Flags,Class,Type,Name}
 #else
-#define ACPI_OP(Name,PArgs,IArgs,Flags)     {PArgs,IArgs,Flags}
+#define ACPI_OP(Name,PArgs,IArgs,Class,Type,Flags)     {PArgs,IArgs,Flags,Class,Type}
 #endif
 
 #define ARG_TYPE_WIDTH                  5
@@ -486,10 +477,6 @@
 #define _REPORT_WARNING(a,b,c,fp)       {AcpiUtReportWarning(a,b,c); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
-/* Buffer dump macros */
-
-#define DUMP_BUFFER(a,b)                AcpiUtDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
-
 /*
  * Debug macros that are conditionally compiled
  */
@@ -518,7 +505,7 @@
 #define FUNCTION_TRACE_STR(a,b)         PROC_NAME(a)\
                                         AcpiUtTraceStr(__LINE__,&_Dbg,(NATIVE_CHAR *)b)
 
-#define FUNCTION_ENTRY                  AcpiUtTrackStackPtr
+#define FUNCTION_ENTRY()                AcpiUtTrackStackPtr()
 
 /*
  * Function exit tracing.
@@ -554,6 +541,7 @@
 #define DUMP_TABLES(a,b)                AcpiNsDumpTables(a,b)
 #define DUMP_PATHNAME(a,b,c,d)          AcpiNsDumpPathname(a,b,c,d)
 #define DUMP_RESOURCE_LIST(a)           AcpiRsDumpResourceList(a)
+#define DUMP_BUFFER(a,b)                AcpiUtDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
 #define BREAK_MSG(a)                    AcpiOsSignal (ACPI_SIGNAL_BREAKPOINT,(a))
 
 
@@ -601,13 +589,14 @@
 #define FUNCTION_EXIT
 #define FUNCTION_STATUS_EXIT(s)
 #define FUNCTION_VALUE_EXIT(s)
-#define FUNCTION_ENTRY
+#define FUNCTION_ENTRY()
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_OPERANDS(a,b,c,d,e)
 #define DUMP_ENTRY(a,b)
 #define DUMP_TABLES(a,b)
 #define DUMP_PATHNAME(a,b,c,d)
 #define DUMP_RESOURCE_LIST(a)
+#define DUMP_BUFFER(a,b)
 #define ACPI_DEBUG_PRINT(pl)
 #define ACPI_DEBUG_PRINT_RAW(pl)
 #define BREAK_MSG(a)
