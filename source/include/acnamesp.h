@@ -321,7 +321,7 @@ NsSetMethod (
 void
 NsSetValue (
     ACPI_HANDLE             ObjHandle, 
-    ACPI_OBJECT_HANDLE      v, 
+    ACPI_HANDLE             Value, 
     UINT8                   ValTyp);
 
 BOOLEAN
@@ -415,10 +415,9 @@ NsFindRootSystemDescriptorPointer (
     ROOT_SYSTEM_DESCRIPTOR_POINTER  ** RSDP,
     OSD_FILE                        *InputFile);
 
-INT32
+ACPI_STATUS
 NsVerifyTableChecksum (
-    void                    *TableHeader, 
-    INT32                   DisplayBitFlags);
+    void                    *TableHeader); 
 
 ACPI_STATUS
 NsGetTable (
