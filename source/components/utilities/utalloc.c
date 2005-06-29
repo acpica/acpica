@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.134 $
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -345,8 +345,8 @@ AcpiUtValidateBuffer (
  *
  * FUNCTION:    AcpiUtInitializeBuffer
  *
- * PARAMETERS:  RequiredLength      - Length needed
- *              Buffer              - Buffer to be validated
+ * PARAMETERS:  Buffer              - Buffer to be validated
+ *              RequiredLength      - Length needed
  *
  * RETURN:      Status
  *
@@ -703,7 +703,8 @@ AcpiUtFreeAndTrack (
  *
  * FUNCTION:    AcpiUtFindAllocation
  *
- * PARAMETERS:  Allocation             - Address of allocated memory
+ * PARAMETERS:  ListId                  - Memory list to search
+ *              Allocation              - Address of allocated memory
  *
  * RETURN:      A list element if found; NULL otherwise.
  *
@@ -749,7 +750,8 @@ AcpiUtFindAllocation (
  *
  * FUNCTION:    AcpiUtTrackAllocation
  *
- * PARAMETERS:  Allocation          - Address of allocated memory
+ * PARAMETERS:  ListId              - Memory list to search
+ *              Allocation          - Address of allocated memory
  *              Size                - Size of the allocation
  *              AllocType           - MEM_MALLOC or MEM_CALLOC
  *              Component           - Component type of caller
@@ -840,7 +842,8 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiUtRemoveAllocation
  *
- * PARAMETERS:  Allocation          - Address of allocated memory
+ * PARAMETERS:  ListId              - Memory list to search
+ *              Allocation          - Address of allocated memory
  *              Component           - Component type of caller
  *              Module              - Source file name of caller
  *              Line                - Line number of caller
