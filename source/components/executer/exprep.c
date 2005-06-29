@@ -168,14 +168,17 @@ AmlGetMethodType (INT32 Index)
         /*  iMethodStackTop or iIndex invalid for current object stack  */
 
         REPORT_ERROR (&KDT[0]);
+        FUNCTION_EXIT;
         return (NsType)-1;
     }
 
     if (!MethodStack[MethodStackTop][Index])
     {
+        FUNCTION_EXIT;
         return TYPE_Any; /* Any == 0 => "uninitialized" -- see spec 15.2.3.5.2.28 */
     }
 
+    FUNCTION_EXIT;
     return MethodStack[MethodStackTop][Index]->ValType;
 }
 
@@ -270,6 +273,7 @@ AmlGetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
         }
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -312,6 +316,7 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetMethodValue: Bad method stack index [%d][%d]\n",
                         MethodStackTop, Index));
+        FUNCTION_EXIT;
         return AE_AML_ERROR;
     }
 
@@ -330,6 +335,7 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
             {
                 /*  allocation failure  */
 
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
         }
@@ -357,7 +363,8 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
         {
             /* XXX - see XXX comment below re possible storage leak */
 
-            DELETE (ObjDesc2);
+            OsdFree (ObjDesc2);
+            ObjDesc = NULL;
         }
     }
 
@@ -382,7 +389,8 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
                                                                 ^= 0x80000000UL;
             }
 
-            DELETE (MethodStack[MethodStackTop][Index]);
+            OsdFree (MethodStack[MethodStackTop][Index]);
+            MethodStack[MethodStackTop][Index] = NULL;
 
             /*  TBD:    Should also delete any unshared storage pointed to by this
              *          descriptor, but lacking a convenient way to determine
@@ -419,6 +427,7 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
         }
     }
 
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -497,7 +506,8 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
                     "AmlPrepDefFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
-            DELETE (ObjDesc);
+            OsdFree (ObjDesc);
+            ObjDesc = NULL;
             Status = AE_AML_ERROR;
         }
     }
@@ -543,6 +553,7 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
                     (UINT8) NsGetType ((NsHandle) ObjStack[ObjStackTop]));
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -612,7 +623,9 @@ AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
                     "AmlPrepBankFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
-            DELETE (ObjDesc);
+            OsdFree (ObjDesc);
+
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
     }
@@ -656,6 +669,7 @@ AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
     }
 
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -715,7 +729,8 @@ AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
                     "AmlPrepIndexFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
-            DELETE (ObjDesc);
+            OsdFree (ObjDesc);
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
     }
@@ -757,6 +772,7 @@ AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
                     (UINT8) NsGetType ((NsHandle) ObjStack[ObjStackTop]));
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -802,6 +818,7 @@ AmlPrepStack (char *Types)
     Status = AmlPushIfExec (MODE_Exec);
     if (AE_OK != Status)
     {
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -824,6 +841,7 @@ AmlPrepStack (char *Types)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack:internal error: null stack entry\n"));
             ObjStackTop--;
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
@@ -903,6 +921,7 @@ AmlPrepStack (char *Types)
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Lvalue, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -911,7 +930,7 @@ AmlPrepStack (char *Types)
                 /* Convert indirect name ptr to direct name ptr */
                 
                 NsHandle TempHandle = (*StackPtr)->Lvalue.Ref;
-                DELETE (*StackPtr);
+                OsdFree (*StackPtr);
                 (*StackPtr) = TempHandle;
             }
             break;
@@ -925,6 +944,7 @@ AmlPrepStack (char *Types)
             if (AE_OK != Status)
             {
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return Status;
             }
 
@@ -933,6 +953,7 @@ AmlPrepStack (char *Types)
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Number, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
             break;
@@ -941,6 +962,7 @@ AmlPrepStack (char *Types)
             if ((Status = AmlGetRvalue (StackPtr)) != AE_OK)
             {
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return Status;
             }
 
@@ -953,6 +975,7 @@ AmlPrepStack (char *Types)
                         "AmlPrepStack: Needed String or Buffer, found %s\n",
                         TypeFoundPtr));
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
             break;
@@ -961,6 +984,7 @@ AmlPrepStack (char *Types)
             if ((Status = AmlGetRvalue(StackPtr)) != AE_OK)
             {
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return Status;
             }
 
@@ -971,6 +995,7 @@ AmlPrepStack (char *Types)
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Buffer, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
             break;
@@ -981,6 +1006,7 @@ AmlPrepStack (char *Types)
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed If, found %s\n",
                         TypeFoundPtr));
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
             break;
@@ -989,6 +1015,7 @@ AmlPrepStack (char *Types)
             if ((Status = AmlGetRvalue (StackPtr)) != AE_OK)
             {
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return Status;
             }
 
@@ -999,6 +1026,7 @@ AmlPrepStack (char *Types)
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Package, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
             break;
@@ -1008,6 +1036,7 @@ AmlPrepStack (char *Types)
                     "AmlPrepStack:internal error Unknown type flag %02x\n",
                     *--Types));
             ObjStackTop--;
+            FUNCTION_EXIT;
             return AE_AML_ERROR;
 
         }   /* switch (*Types++) */
@@ -1025,6 +1054,7 @@ AmlPrepStack (char *Types)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: not enough operands\n"));
                 ObjStackTop--;
+                FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
 
@@ -1034,6 +1064,7 @@ AmlPrepStack (char *Types)
     }   /* while (*Types) */
 
     ObjStackTop--;
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
