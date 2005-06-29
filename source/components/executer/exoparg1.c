@@ -122,8 +122,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "iemonad.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("iemonad");
 
 
 
@@ -540,18 +540,35 @@ AmlExecMonadic2 (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-        /* Duplicate the Lvalue on the top of the object stack */
-        
-        ResDesc = CmCreateInternalObject (ObjDesc->Common.Type);
-        if (!ResDesc)
+
+        /* 
+         * Since we are expecting an Lvalue on the top of the stack, it
+         * can be either an NTE or an internal object.
+         *
+         * TBD: This may be the prototype code for all cases where an Lvalue
+         * is expected!! 10/99
+         */
+
+        if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
         {
-            return_ACPI_STATUS (AE_NO_MEMORY);
+            ResDesc = ObjDesc;
         }
 
-        Status = CmCopyInternalObject (ObjDesc, ResDesc);
-        if (ACPI_FAILURE (Status))
+        else
         {
-            return_ACPI_STATUS (Status);
+            /* Duplicate the Lvalue on the top of the object stack */
+        
+            ResDesc = CmCreateInternalObject (ObjDesc->Common.Type);
+            if (!ResDesc)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            Status = CmCopyInternalObject (ObjDesc, ResDesc);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
         }
         
         /* Push went into unused space, so no need to DeleteObject() */
