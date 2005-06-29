@@ -127,7 +127,7 @@
  * 2) ACPI_USE_STANDARD_HEADERS - Define this if linking to a C library and
  *      the standard header files may be used.
  *
- * The ACPI subsystem only uses low level C library functions that do not call 
+ * The ACPI subsystem only uses low level C library functions that do not call
  * operating system services and may therefore be inlined in the code.
  *
  * It may be necessary to tailor these include files to the target
