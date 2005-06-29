@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -927,7 +927,7 @@ AnMethodAnalysisWalkBegin (
             /*
              * Typechecking for _HID
              */
-            else if (!ACPI_STRCMP ("_HID", ReservedMethods[i].Name))
+            else if (!ACPI_STRCMP (METHOD_NAME__HID, ReservedMethods[i].Name))
             {
                 /* Examine the second operand to typecheck it */
 
