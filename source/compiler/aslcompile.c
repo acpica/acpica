@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.35 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-
+#include <stdio.h>
 #include "aslcompiler.h"
 #include "acnamesp.h"
 #include "acdebug.h"
@@ -358,8 +358,16 @@ CmDoCompile (void)
 
     UtBeginEvent (i, "Analyze AML operand types");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Operand type checking \n\n");
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
-                        AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnOperandTypecheckWalkBegin,
+                        AnOperandTypecheckWalkEnd, &AnalysisWalkInfo);
+    UtEndEvent (i++);
+
+    /* Semantic error checking part four - other miscellaneous checks */
+
+    UtBeginEvent (i, "Miscellaneous analysis");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - miscellaneous \n\n");
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnOtherSemanticAnalysisWalkBegin,
+                        AnOtherSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
     UtEndEvent (i++);
 
 
@@ -404,7 +412,7 @@ CmDoCompile (void)
     UtEndEvent (i++);
 
 
-    UtEndEvent (12);
+    UtEndEvent (13);
     CmCleanupAndExit ();
 
     return 0;
@@ -456,19 +464,19 @@ CmCleanupAndExit (void)
         {
             if (AslGbl_Events[i].Valid)
             {
-                printf ("%8ld ms : %s\n",
+                printf ("%8lu ms : %s\n",
                     AslGbl_Events[i].EndTime -
                     AslGbl_Events[i].StartTime,
                     AslGbl_Events[i].EventName);
             }
         }
         printf ("\nMiscellaneous compile statistics\n\n");
-        printf ("%11d : %s\n", TotalParseNodes, "Parse nodes");
-        printf ("%11d : %s\n", Gbl_NsLookupCount, "Namespace searches");
-        printf ("%11d : %s\n", TotalNamedObjects, "Named objects");
-        printf ("%11d : %s\n", TotalMethods, "Control methods");
-        printf ("%11d : %s\n", TotalAllocations, "Memory Allocations");
-        printf ("%11d : %s\n", TotalAllocated, "Total allocated memory");
+        printf ("%11u : %s\n", TotalParseNodes, "Parse nodes");
+        printf ("%11u : %s\n", Gbl_NsLookupCount, "Namespace searches");
+        printf ("%11u : %s\n", TotalNamedObjects, "Named objects");
+        printf ("%11u : %s\n", TotalMethods, "Control methods");
+        printf ("%11u : %s\n", TotalAllocations, "Memory Allocations");
+        printf ("%11u : %s\n", TotalAllocated, "Total allocated memory");
         printf ("\n");
     }
 
