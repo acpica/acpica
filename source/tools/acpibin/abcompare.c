@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -379,7 +379,7 @@ UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
 
 
 void *
-_UtCallocate (
+AcpiUtCallocate (
     UINT32                  Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
@@ -390,7 +390,7 @@ _UtCallocate (
 }
 
 void
-_UtFree (
+AcpiUtFree (
     void                    *Address,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
