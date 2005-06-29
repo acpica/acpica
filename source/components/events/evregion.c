@@ -129,7 +129,8 @@
 
 
 
-#define PCI_ROOT_HID        "PNP0A03"
+#define PCI_ROOT_HID_STRING        "PNP0A03"
+#define PCI_ROOT_HID_VALUE         0x030AD041       /* EISAID("PNP0A03") */
 
 
 
@@ -182,9 +183,7 @@ EvFindOnePciRootBus (
     {
     case ACPI_TYPE_Number:
 
-        /* TBD: What should this number be?  */
-
-        if (ObjDesc->Number.Value != 0x12345678)
+        if (ObjDesc->Number.Value != PCI_ROOT_HID_VALUE)
         {
             return AE_OK;
         }
@@ -193,7 +192,7 @@ EvFindOnePciRootBus (
 
     case ACPI_TYPE_String:
 
-        if (STRNCMP (ObjDesc->String.Pointer, PCI_ROOT_HID, sizeof (PCI_ROOT_HID)))
+        if (STRNCMP (ObjDesc->String.Pointer, PCI_ROOT_HID_STRING, sizeof (PCI_ROOT_HID_STRING)))
         {
             return AE_OK;
         }
@@ -212,11 +211,8 @@ EvFindOnePciRootBus (
      * handler for this PCI device.
      */
 
-
-    /* TBD: Namespace is LOCKED here.  This call might deadlock. */
-
-    Status = AcpiInstallAddressSpaceHandler (Entry->ParentEntry,
-                ADDRESS_SPACE_PCI_CONFIG, ACPI_DEFAULT_HANDLER, NULL, NULL);
+    Status = AcpiInstallAddressSpaceHandler (Entry->ParentEntry, ADDRESS_SPACE_PCI_CONFIG, 
+                                                ACPI_DEFAULT_HANDLER, NULL, NULL);
 
     return AE_OK;
 }
@@ -237,11 +233,11 @@ EvFindOnePciRootBus (
 
 ACPI_STATUS
 EvFindPciRootBuses (
-    char                    *NameArg)
+    void)
 {
     
     NsWalkNamespace (ACPI_TYPE_Any, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                        FALSE, EvFindOnePciRootBus, NameArg, NULL);
+                        FALSE, EvFindOnePciRootBus, NULL, NULL);
 
     return AE_OK;
 }
@@ -276,8 +272,8 @@ EvInstallDefaultAddressSpaceHandlers (
      *          associated with the address space.  For these we use the root.
      */
 
-    Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject,
-                ADDRESS_SPACE_SYSTEM_MEMORY, ACPI_DEFAULT_HANDLER, NULL, NULL);
+    Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, ADDRESS_SPACE_SYSTEM_MEMORY, 
+                                                ACPI_DEFAULT_HANDLER, NULL, NULL);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -291,43 +287,15 @@ EvInstallDefaultAddressSpaceHandlers (
     }
 
     /*
-     *  Install PCI config space handler for all PCI root bridge.  A PCI root
+     *  Install PCI config space handler for all PCI root bridges.  A PCI root
      *  bridge is found by searching for devices containing a HID with the value
      *  EISAID("PNP0A03")
-     *
-     *  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG
-     *
-     *  For now, I am hardcoding the installation of the PCI buses in.  This 
-     *  needs to be fixed ASAP.
-     *
-     *  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG  BUGBUG
      */
 
-    {
-        char *PCIBus_devices[] = {"\\_SB_.PCI0", "\\_SB_.PCI1", "\\_SB_.PCI2", "\\_SB_.CBN", NULL };
-        NATIVE_UINT i = 0;
+    EvFindPciRootBuses ();
 
-        ACPI_HANDLE PCIBusHandle;
 
-        while (PCIBus_devices[i]) 
-        {
-            Status = AcpiGetHandle (NULL, PCIBus_devices[i], &PCIBusHandle);
-            if (ACPI_SUCCESS(Status))
-            {
-                Status = AcpiInstallAddressSpaceHandler (PCIBusHandle,
-                            ADDRESS_SPACE_PCI_CONFIG, ACPI_DEFAULT_HANDLER, NULL, NULL);
-
-                if (ACPI_FAILURE (Status))
-                {
-                    return_ACPI_STATUS (Status);
-                }
-
-            }
-            i++;
-        }
-    } /* PCI Address space handler install */
-
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -422,17 +390,17 @@ EvExecuteRegMethod (
 
 ACPI_STATUS
 EvAddressSpaceDispatch (
-    ACPI_OBJECT_INTERNAL   *RegionObj,
+    ACPI_OBJECT_INTERNAL    *RegionObj,
     UINT32                  Function,
     UINT32                  Address,
     UINT32                  BitWidth,
-    UINT32                 *Value)
+    UINT32                  *Value)
 {
     ACPI_STATUS             Status;
     ADDRESS_SPACE_HANDLER   Handler;
-    REGION_SETUP_FUNCTION   RegionSetup;
+    ADDRESS_SPACE_SETUP     RegionSetup;
     ACPI_OBJECT_INTERNAL    *HandlerDesc;
-    void                   *RegionContext;
+    void                    *RegionContext;
 
 
     FUNCTION_TRACE ("EvAddressSpaceDispatch");
@@ -458,7 +426,7 @@ EvAddressSpaceDispatch (
         /*
          *  This region has not been initialized yet, do it
          */
-        RegionSetup = HandlerDesc->AddrHandler.RegionSetupFunction;
+        RegionSetup = HandlerDesc->AddrHandler.Setup;
         if (!RegionSetup) 
         {
             /*
@@ -469,8 +437,7 @@ EvAddressSpaceDispatch (
             return_ACPI_STATUS (AE_UNKNOWN_STATUS);
         }
 
-        Status = RegionSetup (RegionObj, ACPI_REGION_ACTIVATE,
-                                HandlerDesc->AddrHandler.InstallTimeContext,
+        Status = RegionSetup (RegionObj, ACPI_REGION_ACTIVATE, HandlerDesc->AddrHandler.InstallTimeContext,
                                 &RegionContext);
         /*
          *  Init routine may fail
@@ -544,13 +511,13 @@ EvAddressSpaceDispatch (
 
 void
 EvDisassociateRegionFromHandler(
-    ACPI_OBJECT_INTERNAL   *RegionObj)
+    ACPI_OBJECT_INTERNAL    *RegionObj)
 {
-    ACPI_OBJECT_INTERNAL   *HandlerObj;
-    ACPI_OBJECT_INTERNAL   *ObjDesc;
-    ACPI_OBJECT_INTERNAL  **LastObjPtr;
-    REGION_SETUP_FUNCTION   RegionSetup;
-    void                   *RegionContext;
+    ACPI_OBJECT_INTERNAL    *HandlerObj;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    **LastObjPtr;
+    ADDRESS_SPACE_SETUP     RegionSetup;
+    void                    *RegionContext;
     ACPI_STATUS             Status;
 
 
@@ -600,19 +567,16 @@ EvDisassociateRegionFromHandler(
             /*
              *  Tell undo region prep work
              */
-            RegionSetup = HandlerObj->AddrHandler.RegionSetupFunction;
-            Status = RegionSetup (  RegionObj,
-                                    ACPI_REGION_DEACTIVATE,
-                                    HandlerObj->AddrHandler.InstallTimeContext,
+            RegionSetup = HandlerObj->AddrHandler.Setup;
+            Status = RegionSetup (RegionObj, ACPI_REGION_DEACTIVATE, HandlerObj->AddrHandler.InstallTimeContext,
                                     &RegionContext);
             /*
              *  Init routine may fail
              */
             if (ACPI_FAILURE (Status))
             {
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("EvDisassociateRegionFromHandler: %s from region init, SpaceID %d\n", 
-                     CmFormatException (Status), RegionObj->Region.SpaceId));
+                DEBUG_PRINT (ACPI_ERROR, ("EvDisassociateRegionFromHandler: %s from region init, SpaceID %d\n", 
+                                CmFormatException (Status), RegionObj->Region.SpaceId));
                 /*
                  *  Just ignore failures for now
                  */
