@@ -849,6 +849,11 @@ AmlExecMonadic2 (
         /* Store the result back in the original descriptor */
 
         Status = AmlExecStore (RetDesc, ObjDesc);
+
+        /* Objdesc was just deleted (because it is an Lvalue) */
+
+        Operands[0] = NULL;
+
         break;
 
 
@@ -1075,11 +1080,19 @@ AmlExecMonadic2 (
 
                     /* TBD: (see below) Don't add an additional ref! */
                 }
-                else
+                else if (ObjDesc->Lvalue.TargetType == ACPI_TYPE_Package)
                 {
-                    RetDesc = ObjDesc->Lvalue.Object;
+                    RetDesc = *(ObjDesc->Lvalue.Where);
                 }
                 
+                else
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: DerefOf, Unknown TargetType %X in obj %p\n", 
+                                    ObjDesc->Lvalue.TargetType, ObjDesc));
+                    Status = AE_AML_ERROR;
+                    goto Cleanup;
+                }
+
                 break;
 
 
@@ -1110,7 +1123,10 @@ AmlExecMonadic2 (
 
 Cleanup:
 
-    CmDeleteOperand (&Operands[0]);
+    if (Operands[0])
+    {
+        CmDeleteOperand (&Operands[0]);
+    }
 
     /* Delete return object on error */
 
