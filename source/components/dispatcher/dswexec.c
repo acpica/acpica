@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -762,6 +762,14 @@ Cleanup:
          */
         AcpiDsDeleteResultIfNotUsed (Op, WalkState->ResultObj, WalkState);
     }
+
+#if _UNDER_DEVELOPMENT
+
+    if (WalkState->ParserState.Aml == WalkState->ParserState.AmlEnd)
+    {
+        AcpiDbMethodEnd (WalkState);
+    }
+#endif
 
     /* Always clear the object stack */
 
