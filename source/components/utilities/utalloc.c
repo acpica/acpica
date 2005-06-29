@@ -607,7 +607,7 @@ _CmAllocate (
 
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %p Size 0x%x\n", Address, Size));
 
-    return_VALUE (Address);
+    return_PTR (Address);
 }
 
 
@@ -667,7 +667,7 @@ _CmCallocate (
     
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %p Size 0x%x\n", Address, Size));
 
-    return_VALUE (Address);
+    return_PTR (Address);
 }
 
 
