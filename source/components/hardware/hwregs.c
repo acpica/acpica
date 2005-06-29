@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  ******************************************************************************/
 
@@ -144,6 +144,7 @@ AcpiHwClearAcpiStatus (void)
 {
     NATIVE_UINT             i;
     NATIVE_UINT             GpeBlock;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE ("HwClearAcpiStatus");
@@ -154,7 +155,11 @@ AcpiHwClearAcpiStatus (void)
         (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm1aEvtBlk.Address)));
 
 
-    AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_VOID;
+    }
 
     AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_STATUS, 
             ACPI_BITMASK_ALL_FIXED_STATUS);
@@ -180,7 +185,7 @@ AcpiHwClearAcpiStatus (void)
         }
     }
 
-    AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     return_VOID;
 }
 
@@ -341,7 +346,10 @@ AcpiHwBitRegisterRead (
 
     if (Flags & ACPI_MTX_LOCK)
     {
-        AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
+        if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_HARDWARE)))
+        {
+            return_VALUE (0);
+        }
     }
 
     /* Get the info structure corresponding to the requested ACPI Register */
@@ -356,7 +364,7 @@ AcpiHwBitRegisterRead (
 
     if (Flags & ACPI_MTX_LOCK)
     {
-        AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+        (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     }
 
     /* Normalize the value that was read */
@@ -399,7 +407,10 @@ AcpiHwBitRegisterWrite (
 
     if (Flags & ACPI_MTX_LOCK)
     {
-        AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
+        if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_HARDWARE)))
+        {
+            return_VALUE (0);
+        }
     }
 
     /* Get the info structure corresponding to the requested ACPI Register */
@@ -491,7 +502,7 @@ AcpiHwBitRegisterWrite (
 
     if (Flags & ACPI_MTX_LOCK)
     {
-        AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+        (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     }
 
     /* Normalize the value that was read */
@@ -531,7 +542,10 @@ AcpiHwRegisterRead (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
+        if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_HARDWARE)))
+        {
+            return_VALUE (0);
+        }
     }
 
     switch (RegisterId)
@@ -581,7 +595,7 @@ AcpiHwRegisterRead (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+        (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     }
 
     return_VALUE (Value);
@@ -616,7 +630,10 @@ AcpiHwRegisterWrite (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
+        if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_HARDWARE)))
+        {
+            return_VOID;
+        }
     }
 
     switch (RegisterId)
@@ -682,7 +699,7 @@ AcpiHwRegisterWrite (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+        (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     }
 
     return_VOID;
