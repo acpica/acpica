@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: acpiobj.h - Definition of ACPI_OBJECT_INTERNAL (Internal object only)
+ * Name: acobject.h - Definition of ACPI_OBJECT_INTERNAL (Internal object only)
  *
  *****************************************************************************/
 
@@ -114,10 +114,10 @@
  *
  *****************************************************************************/
 
-#ifndef _ACPIOBJ_H
-#define _ACPIOBJ_H
+#ifndef _ACOBJECT_H
+#define _ACOBJECT_H
 
-#include <acpitypes.h>
+#include <actypes.h>
 #include <macros.h>
 #include <internal.h>
 
@@ -303,14 +303,14 @@ typedef struct /* EVENT */
 {
     ACPI_OBJECT_COMMON
 
-    UINT32                  Semaphore;
     UINT16                  LockCount;
     UINT16                  ThreadId;
     UINT16                  SignalCount;
     UINT16                  Fill1;
+    UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    void                    *Reserved_p1;
+    void                    *Semaphore;
     void                    *Reserved_p2;
     void                    *Reserved_p3;
     void                    *Reserved_p4;
@@ -343,14 +343,14 @@ typedef struct /* MUTEX */
 {
     ACPI_OBJECT_COMMON
 
-    UINT32                  Semaphore;
     UINT16                  LockCount;
     UINT16                  ThreadId;
     UINT16                  SyncLevel;
     UINT16                  Fill1;
+    UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    void                    *Reserved_p1;
+    void                    *Semaphore;
     void                    *Reserved_p2;
     void                    *Reserved_p3;
     void                    *Reserved_p4;
@@ -596,6 +596,4 @@ typedef union AcpiObjInternal
 
 
 
-#endif
-
- 
+#endif /* _ACOBJECT_H */
