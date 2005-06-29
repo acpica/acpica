@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.163 $
+ *       $Revision: 1.165 $
  *
  *****************************************************************************/
 
@@ -128,23 +128,9 @@ typedef UINT32                          ACPI_MUTEX_HANDLE;
 #define ACPI_LOGICAL_ADDRESSING         0x00
 #define ACPI_PHYSICAL_ADDRESSING        0x01
 
-/* Object descriptor types */
+/* Total number of aml opcodes defined */
 
-#define ACPI_CACHED_OBJECT              0x11    /* ORed in when object is cached */
-#define ACPI_DESC_TYPE_STATE            0x20
-#define ACPI_DESC_TYPE_STATE_UPDATE     0x21
-#define ACPI_DESC_TYPE_STATE_PACKAGE    0x22
-#define ACPI_DESC_TYPE_STATE_CONTROL    0x23
-#define ACPI_DESC_TYPE_STATE_RPSCOPE    0x24
-#define ACPI_DESC_TYPE_STATE_PSCOPE     0x25
-#define ACPI_DESC_TYPE_STATE_WSCOPE     0x26
-#define ACPI_DESC_TYPE_STATE_RESULT     0x27
-#define ACPI_DESC_TYPE_STATE_NOTIFY     0x28
-#define ACPI_DESC_TYPE_STATE_THREAD     0x29
-#define ACPI_DESC_TYPE_WALK             0x44
-#define ACPI_DESC_TYPE_PARSER           0x66
-#define ACPI_DESC_TYPE_INTERNAL         0x88
-#define ACPI_DESC_TYPE_NAMED            0xAA
+#define AML_NUM_OPCODES                 0x7E
 
 
 
@@ -1007,6 +993,7 @@ typedef struct
  ****************************************************************************/
 
 #define ACPI_ASCII_ZERO                      0x30
+
 
 /*****************************************************************************
  *
