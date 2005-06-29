@@ -188,6 +188,9 @@ HwClearAcpiStatus (void)
     DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", 
                     ALL_FIXED_STS_BITS, (UINT16) Gbl_FACP->Pm1aEvtBlk));
 
+
+    CmAcquireMutex (MTX_HARDWARE);
+
     OsdOut16 (Gbl_FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     
     if (Gbl_FACP->Pm1bEvtBlk)
@@ -217,6 +220,7 @@ HwClearAcpiStatus (void)
         }
     }
 
+    CmReleaseMutex (MTX_HARDWARE);
     return_VOID;
 }
 
@@ -236,6 +240,7 @@ HwClearAcpiStatus (void)
  *
 
  ***************************************************************************/
+
 ACPI_STATUS
 HwObtainSleepTypeRegisterData (
     UINT8                   SleepState, 
@@ -252,6 +257,7 @@ HwObtainSleepTypeRegisterData (
     /*
      *  Validate parameters
      */
+
     if ((SleepState > ACPI_S_STATES_MAX) ||
         !Slp_TypA || !Slp_TypB)
     {   
@@ -263,7 +269,6 @@ HwObtainSleepTypeRegisterData (
      */
   
     Status = NsEvaluateByName (SleepStateTable[SleepState], NULL, &ObjDesc);
-
     if (AE_OK == Status)
     {  
         if (ObjDesc)
@@ -340,11 +345,19 @@ HwRegisterIO (
         va_end (marker);
     }
 
+    
+    /*
+     * Decode the Register ID
+     */
+
     switch (RegisterId & REGISTER_BLOCK_MASK)
     {
     case PM1_EVT:
+
         if (RegisterId < (INT32) TMR_EN)
         {   
+            CmAcquireMutex (MTX_HARDWARE);
+
             /* status register */
             
             RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm1aEvtBlk);
@@ -419,12 +432,15 @@ HwRegisterIO (
                     RegisterValue = 0;
                 }
             }
+
+            CmReleaseMutex (MTX_HARDWARE);
         }
         
         else
         {   
             /* enable register */
             
+            CmAcquireMutex (MTX_HARDWARE);
             RegisterValue = (UINT32) OsdIn16 ((Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2));
 
             DEBUG_PRINT (TRACE_IO, ("PM1a enable: Read 0x%X from 0x%X\n", 
@@ -484,12 +500,16 @@ HwRegisterIO (
                                 (UINT16) RegisterValue);
                 }
             }
+            CmReleaseMutex (MTX_HARDWARE);
         }
         break;
     
+
     case PM1_CONTROL:
+
         RegisterValue = 0;
         
+        CmAcquireMutex (MTX_HARDWARE);
         if (RegisterId != (INT32) SLP_TYPb)   
         {
             /* 
@@ -578,9 +598,14 @@ HwRegisterIO (
                 OsdOut16 (Gbl_FACP->Pm1bCntBlk, (UINT16) RegisterValue);
             }
         }
+
+        CmReleaseMutex (MTX_HARDWARE);
         break;
     
+
     case PM2_CONTROL:
+
+        CmAcquireMutex (MTX_HARDWARE);
         RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm2CntBlk);
         DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n", 
                         RegisterValue, Gbl_FACP->Pm2CntBlk));
@@ -607,9 +632,13 @@ HwRegisterIO (
 
             OsdOut16 (Gbl_FACP->Pm2CntBlk, (UINT16) RegisterValue);
         }
+
+        CmReleaseMutex (MTX_HARDWARE);
         break;
     
+
     case PM_TIMER:
+
         RegisterValue = OsdIn32 (Gbl_FACP->PmTmrBlk);
         DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read 0x%X from 0x%X\n", 
                         RegisterValue, Gbl_FACP->PmTmrBlk));
@@ -617,23 +646,31 @@ HwRegisterIO (
         Mask = 0xFFFFFFFF;
         break;
     
+
     case GPE1_EN_BLOCK:
+
         GpeReg = (Gbl_FACP->Gpe1Blk + (UINT32) Gbl_FACP->Gpe1Base) + (GpeReg + 
                     ((UINT32) ((Gbl_FACP->Gpe1BlkLen) / 2)));
     
+
     case GPE1_STS_BLOCK:
+
         if (!GpeReg)
         {
             GpeReg = (Gbl_FACP->Gpe1Blk + (UINT32) Gbl_FACP->Gpe1Base);
         }
 
+
     case GPE0_EN_BLOCK:
+
         if (!GpeReg)
         {
             GpeReg = Gbl_FACP->Gpe0Blk + ((UINT32) ((Gbl_FACP->Gpe0BlkLen) / 2));
         }
     
+
     case GPE0_STS_BLOCK:
+
         if (!GpeReg)
         {
             GpeReg = Gbl_FACP->Gpe0Blk;
@@ -649,7 +686,7 @@ HwRegisterIO (
         /* The enable register is the register following the Status Register */
         /* and each register is defined as 1/2 of the total Register Block */
         
-        /* This sets the bit within wEnableBit that needs to be written to */
+        /* This sets the bit within EnableBit that needs to be written to */
         /* the register indicated in Mask to a 1, all others are 0 */
         
         if (Mask > LOW_BYTE)
@@ -662,6 +699,7 @@ HwRegisterIO (
         
         /* Now get the current Enable Bits in the selected Reg */
         
+        CmAcquireMutex (MTX_HARDWARE);
         RegisterValue = (UINT32) OsdIn8 (GpeReg);
         DEBUG_PRINT (TRACE_IO, ("GPE Enable bits: Read 0x%X from 0x%X\n", RegisterValue, GpeReg));
         
@@ -672,7 +710,7 @@ HwRegisterIO (
             Value          &= Mask;
             RegisterValue  |= Value;
            
-            /* This write will put the iAction state into the General Purpose */
+            /* This write will put the Action state into the General Purpose */
 
             /* Enable Register indexed by the value in Mask */
 
@@ -681,13 +719,17 @@ HwRegisterIO (
             OsdOut8 (GpeReg, (UINT8) RegisterValue);
             RegisterValue = (UINT32) OsdIn8 (GpeReg);          
         }
+        CmReleaseMutex (MTX_HARDWARE);
         break;
     
+
     case PROCESSOR_BLOCK:
     default:
+
         Mask = 0;
         break;
     }
+
 
     RegisterValue &= Mask;
     RegisterValue >>= HwGetBitShift (Mask);
