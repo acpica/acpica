@@ -117,6 +117,7 @@
 #ifndef _ACTYPES_H
 #define _ACTYPES_H
 
+/*! [Begin] no source code translation (keep the typedefs) */
 
 /*
  * Data types - Fixed across all compilation models
@@ -157,7 +158,7 @@ typedef UINT64                          ACPI_IO_ADDRESS;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000008
 
-/* No hardware alignment support in IA64 */
+/* (No hardware alignment support in IA64) */
 
 
 #elif _IA16
@@ -225,6 +226,7 @@ typedef NATIVE_UINT                     ACPI_SIZE;
 #define ACPI_INT32_MAX                  (INT32)  0x7FFFFFFF
 #define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
 
+/*! [End] no source code translation !*/
 
 
 /*
