@@ -596,7 +596,12 @@ PsPopWalkState (
         /* Next walk state becomes the current walk state */
 
         WalkList->WalkState = WalkState->Next;
-        WalkState->Next = NULL;
+
+        /* 
+         * Don't clear the NEXT field, this serves as an indicator
+         * that there is a parent WALK STATE 
+         *     WalkState->Next = NULL;
+         */
     }
 
     return_VALUE (WalkState);
