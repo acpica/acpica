@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.74 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -327,25 +327,30 @@ FlCheckForAscii (
         {
             if (BadBytes < 10)
             {
-                AcpiOsPrintf ("Non-ASCII character: 0x%2.2X at offset 0x%X\n", Byte, Offset);
+                AcpiOsPrintf ("Non-ASCII character [0x%2.2X] found at file offset 0x%8.8X\n",
+                        Byte, Offset);
             }
             BadBytes++;
         }
         Offset++;
     }
 
+    /* Seek back to the beginning of the source file */
+
+    fseek (FileInfo->Handle, 0, SEEK_SET);
+
     /* Were there any non-ASCII characters in the file? */
 
     if (BadBytes)
     {
-        AcpiOsPrintf ("%d non-ASCII characters found in input file, appears to be binary\n", BadBytes);
-        AslError (ASL_ERROR, ASL_MSG_NON_ASCII, NULL, FileInfo->Filename);
+        AcpiOsPrintf ("%d non-ASCII characters found in input file, could be a binary file\n",
+                BadBytes);
+        AslError (ASL_WARNING, ASL_MSG_NON_ASCII, NULL, FileInfo->Filename);
         return (AE_BAD_CHARACTER);
     }
 
-    /* File is OK, seek back to the beginning */
+    /* File is OK */
 
-    fseek (FileInfo->Handle, 0, SEEK_SET);
     return (AE_OK);
 }
 
@@ -381,13 +386,19 @@ CmDoCompile (void)
         return -1;
     }
 
-    /* Ensure that the input file is 100% ASCII text */
+    /* Optional check for 100% ASCII source file */
 
-    Status = FlCheckForAscii (&Gbl_Files[ASL_FILE_INPUT]);
-    if (ACPI_FAILURE (Status))
+    if (Gbl_CheckForAscii)
     {
-        AePrintErrorLog (ASL_FILE_STDERR);
-        return -1;
+        /* 
+         * NOTE: This code is optional because there can be "special" characters
+         * embedded in comments (such as the "copyright" symbol, 0xA9).
+         * Just emit a warning if there are non-ascii characters present.
+         */
+
+        /* Check if the input file is 100% ASCII text */
+
+        Status = FlCheckForAscii (&Gbl_Files[ASL_FILE_INPUT]);
     }
 
     Status = FlOpenMiscOutputFiles (Gbl_OutputFilenamePrefix);
