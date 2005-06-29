@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.76 $
+ *              $Revision: 1.81 $
  *
  ******************************************************************************/
 
@@ -124,10 +124,10 @@
 #include "acdebug.h"
 
 
-#ifdef ENABLE_DEBUGGER
+#ifdef ACPI_DEBUGGER
 
 
-#define _COMPONENT          ACPI_DEBUGGER
+#define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbdisply")
 
 
@@ -358,7 +358,7 @@ DumpNte:
 
     else
     {
-        AcpiOsPrintf ("Object (%p) Pathname:  %s\n", Node, RetBuf.Pointer);
+        AcpiOsPrintf ("Object (%p) Pathname:  %s\n", Node, (char *) RetBuf.Pointer);
     }
 
     if (!AcpiOsReadable (Node, sizeof (ACPI_NAMESPACE_NODE)))
@@ -407,13 +407,13 @@ AcpiDbDecodeInternalObject (
 
     if (!ObjDesc)
     {
-        AcpiOsPrintf (" Uninitialized\n");
+        AcpiOsPrintf (" Uninitialized");
         return;
     }
 
     if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND)
     {
-        AcpiOsPrintf ("%p", ObjDesc);
+        AcpiOsPrintf (" %p", ObjDesc);
         return;
     }
 
@@ -453,10 +453,10 @@ AcpiDbDecodeInternalObject (
         }
         break;
 
-    
+
     default:
-        
-        AcpiOsPrintf ("%p", ObjDesc);
+
+        AcpiOsPrintf (" %p", ObjDesc);
         break;
     }
 }
@@ -480,8 +480,8 @@ AcpiDbDecodeNode (
 {
 
 
-    AcpiOsPrintf ("<Node>            Name %4.4s Type-%s",
-        Node->Name.Ascii, AcpiUtGetTypeName (Node->Type));
+    AcpiOsPrintf ("<Node>            Name %4.4s",
+        Node->Name.Ascii);
 
     if (Node->Flags & ANOBJ_METHOD_ARG)
     {
@@ -544,9 +544,9 @@ AcpiDbDisplayInternalObject (
     case ACPI_DESC_TYPE_OPERAND:
 
         Type = ACPI_GET_OBJECT_TYPE (ObjDesc);
-        if (Type > INTERNAL_TYPE_MAX)
+        if (Type > ACPI_TYPE_LOCAL_MAX)
         {
-            AcpiOsPrintf (" Type %hX [Invalid Type]", Type);
+            AcpiOsPrintf (" Type %X [Invalid Type]", (UINT32) Type);
             return;
         }
 
@@ -554,7 +554,7 @@ AcpiDbDisplayInternalObject (
 
         switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
         {
-        case INTERNAL_TYPE_REFERENCE:
+        case ACPI_TYPE_LOCAL_REFERENCE:
 
             switch (ObjDesc->Reference.Opcode)
             {
@@ -591,13 +591,20 @@ AcpiDbDisplayInternalObject (
             case AML_INDEX_OP:
 
                 AcpiOsPrintf ("[Index]          ");
-                AcpiDbDecodeInternalObject (ObjDesc->Reference.Object);
+                if (!ObjDesc->Reference.Where)
+                {
+                    AcpiOsPrintf ("Uninitialized WHERE ptr");
+                }
+                else
+                {
+                    AcpiDbDecodeInternalObject (*(ObjDesc->Reference.Where));
+                }
                 break;
 
 
             case AML_REF_OF_OP:
 
-                AcpiOsPrintf ("[Reference]      ");
+                AcpiOsPrintf ("[RefOf]          ");
 
                 /* Reference can be to a Node or an Operand object */
 
@@ -619,7 +626,7 @@ AcpiDbDisplayInternalObject (
 
             default:
 
-                AcpiOsPrintf ("Unknown Reference opcode %X\n", 
+                AcpiOsPrintf ("Unknown Reference opcode %X\n",
                     ObjDesc->Reference.Opcode);
                 break;
             }
@@ -998,5 +1005,5 @@ AcpiDbDisplayArgumentObject (
     AcpiDbDisplayInternalObject (ObjDesc, WalkState);
 }
 
-#endif /* ENABLE_DEBUGGER */
+#endif /* ACPI_DEBUGGER */
 
