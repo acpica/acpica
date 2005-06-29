@@ -146,26 +146,6 @@ CmHardwareInitialize (
     void);
 
 
-/* 
- * CmTable - ACPI Table loading and initialization
- */
-
-ACPI_STATUS
-CmInstallTable (
-    char                    *TablePtr,
-    ACPI_TABLE_DESC         *TableInfo);
-
-ACPI_STATUS
-CmGetTableRsdt (
-    UINT32                  *NumberOfTables, 
-    char                    *BufferPtr);
-
-ACPI_STATUS
-CmGetAllTables (
-    UINT32                  NumberOfTables, 
-    char                    *BufferPtr);
-
-
 /* Object construction and conversion interfaces - cmobject */
 
 ACPI_OBJECT_INTERNAL *
