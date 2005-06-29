@@ -516,10 +516,6 @@ SOURCE=..\..\Subsystem\Tables\tbinstal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Tables\tbtable.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Tables\tbutils.c
 # End Source File
 # Begin Source File
