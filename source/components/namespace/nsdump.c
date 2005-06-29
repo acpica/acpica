@@ -1,18 +1,99 @@
-/*_________________________________________________________________________
- |
- |
- |           Copyright (C) Intel Corporation 1994-1997
- |
- | All rights reserved.  No part of this program or publication may be
- | reproduced, transmitted, transcribed, stored in a retrieval system, or
- | translated into any language or computer language, in any form or by any
- | means, electronic, mechanical, magnetic, optical, chemical, manual, or
- | otherwise, without the prior written permission of Intel Corporation.
- |__________________________________________________________________________
- |
- | ModuleName: nsdump - table dumping routines for debug
- |__________________________________________________________________________
-*/
+
+/******************************************************************************
+ * 
+ * Module Name: nsdump - table dumping routines for debug
+ *
+ *****************************************************************************/
+
+/******************************************************************************
+ *
+ * 1. Copyright Notice
+ *
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * reserved.
+ *
+ * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
+ *
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
+ *
+ * the above copyright and patent license is granted only if the following 
+ * conditions are met:
+ *
+ * 3. Conditions 
+ *
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
+ *
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
+ *
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * Intel Code.
+ *
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
+ * without prior written authorization from Intel.
+ *
+ * 4. Disclaimer and Export Compliance
+ *
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
+ *
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * LIMITED REMEDY.
+ *
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
+ *
+ *****************************************************************************/
+
 
 #define __NSDUMP_C__
 
@@ -32,239 +113,220 @@ static ST_KEY_DESC_TABLE KDT[] = {
 
 
 
+
 /****************************************************************************
- * 
- * FUNCTION:    NsDumpTable
  *
- * PARAMETERS:  nte *ThisEntry              table to be dumped
- *              INT32 Size                  size of table
- *              INT32 Level                 Number of ancestor levels
- *              INT32 DisplayBitFlags       See description in NsDumpTables()
- *              INT32 UseGraphicCharSet     See description in NsDumpTables()
- *              INT32 MaxDepth              See description in NsDumpTables()
+ * FUNCTION:    NsDumpOneObject   
  *
- * DESCRIPTION: Dump a name table and its descendents
+ * PARAMETERS:  NsHandle Handle          Entry to be dumped
+ *
+ * DESCRIPTION: Dump a single nte
+ *              This procedure is a UserFunction called by NsWalkNamespace.
+ *
+ ***************************************************************************/
+
+void *
+NsDumpOneObject (NsHandle ObjHandle, INT32 Level, void *Context)
+{
+    UINT32              DownstreamSiblingMask = 0;
+    INT32               LevelTmp;
+    NsType              Type;
+    UINT32              WhichBit;
+    nte                 *Appendage = NULL;
+    nte                 *ThisEntry = (nte *) ObjHandle;
+    size_t              Size = 0;
+
+
+    LevelTmp    = Level;
+    Type        = ThisEntry->Type;
+    WhichBit    = 1;
+
+
+    /* Indent the object according to the level */
+
+    while (LevelTmp--)
+    {
+
+        /*  print appropriate characters to form tree structure */
+
+        if (LevelTmp)
+        {
+            if (DownstreamSiblingMask & WhichBit)
+            {    
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("|"));
+            }
+
+            else
+            {
+                DEBUG_PRINT_RAW (TRACE_TABLES, (" "));
+            }
+        
+            WhichBit <<= 1;
+        }
+    
+        else
+        {
+            if (NsExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
+            {
+                DownstreamSiblingMask |= (1 << (Level - 1));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
+            }
+
+            else
+            {
+                DownstreamSiblingMask &= 0xffffffff ^ (1 << (Level - 1));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
+            }
+
+            if (ThisEntry->Scope == NULL)
+            {
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("-"));
+            }
+        
+            else if (NsExistDownstreamSibling (ThisEntry->Scope, NS_DEFAULT_TABLE_SIZE,
+                                                NEXTSEG (ThisEntry->Scope)))
+            {
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
+            }
+        
+            else
+            {
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("-"));
+            }
+        }
+    }
+
+
+    /* Check the integrity of our data */
+
+    if (OUTRANGE (Type, NsTypeNames))
+    {
+        Type = TYPE_DefAny;                                 /* prints as *ERROR* */
+    }
+    
+    if (!NcOK ((INT32)* (char *) &ThisEntry->Name))
+    {
+        REPORT_WARNING (&KDT[0]);
+    }
+
+    /*
+     * Now we can print out the pertinent information
+     */
+
+    DEBUG_PRINT_RAW (TRACE_TABLES,
+                ("%4.4s [%s] ", &ThisEntry->Name, NsTypeNames[Type]));
+
+    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p PE:%p N:%p",
+                ThisEntry,
+                ThisEntry->Scope, 
+                ThisEntry->ParentEntry,
+                ThisEntry->NextEntry));
+
+
+    if (TYPE_Method == Type && ThisEntry->Value)
+    {
+        /* name is a Method and its AML offset/length are set */
+        
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" @%04x(%04lx)\n",
+                    ((meth *) ThisEntry->Value)->Offset,
+                    ((meth *) ThisEntry->Value)->Length));                
+    }
+    
+    else
+    {
+        UINT8           *Value = ThisEntry->Value;
+
+
+        /* name is not a Method, or the AML offset/length are not set */
+        
+        DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
+
+        /* if debug turned on, display values */
+    
+        while (Value && (DebugLevel & TRACE_VALUES))
+        {
+            UINT8               bT = ((OBJECT_DESCRIPTOR *) Value)->ValType;
+
+
+            DEBUG_PRINT_RAW (TRACE_TABLES,
+                        ("                 %p  %02x %02x %02x %02x %02x %02x",
+                        Value, Value[0], Value[1], Value[2], Value[3], Value[4],
+                        Value[5]));
+            DEBUG_PRINT_RAW (TRACE_TABLES,
+                        (" %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+                        Value[6], Value[7], Value[8], Value[9], Value[10],
+                        Value[11], Value[12], Value[13], Value[14], Value[15]));
+        
+            if (bT == TYPE_String ||     bT == TYPE_Buffer   || bT == TYPE_Package
+             || bT == TYPE_FieldUnit ||  bT == TYPE_DefField || bT == TYPE_BankField
+             || bT == TYPE_IndexField || bT == TYPE_Lvalue)
+            {
+                /* 
+                 * Get pointer to next level.  ThisEntry assumes that all of
+                 * the above-listed variants of OBJECT_DESCRIPTOR have
+                 * compatible mappings.
+                 */
+                Value = ((OBJECT_DESCRIPTOR *)Value)->Buffer.Buffer;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    
+    return NULL;
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsDumpObjects 
+ *
+ * PARAMETERS:  Type            - Object type to be dumped
+ *              StartHandle     - Where in namespace to start/end search
+ *
+ * DESCRIPTION: Dump typed objects
+ *              Uses NsWalkNamespace in conjunction with NsDumpOneObject.
  *
  ***************************************************************************/
 
 static void
-NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
-                INT32 UseGraphicCharSet, INT32 MaxDepth)
+NsDumpObjects (NsType Type, NsHandle StartHandle)
 {
-    nte                 *Appendage;
-    static UINT32       DownstreamSiblingMask = 0;
+    NsWalkNamespace (Type, StartHandle, INT_MAX, NsDumpOneObject, NULL);
+}
 
 
-    FUNCTION_TRACE ("NsDumpTable");
 
+/****************************************************************************
+ *
+ * FUNCTION:    NsDumpRootDevices   
+ *
+ * PARAMETERS:  None
+ *
+ * DESCRIPTION: Dump all objects of type "device"
+ *
+ ***************************************************************************/
 
-    if (0 == MaxDepth || !ThisEntry)
+void
+NsDumpRootDevices (void)
+{
+    NsHandle            SysBusHandle;
+
+    /* Only dump the table if tracing is enabled */
+
+    if (!(TRACE_TABLES & DebugLevel))
     {
-        /* reached requested depth, or nothing to dump */
-        
         return;
     }
 
-    DEBUG_PRINT (ACPI_INFO,
-                ("enter NsDumpTable (%p, %d, %d, %d, %d) %p\n",
-                ThisEntry, Size, Level, DisplayBitFlags, UseGraphicCharSet,
-                ThisEntry->NameSeg));
+    SysBusHandle = AcpiNameToHandle (0, NS_SYSTEM_BUS);
 
+    DEBUG_PRINT (TRACE_TABLES, ("All devices in the namespace:\n"));
+    NsDumpObjects (TYPE_Device, SysBusHandle);
 
-    /* Locate appendage, if any, before losing original scope pointer */
-    
-    if (1 == Size)
-    {
-        Appendage = NULL;
-    }
-    else
-    {
-        Appendage = NEXTSEG (ThisEntry);
-    }
-
-
-    /* for each entry in table */
-    
-    while (Size--)
-    {
-        if (ThisEntry->NameSeg)
-        {
-            INT32           LevelTmp    = Level;
-            NsType          Type        = ThisEntry->NtType;
-            UINT32          WhichBit    = 1;
-
-
-            /* non-empty entry */
-            /* print appropriate graphic characters to form tree structure */
-            
-            while (LevelTmp--)
-            {
-                /*  print appropriate graphic characters to form tree structure */
-
-                if (LevelTmp)
-                {
-                    if (DownstreamSiblingMask & WhichBit)
-                    {    
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("|  "));
-                    }
-                    
-                    else
-                    {
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("   "));
-                    }
-                    
-                    WhichBit <<= 1;
-                }
-                
-                else
-                {
-                    if (ExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
-                    {
-                        DownstreamSiblingMask |= (1 << (Level - 1));
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("+--"));
-                    }
-                    
-                    else
-                    {
-                        DownstreamSiblingMask &= 0xffffffff ^ (1 << (Level - 1));
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("+--"));
-                    }
-
-                    if (ThisEntry->ChildScope == NULL)
-                    {
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("- "));
-                    }
-                    
-                    else if (ExistDownstreamSibling (ThisEntry->ChildScope, TABLSIZE,
-                                                        NEXTSEG (ThisEntry->ChildScope)))
-                    {
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("+ "));
-                    }
-                    
-                    else
-                    {
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("- "));
-                    }
-                }
-            }
-
-            if (OUTRANGE (Type, NsTypeNames))
-            {
-                Type = DefAny;                                 /* prints as *ERROR* */
-            }
-            
-            if (!NcOK ((INT32)* (char *) &ThisEntry->NameSeg))
-            {
-                REPORT_WARNING (&KDT[0]);
-            }
-
-            if (Method == Type && ThisEntry->ptrVal)
-            {
-                /* name is a Method and its AML offset/length are set */
-                
-                DEBUG_PRINT_RAW (ACPI_INFO, ("%p: ", ThisEntry));
-                
-                DEBUG_PRINT_RAW (ACPI_INFO, ("%4.4s [%s %04x:%04lx]",
-                            &ThisEntry->NameSeg, NsTypeNames[Type],
-                            ((meth *) ThisEntry->ptrVal)->Offset,
-                            ((meth *) ThisEntry->ptrVal)->Length));
-                
-                DEBUG_PRINT_RAW (ACPI_INFO, (" C:%p P:%p\n",
-                        ThisEntry->ChildScope, ThisEntry->ParentScope));
-            }
-            
-            else
-            {
-                UINT8           *Value = ThisEntry->ptrVal;
-
-
-                /* name is not a Method, or the AML offset/length are not set */
-                
-                DEBUG_PRINT_RAW (ACPI_INFO, ("%p: ", ThisEntry));
-                
-                DEBUG_PRINT_RAW (ACPI_INFO,
-                            ("%4.4s [%s]", &ThisEntry->NameSeg, NsTypeNames[Type]));
-                
-                DEBUG_PRINT_RAW (ACPI_INFO, (" C:%p P:%p V:%p\n",
-                            ThisEntry->ChildScope, ThisEntry->ParentScope, ThisEntry->ptrVal));
-
-#if 0
-                /* debug code used to show parents */
-                
-                if ((IndexField == Type) && (0 == Size) && (0 == Level) &&
-                    ThisEntry->ParentScope)
-                {
-                    DEBUG_PRINT_RAW (ACPI_INFO, ("  in "));
-                    ++TRACE;
-                    DEBUG_PRINT_RAW (ACPI_INFO,
-                                ("call NsDumpEntry %p\n", ThisEntry->ParentScope));
-                    
-                    NsDumpEntry ((NsHandle) ThisEntry->ParentScope, DisplayBitFlags);
-                    DEBUG_PRINT_RAW (ACPI_INFO,
-                                ("ret from NsDumpEntry %p\n", ThisEntry->ParentScope));
-                    --TRACE;
-                }
-#endif
-                /* if debug turned on, display values */
-                
-                while (Value && GetDebugLevel () > 0)
-                {
-                    UINT8               bT = ((OBJECT_DESCRIPTOR *) Value)->ValType;
-
-
-                    DEBUG_PRINT_RAW (ACPI_INFO,
-                                ("                 %p  %02x %02x %02x %02x %02x %02x",
-                                Value, Value[0], Value[1], Value[2], Value[3], Value[4],
-                                Value[5]));
-                    DEBUG_PRINT_RAW (ACPI_INFO,
-                                (" %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-                                Value[6], Value[7], Value[8], Value[9], Value[10],
-                                Value[11], Value[12], Value[13], Value[14], Value[15]));
-                    
-                    if (bT == String || bT == Buffer || bT == Package
-                     || bT == FieldUnit || bT == DefField || bT == BankField
-                     || bT == IndexField || bT == Lvalue)
-                    {
-                        /* 
-                         * Get pointer to next level.  ThisEntry assumes that all of
-                         * the above-listed variants of OBJECT_DESCRIPTOR have
-                         * compatible mappings.
-                         */
-                        Value = ((OBJECT_DESCRIPTOR *)Value)->Buffer.Buffer;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if (ThisEntry->ChildScope && MaxDepth > 1)
-            {
-                /* dump next scope level */
-                
-                NsDumpTable (ThisEntry->ChildScope, TABLSIZE, Level+1,
-                                DisplayBitFlags, UseGraphicCharSet, MaxDepth - 1);
-            }
-        }
-
-        if (0 == Size && Appendage)
-        {
-            /* Just examined last entry, but table has an appendage.  */
-            
-            ThisEntry = Appendage;
-            Size += TABLSIZE;
-            Appendage = NEXTSEG (ThisEntry);
-        }
-        else
-        {
-            ThisEntry++;
-        }
-    }
-
-
-
-    DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpTable %p\n", ThisEntry));
 }
 
 
@@ -272,12 +334,7 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
  * 
  * FUNCTION:    NsDumpTables
  *
- * PARAMETERS:  INT32 DisplayBitFlags       See definitions of OUTPUT_DATA
- *                                          and related symbols in display.h
- *              INT32 UseGraphicCharSet     1 => use graphic character set to
- *                                          draw links in name space tree
- *                                          0 => use +, -, and | to draw links
- *              NsHandle SearchBase         Root of subtree to be dumped, or
+ * PARAMETERS:  NsHandle SearchBase         Root of subtree to be dumped, or
  *                                          NS_ALL to dump the entire namespace
  *              INT32   MaxDepth            Maximum depth of dump.  Use INT_MAX
  *                                          for an effectively unlimited depth.
@@ -287,19 +344,21 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
  ***************************************************************************/
 
 void
-NsDumpTables (INT32 DisplayBitFlags, INT32 UseGraphicCharSet,
-                NsHandle SearchBase, INT32 MaxDepth)
+NsDumpTables (NsHandle SearchBase, INT32 MaxDepth)
 {
+    NsHandle            SearchHandle = SearchBase;
+
 
     FUNCTION_TRACE ("NsDumpTables");
 
 
-    if (!Root)
+    if (!RootObject->Scope)
     {      
         /* 
          * If the name space has not been initialized,
          * there is nothing to dump.
          */
+        DEBUG_PRINT (TRACE_TABLES, ("NsDumpTables: name space not initialized!\n"));
         return;
     }
 
@@ -307,12 +366,12 @@ NsDumpTables (INT32 DisplayBitFlags, INT32 UseGraphicCharSet,
     {
         /*  entire namespace    */
 
-        SearchBase = Root;
-        DEBUG_PRINT (ACPI_INFO, ("\\\n"));
+        SearchHandle = RootObject;
+        DEBUG_PRINT (TRACE_TABLES, ("\\\n"));
     }
 
-    NsDumpTable (SearchBase, SearchBase == Root ? NsRootSize : TABLSIZE,
-                    1, DisplayBitFlags, UseGraphicCharSet, MaxDepth);
+
+    NsDumpObjects (TYPE_Any, SearchHandle);
 }
 
 
@@ -327,13 +386,13 @@ NsDumpTables (INT32 DisplayBitFlags, INT32 UseGraphicCharSet,
  ***************************************************************************/
 
 void
-NsDumpEntry (NsHandle Handle, INT32 DisplayBitFlags)
+NsDumpEntry (NsHandle Handle)
 {
 
     FUNCTION_TRACE ("NsDumpEntry");
 
-    
-    NsDumpTable ((nte *) Handle, 1, 0, DisplayBitFlags, 0, 1);
+
+    NsDumpOneObject (Handle, 1, NULL);
     
     DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpEntry %p\n", Handle));
 }
