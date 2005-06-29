@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -152,7 +152,7 @@ static void
 Usage (
     void);
 
-static void 
+static void
 AslInitialize (
     void);
 
