@@ -99,6 +99,13 @@ typedef struct
 typedef INT32 LogHandle;
 #define NO_LOG_HANDLE ((LogHandle) -1)
 
+/* Operational mode of AML scanner */
+
+typedef enum {
+    Load = 0,
+    Exec = 1,
+    Load1 = 2
+} OpMode;
 
 
 /* Miscellaneous data manipulation macros */

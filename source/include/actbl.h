@@ -14,55 +14,6 @@
  | FILENAME: acpitype.h - Data structures defined in ACPI specification
  |__________________________________________________________________________
  |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 20:06:31 $
- | $Log: actbl.h,v $
- | Revision 1.6  2005/06/29 20:06:31  aystarik
- | Integrated with 03/99 OPSD code
- |
- | 
- | date	99.03.31.22.30.00;	author rmoore1;	state Exp;
- |
- * 
- * 6     3/31/99 2:30p Rmoore1
- * Integrated with 03/99 OPSD code
- * 
- * 5     3/09/99 4:04p Rmoore1
- * 16/32/64-bit common data types
- * 
- * 4     2/12/99 11:10a Rmosgrov
- * Anti-Polish clean up
- * 
- * 3     1/13/99 10:50a Grsmith1
- * First BeOS compatible check-in.
- * 
- * 2     1/11/99 4:15p Grsmith1
- * 
- * 1     1/11/99 2:10p Rmoore1
- * Subsystem headers
-// 
-//    Rev 1.5   28 Apr 1998 10:18:56   calingle
-// Added a #define for GL_OWNED
-//
-//    Rev 1.4   24 Sep 1997 13:12:04   calingle
-// Added 2 more Reserved fields to the FIXED_ACPI_DESCRIPTION_TABLE
-// which were missing prior to the flags, after the Century byte.
-// This corrects a problem in determining if the sleep button is
-// a fixed event or not, which in the PIIX4 it is not because
-// hardware support is not available for this.
-//
-//    Rev 1.3   Mar 24 1997 16:53:50   KBRANNOC
-// Changed #defines for table signatures from {'x', 'y', 'z'} to "xyz"
-// Changed data entry in ROOT_SYSTEM_DESCTIPTION_TABLE from
-//   ACPI_TABLE_HEADER *entry[1] to DWORD TableOffsetEntry[1]
-// Added typedef for smart battery description table
-//
-//    Rev 1.2   05 Mar 1997 13:28:46   phutchis
-// Added typedef for ACPI_OBJECT_HANDLE
-//
-//    Rev 1.1   Feb 28 1997 08:58:02   KBRANNOC
-// Corrected some inconsistencies with ACPI specification and ETDE coding
-// standard
 //
 //    Rev 1.0   Feb 26 1997 14:35:36   KBRANNOC
 // Initial revision.
