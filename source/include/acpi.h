@@ -134,7 +134,7 @@
 #include "acapi.h"          /* External interfaces to this part */
 #include "acobject.h"       /* Acpi internal object */
 #include "globals.h"        /* All global variables */
-#include "pnp.h"            /* Plug and play definitions */
+#include "hardware.h"       /* Hardware defines and interfaces */
 #include "common.h"         /* Common (global) interfaces */
 
 
