@@ -900,6 +900,74 @@ AmlExecCreateProcessor (
 }
 
 
+/*****************************************************************************
+ *
+ * FUNCTION:    AmlExecCreatePowerResource
+ *
+ * PARAMETERS:  Op           - Op containing the PowerResource definition and args
+ *              PowerResNTE - NTE for the containing NTE
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create a new PowerResource object and populate the fields
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AmlExecCreatePowerResource (
+    ACPI_GENERIC_OP         *Op,
+    ACPI_HANDLE             PowerResNTE)
+{
+    ACPI_STATUS             Status;
+    ACPI_GENERIC_OP         *Arg;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+
+
+    FUNCTION_TRACE_PTR ("AmlExecCreatePowerResource", Op);
+
+
+    ObjDesc = CmCreateInternalObject (ACPI_TYPE_Power);
+    if (!ObjDesc)
+    {
+        Status = AE_NO_MEMORY;
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Install the new processor object in the parent NTE */
+
+    Status = NsAttachObject (PowerResNTE, ObjDesc, (UINT8) ACPI_TYPE_Power);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS(Status);
+    }
+
+    Arg = Op->Value.Arg;
+
+    /* check existence */
+
+    if (!Arg)
+    {
+        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (Status);
+    }
+
+    /* First arg is the SystemLevel */
+    ObjDesc->PowerResource.SystemLevel = (UINT8) Arg->Value.Integer;
+
+    /* Move to next arg and check existence */
+    Arg = Arg->Next;
+    if (!Arg)
+    {
+        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Second arg is the PBlock Address */
+    ObjDesc->PowerResource.ResourceOrder = (UINT16) Arg->Value.Integer;
+
+    return_ACPI_STATUS (AE_OK);
+}
+
 
 /*****************************************************************************
  *
