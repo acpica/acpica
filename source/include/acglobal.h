@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.154 $
+ *       $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -163,11 +163,11 @@ extern      UINT32                      AcpiGbl_NestingLevel;
  ****************************************************************************/
 
 /*
- * Create the predefined _OSI method in the namespace? Default is TRUE
- * because ACPI CA is fully compatible with other ACPI implementations.
- * Changing this will revert ACPI CA (and machine ASL) to pre-OSI behavior.
+ * Enable "slack" in the AML interpreter?  Default is FALSE, and the 
+ * interpreter strictly follows the ACPI specification.  Setting to TRUE
+ * allows the interpreter to forgive certain bad AML constructs.
  */
-ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_CreateOsiMethod, TRUE);
+ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_EnableInterpeterSlack, FALSE);
 
 /*
  * Automatically serialize ALL control methods? Default is FALSE, meaning
@@ -176,6 +176,13 @@ ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_CreateOsiMethod, TRUE);
  * reentrancy even though methods are marked "NotSerialized".
  */
 ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_AllMethodsSerialized, FALSE);
+
+/*
+ * Create the predefined _OSI method in the namespace? Default is TRUE
+ * because ACPI CA is fully compatible with other ACPI implementations.
+ * Changing this will revert ACPI CA (and machine ASL) to pre-OSI behavior.
+ */
+ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_CreateOsiMethod, TRUE);
 
 /*
  * Disable wakeup GPEs during runtime? Default is TRUE because WAKE and
