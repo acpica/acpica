@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.9 $
+ *       $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -117,7 +117,6 @@
 #ifndef __ACWIN_H__
 #define __ACWIN_H__
 
-
 /*! [Begin] no source code translation (Keep the include) */
 
 /* Windows uses VC */
@@ -126,9 +125,13 @@
 #endif
 /*! [End] no source code translation !*/
 
-#define ACPI_OS_NAME                "Windows"
+#define ACPI_OS_NAME            "Windows"
 
-#define strupr              _strupr
+#define ACPI_MACHINE_WIDTH      32
+
+#define strupr                  _strupr
+#define isascii                 __isascii
+
 #define ACPI_USE_STANDARD_HEADERS
 
 /*
