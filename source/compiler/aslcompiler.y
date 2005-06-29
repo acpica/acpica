@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -404,6 +404,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_SUBTRACT
 %token <i> PARSEOP_SWITCH
 %token <i> PARSEOP_THERMALZONE
+%token <i> PARSEOP_TIMER
 %token <i> PARSEOP_TOBCD
 %token <i> PARSEOP_TOBUFFER
 %token <i> PARSEOP_TODECIMALSTRING
@@ -586,6 +587,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> SizeOfTerm
 %type <n> StoreTerm
 %type <n> SubtractTerm
+%type <n> TimerTerm
 %type <n> ToBCDTerm
 %type <n> ToBufferTerm
 %type <n> ToDecimalStringTerm
@@ -937,12 +939,13 @@ Type2Opcode
     | RefOfTerm                     {}
     | SizeOfTerm                    {}
     | StoreTerm                     {}
+    | TimerTerm                     {}
     | WaitTerm                      {}
     | UserTerm                      {}
     ;
 
 /*
- * A type 2 opcode evaluates to an Integer and cannot have a destination operand
+ * Type 3/4/5 opcodes
  */
 
 Type2IntegerOpcode                  /* "Type3" opcodes */
@@ -979,7 +982,6 @@ Type2IntegerOpcode                  /* "Type3" opcodes */
     | ToIntegerTerm                 {}
     | XOrTerm                       {}
     ;
-
 
 Type2StringOpcode                   /* "Type4" Opcodes */
     : ToDecimalStringTerm           {}
@@ -1430,6 +1432,7 @@ ReturnTerm
     : PARSEOP_RETURN '('			{$$ = TrCreateLeafNode (PARSEOP_RETURN);}
         OptionalTermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
+    | PARSEOP_RETURN 				{$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_RETURN),0);}
     | PARSEOP_RETURN '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -1899,6 +1902,14 @@ SubtractTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6);}
     | PARSEOP_SUBTRACT '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
+TimerTerm
+    : PARSEOP_TIMER '('			    {$$ = TrCreateLeafNode (PARSEOP_TIMER);}
+        ')'                         {$$ = TrLinkChildren ($<n>3,0);}
+    | PARSEOP_TIMER		            {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_TIMER),0);}
+    | PARSEOP_TIMER '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
