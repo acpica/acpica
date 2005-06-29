@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.33 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -130,6 +130,8 @@ extern const char * const       yytname[];
 #endif
 
 
+
+
 /*******************************************************************************
  *
  * FUNCTION:    UtLocalCalloc
@@ -151,7 +153,7 @@ UtLocalCalloc (
     void                    *Allocated;
 
 
-    Allocated = AcpiUtCallocate (Size);
+    Allocated = ACPI_MEM_CALLOCATE (Size);
     if (!Allocated)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
@@ -165,6 +167,52 @@ UtLocalCalloc (
     TotalAllocated += Size;
 
     return Allocated;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtBeginEvent
+ *
+ * PARAMETERS:  Event       - Event number (integer index)
+ *              Name        - Ascii name of this event
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Saves the current time with this event
+ *
+ ******************************************************************************/
+
+void
+UtBeginEvent (
+    UINT32                  Event,
+    char                    *Name)
+{
+
+    AslGbl_Events[Event].StartTime = AcpiOsGetTimer();
+    AslGbl_Events[Event].EventName = Name;
+    AslGbl_Events[Event].Valid = TRUE;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtEndEvent
+ *
+ * PARAMETERS:  Event       - Event number (integer index)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Saves the current time (end time) with this event
+ *
+ ******************************************************************************/
+
+void
+UtEndEvent (
+    UINT32                  Event)
+{
+
+    AslGbl_Events[Event].EndTime = AcpiOsGetTimer();
 }
 
 
@@ -404,7 +452,8 @@ UtCheckIntegerRange (
     {
         sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
         AslCompilererror (Buffer);
-        AcpiUtFree (Node);
+        TrReleaseNode (Node);
+
         return NULL;
     }
 
