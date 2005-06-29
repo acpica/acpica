@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -305,7 +305,7 @@ AcpiExOpcode_6A_0T_1R (
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  Index;
+    ACPI_INTEGER            Index;
     ACPI_OPERAND_OBJECT     *ThisElement;
 
 
@@ -333,8 +333,8 @@ AcpiExOpcode_6A_0T_1R (
 
         /* Get the package StartIndex, validate against the package length */
 
-        Index = (UINT32) Operand[5]->Integer.Value;
-        if (Index >= (UINT32) Operand[0]->Package.Count)
+        Index = Operand[5]->Integer.Value;
+        if (Index >= Operand[0]->Package.Count)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index beyond package end\n"));
             Status = AE_AML_PACKAGE_LIMIT;
