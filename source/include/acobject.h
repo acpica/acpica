@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.99 $
+ *       $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -163,6 +163,7 @@
 #define AOPOBJ_DATA_VALID           0x04
 #define AOPOBJ_OBJECT_INITIALIZED   0x08
 #define AOPOBJ_SETUP_COMPLETE       0x10
+#define AOPOBJ_SINGLE_DATUM         0x20
 
 
 /*
@@ -171,24 +172,19 @@
  * "Buffer Datum"   -- a datum from a user buffer, read from or to be written to the field
  */
 #define ACPI_COMMON_FIELD_INFO              /* SIZE/ALIGNMENT: 24 bits + three 32-bit values */\
-    UINT8                       AccessFlags;\
+    UINT8                       FieldFlags;         /* Access, update, and lock bits */\
     UINT16                      BitLength;          /* Length of field in bits */\
     UINT32                      BaseByteOffset;     /* Byte offset within containing object */\
     UINT8                       AccessBitWidth;     /* Read/Write size in bits (from ASL AccessType)*/\
     UINT8                       AccessByteWidth;    /* Read/Write size in bytes */\
-    UINT8                       UpdateRule;         /* How neighboring field bits are handled */\
-    UINT8                       LockRule;           /* Global Lock: 1 = "Must Lock" */\
+    UINT8                       Attribute ;         /* From AccessAs keyword */\
     UINT8                       StartFieldBitOffset;/* Bit offset within first field datum (0-63) */\
     UINT8                       DatumValidBits;     /* Valid bit in first "Field datum" */\
     UINT8                       EndFieldValidBits;  /* Valid bits in the last "field datum" */\
     UINT8                       EndBufferValidBits; /* Valid bits in the last "buffer datum" */\
+    UINT8                       Reserved;           /* Reserved for future use */\
     UINT32                      Value;              /* Value to store into the Bank or Index register */\
     ACPI_NAMESPACE_NODE         *Node;              /* Link back to parent node */
-
-
-/* Access flag bits */
-
-#define AFIELD_SINGLE_DATUM         0x1
 
 
 /*
@@ -505,6 +501,15 @@ typedef struct /* EXTRA */
 } ACPI_OBJECT_EXTRA;
 
 
+typedef struct /* DATA */
+{
+    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_HANDLER         Handler;
+    void                        *Pointer;
+
+} ACPI_OBJECT_DATA;
+
+
 /******************************************************************************
  *
  * ACPI_OPERAND_OBJECT  Descriptor - a giant union of all of the above
@@ -536,6 +541,7 @@ typedef union acpi_operand_obj
     ACPI_OBJECT_NOTIFY_HANDLER  NotifyHandler;
     ACPI_OBJECT_ADDR_HANDLER    AddrHandler;
     ACPI_OBJECT_EXTRA           Extra;
+    ACPI_OBJECT_DATA            Data;
 
 } ACPI_OPERAND_OBJECT;
 
