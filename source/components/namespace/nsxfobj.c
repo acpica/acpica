@@ -160,7 +160,6 @@ AcpiEvaluateObject (
     ACPI_BUFFER             *ReturnBuffer)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ObjEntry;
     ACPI_OBJECT_INTERNAL    **ParamPtr = NULL;
     ACPI_OBJECT_INTERNAL    *ReturnObj = NULL;
     ACPI_OBJECT_INTERNAL    *ObjectPtr = NULL;
@@ -234,7 +233,8 @@ AcpiEvaluateObject (
      * 3) Valid handle 
      */
 
-    if ((Pathname) && (Pathname[0] == '\\'))
+    if ((Pathname) && 
+        (NsValidRootPrefix (Pathname[0])))
     {
         /*
          *  The path is fully qualified, just evaluate by name
@@ -265,24 +265,16 @@ AcpiEvaluateObject (
     else 
     {
         /*
-         *  We get here if we have a handle.
-         *  And if we have a pathname it is relative.
-         *  Validate the handle.
+         *  We get here if we have a handle -- and if we have a pathname it is relative.
+         *  The handle will be validated in the lower procedures
          */
 
-        ObjEntry = NsConvertHandleToEntry (Handle);
-        if (!ObjEntry)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Bad Handle (%p)\n", Handle));
-            Status = AE_BAD_PARAMETER;
-        }
-
-        else if (!Pathname)
+        if (!Pathname)
         {
             /*
              * The null pathname case means the handle is for the actual object to be evaluated
              */
-            Status = NsEvaluateByHandle (ObjEntry, ParamPtr, &ReturnObj);
+            Status = NsEvaluateByHandle (Handle, ParamPtr, &ReturnObj);
         }
 
         else
@@ -290,7 +282,7 @@ AcpiEvaluateObject (
            /*
             * Both a Handle and a relative Pathname
             */
-            Status = NsEvaluateRelative (ObjEntry, Pathname, ParamPtr, &ReturnObj);
+            Status = NsEvaluateRelative (Handle, Pathname, ParamPtr, &ReturnObj);
         }
     }
 
@@ -411,14 +403,18 @@ AcpiGetNextObject (
     ACPI_HANDLE             *RetHandle)
 {
     NAME_TABLE_ENTRY        *ThisEntry;
+    ACPI_STATUS             Status = AE_NOT_FOUND;
 
 
+
+    /* Parameter validation */
 
     if (Type > ACPI_TYPE_MAX)
     {
         return AE_BAD_PARAMETER;
     }
 
+    CmAcquireMutex (MTX_NAMESPACE);
 
     /* If null handle, use the parent */
 
@@ -426,9 +422,11 @@ AcpiGetNextObject (
     {
         /* Start search at the beginning of the specified scope */
 
-        if (!(ThisEntry = NsConvertHandleToEntry (Parent)))
+        ThisEntry = NsConvertHandleToEntry (Parent);
+        if (!ThisEntry)
         {
-            return AE_BAD_PARAMETER;
+            Status = AE_BAD_PARAMETER;
+            goto UnlockAndExit;
         }
 
         /* It's really the parent's _scope_ that we want */
@@ -442,9 +440,11 @@ AcpiGetNextObject (
     {
         /* Convert and validate the handle */
 
-        if (!(ThisEntry = NsConvertHandleToEntry (Child)))
+        ThisEntry = NsConvertHandleToEntry (Child);
+        if (!ThisEntry)
         {
-            return AE_BAD_PARAMETER;
+            Status = AE_BAD_PARAMETER;
+            goto UnlockAndExit;
         }
 
         /* Start search at the NEXT object */
@@ -462,12 +462,14 @@ AcpiGetNextObject (
 
         if (!ThisEntry)
         {
-            return AE_NOT_FOUND;
+            Status = AE_NOT_FOUND;
+            goto UnlockAndExit;
         }
 
         if (!ThisEntry->Name)
         {
-            return AE_NOT_FOUND;
+            Status = AE_NOT_FOUND;
+            goto UnlockAndExit;
         }
 
         if (RetHandle)
@@ -475,7 +477,8 @@ AcpiGetNextObject (
             *RetHandle = NsConvertEntryToHandle (ThisEntry);
         }
 
-        return AE_OK;
+        Status = AE_OK;
+        goto UnlockAndExit;
     }
 
 
@@ -492,7 +495,8 @@ AcpiGetNextObject (
                 *RetHandle = NsConvertEntryToHandle (ThisEntry);
             }
 
-            return AE_OK;
+            Status = AE_OK;
+            goto UnlockAndExit;
         }
 
         /* Otherwise, move on to the next object */
@@ -501,7 +505,10 @@ AcpiGetNextObject (
     }
 
 
-    return AE_NOT_FOUND;
+UnlockAndExit:
+
+    CmReleaseMutex (MTX_NAMESPACE);
+    return Status;
 }
 
 
@@ -526,6 +533,8 @@ AcpiGetType (
     NAME_TABLE_ENTRY        *Object;
 
 
+    /* Parameter Validation */
+
     if (!RetType)
     {
         return AE_BAD_PARAMETER;
@@ -539,14 +548,21 @@ AcpiGetType (
         return AE_OK;
     }
 
+    CmAcquireMutex (MTX_NAMESPACE);
+
     /* Convert and validate the handle */
 
-    if (!(Object = NsConvertHandleToEntry (Handle)))
+    Object = NsConvertHandleToEntry (Handle);
+    if (!Object)
     {
+        CmReleaseMutex (MTX_NAMESPACE);
         return AE_BAD_PARAMETER;
     }
 
     *RetType = Object->Type;
+
+
+    CmReleaseMutex (MTX_NAMESPACE);
     return AE_OK;
 }
 
@@ -571,6 +587,7 @@ AcpiGetParent (
     ACPI_HANDLE             *RetHandle)
 {
     NAME_TABLE_ENTRY        *Object;
+    ACPI_STATUS             Status = AE_OK;
     
 
     /* No trace macro, too verbose */
@@ -588,11 +605,16 @@ AcpiGetParent (
         return AE_NULL_ENTRY;
     }
 
+
+    CmAcquireMutex (MTX_NAMESPACE);
+
     /* Convert and validate the handle */
 
-    if (!(Object = NsConvertHandleToEntry (Handle)))
+    Object = NsConvertHandleToEntry (Handle);
+    if (!Object)
     {
-        return AE_BAD_PARAMETER;
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
    
@@ -604,9 +626,13 @@ AcpiGetParent (
 
     if (!Object->ParentEntry)
     {
-        return AE_NULL_ENTRY;
+        Status = AE_NULL_ENTRY;
     }
 
+
+UnlockAndExit:
+
+    CmReleaseMutex (MTX_NAMESPACE);
     return AE_OK;
 }
 
@@ -758,40 +784,6 @@ AcpiWalkNamespace (
 
     return_ACPI_STATUS (AE_OK);                   /* Complete walk, not terminated by user function */
 }
-
-
-
-/* NON-IMPLEMENTED FUNCTIONS */
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetObject
- *
- * PARAMETERS:  
- *
- * RETURN:      Status
- *
- * DESCRIPTION: TBD: Not completely defined, not implemented!
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetObject (
-    ACPI_STRING             *Pathname, 
-    ACPI_HANDLE             *RetHandle)
-{
-
-    if (!RetHandle)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-
-    *RetHandle = Gbl_RootObject->Scope;
-    return AE_OK;
-}
-
 
 /******************************************************************************
  *
