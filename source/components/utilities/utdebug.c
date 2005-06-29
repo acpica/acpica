@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -207,11 +207,11 @@ AcpiUtDebugPrint (
 
     if (ACPI_LV_THREADS & AcpiDbgLevel)
     {
-        AcpiOsPrintf ("%8s-%04d[%04X][%02d] %s: ", ModuleName, LineNumber, ThreadId, AcpiGbl_NestingLevel, ProcName);
+        AcpiOsPrintf ("%8s-%04d[%04X][%02d] %-24.24s: ", ModuleName, LineNumber, ThreadId, AcpiGbl_NestingLevel, ProcName);
     }
     else
     {
-        AcpiOsPrintf ("%8s-%04d[%02d] %s: ", ModuleName, LineNumber, AcpiGbl_NestingLevel, ProcName);
+        AcpiOsPrintf ("%8s-%04d[%02d] %-24.24s: ", ModuleName, LineNumber, AcpiGbl_NestingLevel, ProcName);
     }
 
 
@@ -321,11 +321,11 @@ AcpiUtDebugPrint2 (
 
     if (ACPI_LV_THREADS & AcpiDbgLevel)
     {
-        AcpiOsPrintf ("%8s-%04d[%04X][%02d] %s: ", DbgInfo->ModuleName, LineNumber, ThreadId, AcpiGbl_NestingLevel, DbgInfo->ProcName);
+        AcpiOsPrintf ("%8s-%04d[%04X][%02d] %-24.24s: ", DbgInfo->ModuleName, LineNumber, ThreadId, AcpiGbl_NestingLevel, DbgInfo->ProcName);
     }
     else
     {
-        AcpiOsPrintf ("%8s-%04d[%02d] %s: ", DbgInfo->ModuleName, LineNumber, AcpiGbl_NestingLevel, DbgInfo->ProcName);
+        AcpiOsPrintf ("%8s-%04d[%02d] %-24.24s: ", DbgInfo->ModuleName, LineNumber, AcpiGbl_NestingLevel, DbgInfo->ProcName);
     }
 
 
