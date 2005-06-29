@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -379,7 +379,7 @@ AcpiDsMethodDataGetEntry (
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
-        *Entry = (ACPI_OPERAND_OBJECT  **) 
+        *Entry = (ACPI_OPERAND_OBJECT  **)
                     &WalkState->LocalVariables[Index].Object;
         break;
 
@@ -394,7 +394,7 @@ AcpiDsMethodDataGetEntry (
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
-        *Entry = (ACPI_OPERAND_OBJECT  **) 
+        *Entry = (ACPI_OPERAND_OBJECT  **)
                     &WalkState->Arguments[Index].Object;
         break;
 

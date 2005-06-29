@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.26 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -126,7 +126,7 @@
 #include "acevents.h"
 #include "actables.h"
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsopcode")
 
 
@@ -169,6 +169,7 @@ AcpiDsGetFieldUnitArguments (
     ExtraDesc = ObjDesc->FieldUnit.Extra;
     Node = ObjDesc->FieldUnit.Node;
 
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "  [Field]"));
     DEBUG_PRINT (TRACE_EXEC,
         ("DsGetFieldUnitArguments: [%4.4s] FieldUnit JIT Init\n",
         &Node->Name));
@@ -289,9 +290,11 @@ AcpiDsGetRegionArguments (
     ExtraDesc = ObjDesc->Region.Extra;
     Node = ObjDesc->Region.Node;
 
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "  [Operation Region]"));
+
     DEBUG_PRINT (TRACE_EXEC,
-        ("DsGetRegionArguments: [%4.4s] OpRegion JIT Init\n",
-        &Node->Name));
+        ("DsGetRegionArguments: [%4.4s] OpRegion Init at AML %p[%x]\n",
+        &Node->Name, ExtraDesc->Extra.Pcode, *(UINT32*) ExtraDesc->Extra.Pcode));
 
     /*
      * Allocate a new parser op to be the root of the parsed
@@ -485,7 +488,7 @@ AcpiDsEvalFieldUnitOperands (
     }
 
 
-    Offset = (UINT32) OffDesc->Number.Value;
+    Offset = (UINT32) OffDesc->Integer.Value;
 
 
     /*
@@ -562,7 +565,7 @@ AcpiDsEvalFieldUnitOperands (
         /* Offset is in bits, count is in bits */
 
         BitOffset = Offset;
-        BitCount = (UINT16) CntDesc->Number.Value;
+        BitCount = (UINT16) CntDesc->Integer.Value;
         break;
 
 
@@ -621,9 +624,10 @@ AcpiDsEvalFieldUnitOperands (
 
     default:
 
-        if ((SrcDesc->Common.Type > (UINT8) INTERNAL_TYPE_REFERENCE) ||
-            !AcpiCmValidObjectType (SrcDesc->Common.Type))
+        if ((SrcDesc->Common.Type > (UINT8) INTERNAL_TYPE_REFERENCE) || !AcpiCmValidObjectType (SrcDesc->Common.Type)) /* TBD: This line MUST be a single line until AcpiSrc can handle it (block deletion) */
         {
+
+
             DEBUG_PRINT (ACPI_ERROR,
                 ("AmlExecCreateField: Tried to create field in invalid object type %X\n",
                 SrcDesc->Common.Type));
@@ -753,7 +757,7 @@ AcpiDsEvalRegionOperands (
      */
     OperandDesc = WalkState->Operands[WalkState->NumOperands - 1];
 
-    ObjDesc->Region.Length = (UINT32) OperandDesc->Number.Value;
+    ObjDesc->Region.Length = (UINT32) OperandDesc->Integer.Value;
     AcpiCmRemoveReference (OperandDesc);
 
     /*
@@ -762,7 +766,7 @@ AcpiDsEvalRegionOperands (
      */
     OperandDesc = WalkState->Operands[WalkState->NumOperands - 2];
 
-    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) OperandDesc->Number.Value;
+    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) OperandDesc->Integer.Value;
     AcpiCmRemoveReference (OperandDesc);
 
 
@@ -972,7 +976,6 @@ AcpiDsExecEndControlOp (
              * an arg or local), resolve it now because it may
              * cease to exist at the end of the method.
              */
-
             Status = AcpiAmlResolveToValue (&WalkState->Operands [0], WalkState);
             if (ACPI_FAILURE (Status))
             {
@@ -988,7 +991,8 @@ AcpiDsExecEndControlOp (
             WalkState->ReturnDesc = WalkState->Operands[0];
         }
 
-        else if (WalkState->NumResults > 0)
+        else if ((WalkState->Results) &&
+                 (WalkState->Results->Results.NumResults > 0))
         {
             /*
              * The return value has come from a previous calculation.
@@ -996,15 +1000,22 @@ AcpiDsExecEndControlOp (
              * If value being returned is a Reference (such as
              * an arg or local), resolve it now because it may
              * cease to exist at the end of the method.
+             *
+             * Allow references created by the Index operator to return unchanged.
              */
 
-            Status = AcpiAmlResolveToValue (&WalkState->Results [0], WalkState);
-            if (ACPI_FAILURE (Status))
+            if (VALID_DESCRIPTOR_TYPE (WalkState->Results->Results.ObjDesc [0], ACPI_DESC_TYPE_INTERNAL) &&
+                ((WalkState->Results->Results.ObjDesc [0])->Common.Type == INTERNAL_TYPE_REFERENCE) &&
+                ((WalkState->Results->Results.ObjDesc [0])->Reference.Opcode != AML_INDEX_OP))
             {
-                return (Status);
+                    Status = AcpiAmlResolveToValue (&WalkState->Results->Results.ObjDesc [0], WalkState);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
             }
 
-            WalkState->ReturnDesc = WalkState->Results [0];
+            WalkState->ReturnDesc = WalkState->Results->Results.ObjDesc [0];
         }
 
         else
