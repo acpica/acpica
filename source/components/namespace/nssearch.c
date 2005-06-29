@@ -163,7 +163,7 @@ AcpiNsSearchNameTable (
     FUNCTION_TRACE ("NsSearchNameTable");
 
     {
-        DEBUG_EXEC (INT8 *ScopeName = AcpiNsGetTablePathname (NameTable));
+        DEBUG_EXEC (NATIVE_CHAR *ScopeName = AcpiNsGetTablePathname (NameTable));
         DEBUG_PRINT (TRACE_NAMES,
             ("NsSearchNameTable: Searching %s [%p]\n",
             ScopeName, NameTable));
@@ -351,7 +351,6 @@ AcpiNsSearchNameTable (
  *              section 5.3)
  *
  ***************************************************************************/
-
 
 ACPI_STATUS
 AcpiNsSearchParentTree (
@@ -552,12 +551,11 @@ AcpiNsInitializeTable (
  *
  * FUNCTION:    AcpiNsInitializeEntry
  *
- * PARAMETERS:  NameTable       - The containing table for the new NTE
+ * PARAMETERS:  WalkState       - Current state of the walk
+ *              NameTable       - The containing table for the new NTE
  *              Position        - Position (index) of the new NTE in the table
  *              EntryName       - ACPI name of the new entry
  *              Type            - ACPI object type of the new entry
- *              PreviousEntry   - Link back to the previous entry (can span
- *                                multiple tables)
  *
  * RETURN:      None
  *
@@ -664,10 +662,12 @@ AcpiNsInitializeEntry (
  * FUNCTION:    AcpiNsSearchAndEnter
  *
  * PARAMETERS:  EntryName           - Ascii ACPI name to search for (4 chars)
+ *              WalkState           - Current state of the walk
  *              *NameTable          - Starting table where search will begin
  *              InterpreterMode     - Add names only in MODE_LoadPassX.  Otherwise,
  *                                    search only.
  *              Type                - Object type to match
+ *              Flags               - Flags describing the search restrictions
  *              **RetEntry          - Where the matched NTE is returned
  *
  * RETURN:      Status
@@ -706,7 +706,11 @@ AcpiNsSearchAndEnter (
 
     if (!NameTable || !EntryName || !RetEntry)
     {
-        REPORT_ERROR ("NsSearchAndEnter: bad parameter");
+        DEBUG_PRINT (ACPI_ERROR,
+            ("NsSearchAndEnter: Null param:  Table %p Name %p Return %p\n",
+            NameTable, EntryName, RetEntry));
+
+        REPORT_ERROR ("NsSearchAndEnter: bad (null)parameter");
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -716,9 +720,10 @@ AcpiNsSearchAndEnter (
     if (!AcpiCmValidAcpiName (EntryName))
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("NsSearchAndEnter:  *** Bad INT8 in name: %08lx *** \n",
+            ("NsSearchAndEnter:  *** Bad character in name: %08lx *** \n",
             EntryName));
 
+        REPORT_ERROR ("NsSearchAndEnter: Bad character in Entry Name");
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
 

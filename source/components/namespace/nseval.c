@@ -154,14 +154,14 @@
 ACPI_STATUS
 AcpiNsEvaluateRelative (
     ACPI_NAMED_OBJECT       *Handle,
-    INT8                    *Pathname,
+    NATIVE_CHAR             *Pathname,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_NAMED_OBJECT       *RelObjEntry;
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *ObjEntry = NULL;
-    INT8                    *InternalPath = NULL;
+    NATIVE_CHAR             *InternalPath = NULL;
     ACPI_GENERIC_STATE      ScopeInfo;
 
 
@@ -261,13 +261,13 @@ Cleanup:
 
 ACPI_STATUS
 AcpiNsEvaluateByName (
-    INT8                    *Pathname,
+    NATIVE_CHAR             *Pathname,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *ObjEntry = NULL;
-    INT8                    *InternalPath = NULL;
+    NATIVE_CHAR             *InternalPath = NULL;
 
 
     FUNCTION_TRACE ("NsEvaluateByName");
@@ -640,9 +640,13 @@ AcpiNsGetObjectValue (
          * Use AcpiAmlResolveToValue() to get the associated value.
          * The call to AcpiAmlResolveToValue causes
          * ObjDesc (allocated above) to always be deleted.
+         *
+         * NOTE: we can get away with passing in NULL for a walk state
+         * because ObjDesc is guaranteed to not be a reference to either
+         * a method local or a method argument
          */
 
-        Status = AcpiAmlResolveToValue (&ObjDesc);
+        Status = AcpiAmlResolveToValue (&ObjDesc, NULL);
     }
 
     /*

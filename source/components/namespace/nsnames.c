@@ -136,17 +136,15 @@
  *              the scope, in Label format (all segments strung together
  *              with no separators)
  *
- * DESCRIPTION: Used via AcpiNsNameOfCurrentScope() and AcpiNsLastFQN()
- *              for label generation in the interpreter, and for debug
- *              printing in AcpiNsSearchTable().
+ * DESCRIPTION: Used for debug printing in AcpiNsSearchTable().
  *
  ***************************************************************************/
 
-INT8 *
+NATIVE_CHAR *
 AcpiNsGetTablePathname (
     ACPI_NAME_TABLE         *Scope)
 {
-    INT8                    *NameBuffer;
+    NATIVE_CHAR             *NameBuffer;
     UINT32                  Size;
     ACPI_NAME               Name;
     ACPI_NAMED_OBJECT       *EntryToSearch;
@@ -221,40 +219,6 @@ AcpiNsGetTablePathname (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNsNameOfCurrentScope
- *
- * PARAMETERS:  none
- *
- * RETURN:      pointer to storage containing the name of the current scope
- *
- ***************************************************************************/
-
-INT8 *
-AcpiNsNameOfCurrentScope (
-    ACPI_WALK_STATE         *WalkState)
-{
-    INT8                    *ScopeName;
-
-
-    FUNCTION_TRACE ("NsNameOfCurrentScope");
-
-
-    if (WalkState && WalkState->ScopeInfo)
-    {
-        ScopeName =
-            AcpiNsGetTablePathname (WalkState->ScopeInfo->Scope.NameTable);
-
-        return_PTR (ScopeName);
-    }
-
-    REPORT_ERROR ("Current scope pointer is invalid");
-
-    return_PTR (NULL);
-}
-
-
-/****************************************************************************
- *
  * FUNCTION:    AcpiNsHandleToPathname
  *
  * PARAMETERS:  TargetHandle            - Handle of nte whose name is to be found
@@ -273,7 +237,7 @@ ACPI_STATUS
 AcpiNsHandleToPathname (
     ACPI_HANDLE             TargetHandle,
     UINT32                  *BufSize,
-    INT8                    *UserBuffer)
+    NATIVE_CHAR             *UserBuffer)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_NAMED_OBJECT       *EntryToSearch = NULL;
@@ -282,8 +246,6 @@ AcpiNsHandleToPathname (
     UINT32                  Size;
     UINT32                  UserBufSize;
     ACPI_NAME               Name;
-    BOOLEAN                 NamespaceWasLocked;
-
 
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
@@ -296,12 +258,6 @@ AcpiNsHandleToPathname (
          */
 
         return_ACPI_STATUS (AE_NO_NAMESPACE);
-    }
-
-    NamespaceWasLocked = AcpiGbl_AcpiMutexInfo[ACPI_MTX_NAMESPACE].Locked;
-    if (!NamespaceWasLocked)
-    {
-        AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
     }
 
     EntryToSearch = AcpiNsConvertHandleToEntry (TargetHandle);
@@ -332,7 +288,7 @@ AcpiNsHandleToPathname (
     if (PathLength > UserBufSize)
     {
         Status = AE_BUFFER_OVERFLOW;
-        goto UnlockAndExit;
+        goto Exit;
     }
 
     /* Store null terminator */
@@ -370,14 +326,7 @@ AcpiNsHandleToPathname (
         ("NsHandleToPathname: Len=%d, %s \n",
         PathLength, UserBuffer));
 
-
-UnlockAndExit:
-
-    if (!NamespaceWasLocked)
-    {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-    }
-
+Exit:
     return_ACPI_STATUS (Status);
 }
 

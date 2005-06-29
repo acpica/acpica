@@ -146,11 +146,11 @@
 ACPI_STATUS
 AcpiNsDumpPathname (
     ACPI_HANDLE             Handle,
-    INT8                    *Msg,
+    NATIVE_CHAR             *Msg,
     UINT32                  Level,
     UINT32                  Component)
 {
-    INT8                    *Buffer;
+    NATIVE_CHAR             *Buffer;
     UINT32                  Length;
 
 
@@ -211,7 +211,7 @@ AcpiNsDumpOneObject (
     OBJECT_TYPE_INTERNAL    Type;
     UINT32                  BytesToDump;
     UINT32                  DownstreamSiblingMask = 0;
-    INT32                   LevelTmp;
+    UINT32                  LevelTmp;
     UINT32                  WhichBit;
 
 
@@ -591,7 +591,7 @@ AcpiNsDumpRootDevices (void)
     AcpiGetHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
-    AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, ACPI_INT32_MAX, NS_WALK_NO_UNLOCK,
+    AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, ACPI_UINT32_MAX, NS_WALK_NO_UNLOCK,
                         AcpiNsDumpOneDevice, NULL, NULL);
 }
 
@@ -612,7 +612,7 @@ AcpiNsDumpRootDevices (void)
 void
 AcpiNsDumpTables (
     ACPI_HANDLE             SearchBase,
-    INT32                   MaxDepth)
+    UINT32                  MaxDepth)
 {
     ACPI_HANDLE             SearchHandle = SearchBase;
 
