@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.51 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -116,505 +116,821 @@
  *****************************************************************************/
 
 
-#include "aslcompiler.h"
-#include "aslcompiler.y.h"
+#include "AslCompiler.h"
+#include "AslCompiler.y.h"
 #include "amlcode.h"
 
-#define _COMPONENT          ACPI_COMPILER
-        ACPI_MODULE_NAME    ("aslopcodes")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcAmlOpcodeWalk
+ * FUNCTION:    
  *
- * PARAMETERS:  ASL_WALK_CALLBACK
+ * PARAMETERS:  
  *
- * RETURN:      Status
+ * RETURN:      
  *
- * DESCRIPTION: Parse tree walk to generate both the AML opcodes and the AML
- *              operands.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
-ACPI_STATUS
-OpcAmlOpcodeWalk (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context)
+void
+CgAmlOpcodeWalk (
+    ASL_PARSE_NODE              *Node,
+    UINT32                      Level,
+    void                        *Context)
 {
 
-    TotalParseNodes++;
+    CgGenerateAmlOpcode (Node);
+    CgGenerateAmlOperands (Node);
+}
 
-    OpcGenerateAmlOpcode (Op);
-    OpnGenerateAmlOperands (Op);
 
-    return (AE_OK);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgSetOptimalIntegerSize (
+    ASL_PARSE_NODE          *Node)
+{
+
+    if (Node->Value.Integer <= ACPI_UINT8_MAX)
+    {
+        Node->AmlOpcode = AML_BYTE_OP;
+    }
+
+    else if (Node->Value.Integer <= ACPI_UINT16_MAX)
+    {
+        Node->AmlOpcode = AML_WORD_OP;
+    }
+
+    else if (Node->Value.Integer <= ACPI_UINT32_MAX)
+    {
+        Node->AmlOpcode = AML_DWORD_OP;
+    }
+
+    else
+    {
+        Node->AmlOpcode = AML_QWORD_OP;
+    }
+}
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoMethod (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+    /* Optional arguments for this opcode with defaults */
+    
+    UINT8                       NumArgs = 0;
+    UINT8                       Serialized = 0;
+    UINT8                       Concurrency = 0;
+    UINT8                       MethodFlags;
+
+
+
+    /* Opcode and package length first */
+    /* Method name */
+
+    Next = Node->Child;
+
+    /* Num args */
+
+    Next = Next->Peer;
+    if (Next->ParseOpcode != DEFAULT_ARG)
+    {
+        NumArgs = Next->Value.Integer8;
+        Next->ParseOpcode = DEFAULT_ARG;
+    }
+
+    /* Serialized Flag */
+
+    Next = Next->Peer;
+    if (Next->ParseOpcode != DEFAULT_ARG)
+    {
+        Serialized = Next->Value.Integer8;
+        Next->ParseOpcode = DEFAULT_ARG;
+    }
+
+    /* Concurrency Flag */
+
+    Next = Next->Peer;
+    if (Next->ParseOpcode != DEFAULT_ARG)
+    {
+        Concurrency = Next->Value.Integer8;
+    }
+
+    /* Put the bits in their proper places */
+
+    MethodFlags = (NumArgs & 0x7) | ((Serialized & 0x1) << 3) | ((Concurrency & 0xF) << 4); 
+
+    /* Use the last node for the combined flags byte */
+
+    Next->Value.Integer = MethodFlags;
+    Next->AmlOpcode = AML_RAW_DATA_BYTE;
+    Next->AmlLength = 1;
+    Next->ParseOpcode = RAW_DATA;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcGetIntegerWidth
+ * FUNCTION:    
  *
- * PARAMETERS:  Op          - DEFINITION BLOCK op
+ * PARAMETERS:  
  *
- * RETURN:      none
+ * RETURN:      
  *
- * DESCRIPTION: Extract integer width from the table revision
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 void
-OpcGetIntegerWidth (
-    ACPI_PARSE_OBJECT       *Op)
+CgDoFieldCommon (
+    ASL_PARSE_NODE              *Node)
 {
-    ACPI_PARSE_OBJECT       *Child;
+    ASL_PARSE_NODE              *Next;
+    ASL_PARSE_NODE              *PkgLengthNode;
+    UINT32                      CurrentBitOffset;
+    UINT32                      NewBitOffset;
+    UINT8                       AccessType;
+    UINT8                       LockRule;
+    UINT8                       UpdateRule;
+    UINT8                       FieldFlags;
 
-    if (!Op)
+
+    /* AccessType -- not optional, so no need to check for DEFAULT_ARG */
+
+    AccessType = Node->Value.Integer8;
+    Node->ParseOpcode = DEFAULT_ARG;
+
+    /* LockRule -- not optional, so no need to check for DEFAULT_ARG */
+
+    Next = Node->Peer;
+    LockRule = Next->Value.Integer8;
+    Next->ParseOpcode = DEFAULT_ARG;
+
+    /* UpdateRule -- not optional, so no need to check for DEFAULT_ARG */
+
+    Next = Next->Peer;
+    UpdateRule = Next->Value.Integer8;
+
+    /* Generate the flags byte */
+
+    FieldFlags = (AccessType & 0x0F) | ((LockRule & 0x01) << 4) | ((UpdateRule & 0x03) << 5);
+
+    /* Use the previous node to be the FieldFlags node */
+
+    /* Set the node to RAW_DATA */
+
+    Next->Value.Integer = FieldFlags;
+    Next->AmlOpcode = AML_RAW_DATA_BYTE;
+    Next->AmlLength = 1;
+    Next->ParseOpcode = RAW_DATA;
+
+    /*  Process the FieldUnitList */
+
+    Next = Next->Peer;
+    CurrentBitOffset = 0;
+
+    while (Next)
+    {
+        switch (Next->ParseOpcode)
+        {
+        case ACCESSAS:
+            break;
+
+        case OFFSET:
+            PkgLengthNode = Next->Child;
+            NewBitOffset = PkgLengthNode->Value.Integer32 * 8;
+            if (NewBitOffset < CurrentBitOffset)
+            {
+                DbgPrint ("Offset less than current offset\n");
+            }
+    
+            PkgLengthNode->Value.Integer = NewBitOffset - CurrentBitOffset;
+            CurrentBitOffset = NewBitOffset;
+            break;
+
+        case NAMESEG:
+        case RESERVED_BYTES:
+            PkgLengthNode = Next->Child;
+            NewBitOffset = PkgLengthNode->Value.Integer32;
+            CurrentBitOffset += NewBitOffset;
+            break;
+
+        }
+        Next = Next->Peer;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoField (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+    /* Opcode is parent node */
+    /* First child is field name */
+
+    Next = Node->Child;
+
+    /* Second child is the AccessType */
+
+    CgDoFieldCommon (Next->Peer);
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoIndexField (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+
+    /* Opcode is parent node */
+    /* First child is the index name */
+
+    Next = Node->Child;
+
+    /* Second child is the data name */
+
+    Next = Next->Peer;
+
+    /* Third child is the AccessType */
+
+    CgDoFieldCommon (Next->Peer);
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoBankField (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+
+    /* Opcode is parent node */
+    /* First child is the region name */
+
+    Next = Node->Child;
+
+    /* Second child is the bank name */
+
+    Next = Next->Peer;
+
+    /* Third child is the bank value */
+
+    Next = Next->Peer;
+
+    /* Fourth child is the AccessType */
+
+    CgDoFieldCommon (Next->Peer);
+
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoBuffer (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *InitializerNode;
+    ASL_PARSE_NODE              *BufferLengthNode;
+
+    /* Optional arguments for this opcode with defaults */
+    
+    UINT32                      BufferLength = 0;
+
+
+    /* Opcode and package length first */
+    /* Buffer Length is next, followed by the initializer list */
+
+    BufferLengthNode = Node->Child;
+    InitializerNode = BufferLengthNode->Peer;
+
+    /*
+     * We always count the number of items in the initializer list, because if
+     * it is larger than the buffer length, we will define the buffer size
+     * to be the size of the initializer list (Per ACPI Spec)
+     */
+    if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+    {
+        /* The peer list contains the byte list (if any...) */
+
+        while (InitializerNode)
+        {
+            /* For buffers, this is a list of raw bytes */
+
+            InitializerNode->AmlOpcode = AML_RAW_DATA_BYTE;
+            InitializerNode->AmlLength = 1;
+            InitializerNode->ParseOpcode = RAW_DATA;
+
+            BufferLength++;
+            InitializerNode = InitializerNode->Peer;
+        }
+    }
+
+
+    /* Check if initializer list is longer than the buffer length */
+
+    if (BufferLengthNode->ParseOpcode == INTEGER)
+    {
+        if (BufferLengthNode->Value.Integer > BufferLength)
+        {
+            BufferLength = BufferLengthNode->Value.Integer32;
+        }
+    }
+
+
+    if (!BufferLength)
+    {
+        /* No length AND no items -- issue a warning */
+
+        AslWarning (ASL_WARNING_BUFFER_LENGTH);
+
+        /* But go ahead and put the buffer length of zero into the AML */
+    }
+
+
+    /* 
+     * Just set the buffer size node to be the buffer length, regardless
+     * of whether it was previously an integer or a default_arg placeholder
+     */
+
+    BufferLengthNode->ParseOpcode = INTEGER;
+    BufferLengthNode->AmlOpcode = AML_DWORD_OP;
+    BufferLengthNode->Value.Integer = BufferLength;
+
+    CgSetOptimalIntegerSize (BufferLengthNode);
+
+    /* Remaining nodes are handled via the tree walk */
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoPackage (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *InitializerNode;
+    ASL_PARSE_NODE              *PackageLengthNode;
+
+    /* Optional arguments for this opcode with defaults */
+    
+    UINT32                      PackageLength = 0;
+
+
+    /* Opcode and package length first */
+    /* Buffer Length is next, followed by the initializer list */
+
+    PackageLengthNode = Node->Child;
+    InitializerNode = PackageLengthNode->Peer;
+
+    /*
+     * We always count the number of items in the initializer list, because if
+     * it is larger than the buffer length, we will define the buffer size
+     * to be the size of the initializer list (Per ACPI Spec)
+     */
+    if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+    {
+        /* The peer list contains the byte list (if any...) */
+
+        while (InitializerNode)
+        {
+            PackageLength++;
+            InitializerNode = InitializerNode->Peer;
+        }
+    }
+
+
+    /* Check if initializer list is longer than the buffer length */
+
+    if (PackageLengthNode->ParseOpcode == INTEGER)
+    {
+        if (PackageLengthNode->Value.Integer > PackageLength)
+        {
+            PackageLength = PackageLengthNode->Value.Integer32;
+        }
+    }
+
+
+    if (!PackageLength)
+    {
+        /* No length AND no items -- issue a warning */
+
+        AslWarning (ASL_WARNING_PACKAGE_LENGTH);
+
+        /* But go ahead and put the buffer length of zero into the AML */
+    }
+
+
+    /* 
+     * Just set the buffer size node to be the buffer length, regardless
+     * of whether it was previously an integer or a default_arg placeholder
+     */
+
+    PackageLengthNode->AmlOpcode = AML_RAW_DATA_BYTE;
+    PackageLengthNode->AmlLength = 1;
+    PackageLengthNode->ParseOpcode = RAW_DATA;
+    PackageLengthNode->Value.Integer = PackageLength;
+
+    /* Remaining nodes are handled via the tree walk */
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoOffset (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *InitializerNode;
+
+    /* Entire proc unnecessarY? */
+
+    Node->AmlOpcodeLength = 1;
+    InitializerNode = Node->Child;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoAccessAs (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+    Node->AmlOpcodeLength = 1;
+    Next = Node->Child;
+
+    /* First child is the access type */
+
+    Next->AmlOpcode = AML_RAW_DATA_BYTE;
+    Next->ParseOpcode = RAW_DATA;
+    
+    /* Second child is the optional access attribute */
+
+    Next = Next->Peer;
+    if (Next->ParseOpcode == DEFAULT_ARG)
+    {
+        Next->Value.Integer = 0;
+    }
+    Next->AmlOpcode = AML_RAW_DATA_BYTE;
+    Next->ParseOpcode = RAW_DATA;
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoDefinitionBlock (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Child;
+    
+
+
+    /* 
+     * These nodes get stuffed into the table header.  They are special
+     * cased when the table is written to the output file.
+     * 
+     * Mark all of these nodes as non-usable so they won't get output
+     * as AML opcodes!
+     */
+
+
+    /* AML filename */
+
+    Child = Node->Child;
+    Child->ParseOpcode = DEFAULT_ARG;
+
+    /* Signature */
+
+    Child = Child->Peer;
+    Child->ParseOpcode = DEFAULT_ARG;
+
+    /* Revision */
+
+    Child = Child->Peer;
+    Child->ParseOpcode = DEFAULT_ARG;
+
+    /* OEMID */
+
+    Child = Child->Peer;
+    Child->ParseOpcode = DEFAULT_ARG;
+
+    /* OEM TableID */
+
+    Child = Child->Peer;
+    Child->ParseOpcode = DEFAULT_ARG;
+
+    /* OEM Revision */
+
+    Child = Child->Peer;
+    Child->ParseOpcode = DEFAULT_ARG;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgGenerateAmlOperands (
+    ASL_PARSE_NODE              *Node)
+{
+
+
+    if (Node->AmlOpcode == AML_RAW_DATA_BYTE)
     {
         return;
     }
 
-    Child = Op->Asl.Child;
-    Child = Child->Asl.Next;
-    Child = Child->Asl.Next;
 
-    /* Use the revision to set the integer width */
-
-    AcpiUtSetIntegerWidth (Child->Asl.Value.Integer8);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    OpcSetOptimalIntegerSize
- *
- * PARAMETERS:  Op        - A parse tree node
- *
- * RETURN:      Integer width, in bytes.  Also sets the node AML opcode to the
- *              optimal integer AML prefix opcode.
- *
- * DESCRIPTION: Determine the optimal AML encoding of an integer.  All leading
- *              zeros can be truncated to squeeze the integer into the
- *              minimal number of AML bytes.
- *
- ******************************************************************************/
-
-UINT32
-OpcSetOptimalIntegerSize (
-    ACPI_PARSE_OBJECT       *Op)
-{
-
-    /*
-     * Check for the special AML integers first - Zero, One, Ones.
-     * These are single-byte opcodes that are the smallest possible
-     * representation of an integer.
-     *
-     * This optimization is optional.
-     */
-    if (Gbl_IntegerOptimizationFlag)
+    switch (Node->ParseOpcode)
     {
-        switch (Op->Asl.Value.Integer)
-        {
-        case 0:
-
-            Op->Asl.AmlOpcode = AML_ZERO_OP;
-            AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION, Op, "Zero");
-            return 1;
-
-        case 1:
-
-            Op->Asl.AmlOpcode = AML_ONE_OP;
-            AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION, Op, "One");
-            return 1;
-
-        case ACPI_UINT32_MAX:
-
-            /* Check for table integer width (32 or 64) */
-
-            if (AcpiGbl_IntegerByteWidth == 4)
-            {
-                Op->Asl.AmlOpcode = AML_ONES_OP;
-                AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION, Op, "Ones");
-                return 1;
-            }
-            break;
-
-        case ACPI_INTEGER_MAX:
-
-            /* Check for table integer width (32 or 64) */
-
-            if (AcpiGbl_IntegerByteWidth == 8)
-            {
-                Op->Asl.AmlOpcode = AML_ONES_OP;
-                AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION, Op, "Ones");
-                return 1;
-            }
-            break;
-
-        default:
-            break;
-        }
-    }
-
-    /* Find the best fit using the various AML integer prefixes */
-
-    if (Op->Asl.Value.Integer <= ACPI_UINT8_MAX)
-    {
-        Op->Asl.AmlOpcode = AML_BYTE_OP;
-        return 1;
-    }
-    if (Op->Asl.Value.Integer <= ACPI_UINT16_MAX)
-    {
-        Op->Asl.AmlOpcode = AML_WORD_OP;
-        return 2;
-    }
-    if (Op->Asl.Value.Integer <= ACPI_UINT32_MAX)
-    {
-        Op->Asl.AmlOpcode = AML_DWORD_OP;
-        return 4;
-    }
-    else
-    {
-        Op->Asl.AmlOpcode = AML_QWORD_OP;
-        return 8;
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    OpcDoAccessAs
- *
- * PARAMETERS:  Op        - Parse node
- *
- * RETURN:      None
- *
- * DESCRIPTION: Implement the ACCESS_AS ASL keyword.
- *
- ******************************************************************************/
-
-void
-OpcDoAccessAs (
-    ACPI_PARSE_OBJECT           *Op)
-{
-    ACPI_PARSE_OBJECT           *Next;
-
-
-    Op->Asl.AmlOpcodeLength = 1;
-    Next = Op->Asl.Child;
-
-    /* First child is the access type */
-
-    Next->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->Asl.ParseOpcode = PARSEOP_RAW_DATA;
-
-    /* Second child is the optional access attribute */
-
-    Next = Next->Asl.Next;
-    if (Next->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
-    {
-        Next->Asl.Value.Integer = 0;
-    }
-    Next->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->Asl.ParseOpcode = PARSEOP_RAW_DATA;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    OpcDoUnicode
- *
- * PARAMETERS:  Op        - Parse node
- *
- * RETURN:      None
- *
- * DESCRIPTION: Implement the UNICODE ASL "macro".  Convert the input string
- *              to a unicode buffer.  There is no Unicode AML opcode.
- *
- * Note:  The Unicode string is 16 bits per character, no leading signature,
- *        with a 16-bit terminating NULL.
- *
- ******************************************************************************/
-
-void
-OpcDoUnicode (
-    ACPI_PARSE_OBJECT           *Op)
-{
-    ACPI_PARSE_OBJECT           *InitializerOp;
-    UINT32                      Length;
-    UINT32                      Count;
-    UINT32                      i;
-    UINT8                       *AsciiString;
-    UINT16                      *UnicodeString;
-    ACPI_PARSE_OBJECT           *BufferLengthOp;
-
-
-    /* Change op into a buffer object */
-
-    Op->Asl.CompileFlags &= ~NODE_COMPILE_TIME_CONST;
-    Op->Asl.ParseOpcode = PARSEOP_BUFFER;
-    UtSetParseOpName (Op);
-
-    /* Buffer Length is first, followed by the string */
-
-    BufferLengthOp = Op->Asl.Child;
-    InitializerOp = BufferLengthOp->Asl.Next;
-
-    AsciiString = (UINT8 *) InitializerOp->Asl.Value.String;
-
-    /* Create a new buffer for the Unicode string */
-
-    Count = strlen (InitializerOp->Asl.Value.String) + 1;
-    Length = Count * sizeof (UINT16);
-    UnicodeString = UtLocalCalloc (Length);
-
-    /* Convert to Unicode string (including null terminator) */
-
-    for (i = 0; i < Count; i++)
-    {
-        UnicodeString[i] = (UINT16) AsciiString[i];
-    }
-
-    /*
-     * Just set the buffer size node to be the buffer length, regardless
-     * of whether it was previously an integer or a default_arg placeholder
-     */
-    BufferLengthOp->Asl.ParseOpcode   = PARSEOP_INTEGER;
-    BufferLengthOp->Asl.AmlOpcode     = AML_DWORD_OP;
-    BufferLengthOp->Asl.Value.Integer = Length;
-    UtSetParseOpName (BufferLengthOp);
-
-    (void) OpcSetOptimalIntegerSize (BufferLengthOp);
-
-    /* The Unicode string is a raw data buffer */
-
-    InitializerOp->Asl.Value.Buffer   = (UINT8 *) UnicodeString;
-    InitializerOp->Asl.AmlOpcode      = AML_RAW_DATA_BUFFER;
-    InitializerOp->Asl.AmlLength      = Length;
-    InitializerOp->Asl.ParseOpcode    = PARSEOP_RAW_DATA;
-    InitializerOp->Asl.Child          = NULL;
-    UtSetParseOpName (InitializerOp);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    OpcDoEisaId
- *
- * PARAMETERS:  Op        - Parse node
- *
- * RETURN:      None
- *
- *
- * DESCRIPTION: Convert a string EISA ID to numeric representation.  See the
- *              Pnp BIOS Specification for details.  Here is an excerpt:
- *
- *              A seven character ASCII representation of the product
- *              identifier compressed into a 32-bit identifier.  The seven
- *              character ID consists of a three character manufacturer code,
- *              a three character hexadecimal product identifier, and a one
- *              character hexadecimal revision number.  The manufacturer code
- *              is a 3 uppercase character code that is compressed into 3 5-bit
- *              values as follows:
- *                  1) Find hex ASCII value for each letter
- *                  2) Subtract 40h from each ASCII value
- *                  3) Retain 5 least signficant bits for each letter by
- *                     discarding upper 3 bits because they are always 0.
- *                  4) Compressed code = concatenate 0 and the 3 5-bit values
- *
- *              The format of the compressed product identifier is as follows:
- *              Byte 0: Bit 7       - Reserved (0)
- *                      Bits 6-2:   - 1st character of compressed mfg code
- *                      Bits 1-0    - Upper 2 bits of 2nd character of mfg code
- *              Byte 1: Bits 7-5    - Lower 3 bits of 2nd character of mfg code
- *                      Bits 4-0    - 3rd character of mfg code
- *              Byte 2: Bits 7-4    - 1st hex digit of product number
- *                      Bits 3-0    - 2nd hex digit of product number
- *              Byte 3: Bits 7-4    - 3st hex digit of product number
- *                      Bits 3-0    - Hex digit of the revision number
- *
- ******************************************************************************/
-
-void
-OpcDoEisaId (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    UINT32                  EisaId = 0;
-    UINT32                  BigEndianId;
-    char                    *InString;
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_NATIVE_UINT        i;
-
-
-    InString = (char *) Op->Asl.Value.String;
-
-    /*
-     * The EISAID string must be exactly 7 characters and of the form
-     * "LLLXXXX" -- 3 letters and 4 hex digits (e.g., "PNP0001")
-     */
-    if (ACPI_STRLEN (InString) != 7)
-    {
-        Status = AE_BAD_PARAMETER;
-    }
-    else
-    {
-        /* Check all 7 characters for correct format */
-
-        for (i = 0; i < 7; i++)
-        {
-            /* First 3 characters must be letters */
-
-            if (i < 3)
-            {
-                if (!isalpha (InString[i]))
-                {
-                    Status = AE_BAD_PARAMETER;
-                }
-            }
-
-            /* Last 4 characters must be hex digits */
-
-            else if (!isxdigit (InString[i]))
-            {
-                Status = AE_BAD_PARAMETER;
-            }
-        }
-    }
-
-    if (ACPI_FAILURE (Status))
-    {
-        AslError (ASL_ERROR, ASL_MSG_INVALID_EISAID, Op, Op->Asl.Value.String);
-    }
-    else
-    {
-        /* Create ID big-endian first (bits are contiguous) */
-
-        BigEndianId  =  (UINT32) (InString[0] - 0x40) << 26 |
-                        (UINT32) (InString[1] - 0x40) << 21 |
-                        (UINT32) (InString[2] - 0x40) << 16 |
-
-                        (UtHexCharToValue (InString[3])) << 12 |
-                        (UtHexCharToValue (InString[4])) << 8  |
-                        (UtHexCharToValue (InString[5])) << 4  |
-                         UtHexCharToValue (InString[6]);
-
-        /* Swap to little-endian to get final ID (see function header) */
-
-        EisaId = AcpiUtDwordByteSwap (BigEndianId);
-    }
-
-    /*
-     * Morph the Op into an integer, regardless of whether there
-     * was an error in the EISAID string
-     */
-    Op->Asl.Value.Integer32 = EisaId;
-
-    Op->Asl.CompileFlags &= ~NODE_COMPILE_TIME_CONST;
-    Op->Asl.ParseOpcode = PARSEOP_INTEGER;
-    (void) OpcSetOptimalIntegerSize (Op);
-
-    /* Op is now an integer */
-
-    UtSetParseOpName (Op);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    OpcGenerateAmlOpcode
- *
- * PARAMETERS:  Op        - Parse node
- *
- * RETURN:      None
- *
- * DESCRIPTION: Generate the AML opcode associated with the node and its
- *              parse (lex/flex) keyword opcode.  Essentially implements
- *              a mapping between the parse opcodes and the actual AML opcodes.
- *
- ******************************************************************************/
-
-void
-OpcGenerateAmlOpcode (
-    ACPI_PARSE_OBJECT       *Op)
-{
-
-    UINT16                  Index;
-
-
-    Index = (UINT16) (Op->Asl.ParseOpcode - ASL_PARSE_OPCODE_BASE);
-
-    Op->Asl.AmlOpcode     = AslKeywordMapping[Index].AmlOpcode;
-    Op->Asl.AcpiBtype     = AslKeywordMapping[Index].AcpiBtype;
-    Op->Asl.CompileFlags |= AslKeywordMapping[Index].Flags;
-
-    if (!Op->Asl.Value.Integer)
-    {
-        Op->Asl.Value.Integer = AslKeywordMapping[Index].Value;
-    }
-
-    /* Special handling for some opcodes */
-
-    switch (Op->Asl.ParseOpcode)
-    {
-    case PARSEOP_INTEGER:
-        /*
-         * Set the opcode based on the size of the integer
-         */
-        (void) OpcSetOptimalIntegerSize (Op);
+    case DEFINITIONBLOCK:
+        CgDoDefinitionBlock (Node);
         break;
 
-    case PARSEOP_OFFSET:
-
-        Op->Asl.AmlOpcodeLength = 1;
+    case METHOD:
+        CgDoMethod (Node);
         break;
 
-    case PARSEOP_ACCESSAS:
-
-        OpcDoAccessAs (Op);
+    case FIELD:
+        CgDoField (Node);
         break;
 
-    case PARSEOP_EISAID:
-
-        OpcDoEisaId (Op);
+    case INDEXFIELD:
+        CgDoIndexField (Node);
         break;
 
-    case PARSEOP_UNICODE:
-
-        OpcDoUnicode (Op);
+    case BANKFIELD:
+        CgDoBankField (Node);
         break;
 
-    case PARSEOP_INCLUDE:
-
-        Op->Asl.Child->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
-        Gbl_HasIncludeFiles = TRUE;
+    case BUFFER:
+        CgDoBuffer (Node);
         break;
 
-    case PARSEOP_EXTERNAL:
-
-        Op->Asl.Child->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
-        Op->Asl.Child->Asl.Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+    case PACKAGE:
+        CgDoPackage (Node);
         break;
 
-    case PARSEOP_PACKAGE:
-        /*
-         * The variable-length package has a different opcode
-         */
-        if ((Op->Asl.Child->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
-            (Op->Asl.Child->Asl.ParseOpcode != PARSEOP_INTEGER)     &&
-            (Op->Asl.Child->Asl.ParseOpcode != PARSEOP_BYTECONST))
-        {
-            Op->Asl.AmlOpcode = AML_VAR_PACKAGE_OP;
-        }
+    case RESOURCETEMPLATE:
+        CgDoResourceTemplate (Node);
+        break;
+
+    case NAMESEG:
+    case NAMESTRING:
+    case STRING_LITERAL:
         break;
 
     default:
-        /* Nothing to do for other opcodes */
+        break;
+    }
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CgDoEisaId
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: Convert a string EISA ID to numeric representation
+ *
+ ******************************************************************************/
+
+void
+CgDoEisaId (
+    ASL_PARSE_NODE          *Node)
+{
+    UINT32                  id;
+    UINT32                  SwappedId;
+    NATIVE_CHAR             *InString;
+
+
+
+    InString = Node->Value.String;
+
+    /* Create ID big-endian first */
+
+    id = 0;
+    id |= (InString[0] - '@') << 26;
+    id |= (InString[1] - '@') << 21;
+    id |= (InString[2] - '@') << 16;
+
+    id |= (UtHexCharToValue (InString[3])) << 12;
+    id |= (UtHexCharToValue (InString[4])) << 8;
+    id |= (UtHexCharToValue (InString[5])) << 4;
+    id |= UtHexCharToValue (InString[6]);
+
+    /* swap to little-endian  */
+
+    SwappedId = (id & 0xFF) << 24;
+    SwappedId |= ((id >> 8) & 0xFF) << 16;
+    SwappedId |= ((id >> 16) & 0xFF) << 8;
+    SwappedId |= (id >> 24) & 0xFF;
+
+    Node->Value.Integer32 = SwappedId;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgGenerateAmlOpcode (
+    ASL_PARSE_NODE          *Node)
+{
+
+    UINT16                  Index = Node->ParseOpcode;
+
+
+    Index = Node->ParseOpcode - ASL_PARSE_OPCODE_BASE;
+
+
+    Node->AmlOpcode = AslKeywordMapping[Index].AmlOpcode;
+    Node->Flags |= AslKeywordMapping[Index].Flags;
+
+    if (!Node->Value.Integer)
+    {
+        Node->Value.Integer = AslKeywordMapping[Index].Value;
+    }
+
+
+    /* Special handling for some opcodes */
+
+    switch (Node->ParseOpcode)
+    {
+    case INTEGER:
+        /*
+         * Set the opcode based on the size of the integer
+         */
+        CgSetOptimalIntegerSize (Node);
+        break;
+
+    case OFFSET:
+        CgDoOffset (Node);
+        break;
+
+    case ACCESSAS:
+        CgDoAccessAs (Node);
+        break;
+
+    case EISAID:
+        CgDoEisaId (Node);
         break;
     }
 
     return;
 }
+
 
 
