@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -131,7 +131,7 @@
         MODULE_NAME         ("exconfig")
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiTbFindTable
  *
@@ -141,9 +141,10 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Load an ACPI table
+ * DESCRIPTION: Find an ACPI table (in the RSDT/XSDT) that matches the 
+ *              Signature, OEM ID and OEM Table ID.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiTbFindTable (
@@ -190,7 +191,7 @@ AcpiTbFindTable (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsAddTable
  *
@@ -202,7 +203,7 @@ AcpiTbFindTable (
  *
  * DESCRIPTION: Install and Load and ACPI table
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsAddTable (
@@ -250,9 +251,6 @@ AcpiNsAddTable (
         goto Cleanup;
     }
 
-
-    /* We need a pointer to the table desc */
-
     /* Init the table handle */
 
     ObjDesc->Reference.Opcode = AML_LOAD_OP;
@@ -267,8 +265,7 @@ Cleanup:
 }
 
 
-
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiExLoadTableOp
  *
@@ -279,7 +276,7 @@ Cleanup:
  *
  * DESCRIPTION: Load an ACPI table
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiExLoadTableOp (
@@ -291,10 +288,8 @@ AcpiExLoadTableOp (
     ACPI_TABLE_HEADER       *Table;
     ACPI_NAMESPACE_NODE     *ParentNode;
     ACPI_NAMESPACE_NODE     *StartNode;
-    ACPI_NAMESPACE_NODE     *ParameterNode;
-    NATIVE_CHAR             *InternalPath = NULL;
+    ACPI_NAMESPACE_NODE     *ParameterNode = NULL;
     ACPI_OPERAND_OBJECT     *DdbHandle;
-    ACPI_GENERIC_STATE      ScopeInfo;
 
 
     FUNCTION_TRACE ("ExLoadTableOp");
@@ -316,8 +311,7 @@ AcpiExLoadTableOp (
 
     Status = AcpiTbFindTable (Operand[0]->String.Pointer,
                               Operand[1]->String.Pointer,
-                              Operand[2]->String.Pointer,
-                              &Table);
+                              Operand[2]->String.Pointer, &Table);
     if (ACPI_FAILURE (Status))
     {
         if (Status != AE_NOT_FOUND)
@@ -339,59 +333,41 @@ AcpiExLoadTableOp (
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Convert the RootPathString to internal (AML) format */
-
-    Status = AcpiNsInternalizeName (Operand[3]->String.Pointer, &InternalPath);
+    /* 
+     * Find the node referenced by the RootPathString.  This is the
+     * location within the namespace where the table will be loaded.
+     */
+    StartNode = WalkState->ScopeInfo->Scope.Node;
+    Status = AcpiNsGetNodeByPath (Operand[3]->String.Pointer, StartNode,
+                                    NS_SEARCH_PARENT, &ParentNode);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    /* Find the node corresponding to the RootPathString parameter */
+    /* ParameterPath (optional parameter) */
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo, InternalPath,
-                    ACPI_TYPE_ANY, IMODE_EXECUTE,
-                    NS_SEARCH_PARENT, WalkState, &ParentNode);
-    ACPI_MEM_FREE (InternalPath);
-
-    if (ACPI_FAILURE (Status))
+    if (Operand[4]->String.Length > 0)
     {
-        return_ACPI_STATUS (Status);
-    }
+        if ((Operand[4]->String.Pointer[0] != '\\') &&
+            (Operand[4]->String.Pointer[0] != '^'))
+        {
+            /*
+             * Path is not absolute, so it will be relative to the node
+             * referenced by the RootPathString
+             */
+            StartNode = ParentNode;
+        }
 
-    /* Build the path to the parameter object */
-
-    /* WBD: check for NULL case (optional parameter) */
-
-    if ((Operand[4]->String.Pointer[0] != '\\') &&
-        (Operand[4]->String.Pointer[0] != '^'))
-    {
-        StartNode = ParentNode;
-    }
-    else
-    {
-        StartNode = WalkState->ScopeInfo->Scope.Node;
-    }
-
-    /* Convert the ParameterPath string to internal format */
-
-    Status = AcpiNsInternalizeName (Operand[4]->String.Pointer, &InternalPath);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Find the parameter object */
-
-    ScopeInfo.Scope.Node = StartNode;
-    Status = AcpiNsLookup (&ScopeInfo, InternalPath,
-                    ACPI_TYPE_ANY, IMODE_EXECUTE,
-                    NS_SEARCH_PARENT, WalkState, &ParameterNode);
-    ACPI_MEM_FREE (InternalPath);
-
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
+        /*
+         * Find the node referenced by the ParameterPathString
+         */
+        Status = AcpiNsGetNodeByPath (Operand[4]->String.Pointer, StartNode,
+                                        NS_SEARCH_PARENT, &ParameterNode);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* Load the table into the namespace */
@@ -402,31 +378,38 @@ AcpiExLoadTableOp (
         return_ACPI_STATUS (Status);
     }
 
-    /* Store the parameter data into the parameter object */
+    /* Parameter Data (optional) */
 
-    Status = AcpiExStore (Operand[5], (ACPI_OPERAND_OBJECT *) ParameterNode, WalkState);
-    if (ACPI_FAILURE (Status))
+    if (ParameterNode)
     {
-        AcpiExUnloadTable (DdbHandle);
+        /* Store the parameter data into the optional parameter object */
+
+        Status = AcpiExStore (Operand[5], (ACPI_OPERAND_OBJECT *) ParameterNode,
+                                WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiExUnloadTable (DdbHandle);
+        }
     }
 
     return_ACPI_STATUS  (Status);
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiExLoadOp
  *
  * PARAMETERS:  ObjDesc         - Region or Field where the table will be 
  *                                obtained
- *              DdbHandle       - Where a handle to the table will be returned
+ *              Target          - Where a handle to the table will be stored
+ *              WalkState       - Current state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Load an ACPI table
+ * DESCRIPTION: Load an ACPI table from a field or operation region
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiExLoadOp (
@@ -482,7 +465,6 @@ AcpiExLoadOp (
         MEMCPY (TablePtr, &TableHeader, sizeof (ACPI_TABLE_HEADER));
         TableDataPtr = ACPI_PTR_ADD (UINT8, TablePtr, sizeof (ACPI_TABLE_HEADER));
 
-
         /* Get the table from the op region */
 
         for (i = 0; i < TableHeader.Length; i++)
@@ -525,8 +507,7 @@ AcpiExLoadOp (
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
-
-    /* Table must be either an SSDT or a PSDT */
+    /* The table must be either an SSDT or a PSDT */
 
     if ((!STRNCMP (TablePtr->Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].Signature,
@@ -575,7 +556,7 @@ Cleanup:
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiExUnloadTable
  *
@@ -585,7 +566,7 @@ Cleanup:
  *
  * DESCRIPTION: Unload an ACPI table
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiExUnloadTable (
@@ -634,7 +615,6 @@ AcpiExUnloadTable (
     /* Delete the table descriptor (DdbHandle) */
 
     AcpiUtRemoveReference (TableDesc);
-
     return_ACPI_STATUS (Status);
 }
 
