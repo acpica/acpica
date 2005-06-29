@@ -178,34 +178,34 @@ HwClearAcpiStatus (void)
 
 
     DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", 
-                    ALL_FIXED_STS_BITS, (UINT16) FACP->Pm1aEvtBlk));
+                    ALL_FIXED_STS_BITS, (UINT16) Gbl_FACP->Pm1aEvtBlk));
 
-    OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
+    OsdOut16 ((UINT16) Gbl_FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     
-    if (FACP->Pm1bEvtBlk)
+    if (Gbl_FACP->Pm1bEvtBlk)
     {
-        OsdOut16 ((UINT16) FACP->Pm1bEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
+        OsdOut16 ((UINT16) Gbl_FACP->Pm1bEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     }
 
     /* now clear the GPE Bits */
     
-    if (FACP->Gpe0BlkLen)
+    if (Gbl_FACP->Gpe0BlkLen)
     {
-        GpeLength = FACP->Gpe0BlkLen / 2;
+        GpeLength = Gbl_FACP->Gpe0BlkLen / 2;
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            OsdOut8 ((UINT16) (FACP->Gpe0Blk + Index), (UINT8) 0xff);
+            OsdOut8 ((UINT16) (Gbl_FACP->Gpe0Blk + Index), (UINT8) 0xff);
         }
     }
 
-    if (FACP->Gpe1BlkLen)
+    if (Gbl_FACP->Gpe1BlkLen)
     {
-        GpeLength = FACP->Gpe1BlkLen / 2;
+        GpeLength = Gbl_FACP->Gpe1BlkLen / 2;
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            OsdOut8 ((UINT16) (FACP->Gpe1Blk + Index), (UINT8) 0xff);
+            OsdOut8 ((UINT16) (Gbl_FACP->Gpe1Blk + Index), (UINT8) 0xff);
         }
     }
 
@@ -289,9 +289,9 @@ HwObtainSleepTypeRegisterData (
                 }
             }
 
-            if (ObjDesc->Type != TYPE_Package ||
-                 (ObjDesc->Package.Elements[0])->Type != TYPE_Number ||
-                 (ObjDesc->Package.Elements[1])->Type != TYPE_Number)
+            if (ObjDesc->Common.Type != TYPE_Package ||
+                 (ObjDesc->Package.Elements[0])->Common.Type != TYPE_Number ||
+                 (ObjDesc->Package.Elements[1])->Common.Type != TYPE_Number)
             {   
                 /* Invalid _Sx_ package type or value  */
                 
@@ -305,13 +305,13 @@ HwObtainSleepTypeRegisterData (
 
                 DEBUG_PRINT (ACPI_INFO, ("Actual Values:"));
                 DEBUG_PRINT (ACPI_INFO,
-                            ("  ObjDesc->ValTyp == %02x", ObjDesc->Type));
+                            ("  ObjDesc->ValTyp == %02x", ObjDesc->Common.Type));
                 DEBUG_PRINT (ACPI_INFO,
-                            ("  (ObjDesc->Package.Elements[0])->Type == %02x",
-                            (ObjDesc->Package.Elements[0])->Type));
+                            ("  (ObjDesc->Package.Elements[0])->Common.Type == %02x",
+                            (ObjDesc->Package.Elements[0])->Common.Type));
                 DEBUG_PRINT (ACPI_INFO,
-                            ("  (ObjDesc->Package.Elements[1])->Type == %02x",
-                            (ObjDesc->Package.Elements[1])->Type));
+                            ("  (ObjDesc->Package.Elements[1])->Common.Type == %02x",
+                            (ObjDesc->Package.Elements[1])->Common.Type));
 
                 Status = AE_ERROR;
             }
@@ -387,13 +387,15 @@ HwRegisterIO (
         {   
             /* status register */
             
-            RegisterValue = (UINT32) OsdIn16 ((UINT16) FACP->Pm1aEvtBlk);
-            DEBUG_PRINT (TRACE_IO, ("PM1a status: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm1aEvtBlk));
+            RegisterValue = (UINT32) OsdIn16 ((UINT16) Gbl_FACP->Pm1aEvtBlk);
+            DEBUG_PRINT (TRACE_IO, ("PM1a status: Read 0x%X from 0x%X\n", 
+                            RegisterValue, Gbl_FACP->Pm1aEvtBlk));
             
-            if (FACP->Pm1bEvtBlk)
+            if (Gbl_FACP->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bEvtBlk);
-                DEBUG_PRINT (TRACE_IO, ("PM1b status: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm1bEvtBlk));
+                RegisterValue |= (UINT32) OsdIn16 ((UINT16) Gbl_FACP->Pm1bEvtBlk);
+                DEBUG_PRINT (TRACE_IO, ("PM1b status: Read 0x%X from 0x%X\n", 
+                                RegisterValue, Gbl_FACP->Pm1bEvtBlk));
             }
 
             switch (RegisterId)
@@ -446,12 +448,12 @@ HwRegisterIO (
                 if (Value)
                 {
                     DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) Value, 
-                                (UINT16) FACP->Pm1aEvtBlk));
-                    OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) Value);
+                                (UINT16) Gbl_FACP->Pm1aEvtBlk));
+                    OsdOut16 ((UINT16) Gbl_FACP->Pm1aEvtBlk, (UINT16) Value);
                     
-                    if (FACP->Pm1bEvtBlk)
+                    if (Gbl_FACP->Pm1bEvtBlk)
                     {
-                        OsdOut16 ((UINT16) FACP->Pm1bEvtBlk, (UINT16) Value);
+                        OsdOut16 ((UINT16) Gbl_FACP->Pm1bEvtBlk, (UINT16) Value);
                     }
                     
                     RegisterValue = 0;
@@ -463,13 +465,15 @@ HwRegisterIO (
         {   
             /* enable register */
             
-            RegisterValue = (UINT32) OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
-            DEBUG_PRINT (TRACE_IO, ("PM1a enable: Read 0x%X from 0x%X\n", RegisterValue, (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2)));
+            RegisterValue = (UINT32) OsdIn16 ((UINT16) (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2));
+            DEBUG_PRINT (TRACE_IO, ("PM1a enable: Read 0x%X from 0x%X\n", 
+                            RegisterValue, (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2)));
             
-            if (FACP->Pm1bEvtBlk)
+            if (Gbl_FACP->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2));
-                DEBUG_PRINT (TRACE_IO, ("PM1b enable: Read 0x%X from 0x%X\n", RegisterValue, (FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2)));
+                RegisterValue |= (UINT32) OsdIn16 ((UINT16) (Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2));
+                DEBUG_PRINT (TRACE_IO, ("PM1b enable: Read 0x%X from 0x%X\n", 
+                                RegisterValue, (Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2)));
             }
 
             switch (RegisterId)
@@ -507,15 +511,15 @@ HwRegisterIO (
                 RegisterValue  |= Value;
 
                 DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                            (UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2)));
+                            (UINT16) (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2)));
 
-                OsdOut16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2), 
-                        (UINT16) RegisterValue);
-                
-                if (FACP->Pm1bEvtBlk)
-                {
-                    OsdOut16 ((UINT16)(FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2), 
+                OsdOut16 ((UINT16) (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2), 
                             (UINT16) RegisterValue);
+                
+                if (Gbl_FACP->Pm1bEvtBlk)
+                {
+                    OsdOut16 ((UINT16) (Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2), 
+                                (UINT16) RegisterValue);
                 }
             }
         }
@@ -533,14 +537,16 @@ HwRegisterIO (
              * for A may be different than the value for B 
              */
 
-            RegisterValue = (UINT32) OsdIn16 ((UINT16)  FACP->Pm1aCntBlk);
-            DEBUG_PRINT (TRACE_IO, ("PM1a control: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm1aCntBlk));
+            RegisterValue = (UINT32) OsdIn16 ((UINT16)  Gbl_FACP->Pm1aCntBlk);
+            DEBUG_PRINT (TRACE_IO, ("PM1a control: Read 0x%X from 0x%X\n", 
+                            RegisterValue, Gbl_FACP->Pm1aCntBlk));
         }
 
-        if (FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
+        if (Gbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
         {
-            RegisterValue |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bCntBlk);
-            DEBUG_PRINT (TRACE_IO, ("PM1b control: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm1bCntBlk));
+            RegisterValue |= (UINT32) OsdIn16 ((UINT16) Gbl_FACP->Pm1bCntBlk);
+            DEBUG_PRINT (TRACE_IO, ("PM1b control: Read 0x%X from 0x%X\n", 
+                            RegisterValue, Gbl_FACP->Pm1bCntBlk));
         }
 
         switch (RegisterId)
@@ -592,7 +598,7 @@ HwRegisterIO (
                     disable();  /* disable interrupts */
                 }
 
-                OsdOut16 ((UINT16) FACP->Pm1aCntBlk, (UINT16) RegisterValue);
+                OsdOut16 ((UINT16) Gbl_FACP->Pm1aCntBlk, (UINT16) RegisterValue);
                 
                 if (Mask == SLP_EN_MASK)
                 {
@@ -605,16 +611,17 @@ HwRegisterIO (
                 }
             }
                 
-            if (FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
+            if (Gbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
             {
-                OsdOut16 ((UINT16) FACP->Pm1bCntBlk, (UINT16) RegisterValue);
+                OsdOut16 ((UINT16) Gbl_FACP->Pm1bCntBlk, (UINT16) RegisterValue);
             }
         }
         break;
     
     case PM2_CONTROL:
-        RegisterValue = (UINT32) OsdIn16 ((UINT16) FACP->Pm2CntBlk);
-        DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n", RegisterValue, FACP->Pm2CntBlk));
+        RegisterValue = (UINT32) OsdIn16 ((UINT16) Gbl_FACP->Pm2CntBlk);
+        DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n", 
+                        RegisterValue, Gbl_FACP->Pm2CntBlk));
         
         switch (RegisterId)
         {
@@ -635,39 +642,40 @@ HwRegisterIO (
             RegisterValue  |= Value;
 
             DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                        (UINT16) FACP->Pm2CntBlk));
+                        (UINT16) Gbl_FACP->Pm2CntBlk));
 
-            OsdOut16 ((UINT16) FACP->Pm2CntBlk, (UINT16) RegisterValue);
+            OsdOut16 ((UINT16) Gbl_FACP->Pm2CntBlk, (UINT16) RegisterValue);
         }
         break;
     
     case PM_TIMER:
-        RegisterValue = OsdIn32 ((UINT16) FACP->PmTmrBlk);
-        DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read 0x%X from 0x%X\n", RegisterValue, FACP->PmTmrBlk));
+        RegisterValue = OsdIn32 ((UINT16) Gbl_FACP->PmTmrBlk);
+        DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read 0x%X from 0x%X\n", 
+                        RegisterValue, Gbl_FACP->PmTmrBlk));
 
         Mask = 0xFFFFFFFF;
         break;
     
     case GPE1_EN_BLOCK:
-        GpeReg = (FACP->Gpe1Blk + (UINT32) FACP->Gpe1Base) + (GpeReg + 
-                    ((UINT32) ((FACP->Gpe1BlkLen) / 2)));
+        GpeReg = (Gbl_FACP->Gpe1Blk + (UINT32) Gbl_FACP->Gpe1Base) + (GpeReg + 
+                    ((UINT32) ((Gbl_FACP->Gpe1BlkLen) / 2)));
     
     case GPE1_STS_BLOCK:
         if (!GpeReg)
         {
-            GpeReg = (FACP->Gpe1Blk + (UINT32) FACP->Gpe1Base);
+            GpeReg = (Gbl_FACP->Gpe1Blk + (UINT32) Gbl_FACP->Gpe1Base);
         }
 
     case GPE0_EN_BLOCK:
         if (!GpeReg)
         {
-            GpeReg = FACP->Gpe0Blk + ((UINT32) ((FACP->Gpe0BlkLen) / 2));
+            GpeReg = Gbl_FACP->Gpe0Blk + ((UINT32) ((Gbl_FACP->Gpe0BlkLen) / 2));
         }
     
     case GPE0_STS_BLOCK:
         if (!GpeReg)
         {
-            GpeReg = FACP->Gpe0Blk;
+            GpeReg = Gbl_FACP->Gpe0Blk;
         }
 
         /* Determine the bit to be accessed */
