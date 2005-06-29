@@ -236,14 +236,8 @@ DbDecodeAndDisplayObject (
                 return;
             }
 
-            Status = AcpiGetName ((ACPI_HANDLE) ObjPtr, ACPI_FULL_PATHNAME, &RetBuf);
-            if (ACPI_SUCCESS (Status))
-            {
-                OsdPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
-            }
-
-            CmDumpBuffer (ObjPtr, sizeof (NAME_TABLE_ENTRY), Display, ACPI_UINT32_MAX);
-            AmlDumpNameTableEntry (ObjPtr, 1);
+            Entry = ObjPtr;
+            goto DumpNte;
         }
 
         else if (VALID_DESCRIPTOR_TYPE ((ObjPtr), DESC_TYPE_ACPI_OBJ))
@@ -252,7 +246,7 @@ DbDecodeAndDisplayObject (
 
             if (!OsdReadable (ObjPtr, sizeof (ACPI_OBJECT_INTERNAL)))
             {
-                OsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
+                OsdPrintf ("Cannot read entire ACPI object at address %p\n", ObjPtr);
                 return;
             }
 
@@ -266,7 +260,7 @@ DbDecodeAndDisplayObject (
 
             if (!OsdReadable (ObjPtr, sizeof (ACPI_GENERIC_OP)))
             {
-                OsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
+                OsdPrintf ("Cannot read entire Parser object at address %p\n", ObjPtr);
                 return;
             }
 
@@ -300,6 +294,7 @@ DbDecodeAndDisplayObject (
         return;
     }
 
+DumpNte:
     /* Now dump the NTE */
 
     Status = AcpiGetName (Entry, ACPI_FULL_PATHNAME, &RetBuf);
