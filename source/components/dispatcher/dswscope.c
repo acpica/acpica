@@ -121,8 +121,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "nsstack.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsstack");
 
 
 
