@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.50 $
+ *       $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -145,7 +145,7 @@
 #define AE_NO_MEMORY                    (ACPI_STATUS) (0x0004 | AE_CODE_ENVIRONMENTAL)
 #define AE_NOT_FOUND                    (ACPI_STATUS) (0x0005 | AE_CODE_ENVIRONMENTAL)
 #define AE_NOT_EXIST                    (ACPI_STATUS) (0x0006 | AE_CODE_ENVIRONMENTAL)
-#define AE_EXIST                        (ACPI_STATUS) (0x0007 | AE_CODE_ENVIRONMENTAL)
+#define AE_ALREADY_EXISTS               (ACPI_STATUS) (0x0007 | AE_CODE_ENVIRONMENTAL)
 #define AE_TYPE                         (ACPI_STATUS) (0x0008 | AE_CODE_ENVIRONMENTAL)
 #define AE_NULL_OBJECT                  (ACPI_STATUS) (0x0009 | AE_CODE_ENVIRONMENTAL)
 #define AE_NULL_ENTRY                   (ACPI_STATUS) (0x000A | AE_CODE_ENVIRONMENTAL)
@@ -253,7 +253,7 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Env[] =
     "AE_NO_MEMORY",
     "AE_NOT_FOUND",
     "AE_NOT_EXIST",
-    "AE_EXIST",
+    "AE_ALREADY_EXISTS",
     "AE_TYPE",
     "AE_NULL_OBJECT",
     "AE_NULL_ENTRY",
