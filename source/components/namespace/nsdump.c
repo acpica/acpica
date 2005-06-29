@@ -376,7 +376,7 @@ NsDumpOneDevice (
     ACPI_STATUS             Status;
     UINT32                  i;
 
-
+BREAKPOINT3;
     RetVal = NsDumpOneObject (ObjHandle, Level, Context);
 
     Status = AcpiGetDeviceInfo (ObjHandle, &Info);
