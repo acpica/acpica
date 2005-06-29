@@ -210,8 +210,8 @@ BREAKPOINT3;
 
     /* Install the default OpRegion handlers */
 
-    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemMemory, ACPI_DEFAULT_HANDLE, NULL);
-    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemIO, ACPI_DEFAULT_HANDLE, NULL);
+    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemMemory, ACPI_DEFAULT_HANDLER, NULL);
+    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemIO, ACPI_DEFAULT_HANDLER, NULL);
 
 /*
     Can't be any defaults till a device appears.
@@ -224,22 +224,22 @@ BREAKPOINT3;
     Status = AcpiPathnameToHandle("\\_SB_.PCI0", &BusHandle);
     if(Status == AE_OK)
     {
-        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLE, (void *)0);
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)0);
     }
     Status = AcpiPathnameToHandle("\\_SB_.PCI0.PCI3", &BusHandle);
     if(Status == AE_OK)
     {
-        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLE, (void *)3);
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)3);
     }
     Status = AcpiPathnameToHandle("\\_SB_.PCI1", &BusHandle);
     if(Status == AE_OK)
     {
-        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLE, (void *)1);
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)1);
     }
     Status = AcpiPathnameToHandle("\\_SB_.PCI2", &BusHandle);
     if(Status == AE_OK)
     {
-        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLE, (void *)2);
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)2);
     }
 
     return_ACPI_STATUS (Status);
