@@ -107,6 +107,10 @@ SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utcache.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utclib.c
 # End Source File
 # Begin Source File
@@ -144,7 +148,15 @@ SOURCE=..\..\source\components\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utmutex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # Begin Source File
 
@@ -474,6 +486,10 @@ SOURCE=..\..\source\components\tables\tbxfroot.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\parser\psargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\parser\psloop.c
 # End Source File
 # Begin Source File
 

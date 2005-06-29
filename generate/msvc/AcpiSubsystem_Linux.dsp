@@ -88,6 +88,10 @@ LIB32=link.exe -lib
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utalloc.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\COMPONENTS\utilities\utalloc.c
 # End Source File
 # Begin Source File
@@ -129,7 +133,15 @@ SOURCE=..\..\source_linux\COMPONENTS\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utmutex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\COMPONENTS\utilities\utobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # Begin Source File
 
@@ -459,6 +471,10 @@ SOURCE=..\..\source_linux\COMPONENTS\tables\tbxfroot.c
 # Begin Source File
 
 SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\psargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\parser\psloop.c
 # End Source File
 # Begin Source File
 
