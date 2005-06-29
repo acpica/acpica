@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -481,6 +481,7 @@ LkOptimizeNamedReference (
     NATIVE_UINT             Index;
     UINT32                  NumCarats;
     NATIVE_UINT             i;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     ACPI_FUNCTION_TRACE ("LkOptimizeNamedReference");
@@ -504,7 +505,14 @@ LkOptimizeNamedReference (
 
     if (Op->Common.Parent)
     {
-        if (Op->Common.Parent->Common.AmlOpcode == AML_SCOPE_OP)
+        OpInfo = AcpiPsGetOpcodeInfo (Op->Common.Parent->Common.AmlOpcode);
+
+        /* 
+         * If the parent is a Named opcode, this is name declaration,
+         * not a named reference, and it cannot be optimized in this
+         * manner.
+         */
+        if (OpInfo->Flags & AML_NAMED)
         {
             return_VOID;
         }
