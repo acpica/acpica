@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.54 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -204,8 +204,7 @@ AcpiPsAllocOp (
     UINT16                  Opcode)
 {
     ACPI_PARSE_OBJECT       *Op = NULL;
-    UINT32                  Size;
-    UINT8                   Flags;
+    UINT8                   Flags = ACPI_PARSEOP_GENERIC;
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
@@ -218,34 +217,27 @@ AcpiPsAllocOp (
 
     if (OpInfo->Flags & AML_DEFER)
     {
-        Size = sizeof (ACPI_PARSE_OBJ_NAMED);
         Flags = ACPI_PARSEOP_DEFERRED;
     }
     else if (OpInfo->Flags & AML_NAMED)
     {
-        Size = sizeof (ACPI_PARSE_OBJ_NAMED);
         Flags = ACPI_PARSEOP_NAMED;
     }
     else if (Opcode == AML_INT_BYTELIST_OP)
     {
-        Size = sizeof (ACPI_PARSE_OBJ_NAMED);
         Flags = ACPI_PARSEOP_BYTELIST;
     }
-    else
-    {
-        Size = sizeof (ACPI_PARSE_OBJ_COMMON);
-        Flags = ACPI_PARSEOP_GENERIC;
-    }
 
-    if (Size == sizeof (ACPI_PARSE_OBJ_COMMON))
+    if (Flags == ACPI_PARSEOP_GENERIC)
     {
-        /*
-         * The generic op is by far the most common (16 to 1)
-         */
+        /* The generic op (default) is by far the most common (16 to 1) */
+
         Op = AcpiUtAcquireFromCache (ACPI_MEM_LIST_PSNODE);
     }
     else
     {
+        /* Extended parseop */
+
         Op = AcpiUtAcquireFromCache (ACPI_MEM_LIST_PSNODE_EXT);
     }
 
