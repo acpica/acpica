@@ -12,7 +12,6 @@
  |__________________________________________________________________________
  |
  | excommon.c - Debug and error reporting routines
- | 
  |__________________________________________________________________________
 
 */
@@ -747,7 +746,11 @@ DumpBuf (char *Buffer, UINT32 Count, INT32 Flags, INT32 ComponentId)
             if (i + j >= Count)
                 goto cleanup;
 
-            OsdPrintf (NULL, "%02X ", Buffer[i + j]);
+
+            /* Make sure that the char doesn't get sign-extended! */
+
+            BufChar = Buffer[i + j];
+            OsdPrintf (NULL, "%02X ", BufChar);
         }
 
         /* 
