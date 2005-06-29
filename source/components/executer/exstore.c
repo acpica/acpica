@@ -80,7 +80,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
     if (!ValDesc || !DestDesc)
     {
-        Why = "ExecStore: internal error: null pointer";
+        DEBUG_PRINT (ACPI_ERROR, ("ExecStore: internal error: null pointer\n"));
     }
 
     else if (IsNsHandle (DestDesc))
@@ -131,9 +131,8 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
     {   
         /*  Store target is not an Lvalue   */
 
-        sprintf (WhyBuf, "ExecStore: Store target is not an Lvalue [%s]",
-                NsTypeNames[DestDesc->ValType]);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("ExecStore: Store target is not an Lvalue [%s]\n",
+                        NsTypeNames[DestDesc->ValType]));
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
@@ -163,10 +162,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
         case Alias:
 #if 1
-            sprintf (WhyBuf,
-                      "ExecStore/NameOp: Store into %s not implemented",
-                      NsTypeNames[NsValType (TempHandle)]);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                      "ExecStore/NameOp: Store into %s not implemented\n",
+                      NsTypeNames[NsValType (TempHandle)]));
             Excep = S_ERROR;
 #else
             DEBUG_PRINT (ACPI_WARN,
@@ -191,10 +189,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             else if (ValDesc->ValType != Number)
             {
-                sprintf (WhyBuf,
-                        "ExecStore: Value assigned to BankField must be Number, not %d",
-                        ValDesc->ValType);
-                Why = WhyBuf;
+               DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecStore: Value assigned to BankField must be Number, not %d\n",
+                        ValDesc->ValType));
                 DELETE (DestDesc);
                 Excep = S_ERROR;
             }
@@ -210,7 +207,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 DestDesc = NsValPtr (TempHandle);
                 if (!DestDesc)
                 {
-                    Why = "ExecStore/BankField: internal error: null old-value pointer";
+                    DEBUG_PRINT (ACPI_ERROR, ("ExecStore/BankField: internal error: null old-value pointer\n"));
                     Excep = S_ERROR;
                 }
             }
@@ -219,10 +216,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             if ((S_SUCCESS == Excep) && 
                 (BankField != DestDesc->ValType))
             {
-                sprintf (WhyBuf,
-                        "ExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p",
-                        TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
                 Excep = S_ERROR;
             }
@@ -241,7 +237,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! (Why will already be set) */
+                        /* release the Global Lock! */
 
                         Excep = S_ERROR;
                     }
@@ -295,10 +291,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             else if (ValDesc->ValType != Number)
             {
-                sprintf (WhyBuf,
-                        "ExecStore/DefField: Value assigned to Field must be Number, not %d",
-                        ValDesc->ValType);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecStore/DefField: Value assigned to Field must be Number, not %d\n",
+                        ValDesc->ValType));
                 DELETE (DestDesc);
                 Excep = S_ERROR;
             }
@@ -315,7 +310,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             
                 if (!DestDesc)
                 {
-                    Why = "ExecStore/DefField: internal error: null old-value pointer";
+                    DEBUG_PRINT (ACPI_ERROR, ("ExecStore/DefField: internal error: null old-value pointer\n"));
                     Excep = S_ERROR;
                 }
             }
@@ -323,10 +318,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             if ((S_SUCCESS == Excep) && 
                 (DefField != DestDesc->ValType))
             {
-                sprintf (WhyBuf,
-                        "ExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                        TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
                 Excep = S_ERROR;
             }
@@ -344,7 +338,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! (Why will already be set) */
+                        /* release the Global Lock!  */
                     
                         Excep = S_ERROR;
                     }
@@ -380,10 +374,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             else if (ValDesc->ValType != Number)
             {
-                sprintf (WhyBuf,
-                        "ExecStore: Value assigned to IndexField must be Number, not %d",
-                        ValDesc->ValType);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecStore: Value assigned to IndexField must be Number, not %d\n",
+                        ValDesc->ValType));
                 DELETE (DestDesc);
                 Excep = S_ERROR;
             }
@@ -400,7 +393,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             
                 if (!DestDesc)
                 {
-                    Why = "ExecStore/IndexField: internal error: null old-value pointer";
+                    DEBUG_PRINT (ACPI_ERROR, ("ExecStore/IndexField: internal error: null old-value pointer\n"));
                     Excep = S_ERROR;
                 }
             }
@@ -408,10 +401,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             if ((S_SUCCESS == Excep) &&
                 (IndexField != DestDesc->ValType))
             {
-                sprintf (WhyBuf,
-                        "ExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                        TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
                 Excep = S_ERROR;
             }
@@ -430,7 +422,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! (Why will already be set) */
+                        /* release the Global Lock!  */
                     
                         Excep = S_ERROR;
                     }
@@ -478,10 +470,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             else if (ValDesc->ValType != Number)
             {
-                sprintf (WhyBuf,
-                        "ExecStore/FieldUnit: Value assigned to Field must be Number, not %d",
-                          ValDesc->ValType);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
+                          ValDesc->ValType));
                 DELETE (DestDesc);
                 Excep = S_ERROR;
             }
@@ -498,7 +489,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             
                 if (!DestDesc)
                 {
-                    Why = "ExecStore/FieldUnit: internal error: null old-value pointer";
+                    DEBUG_PRINT (ACPI_ERROR, ("ExecStore/FieldUnit: internal error: null old-value pointer\n"));
                     Excep = S_ERROR;
                 }
 
@@ -513,10 +504,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             if ((S_SUCCESS == Excep) &&
                 (DestDesc->ValType != (UINT8) NsValType (TempHandle)))
             {
-                sprintf (WhyBuf,
-                        "ExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                          TempHandle, NsValType(TempHandle), DestDesc->ValType, DestDesc);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                          TempHandle, NsValType(TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
                 Excep = S_ERROR;
             }
@@ -536,10 +526,9 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 DUMP_ENTRY (TempHandle);
 
 
-                sprintf (WhyBuf,
-                            "ExecStore/FieldUnit: bad container %p in %s",
-                            DestDesc->FieldUnit.Container, FullyQN);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                            "ExecStore/FieldUnit: bad container %p in %s\n",
+                            DestDesc->FieldUnit.Container, FullyQN));
                 Excep = S_ERROR;
             }
 
@@ -556,7 +545,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! (Why will already be set) */
+                        /* release the Global Lock! */
                     
                         Excep = S_ERROR;
                     }
@@ -573,7 +562,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             if ((S_SUCCESS == Excep) &&
                 (DestDesc->FieldUnit.DatLen + DestDesc->FieldUnit.BitOffset > 32))
             {
-                Why = "ExecStore/FieldUnit: implementation limitation: Field exceeds UINT32";
+                DEBUG_PRINT (ACPI_ERROR, ("ExecStore/FieldUnit: implementation limitation: Field exceeds UINT32\n"));
                 Excep = S_ERROR;
             }
             
@@ -695,11 +684,6 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 #endif
 
     default:
-        sprintf (WhyBuf,
-                    "ExecStore:internal error: Unknown Lvalue subtype %02x",
-                    DestDesc->Lvalue.OpCode);
-        Why = WhyBuf;
-        
         DEBUG_PRINT (ACPI_ERROR,
                     ("ExecStore:internal error: Unknown Lvalue subtype %02x\n",
                     DestDesc->Lvalue.OpCode));
@@ -783,10 +767,9 @@ ExecMonadic1 (UINT16 opcode)
     case ReleaseOp:
         if (Mutex != ObjDesc->ValType)
         {
-            sprintf (WhyBuf,
-                    "ExecMonadic1/ReleaseOp: Needed Mutex, found %d",
-                    ObjDesc->ValType);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "ExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
+                    ObjDesc->ValType));
             return S_ERROR;
         }
 
@@ -798,9 +781,8 @@ ExecMonadic1 (UINT16 opcode)
     case ResetOp:
         if (Event != ObjDesc->ValType)
         {
-            sprintf (WhyBuf,
-                    "ExecMonadic1/ResetOp: Needed Event, found %d", ObjDesc->ValType);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "ExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->ValType));
             return S_ERROR;
         }
 
@@ -812,9 +794,8 @@ ExecMonadic1 (UINT16 opcode)
     case SignalOp:
         if (Event != ObjDesc->ValType)
         {
-            sprintf (WhyBuf,
-                    "ExecMonadic1/SignalOp: Needed Event, found %d", ObjDesc->ValType);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "ExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->ValType));
             return S_ERROR;
         }
         return (SignalOpRqst (ObjDesc));
@@ -837,8 +818,7 @@ ExecMonadic1 (UINT16 opcode)
     /*  unknown opcode  */
     
     default:
-        sprintf (WhyBuf, "ExecMonadic1: Unknown monadic opcode %02x", opcode);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic1: Unknown monadic opcode %02x\n", opcode));
         return S_ERROR;
     
     } /* switch */
@@ -943,10 +923,9 @@ ExecMonadic2R (UINT16 opcode)
         
         if (d0 > 9 || d1 > 9 || d2 > 9 || d3 > 9)
         {
-            sprintf (WhyBuf,
-                    "ExecMonadic2R/FromBCDOp: improper BCD digit %d %d %d %d",
-                    d3, d2, d1, d0);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "ExecMonadic2R/FromBCDOp: improper BCD digit %d %d %d %d\n",
+                    d3, d2, d1, d0));
             return S_ERROR;
         }
         
@@ -959,9 +938,8 @@ ExecMonadic2R (UINT16 opcode)
     case ToBCDOp:
         if (ObjDesc->Number.Number > 9999)
         {
-            sprintf (WhyBuf, "iExecMonadic2R/ToBCDOp: BCD overflow: %d",
-                    ObjDesc->Number.Number);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, ("iExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
+                    ObjDesc->Number.Number));
             return S_ERROR;
         }
         
@@ -982,17 +960,16 @@ ExecMonadic2R (UINT16 opcode)
     case ShiftRightBitOp:
     case CondRefOfOp:
         
-        sprintf (WhyBuf, "ExecMonadic2R: %s unimplemented",
-                (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic2R: %s unimplemented\n",
+                (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
         return S_ERROR;
 
     case StoreOp:
         break;
 
     default:
-        sprintf (WhyBuf, "ExecMonadic2R: internal error: Unknown monadic opcode %02x", opcode);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic2R: internal error: Unknown monadic opcode %02x\n",
+                    opcode));
         return S_ERROR;
     }
     
@@ -1158,7 +1135,7 @@ ExecMonadic2 (UINT16 opcode)
                 break;
 
             case IndexOp:
-                Why = "ExecMonadic2/TypeOp: determining type of Index result is not implemented";
+                DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic2/TypeOp: determining type of Index result is not implemented\n"));
                 return S_ERROR;
 
             case Local0: case Local1: case Local2: case Local3:
@@ -1172,9 +1149,9 @@ ExecMonadic2 (UINT16 opcode)
                 break;
 
             default:
-                sprintf (WhyBuf,
-                        "ExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x",
-                        ObjDesc->Lvalue.OpCode);
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x\n",
+                        ObjDesc->Lvalue.OpCode));
                 return S_ERROR;
             }
         }
@@ -1228,9 +1205,8 @@ ExecMonadic2 (UINT16 opcode)
             break;
 
         default:
-            sprintf (WhyBuf,
-                    "ExecMonadic2: Needed aggregate, found %d", ObjDesc->ValType);
-            Why = WhyBuf;
+           DEBUG_PRINT (ACPI_ERROR, (
+                    "ExecMonadic2: Needed aggregate, found %d\n", ObjDesc->ValType));
             return S_ERROR;
         }
         break;
@@ -1241,17 +1217,15 @@ ExecMonadic2 (UINT16 opcode)
 
     case RefOfOp:
     case DerefOfOp:
-        sprintf (WhyBuf, "ExecMonadic2: %s unimplemented",
-                (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic2: %s unimplemented\n",
+                (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
         ObjStackTop++;  /*  dummy return value  */
         return S_ERROR;
 
     default:
-        sprintf (WhyBuf,
-                    "ExecMonadic2:internal error: Unknown monadic opcode %02x",
-                    opcode);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, (
+                    "ExecMonadic2:internal error: Unknown monadic opcode %02x\n",
+                    opcode));
         return S_ERROR;
     }
 
@@ -1335,18 +1309,16 @@ ExecDyadic1 (UINT16 opcode)
                 break;
 
             default:
-                sprintf (WhyBuf,
-                        "ExecDyadic1/NotifyOp: unexpected notify object type %d",
-                        ObjDesc->ValType);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecDyadic1/NotifyOp: unexpected notify object type %d\n",
+                        ObjDesc->ValType));
                 return S_ERROR;
             }
         }
         break;
 
     default:
-        sprintf (WhyBuf, "ExecDyadic1: Unknown dyadic opcode %02x", opcode);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("ExecDyadic1: Unknown dyadic opcode %02x\n", opcode));
         return S_ERROR;
     }
 
@@ -1496,7 +1468,7 @@ ExecDyadic2R (UINT16 opcode)
     case DivideOp:
         if ((UINT32) 0 == ObjDesc2->Number.Number)
         {
-            Why = "ExecDyadic2R/DivideOp: divide by zero";
+            DEBUG_PRINT (ACPI_ERROR, ("ExecDyadic2R/DivideOp: divide by zero\n"));
             return S_ERROR;
         }
 
@@ -1539,10 +1511,9 @@ ExecDyadic2R (UINT16 opcode)
     case ConcatOp:
         if (ObjDesc2->ValType != ObjDesc->ValType)
         {
-            sprintf (WhyBuf,
-                    "ExecDyadic2R/ConcatOp: operand type mismatch %d %d",
-                    ObjDesc->ValType, ObjDesc2->ValType);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "ExecDyadic2R/ConcatOp: operand type mismatch %d %d\n",
+                    ObjDesc->ValType, ObjDesc2->ValType));
             return S_ERROR;
         }
 
@@ -1557,7 +1528,6 @@ ExecDyadic2R (UINT16 opcode)
             if (!NewBuf)
             {
                 REPORT_ERROR (&KDT[5]);
-                Why = WhyBuf;
                 return S_ERROR;
             }
             
@@ -1587,10 +1557,9 @@ ExecDyadic2R (UINT16 opcode)
                     return S_ERROR;
                 }
 
-                sprintf (WhyBuf,
-                            "ExecDyadic2R/ConcatOp: Buffer allocation failure %d",
-                            ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                            "ExecDyadic2R/ConcatOp: Buffer allocation failure %d\n",
+                            ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen));
                 return S_ERROR;
             }
 
@@ -1606,8 +1575,7 @@ ExecDyadic2R (UINT16 opcode)
         break;
 
     default:
-        sprintf (WhyBuf, "ExecDyadic2R: Unknown dyadic opcode %02x", opcode);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("ExecDyadic2R: Unknown dyadic opcode %02x\n", opcode));
         return S_ERROR;
     }
     
@@ -1685,10 +1653,9 @@ ExecDyadic2S (UINT16 opcode)
         case AcquireOp:
             if (Mutex != ObjDesc->ValType)
             {
-                sprintf (WhyBuf,
-                        "ExecDyadic2S/AcquireOp: Needed Mutex, found %d",
-                        ResDesc->ValType);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecDyadic2S/AcquireOp: Needed Mutex, found %d\n",
+                        ResDesc->ValType));
                 Excep = S_ERROR;
             }
             else
@@ -1703,10 +1670,9 @@ ExecDyadic2S (UINT16 opcode)
         case WaitOp:
             if (Event != ObjDesc->ValType)
             {
-                sprintf (WhyBuf,
-                        "ExecDyadic2S/WaitOp: Needed Event, found %d",
-                        ResDesc->ValType);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "ExecDyadic2S/WaitOp: Needed Event, found %d\n",
+                        ResDesc->ValType));
                 Excep = S_ERROR;
             }
             else
@@ -1716,10 +1682,9 @@ ExecDyadic2S (UINT16 opcode)
 
 
         default:
-            sprintf (WhyBuf,
-                    "ExecDyadic2S: Unknown dyadic synchronization opcode %02x",
-                    opcode);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "ExecDyadic2S: Unknown dyadic synchronization opcode %02x\n",
+                    opcode));
             Excep = S_ERROR;
         }
 
@@ -1832,8 +1797,7 @@ ExecDyadic2 (UINT16 opcode)
         break;
     
     default:
-        sprintf (WhyBuf, "ExecDyadic2: Unknown dyadic opcode %02x", opcode);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("ExecDyadic2: Unknown dyadic opcode %02x\n", opcode));
         return S_ERROR;
     }
 
@@ -1885,7 +1849,7 @@ AmlExec (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
 
     if (Excep = AmlPrepExec (Offset, Length) != S_SUCCESS)               /* package stack */
     {
-        Why = "AmlExec: Exec Stack Overflow";
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExec: Exec Stack Overflow\n"));
     }
 
     /* Push new frame on Method stack */
@@ -1893,7 +1857,7 @@ AmlExec (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
     else if (++MethodStackTop >= AML_METHOD_MAX_NEST)
     {
         MethodStackTop--;
-        Why = "AmlExec: Method Stack Overflow";
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExec: Method Stack Overflow\n"));
         Excep = S_ERROR;
     }
 
