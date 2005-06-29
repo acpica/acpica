@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  ******************************************************************************/
 
@@ -599,7 +599,6 @@ AcpiUtStrupr (
         String++;
     }
 
-
     return (SrcString);
 }
 
@@ -703,7 +702,6 @@ AcpiUtCreateMutex (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     if (!AcpiGbl_AcpiMutexInfo[MutexId].Mutex)
     {
         Status = AcpiOsCreateSemaphore (1, 1,
@@ -743,7 +741,6 @@ AcpiUtDeleteMutex (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     Status = AcpiOsDeleteSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
 
     AcpiGbl_AcpiMutexInfo[MutexId].Mutex = NULL;
@@ -782,7 +779,6 @@ AcpiUtAcquireMutex (
         return (AE_BAD_PARAMETER);
     }
 
-
     ThisThreadId = AcpiOsGetThreadId ();
 
     /*
@@ -813,7 +809,6 @@ AcpiUtAcquireMutex (
         }
     }
 
-
     ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX,
                 "Thread %X attempting to acquire Mutex [%s]\n",
                 ThisThreadId, AcpiUtGetMutexName (MutexId)));
@@ -828,7 +823,6 @@ AcpiUtAcquireMutex (
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount++;
         AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ThisThreadId;
     }
-
     else
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Thread %X could not acquire Mutex [%s] %s\n",
@@ -874,7 +868,6 @@ AcpiUtReleaseMutex (
         return (AE_BAD_PARAMETER);
     }
 
-
     /*
      * Mutex must be acquired in order to release it!
      */
@@ -886,7 +879,6 @@ AcpiUtReleaseMutex (
 
         return (AE_NOT_ACQUIRED);
     }
-
 
     /*
      * Deadlock prevention.  Check if this thread owns any mutexes of value
@@ -910,7 +902,6 @@ AcpiUtReleaseMutex (
             return (AE_RELEASE_DEADLOCK);
         }
     }
-
 
     /* Mark unlocked FIRST */
 
@@ -973,7 +964,6 @@ AcpiUtCreateUpdateStateAndPush (
         return (AE_NO_MEMORY);
     }
 
-
     AcpiUtPushGenericState (StateList, State);
     return (AE_OK);
 }
@@ -1011,7 +1001,6 @@ AcpiUtCreatePkgStateAndPush (
     {
         return (AE_NO_MEMORY);
     }
-
 
     AcpiUtPushGenericState (StateList, State);
     return (AE_OK);
@@ -1281,7 +1270,6 @@ AcpiUtCreateControlState (
         return_PTR (NULL);
     }
 
-
     /* Init fields specific to the control struct */
 
     State->Common.DataType  = ACPI_DESC_TYPE_STATE_CONTROL;
@@ -1378,6 +1366,8 @@ AcpiUtWalkPackageTree (
 
     while (State)
     {
+        /* Get one element of the package */
+
         ThisIndex     = State->Pkg.Index;
         ThisSourceObj = (ACPI_OPERAND_OBJECT *)
                         State->Pkg.SourceObject->Package.Elements[ThisIndex];
@@ -1484,6 +1474,7 @@ AcpiUtGenerateChecksum (
 {
     UINT32                  i;
     signed char             Sum = 0;
+
 
     for (i = 0; i < Length; i++)
     {
