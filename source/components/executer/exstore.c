@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.165 $
+ *              $Revision: 1.166 $
  *
  *****************************************************************************/
 
@@ -305,21 +305,9 @@ AcpiExStore (
         break;
 
 
-    case AML_ZERO_OP:
-    case AML_ONE_OP:
-    case AML_ONES_OP:
-    case AML_REVISION_OP:
-
-        /*
-         * Storing to a constant is a no-op according to the  ACPI
-         * Specification. (Delete the reference descriptor, however.)
-         */
-        break;
-
-
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference subtype %02x\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference opcode %X\n",
             RefDesc->Reference.Opcode));
         ACPI_DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
 

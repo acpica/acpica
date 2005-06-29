@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -165,7 +165,6 @@ AcpiExResolveNodeToValue (
     ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_OBJECT_TYPE        EntryType;
-    ACPI_INTEGER            TempVal;
 
 
     ACPI_FUNCTION_TRACE ("ExResolveNodeToValue");
@@ -317,64 +316,14 @@ AcpiExResolveNodeToValue (
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);  /* Cannot be AE_TYPE */
 
 
-    /*
-     * The only named references allowed are named constants
-     *   e.g. -- Name (\OSFL, Ones)
-     */
     case INTERNAL_TYPE_REFERENCE:
 
-        switch (SourceDesc->Reference.Opcode)
-        {
+        /* No named references are allowed here */
 
-        case AML_ZERO_OP:
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported reference opcode %X\n",
+            SourceDesc->Reference.Opcode));
 
-            TempVal = 0;
-            break;
-
-        case AML_ONE_OP:
-
-            TempVal = 1;
-            break;
-
-        case AML_ONES_OP:
-
-            TempVal = ACPI_INTEGER_MAX;
-            break;
-
-        case AML_REVISION_OP:
-
-            TempVal = ACPI_CA_SUPPORT_LEVEL;
-            break;
-
-        default:
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported reference opcode %X\n",
-                SourceDesc->Reference.Opcode));
-
-            return_ACPI_STATUS (AE_AML_BAD_OPCODE);
-        }
-
-        /* Create object for result */
-
-        ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!ObjDesc)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        ObjDesc->Integer.Value = TempVal;
-
-        /*
-         * Truncate value if we are executing from a 32-bit ACPI table
-         * AND actually executing AML code.  If we are resolving
-         * an object in the namespace via an external call to the
-         * subsystem, we will have a null WalkState
-         */
-        if (WalkState)
-        {
-            AcpiExTruncateFor32bitTable (ObjDesc);
-        }
-        break;
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
 
 
     /* Default case is for unknown types */

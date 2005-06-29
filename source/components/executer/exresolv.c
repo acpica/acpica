@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -278,58 +278,6 @@ AcpiExResolveObjectToValue (
                 StackDesc->Reference.Offset, ObjDesc));
             break;
 
-        /*
-         * For constants, we must change the reference/constant object
-         * to a real integer object
-         */
-        case AML_ZERO_OP:
-        case AML_ONE_OP:
-        case AML_ONES_OP:
-        case AML_REVISION_OP:
-
-            /* Create a new integer object */
-
-            ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-            if (!ObjDesc)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            switch (Opcode)
-            {
-            case AML_ZERO_OP:
-                ObjDesc->Integer.Value = 0;
-                break;
-
-            case AML_ONE_OP:
-                ObjDesc->Integer.Value = 1;
-                break;
-
-            case AML_ONES_OP:
-                ObjDesc->Integer.Value = ACPI_INTEGER_MAX;
-
-                /* Truncate value if we are executing from a 32-bit ACPI table */
-
-                AcpiExTruncateFor32bitTable (ObjDesc);
-                break;
-
-            case AML_REVISION_OP:
-                ObjDesc->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
-                break;
-
-            default:
-                /* No other opcodes can get here */
-                break;
-            }
-
-            /*
-             * Remove a reference from the original reference object
-             * and put the new object in its place
-             */
-            AcpiUtRemoveReference (StackDesc);
-            *StackPtr = ObjDesc;
-            break;
-
 
         case AML_INDEX_OP:
 
@@ -342,6 +290,7 @@ AcpiExResolveObjectToValue (
 
 
             case ACPI_TYPE_PACKAGE:
+
                 ObjDesc = *StackDesc->Reference.Where;
                 if (ObjDesc)
                 {
@@ -367,7 +316,9 @@ AcpiExResolveObjectToValue (
                 }
                 break;
 
+
             default:
+
                 /* Invalid reference object */
 
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -387,14 +338,12 @@ AcpiExResolveObjectToValue (
 
         default:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference object subtype %02X in %p\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference opcode %X in %p\n",
                 Opcode, StackDesc));
             Status = AE_AML_INTERNAL;
             break;
-
-        }   /* switch (Opcode) */
-
-        break; /* case INTERNAL_TYPE_REFERENCE */
+        }
+        break;
 
 
     case ACPI_TYPE_BUFFER:
