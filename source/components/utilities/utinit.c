@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -278,12 +278,12 @@ AcpiUtTerminate (void)
 
     if (AcpiGbl_Gpe0EnableRegisterSave)
     {
-        AcpiUtFree (AcpiGbl_Gpe0EnableRegisterSave);
+        ACPI_MEM_FREE (AcpiGbl_Gpe0EnableRegisterSave);
     }
 
     if (AcpiGbl_Gpe1EnableRegisterSave)
     {
-        AcpiUtFree (AcpiGbl_Gpe1EnableRegisterSave);
+        ACPI_MEM_FREE (AcpiGbl_Gpe1EnableRegisterSave);
     }
 
 

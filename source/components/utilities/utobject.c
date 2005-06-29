@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -389,7 +389,7 @@ AcpiUtDeleteObjectDesc (
          */
         DECREMENT_OBJECT_METRICS (sizeof (ACPI_OPERAND_OBJECT));
 
-        AcpiUtFree (Object);
+        ACPI_MEM_FREE (Object);
         return_VOID;
     }
 
@@ -450,7 +450,7 @@ AcpiUtDeleteObjectCache (
          */
         DECREMENT_OBJECT_METRICS (sizeof (ACPI_OPERAND_OBJECT));
 
-        AcpiUtFree (AcpiGbl_ObjectCache);
+        ACPI_MEM_FREE (AcpiGbl_ObjectCache);
         AcpiGbl_ObjectCache = Next;
         AcpiGbl_ObjectCacheDepth--;
     }
