@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -157,6 +157,7 @@ AcpiUtCreateInternalObjectDbg (
     ACPI_OBJECT_TYPE8       Type)
 {
     ACPI_OPERAND_OBJECT     *Object;
+    ACPI_OPERAND_OBJECT     *SecondObject;
 
 
     FUNCTION_TRACE_STR ("UtCreateInternalObjectDbg", AcpiUtGetTypeName (Type));
@@ -167,9 +168,30 @@ AcpiUtCreateInternalObjectDbg (
     Object = AcpiUtAllocateObjectDescDbg (ModuleName, LineNumber, ComponentId);
     if (!Object)
     {
-        /* Allocation failure */
-
         return_PTR (NULL);
+    }
+
+    switch (Type)
+    {
+    case ACPI_TYPE_REGION:
+    case ACPI_TYPE_BUFFER_FIELD:
+        
+        /* These types require a secondary object */
+
+        SecondObject = AcpiUtAllocateObjectDescDbg (ModuleName, LineNumber, ComponentId);
+        if (!SecondObject)
+        {
+            AcpiUtDeleteObjectDesc (Object);
+            return_PTR (NULL);
+        }
+
+        SecondObject->Common.Type = INTERNAL_TYPE_EXTRA;
+        SecondObject->Common.ReferenceCount = 1;
+
+        /* Link the second object to the first */
+
+        Object->Common.NextObject = SecondObject;
+        break;
     }
 
     /* Save the object type in the object descriptor */
@@ -314,11 +336,6 @@ AcpiUtDeleteObjectDesc (
 {
     FUNCTION_TRACE_PTR ("UtDeleteObjectDesc", Object);
 
-
-    if ((UINT32) Object == 0x4a2418)
-    {
-        AcpiOsPrintf ("Found\n");
-    }
 
     /* Object must be an ACPI_OPERAND_OBJECT  */
 
