@@ -125,6 +125,7 @@
         MODULE_NAME         ("cmalloc");
 
 
+#ifdef ACPI_DEBUG
 /*
  * Most of this code is for tracking memory leaks in the subsystem, and it
  * gets compiled out when the ACPI_DEBUG flag is not set.
@@ -134,7 +135,6 @@
  * to add an element to the list; deletion occurs in the bosy of _CmFree.
  */
 
-#ifdef ACPI_DEBUG
 
 /*****************************************************************************
  *
