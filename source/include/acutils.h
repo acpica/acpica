@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.162 $
+ *       $Revision: 1.163 $
  *
  *****************************************************************************/
 
@@ -768,14 +768,14 @@ AcpiUtPrintString (
 
 ACPI_STATUS
 AcpiUtDivide (
-    ACPI_INTEGER            *InDividend,
-    ACPI_INTEGER            *InDivisor,
+    ACPI_INTEGER            InDividend,
+    ACPI_INTEGER            InDivisor,
     ACPI_INTEGER            *OutQuotient,
     ACPI_INTEGER            *OutRemainder);
 
 ACPI_STATUS
 AcpiUtShortDivide (
-    ACPI_INTEGER            *InDividend,
+    ACPI_INTEGER            InDividend,
     UINT32                  Divisor,
     ACPI_INTEGER            *OutQuotient,
     UINT32                  *OutRemainder);
@@ -793,6 +793,10 @@ AcpiUtStrtoul64 (
     char                    *String,
     UINT32                  Base,
     ACPI_INTEGER            *RetInteger);
+
+/* Values for Base above (16=Hex, 10=Decimal) */
+
+#define ACPI_ANY_BASE        0
 
 char *
 AcpiUtStrupr (
