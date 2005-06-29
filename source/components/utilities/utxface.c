@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.75 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -153,6 +153,9 @@ AcpiInitializeSubsystem (
     FUNCTION_TRACE ("AcpiInitializeSubsystem");
 
 
+    DEBUG_EXEC(AcpiUtInitStackPtrTrace ());
+
+
     /* Initialize all globals used by the subsystem */
 
     AcpiUtInitGlobals ();
@@ -163,7 +166,7 @@ AcpiInitializeSubsystem (
     if (ACPI_FAILURE (Status))
     {
         REPORT_ERROR (("OSD failed to initialize, %s\n",
-            AcpiUtFormatException (Status)));
+            AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -173,7 +176,7 @@ AcpiInitializeSubsystem (
     if (ACPI_FAILURE (Status))
     {
         REPORT_ERROR (("Global mutex creation failure, %s\n",
-            AcpiUtFormatException (Status)));
+            AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -186,7 +189,7 @@ AcpiInitializeSubsystem (
     if (ACPI_FAILURE (Status))
     {
         REPORT_ERROR (("Namespace initialization failure, %s\n",
-            AcpiUtFormatException (Status)));
+            AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -235,10 +238,9 @@ AcpiEnableSubsystem (
      * installed unless other handlers have already been
      * installed via the InstallAddressSpaceHandler interface
      */
-
     if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Installing default address space handlers\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Installing default address space handlers\n"));
 
         Status = AcpiEvInstallDefaultAddressSpaceHandlers ();
         if (ACPI_FAILURE (Status))
@@ -250,10 +252,9 @@ AcpiEnableSubsystem (
     /*
      * We must initialize the hardware before we can enable ACPI.
      */
-
     if (!(Flags & ACPI_NO_HARDWARE_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI hardware\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI hardware\n"));
 
         Status = AcpiHwInitialize ();
         if (ACPI_FAILURE (Status))
@@ -265,15 +266,14 @@ AcpiEnableSubsystem (
     /*
      * Enable ACPI on this platform
      */
-
     if (!(Flags & ACPI_NO_ACPI_ENABLE))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Going into ACPI mode\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Going into ACPI mode\n"));
 
         Status = AcpiEnable ();
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT(ACPI_WARN, ("AcpiEnable failed.\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "AcpiEnable failed.\n"));
             return_ACPI_STATUS (Status);
         }
     }
@@ -284,10 +284,9 @@ AcpiEnableSubsystem (
      * ANY control methods SAFELY.  Any control method can require ACPI hardware
      * support, so the hardware MUST be initialized before execution!
      */
-
     if (!(Flags & ACPI_NO_EVENT_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI events\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI events\n"));
 
         Status = AcpiEvInitialize ();
         if (ACPI_FAILURE (Status))
@@ -301,10 +300,9 @@ AcpiEnableSubsystem (
      * Initialize all device objects in the namespace
      * This runs the _STA and _INI methods.
      */
-
     if (!(Flags & ACPI_NO_DEVICE_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Devices\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI Devices\n"));
 
         Status = AcpiNsInitializeDevices ();
         if (ACPI_FAILURE (Status))
@@ -319,10 +317,9 @@ AcpiEnableSubsystem (
      * runs the executable AML that is part of the declaration of OpRegions
      * and Fields.
      */
-
     if (!(Flags & ACPI_NO_OBJECT_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Objects\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI Objects\n"));
 
         Status = AcpiNsInitializeObjects ();
         if (ACPI_FAILURE (Status))
@@ -524,80 +521,6 @@ AcpiGetSystemInfo (
     }
 
     return_ACPI_STATUS (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiFormatException
- *
- * PARAMETERS:  Status       - The ACPI_STATUS code to be formatted
- *
- * RETURN:      A string containing the exception  text
- *
- * DESCRIPTION: This function translates an ACPI exception into an ASCII string.
- *
- ******************************************************************************/
-
-const char *
-AcpiFormatException (
-    ACPI_STATUS             Status)
-{
-    char                    *Exception = "UNKNOWN_STATUS_CODE";
-    ACPI_STATUS             SubStatus;
-
-
-    SubStatus = (Status & ~AE_CODE_MASK);
-
-
-    switch (Status & AE_CODE_MASK)
-    {
-    case AE_CODE_ENVIRONMENTAL:
-
-        if (SubStatus <= AE_CODE_ENV_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Env [SubStatus];
-        }
-        break;
-
-    case AE_CODE_PROGRAMMER:
-
-        if (SubStatus <= AE_CODE_PGM_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Pgm [SubStatus -1];
-        }
-        break;
-
-    case AE_CODE_ACPI_TABLES:
-
-        if (SubStatus <= AE_CODE_TBL_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Tbl [SubStatus -1];
-        }
-        break;
-
-    case AE_CODE_AML:
-
-        if (SubStatus <= AE_CODE_AML_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Aml [SubStatus -1];
-        }
-        break;
-
-    case AE_CODE_CONTROL:
-
-        if (SubStatus <= AE_CODE_CTRL_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Ctrl [SubStatus -1];
-        }
-        break;
-
-    default:
-        break;
-    }
-
-
-    return ((const char *) Exception);
 }
 
 
