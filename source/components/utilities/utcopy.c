@@ -163,18 +163,18 @@ CmGetSimpleObjectSize (
 
     Length = sizeof (ACPI_OBJECT);
 
-    switch (Obj->ValType)
+    switch (Obj->Type)
     {
 
     case TYPE_String:
 
-        Length += Obj->String.StrLen;
+        Length += Obj->String.Length;
         break;
 
 
     case TYPE_Buffer:
 
-        Length += Obj->Buffer.BufLen;
+        Length += Obj->Buffer.Length;
         break;
 
 
@@ -237,9 +237,9 @@ CmGetPackageObjectSize (
     {
         ThisParent = ParentObj[CurrentDepth];
         ThisIndex = Index[CurrentDepth];
-        ThisObj = ThisParent->Package.PackageElems[ThisIndex];
+        ThisObj = ThisParent->Package.Elements[ThisIndex];
 
-        if (ThisObj->ValType == TYPE_Package)
+        if (ThisObj->Type == TYPE_Package)
         {
             /*
              *  If this object is a package then we go one deeper
@@ -278,7 +278,7 @@ CmGetPackageObjectSize (
             Length += Temp;
 
             Index[CurrentDepth]++;
-            while (Index[CurrentDepth] >= ParentObj[CurrentDepth]->Package.PkgCount)
+            while (Index[CurrentDepth] >= ParentObj[CurrentDepth]->Package.Count)
             {
                 /*
                  *  We've handled all of the objects at this level,  This means that we
@@ -335,7 +335,7 @@ CmGetObjectSize(
     ACPI_STATUS             Status;
 
 
-    if (Obj->ValType == TYPE_Package)
+    if (Obj->Type == TYPE_Package)
     {
         Status = CmGetPackageObjectSize (Obj, ObjLength);
     }
@@ -370,39 +370,39 @@ ACPI_STATUS
 CmBuildExternalSimpleObject(
     ACPI_OBJECT_INTERNAL    *Obj,
     ACPI_OBJECT             *UserObj,
-    char                    *DataSpace,
+    UINT8                   *DataSpace,
     UINT32                  *BufferSpaceUsed)
 {
     UINT32                  Length = 0;
-    char                    *SourcePtr = NULL;
+    UINT8                   *SourcePtr = NULL;
 
 
-    UserObj->Type = Obj->ValType;
+    UserObj->Type = Obj->Type;
 
     switch (UserObj->Type)
     {
 
     case TYPE_String:
 
-        Length = Obj->String.StrLen;
-        UserObj->String.Length = Obj->String.StrLen;
+        Length = Obj->String.Length;
+        UserObj->String.Length = Obj->String.Length;
         UserObj->String.Pointer = DataSpace;
-        SourcePtr = (char *) Obj->String.String;
+        SourcePtr = Obj->String.Pointer;
         break;
 
 
     case TYPE_Buffer:
 
-        Length = Obj->Buffer.BufLen;
-        UserObj->Buffer.Length = Obj->Buffer.BufLen;
+        Length = Obj->Buffer.Length;
+        UserObj->Buffer.Length = Obj->Buffer.Length;
         UserObj->Buffer.Pointer = DataSpace;
-        SourcePtr = (char *) Obj->Buffer.Buffer;
+        SourcePtr = Obj->Buffer.Pointer;
         break;
 
 
     case TYPE_Number:
 
-        UserObj->Number.Value= Obj->Number.Number;
+        UserObj->Number.Value= Obj->Number.Value;
         break;
 
 
@@ -449,10 +449,10 @@ CmBuildExternalSimpleObject(
 ACPI_STATUS
 CmBuildExternalPackageObject (
     ACPI_OBJECT_INTERNAL    *Obj, 
-    char                    *Buffer, 
+    UINT8                   *Buffer, 
     UINT32                  *SpaceUsed)
 {
-    char                    *FreeSpace;
+    UINT8                   *FreeSpace;
     ACPI_OBJECT             *UserObj;
     UINT32                  CurrentDepth = 0;
     ACPI_STATUS             Status;
@@ -485,8 +485,8 @@ CmBuildExternalPackageObject (
 
     memset ((void *) Level, 0, sizeof (Level));
 
-    UserObj->Type = Obj->ValType;
-    UserObj->Package.Count = Obj->Package.PkgCount;
+    UserObj->Type = Obj->Type;
+    UserObj->Package.Count = Obj->Package.Count;
     UserObj->Package.Elements = (ACPI_OBJECT *) FreeSpace;
 
 
@@ -502,10 +502,10 @@ CmBuildExternalPackageObject (
     while (1)
     {
         ThisIndex   = LevelPtr->Index;
-        ThisObj     = (ACPI_OBJECT_INTERNAL *) &LevelPtr->CAObj->Package.PackageElems[ThisIndex];
+        ThisObj     = (ACPI_OBJECT_INTERNAL *) &LevelPtr->CAObj->Package.Elements[ThisIndex];
         ThisUObj    = (ACPI_OBJECT *) &LevelPtr->UserObj->Package.Elements[ThisIndex];
 
-        if (ThisObj->ValType == TYPE_Package)
+        if (ThisObj->Type == TYPE_Package)
         {
             /*
              *  If this object is a package then we go one deeper
@@ -524,7 +524,7 @@ CmBuildExternalPackageObject (
              *  Build the package object
              */
             ThisUObj->Type = TYPE_Package;
-            ThisUObj->Package.Count = ThisObj->Package.PkgCount;
+            ThisUObj->Package.Count = ThisObj->Package.Count;
             ThisUObj->Package.Elements = (ACPI_OBJECT *) FreeSpace;
 
             /*
@@ -545,7 +545,7 @@ CmBuildExternalPackageObject (
         
         else
         {
-            Status = CmBuildExternalSimpleObject(ThisObj, ThisUObj, FreeSpace, &Temp);
+            Status = CmBuildExternalSimpleObject (ThisObj, ThisUObj, FreeSpace, &Temp);
             if (Status != AE_OK) {
                 /*
                  *  Failure get out
@@ -557,7 +557,7 @@ CmBuildExternalPackageObject (
             Length +=Temp;
 
             LevelPtr->Index++;
-            while (LevelPtr->Index >= LevelPtr->CAObj->Package.PkgCount)
+            while (LevelPtr->Index >= LevelPtr->CAObj->Package.Count)
             {
                 /*
                  *  We've handled all of the objects at this level,  This means that we
@@ -615,7 +615,7 @@ CmBuildExternalObject (
     ACPI_STATUS             Status;
 
 
-    if (Obj->ValType == TYPE_Package)
+    if (Obj->Type == TYPE_Package)
     {
         /*
          *  Package objects contain other objects (which can be objects)
@@ -632,7 +632,7 @@ CmBuildExternalObject (
          */
         Status = CmBuildExternalSimpleObject(Obj,
                         (ACPI_OBJECT *) RetBuffer->Pointer,
-                        ((char *) RetBuffer->Pointer + sizeof (ACPI_OBJECT)),
+                        ((UINT8 *) RetBuffer->Pointer + sizeof (ACPI_OBJECT)),
                         &RetBuffer->Length);
         /*
          *  build simple does not include the object size in the length
@@ -667,22 +667,22 @@ CmBuildInternalSimpleObject(
 {
 
 
-    Obj->ValType = UserObj->Type;
+    Obj->Type = UserObj->Type;
 
     switch (UserObj->Type)
     {
 
     case TYPE_String:
 
-        Obj->String.StrLen = UserObj->String.Length;
-        Obj->String.String = UserObj->String.Pointer;
+        Obj->String.Length  = UserObj->String.Length;
+        Obj->String.Pointer = UserObj->String.Pointer;
         break;
 
 
     case TYPE_Buffer:
 
-        Obj->Buffer.BufLen = UserObj->Buffer.Length;
-        Obj->Buffer.Buffer = UserObj->Buffer.Pointer;
+        Obj->Buffer.Length  = UserObj->Buffer.Length;
+        Obj->Buffer.Pointer = UserObj->Buffer.Pointer;
         break;
 
 
@@ -690,7 +690,7 @@ CmBuildInternalSimpleObject(
         /*
          *  Number is included in the object itself
          */
-        Obj->Number.Number = UserObj->Number.Value;
+        Obj->Number.Value = UserObj->Number.Value;
         break;
 
 
@@ -728,10 +728,10 @@ CmBuildInternalSimpleObject(
 ACPI_STATUS
 CmBuildInternalPackageObject (
     ACPI_OBJECT_INTERNAL    *Obj, 
-    char                    *Buffer, 
+    UINT8                   *Buffer, 
     UINT32                  *SpaceUsed)
 {
-    char                    *FreeSpace;
+    UINT8                   *FreeSpace;
     ACPI_OBJECT             *UserObj;
     UINT32                  CurrentDepth = 0;
     ACPI_STATUS             Status = AE_OK;
@@ -764,8 +764,8 @@ CmBuildInternalPackageObject (
 
     memset ((void *) Level, 0, sizeof(Level));
 
-    UserObj->Type = Obj->ValType;
-    UserObj->Package.Count = Obj->Package.PkgCount;
+    UserObj->Type = Obj->Type;
+    UserObj->Package.Count = Obj->Package.Count;
     UserObj->Package.Elements = (ACPI_OBJECT *)FreeSpace;
 
 
@@ -781,10 +781,10 @@ CmBuildInternalPackageObject (
     while (1)
     {
         ThisIndex   = LevelPtr->Index;
-        ThisObj     = (ACPI_OBJECT_INTERNAL *) &LevelPtr->CAObj->Package.PackageElems[ThisIndex];
+        ThisObj     = (ACPI_OBJECT_INTERNAL *) &LevelPtr->CAObj->Package.Elements[ThisIndex];
         ThisUObj    = (ACPI_OBJECT *) &LevelPtr->UserObj->Package.Elements[ThisIndex];
 
-        if (ThisObj->ValType == TYPE_Package)
+        if (ThisObj->Type == TYPE_Package)
         {
             /*
              *  If this object is a package then we go one deeper
@@ -803,7 +803,7 @@ CmBuildInternalPackageObject (
              *  Build the package object
              */
             ThisUObj->Type = TYPE_Package;
-            ThisUObj->Package.Count = ThisObj->Package.PkgCount;
+            ThisUObj->Package.Count = ThisObj->Package.Count;
             ThisUObj->Package.Elements = (ACPI_OBJECT *) FreeSpace;
 
             /*
@@ -837,7 +837,7 @@ CmBuildInternalPackageObject (
             Length +=Temp;
 
             LevelPtr->Index++;
-            while (LevelPtr->Index >= LevelPtr->CAObj->Package.PkgCount)
+            while (LevelPtr->Index >= LevelPtr->CAObj->Package.Count)
             {
                 /*
                  *  We've handled all of the objects at this level,  This means that we
@@ -949,7 +949,7 @@ CmDeleteInternalObjectList (
 
     for (Obj = ObjList; *Obj; Obj++)
     {
-        if ((*Obj)->ValType == TYPE_Package)
+        if ((*Obj)->Type == TYPE_Package)
         {
             /* Delete the package */
 
