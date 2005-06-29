@@ -385,13 +385,27 @@ AcpiHandleToPathname (
     ACPI_HANDLE             Handle, 
     ACPI_BUFFER             *RetPathPtr)
 {
-    if ((!RetPathPtr->Pointer)    ||
-        (!RetPathPtr->Length))
+    ACPI_STATUS             Status;
+
+
+    /* Buffer pointer must be valid always */
+
+    if (!RetPathPtr)
     {
         return AE_BAD_PARAMETER;
     }
 
-    return (NsHandleToPathname (Handle, RetPathPtr->Length, RetPathPtr->Pointer));
+    /* Allow length to be zero and ignore the pointer */
+
+    if ((RetPathPtr->Length) &&
+       (!RetPathPtr->Pointer))
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+    Status = NsHandleToPathname (Handle, &RetPathPtr->Length, RetPathPtr->Pointer);
+
+    return Status;
 }
 
 
