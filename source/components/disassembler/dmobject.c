@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  ******************************************************************************/
 
@@ -160,6 +160,14 @@ AcpiDmDumpMethodInfo (
 
     if ((Status & AE_CODE_MASK) == AE_CODE_CONTROL)
     {
+        return;
+    }
+
+    /* We may be executing a deferred opcode */
+
+    if (WalkState->DeferredNode)
+    {
+        AcpiOsPrintf ("Executing subtree for Buffer/Package/Region\n");
         return;
     }
 
@@ -508,10 +516,16 @@ AcpiDmDisplayLocals (
 
 
     ObjDesc = WalkState->MethodDesc;
-    Node = WalkState->MethodNode;
+    Node    = WalkState->MethodNode;
     if (!Node)
     {
         AcpiOsPrintf ("No method node (Executing subtree for buffer or opregion)\n");
+        return;
+    }
+
+    if (Node->Type != ACPI_TYPE_METHOD)
+    {
+        AcpiOsPrintf ("Executing subtree for Buffer/Package/Region\n");
         return;
     }
 
@@ -554,6 +568,12 @@ AcpiDmDisplayArguments (
     if (!Node)
     {
         AcpiOsPrintf ("No method node (Executing subtree for buffer or opregion)\n");
+        return;
+    }
+
+    if (Node->Type != ACPI_TYPE_METHOD)
+    {
+        AcpiOsPrintf ("Executing subtree for Buffer/Package/Region\n");
         return;
     }
 
