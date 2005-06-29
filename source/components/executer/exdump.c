@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.132 $
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -746,7 +746,7 @@ AcpiExOutAddress (
 #ifdef _IA16
     AcpiOsPrintf ("%20s : %p\n", Title, Value);
 #else
-    AcpiOsPrintf ("%20s : %8.8X%8.8X\n", Title, 
+    AcpiOsPrintf ("%20s : %8.8X%8.8X\n", Title,
                 HIDWORD (Value), LODWORD (Value));
 #endif
 }
@@ -786,7 +786,7 @@ AcpiExDumpNode (
     AcpiExOutInteger ("Flags",            Node->Flags);
     AcpiExOutInteger ("Owner Id",         Node->OwnerId);
     AcpiExOutInteger ("Reference Count",  Node->ReferenceCount);
-    AcpiExOutPointer ("Attached Object",  Node->Object);
+    AcpiExOutPointer ("Attached Object",  AcpiNsGetAttachedObject (Node));
     AcpiExOutPointer ("ChildList",        Node->Child);
     AcpiExOutPointer ("NextPeer",         Node->Peer);
     AcpiExOutPointer ("Parent",           AcpiNsGetParentObject (Node));
@@ -825,7 +825,7 @@ AcpiExDumpObjectDescriptor (
 
     if (!(VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL)))
     {
-        AcpiOsPrintf ("%p is not a valid ACPI object\n", ObjDesc);
+        AcpiOsPrintf ("ExDumpObjectDescriptor: %p is not a valid ACPI object\n", ObjDesc);
         return;
     }
 
@@ -885,21 +885,13 @@ AcpiExDumpObjectDescriptor (
         break;
 
 
-    case ACPI_TYPE_BUFFER_FIELD:
-
-        AcpiExOutInteger ("BitLength",       ObjDesc->BufferField.BitLength);
-        AcpiExOutInteger ("BitOffset",       ObjDesc->BufferField.StartFieldBitOffset);
-        AcpiExOutInteger ("BaseByteOffset",  ObjDesc->BufferField.BaseByteOffset);
-        AcpiExOutPointer ("BufferObj",       ObjDesc->BufferField.BufferObj);
-        break;
-
-
     case ACPI_TYPE_DEVICE:
 
         AcpiExOutPointer ("AddrHandler",     ObjDesc->Device.AddrHandler);
         AcpiExOutPointer ("SysHandler",      ObjDesc->Device.SysHandler);
         AcpiExOutPointer ("DrvHandler",      ObjDesc->Device.DrvHandler);
         break;
+
 
     case ACPI_TYPE_EVENT:
 
@@ -920,7 +912,7 @@ AcpiExDumpObjectDescriptor (
     case ACPI_TYPE_MUTEX:
 
         AcpiExOutInteger ("SyncLevel",       ObjDesc->Mutex.SyncLevel);
-        AcpiExOutPointer ("Owner",           ObjDesc->Mutex.Owner);
+        AcpiExOutPointer ("OwnerThread",     ObjDesc->Mutex.OwnerThread);
         AcpiExOutInteger ("AcquisitionDepth",ObjDesc->Mutex.AcquisitionDepth);
         AcpiExOutPointer ("Semaphore",       ObjDesc->Mutex.Semaphore);
         break;
@@ -965,6 +957,7 @@ AcpiExDumpObjectDescriptor (
         break;
 
 
+    case ACPI_TYPE_BUFFER_FIELD:
     case INTERNAL_TYPE_REGION_FIELD:
     case INTERNAL_TYPE_BANK_FIELD:
     case INTERNAL_TYPE_INDEX_FIELD:
@@ -975,7 +968,7 @@ AcpiExDumpObjectDescriptor (
         AcpiExOutInteger ("LockRule",        ObjDesc->CommonField.LockRule);
         AcpiExOutInteger ("UpdateRule",      ObjDesc->CommonField.UpdateRule);
         AcpiExOutInteger ("BitLength",       ObjDesc->CommonField.BitLength);
-        AcpiExOutInteger ("BitOffset",       ObjDesc->CommonField.StartFieldBitOffset);
+        AcpiExOutInteger ("FldBitOffset",    ObjDesc->CommonField.StartFieldBitOffset);
         AcpiExOutInteger ("BaseByteOffset",  ObjDesc->CommonField.BaseByteOffset);
         AcpiExOutInteger ("DatumValidBits",  ObjDesc->CommonField.DatumValidBits);
         AcpiExOutInteger ("EndFldValidBits", ObjDesc->CommonField.EndFieldValidBits);
@@ -984,6 +977,10 @@ AcpiExDumpObjectDescriptor (
 
         switch (ObjDesc->Common.Type)
         {
+        case ACPI_TYPE_BUFFER_FIELD:
+            AcpiExOutPointer ("BufferObj",       ObjDesc->BufferField.BufferObj);
+            break;
+
         case INTERNAL_TYPE_REGION_FIELD:
             AcpiExOutPointer ("RegionObj",       ObjDesc->Field.RegionObj);
             break;
@@ -1040,15 +1037,17 @@ AcpiExDumpObjectDescriptor (
     case INTERNAL_TYPE_WHILE:
     case INTERNAL_TYPE_SCOPE:
     case INTERNAL_TYPE_DEF_ANY:
+    case INTERNAL_TYPE_EXTRA:
+    case INTERNAL_TYPE_DATA:
 
-        AcpiOsPrintf ("*** Structure display not implemented for type %X! ***\n",
+        AcpiOsPrintf ("ExDumpObjectDescriptor: Display not implemented for object type %X\n",
             ObjDesc->Common.Type);
         break;
 
 
     default:
 
-        AcpiOsPrintf ("*** Cannot display unknown type %X! ***\n", ObjDesc->Common.Type);
+        AcpiOsPrintf ("ExDumpObjectDescriptor: Unknown object type %X\n", ObjDesc->Common.Type);
         break;
     }
 
