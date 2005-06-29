@@ -183,16 +183,16 @@ AcpiEvFixedEventDetect(void)
      * depend on their values.
      */
 
-    StatusRegister = (UINT32) AcpiOsdIn16 (AcpiGbl_FACP->Pm1aEvtBlk);
+    StatusRegister = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1aEvtBlk);
     if (AcpiGbl_FACP->Pm1bEvtBlk)
     {
-        StatusRegister |= (UINT32) AcpiOsdIn16 (AcpiGbl_FACP->Pm1bEvtBlk);
+        StatusRegister |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bEvtBlk);
     }
 
-    EnableRegister = (UINT32) AcpiOsdIn16 (AcpiGbl_FACP->Pm1aEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen));
+    EnableRegister = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1aEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen));
     if (AcpiGbl_FACP->Pm1bEvtBlk)
     {
-        EnableRegister |= (UINT32) AcpiOsdIn16 (AcpiGbl_FACP->Pm1bEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen));
+        EnableRegister |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen));
     }
 
     DEBUG_PRINT (TRACE_INTERRUPTS, ("Fixed AcpiEvent Block: Enable = %08x\tStatus = %08x\n", EnableRegister, StatusRegister));
@@ -360,8 +360,8 @@ AcpiEvGpeInitialize (void)
          * are cleared by writing a '1', while enable registers are cleared
          * by writing a '0'.
          */
-        AcpiOsdOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr, 0x00);
-        AcpiOsdOut8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr, 0xFF);
+        AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr, 0x00);
+        AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr, 0xFF);
 
         RegisterIndex++;
     }
@@ -385,8 +385,8 @@ AcpiEvGpeInitialize (void)
          * are cleared by writing a '1', while enable registers are cleared
          * by writing a '0'.
          */
-        AcpiOsdOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr, 0x00);
-        AcpiOsdOut8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr, 0xFF);
+        AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr, 0x00);
+        AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr, 0xFF);
 
         RegisterIndex++;
     }
@@ -593,8 +593,8 @@ AcpiEvGpeDetect (void)
 
     for (i = 0; i < AcpiGbl_GpeRegisterCount; i++)
     {
-        AcpiGbl_GpeRegisters[i].Status = AcpiOsdIn8 (AcpiGbl_GpeRegisters[i].StatusAddr);
-        AcpiGbl_GpeRegisters[i].Enable = AcpiOsdIn8 (AcpiGbl_GpeRegisters[i].EnableAddr);
+        AcpiGbl_GpeRegisters[i].Status = AcpiOsIn8 (AcpiGbl_GpeRegisters[i].StatusAddr);
+        AcpiGbl_GpeRegisters[i].Enable = AcpiOsIn8 (AcpiGbl_GpeRegisters[i].EnableAddr);
 
         DEBUG_PRINT (TRACE_INTERRUPTS, ("GPE block at %x - Enable: %08x\tStatus: %08x\n",
                         AcpiGbl_GpeRegisters[i].EnableAddr, AcpiGbl_GpeRegisters[i].Status, AcpiGbl_GpeRegisters[i].Enable));
@@ -639,7 +639,7 @@ AcpiEvGpeDetect (void)
  * RETURN:      None
  *
  * DESCRIPTION: Perform the actual execution of a GPE control method.  This
- *              function is called from an invocation of AcpiOsdQueueForExecution
+ *              function is called from an invocation of AcpiOsQueueForExecution
  *              (and therefore does NOT execute at interrupt level) so that
  *              the control method itself is not executed in the context of
  *              the SCI interrupt handler.
@@ -767,7 +767,7 @@ AcpiEvGpeDispatch (
      */
     if (AcpiGbl_GpeInfo [GpeNumber].Handler || AcpiGbl_GpeInfo [GpeNumber].MethodHandle)
     {
-        if (ACPI_FAILURE (AcpiOsdQueueForExecution (OSD_PRIORITY_GPE, AcpiEvAsynchExecuteGpeMethod, (void*)(NATIVE_UINT)GpeNumber)))
+        if (ACPI_FAILURE (AcpiOsQueueForExecution (OSD_PRIORITY_GPE, AcpiEvAsynchExecuteGpeMethod, (void*)(NATIVE_UINT)GpeNumber)))
         {
             /*
              * Shoudn't occur, but if it does report an error. Note that

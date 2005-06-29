@@ -118,7 +118,6 @@
 #include "events.h"
 #include "namesp.h"
 #include "interp.h"
-#include "acpiosd.h"
 #include "hardware.h"
 
 #define _COMPONENT          EVENT_HANDLING
@@ -274,7 +273,7 @@ AcpiEvGlobalLockThread (
     {
         /* Send sufficient units to the semaphore */
 
-        AcpiOsdSignalSemaphore (AcpiGbl_GlobalLockSemaphore, AcpiGbl_GlobalLockThreadCount);
+        AcpiOsSignalSemaphore (AcpiGbl_GlobalLockSemaphore, AcpiGbl_GlobalLockThreadCount);
     }
 }
 
@@ -306,7 +305,7 @@ AcpiEvGlobalLockHandler (
      */
 
     GlobalLock = &AcpiGbl_FACS->GlobalLock;
-    ASM_AcquireGL (GlobalLock, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
     if (Acquired)
     {
         /* Got the lock, now wake all threads waiting for it */
@@ -315,7 +314,7 @@ AcpiEvGlobalLockHandler (
 
         /* Run the Global Lock thread which will signal all waiting threads */
 
-        AcpiOsdQueueForExecution (OSD_PRIORITY_HIGH, AcpiEvGlobalLockThread, Context);
+        AcpiOsQueueForExecution (OSD_PRIORITY_HIGH, AcpiEvGlobalLockThread, Context);
     }
 
     return INTERRUPT_HANDLED;
@@ -391,7 +390,7 @@ AcpiEvAcquireGlobalLock(void)
     /* We must acquire the actualy hardware lock */
 
     GlobalLock = &AcpiGbl_FACS->GlobalLock;
-    ASM_AcquireGL (GlobalLock, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
     if (Acquired)
     {
        /* We got the lock */
@@ -417,7 +416,7 @@ AcpiEvAcquireGlobalLock(void)
       */
 
     AcpiAmlExitInterpreter ();
-    Status = OsLocalWaitSemaphore (AcpiGbl_GlobalLockSemaphore, ACPI_UINT32_MAX);
+    Status = AcpiAmlSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore, ACPI_UINT32_MAX);
     AcpiAmlEnterInterpreter ();
 
 
@@ -460,7 +459,7 @@ AcpiEvReleaseGlobalLock (void)
         /* No more threads holding lock, we can do the actual hardware release */
 
         GlobalLock = &AcpiGbl_FACS->GlobalLock;
-        ASM_ReleaseGL (GlobalLock, Pending);
+        ACPI_RELEASE_GLOBAL_LOCK (GlobalLock, Pending);
         AcpiGbl_GlobalLockAcquired = FALSE;
 
         /*
