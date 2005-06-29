@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -145,6 +145,8 @@ TrAllocateNode (
     Node->Filename          = Gbl_InputFilename;
     Node->LineNumber        = Gbl_CurrentLineNumber;
     Node->LogicalLineNumber = Gbl_LogicalLineNumber;
+    Node->LogicalByteOffset = Gbl_CurrentLineOffset;
+    Node->Column            = Gbl_CurrentColumn;
 
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
 
@@ -180,9 +182,10 @@ TrUpdateNode (
         return NULL;
     }
 
-    DbgPrint ("\nUpdateNode: Old - %s, New - %s\n\n",
-                UtGetOpName (Node->ParseOpcode),
-                UtGetOpName (ParseOpcode));
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nUpdateNode: Old - %s, New - %s\n\n",
+        UtGetOpName (Node->ParseOpcode),
+        UtGetOpName (ParseOpcode));
 
     /* Assign new opcode and name */
 
@@ -235,7 +238,8 @@ TrSetNodeFlags (
 {
 
 
-    DbgPrint ("\nSetNodeFlags: Node %p, %d\n\n", Node, Flags);
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nSetNodeFlags: Node %p, %d\n\n", Node, Flags);
 
     if (!Node)
     {
@@ -301,8 +305,9 @@ TrCreateLeafNode (
 
     Node = TrAllocateNode (ParseOpcode);
 
-    DbgPrint ("\nCreateLeafNode  Line %d NewNode %p  Op %s\n\n",
-                Node->LineNumber, Node, UtGetOpName(ParseOpcode));
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nCreateLeafNode  Line %d NewNode %p  Op %s\n\n",
+        Node->LineNumber, Node, UtGetOpName(ParseOpcode));
 
     return Node;
 }
@@ -332,41 +337,42 @@ TrCreateValuedLeafNode (
 
     Node = TrAllocateNode (ParseOpcode);
 
-    DbgPrint ("\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %lX  ",
-                Node->LineNumber, Node, UtGetOpName(ParseOpcode), Value);
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %lX  ",
+        Node->LineNumber, Node, UtGetOpName(ParseOpcode), Value);
     Node->Value.Integer = Value;
 
     switch (ParseOpcode)
     {
     case STRING_LITERAL:
-        DbgPrint ("STRING->%s", Value);
+        DbgPrint (ASL_PARSE_OUTPUT, "STRING->%s", Value);
         break;
 
     case NAMESEG:
-        DbgPrint ("NAMESEG->%s", Value);
+        DbgPrint (ASL_PARSE_OUTPUT, "NAMESEG->%s", Value);
         break;
 
     case NAMESTRING:
-        DbgPrint ("NAMESTRING->%s", Value);
+        DbgPrint (ASL_PARSE_OUTPUT, "NAMESTRING->%s", Value);
         break;
 
     case EISAID:
-        DbgPrint ("EISAID->%s", Value);
+        DbgPrint (ASL_PARSE_OUTPUT, "EISAID->%s", Value);
         break;
 
     case METHOD:
-        DbgPrint ("METHOD");
+        DbgPrint (ASL_PARSE_OUTPUT, "METHOD");
         break;
 
     case INTEGER:
-        DbgPrint ("INTEGER");
+        DbgPrint (ASL_PARSE_OUTPUT, "INTEGER");
         break;
 
     default:
         break;
     }
 
-    DbgPrint ("\n\n");
+    DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
 
     return Node;
 }
@@ -408,8 +414,9 @@ TrCreateNode (
 
     Node = TrAllocateNode (ParseOpcode);
 
-    DbgPrint ("\nCreateNode  Line %d NewParent %p Child %d Op %s  ",
-                Node->LineNumber, Node, NumChildren, UtGetOpName(ParseOpcode));
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nCreateNode  Line %d NewParent %p Child %d Op %s  ",
+        Node->LineNumber, Node, NumChildren, UtGetOpName(ParseOpcode));
     RootNode = Node;
 
     /* Some extra debug output based on the parse opcode */
@@ -417,15 +424,15 @@ TrCreateNode (
     switch (ParseOpcode)
     {
     case DEFINITIONBLOCK:
-        DbgPrint ("DEFINITION_BLOCK (Tree Completed)->");
+        DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
     case OPERATIONREGION:
-        DbgPrint ("OPREGION->");
+        DbgPrint (ASL_PARSE_OUTPUT, "OPREGION->");
         break;
 
     case OR:
-        DbgPrint ("OR->");
+        DbgPrint (ASL_PARSE_OUTPUT, "OR->");
         break;
     }
 
@@ -439,7 +446,7 @@ TrCreateNode (
         /* Get the next child */
 
         Child = va_arg (ap, ASL_PARSE_NODE *);
-        DbgPrint ("%p, ", Child);
+        DbgPrint (ASL_PARSE_OUTPUT, "%p, ", Child);
 
 
         /*
@@ -489,7 +496,7 @@ TrCreateNode (
     }
     va_end(ap);
 
-    DbgPrint ("\n\n");
+    DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
 
 
     return Node;
@@ -529,23 +536,24 @@ TrLinkChildren (
 
     TrSetEndLineNumber (Node);
 
-    DbgPrint ("\nLinkChildren  Line %d NewParent %p Child %d Op %s  ",
-                Node->LineNumber,
-                Node, NumChildren, UtGetOpName(Node->ParseOpcode));
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nLinkChildren  Line %d NewParent %p Child %d Op %s  ",
+        Node->LineNumber,
+        Node, NumChildren, UtGetOpName(Node->ParseOpcode));
     RootNode = Node;
 
     switch (Node->ParseOpcode)
     {
     case DEFINITIONBLOCK:
-        DbgPrint ("DEFINITION_BLOCK (Tree Completed)->");
+        DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
     case OPERATIONREGION:
-        DbgPrint ("OPREGION->");
+        DbgPrint (ASL_PARSE_OUTPUT, "OPREGION->");
         break;
 
     case OR:
-        DbgPrint ("OR->");
+        DbgPrint (ASL_PARSE_OUTPUT, "OR->");
         break;
     }
 
@@ -557,7 +565,7 @@ TrLinkChildren (
     for (i = 0; i < NumChildren; i++)
     {
         Child = va_arg (ap, ASL_PARSE_NODE *);
-        DbgPrint ("%p, ", Child);
+        DbgPrint (ASL_PARSE_OUTPUT, "%p, ", Child);
 
 
         /*
@@ -607,7 +615,7 @@ TrLinkChildren (
     }
     va_end(ap);
 
-    DbgPrint ("\n\n");
+    DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
 
 
     return Node;
@@ -635,14 +643,15 @@ TrLinkPeerNode (
     ASL_PARSE_NODE          *Next;
 
 
-    DbgPrint ("\nLinkPeerNode: 1=%p (%s), 2=%p (%s)\n\n",
+    DbgPrint (ASL_PARSE_OUTPUT, 
+        "\nLinkPeerNode: 1=%p (%s), 2=%p (%s)\n\n",
         Node1, Node1 ? UtGetOpName(Node1->ParseOpcode) : NULL,
         Node2, Node2 ? UtGetOpName(Node2->ParseOpcode) : NULL);
 
 
     if ((!Node1) && (!Node2))
     {
-        DbgPrint ("\nTwo Null nodes!\n");
+        DbgPrint (ASL_PARSE_OUTPUT, "\nTwo Null nodes!\n");
         return Node1;
     }
 
@@ -661,7 +670,8 @@ TrLinkPeerNode (
 
     if (Node1 == Node2)
     {
-        DbgPrint ("\n\n************* Internal error, linking node to itself %p\n\n\n", Node1);
+        DbgPrint (ASL_DEBUG_OUTPUT, 
+            "\n\n************* Internal error, linking node to itself %p\n\n\n", Node1);
         printf ("Internal error, linking node to itself\n");
         return Node1;
     }
@@ -711,7 +721,8 @@ TrLinkPeerNodes (
     ASL_PARSE_NODE          *Start;
 
 
-    DbgPrint ("\nLinkPeerNodes: (%d) ", NumPeers);
+    DbgPrint (ASL_PARSE_OUTPUT, 
+        "\nLinkPeerNodes: (%d) ", NumPeers);
 
 
     va_start (ap, NumPeers);
@@ -723,7 +734,7 @@ TrLinkPeerNodes (
      */
     for (i = 0; i < (NumPeers -1); i++)
     {
-        DbgPrint ("%d=%p ", (i+1), This);
+        DbgPrint (ASL_PARSE_OUTPUT, "%d=%p ", (i+1), This);
 
         while (This->Peer)
         {
@@ -745,7 +756,7 @@ TrLinkPeerNodes (
     }
 
 
-    DbgPrint ("\n\n");
+    DbgPrint (ASL_PARSE_OUTPUT,"\n\n");
     return (Start);
 }
 
@@ -771,7 +782,8 @@ TrLinkChildNode (
     ASL_PARSE_NODE          *Next;
 
 
-    DbgPrint ("\nLinkChildNode: Parent=%p (%s), Child=%p (%s)\n\n",
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nLinkChildNode: Parent=%p (%s), Child=%p (%s)\n\n",
         Node1, Node1 ? UtGetOpName(Node1->ParseOpcode): NULL,
         Node2, Node2 ? UtGetOpName(Node2->ParseOpcode): NULL);
 

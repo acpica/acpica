@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -155,8 +155,10 @@ typedef struct asl_parse_node
     char                        *Filename;
     char                        *ExternalName;
     char                        *Namepath;
+    UINT32                      Column;
     UINT32                      LineNumber;
     UINT32                      LogicalLineNumber;
+    UINT32                      LogicalByteOffset;
     UINT32                      EndLine;
     UINT32                      EndLogicalLine;
     UINT16                      AmlOpcode;
@@ -253,10 +255,12 @@ typedef struct asl_error_msg
 {
     UINT32                      LineNumber;
     UINT32                      LogicalLineNumber;
+    UINT32                      LogicalByteOffset;
     UINT32                      Column;
     char                        *Message;
     struct asl_error_msg        *Next;
     char                        *Filename;
+    UINT32                      FilenameLength;
     UINT8                       MessageId;
     UINT8                       Level;
 
@@ -324,6 +328,7 @@ typedef enum
     ASL_MSG_NAME_EXISTS,
     ASL_MSG_INVALID_TYPE,
     ASL_MSG_MULTIPLE_TYPES,
+    ASL_MSG_SYNTAX,
 
 } ASL_MESSAGE_IDS;
 
