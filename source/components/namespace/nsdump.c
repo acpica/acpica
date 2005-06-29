@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -499,7 +499,7 @@ AcpiNsDumpOneObject (
                     (ObjDesc->CommonField.BaseByteOffset * 8)
                         + ObjDesc->CommonField.StartFieldBitOffset,
                     ObjDesc->CommonField.BitLength,
-                    ObjDesc->CommonField.AccessBitWidth);
+                    ObjDesc->CommonField.AccessByteWidth);
             break;
         }
 
