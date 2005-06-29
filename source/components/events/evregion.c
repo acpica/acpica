@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.140 $
+ *              $Revision: 1.142 $
  *
  *****************************************************************************/
 
@@ -159,9 +159,9 @@ AcpiEvInitAddressSpaces (
 
     /*
      * All address spaces (PCI Config, EC, SMBus) are scope dependent
-     * and registration must occur for a specific device.  
+     * and registration must occur for a specific device.
      *
-     * In the case of the system memory and IO address spaces there is currently 
+     * In the case of the system memory and IO address spaces there is currently
      * no device associated with the address space.  For these we use the root.
      *
      * We install the default PCI config space handler at the root so
@@ -477,7 +477,7 @@ AcpiEvDetachRegion(
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     **LastObjPtr;
     ACPI_ADR_SPACE_SETUP    RegionSetup;
-    void                    *RegionContext;
+    void                    **RegionContext;
     ACPI_OPERAND_OBJECT     *RegionObj2;
     ACPI_STATUS             Status;
 
@@ -490,7 +490,7 @@ AcpiEvDetachRegion(
     {
         return_VOID;
     }
-    RegionContext = RegionObj2->Extra.RegionContext;
+    RegionContext = &RegionObj2->Extra.RegionContext;
 
     /* Get the address handler from the region object */
 
@@ -554,7 +554,7 @@ AcpiEvDetachRegion(
 
             RegionSetup = HandlerObj->AddressSpace.Setup;
             Status = RegionSetup (RegionObj, ACPI_REGION_DEACTIVATE,
-                            HandlerObj->AddressSpace.Context, &RegionContext);
+                            HandlerObj->AddressSpace.Context, RegionContext);
 
             /* Init routine may fail, Just ignore errors */
 
