@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  ******************************************************************************/
 
@@ -417,30 +417,20 @@ AcpiRsExtendedIrqResource (
     OutputStruct->Data.ExtendedIrq.ProducerConsumer = Temp8 & 0x01;
 
     /*
-     * Check for HE, LL or HL
+     * Check for Interrupt Mode
+     * 
+     * The definition of an Extended IRQ changed between ACPI spec v1.0b 
+     * and ACPI spec 2.0 (section 6.4.3.6 in both).
+     *
+     * - Edge/Level are defined opposite in the table vs the headers
      */
-    if(Temp8 & 0x02)
-    {
-        OutputStruct->Data.ExtendedIrq.EdgeLevel = EDGE_SENSITIVE;
-        OutputStruct->Data.ExtendedIrq.ActiveHighLow = ACTIVE_HIGH;
-    }
-    else
-    {
-        if(Temp8 & 0x4)
-        {
-            OutputStruct->Data.ExtendedIrq.EdgeLevel = LEVEL_SENSITIVE;
-            OutputStruct->Data.ExtendedIrq.ActiveHighLow = ACTIVE_LOW;
-        }
-        else
-        {
-            /*
-             * Only _LL and _HE polarity/trigger interrupts
-             * are allowed (ACPI spec v1.0b ection 6.4.2.1),
-             * so an error will occur if we reach this point
-             */
-            return_ACPI_STATUS (AE_BAD_DATA);
-        }
-    }
+    OutputStruct->Data.ExtendedIrq.EdgeLevel =
+                        (Temp8 & 0x2) ? EDGE_SENSITIVE : LEVEL_SENSITIVE;
+   
+    /*
+     * Check Interrupt Polarity
+     */
+    OutputStruct->Data.ExtendedIrq.ActiveHighLow = (Temp8 >> 2) & 0x1;
 
     /*
      * Check for sharable
@@ -603,15 +593,24 @@ AcpiRsExtendedIrqStream (
     Temp8 = (UINT8)(LinkedList->Data.ExtendedIrq.ProducerConsumer & 0x01);
     Temp8 |= ((LinkedList->Data.ExtendedIrq.SharedExclusive & 0x01) << 3);
 
-    if (LEVEL_SENSITIVE == LinkedList->Data.ExtendedIrq.EdgeLevel &&
-       ACTIVE_LOW == LinkedList->Data.ExtendedIrq.ActiveHighLow)
+    /*
+     * Set the Interrupt Mode
+     * 
+     * The definition of an Extended IRQ changed between ACPI spec v1.0b 
+     * and ACPI spec 2.0 (section 6.4.3.6 in both).  This code does not
+     * implement the more restrictive definition of 1.0b
+     *
+     * - Edge/Level are defined opposite in the table vs the headers
+     */
+    if (EDGE_SENSITIVE == LinkedList->Data.ExtendedIrq.EdgeLevel)
     {
-        Temp8 |= 0x04;
+        Temp8 |= 0x2;
     }
-    else
-    {
-        Temp8 |= 0x02;
-    }
+
+    /*
+     * Set the Interrupt Polarity
+     */
+    Temp8 |= ((LinkedList->Data.ExtendedIrq.ActiveHighLow & 0x1) << 2);
 
     *Buffer = Temp8;
     Buffer += 1;
