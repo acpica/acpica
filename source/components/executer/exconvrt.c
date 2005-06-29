@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.19 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -158,6 +158,9 @@ AcpiExConvertToInteger (
     UINT32                  IntegerSize = sizeof (ACPI_INTEGER);
 
 
+    FUNCTION_ENTRY ();
+
+
     switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
@@ -231,7 +234,6 @@ AcpiExConvertToInteger (
          * Convert string to an integer
          * String must be hexadecimal as per the ACPI specification
          */
-
         Result = STRTOUL (Pointer, NULL, 16);
         break;
 
@@ -296,6 +298,9 @@ AcpiExConvertToBuffer (
     UINT32                  i;
     UINT32                  IntegerSize = sizeof (ACPI_INTEGER);
     UINT8                   *NewBuf;
+
+
+    FUNCTION_ENTRY ();
 
 
     switch (ObjDesc->Common.Type)
@@ -376,7 +381,6 @@ AcpiExConvertToBuffer (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiExConvertAscii
@@ -400,33 +404,19 @@ AcpiExConvertToAscii (
     UINT32                  k = 0;
     UINT8                   HexDigit;
     ACPI_INTEGER            Digit;
-    BOOLEAN                 LeadingZero = TRUE;
+    UINT32                  Remainder;
     UINT32                  Length = sizeof (ACPI_INTEGER);
+    BOOLEAN                 LeadingZero = TRUE;
 
 
-    /******** TBD: DEBUG only 
-    char                    *buf;
-    char                    sbuf[32];
-#include <stdio.h>
-#include <stdlib.h>
-    buf = _ui64toa (Integer, sbuf, 10);
-    printf ("1): %s\n", sbuf);
-
-    AcpiExConvertToDecimalAscii (Integer, 0, sbuf);
-    printf ("2): %s\n", sbuf);
-
-
-    buf = _ui64toa (Integer, sbuf, 16);
-    printf ("3): %s\n", sbuf);
-
-    printf ("4): %s\n", String);
-***************************************************/
+    FUNCTION_ENTRY ();
 
 
     switch (Base)
     {
     case 10:
 
+        Remainder = 0;
         for (i = ACPI_MAX_DECIMAL_DIGITS; i > 0 ; i--)
         {
             /* Divide by nth factor of 10 */
@@ -434,7 +424,7 @@ AcpiExConvertToAscii (
             Digit = Integer;
             for (j = 1; j < i; j++)
             {
-                Digit = ACPI_DIVIDE (Digit, 10);
+                AcpiUtShortDivide (&Digit, 10, &Digit, &Remainder);
             }
 
             /* Create the decimal digit */
@@ -446,7 +436,7 @@ AcpiExConvertToAscii (
 
             if (!LeadingZero)
             {
-                String[k] = (UINT8) (ASCII_ZERO + ACPI_MODULO (Digit, 10));
+                String[k] = (UINT8) (ASCII_ZERO + Remainder);
                 k++;
             }
         }
@@ -479,7 +469,7 @@ AcpiExConvertToAscii (
 
     /*
      * Since leading zeros are supressed, we must check for the case where
-     * the integer equals 0.  
+     * the integer equals 0.
      *
      * Finally, null terminate the string and return the length
      */
@@ -524,6 +514,8 @@ AcpiExConvertToString (
     UINT8                   *NewBuf;
     UINT8                   *Pointer;
 
+
+    FUNCTION_ENTRY ();
 
 
     switch (ObjDesc->Common.Type)
@@ -731,7 +723,6 @@ AcpiExConvertToTargetType (
      * If required by the target,
      * perform implicit conversion on the source before we store it.
      */
-
     switch (GET_CURRENT_ARG_TYPE (WalkState->OpInfo->RuntimeArgs))
     {
     case ARGI_SIMPLE_TARGET:
@@ -751,8 +742,8 @@ AcpiExConvertToTargetType (
 
             if (DestinationType != (*ObjDesc)->Common.Type)
             {
-                DEBUG_PRINTP (ACPI_ERROR,
-                    ("Target does not allow conversion of type %s to %s\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Target does not allow conversion of type %s to %s\n",
                     AcpiUtGetTypeName ((*ObjDesc)->Common.Type),
                     AcpiUtGetTypeName (DestinationType)));
                 Status = AE_TYPE;
@@ -807,8 +798,8 @@ AcpiExConvertToTargetType (
 
 
     default:
-        DEBUG_PRINTP (ACPI_ERROR,
-            ("Unknown Target type ID 0x%X Op %s DestType %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Unknown Target type ID 0x%X Op %s DestType %s\n",
             GET_CURRENT_ARG_TYPE (WalkState->OpInfo->RuntimeArgs),
             WalkState->OpInfo->Name, AcpiUtGetTypeName (DestinationType)));
 
