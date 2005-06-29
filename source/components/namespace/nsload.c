@@ -125,6 +125,7 @@
 #include <pnp.h>
 #include <parser.h>
 #include <dispatch.h>
+#include <debugger.h>
 
 
 #define _COMPONENT          NAMESPACE
@@ -203,6 +204,8 @@ BREAKPOINT3;
     DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Deleting Parsed Namespace\n"));
 BREAKPOINT3;
 
+
+    DEBUG_EXEC (DbGenerateStatistics (Gbl_ParsedNamespaceRoot, 0));
 
     PsDeleteParseTree (Gbl_ParsedNamespaceRoot);
     Gbl_ParsedNamespaceRoot = NULL;
