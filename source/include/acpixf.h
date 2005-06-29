@@ -161,11 +161,11 @@ AcpiFormatException (
 
 ACPI_STATUS
 AcpiFindRootPointer (
-    void                    **RsdpPhysicalAddress);
+    UINT64                  *RsdpPhysicalAddress);
 
 ACPI_STATUS
 AcpiLoadTables (
-    void                    *RsdpPhysicalAddress);
+    UINT64                  RsdpPhysicalAddress);
 
 ACPI_STATUS
 AcpiLoadTable (
@@ -370,11 +370,11 @@ AcpiGetIrqRoutingTable  (
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
-    void                    *PhysicalAddress);
+    UINT64                  PhysicalAddress);
 
 ACPI_STATUS
 AcpiGetFirmwareWakingVector (
-    void                    **PhysicalAddress);
+    UINT64                  *PhysicalAddress);
 
 ACPI_STATUS
 AcpiGetProcessorThrottlingInfo (
