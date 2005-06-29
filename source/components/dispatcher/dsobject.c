@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.51 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -349,7 +349,7 @@ AcpiDsInitObjectFromOp (
 
         /* First arg is a number */
 
-        AcpiDsCreateOperand (WalkState, Op->Value.Arg);
+        AcpiDsCreateOperand (WalkState, Op->Value.Arg, 0);
         ArgDesc = WalkState->Operands [WalkState->NumOperands - 1];
         AcpiDsObjStackPop (1, WalkState);
 
@@ -559,19 +559,22 @@ AcpiDsBuildInternalSimpleObj (
 
                     if (Name)
                     {
-                        REPORT_WARNING (("Reference %s AML 0x%X not found\n",
+                        REPORT_WARNING (("Reference %s at AML %X not found\n",
                                     Name, Op->AmlOffset));
                         AcpiCmFree (Name);
                     }
                     else
                     {
-                        REPORT_WARNING (("Reference %s AML 0x%X not found\n",
+                        REPORT_WARNING (("Reference %s at AML %X not found\n",
                                    Op->Value.String, Op->AmlOffset));
                     }
                     *ObjDescPtr = NULL;
                 }
 
-                return_ACPI_STATUS (Status);
+                else
+                {
+                    return_ACPI_STATUS (Status);
+                }
             }
         }
 
