@@ -187,6 +187,8 @@ DsInitOneObject (
     case ACPI_TYPE_Method:
 
         Info->MethodCount++;
+        OsdPrintf (".");
+
 
         /* Always parse methods to detect errors, we may delete the parse tree below */
 
@@ -196,8 +198,8 @@ DsInitOneObject (
 
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("DsInitOneObject: Method %p [%4.4s] parse failed! %x\n", 
-                                        ObjHandle, ((NAME_TABLE_ENTRY *)ObjHandle)->Name, Status));
+            DEBUG_PRINT (ACPI_ERROR, ("DsInitOneObject: Method %p [%4.4s] parse failed! %s\n", 
+                                        ObjHandle, &((NAME_TABLE_ENTRY *)ObjHandle)->Name, CmFormatException (Status)));
             break;
         }
 
@@ -249,6 +251,8 @@ DsInitializeObjects (
     FUNCTION_TRACE ("DsInitializeObjects");
 
 
+    OsdPrintf ("Parsing Methods:");
+
     DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: **** Starting initialization of namespace objects ****\n"));
 
     Info.MethodCount = 0;
@@ -265,6 +269,7 @@ DsInitializeObjects (
         DEBUG_PRINT (ACPI_ERROR, ("DsInitializeObjects: WalkNamespace failed! %x\n", Status));
     }
 
+    OsdPrintf ("\n%d Control Methods found and parsed\n", Info.MethodCount);
     DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
     DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
 
