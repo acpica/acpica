@@ -121,7 +121,6 @@
 #include <namesp.h>
 #include <interp.h>
 #include <amlcode.h>
-#include <methods.h>
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evregion");
@@ -413,7 +412,7 @@ EvAddressSpaceDispatch (
 
     if (!HandlerDesc)
     {
-        DEBUG_PRINT (TRACE_OPREGION, ("Dispatch address access region 0x%X, no handler\n", RegionObj));
+        DEBUG_PRINT (TRACE_OPREGION, ("Dispatch address access region 0x%p, no handler\n", RegionObj));
         return_ACPI_STATUS(AE_EXIST);
     }
 
@@ -432,12 +431,12 @@ EvAddressSpaceDispatch (
             /*
              *  Bad news, no init routine and not init'd
              */
-            DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: No init routine for region %X\n", 
+            DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: No init routine for region %p\n", 
                             RegionObj));
             return_ACPI_STATUS (AE_UNKNOWN_STATUS);
         }
 
-        Status = RegionSetup (RegionObj, ACPI_REGION_ACTIVATE, HandlerDesc->AddrHandler.InstallTimeContext,
+        Status = RegionSetup (RegionObj, ACPI_REGION_ACTIVATE, HandlerDesc->AddrHandler.Context,
                                 &RegionContext);
         /*
          *  Init routine may fail
@@ -460,9 +459,8 @@ EvAddressSpaceDispatch (
      */
     Handler = HandlerDesc->AddrHandler.Handler;
 
-    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Addrhandler 0x%X (0x%X), Address 0x%X\n", 
-             RegionObj->Region.AddrHandler->AddrHandler, Handler, Address));
+    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO), ("Addrhandler 0x%p (0x%p), Address 0x%p\n", 
+                    RegionObj->Region.AddrHandler->AddrHandler, Handler, Address));
 
     if (!(HandlerDesc->AddrHandler.Flags & ADDR_HANDLER_DEFAULT_INSTALLED))
     {
@@ -532,10 +530,11 @@ EvDisassociateRegionFromHandler(
     if (!HandlerObj)
     {
         /*
-         *  This guy has no handler, we're done
+         *  This region has no handler, all done
          */
         return_VOID;
     }
+
 
     /*
      *  Find this region in the handler's list
@@ -551,7 +550,7 @@ EvDisassociateRegionFromHandler(
          */
         if (ObjDesc == RegionObj)
         {
-            DEBUG_PRINT (TRACE_OPREGION, ("Removing Region 0x%X from address handler 0x%X\n",
+            DEBUG_PRINT (TRACE_OPREGION, ("Removing Region 0x%p from address handler 0x%p\n",
                             RegionObj, HandlerObj));
             /*
              *  This is it, remove it from the handler's list
@@ -559,17 +558,22 @@ EvDisassociateRegionFromHandler(
             *LastObjPtr = ObjDesc->Region.Link;
 
             /*
-             *  Now stop region accesses by executing the _REG
-             *  method
+             *  Now stop region accesses by executing the _REG method
              */
             EvExecuteRegMethod (RegionObj, 0);
 
             /*
-             *  Tell undo region prep work
+             *  Call the setup handler with the deactivate notification
              */
             RegionSetup = HandlerObj->AddrHandler.Setup;
-            Status = RegionSetup (RegionObj, ACPI_REGION_DEACTIVATE, HandlerObj->AddrHandler.InstallTimeContext,
+            Status = RegionSetup (RegionObj, ACPI_REGION_DEACTIVATE, HandlerObj->AddrHandler.Context,
                                     &RegionContext);
+
+            /*
+             *  Save the returned context (It is the original context passed into Install)
+             */
+            HandlerObj->AddrHandler.Context = RegionContext;
+
             /*
              *  Init routine may fail
              */
@@ -608,9 +612,9 @@ EvDisassociateRegionFromHandler(
     }
 
     /*
-     *  If we get here, the region was not not in the handler's region list
+     *  If we get here, the region was not in the handler's region list
      */
-    DEBUG_PRINT (TRACE_OPREGION, ("Cannot remove region 0x%X from address handler 0x%X\n",
+    DEBUG_PRINT (TRACE_OPREGION, ("Cannot remove region 0x%p from address handler 0x%p\n",
                     RegionObj, HandlerObj));
 
     return_VOID;
@@ -643,7 +647,7 @@ EvAssociateRegionAndHandler(
     FUNCTION_TRACE ("EvAssociateRegionAndHandler");
 
 
-    DEBUG_PRINT (TRACE_OPREGION, ("Adding Region 0x%X to address handler 0x%X\n", 
+    DEBUG_PRINT (TRACE_OPREGION, ("Adding Region 0x%p to address handler 0x%p\n", 
                     RegionObj, HandlerObj));
 
     ACPI_ASSERT (RegionObj->Region.SpaceId == HandlerObj->AddrHandler.SpaceId);
@@ -666,7 +670,7 @@ EvAssociateRegionAndHandler(
     RegionObj->Region.AddrHandler = HandlerObj;
 
     /*
-     *  Last thing, tell ASL region is usable
+     *  Last thing, tell all users that this region is usable
      */
     CmReleaseMutex (MTX_NAMESPACE);
 	Status = EvExecuteRegMethod (RegionObj, 1);
@@ -769,7 +773,7 @@ EvAddrHandlerHelper (
                  *  It's for the same address space
                  */
 
-                DEBUG_PRINT (TRACE_OPREGION, ("Found handler for %s in device 0x%X (0x%X) handler 0x%X\n",
+                DEBUG_PRINT (TRACE_OPREGION, ("Found handler for %s in device 0x%p (0x%p) handler 0x%p\n",
                                 Gbl_RegionTypes[HandlerObj->AddrHandler.SpaceId], ObjDesc, TmpObj, HandlerObj));
                 
                 /*
