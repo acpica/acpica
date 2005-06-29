@@ -182,5 +182,9 @@
 #define MAX_PACKAGE_DEPTH           16
 
 
+/* Maximum count for a semaphore object */
+
+#define MAX_SEMAPHORE_COUNT         256 
+
 #endif /* _CONFIG_H */
 
