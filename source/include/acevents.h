@@ -213,9 +213,10 @@ AcpiEvDisassociateRegionFromHandler(
 
 
 ACPI_STATUS
-AcpiEvAssociateRegionAndHandler(
+AcpiEvAssociateRegionAndHandler (
     ACPI_OBJECT_INTERNAL    *HandlerObj,
-    ACPI_OBJECT_INTERNAL    *RegionObj);
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    BOOLEAN                 AcpiNsIsLocked);
 
 
 /*
