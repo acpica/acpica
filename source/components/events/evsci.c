@@ -421,6 +421,7 @@ EvTerminate (void)
 
     /* Free global tables, etc. */
 
+
     if (Gbl_GpeRegisters)
     {
         CmFree (Gbl_GpeRegisters);
