@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.167 $
+ *              $Revision: 1.168 $
  *
  ******************************************************************************/
 
@@ -281,7 +281,8 @@ AcpiGetSleepTypeData (
     else if ((ACPI_GET_OBJECT_TYPE (Info.ReturnObject->Package.Elements[0]) != ACPI_TYPE_INTEGER) ||
              (ACPI_GET_OBJECT_TYPE (Info.ReturnObject->Package.Elements[1]) != ACPI_TYPE_INTEGER))
     {
-        ACPI_REPORT_ERROR (("Sleep State return package elements are not both Integers (%s, %s)\n",
+        ACPI_REPORT_ERROR ((
+            "Sleep State return package elements are not both Integers (%s, %s)\n",
             AcpiUtGetObjectTypeName (Info.ReturnObject->Package.Elements[0]),
             AcpiUtGetObjectTypeName (Info.ReturnObject->Package.Elements[1])));
         Status = AE_AML_OPERAND_TYPE;
@@ -315,9 +316,9 @@ AcpiGetSleepTypeData (
  *
  * PARAMETERS:  RegisterId          - Index of ACPI Register to access
  *
- * RETURN:      The bit mask to be used when accessing the register
+ * RETURN:      The bitmask to be used when accessing the register
  *
- * DESCRIPTION: Map RegisterId into a register bit mask.
+ * DESCRIPTION: Map RegisterId into a register bitmask.
  *
  ******************************************************************************/
 
@@ -461,7 +462,7 @@ AcpiSetRegister (
     /* Always do a register read first so we can insert the new bits  */
 
     Status = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
-                    BitRegInfo->ParentRegister, &RegisterValue);
+                BitRegInfo->ParentRegister, &RegisterValue);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;
@@ -501,7 +502,7 @@ AcpiSetRegister (
                 BitRegInfo->AccessBitMask, Value);
 
         Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                        ACPI_REGISTER_PM1_ENABLE, (UINT16) RegisterValue);
+                    ACPI_REGISTER_PM1_ENABLE, (UINT16) RegisterValue);
         break;
 
 
@@ -518,7 +519,7 @@ AcpiSetRegister (
                 BitRegInfo->AccessBitMask, Value);
 
         Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                        ACPI_REGISTER_PM1_CONTROL, (UINT16) RegisterValue);
+                    ACPI_REGISTER_PM1_CONTROL, (UINT16) RegisterValue);
         break;
 
 
@@ -533,17 +534,19 @@ AcpiSetRegister (
 
         ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM2 control: Read %X from %8.8X%8.8X\n",
             RegisterValue,
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm2CntBlk.Address))));
+            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (
+                AcpiGbl_FADT->XPm2CntBlk.Address))));
 
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition,
                 BitRegInfo->AccessBitMask, Value);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %4.4X to %8.8X%8.8X\n",
             RegisterValue,
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm2CntBlk.Address))));
+            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (
+                AcpiGbl_FADT->XPm2CntBlk.Address))));
 
         Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                            ACPI_REGISTER_PM2_CONTROL, (UINT8) (RegisterValue));
+                    ACPI_REGISTER_PM2_CONTROL, (UINT8) (RegisterValue));
         break;
 
 
@@ -561,7 +564,9 @@ UnlockAndExit:
 
     /* Normalize the value that was read */
 
-    ACPI_DEBUG_EXEC (RegisterValue = ((RegisterValue & BitRegInfo->AccessBitMask) >> BitRegInfo->BitPosition));
+    ACPI_DEBUG_EXEC (RegisterValue =
+        ((RegisterValue & BitRegInfo->AccessBitMask) >>
+            BitRegInfo->BitPosition));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Set bits: %8.8X actual %8.8X register %X\n",
             Value, RegisterValue, BitRegInfo->ParentRegister));
@@ -575,7 +580,7 @@ UnlockAndExit:
  *
  * PARAMETERS:  UseLock             - Mutex hw access
  *              RegisterId          - RegisterID + Offset
- *              ReturnValue         - Value that was read from the register
+ *              ReturnValue         - Where the register value is returned
  *
  * RETURN:      Status and the value read.
  *
@@ -669,7 +674,8 @@ AcpiHwRegisterRead (
         break;
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Register ID: %X\n", RegisterId));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Register ID: %X\n",
+            RegisterId));
         Status = AE_BAD_PARAMETER;
         break;
     }
@@ -887,10 +893,11 @@ AcpiHwLowLevelRead (
         return (AE_BAD_PARAMETER);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Read:  %8.8X width %2d from %8.8X%8.8X (%s)\n",
-            *Value, Width,
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Address)),
-            AcpiUtGetRegionName (Reg->AddressSpaceId)));
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO,
+        "Read:  %8.8X width %2d from %8.8X%8.8X (%s)\n",
+        *Value, Width,
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Address)),
+        AcpiUtGetRegionName (Reg->AddressSpaceId)));
 
     return (Status);
 }
@@ -968,10 +975,11 @@ AcpiHwLowLevelWrite (
         return (AE_BAD_PARAMETER);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Wrote: %8.8X width %2d   to %8.8X%8.8X (%s)\n",
-            Value, Width,
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Address)),
-            AcpiUtGetRegionName (Reg->AddressSpaceId)));
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO,
+        "Wrote: %8.8X width %2d   to %8.8X%8.8X (%s)\n",
+        Value, Width,
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Address)),
+        AcpiUtGetRegionName (Reg->AddressSpaceId)));
 
     return (Status);
 }

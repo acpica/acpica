@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,8 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Initialize and validate various ACPI registers
+ * DESCRIPTION: Initialize and validate the various ACPI registers defined in
+ *              the FADT.
  *
  ******************************************************************************/
 
@@ -150,7 +151,7 @@ AcpiHwInitialize (
 
     if (!AcpiGbl_FADT)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "A FADT is not loaded\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No FADT is present\n"));
 
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }

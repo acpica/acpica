@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -134,7 +134,7 @@
 #define ACPI_SST_SLEEP_CONTEXT  4
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiSetFirmwareWakingVector
  *
@@ -143,7 +143,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Access function for dFirmwareWakingVector field in FACS
+ * DESCRIPTION: Access function for the FirmwareWakingVector field in FACS
  *
  ******************************************************************************/
 
@@ -172,17 +172,17 @@ AcpiSetFirmwareWakingVector (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetFirmwareWakingVector
  *
- * PARAMETERS:  *PhysicalAddress    - Output buffer where contents of
+ * PARAMETERS:  *PhysicalAddress    - Where the contents of
  *                                    the FirmwareWakingVector field of
- *                                    the FACS will be stored.
+ *                                    the FACS will be returned.
  *
- * RETURN:      Status
+ * RETURN:      Status, vector
  *
- * DESCRIPTION: Access function for FirmwareWakingVector field in FACS
+ * DESCRIPTION: Access function for the FirmwareWakingVector field in FACS
  *
  ******************************************************************************/
 
@@ -216,7 +216,7 @@ AcpiGetFirmwareWakingVector (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiEnterSleepStatePrep
  *
@@ -311,7 +311,7 @@ AcpiEnterSleepStatePrep (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiEnterSleepState
  *
@@ -370,7 +370,8 @@ AcpiEnterSleepState (
     {
         /* Disable BM arbitration */
 
-        Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 1, ACPI_MTX_DO_NOT_LOCK);
+        Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE,
+                    1, ACPI_MTX_DO_NOT_LOCK);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -402,11 +403,13 @@ AcpiEnterSleepState (
     {
         return_ACPI_STATUS (Status);
     }
-    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "Entering sleep state [S%d]\n", SleepState));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INIT,
+        "Entering sleep state [S%d]\n", SleepState));
 
     /* Clear SLP_EN and SLP_TYP fields */
 
-    PM1AControl &= ~(SleepTypeRegInfo->AccessBitMask | SleepEnableRegInfo->AccessBitMask);
+    PM1AControl &= ~(SleepTypeRegInfo->AccessBitMask |
+                     SleepEnableRegInfo->AccessBitMask);
     PM1BControl = PM1AControl;
 
     /* Insert SLP_TYP bits */
@@ -461,10 +464,11 @@ AcpiEnterSleepState (
     if (SleepState > ACPI_STATE_S3)
     {
         /*
-         * We wanted to sleep > S3, but it didn't happen (by virtue of the fact that
-         * we are still executing!)
+         * We wanted to sleep > S3, but it didn't happen (by virtue of the
+         * fact that we are still executing!)
          *
-         * Wait ten seconds, then try again. This is to get S4/S5 to work on all machines.
+         * Wait ten seconds, then try again. This is to get S4/S5 to work on
+         * all machines.
          *
          * We wait so long to allow chipsets that poll this reg very slowly to
          * still read the right value. Ideally, this block would go
@@ -500,7 +504,7 @@ AcpiEnterSleepState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiEnterSleepStateS4bios
  *
@@ -572,7 +576,7 @@ AcpiEnterSleepStateS4bios (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiLeaveSleepState
  *
@@ -695,9 +699,12 @@ AcpiLeaveSleepState (
 
     /* Enable power button */
 
-    (void) AcpiSetRegister(AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId,
+    (void) AcpiSetRegister(
+            AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId,
             1, ACPI_MTX_DO_NOT_LOCK);
-    (void) AcpiSetRegister(AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
+
+    (void) AcpiSetRegister(
+            AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
             1, ACPI_MTX_DO_NOT_LOCK);
 
     /* Enable BM arbitration */

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -284,7 +284,7 @@ UnlockAndExit:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Disable all GPEs within a GPE block
+ * DESCRIPTION: Disable all GPEs within a single GPE block
  *
  ******************************************************************************/
 
@@ -324,7 +324,7 @@ AcpiHwDisableGpeBlock (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Clear status bits for all GPEs within a GPE block
+ * DESCRIPTION: Clear status bits for all GPEs within a single GPE block
  *
  ******************************************************************************/
 
@@ -364,8 +364,8 @@ AcpiHwClearGpeBlock (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Enable all "runtime" GPEs within a GPE block. (Includes
- *              combination wake/run GPEs.)
+ * DESCRIPTION: Enable all "runtime" GPEs within a single GPE block. Includes
+ *              combination wake/run GPEs.
  *
  ******************************************************************************/
 
@@ -412,8 +412,8 @@ AcpiHwEnableRuntimeGpeBlock (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Enable all "wake" GPEs within a GPE block.  (Includes
- *              combination wake/run GPEs.)
+ * DESCRIPTION: Enable all "wake" GPEs within a single GPE block. Includes
+ *              combination wake/run GPEs.
  *
  ******************************************************************************/
 
@@ -458,7 +458,7 @@ AcpiHwEnableWakeupGpeBlock (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Disable and clear all GPEs
+ * DESCRIPTION: Disable and clear all GPEs in all GPE blocks
  *
  ******************************************************************************/
 
@@ -486,7 +486,7 @@ AcpiHwDisableAllGpes (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Enable all GPEs of the given type
+ * DESCRIPTION: Enable all "runtime" GPEs, in all GPE blocks
  *
  ******************************************************************************/
 
@@ -513,7 +513,7 @@ AcpiHwEnableAllRuntimeGpes (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Enable all GPEs of the given type
+ * DESCRIPTION: Enable all "wakeup" GPEs, in all GPE blocks
  *
  ******************************************************************************/
 
