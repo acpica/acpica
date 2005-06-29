@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.  
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -205,7 +205,7 @@ OsGetTable (
     Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, s,
                 0L, KEY_ALL_ACCESS, &Handle);
 
-    if (Status != ERROR_SUCCESS) 
+    if (Status != ERROR_SUCCESS)
     {
         AcpiOsPrintf ("Could not find %s in registry at %s\n", TableName, s);
         return (NULL);
@@ -213,17 +213,17 @@ OsGetTable (
 
     /* Actual DSDT is down a couple of levels */
 
-    for (i = 0; ;) 
+    for (i = 0; ;)
     {
         Status = RegEnumKey (Handle, i, s, sizeof(s));
         i += 1;
-        if (Status == ERROR_NO_MORE_ITEMS) 
+        if (Status == ERROR_NO_MORE_ITEMS)
         {
             break;
         }
 
         Status = RegOpenKey (Handle, s, &SubKey);
-        if (Status != ERROR_SUCCESS) 
+        if (Status != ERROR_SUCCESS)
         {
             AcpiOsPrintf ("Could not open %s entry\n", TableName);
             return (NULL);
@@ -236,12 +236,12 @@ OsGetTable (
 
     /* Find the DSDT entry */
 
-    for (i = 0; ;) 
+    for (i = 0; ;)
     {
         NameSize = sizeof (s);
         Status = RegEnumValue (Handle, i, s, &NameSize,
                     NULL, &Type, NULL, 0 );
-        if (Status != ERROR_SUCCESS) 
+        if (Status != ERROR_SUCCESS)
         {
             AcpiOsPrintf ("Could not get %s registry entry\n", TableName);
             return (NULL);
@@ -257,7 +257,7 @@ OsGetTable (
     /* Get the size of the DSDT */
 
     Status = RegQueryValueEx (Handle, s, NULL, NULL, NULL, &DataSize);
-    if (Status != ERROR_SUCCESS) 
+    if (Status != ERROR_SUCCESS)
     {
         AcpiOsPrintf ("Could not read the %s table size\n", TableName);
         return (NULL);
@@ -274,7 +274,7 @@ OsGetTable (
     /* Get the actual DSDT */
 
     Status = RegQueryValueEx (Handle, s, NULL, NULL, (UCHAR *) Buffer, &DataSize);
-    if (Status != ERROR_SUCCESS) 
+    if (Status != ERROR_SUCCESS)
     {
         AcpiOsPrintf ("Could not read %s data\n", TableName);
         return (NULL);
@@ -400,7 +400,7 @@ AcpiOsTableOverride (
     *NewTable = OsGetTable (TableName);
     if (*NewTable)
     {
-        AcpiOsPrintf ("%s obtained from registry, %d bytes\n", 
+        AcpiOsPrintf ("%s obtained from registry, %d bytes\n",
             TableName, (*NewTable)->Length);
     }
     else
@@ -484,7 +484,6 @@ AcpiOsWritable (
 
     return ((BOOLEAN) !IsBadWritePtr (Pointer, Length));
 }
-
 
 
 /******************************************************************************
