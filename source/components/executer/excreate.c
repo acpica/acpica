@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.87 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,25 +118,22 @@
 #define __EXCREATE_C__
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "acdispat.h"
 #include "actables.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("excreate")
+        ACPI_MODULE_NAME    ("excreate")
 
 
 /*****************************************************************************
  *
  * FUNCTION:    AcpiExCreateAlias
  *
- * PARAMETERS:  WalkState            - Current state, contains List of
- *                                      operands for the opcode
+ * PARAMETERS:  WalkState            - Current state, contains operands
  *
  * RETURN:      Status
  *
@@ -152,7 +149,7 @@ AcpiExCreateAlias (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("ExCreateAlias");
+    ACPI_FUNCTION_TRACE ("ExCreateAlias");
 
 
     /* Get the source/alias operands (both namespace nodes) */
@@ -199,7 +196,7 @@ AcpiExCreateEvent (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("ExCreateEvent");
+    ACPI_FUNCTION_TRACE ("ExCreateEvent");
 
 
     ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_EVENT);
@@ -209,7 +206,7 @@ AcpiExCreateEvent (
         goto Cleanup;
     }
 
-    /* 
+    /*
      * Create the actual OS semaphore, with zero initial units -- meaning
      * that the event is created in an unsignalled state
      */
@@ -257,7 +254,7 @@ AcpiExCreateMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("ExCreateMutex", WALK_OPERANDS);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateMutex", ACPI_WALK_OPERANDS);
 
 
     /* Create the new mutex object */
@@ -269,7 +266,7 @@ AcpiExCreateMutex (
         goto Cleanup;
     }
 
-    /* 
+    /*
      * Create the actual OS semaphore.
      * One unit max to make it a mutex, with one initial unit to allow
      * the mutex to be acquired.
@@ -326,12 +323,12 @@ AcpiExCreateRegion (
     ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    FUNCTION_TRACE ("ExCreateRegion");
+    ACPI_FUNCTION_TRACE ("ExCreateRegion");
 
 
     /* Get the Node from the object stack  */
 
-    Node = WalkState->Op->Node;
+    Node = WalkState->Op->Common.Node;
 
     /*
      * If the region object is already attached to this node,
@@ -349,7 +346,7 @@ AcpiExCreateRegion (
     if ((RegionSpace >= ACPI_NUM_PREDEFINED_REGIONS) &&
         (RegionSpace < ACPI_USER_REGION_BEGIN))
     {
-        REPORT_ERROR (("Invalid AddressSpace type %X\n", RegionSpace));
+        ACPI_REPORT_ERROR (("Invalid AddressSpace type %X\n", RegionSpace));
         return_ACPI_STATUS (AE_AML_INVALID_SPACE_ID);
     }
 
@@ -419,11 +416,11 @@ AcpiExCreateTableRegion (
     ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    FUNCTION_TRACE ("ExCreateTableRegion");
+    ACPI_FUNCTION_TRACE ("ExCreateTableRegion");
 
     /* Get the Node from the object stack  */
 
-    Node = WalkState->Op->Node;
+    Node = WalkState->Op->Common.Node;
 
     /*
      * If the region object is already attached to this node,
@@ -501,9 +498,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiExCreateProcessor
  *
- * PARAMETERS:  Op              - Op containing the Processor definition and
- *                                args
- *              ProcessorNode   - Parent Node for the processor object
+ * PARAMETERS:  WalkState           - Current state
  *
  * RETURN:      Status
  *
@@ -522,7 +517,7 @@ AcpiExCreateProcessor (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("ExCreateProcessor", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateProcessor", WalkState);
 
 
     /* Create the processor object */
@@ -557,9 +552,7 @@ AcpiExCreateProcessor (
  *
  * FUNCTION:    AcpiExCreatePowerResource
  *
- * PARAMETERS:  Op              - Op containing the PowerResource definition
- *                                and args
- *              PowerNode       - Parent Node for the power object
+ * PARAMETERS:  WalkState           - Current state
  *
  * RETURN:      Status
  *
@@ -578,7 +571,7 @@ AcpiExCreatePowerResource (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("ExCreatePowerResource", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreatePowerResource", WalkState);
 
 
     /* Create the power resource object */
@@ -613,8 +606,7 @@ AcpiExCreatePowerResource (
  *
  * PARAMETERS:  AmlStart        - First byte of the method's AML
  *              AmlLength       - AML byte count for this method
- *              MethodFlags     - AML method flag byte
- *              Method          - Method Node
+ *              WalkState       - Current state
  *
  * RETURN:      Status
  *
@@ -634,7 +626,7 @@ AcpiExCreateMethod (
     UINT8                   MethodFlags;
 
 
-    FUNCTION_TRACE_PTR ("ExCreateMethod", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateMethod", WalkState);
 
 
     /* Create a new method object */
