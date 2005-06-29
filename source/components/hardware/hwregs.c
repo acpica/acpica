@@ -15,15 +15,17 @@
  |                                  control and status registers.
  |__________________________________________________________________________
  |
- | $Revision: 1.2 $
- | $Date: 2005/06/29 16:54:01 $
+ | $Revision: 1.3 $
+ | $Date: 2005/06/29 16:54:02 $
  | $Log: hwregs.c,v $
- | Revision 1.2  2005/06/29 16:54:01  aystarik
- | Detabified.
+ | Revision 1.3  2005/06/29 16:54:02  aystarik
+ |
  |
  | 
- | date	99.01.12.00.07.00;	author grsmith1;	state Exp;
+ | date	99.01.13.22.39.00;	author grsmith1;	state Exp;
  |
+ * 
+ * 3     1/13/99 2:39p Grsmith1
  * 
  * 2     1/11/99 4:07p Grsmith1
  * Detabified.
