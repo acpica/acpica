@@ -114,6 +114,14 @@
 #define	LOAD_ACPI_NAMESPACE             0x10
 
 
+/*
+ * Common Data Structures used by the interfaces
+ */
+
+typedef struct {
+    UNIT32      Length;         // Length in bytes of the buffer;
+    char        *BufferPtr;     // pointer to buffer
+} APIBuffer;
 
 /*
  * Global interfaces
