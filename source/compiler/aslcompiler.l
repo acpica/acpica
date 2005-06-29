@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -137,6 +137,8 @@ void
 comment2 (void);
 void
 count (int type);
+void
+literal (void);
 
 %}
 
@@ -161,7 +163,7 @@ NamePathTail        [.]{NameSeg}
 
 %%
 
-[\n]                       { count (0); }
+[\n]                        { count (0); }
 [ \t] ;
 
 
@@ -169,13 +171,7 @@ NamePathTail        [.]{NameSeg}
 "/*"			            { comment(); }
 "//"                        { comment2(); }
 
-\"([^\"]|(\\\"))*\"	        { char *s;
-                                count (0);
-			                    s=malloc (strlen (AslCompilertext));
-			                    strcpy (s, AslCompilertext+1);
-			                    s[strlen (AslCompilertext+1)-1] = 0;
-			                    AslCompilerlval.s = s;
-			                    return STRING_LITERAL; }
+\"([^\"]|(\\\"))*\"	        { count (0); literal (); return STRING_LITERAL; }
 
 
 0[xX]{HexDigitChar}+ |
@@ -659,7 +655,46 @@ comment2 (void)
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+literal (void)
+{
+    char                *d;
+    char                *s;
+    char                *CleanString;
 
 
+    CleanString = malloc (strlen (AslCompilertext));
+    d = CleanString;
 
+    s = AslCompilertext;
+    s++;
+
+    while (*s)
+    {
+        if (*s != '\\')
+        {
+            *d = *s;
+            d++;
+        }
+
+        s++;
+    }
+
+    d--;
+    *d = 0;
+
+    AslCompilerlval.s = CleanString;
+}
 

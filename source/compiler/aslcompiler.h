@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -325,7 +325,7 @@ EXTERN UINT32                   INIT_GLOBAL (WarningCount, 0);
 
 EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
 EXTERN ACPI_TABLE_HEADER        TableHeader;
-EXTERN UINT32                   INIT_GLOBAL (TableLength, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_TableLength, 0);
 
 
 
@@ -336,6 +336,8 @@ typedef enum
 {
     ASL_WARNING_BUFFER_LENGTH = 0,
     ASL_WARNING_PACKAGE_LENGTH,
+    ASL_WARNING_RETURN_TYPES,
+    ASL_WARNING_NOT_FOUND,
 
 } ASL_WARNING_IDS;
 
@@ -350,10 +352,10 @@ typedef enum
     ASL_ERROR_DEBUG_FILENAME,
     ASL_ERROR_DEBUG_FILE_OPEN,
     ASL_ERROR_ENCODING_LENGTH,
-    ASL_ERROR_UNITIALIZED_LOCAL,
-    ASL_ERROR_INVALID_ARGUMENT,
     ASL_ERROR_INVALID_PRIORITY,
     ASL_ERROR_INVALID_PERFORMANCE,
+    ASL_ERROR_LOCAL_INIT,
+    ASL_ERROR_ARG_INVALID,
 
 } ASL_ERROR_IDS;
 
@@ -382,12 +384,23 @@ AslWarning (
     UINT32                  LineNumber);
 
 void
+AslWarningMsg (
+    UINT32                  WarningId,
+    UINT32                  LineNumber,
+    char                    *Message);
+
+void
 AslError (
     UINT32                  ErrorId,
     UINT32                  LineNumber);
 
-
 void
+AslErrorMsg (
+    UINT32                  ErrorId,
+    UINT32                  LineNumber,
+    char                    *Message);
+
+UINT32
 CgSetOptimalIntegerSize (
     ASL_PARSE_NODE          *Node);
 
@@ -591,11 +604,10 @@ UtAttachNamepathToOwner (
 
 /* Find */
 
-ASL_PARSE_NODE *
-FdLookupName (
-    ASL_PARSE_NODE          *Scope,
-    NATIVE_CHAR             *Path,
-    UINT16                  Opcode);
+void
+LnAdjustLengthToRoot (
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  LengthDelta);
 
 
 #endif

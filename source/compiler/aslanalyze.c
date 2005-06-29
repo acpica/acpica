@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -142,6 +142,8 @@ AnSemanticAnalysisWalkBegin (
     ASL_METHOD_INFO             *MethodInfo = WalkInfo->MethodStack;
     ASL_PARSE_NODE              *Next;
     UINT32                      RegisterNumber;
+    char                        LocalName[] = "Local0";
+    char                        ArgName[] = "Arg0";
 
 
     UtPrintFormattedName (Node->ParseOpcode, Level);
@@ -193,8 +195,8 @@ AnSemanticAnalysisWalkBegin (
             DbgPrint ("[Is NOT a target]\n");
             if (!MethodInfo->LocalInitialized[RegisterNumber])
             {
-                AslError (ASL_ERROR_UNITIALIZED_LOCAL, Node->LineNumber);
-                DbgPrint ("Local is not initialized!\n");
+                LocalName[strlen (LocalName) -1] = RegisterNumber + 0x30;
+                AslErrorMsg (ASL_ERROR_LOCAL_INIT, Node->LineNumber, LocalName);
             }
         }
         break;
@@ -212,7 +214,8 @@ AnSemanticAnalysisWalkBegin (
 
         if (RegisterNumber >= MethodInfo->NumArguments)
         {
-            AslError (ASL_ERROR_INVALID_ARGUMENT, Node->LineNumber);
+            ArgName[strlen (ArgName) -1] = RegisterNumber + 0x30;
+            AslErrorMsg (ASL_ERROR_ARG_INVALID, Node->LineNumber, ArgName);
         }
         if (Node->Flags & NODE_IS_TARGET)
         {
@@ -309,8 +312,7 @@ AnSemanticAnalysisWalkEnd (
         if (MethodInfo->NumReturnNoValue &&
             MethodInfo->NumReturnWithValue)
         {
-            printf ("%s %4d Warning: Method %s contains mixed return types\n", 
-                Gbl_InputFilename, Node->LineNumber, Node->ExternalName);
+            AslWarningMsg (ASL_WARNING_RETURN_TYPES, Node->LineNumber, Node->ExternalName);
         }
 
         DbgPrint ("Method obj %p popped\n", MethodInfo);
