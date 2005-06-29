@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.97 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -232,10 +232,10 @@ AcpiExReadDataFromField (
         Buffer = &BufferDesc->Integer.Value;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "Obj=%p Type=%X Buf=%p Len=%X\n",
         ObjDesc, ObjDesc->Common.Type, Buffer, Length));
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "FieldWrite: BitLen=%X BitOff=%X ByteOff=%X\n",
         ObjDesc->CommonField.BitLength,
         ObjDesc->CommonField.StartFieldBitOffset,
@@ -289,7 +289,9 @@ AcpiExWriteDataToField (
 {
     ACPI_STATUS             Status;
     UINT32                  Length;
+    UINT32                  RequiredLength;
     void                    *Buffer;
+    void                    *NewBuffer;
     BOOLEAN                 Locked;
 
 
@@ -344,11 +346,39 @@ AcpiExWriteDataToField (
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
+    /*
+     * We must have a buffer that is at least as long as the field
+     * we are writing to.  This is because individual fields are 
+     * indivisible and partial writes are not supported -- as per
+     * the ACPI specification.
+     */
+    NewBuffer = NULL;
+    RequiredLength = ROUND_BITS_UP_TO_BYTES (ObjDesc->CommonField.BitLength);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
+    if (Length < RequiredLength)
+    {
+        /* We need to create a new buffer */
+
+        NewBuffer = ACPI_MEM_CALLOCATE (RequiredLength);
+        if (!NewBuffer)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        /*
+         * Copy the original data to the new buffer, starting
+         * at Byte zero.  All unused (upper) bytes of the
+         * buffer will be 0.
+         */
+        MEMCPY ((char *) NewBuffer, (char *) Buffer, Length);
+        Buffer = NewBuffer;
+        Length = RequiredLength;
+    }
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "Obj=%p Type=%X Buf=%p Len=%X\n",
         ObjDesc, ObjDesc->Common.Type, Buffer, Length));
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "FieldRead: BitLen=%X BitOff=%X ByteOff=%X\n",
         ObjDesc->CommonField.BitLength,
         ObjDesc->CommonField.StartFieldBitOffset,
@@ -365,6 +395,13 @@ AcpiExWriteDataToField (
      * Release global lock if we acquired it earlier
      */
     AcpiExReleaseGlobalLock (Locked);
+
+    /* Free temporary buffer if we used one */
+
+    if (NewBuffer)
+    {
+        ACPI_MEM_FREE (NewBuffer);
+    }
 
     return_ACPI_STATUS (Status);
 }
