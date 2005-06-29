@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -583,6 +583,13 @@ AnCheckForReservedName (
     else if ((Op->Asl.ExternalName[1] == 'T') &&
              (Op->Asl.ExternalName[2] == '_'))
     {
+        /* Ignore if actually emitted by the compiler */
+
+        if (Op->Asl.CompileFlags & NODE_COMPILER_EMITTED)
+        {
+            return (ACPI_NOT_RESERVED_NAME);
+        }
+
         AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
         return (ACPI_COMPILER_RESERVED_NAME);
     }
