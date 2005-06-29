@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -789,7 +789,7 @@ static void
 AcpiEvAsynchExecuteGpeMethod (
     void                    *Context)
 {
-    UINT32                  GpeNumber = (UINT32) Context;
+    UINT32                  GpeNumber = (UINT32) ACPI_TO_INTEGER (Context);
     ACPI_GPE_LEVEL_INFO     GpeInfo;
 
 
