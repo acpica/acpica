@@ -129,10 +129,9 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ***************************************************************************/
 
 ACPI_STATUS
-NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte, 
+NsSearchOnly (char *EntryName, nte *NameTable, NsType Type, nte **RetEntry, 
                 NS_SEARCH_DATA *RetInfo)
 {
-    UINT32              TableSize;
     UINT32              Position;
     UINT32              Tries;
     char                *ScopeName;
@@ -142,19 +141,12 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
 
     /* Debug only */
 
-    ScopeName = NsNameOfScope (NameTbl);
+    ScopeName = NsNameOfScope (NameTable);
     DEBUG_PRINT (TRACE_NAMES,
                     ("NsSearchOnly: search %s [%p] for %4.4s\n",
-                    ScopeName, NameTbl, NamSeg));
+                    ScopeName, NameTable, EntryName));
 
     OsdFree (ScopeName);
-
-    /* TBD: convert to single size table */
-
-    if (NameTbl == RootObject->Scope)
-        TableSize = NS_ROOT_TABLE_SIZE;
-    else
-        TableSize = NS_DEFAULT_TABLE_SIZE;
 
     /* 
      * Name tables are built (and subsequently dumped) in the
@@ -172,7 +164,7 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
     if (RetInfo)
     {
         RetInfo->PreviousEntry = NULL;
-        RetInfo->NameTbl = NameTbl;
+        RetInfo->NameTable = NameTable;
     }
 
     /* 
@@ -184,13 +176,13 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
      * whether or not USE_HASHING is in effect.
      */
 
-    for (Tries = TableSize; Tries && 0 != NameTbl[Position].Name; Tries--)
+    for (Tries = NS_TABLE_SIZE; Tries && 0 != NameTable[Position].Name; Tries--)
     {
         /*  search for name in table    */
 
         CheckTrash ("top of NsSearchTable loop");
         
-        if (NameTbl[Position].Name == *(UINT32 *) NamSeg)
+        if (NameTable[Position].Name == *(UINT32 *) EntryName)
         {
             /* 
              * Found matching entry.  Capture type if appropriate before
@@ -217,16 +209,16 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
             if (Type != TYPE_Scope && 
                 Type != TYPE_DefAny &&
                 Type != TYPE_IndexFieldDefn && 
-                NameTbl[Position].Type == TYPE_Any)
+                NameTable[Position].Type == TYPE_Any)
             {
-                NameTbl[Position].Type = Type;
+                NameTable[Position].Type = Type;
             }
 
             DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s found at %p\n", 
-                            NamSeg, &NameTbl[Position]));
+                            EntryName, &NameTable[Position]));
             
             CheckTrash ("leave NsSearchTable FOUND");
-            *RetNte = &NameTbl[Position];
+            *RetEntry = &NameTable[Position];
             FUNCTION_EXIT;
             return AE_OK;
         }
@@ -235,24 +227,24 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
         {
             /* Save a pointer to this entry, it might become the previous entry */
 
-            RetInfo->PreviousEntry = &NameTbl[Position];
+            RetInfo->PreviousEntry = &NameTable[Position];
         }
         
 
         /* Done with this table? */
 
         if ((1 == Tries) && 
-            (NEXTSEG (NameTbl)))
+            (NEXTSEG (NameTable)))
         {
             /* 
              * Just examined last slot, but table has an appendage.
              * All appendages, even to the root NT, contain NS_DEFAULT_TABLE_SIZE entries.
              */
 
-            NameTbl = NEXTSEG (NameTbl);
-            DEBUG_PRINT (TRACE_EXEC, ("NsSearchOnly: Search appendage NameTbl=%p\n", NameTbl));
+            NameTable = NEXTSEG (NameTable);
+            DEBUG_PRINT (TRACE_EXEC, ("NsSearchOnly: Search appendage NameTable=%p\n", NameTable));
             Position = 0;
-            Tries += NS_DEFAULT_TABLE_SIZE;
+            Tries += NS_TABLE_SIZE;
         }
         
         else
@@ -265,16 +257,16 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
     /* Searched entire table, not found */
 
     DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s not found at %p\n", 
-                                NamSeg, &NameTbl[Position]));
+                                EntryName, &NameTable[Position]));
 
 
     if (RetInfo)
     {
-        /* Save the final information (not found) */
+        /* Save the final information (name was not found) */
 
-        RetInfo->TableFull = !(Tries);      /* Table is full if no more tries available */
-        RetInfo->Position = Position;
-        RetInfo->NameTbl = NameTbl;
+        RetInfo->TableFull  = !(Tries);      /* Table is full if no more tries available */
+        RetInfo->Position   = Position;
+        RetInfo->NameTable  = NameTable;
     }
 
     FUNCTION_EXIT;
@@ -306,7 +298,7 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
 
 
 ACPI_STATUS
-NsSearchParentTree (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte)
+NsSearchParentTree (char *EntryName, nte *NameTable, NsType Type, nte **RetEntry)
 {
     ACPI_STATUS         Status;
     nte                 *ParentScope;
@@ -316,17 +308,17 @@ NsSearchParentTree (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte)
 
 
     /* 
-     * NameTbl[0] will be an unused entry if the table being searched is empty,
+     * NameTable[0] will be an unused entry if the table being searched is empty,
      * However, its ParentScope member will have been filled in
      * when the table was allocated (unless it is the root name table).
      */
 
    
     if (!NsLocal (Type) && 
-        NameTbl[0].ParentScope)
+        NameTable[0].ParentScope)
     {
-        ParentScope = NameTbl[0].ParentScope;
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %.4s\n", NamSeg));
+        ParentScope = NameTable[0].ParentScope;
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %.4s\n", EntryName));
 
         /* Search parents until found or we have backed up to the root */
 
@@ -335,7 +327,7 @@ NsSearchParentTree (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte)
             /* Search parent scope */
             /* TBD: Why TYPE_Any? */
 
-            Status = NsSearchOnly (NamSeg, ParentScope, TYPE_Any, RetNte, NULL);
+            Status = NsSearchOnly (EntryName, ParentScope, TYPE_Any, RetEntry, NULL);
             if (Status == AE_OK)
             {
                 CheckTrash ("leave NsSearchTable FOUND in parent");
@@ -357,15 +349,15 @@ NsSearchParentTree (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte)
          * No parent, or type is "local".  We won't be searching the parent tree.
          */
 
-        if (!NameTbl[0].ParentScope)
+        if (!NameTable[0].ParentScope)
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] has no parent\n", NamSeg));
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] has no parent\n", EntryName));
         }
 
         else if (NsLocal (Type))
         {
             DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] type [%s] is local (no search)\n", 
-                                        NamSeg, NsTypeNames[Type]));
+                                        EntryName, NsTypeNames[Type]));
         }
     }
 
@@ -385,37 +377,48 @@ NsSearchParentTree (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte)
  * DESCRIPTION: Allocate a new namespace table, initialize it, and link it
  *              into the parent table.
  *
+ *              NOTE: We are in the first or second pass load mode, want to 
+ *              add a new table entry, and the current table is full.
+ *
  ***************************************************************************/
 
 ACPI_STATUS
-NsCreateAndLinkNewTable (nte *NameTbl, nte *PreviousEntry)
+NsCreateAndLinkNewTable (nte *NameTable)
 {
-    nte                 *NewTbl;
+    nte                 *NewTable;
     nte                 *ParentScope;
+    nte                 *ParentEntry;
     ACPI_STATUS         Status = AE_OK;
 
 
     FUNCTION_TRACE ("NsCreateAndLinkNewTable");
 
 
-    /*  first or second pass load mode and full table   */
+    /* Sanity check on the data structure */
 
-    ParentScope = NameTbl[0].ParentScope;
-
-    if (NEXTSEG (NameTbl))
+    if (NEXTSEG (NameTable))
     {
-        /*  we should NEVER get here    */
+        /* We should never get here (an appendage already allocated) */
 
         DEBUG_PRINT (ACPI_ERROR,
                     ("NsCreateAndLinkNewTable: appendage %p about to be overwritten\n",
-                    NEXTSEG (NameTbl)));
+                    NEXTSEG (NameTable)));
     }
+
+
+    /*
+     * We can use the parent entries from the start of the current table 
+     * Since the parent information remains the same.
+     */
+
+    ParentScope = NameTable[0].ParentScope;
+    ParentEntry = NameTable[0].ParentEntry;
 
 
     /* Allocate and chain an appendage to the filled table */
     
-    NEXTSEG (NameTbl) = NsAllocateNteDesc (NS_DEFAULT_TABLE_SIZE);
-    if (!NEXTSEG (NameTbl))
+    NewTable = NsAllocateNteDesc (NS_TABLE_SIZE);
+    if (!NewTable)
     {
         REPORT_ERROR (&KDT[1]);
         Status = AE_NO_MEMORY;
@@ -424,33 +427,14 @@ NsCreateAndLinkNewTable (nte *NameTbl, nte *PreviousEntry)
     else
     {
         /* 
-         * Allocation successful 
-         * Setup the required fields.  All others are already zero.
+         * Allocation successful. Init the new table.
          */
-
-        NewTbl = NEXTSEG (NameTbl);
-        NewTbl[0].ParentScope = ParentScope;
-
-        /* Previous Entry MUST be valid here */
-
-        NewTbl[0].ParentEntry = PreviousEntry->ParentEntry;  /* Same parent*/
-        PreviousEntry->NextEntry = &NameTbl[0];
-
-        /* 
-         * Set forward and back links.
-         * Important:  These are the links that tie the tables together
-         * so that when walking the links, it is invisible that their
-         * are separate, disjoint tables.
-         */
-
-        /* TBD: Probably not needed, performed by InitializeEntry */
-
-        NewTbl[0].PrevEntry = PreviousEntry;
-        NewTbl[0].NextEntry = NULL;
+        NEXTSEG (NameTable) = NewTable;
+        NsInitializeTable (NewTable, ParentScope, ParentEntry);
 
         DEBUG_PRINT (TRACE_EXEC, 
-            ("NsCreateAndLinkNewTable: NewTbl=%p, ParentScope=%p, Scope=%p\n",
-                NewTbl, ParentScope, NameTbl->Scope));
+            ("NsCreateAndLinkNewTable: NewTable=%p, ParentScope=%p, Scope=%p\n",
+                NewTable, ParentScope, NameTable->Scope));
     }
 
     FUNCTION_EXIT;
@@ -461,18 +445,44 @@ NsCreateAndLinkNewTable (nte *NameTbl, nte *PreviousEntry)
 
 /****************************************************************************
  *
+ * FUNCTION:    NsInitializeTable
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Initialize a new namespace table.  Simple, but called
+ *              from several places -- code should be kept in one place.
+ *
+ ***************************************************************************/
+
+void
+NsInitializeTable (nte *NewTable, nte *ParentScope, nte *ParentEntry)
+{
+
+
+    NewTable->ParentScope     = ParentScope;
+    NewTable->ParentEntry     = ParentEntry;
+
+
+    DEBUG_PRINT (TRACE_NAMES, ("NsInitializeTable: %x\n", NewTable));
+}
+
+
+/****************************************************************************
+ *
  * FUNCTION:    NsInitializeEntry
  *
  * PARAMETERS:  
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Initialize a new entry within a namespace table.
  *
  ***************************************************************************/
 
 void
-NsInitializeEntry (nte *NameTbl, UINT32 Position, char *NamSeg, NsType Type, 
+NsInitializeEntry (nte *NameTable, UINT32 Position, char *EntryName, NsType Type, 
                    nte *PreviousEntry)
 {
     nte                 *NewEntry;
@@ -481,18 +491,22 @@ NsInitializeEntry (nte *NameTbl, UINT32 Position, char *NamSeg, NsType Type,
     FUNCTION_TRACE ("NsInitializeEntry");
 
 
-    NewEntry = &NameTbl[Position];
+    NewEntry = &NameTable[Position];
     
-    /*  first or second pass load mode, NameTbl valid   */
+    /*  first or second pass load mode, NameTable valid   */
 
     CheckTrash ("NsSearchTable about to add");
 
-    NewEntry->Name          = *(UINT32 *) NamSeg;
-    NewEntry->ParentScope   = NameTbl[0].ParentScope;
-    NewEntry->ParentEntry   = NameTbl[0].ParentEntry;
+    NewEntry->Name          = *(UINT32 *) EntryName;
+    NewEntry->ParentScope   = NameTable[0].ParentScope;
+    NewEntry->ParentEntry   = NameTable[0].ParentEntry;
 
-    /* Set forward and back links */
-
+    /* 
+     * Set forward and back links.
+     * Important:  These are the links that tie the tables together
+     * so that when walking the links, it is invisible that their
+     * are separate, disjoint tables.
+     */
     if (PreviousEntry)
     {
         PreviousEntry->NextEntry = NewEntry;
@@ -543,11 +557,11 @@ NsInitializeEntry (nte *NameTbl, UINT32 Position, char *NamSeg, NsType Type,
         NewEntry->Type = Type;
         CheckTrashA ("NsInitializeEntry added type",
                         &NewEntry->Name, NewEntry->Name, Hash,
-                        &NewEntry->Type, NewEntry->Type, Type, (void *) NameTbl);
+                        &NewEntry->Type, NewEntry->Type, Type, (void *) NameTable);
     }
 
     DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %.4s added to %p at %p\n", 
-                                NamSeg, NameTbl, NewEntry));
+                                EntryName, NameTable, NewEntry));
     CheckTrash ("leave NsInitializeEntry ADDED");
     
     FUNCTION_EXIT;
@@ -562,11 +576,11 @@ NsInitializeEntry (nte *NameTbl, UINT32 Position, char *NamSeg, NsType Type,
  *
  * FUNCTION:    NsSearchAndEnter
  *
- * PARAMETERS:  NamSeg          - name segment to find or insert
- *              NameTbl         - name table to search
+ * PARAMETERS:  EntryName          - name segment to find or insert
+ *              NameTable         - name table to search
  *              LoadMode        - Add names only in Load mode
  *              Type            - Type associated with name
- *              RetNte          - Where to return the found NTE
+ *              RetEntry          - Where to return the found NTE
  *
  * RETURN:      Status
  *
@@ -581,8 +595,8 @@ NsInitializeEntry (nte *NameTbl, UINT32 Position, char *NamSeg, NsType Type,
  ***************************************************************************/
 
 ACPI_STATUS
-NsSearchAndEnter (char *NamSeg, nte *NameTbl,
-                OpMode LoadMode, NsType Type, nte **RetNte)
+NsSearchAndEnter (char *EntryName, nte *NameTable,
+                    OpMode LoadMode, NsType Type, nte **RetEntry)
 {
     UINT32              Position;       /* position in table */
     ACPI_STATUS         Status;
@@ -595,7 +609,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
 
     /* Parameter validation */
 
-    if (!NameTbl || !NamSeg || !RetNte)
+    if (!NameTable || !EntryName || !RetEntry)
     {
         REPORT_ERROR (&KDT[0]);
         FUNCTION_EXIT;
@@ -605,13 +619,13 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
 
     /* Name must consist of printable characters */
 
-    if (!AmlGoodChar ((INT32) NamSeg[0]) || 
-        !AmlGoodChar ((INT32) NamSeg[1]) || 
-        !AmlGoodChar ((INT32) NamSeg[2]) || 
-        !AmlGoodChar ((INT32) NamSeg[3]))
+    if (!AmlGoodChar ((INT32) EntryName[0]) || 
+        !AmlGoodChar ((INT32) EntryName[1]) || 
+        !AmlGoodChar ((INT32) EntryName[2]) || 
+        !AmlGoodChar ((INT32) EntryName[3]))
     {
         DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** bad name %08lx *** \n", 
-                                    *(UINT32 *) NamSeg));
+                                    *(UINT32 *) EntryName));
         CheckTrash ("leave NsSearchTable BADNAME");
         FUNCTION_EXIT;
         return AE_BAD_CHARACTER;
@@ -620,8 +634,8 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
 
     /* Try to find the name in the table specified by the caller */
 
-    *RetNte = NOTFOUND;
-    Status = NsSearchOnly (NamSeg, NameTbl, Type, RetNte, &SearchInfo);
+    *RetEntry = NOTFOUND;
+    Status = NsSearchOnly (EntryName, NameTable, Type, RetEntry, &SearchInfo);
     if (Status != AE_NOT_FOUND)
     {
         /* Either found it or there was an error -- finished either way */
@@ -633,7 +647,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
 
     /* Not found in table - search parent tree according to ACPI specification */
 
-    Status = NsSearchParentTree (NamSeg, NameTbl, Type, RetNte);
+    Status = NsSearchParentTree (EntryName, NameTable, Type, RetEntry);
     if (Status == AE_OK)
     {
         FUNCTION_EXIT;
@@ -648,7 +662,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
     if (LoadMode == MODE_Exec)
     {
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: Name %.4s Not found in %p (not adding)\n", 
-                                    NamSeg, NameTbl));
+                                    EntryName, NameTable));
         CheckTrash ("leave NsSearchTable NOTFOUND");
     
         FUNCTION_EXIT;
@@ -656,10 +670,11 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
     }
 
 
-    /* Extract the pertinent info from the search result struct */
-    /* NameTbl and position might now point to an appendage */
-
-    NameTbl = SearchInfo.NameTbl;
+    /* 
+     * Extract the pertinent info from the search result struct.
+     * NameTable and position might now point to an appendage
+     */
+    NameTable = SearchInfo.NameTable;
     Position = SearchInfo.Position;
 
 
@@ -670,17 +685,17 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
 
     if (SearchInfo.TableFull)
     {
-        Status = NsCreateAndLinkNewTable (NameTbl, SearchInfo.PreviousEntry);
+        Status = NsCreateAndLinkNewTable (NameTable);
         if (Status != AE_OK)
         {
             FUNCTION_EXIT;
             return Status;
         }
 
-        /* Point to first slot in new table */
+        /* Point to the first slot in the new table */
 
+        NameTable = NEXTSEG (NameTable);
         Position = 0;
-        NameTbl = NEXTSEG (NameTbl);
     }
 
 
@@ -689,9 +704,9 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
      * Initialize the new entry
      */
 
-    NsInitializeEntry (NameTbl, Position, NamSeg, Type, 
+    NsInitializeEntry (NameTable, Position, EntryName, Type, 
                         SearchInfo.PreviousEntry);
-    *RetNte = &NameTbl[Position];
+    *RetEntry = &NameTable[Position];
 
     FUNCTION_EXIT;
     return AE_OK;
