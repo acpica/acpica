@@ -245,7 +245,8 @@ PsxMthStackPush (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Pop the method stack (once)
+ * DESCRIPTION: Delete method locals and arguments.  Arguments are only
+ *              deleted if this method was called from another method.
  *
  ****************************************************************************/
 
@@ -281,13 +282,21 @@ PsxMthStackDeleteArgs (
         if (Object)
         {
             CmUpdateObjectReference (Object, REF_DECREMENT);   /* Removed from Stack */
-            CmDeleteInternalObject (Object);
+
+            /*
+             * Only delete the argument if this method was called from another method
+             * Otherwise, the arguments will never get deleted.
+             */
+            
+            if (WalkState->Next)
+            {
+                CmDeleteInternalObject (Object);
+            }
         }
     }
 
     return_ACPI_STATUS (AE_OK);
 }
-
 
 
 /*****************************************************************************
@@ -746,7 +755,7 @@ PsxMthStackDeleteValue (
              *
              * TBD: Is this still necessary??
              */
-            Object->Buffer.Sequence ^= 0x80000000UL;
+            Object->Buffer.Sequence ^= 0x80000000;
         }
 
 
