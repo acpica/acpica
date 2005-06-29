@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -162,7 +162,7 @@ AcpiExLoadOp (
 
     /* Object can be either a field or an opregion */
 
-    /* TBD: Handle field vs. Opregion *?
+    /* TBD: Handle field vs. Opregion */
 
 
     /* Get the table header */
