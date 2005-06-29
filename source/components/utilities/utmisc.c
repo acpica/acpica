@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.20 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -476,6 +476,44 @@ AcpiCmCreateUpdateStateAndPush (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiCmCreateCopyStateAndPush
+ *
+ * PARAMETERS:  *Object         - Object to be added to the new state
+ *              Action          - Increment/Decrement
+ *              StateList       - List the state will be added to
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Create a new state and push it
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmCreateCopyStateAndPush (
+    ACPI_OPERAND_OBJECT     *InternalObject,
+    ACPI_OBJECT             *ExternalObject,
+    UINT16                  Index,
+    ACPI_GENERIC_STATE      **StateList)
+{
+    ACPI_GENERIC_STATE       *State;
+
+
+
+    State = AcpiCmCreateCopyState (InternalObject, ExternalObject, Index);
+    if (!State)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+
+    AcpiCmPushGenericState (StateList, State);
+    return (AE_OK);
+}
+
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiCmPushGenericState
  *
  * PARAMETERS:  ListHead            - Head of the state stack
@@ -650,6 +688,53 @@ AcpiCmCreateUpdateState (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiCmCreateCopyState
+ *
+ * PARAMETERS:  Object              - Initial Object to be installed in the
+ *                                    state
+ *              Action              - Update action to be performed
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create an "Update State" - a flavor of the generic state used
+ *              to update reference counts and delete complex objects such
+ *              as packages.
+ *
+ ******************************************************************************/
+
+ACPI_GENERIC_STATE *
+AcpiCmCreateCopyState (
+    ACPI_OPERAND_OBJECT     *InternalObject,
+    ACPI_OBJECT             *ExternalObject,
+    UINT16                  Index)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    FUNCTION_TRACE_PTR ("CmCreateCopyState", InternalObject);
+
+
+    /* Create the generic state object */
+
+    State = AcpiCmCreateGenericState ();
+    if (!State)
+    {
+        return (NULL);
+    }
+
+    /* Init fields specific to the update struct */
+
+    State->Copy.InternalObject = InternalObject;
+    State->Copy.ExternalObject = ExternalObject;
+    State->Copy.Index          = Index;
+
+    return_PTR (State);
+}
+
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiCmCreateControlState
  *
  * PARAMETERS:  None
@@ -807,26 +892,26 @@ AcpiCmResolvePackageReferences (
     }
 
     for (Count = 0; Count < ObjDesc->Package.Count; Count++)
-    {    
+    {
         SubObject = ObjDesc->Package.Elements[Count];
 
         if (SubObject->Common.Type == INTERNAL_TYPE_REFERENCE)
         {
             if (SubObject->Reference.OpCode == AML_ZERO_OP)
             {
-                SubObject->Common.Type  = ACPI_TYPE_NUMBER;
-                SubObject->Number.Value = 0;
+                SubObject->Common.Type  = ACPI_TYPE_INTEGER;
+                SubObject->Integer.Value = 0;
             }
             else if (SubObject->Reference.OpCode == AML_ONE_OP)
             {
-                SubObject->Common.Type  = ACPI_TYPE_NUMBER;
-                SubObject->Number.Value = 1;
+                SubObject->Common.Type  = ACPI_TYPE_INTEGER;
+                SubObject->Integer.Value = 1;
             }
             else if (SubObject->Reference.OpCode == AML_ONES_OP)
             {
-                SubObject->Common.Type  = ACPI_TYPE_NUMBER;
-                SubObject->Number.Value = ACPI_UINT32_MAX;
-            }   
+                SubObject->Common.Type  = ACPI_TYPE_INTEGER;
+                SubObject->Integer.Value = ACPI_INTEGER_MAX;
+            }
         }
     }
 
