@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.51 $
+ * Module Name: asllength - Tree walk to determine package and opcode lengths
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -116,152 +116,22 @@
  *****************************************************************************/
 
 
-#include "aslcompiler.h"
-#include "aslcompiler.y.h"
-#include "acnamesp.h"
-#include "amlcode.h"
+#include "AslCompiler.h"
 
-#define _COMPONENT          ACPI_COMPILER
-        ACPI_MODULE_NAME    ("aslutils")
 
-#ifdef _USE_BERKELEY_YACC
-extern const char * const       AslCompilername[];
-static const char * const       *yytname = &AslCompilername[255];
-#else
+
 extern const char * const       yytname[];
-#endif
-
-
-void
-AslOptimizeNamepath (
-    char                *Buffer)
-{
-    printf ("NamePath: %s\n", Buffer);
-}
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsDisplayConstantOpcodes
+ * FUNCTION:    
  *
- * PARAMETERS:  None
+ * PARAMETERS:  
  *
- * RETURN:      None
+ * RETURN:      
  *
- * DESCRIPTION: Print AML opcodes that can be used in constant expressions.
- *
- ******************************************************************************/
-
-void
-UtDisplayConstantOpcodes (
-    void)
-{
-    UINT32              i;
-
-    printf ("Constant expression opcode information\n\n");
-
-    for (i = 0; i < sizeof (AcpiGbl_AmlOpInfo) / sizeof (ACPI_OPCODE_INFO); i++)
-    {
-        if (AcpiGbl_AmlOpInfo[i].Flags & AML_CONSTANT)
-        {
-            printf ("%s\n", AcpiGbl_AmlOpInfo[i].Name);
-        }
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtLocalCalloc
- *
- * PARAMETERS:  Size        - Bytes to be allocated
- *
- * RETURN:      Pointer to the allocated memory.  Guaranteed to be valid.
- *
- * DESCRIPTION: Allocate zero-initialized memory.  Aborts the compile on an
- *              allocation failure, on the assumption that nothing more can be
- *              accomplished.
- *
- ******************************************************************************/
-
-void *
-UtLocalCalloc (
-    UINT32                  Size)
-{
-    void                    *Allocated;
-
-
-    Allocated = ACPI_MEM_CALLOCATE (Size);
-    if (!Allocated)
-    {
-        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
-            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-            Gbl_InputByteCount, Gbl_CurrentColumn,
-            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-        exit (1);
-    }
-
-    TotalAllocations++;
-    TotalAllocated += Size;
-    return Allocated;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtBeginEvent
- *
- * PARAMETERS:  Event       - Event number (integer index)
- *              Name        - Ascii name of this event
- *
- * RETURN:      None
- *
- * DESCRIPTION: Saves the current time with this event
- *
- ******************************************************************************/
-
-void
-UtBeginEvent (
-    UINT32                  Event,
-    char                    *Name)
-{
-
-    AslGbl_Events[Event].StartTime = (time_t) AcpiOsGetTimer();
-    AslGbl_Events[Event].EventName = Name;
-    AslGbl_Events[Event].Valid = TRUE;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtEndEvent
- *
- * PARAMETERS:  Event       - Event number (integer index)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Saves the current time (end time) with this event
- *
- ******************************************************************************/
-
-void
-UtEndEvent (
-    UINT32                  Event)
-{
-
-    AslGbl_Events[Event].EndTime = (time_t) AcpiOsGetTimer();
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtHexCharToValue
- *
- * PARAMETERS:  hc          - Hex character in Ascii
- *
- * RETURN:      The binary value of the hex character
- *
- * DESCRIPTION: Perform ascii-to-hex translation
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -269,94 +139,35 @@ UINT8
 UtHexCharToValue (
     int                     hc)
 {
-
-    if (hc <= 0x39)
+    if (hc < 0x39)
     {
-        return ((UINT8) (hc - 0x30));
+        return (hc - 0x30);
     }
 
-    if (hc <= 0x46)
+    if (hc < 0x46)
     {
-        return ((UINT8) (hc - 0x37));
+        return (hc - 0x37);
     }
 
-    return ((UINT8) (hc - 0x57));
+    return (hc - 0x57);
 }
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    UtConvertByteToHex
+ * FUNCTION:    
  *
- * PARAMETERS:  RawByte         - Binary data
- *              *Buffer         - Pointer to where the hex bytes will be stored
+ * PARAMETERS:  
  *
- * RETURN:      Ascii hex byte is stored in Buffer.
+ * RETURN:      
  *
- * DESCRIPTION: Perform hex-to-ascii translation.  The return data is prefixed
- *              with "0x"
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
-void
-UtConvertByteToHex (
-    UINT8                   RawByte,
-    UINT8                   *Buffer)
-{
-
-    Buffer[0] = '0';
-    Buffer[1] = 'x';
-
-    Buffer[2] = (UINT8) hex[(RawByte >> 4) & 0xF];
-    Buffer[3] = (UINT8) hex[RawByte & 0xF];
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtConvertByteToAsmHex
- *
- * PARAMETERS:  RawByte         - Binary data
- *              *Buffer         - Pointer to where the hex bytes will be stored
- *
- * RETURN:      Ascii hex byte is stored in Buffer.
- *
- * DESCRIPTION: Perform hex-to-ascii translation.  The return data is prefixed
- *              with "0x"
- *
- ******************************************************************************/
-
-void
-UtConvertByteToAsmHex (
-    UINT8                   RawByte,
-    UINT8                   *Buffer)
-{
-
-    Buffer[0] = '0';
-
-    Buffer[1] = (UINT8) hex[(RawByte >> 4) & 0xF];
-    Buffer[2] = (UINT8) hex[RawByte & 0xF];
-    Buffer[3] = 'h';
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    DbgPrint
- *
- * PARAMETERS:  Fmt             - Printf format string
- *              ...             - variable printf list
- *
- * RETURN:      None
- *
- * DESCRIPTION: Conditional print statement.  Prints to stderr only if the
- *              debug flag is set.
- *
- ******************************************************************************/
-
-void
+int
 DbgPrint (
-    UINT32                  Type,
     char                    *Fmt,
     ...)
 {
@@ -365,33 +176,24 @@ DbgPrint (
 
     va_start (Args, Fmt);
 
-    if (!Gbl_DebugFlag)
-    {
-        return;
-    }
+    if (Gbl_DebugFlag)
+        vfprintf (stderr, Fmt, Args);
 
-    if ((Type == ASL_PARSE_OUTPUT) &&
-        (!(AslCompilerdebug)))
-    {
-        return;
-    }
-
-    (void) vfprintf (stderr, Fmt, Args);
     va_end (Args);
-    return;
+    return 0;
 }
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    UtPrintFormattedName
+ * FUNCTION:    
  *
- * PARAMETERS:  ParseOpcode         - Parser keyword ID
- *              Level               - Indentation level
+ * PARAMETERS:  
  *
- * RETURN:      None
+ * RETURN:      
  *
- * DESCRIPTION: Print the ascii name of the parse opcode.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -402,48 +204,37 @@ UtPrintFormattedName (
     UINT16                  ParseOpcode,
     UINT32                  Level)
 {
+    UINT32                  i;
 
-    DbgPrint (ASL_TREE_OUTPUT,
-        "%*s %-16.16s", (3 * Level), " ",
-        UtGetOpName (ParseOpcode));
+    
+    for (i = 0; i < Level; i++)
+    {
+        DbgPrint ("    ");
+    }
 
+
+    DbgPrint ("%-16.16s", yytname[ParseOpcode-255]);
+        
+    
     if (Level < TEXT_OFFSET)
     {
-        DbgPrint (ASL_TREE_OUTPUT,
-            "%*s", (TEXT_OFFSET - Level) * 3, " ");
+        for (i = 0; i < (TEXT_OFFSET - Level); i++)
+        {
+            DbgPrint ("    ");
+        }
     }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    UtSetParseOpName
+ * FUNCTION:    
  *
- * PARAMETERS:  Op
+ * PARAMETERS:  
  *
- * RETURN:      None
+ * RETURN:      
  *
- * DESCRIPTION: Insert the ascii name of the parse opcode
- *
- ******************************************************************************/
-
-void
-UtSetParseOpName (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    strncpy (Op->Asl.ParseOpName, UtGetOpName (Op->Asl.ParseOpcode), 12);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtGetOpName
- *
- * PARAMETERS:  ParseOpcode         - Parser keyword ID
- *
- * RETURN:      Pointer to the opcode name
- *
- * DESCRIPTION: Get the ascii name of the parse opcode
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -451,18 +242,14 @@ char *
 UtGetOpName (
     UINT32                  ParseOpcode)
 {
-
-    /*
-     * First entries (ASL_YYTNAME_START) in yytname are special reserved names.
-     * Ignore first 8 characters of the name
-     */
-    return ((char *) yytname [(ParseOpcode - ASL_FIRST_PARSE_OPCODE) + ASL_YYTNAME_START] + 8);
+    return (char *) yytname [ParseOpcode - 255];
 }
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    UtDisplaySummary
+ * FUNCTION:    AslDisplaySummary
  *
  * PARAMETERS:  None
  *
@@ -474,438 +261,156 @@ UtGetOpName (
 
 void
 UtDisplaySummary (
-    UINT32                  FileId)
+    void)
 {
 
-    if (FileId != ASL_FILE_STDOUT)
+
+    printf ("Compilation complete. %d Errors %d Warnings\n", ErrorCount, WarningCount);
+    printf ("ASL Input: %d lines, %d bytes, %d keywords\n", 
+                Gbl_CurrentLineNumber, InputChars, TotalKeywords);
+
+    if (ErrorCount == 0)
     {
-        /* Compiler name and version number */
-
-        FlPrintFile (FileId, "%s version %X [%s]\n",
-            CompilerId, (UINT32) ACPI_CA_VERSION, __DATE__);
+        printf ("AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n", 
+                    Gbl_OutputFilename, TableLength, TotalNamedObjects, TotalExecutableOpcodes);
     }
-
-    /* Input/Output summary */
-
-    FlPrintFile (FileId,
-        "ASL Input:  %s - %d lines, %d bytes, %d keywords\n",
-        Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber,
-        Gbl_InputByteCount, TotalKeywords);
-
-    /* AML summary */
-
-    if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
-    {
-        FlPrintFile (FileId,
-            "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
-            Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength,
-            TotalNamedObjects, TotalExecutableOpcodes);
-    }
-
-    /* Error summary */
-
-    FlPrintFile (FileId,
-        "Compilation complete. %d Errors, %d Warnings, %d Remarks, %d Optimizations\n",
-        Gbl_ExceptionCount[ASL_ERROR], 
-        Gbl_ExceptionCount[ASL_WARNING],
-        Gbl_ExceptionCount[ASL_REMARK],
-        Gbl_ExceptionCount[ASL_OPTIMIZATION]);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    UtDisplaySummary
+ * FUNCTION:    
  *
- * PARAMETERS:  Op            - Integer parse node
- *              LowValue        - Smallest allowed value
- *              HighValue       - Largest allowed value
+ * PARAMETERS:  
  *
- * RETURN:      Op if OK, otherwise NULL
+ * RETURN:      
  *
- * DESCRIPTION: Check integer for an allowable range
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT *
-UtCheckIntegerRange (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  LowValue,
-    UINT32                  HighValue)
+char *
+AslGenerateFilename (
+    char                    *InputFilename,
+    char                    *Suffix)
 {
-    char                    *ParseError = NULL;
-    char                    Buffer[64];
+    char                    *Position;
+    char                    *NewFilename;
 
 
-    if (!Op)
+    NewFilename = calloc (strlen (InputFilename) + strlen (Suffix), 1);
+    if (!NewFilename)
     {
         return NULL;
     }
 
-    if (Op->Asl.Value.Integer < LowValue)
+    Position = strrchr (InputFilename, '.');
+    if (Position)
     {
-        ParseError = "Value below valid range";
+        *Position = 0;
     }
 
-    if (Op->Asl.Value.Integer > HighValue)
-    {
-        ParseError = "Value above valid range";
-    }
+    strcpy (NewFilename, InputFilename);
+    strcat (NewFilename, Suffix);
 
-    if (ParseError)
-    {
-        sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
-        AslCompilererror (Buffer);
-        TrReleaseNode (Op);
 
-        return NULL;
-    }
-
-    return Op;
+    return NewFilename;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    UtGetStringBuffer
+ * FUNCTION:    
  *
- * PARAMETERS:  Length          - Size of buffer requested
+ * PARAMETERS:  
  *
- * RETURN:      Pointer to the buffer.  Aborts on allocation failure
+ * RETURN:      
  *
- * DESCRIPTION: Allocate a string buffer.  Bypass the local
- *              dynamic memory manager for performance reasons (This has a
- *              major impact on the speed of the compiler.)
- *
- ******************************************************************************/
-
-NATIVE_CHAR *
-UtGetStringBuffer (
-    UINT32                  Length)
-{
-    NATIVE_CHAR             *Buffer;
-
-
-    if ((Gbl_StringCacheNext + Length) >= Gbl_StringCacheLast)
-    {
-        Gbl_StringCacheNext = UtLocalCalloc (ASL_STRING_CACHE_SIZE + Length);
-        Gbl_StringCacheLast = Gbl_StringCacheNext + ASL_STRING_CACHE_SIZE + Length;
-    }
-
-    Buffer = Gbl_StringCacheNext;
-    Gbl_StringCacheNext += Length;
-
-    return (Buffer);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtInternalizeName
- *
- * PARAMETERS:  ExternalName            - Name to convert
- *              ConvertedName           - Where the converted name is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Convert an external (ASL) name to an internal (AML) name
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 ACPI_STATUS
-UtInternalizeName (
-    NATIVE_CHAR             *ExternalName,
-    NATIVE_CHAR             **ConvertedName)
+UtOpenAllFiles (
+    char                    *InputFilename)
 {
-    ACPI_NAMESTRING_INFO    Info;
-    ACPI_STATUS             Status;
 
 
-    if (!ExternalName)
+    /* Open the input ASL file, text mode */
+
+	Gbl_AslInputFile = fopen (InputFilename, "r");
+    AslCompilerin = Gbl_AslInputFile;
+    if (!Gbl_AslInputFile)
     {
-        return (AE_OK);
+        AslError (ASL_ERROR_INPUT_FILE_OPEN);
+        return (AE_ERROR);
     }
 
-    /* Get the length of the new internal name */
 
-    Info.ExternalName = ExternalName;
-    AcpiNsGetInternalNameLength (&Info);
+    /* Create the output AML filename */
 
-    /* We need a segment to store the internal  name */
-
-    Info.InternalName = UtGetStringBuffer (Info.Length);
-    if (!Info.InternalName)
+    Gbl_OutputFilename = AslGenerateFilename (InputFilename, ".aml");
+    if (!Gbl_OutputFilename)
     {
-        return (AE_NO_MEMORY);
+        AslError (ASL_ERROR_OUTPUT_FILENAME);
+        return (AE_ERROR);
     }
 
-    /* Build the name */
 
-    Status = AcpiNsBuildInternalName (&Info);
-    if (ACPI_FAILURE (Status))
+    /* Open the output AML file in binary mode */
+
+	Gbl_OutputAmlFile = fopen (Gbl_OutputFilename, "w+b");
+    if (!Gbl_OutputAmlFile)
     {
-        return (Status);
+        AslError (ASL_ERROR_OUTPUT_FILE_OPEN);
+        return (AE_ERROR);
     }
 
-    *ConvertedName = Info.InternalName;
+
+    /* Create/Open a listing output file if asked */
+
+    if (Gbl_ListingFlag)
+    {
+        Gbl_ListingFilename = AslGenerateFilename (InputFilename, ".lst");
+        if (!Gbl_ListingFilename)
+        {
+            AslError (ASL_ERROR_LISTING_FILENAME);
+            return (AE_ERROR);
+        }
+
+        /* Open the debug file, text mode */
+
+	    Gbl_ListingFile = fopen (Gbl_ListingFilename, "w+");
+        if (!Gbl_ListingFile)
+        {
+            AslError (ASL_ERROR_LISTING_FILE_OPEN);
+            return (AE_ERROR);
+        }
+    }
+
+    /* Create/Open a debug output file if asked */
+
+    if (Gbl_DebugFlag)
+    {
+        Gbl_DebugFilename = AslGenerateFilename (InputFilename, ".txt");
+        if (!Gbl_DebugFilename)
+        {
+            AslError (ASL_ERROR_DEBUG_FILENAME);
+            return (AE_ERROR);
+        }
+
+        /* Open the debug file, text mode */
+
+	    Gbl_DebugFile = freopen (Gbl_DebugFilename, "w+", stderr);
+        if (!Gbl_DebugFile)
+        {
+            AslError (ASL_ERROR_DEBUG_FILE_OPEN);
+            return (AE_ERROR);
+        }
+    }
+
+
     return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtAttachNamepathToOwner
- *
- * PARAMETERS:  Op            - Parent parse node
- *              NameOp        - Node that contains the name
- *
- * RETURN:      Sets the ExternalName and Namepath in the parent node
- *
- * DESCRIPTION: Store the name in two forms in the parent node:  The original
- *              (external) name, and the internalized name that is used within
- *              the ACPI namespace manager.
- *
- ******************************************************************************/
-
-void
-UtAttachNamepathToOwner (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_PARSE_OBJECT       *NameOp)
-{
-    ACPI_STATUS             Status;
-
-
-    Op->Asl.ExternalName = NameOp->Asl.Value.String;
-
-    Status = UtInternalizeName (NameOp->Asl.Value.String, &Op->Asl.Namepath);
-    if (ACPI_FAILURE (Status))
-    {
-        /* TBD: abort on no memory */
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtDoConstant
- *
- * PARAMETERS:  String      - Hex, Octal, or Decimal string
- *
- * RETURN:      Converted Integer
- *
- * DESCRIPTION: Convert a string to an integer.  With error checking.
- *
- ******************************************************************************/
-
-ACPI_INTEGER
-UtDoConstant (
-    NATIVE_CHAR             *String)
-{
-    ACPI_STATUS             Status;
-    ACPI_INTEGER            Converted;
-    char                    ErrBuf[64];
-
-
-    Status = UtStrtoul64 (String, 0, &Converted);
-    if (ACPI_FAILURE (Status))
-    {
-        sprintf (ErrBuf, "%s %s\n", "Conversion error:", AcpiFormatException (Status));
-        AslCompilererror (ErrBuf);
-    }
-
-    return (Converted);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtStrtoul64
- *
- * PARAMETERS:  String          - Null terminated string
- *              Terminater      - Where a pointer to the terminating byte is returned
- *              Base            - Radix of the string
- *
- * RETURN:      Converted value
- *
- * DESCRIPTION: Convert a string into an unsigned value.
- *
- ******************************************************************************/
-#define NEGATIVE    1
-#define POSITIVE    0
-
-ACPI_STATUS
-UtStrtoul64 (
-    NATIVE_CHAR             *String,
-    UINT32                  Base,
-    ACPI_INTEGER            *RetInteger)
-{
-    UINT32                  Index;
-    UINT32                  Sign;
-    ACPI_INTEGER            ReturnValue = 0;
-    ACPI_STATUS             Status = AE_OK;
-
-
-    *RetInteger = 0;
-
-    switch (Base)
-    {
-    case 0:
-    case 8:
-    case 10:
-    case 16:
-        break;
-
-    default:
-        /*
-         * The specified Base parameter is not in the domain of
-         * this function:
-         */
-        return (AE_BAD_PARAMETER);
-    }
-
-    /*
-     * skip over any white space in the buffer:
-     */
-    while (isspace (*String) || *String == '\t')
-    {
-        ++String;
-    }
-
-    /*
-     * The buffer may contain an optional plus or minus sign.
-     * If it does, then skip over it but remember what is was:
-     */
-    if (*String == '-')
-    {
-        Sign = NEGATIVE;
-        ++String;
-    }
-    else if (*String == '+')
-    {
-        ++String;
-        Sign = POSITIVE;
-    }
-    else
-    {
-        Sign = POSITIVE;
-    }
-
-    /*
-     * If the input parameter Base is zero, then we need to
-     * determine if it is octal, decimal, or hexadecimal:
-     */
-    if (Base == 0)
-    {
-        if (*String == '0')
-        {
-            if (tolower (*(++String)) == 'x')
-            {
-                Base = 16;
-                ++String;
-            }
-            else
-            {
-                Base = 8;
-            }
-        }
-        else
-        {
-            Base = 10;
-        }
-    }
-
-    /*
-     * For octal and hexadecimal bases, skip over the leading
-     * 0 or 0x, if they are present.
-     */
-    if (Base == 8 && *String == '0')
-    {
-        String++;
-    }
-
-    if (Base == 16 &&
-        *String == '0' &&
-        tolower (*(++String)) == 'x')
-    {
-        String++;
-    }
-
-    /* Main loop: convert the string to an unsigned long */
-
-    while (*String)
-    {
-        if (isdigit (*String))
-        {
-            Index = ((UINT8) *String) - '0';
-        }
-        else
-        {
-            Index = (UINT8) toupper (*String);
-            if (isupper ((char) Index))
-            {
-                Index = Index - 'A' + 10;
-            }
-            else
-            {
-                goto ErrorExit;
-            }
-        }
-
-        if (Index >= Base)
-        {
-            goto ErrorExit;
-        }
-
-        /* Check to see if value is out of range: */
-
-        if (ReturnValue > ((ACPI_INTEGER_MAX - (ACPI_INTEGER) Index) /
-                            (ACPI_INTEGER) Base))
-        {
-            goto ErrorExit;
-        }
-        else
-        {
-            ReturnValue *= Base;
-            ReturnValue += Index;
-        }
-
-        ++String;
-    }
-
-
-    /*
-     * If a minus sign was present, then "the conversion is negated":
-     */
-    if (Sign == NEGATIVE)
-    {
-        ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
-    }
-
-    *RetInteger = ReturnValue;
-    return (Status);
-
-
-ErrorExit:
-    switch (Base)
-    {
-    case 8:
-        Status = AE_BAD_OCTAL_CONSTANT;
-        break;
-
-    case 10:
-        Status = AE_BAD_DECIMAL_CONSTANT;
-        break;
-
-    case 16:
-        Status = AE_BAD_HEX_CONSTANT;
-        break;
-
-    default:
-        /* Base validated above */
-        break;
-    }
-
-    return (Status);
 }
 
 
