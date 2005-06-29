@@ -115,11 +115,11 @@
 
 
 #include "acpi.h"
-#include "parser.h"
-#include "tables.h"
-#include "namesp.h"
-#include "interp.h"
-#include "debugger.h"
+#include "acparser.h"
+#include "actables.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "acdebug.h"
 
 
 #ifdef ENABLE_DEBUGGER
@@ -132,20 +132,19 @@
  * Globals that are specific to the debugger
  */
 
-char                    LineBuf[80];
-char                    ParsedBuf[80];
-char                    ScopeBuf[40];
-char                    DebugFilename[40];
-char                    *Args[DB_MAX_ARGS];
-char                    *Buffer;
-char                    *Filename = NULL;
+INT8                    LineBuf[80];
+INT8                    ParsedBuf[80];
+INT8                    ScopeBuf[40];
+INT8                    DebugFilename[40];
+INT8                    *Args[DB_MAX_ARGS];
+INT8                    *Buffer;
+INT8                    *Filename = NULL;
 BOOLEAN                 OutputToFile = FALSE;
 
 
 UINT32                  AcpiGbl_DbDebugLevel = 0x0FFFFFFF;
 UINT32                  AcpiGbl_DbConsoleDebugLevel = DEBUG_DEFAULT;
 UINT8                   AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
-UINT32                  AcpiGbl_MethodBreakpoint = 0;
 
 
 BOOLEAN                 opt_tables      = FALSE;
@@ -274,7 +273,7 @@ COMMAND_INFO                Commands[] =
 
 void
 AcpiDbDisplayHelp (
-    char                    *HelpType)
+    INT8                    *HelpType)
 {
 
 
@@ -380,18 +379,18 @@ AcpiDbDisplayHelp (
  *
  *****************************************************************************/
 
-char *
+INT8 *
 AcpiDbGetNextToken (
-    char                    *String,
-    char                    **Next)
+    INT8                    *String,
+    INT8                    **Next)
 {
-    char                    *Start;
+    INT8                    *Start;
 
     /* At end of buffer? */
 
     if (!String || !(*String))
     {
-        return NULL;
+        return (NULL);
     }
 
 
@@ -406,7 +405,7 @@ AcpiDbGetNextToken (
 
         if (!(*String))
         {
-            return NULL;
+            return (NULL);
         }
     }
 
@@ -431,7 +430,7 @@ AcpiDbGetNextToken (
         *Next = String + 1;
     }
 
-    return Start;
+    return (Start);
 }
 
 
@@ -450,12 +449,12 @@ AcpiDbGetNextToken (
 
 INT32
 AcpiDbGetLine (
-    char                    *InputBuffer)
+    INT8                    *InputBuffer)
 {
     UINT32                  i;
     INT32                   Count;
-    char                    *Next;
-    char                    *This;
+    INT8                    *Next;
+    INT8                    *This;
 
 
     STRCPY (ParsedBuf, InputBuffer);
@@ -485,7 +484,7 @@ AcpiDbGetLine (
     if (Count)
         Count--;  /* Number of args only */
 
-    return Count;
+    return (Count);
 }
 
 
@@ -503,27 +502,27 @@ AcpiDbGetLine (
 
 INT32
 AcpiDbMatchCommand (
-    char                    *UserCommand)
+    INT8                    *UserCommand)
 {
     UINT32                  i;
 
 
     if (!UserCommand || UserCommand[0] == 0)
     {
-        return CMD_NULL;
+        return (CMD_NULL);
     }
 
     for (i = CMD_FIRST_VALID; Commands[i].Name; i++)
     {
         if (STRSTR (Commands[i].Name, UserCommand) == Commands[i].Name)
         {
-            return i;
+            return (i);
         }
     }
 
     /* Command not recognized */
 
-    return CMD_NOT_FOUND;
+    return (CMD_NOT_FOUND);
 }
 
 
@@ -541,14 +540,14 @@ AcpiDbMatchCommand (
 
 ACPI_STATUS
 AcpiDbCommandDispatch (
-    char                    *InputBuffer,
+    INT8                    *InputBuffer,
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op)
 {
     UINT32                  Temp;
     INT32                   CommandIndex;
     INT32                   ParamCount;
-    char                    *CommandLine;
+    INT8                    *CommandLine;
     ACPI_STATUS             Status = AE_CTRL_TRUE;
 
 
@@ -618,7 +617,7 @@ AcpiDbCommandDispatch (
         if (ACPI_FAILURE(Status))
         {
             AcpiOsPrintf("AcpiEnable failed (0x%x)\n", Status);
-            return Status;
+            return (Status);
         }
         break;
 
@@ -651,26 +650,26 @@ AcpiDbCommandDispatch (
         CommandLine = AcpiDbGetFromHistory (Args[1]);
         if (!CommandLine)
         {
-            return AE_CTRL_TRUE;
+            return (AE_CTRL_TRUE);
         }
 
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
-        if (Status == AE_OK)
+        if (ACPI_SUCCESS (Status))
             Status = AE_CTRL_TRUE;
-        return Status;
+        return (Status);
         break;
 
     case CMD_HISTORY_LAST:
         CommandLine = AcpiDbGetFromHistory (NULL);
         if (!CommandLine)
         {
-            return AE_CTRL_TRUE;
+            return (AE_CTRL_TRUE);
         }
 
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
-        if (Status == AE_OK)
+        if (ACPI_SUCCESS (Status))
             Status = AE_CTRL_TRUE;
-        return Status;
+        return (Status);
 
     case CMD_INFORMATION:
         AcpiDbDisplayMethodInfo (Op);
@@ -680,8 +679,10 @@ AcpiDbCommandDispatch (
         if (Op)
         {
             AcpiGbl_CmSingleStep = TRUE;
-            AcpiGbl_MethodBreakpoint = 0;
-            return AE_OK;
+
+/* TBD: Must get current walk state */
+            /* AcpiGbl_MethodBreakpoint = 0; */
+            return (AE_OK);
         }
         break;
 
@@ -713,7 +714,7 @@ AcpiDbCommandDispatch (
         Status = AcpiDbLoadAcpiTable (Args[1]);
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            return (Status);
         }
 
         AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
@@ -722,7 +723,7 @@ AcpiDbCommandDispatch (
 
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            return (Status);
         }
         break;
 
@@ -834,7 +835,7 @@ AcpiDbCommandDispatch (
     /* Add all commands that come here to the history buffer */
 
     AcpiDbAddToHistory (InputBuffer);
-    return Status;
+    return (Status);
 }
 
 
@@ -912,7 +913,7 @@ AcpiDbSingleThread (
 
 ACPI_STATUS
 AcpiDbUserCommands (
-    char                    Prompt,
+    INT8                    Prompt,
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -970,7 +971,7 @@ AcpiDbUserCommands (
      */
     AcpiTerminate ();
 
-    return Status;
+    return (Status);
 }
 
 

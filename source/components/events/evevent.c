@@ -2,7 +2,6 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -122,98 +121,7 @@
 #include "accommon.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evevent")
-
-
-/**************************************************************************
- *
- * FUNCTION:    AcpiEvInitialize
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Ensures that the system control interrupt (SCI) is properly
- *              configured, disables SCI event sources, installs the SCI
- *              handler
- *
- *************************************************************************/
-
-ACPI_STATUS
-AcpiEvInitialize (
-    void)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE ("EvInitialize");
-
-
-    /* Make sure we've got ACPI tables */
-
-    if (!AcpiGbl_DSDT)
-    {
-        DEBUG_PRINT (ACPI_WARN, ("EvInitialize: No ACPI tables present!\n"));
-        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
-    }
-
-
-    /* Make sure the BIOS supports ACPI mode */
-
-    if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
-    {
-        DEBUG_PRINT (ACPI_WARN,
-            ("EvInitialize: Only legacy mode supported!\n"));
-        return_ACPI_STATUS (AE_ERROR);
-    }
-
-
-    AcpiGbl_OriginalMode = AcpiHwGetMode();
-
-    /*
-     * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
-     * done prior to enabling SCIs to prevent interrupts from occuring
-     * before handers are installed.
-     */
-
-    Status = AcpiEvFixedEventInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_FATAL,
-            ("EvInitialize: Unable to initialize fixed events.\n"));
-        return_ACPI_STATUS (Status);
-    }
-
-    Status = AcpiEvGpeInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_FATAL,
-            ("EvInitialize: Unable to initialize general purpose events.\n"));
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Install the SCI handler */
-
-    Status = AcpiEvInstallSciHandler ();
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_FATAL,
-            ("EvInitialize: Unable to install System Control Interrupt Handler\n"));
-        return_ACPI_STATUS (Status);
-    }
-
-
-    /* Install handlers for control method GPE handlers (_Lxx, _Exx) */
-
-    AcpiEvInitGpeControlMethods ();
-
-    /* Install the handler for the Global Lock */
-
-    Status = AcpiEvInitGlobalLockHandler ();
-
-
-    return_ACPI_STATUS (Status);
-}
+        MODULE_NAME         ("evevent");
 
 
 /******************************************************************************
@@ -353,7 +261,7 @@ AcpiEvFixedEventDispatch (
 {
     /* Clear the status bit */
 
-    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, TMR_STS +
+    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, (INT32)TMR_STS +
                             Event, 1);
 
     /*
@@ -559,13 +467,13 @@ AcpiEvSaveMethodInfo (
     void                    **ReturnValue)
 {
     UINT32                  GpeNumber;
-    NATIVE_CHAR             Name[ACPI_NAME_SIZE + 1];
+    INT8                    Name[ACPI_NAME_SIZE + 1];
     UINT8                   Type;
 
 
     /* Extract the name from the object and convert to a string */
 
-    MOVE_UNALIGNED32_TO_32 (Name, &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name);
+    MOVE_UNALIGNED32_TO_32 (Name, &((ACPI_NAMED_OBJECT*) ObjHandle)->Name);
     Name[ACPI_NAME_SIZE] = 0;
 
     /*
@@ -667,7 +575,7 @@ AcpiEvInitGpeControlMethods (void)
     /* Traverse the namespace under \_GPE to find all methods there */
 
     Status = AcpiWalkNamespace (ACPI_TYPE_METHOD, AcpiGbl_GpeObjHandle,
-                                ACPI_UINT32_MAX, AcpiEvSaveMethodInfo,
+                                ACPI_INT32_MAX, AcpiEvSaveMethodInfo,
                                 NULL, NULL);
 
     return_ACPI_STATUS (Status);

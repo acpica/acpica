@@ -115,10 +115,10 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "debugger.h"
+#include "acnamesp.h"
+#include "acdebug.h"
 
 
 #ifdef ENABLE_DEBUGGER
@@ -130,7 +130,7 @@
 #define MAX_SHOW_ENTRY      128
 
 
-char                        *INDENT_STRING = "....";
+INT8                        *INDENT_STRING = "....";
 
 
 /*******************************************************************************
@@ -156,14 +156,14 @@ AcpiDbBlockType (
     switch (Op->Opcode)
     {
     case AML_METHOD_OP:
-        return BLOCK_BRACE;
+        return (BLOCK_BRACE);
         break;
 
     default:
         break;
     }
 
-    return BLOCK_PAREN;
+    return (BLOCK_PAREN);
 
 }
 
@@ -216,7 +216,7 @@ AcpiPsDisplayObjectPathname (
     }
 
     AcpiOsPrintf (")");
-    return AE_OK;
+    return (AE_OK);
 }
 
 #else
@@ -227,7 +227,7 @@ AcpiPsDisplayObjectPathname (
 {
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *Nte;
-    char                    Buffer[MAX_SHOW_ENTRY];
+    INT8                    Buffer[MAX_SHOW_ENTRY];
     UINT32                  BufferSize = MAX_SHOW_ENTRY;
 
 
@@ -243,7 +243,7 @@ AcpiPsDisplayObjectPathname (
          * is not in the namespace.  This can happen during single
          * stepping where a dynamic named object is *about* to be created.
          */
-        return AE_OK;
+        return (AE_OK);
     }
 
     /* Convert NTE/handle to a full pathname */
@@ -252,11 +252,11 @@ AcpiPsDisplayObjectPathname (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("****Could not get pathname****)");
-        return Status;
+        return (Status);
     }
 
     AcpiOsPrintf ("%s)", Buffer);
-    return AE_OK;
+    return (AE_OK);
 }
 
 #endif
@@ -434,7 +434,7 @@ AcpiDbDisplayOp (
 
 void
 AcpiDbDisplayNamestring (
-    char                    *Name)
+    INT8                    *Name)
 {
     UINT32                  SegCount;
     BOOLEAN                 DoDot = FALSE;
@@ -771,16 +771,7 @@ AcpiDbDisplayOpcode (
         /* Just get the opcode name and print it */
 
         Opc = AcpiPsGetOpcodeInfo (Op->Opcode);
-        if (Opc)
-        {
-            DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
-        }
-
-        else
-        {
-            AcpiOsPrintf ("<Opcode 0x%04x>", Op->Opcode);
-        }
-
+        DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
         break;
     }
 
