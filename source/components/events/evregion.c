@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.128 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,6 @@
 #include "acevents.h"
 #include "acnamesp.h"
 #include "acinterp.h"
-#include "amlcode.h"
 
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evregion")
@@ -267,7 +266,7 @@ AcpiEvExecuteRegMethod (
     /*
      *  Set up the parameter objects
      */
-    Params[0]->Integer.Value  = RegionObj->Region.SpaceId;
+    Params[0]->Integer.Value = RegionObj->Region.SpaceId;
     Params[1]->Integer.Value = Function;
     Params[2] = NULL;
 
@@ -313,6 +312,7 @@ AcpiEvAddressSpaceDispatch (
     ACPI_INTEGER            *Value)
 {
     ACPI_STATUS             Status;
+    ACPI_STATUS             Status2;
     ACPI_ADR_SPACE_HANDLER  Handler;
     ACPI_ADR_SPACE_SETUP    RegionSetup;
     ACPI_OPERAND_OBJECT     *HandlerDesc;
@@ -372,7 +372,11 @@ AcpiEvAddressSpaceDispatch (
 
         /* Re-enter the interpreter */
 
-        AcpiExEnterInterpreter ();
+        Status2 = AcpiExEnterInterpreter ();
+        if (ACPI_FAILURE (Status2))
+        {
+            return_ACPI_STATUS (Status2);
+        }
 
         /*
          *  Init routine may fail
@@ -434,7 +438,11 @@ AcpiEvAddressSpaceDispatch (
          * We just returned from a non-default handler, we must re-enter the
          * interpreter
          */
-        AcpiExEnterInterpreter ();
+        Status2 = AcpiExEnterInterpreter ();
+        if (ACPI_FAILURE (Status2))
+        {
+            return_ACPI_STATUS (Status2);
+        }
     }
 
     return_ACPI_STATUS (Status);
@@ -474,7 +482,7 @@ AcpiEvDisassociateRegionFromHandler(
     RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
     if (!RegionObj2)
     {
-        return;
+        return_VOID;
     }
     RegionContext = RegionObj2->Extra.RegionContext;
 
@@ -525,7 +533,13 @@ AcpiEvDisassociateRegionFromHandler(
             /*
              *  Now stop region accesses by executing the _REG method
              */
-            AcpiEvExecuteRegMethod (RegionObj, 0);
+            Status = AcpiEvExecuteRegMethod (RegionObj, 0);
+            if (ACPI_FAILURE (Status))
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s from region _REG, [%s]\n",
+                    AcpiFormatException (Status),
+                    AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
+            }
 
             if (AcpiNsIsLocked)
             {
@@ -610,7 +624,8 @@ AcpiEvAssociateRegionAndHandler (
     ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsIsLocked)
 {
-    ACPI_STATUS     Status;
+    ACPI_STATUS             Status;
+    ACPI_STATUS             Status2;
 
 
     ACPI_FUNCTION_TRACE ("EvAssociateRegionAndHandler");
@@ -638,14 +653,22 @@ AcpiEvAssociateRegionAndHandler (
      */
     if (AcpiNsIsLocked)
     {
-        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        Status2 = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        if (ACPI_FAILURE (Status2))
+        {
+            return_ACPI_STATUS (Status2);
+        }
     }
 
     Status = AcpiEvExecuteRegMethod (RegionObj, 1);
 
     if (AcpiNsIsLocked)
     {
-        (void) AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+        Status2 = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+        if (ACPI_FAILURE (Status2))
+        {
+            return_ACPI_STATUS (Status2);
+        }
     }
 
     return_ACPI_STATUS (Status);
