@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -290,8 +290,9 @@ AcpiUtEvaluateObject (
             PrefixNode, Path, AE_TYPE);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Type returned from %s was incorrect: %X\n",
-            Path, ACPI_GET_OBJECT_TYPE (Info.ReturnObject)));
+            "Type returned from %s was incorrect: %s, expected Btypes: %X\n",
+            Path, AcpiUtGetObjectTypeName (Info.ReturnObject),
+            ExpectedReturnBtypes));
 
         /* On error exit, we must delete the return object */
 
