@@ -115,27 +115,64 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "debugger.h"
+#include "acnamesp.h"
+#include "acdebug.h"
 #include "aecommon.h"
 
 #include <stdio.h>
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("aeexec");
+        MODULE_NAME         ("aeexec")
 
 
-ACPI_GENERIC_OP             *AcpiGbl_ParsedNamespaceRoot;
-ACPI_GENERIC_OP             *root;
+ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
+ACPI_PARSE_OBJECT           *root;
 UINT8                       *AmlPtr;
 UINT32                      AcpiAmlLength;
 UINT8                       *DsdtPtr;
 UINT32                      AcpiDsdtLength;
 
 DEBUG_REGIONS               Regions;
+
+
+static char                 *AcpiGbl_RegionNames[] =    /* printable names of ACPI region types */
+{
+    "SystemMemory",
+    "SystemIO",
+    "PciConfig",
+    "EmbeddedControl",
+    "SMBus"
+};
+
+#define ACPI_MAX_SPACE_ID   4
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmFormatSpaceId
+ *
+ * PARAMETERS:  Status              - Acpi status to be formatted
+ *
+ * RETURN:      Formatted status string
+ *
+ * DESCRIPTION: Convert an ACPI exception to a string
+ *
+ ****************************************************************************/
+
+char *
+AcpiCmFormatSpaceId (
+    UINT32                  SpaceId)
+{
+
+    if (SpaceId > ACPI_MAX_SPACE_ID)
+    {
+        return "UNKNOWN_REGION_SPACE_ID";
+    }
+
+    return (AcpiGbl_RegionNames [SpaceId]);
+}
 
 
 /******************************************************************************
@@ -154,21 +191,21 @@ DEBUG_REGIONS               Regions;
 ACPI_STATUS
 RegionHandler (
     UINT32                      Function,
-    UINT32                      Address,
+    ACPI_INTEGER                Address,
     UINT32                      BitWidth,
     UINT32                      *Value,
-    void                        *Context)
+    void                        *HandlerContext,
+    void                        *RegionContext)
 {
 
-    ACPI_OBJECT_INTERNAL    *RegionObject = (ACPI_OBJECT_INTERNAL *)Context;
-    UINT32                  BaseAddress;
+    ACPI_OPERAND_OBJECT     *RegionObject = (ACPI_OPERAND_OBJECT*)RegionContext;
+    ACPI_INTEGER            BaseAddress;
     UINT32                  Length;
     BOOLEAN                 BufferExists;
     REGION                  *RegionElement;
     void                    *BufferValue;
     UINT32                  ByteWidth;
 
-    printf ("Received an OpRegion request\n");
 
     /*
      * If the object is not a region, simply return
@@ -177,6 +214,11 @@ RegionHandler (
     {
         return AE_OK;
     }
+
+    DEBUG_PRINT (TRACE_OPREGION, ("Operation Region request on %s at 0x%X\n", 
+            AcpiCmFormatSpaceId (RegionObject->Region.SpaceId),
+            Address));
+
 
     /*
      * Find the region's address space and length before searching
@@ -253,23 +295,6 @@ RegionHandler (
     }
 
     /*
-     * The buffer exists and is pointed to by RegionElement.
-     *  We now need to verify the request is valid and perform the operation.
-     *
-     * NOTE: RegionElement->Length is in bytes, therefore it is multiplied by
-     *  the bitwidth of a byte.
-     */
-    if ((Address + BitWidth) > (RegionElement->Address + (RegionElement->Length * 8)))
-    {
-        return AE_BUFFER_OVERFLOW;
-    }
-
-    /*
-     * Get BufferValue to point to the "address" in the buffer
-     */
-    BufferValue = ((UINT8 *)RegionElement->Buffer + (Address - RegionElement->Address));
-
-    /*
      * Calculate the size of the memory copy
      */
     ByteWidth = (BitWidth / 8);
@@ -278,6 +303,23 @@ RegionHandler (
     {
         ByteWidth += 1;
     }
+
+    /*
+     * The buffer exists and is pointed to by RegionElement.
+     *  We now need to verify the request is valid and perform the operation.
+     *
+     * NOTE: RegionElement->Length is in bytes, therefore it we compare against
+     *  ByteWidth (see above)
+     */
+    if ((Address + ByteWidth) > (RegionElement->Address + RegionElement->Length))
+    {
+        return AE_BUFFER_OVERFLOW;
+    }
+
+    /*
+     * Get BufferValue to point to the "address" in the buffer
+     */
+    BufferValue = ((UINT8 *)RegionElement->Buffer + (Address - RegionElement->Address));
 
     /*
      * Perform a read or write to the buffer space
@@ -323,12 +365,12 @@ RegionInit (
     ACPI_HANDLE                 RegionHandle,
     UINT32                      Function,
     void                        *HandlerContext,
-    void                        **ReturnContext)
+    void                        **RegionContext)
 {
     /*
-     * Real simple, set the ReturnContext to the RegionHandle
+     * Real simple, set the RegionContext to the RegionHandle
      */
-    *ReturnContext = RegionHandle;
+    *RegionContext = RegionHandle;
 
     return AE_OK;
 }
@@ -425,12 +467,12 @@ AeInstallHandlers (void)
 
     for (i = 0; i < 3; i++)
     {
-        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootObject, i, RegionHandler);
+        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode, (ACPI_ADDRESS_SPACE_TYPE) i, RegionHandler);
 
         /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
-        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootObject, i, RegionHandler, RegionInit, NULL);
+        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode, i, RegionHandler, RegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");
@@ -462,12 +504,12 @@ AeInstallHandlers (void)
 
 ACPI_STATUS
 AdSecondPassParse (
-    ACPI_GENERIC_OP         *Root)
+    ACPI_PARSE_OBJECT       *Root)
 {
-    ACPI_GENERIC_OP         *Op = Root;
-    ACPI_DEFERRED_OP        *Method;
-    ACPI_GENERIC_OP         *SearchOp;
-    ACPI_GENERIC_OP         *StartOp;
+    ACPI_PARSE_OBJECT       *Op = Root;
+    ACPI_PARSE2_OBJECT      *Method;
+    ACPI_PARSE_OBJECT       *SearchOp;
+    ACPI_PARSE_OBJECT       *StartOp;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  BaseAmlOffset;
 
@@ -480,8 +522,9 @@ AdSecondPassParse (
 
         if (Op->Opcode == AML_METHOD_OP)
         {
-            Method = (ACPI_DEFERRED_OP *) Op;
-            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0);
+            Method = (ACPI_PARSE2_OBJECT *) Op;
+            Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
+                        NULL, NULL, NULL, NULL, NULL);
 
 
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
@@ -500,7 +543,7 @@ AdSecondPassParse (
         {
             /* TBD: this isn't quite the right thing to do! */
 
-            // Method = (ACPI_DEFERRED_OP *) Op;
+            // Method = (ACPI_PARSE2_OBJECT *) Op;
             // Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength);
         }
 
@@ -511,31 +554,6 @@ AdSecondPassParse (
 
         Op = AcpiPsGetDepthNext (Root, Op);
     }
-
-    return Status;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AdGetTables
- *
- * PARAMETERS:  Filename        - Optional filename
- *
- * RETURN:      None
- *
- * DESCRIPTION: Get the ACPI tables from either memory or a file
- *
- *****************************************************************************/
-
-ACPI_STATUS
-xxxAdGetTables (
-    char                    *Filename)
-{
-    ACPI_STATUS             Status;
-
-
-    Status = AcpiDbLoadAcpiTable (Filename);
 
     return Status;
 }
