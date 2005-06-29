@@ -148,6 +148,7 @@ AcpiDsIsResultUsed (
 }
 #endif
 
+
 ACPI_STATUS
 AcpiDsRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
@@ -180,6 +181,7 @@ AcpiDsMethodDataInitArgs (
 {
     return (AE_OK);
 }
+
 
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
 
@@ -252,6 +254,7 @@ FlGenerateFilename (
     if (Position)
     {
         /* Tack on the new suffix */
+
         Position++;
         *Position = 0;
         strcat (Position, Suffix);
@@ -268,16 +271,16 @@ FlGenerateFilename (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AdAmlDisassemble
  *
- * PARAMETERS:  Filename        - AML file
+ * PARAMETERS:  OutToFile       - TRUE if output should go to a file
+ *              Filename        - AML input filename
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Disassemble an entire ACPI table
  *
  *****************************************************************************/
 
@@ -289,8 +292,6 @@ AdAmlDisassemble (
     ACPI_STATUS             Status;
     char                    *OutFilename = NULL;
     FILE                    *File;
-
-
 
 
     /* Get the ACPI Tables (always) */
@@ -313,7 +314,6 @@ AdAmlDisassemble (
             return Status;
         }
     }
-
 
     if (OutToFile)
     {
@@ -359,11 +359,13 @@ AdAmlDisassemble (
  *
  * FUNCTION:    AdCreateTableHeader
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Filename            - Input file for the table
+ *              Table               - Pointer to the raw table
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Create the ASL table header, including ACPI CA signon with
+ *              current time and date.
  *
  *****************************************************************************/
 
@@ -376,11 +378,12 @@ AdCreateTableHeader (
 
     time (&Timer);
 
-    AcpiOsPrintf ("/*\n * Intel ACPI Component Architecture AML Disassembler\n");
-    AcpiOsPrintf (" * Version %8.8X\n", ACPI_CA_VERSION);
+    AcpiOsPrintf ("/*\n * Intel ACPI Component Architecture\n");
+    AcpiOsPrintf (" * AML Disassembler version %8.8X\n", ACPI_CA_VERSION);
     AcpiOsPrintf (" *\n * Disassembly of %s, %s */\n", Filename, ctime (&Timer));
 
-    AcpiOsPrintf ("DefinitionBlock (\"DSDT.aml\", \"%4.4s\", %d, \"%.6s\", \"%.8s\", %d)\n",
+    AcpiOsPrintf (
+        "DefinitionBlock (\"DSDT.aml\", \"%4.4s\", %hd, \"%.6s\", \"%.8s\", %d)\n",
         Table->Signature, Table->Revision, 
         Table->OemId, Table->OemTableId, Table->OemRevision);
 }
@@ -390,9 +393,9 @@ AdCreateTableHeader (
  *
  * FUNCTION:    AdDisplayTables
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Filename            - Input file for the table
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Display (disassemble) loaded tables and dump raw tables
  *
@@ -420,11 +423,14 @@ AdDisplayTables (
     if (AcpiGbl_DbOpt_verbose)
     {
         AcpiOsPrintf ("\n\nDSDT Header:\n");
-        AcpiUtDumpBuffer ((UINT8 *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+        AcpiUtDumpBuffer ((UINT8 *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER),
+            DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
         AcpiOsPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
-        AcpiUtDumpBuffer ((UINT8 *) AmlStart, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+        AcpiUtDumpBuffer ((UINT8 *) AmlStart, AmlLength, 
+            DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
     }
+
     return AE_OK;
 }
 
@@ -433,7 +439,10 @@ AdDisplayTables (
  *
  * FUNCTION:    AdLoadDsdt
  *
- * PARAMETERS:
+ * PARAMETERS:  fp                  - Input file
+ *              seekable            - can seek on the input file?
+ *              DsdtPtr             - Where pointer to the dsdt is returned
+ *              DsdtLength          - Where dsdt length is returned
  *
  * RETURN:      Status
  *
@@ -442,7 +451,7 @@ AdDisplayTables (
  *****************************************************************************/
 
 ACPI_STATUS
-AdLoadDsdt(
+AdLoadDsdt (
     FILE                    *fp,
     int                     seekable,
     UINT8                   **DsdtPtr,
@@ -486,18 +495,21 @@ AdLoadDsdt(
 
 /******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AdDeferredParse
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Op              - Root Op of the deferred opcode
+ *              Aml             - Pointer to the raw AML
+ *              AmlLength       - Length of the AML
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Parse one deferred opcode
+ *              (Methods, operation regions, etc.)
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AdDoDeferredParse (
+AdDeferredParse (
     ACPI_PARSE_OBJECT       *Op,
     UINT8                   *Aml,
     UINT32                  AmlLength)
@@ -510,7 +522,7 @@ AdDoDeferredParse (
     ACPI_PARSE_OBJECT       *ExtraOp;
 
 
-    ACPI_FUNCTION_TRACE ("AdDoDeferredParse");
+    ACPI_FUNCTION_TRACE ("AdDeferredParse");
 
 
     fprintf (stderr, ".");
@@ -559,6 +571,9 @@ AdDoDeferredParse (
         SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
     }
 
+    /*
+     * Link the newly parsed subtree into the main parse tree
+     */
     switch (Op->Common.AmlOpcode)
     {
     case AML_BUFFER_OP:
@@ -581,6 +596,8 @@ AdDoDeferredParse (
             break;
         }
 
+        /* Must point all parents to the main tree */
+
         StartOp = Op;
         SearchOp = StartOp;
         while (SearchOp)
@@ -601,21 +618,20 @@ AdDoDeferredParse (
 }
 
 
-
 /******************************************************************************
  *
- * FUNCTION:    AdSecondPassParse
+ * FUNCTION:    AdParseDeferredOps
  *
  * PARAMETERS:  Root            - Root of the parse tree
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Need to wait until second pass to parse the control methods
+ * DESCRIPTION: Parse the deferred opcodes (Methods, regions, etc.)
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AdSecondPassParse (
+AdParseDeferredOps (
     ACPI_PARSE_OBJECT       *Root)
 {
     ACPI_PARSE_OBJECT       *Op = Root;
@@ -623,7 +639,7 @@ AdSecondPassParse (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
-    ACPI_FUNCTION_NAME ("AdSecondPassParse");
+    ACPI_FUNCTION_NAME ("AdParseDeferredOps");
     fprintf (stderr, "Parsing Deferred Opcodes (Methods/Buffers/Packages/Regions)\n");
 
     while (Op)
@@ -642,7 +658,7 @@ AdSecondPassParse (
         case AML_PACKAGE_OP:
         case AML_VAR_PACKAGE_OP:
 
-            Status = AdDoDeferredParse (Op, Op->Named.Data, Op->Named.Length);
+            Status = AdDeferredParse (Op, Op->Named.Data, Op->Named.Length);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -711,8 +727,6 @@ AdGetTables (
             fclose(fp);
         }
     }
-
-
     else
     {
 #if ACPI_MACHINE_WIDTH == 16
@@ -738,18 +752,19 @@ AdGetTables (
 
 /******************************************************************************
  *
- * FUNCTION:    AdParseTable
+ * FUNCTION:    AdParseTables
  *
  * PARAMETERS:  None
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Parse all supported tables
+ * DESCRIPTION: Parse the DSDT.
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AdParseTables (void)
+AdParseTables (
+    void)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_WALK_STATE         *WalkState;
@@ -764,7 +779,6 @@ AdParseTables (void)
     /* Pass 1:  Parse everything except control method bodies */
 
     fprintf (stderr, "Pass 1 parse\n");
-
 
     DsdtLength = AcpiGbl_DSDT->Length;
     AmlLength  = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
@@ -802,7 +816,7 @@ AdParseTables (void)
         return Status;
     }
 
-    /* Second pass */
+    /* Pass 2 */
 
     TableDesc.AmlStart = AmlStart;
     TableDesc.AmlLength = AmlLength;
@@ -816,7 +830,7 @@ AdParseTables (void)
 
     /* Pass 3: Parse control methods and link their parse trees into the main parse tree */
 
-    Status = AdSecondPassParse (AcpiGbl_ParsedNamespaceRoot);
+    Status = AdParseDeferredOps (AcpiGbl_ParsedNamespaceRoot);
 
     fprintf (stderr, "Parsing completed\n");
     return AE_OK;
