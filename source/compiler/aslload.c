@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.10 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -131,7 +131,6 @@
         MODULE_NAME         ("aslload")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    LdLoadNamespace
@@ -248,7 +247,7 @@ LdLoadFieldElements (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LdLoadResourceElements
  *
@@ -257,14 +256,14 @@ LdLoadFieldElements (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Enter the named elements of the resource descriptor (children 
+ * DESCRIPTION: Enter the named elements of the resource descriptor (children
  *              of the parent) into the namespace.
  *
  * NOTE: In the real AML namespace, these named elements never exist.  But
  *       we simply use the namespace here as a symbol table so we can look
  *       them up as they are referenced.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 LdLoadResourceElements (
@@ -326,7 +325,7 @@ LdLoadResourceElements (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LdNamespace1Begin
  *
@@ -337,7 +336,8 @@ LdLoadResourceElements (
  * DESCRIPTION: Descending callback used during the parse tree walk.  If this
  *              is a named AML opcode, enter into the namespace
  *
- ****************************************************************************/
+ ******************************************************************************/
+
 
 ACPI_STATUS
 LdNamespace1Begin (
@@ -350,6 +350,7 @@ LdNamespace1Begin (
     ACPI_STATUS             Status;
     OBJECT_TYPE_INTERNAL    DataType;
     NATIVE_CHAR             *Path;
+    UINT32                  Flags = NS_NO_UPSEARCH;
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -413,30 +414,55 @@ LdNamespace1Begin (
         ("Load1BeginOp: Type=%x\n", DataType));
 
 
+    if (PsNode->ParseOpcode != SCOPE)
+    {
+        Flags |= NS_ERROR_IF_FOUND;
+    }
+
     /*
      * Enter the named type into the internal namespace.  We enter the name
      * as we go downward in the parse tree.  Any necessary subobjects that involve
      * arguments to the opcode must be created as we go back up the parse tree later.
      */
-    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
-                            DataType, IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH, WalkState, &(NsNode));
+    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, DataType, 
+                    IMODE_LOAD_PASS1, Flags, WalkState, &(NsNode));
 
     if (ACPI_FAILURE (Status))
     {
+        if (Status == AE_EXIST)
+        {
+            /* The name already exists in this scope */
+
+            AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, PsNode, Path);
+            return (Status);
+        }
+
         printf ("Failure from lookup %s\n", AcpiCmFormatException (Status));
         return (Status);
     }
 
-
     PsNode->NsNode = NsNode;
 
+
+    if (PsNode->ParseOpcode == METHOD)
+    {
+        NsNode->OwnerId = PsNode->Extra;
+
+        if (PsNode->Flags & NODE_METHOD_NO_RETVAL)
+        {
+            NsNode->Flags |= ANOBJ_METHOD_NO_RETVAL;
+        }
+        if (PsNode->Flags & NODE_METHOD_SOME_NO_RETVAL)
+        {
+            NsNode->Flags |= ANOBJ_METHOD_SOME_NO_RETVAL;
+        }
+   }
 
     return (Status);
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LdNamespace1End
  *
@@ -447,7 +473,7 @@ LdNamespace1Begin (
  * DESCRIPTION: Ascending callback used during the loading of the namespace,
  *              We only need to worry about managing the scope stack here.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 LdNamespace1End (
