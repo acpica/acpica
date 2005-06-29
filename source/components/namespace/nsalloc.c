@@ -294,8 +294,7 @@ NsDeleteValue (
     /* Not every value is an object allocated via OsdAllocate, must check */
 
     if (!AmlIsInPCodeBlock ((UINT8 *)    ObjDesc) &&
-        !IS_NS_HANDLE                   (ObjDesc) &&
-        !AmlIsMethodValue               (ObjDesc))
+        !IS_NS_HANDLE                   (ObjDesc))
     {
 
         /* Object was allocated, there may be some sub objects that must be deleted */
@@ -304,10 +303,14 @@ NsDeleteValue (
         {
         case TYPE_String:
             ObjPointer = ObjDesc->String.Pointer;
+            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** String found %p, ptr %p\n", 
+                                    ObjDesc, ObjDesc->String.Pointer));
             break;
 
         case TYPE_Buffer:
             ObjPointer = ObjDesc->Buffer.Pointer;
+            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Buffer found %p, ptr %p\n", 
+                                    ObjDesc, ObjDesc->Buffer.Pointer));
             break;
 
         case TYPE_Package:
@@ -315,6 +318,11 @@ NsDeleteValue (
                                     ObjDesc->Package.Count));
             break;
     
+        case TYPE_Method:
+            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Method found %p\n", 
+                                    ObjDesc));
+            break;
+
         case TYPE_Lvalue:
             ObjPointer = ObjDesc->Lvalue.Object;
             DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Lvalue: %p\n", 
@@ -327,9 +335,7 @@ NsDeleteValue (
 
         if (ObjPointer)
         {
-            if (!AmlIsInPCodeBlock ((UINT8 *)    ObjPointer) &&
-                !IS_NS_HANDLE                   (ObjPointer) &&
-                !AmlIsMethodValue               (ObjPointer))
+            if (!AmlIsInPCodeBlock ((UINT8 *)    ObjPointer))
             {
                 DEBUG_PRINT (ACPI_INFO, ("Deleting Object Pointer %p \n", ObjPointer));
     
