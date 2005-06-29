@@ -646,6 +646,7 @@ DsPopWalkState (
 
 ACPI_WALK_STATE *
 DsCreateWalkState (
+    ACPI_OWNER_ID           OwnerId,
     ACPI_GENERIC_OP         *Origin,
     ACPI_OBJECT_INTERNAL    *MthDesc,
     ACPI_WALK_LIST          *WalkList)
@@ -688,6 +689,7 @@ DsCreateWalkState (
     }
 
     WalkState->DataType         = DESC_TYPE_WALK;
+    WalkState->OwnerId          = OwnerId;       
     WalkState->Origin           = Origin;
     WalkState->MethodDesc       = MthDesc;
 
