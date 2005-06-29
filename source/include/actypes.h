@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.201 $
+ *       $Revision: 1.202 $
  *
  *****************************************************************************/
 
@@ -1218,7 +1218,7 @@ typedef struct pci_routing_table
     UINT32                      SourceIndex;
     NATIVE_CHAR                 Source[4];      /* pad to 64 bits so sizeof() works in all cases */
 
-} PCI_ROUTING_TABLE;
+} ACPI_PCI_ROUTING_TABLE;
 
 
 /*
