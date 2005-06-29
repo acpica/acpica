@@ -174,59 +174,69 @@ PsGetNextWalkOp (
 
             return_ACPI_STATUS (AE_OK);
         }
-    }
 
 
-    /* 
-     * No more children, this Op is complete.  Save Next and Parent
-     * in case the Op object gets deleted by the callback routine
-     */
-
-    Next = Op->Next;
-    Parent = Op->Parent;
-
-    Status = AscendingCallback (WalkState, Op);
-
-    if (Status == AE_TERMINATE)
-    {
         /* 
-         * A control method was terminated via a RETURN statement.
-         * The walk of this method is complete.
+         * No more children, this Op is complete.  Save Next and Parent
+         * in case the Op object gets deleted by the callback routine
          */
-        WalkState->PrevOp       = WalkState->Origin;
-        WalkState->NextOp       = NULL;
 
-        return_ACPI_STATUS (AE_OK);
-    }
+        Next = Op->Next;
+        Parent = Op->Parent;
+
+        Status = AscendingCallback (WalkState, Op);
+
+        if (Status == AE_TERMINATE)
+        {
+            /* 
+             * A control method was terminated via a RETURN statement.
+             * The walk of this method is complete.
+             */
+            WalkState->PrevOp       = WalkState->Origin;
+            WalkState->NextOp       = NULL;
+
+            return_ACPI_STATUS (AE_OK);
+        }
     
-    /* Look for a sibling to the current op */
+        /* Look for a sibling to the current op */
 
-    if (Next)
-    {
-        /* There is a sibling, it will be next */
+        if (Next)
+        {
+            /* There is a sibling, it will be next */
 
-        WalkState->PrevOp       = Op;
-        WalkState->NextOp       = Next;
-        WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;
+            WalkState->PrevOp       = Op;
+            WalkState->NextOp       = Next;
+            WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;
 
-        return_ACPI_STATUS (Status);
+            return_ACPI_STATUS (Status);
+        }
+
+
+        /* 
+         * No sibling, but check status.
+         * Abort on error from callback routine 
+         */
+
+        if (Status != AE_OK)
+        {
+            /* Next op will be the parent */
+
+            WalkState->PrevOp       = Op;
+            WalkState->NextOp       = Parent;
+            WalkState->NextOpInfo   = NEXT_OP_UPWARD;
+
+            return_ACPI_STATUS (Status);
+        }
     }
 
-
-    /* 
-     * No sibling, but check status.
-     * Abort on error from callback routine 
-     */
-
-    if (Status != AE_OK)
+    else
     {
-        /* Next op will be the parent */
+        /*
+         * We are resuming a walk, and we were (are) going upward in the tree.
+         * So, we want to drop into the parent loop below.
+         */
 
-        WalkState->PrevOp       = Op;
-        WalkState->NextOp       = Parent;
-        WalkState->NextOpInfo   = NEXT_OP_UPWARD;
-
-        return_ACPI_STATUS (Status);
+        Parent = Op;
     }
 
 
@@ -321,6 +331,7 @@ PsGetNextWalkOp (
 
         /*
          * No sibling, check for an error from closing the parent 
+         * (Also, AE_PENDING if a method call was encountered)
          */
         if (Status != AE_OK)
         {
@@ -371,7 +382,7 @@ PsWalkLoop (
     INTERPRETER_CALLBACK    DescendingCallback,
     INTERPRETER_CALLBACK    AscendingCallback)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     ACPI_WALK_STATE         *WalkState;
     ACPI_GENERIC_OP         *Op = StartOp;
 
