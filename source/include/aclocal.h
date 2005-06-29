@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.169 $
+ *       $Revision: 1.170 $
  *
  *****************************************************************************/
 
@@ -724,6 +724,7 @@ typedef struct acpi_parseobj_common
 typedef struct acpi_parseobj_named
 {
     ACPI_PARSE_COMMON
+    UINT8                   *Path;
     UINT8                   *Data;          /* AML body or bytelist data */
     UINT32                  Length;         /* AML length */
     UINT32                  Name;           /* 4-byte name or zero if no name */
