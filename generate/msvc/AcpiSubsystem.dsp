@@ -398,6 +398,10 @@ SOURCE=..\..\subsystem\Resources\rsxface.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\subsystem\Tables\tbconvrt.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Tables\tbget.c
 # End Source File
 # Begin Source File
@@ -655,11 +659,15 @@ SOURCE=..\..\subsystem\Include\actbl.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\actbl32.h
+SOURCE=..\..\subsystem\Include\actbl1.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\actbl64.h
+SOURCE=..\..\subsystem\Include\actbl2.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\actbl71.h
 # End Source File
 # Begin Source File
 
