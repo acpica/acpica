@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acoutput.h -- debug output
- *       $Revision: 1.69 $
+ *       $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -147,6 +147,7 @@
 
 #define EMBEDDED_CONTROLLER         0x00020000
 #define BATTERY                     0x00040000
+#define BUTTON                      0x00080000
 
 #define DEBUGGER                    0x00100000
 #define COMPILER                    0x00200000
@@ -187,6 +188,7 @@
 #define TRACE_USER_REQUESTS         0x01000000
 #define TRACE_PACKAGE               0x02000000
 #define TRACE_MUTEX                 0x04000000
+#define TRACE_INIT                  0x08000000
 
 #define TRACE_ALL                   0x0FFFFF00
 
