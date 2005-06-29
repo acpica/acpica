@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D "_DEBUG" /D "_TRACE" /D "WIN32" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /FR /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D "_TRACE" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_DEBUG" /D "DEBUG" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
