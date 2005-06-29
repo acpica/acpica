@@ -240,9 +240,13 @@ PsxInitObjectFromOp (
 
 void
 PsxDeleteResultIfNotUsed (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_GENERIC_OP         *Op,
+    ACPI_OBJECT_INTERNAL    *ResultObj,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OP_INFO            *ParentInfo;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_STATUS             Status;
 
 
     if (!Op)
@@ -257,10 +261,17 @@ PsxDeleteResultIfNotUsed (
         /* If there is no parent, the result can't possibly be used! */
         /* (An executing method typically has no parent, since each method is parsed separately */
 
-        if (Op->ResultObj)
+        if (ResultObj)
         {
-            CmDeleteInternalObject (Op->ResultObj);
-            Op->ResultObj = NULL;
+            /* Must pop the result stack (ObjDesc should be equal to ResultObj) */
+
+            Status = PsxResultStackPop (&ObjDesc, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            CmDeleteInternalObject (ObjDesc);
         }
 
         return;
@@ -296,10 +307,17 @@ PsxDeleteResultIfNotUsed (
     case OPTYPE_CONTROL:        /* IF, ELSE, WHILE only */
     case OPTYPE_NAMED_OBJECT:   /* Scope, method, etc. */
 
-        if (Op->ResultObj)
+        if (ResultObj)
         {
-            CmDeleteInternalObject (Op->ResultObj);
-            Op->ResultObj = NULL;
+            /* Must pop the result stack (ObjDesc should be equal to ResultObj) */
+
+            Status = PsxResultStackPop (&ObjDesc, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            CmDeleteInternalObject (ObjDesc);
         }
         break;
 
@@ -424,13 +442,19 @@ PsxCreateOperands (
 
             if (Flags & OP_HAS_RETURN_VALUE)
             {
-                DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: Argument computed earlier! \n"));
+                DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: Argument already created, getting from result stack \n"));
 
                 /* 
                  * Use value that was already previously returned by the evaluation of this argument
                  */
 
-                ObjDesc = Arg->ResultObj;
+                Status = PsxResultStackPop (&ObjDesc, WalkState);
+                if (ACPI_FAILURE (Status))
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperands: Could not pop result\n"));
+                    goto Cleanup;
+                }
+
                 if (!ObjDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperands: But result obj is null! 1stArg=%X\n", FirstArg));
