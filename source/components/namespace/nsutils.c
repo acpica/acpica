@@ -192,6 +192,7 @@ NsAllocateNteDesc (INT32 NteCount)
 
     DEBUG_PRINT (TRACE_EXEC, ("AllocateNteDesc: NewNteDesc=%p\n", NewNteDesc));
 
+    FUNCTION_EXIT;
     return NewNteDesc;
 }
 
@@ -218,9 +219,11 @@ NsGetType (NsHandle handle)
         /*  Handle invalid  */
 
         REPORT_WARNING (&KDT[0]);
+        FUNCTION_EXIT;
         return TYPE_Any;
     }
 
+    FUNCTION_EXIT;
     return ((nte *) handle)->Type;
 }
 
@@ -246,9 +249,11 @@ NsGetValue (NsHandle handle)
         /* handle invalid */
 
         REPORT_WARNING (&KDT[1]);
+        FUNCTION_EXIT;
         return NULL;
     }
 
+    FUNCTION_EXIT;
     return ((nte *) handle)->Value;
 }
 
@@ -267,11 +272,15 @@ NsGetValue (NsHandle handle)
 INT32
 IsNsValue (OBJECT_DESCRIPTOR *ObjDesc)
 {
+    NsHandle        RetHandle;
+
 
     FUNCTION_TRACE ("IsNsValue");
 
+    RetHandle = NsFindValue (ObjDesc, NS_ALL, INT_MAX);
 
-    return ((NsHandle) 0 != NsFindValue (ObjDesc, NS_ALL, INT_MAX));
+    FUNCTION_EXIT;
+    return (RetHandle != (NsHandle) 0);
 }
 
 
@@ -297,9 +306,11 @@ NsLocal (NsType Type)
         /*  type code out of range  */
 
         REPORT_WARNING (&KDT[1]);
+        FUNCTION_EXIT;
         return 0;
     }
 
+    FUNCTION_EXIT;
     return NsProperties[Type] & LOCAL;
 }
 
@@ -374,6 +385,7 @@ NsInternalizeName (char *DottedName)
 
     DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning %p=>\"%s\"\n", IN, IN ? IN : ""));     
     
+    FUNCTION_EXIT;
     return IN;
 }
 
@@ -480,6 +492,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
 
     if (!ThisEntry)
     {
+        FUNCTION_EXIT;
         return;
     }
 
@@ -616,6 +629,8 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
         }
     
     } /* while */
+
+    FUNCTION_EXIT;
 }
 
 
@@ -647,6 +662,7 @@ NsMarkNS (void)
          * If the name space has not been initialized,
          * there is nothing to mark.
          */
+        FUNCTION_EXIT;
         return 0;
     }
 
@@ -656,6 +672,7 @@ NsMarkNS (void)
     MarkObjectStack (&Count);
 
 
+    FUNCTION_EXIT;
     return Count;
 }
 
