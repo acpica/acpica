@@ -223,7 +223,7 @@ AmlStoreObjectToNte (
             /*
              *  Initially not a number, convert
              */
-            Status = AmlGetRvalue (&ValDesc);
+            Status = AmlResolveToValue (&ValDesc);
             if ((Status == AE_OK) &&
                 (ValDesc->Common.Type != ACPI_TYPE_Number)) 
             {
@@ -257,7 +257,7 @@ AmlStoreObjectToNte (
             /*
              *  Initially not a valid type, convert
              */
-            Status = AmlGetRvalue (&ValDesc);
+            Status = AmlResolveToValue (&ValDesc);
             if ((Status == AE_OK) &&
                 (ValDesc->Common.Type != ACPI_TYPE_Number) && 
                 (ValDesc->Common.Type != ACPI_TYPE_Buffer) &&
@@ -668,7 +668,7 @@ CleanUpAndBailOut:
  *
  * PARAMETERS:  *ValDesc            - Value to be stored
  *              *DestDesc           - Where to store it -- must be an (ACPI_HANDLE)
- *                                    or an ACPI_OBJECT_INTERNAL of type Lvalue;
+ *                                    or an ACPI_OBJECT_INTERNAL of type Reference;
  *                                    if the latter the descriptor will be 
  *                                    either reused or deleted.
  *
@@ -690,6 +690,7 @@ AmlExecStore (
     ACPI_OBJECT_INTERNAL    *DeleteDestDesc = NULL;
     ACPI_OBJECT_INTERNAL    *TmpDesc;
     NAME_TABLE_ENTRY        *Entry = NULL;
+    UINT8                   Value = 0;
 
 
     FUNCTION_TRACE ("AmlExecStore");
@@ -713,7 +714,7 @@ AmlExecStore (
         /* Dest is an ACPI_HANDLE, create a new object */
 
         Entry = (NAME_TABLE_ENTRY *) DestDesc;
-        DestDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
+        DestDesc = CmCreateInternalObject (INTERNAL_TYPE_Reference);
         if (!DestDesc)
         {   
             /* Allocation failure  */
@@ -721,10 +722,10 @@ AmlExecStore (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        /* Build a new Lvalue wrapper around the handle */
+        /* Build a new Reference wrapper around the handle */
 
-        DestDesc->Lvalue.OpCode = AML_NameOp;
-        DestDesc->Lvalue.Object = Entry;
+        DestDesc->Reference.OpCode = AML_NameOp;
+        DestDesc->Reference.Object = Entry;
     }
 
     else
@@ -734,24 +735,24 @@ AmlExecStore (
         DEBUG_PRINT (ACPI_INFO, ("AmlExecStore: Dest is object (not handle) - may be deleted!\n"));
     }
 
-    /* Destination object must be of type Lvalue */
+    /* Destination object must be of type Reference */
 
-    if (DestDesc->Common.Type != INTERNAL_TYPE_Lvalue)
+    if (DestDesc->Common.Type != INTERNAL_TYPE_Reference)
     {   
-        /* Destination is not an Lvalue */
+        /* Destination is not an Reference */
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Destination is not an Lvalue [%p]\n", DestDesc));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Destination is not an Reference [%p]\n", DestDesc));
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
-        DUMP_OPERANDS (&DestDesc, IMODE_Execute, "AmlExecStore", 2, "target not Lvalue");
+        DUMP_OPERANDS (&DestDesc, IMODE_Execute, "AmlExecStore", 2, "target not Reference");
 
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
-    /* Examine the Lvalue opcode */
+    /* Examine the Reference opcode */
 
-    switch (DestDesc->Lvalue.OpCode)
+    switch (DestDesc->Reference.OpCode)
     {
 
     case AML_NameOp:
@@ -760,7 +761,7 @@ AmlExecStore (
          *  Storing into a Name
          */
         DeleteDestDesc = DestDesc;
-        Status = AmlStoreObjectToNte (ValDesc, DestDesc->Lvalue.Object);
+        Status = AmlStoreObjectToNte (ValDesc, DestDesc->Reference.Object);
 
         break;  /* Case NameOp */
 
@@ -774,50 +775,99 @@ AmlExecStore (
          *          then stored.
          *
          * Storing into a package element is simple - just store the object at the
-         * element location specified by the Lvalue.Object
+         * element location specified by the Reference.Object
          */
-        if (DestDesc->Lvalue.TargetType == ACPI_TYPE_Package)
+        if (DestDesc->Reference.TargetType == ACPI_TYPE_Package)
         {
             DeleteDestDesc = DestDesc;
 
             /* Delete any object that just happens to be here */
             /* TBD: we may have to do a type conversion here! */
 
-            TmpDesc = *(DestDesc->Lvalue.Where);
+            TmpDesc = *(DestDesc->Reference.Where);
             if (TmpDesc)
             {
                 /* Take away the reference for being part of a package and delete */
 
                 CmUpdateObjectReference (TmpDesc, REF_DECREMENT);
-                CmDeleteInternalObject (TmpDesc);
+                CmRemoveReference (TmpDesc);
             }
 
             /* Now store the new object */
 
             CmUpdateObjectReference (ValDesc, REF_INCREMENT);
-            *(DestDesc->Lvalue.Where) = ValDesc;
+            *(DestDesc->Reference.Where) = ValDesc;
             break;
         }
 
+        /*
+         * Check that the destination is a Buffer Field type
+         */
+        if (DestDesc->Reference.TargetType != ACPI_TYPE_BufferField)
+        {
+            DeleteDestDesc = DestDesc;
+            Status = AE_AML_OPERAND_TYPE;
+            break;
+        }
+        
         /* 
-         * Storing a number into a buffer at a location defined by an Index.
+         * Storing into a buffer at a location defined by an Index.
          * This is a little more complex than the package case.
          *
          * If value is not a Number, try to resolve it to one.
          */
-        if ((ValDesc->Common.Type != ACPI_TYPE_Number) &&
-           ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+        switch (ValDesc->Common.Type) 
         {
-            DeleteDestDesc = DestDesc;
+        /*
+         * If the type is Integer, only the least significant
+         *  8-bits are used
+         */
+        case ACPI_TYPE_Number:
+            Value = (UINT8)ValDesc->Number.Value;
+            break;
+
+        /*
+         * If the type is Buffer, the least significant
+         *  8-bits are copied over (last element)
+         */
+        case ACPI_TYPE_Buffer:
+            Value = *(ValDesc->Buffer.Pointer + ValDesc->Buffer.Length - 1);
+            break;
+
+        /*
+         * If the type is String, the least significant
+         *  8-bits are copied over (last element)
+         */
+        case ACPI_TYPE_String:
+            Value = *(ValDesc->String.Pointer + ValDesc->String.Length - 1);
+            break;
+
+        /*
+         * If value is not a Number, try to resolve it to one.
+         */
+        default:
+            if ((ValDesc->Common.Type != ACPI_TYPE_Number) &&
+               ((Status = AmlResolveToValue (&ValDesc)) != AE_OK))
+            {
+                DeleteDestDesc = DestDesc;
+            }
+
+            else if (ValDesc->Common.Type != ACPI_TYPE_Number)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Index value must be Number, not %d\n",
+                                ValDesc->Common.Type));
+
+                DeleteDestDesc = DestDesc;
+                Status = AE_AML_OPERAND_TYPE;
+            }
+            break;
         }
 
-        else if (ValDesc->Common.Type != ACPI_TYPE_Number)
+        /*
+         * If we had an error, break out of this case statement.
+         */
+        if(AE_OK != Status)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Index value must be Number, not %d\n",
-                            ValDesc->Common.Type));
-
-            DeleteDestDesc = DestDesc;
-            Status = AE_AML_OPERAND_TYPE;
             break;
         }
 
@@ -828,21 +878,6 @@ AmlExecStore (
 
         DeleteDestDesc = DestDesc;
 
-        DestDesc = NsGetAttachedObject (Entry);
-        if (!DestDesc)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Internal error - null old-value pointer\n"));
-            Status = AE_AML_INTERNAL;
-            break;
-        }
-
-        else
-        {
-            DEBUG_PRINT (ACPI_INFO, ("AmlExecStore/Index: Value DestDesc=%p, Type=0x%X\n",
-                            DestDesc, DestDesc->Common.Type));
-        }
-
-
         /*
          * Valid source value and destination reference pointer.
          *
@@ -850,25 +885,20 @@ AmlExecStore (
          * Destination should point to either a buffer or a package
          */
 
-        if (DestDesc->Common.Type == ACPI_TYPE_Any)
-        {
-            DestDesc->Common.Type = ACPI_TYPE_Number;
-        }
+        /*
+         *  Dereference the Buffer Field and set it equal to the ValDesc value
+         */
+        TmpDesc = DestDesc->Reference.Object;
 
-        if (DestDesc->Common.Type != ACPI_TYPE_Number)
+        if (TmpDesc->Common.Type != ACPI_TYPE_Buffer)
         {
-            DEBUG_PRINT (ACPI_INFO, ("AmlExecStore/Index: Dest type must be a number - DestDesc=%p, Type=0x%X\n",
-                            DestDesc, DestDesc->Common.Type));
-            
             Status = AE_AML_OPERAND_TYPE;
+            break;
         }
 
-        else
-        {
-            /* Destination is a number, as it should be.  Store the value */
+        TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
 
-            DestDesc->Number.Value = ValDesc->Number.Value;
-        }
+        DestDesc = TmpDesc;
 
         break;
 
@@ -887,14 +917,14 @@ AmlExecStore (
 
     case AML_LocalOp:
 
-        Status = DsMthStackSetValue (MTH_TYPE_LOCAL, (DestDesc->Lvalue.Offset), ValDesc);
+        Status = DsMethodDataSetValue (MTH_TYPE_LOCAL, (DestDesc->Reference.Offset), ValDesc);
         DeleteDestDesc = DestDesc;
         break;
 
 
     case AML_ArgOp:
 
-        Status = DsMthStackSetValue (MTH_TYPE_ARG, (DestDesc->Lvalue.Offset), ValDesc);
+        Status = DsMethodDataSetValue (MTH_TYPE_ARG, (DestDesc->Reference.Offset), ValDesc);
         DeleteDestDesc = DestDesc;
         break;
 
@@ -921,8 +951,8 @@ AmlExecStore (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Internal error - Unknown Lvalue subtype %02x\n",
-                        DestDesc->Lvalue.OpCode));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Internal error - Unknown Reference subtype %02x\n",
+                        DestDesc->Reference.OpCode));
         
         /* TBD:  use object dump routine !! */
 
@@ -931,7 +961,7 @@ AmlExecStore (
         DeleteDestDesc = DestDesc;
         Status = AE_AML_INTERNAL;
     
-    }   /* switch(DestDesc->Lvalue.OpCode) */
+    }   /* switch(DestDesc->Reference.OpCode) */
 
 
 
@@ -939,7 +969,7 @@ AmlExecStore (
 
     if (DeleteDestDesc)
     {
-        CmDeleteInternalObject (DeleteDestDesc);
+        CmRemoveReference (DeleteDestDesc);
     }
 
     return_ACPI_STATUS (Status);
