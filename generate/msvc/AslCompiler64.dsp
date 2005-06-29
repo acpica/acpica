@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="AslCompiler" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="AslCompiler64" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=AslCompiler - Win32 Debug
+CFG=AslCompiler64 - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "AslCompiler.mak".
+!MESSAGE NMAKE /f "AslCompiler64.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "AslCompiler.mak" CFG="AslCompiler - Win32 Debug"
+!MESSAGE NMAKE /f "AslCompiler64.mak" CFG="AslCompiler64 - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "AslCompiler - Win32 Release" (based on "Win32 (x86) Application")
-!MESSAGE "AslCompiler - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "AslCompiler64 - Win32 Release" (based on "Win32 (x86) Application")
+!MESSAGE "AslCompiler64 - Win32 Debug" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -29,7 +29,7 @@ CPP=xicl6.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+!IF  "$(CFG)" == "AslCompiler64 - Win32 Release"
 
 # PROP BASE Use_MFC 2
 # PROP BASE Use_Debug_Libraries 0
@@ -38,13 +38,13 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler\NoDebug"
-# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler\NoDebug"
+# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler64\NoDebug"
+# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler64\NoDebug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /FD /c
-# SUBTRACT CPP /X /YX
+# ADD CPP /Za /W3 /Gm /GX /Zi /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /D "_IA64" /FR /FD /c
+# SUBTRACT CPP /nologo /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
@@ -53,15 +53,16 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
-# ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:yes /machine:I386 /out:"Release/iasl.exe"
+# ADD BASE LINK32 /nologo /subsystem:windows /machine:IX86 /machine:IA64
+# ADD LINK32 libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:yes /machine:IX86 /out:"Release/iasl64.exe" /machine:IA64
+# SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy compiler to libraries directory
-PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
+PostBuild_Cmds=copy Release\iasl64.exe ..\..\Libraries
 # End Special Build Tool
 
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+!ELSEIF  "$(CFG)" == "AslCompiler64 - Win32 Debug"
 
 # PROP BASE Use_MFC 2
 # PROP BASE Use_Debug_Libraries 1
@@ -70,13 +71,13 @@ PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler\Debug"
-# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler\Debug"
+# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler64\Debug"
+# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler64\Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /W4 /Gm /GX /ZI /Od /I "$(OutDir)..\\" /I "..\..\source\Include" /I "$(OutDir)\..\\" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /FD /GZ /c
-# SUBTRACT CPP /X /YX
+# ADD CPP /Za /W4 /Gm /GX /Zi /Od /I "$(OutDir)" /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "_DEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /D "_IA64" /D "_M_IX86" /FR /FD /GZ /c
+# SUBTRACT CPP /nologo /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
@@ -85,20 +86,21 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
-# ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /debug /machine:I386 /out:"Debug/iasldebug.exe" /pdbtype:sept
+# ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:IX86 /pdbtype:sept /machine:IA64
+# ADD LINK32 libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /debug /machine:IX86 /out:"Debug/iasldebug64.exe" /pdbtype:sept /machine:IA64
+# SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy compiler to libraries directory
-PostBuild_Cmds=copy Debug\iasldebug.exe ..\..\Libraries
+PostBuild_Cmds=copy Debug\iasldebug64.exe ..\..\Libraries
 # End Special Build Tool
 
 !ENDIF 
 
 # Begin Target
 
-# Name "AslCompiler - Win32 Release"
-# Name "AslCompiler - Win32 Debug"
+# Name "AslCompiler64 - Win32 Release"
+# Name "AslCompiler64 - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -284,36 +286,16 @@ SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # End Group
 # Begin Group "Intermediate"
 
-# PROP Default_Filter "*.c, *.h"
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\AslCompiler\AslCompiler.l.c
-
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
-
+SOURCE=.\AslCompiler\aslcompiler.l.c
 # ADD CPP /I "..\..\source\compiler"
-
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
-
-# ADD CPP /W3 /I "..\..\source\compiler"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\AslCompiler\AslCompiler.y.c
-
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
-
+SOURCE=.\AslCompiler\aslcompiler.y.c
 # ADD CPP /I "..\..\source\compiler"
-
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
-
-# ADD CPP /W3 /I "..\..\source\compiler"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -326,7 +308,7 @@ SOURCE=.\AslCompiler\AslCompiler.y.h
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\..\source\compiler\aslcompiler.h
+SOURCE=..\..\source\compiler\AslCompiler.h
 # End Source File
 # Begin Source File
 
@@ -347,31 +329,31 @@ SOURCE=..\..\source\compiler\asltypes.h
 # End Group
 # Begin Source File
 
-SOURCE=../../source/compiler/aslcompiler.l
+SOURCE=../../source/compiler/AslCompiler.l
 
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+!IF  "$(CFG)" == "AslCompiler64 - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler/$(InputName).l.c
+# Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler64/$(InputName).l.c
 ProjDir=.
-InputPath=../../source/compiler/aslcompiler.l
+InputPath=../../source/compiler/AslCompiler.l
 InputName=aslcompiler
 
-"$(ProjDir)/AslCompiler/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(ProjDir)/AslCompiler/$(InputName).l.c $(InputPath)
+"$(ProjDir)/AslCompiler64/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(ProjDir)/AslCompiler64/$(InputName).l.c $(InputPath)
 
 # End Custom Build
 
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+!ELSEIF  "$(CFG)" == "AslCompiler64 - Win32 Debug"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler/$(InputName).l.c
+# Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler64/$(InputName).l.c
 ProjDir=.
-InputPath=../../source/compiler/aslcompiler.l
+InputPath=../../source/compiler/AslCompiler.l
 InputName=aslcompiler
 
-"$(ProjDir)/AslCompiler/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(ProjDir)/AslCompiler/$(InputName).l.c $(InputPath)
+"$(ProjDir)/AslCompiler64/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(ProjDir)/AslCompiler64/$(InputName).l.c $(InputPath)
 
 # End Custom Build
 
@@ -380,43 +362,43 @@ InputName=aslcompiler
 # End Source File
 # Begin Source File
 
-SOURCE=../../source/compiler/aslcompiler.y
+SOURCE=../../source/compiler/AslCompiler.y
 
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+!IF  "$(CFG)" == "AslCompiler64 - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building parser from $(InputPath) to $(ProjDir)/AslCompiler/$(InputName).y.c
+# Begin Custom Build - Building parser from $(InputPath) to $(ProjDir)/AslCompiler64/$(InputName).y.c
 WkspDir=.
 ProjDir=.
-InputPath=../../source/compiler/aslcompiler.y
+InputPath=../../source/compiler/AslCompiler.y
 InputName=aslcompiler
 
 BuildCmds= \
-	$(WkspDir)\..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler/$(InputName).y.c $(InputPath)
+	$(WkspDir)\..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler64/$(InputName).y.c $(InputPath)
 
-"$(ProjDir)/AslCompiler/$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"$(ProjDir)/AslCompiler64/$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 
-"$(ProjDir)/AslCompiler/$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"$(ProjDir)/AslCompiler64/$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 # End Custom Build
 
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+!ELSEIF  "$(CFG)" == "AslCompiler64 - Win32 Debug"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building parser from $(InputPath) to $(ProjDir)/AslCompiler/$(InputName).y.c
+# Begin Custom Build - Building parser from $(InputPath) to $(ProjDir)/AslCompiler64/$(InputName).y.c
 WkspDir=.
 ProjDir=.
-InputPath=../../source/compiler/aslcompiler.y
+InputPath=../../source/compiler/AslCompiler.y
 InputName=aslcompiler
 
 BuildCmds= \
-	$(WkspDir)\..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler/$(InputName).y.c $(InputPath)
+	$(WkspDir)\..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler64/$(InputName).y.c $(InputPath)
 
-"$(ProjDir)/AslCompiler/$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"$(ProjDir)/AslCompiler64/$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 
-"$(ProjDir)/AslCompiler/$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"$(ProjDir)/AslCompiler64/$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 # End Custom Build
 
