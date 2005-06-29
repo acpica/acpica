@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -806,7 +806,7 @@ AcpiPsGetOpcodeInfo (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown extended opcode [%X]\n", Opcode));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown AML opcode [%4.4X]\n", Opcode));
         break;
     }
 
