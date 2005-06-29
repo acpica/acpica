@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.94 $
+ *       $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -136,7 +136,6 @@
 #define METHOD_PARSE_AT_INIT        0x0
 #define METHOD_PARSE_JUST_IN_TIME   0x1
 #define METHOD_DELETE_AT_COMPLETION 0x2
-
 
 
 ACPI_STATUS
@@ -320,7 +319,6 @@ AcpiAmlReleaseAllMutexes (
 void
 AcpiAmlUnlinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc);
-
 
 
 /*
@@ -576,7 +574,7 @@ AcpiAmlStoreObjectToObject (
 
 
 /*
- * 
+ *
  */
 
 ACPI_STATUS
@@ -631,7 +629,7 @@ AcpiAmlCopyIntegerToFieldUnit (
  * amutils - interpreter/scanner utilities
  */
 
-void
+ACPI_STATUS
 AcpiAmlEnterInterpreter (
     void);
 
