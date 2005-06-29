@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -499,17 +499,27 @@ AcpiDsExecEndOp (
             goto Cleanup;
         }
 
-        /* Resolve all operands */
+        /*
+         * All opcodes require operand resolution, with the only exceptions
+         * being the ObjectType and SizeOf operators.
+         */
+        if (!(WalkState->OpInfo->Flags & AML_NO_OPERAND_RESOLVE))
+        {
+            /* Resolve all operands */
 
-        Status = AcpiExResolveOperands (WalkState->Opcode,
-                        &(WalkState->Operands [WalkState->NumOperands -1]),
-                        WalkState);
+            Status = AcpiExResolveOperands (WalkState->Opcode,
+                            &(WalkState->Operands [WalkState->NumOperands -1]),
+                            WalkState);
+            if (ACPI_SUCCESS (Status))
+            {
+                ACPI_DUMP_OPERANDS (ACPI_WALK_OPERANDS, ACPI_IMODE_EXECUTE,
+                                AcpiPsGetOpcodeName (WalkState->Opcode),
+                                WalkState->NumOperands, "after ExResolveOperands");
+            }
+        }
+
         if (ACPI_SUCCESS (Status))
         {
-            ACPI_DUMP_OPERANDS (ACPI_WALK_OPERANDS, ACPI_IMODE_EXECUTE,
-                            AcpiPsGetOpcodeName (WalkState->Opcode),
-                            WalkState->NumOperands, "after ExResolveOperands");
-
             /*
              * Dispatch the request to the appropriate interpreter handler
              * routine.  There is one routine per opcode "type" based upon the
