@@ -292,11 +292,12 @@ char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n"
 
 static char                 *Gbl_MutexNames[] =
 {
-    "MTX_Execute",
-    "MTX_Interpreter",
-    "MTX_Tables"
-    "MTX_Namespace",
     "MTX_Memory",
+    "MTX_Tables",
+    "MTX_Dispatcher",
+    "MTX_Interpreter",
+    "MTX_Execute",
+    "MTX_Namespace",
     "MTX_Events",
     "MTX_OpRegions",
     "MTX_DebugCommand",
