@@ -103,6 +103,24 @@
 
 
 
+/* Priorities for OsdQueueForExecution */
+
+#define OSD_PRIORITY_HIGH   1
+#define OSD_PRIORITY_MED    2
+#define OSD_PRIORITY_LO     3
+#define OSD_PRIORITY_GPE    OSD_PRIORITY_HIGH
+
+
+/* Types specific to the OS-dependent layer interfaces */
+
+typedef
+UINT32 (*OSD_HANDLER) (
+    void);
+
+typedef
+void (*OSD_EXECUTION_CALLBACK) (
+    void                    *Context);
+
 
 /* 
  * Memory allocation and mapping 
@@ -110,25 +128,25 @@
 
 void *
 OsdAllocate (
-    UINT32          size);
+    UINT32                  Size);
 
 void *
 OsdCallocate (
-    UINT32          size);
+    UINT32                  Size);
 
 void 
 OsdFree (
-    void *          mem);
+    void *                  Memory);
 
 void *
 OsdMapMemory (
-    void            *PhysicalAddress,
-    UINT32          Length);
+    void                    *PhysicalAddress,
+    UINT32                  Length);
 
 void 
 OsdUnMapMemory (
-    void            *PhysicalAddress, 
-    UINT32          Length);
+    void                    *PhysicalAddress, 
+    UINT32                  Length);
 
 
 /* 
@@ -137,27 +155,33 @@ OsdUnMapMemory (
 
 UINT32
 OsdInstallInterruptHandler (
-    UINT32          InterruptNumber,
-    UINT32          (* Isr)(void),
-    UINT32          *SciHandle);
+    UINT32                  InterruptNumber,
+    OSD_HANDLER             ServiceRoutine,
+    UINT32                  *SciHandle);
 
 void
 OsdRemoveInterruptHandler (
-    UINT32          Handle);
+    UINT32                  Handle);
 
 
 /* 
  * Scheduling 
  */
 
+ACPI_STATUS
+OsdQueueForExecution (
+    UINT32                  Priority,
+    OSD_EXECUTION_CALLBACK  Function,
+    void                    *Context);
+
 void
 OsdSleep (
-    UINT32          seconds,
-    UINT32          milliseconds);
+    UINT32                  Seconds,
+    UINT32                  Milliseconds);
 
 void
 OsdSleepUsec (
-    UINT32          microseconds);
+    UINT32                  Microseconds);
 
 
 /*
@@ -166,30 +190,30 @@ OsdSleepUsec (
 
 UINT8
 OsdIn8 (
-    UINT16          InPort);
+    UINT16                  InPort);
 
 UINT16
 OsdIn16 (
-    UINT16          InPort);
+    UINT16                  InPort);
 
 UINT32
 OsdIn32 (
-    UINT16          InPort);
+    UINT16                  InPort);
 
 void
 OsdOut8 (
-    UINT16          OutPort, 
-    UINT8           Value);
+    UINT16                  OutPort, 
+    UINT8                   Value);
 
 void
 OsdOut16 (
-    UINT16          OutPort, 
-    UINT16          Value);
+    UINT16                  OutPort, 
+    UINT16                  Value);
 
 void
 OsdOut32 (
-    UINT16          OutPort, 
-    UINT32          Value);
+    UINT16                  OutPort, 
+    UINT32                  Value);
 
 
 /*
@@ -198,45 +222,45 @@ OsdOut32 (
 
 UINT8 
 OsdReadPciCfgByte (
-    INT32           Bus, 
-    INT32           DeviceFunction, 
-    INT32           Register, 
-    UINT8           *Value);
+    INT32                   Bus, 
+    INT32                   DeviceFunction, 
+    INT32                   Register, 
+    UINT8                   *Value);
 
 UINT8 
 OsdReadPciCfgWord (
-    INT32           Bus, 
-    INT32           DeviceFunction, 
-    INT32           Register, 
-    UINT16          *Value);
+    INT32                   Bus, 
+    INT32                   DeviceFunction, 
+    INT32                   Register, 
+    UINT16                  *Value);
 
 UINT8 
 OsdReadPciCfgDword (
-    INT32           Bus, 
-    INT32           DeviceFunction, 
-    INT32           Register, 
-    UINT32          *Value);
+    INT32                   Bus, 
+    INT32                   DeviceFunction, 
+    INT32                   Register, 
+    UINT32                  *Value);
 
 UINT8 
 OsdWritePciCfgByte (
-    INT32           Bus, 
-    INT32           DeviceFunction, 
-    INT32           Register, 
-    UINT8           Value);
+    INT32                   Bus, 
+    INT32                   DeviceFunction, 
+    INT32                   Register, 
+    UINT8                   Value);
 
 UINT8 
 OsdWritePciCfgWord (
-    INT32           Bus, 
-    INT32           DeviceFunction, 
-    INT32           Register, 
-    UINT16          Value);
+    INT32                   Bus, 
+    INT32                   DeviceFunction, 
+    INT32                   Register, 
+    UINT16                  Value);
 
 UINT8 
 OsdWritePciCfgDword (
-    INT32           Bus, 
-    INT32           DeviceFunction, 
-    INT32           Register, 
-    UINT32          Value);
+    INT32                   Bus, 
+    INT32                   DeviceFunction, 
+    INT32                   Register, 
+    UINT32                  Value);
 
 
 /*
@@ -245,15 +269,15 @@ OsdWritePciCfgDword (
 
 INT32 
 OsdPrintf (
-    OSD_FILE        *stream, 
-    const char      *format, 
+    OSD_FILE                *Stream, 
+    const char              *Format, 
     ...);
 
 INT32
 OsdVprintf (
-    OSD_FILE        *stream, 
-    const char      *format, 
-    va_list         args);
+    OSD_FILE                *Stream, 
+    const char              *Format, 
+    va_list                 Args);
 
 
 /* 
@@ -265,26 +289,26 @@ OsdVprintf (
 
 OSD_FILE *
 OsdOpen (
-    const char      *filename, 
-    const char      *mode);
+    const char              *Filename, 
+    const char              *Mode);
 
 INT32 
 OsdClose (
-    OSD_FILE        *stream);
+    OSD_FILE                *Stream);
 
 UINT32 
 OsdRead (
-    void            *buffer, 
-    UINT32          size, 
-    UINT32          count, 
-    OSD_FILE        *stream);
+    void                    *Buffer, 
+    UINT32                  Size, 
+    UINT32                  Count, 
+    OSD_FILE                *Stream);
 
 UINT32 
 OsdWrite (
-    const void      *buffer, 
-    UINT32          size, 
-    UINT32          count, 
-    OSD_FILE        *stream); 
+    const void              *Buffer, 
+    UINT32                  Size, 
+    UINT32                  Count, 
+    OSD_FILE                *Stream); 
 
 
 
