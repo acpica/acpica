@@ -396,10 +396,10 @@ DbSprintOp (
     ACPI_GENERIC_OP         *Op);
 
 
-
 void
 DbDumpNamespace (
-    char                    *StartArg);
+    char                    *StartArg,
+    char                    *DepthArg);
 
 void
 DbExecute (
