@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.19 $
+ *       $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -133,7 +133,7 @@
 
 #define strtoul simple_strtoul
 
-#ifdef _IA64
+#ifdef __ia64__
 #define ACPI_FLUSH_CPU_CACHE()
 #else
 #define ACPI_FLUSH_CPU_CACHE()	wbinvd()
