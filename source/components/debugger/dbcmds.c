@@ -691,13 +691,13 @@ DbWalkForSpecificObjects (
 
 /******************************************************************************
  * 
- * FUNCTION:    DbDisplayAllMethods
+ * FUNCTION:    DbDisplayObjects
  *
- * PARAMETERS:  Root            - Root of the parse tree
+ * PARAMETERS:  ObjTypeArg          - Type of object to display
  *
  * RETURN:      None
  *
- * DESCRIPTION: Need to wait until second pass to parse the control methods
+ * DESCRIPTION: Display objects in the namespace of the requested type
  *
  *****************************************************************************/
 
@@ -809,13 +809,13 @@ DbWalkAndMatchName (
 
 /******************************************************************************
  * 
- * FUNCTION:    DbWalkAndMatchName
+ * FUNCTION:    DbFindNameInNamespace
  *
  * PARAMETERS:  
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Search the namespace for a given name (with wildcards)
  *
  *****************************************************************************/
 
@@ -831,7 +831,7 @@ DbFindNameInNamespace (
     }
 
     AcpiWalkNamespace (ACPI_TYPE_Any, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-        DbWalkAndMatchName, NameArg, NULL);
+                        DbWalkAndMatchName, NameArg, NULL);
 
     DbSetOutputDestination (DB_CONSOLE_OUTPUT);
     return AE_OK;

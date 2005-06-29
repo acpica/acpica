@@ -154,9 +154,10 @@ DbDumpParserDescriptor (
 
     OsdPrintf ("Parser Op Descriptor:\n");
     OsdPrintf ("%20.20s : %4.4X\n", "Opcode", Op->Opcode);
-    OsdPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name);
-    OsdPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Value);
 
+    DEBUG_ONLY_MEMBERS (OsdPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name));
+
+    OsdPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Value);
     OsdPrintf ("%20.20s : %p\n", "Parent", Op->Parent);
     OsdPrintf ("%20.20s : %p\n", "NextOp", Op->Next);
 }
@@ -219,7 +220,21 @@ DbDecodeAndDisplayObject (
 
     if ((Target[0] >= 0x30) && (Target[0] <= 0x39))
     {
+
+#ifdef _IA16
+#include <stdio.h>
+        if (!sscanf (Target, "%p", &ObjPtr))
+        {
+            OsdPrintf ("Invalid pointer: %s\n", Target);
+            return;
+        }
+
+#else
         ObjPtr = (void *) STRTOUL (Target, NULL, 16);
+
+#endif
+
+
         if (!OsdReadable (ObjPtr, 16))
         {
             OsdPrintf ("Address %p is invalid in this address space\n", ObjPtr);
@@ -236,14 +251,8 @@ DbDecodeAndDisplayObject (
                 return;
             }
 
-            Status = AcpiGetName ((ACPI_HANDLE) ObjPtr, ACPI_FULL_PATHNAME, &RetBuf);
-            if (ACPI_SUCCESS (Status))
-            {
-                OsdPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
-            }
-
-            CmDumpBuffer (ObjPtr, sizeof (NAME_TABLE_ENTRY), Display, ACPI_UINT32_MAX);
-            AmlDumpNameTableEntry (ObjPtr, 1);
+            Entry = ObjPtr;
+            goto DumpNte;
         }
 
         else if (VALID_DESCRIPTOR_TYPE ((ObjPtr), DESC_TYPE_ACPI_OBJ))
@@ -252,7 +261,7 @@ DbDecodeAndDisplayObject (
 
             if (!OsdReadable (ObjPtr, sizeof (ACPI_OBJECT_INTERNAL)))
             {
-                OsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
+                OsdPrintf ("Cannot read entire ACPI object at address %p\n", ObjPtr);
                 return;
             }
 
@@ -266,7 +275,7 @@ DbDecodeAndDisplayObject (
 
             if (!OsdReadable (ObjPtr, sizeof (ACPI_GENERIC_OP)))
             {
-                OsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
+                OsdPrintf ("Cannot read entire Parser object at address %p\n", ObjPtr);
                 return;
             }
 
@@ -300,6 +309,7 @@ DbDecodeAndDisplayObject (
         return;
     }
 
+DumpNte:
     /* Now dump the NTE */
 
     Status = AcpiGetName (Entry, ACPI_FULL_PATHNAME, &RetBuf);
@@ -321,7 +331,7 @@ DbDecodeAndDisplayObject (
 
     if (Entry->Object)
     {
-        OsdPrintf ("\nAttached Object (0x%X):\n", Entry->Object);
+        OsdPrintf ("\nAttached Object (0x%p):\n", Entry->Object);
         if (!OsdReadable (Entry->Object, sizeof (ACPI_OBJECT_INTERNAL)))
         {
             OsdPrintf ("Invalid internal ACPI Object at address %p\n", Entry->Object);
@@ -424,15 +434,15 @@ DbDisplayInternalObject (
 
         switch (ObjDesc->Common.Type)
         {
-        case INTERNAL_TYPE_Lvalue:
-            switch (ObjDesc->Lvalue.OpCode)
+        case INTERNAL_TYPE_Reference:
+            switch (ObjDesc->Reference.OpCode)
             {
             case AML_ZeroOp:
                 OsdPrintf ("[Const]     Number 0x%.8X", 0);
                 break;
 
             case AML_OnesOp:
-                OsdPrintf ("[Const]     Number 0x%.8X", 0xFFFFFFFFF);
+                OsdPrintf ("[Const]     Number 0x%.8X", ACPI_UINT32_MAX);
                 break;
 
             case AML_OneOp:
@@ -440,19 +450,19 @@ DbDisplayInternalObject (
                 break;
 
             case AML_LocalOp:
-                OsdPrintf ("[Local%d]", ObjDesc->Lvalue.Offset);
+                OsdPrintf ("[Local%d]", ObjDesc->Reference.Offset);
                 if (WalkState)
                 {
-                    ObjDesc = WalkState->LocalVariables[ObjDesc->Lvalue.Offset].Object;
+                    ObjDesc = WalkState->LocalVariables[ObjDesc->Reference.Offset].Object;
                     DbDecodeInternalObject (ObjDesc);
                 }
                 break;
 
             case AML_ArgOp:
-                OsdPrintf ("[Arg%d]  ", ObjDesc->Lvalue.Offset);
+                OsdPrintf ("[Arg%d]  ", ObjDesc->Reference.Offset);
                 if (WalkState)
                 {
-                    ObjDesc = WalkState->Arguments[ObjDesc->Lvalue.Offset].Object;
+                    ObjDesc = WalkState->Arguments[ObjDesc->Reference.Offset].Object;
                     DbDecodeInternalObject (ObjDesc);
                 }
                 break;
@@ -463,7 +473,7 @@ DbDisplayInternalObject (
 
             case AML_IndexOp:
                 OsdPrintf ("[Index]  ");
-                DbDecodeInternalObject (ObjDesc->Lvalue.Object);
+                DbDecodeInternalObject (ObjDesc->Reference.Object);
                 break;
 
             default:
