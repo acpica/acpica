@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.41 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -116,30 +116,12 @@
  *****************************************************************************/
 
 #include "acpi.h"
+#include "achware.h"
+#include "acnamesp.h"
 #include "acevents.h"
 
 #define _COMPONENT          ACPI_HARDWARE
-        ACPI_MODULE_NAME    ("hwgpe")
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwGetGpeBitMask
- *
- * PARAMETERS:  GpeNumber       - The GPE
- *
- * RETURN:      Gpe register bitmask for this gpe level
- *
- * DESCRIPTION: Get the bitmask for this GPE
- *
- ******************************************************************************/
-
-UINT8
-AcpiHwGetGpeBitMask (
-    UINT32                  GpeNumber)
-{
-    return (AcpiGbl_GpeNumberInfo [AcpiEvGetGpeNumberIndex (GpeNumber)].BitMask);
-}
+        MODULE_NAME         ("hwgpe")
 
 
 /******************************************************************************
@@ -154,81 +136,31 @@ AcpiHwGetGpeBitMask (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiHwEnableGpe (
     UINT32                  GpeNumber)
 {
-    UINT32                  InByte;
+    UINT8                   InByte;
     UINT32                  RegisterIndex;
     UINT8                   BitMask;
-    ACPI_STATUS             Status;
 
+    /*
+     * Translate GPE number to index into global registers array.
+     */
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Translate GPE number to index into global registers array. */
-
-    RegisterIndex = AcpiEvGetGpeRegisterIndex (GpeNumber);
-
-    /* Get the register bitmask for this GPE */
-
-    BitMask = AcpiHwGetGpeBitMask (GpeNumber);
+    /*
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
 
     /*
      * Read the current value of the register, set the appropriate bit
      * to enable the GPE, and write out the new register.
      */
-    Status = AcpiHwLowLevelRead (8, &InByte, 
-                    &AcpiGbl_GpeRegisterInfo[RegisterIndex].EnableAddress, 0);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    Status = AcpiHwLowLevelWrite (8, (InByte | BitMask), 
-                    &AcpiGbl_GpeRegisterInfo[RegisterIndex].EnableAddress, 0);
-
-    return (Status);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwEnableGpeForWakeup
- *
- * PARAMETERS:  GpeNumber       - The GPE
- *
- * RETURN:      None
- *
- * DESCRIPTION: Keep track of which GPEs the OS has requested not be
- *              disabled when going to sleep.
- *
- ******************************************************************************/
-
-void
-AcpiHwEnableGpeForWakeup (
-    UINT32                  GpeNumber)
-{
-    UINT32                  RegisterIndex;
-    UINT8                   BitMask;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Translate GPE number to index into global registers array. */
-
-    RegisterIndex = AcpiEvGetGpeRegisterIndex (GpeNumber);
-
-    /* Get the register bitmask for this GPE */
-
-    BitMask = AcpiHwGetGpeBitMask (GpeNumber);
-
-    /*
-     * Set the bit so we will not disable this when sleeping
-     */
-    AcpiGbl_GpeRegisterInfo[RegisterIndex].WakeEnable |= BitMask;
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr,
+                (UINT8)(InByte | BitMask));
 }
 
 
@@ -244,86 +176,31 @@ AcpiHwEnableGpeForWakeup (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiHwDisableGpe (
     UINT32                  GpeNumber)
 {
-    UINT32                  InByte;
+    UINT8                   InByte;
     UINT32                  RegisterIndex;
     UINT8                   BitMask;
-    ACPI_STATUS             Status;
 
+    /*
+     * Translate GPE number to index into global registers array.
+     */
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Translate GPE number to index into global registers array. */
-
-    RegisterIndex = AcpiEvGetGpeRegisterIndex (GpeNumber);
-
-    /* Get the register bitmask for this GPE */
-
-    BitMask = AcpiHwGetGpeBitMask (GpeNumber);
+    /*
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
 
     /*
      * Read the current value of the register, clear the appropriate bit,
      * and write out the new register value to disable the GPE.
      */
-    Status = AcpiHwLowLevelRead (8, &InByte,
-                    &AcpiGbl_GpeRegisterInfo[RegisterIndex].EnableAddress, 0);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    Status = AcpiHwLowLevelWrite (8, (InByte & ~BitMask), 
-                    &AcpiGbl_GpeRegisterInfo[RegisterIndex].EnableAddress, 0);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    AcpiHwDisableGpeForWakeup(GpeNumber);
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwDisableGpeForWakeup
- *
- * PARAMETERS:  GpeNumber       - The GPE
- *
- * RETURN:      None
- *
- * DESCRIPTION: Keep track of which GPEs the OS has requested not be
- *              disabled when going to sleep.
- *
- ******************************************************************************/
-
-void
-AcpiHwDisableGpeForWakeup (
-    UINT32                  GpeNumber)
-{
-    UINT32                  RegisterIndex;
-    UINT8                   BitMask;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Translate GPE number to index into global registers array. */
-
-    RegisterIndex = AcpiEvGetGpeRegisterIndex (GpeNumber);
-
-    /* Get the register bitmask for this GPE */
-
-    BitMask = AcpiHwGetGpeBitMask (GpeNumber);
-
-    /*
-     * Clear the bit so we will disable this when sleeping
-     */
-    AcpiGbl_GpeRegisterInfo[RegisterIndex].WakeEnable &= ~BitMask;
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr,
+                (UINT8)(InByte & ~BitMask));
 }
 
 
@@ -339,34 +216,28 @@ AcpiHwDisableGpeForWakeup (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiHwClearGpe (
     UINT32                  GpeNumber)
 {
     UINT32                  RegisterIndex;
     UINT8                   BitMask;
-    ACPI_STATUS             Status;
 
+    /*
+     * Translate GPE number to index into global registers array.
+     */
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Translate GPE number to index into global registers array. */
-
-    RegisterIndex = AcpiEvGetGpeRegisterIndex (GpeNumber);
-
-    /* Get the register bitmask for this GPE */
-
-    BitMask = AcpiHwGetGpeBitMask (GpeNumber);
+    /*
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
 
     /*
      * Write a one to the appropriate bit in the status register to
      * clear this GPE.
      */
-    Status = AcpiHwLowLevelWrite (8, BitMask, 
-                    &AcpiGbl_GpeRegisterInfo[RegisterIndex].StatusAddress, 0);
-
-    return (Status);
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr, BitMask);
 }
 
 
@@ -382,171 +253,49 @@ AcpiHwClearGpe (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiHwGetGpeStatus (
     UINT32                  GpeNumber,
     ACPI_EVENT_STATUS       *EventStatus)
 {
-    UINT32                  InByte = 0;
+    UINT8                   InByte = 0;
     UINT32                  RegisterIndex = 0;
     UINT8                   BitMask = 0;
-    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
 
     if (!EventStatus)
     {
-        return (AE_BAD_PARAMETER);
+        return;
     }
 
     (*EventStatus) = 0;
 
-    /* Translate GPE number to index into global registers array. */
+    /*
+     * Translate GPE number to index into global registers array.
+     */
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
-    RegisterIndex = AcpiEvGetGpeRegisterIndex (GpeNumber);
-    GpeRegisterInfo = &AcpiGbl_GpeRegisterInfo[RegisterIndex];
+    /*
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
 
-    /* Get the register bitmask for this GPE */
-
-    BitMask = AcpiHwGetGpeBitMask (GpeNumber);
-
-    /* GPE Enabled? */
-
-    Status = AcpiHwLowLevelRead (8, &InByte, &GpeRegisterInfo->EnableAddress, 0);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
+    /*
+     * Enabled?:
+     */
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
 
     if (BitMask & InByte)
     {
         (*EventStatus) |= ACPI_EVENT_FLAG_ENABLED;
     }
 
-    /* GPE Enabled for wake? */
-
-    if (BitMask & GpeRegisterInfo->WakeEnable)
-    {
-        (*EventStatus) |= ACPI_EVENT_FLAG_WAKE_ENABLED;
-    }
-
-    /* GPE active (set)? */
-
-    Status = AcpiHwLowLevelRead (8, &InByte, &GpeRegisterInfo->StatusAddress, 0);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
+    /*
+     * Set?
+     */
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr);
 
     if (BitMask & InByte)
     {
         (*EventStatus) |= ACPI_EVENT_FLAG_SET;
     }
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwDisableNonWakeupGpes
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Disable all non-wakeup GPEs
- *              Call with interrupts disabled. The interrupt handler also
- *              modifies AcpiGbl_GpeRegisterInfo[i].Enable, so it should not be
- *              given the chance to run until after non-wake GPEs are
- *              re-enabled.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiHwDisableNonWakeupGpes (
-    void)
-{
-    UINT32                  i;
-    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
-    UINT32                  InValue;
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    for (i = 0; i < AcpiGbl_GpeRegisterCount; i++)
-    {
-        GpeRegisterInfo = &AcpiGbl_GpeRegisterInfo[i];
-
-        /*
-         * Read the enabled status of all GPEs. We
-         * will be using it to restore all the GPEs later.
-         */
-        Status = AcpiHwLowLevelRead (8, &InValue, 
-                    &GpeRegisterInfo->EnableAddress, 0);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-
-        GpeRegisterInfo->Enable = (UINT8) InValue;
-
-        /*
-         * Disable all GPEs except wakeup GPEs.
-         */
-        Status = AcpiHwLowLevelWrite (8, GpeRegisterInfo->WakeEnable, 
-                &GpeRegisterInfo->EnableAddress, 0);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-    }
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwEnableNonWakeupGpes
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Enable all non-wakeup GPEs we previously enabled.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiHwEnableNonWakeupGpes (
-    void)
-{
-    UINT32                  i;
-    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    for (i = 0; i < AcpiGbl_GpeRegisterCount; i++)
-    {
-        GpeRegisterInfo = &AcpiGbl_GpeRegisterInfo[i];
-
-        /*
-         * We previously stored the enabled status of all GPEs.
-         * Blast them back in.
-         */
-        Status = AcpiHwLowLevelWrite (8, GpeRegisterInfo->Enable,
-                    &GpeRegisterInfo->EnableAddress, 0);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-    }
-    return (AE_OK);
 }
