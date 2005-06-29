@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -337,7 +337,7 @@ AcpiTbValidateTableHeader (
 
 ACPI_STATUS
 AcpiTbMapAcpiTable (
-    UINT64                  PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     UINT32                  *Size,
     void                    **LogicalAddress)
 {
