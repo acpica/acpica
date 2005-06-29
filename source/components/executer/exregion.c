@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -341,51 +341,13 @@ AcpiExSystemIoSpaceHandler (
 
     case ACPI_READ_ADR_SPACE:
 
-        switch (BitWidth) /* I/O Port width */
-        {
-        case 8:
-            *Value = (UINT32) AcpiOsIn8 ((ACPI_IO_ADDRESS) Address);
-            break;
-
-        case 16:
-            *Value = (UINT32) AcpiOsIn16 ((ACPI_IO_ADDRESS) Address);
-            break;
-
-        case 32:
-            *Value = AcpiOsIn32 ((ACPI_IO_ADDRESS) Address);
-            break;
-
-        default:
-            DEBUG_PRINTP (ACPI_ERROR, ("Invalid SystemIO width %d\n",
-                    BitWidth));
-            Status = AE_AML_OPERAND_VALUE;
-        }
-
+        Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) Address, Value, BitWidth);
         break;
 
 
     case ACPI_WRITE_ADR_SPACE:
 
-        switch (BitWidth) /* I/O Port width */
-        {
-        case 8:
-            AcpiOsOut8 ((ACPI_IO_ADDRESS) Address, (UINT8) *Value);
-            break;
-
-        case 16:
-            AcpiOsOut16 ((ACPI_IO_ADDRESS) Address, (UINT16) *Value);
-            break;
-
-        case 32:
-            AcpiOsOut32 ((ACPI_IO_ADDRESS) Address, *Value);
-            break;
-
-        default:
-            DEBUG_PRINTP (ACPI_ERROR, ("Invalid SystemIO width %d\n",
-                    BitWidth));
-            Status = AE_AML_OPERAND_VALUE;
-        }
-
+        Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) Address, *Value, BitWidth);
         break;
 
 
@@ -396,6 +358,7 @@ AcpiExSystemIoSpaceHandler (
 
     return_ACPI_STATUS (Status);
 }
+
 
 /*******************************************************************************
  *
@@ -457,53 +420,13 @@ AcpiExPciConfigSpaceHandler (
 
     case ACPI_READ_ADR_SPACE:
 
-        *Value  = 0;
-
-        switch (BitWidth) /* PCI Register width */
-        {
-        case 8:
-            Status = AcpiOsReadPciCfgByte (PciId, PciRegister, (UINT8 *) Value);
-            break;
-
-        case 16:
-            Status = AcpiOsReadPciCfgWord (PciId, PciRegister, (UINT16 *) Value);
-            break;
-
-        case 32:
-            Status = AcpiOsReadPciCfgDword (PciId, PciRegister, Value);
-            break;
-
-        default:
-            DEBUG_PRINTP (ACPI_ERROR, ("Invalid PCIConfig width %d\n",
-                BitWidth));
-            Status = AE_AML_OPERAND_VALUE;
-        }
-
+        Status = AcpiOsReadPciConfiguration (PciId, PciRegister, Value, BitWidth);
         break;
 
 
     case ACPI_WRITE_ADR_SPACE:
 
-        switch (BitWidth) /* PCI Register width */
-        {
-        case 8:
-            Status = AcpiOsWritePciCfgByte (PciId, PciRegister, *(UINT8*)Value);
-            break;
-
-        case 16:
-            Status = AcpiOsWritePciCfgWord (PciId, PciRegister, *(UINT16*)Value);
-            break;
-
-        case 32:
-            Status = AcpiOsWritePciCfgDword (PciId, PciRegister, *Value);
-            break;
-
-        default:
-            DEBUG_PRINTP (ACPI_ERROR, ("Invalid PCIConfig width %d\n",
-                BitWidth));
-            Status = AE_AML_OPERAND_VALUE;
-        }
-
+        Status = AcpiOsWritePciConfiguration (PciId, PciRegister, *Value, BitWidth);
         break;
 
 
