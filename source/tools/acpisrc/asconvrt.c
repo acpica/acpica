@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.37 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -334,7 +334,6 @@ AsTrimLines (
     char                    *Buffer,
     char                    *Filename)
 {
-    UINT32                  Length;
     char                    *SubBuffer = Buffer;
     char                    *StartWhiteSpace = NULL;
     UINT32                  SpaceCount = 0;
@@ -368,9 +367,9 @@ AsTrimLines (
         {
             SpaceCount += (SubBuffer - StartWhiteSpace);
 
-            Length = strlen (SubBuffer) + 1;
+            /* Remove the spaces */
 
-            memmove (StartWhiteSpace, SubBuffer, Length);
+            SubBuffer = AsRemoveData (StartWhiteSpace, SubBuffer);
             StartWhiteSpace = NULL;
         }
 
@@ -423,8 +422,6 @@ AsReplaceHeader (
     char                    *Buffer,
     char                    *NewHeader)
 {
-    UINT32                  Length;
-    UINT32                  HdrLength;
     char                    *SubBuffer;
     char                    *TokenEnd;
 
@@ -442,16 +439,9 @@ AsReplaceHeader (
     TokenEnd = strstr (SubBuffer, "*/");
     TokenEnd = AsSkipPastChar (TokenEnd, '\n');
 
-    /* Move up the rest of the buffer to delete the header */
+    /* Delete old header, insert new one */
 
-    Length = strlen (TokenEnd) + 1;
-    memmove (SubBuffer, TokenEnd, Length);
-
-    /* Insert the new header */
-
-    HdrLength = strlen (NewHeader);
-    memmove (SubBuffer + HdrLength, SubBuffer, Length);
-    memmove (SubBuffer, NewHeader, HdrLength);
+    AsReplaceData (SubBuffer, TokenEnd - SubBuffer, NewHeader, strlen (NewHeader));
 }
 
 
@@ -639,14 +629,16 @@ AsBracesOnSameLine (
                     (*Beginning != ','))
                 {
                     Beginning++;
-                    *Beginning = 0;
-
                     SubBuffer++;
                     Length = strlen (SubBuffer);
 
                     Gbl_MadeChanges = TRUE;
-                    memmove (Beginning + 2, SubBuffer, Length+3);
-                    memmove (Beginning, " {", 2);
+
+#ifdef ADD_EXTRA_WHITESPACE
+                    AsReplaceData (Beginning, SubBuffer-Beginning, " {\n", 3);
+#else
+                    AsReplaceData (Beginning, SubBuffer-Beginning, " {", 2);
+#endif
                 }
             }
         }
@@ -724,11 +716,11 @@ AsTabify4 (
 
                 NewSubBuffer = (SubBuffer + 1) - 4;
                 *NewSubBuffer = '\t';
+                NewSubBuffer++;
 
-                Gbl_MadeChanges = TRUE;
-                SubBuffer++;
-                memmove ((NewSubBuffer + 1), SubBuffer, strlen (SubBuffer) + 1);
-                SubBuffer = NewSubBuffer;
+                /* Remove the spaces */
+
+                SubBuffer = AsRemoveData (NewSubBuffer, SubBuffer + 1);
             }
 
             if ((Column % 4) == 0)
@@ -814,7 +806,6 @@ AsTabify8 (
             }
             else
             {
-
                 ThisTabCount = LastLineTabCount + 1;
             }
         }
@@ -935,9 +926,9 @@ AsTabify8 (
                     TabCount++;
                 }
 
-                Gbl_MadeChanges = TRUE;
-                memmove (NewSubBuffer, SubBuffer, strlen (SubBuffer) + 1);
-                SubBuffer = NewSubBuffer;
+                /* Remove the spaces */
+
+                SubBuffer = AsRemoveData (NewSubBuffer, SubBuffer);
                 continue;
             }
         }
@@ -1141,5 +1132,134 @@ AsCountSourceLines (
                 CommentCount, WhiteCount, LineCount, LineCount+WhiteCount+CommentCount, Filename));
 }
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsInsertPrefix
+ *
+ * DESCRIPTION: Insert struct or union prefixes
+ *
+ ******************************************************************************/
+
+void
+AsInsertPrefix (
+    char                    *Buffer,
+    char                    *Keyword,
+    UINT8                   Type)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    char                    *EndKeyword;
+    int                     StrLength;
+    int                     InsertLength;
+    char                    *InsertString;
+    int                     TrailingSpaces;
+    char                    LowerKeyword[128];
+    int                     KeywordLength;
+
+
+    switch (Type)
+    {
+    case SRC_TYPE_STRUCT:
+        InsertString = "struct ";
+        break;
+
+    case SRC_TYPE_UNION:
+        InsertString = "union ";
+        break;
+
+    default:
+        return;
+    }
+
+    strcpy (LowerKeyword, Keyword);
+    strlwr (LowerKeyword);
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+    InsertLength = strlen (InsertString);
+    KeywordLength = strlen (Keyword);
+
+
+    while (SubString)
+    {
+        /* Find an instance of the keyword */
+
+        SubString = strstr (SubBuffer, LowerKeyword);
+
+        if (!SubString)
+        {
+            return;
+        }
+
+        SubBuffer = SubString;
+
+        /* Must be standalone word, not a substring */
+
+        if (AsMatchExactWord (SubString, KeywordLength))
+        {
+            /* Make sure the keyword isn't already prefixed with the insert */
+
+            if (!strncmp (SubString - InsertLength, InsertString, InsertLength))
+            {
+                /* Add spaces if not already at the end-of-line */
+
+                if (*(SubBuffer + KeywordLength) != '\n')
+                {
+                    /* Already present, add spaces after to align structure members */
+
+                    AsInsertData (SubBuffer + KeywordLength, "        ", 8);
+                }
+                goto Next;
+            }
+
+            /* Make sure the keyword isn't at the end of a struct/union */
+            /* Note: This code depends on a single space after the brace */
+
+            if (*(SubString - 2) == '}')
+            {
+                goto Next;
+            }
+
+            /* Prefix the keyword with the insert string */
+
+            Gbl_MadeChanges = TRUE;
+            StrLength = strlen (SubString);
+
+            /* Is there room for insertion */
+
+            EndKeyword = SubString + strlen (LowerKeyword);
+
+            TrailingSpaces = 0;
+            while (EndKeyword[TrailingSpaces] == ' ')
+            {
+                TrailingSpaces++;
+            }
+
+            /*
+             * Use "if (TrailingSpaces > 1)" if we want to ignore casts
+             */
+            SubBuffer = SubString + InsertLength;
+
+            if (TrailingSpaces > InsertLength)
+            {
+                /* Insert the keyword */
+
+                memmove (SubBuffer, SubString, KeywordLength);
+
+                /* Insert the keyword */
+
+                memmove (SubString, InsertString, InsertLength);
+            }
+            else
+            {
+                AsInsertData (SubString, InsertString, InsertLength);
+            }
+        }
+
+Next:
+        SubBuffer += KeywordLength;
+    }
+}
 
 
