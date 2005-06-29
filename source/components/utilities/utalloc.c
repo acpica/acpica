@@ -131,8 +131,11 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 void *
-_AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId, 
-                     ST_KEY_DESC_TABLE *KdtEntry)
+_AllocateObjectDesc (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ST_KEY_DESC_TABLE       *KdtEntry)
 {
     ACPI_OBJECT             *NewDesc;
 
@@ -174,9 +177,13 @@ _AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId,
  ****************************************************************************/
 
 void *
-_LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 AllocSize)
+_LocalAllocate (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    INT32                   AllocSize)
 {
-    void                *Block;
+    void                    *Block;
 
 
     Block = OsdAllocate ((size_t) AllocSize);
@@ -214,9 +221,13 @@ _LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 All
  ****************************************************************************/
 
 void *
-_LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 AllocSize)
+_LocalCallocate (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    INT32                   AllocSize)
 {
-    void                *Block;
+    void                    *Block;
 
 
     Block = OsdCallocate ((size_t) AllocSize);
@@ -254,7 +265,8 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
  ****************************************************************************/
 
 void
-LocalDeleteObject (ACPI_OBJECT **ObjDesc)
+LocalDeleteObject (
+    ACPI_OBJECT             **ObjDesc)
 {
 
     FUNCTION_TRACE ("LocalDeleteObject");
