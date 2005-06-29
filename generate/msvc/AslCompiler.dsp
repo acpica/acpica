@@ -25,7 +25,7 @@ CFG=AslCompiler - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi/source/compiler", CRIAAAAA"
 # PROP Scc_LocalPath "..\.."
-CPP=xicl6.exe
+CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
@@ -38,8 +38,8 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler"
-# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler"
+# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler\NoDebug"
+# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler\NoDebug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
@@ -52,7 +52,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=xilink6.exe
+LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
 # ADD LINK32 libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:yes /machine:I386 /out:"Release/iasl.exe"
 # Begin Special Build Tool
@@ -70,8 +70,8 @@ PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler"
-# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler"
+# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler\Debug"
+# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler\Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
@@ -84,13 +84,13 @@ PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=xilink6.exe
+LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /debug /machine:I386 /out:"Debug/iasl.exe" /pdbtype:sept
+# ADD LINK32 libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /debug /machine:I386 /out:"Debug/iasldebug.exe" /pdbtype:sept
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy compiler to libraries directory
-PostBuild_Cmds=copy Debug\iasl.exe ..\..\Libraries
+PostBuild_Cmds=copy Debug\iasldebug.exe ..\..\Libraries
 # End Special Build Tool
 
 !ENDIF 
