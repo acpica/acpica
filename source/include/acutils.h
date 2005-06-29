@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.163 $
+ *       $Revision: 1.164 $
  *
  *****************************************************************************/
 
@@ -249,6 +249,12 @@ char *
 AcpiUtStrncpy (
     char                    *DstString,
     const char              *SrcString,
+    ACPI_SIZE               Count);
+
+int
+AcpiUtMemcmp (
+    const char              *Buffer1,
+    const char              *Buffer2,
     ACPI_SIZE               Count);
 
 int
