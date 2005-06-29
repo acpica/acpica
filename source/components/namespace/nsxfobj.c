@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  ******************************************************************************/
 
@@ -754,7 +754,12 @@ AcpiGetDeviceCallback (
     {
         Status = AcpiCmExecute_HID(Node, &DeviceId);
 
-        if (ACPI_FAILURE (Status))
+	if (Status == AE_NOT_FOUND)
+	{
+		return (AE_OK);
+	}
+
+        else if (ACPI_FAILURE (Status))
         {
             return (Status);
         }
