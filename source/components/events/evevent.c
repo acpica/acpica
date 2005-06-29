@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -306,7 +306,7 @@ AcpiEvFixedEventDetect (
     (void) AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_ENABLE, &FixedEnable);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
-        "Fixed AcpiEvent Block: Enable %08X Status %08X\n",
+        "Fixed Event Block: Enable %08X Status %08X\n",
         FixedEnable, FixedStatus));
 
     /*
@@ -366,7 +366,7 @@ AcpiEvFixedEventDispatch (
                 0, ACPI_MTX_DO_NOT_LOCK);
 
         ACPI_REPORT_ERROR (
-            ("EvGpeDispatch: No installed handler for fixed event [%08X]\n",
+            ("No installed handler for fixed event [%08X]\n",
             Event));
 
         return (ACPI_INTERRUPT_NOT_HANDLED);

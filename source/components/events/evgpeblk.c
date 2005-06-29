@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
  *
  * FUNCTION:    AcpiEvWalkGpeList
  *
- * PARAMETERS:  GpeWalkCallback     - Routine called for each GPE bloack
+ * PARAMETERS:  GpeWalkCallback     - Routine called for each GPE block
  *
  * RETURN:      Status
  *
@@ -264,7 +264,7 @@ AcpiEvSaveMethodInfo (
     {
         /* Not valid, all we can do here is ignore it */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
             "GPE number associated with method %s is not valid\n", Name));
         return (AE_OK);
     }
@@ -480,12 +480,16 @@ AcpiEvCreateGpeInfoBlocks (
         goto ErrorExit;
     }
 
+    /* Save the new Info arrays in the GPE block */
+
+    GpeBlock->RegisterInfo = GpeRegisterInfo;
+    GpeBlock->EventInfo    = GpeEventInfo;
+
     /*
      * Initialize the GPE Register and Event structures.  A goal of these
      * tables is to hide the fact that there are two separate GPE register sets
      * in a given gpe hardware block, the status registers occupy the first half,
-     * and the enable registers occupy the second half.  Another goal is to hide
-     * the fact that there may be multiple GPE hardware blocks.
+     * and the enable registers occupy the second half.
      */
     ThisRegister = GpeRegisterInfo;
     ThisEvent    = GpeEventInfo;
@@ -543,9 +547,6 @@ AcpiEvCreateGpeInfoBlocks (
 
         ThisRegister++;
     }
-
-    GpeBlock->RegisterInfo = GpeRegisterInfo;
-    GpeBlock->EventInfo    = GpeEventInfo;
 
     return_ACPI_STATUS (AE_OK);
 
@@ -710,6 +711,7 @@ AcpiEvGpeInitialize (void)
      *
      * Note: both GPE0 and GPE1 are optional, and either can exist without
      * the other.
+     *
      * If EITHER the register length OR the block address are zero, then that
      * particular block is not supported.
      */
@@ -757,7 +759,8 @@ AcpiEvGpeInitialize (void)
         else
         {
             Status = AcpiEvCreateGpeBlock ("\\_GPE", &AcpiGbl_FADT->XGpe1Blk,
-                        RegisterCount1, AcpiGbl_FADT->Gpe1Base, AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[1]);
+                        RegisterCount1, AcpiGbl_FADT->Gpe1Base, 
+                        AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[1]);
             if (ACPI_FAILURE (Status))
             {
                 ACPI_REPORT_ERROR ((

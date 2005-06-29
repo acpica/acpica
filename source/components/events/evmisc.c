@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -639,9 +639,8 @@ AcpiEvTerminate (void)
          * In all cases, on error, print a message but obviously we don't abort.
          */
 
-        /*
-         * Disable all fixed events
-         */
+        /* Disable all fixed events */
+
         for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
         {
             Status = AcpiDisableEvent ((UINT32) i, 0);
@@ -651,14 +650,12 @@ AcpiEvTerminate (void)
             }
         }
 
-        /*
-         * Disable all GPEs in all GPE blocks
-         */
+        /* Disable all GPEs in all GPE blocks */
+
         Status = AcpiEvWalkGpeList (AcpiHwDisableGpeBlock);
 
-        /*
-         * Remove SCI handler
-         */
+        /* Remove SCI handler */
+
         Status = AcpiEvRemoveSciHandler ();
         if (ACPI_FAILURE(Status))
         {
@@ -666,9 +663,8 @@ AcpiEvTerminate (void)
         }
     }
 
-    /*
-     * Return to original mode if necessary
-     */
+    /* Return to original mode if necessary */
+
     if (AcpiGbl_OriginalMode == ACPI_SYS_MODE_LEGACY)
     {
         Status = AcpiDisable ();
@@ -678,9 +674,8 @@ AcpiEvTerminate (void)
         }
     }
 
-    /*
-     * Free global GPE blocks and related info structures
-     */
+    /* Free global GPE blocks and related info structures */
+
     GpeXruptInfo = AcpiGbl_GpeXruptListHead;
     while (GpeXruptInfo)
     {

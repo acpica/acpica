@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -168,7 +168,7 @@ AcpiEvGetGpeEventInfo (
         return (NULL);
     }
 
-    /* TBD: mutex?
+    /* TBD: mutex? */
 
     /* A Valid OwningGpeBlock means this is a GPE Block Device */
 
@@ -234,6 +234,8 @@ AcpiEvGpeDetect (
 
             GpeRegisterInfo = &GpeBlock->RegisterInfo[i];
 
+            /* Read the Status Register */
+
             Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue,
                         &GpeRegisterInfo->StatusAddress, 0);
             GpeRegisterInfo->Status = (UINT8) InValue;
@@ -241,6 +243,8 @@ AcpiEvGpeDetect (
             {
                 return (ACPI_INTERRUPT_NOT_HANDLED);
             }
+
+            /* Read the Enable Register */
 
             Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue,
                         &GpeRegisterInfo->EnableAddress, 0);
@@ -439,9 +443,8 @@ AcpiEvGpeDispatch (
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
 
-        /*
-         * Execute the method associated with the GPE.
-         */
+        /* Execute the method associated with the GPE. */
+
         if (ACPI_FAILURE (AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
                                 AcpiEvAsynchExecuteGpeMethod,
                                 GpeEventInfo)))
@@ -472,9 +475,8 @@ AcpiEvGpeDispatch (
         }
     }
 
-    /*
-     * It is now safe to clear level-triggered evnets.
-     */
+    /* It is now safe to clear level-triggered events. */
+
     if (GpeEventInfo->Type & ACPI_EVENT_LEVEL_TRIGGERED)
     {
         Status = AcpiHwClearGpe (GpeEventInfo);
