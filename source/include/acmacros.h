@@ -314,7 +314,7 @@
 #define DUMP_STACK(a,b,c,d)             AmlDumpObjStack(a,b,c,d)
 #define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
-
+#define BREAK_MSG(a)                    {DEBUG_PRINT (ACPI_INFO, (a)); BREAKPOINT3}
 
 /*
  * Generate INT3 on ACPI_ERROR (Debug only!)
@@ -383,6 +383,7 @@
 #define DUMP_TABLES(a,b)
 #define DEBUG_PRINT(l,f)
 #define DEBUG_PRINT_RAW(l,f) 
+#define BREAK_MSG(a)
 
 #define return_VOID                     return
 #define return_ACPI_STATUS(s)           return(s)
