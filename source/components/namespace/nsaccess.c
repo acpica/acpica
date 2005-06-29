@@ -231,12 +231,12 @@ NsSetup (void)
                     ObjDesc->String.Length = (UINT16) strlen (InitVal->Val);
 
                     /* 
-                     * XXX - if this OsdAllocate() causes a garbage collection pass,
+                     * XXX - if this CmAllocate() causes a garbage collection pass,
                      * XXX - ObjDesc will get deleted since no NT points to it yet.
                      * XXX - This "should not happen" during initialization.
                      */
 
-                    ObjDesc->String.Pointer = OsdAllocate ((ACPI_SIZE) (ObjDesc->String.Length + 1));
+                    ObjDesc->String.Pointer = CmAllocate ((ACPI_SIZE) (ObjDesc->String.Length + 1));
                     if (!ObjDesc->String.Pointer)
                     {
                         REPORT_ERROR ("Initial value string allocation failure");
@@ -251,7 +251,7 @@ NsSetup (void)
                     break;
 
                 default:
-                    OsdFree (ObjDesc);
+                    CmFree (ObjDesc);
                     ObjDesc = NULL;
                     continue;
                 }
@@ -465,6 +465,7 @@ NsLookup (
      * Search namespace for each segment of the name.
      * Loop through and verify/add each name segment.
      */
+
 
     while (NumSegments-- && EntryToSearch)
     {
