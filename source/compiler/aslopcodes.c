@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -320,6 +320,19 @@ OpcSetOptimalIntegerSize (
     }
     else
     {
+        if (AcpiGbl_IntegerByteWidth == 4)
+        {
+            AslError (ASL_WARNING, ASL_MSG_INTEGER_LENGTH,
+                Op, NULL);
+
+            if (!Gbl_IgnoreErrors)
+            {
+                /* Truncate the integer to 32-bit */
+                Op->Asl.AmlOpcode = AML_DWORD_OP;
+                return 4;
+            }
+        }
+
         Op->Asl.AmlOpcode = AML_QWORD_OP;
         return 8;
     }
