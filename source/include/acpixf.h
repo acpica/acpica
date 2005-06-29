@@ -106,7 +106,8 @@
 #define LEGACY_MODE             2
 
 
-typedef union UserObj {
+typedef union UserObj 
+{
     UINT8               ValType;        /* See definition of NsType for values */
     struct
     {
@@ -141,12 +142,14 @@ typedef union UserObj {
 
 } USER_OBJECT, *PUSER_OBJECT;
 
+
+
 /*
  * Global interfaces
  */
 
 ACPI_STATUS
-AcpiInit (
+AcpiInitialize (
     char                    *AcpiFile);
 
 
@@ -168,7 +171,7 @@ AcpiEvaluateObject (
 
 ACPI_STATUS
 AcpiLoadNameSpace (
-    INT32                   DisplayAmlDuringLoad);
+    void);
 
 ACPI_STATUS
 AcpiLoadTable (
@@ -365,57 +368,14 @@ INT32
 AcpiModeCapabilities (
     void);
 
-/* TBD: these may be obsolete */
-
-void
-AcpiLocalCleanup (
-    void);
-
-void 
-InitAcpiLibGlobals (
-    void);
-
-INT32
-LoadNameSpace (
-    INT32                   DisplayAmlDuringLoad);
-
-INT32
+ACPI_STATUS
 AcpiSetFirmwareWakingVector (
-    UINT32                  PhysicalAddress);
+    void                    *PhysicalAddress);
 
-INT32
+ACPI_STATUS
 AcpiGetFirmwareWakingVector (
-    UINT32                  *PhysicalAddress);
+    void                    **PhysicalAddress);
 
 
-ACPI_HANDLE 
-AcpiGetParentHandle (
-    ACPI_HANDLE             ChildHandle);
-
-ACPI_OBJECT_TYPE 
-AcpiValueType (
-    ACPI_HANDLE             Handle);
-
-char * 
-AcpiCurrentScopeName (
-    void);
-
-BOOLEAN 
-AcpiIsNameSpaceHandle (
-    ACPI_HANDLE             QueryHandle);
-
-BOOLEAN 
-AcpiIsNameSpaceValue (
-    ACPI_OBJECT_TYPE        Value);
-
-INT32
-AcpiSetFirmwareWakingVector (
-    UINT32                  PhysicalAddress);
-
-INT32
-AcpiGetFirmwareWakingVector (
-    UINT32                  *PhysicalAddress);
-
-/* End of potentiallly obsolete functions */
 
 #endif /* ACPISUBSYS_H */
