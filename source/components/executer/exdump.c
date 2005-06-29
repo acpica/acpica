@@ -364,6 +364,12 @@ AmlDumpOperand (
         return AE_OK;
     }
 
+    if (!VALID_DESCRIPTOR_TYPE (EntryDesc, DESC_TYPE_ACPI_OBJ))
+    {
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpOperand: %p Not a local object \n", EntryDesc));
+        DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
+        return AE_OK;
+    }
 
     /*  EntryDesc is a valid object  */
 
@@ -455,10 +461,12 @@ AmlDumpOperand (
 
             /*  unknown opcode  */
 
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown opcode=%X\n", EntryDesc->Lvalue.OpCode)); 
             REPORT_ERROR ("AmlDumpOperand: Unknown AML Opcode");
             break;
 
         }
+
         break;
 
 
@@ -574,16 +582,16 @@ AmlDumpOperand (
 
     case ACPI_TYPE_String:
 
-        DEBUG_PRINT_RAW (ACPI_INFO, ("String[%d] @ %p\n",
+        DEBUG_PRINT_RAW (ACPI_INFO, ("String[%d] @ %p\n\n",
                     EntryDesc->String.Length, EntryDesc->String.Pointer));
 
         for (i=0; i < EntryDesc->String.Length; i++)
         {
-            DEBUG_PRINT_RAW (ACPI_INFO, ("%c\n",
+            DEBUG_PRINT_RAW (ACPI_INFO, ("%c",
                         EntryDesc->String.Pointer[i]));
         }
 
-        DEBUG_PRINT_RAW (ACPI_INFO, ("\n"));
+        DEBUG_PRINT_RAW (ACPI_INFO, ("\n\n"));
         break;
 
 
@@ -690,6 +698,7 @@ AmlDumpOperand (
     default:
         /*  unknown EntryDesc->Common.Type value    */
 
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown Type %X\n", EntryDesc->Common.Type));
         REPORT_ERROR ("AmlDumpOperand: Unknown Type");
         
 /* Gbl_Aml table pertains to old parser only */
@@ -711,6 +720,7 @@ AmlDumpOperand (
 
 
         /* TBD:  Change to use dump object routine !! */
+        /* TBD:  What is all of this?? */
 
         DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
         DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT_INTERNAL), 0);
