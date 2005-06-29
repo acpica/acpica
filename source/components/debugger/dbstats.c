@@ -171,6 +171,8 @@ UINT32                      DsdtLength;
 ACPI_STATUS
 DbDisplayStatistics (void)
 {
+    UINT32                      i;
+
 
     if (!DsdtPtr)
     {
@@ -181,39 +183,53 @@ DbDisplayStatistics (void)
     OsdPrintf ("\n\n");
 
     OsdPrintf ("ACPI Table Information:\n\n");
-    OsdPrintf ("DSDT Length:................% 5ld (0x%X)\n", DsdtLength, DsdtLength);
-    OsdPrintf ("Names:......................% 5ld\n", NumNames);
-    OsdPrintf ("Events:.......... ..........% 5ld\n", NumEvents);
-    OsdPrintf ("Devices:....................% 5ld\n", NumDevices);
-    OsdPrintf ("Aliases:....................% 5ld\n", NumAliases);
-    OsdPrintf ("Mutexes:....................% 5ld\n", NumMutexes);
-    OsdPrintf ("Packages:...................% 5ld\n", NumPackages);
-    OsdPrintf ("Bank Fields.................% 5ld\n", NumBankFields);
-    OsdPrintf ("Index Fields................% 5ld\n", NumIndexFields);
-    OsdPrintf ("Thermal Zones:..............% 5ld\n", NumThermalZones);
-    OsdPrintf ("Power Resources:............% 5ld\n", NumPowerResources);
-    OsdPrintf ("Control Methods:............% 5ld\n", NumMethods);
-    OsdPrintf ("Operation Regions:..........% 5ld\n", NumRegions);
-    OsdPrintf ("Field Definitions:..........% 5ld\n", NumFieldDefs);
-    OsdPrintf ("Total Named objects:........% 5ld\n", NumNamedObjects);
+    OsdPrintf ("DSDT Length:................% 6ld (0x%X)\n", DsdtLength, DsdtLength);
+    OsdPrintf ("Names:......................% 6ld\n", NumNames);
+    OsdPrintf ("Events:.....................% 6ld\n", NumEvents);
+    OsdPrintf ("Devices:....................% 6ld\n", NumDevices);
+    OsdPrintf ("Aliases:....................% 6ld\n", NumAliases);
+    OsdPrintf ("Mutexes:....................% 6ld\n", NumMutexes);
+    OsdPrintf ("Packages:...................% 6ld\n", NumPackages);
+    OsdPrintf ("Bank Fields.................% 6ld\n", NumBankFields);
+    OsdPrintf ("Index Fields................% 6ld\n", NumIndexFields);
+    OsdPrintf ("Thermal Zones:..............% 6ld\n", NumThermalZones);
+    OsdPrintf ("Power Resources:............% 6ld\n", NumPowerResources);
+    OsdPrintf ("Control Methods:............% 6ld\n", NumMethods);
+    OsdPrintf ("Operation Regions:..........% 6ld\n", NumRegions);
+    OsdPrintf ("Field Definitions:..........% 6ld\n", NumFieldDefs);
+    OsdPrintf ("Total Named objects:........% 6ld\n", NumNamedObjects);
 
-    OsdPrintf ("\n\n");
+    OsdPrintf ("\n");
 
     OsdPrintf ("ASL/AML Grammar Usage:\n\n");
-    OsdPrintf ("Elements Inside Methods:....% 5ld\n", NumMethodElements);
-    OsdPrintf ("Elements Outside Methods:...% 5ld\n", NumGrammarElements - NumMethodElements);
-    OsdPrintf ("Total Grammar Elements:.....% 5ld\n", NumGrammarElements);
+    OsdPrintf ("Elements Inside Methods:....% 6ld\n", NumMethodElements);
+    OsdPrintf ("Elements Outside Methods:...% 6ld\n", NumGrammarElements - NumMethodElements);
+    OsdPrintf ("Total Grammar Elements:.....% 6ld\n", NumGrammarElements);
 
-    OsdPrintf ("\n\n");
+    OsdPrintf ("\n");
 
     OsdPrintf ("Dynamic Memory Estimates:\n\n");
-    OsdPrintf ("Parse Tree without Methods:.% 5ld\n", SizeOfParseTree);
-    OsdPrintf ("Control Method Parse Trees:.% 5ld\n", SizeOfMethodTrees);
-    OsdPrintf ("Named Object NTEs:..........% 5ld\n", SizeOfNTEs);
-    OsdPrintf ("Named Internal Objects......% 5ld\n", SizeOfAcpiObjects);
-    OsdPrintf ("\n\n");
+    OsdPrintf ("Parse Tree without Methods:.% 6ld\n", SizeOfParseTree);
+    OsdPrintf ("Control Method Parse Trees:.% 6ld\n", SizeOfMethodTrees);
+    OsdPrintf ("Named Object NTEs:..........% 6ld\n", SizeOfNTEs);
+    OsdPrintf ("Named Internal Objects......% 6ld\n", SizeOfAcpiObjects);
 
-    return AE_OK;
+    OsdPrintf ("\n");
+
+    OsdPrintf ("Search Statistics:\n\n");
+    OsdPrintf ("Calls to PsFind:..  ........% 6ld\n", Gbl_PsFindCount);
+    OsdPrintf ("Calls to NsLookup:..........% 6ld\n", Gbl_NsLookupCount);
+
+    OsdPrintf ("\n");
+
+    OsdPrintf ("Mutex usage:\n\n");
+    for (i = 0; i < NUM_MTX; i++)
+    {
+        OsdPrintf ("%-20s:       % 6ld\n", CmGetMutexName (i), Gbl_AcpiMutexInfo[i].UseCount);
+    }
+
+    OsdPrintf ("\n");
+    return AE_OK;   
 }
 
 
