@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.122 $
+ *       $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -120,37 +120,37 @@
 
 /* To search the entire name space, pass this as SearchBase */
 
-#define NS_ALL                  ((ACPI_HANDLE)0)
+#define ACPI_NS_ALL                 ((ACPI_HANDLE)0)
 
 /*
  * Elements of AcpiNsProperties are bit significant
  * and should be one-to-one with values of ACPI_OBJECT_TYPE
  */
-#define NSP_NORMAL              0
-#define NSP_NEWSCOPE            1   /* a definition of this type opens a name scope */
-#define NSP_LOCAL               2   /* suppress search of enclosing scopes */
+#define ACPI_NS_NORMAL              0
+#define ACPI_NS_NEWSCOPE            1   /* a definition of this type opens a name scope */
+#define ACPI_NS_LOCAL               2   /* suppress search of enclosing scopes */
 
 
 /* Definitions of the predefined namespace names  */
 
-#define ACPI_UNKNOWN_NAME       (UINT32) 0x3F3F3F3F     /* Unknown name is  "????" */
-#define ACPI_ROOT_NAME          (UINT32) 0x2F202020     /* Root name is     "/   " */
-#define ACPI_SYS_BUS_NAME       (UINT32) 0x5F53425F     /* Sys bus name is  "_SB_" */
+#define ACPI_UNKNOWN_NAME           (UINT32) 0x3F3F3F3F     /* Unknown name is  "????" */
+#define ACPI_ROOT_NAME              (UINT32) 0x2F202020     /* Root name is     "/   " */
+#define ACPI_SYS_BUS_NAME           (UINT32) 0x5F53425F     /* Sys bus name is  "_SB_" */
 
-#define NS_ROOT_PATH            "\\"
-#define NS_SYSTEM_BUS           "_SB_"
+#define ACPI_NS_ROOT_PATH           "\\"
+#define ACPI_NS_SYSTEM_BUS          "_SB_"
 
 
 /* Flags for AcpiNsLookup, AcpiNsSearchAndEnter */
 
-#define NS_NO_UPSEARCH          0
-#define NS_SEARCH_PARENT        0x01
-#define NS_DONT_OPEN_SCOPE      0x02
-#define NS_NO_PEER_SEARCH       0x04
-#define NS_ERROR_IF_FOUND       0x08
+#define ACPI_NS_NO_UPSEARCH         0
+#define ACPI_NS_SEARCH_PARENT       0x01
+#define ACPI_NS_DONT_OPEN_SCOPE     0x02
+#define ACPI_NS_NO_PEER_SEARCH      0x04
+#define ACPI_NS_ERROR_IF_FOUND      0x08
 
-#define NS_WALK_UNLOCK          TRUE
-#define NS_WALK_NO_UNLOCK       FALSE
+#define ACPI_NS_WALK_UNLOCK         TRUE
+#define ACPI_NS_WALK_NO_UNLOCK      FALSE
 
 
 ACPI_STATUS
@@ -240,7 +240,7 @@ AcpiNsLookup (
     ACPI_GENERIC_STATE      *ScopeInfo,
     NATIVE_CHAR             *Name,
     ACPI_OBJECT_TYPE        Type,
-    OPERATING_MODE          InterpreterMode,
+    ACPI_INTERPRETER_MODE   InterpreterMode,
     UINT32                  Flags,
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     **RetNode);
@@ -455,7 +455,7 @@ AcpiNsSearchAndEnter (
     UINT32                  EntryName,
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     *Node,
-    OPERATING_MODE          InterpreterMode,
+    ACPI_INTERPRETER_MODE   InterpreterMode,
     ACPI_OBJECT_TYPE        Type,
     UINT32                  Flags,
     ACPI_NAMESPACE_NODE     **RetNode);
@@ -499,7 +499,7 @@ ACPI_STATUS
 AcpiNsBuildInternalName (
     ACPI_NAMESTRING_INFO    *Info);
 
-ACPI_STATUS
+void
 AcpiNsGetInternalNameLength (
     ACPI_NAMESTRING_INFO    *Info);
 
