@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.216 $
+ *       $Revision: 1.217 $
  *
  *****************************************************************************/
 
@@ -570,11 +570,10 @@ typedef UINT32                          ACPI_EVENT_TYPE;
 /*
  * GPEs
  */
-#define ACPI_EVENT_ENABLE               0x1
-#define ACPI_EVENT_WAKE_ENABLE          0x2
 
-#define ACPI_EVENT_DISABLE              0x1
-#define ACPI_EVENT_WAKE_DISABLE         0x2
+#define ACPI_EVENT_WAKE_ENABLE          0x1
+
+#define ACPI_EVENT_WAKE_DISABLE         0x1
 
 
 /*
