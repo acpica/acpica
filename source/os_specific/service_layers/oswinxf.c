@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -164,7 +164,7 @@ AeLocalGetRootPointer (
     ACPI_POINTER            *Address);
 
 FILE                        *AcpiGbl_OutputFile;
-LARGE_INTEGER               TimerFrequency;
+UINT64                      TimerFrequency2;
 
 #ifndef _ACPI_EXEC_APP
 /* Used by both iASL and AcpiDump applications */
@@ -326,6 +326,7 @@ ACPI_STATUS
 AcpiOsInitialize (void)
 {
     UINT32                  i;
+    LARGE_INTEGER           TimerFrequency;
 
 
     AcpiGbl_OutputFile = stdout;
@@ -335,9 +336,12 @@ AcpiOsInitialize (void)
         AcpiGbl_Semaphores[i].OsHandle = NULL;
     }
 
-    if (!QueryPerformanceFrequency (&TimerFrequency))
+    TimerFrequency2 = 0;
+    if (QueryPerformanceFrequency (&TimerFrequency))
     {
-        TimerFrequency.QuadPart = 0;
+        /* Convert ticks/sec to ticks/100nsec */
+
+        TimerFrequency2 = TimerFrequency.QuadPart / 10000;
     }
 
     return AE_OK;
@@ -491,13 +495,12 @@ AcpiOsGetTimer (
 
     /* Attempt to use hi-granularity timer first */
 
-    if (TimerFrequency.QuadPart &&
+    if (TimerFrequency2 &&
         QueryPerformanceCounter (&Timer))
     {
         /* Convert to 100 nanosecond ticks */
 
-        return ((UINT64) (
-            (Timer.QuadPart * 10000000) / TimerFrequency.QuadPart));
+        return ((UINT64) (Timer.QuadPart / TimerFrequency2));
     }
 
     /* Fall back to the lo-granularity timer */
