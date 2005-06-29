@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -433,15 +433,16 @@ AcpiDsCreateField (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AcpiDsInitFieldObjects
  *
  * PARAMETERS:  Op              - Op containing the Field definition and args
- *              RegionNode      - Object for the containing Operation Region
  *  `           WalkState       - Current method state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: For each "Field Unit" name in the argument list that is
+ *              part of the field declaration, enter the name into the
+ *              namespace.
  *
  ******************************************************************************/
 
@@ -456,8 +457,8 @@ AcpiDsInitFieldObjects (
     UINT8                   Type = 0;
 
 
-
     FUNCTION_TRACE_PTR ("DsInitFieldObjects", Op);
+
 
     switch (WalkState->Opcode)
     {
@@ -477,9 +478,13 @@ AcpiDsInitFieldObjects (
         break;
     }
 
-
+    /*
+     * Walk the list of entries in the FieldList
+     */
     while (Arg)
     {
+        /* Ignore OFFSET and ACCESSAS terms here */
+
         if (Arg->Opcode == AML_INT_NAMEDFIELD_OP)
         {
             Status = AcpiNsLookup (WalkState->ScopeInfo,
