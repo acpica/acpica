@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -489,7 +489,7 @@ TrDoSwitch (
              * Case->Child->Peer is the beginning of the case block
              */
             NewNode = TrCreateValuedLeafNode (NAMESTRING, 
-                            (NATIVE_INT) PredicateValuePath);
+                            ACPI_TO_INTEGER (PredicateValuePath));
 
             Predicate = Case->Child;
             Predicate->Peer = NewNode;
@@ -584,7 +584,7 @@ TrDoSwitch (
     NewNode->Parent     = Gbl_FirstLevelInsertionNode->Parent;
 
     NewNode2            = TrCreateValuedLeafNode (NAMESTRING, 
-                                (NATIVE_INT) PredicateValueName);
+                                ACPI_TO_INTEGER (PredicateValueName));
     NewNode->Child      = NewNode2;
     NewNode2->Peer      = TrCreateValuedLeafNode (INTEGER, 0);
 
@@ -607,7 +607,7 @@ TrDoSwitch (
     Predicate->Child        = NULL;
 
     NewNode                 = TrCreateValuedLeafNode (NAMESTRING, 
-                                    (NATIVE_INT) PredicateValuePath);
+                                    ACPI_TO_INTEGER (PredicateValuePath));
     NewNode->Parent         = StartNode;
     Predicate->Peer         = NewNode;
 }
