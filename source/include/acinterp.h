@@ -859,6 +859,11 @@ AmlDigitsNeeded (
     INT32                   Value, 
     INT32                   Base);
 
+ACPI_STATUS
+AmlEisaIdToString (
+    UINT32                  NumericId,
+    char                    *OutString);
+
 
 /*
  * ieregion - default OpRegion handlers
