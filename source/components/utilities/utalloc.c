@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.69 $ 
+ *              $Revision: 1.70 $ 
  *
  *****************************************************************************/
 
@@ -425,6 +425,17 @@ AcpiCmDeleteElementFromAllocList (
         Size = Element->Size;
 
         MEMSET (Element, 0xEA, sizeof (ALLOCATION_INFO));
+
+
+        if (Size == sizeof (ACPI_OBJECT_INTERNAL))
+        {
+            DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmDelete: Freeing size 0x%X (ACPI_OBJECT_INTERNAL)\n", Size));
+        }
+        else
+        {
+            DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmDelete: Freeing size 0x%X\n", Size));
+        }
+
         AcpiOsFree (Element);
     }
 
@@ -469,39 +480,39 @@ AcpiCmDumpAllocationInfo (
 
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                    ("Current outstanding allocations: %d (%d b, %d Kb)\n",
-                    AcpiGbl_CurrentAllocCount, AcpiGbl_CurrentAllocSize,
-                    AcpiGbl_CurrentAllocSize / 1024));
+                    ("%30s: %4d (%3d Kb)\n", "Current allocations",
+                    AcpiGbl_CurrentAllocCount,
+                    (AcpiGbl_CurrentAllocSize + 1023) / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                    ("Maximum concurrent allocations thus far: %d (%d b, %d Kb)\n",
+                    ("%30s: %4d (%3d Kb)\n", "Max concurrent allocations",
                     AcpiGbl_MaxConcurrentAllocCount,
-                    AcpiGbl_MaxConcurrentAllocSize,
-                    AcpiGbl_MaxConcurrentAllocSize / 1024));
+                    (AcpiGbl_MaxConcurrentAllocSize + 1023) / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                    ("Current number of allocated internal objects: %d (%d b, %d Kb)\n",
+                    ("%30s: %4d (%3d Kb)\n", "Current Internal objects",
                     AcpiGbl_CurrentObjectCount,
-                    AcpiGbl_CurrentObjectSize,
-                    AcpiGbl_CurrentObjectSize / 1024));
+                    (AcpiGbl_CurrentObjectSize + 1023) / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                    ("Maximum concurrent number of allocated internal objects: %d (%d b, %d Kb)\n",
+                    ("%30s: %4d (%3d Kb)\n", "Max internal objects",
                     AcpiGbl_MaxConcurrentObjectCount,
-                    AcpiGbl_MaxConcurrentObjectSize,
-                    AcpiGbl_MaxConcurrentObjectSize / 1024));
+                    (AcpiGbl_MaxConcurrentObjectSize + 1023) / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                    ("Total number of allocated internal objects: %d (%d b, %d Kb)\n",
+                    ("%30s: %4d (%3d Kb)\n", "Current Name Tables",
+                    AcpiGbl_CurrentNameTableCount,
+                    (AcpiGbl_CurrentNameTableSize + 1023) / 1024));
+
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+                    ("%30s: %4d (%3d Kb)\n", "Total (all) internal objects",
                     AcpiGbl_RunningObjectCount,
-                    AcpiGbl_RunningObjectSize,
-                    AcpiGbl_RunningObjectSize / 1024));
+                    (AcpiGbl_RunningObjectSize + 1023) / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                    ("Total number of allocations: %d (%d b, %d Kb)\n",
+                    ("%30s: %4d (%3d Kb)\n", "Total (all) allocations",
                     AcpiGbl_RunningAllocCount,
-                    AcpiGbl_RunningAllocSize,
-                    AcpiGbl_RunningAllocSize / 1024));
+                    (AcpiGbl_RunningAllocSize + 1023) / 1024));
 
     return_VOID;
 }
