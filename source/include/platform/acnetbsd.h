@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnetbsd.h - OS specific defines, etc.
- *       $Revision: 1.2 $
+ *       $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -158,7 +158,6 @@
 #define ACPI_EXTERNAL_XFACE
 #define ACPI_INTERNAL_XFACE
 #define ACPI_INTERNAL_VAR_XFACE
-#define ACPI_DISASSEMBLER
 
 #ifdef ACPI_DEBUG
 #define ACPI_DEBUG_OUTPUT
@@ -169,6 +168,7 @@
 #define DEBUGGER_THREADING 0    /* integrated with DDB */
 #include "opt_ddb.h"
 #ifdef DDB
+#define ACPI_DISASSEMBLER
 #define ACPI_DEBUGGER
 #endif /* DDB */
 #endif /* ACPI_DEBUG */
