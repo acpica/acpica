@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.55 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -153,7 +153,7 @@ LdLoadNamespace (
 
     /* Create a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
     if (!WalkState)
     {
         return AE_NO_MEMORY;
@@ -326,7 +326,7 @@ LdLoadResourceElements (
              * Store the field offset in the namespace node so it
              * can be used when the field is referenced
              */
-            Node->OwnerId = InitializerOp->Asl.Value.Integer16;
+            Node->OwnerId = (UINT16) InitializerOp->Asl.Value.Integer;
             InitializerOp->Asl.Node = Node;
             Node->Object = (ACPI_OPERAND_OBJECT *) InitializerOp;
 
@@ -368,7 +368,7 @@ LdNamespace1Begin (
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        ObjectType;
     ACPI_OBJECT_TYPE        ActualObjectType = ACPI_TYPE_ANY;
-    NATIVE_CHAR             *Path;
+    char                    *Path;
     UINT32                  Flags = ACPI_NS_NO_UPSEARCH;
     ACPI_PARSE_OBJECT       *Arg;
     UINT32                  i;
@@ -441,7 +441,7 @@ LdNamespace1Begin (
          *
          * first child is name, next child is ObjectType
          */
-        ActualObjectType = Op->Asl.Child->Asl.Next->Asl.Value.Integer8;
+        ActualObjectType = (UINT8) Op->Asl.Child->Asl.Next->Asl.Value.Integer;
         ObjectType = ACPI_TYPE_ANY;
         break;
 
@@ -523,9 +523,14 @@ LdNamespace1Begin (
             AslError (ASL_REMARK, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
 
             /*
-             * Switch the type
+             * Switch the type to scope, open the new scope
              */
-            Node->Type = ACPI_TYPE_ANY;
+            Node->Type = ACPI_TYPE_LOCAL_SCOPE;
+            Status = AcpiDsScopeStackPush (Node, ACPI_TYPE_LOCAL_SCOPE, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
             break;
 
         default:
@@ -539,9 +544,14 @@ LdNamespace1Begin (
             /*
              * However, switch the type to be an actual scope so
              * that compilation can continue without generating a whole
-             * cascade of additional errors.
+             * cascade of additional errors.  Open the new scope.
              */
-            Node->Type = ACPI_TYPE_ANY;
+            Node->Type = ACPI_TYPE_LOCAL_SCOPE;
+            Status = AcpiDsScopeStackPush (Node, ACPI_TYPE_LOCAL_SCOPE, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
             break;
         }
 
