@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.42 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -156,7 +156,7 @@ AcpiInstallAddressSpaceHandler (
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OBJECT_TYPE8       Type;
+    ACPI_OBJECT_TYPE        Type;
     UINT16                  Flags = 0;
 
 
@@ -165,9 +165,7 @@ AcpiInstallAddressSpaceHandler (
 
     /* Parameter validation */
 
-    if ((!Device)   ||
-        ((!Handler)  && (Handler != ACPI_DEFAULT_HANDLER)) ||
-        (SpaceId > ACPI_MAX_ADDRESS_SPACE))
+    if (!Device)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -236,7 +234,6 @@ AcpiInstallAddressSpaceHandler (
         default:
             Status = AE_NOT_EXIST;
             goto UnlockAndExit;
-            break;
         }
     }
 
@@ -280,7 +277,6 @@ AcpiInstallAddressSpaceHandler (
             HandlerObj = HandlerObj->AddrHandler.Next;
         }
     }
-
     else
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
@@ -310,7 +306,7 @@ AcpiInstallAddressSpaceHandler (
 
         /* Attach the new object to the Node */
 
-        Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) Type);
+        Status = AcpiNsAttachObject (Node, ObjDesc, Type);
         if (ACPI_FAILURE (Status))
         {
             AcpiUtRemoveReference (ObjDesc);
@@ -409,9 +405,7 @@ AcpiRemoveAddressSpaceHandler (
 
     /* Parameter validation */
 
-    if ((!Device)   ||
-        ((!Handler)  && (Handler != ACPI_DEFAULT_HANDLER)) ||
-        (SpaceId > ACPI_MAX_ADDRESS_SPACE))
+    if (!Device)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -426,7 +420,6 @@ AcpiRemoveAddressSpaceHandler (
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
     }
-
 
     /* Make sure the internal object exists */
 
