@@ -130,6 +130,36 @@
         MODULE_NAME         ("dbdisply");
 
 
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDumpParserDescriptor
+ *
+ * PARAMETERS:  Op              - A parser Op descriptor
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display a formatted parser object
+ *
+ *****************************************************************************/
+
+void
+DbDumpParserDescriptor (
+    ACPI_GENERIC_OP         *Op)
+{
+    ACPI_OP_INFO            *Info;
+
+
+    Info = PsGetOpcodeInfo (Op->Opcode);
+
+    OsdPrintf ("Parser Op Descriptor:\n");
+    OsdPrintf ("%20.20s : %4.4X\n", "Opcode", Op->Opcode);
+    OsdPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name);
+    OsdPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Value);
+
+    OsdPrintf ("%20.20s : %p\n", "Parent", Op->Parent);
+    OsdPrintf ("%20.20s : %p\n", "NextOp", Op->Next);
+}
+
 
 /******************************************************************************
  * 
@@ -151,6 +181,10 @@ DbDecodeAndDisplayObject (
     UINT32                  Value;
     NAME_TABLE_ENTRY        *Entry;
     UINT32                  Display = DB_BYTE_DISPLAY;
+    char                    Buffer[80];
+    ACPI_BUFFER             RetBuf;
+    ACPI_STATUS             Status;
+
     
     
     if (!Target)
@@ -176,6 +210,9 @@ DbDecodeAndDisplayObject (
     }
     
 
+    RetBuf.Length = sizeof (Buffer);
+    RetBuf.Pointer = Buffer;
+
     /* Differentiate between a number and a name */
 
     if ((Target[0] >= 0x30) && (Target[0] <= 0x39))
@@ -185,6 +222,12 @@ DbDecodeAndDisplayObject (
         if (VALID_DESCRIPTOR_TYPE (((void *) Value), DESC_TYPE_NTE))
         {
             /* This is an NTE */
+
+            Status = AcpiGetName ((ACPI_HANDLE) Value, ACPI_FULL_PATHNAME, &RetBuf);
+            if (ACPI_SUCCESS (Status))
+            {
+                OsdPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
+            }
 
             CmDumpBuffer ((void *) Value, sizeof (NAME_TABLE_ENTRY), Display, ACPI_UINT32_MAX);
             AmlDumpNameTableEntry ((void *) Value, 1);
@@ -196,6 +239,14 @@ DbDecodeAndDisplayObject (
 
             CmDumpBuffer ((void *) Value, sizeof (ACPI_OBJECT_INTERNAL), Display, ACPI_UINT32_MAX);
             AmlDumpObjectDescriptor ((void *) Value, 1);
+        }
+
+        else if (VALID_DESCRIPTOR_TYPE (((void *) Value), DESC_TYPE_PARSER))
+        {
+            /* This is an ACPI OBJECT */
+
+            CmDumpBuffer ((void *) Value, sizeof (ACPI_GENERIC_OP), Display, ACPI_UINT32_MAX);
+            DbDumpParserDescriptor ((ACPI_GENERIC_OP *) Value);
         }
 
         else
@@ -218,6 +269,12 @@ DbDecodeAndDisplayObject (
     }
 
     /* Now dump the NTE */
+
+    Status = AcpiGetName (Entry, ACPI_FULL_PATHNAME, &RetBuf);
+    if (ACPI_SUCCESS (Status))
+    {
+        OsdPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
+    }
 
     CmDumpBuffer ((void *) Entry, sizeof (NAME_TABLE_ENTRY), Display, ACPI_UINT32_MAX);
     AmlDumpNameTableEntry (Entry, 1);
@@ -250,7 +307,7 @@ DbDisplayInternalObject (
     UINT8                   Type;
 
 
-    OsdPrintf ("Obj %p ", ObjDesc);
+    OsdPrintf ("ACPI Internal Object %p ", ObjDesc);
 
     if (!ObjDesc)
     {
