@@ -369,5 +369,47 @@ BREAKPOINT3;
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    CmTerminate
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: free memory allocated for table storage.
+ *
+ ******************************************************************************/
+
+void
+CmTerminate (void)
+{
+
+    FUNCTION_TRACE ("CmTerminate");
+
+
+    /* Free global tables, etc. */
+
+    if (Gpe0EnableRegisterSave)
+    {
+        CmFree (Gpe0EnableRegisterSave);
+    }
+
+    if (Gpe1EnableRegisterSave)
+    {
+        CmFree (Gpe1EnableRegisterSave);
+    }
+
+
+    /* Free the mutex objects */
+
+    CmMutexTerminate ();
+
+
+    return_VOID;
+}
+
+ 
+
 
 
