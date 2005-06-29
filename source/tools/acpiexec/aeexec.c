@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -240,8 +240,8 @@ AeBuildLocalTables (
     }
 
     ACPI_MEMSET (LocalRSDT, 0, RSDT_SIZE);
-    ACPI_STRNCPY (LocalRSDT->Header.Signature, RSDT_SIG, 4);
-    LocalRSDT->Header.Length = RSDT_SIZE;
+    ACPI_STRNCPY (LocalRSDT->Signature, RSDT_SIG, 4);
+    LocalRSDT->Length = RSDT_SIZE;
 
     LocalRSDT->TableOffsetEntry[0] = ACPI_PTR_TO_PHYSADDR (&LocalTEST);
     LocalRSDT->TableOffsetEntry[1] = ACPI_PTR_TO_PHYSADDR (&LocalBADTABLE);
@@ -292,18 +292,18 @@ AeBuildLocalTables (
 
     /* Set checksums for both RSDT and RSDP */
 
-    LocalRSDT->Header.Checksum  = (UINT8) (0 - AcpiTbChecksum (LocalRSDT, LocalRSDT->Header.Length));
-    LocalRSDP.Checksum          = (UINT8) (0 - AcpiTbChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
+    LocalRSDT->Checksum = (UINT8) (0 - AcpiTbChecksum (LocalRSDT, LocalRSDT->Length));
+    LocalRSDP.Checksum  = (UINT8) (0 - AcpiTbChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
 
     /* Build a FADT so we can test the hardware/event init */
 
     ACPI_MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
-    ACPI_STRNCPY (LocalFADT.Header.Signature, FADT_SIG, 4);
+    ACPI_STRNCPY (LocalFADT.Signature, FADT_SIG, 4);
 
     LocalFADT.FirmwareCtrl      = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
     LocalFADT.Dsdt              = ACPI_PTR_TO_PHYSADDR (AcpiGbl_DSDT);
-    LocalFADT.Header.Revision   = 1;
-    LocalFADT.Header.Length     = sizeof (FADT_DESCRIPTOR_REV1);
+    LocalFADT.Revision          = 1;
+    LocalFADT.Length            = sizeof (FADT_DESCRIPTOR_REV1);
     LocalFADT.Gpe0BlkLen        = 4;
     LocalFADT.Gpe1BlkLen        = 6;
     LocalFADT.Gpe1Base          = 61;
@@ -322,7 +322,7 @@ AeBuildLocalTables (
 
     /* Complete the FADT with the checksum */
 
-    LocalFADT.Header.Checksum = (UINT8) (0 - AcpiTbChecksum (&LocalFADT, LocalFADT.Header.Length));
+    LocalFADT.Checksum = (UINT8) (0 - AcpiTbChecksum (&LocalFADT, LocalFADT.Length));
 
     /* Build a FACS */
 
