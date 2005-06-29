@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.74 $
+ *       $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -116,6 +116,7 @@
 
 #ifndef __ACMACROS_H__
 #define __ACMACROS_H__
+
 
 /*
  * Data manipulation macros
@@ -269,7 +270,6 @@
 /*
  * Rounding macros (Power of two boundaries only)
  */
-
 #define ROUND_DOWN(value,boundary)      ((value) & (~((boundary)-1)))
 #define ROUND_UP(value,boundary)        (((value) + ((boundary)-1)) & (~((boundary)-1)))
 
@@ -299,8 +299,6 @@
  * MASK_BITS_ABOVE creates a mask starting AT the position and above
  * MASK_BITS_BELOW creates a mask starting one bit BELOW the position
  */
-
-
 #define MASK_BITS_ABOVE(position)       (~(((UINT32)(-1)) << ((UINT32) (position))))
 #define MASK_BITS_BELOW(position)       (((UINT32)(-1)) << ((UINT32) (position)))
 
@@ -310,7 +308,6 @@
 
 
 /* Macros for GAS addressing */
-
 
 #ifndef _IA16
 
@@ -323,6 +320,9 @@
 #define ACPI_PCI_REGISTER(a)            (UINT16) (((a) & ACPI_PCI_REGISTER_MASK))
 
 #else
+
+/* No support for GAS and PCI IDs in 16-bit mode  */
+
 #define ACPI_PCI_FUNCTION(a)            (UINT16) ((a) & 0xFFFF0000)
 #define ACPI_PCI_DEVICE(a)              (UINT16) ((a) & 0x0000FFFF)
 #define ACPI_PCI_REGISTER(a)            (UINT16) ((a) & 0x0000FFFF)
@@ -336,7 +336,6 @@
  *
  * The DataType field is the first field in both structures.
  */
-
 #define VALID_DESCRIPTOR_TYPE(d,t)      (((ACPI_NAMESPACE_NODE *)d)->DataType == t)
 
 
@@ -358,7 +357,6 @@
  * as a pointer to an ACPI_TABLE_HEADER.  (b+1) then points past the header,
  * and ((UINT8 *)b+b->Length) points one byte past the end of the table.
  */
-
 #ifndef _IA16
 #define IS_IN_ACPI_TABLE(a,b)           (((UINT8 *)(a) >= (UINT8 *)(b + 1)) &&\
                                         ((UINT8 *)(a) < ((UINT8 *)b + b->Length)))
@@ -372,7 +370,6 @@
 /*
  * Macros for the master AML opcode table
  */
-
 #ifdef ACPI_DEBUG
 #define OP_INFO_ENTRY(Flags,Name,PArgs,IArgs)     {Flags,PArgs,IArgs,Name}
 #else
@@ -532,9 +529,9 @@
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            _UtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_CALLOCATE(a)           _UtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_FREE(a)                _UtFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_FREE(a)                AcpiUtFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
 
 /*
  * Generate INT3 on ACPI_ERROR (Debug only!)
