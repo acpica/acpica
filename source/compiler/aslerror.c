@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.63 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -180,7 +180,9 @@ char                        *AslMessages [] = {
     "Opcode is not implemented in compiler AML code generator",
     "No enclosing While statement",
     "Invalid Escape Sequence",
-    "Invalid Hex/Octal Escape - Non-ASCII or NULL"
+    "Invalid Hex/Octal Escape - Non-ASCII or NULL",
+    "Invalid Table Signature",
+    "Too many resource items (internal error)"
 };
 
 
@@ -308,7 +310,7 @@ AePrintException (
              * Seek to the offset in the combined source file, read the source
              * line, and write it to the output.
              */
-            fseek (SourceFile, Enode->LogicalByteOffset, SEEK_SET);
+            fseek (SourceFile, (long) Enode->LogicalByteOffset, SEEK_SET);
 
             Actual = fread (&SourceByte, 1, 1, SourceFile);
             while (Actual && SourceByte && (SourceByte != '\n'))
@@ -438,7 +440,7 @@ AePrintErrorLog (
  *
  ******************************************************************************/
 
-ASL_ERROR_MSG *
+void
 AslCommonError (
     UINT8                   Level,
     UINT8                   MessageId,
@@ -515,7 +517,7 @@ AslCommonError (
         CmCleanupAndExit ();
     }
 
-    return Enode;
+    return;
 }
 
 
@@ -525,7 +527,7 @@ AslCommonError (
  *
  * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
  *              MessageId           - Index into global message buffer
- *              Node                - Parse node where error happened
+ *              Op                - Parse node where error happened
  *              ExtraMessage        - additional error message
  *
  * RETURN:      None
@@ -539,17 +541,17 @@ void
 AslError (
     UINT8                   Level,
     UINT8                   MessageId,
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     char                    *ExtraMessage)
 {
 
-    if (Node)
+    if (Op)
     {
-        AslCommonError (Level, MessageId, Node->LineNumber,
-                        Node->LogicalLineNumber,
-                        Node->LogicalByteOffset,
-                        Node->Column,
-                        Node->Filename, ExtraMessage);
+        AslCommonError (Level, MessageId, Op->Asl.LineNumber,
+                        Op->Asl.LogicalLineNumber,
+                        Op->Asl.LogicalByteOffset,
+                        Op->Asl.Column,
+                        Op->Asl.Filename, ExtraMessage);
     }
     else
     {

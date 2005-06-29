@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.32 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -118,13 +118,12 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
-#include "aslresource.h"
 #include "amlcode.h"
 #include "acparser.h"
 #include "acnamesp.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslisting")
+        ACPI_MODULE_NAME    ("aslisting")
 
 
 /*******************************************************************************
@@ -141,22 +140,26 @@
 
 ACPI_STATUS
 LsAmlListingWalk (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
-    char                    FileByte;
+    UINT8                   FileByte;
     UINT32                  i;
     UINT32                  FileId = (UINT32) Context;
 
 
-    LsWriteNodeToListing (Node, FileId);
+    LsWriteNodeToListing (Op, FileId);
 
     /* Write the hex bytes to the listing file(s) (if requested) */
 
-    for (i = 0; i < Node->FinalAmlLength; i++)
+    for (i = 0; i < Op->Asl.FinalAmlLength; i++)
     {
-        FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1);
+        if (ACPI_FAILURE (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1)))
+        {
+            FlFileError (ASL_FILE_AML_OUTPUT, ASL_MSG_READ);
+            AslAbort ();
+        }
         LsWriteListingHexBytes (&FileByte, 1, FileId);
     }
 
@@ -193,7 +196,7 @@ LsGenerateListing (
     /* Process all parse nodes */
 
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, LsAmlListingWalk,
-                        NULL, (void *) FileId);
+                        NULL, (void *) ACPI_TO_POINTER (FileId));
 
     /* Final processing */
 
@@ -438,6 +441,10 @@ LsFlushListingBuffer (
 
         FlPrintFile (FileId, "    /* %8.8X \"", Gbl_CurrentAmlOffset);
         break;
+
+    default:
+        /* No other types supported */
+        return;
     }
 
     /* Write the ASCII character associated with each of the bytes */
@@ -485,7 +492,7 @@ LsFlushListingBuffer (
 
 void
 LsWriteListingHexBytes (
-    char                    *Buffer,
+    UINT8                   *Buffer,
     UINT32                  Length,
     UINT32                  FileId)
 {
@@ -521,6 +528,10 @@ LsWriteListingHexBytes (
 
                 FlPrintFile (FileId, "        ");
                 break;
+
+            default:
+                /* No other types supported */
+                return;
             }
         }
 
@@ -611,7 +622,7 @@ LsWriteOneSourceLine (
              * Check if an error occurred on this source line during the compile.
              * If so, we print the error message after the source line.
              */
-            LsCheckException (FileId, Gbl_SourceLine);
+            LsCheckException (Gbl_SourceLine, FileId);
             return (1);
         }
     }
@@ -746,7 +757,7 @@ LsWriteSourceLines (
  *
  * FUNCTION:    LsWriteNodeToListing
  *
- * PARAMETERS:  Node            - Parse node to write to the listing file.
+ * PARAMETERS:  Op            - Parse node to write to the listing file.
  *              FileId          - ID of current listing file
  *
  * RETURN:      None.
@@ -760,7 +771,7 @@ LsWriteSourceLines (
 
 void
 LsWriteNodeToListing (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  FileId)
 {
     const ACPI_OPCODE_INFO  *OpInfo;
@@ -770,20 +781,20 @@ LsWriteNodeToListing (
     UINT32                  i;
 
 
-    OpInfo  = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
+    OpInfo  = AcpiPsGetOpcodeInfo (Op->Asl.AmlOpcode);
     OpClass = OpInfo->Class;
 
     /* TBD: clean this up with a single flag that says: I start a named output block */
 
     if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
     {
-        switch (Node->ParseOpcode)
+        switch (Op->Asl.ParseOpcode)
         {
-        case DEFINITIONBLOCK:
-        case METHODCALL:
-        case INCLUDE:
-        case INCLUDE_END:
-        case DEFAULT_ARG:
+        case PARSEOP_DEFINITIONBLOCK:
+        case PARSEOP_METHODCALL:
+        case PARSEOP_INCLUDE:
+        case PARSEOP_INCLUDE_END:
+        case PARSEOP_DEFAULT_ARG:
 
             break;
 
@@ -791,14 +802,14 @@ LsWriteNodeToListing (
             switch (OpClass)
             {
             case AML_CLASS_NAMED_OBJECT:
-                switch (Node->AmlOpcode)
+                switch (Op->Asl.AmlOpcode)
                 {
                 case AML_SCOPE_OP:
                 case AML_ALIAS_OP:
                     break;
 
                 default:
-                    if (Node->ExternalName)
+                    if (Op->Asl.ExternalName)
                     {
                         LsFlushListingBuffer (FileId);
                         FlPrintFile (FileId, "    };\n");
@@ -806,56 +817,65 @@ LsWriteNodeToListing (
                     break;
                 }
                 break;
+
+            default:
+                /* Don't care about other objects */
+                break;
             }
             break;
-       }
+        }
     }
 
 
     /* These cases do not have a corresponding AML opcode */
 
-    switch (Node->ParseOpcode)
+    switch (Op->Asl.ParseOpcode)
     {
-    case DEFINITIONBLOCK:
+    case PARSEOP_DEFINITIONBLOCK:
 
-        LsWriteSourceLines (Node->EndLine, Node->EndLogicalLine, FileId);
+        LsWriteSourceLines (Op->Asl.EndLine, Op->Asl.EndLogicalLine, FileId);
+
+        /* Use the table Signature and TableId to build a unique name */
+
         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "AmlHeader  \\\n");
+            FlPrintFile (FileId, "%s_%s_Header \\\n", 
+                Gbl_TableSignature, Gbl_TableId);
         }
         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "    unsigned char    AmlHeader [] = \n    {\n");
+            FlPrintFile (FileId, "    unsigned char    %s_%s_Header [] = \n    {\n",
+                Gbl_TableSignature, Gbl_TableId);
         }
         return;
 
 
-    case METHODCALL:
+    case PARSEOP_METHODCALL:
 
-        LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
+        LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber, FileId);
         return;
 
 
-    case INCLUDE:
+    case PARSEOP_INCLUDE:
 
         /*
          * Flush everything up to and including the include source line
          */
-        LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
+        LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber, FileId);
 
         /*
          * Create a new listing node and push it
          */
-        LsPushNode (Node->Child->Value.String);
+        LsPushNode (Op->Asl.Child->Asl.Value.String);
         return;
 
 
-    case INCLUDE_END:
+    case PARSEOP_INCLUDE_END:
 
         /*
          * Flush out the rest of the include file
          */
-        LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
+        LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber, FileId);
 
         /*
          * Pop off this listing node and go back to the parent file
@@ -864,8 +884,13 @@ LsWriteNodeToListing (
         return;
 
 
-    case DEFAULT_ARG:
+    case PARSEOP_DEFAULT_ARG:
         return;
+
+
+    default:
+        /* All other opcodes have and AML opcode */
+        break;
     }
 
     /*
@@ -883,7 +908,7 @@ LsWriteNodeToListing (
 
     case AML_CLASS_NAMED_OBJECT:
 
-        switch (Node->AmlOpcode)
+        switch (Op->Asl.AmlOpcode)
         {
         case AML_FIELD_OP:
         case AML_INDEX_FIELD_OP:
@@ -892,15 +917,15 @@ LsWriteNodeToListing (
 
             /* For fields, we want to dump all the AML after the entire definition */
 
-            LsWriteSourceLines (Node->EndLine, Node->EndLogicalLine, FileId);
+            LsWriteSourceLines (Op->Asl.EndLine, Op->Asl.EndLogicalLine, FileId);
             break;
 
         default:
-            LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
+            LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber, FileId);
             break;
         }
 
-        switch (Node->AmlOpcode)
+        switch (Op->Asl.AmlOpcode)
         {
         case AML_SCOPE_OP:
         case AML_ALIAS_OP:
@@ -912,9 +937,9 @@ LsWriteNodeToListing (
             case ASL_FILE_ASM_SOURCE_OUTPUT:
             case ASL_FILE_C_SOURCE_OUTPUT:
 
-                if (Node->ExternalName)
+                if (Op->Asl.ExternalName)
                 {
-                    Pathname = AcpiNsGetExternalPathname (Node->NsNode);
+                    Pathname = AcpiNsGetExternalPathname (Op->Asl.Node);
                     Length = strlen (Pathname);
                     if (Length >= 4)
                     {
@@ -928,15 +953,21 @@ LsWriteNodeToListing (
 
                         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "Aml_%s  \\\n", &Pathname[1]);
+                            FlPrintFile (FileId, "%s_%s_%s  \\\n", 
+                                Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "    unsigned char    Aml_%s [] = \n    {\n", &Pathname[1]);
+                            FlPrintFile (FileId, "    unsigned char    %s_%s_%s [] = \n    {\n", 
+                                Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                     }
                     ACPI_MEM_FREE (Pathname);
                 }
+                break;
+
+            default:
+                /* Nothing to do for listing file */
                 break;
             }
         }
@@ -946,7 +977,7 @@ LsWriteNodeToListing (
     case AML_CLASS_CREATE:
     default:
 
-        LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
+        LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber, FileId);
         break;
 
     case AML_CLASS_UNKNOWN:
@@ -1022,6 +1053,10 @@ LsDoHexOutput (void)
     case HEX_OUTPUT_ASM:
 
         LsDoHexOutputAsm ();
+        break;
+
+    default:
+        /* No other output types supported */
         break;
     }
 }
@@ -1115,7 +1150,8 @@ LsDoHexOutputC (void)
 
 
 void
-LsDoHexOutputAsm (void)
+LsDoHexOutputAsm (
+    void)
 {
     UINT32                  j;
     UINT8                   FileByte[HEX_CHARS_PER_LINE];

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.75 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -129,8 +129,8 @@
  *
  * FUNCTION:    AcpiEvSystemMemoryRegionSetup
  *
- * PARAMETERS:  Handle              - Region we are interested in
- *              Function            - Start or stop
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
@@ -150,7 +150,6 @@ AcpiEvSystemMemoryRegionSetup (
     ACPI_OPERAND_OBJECT     *RegionDesc = (ACPI_OPERAND_OBJECT *) Handle;
     ACPI_MEM_SPACE_CONTEXT  *LocalRegionContext;
 
-
     ACPI_FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
 
 
@@ -164,7 +163,8 @@ AcpiEvSystemMemoryRegionSetup (
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Create a new context */
+
+    /* Activate.  Create a new context */
 
     LocalRegionContext = ACPI_MEM_CALLOCATE (sizeof (ACPI_MEM_SPACE_CONTEXT));
     if (!(LocalRegionContext))
@@ -186,8 +186,8 @@ AcpiEvSystemMemoryRegionSetup (
  *
  * FUNCTION:    AcpiEvIoSpaceRegionSetup
  *
- * PARAMETERS:  Handle              - Region we are interested in
- *              Function            - Start or stop
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
@@ -224,8 +224,8 @@ AcpiEvIoSpaceRegionSetup (
  *
  * FUNCTION:    AcpiEvPciConfigRegionSetup
  *
- * PARAMETERS:  Handle             - Region we are interested in
- *              Function            - Start or stop
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
@@ -245,11 +245,10 @@ AcpiEvPciConfigRegionSetup (
     void                    **RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_INTEGER            PciValue;
+    ACPI_INTEGER            Temp;
     ACPI_PCI_ID             *PciId = *RegionContext;
     ACPI_OPERAND_OBJECT     *HandlerObj;
-    ACPI_NAMESPACE_NODE     *ParentNode;
-    ACPI_NAMESPACE_NODE     *PciRootNode;
+    ACPI_NAMESPACE_NODE     *Node;
     ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
     ACPI_DEVICE_ID          ObjectHID;
 
@@ -257,105 +256,31 @@ AcpiEvPciConfigRegionSetup (
     ACPI_FUNCTION_TRACE ("EvPciConfigRegionSetup");
 
 
-    HandlerObj = RegionObj->Region.Handler;
+    HandlerObj = RegionObj->Region.AddrHandler;
     if (!HandlerObj)
     {
         /*
-         * No installed handler. This shouldn't happen because the dispatch
-         * routine checks before we get here, but we check again just in case.
+         *  No installed handler. This shouldn't happen because the dispatch
+         *  routine checks before we get here, but we check again just in case.
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
             "Attempting to init a region %p, with no handler\n", RegionObj));
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
-    *RegionContext = NULL;
     if (Function == ACPI_REGION_DEACTIVATE)
     {
         if (PciId)
         {
             ACPI_MEM_FREE (PciId);
+            *RegionContext = NULL;
         }
+
         return_ACPI_STATUS (Status);
     }
 
-    ParentNode = AcpiNsGetParentNode (RegionObj->Region.Node);
 
-    /*
-     * Get the _SEG and _BBN values from the device upon which the handler
-     * is installed.
-     *
-     * We need to get the _SEG and _BBN objects relative to the PCI BUS device.
-     * This is the device the handler has been registered to handle.
-     */
-
-    /*
-     * If the AddressSpace.Node is still pointing to the root, we need
-     * to scan upward for a PCI Root bridge and re-associate the OpRegion
-     * handlers with that device.
-     */
-    if (HandlerObj->AddressSpace.Node == AcpiGbl_RootNode)
-    {
-        /* Start search from the parent object */
-
-        PciRootNode = ParentNode;
-        while (PciRootNode != AcpiGbl_RootNode)
-        {
-            Status = AcpiUtExecute_HID (PciRootNode, &ObjectHID);
-            if (ACPI_SUCCESS (Status))
-            {
-                /* Got a valid _HID, check if this is a PCI root */
-
-                if (!(ACPI_STRNCMP (ObjectHID.Value, PCI_ROOT_HID_STRING,
-                                    sizeof (PCI_ROOT_HID_STRING))))
-                {
-                    /* Install a handler for this PCI root bridge */
-
-                    Status = AcpiInstallAddressSpaceHandler ((ACPI_HANDLE) PciRootNode,
-                                        ACPI_ADR_SPACE_PCI_CONFIG,
-                                        ACPI_DEFAULT_HANDLER, NULL, NULL);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        if (Status == AE_SAME_HANDLER)
-                        {
-                            /*
-                             * It is OK if the handler is already installed on the root
-                             * bridge.  Still need to return a context object for the
-                             * new PCI_Config operation region, however.
-                             */
-                            Status = AE_OK;
-                        }
-                        else
-                        {
-                            ACPI_REPORT_ERROR ((
-                                "Could not install PciConfig handler for Root Bridge %4.4s, %s\n",
-                                AcpiUtGetNodeName (PciRootNode), AcpiFormatException (Status)));
-                        }
-                    }
-                    break;
-                }
-            }
-
-            PciRootNode = AcpiNsGetParentNode (PciRootNode);
-        }
-
-        /* PCI root bridge not found, use namespace root node */
-    }
-    else
-    {
-        PciRootNode = HandlerObj->AddressSpace.Node;
-    }
-
-    /*
-     * If this region is now initialized, we are done.
-     * (InstallAddressSpaceHandler could have initialized it)
-     */
-    if (RegionObj->Region.Flags & AOPOBJ_SETUP_COMPLETE)
-    {
-        return_ACPI_STATUS (AE_OK);
-    }
-
-    /* Region is still not initialized. Create a new context */
+    /* Create a new context */
 
     PciId = ACPI_MEM_CALLOCATE (sizeof (ACPI_PCI_ID));
     if (!PciId)
@@ -364,45 +289,94 @@ AcpiEvPciConfigRegionSetup (
     }
 
     /*
-     * For PCI_Config space access, we need the segment, bus,
-     * device and function numbers.  Acquire them here.
+     *  For PCI Config space access, we have to pass the segment, bus,
+     *  device and function numbers.  This routine must acquire those.
      */
 
     /*
-     * Get the PCI device and function numbers from the _ADR object
-     * contained in the parent's scope.
+     *  First get device and function numbers from the _ADR object
+     *  in the parent's scope.
      */
-    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR, ParentNode, &PciValue);
+    Node = AcpiNsGetParentNode (RegionObj->Region.Node);
+
+
+    /* AcpiEvaluate the _ADR object */
+
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR, Node, &Temp);
 
     /*
-     * The default is zero, and since the allocation above zeroed
-     * the data, just do nothing on failure.
+     *  The default is zero, since the allocation above zeroed the data, just
+     *  do nothing on failures.
      */
     if (ACPI_SUCCESS (Status))
     {
-        PciId->Device   = ACPI_HIWORD (ACPI_LODWORD (PciValue));
-        PciId->Function = ACPI_LOWORD (ACPI_LODWORD (PciValue));
+        PciId->Device   = ACPI_HIWORD (Temp);
+        PciId->Function = ACPI_LOWORD (Temp);
     }
 
-    /* The PCI segment number comes from the _SEG method */
+    /*
+     *  Get the _SEG and _BBN values from the device upon which the handler
+     *  is installed.
+     *
+     *  We need to get the _SEG and _BBN objects relative to the PCI BUS device.
+     *  This is the device the handler has been registered to handle.
+     */
 
-    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__SEG, PciRootNode, &PciValue);
+    /*
+     *  If the AddrHandler.Node is still pointing to the root, we need
+     *  to scan upward for a PCI Root bridge and re-associate the OpRegion
+     *  handlers with that device.
+     */
+    if (HandlerObj->AddrHandler.Node == AcpiGbl_RootNode)
+    {
+        /*
+         * Node is currently the parent object
+         */
+        while (Node != AcpiGbl_RootNode)
+        {
+            Status = AcpiUtExecute_HID (Node, &ObjectHID);
+            if (ACPI_SUCCESS (Status))
+            {
+                if (!(ACPI_STRNCMP (ObjectHID.Buffer, PCI_ROOT_HID_STRING,
+                                    sizeof (PCI_ROOT_HID_STRING))))
+                {
+                    Status = AcpiInstallAddressSpaceHandler ((ACPI_HANDLE) Node,
+                                        ACPI_ADR_SPACE_PCI_CONFIG,
+                                        ACPI_DEFAULT_HANDLER, NULL, NULL);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        ACPI_REPORT_ERROR (("Could not install handler for %4.4s, %s\n",
+                            Node->Name.Ascii, AcpiFormatException (Status)));
+                    }
+                    break;
+                }
+            }
+
+            Node = AcpiNsGetParentNode (Node);
+        }
+    }
+    else
+    {
+        Node = HandlerObj->AddrHandler.Node;
+    }
+
+    /*
+     * The PCI segment number comes from the _SEG method
+     */
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__SEG, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
-        PciId->Segment = ACPI_LOWORD (PciValue);
+        PciId->Segment = ACPI_LOWORD (Temp);
     }
 
-    /* The PCI bus number comes from the _BBN method */
-
-    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__BBN, PciRootNode, &PciValue);
+    /*
+     * The PCI bus number comes from the _BBN method
+     */
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__BBN, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
-        PciId->Bus = ACPI_LOWORD (PciValue);
+        PciId->Bus = ACPI_LOWORD (Temp);
     }
-
-    /* Complete this device's PciId */
-
-    AcpiOsDerivePciId (PciRootNode, RegionObj->Region.Node, &PciId);
 
     *RegionContext = PciId;
     return_ACPI_STATUS (AE_OK);
@@ -413,8 +387,8 @@ AcpiEvPciConfigRegionSetup (
  *
  * FUNCTION:    AcpiEvPciBarRegionSetup
  *
- * PARAMETERS:  Handle              - Region we are interested in
- *              Function            - Start or stop
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
@@ -433,6 +407,7 @@ AcpiEvPciBarRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
+
     ACPI_FUNCTION_TRACE ("EvPciBarRegionSetup");
 
 
@@ -444,8 +419,8 @@ AcpiEvPciBarRegionSetup (
  *
  * FUNCTION:    AcpiEvCmosRegionSetup
  *
- * PARAMETERS:  Handle              - Region we are interested in
- *              Function            - Start or stop
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
@@ -464,6 +439,7 @@ AcpiEvCmosRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
+
     ACPI_FUNCTION_TRACE ("EvCmosRegionSetup");
 
 
@@ -475,8 +451,8 @@ AcpiEvCmosRegionSetup (
  *
  * FUNCTION:    AcpiEvDefaultRegionSetup
  *
- * PARAMETERS:  Handle              - Region we are interested in
- *              Function            - Start or stop
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
@@ -513,8 +489,7 @@ AcpiEvDefaultRegionSetup (
  *
  * FUNCTION:    AcpiEvInitializeRegion
  *
- * PARAMETERS:  RegionObj       - Region we are initializing
- *              AcpiNsLocked    - Is namespace locked?
+ * PARAMETERS:  RegionObj  - Region we are initializing
  *
  * RETURN:      Status
  *
@@ -524,7 +499,7 @@ AcpiEvDefaultRegionSetup (
  *              Get the appropriate address space handler for a newly
  *              created region.
  *
- *              This also performs address space specific initialization.  For
+ *              This also performs address space specific intialization.  For
  *              example, PCI regions must have an _ADR object that contains
  *              a PCI address in the scope of the definition.  This address is
  *              required to perform an access to PCI config space.
@@ -564,60 +539,62 @@ AcpiEvInitializeRegion (
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
-
     Node = AcpiNsGetParentNode (RegionObj->Region.Node);
+
+
     SpaceId = RegionObj->Region.SpaceId;
 
-    /* Setup defaults */
-
-    RegionObj->Region.Handler = NULL;
+    RegionObj->Region.AddrHandler = NULL;
     RegionObj2->Extra.Method_REG = NULL;
     RegionObj->Common.Flags &= ~(AOPOBJ_SETUP_COMPLETE);
     RegionObj->Common.Flags |= AOPOBJ_OBJECT_INITIALIZED;
 
-    /* Find any "_REG" method associated with this region definition */
-
+    /*
+     *  Find any "_REG" associated with this region definition
+     */
     Status = AcpiNsSearchNode (*RegNamePtr, Node,
-                                ACPI_TYPE_METHOD, &MethodNode);
+                                   ACPI_TYPE_METHOD, &MethodNode);
     if (ACPI_SUCCESS (Status))
     {
         /*
-         * The _REG method is optional and there can be only one per region
-         * definition.  This will be executed when the handler is attached
-         * or removed
+         *  The _REG method is optional and there can be only one per region
+         *  definition.  This will be executed when the handler is attached
+         *  or removed
          */
         RegionObj2->Extra.Method_REG = MethodNode;
     }
 
     /*
-     * The following loop depends upon the root Node having no parent
-     * ie: AcpiGbl_RootNode->ParentEntry being set to NULL
+     *  The following loop depends upon the root Node having no parent
+     *  ie: AcpiGbl_RootNode->ParentEntry being set to NULL
      */
     while (Node)
     {
-        /* Check to see if a handler exists */
-
+        /*
+         *  Check to see if a handler exists
+         */
         HandlerObj = NULL;
         ObjDesc = AcpiNsGetAttachedObject (Node);
         if (ObjDesc)
         {
-            /* Can only be a handler if the object exists */
-
+            /*
+             * Can only be a handler if the object exists
+             */
             switch (Node->Type)
             {
             case ACPI_TYPE_DEVICE:
 
-                HandlerObj = ObjDesc->Device.Handler;
+                HandlerObj = ObjDesc->Device.AddrHandler;
                 break;
 
             case ACPI_TYPE_PROCESSOR:
 
-                HandlerObj = ObjDesc->Processor.Handler;
+                HandlerObj = ObjDesc->Processor.AddrHandler;
                 break;
 
             case ACPI_TYPE_THERMAL:
 
-                HandlerObj = ObjDesc->ThermalZone.Handler;
+                HandlerObj = ObjDesc->ThermalZone.AddrHandler;
                 break;
 
             default:
@@ -627,61 +604,41 @@ AcpiEvInitializeRegion (
 
             while (HandlerObj)
             {
-                /* Is this handler of the correct type? */
-
-                if (HandlerObj->AddressSpace.SpaceId == SpaceId)
+                /*
+                 *  This guy has at least one address handler
+                 *  see if it has the type we want
+                 */
+                if (HandlerObj->AddrHandler.SpaceId == SpaceId)
                 {
-                    /* Found correct handler */
-
                     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
                         "Found handler %p for region %p in obj %p\n",
                         HandlerObj, RegionObj, ObjDesc));
 
-                    Status = AcpiEvAttachRegion (HandlerObj, RegionObj,
-                                AcpiNsLocked);
-
                     /*
-                     * Tell all users that this region is usable by running the _REG
-                     * method
+                     *  Found it! Now update the region and the handler
                      */
-                    if (AcpiNsLocked)
-                    {
-                        Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-                        if (ACPI_FAILURE (Status))
-                        {
-                            return_ACPI_STATUS (Status);
-                        }
-                    }
-
-                    Status = AcpiEvExecuteRegMethod (RegionObj, 1);
-
-                    if (AcpiNsLocked)
-                    {
-                        Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-                        if (ACPI_FAILURE (Status))
-                        {
-                            return_ACPI_STATUS (Status);
-                        }
-                    }
+                    Status = AcpiEvAssociateRegionAndHandler (HandlerObj, RegionObj,
+                                AcpiNsLocked);
 
                     return_ACPI_STATUS (AE_OK);
                 }
 
-                /* Try next handler in the list */
+                HandlerObj = HandlerObj->AddrHandler.Next;
 
-                HandlerObj = HandlerObj->AddressSpace.Next;
-            }
+            } /* while handlerobj */
         }
 
         /*
-         * This node does not have the handler we need;
-         * Pop up one level
+         *  This one does not have the handler we need
+         *  Pop up one level
          */
         Node = AcpiNsGetParentNode (Node);
-    }
 
-    /* If we get here, there is no handler for this region */
+    } /* while Node != ROOT */
 
+    /*
+     *  If we get here, there is no handler for this region
+     */
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
         "No handler for RegionType %s(%X) (RegionObj %p)\n",
         AcpiUtGetRegionName (SpaceId), SpaceId, RegionObj));

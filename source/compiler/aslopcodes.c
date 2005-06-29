@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.34 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -120,10 +120,9 @@
 #include "aslcompiler.y.h"
 #include "amlcode.h"
 
-#include "acnamesp.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslopcodes")
+        ACPI_MODULE_NAME    ("aslopcodes")
 
 
 /*******************************************************************************
@@ -141,15 +140,15 @@
 
 ACPI_STATUS
 OpcAmlOpcodeWalk (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
 
     TotalParseNodes++;
 
-    OpcGenerateAmlOpcode (Node);
-    OpnGenerateAmlOperands (Node);
+    OpcGenerateAmlOpcode (Op);
+    OpnGenerateAmlOperands (Op);
 
     return (AE_OK);
 }
@@ -159,7 +158,7 @@ OpcAmlOpcodeWalk (
  *
  * FUNCTION:    OpcSetOptimalIntegerSize
  *
- * PARAMETERS:  Node        - A parse tree node
+ * PARAMETERS:  Op        - A parse tree node
  *
  * RETURN:      Integer width, in bytes.  Also sets the node AML opcode to the
  *              optimal integer AML prefix opcode.
@@ -172,28 +171,28 @@ OpcAmlOpcodeWalk (
 
 UINT32
 OpcSetOptimalIntegerSize (
-    ASL_PARSE_NODE          *Node)
+    ACPI_PARSE_OBJECT       *Op)
 {
 
 
-    if (Node->Value.Integer <= ACPI_UINT8_MAX)
+    if (Op->Asl.Value.Integer <= ACPI_UINT8_MAX)
     {
-        Node->AmlOpcode = AML_BYTE_OP;
+        Op->Asl.AmlOpcode = AML_BYTE_OP;
         return 1;
     }
-    else if (Node->Value.Integer <= ACPI_UINT16_MAX)
+    else if (Op->Asl.Value.Integer <= ACPI_UINT16_MAX)
     {
-        Node->AmlOpcode = AML_WORD_OP;
+        Op->Asl.AmlOpcode = AML_WORD_OP;
         return 2;
     }
-    else if (Node->Value.Integer <= ACPI_UINT32_MAX)
+    else if (Op->Asl.Value.Integer <= ACPI_UINT32_MAX)
     {
-        Node->AmlOpcode = AML_DWORD_OP;
+        Op->Asl.AmlOpcode = AML_DWORD_OP;
         return 4;
     }
     else
     {
-        Node->AmlOpcode = AML_QWORD_OP;
+        Op->Asl.AmlOpcode = AML_QWORD_OP;
         return 8;
     }
 }
@@ -203,7 +202,7 @@ OpcSetOptimalIntegerSize (
  *
  * FUNCTION:    OpcDoAccessAs
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  Op        - Parse node
  *
  * RETURN:      None
  *
@@ -213,28 +212,28 @@ OpcSetOptimalIntegerSize (
 
 void
 OpcDoAccessAs (
-    ASL_PARSE_NODE              *Node)
+    ACPI_PARSE_OBJECT           *Op)
 {
-    ASL_PARSE_NODE              *Next;
+    ACPI_PARSE_OBJECT           *Next;
 
 
-    Node->AmlOpcodeLength = 1;
-    Next = Node->Child;
+    Op->Asl.AmlOpcodeLength = 1;
+    Next = Op->Asl.Child;
 
     /* First child is the access type */
 
-    Next->AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->ParseOpcode = RAW_DATA;
+    Next->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
+    Next->Asl.ParseOpcode = PARSEOP_RAW_DATA;
 
     /* Second child is the optional access attribute */
 
-    Next = Next->Peer;
-    if (Next->ParseOpcode == DEFAULT_ARG)
+    Next = Next->Asl.Next;
+    if (Next->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
     {
-        Next->Value.Integer = 0;
+        Next->Asl.Value.Integer = 0;
     }
-    Next->AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->ParseOpcode = RAW_DATA;
+    Next->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
+    Next->Asl.ParseOpcode = PARSEOP_RAW_DATA;
 }
 
 
@@ -242,7 +241,7 @@ OpcDoAccessAs (
  *
  * FUNCTION:    OpcDoUnicode
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  Op        - Parse node
  *
  * RETURN:      None
  *
@@ -253,32 +252,32 @@ OpcDoAccessAs (
 
 void
 OpcDoUnicode (
-    ASL_PARSE_NODE              *Node)
+    ACPI_PARSE_OBJECT           *Op)
 {
-    ASL_PARSE_NODE              *InitializerNode;
+    ACPI_PARSE_OBJECT           *InitializerOp;
     UINT32                      Length;
     UINT32                      Count;
     UINT32                      i;
-    char                        *AsciiString;
+    UINT8                       *AsciiString;
     UINT16                      *UnicodeString;
-    ASL_PARSE_NODE              *BufferLengthNode;
+    ACPI_PARSE_OBJECT           *BufferLengthOp;
 
 
     /* Opcode and package length first */
     /* Buffer Length is next, followed by the initializer list */
 
-    BufferLengthNode = Node->Child;
-    InitializerNode = BufferLengthNode->Peer;
+    BufferLengthOp = Op->Asl.Child;
+    InitializerOp = BufferLengthOp->Asl.Next;
 
-    AsciiString = InitializerNode->Value.String;
+    AsciiString = (UINT8 *) InitializerOp->Asl.Value.String;
 
-    Count = strlen (AsciiString);
+    Count = strlen (InitializerOp->Asl.Value.String);
     Length = (Count * 2)  + sizeof (UINT16);
     UnicodeString = UtLocalCalloc (Length);
 
     for (i = 0; i < Count; i++)
     {
-        UnicodeString[i] = AsciiString[i];
+        UnicodeString[i] = (UINT16) AsciiString[i];
     }
 
     ACPI_MEM_FREE (AsciiString);
@@ -287,16 +286,16 @@ OpcDoUnicode (
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-    BufferLengthNode->ParseOpcode   = INTEGER;
-    BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
-    BufferLengthNode->Value.Integer = Length;
+    BufferLengthOp->Asl.ParseOpcode   = PARSEOP_INTEGER;
+    BufferLengthOp->Asl.AmlOpcode     = AML_DWORD_OP;
+    BufferLengthOp->Asl.Value.Integer = Length;
 
-    OpcSetOptimalIntegerSize (BufferLengthNode);
+    (void) OpcSetOptimalIntegerSize (BufferLengthOp);
 
-    InitializerNode->Value.Pointer  = UnicodeString;
-    InitializerNode->AmlOpcode      = AML_RAW_DATA_BUFFER;
-    InitializerNode->AmlLength      = Length;
-    InitializerNode->ParseOpcode    = RAW_DATA;
+    InitializerOp->Asl.Value.Buffer   = (UINT8 *) UnicodeString;
+    InitializerOp->Asl.AmlOpcode      = AML_RAW_DATA_BUFFER;
+    InitializerOp->Asl.AmlLength      = Length;
+    InitializerOp->Asl.ParseOpcode    = PARSEOP_RAW_DATA;
 }
 
 
@@ -304,7 +303,7 @@ OpcDoUnicode (
  *
  * FUNCTION:    OpcDoEisaId
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  Op        - Parse node
  *
  * RETURN:      None
  *
@@ -315,21 +314,21 @@ OpcDoUnicode (
 
 void
 OpcDoEisaId (
-    ASL_PARSE_NODE          *Node)
+    ACPI_PARSE_OBJECT       *Op)
 {
     UINT32                  id;
     UINT32                  SwappedId;
-    NATIVE_CHAR             *InString;
+    UINT8                   *InString;
 
 
-    InString = Node->Value.String;
+    InString = (UINT8 *) Op->Asl.Value.String;
 
     /* Create ID big-endian first */
 
     id = 0;
-    id |= (InString[0] - '@') << 26;
-    id |= (InString[1] - '@') << 21;
-    id |= (InString[2] - '@') << 16;
+    id |= (UINT32) (InString[0] - '@') << 26;
+    id |= (UINT32) (InString[1] - '@') << 21;
+    id |= (UINT32) (InString[2] - '@') << 16;
 
     id |= (UtHexCharToValue (InString[3])) << 12;
     id |= (UtHexCharToValue (InString[4])) << 8;
@@ -343,12 +342,12 @@ OpcDoEisaId (
     SwappedId |= ((id >> 16) & 0xFF) << 8;
     SwappedId |= (id >> 24) & 0xFF;
 
-    Node->Value.Integer32 = SwappedId;
+    Op->Asl.Value.Integer32 = SwappedId;
 
-    /* Node is now an integer */
+    /* Op is now an integer */
 
-    Node->ParseOpcode = INTEGER;
-    OpcSetOptimalIntegerSize (Node);
+    Op->Asl.ParseOpcode = PARSEOP_INTEGER;
+    (void) OpcSetOptimalIntegerSize (Op);
 }
 
 
@@ -356,7 +355,7 @@ OpcDoEisaId (
  *
  * FUNCTION:    OpcGenerateAmlOpcode
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  Op        - Parse node
  *
  * RETURN:      None
  *
@@ -368,76 +367,81 @@ OpcDoEisaId (
 
 void
 OpcGenerateAmlOpcode (
-    ASL_PARSE_NODE          *Node)
+    ACPI_PARSE_OBJECT       *Op)
 {
 
     UINT16                  Index;
 
 
-    Index = (UINT16) (Node->ParseOpcode - ASL_PARSE_OPCODE_BASE);
+    Index = (UINT16) (Op->Asl.ParseOpcode - ASL_PARSE_OPCODE_BASE);
 
-    Node->AmlOpcode  = AslKeywordMapping[Index].AmlOpcode;
-    Node->AcpiBtype  = AslKeywordMapping[Index].AcpiBtype;
-    Node->Flags     |= AslKeywordMapping[Index].Flags;
+    Op->Asl.AmlOpcode     = AslKeywordMapping[Index].AmlOpcode;
+    Op->Asl.AcpiBtype     = AslKeywordMapping[Index].AcpiBtype;
+    Op->Asl.CompileFlags |= AslKeywordMapping[Index].Flags;
 
-    if (!Node->Value.Integer)
+    if (!Op->Asl.Value.Integer)
     {
-        Node->Value.Integer = AslKeywordMapping[Index].Value;
+        Op->Asl.Value.Integer = AslKeywordMapping[Index].Value;
     }
 
     /* Special handling for some opcodes */
 
-    switch (Node->ParseOpcode)
+    switch (Op->Asl.ParseOpcode)
     {
-    case INTEGER:
+    case PARSEOP_INTEGER:
         /*
          * Set the opcode based on the size of the integer
          */
-        OpcSetOptimalIntegerSize (Node);
+        (void) OpcSetOptimalIntegerSize (Op);
         break;
 
-    case OFFSET:
+    case PARSEOP_OFFSET:
 
-        Node->AmlOpcodeLength = 1;
+        Op->Asl.AmlOpcodeLength = 1;
         break;
 
-    case ACCESSAS:
+    case PARSEOP_ACCESSAS:
 
-        OpcDoAccessAs (Node);
+        OpcDoAccessAs (Op);
         break;
 
-    case EISAID:
+    case PARSEOP_EISAID:
 
-        OpcDoEisaId (Node);
+        OpcDoEisaId (Op);
         break;
 
-    case UNICODE:
+    case PARSEOP_UNICODE:
 
-        OpcDoUnicode (Node);
+        OpcDoUnicode (Op);
         break;
 
-    case INCLUDE:
+    case PARSEOP_INCLUDE:
 
-        Node->Child->ParseOpcode = DEFAULT_ARG;
+        Op->Asl.Child->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
         Gbl_HasIncludeFiles = TRUE;
         break;
 
-    case EXTERNAL:
+    case PARSEOP_EXTERNAL:
 
-        Node->Child->ParseOpcode = DEFAULT_ARG;
-        Node->Child->Peer->ParseOpcode = DEFAULT_ARG;
+        Op->Asl.Child->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+        Op->Asl.Child->Asl.Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
         break;
 
-    case PACKAGE:
+    case PARSEOP_PACKAGE:
         /*
          * The variable-length package has a different opcode
          */
-        if ((Node->Child->ParseOpcode != DEFAULT_ARG) &&
-            (Node->Child->ParseOpcode != INTEGER)     &&
-            (Node->Child->ParseOpcode != BYTECONST))
+        if ((Op->Asl.Child->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
+            (Op->Asl.Child->Asl.ParseOpcode != PARSEOP_INTEGER)     &&
+            (Op->Asl.Child->Asl.ParseOpcode != PARSEOP_BYTECONST))
         {
-            Node->AmlOpcode = AML_VAR_PACKAGE_OP;
+            Op->Asl.AmlOpcode = AML_VAR_PACKAGE_OP;
         }
+        break;
+
+    default:
+        /* Nothing to do for other opcodes */
+        break;
     }
 
     return;
