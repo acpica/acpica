@@ -223,7 +223,7 @@ ACPI_STATUS
 PsParseAml (
     ACPI_GENERIC_OP         *StartScope,
     UINT8                   *Aml, 
-    INT32                   AmlSize);
+    UINT32                  AmlSize);
 
 ACPI_STATUS
 PsParseTable (
@@ -313,6 +313,7 @@ PsWalkParsedAml (
 	NAME_TABLE_ENTRY		*StartScope,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
+    ACPI_TABLE_DESC         *TableDesc,
     INTERPRETER_CALLBACK    DescendingCallback,
     INTERPRETER_CALLBACK    AscendingCallback);
 
