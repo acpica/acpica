@@ -170,7 +170,7 @@ NsEvaluateRelative (
                                 NS_NO_UPSEARCH, &ObjEntry);
     if (Status != AE_OK)
     {
-        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: Object at [%s] was not found, status=%.4X\n",
+        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: Object [%s] not found [%.4X]\n",
                         InternalPath, Status));
 
     }
@@ -498,21 +498,21 @@ NsExecuteControlMethod (
                                ((METHOD_INFO *) MethodEntry->Value)->Length - 1,
                                Params);
 
-    if (AmlPackageNested ())
+    if (AmlPkgStackLevel ())
     {
         /* Package stack not empty at method exit and should be */
 
         REPORT_ERROR ("Package stack not empty at method exit");
     }
 
-    if (AmlGetMethodDepth () > -1)
+    if (AmlMthStackLevel () > -1)
     {
         /* Method stack not empty at method exit and should be */
 
         REPORT_ERROR ("Method stack not empty at method exit");
     }
 
-    if ((ObjStackTop) &&
+    if ((AmlObjStackLevel ()) &&
         (Status != AE_RETURN_VALUE))
     {
         /* Object stack is not empty at method exit and should be */
@@ -525,7 +525,7 @@ NsExecuteControlMethod (
             DEBUG_PRINT (ACPI_ERROR, ("Object Stack [%d]: %p\n", i, ObjStack[ObjStackTop]));
         }
 
-        AmlDumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
+        AmlDumpObjStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
     }
 
     FUNCTION_STATUS_EXIT (Status);
