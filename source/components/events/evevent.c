@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.14 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -125,8 +125,6 @@
         MODULE_NAME         ("evevent")
 
 
-
-
 /**************************************************************************
  *
  * FUNCTION:    AcpiEvInitialize
@@ -164,7 +162,7 @@ AcpiEvInitialize (
 
     if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
     {
-        DEBUG_PRINT (ACPI_WARN, 
+        DEBUG_PRINT (ACPI_WARN,
             ("EvInitialize: Only legacy mode supported!\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
@@ -181,7 +179,7 @@ AcpiEvInitialize (
     Status = AcpiEvFixedEventInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_FATAL, 
+        DEBUG_PRINT (ACPI_FATAL,
             ("EvInitialize: Unable to initialize fixed events.\n"));
         return_ACPI_STATUS (Status);
     }
@@ -216,9 +214,6 @@ AcpiEvInitialize (
 
     return_ACPI_STATUS (Status);
 }
-
-
-
 
 
 /******************************************************************************
@@ -370,9 +365,8 @@ AcpiEvFixedEventDispatch (
         AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK,
                                 TMR_EN + Event, 0);
 
-        REPORT_ERROR("No installed handler for fixed event.");
-        DEBUG_PRINT (ACPI_ERROR,
-            ("EvGpeDispatch: No installed handler for fixed event [0x%08X].",
+        REPORT_ERROR (
+            ("EvGpeDispatch: No installed handler for fixed event [0x%08X]\n",
             Event));
 
         return (INTERRUPT_NOT_HANDLED);
@@ -420,8 +414,7 @@ AcpiEvGpeInitialize (void)
 
     if (!AcpiGbl_GpeRegisterCount)
     {
-        REPORT_WARNING ("No GPEs defined in the FACP");
-        DEBUG_PRINT (ACPI_ERROR, ("Zero GPE count!\n"));
+        REPORT_WARNING (("Zero GPEs are defined in the FACP\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -925,9 +918,8 @@ AcpiEvGpeDispatch (
              * the GPE will remain disabled until the ACPI Core Subsystem
              * is restarted, or the handler is removed/reinstalled.
              */
-            REPORT_ERROR ("Unable to queue-up handler for GPE.");
-            DEBUG_PRINT (ACPI_ERROR,
-                ("EvGpeDispatch: Unable to queue-up handler for GPE [0x%08X].",
+            REPORT_ERROR (
+                ("EvGpeDispatch: Unable to queue the handler for GPE [0x%08X]\n",
                 GpeNumber));
         }
     }
@@ -940,9 +932,8 @@ AcpiEvGpeDispatch (
      */
     else
     {
-        REPORT_ERROR ("No installed handler for GPE.");
-        DEBUG_PRINT (ACPI_ERROR,
-            ("EvGpeDispatch: No installed handler for GPE [0x%08X].",
+        REPORT_ERROR (
+            ("EvGpeDispatch: No installed handler for GPE [0x%08X]\n",
             GpeNumber));
     }
 
