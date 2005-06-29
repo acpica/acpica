@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.147 $
+ *       $Revision: 1.148 $
  *
  *****************************************************************************/
 
@@ -767,7 +767,7 @@ typedef struct
 
 typedef struct
 {
-    UINT8                       *MappedPhysicalAddress;
+    UINT64                      MappedPhysicalAddress;
     UINT8                       *MappedLogicalAddress;
     UINT32                      MappedLength;
 } MEM_HANDLER_CONTEXT;
