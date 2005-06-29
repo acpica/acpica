@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.93 $
+ *              $Revision: 1.96 $
  *
  ******************************************************************************/
 
@@ -409,7 +409,7 @@ AcpiGetNextObject (
     {
         /* Start search at the beginning of the specified scope */
 
-        ParentNode = AcpiNsConvertHandleToEntry (Parent);
+        ParentNode = AcpiNsMapHandleToNode (Parent);
         if (!ParentNode)
         {
             Status = AE_BAD_PARAMETER;
@@ -423,7 +423,7 @@ AcpiGetNextObject (
     {
         /* Convert and validate the handle */
 
-        ChildNode = AcpiNsConvertHandleToEntry (Child);
+        ChildNode = AcpiNsMapHandleToNode (Child);
         if (!ChildNode)
         {
             Status = AE_BAD_PARAMETER;
@@ -434,7 +434,7 @@ AcpiGetNextObject (
 
     /* Internal function does the real work */
 
-    Node = AcpiNsGetNextObject ((ACPI_OBJECT_TYPE8) Type,
+    Node = AcpiNsGetNextNode ((ACPI_OBJECT_TYPE8) Type,
                                     ParentNode, ChildNode);
     if (!Node)
     {
@@ -497,7 +497,7 @@ AcpiGetType (
 
     /* Convert and validate the handle */
 
-    Node = AcpiNsConvertHandleToEntry (Handle);
+    Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
         AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -552,7 +552,7 @@ AcpiGetParent (
 
     /* Convert and validate the handle */
 
-    Node = AcpiNsConvertHandleToEntry (Handle);
+    Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
         Status = AE_BAD_PARAMETER;
@@ -675,14 +675,15 @@ AcpiNsGetDeviceCallback (
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
     UINT32                  Flags;
-    ACPI_DEVICE_ID          DeviceId;
+    ACPI_DEVICE_ID          Hid;
+    ACPI_DEVICE_ID          Cid;
     ACPI_GET_DEVICES_INFO   *Info;
 
 
     Info = Context;
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    Node = AcpiNsConvertHandleToEntry (ObjHandle);
+    Node = AcpiNsMapHandleToNode (ObjHandle);
     AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (!Node)
@@ -701,16 +702,16 @@ AcpiNsGetDeviceCallback (
 
     if (!(Flags & 0x01))
     {
-        /* don't return at the device or children of the device if not there */
+        /* Don't return at the device or children of the device if not there */
         return (AE_CTRL_DEPTH);
     }
 
     /*
-     * Filter based on device HID
+     * Filter based on device HID & CID
      */
     if (Info->Hid != NULL)
     {
-        Status = AcpiUtExecute_HID (Node, &DeviceId);
+        Status = AcpiUtExecute_HID (Node, &Hid);
         if (Status == AE_NOT_FOUND)
         {
             return (AE_OK);
@@ -721,10 +722,26 @@ AcpiNsGetDeviceCallback (
             return (AE_CTRL_DEPTH);
         }
 
-        if (STRNCMP (DeviceId.Buffer, Info->Hid, sizeof (DeviceId.Buffer)) != 0)
+        if (STRNCMP (Hid.Buffer, Info->Hid, sizeof (Hid.Buffer)) != 0)
         {
-            return (AE_OK);
-        }
+	    Status = AcpiUtExecute_CID (Node, &Cid);
+	    if (Status == AE_NOT_FOUND)
+	    {
+	        return (AE_OK);
+	    }
+
+	    else if (ACPI_FAILURE (Status))
+	    {
+	        return (AE_CTRL_DEPTH);
+	    }
+
+	    /* TBD: Handle CID packages */
+
+	    if (STRNCMP (Cid.Buffer, Info->Hid, sizeof (Cid.Buffer)) != 0)
+	    {
+	        return (AE_OK);
+	    }
+	}
     }
 
     Info->UserFunction (ObjHandle, NestingLevel, Info->Context, ReturnValue);
