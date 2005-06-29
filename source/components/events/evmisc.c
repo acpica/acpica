@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.13 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -157,7 +157,7 @@ AcpiEvNotifyDispatch (
 
 
     DEBUG_PRINT (ACPI_INFO,
-        ("Dispatching Notify(%d) on device %p\n", NotifyValue, Device));
+        ("Dispatching Notify(%X) on device %p\n", NotifyValue, Device));
 
     switch (NotifyValue)
     {
@@ -268,7 +268,7 @@ AcpiEvNotifyDispatch (
  *
  **************************************************************************/
 
-void
+static void
 AcpiEvGlobalLockThread (
     void                    *Context)
 {
@@ -297,7 +297,7 @@ AcpiEvGlobalLockThread (
  *
  **************************************************************************/
 
-UINT32
+static UINT32
 AcpiEvGlobalLockHandler (
     void                    *Context)
 {
@@ -311,7 +311,7 @@ AcpiEvGlobalLockHandler (
      * take another interrupt when it becomes free.
      */
 
-    GlobalLock = &AcpiGbl_FACS->GlobalLock;
+    GlobalLock = AcpiGbl_FACS->GlobalLock;
     ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
     if (Acquired)
     {
@@ -396,9 +396,9 @@ AcpiEvAcquireGlobalLock(void)
     }
 
 
-    /* We must acquire the actualy hardware lock */
+    /* We must acquire the actual hardware lock */
 
-    GlobalLock = &AcpiGbl_FACS->GlobalLock;
+    GlobalLock = AcpiGbl_FACS->GlobalLock;
     ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
     if (Acquired)
     {
@@ -424,11 +424,8 @@ AcpiEvAcquireGlobalLock(void)
       * Since this wait will block, we must release the interpreter
       */
 
-    AcpiAmlExitInterpreter ();
     Status = AcpiAmlSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
                                             ACPI_UINT32_MAX);
-    AcpiAmlEnterInterpreter ();
-
 
     return_ACPI_STATUS (Status);
 }
@@ -451,16 +448,15 @@ AcpiEvReleaseGlobalLock (void)
 
     FUNCTION_TRACE ("EvReleaseGlobalLock");
 
-
-    if (!AcpiGbl_FACS)
+    if (!AcpiGbl_GlobalLockThreadCount)
     {
+        REPORT_WARNING(("Releasing a non-acquired Global Lock\n"));
         return_VOID;
     }
 
    /* One fewer thread has the global lock */
 
     AcpiGbl_GlobalLockThreadCount--;
-
 
     /* Have all threads released the lock? */
 
@@ -471,7 +467,7 @@ AcpiEvReleaseGlobalLock (void)
          * release
          */
 
-        GlobalLock = &AcpiGbl_FACS->GlobalLock;
+        GlobalLock = AcpiGbl_FACS->GlobalLock;
         ACPI_RELEASE_GLOBAL_LOCK (GlobalLock, Pending);
         AcpiGbl_GlobalLockAcquired = FALSE;
 
@@ -481,8 +477,8 @@ AcpiEvReleaseGlobalLock (void)
          */
         if (Pending)
         {
-            AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK,
-                                    PM1_CONTROL | GBL_RLS, 1);
+            AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK,
+                                    GBL_RLS, 1);
         }
     }
 

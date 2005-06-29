@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.18 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -128,14 +128,6 @@
         MODULE_NAME         ("evxfevnt")
 
 
-ACPI_STATUS
-AcpiEvFindPciRootBuses (
-    void);
-
-ACPI_STATUS
-AcpiEvInitDevices (
-    void);
-
 /**************************************************************************
  *
  * FUNCTION:    AcpiEnable
@@ -144,9 +136,7 @@ AcpiEvInitDevices (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ensures that the system control interrupt (SCI) is properly
- *              configured, disables SCI event sources, installs the SCI
- *              handler, and transfers the system into ACPI mode.
+ * DESCRIPTION: Transfers the system into ACPI mode.
  *
  *************************************************************************/
 
@@ -167,61 +157,13 @@ AcpiEnable (void)
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-    /* Init the hardware */
-
-    /*
-     * With the advent of a 3-pass parser, we need to be
-     *  prepared to execute on initialized HW before the
-     *  namespace has completed its load.
-     */
-
-    Status = AcpiCmHardwareInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-
     /* Make sure the BIOS supports ACPI mode */
 
     if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
     {
-        DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported!\n"));
+        DEBUG_PRINT (ACPI_WARN,
+            ("AcpiEnable: Only legacy mode supported!\n"));
         return_ACPI_STATUS (AE_ERROR);
-    }
-
-
-    AcpiGbl_OriginalMode = AcpiHwGetMode();
-
-    /*
-     * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
-     * done prior to enabling SCIs to prevent interrupts from occuring
-     * before handers are installed.
-     */
-
-    Status = AcpiEvFixedEventInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize fixed events.\n"));
-        return_ACPI_STATUS (Status);
-    }
-
-    Status = AcpiEvGpeInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_FATAL,
-            ("Unable to initialize general purpose events.\n"));
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Install the SCI handler */
-
-    Status = AcpiEvInstallSciHandler ();
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_FATAL,
-            ("Unable to install System Control Interrupt Handler\n"));
-        return_ACPI_STATUS (Status);
     }
 
     /* Transition to ACPI mode */
@@ -234,34 +176,6 @@ AcpiEnable (void)
     }
 
     DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
-
-    /* Install handlers for control method GPE handlers (_Lxx, _Exx) */
-
-    AcpiEvInitGpeControlMethods ();
-
-    Status = AcpiEvInitGlobalLockHandler ();
-
-    /* Call _INI on all devices */
-
-    AcpiEvInitDevices ();
-
-
-    /*
-     * Perform additional initialization that may cause control methods
-     * to be executed
-     *
-     * It may be wise to move this code to a new interface
-     */
-
-
-    /*
-     *  Install PCI config space handler for all PCI root bridges.  A PCI root
-     *  bridge is found by searching for devices containing a HID with the value
-     *  EISAID("PNP0A03")
-     */
-
-    //AcpiEvFindPciRootBuses ();
-
 
     return_ACPI_STATUS (Status);
 }
@@ -373,7 +287,14 @@ AcpiEnableEvent (
          * enable register bit)
          */
 
-        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
+        AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RegisterId, 1);
+
+        if (1 != AcpiHwRegisterBitAccess(ACPI_READ, ACPI_MTX_LOCK, RegisterId))
+        {
+            DEBUG_PRINT(ACPI_ERROR, ("Fixed event bit clear when it should be set,\n"));
+            return_ACPI_STATUS (AE_ERROR);
+        }
+
         break;
 
 
@@ -470,7 +391,14 @@ AcpiDisableEvent (
          * enable register bit)
          */
 
-        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 0);
+        AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RegisterId, 0);
+
+        if (0 != AcpiHwRegisterBitAccess(ACPI_READ, ACPI_MTX_LOCK, RegisterId))
+        {
+            DEBUG_PRINT(ACPI_ERROR, ("Fixed event bit set when it should be clear,\n"));
+            return_ACPI_STATUS (AE_ERROR);
+        }
+
         break;
 
 
@@ -564,7 +492,7 @@ AcpiClearEvent (
          * status register bit)
          */
 
-        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
+        AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RegisterId, 1);
         break;
 
 
@@ -665,7 +593,7 @@ AcpiGetEventStatus (
 
         /* Get the status of the requested fixed event */
 
-        *EventStatus = AcpiHwRegisterAccess (ACPI_READ, TRUE, RegisterId);
+        *EventStatus = AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_LOCK, RegisterId);
         break;
 
 

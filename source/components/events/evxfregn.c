@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.18 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -135,12 +135,12 @@
  * PARAMETERS:  Device          - Handle for the device
  *              SpaceId         - The address space ID
  *              Handler         - Address of the handler
+ *              Setup           - Address of the setup function
  *              Context         - Value passed to the handler on each access
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Install a handler for accesses on an address space controlled
- *              a specific device.
+ * DESCRIPTION: Install a handler for all OpRegions of a given SpaceId.
  *
  ******************************************************************************/
 
@@ -263,14 +263,14 @@ AcpiInstallAddressSpaceHandler (
             /*
              *  Move through the linked list of handlers
              */
-            HandlerObj = HandlerObj->AddrHandler.Link;
+            HandlerObj = HandlerObj->AddrHandler.Next;
         }
     }
 
     else
     {
         DEBUG_PRINT (TRACE_OPREGION,
-            ("Creating object on Device 0x%X while installing handler\n",
+            ("Creating object on Device %p while installing handler\n",
             Node));
 
         /* ObjDesc does not exist, create one */
@@ -298,24 +298,17 @@ AcpiInstallAddressSpaceHandler (
 
         /* Attach the new object to the Node */
 
-        Status = AcpiNsAttachObject (Device, ObjDesc, (UINT8) Type);
+        Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) Type);
         if (ACPI_FAILURE (Status))
         {
             AcpiCmRemoveReference (ObjDesc);
             goto UnlockAndExit;
         }
-
-        /* TBD: [Investigate] Will this always be of type DEVICE? */
-
-        if (Type == ACPI_TYPE_DEVICE)
-        {
-            ObjDesc->Device.Handle = Device;
-        }
     }
 
     DEBUG_PRINT (TRACE_OPREGION,
-        ("Installing address handler for %s on Device 0x%p (0x%p)\n",
-        AcpiGbl_RegionTypes[SpaceId], Node, ObjDesc));
+        ("Installing address handler for region %s(%X) on Device %p(%p)\n",
+        AcpiCmGetRegionName (SpaceId), SpaceId, Node, ObjDesc));
 
     /*
      *  Now we can install the handler
@@ -331,11 +324,11 @@ AcpiInstallAddressSpaceHandler (
         goto UnlockAndExit;
     }
 
-    HandlerObj->AddrHandler.SpaceId     = (UINT16) SpaceId;
+    HandlerObj->AddrHandler.SpaceId     = (UINT8) SpaceId;
     HandlerObj->AddrHandler.Hflags      = Flags;
-    HandlerObj->AddrHandler.Link        = ObjDesc->Device.AddrHandler;
+    HandlerObj->AddrHandler.Next        = ObjDesc->Device.AddrHandler;
     HandlerObj->AddrHandler.RegionList  = NULL;
-    HandlerObj->AddrHandler.Node    = Node;
+    HandlerObj->AddrHandler.Node        = Node;
     HandlerObj->AddrHandler.Handler     = Handler;
     HandlerObj->AddrHandler.Context     = Context;
     HandlerObj->AddrHandler.Setup       = Setup;
@@ -454,8 +447,8 @@ AcpiRemoveAddressSpaceHandler (
              *  Got it, first dereference this in the Regions
              */
             DEBUG_PRINT (TRACE_OPREGION,
-                ("Removing address handler 0x%p (0x%p) for %s on Device 0x%p (0x%p)\n",
-                HandlerObj, Handler, AcpiGbl_RegionTypes[SpaceId],
+                ("Removing address handler %p(%p) for region %s on Device %p(%p)\n",
+                HandlerObj, Handler, AcpiCmGetRegionName (SpaceId),
                 Node, ObjDesc));
 
             RegionObj = HandlerObj->AddrHandler.RegionList;
@@ -471,7 +464,7 @@ AcpiRemoveAddressSpaceHandler (
                  *  The region is just inaccessible as indicated to
                  *  the _REG method
                  */
-                AcpiEvDisassociateRegionFromHandler(RegionObj);
+                AcpiEvDisassociateRegionFromHandler(RegionObj, FALSE);
 
                 /*
                  *  Walk the list, since we took the first region and it
@@ -485,7 +478,7 @@ AcpiRemoveAddressSpaceHandler (
             /*
              *  Remove this Handler object from the list
              */
-            *LastObjPtr = HandlerObj->AddrHandler.Link;
+            *LastObjPtr = HandlerObj->AddrHandler.Next;
 
             /*
              *  Now we can delete the handler object
@@ -499,8 +492,8 @@ AcpiRemoveAddressSpaceHandler (
         /*
          *  Move through the linked list of handlers
          */
-        LastObjPtr = &HandlerObj->AddrHandler.Link;
-        HandlerObj = HandlerObj->AddrHandler.Link;
+        LastObjPtr = &HandlerObj->AddrHandler.Next;
+        HandlerObj = HandlerObj->AddrHandler.Next;
     }
 
 
@@ -508,8 +501,8 @@ AcpiRemoveAddressSpaceHandler (
      *  The handler does not exist
      */
     DEBUG_PRINT (TRACE_OPREGION,
-        ("Unable to remove address handler 0x%p for %s, DeviceNode 0x%p, obj 0x%p\n",
-        Handler, AcpiGbl_RegionTypes[SpaceId], Node, ObjDesc));
+        ("Unable to remove address handler %p for %s(%X), DevNode %p, obj %p\n",
+        Handler, AcpiCmGetRegionName (SpaceId), SpaceId, Node, ObjDesc));
 
     Status = AE_NOT_EXIST;
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.42 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -660,14 +660,14 @@ AcpiDbSetMethodData (
 
     /* Create and initialize the new object */
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
     if (!ObjDesc)
     {
         AcpiOsPrintf ("Could not create an internal object\n");
         return;
     }
 
-    ObjDesc->Number.Value = Value;
+    ObjDesc->Integer.Value = Value;
 
 
     /* Store the new object into the target */
@@ -764,8 +764,8 @@ AcpiDbWalkForSpecificObjects (
             AcpiOsPrintf ("  #Args %d  Concurrency %X", ObjDesc->Method.ParamCount, ObjDesc->Method.Concurrency);
             break;
 
-        case ACPI_TYPE_NUMBER:
-            AcpiOsPrintf ("  Value %X", ObjDesc->Number.Value);
+        case ACPI_TYPE_INTEGER:
+            AcpiOsPrintf ("  Value %X", ObjDesc->Integer.Value);
             break;
 
         case ACPI_TYPE_STRING:

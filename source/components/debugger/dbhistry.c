@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbhistry - debugger HISTORY command
- *              $Revision: 1.14 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -150,7 +150,6 @@ UINT16                      LoHistory = 0;
 UINT16                      NumHistory = 0;
 UINT16                      NextHistoryIndex = 0;
 UINT32                      NextCmdNum = 1;
-
 
 
 /*******************************************************************************

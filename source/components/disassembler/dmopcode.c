@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.28 $
+ *              $Revision: 1.37 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -135,7 +135,6 @@
 #define DB_FULL_OP_INFO     "%5.5X #%4.4X [%2.2d]  "
 
 
-
 NATIVE_CHAR                 *INDENT_STRING = "....";
 
 
@@ -179,9 +178,9 @@ AcpiDbBlockType (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Diplay the pathname associated with a named object.  Two 
- *              versions. One searches the parse tree (for parser-only 
- *              applications suchas AcpiDump), and the other searches the 
+ * DESCRIPTION: Diplay the pathname associated with a named object.  Two
+ *              versions. One searches the parse tree (for parser-only
+ *              applications suchas AcpiDump), and the other searches the
  *              ACPI namespace (the parse tree is probably deleted)
  *
  ******************************************************************************/
@@ -195,8 +194,6 @@ AcpiPsDisplayObjectPathname (
     ACPI_PARSE_OBJECT       *TargetOp;
 
 
-    AcpiOsPrintf ("  (Path ");
-
     /* Search parent tree up to the root if necessary */
 
     TargetOp = AcpiPsFind (Op, Op->Value.Name, 0, 0);
@@ -209,17 +206,18 @@ AcpiPsDisplayObjectPathname (
          * the predefined names, just display the name as given
          */
 
-        AcpiDbDisplayNamestring (Op->Value.Name);
+        AcpiOsPrintf ("  **** Path not found in parse tree");
     }
 
     else
     {
         /* The target was found, print the name and complete path */
 
+        AcpiOsPrintf ("  (Path ");
         AcpiDbDisplayPath (TargetOp);
+        AcpiOsPrintf (")");
     }
 
-    AcpiOsPrintf (")");
     return (AE_OK);
 }
 
@@ -281,6 +279,7 @@ AcpiPsDisplayObjectPathname (
 
 void
 AcpiDbDisplayOp (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Origin,
     UINT32                  NumOpcodes)
 {
@@ -374,7 +373,7 @@ AcpiDbDisplayOp (
 
             /* Now print the opcode */
 
-            AcpiDbDisplayOpcode (Op);
+            AcpiDbDisplayOpcode (WalkState, Op);
 
             /* Resolve a name reference */
 
@@ -417,7 +416,7 @@ AcpiDbDisplayOp (
 
     else
     {
-        AcpiDbDisplayOpcode (Op);
+        AcpiDbDisplayOpcode (WalkState, Op);
     }
 }
 
@@ -626,6 +625,7 @@ AcpiDbDisplayPath (
 
 void
 AcpiDbDisplayOpcode (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
 {
     UINT8                   *ByteData;
@@ -650,12 +650,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer & 0xff);
+            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer & ACPI_UINT8_MAX);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer & 0xff);
+            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer & ACPI_UINT8_MAX);
         }
 
         break;
@@ -665,12 +665,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer & 0xffff);
+            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer & ACPI_UINT16_MAX);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer & 0xffff);
+            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer & ACPI_UINT16_MAX);
         }
 
         break;
@@ -773,7 +773,18 @@ AcpiDbDisplayOpcode (
         /* Just get the opcode name and print it */
 
         Opc = AcpiPsGetOpcodeInfo (Op->Opcode);
-        DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
+        AcpiOsPrintf ("%s", Opc->Name);
+
+
+#ifndef PARSER_ONLY
+        if ((Op->Opcode == AML_RETURN_VALUE_OP) &&
+            (WalkState->Results) &&
+            (WalkState->Results->Results.NumResults))
+        {
+            AcpiDbDecodeInternalObject (WalkState->Results->Results.ObjDesc [WalkState->Results->Results.NumResults-1]);
+        }
+#endif
+
         break;
     }
 
