@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -658,7 +658,8 @@ AcpiPsParseLoop (
                  */
 
                 Status = AcpiDsGetPredicateValue (WalkState, NULL, TRUE);
-                if (ACPI_FAILURE (Status))
+                if (ACPI_FAILURE (Status) &&
+                    ((Status & AE_CODE_MASK) != AE_CODE_CONTROL))
                 {
                     if (Status == AE_AML_NO_RETURN_VALUE)
                     {
@@ -667,6 +668,9 @@ AcpiPsParseLoop (
                             AcpiCmFormatException (Status)));
 
                     }
+                    DEBUG_PRINT (ACPI_ERROR,
+                        ("PsParseLoop: GetPredicate Failed, %s\n",
+                        AcpiCmFormatException (Status)));
                     return_ACPI_STATUS (Status);
                 }
 
