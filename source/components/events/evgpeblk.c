@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -458,7 +458,7 @@ AcpiEvCreateGpeBlock (
 
     if (!RegisterCount)
     {
-        return_ACPI_STATUS (AE_OK)
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* Get a handle to the parent object for this GPE block */
