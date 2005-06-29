@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.12 $
+ *       $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -153,6 +153,7 @@ typedef struct acpi_walk_state
     UINT32                  AmlOffset;
     UINT32                  ArgTypes;
     UINT32                  MethodBreakpoint;                   /* For single stepping */
+    UINT32                  UserBreakpoint;                     /* User AML breakpoint */
     UINT32                  ParseFlags;
     UINT32                  PrevArgTypes;
 
