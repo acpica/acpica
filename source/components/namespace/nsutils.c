@@ -117,8 +117,8 @@
 #define __NSUTILS_C__
 
 #include <acpi.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include <namesp.h>
+#include <interp.h>
 #include <amlcode.h>
 #include <tables.h>
 
@@ -307,6 +307,155 @@ NsInternalizeName (
     {
         DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (rel) \"%s\"\n", 
                                 InternalName, &InternalName[2])); 
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsExternalizeName
+ *
+ * PARAMETERS:  *InternalName          - Internal representation of name
+ *              **ConvertedName        - Where to return the resulting
+ *                                        external representation of name
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Convert internal name (e.g. 5c 2f 02 5f 50 52 5f 43 50 55 30)
+ *              to its external form (e.g. "\_PR_.CPU0")
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+NsExternalizeName (
+    UINT32                  InternalNameLength,
+    char                    *InternalName,
+    UINT32                  *ConvertedNameLength,
+    char                    **ConvertedName)
+{
+    UINT32                  PrefixLength = 0;
+    UINT32                  NamesIndex = 0;
+    UINT32                  NamesCount = 0;
+    UINT32                  i = 0;
+    UINT32                  j = 0;
+
+    FUNCTION_TRACE ("NsExternalizeName");
+
+    if (InternalNameLength < 0 || !InternalName || !ConvertedNameLength || !ConvertedName)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /*
+     * Check for a prefix (one '\' | one or more '^').
+     */
+    switch (InternalName[0])
+    {
+    case '\\':
+        PrefixLength = 1;
+        break;
+
+    case '^':
+        for (i = 0; i < InternalNameLength; i++)
+        {
+            if (InternalName[i] != '^')
+            {
+                PrefixLength = i + 1;
+            }
+        }
+
+        if (i == InternalNameLength)
+        {
+            PrefixLength = i;
+        }
+
+        break;
+    }
+
+    /*
+     * Check for object names.  Note that there could be 0-255 of these 
+     * 4-byte elements.
+     */
+    if (PrefixLength < InternalNameLength)
+    {
+        switch (InternalName[PrefixLength])
+        {
+        /* <count> 4-byte names */
+        case AML_MultiNamePrefixOp:
+            NamesIndex = PrefixLength + 2;
+            NamesCount = (UINT32) InternalName[PrefixLength + 1];
+            break;
+
+        /* two 4-byte names */
+        case AML_DualNamePrefix:
+            NamesIndex = PrefixLength + 1;
+            NamesCount = 2;
+            break;
+
+        /* NullName */
+        case 0:
+            NamesIndex = 0;
+            NamesCount = 0;
+            break;
+
+        /* one 4-byte name */
+        default:
+            NamesIndex = PrefixLength;
+            NamesCount = 1;
+            break;
+        }
+    }
+
+    /* 
+     * Calculate the length of ConvertedName, which equals the length
+     * of the prefix, length of all object names, length of any required 
+     * punctuation ('.') between object names, plus the NULL terminator.
+     */
+    *ConvertedNameLength = PrefixLength + (4 * NamesCount) + ((NamesCount > 0) ? (NamesCount - 1) : 0) + 1;
+
+    /*
+     * Check to see if we're still in bounds.  If not, there's a problem
+     * with InternalName (invalid format).
+     */ 
+    if (*ConvertedNameLength > InternalNameLength)
+    {
+        REPORT_ERROR ("NsExternalizeName: Invalid internal name.\n");
+        return_ACPI_STATUS (AE_BAD_PATHNAME);
+    }
+
+    /* 
+     * Build ConvertedName...
+     */
+
+    (*ConvertedName) = CmCallocate (*ConvertedNameLength);
+    if (!(*ConvertedName))
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    j = 0;
+
+    for (i = 0; i < PrefixLength; i++)
+    {
+        (*ConvertedName)[j++] = InternalName[i];
+    }
+
+    if (NamesCount > 0)
+    {
+        for (i = 0; i < NamesCount; i++)
+        {
+            if (i > 0)
+            {
+                (*ConvertedName)[j++] = '.';
+            }
+
+            (*ConvertedName)[j++] = InternalName[NamesIndex++];
+            (*ConvertedName)[j++] = InternalName[NamesIndex++];
+            (*ConvertedName)[j++] = InternalName[NamesIndex++];
+            (*ConvertedName)[j++] = InternalName[NamesIndex++];
+        }
     }
 
     return_ACPI_STATUS (AE_OK);
