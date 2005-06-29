@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -178,9 +178,11 @@ typedef union ptr_ovl
 #define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
-void __cdecl
-AeCtrlCHandler (
-    int                     Sig);
+int
+getopt (
+    int                     argc,
+    char                    **argv,
+    char                    *opts);
 
 ACPI_STATUS
 AeBuildLocalTables (
@@ -219,12 +221,36 @@ void
 AeOpenDebugFile (
     char                    *Name);
 
+void
+AdPrintStatistics (void);
+
 ACPI_STATUS
 AeDisplayAllMethods (
     UINT32                  DisplayCount);
 
 ACPI_STATUS
+AdFindDsdt(
+    UINT8                   **DsdtPtr,
+    UINT32                  *DsdtLength);
+
+void
+AdDumpTables (void);
+
+ACPI_STATUS
 AeInstallHandlers (void);
+
+ACPI_STATUS
+AdGetTables (
+    char                    *Filename);
+
+ACPI_STATUS
+AdParseTables (void);
+
+ACPI_STATUS
+AdDisplayTables (void);
+
+ACPI_STATUS
+AdDisplayStatistics (void);
 
 
 #endif /* _ADCOMMON */

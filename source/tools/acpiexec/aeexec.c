@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.65 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,7 +124,6 @@
 #include "aecommon.h"
 
 #include <stdio.h>
-#include <signal.h>
 
 
 #define _COMPONENT          ACPI_TOOLS
@@ -158,38 +157,6 @@ RSDT_DESCRIPTOR_REV1        *LocalRSDT;
 #define RSDT_TABLES         3
 #define RSDT_SIZE           (sizeof (RSDT_DESCRIPTOR_REV1) + ((RSDT_TABLES -1) * sizeof (UINT32)))
 
-
-/******************************************************************************
- *
- * FUNCTION:    AeCtrlCHandler
- *
- * PARAMETERS:
- *
- * RETURN:      none
- *
- * DESCRIPTION: Control-C handler.  Abort running control method if any.
- *
- *****************************************************************************/
-
-void __cdecl
-AeCtrlCHandler (
-    int                     Sig)
-{
-
-    signal (SIGINT, SIG_IGN);
-
-    AcpiOsPrintf ("Caught a ctrl-c\n\n");
-
-    if (AcpiGbl_MethodExecuting)
-    {
-        AcpiGbl_AbortMethod = TRUE;
-        signal (SIGINT, AeCtrlCHandler);
-    }
-    else
-    {
-        exit (0);
-    }
-}
 
 
 /******************************************************************************
@@ -246,7 +213,7 @@ AeBuildLocalTables (void)
     LocalFADT.Header.Length     = sizeof (FADT_DESCRIPTOR_REV1);
     LocalFADT.Gpe0BlkLen        = 4;
     LocalFADT.Gpe1BlkLen        = 6;
-    LocalFADT.Gpe1Base          = 61;
+    LocalFADT.Gpe1Base          = 61;   
 
     LocalFADT.Pm1EvtLen         = 4;
     LocalFADT.Pm1CntLen         = 4;
@@ -381,12 +348,11 @@ AeRegionHandler (
 
     ACPI_OPERAND_OBJECT     *RegionObject = (ACPI_OPERAND_OBJECT*) RegionContext;
     ACPI_PHYSICAL_ADDRESS   BaseAddress;
-    ACPI_SIZE               Length;
+    UINT32                  Length;
     BOOLEAN                 BufferExists;
     REGION                  *RegionElement;
     void                    *BufferValue;
     UINT32                  ByteWidth;
-    UINT32                  i;
 
 
     ACPI_FUNCTION_NAME ("AeRegionHandler");
@@ -399,85 +365,16 @@ AeRegionHandler (
         return AE_OK;
     }
 
-    /*
-     * Find the region's address space and length before searching
-     * the linked list.
-     */
-    BaseAddress = RegionObject->Region.Address;
-    Length = (ACPI_SIZE) RegionObject->Region.Length;
-
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION, "Operation Region request on %s at 0x%X\n",
             AcpiUtGetRegionName (RegionObject->Region.SpaceId),
             Address));
 
-    if (RegionObject->Region.SpaceId == ACPI_ADR_SPACE_SMBUS)
-    {
-        Length = 0;
-
-        switch (Function & ACPI_IO_MASK)
-        {
-        case ACPI_READ:
-            switch (Function >> 16)
-            {
-            case AML_FIELD_ATTRIB_SMB_QUICK:
-            case AML_FIELD_ATTRIB_SMB_SEND_RCV:
-            case AML_FIELD_ATTRIB_SMB_BYTE:
-                Length = 1;
-                break;
-
-            case AML_FIELD_ATTRIB_SMB_WORD:
-            case AML_FIELD_ATTRIB_SMB_WORD_CALL:
-                Length = 2;
-                break;
-
-            case AML_FIELD_ATTRIB_SMB_BLOCK:
-            case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
-                Length = 32;
-                break;
-
-            default:
-                break;
-            }
-            break;
-
-        case ACPI_WRITE:
-            switch (Function >> 16)
-            {
-            case AML_FIELD_ATTRIB_SMB_QUICK:
-            case AML_FIELD_ATTRIB_SMB_SEND_RCV:
-            case AML_FIELD_ATTRIB_SMB_BYTE:
-            case AML_FIELD_ATTRIB_SMB_WORD:
-            case AML_FIELD_ATTRIB_SMB_BLOCK:
-                Length = 0;
-                break;
-
-            case AML_FIELD_ATTRIB_SMB_WORD_CALL:
-                Length = 2;
-                break;
-
-            case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
-                Length = 32;
-                break;
-
-            default:
-                break;
-            }
-            break;
-
-        default:
-            break;
-        }
-
-        for (i = 0; i < Length; i++)
-        {
-            ((UINT8 *) Value)[i+2] = (UINT8) (0xA0 + i);
-        }
-
-        ((UINT8 *) Value)[0] = 0x7A;
-        ((UINT8 *) Value)[1] = (UINT8) Length;
-
-        return AE_OK;
-    }
+    /*
+     * Find the region's address space and length before searching
+     *  the linked list.
+     */
+    BaseAddress = RegionObject->Region.Address;
+    Length = RegionObject->Region.Length;
 
     /*
      * Search through the linked list for this region's buffer
@@ -499,7 +396,7 @@ AeRegionHandler (
                 RegionElement = RegionElement->NextRegion;
             }
         }
-    }
+    }                                                                
 
     /*
      * If the Region buffer does not exist, create it now
@@ -652,7 +549,6 @@ AeNotifyHandler (
 
     switch (Value)
     {
-#if 0
     case 0:
         printf ("**** Method Error 0x%X: Results not equal\n", Value);
         if (AcpiGbl_DebugFile)
@@ -679,11 +575,9 @@ AeNotifyHandler (
         }
         break;
 
-#endif
 
     default:
-        printf ("**** Received a Notify on Device [%s] %p value 0x%X\n",
-            ((ACPI_NAMESPACE_NODE *) Device)->Name.Ascii, Device, Value);
+        printf ("**** Received a notify, value 0x%X\n", Value);
         if (AcpiGbl_DebugFile)
         {
             AcpiOsPrintf ("**** Received a notify, value 0x%X\n", Value);
@@ -707,8 +601,8 @@ AeNotifyHandler (
  *
  *****************************************************************************/
 
-ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 4, 0x80};
-#define AEXEC_NUM_REGIONS   6
+ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 0x80};
+#define AEXEC_NUM_REGIONS   5
 
 ACPI_STATUS
 AeInstallHandlers (void)

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -157,9 +157,8 @@ typedef struct semaphore_entry
 
 
 SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
-
-
 extern FILE                 *AcpiGbl_DebugFile;
+
 ACPI_STATUS
 AeLocalGetRootPointer (
     UINT32                  Flags,
