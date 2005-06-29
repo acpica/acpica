@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -416,7 +416,7 @@ LkNamespaceLocateBegin (
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
     ACPI_STATUS             Status;
-    ACPI_OBJECT_TYPE8       DataType;
+    ACPI_OBJECT_TYPE8       ObjectType;
     NATIVE_CHAR             *Path;
     UINT8                   PassedArgs;
     ASL_PARSE_NODE          *Next;
@@ -454,11 +454,8 @@ LkNamespaceLocateBegin (
 
     /* Map the raw opcode into an internal object type */
 
-    DataType = AcpiDsMapNamedOpcodeToDataType (PsNode->AmlOpcode);
-
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%x\n", DataType));
-
+    ObjectType = OpInfo->ObjectType;
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%x\n", ObjectType));
 
     /*
      * Lookup the name in the namespace.  Name must exist at this point, or it
@@ -470,7 +467,7 @@ LkNamespaceLocateBegin (
     Gbl_NsLookupCount++;
 
     Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
-                            DataType, IMODE_EXECUTE,
+                            ObjectType, IMODE_EXECUTE,
                             NS_SEARCH_PARENT, WalkState, &(NsNode));
 
     if (ACPI_FAILURE (Status))
@@ -792,7 +789,6 @@ LkNamespaceLocateEnd (
     void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
-    ACPI_OBJECT_TYPE8       DataType;
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
@@ -808,10 +804,6 @@ LkNamespaceLocateEnd (
     }
 
 
-    /* Get the type to determine if we should pop the scope */
-
-    DataType = AcpiDsMapNamedOpcodeToDataType (PsNode->AmlOpcode);
-
     if (PsNode->AmlOpcode == AML_NAME_OP)
     {
         /* For Name opcode, check the argument */
@@ -819,10 +811,10 @@ LkNamespaceLocateEnd (
         if (PsNode->Child)
         {
 /*
-            DataType = AcpiDsMapOpcodeToDataType (
+            ObjectType = AcpiDsMapOpcodeToDataType (
                             PsNode->Child->AmlOpcode, NULL);
             ((ACPI_NAMESPACE_NODE *)Op->Node)->Type =
-                            (UINT8) DataType;
+                            (UINT8) ObjectType;
 */
         }
     }
@@ -830,12 +822,12 @@ LkNamespaceLocateEnd (
 
     /* Pop the scope stack */
 
-    if (AcpiNsOpensScope (DataType))
+    if (AcpiNsOpensScope (OpInfo->ObjectType))
     {
 
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
             "%s: Popping scope for Op %p\n",
-            AcpiUtGetTypeName (DataType), PsNode));
+            AcpiUtGetTypeName (OpInfo->ObjectType), PsNode));
 
 
         AcpiDsScopeStackPop (WalkState);
