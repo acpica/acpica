@@ -179,7 +179,7 @@ AcpiDbDisplayTableInfo (
     {
         if (AcpiGbl_AcpiTables[i].Pointer)
         {
-            AcpiOsdPrintf ("%s at 0x%p length 0x%X\n", AcpiGbl_AcpiTableData[i].Name,
+            AcpiOsPrintf ("%s at 0x%p length 0x%X\n", AcpiGbl_AcpiTableData[i].Name,
                         AcpiGbl_AcpiTables[i].Pointer, AcpiGbl_AcpiTables[i].Length);
         }
     }
@@ -214,18 +214,18 @@ AcpiDbUnloadAcpiTable (
             Status = AcpiUnloadTable (i);
             if (ACPI_SUCCESS (Status))
             {
-                AcpiOsdPrintf ("[%s] unloaded and uninstalled\n", TableArg);
+                AcpiOsPrintf ("[%s] unloaded and uninstalled\n", TableArg);
             }
             else
             {
-                AcpiOsdPrintf ("%s, while unloading [%s]\n", AcpiCmFormatException (Status), TableArg);
+                AcpiOsPrintf ("%s, while unloading [%s]\n", AcpiCmFormatException (Status), TableArg);
             }
 
             return;
         }
     }
 
-    AcpiOsdPrintf ("Unknown table type [%s]\n", TableArg);
+    AcpiOsPrintf ("Unknown table type [%s]\n", TableArg);
 }
 
 
@@ -254,7 +254,7 @@ AcpiDbSetMethodBreakpoint (
 
     if (!Op)
     {
-        AcpiOsdPrintf ("There is no method currently executing\n");
+        AcpiOsPrintf ("There is no method currently executing\n");
         return;
     }
 
@@ -263,14 +263,14 @@ AcpiDbSetMethodBreakpoint (
     Address = STRTOUL (Location, NULL, 16);
     if (Address <= Op->AmlOffset)
     {
-        AcpiOsdPrintf ("Breakpoint 0x%X is beyond current address 0x%X\n", Address, Op->AmlOffset);
+        AcpiOsPrintf ("Breakpoint 0x%X is beyond current address 0x%X\n", Address, Op->AmlOffset);
     }
 
     /* Just save the breakpoint in a global */
 
     AcpiGbl_MethodBreakpoint = Address;
     AcpiGbl_BreakpointWalk = WalkState;
-    AcpiOsdPrintf ("Breakpoint set at AML offset 0x%X\n", Address);
+    AcpiOsPrintf ("Breakpoint set at AML offset 0x%X\n", Address);
 }
 
 
@@ -296,7 +296,7 @@ AcpiDbSetMethodCallBreakpoint (
 
     if (!Op)
     {
-        AcpiOsdPrintf ("There is no method currently executing\n");
+        AcpiOsPrintf ("There is no method currently executing\n");
         return;
     }
 
@@ -328,7 +328,7 @@ AcpiDbDisassembleAml (
 
     if (!Op)
     {
-        AcpiOsdPrintf ("There is no method currently executing\n");
+        AcpiOsPrintf ("There is no method currently executing\n");
         return;
     }
 
@@ -373,14 +373,14 @@ AcpiDbDumpNamespace (
         if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
         {
             SubtreeEntry = (ACPI_HANDLE) STRTOUL (StartArg, NULL, 16);
-            if (!AcpiOsdReadable (SubtreeEntry, sizeof (NAME_TABLE_ENTRY)))
+            if (!AcpiOsReadable (SubtreeEntry, sizeof (NAME_TABLE_ENTRY)))
             {
-                AcpiOsdPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
+                AcpiOsPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
                 return;
             }
             if (!VALID_DESCRIPTOR_TYPE ((SubtreeEntry), DESC_TYPE_NTE))
             {
-                AcpiOsdPrintf ("Address %p is not a valid NTE\n", SubtreeEntry);
+                AcpiOsPrintf ("Address %p is not a valid NTE\n", SubtreeEntry);
                 return;
             }
         }
@@ -410,7 +410,7 @@ AcpiDbDumpNamespace (
 
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    AcpiOsdPrintf ("ACPI Namespace (from %p subtree):\n", SubtreeEntry);
+    AcpiOsPrintf ("ACPI Namespace (from %p subtree):\n", SubtreeEntry);
 
     /* Display the subtree */
 
@@ -454,7 +454,7 @@ AcpiDbDumpNamespaceByOwner (
 
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    AcpiOsdPrintf ("ACPI Namespace by owner 0x%X:\n", OwnerId);
+    AcpiOsPrintf ("ACPI Namespace by owner 0x%X:\n", OwnerId);
 
     /* Display the subtree */
 
@@ -505,7 +505,7 @@ AcpiDbSendNotify (
         break;
 
     default:
-        AcpiOsdPrintf ("Named object is not a device or a thermal object\n");
+        AcpiOsPrintf ("Named object is not a device or a thermal object\n");
         break;
     }
 
@@ -542,7 +542,7 @@ AcpiDbSetMethodData (
     if ((Type != 'L') &&
         (Type != 'A'))
     {
-        AcpiOsdPrintf ("Invalid SET operand: %s\n", TypeArg);
+        AcpiOsPrintf ("Invalid SET operand: %s\n", TypeArg);
         return;
     }
 
@@ -552,7 +552,7 @@ AcpiDbSetMethodData (
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
-        AcpiOsdPrintf ("There is no method currently executing\n");
+        AcpiOsPrintf ("There is no method currently executing\n");
         return;
     }
 
@@ -560,7 +560,7 @@ AcpiDbSetMethodData (
     ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
     if (!ObjDesc)
     {
-        AcpiOsdPrintf ("Could not create an internal object\n");
+        AcpiOsPrintf ("Could not create an internal object\n");
         return;
     }
 
@@ -574,13 +574,13 @@ AcpiDbSetMethodData (
 
         if (Index > MTH_NUM_ARGS)
         {
-            AcpiOsdPrintf ("Arg%d - Invalid argument name\n", Index);
+            AcpiOsPrintf ("Arg%d - Invalid argument name\n", Index);
             return;
         }
 
         AcpiDsMethodDataSetValue (MTH_TYPE_ARG, Index, ObjDesc);
         ObjDesc = WalkState->Arguments[Index].Object;
-        AcpiOsdPrintf ("Arg%d: ", Index);
+        AcpiOsPrintf ("Arg%d: ", Index);
         AcpiDbDisplayInternalObject (ObjDesc);
         break;
 
@@ -590,13 +590,13 @@ AcpiDbSetMethodData (
 
         if (Index > MTH_NUM_LOCALS)
         {
-            AcpiOsdPrintf ("Local%d - Invalid local variable name\n", Index);
+            AcpiOsPrintf ("Local%d - Invalid local variable name\n", Index);
             return;
         }
 
         AcpiDsMethodDataSetValue (MTH_TYPE_LOCAL, Index, ObjDesc);
         ObjDesc = WalkState->LocalVariables[Index].Object;
-        AcpiOsdPrintf ("Local%d: ", Index);
+        AcpiOsPrintf ("Local%d: ", Index);
         AcpiDbDisplayInternalObject (ObjDesc);
         break;
 
@@ -639,43 +639,43 @@ AcpiDbWalkForSpecificObjects (
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("Could Not get pathname for object %p\n", ObjHandle);
+        AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
         return AE_OK;
     }
 
-    AcpiOsdPrintf ("%32s", buffer);
+    AcpiOsPrintf ("%32s", buffer);
 
     if (ObjDesc)
     {
         switch (ObjDesc->Common.Type)
         {
         case ACPI_TYPE_METHOD:
-            AcpiOsdPrintf ("  #Args %d  Concurrency %d", ObjDesc->Method.ParamCount, ObjDesc->Method.Concurrency);
+            AcpiOsPrintf ("  #Args %d  Concurrency %d", ObjDesc->Method.ParamCount, ObjDesc->Method.Concurrency);
             break;
 
         case ACPI_TYPE_NUMBER:
-            AcpiOsdPrintf ("  Value 0x%X", ObjDesc->Number.Value);
+            AcpiOsPrintf ("  Value 0x%X", ObjDesc->Number.Value);
             break;
 
         case ACPI_TYPE_STRING:
-            AcpiOsdPrintf ("  \"%s\"", ObjDesc->String.Pointer);
+            AcpiOsPrintf ("  \"%s\"", ObjDesc->String.Pointer);
             break;
 
         case ACPI_TYPE_REGION:
-            AcpiOsdPrintf ("  SpaceId %d Address %X Length %X", ObjDesc->Region.SpaceId, ObjDesc->Region.Address, ObjDesc->Region.Length);
+            AcpiOsPrintf ("  SpaceId %d Address %X Length %X", ObjDesc->Region.SpaceId, ObjDesc->Region.Address, ObjDesc->Region.Length);
             break;
 
         case ACPI_TYPE_PACKAGE:
-            AcpiOsdPrintf ("  #Elements %d", ObjDesc->Package.Count);
+            AcpiOsPrintf ("  #Elements %d", ObjDesc->Package.Count);
             break;
 
         case ACPI_TYPE_BUFFER:
-            AcpiOsdPrintf ("  Length %d", ObjDesc->Buffer.Length);
+            AcpiOsPrintf ("  Length %d", ObjDesc->Buffer.Length);
             break;
         }
     }
 
-    AcpiOsdPrintf ("\n");
+    AcpiOsPrintf ("\n");
     return AE_OK;
 }
 
@@ -705,7 +705,7 @@ AcpiDbDisplayObjects (
     Type = AcpiDbMatchArgument (ObjTypeArg, AcpiDbObjectTypes);
     if (Type == ACPI_TYPE_NOT_FOUND)
     {
-        AcpiOsdPrintf ("Invalid or unsupported argument\n");
+        AcpiOsPrintf ("Invalid or unsupported argument\n");
         return AE_OK;
     }
 
@@ -721,7 +721,7 @@ AcpiDbDisplayObjects (
     }
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    AcpiOsdPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n", AcpiCmGetTypeName (Type));
+    AcpiOsPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n", AcpiCmGetTypeName (Type));
 
     AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
 
@@ -786,12 +786,12 @@ AcpiDbWalkAndMatchName (
     Status = AcpiNsHandleToPathname (ObjHandle, &BufSize, Buffer);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("Could Not get pathname for object %p\n", ObjHandle);
+        AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
     }
 
     else
     {
-        AcpiOsdPrintf ("%32s (0x%p) - %s\n", Buffer, ObjHandle, AcpiCmGetTypeName (((NAME_TABLE_ENTRY *)ObjHandle)->Type));
+        AcpiOsPrintf ("%32s (0x%p) - %s\n", Buffer, ObjHandle, AcpiCmGetTypeName (((NAME_TABLE_ENTRY *)ObjHandle)->Type));
     }
 
     return AE_OK;
@@ -817,7 +817,7 @@ AcpiDbFindNameInNamespace (
 
     if (STRLEN (NameArg) > 4)
     {
-        AcpiOsdPrintf ("Name must be no longer than 4 characters\n");
+        AcpiOsPrintf ("Name must be no longer than 4 characters\n");
         return (AE_OK);
     }
 
@@ -849,7 +849,7 @@ AcpiDbSetScope (
 
     if (!Name || Name[0] == 0)
     {
-        AcpiOsdPrintf ("Current scope: %s\n", ScopeBuf);
+        AcpiOsPrintf ("Current scope: %s\n", ScopeBuf);
         return;
     }
 
@@ -869,7 +869,7 @@ AcpiDbSetScope (
         STRCAT (ScopeBuf, "\\");
     }
 
-    AcpiOsdPrintf ("New scope: %s\n", ScopeBuf);
+    AcpiOsPrintf ("New scope: %s\n", ScopeBuf);
 }
 
 #endif /* ENABLE_DEBUGGER */

@@ -164,7 +164,7 @@ AcpiDbSingleStep (
         {
             /* Hit the breakpoint, resume single step, reset breakpoint */
 
-            AcpiOsdPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
+            AcpiOsPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
             AcpiGbl_CmSingleStep = TRUE;
             AcpiGbl_StepToNextCall = FALSE;
             AcpiGbl_MethodBreakpoint = 0;
@@ -214,7 +214,7 @@ AcpiDbSingleStep (
         if ((OutputToFile)                  ||
             (AcpiDbgLevel & TRACE_PARSE))
         {
-            AcpiOsdPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
+            AcpiOsPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
         }
 
         /*
@@ -235,7 +235,7 @@ AcpiDbSingleStep (
         /* Restore everything */
 
         Op->Next = Next;
-        AcpiOsdPrintf ("\n");
+        AcpiOsPrintf ("\n");
         AcpiDbgLevel = OriginalDebugLevel;
    }
 
@@ -314,16 +314,16 @@ AcpiDbSingleStep (
 
             if (!AcpiGbl_MethodExecuting)
             {
-                AcpiOsdPrintf ("%1c ", DB_COMMAND_PROMPT);
+                AcpiOsPrintf ("%1c ", DB_COMMAND_PROMPT);
             }
             else
             {
-                AcpiOsdPrintf ("%1c ", DB_EXECUTE_PROMPT);
+                AcpiOsPrintf ("%1c ", DB_EXECUTE_PROMPT);
             }
 
             /* Get the user input line */
 
-            AcpiOsdGetLine (LineBuf);
+            AcpiOsGetLine (LineBuf);
         }
 
         Status = AcpiDbCommandDispatch (LineBuf, WalkState, Op);
@@ -357,7 +357,7 @@ AcpiDbInitialize (void)
 
     /* Init globals */
 
-    Buffer = AcpiOsdAllocate (BUFFER_SIZE);
+    Buffer = AcpiOsAllocate (BUFFER_SIZE);
 
     /* Initial scope is the root */
 
@@ -380,7 +380,7 @@ AcpiDbInitialize (void)
 
         /* Create the debug execution thread to execute commands */
 
-        AcpiOsdQueueForExecution (0, AcpiDbExecuteThread, NULL);
+        AcpiOsQueueForExecution (0, AcpiDbExecuteThread, NULL);
     }
 
     if (!opt_verbose)

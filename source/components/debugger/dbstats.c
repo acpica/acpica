@@ -189,12 +189,12 @@ AcpiDbDisplayStatistics (
 
     if (!AcpiGbl_DSDT)
     {
-        AcpiOsdPrintf ("*** Warning:  There is no DSDT loaded\n");
+        AcpiOsPrintf ("*** Warning:  There is no DSDT loaded\n");
     }
 
     if (!TypeArg)
     {
-        AcpiOsdPrintf ("Use subcommand OBJECTS, MEMORY, MISC, or TABLES\n");
+        AcpiOsPrintf ("Use subcommand OBJECTS, MEMORY, MISC, or TABLES\n");
         return AE_OK;
     }
 
@@ -202,7 +202,7 @@ AcpiDbDisplayStatistics (
     Type = AcpiDbMatchArgument (TypeArg, AcpiDbStatTypes);
     if (Type == (UINT32) -1)
     {
-        AcpiOsdPrintf ("Invalid or unsupported argument\n");
+        AcpiOsPrintf ("Invalid or unsupported argument\n");
         return AE_OK;
     }
 
@@ -217,85 +217,85 @@ AcpiDbDisplayStatistics (
 
     case CMD_TABLES:
 
-        AcpiOsdPrintf ("ACPI Table Information:\n\n");
+        AcpiOsPrintf ("ACPI Table Information:\n\n");
         if (AcpiGbl_DSDT)
         {
-            AcpiOsdPrintf ("DSDT Length:................% 7ld (0x%X)\n", AcpiGbl_DSDT->Length, AcpiGbl_DSDT->Length);
+            AcpiOsPrintf ("DSDT Length:................% 7ld (0x%X)\n", AcpiGbl_DSDT->Length, AcpiGbl_DSDT->Length);
         }
         break;
 
     case CMD_OBJECTS:
 
-        AcpiOsdPrintf ("\nObjects defined in the current namespace:\n\n");
-        AcpiOsdPrintf ("Names:......................% 7ld\n", NumNames);
-        AcpiOsdPrintf ("Events:.....................% 7ld\n", NumEvents);
-        AcpiOsdPrintf ("Devices:....................% 7ld\n", NumDevices);
-        AcpiOsdPrintf ("Aliases:....................% 7ld\n", NumAliases);
-        AcpiOsdPrintf ("Mutexes:....................% 7ld\n", NumMutexes);
-        AcpiOsdPrintf ("Packages:...................% 7ld\n", NumPackages);
-        AcpiOsdPrintf ("Bank Fields.................% 7ld\n", NumBankFields);
-        AcpiOsdPrintf ("Index Fields................% 7ld\n", NumIndexFields);
-        AcpiOsdPrintf ("Thermal Zones:..............% 7ld\n", NumThermalZones);
-        AcpiOsdPrintf ("Power Resources:............% 7ld\n", NumPowerResources);
-        AcpiOsdPrintf ("Control Methods:............% 7ld\n", NumMethods);
-        AcpiOsdPrintf ("Operation Regions:..........% 7ld\n", NumRegions);
-        AcpiOsdPrintf ("Field Definitions:..........% 7ld\n", NumFieldDefs);
-        AcpiOsdPrintf ("Total Named objects:........% 7ld\n", NumNamedObjects);
+        AcpiOsPrintf ("\nObjects defined in the current namespace:\n\n");
+        AcpiOsPrintf ("Names:......................% 7ld\n", NumNames);
+        AcpiOsPrintf ("Events:.....................% 7ld\n", NumEvents);
+        AcpiOsPrintf ("Devices:....................% 7ld\n", NumDevices);
+        AcpiOsPrintf ("Aliases:....................% 7ld\n", NumAliases);
+        AcpiOsPrintf ("Mutexes:....................% 7ld\n", NumMutexes);
+        AcpiOsPrintf ("Packages:...................% 7ld\n", NumPackages);
+        AcpiOsPrintf ("Bank Fields.................% 7ld\n", NumBankFields);
+        AcpiOsPrintf ("Index Fields................% 7ld\n", NumIndexFields);
+        AcpiOsPrintf ("Thermal Zones:..............% 7ld\n", NumThermalZones);
+        AcpiOsPrintf ("Power Resources:............% 7ld\n", NumPowerResources);
+        AcpiOsPrintf ("Control Methods:............% 7ld\n", NumMethods);
+        AcpiOsPrintf ("Operation Regions:..........% 7ld\n", NumRegions);
+        AcpiOsPrintf ("Field Definitions:..........% 7ld\n", NumFieldDefs);
+        AcpiOsPrintf ("Total Named objects:........% 7ld\n", NumNamedObjects);
 
-        AcpiOsdPrintf ("\n");
+        AcpiOsPrintf ("\n");
 
-        AcpiOsdPrintf ("ASL/AML Grammar Usage:\n\n");
-        AcpiOsdPrintf ("Elements Inside Methods:....% 7ld\n", NumMethodElements);
-        AcpiOsdPrintf ("Elements Outside Methods:...% 7ld\n", NumGrammarElements - NumMethodElements);
-        AcpiOsdPrintf ("Total Grammar Elements:.....% 7ld\n", NumGrammarElements);
+        AcpiOsPrintf ("ASL/AML Grammar Usage:\n\n");
+        AcpiOsPrintf ("Elements Inside Methods:....% 7ld\n", NumMethodElements);
+        AcpiOsPrintf ("Elements Outside Methods:...% 7ld\n", NumGrammarElements - NumMethodElements);
+        AcpiOsPrintf ("Total Grammar Elements:.....% 7ld\n", NumGrammarElements);
         break;
 
     case CMD_MEMORY:
 
-        AcpiOsdPrintf ("\nDynamic Memory Estimates:\n\n");
-        AcpiOsdPrintf ("Parse Tree without Methods:.% 7ld\n", SizeOfParseTree);
-        AcpiOsdPrintf ("Control Method Parse Trees:.% 7ld (If parsed simultaneously)\n", SizeOfMethodTrees);
-        AcpiOsdPrintf ("Named Object NTEs:..........% 7ld (%d objects)\n", SizeOfNameTableEntries, NumNamedObjects);
-        AcpiOsdPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
-        AcpiOsdPrintf ("State Cache size............% 7ld\n", AcpiGbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
-        AcpiOsdPrintf ("Parse Cache size............% 7ld\n", AcpiGbl_ParseCacheDepth * sizeof (ACPI_GENERIC_OP));
-        AcpiOsdPrintf ("Object Cache size...........% 7ld\n", AcpiGbl_ObjectCacheDepth * sizeof (ACPI_OBJECT_INTERNAL));
-        AcpiOsdPrintf ("WalkState Cache size........% 7ld\n", AcpiGbl_WalkStateCacheDepth * sizeof (ACPI_WALK_STATE));
+        AcpiOsPrintf ("\nDynamic Memory Estimates:\n\n");
+        AcpiOsPrintf ("Parse Tree without Methods:.% 7ld\n", SizeOfParseTree);
+        AcpiOsPrintf ("Control Method Parse Trees:.% 7ld (If parsed simultaneously)\n", SizeOfMethodTrees);
+        AcpiOsPrintf ("Named Object NTEs:..........% 7ld (%d objects)\n", SizeOfNameTableEntries, NumNamedObjects);
+        AcpiOsPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
+        AcpiOsPrintf ("State Cache size............% 7ld\n", AcpiGbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
+        AcpiOsPrintf ("Parse Cache size............% 7ld\n", AcpiGbl_ParseCacheDepth * sizeof (ACPI_GENERIC_OP));
+        AcpiOsPrintf ("Object Cache size...........% 7ld\n", AcpiGbl_ObjectCacheDepth * sizeof (ACPI_OBJECT_INTERNAL));
+        AcpiOsPrintf ("WalkState Cache size........% 7ld\n", AcpiGbl_WalkStateCacheDepth * sizeof (ACPI_WALK_STATE));
 
-        AcpiOsdPrintf ("\n");
+        AcpiOsPrintf ("\n");
 
-        AcpiOsdPrintf ("Cache Statistics:\n\n");
-        AcpiOsdPrintf ("State Cache requests........% 7ld\n", AcpiGbl_StateCacheRequests);
-        AcpiOsdPrintf ("State Cache hits............% 7ld\n", AcpiGbl_StateCacheHits);
-        AcpiOsdPrintf ("State Cache depth...........% 7ld\n", AcpiGbl_GenericStateCacheDepth);
-        AcpiOsdPrintf ("Parse Cache requests........% 7ld\n", AcpiGbl_ParseCacheRequests);
-        AcpiOsdPrintf ("Parse Cache hits............% 7ld\n", AcpiGbl_ParseCacheHits);
-        AcpiOsdPrintf ("Parse Cache depth...........% 7ld\n", AcpiGbl_ParseCacheDepth);
-        AcpiOsdPrintf ("Object Cache requests.......% 7ld\n", AcpiGbl_ObjectCacheRequests);
-        AcpiOsdPrintf ("Object Cache hits...........% 7ld\n", AcpiGbl_ObjectCacheHits);
-        AcpiOsdPrintf ("Object Cache depth..........% 7ld\n", AcpiGbl_ObjectCacheDepth);
-        AcpiOsdPrintf ("WalkState Cache requests....% 7ld\n", AcpiGbl_WalkStateCacheRequests);
-        AcpiOsdPrintf ("WalkState Cache hits........% 7ld\n", AcpiGbl_WalkStateCacheHits);
-        AcpiOsdPrintf ("WalkState Cache depth.......% 7ld\n", AcpiGbl_WalkStateCacheDepth);
+        AcpiOsPrintf ("Cache Statistics:\n\n");
+        AcpiOsPrintf ("State Cache requests........% 7ld\n", AcpiGbl_StateCacheRequests);
+        AcpiOsPrintf ("State Cache hits............% 7ld\n", AcpiGbl_StateCacheHits);
+        AcpiOsPrintf ("State Cache depth...........% 7ld\n", AcpiGbl_GenericStateCacheDepth);
+        AcpiOsPrintf ("Parse Cache requests........% 7ld\n", AcpiGbl_ParseCacheRequests);
+        AcpiOsPrintf ("Parse Cache hits............% 7ld\n", AcpiGbl_ParseCacheHits);
+        AcpiOsPrintf ("Parse Cache depth...........% 7ld\n", AcpiGbl_ParseCacheDepth);
+        AcpiOsPrintf ("Object Cache requests.......% 7ld\n", AcpiGbl_ObjectCacheRequests);
+        AcpiOsPrintf ("Object Cache hits...........% 7ld\n", AcpiGbl_ObjectCacheHits);
+        AcpiOsPrintf ("Object Cache depth..........% 7ld\n", AcpiGbl_ObjectCacheDepth);
+        AcpiOsPrintf ("WalkState Cache requests....% 7ld\n", AcpiGbl_WalkStateCacheRequests);
+        AcpiOsPrintf ("WalkState Cache hits........% 7ld\n", AcpiGbl_WalkStateCacheHits);
+        AcpiOsPrintf ("WalkState Cache depth.......% 7ld\n", AcpiGbl_WalkStateCacheDepth);
         break;
 
     case CMD_MISC:
 
-        AcpiOsdPrintf ("\nMiscellaneous Statistics:\n\n");
-        AcpiOsdPrintf ("Calls to AcpiPsFind:..  ........% 7ld\n", AcpiGbl_PsFindCount);
-        AcpiOsdPrintf ("Calls to AcpiNsLookup:..........% 7ld\n", AcpiGbl_NsLookupCount);
+        AcpiOsPrintf ("\nMiscellaneous Statistics:\n\n");
+        AcpiOsPrintf ("Calls to AcpiPsFind:..  ........% 7ld\n", AcpiGbl_PsFindCount);
+        AcpiOsPrintf ("Calls to AcpiNsLookup:..........% 7ld\n", AcpiGbl_NsLookupCount);
 
-        AcpiOsdPrintf ("\n");
+        AcpiOsPrintf ("\n");
 
-        AcpiOsdPrintf ("Mutex usage:\n\n");
+        AcpiOsPrintf ("Mutex usage:\n\n");
         for (i = 0; i < NUM_MTX; i++)
         {
-            AcpiOsdPrintf ("%-20s:       % 7ld\n", AcpiCmGetMutexName (i), AcpiGbl_AcpiMutexInfo[i].UseCount);
+            AcpiOsPrintf ("%-20s:       % 7ld\n", AcpiCmGetMutexName (i), AcpiGbl_AcpiMutexInfo[i].UseCount);
         }
         break;
     }
 
-    AcpiOsdPrintf ("\n");
+    AcpiOsPrintf ("\n");
     return AE_OK;
 }
 

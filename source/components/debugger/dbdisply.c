@@ -158,7 +158,7 @@ AcpiDbGetPointer (
 
     if (!sscanf (Target, "%p", &ObjPtr))
     {
-        AcpiOsdPrintf ("Invalid pointer: %s\n", Target);
+        AcpiOsPrintf ("Invalid pointer: %s\n", Target);
         return;
     }
 
@@ -195,14 +195,14 @@ AcpiDbDumpParserDescriptor (
 
     Info = AcpiPsGetOpcodeInfo (Op->Opcode);
 
-    AcpiOsdPrintf ("Parser Op Descriptor:\n");
-    AcpiOsdPrintf ("%20.20s : %4.4X\n", "Opcode", Op->Opcode);
+    AcpiOsPrintf ("Parser Op Descriptor:\n");
+    AcpiOsPrintf ("%20.20s : %4.4X\n", "Opcode", Op->Opcode);
 
-    DEBUG_ONLY_MEMBERS (AcpiOsdPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name));
+    DEBUG_ONLY_MEMBERS (AcpiOsPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name));
 
-    AcpiOsdPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Value);
-    AcpiOsdPrintf ("%20.20s : %p\n", "Parent", Op->Parent);
-    AcpiOsdPrintf ("%20.20s : %p\n", "NextOp", Op->Next);
+    AcpiOsPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Value);
+    AcpiOsPrintf ("%20.20s : %p\n", "Parent", Op->Parent);
+    AcpiOsPrintf ("%20.20s : %p\n", "NextOp", Op->Next);
 }
 
 
@@ -263,9 +263,9 @@ AcpiDbDecodeAndDisplayObject (
     if ((Target[0] >= 0x30) && (Target[0] <= 0x39))
     {
         ObjPtr = AcpiDbGetPointer (Target);
-        if (!AcpiOsdReadable (ObjPtr, 16))
+        if (!AcpiOsReadable (ObjPtr, 16))
         {
-            AcpiOsdPrintf ("Address %p is invalid in this address space\n", ObjPtr);
+            AcpiOsPrintf ("Address %p is invalid in this address space\n", ObjPtr);
             return;
         }
 
@@ -273,9 +273,9 @@ AcpiDbDecodeAndDisplayObject (
         {
             /* This is an NTE */
 
-            if (!AcpiOsdReadable (ObjPtr, sizeof (NAME_TABLE_ENTRY)))
+            if (!AcpiOsReadable (ObjPtr, sizeof (NAME_TABLE_ENTRY)))
             {
-                AcpiOsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
+                AcpiOsPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
                 return;
             }
 
@@ -287,9 +287,9 @@ AcpiDbDecodeAndDisplayObject (
         {
             /* This is an ACPI OBJECT */
 
-            if (!AcpiOsdReadable (ObjPtr, sizeof (ACPI_OBJECT_INTERNAL)))
+            if (!AcpiOsReadable (ObjPtr, sizeof (ACPI_OBJECT_INTERNAL)))
             {
-                AcpiOsdPrintf ("Cannot read entire ACPI object at address %p\n", ObjPtr);
+                AcpiOsPrintf ("Cannot read entire ACPI object at address %p\n", ObjPtr);
                 return;
             }
 
@@ -301,9 +301,9 @@ AcpiDbDecodeAndDisplayObject (
         {
             /* This is an Parser Op object */
 
-            if (!AcpiOsdReadable (ObjPtr, sizeof (ACPI_GENERIC_OP)))
+            if (!AcpiOsReadable (ObjPtr, sizeof (ACPI_GENERIC_OP)))
             {
-                AcpiOsdPrintf ("Cannot read entire Parser object at address %p\n", ObjPtr);
+                AcpiOsPrintf ("Cannot read entire Parser object at address %p\n", ObjPtr);
                 return;
             }
 
@@ -315,7 +315,7 @@ AcpiDbDecodeAndDisplayObject (
         else
         {
             Size = 16;
-            if (AcpiOsdReadable (ObjPtr, 64))
+            if (AcpiOsReadable (ObjPtr, 64))
             {
                 Size = 64;
             }
@@ -343,14 +343,14 @@ DumpNte:
     Status = AcpiGetName (Entry, ACPI_FULL_PATHNAME, &RetBuf);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("Could not convert name to pathname\n");
+        AcpiOsPrintf ("Could not convert name to pathname\n");
         return;
     }
 
-    AcpiOsdPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
-    if (!AcpiOsdReadable (Entry, sizeof (NAME_TABLE_ENTRY)))
+    AcpiOsPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
+    if (!AcpiOsReadable (Entry, sizeof (NAME_TABLE_ENTRY)))
     {
-        AcpiOsdPrintf ("Invalid NTE at address %p\n", Entry);
+        AcpiOsPrintf ("Invalid NTE at address %p\n", Entry);
         return;
     }
 
@@ -359,10 +359,10 @@ DumpNte:
 
     if (Entry->Object)
     {
-        AcpiOsdPrintf ("\nAttached Object (0x%p):\n", Entry->Object);
-        if (!AcpiOsdReadable (Entry->Object, sizeof (ACPI_OBJECT_INTERNAL)))
+        AcpiOsPrintf ("\nAttached Object (0x%p):\n", Entry->Object);
+        if (!AcpiOsReadable (Entry->Object, sizeof (ACPI_OBJECT_INTERNAL)))
         {
-            AcpiOsdPrintf ("Invalid internal ACPI Object at address %p\n", Entry->Object);
+            AcpiOsPrintf ("Invalid internal ACPI Object at address %p\n", Entry->Object);
             return;
         }
 
@@ -394,16 +394,16 @@ AcpiDbDecodeInternalObject (
         return;
     }
 
-    AcpiOsdPrintf (" %9.9s ", AcpiCmGetTypeName (ObjDesc->Common.Type));
+    AcpiOsPrintf (" %9.9s ", AcpiCmGetTypeName (ObjDesc->Common.Type));
 
     switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_NUMBER:
-        AcpiOsdPrintf ("0x%.8X", ObjDesc->Number.Value, ObjDesc->Number.Value);
+        AcpiOsPrintf ("0x%.8X", ObjDesc->Number.Value, ObjDesc->Number.Value);
         break;
 
     case ACPI_TYPE_STRING:
-        AcpiOsdPrintf ("\"%.16s\"...", ObjDesc->String.Pointer);
+        AcpiOsPrintf ("\"%.16s\"...", ObjDesc->String.Pointer);
         break;
     }
 }
@@ -431,32 +431,32 @@ AcpiDbDisplayInternalObject (
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
 
-    AcpiOsdPrintf ("%p ", ObjDesc);
+    AcpiOsPrintf ("%p ", ObjDesc);
 
     if (!ObjDesc)
     {
-        AcpiOsdPrintf ("<NullObj>\n");
+        AcpiOsPrintf ("<NullObj>\n");
         return;
     }
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_PARSER))
     {
-        AcpiOsdPrintf ("<Parser>  ");
+        AcpiOsPrintf ("<Parser>  ");
     }
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
-        AcpiOsdPrintf ("<NTE>             Name %4.4s Type %s", &((NAME_TABLE_ENTRY *)ObjDesc)->Name,
+        AcpiOsPrintf ("<NTE>             Name %4.4s Type %s", &((NAME_TABLE_ENTRY *)ObjDesc)->Name,
                                                             AcpiCmGetTypeName (((NAME_TABLE_ENTRY *)ObjDesc)->Type));
     }
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
     {
-        AcpiOsdPrintf ("<Obj> ");
+        AcpiOsPrintf ("<Obj> ");
         Type = ObjDesc->Common.Type;
         if (Type > INTERNAL_TYPE_MAX)
         {
-            AcpiOsdPrintf (" Type %x [Invalid Type]", Type);
+            AcpiOsPrintf (" Type %x [Invalid Type]", Type);
             return;
         }
 
@@ -466,19 +466,19 @@ AcpiDbDisplayInternalObject (
             switch (ObjDesc->Reference.OpCode)
             {
             case AML_ZERO_OP:
-                AcpiOsdPrintf ("[Const]     Number 0x%.8X", 0);
+                AcpiOsPrintf ("[Const]     Number 0x%.8X", 0);
                 break;
 
             case AML_ONES_OP:
-                AcpiOsdPrintf ("[Const]     Number 0x%.8X", ACPI_UINT32_MAX);
+                AcpiOsPrintf ("[Const]     Number 0x%.8X", ACPI_UINT32_MAX);
                 break;
 
             case AML_ONE_OP:
-                AcpiOsdPrintf ("[Const]     Number 0x%.8X", 1);
+                AcpiOsPrintf ("[Const]     Number 0x%.8X", 1);
                 break;
 
             case AML_LOCAL_OP:
-                AcpiOsdPrintf ("[Local%d]", ObjDesc->Reference.Offset);
+                AcpiOsPrintf ("[Local%d]", ObjDesc->Reference.Offset);
                 if (WalkState)
                 {
                     ObjDesc = WalkState->LocalVariables[ObjDesc->Reference.Offset].Object;
@@ -487,7 +487,7 @@ AcpiDbDisplayInternalObject (
                 break;
 
             case AML_ARG_OP:
-                AcpiOsdPrintf ("[Arg%d]  ", ObjDesc->Reference.Offset);
+                AcpiOsPrintf ("[Arg%d]  ", ObjDesc->Reference.Offset);
                 if (WalkState)
                 {
                     ObjDesc = WalkState->Arguments[ObjDesc->Reference.Offset].Object;
@@ -496,11 +496,11 @@ AcpiDbDisplayInternalObject (
                 break;
 
             case AML_DEBUG_OP:
-                AcpiOsdPrintf ("[Debug]  ");
+                AcpiOsPrintf ("[Debug]  ");
                 break;
 
             case AML_INDEX_OP:
-                AcpiOsdPrintf ("[Index]  ");
+                AcpiOsPrintf ("[Index]  ");
                 AcpiDbDecodeInternalObject (ObjDesc->Reference.Object);
                 break;
 
@@ -511,7 +511,7 @@ AcpiDbDisplayInternalObject (
             break;
 
         default:
-            AcpiOsdPrintf ("        ");
+            AcpiOsPrintf ("        ");
             AcpiDbDecodeInternalObject (ObjDesc);
             break;
         }
@@ -519,10 +519,10 @@ AcpiDbDisplayInternalObject (
 
     else
     {
-        AcpiOsdPrintf ("<Not a valid ACPI Object Descriptor> ");
+        AcpiOsPrintf ("<Not a valid ACPI Object Descriptor> ");
     }
 
-    AcpiOsdPrintf ("\n");
+    AcpiOsPrintf ("\n");
 }
 
 
@@ -562,7 +562,7 @@ AcpiDbDisplayMethodInfo (
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
-        AcpiOsdPrintf ("There is no method currently executing\n");
+        AcpiOsPrintf ("There is no method currently executing\n");
         return;
     }
 
@@ -572,8 +572,8 @@ AcpiDbDisplayMethodInfo (
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
-    AcpiOsdPrintf ("Currently executing control method is [%4.4s]\n", &Entry->Name);
-    AcpiOsdPrintf ("%d arguments, max concurrency = %d\n", NumArgs, Concurrency);
+    AcpiOsPrintf ("Currently executing control method is [%4.4s]\n", &Entry->Name);
+    AcpiOsPrintf ("%d arguments, max concurrency = %d\n", NumArgs, Concurrency);
 
 
     RootOp = StartOp;
@@ -629,10 +629,10 @@ AcpiDbDisplayMethodInfo (
         Op = AcpiPsGetDepthNext (StartOp, Op);
     }
 
-    AcpiOsdPrintf ("Method contains:       %d AML Opcodes - %d Operators, %d Operands\n",
+    AcpiOsPrintf ("Method contains:       %d AML Opcodes - %d Operators, %d Operands\n",
                 NumOps, NumOperators, NumOperands);
 
-    AcpiOsdPrintf ("Remaining to execute:  %d AML Opcodes - %d Operators, %d Operands\n",
+    AcpiOsPrintf ("Remaining to execute:  %d AML Opcodes - %d Operators, %d Operands\n",
                 NumRemainingOps, NumRemainingOperators, NumRemainingOperands);
 }
 
@@ -661,7 +661,7 @@ AcpiDbDisplayLocals (void)
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
-        AcpiOsdPrintf ("There is no method currently executing\n");
+        AcpiOsPrintf ("There is no method currently executing\n");
         return;
     }
 
@@ -669,12 +669,12 @@ AcpiDbDisplayLocals (void)
     Entry = WalkState->Origin->NameTableEntry;
 
 
-    AcpiOsdPrintf ("Local Variables for method [%4.4s]:\n", &Entry->Name);
+    AcpiOsPrintf ("Local Variables for method [%4.4s]:\n", &Entry->Name);
 
     for (i = 0; i < MTH_NUM_LOCALS; i++)
     {
         ObjDesc = WalkState->LocalVariables[i].Object;
-        AcpiOsdPrintf ("Local%d: ", i);
+        AcpiOsPrintf ("Local%d: ", i);
         AcpiDbDisplayInternalObject (ObjDesc);
     }
 }
@@ -706,7 +706,7 @@ AcpiDbDisplayArguments (void)
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
-        AcpiOsdPrintf ("There is no method currently executing\n");
+        AcpiOsPrintf ("There is no method currently executing\n");
         return;
     }
 
@@ -716,12 +716,12 @@ AcpiDbDisplayArguments (void)
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
-    AcpiOsdPrintf ("Method [%4.4s] has %d arguments, max concurrency = %d\n", &Entry->Name, NumArgs, Concurrency);
+    AcpiOsPrintf ("Method [%4.4s] has %d arguments, max concurrency = %d\n", &Entry->Name, NumArgs, Concurrency);
 
     for (i = 0; i < NumArgs; i++)
     {
         ObjDesc = WalkState->Arguments[i].Object;
-        AcpiOsdPrintf ("Arg%d: ", i);
+        AcpiOsPrintf ("Arg%d: ", i);
         AcpiDbDisplayInternalObject (ObjDesc);
     }
 }
@@ -752,7 +752,7 @@ AcpiDbDisplayResults (void)
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
-        AcpiOsdPrintf ("There is no method currently executing\n");
+        AcpiOsPrintf ("There is no method currently executing\n");
         return;
     }
 
@@ -760,12 +760,12 @@ AcpiDbDisplayResults (void)
     Entry = WalkState->Origin->NameTableEntry;
     NumResults = WalkState->NumResults - WalkState->CurrentResult;
 
-    AcpiOsdPrintf ("Method [%4.4s] has %d stacked result objects\n", &Entry->Name, NumResults);
+    AcpiOsPrintf ("Method [%4.4s] has %d stacked result objects\n", &Entry->Name, NumResults);
 
     for (i = WalkState->CurrentResult; i < WalkState->NumResults; i++)
     {
         ObjDesc = WalkState->Results[i];
-        AcpiOsdPrintf ("Result%d: ", i);
+        AcpiOsPrintf ("Result%d: ", i);
         AcpiDbDisplayInternalObject (ObjDesc);
     }
 }
@@ -795,21 +795,21 @@ AcpiDbDisplayCallingTree (void)
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
-        AcpiOsdPrintf ("There is no method currently executing\n");
+        AcpiOsPrintf ("There is no method currently executing\n");
         return;
     }
 
     ObjDesc = WalkState->MethodDesc;
     Entry = WalkState->Origin->NameTableEntry;
 
-    AcpiOsdPrintf ("Current Control Method Call Tree\n");
+    AcpiOsPrintf ("Current Control Method Call Tree\n");
 
     for (i = 0; WalkState; i++)
     {
         ObjDesc = WalkState->MethodDesc;
         Entry = WalkState->Origin->NameTableEntry;
 
-        AcpiOsdPrintf ("    [%4.4s]\n", &Entry->Name);
+        AcpiOsPrintf ("    [%4.4s]\n", &Entry->Name);
 
         WalkState = WalkState->Next;
     }
@@ -843,9 +843,9 @@ AcpiDbDisplayResultObject (
         return;
     }
 
-    AcpiOsdPrintf ("ResultObj: ");
+    AcpiOsPrintf ("ResultObj: ");
     AcpiDbDisplayInternalObject (ObjDesc);
-    AcpiOsdPrintf ("\n");
+    AcpiOsPrintf ("\n");
 }
 
 
@@ -872,7 +872,7 @@ AcpiDbDisplayArgumentObject (
         return;
     }
 
-    AcpiOsdPrintf ("ArgObj:    ");
+    AcpiOsPrintf ("ArgObj:    ");
     AcpiDbDisplayInternalObject (ObjDesc);
 }
 

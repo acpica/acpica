@@ -116,7 +116,6 @@
 
 
 #include "acpi.h"
-#include "acxface.h"
 #include "debugger.h"
 #include "namesp.h"
 #include "parser.h"
@@ -201,7 +200,7 @@ AcpiDbCloseDebugFile (
        fclose (DebugFile);
        DebugFile = NULL;
        OutputToFile = FALSE;
-       AcpiOsdPrintf ("Debug output file %s closed\n", DebugFilename);
+       AcpiOsPrintf ("Debug output file %s closed\n", DebugFilename);
     }
 #endif
 
@@ -231,7 +230,7 @@ AcpiDbOpenDebugFile (
     DebugFile = fopen (Name, "w+");
     if (DebugFile)
     {
-        AcpiOsdPrintf ("Debug output file %s opened\n", Name);
+        AcpiOsPrintf ("Debug output file %s opened\n", Name);
         STRCPY (DebugFilename, Name);
         OutputToFile = TRUE;
     }
@@ -268,7 +267,7 @@ AcpiDbLoadTable(
 
     if (fread (&TableHeader, 1, sizeof (TableHeader), fp) != sizeof (TableHeader))
     {
-        AcpiOsdPrintf ("Couldn't read the table header\n");
+        AcpiOsPrintf ("Couldn't read the table header\n");
         return (AE_BAD_SIGNATURE);
     }
 
@@ -277,7 +276,7 @@ AcpiDbLoadTable(
     *TableLength = TableHeader.Length;
     if (!*TableLength)
     {
-        AcpiOsdPrintf ("Found a table length of zero!\n");
+        AcpiOsPrintf ("Found a table length of zero!\n");
         return (AE_ERROR);
     }
 
@@ -286,7 +285,7 @@ AcpiDbLoadTable(
     *TablePtr = (char *) malloc ((size_t) *TableLength);
     if (!*TablePtr)
     {
-        AcpiOsdPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
+        AcpiOsPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
         return (AE_NO_MEMORY);
     }
 
@@ -305,7 +304,7 @@ AcpiDbLoadTable(
         return AE_OK;
     }
 
-    AcpiOsdPrintf ("Error reading the table\n");
+    AcpiOsPrintf ("Error reading the table\n");
     free (*TablePtr);
     *TablePtr = NULL;
     *TableLength = 0;
@@ -342,17 +341,17 @@ AcpiDbLoadAcpiTable (
     fp = fopen (Filename, "rb");
     if (!fp)
     {
-        AcpiOsdPrintf ("Could not open file %s\n", Filename);
+        AcpiOsPrintf ("Could not open file %s\n", Filename);
         return AE_ERROR;
     }
 
-    AcpiOsdPrintf ("Loading Acpi table from file %s\n", Filename);
+    AcpiOsPrintf ("Loading Acpi table from file %s\n", Filename);
     Status = AcpiDbLoadTable (fp, &TablePtr, &TableLength);
     fclose(fp);
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("Couldn't get table from the file\n");
+        AcpiOsPrintf ("Couldn't get table from the file\n");
         return Status;
     }
 
@@ -365,18 +364,18 @@ AcpiDbLoadAcpiTable (
     {
         if (Status == AE_EXIST)
         {
-            AcpiOsdPrintf ("Table is already installed/loaded\n");
+            AcpiOsPrintf ("Table is already installed/loaded\n");
         }
         else
         {
-            AcpiOsdPrintf ("Could not install table, %s\n", AcpiCmFormatException (Status));
+            AcpiOsPrintf ("Could not install table, %s\n", AcpiCmFormatException (Status));
         }
         free (TablePtr);
         return Status;
     }
 
 
-    AcpiOsdPrintf ("%s successfully loaded and installed at %p\n",
+    AcpiOsPrintf ("%s successfully loaded and installed at %p\n",
                                 AcpiGbl_AcpiTableData[TableInfo.Type].Name, TablePtr);
 
     AcpiGbl_AcpiHardwarePresent = FALSE;

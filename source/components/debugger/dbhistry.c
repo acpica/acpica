@@ -218,7 +218,7 @@ AcpiDbDisplayHistory (void)
     HistoryIndex = LoHistory;
     for (i = 0; i < NumHistory; i++)
     {
-        AcpiOsdPrintf ("%ld  %s\n", HistoryBuffer[HistoryIndex].CmdNum, HistoryBuffer[HistoryIndex].Command);
+        AcpiOsPrintf ("%ld  %s\n", HistoryBuffer[HistoryIndex].CmdNum, HistoryBuffer[HistoryIndex].Command);
 
         HistoryIndex++;
         if (HistoryIndex >= HISTORY_SIZE)
@@ -277,7 +277,7 @@ AcpiDbGetFromHistory (
         }
     }
 
-    AcpiOsdPrintf ("Invalid history number: %d\n", HistoryIndex);
+    AcpiOsPrintf ("Invalid history number: %d\n", HistoryIndex);
     return NULL;
 }
 

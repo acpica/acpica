@@ -191,7 +191,7 @@ AcpiPsDisplayObjectPathname (
     ACPI_GENERIC_OP         *TargetOp;
 
 
-    AcpiOsdPrintf ("  (Path ");
+    AcpiOsPrintf ("  (Path ");
 
     /* Search parent tree up to the root if necessary */
 
@@ -215,7 +215,7 @@ AcpiPsDisplayObjectPathname (
         AcpiDbDisplayPath (TargetOp);
     }
 
-    AcpiOsdPrintf (")");
+    AcpiOsPrintf (")");
     return AE_OK;
 }
 
@@ -231,7 +231,7 @@ AcpiPsDisplayObjectPathname (
     UINT32                  BufferSize = MAX_SHOW_ENTRY;
 
 
-    AcpiOsdPrintf ("  (Path ");
+    AcpiOsPrintf ("  (Path ");
 
     /* Just get the NTE out of the Op object */
 
@@ -251,11 +251,11 @@ AcpiPsDisplayObjectPathname (
     Status = AcpiNsHandleToPathname (Nte, &BufferSize, Buffer);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("****Could not get pathname****)");
+        AcpiOsPrintf ("****Could not get pathname****)");
         return Status;
     }
 
-    AcpiOsdPrintf ("%s)", Buffer);
+    AcpiOsPrintf ("%s)", Buffer);
     return AE_OK;
 }
 
@@ -329,13 +329,13 @@ AcpiDbDisplayOp (
                 VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth));
                 for (i = 0; i < LastDepth; i++)
                 {
-                    AcpiOsdPrintf (INDENT_STRING);
+                    AcpiOsPrintf (INDENT_STRING);
                 }
 
                 if (AcpiDbBlockType (Op) == BLOCK_PAREN)
-                    AcpiOsdPrintf ("(\n");
+                    AcpiOsPrintf ("(\n");
                 else
-                    AcpiOsdPrintf ("{\n");
+                    AcpiOsPrintf ("{\n");
             }
 
             /* Close a block if we are nested less than last time */
@@ -347,13 +347,13 @@ AcpiDbDisplayOp (
                     VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth - j));
                     for (i = 0; i < (LastDepth - j - 1); i++)
                     {
-                        AcpiOsdPrintf (INDENT_STRING);
+                        AcpiOsPrintf (INDENT_STRING);
                     }
 
                     if (AcpiDbBlockType (Op) == BLOCK_PAREN)
-                        AcpiOsdPrintf (")\n");
+                        AcpiOsPrintf (")\n");
                     else
-                        AcpiOsdPrintf ("}\n");
+                        AcpiOsPrintf ("}\n");
                 }
             }
 
@@ -366,7 +366,7 @@ AcpiDbDisplayOp (
 
             for (i = 0; i < DepthCount; i++)
             {
-                AcpiOsdPrintf (INDENT_STRING);
+                AcpiOsPrintf (INDENT_STRING);
             }
 
 
@@ -383,7 +383,7 @@ AcpiDbDisplayOp (
                 AcpiPsDisplayObjectPathname (Op);
             }
 
-            AcpiOsdPrintf ("\n");
+            AcpiOsPrintf ("\n");
 
             /* Get the next node in the tree */
 
@@ -405,9 +405,9 @@ AcpiDbDisplayOp (
             VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth - i));
             for (j = 0; j < DepthCount; j++)
             {
-                AcpiOsdPrintf (INDENT_STRING);
+                AcpiOsPrintf (INDENT_STRING);
             }
-            AcpiOsdPrintf ("}\n");
+            AcpiOsPrintf ("}\n");
             DepthCount--;
         }
 
@@ -442,7 +442,7 @@ AcpiDbDisplayNamestring (
 
     if (!Name)
     {
-        AcpiOsdPrintf ("<NULL NAME PTR>");
+        AcpiOsPrintf ("<NULL NAME PTR>");
         return;
     }
 
@@ -450,7 +450,7 @@ AcpiDbDisplayNamestring (
     {
         /* append prefix character */
 
-        AcpiOsdPrintf ("%1c", GET8 (Name));
+        AcpiOsPrintf ("%1c", GET8 (Name));
         Name++;
     }
 
@@ -479,10 +479,10 @@ AcpiDbDisplayNamestring (
         {
             /* append dot */
 
-            AcpiOsdPrintf (".");
+            AcpiOsPrintf (".");
         }
 
-        AcpiOsdPrintf ("%4.4s", Name);
+        AcpiOsPrintf ("%4.4s", Name);
         DoDot = TRUE;
 
         Name += 4;
@@ -572,7 +572,7 @@ AcpiDbDisplayPath (
             {
                 /* append dot */
 
-                AcpiOsdPrintf (".");
+                AcpiOsPrintf (".");
             }
 
             if (AcpiPsIsCreateFieldOp (Search->Opcode))
@@ -589,14 +589,14 @@ AcpiDbDisplayPath (
                 if ((NamePath) &&
                     (NamePath->Value.String))
                 {
-                    AcpiOsdPrintf ("%4.4s", NamePath->Value.String);
+                    AcpiOsPrintf ("%4.4s", NamePath->Value.String);
                 }
             }
 
             else
             {
                 Name = AcpiPsGetName (Search);
-                AcpiOsdPrintf ("%4.4s", &Name);
+                AcpiOsPrintf ("%4.4s", &Name);
             }
 
             DoDot = TRUE;
@@ -635,7 +635,7 @@ AcpiDbDisplayOpcode (
 
     if (!Op)
     {
-        AcpiOsdPrintf ("<NULL OP PTR>");
+        AcpiOsPrintf ("<NULL OP PTR>");
     }
 
 
@@ -648,12 +648,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsdPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer & 0xff);
+            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer & 0xff);
         }
 
         else
         {
-            AcpiOsdPrintf ("0x%2.2X", Op->Value.Integer & 0xff);
+            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer & 0xff);
         }
 
         break;
@@ -663,12 +663,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsdPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer & 0xffff);
+            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer & 0xffff);
         }
 
         else
         {
-            AcpiOsdPrintf ("0x%4.4X", Op->Value.Integer & 0xffff);
+            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer & 0xffff);
         }
 
         break;
@@ -678,12 +678,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsdPrintf ("(UINT32) 0x%8.8X", Op->Value.Integer);
+            AcpiOsPrintf ("(UINT32) 0x%8.8X", Op->Value.Integer);
         }
 
         else
         {
-            AcpiOsdPrintf ("0x%8.8X", Op->Value.Integer);
+            AcpiOsPrintf ("0x%8.8X", Op->Value.Integer);
         }
 
         break;
@@ -693,12 +693,12 @@ AcpiDbDisplayOpcode (
 
         if (Op->Value.String)
         {
-            AcpiOsdPrintf ("\"%s\"", Op->Value.String);
+            AcpiOsPrintf ("\"%s\"", Op->Value.String);
         }
 
         else
         {
-            AcpiOsdPrintf ("<\"NULL STRING PTR\">");
+            AcpiOsPrintf ("<\"NULL STRING PTR\">");
         }
 
         break;
@@ -708,12 +708,12 @@ AcpiDbDisplayOpcode (
 
         if (Op->Value.String)
         {
-            AcpiOsdPrintf ("\"%s\"", Op->Value.String);
+            AcpiOsPrintf ("\"%s\"", Op->Value.String);
         }
 
         else
         {
-            AcpiOsdPrintf ("\"<NULL STATIC STRING PTR>\"");
+            AcpiOsPrintf ("\"<NULL STATIC STRING PTR>\"");
         }
 
         break;
@@ -727,19 +727,19 @@ AcpiDbDisplayOpcode (
 
     case AML_NAMEDFIELD_OP:
 
-        AcpiOsdPrintf ("NamedField    (Length 0x%8.8X)  ", Op->Value.Integer);
+        AcpiOsPrintf ("NamedField    (Length 0x%8.8X)  ", Op->Value.Integer);
         break;
 
 
     case AML_RESERVEDFIELD_OP:
 
-        AcpiOsdPrintf ("ReservedField (Length 0x%8.8X)  ", Op->Value.Integer);
+        AcpiOsPrintf ("ReservedField (Length 0x%8.8X)  ", Op->Value.Integer);
         break;
 
 
     case AML_ACCESSFIELD_OP:
 
-        AcpiOsdPrintf ("AccessField   (Length 0x%8.8X)  ", Op->Value.Integer);
+        AcpiOsPrintf ("AccessField   (Length 0x%8.8X)  ", Op->Value.Integer);
         break;
 
 
@@ -747,19 +747,19 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsdPrintf ("ByteList      (Length 0x%8.8X)  ", Op->Value.Integer);
+            AcpiOsPrintf ("ByteList      (Length 0x%8.8X)  ", Op->Value.Integer);
         }
 
         else
         {
-            AcpiOsdPrintf ("0x%2.2X", Op->Value.Integer);
+            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer);
 
             ByteCount = Op->Value.Integer;
             ByteData = ((ACPI_BYTELIST_OP *) Op)->Data;
 
             for (i = 0; i < ByteCount; i++)
             {
-                AcpiOsdPrintf (", 0x%2.2X", ByteData[i]);
+                AcpiOsPrintf (", 0x%2.2X", ByteData[i]);
             }
         }
 
@@ -773,12 +773,12 @@ AcpiDbDisplayOpcode (
         Opc = AcpiPsGetOpcodeInfo (Op->Opcode);
         if (Opc)
         {
-            DEBUG_ONLY_MEMBERS ((AcpiOsdPrintf ("%s", Opc->Name)));
+            DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
         }
 
         else
         {
-            AcpiOsdPrintf ("<Opcode 0x%04x>", Op->Opcode);
+            AcpiOsPrintf ("<Opcode 0x%04x>", Op->Opcode);
         }
 
         break;
@@ -791,7 +791,7 @@ AcpiDbDisplayOpcode (
 
         if (Op->Next)
         {
-            AcpiOsdPrintf (",");
+            AcpiOsPrintf (",");
         }
     }
 
@@ -803,13 +803,13 @@ AcpiDbDisplayOpcode (
     if (Op && AcpiPsIsNamedOp (Op->Opcode))
     {
         Name = AcpiPsGetName (Op);
-        AcpiOsdPrintf (" %4.4s", &Name);
+        AcpiOsPrintf (" %4.4s", &Name);
 
         if (opt_verbose)
         {
-            AcpiOsdPrintf ("  (Path \\");
+            AcpiOsPrintf ("  (Path \\");
             AcpiDbDisplayPath (Op);
-            AcpiOsdPrintf (")");
+            AcpiOsPrintf (")");
         }
     }
 }

@@ -172,7 +172,7 @@ AcpiDbExecuteMethod (
 
     if (OutputToFile && !AcpiDbgLevel)
     {
-        AcpiOsdPrintf ("Warning: debug output is not enabled!\n");
+        AcpiOsPrintf ("Warning: debug output is not enabled!\n");
     }
 
     if (Info->Args && Info->Args[0])
@@ -249,7 +249,7 @@ AcpiDbExecuteSetup (
     AcpiDbPrepNamestring (Info->Pathname);
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    AcpiOsdPrintf ("Executing %s\n", Info->Pathname);
+    AcpiOsPrintf ("Executing %s\n", Info->Pathname);
 
     if (Info->Flags & EX_SINGLE_STEP)
     {
@@ -318,14 +318,14 @@ AcpiDbExecute (
 
     if (Allocations > 0)
     {
-        AcpiOsdPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
+        AcpiOsPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
                         Allocations, Size);
     }
 
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("Execution of %s failed with status %s\n", Info.Pathname, AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Execution of %s failed with status %s\n", Info.Pathname, AcpiCmFormatException (Status));
     }
 
     else
@@ -334,7 +334,7 @@ AcpiDbExecute (
 
         if (ReturnObj.Length)
         {
-            AcpiOsdPrintf ("Execution of %s returned object %p\n", Info.Pathname, ReturnObj.Pointer);
+            AcpiOsPrintf ("Execution of %s returned object %p\n", Info.Pathname, ReturnObj.Pointer);
             AcpiDbDumpObject (ReturnObj.Pointer, 1);
         }
     }
@@ -373,7 +373,7 @@ AcpiDbMethodThread (
         {
             if (ReturnObj.Length)
             {
-                AcpiOsdPrintf ("Execution of %s returned object %p\n", Info->Pathname, ReturnObj.Pointer);
+                AcpiOsPrintf ("Execution of %s returned object %p\n", Info->Pathname, ReturnObj.Pointer);
                 AcpiDbDumpObject (ReturnObj.Pointer, 1);
             }
         }
@@ -382,7 +382,7 @@ AcpiDbMethodThread (
 
     /* Signal our completion */
 
-    AcpiOsdSignalSemaphore (Info->ThreadGate, 1);
+    AcpiOsSignalSemaphore (Info->ThreadGate, 1);
 }
 
 
@@ -418,17 +418,17 @@ AcpiDbCreateExecutionThreads (
 
     if (!NumThreads || !NumLoops)
     {
-        AcpiOsdPrintf ("Bad argument: Threads %d, Loops %d\n", NumThreads, NumLoops);
+        AcpiOsPrintf ("Bad argument: Threads %d, Loops %d\n", NumThreads, NumLoops);
         return;
     }
 
 
     /* Create the synchronization semaphore */
 
-    Status = AcpiOsdCreateSemaphore (0, &ThreadGate);
+    Status = AcpiOsCreateSemaphore (1, 0, &ThreadGate);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("Could not create semaphore, %s\n", AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not create semaphore, %s\n", AcpiCmFormatException (Status));
         return;
     }
 
@@ -445,11 +445,11 @@ AcpiDbCreateExecutionThreads (
 
     /* Create the threads */
 
-    AcpiOsdPrintf ("Creating %d threads to execute %d times each\n", NumThreads, NumLoops);
+    AcpiOsPrintf ("Creating %d threads to execute %d times each\n", NumThreads, NumLoops);
 
     for (i = 0; i < (NumThreads); i++)
     {
-        AcpiOsdQueueForExecution (OSD_PRIORITY_MED, AcpiDbMethodThread, &Info);
+        AcpiOsQueueForExecution (OSD_PRIORITY_MED, AcpiDbMethodThread, &Info);
     }
 
 
@@ -458,16 +458,16 @@ AcpiDbCreateExecutionThreads (
     i = NumThreads;
     while (i)   /* Brain damage for OSD implementations that only support wait of 1 unit */
     {
-        Status = AcpiOsdWaitSemaphore (ThreadGate, 1, WAIT_FOREVER);
+        Status = AcpiOsWaitSemaphore (ThreadGate, 1, WAIT_FOREVER);
         i--;
     }
 
     /* Cleanup and exit */
 
-    AcpiOsdDeleteSemaphore (ThreadGate);
+    AcpiOsDeleteSemaphore (ThreadGate);
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    AcpiOsdPrintf ("All threads (%d) have completed\n", NumThreads);
+    AcpiOsPrintf ("All threads (%d) have completed\n", NumThreads);
     AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
