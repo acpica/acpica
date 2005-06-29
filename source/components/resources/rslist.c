@@ -1,16 +1,17 @@
-/*******************************************************************************
+/******************************************************************************
  *
- * Module Name: rslist - Linked list utilities
- *              $Revision: 1.18 $
+ * Module Name: rslist - AcpiRsByteStreamToList
+ *                       AcpiListToByteStream
+ *              $Revision: 1.6 $
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -119,73 +120,25 @@
 #include "acpi.h"
 #include "acresrc.h"
 
-#define _COMPONENT          ACPI_RESOURCES
+#define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rslist")
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiRsGetResourceType
- *
- * PARAMETERS:  ResourceStartByte       - Byte 0 of a resource descriptor
- *
- * RETURN:      The Resource Type (Name) with no extraneous bits
- *
- * DESCRIPTION: Extract the Resource Type/Name from the first byte of
- *              a resource descriptor.
- *
- ******************************************************************************/
-
-UINT8
-AcpiRsGetResourceType (
-    UINT8                   ResourceStartByte)
-{
-
-    FUNCTION_ENTRY ();
-
-
-    /*
-     * Determine if this is a small or large resource
-     */
-    switch (ResourceStartByte & RESOURCE_DESC_TYPE_MASK)
-    {
-    case RESOURCE_DESC_TYPE_SMALL:
-
-        /*
-         * Small Resource Type -- Only bits 6:3 are valid
-         */
-        return ((UINT8) (ResourceStartByte & RESOURCE_DESC_SMALL_MASK));
-        break;
-
-
-    case RESOURCE_DESC_TYPE_LARGE:
-
-        /*
-         * Large Resource Type -- All bits are valid
-         */
-        return (ResourceStartByte);
-        break;
-    }
-
-    return (0xFF);
-}
-
-
-/*******************************************************************************
- *
+/***************************************************************************
  * FUNCTION:    AcpiRsByteStreamToList
  *
- * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource byte stream
+ * PARAMETERS:
+ *              ByteStreamBuffer        - Pointer to the resource byte stream
  *              ByteStreamBufferLength  - Length of ByteStreamBuffer
  *              OutputBuffer            - Pointer to the buffer that will
- *                                        contain the output structures
+ *                                          contain the output structures
  *
- * RETURN:      Status
+ * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
  * DESCRIPTION: Takes the resource byte stream and parses it, creating a
  *              linked list of resources in the caller's output buffer
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
 AcpiRsByteStreamToList (
@@ -204,175 +157,226 @@ AcpiRsByteStreamToList (
 
     FUNCTION_TRACE ("RsByteStreamToList");
 
-
     while (BytesParsed < ByteStreamBufferLength &&
             FALSE == EndTagProcessed)
     {
         /*
-         * The next byte in the stream is the resource type
+         * Look at the next byte in the stream
          */
-        ResourceType = AcpiRsGetResourceType (*ByteStreamBuffer);
+        ResourceType = *ByteStreamBuffer;
 
-        switch (ResourceType)
+        /*
+         * See if this is a small or large resource
+         */
+        if(ResourceType & 0x80)
         {
-        case RESOURCE_DESC_MEMORY_24:
             /*
-             * 24-Bit Memory Resource
+             * Large Resource Type
              */
-            Status = AcpiRsMemory24Resource (ByteStreamBuffer, 
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
+            switch (ResourceType)
+            {
+            case MEMORY_RANGE_24:
+                /*
+                 * 24-Bit Memory Resource
+                 */
+                Status = AcpiRsMemory24Resource(ByteStreamBuffer,
+                                                &BytesConsumed,
+                                                Buffer,
+                                                &StructureSize);
 
+                break;
 
-        case RESOURCE_DESC_LARGE_VENDOR:
-            /*
-             * Vendor Defined Resource
-             */
-            Status = AcpiRsVendorResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
+            case LARGE_VENDOR_DEFINED:
+                /*
+                 * Vendor Defined Resource
+                 */
+                Status = AcpiRsVendorResource(ByteStreamBuffer,
+                                              &BytesConsumed,
+                                              Buffer,
+                                              &StructureSize);
 
+                break;
 
-        case RESOURCE_DESC_MEMORY_32:
-            /*
-             * 32-Bit Memory Range Resource
-             */
-            Status = AcpiRsMemory32RangeResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
+            case MEMORY_RANGE_32:
+                /*
+                 * 32-Bit Memory Range Resource
+                 */
+                Status = AcpiRsMemory32RangeResource(ByteStreamBuffer,
+                                                     &BytesConsumed,
+                                                     Buffer,
+                                                     &StructureSize);
 
+                break;
 
-        case RESOURCE_DESC_FIXED_MEMORY_32:
-            /*
-             * 32-Bit Fixed Memory Resource
-             */
-            Status = AcpiRsFixedMemory32Resource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
+            case FIXED_MEMORY_RANGE_32:
+                /*
+                 * 32-Bit Fixed Memory Resource
+                 */
+                Status = AcpiRsFixedMemory32Resource(ByteStreamBuffer,
+                                                     &BytesConsumed,
+                                                     Buffer,
+                                                     &StructureSize);
 
+                break;
 
-        case RESOURCE_DESC_QWORD_ADDRESS_SPACE:
-            /*
-             * 64-Bit Address Resource
-             */
-            Status = AcpiRsAddress64Resource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
+            case DWORD_ADDRESS_SPACE:
+                /*
+                 * 32-Bit Address Resource
+                 */
+                Status = AcpiRsAddress32Resource(ByteStreamBuffer,
+                                                 &BytesConsumed,
+                                                 Buffer,
+                                                 &StructureSize);
 
+                break;
 
-        case RESOURCE_DESC_DWORD_ADDRESS_SPACE:
-            /*
-             * 32-Bit Address Resource
-             */
-            Status = AcpiRsAddress32Resource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
+            case WORD_ADDRESS_SPACE:
+                /*
+                 * 16-Bit Address Resource
+                 */
+                Status = AcpiRsAddress16Resource(ByteStreamBuffer,
+                                                 &BytesConsumed,
+                                                 Buffer,
+                                                 &StructureSize);
 
+                break;
 
-        case RESOURCE_DESC_WORD_ADDRESS_SPACE:
-            /*
-             * 16-Bit Address Resource
-             */
-            Status = AcpiRsAddress16Resource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
+            case EXTENDED_IRQ:
+                /*
+                 * Extended IRQ
+                 */
+                Status = AcpiRsExtendedIrqResource(ByteStreamBuffer,
+                                                   &BytesConsumed,
+                                                   Buffer,
+                                                   &StructureSize);
 
+                break;
 
-        case RESOURCE_DESC_EXTENDED_XRUPT:
-            /*
-             * Extended IRQ
-             */
-            Status = AcpiRsExtendedIrqResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
+/* 64-bit not currently supported */
+/*
+            case 0x8A:
+                break;
+*/
 
-
-        case RESOURCE_DESC_IRQ_FORMAT:
-            /*
-             * IRQ Resource
-             */
-            Status = AcpiRsIrqResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
-
-
-        case RESOURCE_DESC_DMA_FORMAT:
-            /*
-             * DMA Resource
-             */
-            Status = AcpiRsDmaResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
-
-
-        case RESOURCE_DESC_START_DEPENDENT:
-            /*
-             * Start Dependent Functions Resource
-             */
-            Status = AcpiRsStartDependentFunctionsResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
-
-
-        case RESOURCE_DESC_END_DEPENDENT:
-            /*
-             * End Dependent Functions Resource
-             */
-            Status = AcpiRsEndDependentFunctionsResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
-
-
-        case RESOURCE_DESC_IO_PORT:
-            /*
-             * IO Port Resource
-             */
-            Status = AcpiRsIoResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
-
-
-        case RESOURCE_DESC_FIXED_IO_PORT:
-            /*
-             * Fixed IO Port Resource
-             */
-            Status = AcpiRsFixedIoResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
-
-
-        case RESOURCE_DESC_SMALL_VENDOR:
-            /*
-             * Vendor Specific Resource
-             */
-            Status = AcpiRsVendorResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
-
-
-        case RESOURCE_DESC_END_TAG:
-            /*
-             * End Tag
-             */
-            EndTagProcessed = TRUE;
-            Status = AcpiRsEndTagResource (ByteStreamBuffer,
-                        &BytesConsumed, Buffer, &StructureSize);
-            break;
-
-
-        default:
-            /*
-             * Invalid/Unknowns resource type
-             */
-            Status = AE_AML_ERROR;
-            break;
+            default:
+                /*
+                 * If we get here, everything is out of sync,
+                 *  so exit with an error
+                 */
+                return_ACPI_STATUS (AE_AML_ERROR);
+                break;
+            }
         }
 
-
-        if (!ACPI_SUCCESS(Status))
+        else
         {
-            return_ACPI_STATUS (Status);
-        }
+            /*
+             * Small Resource Type
+             *  Only bits 7:3 are valid
+             */
+            ResourceType >>= 3;
+
+            switch(ResourceType)
+            {
+            case IRQ_FORMAT:
+                /*
+                 * IRQ Resource
+                 */
+                Status = AcpiRsIrqResource(ByteStreamBuffer,
+                                           &BytesConsumed,
+                                           Buffer,
+                                           &StructureSize);
+
+                break;
+
+            case DMA_FORMAT:
+                /*
+                 * DMA Resource
+                 */
+                Status = AcpiRsDmaResource(ByteStreamBuffer,
+                                           &BytesConsumed,
+                                           Buffer,
+                                           &StructureSize);
+
+                break;
+
+            case START_DEPENDENT_TAG:
+                /*
+                 * Start Dependent Functions Resource
+                 */
+                Status = AcpiRsStartDependentFunctionsResource(ByteStreamBuffer,
+                                                               &BytesConsumed,
+                                                               Buffer,
+                                                               &StructureSize);
+
+                break;
+
+            case END_DEPENDENT_TAG:
+                /*
+                 * End Dependent Functions Resource
+                 */
+                Status = AcpiRsEndDependentFunctionsResource(ByteStreamBuffer,
+                                                             &BytesConsumed,
+                                                             Buffer,
+                                                             &StructureSize);
+
+                break;
+
+            case IO_PORT_DESCRIPTOR:
+                /*
+                 * IO Port Resource
+                 */
+                Status = AcpiRsIoResource(ByteStreamBuffer,
+                                          &BytesConsumed,
+                                          Buffer,
+                                          &StructureSize);
+
+                break;
+
+            case FIXED_LOCATION_IO_DESCRIPTOR:
+                /*
+                 * Fixed IO Port Resource
+                 */
+                Status = AcpiRsFixedIoResource(ByteStreamBuffer,
+                                               &BytesConsumed,
+                                               Buffer,
+                                               &StructureSize);
+
+                break;
+
+            case SMALL_VENDOR_DEFINED:
+                /*
+                 * Vendor Specific Resource
+                 */
+                Status = AcpiRsVendorResource(ByteStreamBuffer,
+                                              &BytesConsumed,
+                                              Buffer,
+                                              &StructureSize);
+
+                break;
+
+            case END_TAG:
+                /*
+                 * End Tag
+                 */
+                Status = AcpiRsEndTagResource(ByteStreamBuffer,
+                                              &BytesConsumed,
+                                              Buffer,
+                                              &StructureSize);
+                EndTagProcessed = TRUE;
+
+                break;
+
+            default:
+                /*
+                 * If we get here, everything is out of sync,
+                 *  so exit with an error
+                 */
+                return_ACPI_STATUS (AE_AML_ERROR);
+                break;
+
+            } /* switch */
+        }  /* end else */
 
         /*
          * Update the return value and counter
@@ -394,39 +398,41 @@ AcpiRsByteStreamToList (
     /*
      * Check the reason for exiting the while loop
      */
-    if (TRUE != EndTagProcessed)
+    if (!(ByteStreamBufferLength == BytesParsed) ||
+         (TRUE != EndTagProcessed))
     {
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
     return_ACPI_STATUS (AE_OK);
-}
+
+} /* AcpiRsByteStreamToList */
 
 
-/*******************************************************************************
- *
+/***************************************************************************
  * FUNCTION:    AcpiRsListToByteStream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:
+ *              LinkedList              - Pointer to the resource linked list
  *              ByteSteamSizeNeeded     - Calculated size of the byte stream
- *                                        needed from calling
- *                                        AcpiRsCalculateByteStreamLength()
- *                                        The size of the OutputBuffer is
- *                                        guaranteed to be >=
- *                                        ByteStreamSizeNeeded
+ *                                          needed from calling
+ *                                          AcpiRsCalculateByteStreamLength()
+ *                                          The size of the OutputBuffer is
+ *                                          guaranteed to be >=
+ *                                          ByteStreamSizeNeeded
  *              OutputBuffer            - Pointer to the buffer that will
- *                                        contain the byte stream
+ *                                          contain the byte stream
  *
- * RETURN:      Status
+ * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
  * DESCRIPTION: Takes the resource linked list and parses it, creating a
  *              byte stream of resources in the caller's output buffer
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
 AcpiRsListToByteStream (
-    ACPI_RESOURCE           *LinkedList,
+    RESOURCE                *LinkedList,
     UINT32                  ByteStreamSizeNeeded,
     UINT8                   **OutputBuffer)
 {
@@ -438,67 +444,80 @@ AcpiRsListToByteStream (
 
     FUNCTION_TRACE ("RsListToByteStream");
 
-
     while (!Done)
     {
         switch (LinkedList->Id)
         {
-        case ACPI_RSTYPE_IRQ:
+        case Irq:
             /*
              * IRQ Resource
              */
-            Status = AcpiRsIrqStream (LinkedList, &Buffer, &BytesConsumed);
+            Status = AcpiRsIrqStream (LinkedList,
+                                      &Buffer,
+                                      &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_DMA:
+        case Dma:
             /*
              * DMA Resource
              */
-            Status = AcpiRsDmaStream (LinkedList, &Buffer, &BytesConsumed);
+            Status = AcpiRsDmaStream (LinkedList,
+                                      &Buffer,
+                                      &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_START_DPF:
+        case StartDependentFunctions:
             /*
              * Start Dependent Functions Resource
              */
             Status = AcpiRsStartDependentFunctionsStream (LinkedList,
-                            &Buffer, &BytesConsumed);
+                                                          &Buffer,
+                                                          &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_END_DPF:
+        case EndDependentFunctions:
             /*
              * End Dependent Functions Resource
              */
             Status = AcpiRsEndDependentFunctionsStream (LinkedList,
-                            &Buffer, &BytesConsumed);
+                                                        &Buffer,
+                                                        &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_IO:
+        case Io:
             /*
              * IO Port Resource
              */
-            Status = AcpiRsIoStream (LinkedList, &Buffer, &BytesConsumed);
+            Status = AcpiRsIoStream (LinkedList,
+                                     &Buffer,
+                                     &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_FIXED_IO:
+        case FixedIo:
             /*
              * Fixed IO Port Resource
              */
-            Status = AcpiRsFixedIoStream (LinkedList, &Buffer, &BytesConsumed);
+            Status = AcpiRsFixedIoStream (LinkedList,
+                                          &Buffer,
+                                          &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_VENDOR:
+        case VendorSpecific:
             /*
              * Vendor Defined Resource
              */
-            Status = AcpiRsVendorStream (LinkedList, &Buffer, &BytesConsumed);
+            Status = AcpiRsVendorStream (LinkedList,
+                                         &Buffer,
+                                         &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_END_TAG:
+        case EndTag:
             /*
              * End Tag
              */
-            Status = AcpiRsEndTagStream (LinkedList, &Buffer, &BytesConsumed);
+            Status = AcpiRsEndTagStream (LinkedList,
+                                         &Buffer,
+                                         &BytesConsumed);
 
             /*
              * An End Tag indicates the end of the Resource Template
@@ -506,59 +525,58 @@ AcpiRsListToByteStream (
             Done = TRUE;
             break;
 
-        case ACPI_RSTYPE_MEM24:
+        case Memory24:
             /*
              * 24-Bit Memory Resource
              */
-            Status = AcpiRsMemory24Stream (LinkedList, &Buffer, &BytesConsumed);
+            Status = AcpiRsMemory24Stream (LinkedList,
+                                           &Buffer,
+                                           &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_MEM32:
+        case Memory32:
             /*
              * 32-Bit Memory Range Resource
              */
-            Status = AcpiRsMemory32RangeStream (LinkedList, &Buffer,
-                        &BytesConsumed);
+            Status = AcpiRsMemory32RangeStream (LinkedList,
+                                                &Buffer,
+                                                &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_FIXED_MEM32:
+        case FixedMemory32:
             /*
              * 32-Bit Fixed Memory Resource
              */
-            Status = AcpiRsFixedMemory32Stream (LinkedList, &Buffer,
-                        &BytesConsumed);
+            Status = AcpiRsFixedMemory32Stream (LinkedList,
+                                                &Buffer,
+                                                &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_ADDRESS16:
+        case Address16:
             /*
              * 16-Bit Address Descriptor Resource
              */
-            Status = AcpiRsAddress16Stream (LinkedList, &Buffer, 
-                        &BytesConsumed);
+            Status = AcpiRsAddress16Stream (LinkedList,
+                                            &Buffer,
+                                            &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_ADDRESS32:
+        case Address32:
             /*
              * 32-Bit Address Descriptor Resource
              */
-            Status = AcpiRsAddress32Stream (LinkedList, &Buffer,
-                        &BytesConsumed);
+            Status = AcpiRsAddress32Stream (LinkedList,
+                                            &Buffer,
+                                            &BytesConsumed);
             break;
 
-        case ACPI_RSTYPE_ADDRESS64:
-            /*
-             * 64-Bit Address Descriptor Resource
-             */
-            Status = AcpiRsAddress64Stream (LinkedList, &Buffer,
-                        &BytesConsumed);
-            break;
-
-        case ACPI_RSTYPE_EXT_IRQ:
+        case ExtendedIrq:
             /*
              * Extended IRQ Resource
              */
-            Status = AcpiRsExtendedIrqStream (LinkedList, &Buffer,
-                        &BytesConsumed);
+            Status = AcpiRsExtendedIrqStream (LinkedList,
+                                              &Buffer,
+                                              &BytesConsumed);
             break;
 
         default:
@@ -566,16 +584,10 @@ AcpiRsListToByteStream (
              * If we get here, everything is out of sync,
              *  so exit with an error
              */
-            Status = AE_BAD_DATA;
+            return_ACPI_STATUS (AE_BAD_DATA);
             break;
 
         } /* switch (LinkedList->Id) */
-
-
-        if (!ACPI_SUCCESS(Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
 
         /*
          * Set the Buffer to point to the open byte
@@ -585,10 +597,11 @@ AcpiRsListToByteStream (
         /*
          * Point to the next object
          */
-        LinkedList = POINTER_ADD (ACPI_RESOURCE, 
-                        LinkedList, LinkedList->Length);
+        LinkedList = (RESOURCE *) ((NATIVE_UINT) LinkedList +
+                     (NATIVE_UINT) LinkedList->Length);
     }
 
-    return_ACPI_STATUS (AE_OK);
-}
+    return_ACPI_STATUS  (AE_OK);
+
+} /* AcpiRsListToByteStream */
 

@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.74 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -125,7 +124,7 @@
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsdump");
+        MODULE_NAME         ("nsdump")
 
 
 #ifdef ACPI_DEBUG
@@ -188,11 +187,11 @@ AcpiNsDumpPathname (
  *
  * FUNCTION:    AcpiNsDumpOneObject
  *
- * PARAMETERS:  Handle              - Entry to be dumped
+ * PARAMETERS:  Handle              - Named Object to be dumped
  *              Level               - Nesting level of the handle
  *              Context             - Passed into WalkNamespace
  *
- * DESCRIPTION: Dump a single nte
+ * DESCRIPTION: Dump a single Named Object
  *              This procedure is a UserFunction called by AcpiNsWalkNamespace.
  *
  ***************************************************************************/
@@ -205,7 +204,7 @@ AcpiNsDumpOneObject (
     void                    **ReturnValue)
 {
     ACPI_WALK_INFO          *Info = (ACPI_WALK_INFO *) Context;
-    ACPI_NAMED_OBJECT       *ThisEntry;
+    ACPI_NAMED_OBJECT       *ThisNameDesc;
     UINT8                   *Value;
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     OBJECT_TYPE_INTERNAL    ObjType;
@@ -216,10 +215,10 @@ AcpiNsDumpOneObject (
     UINT32                  WhichBit;
 
 
-    ThisEntry = AcpiNsConvertHandleToEntry (ObjHandle);
+    ThisNameDesc = AcpiNsConvertHandleToEntry (ObjHandle);
 
     LevelTmp    = Level;
-    Type        = ThisEntry->Type;
+    Type        = ThisNameDesc->Type;
     WhichBit    = 1;
 
 
@@ -237,7 +236,7 @@ AcpiNsDumpOneObject (
     /* Check if the owner matches */
 
     if ((Info->OwnerId != ACPI_UINT32_MAX) &&
-        (Info->OwnerId != ThisEntry->OwnerId))
+        (Info->OwnerId != ThisNameDesc->OwnerId))
     {
         return (AE_OK);
     }
@@ -267,7 +266,7 @@ AcpiNsDumpOneObject (
 
         else
         {
-            if (AcpiNsExistDownstreamSibling (ThisEntry + 1))
+            if (AcpiNsExistDownstreamSibling (ThisNameDesc + 1))
             {
                 DownstreamSiblingMask |= (1 << (Level - 1));
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
@@ -279,12 +278,12 @@ AcpiNsDumpOneObject (
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
             }
 
-            if (ThisEntry->ChildTable == NULL)
+            if (ThisNameDesc->Child == NULL)
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("-"));
             }
 
-            else if (AcpiNsExistDownstreamSibling (ThisEntry->ChildTable->Entries))
+            else if (AcpiNsExistDownstreamSibling (ThisNameDesc->Child))
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
             }
@@ -304,7 +303,7 @@ AcpiNsDumpOneObject (
         Type = INTERNAL_TYPE_DEF_ANY;                                /* prints as *ERROR* */
     }
 
-    if (!AcpiCmValidAcpiName (ThisEntry->Name))
+    if (!AcpiCmValidAcpiName (ThisNameDesc->Name))
     {
         REPORT_WARNING ("Invalid Name");
     }
@@ -313,11 +312,11 @@ AcpiNsDumpOneObject (
      * Now we can print out the pertinent information
      */
 
-    DEBUG_PRINT_RAW (TRACE_TABLES, (" %4.4s %-9s ", &ThisEntry->Name, AcpiCmGetTypeName (Type)));
-    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",  ThisEntry, ThisEntry->ChildTable, ThisEntry->Object));
+    DEBUG_PRINT_RAW (TRACE_TABLES, (" %4.4s %-9s ", &ThisNameDesc->Name, AcpiCmGetTypeName (Type)));
+    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",  ThisNameDesc, ThisNameDesc->Child, ThisNameDesc->Object));
 
 
-    if (!ThisEntry->Object)
+    if (!ThisNameDesc->Object)
     {
         /* No attached object, we are done */
 
@@ -333,8 +332,8 @@ AcpiNsDumpOneObject (
         /* Name is a Method and its AML offset/length are set */
 
         DEBUG_PRINT_RAW (TRACE_TABLES, (" M:%p-%X\n",
-                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Pcode,
-                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.PcodeLength));
+                    ((ACPI_OBJECT_INTERNAL *) ThisNameDesc->Object)->Method.Pcode,
+                    ((ACPI_OBJECT_INTERNAL *) ThisNameDesc->Object)->Method.PcodeLength));
 
         break;
 
@@ -342,23 +341,23 @@ AcpiNsDumpOneObject (
     case ACPI_TYPE_NUMBER:
 
         DEBUG_PRINT_RAW (TRACE_TABLES, (" N:%X\n",
-                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Number.Value));
+                    ((ACPI_OBJECT_INTERNAL *) ThisNameDesc->Object)->Number.Value));
         break;
 
 
     case ACPI_TYPE_STRING:
 
         DEBUG_PRINT_RAW (TRACE_TABLES, (" S:%p-%X\n",
-                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->String.Pointer,
-                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->String.Length));
+                    ((ACPI_OBJECT_INTERNAL *) ThisNameDesc->Object)->String.Pointer,
+                    ((ACPI_OBJECT_INTERNAL *) ThisNameDesc->Object)->String.Length));
         break;
 
 
     case ACPI_TYPE_BUFFER:
 
         DEBUG_PRINT_RAW (TRACE_TABLES, (" B:%p-%X\n",
-                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Buffer.Pointer,
-                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Buffer.Length));
+                    ((ACPI_OBJECT_INTERNAL *) ThisNameDesc->Object)->Buffer.Pointer,
+                    ((ACPI_OBJECT_INTERNAL *) ThisNameDesc->Object)->Buffer.Length));
         break;
 
 
@@ -378,7 +377,7 @@ AcpiNsDumpOneObject (
 
     /* If there is an attached object, display it */
 
-    Value = ThisEntry->Object;
+    Value = ThisNameDesc->Object;
 
     /* Dump attached objects */
 
@@ -398,7 +397,7 @@ AcpiNsDumpOneObject (
 
         else if (VALID_DESCRIPTOR_TYPE (Value, ACPI_DESC_TYPE_NAMED))
         {
-            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to Name Table Entry)\n"));
+            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to NamedObject)\n"));
             BytesToDump = sizeof (ACPI_NAMED_OBJECT);
         }
 
@@ -526,11 +525,11 @@ AcpiNsDumpObjects (
  *
  * FUNCTION:    AcpiNsDumpOneDevice
  *
- * PARAMETERS:  Handle              - Entry to be dumped
+ * PARAMETERS:  Handle              - NamedObject to be dumped
  *              Level               - Nesting level of the handle
  *              Context             - Passed into WalkNamespace
  *
- * DESCRIPTION: Dump a single nte that represents a device
+ * DESCRIPTION: Dump a single Named Object that represents a device
  *              This procedure is a UserFunction called by AcpiNsWalkNamespace.
  *
  ***************************************************************************/
@@ -559,7 +558,6 @@ AcpiNsDumpOneDevice (
 
         DEBUG_PRINT_RAW (TRACE_TABLES, ("    HID: %.8X, ADR: %.8X, Status: %x\n",
                         Info.HardwareId, Info.Address, Info.CurrentStatus));
-
     }
 
     return (Status);
@@ -621,7 +619,7 @@ AcpiNsDumpTables (
     FUNCTION_TRACE ("NsDumpTables");
 
 
-    if (!AcpiGbl_RootObject->ChildTable)
+    if (!AcpiGbl_RootObject)
     {
         /*
          * If the name space has not been initialized,
@@ -649,10 +647,10 @@ AcpiNsDumpTables (
  *
  * FUNCTION:    AcpiNsDumpEntry
  *
- * PARAMETERS:  Handle              - Entry to be dumped
+ * PARAMETERS:  Handle              - NamedObject to be dumped
  *              DebugLevel          - Output level
  *
- * DESCRIPTION: Dump a single nte
+ * DESCRIPTION: Dump a single Named Object
  *
  ***************************************************************************/
 

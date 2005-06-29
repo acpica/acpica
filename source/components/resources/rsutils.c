@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -118,25 +118,26 @@
 #define __RSUTILS_C__
 
 #include "acpi.h"
-#include "namesp.h"
-#include "resource.h"
+#include "acnamesp.h"
+#include "acresrc.h"
 
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rsutils");
+        MODULE_NAME         ("rsutils")
 
 
 /******************************************************************************
  *
  * FUNCTION:    AcpiRsGetPrtMethodData
  *
- * PARAMETERS:  DeviceHandle    - a handle to the containing object
- *              RetBuffer       - a pointer to a buffer structure for the results
+ * PARAMETERS:  Handle          - a handle to the containing object
+ *              RetBuffer       - a pointer to a buffer structure for the
+ *                                  results
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to get the _PRT value of an object contained
- *              in an object specified by the handle passed in
+ * DESCRIPTION: This function is called to get the _PRT value of an object
+ *              contained in an object specified by the handle passed in
  *
  *              If the function fails an appropriate status will be returned
  *              and the contents of the callers buffer is undefined.
@@ -150,29 +151,20 @@ AcpiRsGetPrtMethodData (
 {
     ACPI_OBJECT_INTERNAL    *RetObj;
     ACPI_STATUS             Status;
-    UINT32                  BufferSpaceNeeded = RetBuffer->Length;
+    UINT32                  BufferSpaceNeeded;
 
 
     FUNCTION_TRACE ("RsGetPrtMethodData");
 
+    /* already validated params, so we won't repeat here */
 
-    /*
-     *  Must have a valid handle and buffer, So we have to have a handle
-     *  a return buffer structure and if there is a non-zero buffer length
-     *  we also need a valid pointer in the buffer
-     */
-    if ((!Handle)               ||
-        (!RetBuffer)            ||
-        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
+    BufferSpaceNeeded = RetBuffer->Length;
 
     /*
      *  Execute the method, no parameters
      */
     Status = AcpiNsEvaluateRelative (Handle, "_PRT", NULL, &RetObj);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -228,13 +220,14 @@ Cleanup:
  *
  * FUNCTION:    AcpiRsGetCrsMethodData
  *
- * PARAMETERS:  DeviceHandle    - a handle to the containing object
- *              RetBuffer       - a pointer to a buffer structure for the results
+ * PARAMETERS:  Handle          - a handle to the containing object
+ *              RetBuffer       - a pointer to a buffer structure for the
+ *                                  results
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to get the _CRS value of an object contained
- *              in an object specified by the handle passed in
+ * DESCRIPTION: This function is called to get the _CRS value of an object
+ *              contained in an object specified by the handle passed in
  *
  *              If the function fails an appropriate status will be returned
  *              and the contents of the callers buffer is undefined.
@@ -253,24 +246,13 @@ AcpiRsGetCrsMethodData (
 
     FUNCTION_TRACE ("RsGetCrsMethodData");
 
-
-    /*
-     *  Must have a valid handle and buffer, So we have to have a handle
-     *  a return buffer structure and if there is a non-zero buffer length
-     *  we also need a valid pointer in the buffer
-     */
-    if ((!Handle)               ||
-        (!RetBuffer)            ||
-        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
+    /* already validated params, so we won't repeat here */
 
     /*
      *  Execute the method, no parameters
      */
     Status = AcpiNsEvaluateRelative (Handle, "_CRS", NULL, &RetObj);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -304,9 +286,11 @@ AcpiRsGetCrsMethodData (
                                    RetBuffer->Pointer,
                                    &BufferSpaceNeeded);
 
-    if (AE_OK == Status)
+    
+
+    if (ACPI_SUCCESS (Status))
     {
-        AcpiRsDumpResourceList((RESOURCE *)RetBuffer->Pointer);
+        DUMP_RESOURCE_LIST(RetBuffer->Pointer);
     }
 
     /*
@@ -330,13 +314,14 @@ Cleanup:
  *
  * FUNCTION:    AcpiRsGetPrsMethodData
  *
- * PARAMETERS:  DeviceHandle    - a handle to the containing object
- *              RetBuffer       - a pointer to a buffer structure for the results
+ * PARAMETERS:  Handle          - a handle to the containing object
+ *              RetBuffer       - a pointer to a buffer structure for the
+ *                                  results
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to get the _PRS value of an object contained
- *              in an object specified by the handle passed in
+ * DESCRIPTION: This function is called to get the _PRS value of an object
+ *              contained in an object specified by the handle passed in
  *
  *              If the function fails an appropriate status will be returned
  *              and the contents of the callers buffer is undefined.
@@ -355,24 +340,13 @@ AcpiRsGetPrsMethodData (
 
     FUNCTION_TRACE ("RsGetPrsMethodData");
 
-
-    /*
-     *  Must have a valid handle and buffer, So we have to have a handle
-     *  a return buffer structure and if there is a non-zero buffer length
-     *  we also need a valid pointer in the buffer
-     */
-    if ((!Handle)               ||
-        (!RetBuffer)            ||
-        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
+    /* already validated params, so we won't repeat here */
 
     /*
      *  Execute the method, no parameters
      */
     Status = AcpiNsEvaluateRelative (Handle, "_PRS", NULL, &RetObj);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -427,10 +401,9 @@ Cleanup:
  *
  * FUNCTION:    AcpiRsSetSrsMethodData
  *
- * PARAMETERS:  DeviceHandle    - a handle to the containing object
- *              *MethodName     - Name of method to execute, If NULL, the
- *                                handle is the object to execute
- *              InBuffer        - a pointer to a buffer structure of the parameter
+ * PARAMETERS:  Handle          - a handle to the containing object
+ *              InBuffer        - a pointer to a buffer structure of the
+ *                                  parameter
  *
  * RETURN:      Status          - the status of the call
  *
@@ -455,16 +428,7 @@ AcpiRsSetSrsMethodData (
 
     FUNCTION_TRACE ("RsSetSrsMethodData");
 
-    /*
-     *  Must have a valid handle and buffer
-     */
-    if ((!Handle)       ||
-        (!InBuffer)           ||
-        (!InBuffer->Pointer)  ||
-        (!InBuffer->Length))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
+    /* already validated params, so we won't repeat here */
 
     /*
      * The InBuffer parameter will point to a linked list of
@@ -506,13 +470,9 @@ AcpiRsSetSrsMethodData (
                                  ByteStream,
                                  &BufferSizeNeeded);
 
-    if(AE_OK != Status)
+    if (ACPI_FAILURE (Status))
     {
-        /*
-         *  Failed the call
-         */
-        AcpiCmFree (ByteStream);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     /*
@@ -541,6 +501,9 @@ AcpiRsSetSrsMethodData (
     /*
      *  Clean up and return the status from AcpiNsEvaluateRelative
      */
+
+Cleanup:
+
     AcpiCmFree (ByteStream);
     return_ACPI_STATUS (Status);
 }

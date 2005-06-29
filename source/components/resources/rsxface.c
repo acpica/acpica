@@ -1,16 +1,16 @@
-/*******************************************************************************
+/******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the ACPI subsystem
- *              $Revision: 1.9 $
+ *              $Revision: 1.7 $
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -126,7 +126,7 @@
         MODULE_NAME         ("rsxface")
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiGetIrqRoutingTable
  *
@@ -178,7 +178,7 @@ AcpiGetIrqRoutingTable  (
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiGetCurrentResources
  *
@@ -231,7 +231,7 @@ AcpiGetCurrentResources (
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiGetPossibleResources
  *
@@ -239,7 +239,7 @@ AcpiGetCurrentResources (
  *                                device we are querying
  *              RetBuffer       - a pointer to a buffer to receive the
  *                                resources for the device
- *
+  *
  * RETURN:      Status          - the status of the call
  *
  * DESCRIPTION: This function is called to get a list of the possible resources
@@ -281,7 +281,7 @@ AcpiGetPossibleResources (
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiSetCurrentResources
  *

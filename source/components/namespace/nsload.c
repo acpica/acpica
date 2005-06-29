@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -117,16 +117,16 @@
 #define __NSLOAD_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 #include "amlcode.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "debugger.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acdebug.h"
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsload");
+        MODULE_NAME         ("nsload")
 
 
 /*******************************************************************************
@@ -145,7 +145,7 @@
 ACPI_STATUS
 AcpiNsParseTable (
     ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAME_TABLE         *Scope)
+    ACPI_NAMED_OBJECT       *Scope)
 {
     ACPI_STATUS             Status;
 
@@ -153,7 +153,18 @@ AcpiNsParseTable (
     FUNCTION_TRACE ("NsParseTable");
 
 
-    /* Create the root object */
+    /*
+     * AML Parse, pass 1
+     *
+     * In this pass, we load most of the namespace.  Control methods
+     * are not parsed until later.  A parse tree is not created.  Instead,
+     * each Parser Op subtree is deleted when it is finished.  This saves
+     * a great deal of memory, and allows a small cache of parse objects
+     * to service the entire parse.  The second pass of the parse then
+     * performs another complete parse of the AML..
+     */
+
+    /* Create and init a root object */
 
     AcpiGbl_ParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
     if (!AcpiGbl_ParsedNamespaceRoot)
@@ -161,38 +172,76 @@ AcpiNsParseTable (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /* Initialize the root object */
+    ((ACPI_EXTENDED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
-    ((ACPI_NAMED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
-    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot, TableDesc->AmlPointer, TableDesc->AmlLength, 0);
+    DEBUG_PRINT (TRACE_PARSE,
+        ("NsParseTable: *PARSE* 1st pass parse\n"));
+
+    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot,
+                            TableDesc->AmlPointer,
+                            TableDesc->AmlLength, 
+                            ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
+                            NULL, NULL, NULL,
+                            AcpiDsLoad1BeginOp,
+                            AcpiDsLoad1EndOp);
+
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
+
+
+    /*
+     * AML Parse, pass 2
+     *
+     * In this pass, we resolve forward references and other things
+     * that could not be completed during the first pass.
+     * Another complete parse of the AML is performed, but the
+     * overhead of this is compensated for by the fact that the
+     * parse objects are all cached.
+     */
+
+    /* Create and init a root object */
+
+    AcpiGbl_ParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!AcpiGbl_ParsedNamespaceRoot)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    ((ACPI_EXTENDED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+
+
+    /* Pass 2: Resolve forward references */
+
+    DEBUG_PRINT (TRACE_PARSE,
+        ("NsParseTable: *PARSE* 2nd pass parse\n"));
+
+    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot,
+                            TableDesc->AmlPointer,
+                            TableDesc->AmlLength, 
+                            ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
+                            NULL, NULL, NULL,
+                            AcpiDsLoad2BeginOp,
+                            AcpiDsLoad2EndOp);
+
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
 
-#ifndef PARSER_ONLY
-    DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Building Internal Namespace\n"));
+/* TBD: [Restructure] must generate stats on the fly, can't walk the tree */
 
-    Status = AcpiPsWalkParsedAml (AcpiPsGetChild (AcpiGbl_ParsedNamespaceRoot), AcpiGbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
-                        TableDesc->TableId, AcpiDsLoad2BeginOp, AcpiDsLoad2EndOp);
-
-
-    /*
-     * Now that the internal namespace has been constructed, we can delete the
-     * parsed namespace, since it is no longer needed
-     */
-
-    DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Deleting Parsed Namespace\n"));
-
-    DEBUG_EXEC (AcpiDbGenerateStatistics (AcpiGbl_ParsedNamespaceRoot, 0));
+    DEBUGGER_EXEC (AcpiDbGenerateStatistics (AcpiGbl_ParsedNamespaceRoot, 0));
 
     AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
     AcpiGbl_ParsedNamespaceRoot = NULL;
-#endif
 
 
     return_ACPI_STATUS (Status);
@@ -216,7 +265,7 @@ AcpiNsParseTable (
 ACPI_STATUS
 AcpiNsLoadTable (
     ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMED_OBJECT       *Entry)
+    ACPI_NAMED_OBJECT       *NameDesc)
 {
     ACPI_STATUS             Status;
 
@@ -230,28 +279,33 @@ AcpiNsLoadTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("NsLoadTable: AML block at %p\n", TableDesc->AmlPointer));
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsLoadTable: AML block at %p\n", TableDesc->AmlPointer));
 
 
     if (!TableDesc->AmlLength)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("NsLoadTable: Zero-length AML block\n"));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("NsLoadTable: Zero-length AML block\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
 
     /*
-     * Parse the table and load the namespace with all named objects found within.
-     * Control methods are NOT parsed at this time.  In fact, the control methods
-     * cannot be parsed until the entire namespace is loaded, because if a control
-     * method makes a forward reference (call) to another control method, we can't
-     * continue parsing because we don't know how many arguments to parse next!
+     * Parse the table and load the namespace with all named
+     * objects found within.  Control methods are NOT parsed
+     * at this time.  In fact, the control methods cannot be
+     * parsed until the entire namespace is loaded, because
+     * if a control method makes a forward reference (call)
+     * to another control method, we can't continue parsing
+     * because we don't know how many arguments to parse next!
      */
 
-    DEBUG_PRINT (ACPI_INFO, ("NsLoadTable: **** Loading table into namespace ****\n"));
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsLoadTable: **** Loading table into namespace ****\n"));
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-    Status = AcpiNsParseTable (TableDesc, Entry->ChildTable);
+    Status = AcpiNsParseTable (TableDesc, NameDesc->Child);
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
@@ -260,16 +314,19 @@ AcpiNsLoadTable (
     }
 
     /*
-     * Now we can parse the control methods.  We always parse them here for a sanity
-     * check, and if configured for just-in-time parsing, we delete the control method
+     * Now we can parse the control methods.  We always parse
+     * them here for a sanity check, and if configured for
+     * just-in-time parsing, we delete the control method
      * parse trees.
      */
 
-    DEBUG_PRINT (ACPI_INFO, ("NsLoadTable: **** Begin Table Method Parsing and Object Initialization ****\n"));
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsLoadTable: **** Begin Table Method Parsing and Object Initialization ****\n"));
 
-    Status = AcpiDsInitializeObjects (TableDesc, Entry);
+    Status = AcpiDsInitializeObjects (TableDesc, NameDesc);
 
-    DEBUG_PRINT (ACPI_INFO, ("NsLoadTable: **** Completed Table Method Parsing and Object Initialization ****\n"));
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsLoadTable: **** Completed Table Method Parsing and Object Initialization ****\n"));
 
     return_ACPI_STATUS (Status);
 }
@@ -349,8 +406,9 @@ AcpiNsLoadTableByType (
 
     case ACPI_TABLE_SSDT:
 
-        DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading %d SSDTs\n",
-                        AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count));
+        DEBUG_PRINT (ACPI_INFO,
+            ("NsLoadTableByType: Loading %d SSDTs\n",
+            AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count));
 
         /*
          * Traverse list of SSDT tables
@@ -361,11 +419,15 @@ AcpiNsLoadTableByType (
         {
             TablePtr = TableDesc->Pointer;
 
-            /* Only attempt to load table if it is not already loaded! */
+            /*
+             * Only attempt to load table if it is not
+             * already loaded!
+             */
 
             if (!TableDesc->LoadedIntoNamespace)
             {
-                Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootObject);
+                Status = AcpiNsLoadTable (TableDesc,
+                                            AcpiGbl_RootObject);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -382,14 +444,16 @@ AcpiNsLoadTableByType (
 
     case ACPI_TABLE_PSDT:
 
-        DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading %d PSDTs\n",
-                        AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count));
+        DEBUG_PRINT (ACPI_INFO,
+            ("NsLoadTableByType: Loading %d PSDTs\n",
+            AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count));
 
         /*
          * Traverse list of PSDT tables
          */
 
         TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_PSDT];
+
         for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count; i++)
         {
             TablePtr = TableDesc->Pointer;
@@ -398,7 +462,8 @@ AcpiNsLoadTableByType (
 
             if (!TableDesc->LoadedIntoNamespace)
             {
-                Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootObject);
+                Status = AcpiNsLoadTable (TableDesc,
+                                            AcpiGbl_RootObject);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -429,57 +494,6 @@ UnlockAndExit:
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiNsFreeTableEntry
- *
- * PARAMETERS:  Entry           - The entry to be deleted
- *
- * RETURNS      None
- *
- * DESCRIPTION: Free an entry in a namespace table.  Delete any objects contained
- *              in the entry, unlink the entry, then mark it unused.
- *
- ******************************************************************************/
-
-void
-AcpiNsFreeTableEntry (
-    ACPI_NAMED_OBJECT       *Entry)
-{
-    FUNCTION_TRACE ("NsFreeTableEntry");
-
-
-    if (!Entry)
-    {
-        return_VOID;
-    }
-
-    /*
-     * Need to delete
-     * 1) The scope, if any
-     * 2) An attached object, if any
-     */
-
-    if (Entry->ChildTable)
-    {
-        AcpiCmFree (Entry->ChildTable);
-        Entry->ChildTable = NULL;
-    }
-
-    if (Entry->Object)
-    {
-        AcpiNsDetachObject (Entry->Object);
-        Entry->Object = NULL;
-    }
-
-    /* Mark the entry unallocated */
-
-    Entry->Name = 0;
-
-    return_VOID;
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AcpiNsDeleteSubtree
  *
  * PARAMETERS:  StartHandle         - Handle in namespace where search begins
@@ -489,8 +503,8 @@ AcpiNsFreeTableEntry (
  * DESCRIPTION: Walks the namespace starting at the given handle and deletes
  *              all objects, entries, and scopes in the entire subtree.
  *
- *              TBD: [Investigate] What if any part of this subtree is in use?  (i.e. on one
- *              of the object stacks?)
+ *              TBD: [Investigate] What if any part of this subtree is in use?
+ *              (i.e. on one of the object stacks?)
  *
  ******************************************************************************/
 
@@ -522,16 +536,10 @@ AcpiNsDeleteSubtree (
     {
         /* Attempt to get the next object in this scope */
 
-        Status = AcpiGetNextObject (ACPI_TYPE_ANY, ParentHandle, ChildHandle, &NextChildHandle);
+        Status = AcpiGetNextObject (ACPI_TYPE_ANY, ParentHandle,
+                                    ChildHandle,
+                                    &NextChildHandle);
 
-        /*
-         * Regardless of the success or failure of the previous operation,
-         * we are done with the previous object (if there was one), and any
-         * children it may have had.  So we can now safely delete it (and
-         * its scope, if any)
-         */
-
-        AcpiNsFreeTableEntry (ChildHandle);
         ChildHandle = NextChildHandle;
 
 
@@ -541,9 +549,14 @@ AcpiNsDeleteSubtree (
         {
             /* Check if this object has any children */
 
-            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY, ChildHandle, 0, &Dummy)))
+            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY,
+                                                ChildHandle, 0,
+                                                &Dummy)))
             {
-                /* There is at least one child of this object, visit the object */
+                /*
+                 * There is at least one child of this object,
+                 * visit the object
+                 */
 
                 Level++;
                 ParentHandle    = ChildHandle;
@@ -554,9 +567,15 @@ AcpiNsDeleteSubtree (
         else
         {
             /*
-             * No more children in this object, go back up to the object's parent
+             * No more children in this object, go back up to
+             * the object's parent
              */
             Level--;
+
+            /* Delete all children now */
+
+            AcpiNsDeleteChildren (ChildHandle);
+
             ChildHandle = ParentHandle;
             AcpiGetParent (ParentHandle, &ParentHandle);
         }
@@ -564,7 +583,7 @@ AcpiNsDeleteSubtree (
 
     /* Now delete the starting object, and we are done */
 
-    AcpiNsFreeTableEntry ((ACPI_NAMED_OBJECT*) ChildHandle);
+    AcpiNsDeleteNamedObject (ChildHandle);
 
 
     return_ACPI_STATUS (AE_OK);
@@ -597,7 +616,7 @@ AcpiNsUnloadNamespace (
 
     /* Parameter validation */
 
-    if (!AcpiGbl_RootObject->ChildTable)
+    if (!AcpiGbl_RootObject)
     {
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
