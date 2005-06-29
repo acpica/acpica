@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.5 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,11 +116,13 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "aslresource.h"
 #include "amlcode.h"
 
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("aslrestype1")
 
 
 /*******************************************************************************
@@ -128,7 +130,7 @@
  * FUNCTION:    RsDoDmaDescriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -153,7 +155,8 @@ RsDoDmaDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_DMA_FORMAT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Dma.DescriptorType  = RESOURCE_DESC_DMA_FORMAT;
+    Descriptor->Dma.DescriptorType  = RESOURCE_DESC_DMA_FORMAT | 
+                                        ASL_RDESC_DMA_SIZE;
 
 
     /*
@@ -216,7 +219,7 @@ RsDoDmaDescriptor (
  * FUNCTION:    RsDoEndDependentDescriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -237,7 +240,8 @@ RsDoEndDependentDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_END_DEPENDENT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->End.DescriptorType  = RESOURCE_DESC_END_DEPENDENT;
+    Descriptor->End.DescriptorType  = RESOURCE_DESC_END_DEPENDENT | 
+                                        ASL_RDESC_END_DEPEND_SIZE;
 
     return (Rnode);
 }
@@ -248,7 +252,7 @@ RsDoEndDependentDescriptor (
  * FUNCTION:    RsDoFixedIoDescriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -272,7 +276,8 @@ RsDoFixedIoDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_FIXED_IO_PORT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Iop.DescriptorType  = RESOURCE_DESC_FIXED_IO_PORT;
+    Descriptor->Iop.DescriptorType  = RESOURCE_DESC_FIXED_IO_PORT |
+                                        ASL_RDESC_FIXED_IO_SIZE;
 
 
     /*
@@ -315,7 +320,7 @@ RsDoFixedIoDescriptor (
  * FUNCTION:    RsDoIoDescriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -339,7 +344,8 @@ RsDoIoDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_IO_PORT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Iop.DescriptorType  = RESOURCE_DESC_IO_PORT;
+    Descriptor->Iop.DescriptorType  = RESOURCE_DESC_IO_PORT | 
+                                        ASL_RDESC_IO_SIZE;
 
 
     /*
@@ -400,7 +406,7 @@ RsDoIoDescriptor (
  * FUNCTION:    RsDoIrqDescriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -427,7 +433,8 @@ RsDoIrqDescriptor (
     /* Length = 3 (with flag byte) */
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Irq.DescriptorType  = RESOURCE_DESC_IRQ_FORMAT | 0x01;
+    Descriptor->Irq.DescriptorType  = RESOURCE_DESC_IRQ_FORMAT | 
+                                        (ASL_RDESC_IRQ_SIZE + 0x01);
 
 
     /*
@@ -501,7 +508,7 @@ RsDoIrqDescriptor (
  * FUNCTION:    RsDoIrqNoFlagsDescriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -526,7 +533,8 @@ RsDoIrqNoFlagsDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_IRQ_NOFLAGS_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Irq.DescriptorType  = RESOURCE_DESC_IRQ_FORMAT;
+    Descriptor->Irq.DescriptorType  = RESOURCE_DESC_IRQ_FORMAT |
+                                        ASL_RDESC_IRQ_SIZE;
 
 
     /*
@@ -580,7 +588,7 @@ RsDoIrqNoFlagsDescriptor (
  * FUNCTION:    RsDoMemory24Descriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -668,7 +676,7 @@ RsDoMemory24Descriptor (
  * FUNCTION:    RsDoMemory32Descriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -756,7 +764,7 @@ RsDoMemory32Descriptor (
  * FUNCTION:    RsDoMemory32FixedDescriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -830,7 +838,7 @@ RsDoMemory32FixedDescriptor (
  * FUNCTION:    RsDoStartDependentDescriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -860,7 +868,8 @@ RsDoStartDependentDescriptor (
 
     /* Descriptor has priority byte */
 
-    Descriptor->Std.DescriptorType  = RESOURCE_DESC_START_DEPENDENT | 0x01;
+    Descriptor->Std.DescriptorType  = RESOURCE_DESC_START_DEPENDENT | 
+                                        (ASL_RDESC_ST_DEPEND_SIZE + 0x01);
 
 
     /*
@@ -894,10 +903,7 @@ RsDoStartDependentDescriptor (
 
         case 2:
 
-            /* Finished with the StartDependent descriptor, update buffer pointer */
-
-            //*DescriptorPtr = NEXT_RESOURCE_DESC (Descriptor, ASL_START_DEPENDENT_DESC);
-
+            /* Finished with the StartDependent descriptor */
             /* Fall through */
 
         default:
@@ -927,7 +933,7 @@ RsDoStartDependentDescriptor (
  * FUNCTION:    RsDoStartDependentNoPriDescriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node
@@ -952,7 +958,8 @@ RsDoStartDependentNoPriDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_START_DEPENDENT_NOPRIO_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Std.DescriptorType  = RESOURCE_DESC_START_DEPENDENT;
+    Descriptor->Std.DescriptorType  = RESOURCE_DESC_START_DEPENDENT | 
+                                        ASL_RDESC_ST_DEPEND_SIZE;
     PreviousRnode = Rnode;
 
     /*
@@ -983,7 +990,7 @@ RsDoStartDependentNoPriDescriptor (
  * FUNCTION:    RsDoVendorSmallDescriptor
  *
  * PARAMETERS:  Node                - Parent resource descriptor parse node
- *              CurrentByteOffset   - Offset into the resource template AML 
+ *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
  * RETURN:      Completed resource node

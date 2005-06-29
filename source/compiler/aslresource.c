@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.11 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,12 +116,14 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "aslresource.h"
 #include "amlcode.h"
 
 
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("aslresource")
 
 
 /*******************************************************************************
@@ -165,7 +167,7 @@ RsAllocateResourceNode (
  * PARAMETERS:  Node            - Resource field node
  *              Name            - Name of the field (Used only to reference
  *                                the field in the ASL, not in the AML)
- *              ByteOffset      - Offset from the field start 
+ *              ByteOffset      - Offset from the field start
  *              BitOffset       - Additional bit offset
  *
  * RETURN:      None, sets fields within the input node
@@ -231,7 +233,7 @@ RsCreateByteField (
  *              Position        - Bit position within the flag byte
  *              Default         - Used if the node is DEFAULT.
  *
- * RETURN:      Sets bits within the *Flags output byte. 
+ * RETURN:      Sets bits within the *Flags output byte.
  *
  * DESCRIPTION: Set a bit in a cumulative flags word from an initialization
  *              node.  Will use a default value if the node is DEFAULT, meaning
@@ -300,7 +302,7 @@ RsCompleteNodeAndGetNext (
  * FUNCTION:    RsDoOneResourceDescriptor
  *
  * PARAMETERS:  DescriptorTypeNode  - Parent parse node of the descriptor
- *              CurrentByteOffset   - Offset in the resource descriptor 
+ *              CurrentByteOffset   - Offset in the resource descriptor
  *                                    buffer.
  *
  * RETURN:      A valid resource node for the descriptor
@@ -433,7 +435,7 @@ RsDoOneResourceDescriptor (
  *
  * FUNCTION:    RsLinkDescriptorChain
  *
- * PARAMETERS:  PreviousRnode       - Pointer to the node that will be previous 
+ * PARAMETERS:  PreviousRnode       - Pointer to the node that will be previous
  *                                    to the linked node,  At exit, set to the
  *                                    last node in the new chain.
  *              Rnode               - Resource node to link into the list
@@ -549,7 +551,8 @@ RsDoResourceTemplate (
     Rnode = RsAllocateResourceNode (sizeof (ASL_END_TAG_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Et.DescriptorType = RESOURCE_DESC_END_TAG;
+    Descriptor->Et.DescriptorType = RESOURCE_DESC_END_TAG | 
+                                        ASL_RDESC_END_TAG_SIZE;
     Descriptor->Et.Checksum = 0;
 
     CurrentByteOffset += RsLinkDescriptorChain (&PreviousRnode, Rnode);
