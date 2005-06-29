@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  ******************************************************************************/
 
@@ -449,6 +449,11 @@ AcpiDsCreateOperand (
                  * very serious error at this point
                  */
                 Status = AE_AML_NAME_NOT_FOUND;
+
+                /* TBD: Externalize NameString and print */
+
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                        "Object name was not found in namespace\n"));
             }
         }
 

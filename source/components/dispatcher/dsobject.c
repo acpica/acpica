@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -802,15 +802,8 @@ AcpiDsCreateNode (
     /* Init obj */
 
     Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) Node->Type);
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
 
-    return_ACPI_STATUS (Status);
-
-
-Cleanup:
+    /* Remove local reference to the object */
 
     AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
