@@ -25,7 +25,7 @@ CFG=AcpiSubsystem - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi Components/Subsystem", CQBAAAAA"
 # PROP Scc_LocalPath "..\.."
-CPP=cl.exe
+CPP=xicl6.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiSubsystem - Win32 Release"
@@ -48,7 +48,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=link.exe -lib
+LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"bin\acpica.lib"
 # Begin Special Build Tool
@@ -78,7 +78,7 @@ PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\librarie
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=link.exe -lib
+LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"bin\acpica.lib"
 # Begin Special Build Tool
@@ -132,6 +132,11 @@ SOURCE=..\..\source\components\utilities\utglobal.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utinit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utmath.c
+# ADD CPP /Ze
 # End Source File
 # Begin Source File
 
