@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdyadic - ACPI AML execution for dyadic (2-operand) operators
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -463,6 +463,14 @@ AcpiExDyadic2R (
     Status = AcpiExResolveOperands (Opcode, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
                     NumOperands, "after AcpiExResolveOperands");
+
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINTP (ACPI_ERROR, ("(%s) Could not resolve operand(s) (%s)\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
+
+        goto Cleanup;
+    }
 
     /* Get all operands */
 

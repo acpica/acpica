@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmonad - ACPI AML execution for monadic (1 operand) operators
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -597,29 +597,23 @@ AcpiExMonadic2R (
          * Do the store, and be careful about deleting the source object,
          * since the object itself may have been stored.
          */
-
         Status = AcpiExStore (ObjDesc, ResDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             /* On failure, just delete the ObjDesc */
 
             AcpiUtRemoveReference (ObjDesc);
+            return_ACPI_STATUS (Status);
         }
 
-        else
-        {
-            /*
-             * Normally, we would remove a reference on the ObjDesc parameter;
-             * But since it is being used as the internal return object
-             * (meaning we would normally increment it), the two cancel out,
-             * and we simply don't do anything.
-             */
-            *ReturnDesc = ObjDesc;
-        }
-
-        ObjDesc = NULL;
+        /*
+         * Normally, we would remove a reference on the ObjDesc parameter;
+         * But since it is being used as the internal return object
+         * (meaning we would normally increment it), the two cancel out,
+         * and we simply don't do anything.
+         */
+        *ReturnDesc = ObjDesc;
         return_ACPI_STATUS (Status);
-
         break;
 
 
