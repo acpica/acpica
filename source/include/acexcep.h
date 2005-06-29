@@ -122,46 +122,120 @@
  * Exceptions returned by external ACPI interfaces
  */
 
-#define ACPI_SUCCESS(a)     (!(a))
-#define ACPI_FAILURE(a)     (a)
+#define ACPI_SUCCESS(a)             (!(a))
+#define ACPI_FAILURE(a)             (a)
 
-#define AE_OK               (ACPI_STATUS) 0x0000
-#define AE_PENDING          (ACPI_STATUS) 0x0001
-#define AE_AML_ERROR        (ACPI_STATUS) 0x0002
-#define AE_RETURN_VALUE     (ACPI_STATUS) 0x0003
-#define AE_ERROR            (ACPI_STATUS) 0x0004
-#define AE_NO_ACPI_TABLES   (ACPI_STATUS) 0x0005
-#define AE_NO_NAMESPACE     (ACPI_STATUS) 0x0006
-#define AE_NO_MEMORY        (ACPI_STATUS) 0x0007
-#define AE_BAD_SIGNATURE    (ACPI_STATUS) 0x0008
-#define AE_BAD_HEADER       (ACPI_STATUS) 0x0009
-#define AE_BAD_CHECKSUM     (ACPI_STATUS) 0x000A
-#define AE_BAD_PARAMETER    (ACPI_STATUS) 0x000B
-#define AE_BAD_CHARACTER    (ACPI_STATUS) 0x000C
-#define AE_BAD_PATHNAME     (ACPI_STATUS) 0x000D
-#define AE_BAD_DATA         (ACPI_STATUS) 0x000E
-#define AE_NOT_FOUND        (ACPI_STATUS) 0x000F
-#define AE_NOT_EXIST        (ACPI_STATUS) 0x0010
-#define AE_EXIST            (ACPI_STATUS) 0x0011
-#define AE_TYPE             (ACPI_STATUS) 0x0012
-#define AE_NULL_ENTRY       (ACPI_STATUS) 0x0013
-#define AE_BUFFER_OVERFLOW  (ACPI_STATUS) 0x0014
-#define AE_STACK_OVERFLOW   (ACPI_STATUS) 0x0015
-#define AE_STACK_UNDERFLOW  (ACPI_STATUS) 0x0016
-#define AE_NOT_IMPLEMENTED  (ACPI_STATUS) 0x0017
-#define AE_VERSION_MISMATCH (ACPI_STATUS) 0x0018
-#define AE_SUPPORT          (ACPI_STATUS) 0x0019
-#define AE_SHARE            (ACPI_STATUS) 0x001A
-#define AE_LIMIT            (ACPI_STATUS) 0x001B
-#define AE_TIME             (ACPI_STATUS) 0x001C
-#define AE_TERMINATE        (ACPI_STATUS) 0x001D
-#define AE_DEPTH            (ACPI_STATUS) 0x001E
-#define AE_TRUE             (ACPI_STATUS) 0x001F
-#define AE_FALSE            (ACPI_STATUS) 0x0020
-#define AE_UNKNOWN_STATUS   (ACPI_STATUS) 0x0021
-#define ACPI_MAX_STATUS     (ACPI_STATUS) 0x0021
-#define ACPI_NUM_STATUS     (ACPI_STATUS) 0x0022
+#define AE_OK                       (ACPI_STATUS) 0x0000
+#define AE_RETURN_VALUE             (ACPI_STATUS) 0x0001
+#define AE_PENDING                  (ACPI_STATUS) 0x0002
+#define AE_ERROR                    (ACPI_STATUS) 0x0003
+#define AE_AML_ERROR                (ACPI_STATUS) 0x0004
+#define AE_AML_PARSE                (ACPI_STATUS) 0x0005
+#define AE_AML_BAD_OPCODE           (ACPI_STATUS) 0x0006
+#define AE_AML_NO_OPERAND           (ACPI_STATUS) 0x0007
+#define AE_AML_OPERAND_TYPE         (ACPI_STATUS) 0x0008
+#define AE_AML_OPERAND_VALUE        (ACPI_STATUS) 0x0009
+#define AE_AML_UNINITIALIZED_LOCAL  (ACPI_STATUS) 0x000A
+#define AE_AML_UNINITIALIZED_ARG    (ACPI_STATUS) 0x000B
+#define AE_AML_NUMERIC_OVERFLOW     (ACPI_STATUS) 0x000C
+#define AE_AML_REGION_LIMIT         (ACPI_STATUS) 0x000D
+#define AE_AML_BUFFER_LIMIT         (ACPI_STATUS) 0x000E
+#define AE_AML_PACKAGE_LIMIT        (ACPI_STATUS) 0x000F
+#define AE_AML_DIVIDE_BY_ZERO       (ACPI_STATUS) 0x0010
+#define AE_AML_BAD_NAME             (ACPI_STATUS) 0x0011
+#define AE_AML_INTERNAL             (ACPI_STATUS) 0x0012
+#define AE_NO_ACPI_TABLES           (ACPI_STATUS) 0x0013
+#define AE_NO_NAMESPACE             (ACPI_STATUS) 0x0014
+#define AE_NO_MEMORY                (ACPI_STATUS) 0x0015
+#define AE_BAD_SIGNATURE            (ACPI_STATUS) 0x0016
+#define AE_BAD_HEADER               (ACPI_STATUS) 0x0017
+#define AE_BAD_CHECKSUM             (ACPI_STATUS) 0x0018
+#define AE_BAD_PARAMETER            (ACPI_STATUS) 0x0019
+#define AE_BAD_CHARACTER            (ACPI_STATUS) 0x001A
+#define AE_BAD_PATHNAME             (ACPI_STATUS) 0x001B
+#define AE_BAD_DATA                 (ACPI_STATUS) 0x001C
+#define AE_NOT_FOUND                (ACPI_STATUS) 0x001D
+#define AE_NOT_EXIST                (ACPI_STATUS) 0x001E
+#define AE_EXIST                    (ACPI_STATUS) 0x001F
+#define AE_TYPE                     (ACPI_STATUS) 0x0020
+#define AE_NULL_ENTRY               (ACPI_STATUS) 0x0021
+#define AE_BUFFER_OVERFLOW          (ACPI_STATUS) 0x0022
+#define AE_STACK_OVERFLOW           (ACPI_STATUS) 0x0023
+#define AE_STACK_UNDERFLOW          (ACPI_STATUS) 0x0024
+#define AE_NOT_IMPLEMENTED          (ACPI_STATUS) 0x0025
+#define AE_VERSION_MISMATCH         (ACPI_STATUS) 0x0026
+#define AE_SUPPORT                  (ACPI_STATUS) 0x0027
+#define AE_SHARE                    (ACPI_STATUS) 0x0028
+#define AE_LIMIT                    (ACPI_STATUS) 0x0029
+#define AE_TIME                     (ACPI_STATUS) 0x002A
+#define AE_TERMINATE                (ACPI_STATUS) 0x002B
+#define AE_DEPTH                    (ACPI_STATUS) 0x002C
+#define AE_TRUE                     (ACPI_STATUS) 0x002D
+#define AE_FALSE                    (ACPI_STATUS) 0x002E
+#define AE_UNKNOWN_STATUS           (ACPI_STATUS) 0x002F
+#define ACPI_MAX_STATUS             (ACPI_STATUS) 0x002F
+#define ACPI_NUM_STATUS             (ACPI_STATUS) 0x0030
 
+
+#ifdef DEFINE_ACPI_GLOBALS
+
+/* 
+ * String versions of the exception codes above
+ * These strings must match the corresponding defines exactly
+ */
+static char                 *Gbl_ExceptionNames[] = 
+{ 
+    "AE_OK",
+    "AE_RETURN_VALUE",
+    "AE_PENDING",
+    "AE_ERROR",
+    "AE_AML_ERROR",
+    "AE_AML_PARSE",
+    "AE_AML_BAD_OPCODE",
+	"AE_AML_NO_OPERAND",
+    "AE_AML_OPERAND_TYPE",
+    "AE_AML_OPERAND_VALUE",
+    "AE_AML_UNITIALIZED_LOCAL",
+    "AE_AML_UNITIALIZED_ARG",
+    "AE_AML_NUMERIC_OVERFLOW",
+    "AE_AML_REGION_LIMIT",
+    "AE_AML_BUFFER_LIMIT",
+    "AE_AML_PACKAGE_LIMIT",
+    "AE_AML_DIVIDE_BY_ZERO",
+    "AE_AML_BAD_NAME",
+	"AE_AML_INTERNAL",
+    "AE_NO_ACPI_TABLES",
+    "AE_NO_NAMESPACE",
+    "AE_NO_MEMORY",
+    "AE_BAD_SIGNATURE",
+    "AE_BAD_HEADER",
+    "AE_BAD_CHECKSUM",
+    "AE_BAD_PARAMETER",
+    "AE_BAD_CHARACTER",
+    "AE_BAD_PATHNAME",
+    "AE_BAD_DATA",
+    "AE_NOT_FOUND",
+    "AE_NOT_EXIST",
+    "AE_EXIST",
+    "AE_TYPE",
+    "AE_NULL_ENTRY",
+    "AE_BUFFER_OVERFLOW",
+    "AE_STACK_OVERFLOW",
+    "AE_STACK_UNDERFLOW",
+    "AE_NOT_IMPLEMENTED",
+    "AE_VERSION_MISMATCH",
+    "AE_SUPPORT",
+    "AE_SHARE",
+    "AE_LIMIT",
+    "AE_TIME",
+    "AE_TERMINATE",
+    "AE_DEPTH",
+    "AE_TRUE",
+    "AE_FALSE",
+    "AE_UNKNOWN_STATUS"
+};
+
+#endif /* DEFINE_ACPI_GLOBALS */
 
 
 #endif /* __ACEXCEP_H__ */
