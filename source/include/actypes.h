@@ -267,7 +267,7 @@ typedef UINT32                          u32;
 
 typedef UINT32                          ACPI_STATUS;    /* All ACPI Exceptions */
 typedef UINT32                          ACPI_NAME;      /* 4-INT8 ACPI name */
-typedef char*                           ACPI_STRING;    /* Null terminated ASCII string */
+typedef INT8*                           ACPI_STRING;    /* Null terminated ASCII string */
 typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an NTE */
 
 
