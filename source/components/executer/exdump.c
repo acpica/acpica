@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -364,7 +364,7 @@ AcpiAmlDumpOperand (
             break;
 
 
-        case AML_NAMEPATH_OP:
+        case AML_INT_NAMEPATH_OP:
             DEBUG_PRINT_RAW (ACPI_INFO, ("Reference.Node->Name %x\n",
                         EntryDesc->Reference.Node->Name));
             break;
