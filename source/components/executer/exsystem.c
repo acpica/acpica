@@ -394,8 +394,6 @@ OsSignalEvent (
  * DESCRIPTION: Provides an access point to perform synchronization operations
  *              within the AML.  This operation is a request to wait for an event.
  *
- *              TBD: Timeout is being ignored for the current implementation.
- *
  ******************************************************************************/
 
 ACPI_STATUS
