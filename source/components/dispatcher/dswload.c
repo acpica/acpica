@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.27 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dswload")
 
 
@@ -516,7 +516,8 @@ AcpiDsLoad2EndOp (
     ACPI_NAMESPACE_NODE     *NewNode;
 
 
-    DEBUG_PRINT (TRACE_DISPATCH, ("Load2EndOp: Op=%p State=%p\n", Op, WalkState));
+    DEBUG_PRINT (TRACE_DISPATCH, 
+        ("Load2EndOp: Op=%p State=%p\n", Op, WalkState));
 
     if (!AcpiPsIsNamespaceObjectOp (Op->Opcode))
     {
@@ -628,43 +629,45 @@ AcpiDsLoad2EndOp (
             Arg = AcpiPsGetArg (Op, 2);
         }
 
+        if (!Arg)
+        {
+            Status = AE_AML_NO_OPERAND;
+            goto Cleanup;
+        }
+
         /*
          * Enter the NameString into the namespace
          */
-
-        Status = AcpiNsLookup (WalkState->ScopeInfo,
-                                Arg->Value.String,
-                                INTERNAL_TYPE_DEF_ANY,
-                                IMODE_LOAD_PASS1,
+        Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
+                                INTERNAL_TYPE_DEF_ANY, IMODE_LOAD_PASS1,
                                 NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                                 WalkState, &(NewNode));
-
-        if (ACPI_SUCCESS (Status))
+        if (ACPI_FAILURE (Status))
         {
-            /* We could put the returned object (Node) on the object stack for later, but
-             * for now, we will put it in the "op" object that the parser uses, so we
-             * can get it again at the end of this scope
-             */
-            Op->Node = NewNode;
-
-            /*
-             * If there is no object attached to the node, this node was just created and
-             * we need to create the field object.  Otherwise, this was a lookup of an
-             * existing node and we don't want to create the field object again.
-             */
-            if (!NewNode->Object)
-            {
-                /*
-                 * The Field definition is not fully parsed at this time.
-                 * (We must save the address of the AML for the buffer and index operands)
-                 */
-                Status = AcpiAmlExecCreateField (((ACPI_PARSE2_OBJECT *) Op)->Data,
-                                                ((ACPI_PARSE2_OBJECT *) Op)->Length,
-                                                NewNode, WalkState);
-            }
+            goto Cleanup;
         }
 
+        /* We could put the returned object (Node) on the object stack for later, but
+         * for now, we will put it in the "op" object that the parser uses, so we
+         * can get it again at the end of this scope
+         */
+        Op->Node = NewNode;
 
+        /*
+         * If there is no object attached to the node, this node was just created and
+         * we need to create the field object.  Otherwise, this was a lookup of an
+         * existing node and we don't want to create the field object again.
+         */
+        if (!NewNode->Object)
+        {
+            /*
+             * The Field definition is not fully parsed at this time.
+             * (We must save the address of the AML for the buffer and index operands)
+             */
+            Status = AcpiAmlExecCreateField (((ACPI_PARSE2_OBJECT *) Op)->Data,
+                                            ((ACPI_PARSE2_OBJECT *) Op)->Length,
+                                            NewNode, WalkState);
+        }
         break;
 
 
@@ -686,7 +689,7 @@ AcpiDsLoad2EndOp (
         if (ACPI_SUCCESS (Status))
         {
 
-/* has name already been resolved by here ??*/
+            /* TBD: has name already been resolved by here ??*/
 
             /* TBD: [Restructure] Make sure that what we found is indeed a method! */
             /* We didn't search for a method on purpose, to see if the name would resolve! */
