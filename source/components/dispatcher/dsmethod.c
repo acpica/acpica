@@ -153,9 +153,10 @@ PsxParseMethod (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *Op;
     NAME_TABLE_ENTRY        *Entry;
+    INIT_WALK_INFO          Info;
 
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsParseMethod: [%4.4s] Nte=%X\n", 
+    DEBUG_PRINT (TRACE_PARSE, ("PsParseMethod: [%4.4s] Nte=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
 
 
@@ -195,10 +196,29 @@ PsxParseMethod (
 
     /* 
      * Walk the method parse tree to enter any named objects declared within the
-     * method into the namespace.  Don't include the method op in the walk --
-     * Just set the opcode to NOOP temporarily
+     * method into the namespace.  Don't include the method op in the walk, start with
+     * first arg.
      */
-    PsWalkParsedAml (PsGetChild (Op), Op, NULL, NULL, PsxLoadBeginMethodOp, PsxLoadEndOp);
+    PsWalkParsedAml (PsGetArg (Op, 0), Op, NULL, NULL, PsxLoadBeginMethodOp, PsxLoadEndOp);
+
+
+    /*
+     * Now walk the namespace under the method to initialize any objects that have been declared
+     */
+
+
+    DEBUG_PRINT (TRACE_PARSE, ("PsParseMethod: [%4.4s] Nte=%p About to Walk new NS \n", 
+                    &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
+BREAKPOINT3;
+    Info.MethodCount = 0;
+    Info.OpRegionCount = 0;
+    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Entry, ACPI_INT_MAX, PsxInitOneObject, 
+                                &Info, NULL);
+
+    if (Info.MethodCount > 0)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("PsxParseMethod:  Found a method declared within a method! Nte=%p\n", Entry));
+    }
 
     NsScopeStackPop (ACPI_TYPE_Any);
 
