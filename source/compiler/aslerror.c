@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -301,7 +301,7 @@ AePrintException (
 
         if (Enode->LineNumber)
         {
-            fprintf (OutputFile, "%6d: ", Enode->LineNumber);
+            fprintf (OutputFile, "%6u: ", Enode->LineNumber);
 
             /*
              * Seek to the offset in the combined source file, read the source
@@ -359,14 +359,14 @@ AePrintException (
                 if ((MsgLength + ErrorColumn) < (SourceColumn - 1))
                 {
                     fprintf (OutputFile, "%*s%s",
-                        (SourceColumn - 1) - ErrorColumn,
+                        (int) ((SourceColumn - 1) - ErrorColumn),
                         MainMessage, " ^ ");
                 }
 
                 else
                 {
                     fprintf (OutputFile, "%*s %s",
-                        (SourceColumn - ErrorColumn) + 1, "^",
+                        (int) ((SourceColumn - ErrorColumn) + 1), "^",
                         MainMessage);
                 }
             }

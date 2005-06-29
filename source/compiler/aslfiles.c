@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.18 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,6 @@
  *
  *****************************************************************************/
 
-
 #include "aslcompiler.h"
 
 #define _COMPONENT          ACPI_COMPILER
@@ -218,7 +217,7 @@ FlFileError (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Open a file.  
+ * DESCRIPTION: Open a file.
  *              NOTE: Aborts compiler on any error.
  *
  ******************************************************************************/
@@ -258,7 +257,7 @@ FlOpenFile (
  *
  * RETURN:      Status.  AE_ERROR indicated EOF.
  *
- * DESCRIPTION: Read data from an open file.  
+ * DESCRIPTION: Read data from an open file.
  *              NOTE: Aborts compiler on any error.
  *
  ******************************************************************************/
@@ -310,7 +309,7 @@ FlReadFile (
 ACPI_STATUS
 FlWriteFile (
     UINT32                  FileId,
-    char                    *Buffer,
+    void                    *Buffer,
     UINT32                  Length)
 {
     UINT32                  Actual;
@@ -365,7 +364,6 @@ FlPrintFile (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    FlSeekFile
@@ -380,7 +378,7 @@ FlPrintFile (
  *
  ******************************************************************************/
 
-ACPI_STATUS 
+ACPI_STATUS
 FlSeekFile (
     UINT32                  FileId,
     UINT32                  Offset)
@@ -412,7 +410,7 @@ FlSeekFile (
  *
  ******************************************************************************/
 
-ACPI_STATUS 
+ACPI_STATUS
 FlCloseFile (
     UINT32                  FileId)
 {
@@ -461,8 +459,9 @@ FlOpenIncludeFile (
     if (!Node)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN,
-                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                    Gbl_InputByteCount, Gbl_CurrentColumn, Gbl_InputFilename, " - Null parse node");
+            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+            Gbl_InputByteCount, Gbl_CurrentColumn,
+            Gbl_Files[ASL_FILE_INPUT].Filename, " - Null parse node");
         return;
     }
 
@@ -744,9 +743,12 @@ FlOpenMiscOutputFiles (
             return (AE_ERROR);
         }
 
-        /* Open the debug file, text mode */
+        /* Open the debug file as STDERR, text mode */
 
-        FlOpenFile (ASL_FILE_DEBUG_OUTPUT, Filename, "w+");
+        /* TBD: hide this behind a FlReopenFile function */
+
+        Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Filename = Filename;
+        Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle   = freopen (Filename, "w+", stderr);
 
         AslCompilerSignon (ASL_FILE_DEBUG_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_DEBUG_OUTPUT);
@@ -754,54 +756,6 @@ FlOpenMiscOutputFiles (
 
 
     return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    FlCloseListingFile
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Close the listing file if the option was specified
- *
- ******************************************************************************/
-
-void
-FlCloseListingFile (void)
-{
-
-    if (!Gbl_ListingFlag)
-    {
-        return;
-    }
-
-    /* Flush any final AML in the buffer */
-
-    LsFlushListingBuffer ();
-
-    /* Print a summary of the compile exceptions */
-
-    FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\nSummary of errors and warnings\n\n");
-    AePrintErrorLog (ASL_FILE_LISTING_OUTPUT);
-    FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\n");
-    UtDisplaySummary (ASL_FILE_LISTING_OUTPUT);
-    FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\n");
-
-    /* Close the listing file */
-
-    FlCloseFile (ASL_FILE_LISTING_OUTPUT);
-
-    /*
-     * TBD: SourceOutput should be .TMP, then rename if we want to keep it?
-     */
-    if (!Gbl_SourceOutputFlag)
-    {
-        FlCloseFile (ASL_FILE_SOURCE_OUTPUT);
-        unlink (Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename);
-    }
 }
 
 
