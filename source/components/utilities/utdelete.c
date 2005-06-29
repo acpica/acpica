@@ -233,6 +233,7 @@ CmUpdateObjectReference (
     INT32                   Action)
 {
     UINT32                  i;
+    ACPI_OBJECT_INTERNAL    *Next;
 
 
     FUNCTION_TRACE_PTR ("CmUpdateObjectReference", Object);
@@ -269,10 +270,33 @@ CmUpdateObjectReference (
      * All sub-objects must have their reference count incremented also.
      * Different object types have different subobjects.
      */
-    switch (Object->Type)
+    switch (Object->Common.Type)
     {
 
-    case TYPE_Package:
+    case ACPI_TYPE_Device:
+
+        CmUpdateObjectReference (Object->Device.AddrHandler, Action);
+        CmUpdateObjectReference (Object->Device.SysHandler, Action);
+        CmUpdateObjectReference (Object->Device.DrvHandler, Action);
+        break;
+
+
+    case INTERNAL_TYPE_AddressHandler:
+
+        /* Must walk list of address handlers */
+
+        Next = Object->AddrHandler.Link;
+        while (Next)
+        {
+            Next->Common.ReferenceCount = CmUpdateRefCount (Next, 
+                                            Next->Common.ReferenceCount, Action);
+
+            Next = Next->AddrHandler.Link;
+        }
+        break;
+
+
+    case ACPI_TYPE_Package:
 
         /* 
          * We must update all the sub-objects of the package
@@ -292,32 +316,32 @@ CmUpdateObjectReference (
         break;
 
 
-    case TYPE_FieldUnit:
+    case ACPI_TYPE_FieldUnit:
 
         CmUpdateObjectReference (Object->FieldUnit.Container, Action);
         break;
 
 
-    case TYPE_DefField:
+    case INTERNAL_TYPE_DefField:
 
         CmUpdateObjectReference (Object->Field.Container, Action);
         break;
 
 
-    case TYPE_BankField:
+    case INTERNAL_TYPE_BankField:
 
         CmUpdateObjectReference (Object->BankField.Container, Action);
         CmUpdateObjectReference (Object->BankField.BankSelect, Action);
         break;
 
 
-    case TYPE_Region:
+    case ACPI_TYPE_Region:
 
         CmUpdateObjectReference (Object->Region.AddressLocation, Action);
         break;
 
 
-    case TYPE_Lvalue:
+    case INTERNAL_TYPE_Lvalue:
 
         break;
     }
@@ -353,6 +377,8 @@ CmDeleteInternalObj (
 {
     void                    *ObjPointer = NULL;
     UINT32                  i;
+    ACPI_OBJECT_INTERNAL    *Next;
+    ACPI_OBJECT_INTERNAL    *New;
 
 
     FUNCTION_TRACE_PTR ("CmDeleteInternalObj", Object);
@@ -371,10 +397,40 @@ CmDeleteInternalObj (
     
     /* Handle sub-objects and buffers within the object */
 
-    switch (Object->Type)
+    switch (Object->Common.Type)
     {
 
-    case TYPE_String:
+    case ACPI_TYPE_Device:
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Device %p\n", 
+                                Object));
+
+
+        CmDeleteInternalObj (Object->Device.AddrHandler);
+        CmDeleteInternalObj (Object->Device.SysHandler);
+        CmDeleteInternalObj (Object->Device.DrvHandler);
+        break;
+
+
+    case INTERNAL_TYPE_AddressHandler:
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** AddressHandler %p\n", 
+                                Object));
+
+        Next = Object->AddrHandler.Link;
+        while (Next)
+        {
+            New = Next->AddrHandler.Link;
+            if (!(Next->Common.Flags & AO_STATIC_ALLOCATION))
+            {
+                CmFree (Next);
+            }
+
+            Next = New;
+        }
+        break;
+
+    case ACPI_TYPE_String:
 
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** String %p, ptr %p\n", 
                                 Object, Object->String.Pointer));
@@ -385,7 +441,7 @@ CmDeleteInternalObj (
         break;
 
 
-    case TYPE_Buffer:
+    case ACPI_TYPE_Buffer:
         
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Buffer %p, ptr %p\n", 
                                 Object, Object->Buffer.Pointer));
@@ -396,7 +452,7 @@ CmDeleteInternalObj (
         break;
 
 
-    case TYPE_Package:
+    case ACPI_TYPE_Package:
         
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Package of count %d\n", 
                                 Object->Package.Count));
@@ -421,13 +477,13 @@ CmDeleteInternalObj (
         break;
 
 
-    case TYPE_FieldUnit:
+    case ACPI_TYPE_FieldUnit:
         
         CmDeleteInternalObj (Object->FieldUnit.Container);
         break;
 
 
-    case TYPE_DefField:
+    case INTERNAL_TYPE_DefField:
         
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Field %p, container %p\n", 
                                 Object, Object->Field.Container));
@@ -436,14 +492,14 @@ CmDeleteInternalObj (
         break;
 
 
-    case TYPE_BankField:
+    case INTERNAL_TYPE_BankField:
         
         CmDeleteInternalObj (Object->BankField.Container);
         CmDeleteInternalObj (Object->BankField.BankSelect);  /* TBD: is this necessary? */
         break;
 
 
-    case TYPE_Region:
+    case ACPI_TYPE_Region:
         
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Region %p, method %p\n", 
                                 Object, Object->Region.AddressLocation));
@@ -452,7 +508,7 @@ CmDeleteInternalObj (
         break;
 
 
-    case TYPE_Lvalue:
+    case INTERNAL_TYPE_Lvalue:
         
         if ((Object->Lvalue.Object) &&
            (!IS_NS_HANDLE (Object->Lvalue.Object)))
@@ -467,7 +523,7 @@ CmDeleteInternalObj (
     default:
 
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Obj Type: %d, no subobject delete\n", 
-                                Object->Type));
+                                Object->Common.Type));
         break;
     }
 
@@ -493,13 +549,13 @@ CmDeleteInternalObj (
     if (Object->Common.Flags & AO_STATIC_ALLOCATION)
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Obj %p [%s] static allocation!\n",
-                                Object, NsTypeNames[Object->Type]));
+                                Object, Gbl_NsTypeNames[Object->Common.Type]));
     }
 
     else
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj %p [%s]\n",
-                                Object, NsTypeNames[Object->Type]));
+                                Object, Gbl_NsTypeNames[Object->Common.Type]));
 
         CmFree (Object);
     }
@@ -606,7 +662,7 @@ CmDeleteInternalObjectList (
          * need to be deleted separately.
          */
 
-        if ((*InternalObj)->Type == TYPE_Package)
+        if ((*InternalObj)->Common.Type == ACPI_TYPE_Package)
         {
             /* Delete the package */
             
