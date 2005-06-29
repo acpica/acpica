@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.110 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -129,21 +129,6 @@
 
 /* warn : named type definition in parentheses */
 #pragma warning(disable:4115)
-
-/* MS doesn't have getopt, but we implement it */
-int
-getopt (
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
-
-#endif
-
-#ifdef _LINUX
-
-/* includes native getopt definition */
-#include <unistd.h>
-
 #endif
 
 #include <stdio.h>
@@ -155,6 +140,7 @@ getopt (
 
 
 #include "acpi.h"
+#include "amlresrc.h"
 #include "acdebug.h"
 #include "asltypes.h"
 #include "aslglobal.h"
@@ -167,7 +153,7 @@ getopt (
 #define CompilerCreatorRevision     ACPI_CA_VERSION
 
 #define IntelAcpiCA                 "Intel ACPI Component Architecture"
-#define CompilerId                  "ASL Compiler / AML Disassembler"
+#define CompilerId                  "ASL Optimizing Compiler / AML Disassembler"
 #define CompilerCopyright           "Copyright (C) 2000 - 2002 Intel Corporation"
 #define CompilerCompliance          "ACPI 2.0a"
 #define CompilerName                "iasl"
@@ -221,6 +207,7 @@ getopt (
 #define FILE_SUFFIX_NAMESPACE       "nsp"
 #define FILE_SUFFIX_ASM_SOURCE      "asm"
 #define FILE_SUFFIX_C_SOURCE        "c"
+#define FILE_SUFFIX_DISASSEMBLY     "dsl"
 
 
 /* Misc */
@@ -303,6 +290,9 @@ int
 CmDoCompile (void);
 
 void
+CmDoOutputFiles (void);
+
+void
 CmCleanupAndExit (void);
 
 
@@ -329,7 +319,8 @@ AslCommonError (
 void
 AePrintException (
     UINT32                  FileId,
-    ASL_ERROR_MSG           *Enode);
+    ASL_ERROR_MSG           *Enode,
+    char                    *Header);
 
 void
 AePrintErrorLog (
@@ -468,7 +459,6 @@ OpnDoPackage (
 void
 OpnDoRegion (
     ACPI_PARSE_OBJECT       *Op);
-
 
 
 /*
@@ -920,6 +910,178 @@ void
 LnAdjustLengthToRoot (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  LengthDelta);
+
+
+#define NEXT_RESOURCE_DESC(a,b)     (ASL_RESOURCE_DESC *) (((char *) (a)) + sizeof(b))
+
+#define DEFAULT_RESOURCE_DESC_SIZE  (sizeof (ASL_RESOURCE_DESC) + sizeof (ASL_END_TAG_DESC))
+
+
+/*
+ * Resource utilities
+ */
+
+ASL_RESOURCE_NODE *
+RsAllocateResourceNode (
+    UINT32                  Size);
+
+    void
+RsCreateBitField (
+    ACPI_PARSE_OBJECT       *Op,
+    char                    *Name,
+    UINT32                  ByteOffset,
+    UINT32                  BitOffset);
+
+void
+RsCreateByteField (
+    ACPI_PARSE_OBJECT       *Op,
+    char                    *Name,
+    UINT32                  ByteOffset);
+
+void
+RsSetFlagBits (
+    UINT8                   *Flags,
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   Position,
+    UINT8                   Default);
+
+ACPI_PARSE_OBJECT *
+RsCompleteNodeAndGetNext (
+    ACPI_PARSE_OBJECT       *Op);
+
+ASL_RESOURCE_NODE *
+RsDoOneResourceDescriptor (
+    ACPI_PARSE_OBJECT       *DescriptorTypeOp,
+    UINT32                  CurrentByteOffset,
+    UINT8                   *State);
+
+#define ACPI_RSTATE_NORMAL              0
+#define ACPI_RSTATE_START_DEPENDENT     1
+#define ACPI_RSTATE_DEPENDENT_LIST      2
+
+UINT32
+RsLinkDescriptorChain (
+    ASL_RESOURCE_NODE       **PreviousRnode,
+    ASL_RESOURCE_NODE       *Rnode);
+
+
+/*
+ * Small descriptors
+ */
+
+ASL_RESOURCE_NODE *
+RsDoDmaDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoEndDependentDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoFixedIoDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoInterruptDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoIoDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoIrqDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoIrqNoFlagsDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoMemory24Descriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoMemory32Descriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoMemory32FixedDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoStartDependentDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoStartDependentNoPriDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoVendorSmallDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+
+/*
+ * Large descriptors
+ */
+
+UINT32
+RsGetStringDataLength (
+    ACPI_PARSE_OBJECT       *InitializerOp);
+
+ASL_RESOURCE_NODE *
+RsDoDwordIoDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoDwordMemoryDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoQwordIoDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoQwordMemoryDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoWordIoDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoWordBusNumberDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoVendorLargeDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoGeneralRegisterDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
 
 
 #endif /*  __ASLCOMPILER_H */

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.59 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,6 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslcompile")
-
 
 
 /*******************************************************************************
@@ -313,6 +312,18 @@ CmDoCompile (void)
 
     OpcGetIntegerWidth (RootNode);
 
+    /*
+     * Now that the input is parsed, we can open the AML output file.
+     * Note: by default, the name of this file comes from the table descriptor
+     * within the input file.
+     */
+    Status = FlOpenAmlOutputFile (Gbl_OutputFilenamePrefix);
+    if (ACPI_FAILURE (Status))
+    {
+        AePrintErrorLog (ASL_FILE_STDERR);
+        return -1;
+    }
+
     /* Pre-process parse tree for any operator transforms */
 
     UtBeginEvent (i, "Generate AML opcodes");
@@ -424,17 +435,6 @@ CmDoCompile (void)
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
     UtEndEvent (i++);
 
-    /*
-     * Now that the input is parsed, we can open the AML output file.
-     * Note: by default, the name of this file comes from the table descriptor
-     * within the input file.
-     */
-    Status = FlOpenAmlOutputFile (Gbl_OutputFilenamePrefix);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (ASL_FILE_STDERR);
-        return -1;
-    }
 
     /* Code generation - emit the AML */
 
@@ -443,6 +443,17 @@ CmDoCompile (void)
     UtEndEvent (i++);
 
     UtBeginEvent (i, "Write optional output files");
+    CmDoOutputFiles ();
+    UtEndEvent (i++);
+
+    UtEndEvent (13);
+    CmCleanupAndExit ();
+    return 0;
+}
+
+void
+CmDoOutputFiles (void)
+{
 
     /* Create listings and hex files */
 
@@ -452,11 +463,6 @@ CmDoCompile (void)
     /* Dump the namespace to the .nsp file if requested */
 
     LsDisplayNamespace ();
-    UtEndEvent (i++);
-
-    UtEndEvent (13);
-    CmCleanupAndExit ();
-    return 0;
 }
 
 
@@ -551,6 +557,11 @@ CmCleanupAndExit (void)
     if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
     {
         unlink (Gbl_Files[ASL_FILE_AML_OUTPUT].Filename);
+    }
+
+    if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
+    {
+        printf ("\nMaximum error count (%d) exceeded.\n", ASL_MAX_ERROR_COUNT);
     }
 
     UtDisplaySummary (ASL_FILE_STDOUT);
