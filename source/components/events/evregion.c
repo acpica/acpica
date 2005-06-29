@@ -1,6 +1,6 @@
 /******************************************************************************
  * 
- * Module Name: evregion - ACPI Operation Region handler dispatch
+ * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
  *
  *****************************************************************************/
 
@@ -123,20 +123,54 @@
 
 /**************************************************************************
  *
- * FUNCTION:    EvOpRegionDispatch
+ * FUNCTION:    EvAddressSpaceDispatch
  *
- * PARAMETERS:  
+ * PARAMETERS:  SpaceId             - ID of the address space (0-255)
+ *              Function            - Read or Write operation
+ *              Address             - Where in the space to read or write
+ *              BitWidth            - Field width in bits (8, 16, or 32)
+ *              Value               - Pointer to in or out value
  *
- * RETURN:      None.
+ * RETURN:      Status
  *
- * DESCRIPTION: Dispatch an operation region access to a previously 
- *              installed handler.
+ * DESCRIPTION: Dispatch an address space or operation region access to  
+ *              a previously installed handler.
  *
  *************************************************************************/
 
-void
-EvOpRegionDispatch (
-    UINT32                  Region)
+ACPI_STATUS
+EvAddressSpaceDispatch (
+    UINT32                  SpaceId,
+    UINT32                  Function,
+    UINT32                  Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value)
 {
+    ACPI_STATUS             Status;
 
+
+    /* SpaceId must be in range */
+
+    if (SpaceId > ACPI_MAX_ADDRESS_SPACE)
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+    /* Check for an installed handler */
+
+    if (!AddressSpaces[SpaceId].Handler)
+    {
+        return AE_EXIST;
+    }
+
+
+    /* 
+     * Invoke the handler.  
+     * Value of "Value" is used in case this is a write operation 
+     */
+
+    Status = AddressSpaces[SpaceId].Handler (Function, Address, BitWidth, Value,
+                                                AddressSpaces[SpaceId].Context);
+
+    return Status;
 }
