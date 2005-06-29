@@ -228,8 +228,7 @@ AcpiModeCapabilities (
 
 ACPI_STATUS
 AcpiEnable (
-    char                *TestName, 
-    INT32               Flags);
+	void);
 
 ACPI_STATUS
 AcpiDisable (
