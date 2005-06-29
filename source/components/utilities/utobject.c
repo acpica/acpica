@@ -151,9 +151,9 @@
 
 ACPI_OBJECT_INTERNAL *
 _CmCreateInternalObject (
-    INT8                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
     OBJECT_TYPE_INTERNAL    Type)
 {
     ACPI_OBJECT_INTERNAL    *Object;
@@ -183,10 +183,6 @@ _CmCreateInternalObject (
 
     /* Any per-type initialization should go here */
 
-
-    /* Memory allocation metrics - compiled out in non debug mode. */
-
-    INCREMENT_OBJECT_METRICS (sizeof (ACPI_OBJECT_INTERNAL));
 
     return_PTR (Object);
 }
@@ -280,9 +276,9 @@ AcpiCmValidInternalObject (
 
 void *
 _CmAllocateObjectDesc (
-    INT8                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId)
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId)
 {
     ACPI_OBJECT_INTERNAL    *Object;
 
@@ -320,7 +316,6 @@ _CmAllocateObjectDesc (
 
         Object = _CmCallocate (sizeof (ACPI_OBJECT_INTERNAL), ComponentId,
                                     ModuleName, LineNumber);
-
         if (!Object)
         {
             /* Allocation failed */
@@ -330,6 +325,10 @@ _CmAllocateObjectDesc (
 
             return_PTR (NULL);
         }
+
+        /* Memory allocation metrics - compiled out in non debug mode. */
+
+        INCREMENT_OBJECT_METRICS (sizeof (ACPI_OBJECT_INTERNAL));
     }
 
     /* Mark the descriptor type */
@@ -360,6 +359,8 @@ AcpiCmDeleteObjectDesc (
     ACPI_OBJECT_INTERNAL    *Object)
 {
 
+    FUNCTION_TRACE ("AcpiCmDeleteObjectDesc");
+
 
     /* Object must be an ACPI_OBJECT_INTERNAL */
 
@@ -367,7 +368,7 @@ AcpiCmDeleteObjectDesc (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("CmDeleteObjectDesc: Obj %p is not an ACPI object\n", Object));
-        return;
+        return_VOID;
     }
 
     /* Make sure that the object isn't already in the cache */
@@ -377,7 +378,7 @@ AcpiCmDeleteObjectDesc (
         DEBUG_PRINT (ACPI_ERROR,
             ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
             Object));
-        return;
+        return_VOID;
     }
 
 
@@ -389,10 +390,10 @@ AcpiCmDeleteObjectDesc (
          * Memory allocation metrics.  Call the macro here since we only
          * care about dynamically allocated objects.
          */
-        DECREMENT_OBJECT_METRICS (AcpiGbl_ObjectCache->Common.Size);
+        DECREMENT_OBJECT_METRICS (sizeof (ACPI_OBJECT_INTERNAL));
 
         AcpiCmFree (Object);
-        return;
+        return_VOID;
     }
 
     AcpiCmAcquireMutex (ACPI_MTX_CACHES);
@@ -410,6 +411,7 @@ AcpiCmDeleteObjectDesc (
 
 
     AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+    return_VOID;
 }
 
 
@@ -449,7 +451,7 @@ AcpiCmDeleteObjectCache (
          * Memory allocation metrics.  Call the macro here since we only
          * care about dynamically allocated objects.
          */
-        DECREMENT_OBJECT_METRICS (AcpiGbl_ObjectCache->Common.Size);
+        DECREMENT_OBJECT_METRICS (sizeof (ACPI_OBJECT_INTERNAL));
 
         AcpiCmFree (AcpiGbl_ObjectCache);
         AcpiGbl_ObjectCache = Next;
@@ -664,7 +666,7 @@ AcpiCmGetPackageObjectSize (
     UINT32                  Index[MAX_PACKAGE_DEPTH] = { 0,0,0,0,0 };
     UINT32                  Length = 0;
     UINT32                  ObjectSpace;
-    INT32                   CurrentDepth = 0;
+    UINT32                  CurrentDepth = 0;
     UINT32                  PackageCount = 1;
     ACPI_STATUS             Status;
 
