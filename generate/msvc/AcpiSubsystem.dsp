@@ -611,6 +611,14 @@ SOURCE=..\..\Subsystem\Include\acpi.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\subsystem\Include\acpiosxf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acpixf.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\subsystem\Include\acresrc.h
 # End Source File
 # Begin Source File
