@@ -197,10 +197,11 @@ void
 OsdFree (
     void *                  Memory);
 
-void *
+ACPI_STATUS
 OsdMapMemory (
     void                    *PhysicalAddress,
-    UINT32                  Length);
+    UINT32                  Length,
+	void					**LogicalAddress);
 
 void 
 OsdUnMapMemory (
