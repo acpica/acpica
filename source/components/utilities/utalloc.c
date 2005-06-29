@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -666,7 +666,7 @@ _CmAllocate (
         _REPORT_ERROR (Module, Line, Component,
                 ("CmAllocate: Could not allocate size %X\n", Size));
 
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
 #ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
@@ -720,7 +720,7 @@ _CmCallocate (
     {
         _REPORT_ERROR (Module, Line, Component,
                 ("CmCallocate: Attempt to allocate zero bytes\n"));
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
 
@@ -732,7 +732,7 @@ _CmCallocate (
 
         _REPORT_ERROR (Module, Line, Component,
                 ("CmCallocate: Could not allocate size %X\n", Size));
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
 #ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
