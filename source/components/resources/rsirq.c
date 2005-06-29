@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  ******************************************************************************/
 
@@ -190,19 +190,16 @@ AcpiRsIrqResource (
         }
     }
 
-    if (i == 0)
-    {
-        /* Zero interrupts is invalid! */
+    /* Zero interrupts is valid */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Found Zero interrupt levels in resource list\n"));
-        return_ACPI_STATUS (AE_BAD_DATA);
-    }
     OutputStruct->Data.Irq.NumberOfInterrupts = i;
-
-    /*
-     * Calculate the structure size based upon the number of interrupts
-     */
-    StructSize += ((ACPI_SIZE) OutputStruct->Data.Irq.NumberOfInterrupts - 1) * 4;
+    if (i > 0)
+    {
+        /*
+         * Calculate the structure size based upon the number of interrupts
+         */
+        StructSize += ((ACPI_SIZE) i - 1) * 4;
+    }
 
     /*
      * Point to Byte 3 if it is used
