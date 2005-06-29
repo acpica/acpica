@@ -198,6 +198,20 @@ PsGetNextWalkOp (
             return_ACPI_STATUS (AE_OK);
         }
     
+        if (Status == AE_FALSE)
+        {
+            /*
+             * Predicate was false, so instead of moving on to the
+             * body (TermList), we close out the IF/WHILE
+             */
+
+            Next        = Parent->Next;
+
+            Status = AscendingCallback (WalkState, Parent);
+
+            /* Now continue to the next node in the tree */
+        }
+
         /* Look for a sibling to the current op */
 
         if (Next)
@@ -281,6 +295,7 @@ PsGetNextWalkOp (
 
             Op = WalkState->ControlState->PredicateOp;      /* Points to the predicate */
 
+            WalkState->ControlState->Exec           = CONTROL_PREDICATE_EXECUTING;
             WalkState->PrevOp       = Op->Parent;
             WalkState->NextOp       = Op;                   /* Evaluate the predicate again (next) */
             WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;     /* Because we will traverse WHILE tree again */
@@ -404,12 +419,16 @@ PsWalkLoop (
 
         /* 
          * A TRUE exception means that an ELSE was detected, but the IF predicate evaluated TRUE.
-         * Simply ignore the entire ELSE block by moving on the the next opcode.
          */
         if (Status == AE_TRUE)
         {
-            Op = Op->Next;
-            continue;
+            /*
+             * Ignore the entire ELSE block by moving on to the the next opcode.
+             * And we do that by simply going up in the tree (either to the next sibling
+             * or to the parent) from here.
+             */
+          
+            WalkState->NextOpInfo = NEXT_OP_UPWARD;
         }
 
         /* Get the next node (op) in the depth-first walk */
@@ -466,6 +485,8 @@ ACPI_STATUS
 PsWalkParsedAml (
     ACPI_GENERIC_OP         *StartOp,
     ACPI_GENERIC_OP         *EndOp,
+    ACPI_OBJECT_INTERNAL    *MthDesc,
+	NAME_TABLE_ENTRY		*StartScope,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     INTERPRETER_CALLBACK    DescendingCallback,
@@ -493,7 +514,7 @@ PsWalkParsedAml (
 
     WalkList.WalkState = NULL;
 
-    WalkState = PsCreateWalkState (EndOp, &WalkList);
+    WalkState = PsCreateWalkState (EndOp, MthDesc, &WalkList);
     if (!WalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -505,9 +526,21 @@ PsWalkParsedAml (
     PrevWalkList = Gbl_CurrentWalkList;
     Gbl_CurrentWalkList = &WalkList;
 
-    /* Init arguments if this is a control method */
+	if (MthDesc)
+	{
+		/* Push start scope on scope stack and make it current  */
 
-    PsxMthStackInitArgs (Params, MTH_NUM_ARGS);
+		Status = NsScopeStackPush (StartScope, ACPI_TYPE_Method, WalkState);
+		if (ACPI_FAILURE (Status))
+		{
+			return_ACPI_STATUS (Status);
+		}
+
+		/* Init arguments if this is a control method */
+		/* TBD: add walkstate as a param */
+
+		PsxMthStackInitArgs (Params, MTH_NUM_ARGS);
+	}
 
     Op = StartOp;
     Status = AE_OK;
@@ -537,13 +570,40 @@ PsWalkParsedAml (
         ReturnDesc = WalkState->ReturnDesc;     /* Extract return value before we delete WalkState */
 
         DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: ReturnValue=%p, State=%p\n", WalkState->ReturnDesc, WalkState));
+ 
+        /* If we just returned from the execution of a control method, there's lots of cleanup to do */
 
-        
-        PsxMthStackDeleteArgs (WalkState);      /* Delete all arguments and locals (if a method completed) */
+        if (WalkState->MethodDesc)
+        {
+            /* Signal completion of the execution of this method if necessary */
 
-        CmFree (WalkState);
+            if (WalkState->MethodDesc->Method.Semaphore)
+            {
+                Status = OsdSignalSemaphore (WalkState->MethodDesc->Method.Semaphore, 1);
+            }
 
-        /* Check if we have restarted a preempted walk */
+			/* Reset the current scope to the beginning of scope stack */
+
+			NsScopeStackClear (WalkState);
+
+            /* Delete all arguments and locals */
+
+            PsxMthStackDeleteArgs (WalkState);      
+
+            /* Delete the parse tree if asked to */
+
+            if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
+            {
+                PsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
+                WalkState->MethodDesc->Method.ParserOp = NULL;
+            }
+        }
+
+         /* Delete this walk state and all linked control states */
+
+        PsDeleteWalkState (WalkState);
+
+       /* Check if we have restarted a preempted walk */
 
         WalkState = PsGetCurrentWalkState (&WalkList);
         if (WalkState &&
@@ -551,8 +611,10 @@ PsWalkParsedAml (
         {
             /* There is another walk state, restart it */
 
-            /* TBD: What if the returned value is not used by the parent?  The obj must be deleted */
-            /* In restart, call DeleteIfNotUsed?? */
+            /* 
+             * If the method returned value is not used by the parent,
+             * The object is deleted 
+             */
 
             PsxRestartControlMethod (WalkState, ReturnDesc);
 

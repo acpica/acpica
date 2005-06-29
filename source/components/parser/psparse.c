@@ -688,6 +688,7 @@ PsParseAml (
 
     PsInitScope (ParserState, StartScope);
 
+
     /* Create the parse tree */
 
     Status = PsParseLoop (ParserState);
@@ -746,9 +747,7 @@ PsParseTable (
 
     /* Initialize the root object */
 
-    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Name       = * (UINT32 *) NS_ROOT;
-/* TBD: REMOVE:    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->ResultObj  = Gbl_RootObject; */
-
+    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Name = * (UINT32 *) NS_ROOT;
 
     /* Pass 1:  Parse everything except control method bodies */
 
@@ -765,11 +764,11 @@ BREAKPOINT3;
 
 /* TBD: Temp only */
 
-    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL,
+    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL, NULL,
                         PsxLoad1BeginOp, PsxLoad1EndOp);
 
 
-    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL,
+    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL, NULL,
                         DescendingCallback, AscendingCallback);
 
 

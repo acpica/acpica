@@ -193,11 +193,12 @@ PsInitScope (
         return AE_NO_MEMORY;
     }
 
-    Scope->Op           = Root;
-    Scope->ArgCount     = ACPI_VAR_ARGS;
-    Scope->ArgEnd       = ParserState->AmlEnd;
-    Scope->PkgEnd       = ParserState->AmlEnd;
-    ParserState->Scope  = Scope;
+    Scope->Op               = Root;
+    Scope->ArgCount         = ACPI_VAR_ARGS;
+    Scope->ArgEnd           = ParserState->AmlEnd;
+    Scope->PkgEnd           = ParserState->AmlEnd;
+    ParserState->Scope      = Scope;
+    ParserState->StartOp    = Root;
 
     return AE_OK;
 }
