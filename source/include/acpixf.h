@@ -160,14 +160,28 @@ ACPI_STATUS
 AcpiLoadNameSpace (
     INT32               DisplayAmlDuringLoad);
 
-ACPI_STATUS
-AcpiUnloadNameSpace (
-    void);
+/*
+ *  This must be moved to the datatypes.h file
+ *
+ *  Table types.  These values are passed to the table related APIs
+ */
+
+typedef enum {
+    RSDPTR_Ord    = 0,
+    APIC_Ord,
+    DSDT_Ord,
+    FACP_Ord,
+    FACS_Ord,
+    PSDT_Ord,
+    RSDT_Ord,
+    SSDT_Ord,
+    SBDT_Ord
+} AcpiTableType;
 
 ACPI_STATUS
 AcpiLoadTable (
-    NsHandle            OpRegion,
-    NsHandle            *OutHandle);
+    ACPI_TABLE_HEADER   *TablePtr,
+    NsHandle            *OutTableHandle);
 
 ACPI_STATUS
 AcpiUnLoadTable (
@@ -176,7 +190,17 @@ AcpiUnLoadTable (
 ACPI_STATUS
 AcpiLoadTableFromFile (
     char                *FileName,
-    NsHandle            *OutHandle);
+    NsHandle            *OutTableHandle);
+
+ACPI_STATUS
+AcpiGetTableHeader (
+    AcpiTableType       TableType,
+    char                *OutTableHeader);
+
+ACPI_STATUS
+AcpiGetTable (
+    AcpiTableType       TableType,
+    APIBuffer           *RetBuffer);
 
 ACPI_STATUS
 AcpiNameToHandle (
@@ -187,18 +211,17 @@ AcpiNameToHandle (
 ACPI_STATUS
 AcpiHandleToName (
     NsHandle            Handle,
-    UINT32              *OutName);
+    UINT32             *RetName);
 
 ACPI_STATUS
-AcpiPathameToHandle (
+AcpiPathnameToHandle (
     char                *Pathname,
     NsHandle            *OutHandle);
 
 ACPI_STATUS
 AcpiHandleToPathname (
     NsHandle            Handle,
-    UINT32              BufferSize,
-    char                *OutPath);
+    APIBuffer           *OutPathBuffer);
 
 ACPI_STATUS
 AcpiGetNextObject (
@@ -240,7 +263,7 @@ AcpiSetMode (
     INT32               Mode);
 
 INT32
-AcpiModeStatus (
+AcpiGetMode (
     void);
 
 INT32
@@ -333,14 +356,6 @@ AcpiSetFirmwareWakingVector (
 INT32
 AcpiGetFirmwareWakingVector (
     UINT32              *PhysicalAddress);
-
-ACPI_TABLE_HEADER * 
-AcpiGetTableHeader (
-    NsHandle            Handle);
-
-ACPI_TABLE_HEADER * 
-AcpiGetTable (
-    NsHandle            Handle);
 
 /* End of potentiallly obsolete functions */
 
