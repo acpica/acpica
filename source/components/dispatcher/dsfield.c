@@ -219,7 +219,7 @@ AcpiDsCreateField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            (INT8 *) &((ACPI_NAMED_OP *)Arg)->Name,
+                            (INT8 *) &((ACPI_EXTENDED_OP *)Arg)->Name,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
@@ -361,7 +361,7 @@ AcpiDsCreateBankField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            (INT8 *) &((ACPI_NAMED_OP *)Arg)->Name,
+                            (INT8 *) &((ACPI_EXTENDED_OP *)Arg)->Name,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
@@ -498,7 +498,7 @@ AcpiDsCreateIndexField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                                    (INT8 *) &((ACPI_NAMED_OP *)Arg)->Name,
+                                    (INT8 *) &((ACPI_EXTENDED_OP *)Arg)->Name,
                                     INTERNAL_TYPE_INDEX_FIELD,
                                     IMODE_LOAD_PASS1,
                                     NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,

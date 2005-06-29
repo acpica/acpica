@@ -222,9 +222,13 @@ AcpiDsInitOneObject (
 
             AcpiNsDeleteNamespaceSubtree (ObjHandle);
 
+            /* TBD: [Restructure] - remove, obsolete */
+
+            /*
             ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
             AcpiPsDeleteParseTree (ObjDesc->Method.ParserOp);
             ObjDesc->Method.ParserOp = NULL;
+            */
         }
 
         break;
@@ -319,11 +323,11 @@ AcpiDsInitObjectFromOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_OBJECT_INTERNAL    **ObjDesc)
 {
     ACPI_STATUS             Status;
     ACPI_GENERIC_OP         *Arg;
-    ACPI_BYTELIST_OP        *ByteList;
+    ACPI_EXTENDED_OP        *ByteList;
     ACPI_OBJECT_INTERNAL    *ArgDesc;
     ACPI_OP_INFO            *OpInfo;
 
@@ -339,7 +343,7 @@ AcpiDsInitObjectFromOp (
 
     /* Get and prepare the first argument */
 
-    switch (ObjDesc->Common.Type)
+    switch ((*ObjDesc)->Common.Type)
     {
     case ACPI_TYPE_BUFFER:
 
@@ -371,15 +375,15 @@ AcpiDsInitObjectFromOp (
 
         /* Get the value, delete the internal object */
 
-        ObjDesc->Buffer.Length = ArgDesc->Number.Value;
+        (*ObjDesc)->Buffer.Length = ArgDesc->Number.Value;
         AcpiCmRemoveReference (ArgDesc);
 
         /* Allocate the buffer */
 
-        ObjDesc->Buffer.Pointer =
-                        AcpiCmCallocate (ObjDesc->Buffer.Length);
+        (*ObjDesc)->Buffer.Pointer =
+                        AcpiCmCallocate ((*ObjDesc)->Buffer.Length);
 
-        if (!ObjDesc->Buffer.Pointer)
+        if (!(*ObjDesc)->Buffer.Pointer)
         {
             return (AE_NO_MEMORY);
         }
@@ -392,7 +396,7 @@ AcpiDsInitObjectFromOp (
 
         /* skip first arg */
         Arg = Op->Value.Arg;
-        ByteList = (ACPI_BYTELIST_OP *) Arg->Next;
+        ByteList = (ACPI_EXTENDED_OP *) Arg->Next;
         if (ByteList)
         {
             if (ByteList->Opcode != AML_BYTELIST_OP)
@@ -403,21 +407,36 @@ AcpiDsInitObjectFromOp (
                 return (AE_TYPE);
             }
 
-            MEMCPY (ObjDesc->Buffer.Pointer, ByteList->Data,
-                    ObjDesc->Buffer.Length);
+            MEMCPY ((*ObjDesc)->Buffer.Pointer, ByteList->Data,
+                    (*ObjDesc)->Buffer.Length);
         }
 
         break;
 
 
+	case ACPI_TYPE_PACKAGE:
+        
+        /*
+         * When called, an internal package object has already
+         *  been built and is pointed to by *ObjDesc.  
+         *  AcpiDsBuildInternalObject build another internal 
+         *  package object, so remove reference to the original 
+         *  so that it is deleted.  Error checking is done
+         *  within the remove reference function.
+         */
+        AcpiCmRemoveReference(*ObjDesc);
+
+        Status = AcpiDsBuildInternalObject (WalkState, Op, ObjDesc);
+		break;
+
     case ACPI_TYPE_NUMBER:
-        ObjDesc->Number.Value = Op->Value.Integer;
+        (*ObjDesc)->Number.Value = Op->Value.Integer;
         break;
 
 
     case ACPI_TYPE_STRING:
-        ObjDesc->String.Pointer = Op->Value.String;
-        ObjDesc->String.Length = STRLEN (Op->Value.String);
+        (*ObjDesc)->String.Pointer = Op->Value.String;
+        (*ObjDesc)->String.Length = STRLEN (Op->Value.String);
         break;
 
 
@@ -433,16 +452,16 @@ AcpiDsInitObjectFromOp (
 
             /* Split the opcode into a base opcode + offset */
 
-            ObjDesc->Reference.OpCode = AML_LOCAL_OP;
-            ObjDesc->Reference.Offset = Opcode - AML_LOCAL_OP;
+            (*ObjDesc)->Reference.OpCode = AML_LOCAL_OP;
+            (*ObjDesc)->Reference.Offset = Opcode - AML_LOCAL_OP;
             break;
 
         case OPTYPE_METHOD_ARGUMENT:
 
             /* Split the opcode into a base opcode + offset */
 
-            ObjDesc->Reference.OpCode = AML_ARG_OP;
-            ObjDesc->Reference.Offset = Opcode - AML_ARG_OP;
+            (*ObjDesc)->Reference.OpCode = AML_ARG_OP;
+            (*ObjDesc)->Reference.Offset = Opcode - AML_ARG_OP;
             break;
 
         default: /* Constants, Literals, etc.. */
@@ -451,10 +470,10 @@ AcpiDsInitObjectFromOp (
             {
                 /* Nte was saved in Op */
 
-                ObjDesc->Reference.Nte = Op->AcpiNamedObject;
+                (*ObjDesc)->Reference.Nte = Op->AcpiNamedObject;
             }
 
-            ObjDesc->Reference.OpCode = Opcode;
+            (*ObjDesc)->Reference.OpCode = Opcode;
             break;
         }
 
@@ -465,7 +484,7 @@ AcpiDsInitObjectFromOp (
 
         DEBUG_PRINT (ACPI_ERROR,
             ("InitObject: Unimplemented data type: %x\n",
-            ObjDesc->Common.Type));
+            (*ObjDesc)->Common.Type));
 
         break;
     }
@@ -548,7 +567,7 @@ AcpiDsBuildInternalSimpleObj (
     }
 
     Status = AcpiDsInitObjectFromOp (WalkState, Op,
-                                        Op->Opcode, ObjDesc);
+                                        Op->Opcode, &ObjDesc);
 
     if (ACPI_FAILURE (Status))
     {

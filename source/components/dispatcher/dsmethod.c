@@ -236,7 +236,7 @@ AcpiDsParseMethod (
 
     Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
                         ObjDesc->Method.PcodeLength, PARSE_DELETE_TREE,
-                        NULL, NULL, NULL, 
+                        Entry, NULL, NULL, 
                         AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
 
     if (ACPI_FAILURE (Status))
@@ -386,7 +386,7 @@ AcpiDsCallControlMethod (
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_DEFERRED_OP        *Method;
+    ACPI_EXTENDED_OP        *Method;
     ACPI_NAMED_OBJECT       *MethodEntry;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_WALK_STATE         *NextWalkState;
@@ -427,8 +427,8 @@ AcpiDsCallControlMethod (
 
     /* Save the (current) Op for when this walk is restarted */
 
-//    ThisWalkState->MethodCallOp = ThisWalkState->PrevOp;
-//    ThisWalkState->PrevOp       = Op;
+/*    ThisWalkState->MethodCallOp = ThisWalkState->PrevOp;
+    ThisWalkState->PrevOp       = Op;*/
     Method                      = ObjDesc->Method.ParserOp;
 
 
@@ -508,9 +508,6 @@ AcpiDsCallControlMethod (
                                 MethodEntry, NULL, NULL,
                                 AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
     AcpiPsDeleteParseTree (Op);
-
-
-
 
 
 
@@ -627,7 +624,7 @@ AcpiDsTerminateControlMethod (
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_DEFERRED_OP        *Op;
+    ACPI_EXTENDED_OP        *Op;
     ACPI_NAMED_OBJECT       *MethodEntry;
 
 
@@ -675,8 +672,8 @@ AcpiDsTerminateControlMethod (
 
     /* Decrement the thread count on the method parse tree */
 
-    Op->ThreadCount--;
-    if (!Op->ThreadCount)
+    WalkState->MethodDesc->Method.ThreadCount--;
+    if (!WalkState->MethodDesc->Method.ThreadCount)
     {
         /*
          * There are no more threads executing this method.  Perform
