@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.24 $
+ *       $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -138,8 +138,17 @@ AcpiTbConvertToXsdt (
     UINT32                  *NumberOfTables);
 
 ACPI_STATUS
-AcpiTbConvertTableFadt 
-    (void);
+AcpiTbConvertTableFadt (
+    void);
+
+ACPI_STATUS
+AcpiTbBuildCommonFacs (
+    ACPI_TABLE_DESC         *TableInfo);
+
+UINT32
+AcpiTbGetTableCount (
+    RSDP_DESCRIPTOR         *RSDP,
+    ACPI_TABLE_HEADER       *RSDT);
 
 /*
  * tbget - Table "get" routines
@@ -153,19 +162,33 @@ AcpiTbGetTablePtr (
 
 ACPI_STATUS
 AcpiTbGetTable (
-    UINT64                  PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     ACPI_TABLE_HEADER       *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 AcpiTbVerifyRsdp (
-    UINT64                  RSDP_PhysicalAddress);
+    ACPI_PHYSICAL_ADDRESS   RSDP_PhysicalAddress);
 
 ACPI_STATUS
 AcpiTbGetTableFacs (
     ACPI_TABLE_HEADER       *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
+ACPI_PHYSICAL_ADDRESS
+AcpiTbGetRsdtAddress (
+    void);
+
+ACPI_STATUS
+AcpiTbValidateRsdt (
+    ACPI_TABLE_HEADER       *TablePtr);
+
+ACPI_STATUS
+AcpiTbGetTablePointer (
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
+    UINT32                  Flags,
+    UINT32                  *Size,
+    ACPI_TABLE_HEADER       **TablePtr);
 
 /*
  * tbgetall - Get all firmware ACPI tables
@@ -237,7 +260,8 @@ AcpiTbScanMemoryForRsdp (
 
 ACPI_STATUS
 AcpiTbFindRsdp (
-    ACPI_TABLE_DESC         *TableInfo);
+    ACPI_TABLE_DESC         *TableInfo,
+    UINT32                  Flags);
 
 
 /*
@@ -250,7 +274,7 @@ AcpiTbSystemTablePointer (
 
 ACPI_STATUS
 AcpiTbMapAcpiTable (
-    UINT64                  PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     UINT32                  *Size,
     void                    **LogicalAddress);
 
