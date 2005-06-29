@@ -157,8 +157,7 @@ AcpiLoadNamespace (
     if (DSDT == NULL)
     {
         DEBUG_PRINT (ACPI_ERROR, ("DSDT is not in memory\n"));
-        Status = AE_NO_ACPI_TABLES;
-        goto ErrorExit;
+        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
 
@@ -170,35 +169,45 @@ AcpiLoadNamespace (
     /* Everything OK, now init the hardware */
 
     Status = CmHardwareInitialize ();
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
-        goto ErrorExit;
+        return_ACPI_STATUS (Status);
     }
 
 
     /* Initialize the namespace */
     
     Status = NsSetup ();
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
-        goto ErrorExit;
+        return_ACPI_STATUS (Status);
     }
 
 
-    /* Load the namespace via the interpreter */
+    /* 
+     * Load the namespace via the interpreter.  The DSDT is required,
+     * but the SSDT and PSDT tables are optional.
+     */
 
 BREAKPOINT3;
-    Status = AmlDoDefinitionBlock ("AML contained in DSDT",
-                (UINT8 *) (DSDT + 1),
-                (INT32) (DSDT->Length - (UINT32) sizeof (ACPI_TABLE_HEADER)));
+
+    Status = AmlLoadTable (TABLE_DSDT);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AmlLoadTable (TABLE_SSDT);
+    Status = AmlLoadTable (TABLE_PSDT);
 
 
+    DUMP_TABLES (NS_ALL, ACPI_INT_MAX);
 
-    /* TBD:  AmlDoDefinitionBlock always returns AE_AML_ERROR for some reason!! */
+    DEBUG_PRINT (ACPI_OK, ("**** ACPI Namespace successfully loaded! [%p]\n", 
+                    RootObject->Scope));
 
-ErrorExit:    
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+BREAKPOINT3;
+    return_ACPI_STATUS (Status);
 }
 
 
