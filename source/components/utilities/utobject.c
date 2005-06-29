@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.25 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -127,7 +127,7 @@
         MODULE_NAME         ("cmobject")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    _CmCreateInternalObject
  *
@@ -141,11 +141,11 @@
  *
  * DESCRIPTION: Create and initialize a new internal object.
  *
- * NOTE:
- *      We always allocate the worst-case object descriptor because these
- *      objects are cached, and we want them to be one-size-satisifies-any-request.
- *      This in itself may not be the most memory efficient, but the efficiency
- *      of the object cache should more than make up for this!
+ * NOTE:        We always allocate the worst-case object descriptor because 
+ *              these objects are cached, and we want them to be 
+ *              one-size-satisifies-any-request.  This in itself may not be 
+ *              the most memory efficient, but the efficiency of the object 
+ *              cache should more than make up for this!
  *
  ******************************************************************************/
 
@@ -175,7 +175,6 @@ _CmCreateInternalObject (
     /* Save the object type in the object descriptor */
 
     Object->Common.Type = Type;
-    Object->Common.Size = (UINT8) sizeof (ACPI_OPERAND_OBJECT);
 
     /* Init the reference count */
 
@@ -188,7 +187,7 @@ _CmCreateInternalObject (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmValidInternalObject
  *
@@ -196,7 +195,7 @@ _CmCreateInternalObject (
  *
  * RETURN:      Validate a pointer to be an ACPI_OPERAND_OBJECT
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 BOOLEAN
 AcpiCmValidInternalObject (
@@ -258,7 +257,7 @@ AcpiCmValidInternalObject (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    _CmAllocateObjectDesc
  *
@@ -272,7 +271,7 @@ AcpiCmValidInternalObject (
  * DESCRIPTION: Allocate a new object descriptor.  Gracefully handle
  *              error conditions.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void *
 _CmAllocateObjectDesc (
@@ -297,8 +296,8 @@ _CmAllocateObjectDesc (
         /* There is an object available, use it */
 
         Object = AcpiGbl_ObjectCache;
-        AcpiGbl_ObjectCache = Object->Common.Next;
-        Object->Common.Next = NULL;
+        AcpiGbl_ObjectCache = Object->Cache.Next;
+        Object->Cache.Next = NULL;
 
         AcpiGbl_ObjectCacheHits++;
         AcpiGbl_ObjectCacheDepth--;
@@ -321,7 +320,7 @@ _CmAllocateObjectDesc (
             /* Allocation failed */
 
             _REPORT_ERROR (ModuleName, LineNumber, ComponentId,
-                            "Could not allocate Object Descriptor");
+                            ("Could not allocate an object descriptor\n"));
 
             return_PTR (NULL);
         }
@@ -335,14 +334,14 @@ _CmAllocateObjectDesc (
 
     Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL;
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size 0x%x\n",
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size %X\n",
                     Object, sizeof (ACPI_OPERAND_OBJECT)));
 
     return_PTR (Object);
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteObjectDesc
  *
@@ -352,15 +351,25 @@ _CmAllocateObjectDesc (
  *
  * DESCRIPTION: Free an ACPI object descriptor or add it to the object cache
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiCmDeleteObjectDesc (
     ACPI_OPERAND_OBJECT     *Object)
 {
 
-    FUNCTION_TRACE ("AcpiCmDeleteObjectDesc");
+    FUNCTION_TRACE_PTR ("AcpiCmDeleteObjectDesc", Object);
 
+
+    /* Make sure that the object isn't already in the cache */
+
+    if (Object->Common.DataType == (ACPI_DESC_TYPE_INTERNAL | ACPI_CACHED_OBJECT))
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
+            Object));
+        return_VOID;
+    }
 
     /* Object must be an ACPI_OPERAND_OBJECT  */
 
@@ -369,21 +378,6 @@ AcpiCmDeleteObjectDesc (
         DEBUG_PRINT (ACPI_ERROR,
             ("CmDeleteObjectDesc: Obj %p is not an ACPI object\n", Object));
         return_VOID;
-    }
-
-    /* Make sure that the object isn't already in the cache */
-
-    if (Object->Common.Next)
-    {
-        /* Some objects actually use the Next link field */
-
-        if (Object->Common.Type != ACPI_TYPE_REGION)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
-                Object));
-            return_VOID;
-        }
     }
 
 
@@ -406,11 +400,11 @@ AcpiCmDeleteObjectDesc (
     /* Clear the entire object.  This is important! */
 
     MEMSET (Object, 0, sizeof (ACPI_OPERAND_OBJECT));
-    Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL;
+    Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL | ACPI_CACHED_OBJECT;
 
     /* Put the object at the head of the global cache list */
 
-    Object->Common.Next = AcpiGbl_ObjectCache;
+    Object->Cache.Next = AcpiGbl_ObjectCache;
     AcpiGbl_ObjectCache = Object;
     AcpiGbl_ObjectCacheDepth++;
 
@@ -420,7 +414,7 @@ AcpiCmDeleteObjectDesc (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteObjectCache
  *
@@ -449,8 +443,8 @@ AcpiCmDeleteObjectCache (
     {
         /* Delete one cached state object */
 
-        Next = AcpiGbl_ObjectCache->Common.Next;
-        AcpiGbl_ObjectCache->Common.Next = NULL;
+        Next = AcpiGbl_ObjectCache->Cache.Next;
+        AcpiGbl_ObjectCache->Cache.Next = NULL;
 
         /*
          * Memory allocation metrics.  Call the macro here since we only
@@ -467,7 +461,7 @@ AcpiCmDeleteObjectCache (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmInitStaticObject
  *
@@ -479,7 +473,7 @@ AcpiCmDeleteObjectCache (
  * DESCRIPTION: Initialize a static object.  Sets flags to disallow dynamic
  *              deletion of the object.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiCmInitStaticObject (
@@ -511,22 +505,21 @@ AcpiCmInitStaticObject (
      */
 
     ObjDesc->Common.DataType        = ACPI_DESC_TYPE_INTERNAL;
-    ObjDesc->Common.Size            = sizeof (ACPI_OPERAND_OBJECT);
-    ObjDesc->Common.Flags           = AO_STATIC_ALLOCATION;
+    ObjDesc->Common.Flags           = AOPOBJ_STATIC_ALLOCATION;
     ObjDesc->Common.ReferenceCount  = 1;
 
     return_VOID;
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmGetSimpleObjectSize
  *
- * PARAMETERS:  *InternalObj    - Pointer to the object we are examining
- *              *RetLength      - Where the length is returned
+ * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
+ *              *RetLength          - Where the length is returned
  *
- * RETURN:      Status          - the status of the call
+ * RETURN:      Status
  *
  * DESCRIPTION: This function is called to determine the space required to
  *              contain a simple object for return to an API user.
@@ -538,19 +531,19 @@ AcpiCmInitStaticObject (
 
 ACPI_STATUS
 AcpiCmGetSimpleObjectSize (
-    ACPI_OPERAND_OBJECT     *InternalObj,
+    ACPI_OPERAND_OBJECT     *InternalObject,
     UINT32                  *ObjLength)
 {
     UINT32                  Length;
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("CmGetSimpleObjectSize", InternalObj);
+    FUNCTION_TRACE_PTR ("CmGetSimpleObjectSize", InternalObject);
 
 
     /* Handle a null object (Could be a uninitialized package element -- which is legal) */
 
-    if (!InternalObj)
+    if (!InternalObject)
     {
         *ObjLength = 0;
         return_ACPI_STATUS (AE_OK);
@@ -561,7 +554,7 @@ AcpiCmGetSimpleObjectSize (
 
     Length = sizeof (ACPI_OBJECT);
 
-    if (VALID_DESCRIPTOR_TYPE (InternalObj, ACPI_DESC_TYPE_NAMED))
+    if (VALID_DESCRIPTOR_TYPE (InternalObject, ACPI_DESC_TYPE_NAMED))
     {
         /* Object is a named object (reference), just return the length */
 
@@ -578,22 +571,22 @@ AcpiCmGetSimpleObjectSize (
      * TBD:[Investigate] do strings and buffers require alignment also?
      */
 
-    switch (InternalObj->Common.Type)
+    switch (InternalObject->Common.Type)
     {
 
     case ACPI_TYPE_STRING:
 
-        Length += InternalObj->String.Length;
+        Length += InternalObject->String.Length + 1;
         break;
 
 
     case ACPI_TYPE_BUFFER:
 
-        Length += InternalObj->Buffer.Length;
+        Length += InternalObject->Buffer.Length;
         break;
 
 
-    case ACPI_TYPE_NUMBER:
+    case ACPI_TYPE_INTEGER:
     case ACPI_TYPE_PROCESSOR:
     case ACPI_TYPE_POWER:
 
@@ -609,11 +602,11 @@ AcpiCmGetSimpleObjectSize (
          * The only type that should be here is opcode AML_NAMEPATH_OP -- since
          * this means an object reference
          */
-        if (InternalObj->Reference.OpCode != AML_NAMEPATH_OP)
+        if (InternalObject->Reference.OpCode != AML_NAMEPATH_OP)
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("CmGetSimpleObjectSize: Unsupported Reference opcode=0x%X in object %p\n",
-                InternalObj->Reference.OpCode, InternalObj));
+                ("CmGetSimpleObjectSize: Unsupported Reference opcode=%X in object %p\n",
+                InternalObject->Reference.OpCode, InternalObject));
             Status = AE_TYPE;
         }
         break;
@@ -622,8 +615,8 @@ AcpiCmGetSimpleObjectSize (
     default:
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("CmGetSimpleObjectSize: Unsupported type=0x%X in object %p\n",
-            InternalObj->Common.Type, InternalObj));
+            ("CmGetSimpleObjectSize: Unsupported type=%X in object %p\n",
+            InternalObject->Common.Type, InternalObject));
         Status = AE_TYPE;
         break;
     }
@@ -641,156 +634,124 @@ AcpiCmGetSimpleObjectSize (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiCmGetPackageObjectSize
+ * FUNCTION:    AcpiCmCopyPackageToInternal
  *
- * PARAMETERS:  *InternalObj    - Pointer to the object we are examining
- *              *RetLength      - Where the length is returned
+ * PARAMETERS:  ACPI_PKG_CALLBACK
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to determine the space required to contain
- *              a package object for return to an API user.
+ * DESCRIPTION: 
  *
- *              This is moderately complex since a package contains other objects
- *              including packages.
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmGetElementLength (
+    UINT8                   ObjectType,
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    ACPI_GENERIC_STATE      *State,
+    void                    *Context)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_PKG_INFO           *Info = (ACPI_PKG_INFO *) Context;
+    UINT32                  ObjectSpace;
+
+
+    switch (ObjectType)
+    {
+    case 0:
+
+        /*
+         * Simple object - just get the size (Null object/entry is handled
+         * here also) and sum it into the running package length
+         */
+        Status = AcpiCmGetSimpleObjectSize (SourceObject, &ObjectSpace);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        Info->Length += ObjectSpace;
+        break;
+
+
+    case 1:
+        /* Package - nothing much to do here, let the walk handle it */
+
+        Info->NumPackages++;
+        State->Pkg.ThisTargetObj = NULL;
+        break;
+
+    default:
+        return (AE_BAD_PARAMETER);
+    }
+
+
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiCmGetPackageObjectSize
+ *
+ * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
+ *              *RetLength          - Where the length is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This function is called to determine the space required to 
+ *              contain a package object for return to an API user.
+ *
+ *              This is moderately complex since a package contains other 
+ *              objects including packages.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmGetPackageObjectSize (
-    ACPI_OPERAND_OBJECT     *InternalObj,
+    ACPI_OPERAND_OBJECT     *InternalObject,
     UINT32                  *ObjLength)
 {
-
-    ACPI_OPERAND_OBJECT     *ThisInternalObj;
-    ACPI_OPERAND_OBJECT     *ParentObj[MAX_PACKAGE_DEPTH] = { 0,0,0,0,0 };
-    ACPI_OPERAND_OBJECT     *ThisParent;
-    UINT32                  ThisIndex;
-    UINT32                  Index[MAX_PACKAGE_DEPTH] = { 0,0,0,0,0 };
-    UINT32                  Length = 0;
-    UINT32                  ObjectSpace;
-    UINT32                  CurrentDepth = 0;
-    UINT32                  PackageCount = 1;
     ACPI_STATUS             Status;
+    ACPI_PKG_INFO           Info;
 
 
-    FUNCTION_TRACE_PTR ("CmGetPackageObjectSize", InternalObj);
+    FUNCTION_TRACE_PTR ("CmGetPackageObjectSize", InternalObject);
 
 
-    ParentObj[0] = InternalObj;
+    Info.Length      = 0;
+    Info.ObjectSpace = 0;
+    Info.NumPackages = 1;
 
-    while (1)
-    {
-        ThisParent      = ParentObj[CurrentDepth];
-        ThisIndex       = Index[CurrentDepth];
-        ThisInternalObj = ThisParent->Package.Elements[ThisIndex];
+    Status = AcpiCmWalkPackageTree (InternalObject, NULL,
+                            AcpiCmGetElementLength, &Info);
 
+    /*
+     * We have handled all of the objects in all levels of the package.
+     * just add the length of the package objects themselves.
+     * Round up to the next machine word.
+     */
+    Info.Length += ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT)) *
+                    Info.NumPackages;
 
-        /*
-         * Check for 1) An unitialized package element.  It is completely
-         *              legal to declare a package and leave it uninitialized
-         *           2) Any type other than a package.  Packages are handled
-         *              below.
-         */
+    /* Return the total package length */
 
-        if ((!ThisInternalObj) ||
-            (!IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_PACKAGE)))
-        {
-            /*
-             * Simple object - just get the size (Null object/entry handled
-             *  also)
-             */
-
-            Status =
-                AcpiCmGetSimpleObjectSize (ThisInternalObj, &ObjectSpace);
-
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-
-            Length += ObjectSpace;
-
-            Index[CurrentDepth]++;
-            while (Index[CurrentDepth] >=
-                ParentObj[CurrentDepth]->Package.Count)
-            {
-                /*
-                 * We've handled all of the objects at
-                 * this level,  This means that we have
-                 * just completed a package.  That package
-                 * may have contained one or more packages
-                 * itself.
-                 */
-                if (CurrentDepth == 0)
-                {
-                    /*
-                     * We have handled all of the objects
-                     * in the top level package just add the
-                     * length of the package objects and
-                     * get out. Round up to the next machine
-                     * word.
-                     */
-                    Length +=
-                        ROUND_UP_TO_NATIVE_WORD (
-                                sizeof (ACPI_OBJECT)) *
-                                PackageCount;
-
-                    *ObjLength = Length;
-
-                    return_ACPI_STATUS (AE_OK);
-                }
-
-                /*
-                 * Go back up a level and move the index
-                 * past the just completed package object.
-                 */
-                CurrentDepth--;
-                Index[CurrentDepth]++;
-            }
-        }
-
-        else
-        {
-            /*
-             * This object is a package
-             * -- go one level deeper
-             */
-            PackageCount++;
-            if (CurrentDepth < MAX_PACKAGE_DEPTH-1)
-            {
-                CurrentDepth++;
-                ParentObj[CurrentDepth] = ThisInternalObj;
-                Index[CurrentDepth]     = 0;
-            }
-
-            else
-            {
-                /*
-                 * Too many nested levels of packages for us
-                 * to handle
-                 */
-
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("CmGetPackageObjectSize: Pkg nested too deep (max %d)\n",
-                    MAX_PACKAGE_DEPTH));
-                return_ACPI_STATUS (AE_LIMIT);
-            }
-        }
-    }
+    *ObjLength = Info.Length;
+    return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmGetObjectSize
  *
- * PARAMETERS:  *InternalObj    - Pointer to the object we are examining
- *              *RetLength      - Where the length will be returned
+ * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
+ *              *RetLength          - Where the length will be returned
  *
- * RETURN:      Status          - the status of the call
+ * RETURN:      Status 
  *
  * DESCRIPTION: This function is called to determine the space required to
  *              contain an object for return to an API user.
@@ -799,23 +760,21 @@ AcpiCmGetPackageObjectSize (
 
 ACPI_STATUS
 AcpiCmGetObjectSize(
-    ACPI_OPERAND_OBJECT     *InternalObj,
+    ACPI_OPERAND_OBJECT     *InternalObject,
     UINT32                  *ObjLength)
 {
     ACPI_STATUS             Status;
 
 
-    if ((VALID_DESCRIPTOR_TYPE (InternalObj, ACPI_DESC_TYPE_INTERNAL)) &&
-        (IS_THIS_OBJECT_TYPE (InternalObj, ACPI_TYPE_PACKAGE)))
+    if ((VALID_DESCRIPTOR_TYPE (InternalObject, ACPI_DESC_TYPE_INTERNAL)) &&
+        (IS_THIS_OBJECT_TYPE (InternalObject, ACPI_TYPE_PACKAGE)))
     {
-        Status =
-            AcpiCmGetPackageObjectSize (InternalObj, ObjLength);
+        Status = AcpiCmGetPackageObjectSize (InternalObject, ObjLength);
     }
 
     else
     {
-        Status =
-            AcpiCmGetSimpleObjectSize (InternalObj, ObjLength);
+        Status = AcpiCmGetSimpleObjectSize (InternalObject, ObjLength);
     }
 
     return (Status);

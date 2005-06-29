@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  ******************************************************************************/
 
@@ -476,7 +476,7 @@ AcpiCmCreateUpdateStateAndPush (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmCreateCopyStateAndPush
+ * FUNCTION:    AcpiCmCreatePkgStateAndPush
  *
  * PARAMETERS:  *Object         - Object to be added to the new state
  *              Action          - Increment/Decrement
@@ -489,9 +489,9 @@ AcpiCmCreateUpdateStateAndPush (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiCmCreateCopyStateAndPush (
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_OBJECT             *ExternalObject,
+AcpiCmCreatePkgStateAndPush (
+    void                    *InternalObject,
+    void                    *ExternalObject,
     UINT16                  Index,
     ACPI_GENERIC_STATE      **StateList)
 {
@@ -499,7 +499,7 @@ AcpiCmCreateCopyStateAndPush (
 
 
 
-    State = AcpiCmCreateCopyState (InternalObject, ExternalObject, Index);
+    State = AcpiCmCreatePkgState (InternalObject, ExternalObject, Index);
     if (!State)
     {
         return (AE_NO_MEMORY);
@@ -688,7 +688,7 @@ AcpiCmCreateUpdateState (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmCreateCopyState
+ * FUNCTION:    AcpiCmCreatePkgState
  *
  * PARAMETERS:  Object              - Initial Object to be installed in the
  *                                    state
@@ -703,15 +703,15 @@ AcpiCmCreateUpdateState (
  ******************************************************************************/
 
 ACPI_GENERIC_STATE *
-AcpiCmCreateCopyState (
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_OBJECT             *ExternalObject,
+AcpiCmCreatePkgState (
+    void                    *InternalObject,
+    void                    *ExternalObject,
     UINT16                  Index)
 {
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE_PTR ("CmCreateCopyState", InternalObject);
+    FUNCTION_TRACE_PTR ("CmCreatePkgState", InternalObject);
 
 
     /* Create the generic state object */
@@ -724,9 +724,10 @@ AcpiCmCreateCopyState (
 
     /* Init fields specific to the update struct */
 
-    State->Copy.InternalObject = InternalObject;
-    State->Copy.ExternalObject = ExternalObject;
-    State->Copy.Index          = Index;
+    State->Pkg.SourceObject = (ACPI_OPERAND_OBJECT *) InternalObject;
+    State->Pkg.DestObject   = ExternalObject;
+    State->Pkg.Index        = Index;
+    State->Pkg.NumPackages  = 1; 
 
     return_PTR (State);
 }
@@ -878,18 +879,23 @@ ACPI_STATUS
 AcpiCmResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    UINT32              Count;
-    ACPI_OPERAND_OBJECT *SubObject;
+    UINT32                  Count;
+    ACPI_OPERAND_OBJECT     *SubObject;
+
 
     FUNCTION_TRACE ("AcpiCmResolvePackageReferences");
 
+
     if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
     {
-        /* Must be a package */
+        /* The object must be a package */
 
         REPORT_ERROR (("Must resolve Package Refs on a Package\n"));
         return_ACPI_STATUS(AE_ERROR);
     }
+
+    /*
+     * TBD: what about nested packages? */
 
     for (Count = 0; Count < ObjDesc->Package.Count; Count++)
     {
@@ -919,6 +925,188 @@ AcpiCmResolvePackageReferences (
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmDisplayInitPathname
+ *
+ * PARAMETERS:  ObjHandle           - Handle whose pathname will be displayed
+ *              Path                - Additional path string to be appended
+ *
+ * RETURN:      ACPI_STATUS
+ *
+ * DESCRIPTION: Display full pathnbame of an object, DEBUG ONLY
+ *
+ *****************************************************************************/
+
+void
+AcpiCmDisplayInitPathname (
+    ACPI_HANDLE             ObjHandle,
+    char                    *Path)
+{
+#ifdef ACPI_DEBUG
+    ACPI_STATUS             Status;
+    ACPI_BUFFER             RetPath;
+    char                    Buffer[128];
+
+
+    RetPath.Length = 128;
+    RetPath.Pointer = Buffer;
+    Status = AcpiGetName (ObjHandle, ACPI_FULL_PATHNAME, &RetPath);
+
+
+    if (ACPI_SUCCESS (Status))
+    {
+
+        if (Path)
+        {
+            DEBUG_PRINT (TRACE_INIT, ("%s.%s\n", RetPath.Pointer, Path))
+        }
+        else
+        {
+            DEBUG_PRINT (TRACE_INIT, ("%s\n", RetPath.Pointer))
+        }
+    }
+
+#endif
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiCmWalkPackageTree
+ *
+ * PARAMETERS:  ObjDesc         - The Package object on which to resolve refs
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walk through a package
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmWalkPackageTree (
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    void                    *TargetObject,
+    ACPI_PKG_CALLBACK       WalkCallback,
+    void                    *Context)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_GENERIC_STATE      *StateList = NULL;
+    ACPI_GENERIC_STATE      *State;
+    UINT32                  ThisIndex;
+    ACPI_OPERAND_OBJECT     *ThisSourceObj;
+
+
+    FUNCTION_TRACE ("AcpiCmWalkPackageTree");
+
+
+    State = AcpiCmCreatePkgState (SourceObject, TargetObject, 0);
+    if (!State)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    while (State)
+    {
+        ThisIndex        = State->Pkg.Index;
+        ThisSourceObj    = (ACPI_OPERAND_OBJECT *) 
+                            State->Pkg.SourceObject->Package.Elements[ThisIndex];
+
+        /*
+         * Check for 
+         * 1) An uninitialized package element.  It is completely
+         *      legal to declare a package and leave it uninitialized
+         * 2) Not an internal object - can be a namespace node instead
+         * 3) Any type other than a package.  Packages are handled in else case below.
+         */
+        if ((!ThisSourceObj) ||
+            (!VALID_DESCRIPTOR_TYPE (
+                    ThisSourceObj, ACPI_DESC_TYPE_INTERNAL)) ||
+            (!IS_THIS_OBJECT_TYPE (
+                    ThisSourceObj, ACPI_TYPE_PACKAGE)))
+        {
+
+            Status = WalkCallback (0, ThisSourceObj, State, Context);
+            if (ACPI_FAILURE (Status))
+            {
+                /* TBD: must delete package created up to this point */
+
+                return_ACPI_STATUS (Status);
+            }
+
+            State->Pkg.Index++;
+            while (State->Pkg.Index >= State->Pkg.SourceObject->Package.Count)
+            {
+                /*
+                 * We've handled all of the objects at this level,  This means
+                 * that we have just completed a package.  That package may
+                 * have contained one or more packages itself.
+                 *
+                 * Delete this state and pop the previous state (package).
+                 */
+                AcpiCmDeleteGenericState (State);
+                State = AcpiCmPopGenericState (&StateList);
+                
+
+                /* Finished when there are no more states */
+
+                if (!State)
+                {
+                    /*
+                     * We have handled all of the objects in the top level
+                     * package just add the length of the package objects
+                     * and exit
+                     */
+                    return_ACPI_STATUS (AE_OK);
+                }
+
+                /*
+                 * Go back up a level and move the index past the just
+                 * completed package object.
+                 */
+                State->Pkg.Index++;
+            }
+        }
+
+        else
+        {
+            /* This is a sub-object of type package */
+
+            Status = WalkCallback (1, ThisSourceObj, State, Context);
+            if (ACPI_FAILURE (Status))
+            {
+                /* TBD: must delete package created up to this point */
+
+                return_ACPI_STATUS (Status);
+            }
+
+
+            /* 
+             * The callback above returned a new target package object.
+             */
+
+            /*
+             * Push the current state and create a new one
+             */
+            AcpiCmPushGenericState (&StateList, State);
+            State = AcpiCmCreatePkgState (ThisSourceObj, State->Pkg.ThisTargetObj, 0);
+            if (!State)
+            {
+                /* TBD: must delete package created up to this point */
+
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+        }
+    }
+
+    /* We should never get here */
+
+    return (AE_AML_INTERNAL);
+
+}
+
+
+
 /*******************************************************************************
  *
  * FUNCTION:    _ReportError
@@ -930,7 +1118,7 @@ AcpiCmResolvePackageReferences (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print error message from KD table
+ * DESCRIPTION: Print error message
  *
  ******************************************************************************/
 
@@ -957,7 +1145,7 @@ _ReportError (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print warning message from KD table
+ * DESCRIPTION: Print warning message
  *
  ******************************************************************************/
 
@@ -983,7 +1171,7 @@ _ReportWarning (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print information message from KD table
+ * DESCRIPTION: Print information message
  *
  ******************************************************************************/
 
