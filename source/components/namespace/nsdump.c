@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.154 $
+ *              $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -125,8 +125,8 @@
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsdump")
 
-#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
+#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
 /*******************************************************************************
  *
@@ -152,7 +152,7 @@ AcpiNsPrintPathname (
         return;
     }
 
-        /* Print the entire name */
+    /* Print the entire name */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "["));
 
@@ -466,7 +466,7 @@ AcpiNsDumpOneObject (
         case ACPI_TYPE_LOCAL_BANK_FIELD:
         case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
-            AcpiOsPrintf ("Off %.2X Len %.2X Acc %.2hd\n",
+            AcpiOsPrintf (" Off %.3X Len %.2X Acc %.2hd\n",
                     (ObjDesc->CommonField.BaseByteOffset * 8)
                         + ObjDesc->CommonField.StartFieldBitOffset,
                     ObjDesc->CommonField.BitLength,
@@ -685,7 +685,6 @@ AcpiNsDumpObjects (
     Info.OwnerId = OwnerId;
     Info.DisplayType = DisplayType;
 
-
     (void) AcpiNsWalkNamespace (Type, StartHandle, MaxDepth,
                 ACPI_NS_WALK_NO_UNLOCK, AcpiNsDumpOneObject,
                 (void *) &Info, NULL);
@@ -733,7 +732,6 @@ AcpiNsDumpTables (
         SearchHandle = AcpiGbl_RootNode;
         ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "\\\n"));
     }
-
 
     AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_OBJECTS, MaxDepth,
             ACPI_UINT32_MAX, SearchHandle);
