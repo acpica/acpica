@@ -298,6 +298,19 @@ _LocalCallocate (
  * Obsolete??
  */
 
+/*  Bitflags for all display functions  */
+
+#define DISPLAY_DATA        SCREEN          /*  SCREEN defined in BU.H (1)  */
+#define LOG_DATA            LOGFILE         /*  LOGFILE defined in BU.H (2) */
+#define OUTPUT_DATA         (DISPLAY_DATA | LOG_DATA)
+
+/*  
+ * start using bits from the other end to minimize the possibility
+ *  of additional flag bits from BU being defined that will conflict
+ */
+#define OUTPUT_ERRORS       0x80
+
+
 #ifdef _SCREEN_IO
 #define LINE_SET(a,b)                   LineSet(a,b)
 #else

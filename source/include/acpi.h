@@ -107,11 +107,19 @@ ACPI_EXTERN char        *NameString;    /* Runtime AML error message communicati
 
 /* These must not be ACPI_EXTERN since they need explicit initialization */
 
+
+extern INT32            AcpiLibInitStatus;
+
+extern INT32            RestoreAcpiChipset;
+extern UINT16           Pm1EnableRegisterSave;
+extern UINT8 *          Gpe0EnableRegisterSave;
+extern UINT8 *          Gpe1EnableRegisterSave;
+extern INT32            OriginalMode;
+
 extern char             *AsmFile;           /* defined in acpipriv.c */
 extern char             *DsdtFile;          /* defined in acpipriv.c */
 extern char             *OutputFile;        /* defined in acpipriv.c */
 extern char             *InputFile;         /* defined in acpipriv.c */
-extern                  HardwareOverride;   /* defined in AcpiTbls.c */
 extern INT32            AcpiHook;           /* strong link that lives in acpilibv.c */
 
 
