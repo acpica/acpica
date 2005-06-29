@@ -10,88 +10,108 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
  * reserved.
  *
  * 2. License
- * 
- * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
- * copy of the source code appearing in this file ("Covered Code") a license 
- * under Intel's copyrights in the base code distributed originally by Intel 
- * ("Original Intel Code") to copy, make derivatives, distribute, use and 
- * display any portion of the Covered Code in any form; and
  *
- * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * 2.1. This is your license from Intel Corp. under its intellectual property
+ * rights.  You may have additional license terms from the party that provided
+ * you this software, covering your right to use that party's intellectual
+ * property rights.
+ *
+ * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
+ * copy of the source code appearing in this file ("Covered Code") an
+ * irrevocable, perpetual, worldwide license under Intel's copyrights in the
+ * base code distributed originally by Intel ("Original Intel Code") to copy,
+ * make derivatives, distribute, use and display any portion of the Covered
+ * Code in any form, with the right to sublicense such rights; and
+ *
+ * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
  * license (without the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell, 
- * offer to sell, and import the Covered Code and derivative works thereof 
- * solely to the minimum extent necessary to exercise the above copyright 
- * license, and in no event shall the patent license extend to any additions to
- * or modifications of the Original Intel Code.  No other license or right is 
- * granted directly or by implication, estoppel or otherwise;
+ * patents that are infringed by the Original Intel Code, to make, use, sell,
+ * offer to sell, and import the Covered Code and derivative works thereof
+ * solely to the minimum extent necessary to exercise the above copyright
+ * license, and in no event shall the patent license extend to any additions
+ * to or modifications of the Original Intel Code.  No other license or right
+ * is granted directly or by implication, estoppel or otherwise;
  *
- * the above copyright and patent license is granted only if the following 
+ * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
  * 3. Conditions 
  *
- * 3.1. Redistribution of source code of any substantial portion of the Covered 
- * Code or modification must include the above Copyright Notice, the above 
- * License, this list of Conditions, and the following Disclaimer and Export 
- * Compliance provision.  In addition, Licensee must cause all Covered Code to 
- * which Licensee contributes to contain a file documenting the changes 
- * Licensee made to create that Covered Code and the date of any change.  
- * Licensee must include in that file the documentation of any changes made by
- * any predecessor Licensee.  Licensee must include a prominent statement that
- * the modification is derived, directly or indirectly, from Original Intel 
- * Code.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification with rights to further distribute source must include
+ * the above Copyright Notice, the above License, this list of Conditions,
+ * and the following Disclaimer and Export Compliance provision.  In addition,
+ * Licensee must cause all Covered Code to which Licensee contributes to
+ * contain a file documenting the changes Licensee made to create that Covered
+ * Code and the date of any change.  Licensee must include in that file the
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * must include a prominent statement that the modification is derived,
+ * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution in binary form of any substantial portion of the Covered 
- * Code or modification must reproduce the above Copyright Notice, and the 
- * following Disclaimer and Export Compliance provision in the documentation 
- * and/or other materials provided with the distribution.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification without rights to further distribute source must
+ * include the following Disclaimer and Export Compliance provision in the
+ * documentation and/or other materials provided with distribution.  In
+ * addition, Licensee may not authorize further sublicense of source of any
+ * portion of the Covered Code, and must include terms to the effect that the
+ * license from Licensee to its licensee is limited to the intellectual
+ * property embodied in the software Licensee provides to its licensee, and
+ * not to intellectual property embodied in modifications its licensee may
+ * make.
  *
- * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * 3.3. Redistribution of Executable. Redistribution in executable form of any
+ * substantial portion of the Covered Code or modification must reproduce the
+ * above Copyright Notice, and the following Disclaimer and Export Compliance
+ * provision in the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * 3.4. Intel retains all right, title, and interest in and to the Original
  * Intel Code.
  *
- * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
- * Intel shall be used in advertising or otherwise to promote the sale, use or 
- * other dealings in products derived from or relating to the Covered Code 
+ * 3.5. Neither the name Intel nor any other trademark owned or controlled by
+ * Intel shall be used in advertising or otherwise to promote the sale, use or
+ * other dealings in products derived from or relating to the Covered Code
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
  * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this 
- * software or system incorporating such software without first obtaining any 
- * required license or other approval from the U. S. Department of Commerce or 
- * any other agency or department of the United States Government.  In the 
- * event Licensee exports any such software from the United States or re-
- * exports any such software from a foreign destination, Licensee shall ensure
- * that the distribution and export/re-export of the software is in compliance 
- * with all laws, regulations, orders, or other restrictions of the U.S. Export 
- * Administration Regulations. Licensee agrees that neither it nor any of its 
- * subsidiaries will export/re-export any technical data, process, software, or 
- * service, directly or indirectly, to any country for which the United States 
- * government or any agency thereof requires an export license, other 
- * governmental approval, or letter of assurance, without first obtaining such
- * license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this
+ * software or system incorporating such software without first obtaining any
+ * required license or other approval from the U. S. Department of Commerce or
+ * any other agency or department of the United States Government.  In the
+ * event Licensee exports any such software from the United States or
+ * re-exports any such software from a foreign destination, Licensee shall
+ * ensure that the distribution and export/re-export of the software is in
+ * compliance with all laws, regulations, orders, or other restrictions of the
+ * U.S. Export Administration Regulations. Licensee agrees that neither it nor
+ * any of its subsidiaries will export/re-export any technical data, process,
+ * software, or service, directly or indirectly, to any country for which the
+ * United States government or any agency thereof requires an export license,
+ * other governmental approval, or letter of assurance, without first obtaining
+ * such license, approval or letter.
  *
  *****************************************************************************/
 
@@ -136,14 +156,83 @@ ACPI_STATUS
 AcpiEvaluateObject (
     ACPI_HANDLE             Handle, 
     char                    *Pathname, 
-    ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    *ReturnObject)
+    ACPI_OBJECT_LIST        *ParamObjects,
+    ACPI_BUFFER             *ReturnBuffer)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_OBJECT_INTERNAL    InternalRetObj;
+    ACPI_OBJECT_INTERNAL    **ParamPtr = NULL;
+    ACPI_OBJECT_INTERNAL    *ReturnPtr = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjectPtr = NULL;
+    UINT32                  BufferSpaceNeeded;
+    UINT32                  Count;
+    UINT32                  i;
+
 
     FUNCTION_TRACE ("AcpiEvaluateObject");
 
+
+    /* 
+     * If there are parameters, the external objects must be converted
+     * to internal objects
+     */
+
+    if (ParamObjects && ParamObjects->Count)
+    {
+        /* 
+         * Allocate a new parameter block for the internal objects
+         * Add 1 to count to allow for null terminated internal list
+         * TBD: merge into single allocation!
+         */
+
+        Count = ParamObjects->Count;
+        ParamPtr = LocalCallocate ((Count + 1) * 
+                                    sizeof (void *));
+        if (!ParamPtr)
+        {
+            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
+            return AE_NO_MEMORY;
+        }
+
+        ObjectPtr = LocalCallocate ((Count) * 
+                                    sizeof (ACPI_OBJECT_INTERNAL));
+        if (!ObjectPtr)
+        {
+            OsdFree (ParamPtr);
+            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
+            return AE_NO_MEMORY;
+        }
+
+        /*
+         * Init the param array of pointers and NULL terminate the list
+         */
+
+        for (i = 0; i < Count; i++)
+        {
+            ParamPtr[i] = &ObjectPtr[i];
+        }
+        ParamPtr[Count] = NULL;                 
+
+        /* 
+         * Convert each external object in the list to an internal object
+         */
+        for (i = 0; i < Count; i++)
+        {
+            Status = CmBuildInternalObject (&ParamObjects->Pointer[i], ParamPtr[i]);
+            if (ACPI_FAILURE (Status))
+            {
+                CmDeleteInternalObjectList (ParamPtr);
+                FUNCTION_STATUS_EXIT (Status);
+                return Status;
+            }
+        }
+    }
+
+    if (ReturnBuffer && ReturnBuffer->Pointer)
+    {
+        ReturnPtr = &InternalRetObj;
+    }
 
     /*
      *  If the pathname exists and is fully qualified then just eval by name
@@ -151,9 +240,9 @@ AcpiEvaluateObject (
 
     if ((Pathname) && (Pathname[0] == '\\'))
     {
-        Status = NsEvaluateByName (Pathname, Params, ReturnObject);
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+BREAKPOINT3;
+        Status = NsEvaluateByName (Pathname, ParamPtr, ReturnPtr);
+        goto Cleanup;
     }
 
     if (!Handle)
@@ -172,9 +261,11 @@ AcpiEvaluateObject (
             DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Handle is NULL and Pathname is relative\n"));
         }
 
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        Status = AE_BAD_PARAMETER;
+        goto Cleanup;
     }
+
+
     /*
      *  We get here we have a handle, and if we have a pathname it is relative.
      *
@@ -183,8 +274,8 @@ AcpiEvaluateObject (
     if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Bad Handle\n"));
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        Status = AE_BAD_PARAMETER;
+        goto Cleanup;
     }
 
     if (!Pathname)
@@ -192,14 +283,83 @@ AcpiEvaluateObject (
         /*
          *  The null pathname case means the handle is for the object
          */
-        Status = NsEvaluateByHandle (ObjEntry, Params, ReturnObject);
+        Status = NsEvaluateByHandle (ObjEntry, ParamPtr, ReturnPtr);
     }
+
     else
     {
        /*
         *   Have both Handle and a relative Pathname
         */
-        Status = NsEvaluateRelative (ObjEntry, Pathname, Params, ReturnObject);
+        Status = NsEvaluateRelative (ObjEntry, Pathname, ParamPtr, ReturnPtr);
+    }
+
+
+
+    /*
+     * Common cleanup: We must free the input parameter list (if we created one),
+     * and copy the return object to the caller's buffer (if necessary)
+     */
+
+Cleanup:
+    if (ParamPtr)
+    {
+        /* Free the allocated parameter block */
+
+        CmDeleteInternalObjectList (ParamPtr);
+    }
+
+    if (ReturnPtr)
+    {
+        if (Status == AE_RETURN_VALUE)
+        {
+            /*
+             *  Find out how large a buffer is needed to contain the
+             *  returned object
+             */
+            Status = CmGetObjectSize (ReturnPtr, &BufferSpaceNeeded);
+            if (Status != AE_OK) 
+            {
+                /*
+                 *  Failed the call
+                 */
+                ReturnBuffer->Length = 0;
+                FUNCTION_STATUS_EXIT (Status);
+                return Status;
+            }
+
+
+            if (ReturnBuffer->Length < BufferSpaceNeeded) 
+            {
+                /*
+                 *  Caller's buffer is too small, can't give him partial results
+                 *  fail the call but return the buffer size needed
+                 */
+                ReturnBuffer->Length = BufferSpaceNeeded;
+                FUNCTION_STATUS_EXIT (AE_BUFFER_OVERFLOW);
+                return AE_BUFFER_OVERFLOW;
+            }
+
+            /*
+             *  We have enough space for the object, build it
+             */
+            Status = CmBuildExternalObject (ReturnPtr, ReturnBuffer);
+            ReturnBuffer->Length = BufferSpaceNeeded;
+        }
+
+        else
+        {
+            /* Nothing was returned */
+
+            ReturnBuffer->Length = 0;
+        }
+    }
+
+    /* Never pass AE_RETURN_VALUE back to the caller */
+
+    if (Status == AE_RETURN_VALUE)
+    {
+        Status = AE_OK;
     }
 
     FUNCTION_STATUS_EXIT (Status);
