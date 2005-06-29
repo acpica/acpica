@@ -119,7 +119,7 @@
 
 #include <acpi.h>
 #include <hardware.h>
-#include <namespace.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -401,15 +401,63 @@ CmTerminate (void)
     }
 
 
-    /* Free the mutex objects */
-
-    CmMutexTerminate ();
-
-
     return_VOID;
 }
 
  
+/******************************************************************************
+ *
+ * FUNCTION:    CmSubsystemShutdown
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Shutdown the various subsystems.  Don't delete the mutex
+ *              objects here -- because the AML debugger may be still running.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+CmSubsystemShutdown (void)
+{
+
+    FUNCTION_TRACE ("CmSubsystemShutdown");
+    
+    /* Just exit if subsystem is already shutdown */
+
+    if (Gbl_Shutdown)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Subsystem appears active, go ahead and shut it down */
+
+    DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
+
+
+    /* Close the Namespace */
+
+    NsTerminate ();
+
+    /* Close the Event Handling */
+
+    EvTerminate ();
+
+    /* Close the globals */
+
+    CmTerminate ();
+
+    /* Debug only - display leftover memory allocation, if any */
+
+    CmDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
+    Gbl_Shutdown = TRUE;
+
+    BREAKPOINT3;
+
+    return_ACPI_STATUS (AE_OK);
+}
+
 
 
 
