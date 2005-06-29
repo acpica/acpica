@@ -19,20 +19,11 @@
 #include <acpi.h>
 #include <devices.h>
 #include <namespace.h>
-#include <display.h>
 #include <string.h>
 
 
 #define _THIS_MODULE        "acpiinit.c"
 #define _COMPONENT          NAMESPACE
-
-static INT32        RestoreAcpiChipset = TRUE;
-static UINT16       Pm1EnableRegisterSave = 0;
-static UINT8 *      Gpe0EnableRegisterSave = NULL;
-static UINT8 *      Gpe1EnableRegisterSave = NULL;
-
-INT32               OriginalMode;
-INT32               HardwareOverride = FALSE;
 
 
 static ST_KEY_DESC_TABLE KDT[] = {
@@ -164,16 +155,7 @@ AcpiInit (char *FileName)
     {
         /* use BIOS ACPI tables */
 
-        /* is this override obsolete??? TBD */
-
-        if (HardwareOverride)
-        {
-            DEBUG_PRINT (ACPI_INFO,
-                        ("HwOverride specified on command line, but no input file was provided"
-                        "\n  HwOverride ignored\n"));
-            /* dKinc_info ("0003", PRINT);*/
-            HardwareOverride = FALSE;
-        }
+        /* Anything to do here??? TBD */
     }
 
     if (ErrorCheck == E_OK)
