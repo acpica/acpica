@@ -211,6 +211,11 @@ typedef struct ArgumentInfo
 
 
 void
+DbDumpNamespaceByOwner (
+    char                    *OwnerArg,
+    char                    *DepthArg);
+
+void
 DbDisplayTableInfo (
     char                    *TableArg);
 
