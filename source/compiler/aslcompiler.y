@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.32 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
  */
 #define YYINITDEPTH 600
 
-#include "AslCompiler.h"
+#include "aslcompiler.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -216,7 +216,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> CONCATENATERESTEMPLATE
 %token <i> CONDREFOF
 %token <i> CONTINUE
-%token <i> COPY
+%token <i> COPYOBJECT
 %token <i> CREATEBITFIELD
 %token <i> CREATEBYTEFIELD
 %token <i> CREATEDWORDFIELD
@@ -540,7 +540,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> ConcatTerm
 %type <n> ConcatResTerm
 %type <n> CondRefOfTerm
-%type <n> CopyTerm
+%type <n> CopyObjectTerm
 %type <n> DecTerm
 %type <n> DerefOfTerm
 %type <n> DivideTerm
@@ -908,7 +908,7 @@ Type1Opcode
 Type2Opcode
     : AcquireTerm                   {}
     | CondRefOfTerm                 {}
-    | CopyTerm                      {}
+    | CopyObjectTerm                {}
     | DerefOfTerm                   {}
     | ObjectTypeTerm                {}
     | RefOfTerm                     {}
@@ -1546,12 +1546,12 @@ CondRefOfTerm
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
-CopyTerm
-    : COPY '('                      {$$ = TrCreateLeafNode (COPY);}
+CopyObjectTerm
+    : COPYOBJECT '('                {$$ = TrCreateLeafNode (COPYOBJECT);}
         TermArg
         ',' SimpleTarget
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6);}
-    | COPY '('
+    | COPYOBJECT '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
@@ -2800,7 +2800,7 @@ NameStringItem
 /* programs */
 
 int
-AslCompilerwrap()
+AslCompilerwrap(void)
 {
   return 1;
 }
@@ -2816,9 +2816,10 @@ AslLocalAllocate (unsigned int Size)
     Mem = _CmCallocate (Size, 0, "", 0);
     if (!Mem)
     {
-        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION, Gbl_CurrentLineNumber,
-                    Gbl_LogicalLineNumber, Gbl_InputByteCount, Gbl_CurrentColumn,
-                    Gbl_InputFilename, NULL);
+        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION, 
+                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, 
+                        Gbl_InputByteCount, Gbl_CurrentColumn,
+                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
         exit (1);
     }
 
