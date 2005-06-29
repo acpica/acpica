@@ -184,19 +184,11 @@ SOURCE=..\..\Subsystem\Events\evsci.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Hardware\hw32.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Hardware\hw32thrt.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Hardware\hwapi.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Hardware\hwerrata.c
 # End Source File
 # Begin Source File
 
