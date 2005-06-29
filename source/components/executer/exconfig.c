@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -308,7 +308,7 @@ AcpiExUnloadTable (
      * validated here.
      */
     if ((!DdbHandle) ||
-        (!VALID_DESCRIPTOR_TYPE (DdbHandle, ACPI_DESC_TYPE_INTERNAL)) ||
+        (ACPI_GET_DESCRIPTOR_TYPE (DdbHandle) != ACPI_DESC_TYPE_INTERNAL) ||
         (((ACPI_OPERAND_OBJECT  *)DdbHandle)->Common.Type !=
                 INTERNAL_TYPE_REFERENCE))
     {
