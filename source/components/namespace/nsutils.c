@@ -118,10 +118,10 @@
 #define __NSUTILS_C__
 
 #include "acpi.h"
-#include "namesp.h"
-#include "interp.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "tables.h"
+#include "actables.h"
 
 #define _COMPONENT          NAMESPACE
         MODULE_NAME         ("nsutils");
@@ -141,7 +141,7 @@
 
 BOOLEAN
 AcpiNsValidRootPrefix (
-    char                    Prefix)
+    INT8                    Prefix)
 {
 
     return ((BOOLEAN) (Prefix == '\\'));
@@ -162,7 +162,7 @@ AcpiNsValidRootPrefix (
 
 BOOLEAN
 AcpiNsValidPathSeparator (
-    char                    Sep)
+    INT8                    Sep)
 {
 
     return ((BOOLEAN) (Sep == '.'));
@@ -245,11 +245,11 @@ AcpiNsLocal (
 
 ACPI_STATUS
 AcpiNsInternalizeName (
-    char                    *ExternalName,
-    char                    **ConvertedName)
+    INT8                    *ExternalName,
+    INT8                    **ConvertedName)
 {
-    char                    *Result = NULL;
-    char                    *InternalName;
+    INT8                    *Result = NULL;
+    INT8                    *InternalName;
     UINT32                  NumSegments;
     BOOLEAN                 FullyQualified = FALSE;
     UINT32                  i;
@@ -345,7 +345,7 @@ AcpiNsInternalizeName (
 
             else
             {
-                /* Convert char to uppercase and save it */
+                /* Convert INT8 to uppercase and save it */
 
                 Result[i] = (char) TOUPPER (*ExternalName);
                 ExternalName++;
@@ -411,9 +411,9 @@ AcpiNsInternalizeName (
 ACPI_STATUS
 AcpiNsExternalizeName (
     UINT32                  InternalNameLength,
-    char                    *InternalName,
+    INT8                    *InternalName,
     UINT32                  *ConvertedNameLength,
-    char                    **ConvertedName)
+    INT8                    **ConvertedName)
 {
     UINT32                  PrefixLength = 0;
     UINT32                  NamesIndex = 0;
@@ -579,12 +579,12 @@ AcpiNsConvertHandleToEntry (
 
     if (!Handle)
     {
-        return NULL;
+        return (NULL);
     }
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
-        return AcpiGbl_RootObject;
+        return (AcpiGbl_RootObject);
     }
 
 
@@ -592,10 +592,10 @@ AcpiNsConvertHandleToEntry (
 
     if (!VALID_DESCRIPTOR_TYPE (Handle, ACPI_DESC_TYPE_NAMED))
     {
-        return NULL;
+        return (NULL);
     }
 
-    return (ACPI_NAMED_OBJECT*) Handle;
+    return ((ACPI_NAMED_OBJECT*) Handle);
 }
 
 
@@ -622,23 +622,23 @@ AcpiNsConvertEntryToHandle(ACPI_NAMED_OBJECT*Nte)
      * and keep all pointers within this subsystem!
      */
 
-    return (ACPI_HANDLE) Nte;
+    return ((ACPI_HANDLE) Nte);
 
 
 /* ---------------------------------------------------
 
     if (!Nte)
     {
-        return NULL;
+        return (NULL);
     }
 
     if (Nte == AcpiGbl_RootObject)
     {
-        return ACPI_ROOT_OBJECT;
+        return (ACPI_ROOT_OBJECT);
     }
 
 
-    return (ACPI_HANDLE) Nte;
+    return ((ACPI_HANDLE) Nte);
 ------------------------------------------------------*/
 }
 
@@ -689,8 +689,6 @@ AcpiNsTerminate (void)
     AcpiNsDeleteNameTable (Entry->ChildTable);
     Entry->ChildTable = NULL;
 
-
-    REPORT_SUCCESS ("Entire namespace and objects deleted");
     DEBUG_PRINT (ACPI_INFO, ("NsTerminate: Namespace freed\n"));
 
 
@@ -745,7 +743,7 @@ AcpiNsOpensScope (
  *                            . (period) to separate segments are supported.
  *              InScope     - Root of subtree to be searched, or NS_ALL for the
  *                            root of the name space.  If Name is fully
- *                            qualified (first char is '\'), the passed value
+ *                            qualified (first INT8 is '\'), the passed value
  *                            of Scope will not be accessed.
  *              OutNte      - Where the Nte is returned
  *
@@ -758,14 +756,14 @@ AcpiNsOpensScope (
 
 ACPI_STATUS
 AcpiNsGetNamedObject (
-    char                    *Pathname,
+    INT8                    *Pathname,
     ACPI_NAME_TABLE         *InScope,
     ACPI_NAMED_OBJECT       **OutNte)
 {
     ACPI_GENERIC_STATE      ScopeInfo;
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *ObjEntry = NULL;
-    char                    *InternalPath = NULL;
+    INT8                    *InternalPath = NULL;
 
 
     FUNCTION_TRACE_PTR ("NsGetNte", Pathname);
@@ -821,7 +819,7 @@ AcpiNsGetNamedObject (
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                             NULL, &ObjEntry);
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_INFO, ("NsGetNte: %s, %s\n",
                         InternalPath, AcpiCmFormatException (Status)));
@@ -918,22 +916,22 @@ AcpiNsExistDownstreamSibling (
 
     if (!ThisEntry)
     {
-        return FALSE;
+        return (FALSE);
     }
 
     if (ThisEntry->Name)
     {
-        return TRUE;
+        return (TRUE);
     }
 
 
 /* TBD: what did this really do?
     if (ThisEntry->NextEntry)
     {
-        return TRUE;
+        return (TRUE);
     }
 */
-    return FALSE;
+    return (FALSE);
 }
 
 
@@ -970,11 +968,11 @@ AcpiNsGetOwnerTable (
      * the parent.
      */
 
-    return (ACPI_NAME_TABLE *) ((char *) ThisEntry -
+    return ((ACPI_NAME_TABLE *) ((INT8 *) ThisEntry -
                             (ThisEntry->ThisIndex *
                             sizeof (ACPI_NAMED_OBJECT)) -
                             (sizeof (ACPI_NAME_TABLE) -
-                            sizeof (ACPI_NAMED_OBJECT)));
+                            sizeof (ACPI_NAMED_OBJECT))));
 
 }
 
@@ -1064,7 +1062,7 @@ AcpiNsGetNextValidEntry (
 
     /* No more valid entries in this name table */
 
-    return NULL;
+    return (NULL);
 }
 
 

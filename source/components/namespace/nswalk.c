@@ -130,20 +130,19 @@
  *
  * FUNCTION:    AcpiGetNextObject
  *
- * PARAMETERS:  Type                - Type of object to be searched for
- *              Parent              - Parent object whose children we are 
- *                                      getting
- *              LastChild           - Previous child that was found.
- *                                    The NEXT child will be returned
+ * PARAMETERS:  Type            - Type of object to be searched for
+ *              Parent          - Parent object whose children we are getting
+ *              LastChild       - Previous child that was found.
+ *                                The NEXT child will be returned
+ *              RetHandle       - Where handle to the next object is placed
  *
- * RETURN:      ACPI_NAMED_OBJECT   - Pointer to the NEXT child or NULL if
- *                                      none is found.
+ * RETURN:      Status
  *
- * DESCRIPTION: Return the next peer object within the namespace.  If Handle 
- *              is valid, Scope is ignored.  Otherwise, the first object 
- *              within Scope is returned.
+ * DESCRIPTION: Return the next peer object within the namespace.  If Handle is
+ *              valid, Scope is ignored.  Otherwise, the first object within
+ *              Scope is returned.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_NAMED_OBJECT*
 AcpiNsGetNextObject (
