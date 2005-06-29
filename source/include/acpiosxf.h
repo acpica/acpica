@@ -1,9 +1,9 @@
 
 // File I/O
 
-#define OSD_FILE	char
+#define OSD_FILE    char
 #ifndef size_t
-#define size_t		unsigned long
+#define size_t      unsigned long
 #endif
 
 OSD_FILE *OsdOpen (const char *filename, const char *mode);
@@ -29,9 +29,9 @@ void OsdUnMapMemory (char * where, unsigned long length);
 // Interrupt handlers
 
 void *OsdInstallInterruptHandler (
-	unsigned long		InterruptNumber,
-	int					(* Isr)(void),
-	unsigned long *		ExceptPtr);
+    unsigned long       InterruptNumber,
+    int                 (* Isr)(void),
+    unsigned long *     ExceptPtr);
 
 
 // Misc

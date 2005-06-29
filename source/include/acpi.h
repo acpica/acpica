@@ -14,16 +14,17 @@
  | FILENAME: acpi.h - Publics and external data for ACPI.LIB
  |__________________________________________________________________________
  |
- | $Revision: 1.1 $
- | $Date: 2005/06/29 19:58:17 $
+ | $Revision: 1.2 $
+ | $Date: 2005/06/29 19:58:18 $
  | $Log: acpi.h,v $
- | Revision 1.1  2005/06/29 19:58:17  aystarik
- | Subsystem headers
+ | Revision 1.2  2005/06/29 19:58:18  aystarik
  |
  |
  | 
- | date	99.01.11.22.10.00;	author rmoore1;	state Exp;
+ | date	99.01.12.00.15.00;	author grsmith1;	state Exp;
  |
+ * 
+ * 2     1/11/99 4:15p Grsmith1
  * 
  * 1     1/11/99 2:10p Rmoore1
  * Subsystem headers
@@ -79,56 +80,56 @@
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
-#define BREAKPOINT3				_asm int 3
+#define BREAKPOINT3             _asm int 3
 
 
 #ifndef ACPILIB_GEN
-	#include <amlpub.h>
-	#include <amlscan.h>
-	#include <acpitype.h>
-	#include <acpievnt.h>
-	#include <acpilgcy.h>
-	#include <acpinmsp.h>
-	#include <acpipmt.h>
-	#include <acpislwa.h>
-	#include <acpitbls.h>
-	#include <acpirio.h>
-	#include <debuglvl.h>
-	#include <device.h>
-	#include <display.h>
-	#include <exmethod.h>
-	#include <scilast.h>
+    #include <amlpub.h>
+    #include <amlscan.h>
+    #include <acpitype.h>
+    #include <acpievnt.h>
+    #include <acpilgcy.h>
+    #include <acpinmsp.h>
+    #include <acpipmt.h>
+    #include <acpislwa.h>
+    #include <acpitbls.h>
+    #include <acpirio.h>
+    #include <debuglvl.h>
+    #include <device.h>
+    #include <display.h>
+    #include <exmethod.h>
+    #include <scilast.h>
 #else
-	#include "acpitype.h"
-#endif	
+    #include "acpitype.h"
+#endif  
 
 #ifdef DEFINE_ACPI_GLOBALS
-	#define ACPI_EXTERN
-	#ifndef RMX
-		#pragma message ("ACPI_EXTERN variables defined in this module.")
-	#endif
+    #define ACPI_EXTERN
+    #ifndef RMX
+        #pragma message ("ACPI_EXTERN variables defined in this module.")
+    #endif
 #else
-	#define ACPI_EXTERN extern
+    #define ACPI_EXTERN extern
 #endif
 
 /* global data, DEFINE_ACPI_GLOBALS is defined in ACPIPRIV.C,
-	Initialization of all variables occurs in iAcpiInit */
+    Initialization of all variables occurs in iAcpiInit */
 
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER	* pRSDP;
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE		* pRSDT;
-ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE	* pFACS;
-ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE		* pFACP;
-ACPI_EXTERN APIC_TABLE								* pMAPIC;
-ACPI_EXTERN ACPI_TABLE_HEADER						* pDSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER						* pPSDT;
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER  * pRSDP;
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       * pRSDT;
+ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE * pFACS;
+ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        * pFACP;
+ACPI_EXTERN APIC_TABLE                              * pMAPIC;
+ACPI_EXTERN ACPI_TABLE_HEADER                       * pDSDT;
+ACPI_EXTERN ACPI_TABLE_HEADER                       * pPSDT;
 /* TBD - There may be multiple SSDTs so a single pointer is not sufficient to
-			tag them all.  An array or linked list of SSDT pointers will be
-			necessary. */
-ACPI_EXTERN ACPI_TABLE_HEADER						* pSSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER						* pSBDT;
+            tag them all.  An array or linked list of SSDT pointers will be
+            necessary. */
+ACPI_EXTERN ACPI_TABLE_HEADER                       * pSSDT;
+ACPI_EXTERN ACPI_TABLE_HEADER                       * pSBDT;
 
 
 
-#define MAX_ACPI_TABLE_SIZE			16384
+#define MAX_ACPI_TABLE_SIZE         16384
 
 #endif /* __ACPI_H__ */
