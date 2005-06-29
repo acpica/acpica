@@ -165,7 +165,7 @@ NsEnter (
     char                *Name, 
     NsType              Type, 
     OpMode              iLE,
-    NsHandle            *RetHandle);
+    NAME_TABLE_ENTRY    **RetEntry);
 
 ACPI_STATUS
 NsUnloadNamespace (
