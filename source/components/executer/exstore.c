@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -407,8 +407,7 @@ AcpiAmlStoreObjectToIndex (
                  */
                 if (ACPI_TYPE_PACKAGE == ObjDesc->Common.Type)
                 {
-                    Status = AcpiAmlBuildCopyInternalPackageObject (
-                                ValDesc, ObjDesc, WalkState);
+                    Status = AcpiCmCopyIpackageToIpackage (ValDesc, ObjDesc, WalkState);
                     if (ACPI_FAILURE (Status))
                     {
                         AcpiCmRemoveReference (ObjDesc);
