@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.82 $
+ *              $Revision: 1.85 $
  *
  ******************************************************************************/
 
@@ -189,7 +189,7 @@ AcpiEvaluateObject (
         ParamLength     = (Count + 1) * sizeof (void *);
         ObjectLength    = Count * sizeof (ACPI_OPERAND_OBJECT);
 
-        ParamPtr = AcpiCmCallocate (ParamLength +   /* Parameter List part */
+        ParamPtr = AcpiUtCallocate (ParamLength +   /* Parameter List part */
                                     ObjectLength);  /* Actual objects */
         if (!ParamPtr)
         {
@@ -207,7 +207,7 @@ AcpiEvaluateObject (
         for (i = 0; i < Count; i++)
         {
             ParamPtr[i] = &ObjectPtr[i];
-            AcpiCmInitStaticObject (&ObjectPtr[i]);
+            AcpiUtInitStaticObject (&ObjectPtr[i]);
         }
         ParamPtr[Count] = NULL;
 
@@ -217,12 +217,12 @@ AcpiEvaluateObject (
          */
         for (i = 0; i < Count; i++)
         {
-            Status = AcpiCmCopyEobjectToIobject (&ParamObjects->Pointer[i],
+            Status = AcpiUtCopyEobjectToIobject (&ParamObjects->Pointer[i],
                                                 ParamPtr[i]);
 
             if (ACPI_FAILURE (Status))
             {
-                AcpiCmDeleteInternalObjectList (ParamPtr);
+                AcpiUtDeleteInternalObjectList (ParamPtr);
                 return_ACPI_STATUS (Status);
             }
         }
@@ -255,14 +255,12 @@ AcpiEvaluateObject (
 
         if (!Pathname)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AcpiEvaluateObject: Both Handle and Pathname are NULL\n"));
+            DEBUG_PRINTP (ACPI_ERROR, ("Both Handle and Pathname are NULL\n"));
         }
 
         else
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AcpiEvaluateObject: Handle is NULL and Pathname is relative\n"));
+            DEBUG_PRINTP (ACPI_ERROR, ("Handle is NULL and Pathname is relative\n"));
         }
 
         Status = AE_BAD_PARAMETER;
@@ -331,7 +329,7 @@ AcpiEvaluateObject (
                  * Find out how large a buffer is needed
                  * to contain the returned object
                  */
-                Status = AcpiCmGetObjectSize (ReturnObj,
+                Status = AcpiUtGetObjectSize (ReturnObj,
                                                 &BufferSpaceNeeded);
                 if (ACPI_SUCCESS (Status))
                 {
@@ -348,8 +346,8 @@ AcpiEvaluateObject (
                          * but return the buffer size needed
                          */
 
-                        DEBUG_PRINT (ACPI_INFO,
-                            ("AcpiEvaluateObject: Needed buffer size %X, received %X\n",
+                        DEBUG_PRINTP (ACPI_INFO,
+                            ("Needed buffer size %X, received %X\n",
                             BufferSpaceNeeded, UserBufferLength));
 
                         ReturnBuffer->Length = BufferSpaceNeeded;
@@ -361,7 +359,7 @@ AcpiEvaluateObject (
                         /*
                          *  We have enough space for the object, build it
                          */
-                        Status = AcpiCmCopyIobjectToEobject (ReturnObj,
+                        Status = AcpiUtCopyIobjectToEobject (ReturnObj,
                                         ReturnBuffer);
                         ReturnBuffer->Length = BufferSpaceNeeded;
                     }
@@ -379,7 +377,7 @@ AcpiEvaluateObject (
          * Delete the internal return object. (Or at least
          * decrement the reference count by one)
          */
-        AcpiCmRemoveReference (ReturnObj);
+        AcpiUtRemoveReference (ReturnObj);
     }
 
     /*
@@ -390,7 +388,7 @@ AcpiEvaluateObject (
     {
         /* Free the allocated parameter block */
 
-        AcpiCmDeleteInternalObjectList (ParamPtr);
+        AcpiUtDeleteInternalObjectList (ParamPtr);
     }
 
     return_ACPI_STATUS (Status);
@@ -435,7 +433,7 @@ AcpiGetNextObject (
         return (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* If null handle, use the parent */
 
@@ -468,7 +466,7 @@ AcpiGetNextObject (
 
     /* Internal function does the real work */
 
-    Node = AcpiNsGetNextObject ((OBJECT_TYPE_INTERNAL) Type,
+    Node = AcpiNsGetNextObject ((ACPI_OBJECT_TYPE8) Type,
                                     ParentNode, ChildNode);
     if (!Node)
     {
@@ -484,7 +482,7 @@ AcpiGetNextObject (
 
 UnlockAndExit:
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
 
@@ -527,21 +525,21 @@ AcpiGetType (
         return (AE_OK);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Convert and validate the handle */
 
     Node = AcpiNsConvertHandleToEntry (Handle);
     if (!Node)
     {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         return (AE_BAD_PARAMETER);
     }
 
     *RetType = Node->Type;
 
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (AE_OK);
 }
 
@@ -585,7 +583,7 @@ AcpiGetParent (
     }
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Convert and validate the handle */
 
@@ -612,7 +610,7 @@ AcpiGetParent (
 
 UnlockAndExit:
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
 
@@ -652,7 +650,7 @@ AcpiWalkNamespace (
     ACPI_OBJECT_TYPE        Type,
     ACPI_HANDLE             StartObject,
     UINT32                  MaxDepth,
-    WALK_CALLBACK           UserFunction,
+    ACPI_WALK_CALLBACK      UserFunction,
     void                    *Context,
     void                    **ReturnValue)
 {
@@ -678,14 +676,14 @@ AcpiWalkNamespace (
      * must be allowed to make Acpi calls itself.
      */
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-    Status = AcpiNsWalkNamespace ((OBJECT_TYPE_INTERNAL) Type,
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiNsWalkNamespace ((ACPI_OBJECT_TYPE8) Type,
                                     StartObject, MaxDepth,
                                     NS_WALK_UNLOCK,
                                     UserFunction, Context,
                                     ReturnValue);
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     return_ACPI_STATUS (Status);
 }
@@ -715,17 +713,15 @@ AcpiNsGetDeviceCallback (
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
     UINT32                  Flags;
-    DEVICE_ID               DeviceId;
+    ACPI_DEVICE_ID          DeviceId;
     ACPI_GET_DEVICES_INFO   *Info;
 
 
     Info = Context;
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     Node = AcpiNsConvertHandleToEntry (ObjHandle);
-
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (!Node)
     {
@@ -735,8 +731,7 @@ AcpiNsGetDeviceCallback (
     /*
      * Run _STA to determine if device is present
      */
-
-    Status = AcpiCmExecute_STA (Node, &Flags);
+    Status = AcpiUtExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
     {
         return (AE_CTRL_DEPTH);
@@ -753,8 +748,7 @@ AcpiNsGetDeviceCallback (
      */
     if (Info->Hid != NULL)
     {
-        Status = AcpiCmExecute_HID (Node, &DeviceId);
-
+        Status = AcpiUtExecute_HID (Node, &DeviceId);
         if (Status == AE_NOT_FOUND)
         {
             return (AE_OK);
@@ -772,7 +766,6 @@ AcpiNsGetDeviceCallback (
     }
 
     Info->UserFunction (ObjHandle, NestingLevel, Info->Context, ReturnValue);
-
     return (AE_OK);
 }
 
@@ -805,7 +798,7 @@ AcpiNsGetDeviceCallback (
 ACPI_STATUS
 AcpiGetDevices (
     NATIVE_CHAR             *HID,
-    WALK_CALLBACK           UserFunction,
+    ACPI_WALK_CALLBACK      UserFunction,
     void                    *Context,
     void                    **ReturnValue)
 {
@@ -838,14 +831,14 @@ AcpiGetDevices (
      * must be allowed to make Acpi calls itself.
      */
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE,
                                     ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                                     NS_WALK_UNLOCK,
                                     AcpiNsGetDeviceCallback, &Info,
                                     ReturnValue);
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     return_ACPI_STATUS (Status);
 }
