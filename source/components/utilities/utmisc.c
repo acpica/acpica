@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  ******************************************************************************/
 
@@ -461,7 +461,7 @@ AcpiUtStrtoul64 (
     UINT32                  Base,
     ACPI_INTEGER            *RetInteger)
 {
-    UINT32                  ThisDigit;
+    UINT32                  ThisDigit = 0;
     ACPI_INTEGER            ReturnValue = 0;
     ACPI_INTEGER            Quotient;
 
@@ -541,8 +541,15 @@ AcpiUtStrtoul64 (
         }
         else
         {
+            if (Base == 10)
+            {
+                /* Digit is out of range */
+
+                goto ErrorExit;
+            }
+
             ThisDigit = (UINT8) ACPI_TOUPPER (*String);
-            if (ACPI_IS_UPPER ((char) ThisDigit))
+            if (ACPI_IS_XDIGIT ((char) ThisDigit))
             {
                 /* Convert ASCII Hex char to value */
 
@@ -550,15 +557,12 @@ AcpiUtStrtoul64 (
             }
             else
             {
-                goto ErrorExit;
+                /*
+                 * We allow non-hex chars, just stop now, same as end-of-string.
+                 * See ACPI spec, string-to-integer conversion.
+                 */
+                break;
             }
-        }
-
-        /* Check to see if digit is out of range */
-
-        if (ThisDigit >= Base)
-        {
-            goto ErrorExit;
         }
 
         /* Divide the digit into the correct position */
@@ -574,6 +578,8 @@ AcpiUtStrtoul64 (
         ReturnValue += ThisDigit;
         String++;
     }
+
+    /* All done, normal exit */
 
     *RetInteger = ReturnValue;
     return_ACPI_STATUS (AE_OK);
