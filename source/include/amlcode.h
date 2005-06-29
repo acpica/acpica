@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.53 $
+ *       $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -357,47 +357,77 @@
 #define OPGRP_FIELD                 0x02
 #define OPGRP_BYTELIST              0x04
 
-#define OPTYPE_UNDEFINED            0
 
+/* 
+ * Opcode types. 
+ * The first group is used in a dispatch table, do not change
+ * without updating the table
+ */
+#define AML_TYPE_MONADIC1               0x00000000
+#define AML_TYPE_MONADIC2               0x00000001
+#define AML_TYPE_MONADIC2R              0x00000002
+#define AML_TYPE_DYADIC1                0x00000003
+#define AML_TYPE_DYADIC2                0x00000004
+#define AML_TYPE_DYADIC2R               0x00000005
+#define AML_TYPE_DYADIC_T21             0x00000006
+#define AML_TYPE_TRIADIC                0x00000007
+#define AML_TYPE_HEXADIC                0x00000008
+#define AML_TYPE_RECONFIGURATION        0x00000009
+/* End of types used in dispatch table */
 
-#define OPTYPE_LITERAL              1
-#define OPTYPE_CONSTANT             2
-#define OPTYPE_METHOD_ARGUMENT      3
-#define OPTYPE_LOCAL_VARIABLE       4
-#define OPTYPE_DATA_TERM            5
-
-/* Type 1 opcodes */
-
-#define OPTYPE_MONADIC1             6
-#define OPTYPE_DYADIC1              7
-
-/* Type 2 opcodes */
-
-#define OPTYPE_MONADIC2             8
-#define OPTYPE_MONADIC2R            9
-#define OPTYPE_DYADIC2              10
-#define OPTYPE_DYADIC2R             11
-#define OPTYPE_DYADIC2S             12
-
-/* Multi-operand (>=3) opcodes */
-
-#define OPTYPE_TRIADIC              13
-#define OPTYPE_QUADRADIC            14
-#define OPTYPE_HEXADIC              15
+#define AML_TYPE_LITERAL                0x0000000A
+#define AML_TYPE_CONSTANT               0x0000000B
+#define AML_TYPE_METHOD_ARGUMENT        0x0000000C
+#define AML_TYPE_LOCAL_VARIABLE         0x0000000D
+#define AML_TYPE_DATA_TERM              0x0000000E
 
 /* Generic for an op that returns a value */
 
-#define OPTYPE_METHOD_CALL          16
+#define AML_TYPE_METHOD_CALL            0x0000000F
 
 /* Misc */
 
-#define OPTYPE_CREATE_FIELD         17
-#define OPTYPE_CONTROL              18
-#define OPTYPE_RECONFIGURATION      19
-#define OPTYPE_NAMED_OBJECT         20
-#define OPTYPE_RETURN               21
+#define AML_TYPE_CREATE_FIELD           0x00000010
+#define AML_TYPE_CONTROL                0x00000011
+#define AML_TYPE_NAMED_OBJECT           0x00000012
+#define AML_TYPE_RETURN                 0x00000013
 
-#define OPTYPE_BOGUS                22
+#define AML_TYPE_UNDEFINED              0x00000014
+#define AML_TYPE_BOGUS                  0x00000015
+
+#define AML_TYPE_MASK                   0x0000001F
+
+/* Opcode classes */
+
+#define AML_CLASS_EXECUTE               0x00000200
+#define AML_CLASS_CREATE                0x00000400
+#define AML_CLASS_ARGUMENT              0x00000600
+#define AML_CLASS_NAMED_OBJECT          0x00000800
+#define AML_CLASS_CONTROL               0x00000A00
+#define AML_CLASS_ASCII                 0x00000C00
+#define AML_CLASS_PREFIX                0x00000E00
+#define AML_CLASS_UNKNOWN               0x00001000
+
+#define AML_CLASS_MASK                  0x00001E00
+
+/* Opcode flags */
+
+#define AML_HAS_ARGS                    0x80000000
+#define AML_NSOBJECT                    0x40000000
+#define AML_NSOPCODE                    0x20000000
+#define AML_NSNODE                      0x10000000
+#define AML_NAMED                       0x08000000
+#define AML_DEFER                       0x04000000
+#define AML_FIELD                       0x02000000
+#define AML_CREATE                      0x01000000
+#define AML_MATH                        0x00800000
+#define AML_LOGICAL                     0x00400000
+
+#define AML_FLAGS_MASK                  0xFFF00000
+
+#define ACPI_GET_OP_TYPE(a)             ((a)->Flags & AML_TYPE_MASK)
+#define ACPI_GET_OP_CLASS(a)            ((a)->Flags & AML_CLASS_MASK)
+#define ACPI_GET_OP_FLAGS(a)            ((a)->Flags & AML_FLAGS_MASK)
 
 
 /* Predefined Operation Region SpaceIDs */
