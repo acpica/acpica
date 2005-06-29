@@ -157,7 +157,9 @@ NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
  *
  * FUNCTION:    NsDumpOneObject   
  *
- * PARAMETERS:  NsHandle Handle          - Entry to be dumped
+ * PARAMETERS:  Handle              - Entry to be dumped
+ *              Level               - Nesting level of the handle
+ *              Context             - Passed into NsWalkNamespace
  *
  * DESCRIPTION: Dump a single nte
  *              This procedure is a UserFunction called by NsWalkNamespace.
@@ -340,6 +342,45 @@ NsDumpObjects (NsType Type, INT32 MaxDepth, NsHandle StartHandle)
 }
 
 
+/****************************************************************************
+ *
+ * FUNCTION:    NsDumpOneDevice   
+ *
+ * PARAMETERS:  Handle              - Entry to be dumped
+ *              Level               - Nesting level of the handle
+ *              Context             - Passed into NsWalkNamespace
+ *
+ * DESCRIPTION: Dump a single nte that represents a device
+ *              This procedure is a UserFunction called by NsWalkNamespace.
+ *
+ ***************************************************************************/
+
+void *
+NsDumpOneDevice (NsHandle ObjHandle, UINT32 Level, void *Context)
+{
+    void                *RetVal;
+    ACPI_DEVICE_INFO    Info;
+    ACPI_STATUS         Status;
+    UINT32              i;
+
+
+    RetVal = NsDumpOneObject (ObjHandle, Level, Context);
+
+    Status = AcpiGetDeviceInfo (ObjHandle, &Info);
+    if (ACPI_SUCCESS (Status))
+    {
+        for (i = 0; i < Level; i++)
+        {
+            DEBUG_PRINT_RAW (TRACE_TABLES, (" "));
+        }
+
+        DEBUG_PRINT_RAW (TRACE_TABLES, ("    HID: %.8X, ADR: %.8X, Status: %x\n",
+                        Info.HardwareId, Info.Address, Info.CurrentStatus));
+    }
+
+    return RetVal;
+}
+
 
 /****************************************************************************
  *
@@ -365,9 +406,8 @@ NsDumpRootDevices (void)
 
     AcpiNameToHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
-    DEBUG_PRINT (TRACE_TABLES, ("All devices in the namespace:\n"));
-    NsDumpObjects (TYPE_Device, INT_MAX, SysBusHandle);
-
+    DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
+    AcpiWalkNamespace (TYPE_Device, SysBusHandle, INT_MAX, NsDumpOneDevice, NULL, NULL);
 }
 
 
