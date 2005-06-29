@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.165 $
+ *       $Revision: 1.166 $
  *
  *****************************************************************************/
 
@@ -260,14 +260,22 @@ ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_MutexInfo[NUM_MUTEX];
  *
  ****************************************************************************/
 
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+
+/* Lists for tracking memory allocations */
 
 ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_GlobalList;
 ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_NsNodeList;
+#endif
 
-ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_StateCache;
-ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_PsNodeCache;
-ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_PsNodeExtCache;
-ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_OperandCache;
+/* Object caches */
+
+ACPI_EXTERN ACPI_CACHE_T               *AcpiGbl_StateCache;
+ACPI_EXTERN ACPI_CACHE_T               *AcpiGbl_PsNodeCache;
+ACPI_EXTERN ACPI_CACHE_T               *AcpiGbl_PsNodeExtCache;
+ACPI_EXTERN ACPI_CACHE_T               *AcpiGbl_OperandCache;
+
+/* Global handlers */
 
 ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_DeviceNotify;
 ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_SystemNotify;
@@ -275,6 +283,8 @@ ACPI_EXTERN ACPI_EXCEPTION_HANDLER      AcpiGbl_ExceptionHandler;
 ACPI_EXTERN ACPI_INIT_HANDLER           AcpiGbl_InitHandler;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GlobalLockSemaphore;
+
+/* Misc */
 
 ACPI_EXTERN UINT32                      AcpiGbl_GlobalLockThreadCount;
 ACPI_EXTERN UINT32                      AcpiGbl_OriginalMode;
