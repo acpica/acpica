@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: iexecute - ACPI AML (p-code) execution, top-level routines
+ * Module Name: iexecute - ACPI AML (p-code) execution, exec/store routine
  *
  *****************************************************************************/
 
@@ -125,97 +125,6 @@
 #define _THIS_MODULE        "iexecute.c"
 #define _COMPONENT          INTERPRETER
 
-
-
-/******************************************************************************
- * 
- * FUNCTION:    AmlExecuteMethod
- *
- * PARAMETERS:  Pcode               - Pointer to the pcode stream
- *              PcodeLength         - Length of pcode that comprises the method
- *              **Params            - List of parameters to pass to method, 
- *                                    terminated by NULL. Params itself may be 
- *                                    NULL if no parameters are being passed.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute a control method
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AmlExecuteMethod (
-    UINT8                   *Pcode, 
-    UINT32                  PcodeLength, 
-    ACPI_OBJECT_INTERNAL    **Params)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE ("AmlExecuteMethod");
-
-
-    /* Prepare the package stack */
-
-    Status = AmlPrepExec (Pcode, PcodeLength);
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Exec Stack Overflow\n"));
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Push new frame on Method stack */
-    
-    Status = AmlMthStackPush (Params);
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Could not push Method Stack\n"));
-
-        /* TBD: do we need to pop the package stack here? */
-    }
-
-    else
-    {
-        /* 
-         * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
-         * or with Status == AE_PENDING at end of AML block (end of Method code)
-         */
-
-        if (AE_OK == Status)
-        {
-            while ((Status = AmlDoCode (IMODE_Execute)) == AE_OK)
-            {;}
-        }
-
-        if (AE_PENDING == Status)
-        {
-            Status = AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
-        }
-
-        else
-        {
-            if (AE_RETURN_VALUE == Status)
-            {
-                DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
-                DUMP_STACK_ENTRY (AmlObjStackGetValue (STACK_TOP));
-                DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", AmlObjStackLevel()));
-            }
-
-            AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
-        }
-
-        AmlMthStackPop ();         /* pop our frame off method stack */
-    }
-
-
-    if (AmlObjStackLevel())
-    {
-        DEBUG_PRINT (ACPI_INFO, ("AmlExecuteMethod: Obj TOS at exit=%d\n",
-                        AmlObjStackLevel()));
-    }
-
-    return_ACPI_STATUS (Status);
-}
 
 
 /*****************************************************************************
