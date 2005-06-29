@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  ******************************************************************************/
 
@@ -283,14 +283,9 @@ AcpiUtDeleteInternalObj (
      */
     if (ObjPointer)
     {
-        if (!AcpiTbSystemTablePointer (ObjPointer))
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Deleting Obj Ptr %p \n", ObjPointer));
-
-            ACPI_MEM_FREE (ObjPointer);
-        }
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Deleting Obj Ptr %p \n", ObjPointer));
+        ACPI_MEM_FREE (ObjPointer);
     }
-
 
     /* Only delete the object if it was dynamically allocated */
 
@@ -518,14 +513,6 @@ AcpiUtUpdateObjectReference (
     if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object %p is NS handle\n", Object));
-        return_ACPI_STATUS (AE_OK);
-    }
-
-    if (AcpiTbSystemTablePointer (Object))
-    {
-        ACPI_DEBUG_PRINT (
-            (ACPI_DB_INFO, "**** Object %p points into an ACPI table\n", 
-            Object));
         return_ACPI_STATUS (AE_OK);
     }
 
