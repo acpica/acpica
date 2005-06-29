@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -506,7 +506,7 @@ CmCleanupAndExit (void)
         {
             if (AslGbl_Events[i].Valid)
             {
-                printf ("%8d ms : %s\n",
+                printf ("%8ld ms : %s\n",
                     AslGbl_Events[i].EndTime -
                     AslGbl_Events[i].StartTime,
                     AslGbl_Events[i].EventName);
