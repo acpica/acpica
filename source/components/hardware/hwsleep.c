@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -318,8 +318,11 @@ AcpiEnterSleepState (
 
     /* wait until we enter sleep state */
 
-    while (!AcpiHwRegisterBitAccess (ACPI_READ,ACPI_MTX_LOCK,WAK_STS))
-    {  }
+    do 
+    {
+        AcpiOsStall(10000);
+    }
+    while (!AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_LOCK, WAK_STS));
 
     enable ();
 
