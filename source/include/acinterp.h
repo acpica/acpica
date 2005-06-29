@@ -141,7 +141,8 @@
 ACPI_STATUS
 AcpiAmlResolveOperands (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **StackPtr);
+    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -158,15 +159,6 @@ AcpiAmlExecuteMethod (
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
 
-
-/*
- * amcopy - Interpreter object copy support
- */
-
-ACPI_STATUS
-AcpiAmlBuildCopyInternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *SourceObj,
-    ACPI_OBJECT_INTERNAL    *DestObj);
 
 
 /*
@@ -424,7 +416,8 @@ AcpiAmlExecDyadic2S (
 
 ACPI_STATUS
 AcpiAmlResolveToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr);
+    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiAmlResolveEntryToValue (
@@ -432,7 +425,8 @@ AcpiAmlResolveEntryToValue (
 
 ACPI_STATUS
 AcpiAmlResolveObjectToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr);
+    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiAmlGetFieldUnitValue (
@@ -514,18 +508,21 @@ AcpiAmlDoName (
 
 ACPI_STATUS
 AcpiAmlExecStore (
-    ACPI_OBJECT_INTERNAL    *op1,
-    ACPI_OBJECT_INTERNAL    *res);
+    ACPI_OBJECT_INTERNAL    *ValDesc,
+    ACPI_OBJECT_INTERNAL    *DestDesc,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiAmlStoreObjectToObject (
     ACPI_OBJECT_INTERNAL    *ValDesc,
-    ACPI_OBJECT_INTERNAL    *DestDesc);
+    ACPI_OBJECT_INTERNAL    *DestDesc,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiAmlStoreObjectToNte (
     ACPI_OBJECT_INTERNAL    *ValDesc,
-    ACPI_NAMED_OBJECT       *Entry);
+    ACPI_NAMED_OBJECT       *Entry,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -565,6 +562,12 @@ ACPI_STATUS
 AcpiAmlEisaIdToString (
     UINT32                  NumericId,
     INT8                    *OutString);
+
+ACPI_STATUS
+AcpiAmlBuildCopyInternalPackageObject (
+    ACPI_OBJECT_INTERNAL    *SourceObj,
+    ACPI_OBJECT_INTERNAL    *DestObj,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
