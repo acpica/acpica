@@ -288,7 +288,7 @@ NsHandleToPathname (
 ACPI_STATUS
 NsSetMethod (
     ACPI_HANDLE         ObjHandle, 
-    ptrdiff_t           Offset, 
+    ACPI_PTRDIFF        Offset, 
     INT32               Length);
 
 void
