@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.27 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -169,6 +169,7 @@ AcpiDsGetFieldUnitArguments (
     ExtraDesc = ObjDesc->FieldUnit.Extra;
     Node = ObjDesc->FieldUnit.Node;
 
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "  [Field]"));
     DEBUG_PRINT (TRACE_EXEC,
         ("DsGetFieldUnitArguments: [%4.4s] FieldUnit JIT Init\n",
         &Node->Name));
@@ -289,6 +290,8 @@ AcpiDsGetRegionArguments (
     ExtraDesc = ObjDesc->Region.Extra;
     Node = ObjDesc->Region.Node;
 
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "  [Operation Region]"));
+        
     DEBUG_PRINT (TRACE_EXEC,
         ("DsGetRegionArguments: [%4.4s] OpRegion Init at AML %p[%x]\n",
         &Node->Name, ExtraDesc->Extra.Pcode, *(UINT32*) ExtraDesc->Extra.Pcode));
@@ -485,7 +488,7 @@ AcpiDsEvalFieldUnitOperands (
     }
 
 
-    Offset = (UINT32) OffDesc->Number.Value;
+    Offset = (UINT32) OffDesc->Integer.Value;
 
 
     /*
@@ -562,7 +565,7 @@ AcpiDsEvalFieldUnitOperands (
         /* Offset is in bits, count is in bits */
 
         BitOffset = Offset;
-        BitCount = (UINT16) CntDesc->Number.Value;
+        BitCount = (UINT16) CntDesc->Integer.Value;
         break;
 
 
@@ -753,7 +756,7 @@ AcpiDsEvalRegionOperands (
      */
     OperandDesc = WalkState->Operands[WalkState->NumOperands - 1];
 
-    ObjDesc->Region.Length = (UINT32) OperandDesc->Number.Value;
+    ObjDesc->Region.Length = (UINT32) OperandDesc->Integer.Value;
     AcpiCmRemoveReference (OperandDesc);
 
     /*
@@ -762,7 +765,7 @@ AcpiDsEvalRegionOperands (
      */
     OperandDesc = WalkState->Operands[WalkState->NumOperands - 2];
 
-    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) OperandDesc->Number.Value;
+    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) OperandDesc->Integer.Value;
     AcpiCmRemoveReference (OperandDesc);
 
 
@@ -988,7 +991,8 @@ AcpiDsExecEndControlOp (
             WalkState->ReturnDesc = WalkState->Operands[0];
         }
 
-        else if (WalkState->NumResults > 0)
+        else if ((WalkState->Results) &&
+                 (WalkState->Results->Results.NumResults > 0))
         {
             /*
              * The return value has come from a previous calculation.
@@ -998,13 +1002,13 @@ AcpiDsExecEndControlOp (
              * cease to exist at the end of the method.
              */
 
-            Status = AcpiAmlResolveToValue (&WalkState->Results [0], WalkState);
+            Status = AcpiAmlResolveToValue (&WalkState->Results->Results.ObjDesc [0], WalkState);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
             }
 
-            WalkState->ReturnDesc = WalkState->Results [0];
+            WalkState->ReturnDesc = WalkState->Results->Results.ObjDesc [0];
         }
 
         else
