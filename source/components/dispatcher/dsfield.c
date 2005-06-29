@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -158,6 +158,7 @@ AcpiDsCreateBufferField (
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *ObjDesc;
+    UINT32                  Flags;
 
 
     FUNCTION_TRACE ("DsCreateBufferField");
@@ -182,11 +183,25 @@ AcpiDsCreateBufferField (
     }
 
     /*
+     * During the load phase, we want to enter the name of the field into 
+     * the namespace.  During the execute phase (when we evaluate the size
+     * operand), we want to lookup the name
+     */
+    if (WalkState->ParseFlags & ACPI_PARSE_EXECUTE)
+    {
+        Flags = NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE;
+    }
+    else
+    {
+        Flags = NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE | NS_ERROR_IF_FOUND;
+    }
+
+    /*
      * Enter the NameString into the namespace
      */
     Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
                             INTERNAL_TYPE_DEF_ANY, IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE | NS_ERROR_IF_FOUND,
+                            Flags,
                             WalkState, &(Node));
     if (ACPI_FAILURE (Status))
     {
@@ -206,6 +221,10 @@ AcpiDsCreateBufferField (
      */
     if (Node->Object)
     {
+        /* No longer need the Extra field */
+
+        AcpiUtRemoveReference ((Node->Object)->BufferField.Extra);
+        (Node->Object)->BufferField.Extra = NULL;
         return_ACPI_STATUS (AE_OK);
     }
 
