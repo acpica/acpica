@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.13 $
+ *       $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -133,6 +133,8 @@
 
 #define strtoul simple_strtoul
 
+#define ACPI_FLUSH_CPU_CACHE	wbinvd()
+
 #else
 
 #include <stdarg.h>
@@ -148,15 +150,6 @@
 
 #undef DEBUGGER_THREADING
 #define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
-
-#ifndef _IA64
-/* Linux ia32 can't do int64 well */
-#define ACPI_NO_INTEGER64_SUPPORT
-/* And the ia32 kernel doesn't include 64-bit divide support */
-#define ACPI_DIV64(dividend, divisor) do_div(dividend, divisor)
-#else
-#define ACPI_DIV64(dividend, divisor) ACPI_DIVIDE(dividend, divisor)
-#endif
 
 
 #endif /* __ACLINUX_H__ */
