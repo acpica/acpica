@@ -175,9 +175,9 @@ FunctionTrace (
     char                    *FunctionName)
 {
 
-    NestingLevel++;
+    Gbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Entered Function: %s\n", NestingLevel, FunctionName);
+                " %2.2d Entered Function: %s\n", Gbl_NestingLevel, FunctionName);
 }
 
 
@@ -207,10 +207,10 @@ FunctionTracePtr (
     void                    *Pointer)
 {
 
-    NestingLevel++;
+    Gbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2d Entered Function: %s, 0x%X\n", 
-                NestingLevel, FunctionName, Pointer);
+                Gbl_NestingLevel, FunctionName, Pointer);
 }
 
 
@@ -240,10 +240,10 @@ FunctionTraceStr (
     char                    *String)
 {
 
-    NestingLevel++;
+    Gbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2d Entered Function: %s, %s\n", 
-                NestingLevel, FunctionName, String);
+                Gbl_NestingLevel, FunctionName, String);
 }
 
 
@@ -273,10 +273,10 @@ FunctionTraceU32 (
     UINT32                  Integer)
 {
 
-    NestingLevel++;
+    Gbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2d Entered Function: %s, 0x%X\n", 
-                NestingLevel, FunctionName, Integer);
+                Gbl_NestingLevel, FunctionName, Integer);
 }
 
 
@@ -305,8 +305,8 @@ FunctionExit (
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Exiting Function: %s\n", NestingLevel, FunctionName);
-    NestingLevel--;
+                " %2.2d Exiting Function: %s\n", Gbl_NestingLevel, FunctionName);
+    Gbl_NestingLevel--;
 }
 
 
@@ -343,8 +343,8 @@ FunctionStatusExit (
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2d Exiting Function: %s, %s\n", 
-                NestingLevel, FunctionName, ExceptionNames[Status]);
-    NestingLevel--;
+                Gbl_NestingLevel, FunctionName, Gbl_ExceptionNames[Status]);
+    Gbl_NestingLevel--;
 }
 
 
@@ -376,8 +376,8 @@ FunctionValueExit (
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2d Exiting Function: %s, 0x%X\n", 
-                NestingLevel, FunctionName, Value);
-    NestingLevel--;
+                Gbl_NestingLevel, FunctionName, Value);
+    Gbl_NestingLevel--;
 }
 
 
