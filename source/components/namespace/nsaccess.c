@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.154 $
+ *              $Revision: 1.156 $
  *
  ******************************************************************************/
 
@@ -282,7 +282,7 @@ AcpiNsRootInitialize (void)
 
             /* Store pointer to value descriptor in the Node */
 
-            Status = AcpiNsAttachObject (NewNode, ObjDesc, ObjDesc->Common.Type);
+            Status = AcpiNsAttachObject (NewNode, ObjDesc, ACPI_GET_OBJECT_TYPE (ObjDesc));
 
             /* Remove local reference to the object */
 
@@ -411,7 +411,7 @@ AcpiNsLookup (
         Pathname     = "";
 
         ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-            "Null Pathname (Zero segments), Flags=%x\n", Flags));
+            "Null Pathname (Zero segments), Flags=%X\n", Flags));
     }
     else
     {
@@ -428,7 +428,7 @@ AcpiNsLookup (
          * Parent Prefixes (in which case the name's scope is relative
          * to the current scope).
          */
-        if (*Pathname == AML_ROOT_PREFIX)
+        if (*Pathname == (UINT8) AML_ROOT_PREFIX)
         {
             /* Pathname is fully qualified, start from the root */
 
@@ -454,7 +454,7 @@ AcpiNsLookup (
              * the parent node for each prefix instance.
              */
             ThisNode = PrefixNode;
-            while (*Pathname == AML_PARENT_PREFIX)
+            while (*Pathname == (UINT8) AML_PARENT_PREFIX)
             {
                 /*
                  * Point past this prefix to the name segment
@@ -499,7 +499,7 @@ AcpiNsLookup (
             NumSegments  = 0;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "Prefix-only Pathname (Zero name segments), Flags=%x\n", Flags));
+                "Prefix-only Pathname (Zero name segments), Flags=%X\n", Flags));
             break;
 
         case AML_DUAL_NAME_PREFIX:
