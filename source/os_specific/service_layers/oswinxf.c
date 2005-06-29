@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -180,7 +180,7 @@ CHAR                s[500];
  *
  * RETURN:      Pointer to the table.  NULL if failure
  *
- * DESCRIPTION: Get the DSDT from the Windows registry.
+ * DESCRIPTION: Get an ACPI table from the Windows registry.
  *
  *****************************************************************************/
 
@@ -211,6 +211,14 @@ OsGetTable (
 
         if (Status != ERROR_SUCCESS)
         {
+            /*
+             * Somewhere along the way, MS changed the registry entry for
+             * the FADT from
+             * HARDWARE/ACPI/FACP  to
+             * HARDWARE/ACPI/FADT.
+             *
+             * This code allows for both.
+             */
             if (!ACPI_STRNCMP (Signature, "FACP", 4))
             {
                 Signature = "FADT";
@@ -227,7 +235,7 @@ OsGetTable (
         }
     }
 
-    /* Actual DSDT is down a couple of levels */
+    /* Actual table is down a couple of levels */
 
     for (i = 0; ;)
     {
@@ -250,7 +258,7 @@ OsGetTable (
         i = 0;
     }
 
-    /* Find the DSDT entry */
+    /* Find the table entry */
 
     for (i = 0; ;)
     {
@@ -270,7 +278,7 @@ OsGetTable (
         i += 1;
     }
 
-    /* Get the size of the DSDT */
+    /* Get the size of the table */
 
     Status = RegQueryValueEx (Handle, s, NULL, NULL, NULL, &DataSize);
     if (Status != ERROR_SUCCESS)
@@ -279,7 +287,7 @@ OsGetTable (
         return (NULL);
     }
 
-    /* Allocate a new buffer for the DSDT */
+    /* Allocate a new buffer for the table */
 
     Buffer = AcpiOsAllocate (DataSize);
     if (!Buffer)
@@ -287,7 +295,7 @@ OsGetTable (
         goto Cleanup;
     }
 
-    /* Get the actual DSDT */
+    /* Get the actual table from the registry */
 
     Status = RegQueryValueEx (Handle, s, NULL, NULL, (UCHAR *) Buffer, &DataSize);
     if (Status != ERROR_SUCCESS)
