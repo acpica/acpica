@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.21 $
+ *              $Revision: 1.26 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -286,11 +286,11 @@ AcpiRsVendorResource (
 
         /* Dereference */
 
-        ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+        ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
 
         /* Calculate bytes consumed */
 
-        *BytesConsumed = Temp16 + 3;
+        *BytesConsumed = (ACPI_SIZE) Temp16 + 3;
 
         /* Point to the first vendor byte */
 
@@ -305,7 +305,7 @@ AcpiRsVendorResource (
 
         /* Calculate bytes consumed */
 
-        *BytesConsumed = Temp16 + 1;
+        *BytesConsumed = (ACPI_SIZE) Temp16 + 1;
 
         /* Point to the first vendor byte */
 
@@ -331,7 +331,7 @@ AcpiRsVendorResource (
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = StructSize;
+    OutputStruct->Length = (UINT32) StructSize;
 
     /*
      * Return the final size of the structure
@@ -385,7 +385,7 @@ AcpiRsVendorStream (
 
         Temp16 = (UINT16) LinkedList->Data.VendorSpecific.Length;
 
-        ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
+        ACPI_MOVE_16_TO_16 (Buffer, &Temp16);
         Buffer += 2;
     }
     else
@@ -480,7 +480,7 @@ AcpiRsStartDependFnsResource (
 
         if (3 == OutputStruct->Data.StartDpf.CompatibilityPriority)
         {
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_BAD_RESOURCE_VALUE);
         }
 
         /*
@@ -490,7 +490,7 @@ AcpiRsStartDependFnsResource (
 
         if (3 == OutputStruct->Data.StartDpf.PerformanceRobustness)
         {
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_BAD_RESOURCE_VALUE);
         }
     }
     else
@@ -505,7 +505,7 @@ AcpiRsStartDependFnsResource (
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = StructSize;
+    OutputStruct->Length = (UINT32) StructSize;
 
     /*
      * Return the final size of the structure
@@ -563,7 +563,7 @@ AcpiRsEndDependFnsResource (
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = StructSize;
+    OutputStruct->Length = (UINT32) StructSize;
 
     /*
      * Return the final size of the structure
