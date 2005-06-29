@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.90 $
+ *       $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -279,10 +279,10 @@ typedef struct /* METHOD */
     UINT8                       MethodFlags;
     UINT8                       ParamCount;
 
-    UINT32                      PcodeLength;
+    UINT32                      AmlLength;
 
     void                        *Semaphore;
-    UINT8                       *Pcode;
+    UINT8                       *AmlStart;
 
     UINT8                       Concurrency;
     UINT8                       ThreadCount;
@@ -493,8 +493,8 @@ typedef struct /* EXTRA */
     ACPI_OBJECT_COMMON_HEADER
     UINT8                       ByteFill1;
     UINT16                      WordFill1;
-    UINT32                      PcodeLength;
-    UINT8                       *Pcode;
+    UINT32                      AmlLength;
+    UINT8                       *AmlStart;
     ACPI_NAMESPACE_NODE         *Method_REG;        /* _REG method for this region (if any) */
     void                        *RegionContext;     /* Region-specific data */
 
