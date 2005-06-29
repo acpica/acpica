@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
- *              $Revision: 1.87 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -129,7 +129,6 @@
         MODULE_NAME         ("ammonad")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlGetObjectReference
@@ -169,7 +168,7 @@ AcpiAmlGetObjectReference (
          * Not a Name -- an indirect name pointer would have
          * been converted to a direct name pointer in AcpiAmlResolveOperands
          */
-        switch (ObjDesc->Reference.OpCode)
+        switch (ObjDesc->Reference.Opcode)
         {
         case AML_LOCAL_OP:
 
@@ -189,7 +188,7 @@ AcpiAmlGetObjectReference (
 
             DEBUG_PRINT (ACPI_ERROR,
                 ("AmlGetObjectReference: (Internal) Unknown Ref subtype %02x\n",
-                ObjDesc->Reference.OpCode));
+                ObjDesc->Reference.Opcode));
             *RetDesc = NULL;
             Status = AE_AML_INTERNAL;
             goto Cleanup;
@@ -297,7 +296,7 @@ AcpiAmlExecMonadic1 (
 
     case AML_SLEEP_OP:
 
-        AcpiAmlSystemDoSuspend ((UINT32) ObjDesc->Number.Value);
+        AcpiAmlSystemDoSuspend ((UINT32) ObjDesc->Integer.Value);
         break;
 
 
@@ -305,7 +304,7 @@ AcpiAmlExecMonadic1 (
 
     case AML_STALL_OP:
 
-        AcpiAmlSystemDoStall ((UINT32) ObjDesc->Number.Value);
+        AcpiAmlSystemDoStall ((UINT32) ObjDesc->Integer.Value);
         break;
 
 
@@ -396,7 +395,7 @@ AcpiAmlExecMonadic2R (
     case AML_TO_BCD_OP:
     case AML_COND_REF_OF_OP:
 
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
@@ -413,7 +412,7 @@ AcpiAmlExecMonadic2R (
 
     case AML_BIT_NOT_OP:
 
-        RetDesc->Number.Value = ~ObjDesc->Number.Value;
+        RetDesc->Integer.Value = ~ObjDesc->Integer.Value;
         break;
 
 
@@ -421,18 +420,18 @@ AcpiAmlExecMonadic2R (
 
     case AML_FIND_SET_LEFT_BIT_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value;
 
         /*
          * Acpi specification describes Integer type as a little
          * endian unsigned value, so this boundry condition is valid.
          */
-        for (ResVal = 0; RetDesc->Number.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
+        for (ResVal = 0; RetDesc->Integer.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
         {
-            RetDesc->Number.Value >>= 1;
+            RetDesc->Integer.Value >>= 1;
         }
 
-        RetDesc->Number.Value = ResVal;
+        RetDesc->Integer.Value = ResVal;
         break;
 
 
@@ -440,20 +439,20 @@ AcpiAmlExecMonadic2R (
 
     case AML_FIND_SET_RIGHT_BIT_OP:
 
-        RetDesc->Number.Value = ObjDesc->Number.Value;
+        RetDesc->Integer.Value = ObjDesc->Integer.Value;
 
         /*
          * Acpi specification describes Integer type as a little
          * endian unsigned value, so this boundry condition is valid.
          */
-        for (ResVal = 0; RetDesc->Number.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
+        for (ResVal = 0; RetDesc->Integer.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
         {
-            RetDesc->Number.Value <<= 1;
+            RetDesc->Integer.Value <<= 1;
         }
 
         /* Since returns must be 1-based, subtract from 33 (65) */
 
-        RetDesc->Number.Value = ResVal == 0 ? 0 : (ACPI_INTEGER_BIT_SIZE + 1) - ResVal;
+        RetDesc->Integer.Value = ResVal == 0 ? 0 : (ACPI_INTEGER_BIT_SIZE + 1) - ResVal;
         break;
 
 
@@ -464,12 +463,12 @@ AcpiAmlExecMonadic2R (
         /*
          * The 64-bit ACPI integer can hold 16 4-bit BCD integers
          */
-        RetDesc->Number.Value = 0;
+        RetDesc->Integer.Value = 0;
         for (i = 0; i < ACPI_MAX_BCD_DIGITS; i++)
         {
             /* Get one BCD digit */
 
-            Digit = (ACPI_INTEGER) ((ObjDesc->Number.Value >> (i * 4)) & 0xF);
+            Digit = (ACPI_INTEGER) ((ObjDesc->Integer.Value >> (i * 4)) & 0xF);
 
             /* Check the range of the digit */
 
@@ -491,7 +490,7 @@ AcpiAmlExecMonadic2R (
                     Digit *= 10;
                 }
 
-                RetDesc->Number.Value += Digit;
+                RetDesc->Integer.Value += Digit;
             }
         }
         break;
@@ -502,20 +501,20 @@ AcpiAmlExecMonadic2R (
     case AML_TO_BCD_OP:
 
 
-        if (ObjDesc->Number.Value > ACPI_MAX_BCD_VALUE)
+        if (ObjDesc->Integer.Value > ACPI_MAX_BCD_VALUE)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Monadic2R/ToBCDOp: BCD overflow: %d\n",
-                ObjDesc->Number.Value));
+                ObjDesc->Integer.Value));
             Status = AE_AML_NUMERIC_OVERFLOW;
             goto Cleanup;
         }
 
-        RetDesc->Number.Value = 0;
+        RetDesc->Integer.Value = 0;
         for (i = 0; i < ACPI_MAX_BCD_DIGITS; i++)
         {
             /* Divide by nth factor of 10 */
 
-            Digit = ObjDesc->Number.Value;
+            Digit = ObjDesc->Integer.Value;
             for (j = 0; j < i; j++)
             {
                 Digit /= 10;
@@ -525,7 +524,7 @@ AcpiAmlExecMonadic2R (
 
             if (Digit > 0)
             {
-                RetDesc->Number.Value += (ACPI_MODULO (Digit, 10) << (i * 4));
+                RetDesc->Integer.Value += (ACPI_MODULO (Digit, 10) << (i * 4));
             }
         }
         break;
@@ -548,7 +547,7 @@ AcpiAmlExecMonadic2R (
              * return FALSE
              */
 
-            RetDesc->Number.Value = 0;
+            RetDesc->Integer.Value = 0;
 
             /*
              * Must delete the result descriptor since there is no reference
@@ -571,7 +570,7 @@ AcpiAmlExecMonadic2R (
 
         /* The object exists in the namespace, return TRUE */
 
-        RetDesc->Number.Value = ACPI_INTEGER_MAX;
+        RetDesc->Integer.Value = ACPI_INTEGER_MAX;
         goto Cleanup;
         break;
 
@@ -751,14 +750,14 @@ AcpiAmlExecMonadic2 (
 
     case AML_LNOT_OP:
 
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        RetDesc->Number.Value = !ObjDesc->Number.Value;
+        RetDesc->Integer.Value = !ObjDesc->Integer.Value;
         break;
 
 
@@ -795,7 +794,7 @@ AcpiAmlExecMonadic2 (
                goto Cleanup;
             }
 
-            RetDesc->Reference.OpCode = ObjDesc->Reference.OpCode;
+            RetDesc->Reference.Opcode = ObjDesc->Reference.Opcode;
             RetDesc->Reference.Offset = ObjDesc->Reference.Offset;
             RetDesc->Reference.Object = ObjDesc->Reference.Object;
         }
@@ -820,11 +819,11 @@ AcpiAmlExecMonadic2 (
 
         if (AML_INCREMENT_OP == Opcode)
         {
-            RetDesc->Number.Value++;
+            RetDesc->Integer.Value++;
         }
         else
         {
-            RetDesc->Number.Value--;
+            RetDesc->Integer.Value--;
         }
 
         /* Store the result back in the original descriptor */
@@ -848,7 +847,7 @@ AcpiAmlExecMonadic2 (
              * Not a Name -- an indirect name pointer would have
              * been converted to a direct name pointer in ResolveOperands
              */
-            switch (ObjDesc->Reference.OpCode)
+            switch (ObjDesc->Reference.Opcode)
             {
             case AML_ZERO_OP:
             case AML_ONE_OP:
@@ -856,7 +855,7 @@ AcpiAmlExecMonadic2 (
 
                 /* Constants are of type Number */
 
-                Type = ACPI_TYPE_NUMBER;
+                Type = ACPI_TYPE_INTEGER;
                 break;
 
 
@@ -903,7 +902,7 @@ AcpiAmlExecMonadic2 (
             default:
 
                 REPORT_ERROR (("AcpiAmlExecMonadic2/TypeOp: Internal error - Unknown Reference subtype %X\n",
-                    ObjDesc->Reference.OpCode));
+                    ObjDesc->Reference.Opcode));
                 Status = AE_AML_INTERNAL;
                 goto Cleanup;
             }
@@ -919,14 +918,14 @@ AcpiAmlExecMonadic2 (
 
         /* Allocate a descriptor to hold the type. */
 
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        RetDesc->Number.Value = Type;
+        RetDesc->Integer.Value = Type;
         break;
 
 
@@ -986,14 +985,14 @@ AcpiAmlExecMonadic2 (
          * object to hold the value
          */
 
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        RetDesc->Number.Value = Value;
+        RetDesc->Integer.Value = Value;
         break;
 
 
@@ -1021,7 +1020,7 @@ AcpiAmlExecMonadic2 (
             /*
              * Must resolve/dereference the local/arg reference first
              */
-            switch (ObjDesc->Reference.OpCode)
+            switch (ObjDesc->Reference.Opcode)
             {
             /* Set ObjDesc to the value of the local/arg */
 
@@ -1080,19 +1079,19 @@ AcpiAmlExecMonadic2 (
              * ASL operation -- check internal opcode
              */
 
-            if ((ObjDesc->Reference.OpCode != AML_INDEX_OP) &&
-                (ObjDesc->Reference.OpCode != AML_REF_OF_OP))
+            if ((ObjDesc->Reference.Opcode != AML_INDEX_OP) &&
+                (ObjDesc->Reference.Opcode != AML_REF_OF_OP))
             {
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlExecMonadic2: DerefOf, invalid obj ref %p\n",
-                    ObjDesc));
+                    ("AmlExecMonadic2: DerefOf, Unknown opcode in ref(%p) - %X\n",
+                    ObjDesc, ObjDesc->Reference.Opcode));
 
                 Status = AE_TYPE;
                 goto Cleanup;
             }
 
 
-            switch (ObjDesc->Reference.OpCode)
+            switch (ObjDesc->Reference.Opcode)
             {
             case AML_INDEX_OP:
 
@@ -1113,7 +1112,7 @@ AcpiAmlExecMonadic2 (
                      * sub-buffer of the main buffer, it is only a pointer to a
                      * single element (byte) of the buffer!
                      */
-                    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+                    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
                     if (!RetDesc)
                     {
                         Status = AE_NO_MEMORY;
@@ -1121,7 +1120,7 @@ AcpiAmlExecMonadic2 (
                     }
 
                     TmpDesc = ObjDesc->Reference.Object;
-                    RetDesc->Number.Value =
+                    RetDesc->Integer.Value =
                         TmpDesc->Buffer.Pointer[ObjDesc->Reference.Offset];
 
                     /* TBD: [Investigate] (see below) Don't add an additional
