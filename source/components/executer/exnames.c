@@ -314,18 +314,18 @@ AmlDecodePackageLength (
  *
  * FUNCTION:    AmlDoSeg
  *
- * PARAMETERS:  LoadExecMode        - MODE_Load or MODE_Exec
+ * PARAMETERS:  InterpreterMode     - Current running mode (load1/Load2/Exec)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Print/exec a name segment (4 bytes)
+ * DESCRIPTION: Execute a name segment (4 bytes)
  *
  ****************************************************************************/
 
 ACPI_STATUS
 AmlDoSeg (
     char                    *NameString,
-    OPERATING_MODE          LoadExecMode)
+    OPERATING_MODE          InterpreterMode)
 {
     ACPI_STATUS             Status = AE_OK;
     INT32                   Index;
@@ -396,7 +396,7 @@ AmlDoSeg (
             Status = AE_AML_ERROR;
             DEBUG_PRINT (TRACE_LOAD, ("AmlDoSeg: Bad char %02x in name\n", AmlPeek ()));
 
-            if (MODE_Load == LoadExecMode)
+            if (IMODE_LoadPass2 == InterpreterMode)
             {
                 /* Second pass load mode   */
 
@@ -410,7 +410,7 @@ AmlDoSeg (
         }   
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", ExceptionNames[Status]));
+    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", Gbl_ExceptionNames[Status]));
 
     return_ACPI_STATUS (Status);
 }
@@ -421,7 +421,7 @@ AmlDoSeg (
  * FUNCTION:    AmlDoName
  *
  * PARAMETERS:  DataType            - Data type to be associated with this name
- *              LoadExecMode        - MODE_Load or MODE_Exec
+ *              InterpreterMode     - Current running mode (load1/Load2/Exec)
  *
  * RETURN:      Status
  *
@@ -433,7 +433,7 @@ AmlDoSeg (
 ACPI_STATUS
 AmlDoName (
     ACPI_OBJECT_TYPE        DataType, 
-    OPERATING_MODE          LoadExecMode)
+    OPERATING_MODE          InterpreterMode)
 {
     ACPI_STATUS             Status = AE_OK;
     INT32                   NumSegments;
@@ -445,7 +445,7 @@ AmlDoName (
     INT32                   PreviousStackTop = 0;
     INT32                   CurrentStackTop = 0;
     UINT32                  StackOffset;
-    METHOD_INFO             *MethodPtr;
+    ACPI_OBJECT_INTERNAL    *MthDesc;
     ACPI_HANDLE             MethodScope;
     char                    *NameString = NULL;
 
@@ -468,7 +468,7 @@ BREAKPOINT3;
         }
         else
         {
-            Status = AmlDoSeg (NameString, LoadExecMode);
+            Status = AmlDoSeg (NameString, InterpreterMode);
         }
     }
 
@@ -534,9 +534,9 @@ BREAKPOINT3;
             
             PrefixCount += 2;
 
-            if ((Status = AmlDoSeg (NameString, LoadExecMode)) == AE_OK)
+            if ((Status = AmlDoSeg (NameString, InterpreterMode)) == AE_OK)
             {
-                Status = AmlDoSeg (NameString, LoadExecMode);
+                Status = AmlDoSeg (NameString, InterpreterMode);
             }
 
             break;
@@ -549,7 +549,7 @@ BREAKPOINT3;
 
             NumSegments = AmlPeek ();                      /* fetch count of segments */
 
-            if (AmlDoByteConst (MODE_Load, 0) != AE_OK)
+            if (AmlDoByteConst (IMODE_LoadPass2, 0) != AE_OK)
             {
                 /* Unexpected end of AML */
 
@@ -570,7 +570,7 @@ BREAKPOINT3;
             
             PrefixCount += 2;
 
-            while (NumSegments && (Status = AmlDoSeg (NameString, LoadExecMode)) == AE_OK)
+            while (NumSegments && (Status = AmlDoSeg (NameString, InterpreterMode)) == AE_OK)
             {
                 --NumSegments;
             }
@@ -612,7 +612,7 @@ BREAKPOINT3;
                 break;
             }
 
-            Status = AmlDoSeg (NameString, LoadExecMode);
+            Status = AmlDoSeg (NameString, InterpreterMode);
             break;
 
         }   /* Switch (PeekOp ())    */
@@ -625,7 +625,7 @@ BREAKPOINT3;
 
         AmlObjStackDeleteValue (STACK_TOP);
 
-        Status = NsLookup (CurrentScope->Scope, NameString, DataType, LoadExecMode, 
+        Status = NsLookup (Gbl_CurrentScope->Scope, NameString, DataType, InterpreterMode, 
                                     NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) AmlObjStackGetTopPtr ());
 
         /* Get return value from the lookup */
@@ -635,18 +635,18 @@ BREAKPOINT3;
         /* TBD: another global to remove!! */
         /* Globally set this handle for use later */
 
-        if (MODE_Load1 == LoadExecMode)
+        if (IMODE_LoadPass1 == InterpreterMode)
         {
-            LastMethod = Handle;
+            Gbl_LastMethod = Handle;
         }
 
-        if (MODE_Exec == LoadExecMode && !Handle)
+        if (IMODE_Execute == InterpreterMode && !Handle)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Name Lookup Failure\n"));
             Status = AE_AML_ERROR;
         }
 
-        else if (MODE_Load1 != LoadExecMode)
+        else if (IMODE_LoadPass1 != InterpreterMode)
         {   
             /* Not first pass load */
 
@@ -661,12 +661,12 @@ BREAKPOINT3;
                  * byte of the Method's AML.
                  */
 
-                MethodPtr = (METHOD_INFO *) NsGetValue (Handle);
-                if (MethodPtr)
+                MthDesc = (ACPI_OBJECT_INTERNAL *) NsGetAttachedObject (Handle);
+                if (MthDesc)
                 {   
-                    /* MethodPtr valid   */
+                    /* MthDesc valid   */
                     
-                    MethodFlags = AmlGetPCodeByte (MethodPtr->Offset);
+                    MethodFlags = AmlGetPCodeByte (MthDesc->Method.Pcode);
 
                     if (AML_END_OF_BLOCK == MethodFlags)
                     {
@@ -677,14 +677,14 @@ BREAKPOINT3;
 
                     else
                     {   
-                        /* MethodPtr points at valid method  */
+                        /* MthDesc points at valid method  */
                         
                         ArgCount = (MethodFlags & METHOD_ARG_COUNT_MASK) >> METHOD_ARG_COUNT_SHIFT;
 
                         PreviousStackTop = AmlObjStackLevel ();
                         MethodScope = AmlObjStackGetValue (STACK_TOP);
 
-                        if (((Status = AmlObjStackPushIfExec (MODE_Exec)) == AE_OK) &&
+                        if (((Status = AmlObjStackPush ()) == AE_OK) &&
                              (ArgCount > 0))
                         {   
                             /* Get all arguments */
@@ -693,7 +693,7 @@ BREAKPOINT3;
                             {   
                                 /* Get each argument */
                                 
-                                if (AE_OK == (Status = AmlDoOpCode (LoadExecMode)))
+                                if (AE_OK == (Status = AmlDoOpCode (InterpreterMode)))
                                 {   
                                     /* Argument is now on the object stack */
                                     
@@ -706,7 +706,7 @@ BREAKPOINT3;
                                     /*
                                      * TBD: RefOf problem with AmlGetRvalue() conversion.
                                      */
-                                    if (MODE_Exec == LoadExecMode)
+                                    if (IMODE_Execute == InterpreterMode)
                                     {
                                         Status = AmlGetRvalue (AmlObjStackGetTopPtr ());
                                     }
@@ -715,13 +715,13 @@ BREAKPOINT3;
                                     {
                                         /* Make room for the next argument */
 
-                                        Status = AmlObjStackPushIfExec (LoadExecMode);
+                                        Status = AmlObjStackPushIfExec (InterpreterMode);
                                     }
                                 } 
                             }
                         } 
 
-                        if ((AE_OK == Status) && (MODE_Exec == LoadExecMode))
+                        if ((AE_OK == Status) && (IMODE_Execute == InterpreterMode))
                         {   
                             /* Execution mode  */
                             /* Mark end of arg list */
@@ -737,16 +737,17 @@ BREAKPOINT3;
                             DEBUG_PRINT (TRACE_LOAD, ("Calling %4.4s, PreviousTOS=%d  CurrentTOS=%d\n",
                                             MethodScope, PreviousStackTop, CurrentStackTop));
 
-                            AmlDumpObjStack (LoadExecMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
+                            AmlDumpObjStack (InterpreterMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
 
                             /* Execute the Method, passing the stacked args */
                             
-                            Status = AmlExecuteMethod (MethodPtr->Offset + 1, MethodPtr->Length - 1,
-                                                        AmlObjStackGetPtr (StackOffset -1));
+                            Status = AmlExecute (MthDesc->Method.Pcode + 1, 
+                                                 MthDesc->Method.PcodeLength - 1,
+                                                 AmlObjStackGetPtr (StackOffset -1));
 
                             CurrentStackTop = AmlObjStackLevel ();
 
-                            DEBUG_PRINT (TRACE_LOAD, ("After AmlExecuteMethod, PreviousTOS=%d  CurrentTOS=%d\n",
+                            DEBUG_PRINT (TRACE_LOAD, ("After AmlExecute, PreviousTOS=%d  CurrentTOS=%d\n",
                                             PreviousStackTop, CurrentStackTop));
 
                             if (AE_RETURN_VALUE == Status)
@@ -806,7 +807,8 @@ BREAKPOINT3;
     {
         /* Ran out of segments after processing a prefix */
 
-        if (MODE_Load1 == LoadExecMode || MODE_Load == LoadExecMode)
+        if (IMODE_LoadPass1 == InterpreterMode || 
+            IMODE_LoadPass2 == InterpreterMode)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: ***Malformed Name***\n"));
 

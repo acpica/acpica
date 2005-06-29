@@ -185,7 +185,7 @@ AmlExecCreateField (
     {
         Status = AmlPrepObjStack ("lnnb");
         NumOperands = 4;
-        OpName = LongOps[opcode & 0x00ff];
+        OpName = Gbl_LongOps[opcode & 0x00ff];
     }
 
     
@@ -198,7 +198,7 @@ AmlExecCreateField (
     {
         Status = AmlPrepObjStack ("lnb");
         NumOperands = 3;
-        OpName = ShortOps[opcode];
+        OpName = Gbl_ShortOps[opcode];
     }
 
     if (Status != AE_OK)
@@ -350,7 +350,7 @@ AmlExecCreateField (
         TypeFound = SrcDesc->Type;
 
         if ((TypeFound > (UINT8) TYPE_Lvalue) ||
-            (BadType == NsTypeNames[TypeFound]))
+            (Gbl_BadType == Gbl_NsTypeNames[TypeFound]))
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecCreateField: Tried to create field in improper object type - encoding %d\n",
@@ -361,7 +361,7 @@ AmlExecCreateField (
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecCreateField: Tried to create field in improper object type - %s\n",
-                    NsTypeNames[TypeFound]));
+                    Gbl_NsTypeNames[TypeFound]));
         }
 
         return_ACPI_STATUS (AE_AML_ERROR);
@@ -493,7 +493,7 @@ AmlExecFatal (void)
         return_ACPI_STATUS (Status);
     }
 
-    AmlDumpObjStack (IMODE_Execute, LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, Gbl_LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepObjStack");
 
 
     /* DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
@@ -557,7 +557,7 @@ AmlExecIndex (void)
 
     else
     {
-        AmlDumpObjStack (IMODE_Execute, ShortOps[AML_IndexOp], 3, "after AmlPrepObjStack");
+        AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[AML_IndexOp], 3, "after AmlPrepObjStack");
 
         ResDesc = AmlObjStackGetValue (0);
         IdxDesc = AmlObjStackGetValue (1);
@@ -651,7 +651,7 @@ AmlExecMatch (void)
 
     /* Get the parameters from the object stack */
 
-    AmlDumpObjStack (IMODE_Execute, ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
 
     StartDesc = AmlObjStackGetValue (0);
     V2Desc    = AmlObjStackGetValue (1);

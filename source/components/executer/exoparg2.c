@@ -118,6 +118,7 @@
 #define __IEDYAD_C__
 
 #include <acpi.h>
+#include <namespace.h>
 #include <interpreter.h>
 #include <events.h>
 #include <amlcode.h>
@@ -165,14 +166,16 @@ AmlExecDyadic1 (
         return_ACPI_STATUS (Status);
     }
 
-    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], 2, "after AmlPrepObjStack");
 
     ValDesc = AmlObjStackGetValue (STACK_TOP);
     ObjDesc = AmlObjStackGetValue (1);
 
+
+    /* Examine the opcode */
+
     switch (opcode)
     {
-
 
     /* DefNotify   :=  NotifyOp    NotifyObject    NotifyValue */
 
@@ -219,12 +222,12 @@ AmlExecDyadic1 (
 
     if (ValDesc)
     {
-        CmFree (ValDesc);
+        CmDeleteInternalObject (ValDesc);
     }
 
     if (ObjDesc)
     {
-        CmFree (ObjDesc);
+        CmDeleteInternalObject (ObjDesc);
     }
     
     /* Clear the stack */
@@ -269,9 +272,10 @@ AmlExecDyadic2R (
     FUNCTION_TRACE ("AmlExecDyadic2R");
 
 
+    /* Examine the opcode */
+
     switch (opcode)
     {
-
 
     /* DefConcat   :=  ConcatOp    Data1   Data2   Result  */
 
@@ -307,7 +311,7 @@ AmlExecDyadic2R (
         return_ACPI_STATUS (Status);
     }
 
-    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], NumOperands, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], NumOperands, "after AmlPrepObjStack");
 
 
     /* Get all operand and result objects from the stack */
@@ -478,9 +482,10 @@ AmlExecDyadic2R (
                             (ACPI_SIZE) ObjDesc2->Buffer.Length);
             
             /* Don't free old ObjDesc->Buffer.Pointer; the operand still exists */
+            /* Buffer.PtrRefCount remains the same! */
             
-            ObjDesc->Buffer.Pointer = (UINT8 *) NewBuf;
-            ObjDesc->Buffer.Length += ObjDesc2->Buffer.Length;
+            ObjDesc->Buffer.Pointer     = (UINT8 *) NewBuf;
+            ObjDesc->Buffer.Length      += ObjDesc2->Buffer.Length;
         }
         break;
 
@@ -503,11 +508,11 @@ AmlExecDyadic2R (
     }
 
     /* Don't delete ObjDesc because it remains on the stack */
-    /* deleting psObjDescOperand2 is valid for DivideOp since we preserved
+    /* deleting ObjDesc2 is valid for DivideOp since we preserved
      * remainder on stack
      */
     
-    CmFree (ObjDesc2);
+    CmDeleteInternalObject (ObjDesc2);
     AmlObjStackPop (NumOperands - 1);
     
     return_ACPI_STATUS (Status);
@@ -535,6 +540,7 @@ AmlExecDyadic2S (
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_OBJECT_INTERNAL    *TimeDesc = NULL;
     ACPI_OBJECT_INTERNAL    *ResDesc = NULL;
+    NAME_TABLE_ENTRY        *ThisEntry;
     ACPI_STATUS             Status;
 
 
@@ -542,78 +548,120 @@ AmlExecDyadic2S (
 
 
     Status = AmlPrepObjStack ("nl");
-
     if (Status != AE_OK)
     {   
-        /* invalid parameters on object stack  */
+        /* Invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
+        return_ACPI_STATUS (Status);
     }
 
-    else
+
+    /* Get the operands and validate them */
+
+    AmlDumpObjStack (IMODE_Execute, Gbl_LongOps[opcode & 0x00ff], 2, "after AmlPrepObjStack");
+
+    TimeDesc = AmlObjStackGetValue (STACK_TOP);
+    ObjDesc = AmlObjStackGetValue (1);
+
+    if (!TimeDesc || !ObjDesc)
     {
-        AmlDumpObjStack (MODE_Exec, LongOps[opcode & 0x00ff], 2, "after AmlPrepObjStack");
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
 
-        TimeDesc = AmlObjStackGetValue (STACK_TOP);
-        ObjDesc = AmlObjStackGetValue (1);
+    /* ObjDesc can be an NTE */
 
-        switch (opcode)
+    if (IS_NS_HANDLE (ObjDesc))
+    {
+        ThisEntry = (NAME_TABLE_ENTRY *) ObjDesc;
+        if (!ThisEntry->Object)
         {
+            /* No object present, create a Mutex object */
 
-        /* DefAcquire  :=  AcquireOp   MutexObject Timeout */
-
-        case AML_AcquireOp:
-
-            if (TYPE_Mutex != ObjDesc->Type)
+            ObjDesc = CmCreateInternalObject (TYPE_Mutex);
+            if (!ObjDesc)
             {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecDyadic2S/AcquireOp: Needed Mutex, found %d\n",
-                        ResDesc->Type));
-                Status = AE_AML_ERROR;
+                Status = AE_NO_MEMORY;
+                goto Cleanup;
             }
-            else
-            {
-                Status = OsAcquireOpRqst (TimeDesc, ObjDesc);
-            }
+            
+            /* Initialize the new object and install it in the NTE */
+
+            ObjDesc->Mutex.SyncLevel = 0;
+            ObjDesc->Mutex.Semaphore = 0;
+            ObjDesc->Mutex.LockCount = 0;
+            ObjDesc->Mutex.ThreadId  = 0;
+
+            ThisEntry->Object = ObjDesc;
+            ThisEntry->Type = TYPE_Mutex;
+        }
+
+        /* Extract the valid object */
+
+        ObjDesc = ThisEntry->Object;
+    }
 
 
+    /* Examine the opcode */
 
-        /* DefWait :=  WaitOp  EventObject Timeout */
+    switch (opcode)
+    {
 
-        case AML_WaitOp:
+    /* DefAcquire  :=  AcquireOp   MutexObject Timeout */
 
-            if (TYPE_Event != ObjDesc->Type)
-            {
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecDyadic2S/WaitOp: Needed Event, found %d\n",
-                        ResDesc->Type));
-                Status = AE_AML_ERROR;
-            }
-            else
-            {
-                Status = OsWaitOpRqst (TimeDesc, ObjDesc);
-            }
+    case AML_AcquireOp:
 
-
-        default:
-
+        if (TYPE_Mutex != ObjDesc->Type)
+        {
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecDyadic2S: Unknown dyadic synchronization opcode %02x\n",
-                    opcode));
+                    "AmlExecDyadic2S/AcquireOp: Needed Mutex, found %d\n",
+                    ResDesc->Type));
             Status = AE_AML_ERROR;
+        }
+        else
+        {
+            Status = OsAcquireOpRqst (TimeDesc, ObjDesc);
         }
 
 
-        /* delete TimeOut object descriptor before removing it from object stack   */
-    
-        CmFree (TimeDesc);
 
-        /* remove TimeOut parameter from object stack  */
+    /* DefWait :=  WaitOp  EventObject Timeout */
 
-        AmlObjStackPop (1);
-    
+    case AML_WaitOp:
+
+        if (TYPE_Event != ObjDesc->Type)
+        {
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlExecDyadic2S/WaitOp: Needed Event, found %d\n",
+                    ResDesc->Type));
+            Status = AE_AML_ERROR;
+        }
+        else
+        {
+            Status = OsWaitOpRqst (TimeDesc, ObjDesc);
+        }
+
+
+    default:
+
+        DEBUG_PRINT (ACPI_ERROR, (
+                "AmlExecDyadic2S: Unknown dyadic synchronization opcode %02x\n",
+                opcode));
+        Status = AE_AML_ERROR;
     }
 
+
+
+Cleanup:
+
+    /* Delete TimeOut object descriptor before removing it from object stack   */
+
+    CmDeleteInternalObject (TimeDesc);
+
+    /* Remove TimeOut parameter from object stack  */
+
+    AmlObjStackPop (1);
+    
     return_ACPI_STATUS (Status);
 }
 
@@ -650,13 +698,13 @@ AmlExecDyadic2 (
 
     if (Status != AE_OK)
     {
-        /* invalid parameters on object stack  */
+        /* Invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
         return_ACPI_STATUS (Status);
     }
 
-    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], 2, "after AmlPrepObjStack");
 
     ObjDesc2 = AmlObjStackGetValue (STACK_TOP);
     ObjDesc = AmlObjStackGetValue (1);
@@ -738,7 +786,7 @@ AmlExecDyadic2 (
 
     /* Free operand2 object and remove it from the stack */
 
-    CmFree (ObjDesc2);
+    CmDeleteInternalObject (ObjDesc2);
     AmlObjStackPop (1);
  
     /* Always return AE_OK here (AE_PENDING was handled above!) */

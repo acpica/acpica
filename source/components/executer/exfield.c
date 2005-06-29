@@ -179,7 +179,7 @@ AmlSetupField (
     else if (TYPE_Region != RgnDesc->Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found %d %s\n",
-                        RgnDesc->Type, NsTypeNames[RgnDesc->Type]));
+                        RgnDesc->Type, Gbl_NsTypeNames[RgnDesc->Type]));
         Status = AE_AML_ERROR;
     }
 
@@ -410,7 +410,7 @@ AmlReadField (
     {
         DEBUG_PRINT (TRACE_OPREGION,
                     ("AmlReadField: Read from OpRegion %s at %08lx width %d\n",
-                    RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
+                    Gbl_RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
 
@@ -422,7 +422,7 @@ AmlReadField (
     if (Status == AE_NOT_IMPLEMENTED)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: **** OpRegion type %s not implemented\n",
-                RegionTypes[RgnDesc->Region.SpaceId]));
+                Gbl_RegionTypes[RgnDesc->Region.SpaceId]));
     }
 
     else if (Status == AE_EXIST)
@@ -493,7 +493,7 @@ AmlWriteField (
     {
         DEBUG_PRINT (TRACE_OPREGION,
                 ("AmlWriteField: Store %lx in OpRegion %s at %08lx width %d\n",
-                Value, RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
+                Value, Gbl_RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
@@ -504,7 +504,7 @@ AmlWriteField (
     if (Status == AE_NOT_IMPLEMENTED)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** OpRegion type %s not implemented\n",
-                        RegionTypes[RgnDesc->Region.SpaceId]));
+                        Gbl_RegionTypes[RgnDesc->Region.SpaceId]));
     }
 
     else if (Status == AE_EXIST)

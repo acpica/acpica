@@ -479,7 +479,7 @@ AmlDumpObjStackEntry (
         else
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("Region %s",
-                                RegionTypes[EntryDesc->Region.SpaceId]));
+                                Gbl_RegionTypes[EntryDesc->Region.SpaceId]));
         }
 
         /* 
@@ -609,11 +609,11 @@ AmlDumpObjStackEntry (
 
         REPORT_ERROR ("AmlDumpObjStackEntry: Unknown Type");
         
-        if (AML_UNASSIGNED != Aml[(INT32) EntryDesc->Type])
+        if (AML_UNASSIGNED != Gbl_Aml[(INT32) EntryDesc->Type])
         {
             DEBUG_PRINT_RAW (ACPI_ERROR,
                           ("AmlDumpObjStackEntry: Unhandled opcode (AML %s) \n", 
-                          ShortOps[Aml[(INT32) EntryDesc->Type]]));
+                          Gbl_ShortOps[Gbl_Aml[(INT32) EntryDesc->Type]]));
         }
 
 

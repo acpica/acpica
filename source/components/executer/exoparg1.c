@@ -169,8 +169,37 @@ AmlExecMonadic1 (
     }
 
 
-    AmlDumpObjStack (MODE_Exec, LongOps[opcode & 0x00ff], 1, "after AmlPrepObjStack");
+    /* Get the operand from the stack */
+
+    AmlDumpObjStack (IMODE_Execute, Gbl_LongOps[opcode & 0x00ff], 1, "after AmlPrepObjStack");
     ObjDesc = AmlObjStackGetValue (STACK_TOP);
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
+
+    /* ObjDesc can be an NTE - extract the object from the NTE */
+
+    if (IS_NS_HANDLE (ObjDesc))
+    {
+        if (((NAME_TABLE_ENTRY *) ObjDesc)->Object)
+        {
+            /* Valid object, get it */
+
+            ObjDesc = ((NAME_TABLE_ENTRY *) ObjDesc)->Object;
+
+            /* The object is deleted below, we must clear the entry */
+
+            ((NAME_TABLE_ENTRY *) ObjDesc)->Object = NULL;
+        }
+
+        else
+        {
+            /* No object, just exit */
+
+            return_ACPI_STATUS (AE_OK);
+        }
+    }
 
 
     /* Examine the opcode */
@@ -250,7 +279,7 @@ AmlExecMonadic1 (
     } /* switch */
 
 
-    CmFree (ObjDesc);
+    CmDeleteInternalObject (ObjDesc);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -301,7 +330,7 @@ AmlExecMonadic2R (
         }
     }
 
-    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], 2, "after AmlPrepObjStack");
 
     ResDesc = AmlObjStackGetValue (STACK_TOP);
     ObjDesc = AmlObjStackGetValue (1);
@@ -393,7 +422,7 @@ AmlExecMonadic2R (
     case AML_CondRefOfOp:
         
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n",
-                (opcode > ACPI_UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
+                (opcode > ACPI_UCHAR_MAX) ? Gbl_LongOps[opcode & 0x00ff] : Gbl_ShortOps[opcode]));
         return_ACPI_STATUS (AE_AML_ERROR);
 
 
@@ -460,7 +489,7 @@ AmlExecMonadic2 (
         return_ACPI_STATUS (Status);
     }
 
-    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 1, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], 1, "after AmlPrepObjStack");
 
     ObjDesc = AmlObjStackGetValue (STACK_TOP);
 
@@ -482,28 +511,29 @@ AmlExecMonadic2 (
     case AML_DecrementOp:
     case AML_IncrementOp:
 
-        if ((Status = AmlObjStackPushIfExec (MODE_Exec)) != AE_OK)
+        if ((Status = AmlObjStackPush ()) != AE_OK)
         {
             REPORT_ERROR ("AmlExecMonadic2/IncDec: stack overflow");
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-        /* duplicate the Lvalue on TOS */
+        /* Duplicate the Lvalue on the top of the object stack */
         
-        ResDesc = AllocateObjectDesc ();
-        if (ResDesc)
-        {
-            memcpy ((void *) ResDesc, (void *) ObjDesc, sizeof (*ObjDesc));
-            
-            /* push went into unused space, so no need to DeleteObject() */
-            
-            AmlObjStackSetValue (STACK_TOP, ResDesc);
-        }
-        
-        else
+        ResDesc = CmAllocateObjectDesc ();
+        if (!ResDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
+
+        Status = CmCopyInternalObject (ObjDesc, ResDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+        
+        /* Push went into unused space, so no need to DeleteObject() */
+        
+        AmlObjStackSetValue (STACK_TOP, ResDesc);
 
         /* Convert the top copy to a Number */
         
@@ -582,14 +612,14 @@ AmlExecMonadic2 (
             case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
             case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-                Status = (INT32) AmlMthStackGetType (MTH_LOCAL_BASE + ObjDesc->Lvalue.OpCode - AML_Local0);
+                Status = AmlMthStackGetType (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.OpCode - AML_Local0));
                 break;
 
 
             case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
             case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-                Status = (INT32) AmlMthStackGetType (MTH_ARG_BASE + ObjDesc->Lvalue.OpCode - AML_Arg0);
+                Status = AmlMthStackGetType (MTH_TYPE_ARG, (ObjDesc->Lvalue.OpCode - AML_Arg0));
                 break;
 
 
@@ -611,7 +641,7 @@ AmlExecMonadic2 (
              */
             Status = (INT32) NsGetType ((ACPI_HANDLE) ObjDesc);
 
-            ObjDesc = AllocateObjectDesc ();
+            ObjDesc = CmCreateInternalObject (TYPE_Number);
             if (!ObjDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -619,7 +649,7 @@ AmlExecMonadic2 (
 
             /* 
              * Replace (ACPI_HANDLE) on TOS with descriptor containing result.
-             * No need to LocalDeleteObject() first since TOS is an ACPI_HANDLE.
+             * No need to CmDeleteInternalObject() first since TOS is an ACPI_HANDLE.
              */
 
             AmlObjStackSetValue (STACK_TOP, ObjDesc);
@@ -675,7 +705,7 @@ AmlExecMonadic2 (
     case AML_DerefOfOp:
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: %s unimplemented\n",
-                (opcode > ACPI_UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
+                (opcode > ACPI_UCHAR_MAX) ? Gbl_LongOps[opcode & 0x00ff] : Gbl_ShortOps[opcode]));
 
         AmlObjStackPush ();  /*  dummy return value  */
 
