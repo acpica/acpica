@@ -237,18 +237,18 @@ strupr(char *str);
  * We will be linking to the standard Clib functions
  */
 
-#define STRSTR(s1,s2)   strstr((char *) (s1), (char *) (s2))
-#define STRUPR(s)       strupr((char *) (s))
-#define STRLEN(s)       strlen((char *) (s))
-#define STRCPY(d,s)     strcpy((char *) (d), (char *) (s))
-#define STRNCPY(d,s,n)  strncpy((char *) (d), (char *) (s), (n))
-#define STRNCMP(d,s,n)  strncmp((char *) (d), (char *) (s), (n))
-#define STRCMP(d,s)     strcmp((char *) (d), (char *) (s))
-#define STRCAT(d,s)     strcat((char *) (d), (char *) (s))
-#define STRNCAT(d,s,n)  strncat((char *) (d), (char *) (s), (n))
+#define STRSTR(s1,s2)   strstr((s1), (s2))
+#define STRUPR(s)       strupr((s))
+#define STRLEN(s)       strlen((s))
+#define STRCPY(d,s)     strcpy((d), (s))
+#define STRNCPY(d,s,n)  strncpy((d), (s), (n))
+#define STRNCMP(d,s,n)  strncmp((d), (s), (n))
+#define STRCMP(d,s)     strcmp((d), (s))
+#define STRCAT(d,s)     strcat((d), (s))
+#define STRNCAT(d,s,n)  strncat((d), (s), (n))
 #define STRTOUL(d,s,n)  strtoul((d), (s), (n))
-#define MEMCPY(d,s,n)   memcpy(d, s, (size_t) n)
-#define MEMSET(d,s,n)   memset(d, s, (size_t) n)
+#define MEMCPY(d,s,n)   memcpy((d), (s), (n))
+#define MEMSET(d,s,n)   memset((d), (s), (n))
 #define TOUPPER         toupper
 #define TOLOWER         tolower
 
@@ -293,18 +293,18 @@ typedef char *va_list;
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)    AcpiCmStrstr  ((char *) (s1), (char *) (s2))
-#define STRUPR(s)        AcpiCmStrupr  ((char *) (s))
-#define STRLEN(s)        AcpiCmStrlen  ((char *) (s))
-#define STRCPY(d,s)      AcpiCmStrcpy  ((char *) (d), (char *) (s))
-#define STRNCPY(d,s,n)   AcpiCmStrncpy ((char *) (d), (char *) (s), (n))
-#define STRNCMP(d,s,n)   AcpiCmStrncmp ((char *) (d), (char *) (s), (n))
-#define STRCMP(d,s)      AcpiCmStrcmp  ((char *) (d), (char *) (s))
-#define STRCAT(d,s)      AcpiCmStrcat  ((char *) (d), (char *) (s))
-#define STRNCAT(d,s,n)   AcpiCmStrncat ((char *) (d), (char *) (s), (n))
-#define STRTOUL(d,s,n)   AcpiCmStrtoul ((char *) (d), (char **)(s),(n))
-#define MEMCPY(d,s,n)    AcpiCmMemcpy  ((void *) (d), (const void *) (s), (n))
-#define MEMSET(d,v,n)    AcpiCmMemset  ((void *) (d), (v), (n))
+#define STRSTR(s1,s2)    AcpiCmStrstr  ((s1), (s2))
+#define STRUPR(s)        AcpiCmStrupr  ((s))
+#define STRLEN(s)        AcpiCmStrlen  ((s))
+#define STRCPY(d,s)      AcpiCmStrcpy  ((d), (s))
+#define STRNCPY(d,s,n)   AcpiCmStrncpy ((d), (s), (n))
+#define STRNCMP(d,s,n)   AcpiCmStrncmp ((d), (s), (n))
+#define STRCMP(d,s)      AcpiCmStrcmp  ((d), (s))
+#define STRCAT(d,s)      AcpiCmStrcat  ((d), (s))
+#define STRNCAT(d,s,n)   AcpiCmStrncat ((d), (s), (n))
+#define STRTOUL(d,s,n)   AcpiCmStrtoul ((d), (s),(n))
+#define MEMCPY(d,s,n)    AcpiCmMemcpy  ((d), (s), (n))
+#define MEMSET(d,v,n)    AcpiCmMemset  ((d), (v), (n))
 #define TOUPPER          AcpiCmToUpper
 #define TOLOWER          AcpiCmToLower
 
