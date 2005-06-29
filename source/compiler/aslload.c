@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.59 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -131,7 +131,7 @@
  *
  * FUNCTION:    LdLoadNamespace
  *
- * PARAMETERS:  None
+ * PARAMETERS:  RootOp      - Root of the parse tree
  *
  * RETURN:      Status
  *
@@ -162,7 +162,7 @@ LdLoadNamespace (
     /* Perform the walk of the parse tree */
 
     TrWalkParseTree (RootOp, ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
-                        LdNamespace1End, WalkState);
+        LdNamespace1End, WalkState);
 
     /* Dump the namespace if debug is enabled */
 
@@ -175,7 +175,7 @@ LdLoadNamespace (
  *
  * FUNCTION:    LdLoadFieldElements
  *
- * PARAMETERS:  Op          - Parent node (Field)
+ * PARAMETERS:  Op              - Parent node (Field)
  *              WalkState       - Current walk state
  *
  * RETURN:      Status
@@ -185,7 +185,7 @@ LdLoadNamespace (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 LdLoadFieldElements (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState)
@@ -232,10 +232,13 @@ LdLoadFieldElements (
 
         default:
 
-            Status = AcpiNsLookup (WalkState->ScopeInfo, Child->Asl.Value.String,
-                            ACPI_TYPE_LOCAL_REGION_FIELD, ACPI_IMODE_LOAD_PASS1,
-                            ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE | ACPI_NS_ERROR_IF_FOUND,
-                            NULL, &Node);
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
+                        Child->Asl.Value.String,
+                        ACPI_TYPE_LOCAL_REGION_FIELD,
+                        ACPI_IMODE_LOAD_PASS1,
+                        ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE |
+                            ACPI_NS_ERROR_IF_FOUND,
+                        NULL, &Node);
             if (ACPI_FAILURE (Status))
             {
                 if (Status != AE_ALREADY_EXISTS)
@@ -247,7 +250,8 @@ LdLoadFieldElements (
                  * The name already exists in this scope
                  * But continue processing the elements
                  */
-                AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Child, Child->Asl.Value.String);
+                AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Child,
+                    Child->Asl.Value.String);
             }
             else
             {
@@ -266,7 +270,7 @@ LdLoadFieldElements (
  *
  * FUNCTION:    LdLoadResourceElements
  *
- * PARAMETERS:  Op          - Parent node (Resource Descriptor)
+ * PARAMETERS:  Op              - Parent node (Resource Descriptor)
  *              WalkState       - Current walk state
  *
  * RETURN:      Status
@@ -280,7 +284,7 @@ LdLoadFieldElements (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 LdLoadResourceElements (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState)
@@ -295,8 +299,8 @@ LdLoadResourceElements (
      * This opens a scope
      */
     Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Asl.Namepath,
-                    ACPI_TYPE_LOCAL_RESOURCE, ACPI_IMODE_LOAD_PASS1, ACPI_NS_NO_UPSEARCH,
-                    WalkState, &Node);
+                ACPI_TYPE_LOCAL_RESOURCE, ACPI_IMODE_LOAD_PASS1,
+                ACPI_NS_NO_UPSEARCH, WalkState, &Node);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
@@ -313,10 +317,11 @@ LdLoadResourceElements (
         if (InitializerOp->Asl.ExternalName)
         {
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            InitializerOp->Asl.ExternalName,
-                            ACPI_TYPE_LOCAL_RESOURCE_FIELD,
-                            ACPI_IMODE_LOAD_PASS1, ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE,
-                            NULL, &Node);
+                        InitializerOp->Asl.ExternalName,
+                        ACPI_TYPE_LOCAL_RESOURCE_FIELD,
+                        ACPI_IMODE_LOAD_PASS1,
+                        ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE,
+                        NULL, &Node);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
@@ -357,7 +362,7 @@ LdLoadResourceElements (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 LdNamespace1Begin (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
@@ -417,8 +422,8 @@ LdNamespace1Begin (
     {
     case PARSEOP_NAME:
 
-        Arg = Op->Asl.Child;        /* Get the NameSeg/NameString node */
-        Arg = Arg->Asl.Next;        /* First peer is the object to be associated with the name */
+        Arg = Op->Asl.Child;  /* Get the NameSeg/NameString node */
+        Arg = Arg->Asl.Next;  /* First peer is the object to be associated with the name */
 
         /* Get the data type associated with the named object, not the name itself */
 
@@ -467,23 +472,28 @@ LdNamespace1Begin (
          * handle this case.  Perhaps someday this case can go away.
          */
         Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ACPI_TYPE_ANY,
-                        ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
+                    ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT,
+                    WalkState, &(Node));
         if (ACPI_FAILURE (Status))
         {
             if (Status == AE_NOT_FOUND)
             {
                 /* The name was not found, go ahead and create it */
 
-                Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ACPI_TYPE_LOCAL_SCOPE,
-                                ACPI_IMODE_LOAD_PASS1, Flags, WalkState, &(Node));
+                Status = AcpiNsLookup (WalkState->ScopeInfo, Path,
+                            ACPI_TYPE_LOCAL_SCOPE,
+                            ACPI_IMODE_LOAD_PASS1, Flags,
+                            WalkState, &(Node));
 
                 /*
                  * However, this is an error -- primarily because the MS
                  * interpreter can't handle a forward reference from the
                  * Scope() operator.
                  */
-                AslError (ASL_ERROR, ASL_MSG_NOT_FOUND, Op, Op->Asl.ExternalName);
-                AslError (ASL_ERROR, ASL_MSG_SCOPE_FWD_REF, Op, Op->Asl.ExternalName);
+                AslError (ASL_ERROR, ASL_MSG_NOT_FOUND, Op,
+                    Op->Asl.ExternalName);
+                AslError (ASL_ERROR, ASL_MSG_SCOPE_FWD_REF, Op,
+                    Op->Asl.ExternalName);
                 goto FinishNode;
             }
 
@@ -509,8 +519,8 @@ LdNamespace1Begin (
         case ACPI_TYPE_BUFFER:
 
             /*
-             * These types we will allow, but we will change the type.  This
-             * enables some existing code of the form:
+             * These types we will allow, but we will change the type.
+             * This enables some existing code of the form:
              *
              *  Name (DEB, 0)
              *  Scope (DEB) { ... }
@@ -518,30 +528,41 @@ LdNamespace1Begin (
              * Which is used to workaround the fact that the MS interpreter
              * does not allow Scope() forward references.
              */
-            sprintf (MsgBuffer, "%s, %s, Changing type to (Scope)",
+            sprintf (MsgBuffer, "%s [%s], changing type to [Scope]",
                 Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
             AslError (ASL_REMARK, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
 
-            /*
-             * Switch the type
-             */
-            Node->Type = ACPI_TYPE_ANY;
+            /* Switch the type to scope, open the new scope */
+
+            Node->Type = ACPI_TYPE_LOCAL_SCOPE;
+            Status = AcpiDsScopeStackPush (Node, ACPI_TYPE_LOCAL_SCOPE,
+                        WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
             break;
 
         default:
 
-            /*
-             * All other types are an error
-             */
-            sprintf (MsgBuffer, "%s, %s", Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
+            /* All other types are an error */
+
+            sprintf (MsgBuffer, "%s [%s]", Op->Asl.ExternalName,
+                AcpiUtGetTypeName (Node->Type));
             AslError (ASL_ERROR, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
 
             /*
              * However, switch the type to be an actual scope so
              * that compilation can continue without generating a whole
-             * cascade of additional errors.
+             * cascade of additional errors.  Open the new scope.
              */
-            Node->Type = ACPI_TYPE_ANY;
+            Node->Type = ACPI_TYPE_LOCAL_SCOPE;
+            Status = AcpiDsScopeStackPush (Node, ACPI_TYPE_LOCAL_SCOPE,
+                        WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
             break;
         }
 
@@ -565,8 +586,9 @@ LdNamespace1Begin (
 
     /*
      * Enter the named type into the internal namespace.  We enter the name
-     * as we go downward in the parse tree.  Any necessary subobjects that involve
-     * arguments to the opcode must be created as we go back up the parse tree later.
+     * as we go downward in the parse tree.  Any necessary subobjects that
+     * involve arguments to the opcode must be created as we go back up the
+     * parse tree later.
      */
     Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ObjectType,
                     ACPI_IMODE_LOAD_PASS1, Flags, WalkState, &(Node));
@@ -583,14 +605,16 @@ LdNamespace1Begin (
             }
             else
             {
-                AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Op, Op->Asl.ExternalName);
+                AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Op,
+                    Op->Asl.ExternalName);
                 Status = AE_OK;
                 goto Exit;
             }
         }
         else
         {
-            AslCoreSubsystemError (Op, Status, "Failure from lookup %s\n", FALSE);
+            AslCoreSubsystemError (Op, Status,
+                "Failure from lookup %s\n", FALSE);
             goto Exit;
         }
     }
@@ -639,7 +663,7 @@ Exit:
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 LdNamespace1End (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,

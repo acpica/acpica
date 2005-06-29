@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.64 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -130,24 +130,6 @@ static const char * const       *yytname = &AslCompilername[254];
 #else
 extern const char * const       yytname[];
 #endif
-
-/* Local prototypes */
-
-static ACPI_STATUS
-UtStrtoul64 (
-    char                    *String,
-    UINT32                  Base,
-    ACPI_INTEGER            *RetInteger);
-
-static void
-UtPadNameWithUnderscores (
-    char                    *NameSeg,
-    char                    *PaddedNameSeg);
-
-static void
-UtAttachNameseg (
-    ACPI_PARSE_OBJECT       *Op,
-    char                    *Name);
 
 
 /*******************************************************************************
@@ -853,7 +835,7 @@ UtDoConstant (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 UtStrtoul64 (
     char                    *String,
     UINT32                  Base,
