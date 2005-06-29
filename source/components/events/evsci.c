@@ -153,7 +153,8 @@ FixedEventHandler (
 	{
 		DEBUG_PRINT (TRACE_INTERRUPTS,
 			("Disabling unhandled fixed event %08x.\n", Event));
-		AcpiDisableFixedEvent (Event);
+
+        /* AcpiDisableFixedEvent (Event);*/
 		return INTERRUPT_NOT_HANDLED;
 	}
 	
@@ -528,7 +529,7 @@ AcpiEnable ()
         if (AE_OK != AcpiSetMode (ACPI_MODE))
 		{	
 			/*	Unable to transition to ACPI Mode	*/
-			DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\m"));
+			DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
 			return AE_ERROR;	
 		}
 		else
