@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.80 $
+ *       $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -266,7 +266,6 @@ typedef struct /* DEVICE - has handle and notification handler/context */
 typedef struct /* EVENT */
 {
     ACPI_OBJECT_COMMON_HEADER
-
     void                        *Semaphore;
 
 } ACPI_OBJECT_EVENT;
@@ -292,12 +291,16 @@ typedef struct /* METHOD */
 } ACPI_OBJECT_METHOD;
 
 
-typedef struct /* MUTEX */
+typedef struct acpi_obj_mutex /* MUTEX */
 {
     ACPI_OBJECT_COMMON_HEADER
     UINT16                      SyncLevel;
+    UINT16                      AcquisitionDepth;
 
     void                        *Semaphore;
+    void                        *Owner;
+    union acpi_operand_obj      *Prev;              /* Link for list of acquired mutexes */
+    union acpi_operand_obj      *Next;              /* Link for list of acquired mutexes */
 
 } ACPI_OBJECT_MUTEX;
 
