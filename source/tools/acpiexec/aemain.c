@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.62 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -127,8 +127,10 @@
 
 #include "aecommon.h"
 
-#ifdef _DEBUG
+#ifdef _DEBUG  
+#if ACPI_MACHINE_WIDTH != 16
 #include <crtdbg.h>
+#endif     
 #endif
 
 #define _COMPONENT          PARSER
@@ -137,7 +139,7 @@
 /*
  * TBD: Debug only, remove!
  */
-#ifdef _IA32
+#if ACPI_MACHINE_WIDTH == 32
 void
 AcpiCompare (
     UINT64_OVERLAY          Dividend,
@@ -209,7 +211,8 @@ AeDoDivideCheck (void)
 #endif
 
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
+
 ACPI_STATUS
 AcpiGetIrqRoutingTable  (
     ACPI_HANDLE             DeviceHandle,
@@ -271,8 +274,10 @@ main (
     char                    Buffer[32];
 
 
-#ifdef _DEBUG
+#ifdef _DEBUG 
+#if ACPI_MACHINE_WIDTH != 16
     _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CrtSetDbgFlag(0));
+#endif    
 #endif
 
     /* Init globals */
@@ -285,13 +290,13 @@ main (
 
     printf ("ACPI AML Execution/Debug Utility ");
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
     printf ("(16-bit) ");
 #else
     printf ("(32-bit) ");
 #endif
 
-    printf ("CA version %4.4X [%s]\n", ACPI_CA_VERSION, __DATE__);
+    printf ("CA version %8.8lX [%s]\n", ACPI_CA_VERSION, __DATE__);
 
     /* Get the command line options */
 
@@ -392,7 +397,7 @@ main (
         AcpiEnableEvent (0, ACPI_EVENT_GPE, 0);
     }
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
     else
     {
 #include "16bit.h"
