@@ -131,7 +131,6 @@
         MODULE_NAME         ("amconfig");
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiAmlExecLoadTable
@@ -206,8 +205,8 @@ AcpiAmlExecLoadTable (
 
     /* Table must be either an SSDT or a PSDT */
 
-    if ((!STRNCMP (TableHeader.Signature, AcpiGbl_AcpiTableData[TABLE_PSDT].Signature, AcpiGbl_AcpiTableData[TABLE_PSDT].SigLength)) &&
-        (!STRNCMP (TableHeader.Signature, AcpiGbl_AcpiTableData[TABLE_SSDT].Signature, AcpiGbl_AcpiTableData[TABLE_SSDT].SigLength)))
+    if ((!STRNCMP (TableHeader.Signature, AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].Signature, AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].SigLength)) &&
+        (!STRNCMP (TableHeader.Signature, AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].Signature, AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].SigLength)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Table has invalid signature [%4.4s], must be SSDT or PSDT\n", TableHeader.Signature));
         Status = AE_BAD_SIGNATURE;
@@ -268,7 +267,6 @@ Cleanup:
 }
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiAmlExecUnloadTable
@@ -280,7 +278,6 @@ Cleanup:
  * DESCRIPTION: Unload an ACPI table
  *
  ****************************************************************************/
-
 
 ACPI_STATUS
 AcpiAmlExecUnloadTable (
@@ -330,7 +327,6 @@ AcpiAmlExecUnloadTable (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*****************************************************************************
@@ -399,19 +395,18 @@ AcpiAmlExecReconfiguration (
 
 
     default:
+
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecReconfiguration: bad opcode=%X\n", Opcode));
 
         Status = AE_AML_BAD_OPCODE;
         break;
     }
 
+
 Cleanup2:
     AcpiCmRemoveReference (RegionDesc);
 
 Cleanup1:
-//    AcpiCmRemoveReference (DdbHandle);
-
-
     return_ACPI_STATUS (Status);
 }
 
