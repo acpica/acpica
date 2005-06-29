@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.120 $
+ *              $Revision: 1.121 $
  *
  ******************************************************************************/
 
@@ -234,8 +234,7 @@ AcpiNsRootInitialize (void)
 
             case ACPI_TYPE_STRING:
 
-                ObjDesc->String.Length =
-                        (UINT16) STRLEN (InitVal->Val);
+                ObjDesc->String.Length = STRLEN (InitVal->Val);
 
                 /*
                  * Allocate a buffer for the string.  All
@@ -257,8 +256,8 @@ AcpiNsRootInitialize (void)
 
             case ACPI_TYPE_MUTEX:
 
-                ObjDesc->Mutex.SyncLevel =
-                        (UINT16) STRTOUL (InitVal->Val, NULL, 10);
+                ObjDesc->Mutex.SyncLevel = 
+                            (UINT16) STRTOUL (InitVal->Val, NULL, 10);
 
                 if (STRCMP (InitVal->Name, "_GL_") == 0)
                 {
@@ -306,8 +305,7 @@ AcpiNsRootInitialize (void)
 
             /* Store pointer to value descriptor in the Node */
 
-            AcpiNsAttachObject (NewNode, ObjDesc,
-                                ObjDesc->Common.Type);
+            AcpiNsAttachObject (NewNode, ObjDesc, ObjDesc->Common.Type);
         }
     }
 
@@ -394,7 +392,8 @@ AcpiNsLookup (
         (!ScopeInfo->Scope.Node))
     {
         DEBUG_PRINT (TRACE_NAMES,
-            ("NsLookup: Null scope prefix, using root node (%p)\n", AcpiGbl_RootNode));
+            ("NsLookup: Null scope prefix, using root node (%p)\n", 
+            AcpiGbl_RootNode));
 
         PrefixNode = AcpiGbl_RootNode;
     }
@@ -520,7 +519,8 @@ AcpiNsLookup (
                 {
                     /* Current scope has no parent scope */
 
-                    REPORT_ERROR (("Too many parent prefixes (^) - reached root\n"));
+                    REPORT_ERROR (
+                        ("Too many parent prefixes (^) - reached root\n"));
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
 
