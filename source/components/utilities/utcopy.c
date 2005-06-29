@@ -116,8 +116,8 @@
 #define __CMCOPY_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -162,7 +162,7 @@ AcpiCmBuildExternalSimpleObject (
     UINT32                  *BufferSpaceUsed)
 {
     UINT32                  Length = 0;
-    char                    *SourcePtr = NULL;
+    INT8                    *SourcePtr = NULL;
 
 
     FUNCTION_TRACE ("CmBuildExternalSimpleObject");
@@ -199,7 +199,7 @@ AcpiCmBuildExternalSimpleObject (
 
         Length = InternalObj->String.Length;
         ExternalObj->String.Length = InternalObj->String.Length;
-        ExternalObj->String.Pointer = (char *) DataSpace;
+        ExternalObj->String.Pointer = (INT8 *) DataSpace;
         SourcePtr = InternalObj->String.Pointer;
         break;
 
@@ -209,7 +209,7 @@ AcpiCmBuildExternalSimpleObject (
         Length = InternalObj->Buffer.Length;
         ExternalObj->Buffer.Length = InternalObj->Buffer.Length;
         ExternalObj->Buffer.Pointer = DataSpace;
-        SourcePtr = (char *) InternalObj->Buffer.Pointer;
+        SourcePtr = (INT8 *) InternalObj->Buffer.Pointer;
         break;
 
 
@@ -734,7 +734,7 @@ AcpiCmBuildInternalPackageObject (
                                                ThisExternalObj, FreeSpace,
                                                &ObjectSpace);
 */
-            if (Status != AE_OK)
+            if (ACPI_FAILURE (Status))
             {
                 /*
                  * Failure get out

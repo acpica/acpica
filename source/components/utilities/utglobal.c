@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,15 +117,14 @@
 #define __CMGLOBAL_C__
 #define DEFINE_ACPI_GLOBALS
 
-#include <acpi.h>
-#include <events.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include "acpi.h"
+#include "acevents.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cmglobal");
-
 
 
 /******************************************************************************
@@ -134,78 +133,37 @@
  *
  ******************************************************************************/
 
-
-/* 
- * We want the debug switches statically initialized so they 
+/*
+ * We want the debug switches statically initialized so they
  * are already set when the debugger is entered.
  */
 
-    /* Debug switch - level and trace mask */
+/* Debug switch - level and trace mask */
 
 #ifdef ACPI_DEBUG
-UINT32                      DebugLevel = DEBUG_DEFAULT;
+UINT32                      AcpiDbgLevel = DEBUG_DEFAULT;
 #else
-UINT32                      DebugLevel = NORMAL_DEFAULT;
+UINT32                      AcpiDbgLevel = NORMAL_DEFAULT;
 #endif
 
-    /* Debug switch - layer (component) mask */
+/* Debug switch - layer (component) mask */
 
-UINT32                      DebugLayer = ALL_COMPONENTS;
-UINT32                      Gbl_NestingLevel = 0;
+UINT32                      AcpiDbgLayer = ALL_COMPONENTS;
+UINT32                      AcpiGbl_NestingLevel = 0;
 
+
+/* Debugger globals */
+
+BOOLEAN                     AcpiGbl_DbTerminateThreads = FALSE;
+BOOLEAN                     AcpiGbl_MethodExecuting = FALSE;
 
 /* System flags */
 
-UINT32                      Gbl_SystemFlags = 0;
-UINT32                      Gbl_StartupFlags = 0;
+UINT32                      AcpiGbl_SystemFlags = 0;
+UINT32                      AcpiGbl_StartupFlags = 0;
 
-/* 
- * Human-readable decode of exception codes, mostly for debugging
- * These need to match the corresponding defines
- * Note that AE_PENDING is not an error, but indicates
- * that other alternatives should be checked.
- */
-char                        *Gbl_ExceptionNames[] = 
-{ 
-    "AE_OK",
-    "AE_PENDING",
-    "AE_AML_ERROR",
-    "AE_RETURN_VALUE",
-    "AE_ERROR",
-    "AE_NO_ACPI_TABLES",
-    "AE_NO_NAMESPACE",
-    "AE_NO_MEMORY",
-    "AE_BAD_SIGNATURE",
-    "AE_BAD_HEADER",
-    "AE_BAD_CHECKSUM",
-    "AE_BAD_PARAMETER",
-    "AE_BAD_CHARACTER",
-    "AE_BAD_PATHNAME",
-    "AE_BAD_DATA",
-    "AE_NOT_FOUND",
-    "AE_NOT_EXIST",
-    "AE_EXIST",
-    "AE_TYPE",
-    "AE_NULL_ENTRY",
-    "AE_BUFFER_OVERFLOW",
-    "AE_STACK_OVERFLOW",
-    "AE_STACK_UNDERFLOW",
-    "AE_NOT_IMPLEMENTED",
-    "AE_VERSION_MISMATCH",
-    "AE_SUPPORT",
-    "AE_SHARE",
-    "AE_LIMIT",
-    "AE_TIME",
-    "AE_TERMINATE",
-    "AE_DEPTH",
-    "AE_UNKNOWN_STATUS"
-};
-
-
-/* Message strings */
-
-char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
-
+/* System starts unitialized! */
+BOOLEAN                     AcpiGbl_Shutdown = TRUE;
 
 
 /******************************************************************************
@@ -215,94 +173,162 @@ char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n"
  ******************************************************************************/
 
 
-/* 
+/*
  * Names built-in to the interpreter
  *
  * Initial values are currently supported only for types String and Number.
  * To avoid type punning, both are specified as strings in this table.
  */
 
-PREDEFINED_NAMES            Gbl_PreDefinedNames[] = 
+PREDEFINED_NAMES            AcpiGbl_PreDefinedNames[] =
 {
-    {"_GPE",    INTERNAL_TYPE_DefAny},
-    {"_PR_",    INTERNAL_TYPE_DefAny},
-    {"_SB_",    INTERNAL_TYPE_DefAny},
-    {"_SI_",    INTERNAL_TYPE_DefAny},
-    {"_TZ_",    INTERNAL_TYPE_DefAny},
-    {"_REV",    ACPI_TYPE_Number, "2"},
-    {"_OS_",    ACPI_TYPE_String, "Intel AML interpreter"},
-    {"_GL_",    ACPI_TYPE_Mutex, "0"},
+    {"_GPE",    INTERNAL_TYPE_DEF_ANY},
+    {"_PR_",    INTERNAL_TYPE_DEF_ANY},
+    {"_SB_",    INTERNAL_TYPE_DEF_ANY},
+    {"_SI_",    INTERNAL_TYPE_DEF_ANY},
+    {"_TZ_",    INTERNAL_TYPE_DEF_ANY},
+    {"_REV",    ACPI_TYPE_NUMBER, "2"},
+    {"_OS_",    ACPI_TYPE_STRING, ACPI_OS_NAME},
+    {"_GL_",    ACPI_TYPE_MUTEX, "0"},
 
     /* Table terminator */
 
-    {NULL,      ACPI_TYPE_Any}
+    {NULL,      ACPI_TYPE_ANY}
 };
 
 
-/* 
- * Elements of NsProperties are bit significant
- * and should be one-to-one with values of ACPI_OBJECT_TYPE
+/*
+ * Properties of the ACPI Object Types, both internal and external.
+ *
+ * Elements of AcpiNsProperties are bit significant
+ * and the table is indexed by values of ACPI_OBJECT_TYPE
  */
 
-INT32                       Gbl_NsProperties[] =    /* properties of types */
+UINT8                       AcpiGbl_NsProperties[] =
 {
-    0,                      /* 00 Any              */
-    0,                      /* 01 Number           */
-    0,                      /* 02 String           */
-    0,                      /* 03 Buffer           */
-    LOCAL,                  /* 04 Package          */
-    0,                      /* 05 FieldUnit        */
-    NEWSCOPE | LOCAL,       /* 06 Device           */
-    LOCAL,                  /* 07 Event            */
-    NEWSCOPE | LOCAL,       /* 08 Method           */
-    LOCAL,                  /* 09 Mutex            */
-    LOCAL,                  /* 10 Region           */
-    NEWSCOPE | LOCAL,       /* 11 Power            */
-    NEWSCOPE | LOCAL,       /* 12 Processor        */
-    NEWSCOPE | LOCAL,       /* 13 Thermal          */
-    0,                      /* 14 BufferField      */
-    0,                      /* 15 DdbHandle        */
-    0,                      /* 16 reserved         */
-    0,                      /* 17 reserved         */
-    0,                      /* 18 reserved         */
-    0,                      /* 19 reserved         */
-    0,                      /* 20 reserved         */
-    0,                      /* 21 reserved         */
-    0,                      /* 22 reserved         */
-    0,                      /* 23 reserved         */
-    0,                      /* 24 reserved         */
-    0,                      /* 25 DefField         */
-    0,                      /* 26 BankField        */
-    0,                      /* 27 IndexField       */
-    0,                      /* 28 DefFieldDefn     */
-    0,                      /* 29 BankFieldDefn    */
-    0,                      /* 30 IndexFieldDefn   */
-    0,                      /* 31 If               */
-    0,                      /* 32 Else             */
-    0,                      /* 33 While            */
-    NEWSCOPE,               /* 34 Scope            */
-    LOCAL,                  /* 35 DefAny           */
-    0,                      /* 36 Lvalue           */
-    0,                      /* 37 Alias            */
-    0,                      /* 38 Notify           */
-    0,                      /* 39 Address Handler  */
-    0                       /* 40 Invalid          */
+    NSP_NORMAL,                 /* 00 Any              */
+    NSP_NORMAL,                 /* 01 Number           */
+    NSP_NORMAL,                 /* 02 String           */
+    NSP_NORMAL,                 /* 03 Buffer           */
+    NSP_LOCAL,                  /* 04 Package          */
+    NSP_NORMAL,                 /* 05 FieldUnit        */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 06 Device           */
+    NSP_LOCAL,                  /* 07 AcpiEvent        */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 08 Method           */
+    NSP_LOCAL,                  /* 09 Mutex            */
+    NSP_LOCAL,                  /* 10 Region           */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 11 Power            */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 12 Processor        */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 13 Thermal          */
+    NSP_NORMAL,                 /* 14 BufferField      */
+    NSP_NORMAL,                 /* 15 DdbHandle        */
+    NSP_NORMAL,                 /* 16 reserved         */
+    NSP_NORMAL,                 /* 17 reserved         */
+    NSP_NORMAL,                 /* 18 reserved         */
+    NSP_NORMAL,                 /* 19 reserved         */
+    NSP_NORMAL,                 /* 20 reserved         */
+    NSP_NORMAL,                 /* 21 reserved         */
+    NSP_NORMAL,                 /* 22 reserved         */
+    NSP_NORMAL,                 /* 23 reserved         */
+    NSP_NORMAL,                 /* 24 reserved         */
+    NSP_NORMAL,                 /* 25 DefField         */
+    NSP_NORMAL,                 /* 26 BankField        */
+    NSP_NORMAL,                 /* 27 IndexField       */
+    NSP_NORMAL,                 /* 28 DefFieldDefn     */
+    NSP_NORMAL,                 /* 29 BankFieldDefn    */
+    NSP_NORMAL,                 /* 30 IndexFieldDefn   */
+    NSP_NORMAL,                 /* 31 If               */
+    NSP_NORMAL,                 /* 32 Else             */
+    NSP_NORMAL,                 /* 33 While            */
+    NSP_NEWSCOPE,               /* 34 Scope            */
+    NSP_LOCAL,                  /* 35 DefAny           */
+    NSP_NORMAL,                 /* 36 Reference        */
+    NSP_NORMAL,                 /* 37 Alias            */
+    NSP_NORMAL,                 /* 38 Notify           */
+    NSP_NORMAL,                 /* 39 Address Handler  */
+    NSP_NORMAL                  /* 40 Invalid          */
 };
 
-char                        Gbl_BadType[] = "UNDEFINED";
 
-#define TYPE_NAME_LENGTH    9                   /* Maximum length of each string */
+/******************************************************************************
+ *
+ * Table globals
+ *
+ ******************************************************************************/
 
-/* 
- * Elements of Gbl_NsTypeNames below must match
+
+ACPI_TABLE_DESC             AcpiGbl_AcpiTables[NUM_ACPI_TABLES];
+
+
+ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
+{
+                 /* Name,   Signature,  Signature size,    How many allowed?,   Supported?  Global typed pointer */
+
+    /* RSDP 0 */ {"RSDP",   RSDP_SIG, sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
+    /* APIC 1 */ {APIC_SIG, APIC_SIG, sizeof (APIC_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_APIC},
+    /* DSDT 2 */ {DSDT_SIG, DSDT_SIG, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_DSDT},
+    /* FACP 3 */ {FACP_SIG, FACP_SIG, sizeof (FACP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_FACP},
+    /* FACS 4 */ {FACS_SIG, FACS_SIG, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_FACS},
+    /* PSDT 5 */ {PSDT_SIG, PSDT_SIG, sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
+    /* RSDT 6 */ {RSDT_SIG, RSDT_SIG, sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
+    /* SSDT 7 */ {SSDT_SIG, SSDT_SIG, sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
+    /* SBST 8 */ {SBST_SIG, SBST_SIG, sizeof (SBST_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_SBST},
+    /* BOOT 9 */ {BOOT_SIG, BOOT_SIG, sizeof (BOOT_SIG)-1, ACPI_TABLE_SINGLE,   AE_SUPPORT, NULL}
+};
+
+ACPI_INIT_DATA AcpiGbl_AcpiInitData;
+
+
+#ifdef ACPI_DEBUG
+
+/******************************************************************************
+ *
+ * Strings and procedures used for debug only
+ *
+ ******************************************************************************/
+
+INT8                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmGetMutexName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a mutex ID into a name string (Debug only)
+ *
+ ****************************************************************************/
+
+INT8 *
+AcpiCmGetMutexName (
+    UINT32                  MutexId)
+{
+
+    if (MutexId > MAX_MTX)
+    {
+        return ("Invalid Mutex ID");
+    }
+
+    return (AcpiGbl_MutexNames[MutexId]);
+}
+
+
+/*
+ * Elements of AcpiGbl_NsTypeNames below must match
  * one-to-one with values of ACPI_OBJECT_TYPE
  *
- * The type ACPI_TYPE_Any (Untyped) is used as a "don't care" when searching; when 
- * stored in a table it really means that we have thus far seen no evidence to 
+ * The type ACPI_TYPE_ANY (Untyped) is used as a "don't care" when searching; when
+ * stored in a table it really means that we have thus far seen no evidence to
  * indicatewhat type is actually going to be stored for this entry.
  */
 
-char                        *Gbl_NsTypeNames[] =  /* printable names of types */
+static INT8                 AcpiGbl_BadType[] = "UNDEFINED";
+#define TYPE_NAME_LENGTH    9                       /* Maximum length of each string */
+
+static INT8                 *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
 {
     "Untyped",
     "Number",
@@ -319,16 +345,16 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
     "Processor",
     "Thermal",
     "BufferFld",
-    "DdbHandle", 
-     Gbl_BadType, 
-     Gbl_BadType, 
-     Gbl_BadType, 
-     Gbl_BadType,
-     Gbl_BadType, 
-     Gbl_BadType, 
-     Gbl_BadType, 
-     Gbl_BadType, 
-     Gbl_BadType,
+    "DdbHandle",
+     AcpiGbl_BadType,
+     AcpiGbl_BadType,
+     AcpiGbl_BadType,
+     AcpiGbl_BadType,
+     AcpiGbl_BadType,
+     AcpiGbl_BadType,
+     AcpiGbl_BadType,
+     AcpiGbl_BadType,
+     AcpiGbl_BadType,
     "DefField",
     "BnkField",
     "IdxField",
@@ -340,45 +366,156 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
     "While",
     "Scope",
     "DefAny",
-    "Lvalue",
+    "Reference",
     "Alias",
-    "Notify", 
-    "AddrHndlr", 
+    "Notify",
+    "AddrHndlr",
     "Invalid"
 };
 
 
-/******************************************************************************
+/*****************************************************************************
  *
- * Table globals
+ * FUNCTION:    AcpiCmGetTypeName
  *
- ******************************************************************************/
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a Type ID into a name string (Debug only)
+ *
+ ****************************************************************************/
 
-
-ACPI_TABLE_DESC             Gbl_AcpiTables[NUM_ACPI_TABLES];
-
-
-ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES] =
+INT8 *
+AcpiCmGetTypeName (
+    UINT32                  Type)
 {
-               /* Name,   Signature,  Signature size,    How many allowed?,   Supported?  Global typed pointer */
 
-    /* RSDP */ {"RSDP",   RSDP_SIG, sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
-    /* APIC */ {APIC_SIG, APIC_SIG, sizeof (APIC_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_APIC},
-    /* DSDT */ {DSDT_SIG, DSDT_SIG, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_DSDT},
-    /* FACP */ {FACP_SIG, FACP_SIG, sizeof (FACP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACP},
-    /* FACS */ {FACS_SIG, FACS_SIG, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACS},
-    /* PSDT */ {PSDT_SIG, PSDT_SIG, sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
-    /* RSDT */ {RSDT_SIG, RSDT_SIG, sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
-    /* SSDT */ {SSDT_SIG, SSDT_SIG, sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
-    /* SBST */ {SBST_SIG, SBST_SIG, sizeof (SBST_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_SBST},
-    /* BOOT */ {BOOT_SIG, BOOT_SIG, sizeof (BOOT_SIG)-1, ACPI_TABLE_SINGLE,   AE_SUPPORT, NULL}
-};
+    if (Type > INTERNAL_TYPE_INVALID)
+    {
+        return (AcpiGbl_BadType);
+    }
 
+    return (AcpiGbl_NsTypeNames[Type]);
+}
+
+#endif
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmValidObjectType
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      TRUE if valid object type
+ *
+ * DESCRIPTION: Validate an object type
+ *
+ ****************************************************************************/
+
+BOOLEAN
+AcpiCmValidObjectType (
+    UINT32                  Type)
+{
+
+    if (Type > ACPI_TYPE_MAX)
+    {
+        if ((Type < INTERNAL_TYPE_BEGIN) ||
+            (Type > INTERNAL_TYPE_MAX))
+        {
+            return FALSE;
+        }
+    }
+
+    return TRUE;
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmFormatException
+ *
+ * PARAMETERS:  Status              - Acpi status to be formatted
+ *
+ * RETURN:      Formatted status string
+ *
+ * DESCRIPTION: Convert an ACPI exception to a string
+ *
+ ****************************************************************************/
+
+INT8 *
+AcpiCmFormatException (
+    ACPI_STATUS             Status)
+{
+
+    if (Status > ACPI_MAX_STATUS)
+    {
+        return "UNKNOWN_STATUS";
+    }
+
+    return (AcpiGbl_ExceptionNames [Status]);
+}
 
 
 /****************************************************************************
  *
- * FUNCTION:    CmInitGlobals
+ * FUNCTION:    AcpiCmAllocateOwnerId
+ *
+ * PARAMETERS:  IdType          - Type of ID (method or table)
+ *
+ * DESCRIPTION: Allocate a table or method owner id
+ *
+ ***************************************************************************/
+
+ACPI_OWNER_ID
+AcpiCmAllocateOwnerId (
+    UINT32                  IdType)
+{
+    ACPI_OWNER_ID           OwnerId = 0xFFFF;
+
+
+    FUNCTION_TRACE ("CmAllocateOwnerId");
+
+
+    AcpiCmAcquireMutex (ACPI_MTX_CACHES);
+
+    switch (IdType)
+    {
+    case OWNER_TYPE_TABLE:
+
+        OwnerId = AcpiGbl_NextTableOwnerId;
+        AcpiGbl_NextTableOwnerId++;
+
+        if (AcpiGbl_NextTableOwnerId == FIRST_METHOD_ID)
+        {
+            AcpiGbl_NextTableOwnerId = FIRST_TABLE_ID;
+        }
+        break;
+
+
+    case OWNER_TYPE_METHOD:
+
+        OwnerId = AcpiGbl_NextMethodOwnerId;
+        AcpiGbl_NextMethodOwnerId++;
+
+        if (AcpiGbl_NextMethodOwnerId == FIRST_TABLE_ID)
+        {
+            AcpiGbl_NextMethodOwnerId = FIRST_METHOD_ID;
+        }
+        break;
+    }
+
+
+    AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+
+    return_VALUE (OwnerId);
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiCmInitGlobals
  *
  * PARAMETERS:  none
  *
@@ -387,89 +524,151 @@ ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES] =
  *
  ***************************************************************************/
 
-void 
-CmInitGlobals (void)
+void
+AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
 {
     UINT32                  i;
 
     FUNCTION_TRACE ("CmInitGlobals");
 
-    
+
+    if (InitData)
+    {
+        MEMCPY (&AcpiGbl_AcpiInitData, InitData, sizeof (ACPI_INIT_DATA));
+    }
+
+    else
+    {
+        MEMSET (&AcpiGbl_AcpiInitData, 0, sizeof (ACPI_INIT_DATA));
+    }
+
     /* ACPI table structure */
 
     for (i = 0; i < ACPI_TABLE_MAX; i++)
     {
-        Gbl_AcpiTables[i].Prev          = &Gbl_AcpiTables[i];
-        Gbl_AcpiTables[i].Next          = &Gbl_AcpiTables[i];
-        Gbl_AcpiTables[i].Pointer       = NULL;
-        Gbl_AcpiTables[i].Length        = 0;
-        Gbl_AcpiTables[i].Allocation    = ACPI_MEM_NOT_ALLOCATED;
-        Gbl_AcpiTables[i].Count         = 0;
+        AcpiGbl_AcpiTables[i].Prev          = &AcpiGbl_AcpiTables[i];
+        AcpiGbl_AcpiTables[i].Next          = &AcpiGbl_AcpiTables[i];
+        AcpiGbl_AcpiTables[i].Pointer       = NULL;
+        AcpiGbl_AcpiTables[i].Length        = 0;
+        AcpiGbl_AcpiTables[i].Allocation    = ACPI_MEM_NOT_ALLOCATED;
+        AcpiGbl_AcpiTables[i].Count         = 0;
     }
-      
+
 
     /* Address Space handler array */
 
     for (i = 0; i < ACPI_MAX_ADDRESS_SPACE; i++)
     {
-        Gbl_AddressSpaces[i].Handler    = NULL;
-        Gbl_AddressSpaces[i].Context    = NULL;
+        AcpiGbl_AddressSpaces[i].Handler    = NULL;
+        AcpiGbl_AddressSpaces[i].Context    = NULL;
     }
 
+    /* Mutex locked flags */
+
+    for (i = 0; i < NUM_MTX; i++)
+    {
+        AcpiGbl_AcpiMutexInfo[i].Mutex      = NULL;
+        AcpiGbl_AcpiMutexInfo[i].Locked     = FALSE;
+        AcpiGbl_AcpiMutexInfo[i].UseCount   = 0;
+    }
+
+    /* Global notify handlers */
+
+    AcpiGbl_SysNotify.Handler           = NULL;
+    AcpiGbl_DrvNotify.Handler           = NULL;
 
     /* Global "typed" ACPI table pointers */
 
-    Gbl_RSDP                    = NULL;
-    Gbl_RSDT                    = NULL;
-    Gbl_FACS                    = NULL;
-    Gbl_FACP                    = NULL;
-    Gbl_APIC                    = NULL;
-    Gbl_DSDT                    = NULL;
-    Gbl_SBST                    = NULL;
+    AcpiGbl_RSDP                        = NULL;
+    AcpiGbl_RSDT                        = NULL;
+    AcpiGbl_FACS                        = NULL;
+    AcpiGbl_FACP                        = NULL;
+    AcpiGbl_APIC                        = NULL;
+    AcpiGbl_DSDT                        = NULL;
+    AcpiGbl_SBST                        = NULL;
 
+
+    /* Global Lock support */
+
+    AcpiGbl_GlobalLockAcquired          = FALSE;
+    AcpiGbl_GlobalLockThreadCount       = 0;
 
     /* Miscellaneous variables */
-    
-    Gbl_SystemFlags             = 0;
-    Gbl_StartupFlags            = 0;
-    Gbl_GlobalLockSet           = FALSE;
-    Gbl_RsdpOriginalLocation    = 0;
-    
-    /* Stack pointers */
 
-    Gbl_MethodStackTop          = -1;
-    Gbl_PkgStackLevel           = 0;
-    Gbl_ObjStackTop             = 0;
+    AcpiGbl_SystemFlags                 = 0;
+    AcpiGbl_StartupFlags                = 0;
+    AcpiGbl_GlobalLockSet               = FALSE;
+    AcpiGbl_RsdpOriginalLocation        = 0;
+    AcpiGbl_WhenToParseMethods          = METHOD_PARSE_CONFIGURATION;
+    AcpiGbl_CmSingleStep                = FALSE;
+    AcpiGbl_DbTerminateThreads          = FALSE;
+    AcpiGbl_Shutdown                    = FALSE;
+    AcpiGbl_NsLookupCount               = 0;
+    AcpiGbl_PsFindCount                 = 0;
+    AcpiGbl_AcpiHardwarePresent         = TRUE;
+    AcpiGbl_NextTableOwnerId            = FIRST_TABLE_ID;
+    AcpiGbl_NextMethodOwnerId           = FIRST_METHOD_ID;
+    AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
+
+    /* Cache of small "state" objects */
+
+    AcpiGbl_GenericStateCache           = NULL;
+    AcpiGbl_GenericStateCacheDepth      = 0;
+    AcpiGbl_StateCacheRequests          = 0;
+    AcpiGbl_StateCacheHits              = 0;
+
+    AcpiGbl_ParseCache                  = NULL;
+    AcpiGbl_ParseCacheDepth             = 0;
+    AcpiGbl_ParseCacheRequests          = 0;
+    AcpiGbl_ParseCacheHits              = 0;
+
+    AcpiGbl_ObjectCache                 = NULL;
+    AcpiGbl_ObjectCacheDepth            = 0;
+    AcpiGbl_ObjectCacheRequests         = 0;
+    AcpiGbl_ObjectCacheHits             = 0;
+
+    AcpiGbl_WalkStateCache              = NULL;
+    AcpiGbl_WalkStateCacheDepth         = 0;
+    AcpiGbl_WalkStateCacheRequests      = 0;
+    AcpiGbl_WalkStateCacheHits          = 0;
 
     /* Interpreter */
 
-    Gbl_BufSeq                  = 0;
-    Gbl_NamedObjectErr          = FALSE;
+    AcpiGbl_BufSeq                      = 0;
+    AcpiGbl_NamedObjectErr              = FALSE;
+
+    /* Parser */
+
+    AcpiGbl_ParsedNamespaceRoot         = NULL;
 
     /* Hardware oriented */
 
-    Gbl_Gpe0EnableRegisterSave  = NULL;
-    Gbl_Gpe1EnableRegisterSave  = NULL;
-    Gbl_OriginalMode            = SYS_MODE_UNKNOWN;   /*  original ACPI/legacy mode   */
-    Gbl_GpeRegisters            = NULL;
-    Gbl_GpeInfo                 = NULL;
+    AcpiGbl_Gpe0EnableRegisterSave      = NULL;
+    AcpiGbl_Gpe1EnableRegisterSave      = NULL;
+    AcpiGbl_OriginalMode                = SYS_MODE_UNKNOWN;   /*  original ACPI/legacy mode   */
+    AcpiGbl_GpeRegisters                = NULL;
+    AcpiGbl_GpeInfo                     = NULL;
 
     /* Namespace */
 
-    Gbl_RootObject              = &Gbl_RootObjStruct;
+    AcpiGbl_RootNameTable.NextTable     = NULL;
+    AcpiGbl_RootNameTable.ParentEntry   = NULL;
+    AcpiGbl_RootNameTable.ParentTable   = NULL;
 
-    Gbl_RootObject->DataType    = DESC_TYPE_NTE;
-    Gbl_RootObject->Type        = ACPI_TYPE_Any;
-    Gbl_RootObject->Fill1       = 0;
-    Gbl_RootObject->Name        = NS_ROOT;
-    Gbl_RootObject->Scope       = NULL;
-    Gbl_RootObject->ParentScope = NULL;
-    Gbl_RootObject->ParentEntry = NULL;
-    Gbl_RootObject->NextEntry   = NULL;
-    Gbl_RootObject->PrevEntry   = NULL;
-    Gbl_RootObject->Object      = NULL;
+    AcpiGbl_RootObject                  = AcpiGbl_RootNameTable.Entries;
+
+    AcpiGbl_RootObject->Name            = ACPI_ROOT_NAME;
+    AcpiGbl_RootObject->DataType        = ACPI_DESC_TYPE_NAMED;
+    AcpiGbl_RootObject->Type            = ACPI_TYPE_ANY;
+    AcpiGbl_RootObject->ThisIndex       = 0;
+    AcpiGbl_RootObject->ChildTable      = NULL;
+    AcpiGbl_RootObject->Object          = NULL;
+
+    /* Memory allocation metrics - compiled out in non-debug mode. */
+
+    INITIALIZE_ALLOCATION_METRICS();
 
     return_VOID;
-}   
+}
 
 
