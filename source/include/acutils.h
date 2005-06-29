@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: common.h -- prototypes for the common (subsystem-wide) procedures
+ * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef _COMMON_H
-#define _COMMON_H
+#ifndef _ACCOMMON_H
+#define _ACCOMMON_H
 
 
 #define REF_INCREMENT       (UINT16) 0
@@ -738,4 +738,4 @@ AcpiCmDumpCurrentAllocations (
 #endif
 
 
-#endif /* _COMMON_H */
+#endif /* _ACCOMMON_H */

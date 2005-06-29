@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef _ACTYPES_H
-#define _ACTYPES_H
+#ifndef __ACTYPES_H__
+#define __ACTYPES_H__
 
 /*! [Begin] no source code translation (keep the typedefs) */
 
@@ -1057,4 +1057,4 @@ typedef struct _prt_tag
  * END: Definitions for PCI Routing tables
  */
 
-#endif /* ACTYPES_H */
+#endif /* __ACTYPES_H__ */
