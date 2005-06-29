@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -122,16 +122,15 @@
 #include <ctype.h>
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -141,7 +140,6 @@ AnCheckForReservedMethod (
     ASL_METHOD_INFO             *MethodInfo)
 {
     UINT32                      i;
-
 
 
     /* All reserved names are prefixed with a single underscore */
@@ -164,9 +162,9 @@ AnCheckForReservedMethod (
 
             if (MethodInfo->NumArguments != ReservedMethods[i].NumArguments)
             {
-                sprintf (MsgBuffer, "\n%32s requires %d arg(s) not %d", 
+                sprintf (MsgBuffer, "\n%32s requires %d arg(s) not %d",
                             ReservedMethods[i].Name,
-                            ReservedMethods[i].NumArguments, 
+                            ReservedMethods[i].NumArguments,
                             MethodInfo->NumArguments);
 
                 AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT, Node, MsgBuffer);
@@ -175,7 +173,7 @@ AnCheckForReservedMethod (
             if (MethodInfo->NumReturnNoValue &&
                 ReservedMethods[i].Flags & ASL_RSVD_RETURN_VALUE)
             {
-                sprintf (MsgBuffer, "%s", 
+                sprintf (MsgBuffer, "%s",
                             ReservedMethods[i].Name);
 
                 AslError (ASL_WARNING, ASL_MSG_RESERVED_RETURN_VALUE, Node, MsgBuffer);
@@ -205,9 +203,9 @@ AnCheckForReservedMethod (
             (isxdigit (Node->ExternalName[3])) &&
             (MethodInfo->NumArguments != 0))
         {
-            sprintf (MsgBuffer, "\n%32s requires %d arg(s) not %d", 
+            sprintf (MsgBuffer, "\n%32s requires %d arg(s) not %d",
                         Node->ExternalName,
-                        0, 
+                        0,
                         MethodInfo->NumArguments);
 
             AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT, Node, MsgBuffer);
@@ -227,16 +225,15 @@ AnCheckForReservedMethod (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -252,7 +249,6 @@ AnSemanticAnalysisWalkBegin (
     UINT32                      RegisterNumber;
     char                        LocalName[] = "Local0";
     char                        ArgName[] = "Arg0";
-
 
 
     switch (Node->ParseOpcode)
@@ -311,7 +307,7 @@ AnSemanticAnalysisWalkBegin (
             AslError (ASL_ERROR, ASL_MSG_ARG_INVALID, Node, ArgName);
         }
         break;
-        
+
 
     case RETURN:
 
@@ -340,20 +336,20 @@ AnSemanticAnalysisWalkBegin (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
 BOOLEAN
 AnLastStatementIsReturn (
     ASL_PARSE_NODE              *Node)
-{    
+{
     ASL_PARSE_NODE              *Next;
 
 
@@ -378,13 +374,13 @@ AnLastStatementIsReturn (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -400,8 +396,6 @@ AnSemanticAnalysisWalkEnd (
     ASL_PARSE_NODE              *LastNode = NULL;
 
 
-
-
     switch (Node->ParseOpcode)
     {
     case METHOD:
@@ -410,7 +404,6 @@ AnSemanticAnalysisWalkEnd (
         WalkInfo->MethodStack = MethodInfo->Next;
 
 
-        
         /*
          * Check if there is no return statement at the end of the
          * method AND we can actually get there -- i.e., the execution
@@ -419,9 +412,9 @@ AnSemanticAnalysisWalkEnd (
         if ((!AnLastStatementIsReturn (Node)) &&
             (!(Node->Flags & NODE_HAS_NO_EXIT)))
         {
-            /* 
+            /*
              * No return statement, and execution can possibly exit
-             * via this path.  This is equivalent to Return () 
+             * via this path.  This is equivalent to Return ()
              */
 
             MethodInfo->NumReturnNoValue++;
@@ -489,10 +482,5 @@ AnSemanticAnalysisWalkEnd (
 
     }
 }
-
-
-
-
-
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -142,8 +142,6 @@
 #define CompilerCreatorId                       "IASL"
 
 
-
-
 typedef struct asl_method_info
 {
     UINT8                   NumArguments;
@@ -161,7 +159,6 @@ typedef struct asl_analysis_walk_info
 } ASL_ANALYSIS_WALK_INFO;
 
 
-
 /*
  * Macros
  */
@@ -173,9 +170,7 @@ typedef struct asl_analysis_walk_info
 #define ASL_GET_PEER_NODE(a)        (a)->Peer
 
 
-
-
-#define ASL_PARSE_OPCODE_BASE       ACCESSAS        /* First Lex type */   
+#define ASL_PARSE_OPCODE_BASE       ACCESSAS        /* First Lex type */
 
 
 /* TBD: Is this a real opcode? */
@@ -208,10 +203,6 @@ typedef struct asl_analysis_walk_info
 #define ASL_WALK_VISIT_DOWNWARD     0x01
 #define ASL_WALK_VISIT_UPWARD       0x02
 #define ASL_WALK_VISIT_TWICE        0x03
-
-
-
-
 
 
 #define OP_TABLE_ENTRY(a,b,c)        {b,a,c}
@@ -272,7 +263,7 @@ typedef struct asl_walk_info
 
 
 typedef struct asl_error_msg
-{   
+{
     UINT32                      LineNumber;
     UINT32                      LogicalLineNumber;
     UINT32                      Column;
@@ -310,7 +301,6 @@ void (*ASL_WALK_CALLBACK) (
     ASL_PARSE_NODE              *Node,
     UINT32                      Level,
     void                        *Context);
-
 
 
 /*
@@ -403,8 +393,6 @@ EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
 EXTERN ASL_LISTING_NODE         INIT_GLOBAL (*Gbl_ListingNode, NULL);
 
 
-
-
 EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentHexColumn, 0);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentAmlOffset, 0);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentLine, 0);
@@ -431,15 +419,11 @@ EXTERN char                     MsgBuffer[256];
 EXTERN char                     StringBuffer[256];
 
 
-
-
-
 #define ASL_ERROR               0
 #define ASL_WARNING             1
 
 
-
-typedef enum 
+typedef enum
 {
     ASL_MSG_NULL = 0,
     ASL_MSG_MEMORY_ALLOCATION,
@@ -570,8 +554,6 @@ ASL_LISTING_NODE *
 LsPopNode (void);
 
 
-
-
 void
 CgGenerateAmlOutput (void);
 
@@ -614,9 +596,6 @@ LnInitLengthsWalk (
     void                    *Context);
 
 
-
-
-
 void
 CgAmlWriteWalk (
     ASL_PARSE_NODE          *Node,
@@ -645,8 +624,6 @@ CgWriteNode (
 void
 CgDoResourceTemplate (
     ASL_PARSE_NODE          *Node);
-
-
 
 
 /* asltree */
@@ -718,7 +695,6 @@ TgLinkPeerNodes (
     ...);
 
 
-
 /* Analyze */
 
 void
@@ -732,7 +708,6 @@ AnSemanticAnalysisWalkEnd (
     ASL_PARSE_NODE              *Node,
     UINT32                      Level,
     void                        *Context);
-
 
 
 void
@@ -846,7 +821,6 @@ void
 UtAttachNamepathToOwner (
     ASL_PARSE_NODE          *Node,
     ASL_PARSE_NODE          *NameNode);
-
 
 
 /* Find */

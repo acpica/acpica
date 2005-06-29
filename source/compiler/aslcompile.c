@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,6 @@
 #include <time.h>
 
 
-
 /*
  * Stubs
  */
@@ -170,8 +169,8 @@ time_t                      Aclock;
  * FUNCTION:    Signon and FileHeader
  *
  * PARAMETERS:  None
- *  
- * RETURN:      None      
+ *
+ * RETURN:      None
  *
  * DESCRIPTION: Display compiler signon
  *
@@ -194,21 +193,20 @@ AslCompilerFileHeader (
     FILE                    *Where)
 {
 
-    fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime)); 
+    fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime));
 
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -241,7 +239,7 @@ CmDoCompile (void)
     /* Build the parse tree */
 
     AslCompilerparse();
-    
+
 
     /* Generate AML opcodes corresponding to the parse tokens */
 
@@ -256,9 +254,9 @@ CmDoCompile (void)
     /* Semantic error checking */
 
     AnalysisWalkInfo.MethodStack = NULL;
-    
+
     DbgPrint ("\nSemantic analysis\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin, 
+    TgWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
                         AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
 
 
@@ -280,7 +278,7 @@ CmDoCompile (void)
 
     /*
      * Now that the input is parsed, we can open the AML output file.
-     * Note: by default, the name of this file comes from the table descriptor 
+     * Note: by default, the name of this file comes from the table descriptor
      * within the input file.
      */
     Status = FlOpenAmlOutputFile (Gbl_InputFilename);
@@ -331,6 +329,5 @@ CmDoCompile (void)
 
     return 0;
 }
-
 
 
