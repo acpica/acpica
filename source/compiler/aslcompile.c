@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -179,7 +179,7 @@ AslCompilerSignon (
     /* Compiler signon with copyright */
 
     FlPrintFile (FileId,
-        "%s\n%s%s\n%s%s Version %X [%s]\n%s%s\n%sSupports ACPI Specification Revision 2.0a\n%s\n",
+        "%s\n%s%s\n%s%s version %X [%s]\n%s%s\n%sSupports ACPI Specification Revision 2.0a\n%s\n",
         Prefix,
         Prefix, IntelAcpiCA,
         Prefix, CompilerId, ACPI_CA_VERSION, __DATE__,
