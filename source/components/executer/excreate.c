@@ -318,7 +318,7 @@ AmlExecCreateField (
         }
 
 
-        /* Allocate a temporary object for the field */
+        /* Allocate an object for the field */
 
         FieldDesc = CmCreateInternalObject (ACPI_TYPE_FieldUnit);
         if (!FieldDesc)
@@ -430,9 +430,14 @@ AmlExecCreateField (
 
     Status = AmlExecStore (FieldDesc, ResDesc);
 
-    /* All done with the temp field descriptor */
-
-    CmDeleteInternalObject (FieldDesc);
+    /*
+     * If the field descriptor was not physically stored (or if a failure above), we
+     * must delete it
+     */
+    if (FieldDesc->Common.ReferenceCount <= 1)
+    {
+        CmDeleteInternalObject (FieldDesc);
+    }
 
 
 Cleanup:
