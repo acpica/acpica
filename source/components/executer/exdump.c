@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.179 $
+ *              $Revision: 1.182 $
  *
  *****************************************************************************/
 
@@ -125,23 +125,46 @@
 #define _COMPONENT          ACPI_EXECUTER
         ACPI_MODULE_NAME    ("exdump")
 
+/* Local prototypes */
+
+static void
+AcpiExOutString (
+    char                    *Title,
+    char                    *Value);
+
+static void
+AcpiExOutPointer (
+    char                    *Title,
+    void                    *Value);
+
+static void
+AcpiExOutInteger (
+    char                    *Title,
+    UINT32                  Value);
+
+static void
+AcpiExOutAddress (
+    char                    *Title,
+    ACPI_PHYSICAL_ADDRESS   Value);
+
 
 /*
  * The following routines are used for debug output only
  */
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiExDumpOperand
  *
- * PARAMETERS:  *ObjDesc          - Pointer to entry to be dumped
+ * PARAMETERS:  *ObjDesc        - Pointer to entry to be dumped
+ *              Depth           - Current nesting depth
  *
  * RETURN:      None
  *
  * DESCRIPTION: Dump an operand object
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiExDumpOperand (
@@ -162,9 +185,8 @@ AcpiExDumpOperand (
 
     if (!ObjDesc)
     {
-        /*
-         * This could be a null element of a package
-         */
+        /* This could be a null element of a package */
+
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Null Object Descriptor\n"));
         return;
     }
@@ -197,6 +219,7 @@ AcpiExDumpOperand (
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%p ", ObjDesc));
     }
 
+    /* Decode object type */
 
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
@@ -366,7 +389,9 @@ AcpiExDumpOperand (
     case ACPI_TYPE_STRING:
 
         AcpiOsPrintf ("String length %X @ %p ",
-            ObjDesc->String.Length, ObjDesc->String.Pointer);
+            ObjDesc->String.Length,
+            ObjDesc->String.Pointer);
+
         AcpiUtPrintString (ObjDesc->String.Pointer, ACPI_UINT8_MAX);
         AcpiOsPrintf ("\n");
         break;
@@ -382,10 +407,13 @@ AcpiExDumpOperand (
 
         AcpiOsPrintf (
             "RegionField: Bits=%X AccWidth=%X Lock=%X Update=%X at byte=%X bit=%X of below:\n",
-            ObjDesc->Field.BitLength, ObjDesc->Field.AccessByteWidth,
+            ObjDesc->Field.BitLength,
+            ObjDesc->Field.AccessByteWidth,
             ObjDesc->Field.FieldFlags & AML_FIELD_LOCK_RULE_MASK,
             ObjDesc->Field.FieldFlags & AML_FIELD_UPDATE_RULE_MASK,
-            ObjDesc->Field.BaseByteOffset, ObjDesc->Field.StartFieldBitOffset);
+            ObjDesc->Field.BaseByteOffset,
+            ObjDesc->Field.StartFieldBitOffset);
+
         AcpiExDumpOperand (ObjDesc->Field.RegionObj, Depth+1);
         break;
 
@@ -400,14 +428,16 @@ AcpiExDumpOperand (
 
         AcpiOsPrintf (
             "BufferField: %X bits at byte %X bit %X of \n",
-            ObjDesc->BufferField.BitLength, ObjDesc->BufferField.BaseByteOffset,
+            ObjDesc->BufferField.BitLength,
+            ObjDesc->BufferField.BaseByteOffset,
             ObjDesc->BufferField.StartFieldBitOffset);
 
         if (!ObjDesc->BufferField.BufferObj)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "*NULL* \n"));
         }
-        else if (ACPI_GET_OBJECT_TYPE (ObjDesc->BufferField.BufferObj) != ACPI_TYPE_BUFFER)
+        else if (ACPI_GET_OBJECT_TYPE (ObjDesc->BufferField.BufferObj) !=
+                    ACPI_TYPE_BUFFER)
         {
             AcpiOsPrintf ("*not a Buffer* \n");
         }
@@ -426,10 +456,10 @@ AcpiExDumpOperand (
 
     case ACPI_TYPE_METHOD:
 
-        AcpiOsPrintf (
-            "Method(%X) @ %p:%X\n",
+        AcpiOsPrintf ("Method(%X) @ %p:%X\n",
             ObjDesc->Method.ParamCount,
-            ObjDesc->Method.AmlStart, ObjDesc->Method.AmlLength);
+            ObjDesc->Method.AmlStart,
+            ObjDesc->Method.AmlLength);
         break;
 
 
@@ -474,7 +504,7 @@ AcpiExDumpOperand (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiExDumpOperands
  *
@@ -488,7 +518,7 @@ AcpiExDumpOperand (
  *
  * DESCRIPTION: Dump the object stack
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiExDumpOperands (
@@ -539,9 +569,9 @@ AcpiExDumpOperands (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiExOut*
+ * FUNCTION:    AcpiExOut* functions
  *
  * PARAMETERS:  Title               - Descriptive text
  *              Value               - Value to be displayed
@@ -550,9 +580,9 @@ AcpiExDumpOperands (
  *              reduce the number of format strings required and keeps them
  *              all in one place for easy modification.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
-void
+static void
 AcpiExOutString (
     char                    *Title,
     char                    *Value)
@@ -560,7 +590,7 @@ AcpiExOutString (
     AcpiOsPrintf ("%20s : %s\n", Title, Value);
 }
 
-void
+static void
 AcpiExOutPointer (
     char                    *Title,
     void                    *Value)
@@ -568,7 +598,7 @@ AcpiExOutPointer (
     AcpiOsPrintf ("%20s : %p\n", Title, Value);
 }
 
-void
+static void
 AcpiExOutInteger (
     char                    *Title,
     UINT32                  Value)
@@ -576,7 +606,7 @@ AcpiExOutInteger (
     AcpiOsPrintf ("%20s : %X\n", Title, Value);
 }
 
-void
+static void
 AcpiExOutAddress (
     char                    *Title,
     ACPI_PHYSICAL_ADDRESS   Value)
@@ -590,16 +620,16 @@ AcpiExOutAddress (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiExDumpNode
  *
  * PARAMETERS:  *Node               - Descriptor to dump
- *              Flags               - Force display
+ *              Flags               - Force display if TRUE
  *
  * DESCRIPTION: Dumps the members of the given.Node
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiExDumpNode (
@@ -630,16 +660,16 @@ AcpiExDumpNode (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiExDumpObjectDescriptor
  *
  * PARAMETERS:  *Object             - Descriptor to dump
- *              Flags               - Force display
+ *              Flags               - Force display if TRUE
  *
  * DESCRIPTION: Dumps the members of the object descriptor given.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiExDumpObjectDescriptor (
@@ -860,7 +890,8 @@ AcpiExDumpObjectDescriptor (
     case ACPI_TYPE_LOCAL_REFERENCE:
 
         AcpiExOutInteger ("TargetType",     ObjDesc->Reference.TargetType);
-        AcpiExOutString  ("Opcode",         (AcpiPsGetOpcodeInfo (ObjDesc->Reference.Opcode))->Name);
+        AcpiExOutString  ("Opcode",         (AcpiPsGetOpcodeInfo (
+                                             ObjDesc->Reference.Opcode))->Name);
         AcpiExOutInteger ("Offset",         ObjDesc->Reference.Offset);
         AcpiExOutPointer ("ObjDesc",        ObjDesc->Reference.Object);
         AcpiExOutPointer ("Node",           ObjDesc->Reference.Node);
