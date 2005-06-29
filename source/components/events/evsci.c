@@ -26,12 +26,16 @@
 #define _THIS_MODULE        "evsci.c"
 #define _COMPONENT          EVENT_HANDLING
 
-extern INT32                __AcpiLibInitStatus;
-
-
+INT32                       RestoreAcpiChipset = TRUE;
+UINT16                      Pm1EnableRegisterSave = 0;
+UINT8 *                     Gpe0EnableRegisterSave = NULL;
+UINT8 *                     Gpe1EnableRegisterSave = NULL;
+INT32                       OriginalMode;
 INT32                       EdgeLevelSave   = SAVE_NOT_VALID;
 INT32                       IrqEnableSave   = SAVE_NOT_VALID;
 INT32                       OriginalMode    = SAVE_NOT_VALID;   /*  original ACPI/legacy mode   */
+
+
 
 
 static ST_KEY_DESC_TABLE KDT[] = {
@@ -194,7 +198,7 @@ VerifyAcpiTablesPresent (char *TestName)
     FUNCTION_TRACE ("VerifyAcpiTablesPresent");
 
 
-    if (__AcpiLibInitStatus == E_NO_ACPI_TBLS)
+    if (AcpiLibInitStatus == E_NO_ACPI_TBLS)
     {
         /*	ACPI tables are not available	*/
 
@@ -351,6 +355,81 @@ AcpiEnable (char *TestName, INT32 Flags)
 }
     
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    RestoreAcpiState
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Exit function registered by AcpiInit().  This function will
+ *              free memory allocated for table storage.
+ *
+ ******************************************************************************/
+
+void
+RestoreAcpiState (void)
+{
+    INT32           Index;
+
+
+    FUNCTION_TRACE ("RestoreAcpiState");
+
+
+    /* restore state of chipset enable bits. */
+    
+    if (RestoreAcpiChipset == TRUE)
+    {
+        /* restore the fixed events */
+        
+        if (OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + 2)) != Pm1EnableRegisterSave)
+        {
+            OsdOut16 ((UINT16) (FACP->Pm1aEvtBlk + 2), Pm1EnableRegisterSave);
+        }
+        
+        if (FACP->Pm1bEvtBlk)
+        {
+            if (OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + 2)) != Pm1EnableRegisterSave)
+            {
+                OsdOut16 ((UINT16) (FACP->Pm1bEvtBlk + 2), Pm1EnableRegisterSave);
+            }
+        }
+
+        /* insure all status bits are clear */
+        
+        ClearAllAcpiChipsetStatusBits ();
+
+        /* restore the GPEs */
+        
+        for (Index = 0; Index < FACP->Gpe0BlkLen / 2; Index++)
+        {
+            if (OsdIn8 ((UINT16)(FACP->Gpe0Blk + FACP->Gpe0BlkLen / 2)) != Gpe0EnableRegisterSave[Index])
+            {
+                OsdOut8 ((UINT16)(FACP->Gpe0Blk + FACP->Gpe0BlkLen / 2), Gpe0EnableRegisterSave[Index]);
+            }
+        }
+
+        if (FACP->Gpe1Blk && FACP->Gpe1BlkLen)
+        {
+            for (Index = 0; Index < FACP->Gpe1BlkLen / 2; Index++)
+            {
+                if (OsdIn8 ((UINT16)(FACP->Gpe1Blk + FACP->Gpe1BlkLen / 2)) != Gpe1EnableRegisterSave[Index])
+                {
+                    OsdOut8 ((UINT16)(FACP->Gpe1Blk + FACP->Gpe1BlkLen / 2), Gpe1EnableRegisterSave[Index]);
+                }
+            }
+        }
+        
+        if (AcpiModeStatus() != OriginalMode)
+        {
+            AcpiSetMode (OriginalMode);
+        }
+    }
+}
+
+
 /**************************************************************************
  *
  * FUNCTION:    AcpiDisable
@@ -359,9 +438,8 @@ AcpiEnable (char *TestName, INT32 Flags)
  *
  * RETURN:      0 if successful; non-zero if failure encountered
  *
- * DESCRIPTION: iUninstallSCIHandlerXferToLegacy() returns the system
- *              to original ACPI/legacy mode, unloads the SCI handler,
- *              and restores the SCI to its original configuration.
+ * DESCRIPTION: Returns the system to original ACPI/legacy mode, and 
+ *              uninstalls the SCI interrupt handler.
  *              If successful, return 0. Otherwise, return non-zero.
  *
  *************************************************************************/
@@ -374,52 +452,8 @@ AcpiDisable ()
     FUNCTION_TRACE ("AcpiDisable");
 
 
-    /*  restore IRQ before returning to legacy mode */
 
-/* Don't fuss with PIC here !!!
-
-    if (IRQ_EDGE == EdgeLevelSave)
-    {
-        trace_bu (debug_level() >= 4, __FILE__, __LINE__,
-                    "iUninstallSCIHandlerXferToLegacy: Restore IRQ %d to edge sensitivity",
-                    FACP->SciInt);
-
-
-        if (iSetIrqToEdge (FACP->SciInt))
-        {
-            printf_bu ("\nUnable to restore interrupt %d to edge sensitivity",
-                FACP->SciInt);
-            dKinc_warning ("0007", PRINT | APPEND_CRLF);
-            //  ErrorMask |= SCI_LEVEL_INT_MASK;
-        }
-        else
-            printf_bu ("\nInterrupt %d restored to edge sensitivity\n",
-                FACP->SciInt);
-
-    }
-*/
-
-/* Don't fuss with PIC here !!!
-
-    if (IRQ_DISABLE == IrqEnableSave)
-    {
-        trace_bu (debug_level() >= 4, __FILE__, __LINE__,
-            "iUninstallSCIHandlerXferToLegacy: Restore interrupt %d to disable",
-            FACP->SciInt);
-
-        if (iDisableIrqAtPic (FACP->SciInt))
-        {
-            printf_bu ("\nUnable to restore interrupt %d to disable",
-                FACP->SciInt);
-            dKinc_warning ("0008", PRINT | APPEND_CRLF);
-        }
-
-        else
-            printf_bu ("\nInterrupt %d restored to disable\n", FACP->SciInt);
-    }
-*/
-
-    /*  restore original mode   */
+    /* Restore original ACPI mode   */
 
     if (E_OK != AcpiSetMode (OriginalMode))
     {
@@ -428,12 +462,13 @@ AcpiDisable ()
         /*  ErrorMask |= NO_LEGACY_TRANSITION_MASK;    */
     }
 
-    /*  unload SCI handler  */
+    /* Unload the SCI interrupt handler  */
 
     UninstallSciHandler ();
 
 
-    AcpiCleanup ();
+    RestoreAcpiState ();
+    AcpiLocalCleanup ();
 
     return ErrorMask;
 }
