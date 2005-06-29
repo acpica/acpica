@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.45 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -443,20 +443,23 @@ AcpiGetTable (
 {
     ACPI_TABLE_HEADER       *TblPtr;
     ACPI_STATUS             Status;
-    UINT32                  RetBufLen;
+    UINT32                  TableLength;
 
 
     FUNCTION_TRACE ("AcpiGetTable");
 
 
-    /*
-     *  If we have a buffer, we must have a length too
-     */
-    if ((Instance == 0)                 ||
-        (!RetBuffer)                    ||
-        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
+    /* Parameter validation */
+
+    if (Instance == 0)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtValidateBuffer (RetBuffer);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
     }
 
     /* Check the table type and instance */
@@ -486,34 +489,31 @@ AcpiGetTable (
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
-    /*
-     * Got a table ptr, assume it's ok and copy it to the user's buffer
-     */
+    /* Get the table length */
+
     if (TableType == ACPI_TABLE_RSDP)
     {
         /*
          *  RSD PTR is the only "table" without a header
          */
-        RetBufLen = sizeof (RSDP_DESCRIPTOR);
+        TableLength = sizeof (RSDP_DESCRIPTOR);
     }
     else
     {
-        RetBufLen = TblPtr->Length;
+        TableLength = TblPtr->Length;
     }
 
-    /*
-     * Verify we have space in the caller's buffer for the table
-     */
-    if (RetBuffer->Length < RetBufLen)
+    /* Validate buffer size or allocate new buffer */
+
+    Status = AcpiUtValidateBufferSize (RetBuffer, TableLength);
+    if (ACPI_FAILURE (Status))
     {
-        RetBuffer->Length = RetBufLen;
-        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
+        return_ACPI_STATUS (Status);
     }
 
-    RetBuffer->Length = RetBufLen;
+    /* Copy the table to the buffer */
 
-    MEMCPY ((void *) RetBuffer->Pointer, (void *) TblPtr, RetBufLen);
-
+    MEMCPY ((void *) RetBuffer->Pointer, (void *) TblPtr, TableLength);
     return_ACPI_STATUS (AE_OK);
 }
 
