@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.109 $
+ *       $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -246,8 +246,8 @@ extern const PREDEFINED_NAMES           AcpiGbl_PreDefinedNames [NUM_PREDEFINED_
 ACPI_EXTERN UINT32                      AcpiGbl_CurrentNodeCount;
 ACPI_EXTERN UINT32                      AcpiGbl_CurrentNodeSize;
 ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentNodeCount;
-ACPI_EXTERN UINT32                      AcpiGbl_EntryStackPointer;
-ACPI_EXTERN UINT32                      AcpiGbl_LowestStackPointer;
+ACPI_EXTERN ACPI_SIZE                   AcpiGbl_EntryStackPointer;
+ACPI_EXTERN ACPI_SIZE                   AcpiGbl_LowestStackPointer;
 ACPI_EXTERN UINT32                      AcpiGbl_DeepestNesting;
 #endif
 
