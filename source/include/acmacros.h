@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.108 $
+ *       $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -359,8 +359,8 @@
 
 /* Bitfields within ACPI registers */
 
-#define ACPI_REGISTER_PREPARE_BITS(Val, Pos, Mask)      ((Val << Pos) && Mask)
-#define ACPI_REGISTER_INSERT_VALUE(Reg, Pos, Mask, Val)  {Reg &= Mask; Reg |= ACPI_REGISTER_PREPARE_BITS(Val, Pos, Mask);}
+#define ACPI_REGISTER_PREPARE_BITS(Val, Pos, Mask)      ((Val << Pos) & Mask)
+#define ACPI_REGISTER_INSERT_VALUE(Reg, Pos, Mask, Val)  Reg = (Reg & (~(Mask))) | ACPI_REGISTER_PREPARE_BITS(Val, Pos, Mask)
 
 /*
  * An ACPI_NAMESPACE_NODE * can appear in some contexts,
@@ -668,8 +668,8 @@
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            AcpiOsAllocate(a)
-#define ACPI_MEM_CALLOCATE(a)           AcpiOsCallocate(a)
+#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
 #define ACPI_MEM_FREE(a)                AcpiOsFree(a)
 #define ACPI_MEM_TRACKING(a)
 
@@ -678,9 +678,9 @@
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_FREE(a)                AcpiUtFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocateAndTrack(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocateAndTrack(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_FREE(a)                AcpiUtFreeAndTrack(a,_COMPONENT,_THIS_MODULE,__LINE__)
 #define ACPI_MEM_TRACKING(a)            a
 
 #endif /* ACPI_DBG_TRACK_ALLOCATIONS */
