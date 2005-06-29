@@ -172,7 +172,7 @@ AmlSetupField (
             (FieldBitWidth != 16) && 
             (FieldBitWidth != 32))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField:internal error: bad width %d\n", FieldBitWidth));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: internal error - bad width %d\n", FieldBitWidth));
             Status = AE_AML_ERROR;
         }
     }
@@ -215,7 +215,7 @@ AmlSetupField (
                     if (!ObjValDesc ||
                         ObjValDesc->ValType != (UINT8) TYPE_Number)
                     {
-                        DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Address "
+                        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Address "
                                     "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh\n",
                                     ObjValDesc, ObjValDesc->ValType, (UINT8) TYPE_Number));
 
@@ -243,7 +243,7 @@ AmlSetupField (
                             ObjValDesc->ValType != (UINT8) TYPE_Number)
                         {
 
-                            DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Length \n"));
+                            DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Length \n"));
                             Status = AE_AML_ERROR;
                         }
 
@@ -298,7 +298,7 @@ AmlSetupField (
         }
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave iSetupFld: %s\n", ExceptionNames[Status]));
+    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlSetupField: %s\n", ExceptionNames[Status]));
     FUNCTION_EXIT;
     return Status;
 }
@@ -374,14 +374,14 @@ AmlReadField (
     if (OUTRANGE (RgnDesc->Region.SpaceId, RegionTypes))
     {
         DEBUG_PRINT (TRACE_OPREGION,
-                    ("** AmlReadField: Read from unknown region SpaceID %d at %08lx width %d ** \n",
+                    ("AmlReadField: **** Read from unknown OpRegion SpaceID %d at %08lx width %d ** \n",
                     RgnDesc->Region.SpaceId, Address, FieldBitWidth));
     }
 
     else
     {
         DEBUG_PRINT (TRACE_OPREGION,
-                    ("** Read from %s at %08lx width %d\n",
+                    ("AmlReadField: Read from OpRegion %s at %08lx width %d\n",
                     RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
@@ -398,7 +398,7 @@ AmlReadField (
         if (Address & 0xFFF00000UL)
         {
             DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField:implementation limitation: SystemMemory address %08lx over 1MB\n", Address));
+                    ("AmlReadField: **** Implementation limitation - SystemMemory address %08lx over 1MB\n", Address));
             FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
@@ -430,7 +430,7 @@ AmlReadField (
 
         default:
             DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: invalid SystemMemory width %d\n", FieldBitWidth));
+                    ("AmlReadField: Invalid SystemMemory width %d\n", FieldBitWidth));
             OsdUnMapMemory (PhysicalAddrPtr, 4);
             FUNCTION_EXIT;
             return AE_AML_ERROR;
@@ -458,7 +458,7 @@ AmlReadField (
 
         default:
             DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: invalid SystemIO width %d\n", FieldBitWidth));
+                    ("AmlReadField: Invalid SystemIO width %d\n", FieldBitWidth));
             FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
@@ -487,7 +487,7 @@ AmlReadField (
 
         default:
             DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: invalid PCIConfig width %d\n", FieldBitWidth));
+                    ("AmlReadField: Invalid PCIConfig width %d\n", FieldBitWidth));
             FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
@@ -503,13 +503,13 @@ AmlReadField (
 
         /* XXX - Actual read should happen here */
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: Region type %s not implemented\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: **** OpRegion type %s not implemented\n",
                 RegionTypes[RgnDesc->Region.SpaceId]));
         FUNCTION_EXIT;
         return AE_AML_ERROR;
 
     default:
-        DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: Unknown region SpaceID %d\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: **** Unknown OpRegion SpaceID %d\n",
                 RgnDesc->Region.SpaceId));
         FUNCTION_EXIT;
         return AE_AML_ERROR;
@@ -577,13 +577,13 @@ AmlWriteField (
     if (OUTRANGE (RgnDesc->Region.SpaceId, RegionTypes))
     {
         DEBUG_PRINT (TRACE_OPREGION,
-                ("** AmlWriteField: Store %lx in unknown region SpaceID %d at %08lx width %d ** \n",
+                ("AmlWriteField: **** Store %lx in unknown OpRegion SpaceID %d at %08lx width %d ** \n",
                 Value, RgnDesc->Region.SpaceId, Address, FieldBitWidth));
     }
     else
     {
         DEBUG_PRINT (TRACE_OPREGION,
-                ("** AmlWriteField: Store %lx in %s at %08lx width %d\n",
+                ("AmlWriteField: Store %lx in OpRegion %s at %08lx width %d\n",
                 Value, RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
@@ -600,7 +600,7 @@ AmlWriteField (
         if (Address & 0xFFF00000UL)
         {
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField:implementation limitation: SystemMemory address %08lx over 1MB\n", Address));
+                    "AmlWriteField: Implementation limitation - SystemMemory address %08lx over 1MB\n", Address));
             FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
@@ -630,7 +630,7 @@ AmlWriteField (
 
         default:
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: invalid SystemMemory width %d\n", FieldBitWidth));
+                    "AmlWriteField: Invalid SystemMemory width %d\n", FieldBitWidth));
             OsdUnMapMemory (PhysicalAddrPtr, 4);
             Status = AE_AML_ERROR;
         }
@@ -655,7 +655,7 @@ AmlWriteField (
 
         default:
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: invalid SystemIO width %d\n", FieldBitWidth));
+                    "AmlWriteField: Invalid SystemIO width %d\n", FieldBitWidth));
             Status = AE_AML_ERROR;
         }
         break;
@@ -681,7 +681,7 @@ AmlWriteField (
 
         default:
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: invalid PCIConfig width %d\n", FieldBitWidth));
+                    "AmlWriteField: Invalid PCIConfig width %d\n", FieldBitWidth));
             Status = AE_AML_ERROR;
         }
 
@@ -696,12 +696,12 @@ AmlWriteField (
 
         /* XXX - Actual write should happen here */
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: Region type %s not implemented\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** OpRegion type %s not implemented\n",
                         RegionTypes[RgnDesc->Region.SpaceId]));
         Status = AE_AML_ERROR;
 
     default:
-        DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: Unknown region SpaceID %d\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** Unknown OpRegion SpaceID %d\n",
                         RgnDesc->Region.SpaceId));
         Status = AE_AML_ERROR;
     }
@@ -733,8 +733,8 @@ AmlAccessNamedField (
     ACPI_OBJECT             *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_AML_ERROR;
     char                    *Type = NULL;
-    INT32                   Granularity = 0;
-    INT32                   MaxW = 0;
+    UINT32                  Granularity = 0;
+    UINT32                  MaxW = 0;
     UINT32                  Mask = 0;
     UINT32                  dValue = 0;
     UINT32                  OldVal = 0;
@@ -747,7 +747,7 @@ AmlAccessNamedField (
     ObjDesc = NsGetValue (NamedField);
     if (!ObjDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField:internal error: null value pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Internal error - null value pointer\n"));
     }
 
     else if (TYPE_DefField != NsGetType (NamedField))
@@ -773,7 +773,7 @@ AmlAccessNamedField (
         if (TYPE_DefField != ObjDesc->ValType)
         {
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlAccessNamedField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                    "AmlAccessNamedField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                     NamedField, NsGetType (NamedField), ObjDesc->ValType, ObjDesc));
             AmlAppendBlockOwner (ObjDesc);
         }
@@ -816,7 +816,7 @@ AmlAccessNamedField (
             /* Invalid field access type */
 
             DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlAccessNamedField: unknown access type %d\n",
+                        "AmlAccessNamedField: Unknown field access type %d\n",
                         ObjDesc->Field.Access));
             Status = AE_AML_ERROR;
         }
@@ -828,7 +828,7 @@ AmlAccessNamedField (
     {
         /* Field has valid access type */
 
-        if (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset > (UINT16) MaxW)
+        if ((UINT32) (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset) > MaxW)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Field exceeds %s\n", Type));
             FUNCTION_EXIT;
