@@ -278,8 +278,6 @@ CmBuildExternalPackageObject (
      * Initialize the working variables
      */
 
-BREAKPOINT3;
-
     memset ((void *) Level, 0, sizeof (Level));
 
     Level[0].InternalObj    = InternalObj;
@@ -455,6 +453,7 @@ CmBuildExternalObject (
     return Status;
 }
 
+
 /******************************************************************************
  *
  * FUNCTION:    CmBuildInternalSimpleObject
@@ -620,23 +619,23 @@ CmBuildInternalPackageObject (
             /*
              * Build the package object
              */
-            ThisExternalObj->Type = TYPE_Package;
-            ThisExternalObj->Package.Count = ThisInternalObj->Package.Count;
-            ThisExternalObj->Package.Elements = (ACPI_OBJECT *) FreeSpace;
+            ThisExternalObj->Type               = TYPE_Package;
+            ThisExternalObj->Package.Count      = ThisInternalObj->Package.Count;
+            ThisExternalObj->Package.Elements   = (ACPI_OBJECT *) FreeSpace;
 
             /*
              * Save space for the array of objects (Package elements)
              * update the buffer length counter
              */
-            ObjectSpace = ThisExternalObj->Package.Count * sizeof(ACPI_OBJECT);
-            FreeSpace += ObjectSpace;
-            Length += ObjectSpace;
+            ObjectSpace             = ThisExternalObj->Package.Count * sizeof(ACPI_OBJECT);
+            FreeSpace               += ObjectSpace;
+            Length                  += ObjectSpace;
 
             CurrentDepth++;
-            LevelPtr = &Level[CurrentDepth];
-            LevelPtr->InternalObj = ThisInternalObj;
-            LevelPtr->ExternalObj = ThisExternalObj;
-            LevelPtr->Index = 0;
+            LevelPtr                = &Level[CurrentDepth];
+            LevelPtr->InternalObj   = ThisInternalObj;
+            LevelPtr->ExternalObj   = ThisExternalObj;
+            LevelPtr->Index         = 0;
 
         }   /* if object is a package */
         
@@ -653,8 +652,8 @@ CmBuildInternalPackageObject (
                 return Status;
             }
 
-            FreeSpace += ObjectSpace;
-            Length +=ObjectSpace;
+            FreeSpace   += ObjectSpace;
+            Length      +=ObjectSpace;
 
             LevelPtr->Index++;
             while (LevelPtr->Index >= LevelPtr->InternalObj->Package.Count)
