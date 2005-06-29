@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -634,7 +634,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> DecodeKeyword
 %type <n> RangeTypeKeyword
 %type <n> MemTypeKeyword
-%type <n> ReadWriteKeyword
+%type <n> OptionalReadWriteKeyword
 %type <n> InterruptTypeKeyword
 %type <n> InterruptLevel
 %type <n> ShareTypeKeyword
@@ -2220,8 +2220,9 @@ MemTypeKeyword
     | PARSEOP_MEMTYPE_NONCACHEABLE          {$$ = TrCreateLeafNode (PARSEOP_MEMTYPE_NONCACHEABLE);}
     ;
 
-ReadWriteKeyword
-    : PARSEOP_READWRITETYPE_BOTH            {$$ = TrCreateLeafNode (PARSEOP_READWRITETYPE_BOTH);}
+OptionalReadWriteKeyword
+    :                                       {$$ = TrCreateLeafNode (PARSEOP_READWRITETYPE_BOTH);}
+    | PARSEOP_READWRITETYPE_BOTH            {$$ = TrCreateLeafNode (PARSEOP_READWRITETYPE_BOTH);}
     | PARSEOP_READWRITETYPE_READONLY        {$$ = TrCreateLeafNode (PARSEOP_READWRITETYPE_READONLY);}
     ;
 
@@ -2557,7 +2558,7 @@ DWordMemoryTerm
         OptionalMinType
         OptionalMaxType
         OptionalMemType
-        ',' ReadWriteKeyword
+        ',' OptionalReadWriteKeyword
         ',' DWordConstExpr
         ',' DWordConstExpr
         ',' DWordConstExpr
@@ -2630,7 +2631,7 @@ ExtendedMemoryTerm
         OptionalMinType
         OptionalMaxType
         OptionalMemType
-        ',' ReadWriteKeyword
+        ',' OptionalReadWriteKeyword
         ',' QWordConstExpr
         ',' QWordConstExpr
         ',' QWordConstExpr
@@ -2726,7 +2727,7 @@ IRQTerm
 
 Memory24Term
     : PARSEOP_MEMORY24 '('          {$$ = TrCreateLeafNode (PARSEOP_MEMORY24);}
-        ReadWriteKeyword
+        OptionalReadWriteKeyword
         ',' WordConstExpr
         ',' WordConstExpr
         ',' WordConstExpr
@@ -2739,7 +2740,7 @@ Memory24Term
 
 Memory32FixedTerm
     : PARSEOP_MEMORY32FIXED '('     {$$ = TrCreateLeafNode (PARSEOP_MEMORY32FIXED);}
-        ReadWriteKeyword
+        OptionalReadWriteKeyword
         ',' DWordConstExpr
         ',' DWordConstExpr
         OptionalNameString_Last
@@ -2750,7 +2751,7 @@ Memory32FixedTerm
 
 Memory32Term
     : PARSEOP_MEMORY32 '('          {$$ = TrCreateLeafNode (PARSEOP_MEMORY32);}
-        ReadWriteKeyword
+        OptionalReadWriteKeyword
         ',' DWordConstExpr
         ',' DWordConstExpr
         ',' DWordConstExpr
@@ -2790,7 +2791,7 @@ QWordMemoryTerm
         OptionalMinType
         OptionalMaxType
         OptionalMemType
-        ',' ReadWriteKeyword
+        ',' OptionalReadWriteKeyword
         ',' QWordConstExpr
         ',' QWordConstExpr
         ',' QWordConstExpr
