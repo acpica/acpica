@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -148,6 +148,8 @@ AcpiExUnlinkMutex (
         return;
     }
 
+    /* Doubly linked list */
+
     if (ObjDesc->Mutex.Next)
     {
         (ObjDesc->Mutex.Next)->Mutex.Prev = ObjDesc->Mutex.Prev;
@@ -283,7 +285,7 @@ AcpiExAcquireMutex (
         return_ACPI_STATUS (Status);
     }
 
-    /* Have the mutex, update mutex and walk info */
+    /* Have the mutex: update mutex and walk info and save the SyncLevel */
 
     ObjDesc->Mutex.OwnerThread       = WalkState->Thread;
     ObjDesc->Mutex.AcquisitionDepth  = 1;
@@ -351,7 +353,6 @@ AcpiExReleaseMutex (
      */
     if ((ObjDesc->Mutex.OwnerThread->ThreadId != WalkState->Thread->ThreadId) &&
         (ObjDesc->Mutex.Semaphore != AcpiGbl_GlobalLockSemaphore))
-
     {
         ACPI_REPORT_ERROR ((
             "Thread %X cannot release Mutex [%4.4s] acquired by thread %X\n",
@@ -445,6 +446,10 @@ AcpiExReleaseAllMutexes (
         /* Mark mutex unowned */
 
         This->Mutex.OwnerThread = NULL;
+
+        /* Update Thread SyncLevel (Last mutex is the important one) */
+
+        Thread->CurrentSyncLevel = This->Mutex.OriginalSyncLevel;
     }
 }
 
