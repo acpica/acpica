@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.111 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -287,9 +287,9 @@ AcpiExConcatTemplate (
 
     /* Compute the new checksum */
 
-    NewBuf[ReturnDesc->Buffer.Length - 1] = (NATIVE_CHAR)
+    NewBuf[ReturnDesc->Buffer.Length - 1] =
             AcpiUtGenerateChecksum (ReturnDesc->Buffer.Pointer,
-                                    (ReturnDesc->Buffer.Length - 1));
+                                   (ReturnDesc->Buffer.Length - 1));
 
     /* Return the completed template descriptor */
 
@@ -385,8 +385,8 @@ AcpiExDoConcatenate (
 
         /* Operand0 is string  */
 
-        NewBuf = ACPI_MEM_ALLOCATE ((ACPI_SIZE) ObjDesc1->String.Length +
-                                    (ACPI_SIZE) ObjDesc2->String.Length + 1);
+        NewBuf = ACPI_MEM_CALLOCATE ((ACPI_SIZE) ObjDesc1->String.Length +
+                                     (ACPI_SIZE) ObjDesc2->String.Length + 1);
         if (!NewBuf)
         {
             ACPI_REPORT_ERROR
