@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,6 @@
         ACPI_MODULE_NAME    ("evgpe")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiEvGetGpeEventInfo
@@ -223,7 +222,7 @@ AcpiEvGpeDetect (void)
 
             GpeRegisterInfo = &GpeBlock->RegisterInfo[i];
 
-            Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue, 
+            Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue,
                         &GpeRegisterInfo->StatusAddress, 0);
             GpeRegisterInfo->Status = (UINT8) InValue;
             if (ACPI_FAILURE (Status))
@@ -231,7 +230,7 @@ AcpiEvGpeDetect (void)
                 return (ACPI_INTERRUPT_NOT_HANDLED);
             }
 
-            Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue, 
+            Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue,
                         &GpeRegisterInfo->EnableAddress, 0);
             GpeRegisterInfo->Enable = (UINT8) InValue;
             if (ACPI_FAILURE (Status))
@@ -395,7 +394,7 @@ AcpiEvGpeDispatch (
         Status = AcpiHwClearGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to clear GPE[%2.2X]\n", 
+            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to clear GPE[%2.2X]\n",
                 GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
@@ -423,7 +422,7 @@ AcpiEvGpeDispatch (
         Status = AcpiHwDisableGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to disable GPE[%2.2X]\n", 
+            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to disable GPE[%2.2X]\n",
                 GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
@@ -436,7 +435,7 @@ AcpiEvGpeDispatch (
                                 GpeEventInfo)))
         {
             ACPI_REPORT_ERROR ((
-                "AcpiEvGpeDispatch: Unable to queue handler for GPE[%2.2X], event is disabled\n", 
+                "AcpiEvGpeDispatch: Unable to queue handler for GPE[%2.2X], event is disabled\n",
                 GpeNumber));
         }
     }
@@ -445,7 +444,7 @@ AcpiEvGpeDispatch (
         /* No handler or method to run! */
 
         ACPI_REPORT_ERROR ((
-            "AcpiEvGpeDispatch: No handler or method for GPE[%2.2X], disabling event\n", 
+            "AcpiEvGpeDispatch: No handler or method for GPE[%2.2X], disabling event\n",
             GpeNumber));
 
         /*
@@ -455,7 +454,7 @@ AcpiEvGpeDispatch (
         Status = AcpiHwDisableGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to disable GPE[%2.2X]\n", 
+            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to disable GPE[%2.2X]\n",
                 GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
@@ -469,7 +468,7 @@ AcpiEvGpeDispatch (
         Status = AcpiHwClearGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to clear GPE[%2.2X]\n", 
+            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to clear GPE[%2.2X]\n",
                 GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
