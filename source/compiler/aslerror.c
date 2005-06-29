@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -188,7 +188,11 @@ char                        *AslMessages [] = {
     "Invalid operator (not type 3/4/5) in constant expression",
     "Could not evaluate constant expression",
     "Constant expression evaluated and reduced",
-    "Invalid EISAID string, not of the form \"UUUXXXX\" (3 uppercase, 4 hex digits)"
+    "Invalid EISAID string, not of the form \"UUUXXXX\" (3 uppercase, 4 hex digits)",
+    "Invalid operand type for reserved name, must be",
+    "Reserved name must be a control method",
+    "String must be entirely alphanumeric",
+    "Invalid use of reserved name"
 };
 
 
