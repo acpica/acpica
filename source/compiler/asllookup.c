@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.25 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -154,7 +154,7 @@ LsDoOneNamespaceObject (
 
     Gbl_NumNamespaceObjects++;
 
-    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s",
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "%5d  [%d]  %*s %4.4s - %s",
                         Gbl_NumNamespaceObjects, Level, (Level * 3), " ",
                         &Node->Name,
                         AcpiCmGetTypeName (Node->Type));
@@ -181,12 +181,12 @@ LsDoOneNamespaceObject (
 
             if (Pnode->Value.Integer64 > ACPI_UINT32_MAX)
             {
-                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X%X]",
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X%X]",
                             HIDWORD (Pnode->Value.Integer64), Pnode->Value.Integer32);
             }
             else
             {
-                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X]",
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X]",
                             Pnode->Value.Integer32);
             }
             break;
@@ -199,7 +199,7 @@ LsDoOneNamespaceObject (
                 Pnode = Pnode->Peer;
             }
 
-            fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = \"%s\"]",
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = \"%s\"]",
                         Pnode->Value.String);
 
             break;
@@ -211,7 +211,7 @@ LsDoOneNamespaceObject (
             {
                 Pnode = Pnode->Child;
             }
-            fprintf (Gbl_NamespaceOutputFile, "    [Length = 0x%02X]",
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Length = 0x%02X]",
                         Pnode->Value.Integer32);
 
             break;
@@ -220,7 +220,7 @@ LsDoOneNamespaceObject (
 
     }
 
-    fprintf (Gbl_NamespaceOutputFile, "\n");
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "\n");
 
     return (AE_OK);
 }
@@ -253,8 +253,8 @@ LsDisplayNamespace (void)
 
     /* File header */
 
-    fprintf (Gbl_NamespaceOutputFile, "Contents of ACPI Namespace\n\n");
-    fprintf (Gbl_NamespaceOutputFile, "Count  Depth    Name - Type\n\n");
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "Contents of ACPI Namespace\n\n");
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "Count  Depth    Name - Type\n\n");
 
     /* Walk entire namespace from the supplied root */
 
@@ -416,7 +416,7 @@ LkNamespaceLocateBegin (
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
     ACPI_STATUS             Status;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
     NATIVE_CHAR             *Path;
     UINT8                   PassedArgs;
     ASL_PARSE_NODE          *Next;
@@ -585,7 +585,7 @@ LkNamespaceLocateBegin (
 
                 if (NsNode->OwnerId > 7)
                 {
-                    printf ("too many arguments defined for method [%4.4s]\n", &NsNode->Name);
+                    printf ("too many arguments defined for method [%4.4s]\n", (char *) &NsNode->Name);
                     return (AE_BAD_PARAMETER);
                 }
             }
@@ -649,7 +649,7 @@ LkNamespaceLocateEnd (
     void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
 
 
     /* We are only interested in opcodes that have an associated name */
