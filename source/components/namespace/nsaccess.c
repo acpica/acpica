@@ -240,7 +240,7 @@ AcpiNsRootInitialize (void)
          * initial value
          */
 
-        if ((Status == AE_OK) &&
+        if (ACPI_SUCCESS (Status) &&
             NewEntry && InitVal->Val)
         {
             /*
@@ -296,7 +296,7 @@ AcpiNsRootInitialize (void)
                     goto UnlockAndExit;
                 }
 
-                STRCPY ((char *) ObjDesc->String.Pointer, InitVal->Val);
+                STRCPY ((INT8 *) ObjDesc->String.Pointer, InitVal->Val);
                 break;
 
 
@@ -390,7 +390,7 @@ UnlockAndExit:
 ACPI_STATUS
 AcpiNsLookup (
     ACPI_GENERIC_STATE      *ScopeInfo,
-    char                    *Pathname,
+    INT8                    *Pathname,
     OBJECT_TYPE_INTERNAL    Type,
     OPERATING_MODE          InterpreterMode,
     UINT32                  Flags,
@@ -433,7 +433,8 @@ AcpiNsLookup (
 
         if (IMODE_LOAD_PASS1 == InterpreterMode)
         {
-            if ((Status = AcpiNsRootInitialize ()) != AE_OK)
+            Status = AcpiNsRootInitialize ();
+            if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
@@ -669,7 +670,7 @@ AcpiNsLookup (
                                         ThisSearchType, Flags,
                                         &ThisEntry);
 
-        if (Status != AE_OK)
+        if (ACPI_FAILURE (Status))
         {
             if (Status == AE_NOT_FOUND)
             {
