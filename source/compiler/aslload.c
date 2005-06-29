@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -473,7 +473,7 @@ LdNamespace1Begin (
             return (Status);
         }
 
-        printf ("Failure from lookup %s\n", AcpiUtFormatException (Status));
+        printf ("Failure from lookup %s\n", AcpiFormatException (Status));
         return (Status);
     }
 
