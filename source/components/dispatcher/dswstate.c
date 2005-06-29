@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -345,12 +345,12 @@ AcpiDsResultPopFromBottom (
     if (!*Object)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Null operand! State=%p #Ops=%X, Index=%X\n",
+            "Null operand! State=%p #Ops=%X Index=%X\n",
             WalkState, State->Results.NumResults, (UINT32) Index));
         return (AE_AML_NO_RETURN_VALUE);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s], Results=%p State=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p [%s] Results=%p State=%p\n",
         *Object, (*Object) ? AcpiUtGetObjectTypeName (*Object) : "NULL",
         State, WalkState));
 
