@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -698,20 +698,24 @@ AsLowerCaseIdentifiers (
         if (SubBuffer[0] == '\"')
         {
             SubBuffer++;
+
+            /* Find the closing quote */
+
             while (1)
             {
-                SubBuffer = AsSkipPastChar (SubBuffer, '\"');
-                if (!SubBuffer)
+                /* Ignore escaped quote characters */
+
+                if (SubBuffer[0] == '\\')
                 {
-                    return;
+                    SubBuffer++;
                 }
 
-                /* Handle escaped quotes */
-
-                if (*(SubBuffer-2) != '\\')
+                else if (SubBuffer[0] == '\"')
                 {
+                    SubBuffer++;
                     break;
                 }
+                SubBuffer++;
             }
         }
 
