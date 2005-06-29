@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -204,7 +204,7 @@ AcpiTbScanMemoryForRsdp (
         {
             /* If so, we have found the RSDP */
 
-		DEBUG_PRINTP (ACPI_ERROR,
+		DEBUG_PRINTP (ACPI_INFO,
 		("RSDP located at physical address %p\n",MemRover));
 		return_PTR (MemRover);
         }
@@ -411,15 +411,13 @@ AcpiGetFirmwareTable (
     Status = AcpiTbFindRsdp (&TableInfo, Flags);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("RSDP structure not found\n"));
+        DEBUG_PRINTP (ACPI_INFO, ("RSDP structure not found\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
     AcpiGbl_RSDP = (RSDP_DESCRIPTOR *) TableInfo.PhysicalAddress;
-/*
-    AcpiGbl_RSDP = (RSDP_DESCRIPTOR *) TableInfo.Pointer;
-*/
-  DEBUG_PRINTP (ACPI_ERROR,
+
+    DEBUG_PRINTP (ACPI_INFO,
         ("RSDP located at %p, RSDT physical=%p \n",
         AcpiGbl_RSDP, AcpiGbl_RSDP->RsdtPhysicalAddress));
 
