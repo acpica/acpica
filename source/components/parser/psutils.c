@@ -349,7 +349,7 @@ PsDeleteParseCache (
  *
  * DESCRIPTION: Low level functions
  *
- * TBD:
+ * TBD: [Restructure]
  * 1) Some of these functions should be macros
  * 2) Some can be simplified
  *
@@ -439,7 +439,7 @@ PsIsNamespaceOp (
  * Is opcode for a named object Op?
  * (Includes all named object opcodes)
  *
- * TBD: Need a better way than this brute force approach!
+ * TBD: [Restructure] Need a better way than this brute force approach!
  */
 BOOLEAN
 PsIsNamedObjectOp (
@@ -527,6 +527,23 @@ PsIsFieldOp (
             || Opcode == AML_IndexFieldOp
             || Opcode == AML_BankFieldOp));
 }
+
+
+/*
+ * Is field creation op
+ */
+BOOLEAN
+PsIsCreateFieldOp (
+    UINT16                  Opcode)
+{
+    return ((BOOLEAN) 
+           (Opcode == AML_CreateFieldOp     ||
+            Opcode == AML_BitFieldOp        ||
+            Opcode == AML_ByteFieldOp       ||
+            Opcode == AML_WordFieldOp       ||
+            Opcode == AML_DWordFieldOp));
+}
+
 
 
 /*
