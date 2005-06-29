@@ -191,6 +191,7 @@ enum AmlDebuggerCommands
     CMD_NOTIFY,
     CMD_OBJECT,
     CMD_OPEN,
+    CMD_OWNER,
     CMD_PREFIX,
     CMD_QUIT,
     CMD_RESULTS,
@@ -239,6 +240,7 @@ COMMAND_INFO                Commands[] =
     "NOTIFY",       2,
     "OBJECT",       1,
     "OPEN",         1,
+    "OWNER",        1,
     "PREFIX",       0,
     "QUIT",         0,
     "RESULTS",      0,
@@ -285,6 +287,7 @@ DbDisplayHelp (void)
     OsdPrintf ("Namespace [<Addr>|<Path>] [Depth]   Display loaded namespace tree/subtree\n");
     OsdPrintf ("Notify <NamePath> <Value>           Send a notification\n");
     OsdPrintf ("Objects <ObjectType>                Display all objects of the given type\n");
+    OsdPrintf ("Owner <OwnerId> [Depth]             Display loaded namespace by object owner\n");
     OsdPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
     OsdPrintf ("Quit or Exit                        Exit this command\n");
     OsdPrintf ("Stats                               Display namespace and memory statistics\n");
@@ -676,6 +679,10 @@ DbCommandDispatch (
 
     case CMD_OPEN:
         DbOpenDebugFile (Args[1]);
+        break;
+
+    case CMD_OWNER:
+        DbDumpNamespaceByOwner (Args[1], Args[2]);
         break;
 
     case CMD_PREFIX:
