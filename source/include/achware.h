@@ -123,6 +123,11 @@
 #define GTS_CALL            0
 #define GTS_WAKE            1
 
+/* Cx States */
+
+#define MAX_CX_STATE_LATENCY 0xFFFFFFFF
+#define MAX_CX_STATES		4
+
 /* 
  * The #define's and enum below establish an abstract way of identifying what
  * register block and register is to be accessed.  Do not change any of the
@@ -140,7 +145,6 @@
 #define GPE0_EN_BLOCK           0x0700
 #define GPE1_STS_BLOCK          0x0800
 #define GPE1_EN_BLOCK           0x0900
-
 
 enum
 {
@@ -306,18 +310,17 @@ HwObtainSleepTypeRegisterData (
 /* Cx State Prototypes */
 
 ACPI_STATUS
+HwIa32SetCx (
+    UINT32                  CxState);
+
+ACPI_STATUS
 HwIa32EnterCx (
-    ACPI_IO_ADDRESS         PBlkAddress);
+    ACPI_IO_ADDRESS         PBlkAddress,
+	UINT32					*PmTimerTicks);
 
 ACPI_STATUS
-HwIa32GetCxHandler (
-    UINT32                  State, 
-    ACPI_SET_C_STATE_HANDLER *Handler);
-
-ACPI_STATUS
-HwIa32SetCxHandler (
-    UINT32                  State, 
-    ACPI_SET_C_STATE_HANDLER Handler);
+HwIa32GetCxInfo (
+    UINT32					CxStates[MAX_CX_STATES]);
 
 
 /* Throttling Prototypes */
@@ -347,6 +350,7 @@ NATIVE_UINT
 HwLocalPow (
     NATIVE_UINT             x,
     NATIVE_UINT             y);
+
 
 /* ACPI Timer prototypes */
 
