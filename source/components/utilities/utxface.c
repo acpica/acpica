@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -474,7 +474,7 @@ AcpiGetSystemInfo (
 
     /* System flags (ACPI capabilities) */
 
-    InfoPtr->Flags              = AcpiGbl_SystemFlags;
+    InfoPtr->Flags              = SYS_MODE_ACPI;
 
     /* Timer resolution - 24 or 32 bits  */
     if (!AcpiGbl_FADT)
