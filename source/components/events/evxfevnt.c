@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -164,7 +164,7 @@ AcpiEnable (void)
         Status = AcpiHwSetMode (ACPI_SYS_MODE_ACPI);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, "Could not transition to ACPI mode.\n"));
+            ACPI_REPORT_ERROR (("Could not transition to ACPI mode.\n"));
             return_ACPI_STATUS (Status);
         }
 
