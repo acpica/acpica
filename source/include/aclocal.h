@@ -425,6 +425,115 @@ typedef struct
 } ACPI_FIELD_INFO;
 
 
+
+/*****************************************************************************
+ *
+ * Generic "state" object for stacks
+ *
+ ****************************************************************************/
+
+
+#define CONTROL_NORMAL                        0xC0
+#define CONTROL_CONDITIONAL_EXECUTING         0xC1
+#define CONTROL_PREDICATE_EXECUTING           0xC2
+#define CONTROL_PREDICATE_FALSE               0xC3
+#define CONTROL_PREDICATE_TRUE                0xC4
+
+
+/* Forward declaration */
+struct acpi_walk_state;
+struct acpi_generic_op;
+
+
+#define ACPI_STATE_COMMON                  /* Two 32-bit fields and a pointer */\
+    UINT8                   DataType;           /* To differentiate various internal objs */\
+    UINT8                   Flags; \
+    UINT16                  Value; \
+    UINT16                  State; \
+    UINT16                  AcpiEval;  \
+    void                    *Next; \
+
+typedef struct acpi_common_state
+{
+    ACPI_STATE_COMMON
+} ACPI_COMMON_STATE;
+
+
+/*
+ * Update state - used to traverse complex objects such as packages
+ */
+typedef struct acpi_update_state
+{
+    ACPI_STATE_COMMON
+    union AcpiObjInternal   *Object;
+
+} ACPI_UPDATE_STATE;
+
+/*
+ * Control state - one per if/else and while constructs.
+ * Allows nesting of these constructs
+ */
+typedef struct acpi_control_state
+{
+    ACPI_STATE_COMMON
+    struct acpi_generic_op  *PredicateOp;
+    UINT8                   *AmlPredicateStart;   /* Start of if/while predicate */
+
+} ACPI_CONTROL_STATE;
+
+
+/*
+ * Scope state - current scope during namespace lookups
+ */
+
+typedef struct acpi_scope_state
+{
+    ACPI_STATE_COMMON
+    ACPI_NAME_TABLE         *NameTable;
+
+} ACPI_SCOPE_STATE;
+
+
+
+typedef struct acpi_pscope_state
+{
+    ACPI_STATE_COMMON
+    struct acpi_generic_op  *Op;            /* current op being parsed */
+    UINT8                   *ArgEnd;        /* current argument end */
+    UINT8                   *PkgEnd;        /* current package end */
+    UINT32                  ArgList;        /* next argument to parse */
+    UINT32                  ArgCount;       /* Number of fixed arguments */
+
+} ACPI_PSCOPE_STATE;
+
+
+typedef union acpi_gen_state
+{
+    ACPI_COMMON_STATE       Common;
+    ACPI_CONTROL_STATE      Control;
+    ACPI_UPDATE_STATE       Update;
+    ACPI_SCOPE_STATE        Scope;
+    ACPI_PSCOPE_STATE       ParseScope;
+
+} ACPI_GENERIC_STATE;
+
+
+
+
+typedef
+ACPI_STATUS (*ACPI_PARSE_DOWNWARDS) (
+    UINT16                  Opcode,
+    struct acpi_generic_op  *Op,
+    struct acpi_walk_state  *WalkState,
+    struct acpi_generic_op  **OutOp);
+
+typedef
+ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
+    struct acpi_walk_state  *WalkState,
+    struct acpi_generic_op  *Op);
+
+
+
 /*****************************************************************************
  *
  * Parser typedefs and structs
@@ -499,40 +608,18 @@ typedef struct acpi_generic_op
 
 
 /*
- * operation with a name (eg. Scope, Method, Name, NamedField, ...)
+ * Extended Op for named ops (Scope, Method, etc.), deferred ops (Methods and OpRegions),
+ * and bytelists.  
  */
-typedef struct acpi_named_op
+typedef struct acpi_extended_op
 {
     ACPI_COMMON_OP
+    UINT8                   *Data;          /* AML body or bytelist data */
+    UINT32                  Length;         /* AML length */
     UINT32                  Name;           /* 4-byte name or zero if no name */
 
-} ACPI_NAMED_OP;
+} ACPI_EXTENDED_OP;
 
-
-/*
- * special operation for methods and regions (parsing must be deferred
- * until a first pass parse is completed)
- */
-typedef struct acpi_deferred_op
-{
-    ACPI_COMMON_OP
-    UINT32                  Name;           /* 4-byte name or 0 if none */
-    UINT32                  BodyLength;     /* AML body size */
-    UINT8                   *Body;          /* AML body */
-    UINT16                  ThreadCount;    /* Count of threads currently executing a method */
-
-} ACPI_DEFERRED_OP;
-
-
-/*
- * special operation for bytelists (ByteList only)
- */
-typedef struct acpi_bytelist_op
-{
-    ACPI_COMMON_OP
-    UINT8                   *Data;          /* bytelist data */
-
-} ACPI_BYTELIST_OP;
 
 
 /*
@@ -549,115 +636,11 @@ typedef struct acpi_parse_state
     UINT8                   *PkgEnd;        /* current package end */
     ACPI_GENERIC_OP         *StartOp;       /* root of parse tree */
     struct AcpiNamedObject  *StartEntry;
-    struct acpi_parse_scope *Scope;         /* current scope */
-    struct acpi_parse_scope *ScopeAvail;    /* unused (extra) scope structs */
+    ACPI_GENERIC_STATE      *Scope;         /* current scope */
     struct acpi_parse_state *Next;
 
 } ACPI_PARSE_STATE;
 
-
-/*
- * Parse scope - one per ACPI scope
- */
-
-typedef struct acpi_parse_scope
-{
-    ACPI_GENERIC_OP         *Op;            /* current op being parsed */
-    UINT8                   *ArgEnd;        /* current argument end */
-    UINT8                   *PkgEnd;        /* current package end */
-    struct acpi_parse_scope *Parent;        /* parent scope */
-    UINT32                  ArgList;        /* next argument to parse */
-    UINT32                  ArgCount;       /* Number of fixed arguments */
-
-} ACPI_PARSE_SCOPE;
-
-
-/*****************************************************************************
- *
- * Generic "state" object for stacks
- *
- ****************************************************************************/
-
-
-#define CONTROL_NORMAL                        0xC0
-#define CONTROL_CONDITIONAL_EXECUTING         0xC1
-#define CONTROL_PREDICATE_EXECUTING           0xC2
-#define CONTROL_PREDICATE_FALSE               0xC3
-#define CONTROL_PREDICATE_TRUE                0xC4
-
-
-#define ACPI_STATE_COMMON                  /* Two 32-bit fields and a pointer */\
-    UINT8                   DataType;           /* To differentiate various internal objs */\
-    UINT8                   Flags; \
-    UINT16                  Value; \
-    UINT16                  State; \
-    UINT16                  AcpiEval;  \
-    void                    *Next; \
-
-typedef struct acpi_common_state
-{
-    ACPI_STATE_COMMON
-} ACPI_COMMON_STATE;
-
-
-/*
- * Update state - used to traverse complex objects such as packages
- */
-typedef struct acpi_update_state
-{
-    ACPI_STATE_COMMON
-    union AcpiObjInternal   *Object;
-
-} ACPI_UPDATE_STATE;
-
-/*
- * Control state - one per if/else and while constructs.
- * Allows nesting of these constructs
- */
-typedef struct acpi_control_state
-{
-    ACPI_STATE_COMMON
-    ACPI_GENERIC_OP         *PredicateOp;
-    UINT8                   *AmlPredicateStart;   /* Start of if/while predicate */
-
-} ACPI_CONTROL_STATE;
-
-
-/*
- * Scope state - current scope during namespace lookups
- */
-
-typedef struct acpi_scope_state
-{
-    ACPI_STATE_COMMON
-    ACPI_NAME_TABLE         *NameTable;
-
-} ACPI_SCOPE_STATE;
-
-
-typedef union acpi_gen_state
-{
-    ACPI_COMMON_STATE       Common;
-    ACPI_CONTROL_STATE      Control;
-    ACPI_UPDATE_STATE       Update;
-    ACPI_SCOPE_STATE        Scope;
-
-} ACPI_GENERIC_STATE;
-
-/* Forward declaration */
-struct acpi_walk_state;
-
-typedef
-ACPI_STATUS (*ACPI_PARSE_DOWNWARDS) (
-    UINT16                  Opcode,
-    ACPI_GENERIC_OP         *Op,
-    struct acpi_walk_state  *WalkState,
-    ACPI_GENERIC_OP         **OutOp);
-
-typedef
-ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
-    struct acpi_walk_state  *WalkState,
-    ACPI_GENERIC_OP         *Op);
 
 
 /*****************************************************************************
