@@ -254,15 +254,13 @@
 
 #define DUMP_BUFFER(a,b,c)              DumpBuffer((char *)a,b,c,_COMPONENT)
 
+#define MODULE_NAME(name)               static char *_THIS_MODULE = name
 
 /*
  * Debug macros that are conditionally compiled
  */
 
 #ifdef ACPI_DEBUG
-
-
-#define MODULE_NAME(name)               static char *_THIS_MODULE = name
 
 /* 
  * Function entry tracing. 
@@ -341,7 +339,6 @@
  * leaving no executable debug code!
  */
 
-#define MODULE_NAME(name) 
 #define DEBUG_EXEC(a)  
 #define DEBUG_DEFINE(a)                     
 #define FUNCTION_TRACE(a)
