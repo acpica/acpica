@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.30 $
+ *       $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,11 +117,8 @@
 #ifndef __ACLINUX_H__
 #define __ACLINUX_H__
 
+
 #define ACPI_OS_NAME                "Linux"
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-
-#ifdef __KERNEL__
 
 #include <linux/config.h>
 #include <linux/string.h>
@@ -129,36 +126,17 @@
 #include <linux/ctype.h>
 #include <asm/system.h>
 #include <asm/atomic.h>
-#include <asm/div64.h>
-#include <asm/acpi.h>
-
-#define strtoul simple_strtoul
-
-#define ACPI_MACHINE_WIDTH  BITS_PER_LONG
-
-#else /* !__KERNEL__ */
-
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <unistd.h>
-
-#if defined(__ia64__) || defined(__x86_64__)
-#define ACPI_MACHINE_WIDTH	    64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH	    32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#endif
-
-#endif /* __KERNEL__ */
 
 /* Linux uses GCC */
 
 #include "acgcc.h"
+
+#undef DEBUGGER_THREADING
+#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
+
+/* Linux ia32 can't do int64 well */
+#ifndef _IA64
+#define ACPI_NO_INTEGER64_SUPPORT
+#endif
 
 #endif /* __ACLINUX_H__ */

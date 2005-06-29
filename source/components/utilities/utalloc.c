@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -517,7 +517,7 @@ AcpiCmDumpAllocationInfo (
                     ROUND_UP_TO_1K (AcpiGbl_RunningAllocSize)));
 
 #endif
-    
+
     return_VOID;
 }
 
@@ -622,13 +622,11 @@ AcpiCmDumpCurrentAllocations (
         ("Total number of unfreed allocations = %d(%X)\n", i,i));
 
 
-
     return_VOID;
 #else
     return;
 #endif
 }
-
 
 
 /*****************************************************************************
@@ -681,7 +679,7 @@ _CmAllocate (
 
 #ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
 
-    if (ACPI_FAILURE (AcpiCmAddElementToAllocList (Address, Size, MEM_MALLOC, 
+    if (ACPI_FAILURE (AcpiCmAddElementToAllocList (Address, Size, MEM_MALLOC,
                                 Component, Module, Line)))
     {
         AcpiOsFree (Address);
@@ -747,7 +745,7 @@ _CmCallocate (
 
 #ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
 
-    if (ACPI_FAILURE (AcpiCmAddElementToAllocList (Address, Size, MEM_CALLOC, 
+    if (ACPI_FAILURE (AcpiCmAddElementToAllocList (Address, Size, MEM_CALLOC,
                             Component,Module, Line)))
     {
         AcpiOsFree (Address);
