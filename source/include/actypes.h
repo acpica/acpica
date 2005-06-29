@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.273 $
+ *       $Revision: 1.274 $
  *
  *****************************************************************************/
 
@@ -922,7 +922,11 @@ ACPI_STATUS (*ACPI_INIT_HANDLER) (
 
 typedef
 ACPI_STATUS (*ACPI_EXCEPTION_HANDLER) (
-    ACPI_STATUS                 Status);
+    ACPI_STATUS             AmlStatus,
+    ACPI_NAME               Name,
+    UINT16                  Opcode,
+    UINT32                  AmlOffset,
+    void                    *Context);
 
 
 /* Address Spaces (For Operation Regions) */
