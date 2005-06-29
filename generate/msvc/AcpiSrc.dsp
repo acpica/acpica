@@ -136,6 +136,10 @@ SOURCE=..\..\source\tools\AcpiSrc\asutils.c
 
 SOURCE=..\..\source\common\getopt.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\os_specific\SERVICE_LAYERS\oswindir.c
+# End Source File
 # End Group
 # End Group
 # Begin Group "Header Files"
