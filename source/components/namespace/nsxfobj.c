@@ -778,9 +778,9 @@ AcpiIsNameSpaceValue (
  *
  ******************************************************************************/
 
-INT32
+ACPI_STATUS
 AcpiSetFirmwareWakingVector (
-    UINT32                  PhysicalAddress)
+    void                    *PhysicalAddress)
 {
     FUNCTION_TRACE ("AcpiSetFirmwareWakingVector");
     
@@ -805,7 +805,7 @@ AcpiSetFirmwareWakingVector (
 
 ACPI_STATUS
 AcpiGetFirmwareWakingVector (
-    UINT32                  *PhysicalAddress)
+    void                    **PhysicalAddress)
 {
     FUNCTION_TRACE ("AcpiGetFirmwareWakingVector");
 
