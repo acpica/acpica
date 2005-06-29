@@ -292,8 +292,7 @@ AcpiOsWaitEventsComplete (
 
 void
 AcpiOsSleep (
-    UINT32                  Seconds,
-    UINT32                  Milliseconds);
+    ACPI_INTEGER            Milliseconds);
 
 void
 AcpiOsStall (
