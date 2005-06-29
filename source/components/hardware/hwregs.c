@@ -114,12 +114,12 @@
  *
  * FUNCTION:    GetBitShift
  *
- * PARAMETERS:  UINT32   Mask     - input mask to determine bit shift from.  Must
- *                                  have at least 1 bit set.
+ * PARAMETERS:  Mask            - Input mask to determine bit shift from.  Must
+ *                                have at least 1 bit set.
  *
- * RETURN:      bit location of the lsb of the mask
+ * RETURN:      Bit location of the lsb of the mask
  *
- * DESCRIPTION: returns the bit number for the low order bit that's set.
+ * DESCRIPTION: Returns the bit number for the low order bit that's set.
  *
  ******************************************************************************/
 
@@ -143,12 +143,12 @@ GetBitShift (UINT32 Mask)
  *
  * FUNCTION:    AcpiRegisterIO
  *
- * PARAMETERS:  INT32   ReadWrite      - Either ACPI_READ or ACPI_WRITE.
- *              INT32   RegisterId     - index of ACPI register to access
- *              UINT32  Value          - (only used on write) value to write to the
- *                                       register.  This value is shifted all the way right.
+ * PARAMETERS:  ReadWrite       - Either ACPI_READ or ACPI_WRITE.
+ *              RegisterId      - index of ACPI register to access
+ *              Value           - (only used on write) value to write to the
+ *                                 register.  Shifted all the way right.
  *
- * RETURN:      value written to or read from specified register.  This value
+ * RETURN:      Value written to or read from specified register.  This value
  *              is shifted all the way right.
  *
  * DESCRIPTION: Generic ACPI register read/write function.
@@ -230,7 +230,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
             if (ReadWrite == ACPI_WRITE)
             {
                 /* 
-                 * status registers are different from the rest.  Clear by writing 1, writing 0
+                 * Status registers are different from the rest.  Clear by writing 1, writing 0
                  * has no effect.  So, the only relevent information is the single bit we're
                  * interested in, all others should be written as 0 so they will be left
                  * unchanged 
@@ -393,7 +393,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                 if (Mask == SLP_EN_MASK)
                 {
                     /* 
-                     * enable interrupts, the SCI handler is likely going to be invoked as
+                     * Enable interrupts, the SCI handler is likely going to be invoked as
                      * soon as interrupts are enabled, since gpe's and most fixed resume
                      * events also generate SCI's. 
                      */
