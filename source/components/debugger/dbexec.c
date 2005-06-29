@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.21 $
+ *              $Revision: 1.23 $
  *
  ******************************************************************************/
 
@@ -128,7 +128,7 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbexec")
 
 
@@ -342,7 +342,8 @@ AcpiDbExecute (
 
         if (ReturnObj.Length)
         {
-            AcpiOsPrintf ("Execution of %s returned object %p\n", Info.Pathname, ReturnObj.Pointer);
+            AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n", 
+                Info.Pathname, ReturnObj.Pointer, ReturnObj.Length);
             AcpiDbDumpObject (ReturnObj.Pointer, 1);
         }
     }
@@ -381,7 +382,8 @@ AcpiDbMethodThread (
         {
             if (ReturnObj.Length)
             {
-                AcpiOsPrintf ("Execution of %s returned object %p\n", Info->Pathname, ReturnObj.Pointer);
+                AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n", 
+                    Info->Pathname, ReturnObj.Pointer, ReturnObj.Length);
                 AcpiDbDumpObject (ReturnObj.Pointer, 1);
             }
         }

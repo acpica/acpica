@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.37 $
+ *              $Revision: 1.39 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbfileio")
 
 
@@ -239,6 +239,10 @@ AcpiDbOpenDebugFile (
         AcpiOsPrintf ("Debug output file %s opened\n", Name);
         STRCPY (DebugFilename, Name);
         OutputToFile = TRUE;
+    }
+    else
+    {
+        AcpiOsPrintf ("Could not open debug file %s\n", Name);
     }
 
 #endif

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.41 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -129,7 +129,7 @@
 #ifdef ENABLE_DEBUGGER
 
 
-#define _COMPONENT          DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbdisply")
 
 
@@ -498,7 +498,7 @@ AcpiDbDisplayInternalObject (
         switch (ObjDesc->Common.Type)
         {
         case INTERNAL_TYPE_REFERENCE:
-            switch (ObjDesc->Reference.OpCode)
+            switch (ObjDesc->Reference.Opcode)
             {
             case AML_ZERO_OP:
                 AcpiOsPrintf ("[Const]     Number %.8X", 0);
