@@ -613,7 +613,7 @@ AmlDumpOperand (
 
 
         /* TBD:  Change to use dump object routine !! */
-        /* TBD:  What is all of this?? */
+        /*       What is all of this?? */
 
         DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT_INTERNAL));
         DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT_INTERNAL));
