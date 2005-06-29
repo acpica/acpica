@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.30 $
+ *       $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -161,8 +161,59 @@ AcpiRsCreatePciRoutingTable (
 
 
 /*
- *Function prototypes called from AcpiRsCreate*
+ * Function prototypes called from AcpiRsCreate*
  */
+void
+AcpiRsDumpIrq (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpAddress16 (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpAddress32 (
+    ACPI_RESOURCE_DATA      *Data);
+    
+void
+AcpiRsDumpAddress64 (
+    ACPI_RESOURCE_DATA      *Data);
+    
+void
+AcpiRsDumpDma (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpIo (
+    ACPI_RESOURCE_DATA      *Data);
+    
+void
+AcpiRsDumpExtendedIrq (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpFixedIo (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpFixedMemory32 (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpMemory24 (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpMemory32 (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpStartDependFns (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpVendorSpecific (
+    ACPI_RESOURCE_DATA      *Data);
 
 void
 AcpiRsDumpResourceList (
