@@ -564,8 +564,8 @@ typedef struct AcpiTableInfo
 
 typedef struct _AcpiSysInfo 
 {
+    UINT32                      AcpiCAVersion;
     UINT32                      Flags;
-
     UINT32                      TimerResolution;
     UINT32                      Reserved1;
     UINT32                      Reserved2;
