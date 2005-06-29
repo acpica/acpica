@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.41 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -298,12 +298,12 @@ AePrintException (
              * Seek to the offset in the combined source file, read the source
              * line, and write it to the output.
              */
-            fseek (OutputFile, Enode->LogicalByteOffset, SEEK_SET);
+            fseek (SourceFile, Enode->LogicalByteOffset, SEEK_SET);
 
             Actual = fread (&SourceByte, 1, 1, SourceFile);
             while (Actual && SourceByte && (SourceByte != '\n'))
             {
-                Actual = fwrite (&SourceByte, 1, 1, OutputFile);
+                fwrite (&SourceByte, 1, 1, OutputFile);
                 Actual = fread (&SourceByte, 1, 1, SourceFile);
             }
 
@@ -583,7 +583,7 @@ AslCompilererror (
 
     AslCommonError (ASL_ERROR, ASL_MSG_SYNTAX, Gbl_CurrentLineNumber,
                     Gbl_LogicalLineNumber, Gbl_CurrentLineOffset,
-                    Gbl_CurrentColumn, Gbl_InputFilename,
+                    Gbl_CurrentColumn, Gbl_Files[ASL_FILE_INPUT].Filename,
                     CompilerMessage /*MsgBuffer*/);
 
     return 0;
