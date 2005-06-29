@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  ******************************************************************************/
 
@@ -621,7 +621,7 @@ AcpiDbSendNotify (
 
          /* Send the notify */
 
-        AcpiEvNotifyDispatch (Node, Value);
+        AcpiEvQueueNotifyRequest (Node, Value);
         break;
 
     default:
