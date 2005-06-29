@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -160,7 +160,7 @@ AcpiEvInitialize (
     Status = AcpiEvFixedEventInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL,
+        ACPI_REPORT_ERROR ((
                 "Unable to initialize fixed events, %s\n",
                 AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
@@ -169,7 +169,7 @@ AcpiEvInitialize (
     Status = AcpiEvGpeInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL,
+        ACPI_REPORT_ERROR ((
                 "Unable to initialize general purpose events, %s\n",
                 AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
@@ -206,7 +206,7 @@ AcpiEvHandlerInitialize (
     Status = AcpiEvInstallSciHandler ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL,
+        ACPI_REPORT_ERROR ((
                 "Unable to install System Control Interrupt Handler, %s\n",
                 AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
@@ -217,7 +217,7 @@ AcpiEvHandlerInitialize (
     Status = AcpiEvInitGpeControlMethods ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL,
+        ACPI_REPORT_ERROR ((
                 "Unable to initialize GPE control methods, %s\n",
                 AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
@@ -228,7 +228,7 @@ AcpiEvHandlerInitialize (
     Status = AcpiEvInitGlobalLockHandler ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL,
+        ACPI_REPORT_ERROR ((
                 "Unable to initialize Global Lock handler, %s\n",
                 AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
