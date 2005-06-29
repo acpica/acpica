@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.12 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ LdLoadNamespace (void)
     ACPI_WALK_LIST          WalkList;
 
 
-    DbgPrint ("\nCreating namespace\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nCreating namespace\n\n");
 
 
     /* Create a new walk state */
@@ -168,7 +168,7 @@ LdLoadNamespace (void)
 
     /* Perform the walk of the parse tree */
 
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
                         LdNamespace1End, WalkState);
 
 
@@ -201,6 +201,7 @@ LdLoadFieldElements (
 {
     ASL_PARSE_NODE          *Child = NULL;
     ACPI_NAMESPACE_NODE     *NsNode;
+    ACPI_STATUS             Status;
 
 
     /* Get the first named field element */
@@ -233,12 +234,20 @@ LdLoadFieldElements (
 
         default:
 
-            AcpiNsLookup (WalkState->ScopeInfo,
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
                             Child->Value.String,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                             NULL, &NsNode);
+            if (ACPI_FAILURE (Status))
+            {
+                /* TBD - emit error */
+                return;
+            }
+
+            Child->NsNode = NsNode;
+            NsNode->Object = Child;
             break;
         }
 
@@ -247,7 +256,7 @@ LdLoadFieldElements (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LdLoadResourceElements
  *
@@ -263,7 +272,7 @@ LdLoadFieldElements (
  *       we simply use the namespace here as a symbol table so we can look
  *       them up as they are referenced.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 LdLoadResourceElements (
@@ -285,11 +294,6 @@ LdLoadResourceElements (
                     IMODE_LOAD_PASS1,
                     NS_NO_UPSEARCH,
                     WalkState, &NsNode);
-
-    /*
-     * Store offset of zero for the base name of the resource
-     */
-    (UINT32) NsNode->Object = 0;
 
 
     /*
@@ -319,13 +323,16 @@ LdLoadResourceElements (
              * can be used when the field is referenced
              */
             (UINT16) NsNode->OwnerId = InitializerNode->Value.Integer16;
+            InitializerNode->NsNode = NsNode;
+            NsNode->Object = InitializerNode;
         }
+
         InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
     }
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LdNamespace1Begin
  *
@@ -336,7 +343,7 @@ LdLoadResourceElements (
  * DESCRIPTION: Descending callback used during the parse tree walk.  If this
  *              is a named AML opcode, enter into the namespace
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 
 ACPI_STATUS
@@ -350,6 +357,10 @@ LdNamespace1Begin (
     ACPI_STATUS             Status;
     OBJECT_TYPE_INTERNAL    DataType;
     NATIVE_CHAR             *Path;
+    UINT32                  Flags = NS_NO_UPSEARCH;
+    ASL_PARSE_NODE          *Arg;
+    UINT32                  i;
+
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -386,7 +397,23 @@ LdNamespace1Begin (
 
     /* Map the raw opcode into an internal object type */
 
-    if (PsNode->ParseOpcode == EXTERNAL)
+    if (PsNode->ParseOpcode == NAME)
+    {
+        Arg = PsNode->Child;        /* Get the NameSeg/NameString node */
+        Arg = Arg->Peer;            /* First peer is the object to be associated with the name */
+
+        /* Get the data type associated with the named object, not the name itself */
+
+        /* Log2 loop to convert from Btype (binary) to Etype (encoded) */
+
+        DataType = 1;
+        for (i = 1; i < Arg->AcpiBtype; i *= 2)
+        {
+            DataType++;
+        }
+    }
+
+    else if (PsNode->ParseOpcode == EXTERNAL)
     {
         /* "External" simply enters a name and type into the namespace */
         /* first child is name, next child is ObjectType */
@@ -413,39 +440,52 @@ LdNamespace1Begin (
         ("Load1BeginOp: Type=%x\n", DataType));
 
 
+    if (PsNode->ParseOpcode != SCOPE)
+    {
+        Flags |= NS_ERROR_IF_FOUND;
+    }
+
     /*
      * Enter the named type into the internal namespace.  We enter the name
      * as we go downward in the parse tree.  Any necessary subobjects that involve
      * arguments to the opcode must be created as we go back up the parse tree later.
      */
-    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
-                            DataType, IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH, WalkState, &(NsNode));
+    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, DataType, 
+                    IMODE_LOAD_PASS1, Flags, WalkState, &(NsNode));
 
     if (ACPI_FAILURE (Status))
     {
+        if (Status == AE_EXIST)
+        {
+            /* The name already exists in this scope */
+
+            AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, PsNode, Path);
+            return (Status);
+        }
+
         printf ("Failure from lookup %s\n", AcpiCmFormatException (Status));
         return (Status);
     }
 
+    /*
+     * Point the parse node to the new namespace node, and point
+     * the NsNode back to the original Parse node
+     */
     PsNode->NsNode = NsNode;
+    NsNode->Object = PsNode;
 
 
     if (PsNode->ParseOpcode == METHOD)
     {
         NsNode->OwnerId = PsNode->Extra;
-
-        if (PsNode->Flags & NODE_METHOD_NO_RETURN_VAL)
-        {
-            NsNode->Flags |= ANOBJ_METHOD_NO_RETVAL;
-        }
     }
+
 
     return (Status);
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LdNamespace1End
  *
@@ -456,7 +496,7 @@ LdNamespace1Begin (
  * DESCRIPTION: Ascending callback used during the loading of the namespace,
  *              We only need to worry about managing the scope stack here.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 LdNamespace1End (

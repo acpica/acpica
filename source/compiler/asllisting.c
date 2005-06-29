@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -432,7 +432,7 @@ LsWriteOneSourceLine (void)
     while (fread (&FileByte, 1, 1, Gbl_SourceOutputFile))
     {
         fwrite (&FileByte, 1, 1, Gbl_ListingOutputFile);
-        DbgPrint ("%c", FileByte);
+        DbgPrint (ASL_PARSE_OUTPUT, "%c", FileByte);
 
         if (FileByte == '\n')
         {

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.9 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@ FlOpenLocalFile (
     strcpy (StringBuffer, Gbl_DirectoryPath);
     strcat (StringBuffer, LocalName);
 
-    DbgPrint ("FlOpenLocalFile: %s\n", StringBuffer);
+    DbgPrint (ASL_PARSE_OUTPUT, "FlOpenLocalFile: %s\n", StringBuffer);
     return (fopen (StringBuffer, (const char *) Mode));
 
 }
@@ -173,20 +173,20 @@ FlOpenIncludeFile (
     {
         AslCommonError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN,
                     Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                    Gbl_InputFilename, " - Null parse node");
+                    Gbl_InputByteCount, Gbl_CurrentColumn, Gbl_InputFilename, " - Null parse node");
         return;
     }
 
 
-    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
-    {
+//    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
+//    {
           fprintf (Gbl_SourceOutputFile, "\n");
           Gbl_LogicalLineNumber++;
-    }
+//    }
 
     /* Prepend the directory pathname and open the include file */
 
-    DbgPrint ("\nOpen include file: path %s\n\n", Node->Value.String);
+    DbgPrint (ASL_PARSE_OUTPUT, "\nOpen include file: path %s\n\n", Node->Value.String);
     IncFile = FlOpenLocalFile (Node->Value.String, "r");
     if (!IncFile)
     {
@@ -280,7 +280,7 @@ FlOpenInputFile (
     AslCompilerin = Gbl_AslInputFile;
     if (!Gbl_AslInputFile)
     {
-        AslCommonError (ASL_ERROR, ASL_MSG_INPUT_FILE_OPEN, 0, 0, NULL, InputFilename);
+        AslCommonError (ASL_ERROR, ASL_MSG_INPUT_FILE_OPEN, 0, 0, 0, 0, NULL, InputFilename);
         return (AE_ERROR);
     }
 
@@ -340,7 +340,7 @@ FlOpenAmlOutputFile (
         Gbl_OutputFilename = FlGenerateFilename (InputFilename, ".aml");
         if (!Gbl_OutputFilename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME, 0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
     }
@@ -350,7 +350,7 @@ FlOpenAmlOutputFile (
     Gbl_AmlOutputFile = fopen (Gbl_OutputFilename, "w+b");
     if (!Gbl_AmlOutputFile)
     {
-        AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME, 0, 0, NULL, Gbl_OutputFilename);
+        AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME, 0, 0, 0, 0, NULL, Gbl_OutputFilename);
         return (AE_ERROR);
     }
 
@@ -379,25 +379,22 @@ FlOpenMiscOutputFiles (
 
     /* Create/Open a combined source output file if asked */
 
-    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
+    Gbl_SourceOutputFilename = FlGenerateFilename (InputFilename, ".src");
+    if (!Gbl_SourceOutputFilename)
     {
-        Gbl_SourceOutputFilename = FlGenerateFilename (InputFilename, ".src");
-        if (!Gbl_SourceOutputFilename)
-        {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, NULL);
-            return (AE_ERROR);
-        }
-
-        /* Open the debug file, text mode */
-
-        Gbl_SourceOutputFile = fopen (Gbl_SourceOutputFilename, "w+");
-        if (!Gbl_SourceOutputFile)
-        {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, Gbl_SourceOutputFilename);
-            return (AE_ERROR);
-        }
-
+        AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+        return (AE_ERROR);
     }
+
+    /* Open the debug file, text mode */
+
+    Gbl_SourceOutputFile = fopen (Gbl_SourceOutputFilename, "w+");
+    if (!Gbl_SourceOutputFile)
+    {
+        AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, Gbl_SourceOutputFilename);
+        return (AE_ERROR);
+    }
+
 
     /* Create/Open a listing output file if asked */
 
@@ -406,7 +403,7 @@ FlOpenMiscOutputFiles (
         Gbl_ListingOutputFilename = FlGenerateFilename (InputFilename, ".lst");
         if (!Gbl_ListingOutputFilename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
 
@@ -415,7 +412,7 @@ FlOpenMiscOutputFiles (
         Gbl_ListingOutputFile = fopen (Gbl_ListingOutputFilename, "w+");
         if (!Gbl_ListingOutputFile)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, Gbl_ListingOutputFilename);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, Gbl_ListingOutputFilename);
             return (AE_ERROR);
         }
 
@@ -431,7 +428,7 @@ FlOpenMiscOutputFiles (
         Gbl_HexOutputFilename = FlGenerateFilename (InputFilename, ".hex");
         if (!Gbl_HexOutputFilename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
 
@@ -440,7 +437,7 @@ FlOpenMiscOutputFiles (
         Gbl_HexOutputFile = fopen (Gbl_HexOutputFilename, "w+");
         if (!Gbl_HexOutputFile)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, Gbl_HexOutputFilename);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, Gbl_HexOutputFilename);
             return (AE_ERROR);
         }
 
@@ -456,7 +453,7 @@ FlOpenMiscOutputFiles (
         Gbl_NamespaceOutputFilename = FlGenerateFilename (InputFilename, ".nsp");
         if (!Gbl_NamespaceOutputFilename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
 
@@ -465,7 +462,7 @@ FlOpenMiscOutputFiles (
         Gbl_NamespaceOutputFile = fopen (Gbl_NamespaceOutputFilename, "w+");
         if (!Gbl_NamespaceOutputFile)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, Gbl_NamespaceOutputFilename);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, Gbl_NamespaceOutputFilename);
             return (AE_ERROR);
         }
 
@@ -481,7 +478,7 @@ FlOpenMiscOutputFiles (
         Gbl_DebugOutputFilename = FlGenerateFilename (InputFilename, ".txt");
         if (!Gbl_DebugOutputFilename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME, 0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
 
@@ -490,7 +487,7 @@ FlOpenMiscOutputFiles (
         Gbl_DebugOutputFile = freopen (Gbl_DebugOutputFilename, "w+", stderr);
         if (!Gbl_DebugOutputFile)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME, 0, 0, NULL, Gbl_DebugOutputFilename);
+            AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME, 0, 0, 0, 0, NULL, Gbl_DebugOutputFilename);
             return (AE_ERROR);
         }
 
@@ -533,6 +530,8 @@ FlCloseListingFile (void)
     fprintf (Gbl_ListingOutputFile, "\n\nSummary of errors and warnings\n\n");
     AePrintErrorLog (Gbl_ListingOutputFile);
     fprintf (Gbl_ListingOutputFile, "\n\n");
+    UtDisplaySummary (Gbl_ListingOutputFile);
+    fprintf (Gbl_ListingOutputFile, "\n\n");
 
     /* Close the listing file */
 
@@ -564,11 +563,6 @@ FlCloseListingFile (void)
 void
 FlCloseSourceOutputFile (void)
 {
-
-    if (!Gbl_SourceOutputFlag)
-    {
-        return;
-    }
 
     fclose (Gbl_SourceOutputFile);
 }

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -143,7 +143,8 @@ Usage (
     void)
 {
     printf ("Usage:    %s <Options> <InputFile>\n\n", CompilerName);
-    printf ("Options:  -d               Create debug/trace output file (*.txt)\n");
+    printf ("Options:  -d <p|t|b>       Create debug/trace output file (*.txt)\n");
+    printf ("                             Types: Parse/Tree/Both\n");
     printf ("          -h               Create ascii hex output file (*.hex)\n");
     printf ("          -i               Ignore errors, always create AML file\n");
     printf ("          -l               Create listing (mixed source/AML) file (*.lst)\n");
@@ -152,6 +153,7 @@ Usage (
     printf ("          -p               Parse only, no output generation\n");
     printf ("          -s               Create combined (w/includes) ASL file (*.src)\n");
 }
+
 
 
 /*******************************************************************************
@@ -166,7 +168,6 @@ Usage (
  *              options and begin the compile.
  *
  ******************************************************************************/
-
 
 int
 main (
@@ -194,13 +195,26 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "dhilno:ps")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "d:hilno:ps")) != EOF) switch (j)
     {
     case 'd':
+        switch (optarg[0])
+        {
+        case 'b':
+            AslCompilerdebug = 1; /* same as yydebug */
+            break;
+
+        case 'p':
+            AslCompilerdebug = 1; /* same as yydebug */
+            break;
+
+        case 't':
+            break;
+        }
+
         /* Produce debug output file */
 
         Gbl_DebugFlag = TRUE;
-        AslCompilerdebug = 1; /* same as yydebug */
         break;
 
     case 'h':

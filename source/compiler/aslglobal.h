@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.4 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -160,6 +160,7 @@ EXTERN char                     Gbl_CurrentLineBuffer[ASL_LINE_BUFFER_SIZE];
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentColumn, 0);
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineNumber, 1);
 EXTERN int                      INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
+EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineOffset, 0);
 EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
 
 /* Exception reporting */
@@ -205,6 +206,7 @@ EXTERN char                     *Gbl_CurrentInputFilename;
 /* Statistics */
 
 EXTERN UINT32                   INIT_GLOBAL (Gbl_InputByteCount, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_NsLookupCount, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
@@ -239,6 +241,7 @@ EXTERN ASL_RESERVED_INFO        ReservedMethods[];
 EXTERN UINT8                    Gbl_AmlBuffer[16];
 EXTERN char                     MsgBuffer[ASL_MSG_BUFFER_SIZE];
 EXTERN char                     StringBuffer[ASL_MSG_BUFFER_SIZE];
+EXTERN char                     StringBuffer2[ASL_MSG_BUFFER_SIZE];
 
 #endif /* __ASLGLOBAL_H */
 

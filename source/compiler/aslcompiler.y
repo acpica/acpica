@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -2808,13 +2808,14 @@ AslLocalAllocate (unsigned int Size)
     void                *Mem;
 
 
-    DbgPrint ("\nAslLocalAllocate: Expanding Stack to %d\n\n", Size);
+    DbgPrint (ASL_PARSE_OUTPUT, "\nAslLocalAllocate: Expanding Stack to %d\n\n", Size);
 
     Mem = _CmCallocate (Size, 0, "", 0);
     if (!Mem)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION, Gbl_CurrentLineNumber,
-                    Gbl_LogicalLineNumber, Gbl_InputFilename, NULL);
+                    Gbl_LogicalLineNumber, Gbl_InputByteCount, Gbl_CurrentColumn,
+                    Gbl_InputFilename, NULL);
         exit (1);
     }
 

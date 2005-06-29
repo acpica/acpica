@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.15 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -230,7 +230,7 @@ LkCrossReferenceNamespace (void)
     ACPI_WALK_LIST          WalkList;
 
 
-    DbgPrint ("\nCreating namespace\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nCreating namespace\n\n");
 
     /*
      * Create a new walk state for use when looking up names
@@ -247,7 +247,7 @@ LkCrossReferenceNamespace (void)
 
     /* Walk the entire parse tree */
 
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
                         LkNamespaceLocateEnd, WalkState);
 
     return AE_OK;
@@ -286,6 +286,7 @@ LkNamespaceLocateBegin (
     NATIVE_CHAR             *Path;
     UINT8                   PassedArgs;
     ASL_PARSE_NODE          *Next;
+    ASL_PARSE_NODE          *MethodPsNode;
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -327,6 +328,8 @@ LkNamespaceLocateBegin (
      * The namespace is also used as a lookup table for references to resource
      * descriptors and the fields within them.
      */
+    Gbl_NsLookupCount++;
+
     Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
                             DataType, IMODE_EXECUTE,
                             NS_SEARCH_PARENT, WalkState, &(NsNode));
@@ -377,8 +380,10 @@ LkNamespaceLocateBegin (
          * Count the number of arguments, each appears as a child
          * under the parent node
          */
-        PassedArgs = 0;
-        Next = PsNode->Child;
+        PsNode->ParseOpcode = METHODCALL;
+        PassedArgs          = 0;
+        Next                = PsNode->Child;
+
         while (Next)
         {
             PassedArgs++;
@@ -406,18 +411,29 @@ LkNamespaceLocateBegin (
 
         /*
          * Check if the method caller expects this method to return a value and
-         * if the method in fact returns a value.
+         * if the called method in fact returns a value.
          */
 
-        if ((!(PsNode->Flags & NODE_RESULT_NOT_USED)) &&
-            (NsNode->Flags & ANOBJ_METHOD_NO_RETVAL))
+        if (!(PsNode->Flags & NODE_RESULT_NOT_USED))
         {
-            /*
-             * 1) Result from the method is used (method is a TermArg)
-             * 2) Method does not return a value (or does not consistently return
-             *    a value)
-             */
-            AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, PsNode, PsNode->ExternalName);
+            /* 1) The result from the method is used (the method is a TermArg) */
+
+            MethodPsNode = NsNode->Object;
+            if (MethodPsNode->Flags & NODE_METHOD_NO_RETVAL)
+            {
+                /*
+                 * 2) Method NEVER returns a value
+                 */
+                AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, PsNode, PsNode->ExternalName);
+            }
+
+            else if (MethodPsNode->Flags & NODE_METHOD_SOME_NO_RETVAL)
+            {
+                /*
+                 * 2) Method SOMETIMES returns a value, SOMETIMES not
+                 */
+                AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, PsNode, PsNode->ExternalName);
+            }
         }
     }
 

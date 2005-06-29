@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -141,8 +141,8 @@
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2009"
-#define CompilerCreatorRevision     0x02002009  /* Acpi 2.0, Version# */
+#define CompilerVersion             "X2010"
+#define CompilerCreatorRevision     0x02002010  /* Acpi 2.0, Version# */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000 Intel Corporation"
@@ -242,8 +242,15 @@ AslPushInputFileStack (
 int
 AslCompilererror(char *s);
 
+#define ASL_DEBUG_OUTPUT    0
+#define ASL_PARSE_OUTPUT    1
+#define ASL_TREE_OUTPUT     2
+
+
+
 int
 DbgPrint (
+    UINT32                  Type,
     char                    *Format,
     ...);
 
@@ -280,6 +287,8 @@ AslCommonError (
     UINT8                   MessageId,
     UINT32                  CurrentLineNumber,
     UINT32                  LogicalLineNumber,
+    UINT32                  LogicalByteOffset,
+    UINT32                  Column,
     char                    *Filename,
     char                    *ExtraMessage);
 

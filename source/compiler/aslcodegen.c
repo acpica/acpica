@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -141,12 +141,12 @@ CgGenerateAmlOutput (void)
 {
 
 
-    DbgPrint ("\nWriting AML\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nWriting AML\n\n");
 
-    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
-    {
+//    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
+//    {
         fseek (Gbl_SourceOutputFile, 0, SEEK_SET);
-    }
+//    }
 
     Gbl_SourceLine = 0;
     LsPushNode (Gbl_InputFilename);
@@ -185,22 +185,25 @@ CgAmlWriteWalk (
 {
 
 
-    DbgPrint ("%5.5d [%d]", Node->LogicalLineNumber, Level);
+    DbgPrint (ASL_TREE_OUTPUT, 
+        "%5.5d [%d]", Node->LogicalLineNumber, Level);
     UtPrintFormattedName (Node->ParseOpcode, Level);
 
     if (Node->ParseOpcode == NAMESEG    ||
         Node->ParseOpcode == NAMESTRING ||
         Node->ParseOpcode == METHODCALL)
     {
-        DbgPrint ("%10.32s      ", Node->ExternalName);
+        DbgPrint (ASL_TREE_OUTPUT, 
+            "%10.32s      ", Node->ExternalName);
     }
 
     else
     {
-        DbgPrint ("                ");
+        DbgPrint (ASL_TREE_OUTPUT, "                ");
     }
 
-    DbgPrint ("Val-%08X POp-%04X AOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X PSubLen-%04X Node-%08X Chld-%08X Paren-%08X Flags-%04X AcTyp-%08X\n",
+    DbgPrint (ASL_TREE_OUTPUT,
+        "Val-%08X POp-%04X AOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X PSubLen-%04X Node-%08X Chld-%08X Paren-%08X Flags-%04X AcTyp-%08X C-%2d L-%d\n",
                 Node->Value.Integer32,
                 Node->ParseOpcode,
                 Node->AmlOpcode,
@@ -213,7 +216,9 @@ CgAmlWriteWalk (
                 Node->Child,
                 Node->Parent,
                 Node->Flags,
-                Node->AcpiBtype);
+                Node->AcpiBtype,
+                Node->Column,
+                Node->LineNumber);
 
 
     LsWriteNodeToListing (Node);

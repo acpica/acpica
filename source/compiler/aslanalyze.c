@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -437,8 +437,9 @@ AnGetBtype (
         NsNode = PsNode->NsNode;
         if (!NsNode)
         {
-            DbgPrint ("Null attached Nsnode: [%s] at line %d\n", 
-                        PsNode->ParseOpName, PsNode->LineNumber);
+            DbgPrint (ASL_DEBUG_OUTPUT,
+                "Null attached Nsnode: [%s] at line %d\n", 
+                PsNode->ParseOpName, PsNode->LineNumber);
             return ACPI_UINT32_MAX;
         }
 
