@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.92 $
+ *       $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -152,7 +152,7 @@
  * 2) This is NOT a 16-bit version of the code (not enough real-mode memory)
  */
 #ifdef ACPI_DEBUG
-#ifndef _IA16
+#if ACPI_MACHINE_WIDTH != 16
 #define ACPI_DBG_TRACK_ALLOCATIONS
 #endif
 #endif
