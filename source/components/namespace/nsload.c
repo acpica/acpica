@@ -171,7 +171,7 @@ AcpiNsParseTable (
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
-    ((ACPI_NAMED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    ((ACPI_EXTENDED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
@@ -209,7 +209,7 @@ AcpiNsParseTable (
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
-    ((ACPI_NAMED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    ((ACPI_EXTENDED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 2: Resolve forward references */
 
