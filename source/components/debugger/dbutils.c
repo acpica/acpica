@@ -132,6 +132,38 @@
 
 /******************************************************************************
  * 
+ * FUNCTION:    DbSetOutputDestination
+ *
+ * PARAMETERS:  Address             - Pointer to the buffer
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print a portion of a buffer
+ *
+ *****************************************************************************/
+
+void
+DbSetOutputDestination (
+    INT32                   OutputFlags)
+{
+    
+    Gbl_DbOutputFlags = (UINT8) OutputFlags;
+
+    if (OutputFlags & DB_REDIRECTABLE_OUTPUT)
+    {
+        if (OutputToFile)
+        {
+            DebugLevel = Gbl_DbDebugLevel;
+        }
+    }
+    else
+    {
+        DebugLevel = Gbl_DbConsoleDebugLevel;
+    }
+}
+
+/******************************************************************************
+ * 
  * FUNCTION:    DbDumpBuffer 
  *
  * PARAMETERS:  Address             - Pointer to the buffer
@@ -243,17 +275,34 @@ DbPrepNamestring (
     char                    *Name)
 {
 
+
     if (!Name)
     {
         return;
     }
 
+    /* Convert a leading forward slash to a backslash */
+
+    if (*Name == '/')
+    {
+        *Name = '\\';
+    }
+
+    /* Ignore a leading backslash, this is the root prefix */
+
+    if (*Name == '\\')
+    {
+        *Name++;
+    }
+
+    /* Convert all slash path separators to dots */
+
     while (*Name)
     {
         if ((*Name == '/') ||
-            (*Name == '.'))
+            (*Name == '\\'))
         {
-            *Name = '\\';
+            *Name = '.';
         }
 
         Name++;
@@ -366,7 +415,7 @@ DbLocalNsLookup (
 
     if (ACPI_FAILURE (Status))
     {
-        OsdPrintf ("Could not locate name: %s %s\n", Name, Gbl_ExceptionNames[Status]);
+        OsdPrintf ("Could not locate name: %s %s\n", Name, CmFormatException (Status));
     }
 
 
