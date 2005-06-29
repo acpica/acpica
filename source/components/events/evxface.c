@@ -571,6 +571,45 @@ AcpiInstallNotifyHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+
+    /*
+     * Support for global notify handlers.  These handlers are invoked for
+     * every notifiy of the type specifiec
+     */
+
+    if (Device == ACPI_ROOT_OBJECT)
+    {
+        /*
+         *  Make sure the handler is not already installed.
+         */
+
+        if (((HandlerType == ACPI_SYSTEM_NOTIFY) && Gbl_SysNotify.Handler) ||
+            ((HandlerType == ACPI_DEVICE_NOTIFY) && Gbl_DrvNotify.Handler))
+        {
+            return_ACPI_STATUS (AE_EXIST);
+        }
+
+        if (HandlerType = ACPI_SYSTEM_NOTIFY)
+        {
+            Gbl_SysNotify.Nte = ObjEntry;
+            Gbl_SysNotify.Handler = Handler;
+            Gbl_SysNotify.Context = Context;
+        }
+
+        else
+        {
+            Gbl_DrvNotify.Nte = ObjEntry;
+            Gbl_DrvNotify.Handler = Handler;
+            Gbl_DrvNotify.Context = Context;
+        }
+
+
+        /* Global notify handler installed */
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+
     /*
      * These are the ONLY objects that can receive ACPI notifications
      */
@@ -594,8 +633,8 @@ AcpiInstallNotifyHandler (
          *  Make sure the handler is not already installed.
          */
 
-        if (((HandlerType = ACPI_SYSTEM_NOTIFY) && ObjDesc->Device.SysHandler) ||
-            ((HandlerType = ACPI_DEVICE_NOTIFY) && ObjDesc->Device.DrvHandler))
+        if (((HandlerType == ACPI_SYSTEM_NOTIFY) && ObjDesc->Device.SysHandler) ||
+            ((HandlerType == ACPI_DEVICE_NOTIFY) && ObjDesc->Device.DrvHandler))
         {
             return_ACPI_STATUS (AE_EXIST);
         }
@@ -622,6 +661,7 @@ AcpiInstallNotifyHandler (
             return_ACPI_STATUS (Status);
         }
     }
+
 
     /* 
      *  We get here, we know that there is no handler installed
