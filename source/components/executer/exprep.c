@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.92 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -147,6 +147,8 @@ AcpiExDecodeFieldAccessType (
     UINT16                  Length,
     UINT32                  *Alignment)
 {
+    PROC_NAME ("ExDecodeFieldAccessType");
+
 
     switch (Access)
     {
@@ -201,8 +203,8 @@ AcpiExDecodeFieldAccessType (
     default:
         /* Invalid field access type */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("ExDecodeFieldAccessType: Unknown field access type %x\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Unknown field access type %x\n",
             Access));
         return (0);
     }
@@ -258,7 +260,7 @@ AcpiExPrepCommonFieldObject (
 
     ObjDesc->CommonField.BitLength  = (UINT16) FieldBitLength;
 
-    /* 
+    /*
      * Decode the access type so we can compute offsets.  The access type gives
      * two pieces of information - the width of each field access and the
      * necessary alignment of the access.  For AnyAcc, the width used is the
@@ -291,13 +293,13 @@ AcpiExPrepCommonFieldObject (
     }
 
 
-    /* 
+    /*
      * BaseByteOffset is the address of the start of the field within the region.  It is
      * the byte address of the first *datum* (field-width data unit) of the field.
      * (i.e., the first datum that contains at least the first *bit* of the field.)
      */
     NearestByteAddress                        = ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
-    ObjDesc->CommonField.BaseByteOffset       = ROUND_DOWN (NearestByteAddress, 
+    ObjDesc->CommonField.BaseByteOffset       = ROUND_DOWN (NearestByteAddress,
                                                             DIV_8 (Alignment));
 
     /*
@@ -311,15 +313,15 @@ AcpiExPrepCommonFieldObject (
     /*
      * DatumValidBits is the number of valid field bits in the first field datum.
      */
-    ObjDesc->CommonField.DatumValidBits       = (UINT8) (AccessBitWidth - 
+    ObjDesc->CommonField.DatumValidBits       = (UINT8) (AccessBitWidth -
                                                          ObjDesc->CommonField.StartFieldBitOffset);
 
-    /* 
+    /*
      * Valid bits -- the number of bits that compose a partial datum,
      * 1) At the end of the field within the region (arbitrary starting bit offset)
      * 2) At the end of a buffer used to contain the field (starting offset always zero)
      */
-    ObjDesc->CommonField.EndFieldValidBits    = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset + 
+    ObjDesc->CommonField.EndFieldValidBits    = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset +
                                                             FieldBitLength) % AccessBitWidth);
     ObjDesc->CommonField.EndBufferValidBits   = (UINT8) (FieldBitLength % AccessBitWidth); /* StartBufferBitOffset always = 0 */
 
@@ -376,14 +378,14 @@ AcpiExPrepRegionFieldValue (
 
     if (!RegionNode)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Null RegionNode\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null RegionNode\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     Type = AcpiNsGetType (RegionNode);
     if (Type != ACPI_TYPE_REGION)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Needed Region, found type %X %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Needed Region, found type %X %s\n",
             Type, AcpiUtGetTypeName (Type)));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
@@ -424,11 +426,11 @@ AcpiExPrepRegionFieldValue (
 
     /* Debug info */
 
-    DEBUG_PRINTP (ACPI_INFO, ("Bitoff=%X Off=%X Gran=%X Region %p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Bitoff=%X Off=%X Gran=%X Region %p\n",
         ObjDesc->Field.StartFieldBitOffset, ObjDesc->Field.BaseByteOffset,
         ObjDesc->Field.AccessBitWidth, ObjDesc->Field.RegionObj));
 
-    DEBUG_PRINTP (ACPI_INFO, ("set NamedObj %p (%4.4s) val = %p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "set NamedObj %p (%4.4s) val = %p\n",
         Node, &(Node->Name), ObjDesc));
 
 
@@ -482,14 +484,14 @@ AcpiExPrepBankFieldValue (
 
     if (!RegionNode)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Null RegionNode\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null RegionNode\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     Type = AcpiNsGetType (RegionNode);
     if (Type != ACPI_TYPE_REGION)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Needed Region, found type %X %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Needed Region, found type %X %s\n",
             Type, AcpiUtGetTypeName (Type)));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
@@ -531,12 +533,12 @@ AcpiExPrepBankFieldValue (
 
     /* Debug info */
 
-    DEBUG_PRINTP (ACPI_INFO, ("BitOff=%X Off=%X Gran=%X Region %p BankReg %p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "BitOff=%X Off=%X Gran=%X Region %p BankReg %p\n",
         ObjDesc->BankField.StartFieldBitOffset, ObjDesc->BankField.BaseByteOffset,
         ObjDesc->Field.AccessBitWidth, ObjDesc->BankField.RegionObj,
         ObjDesc->BankField.BankRegisterObj));
 
-    DEBUG_PRINTP (ACPI_INFO, ("Set NamedObj %p (%4.4s) val=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Set NamedObj %p (%4.4s) val=%p\n",
         Node, &(Node->Name), ObjDesc));
 
 
@@ -587,7 +589,7 @@ AcpiExPrepIndexFieldValue (
 
     if (!IndexReg || !DataReg)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Null handle\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null handle\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
@@ -615,6 +617,12 @@ AcpiExPrepIndexFieldValue (
     ObjDesc->IndexField.Value    = (UINT32) (FieldBitPosition /
                                             ObjDesc->Field.AccessBitWidth);
 
+    if (!ObjDesc->IndexField.DataObj || !ObjDesc->IndexField.IndexObj)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null Index Object\n"));
+        return_ACPI_STATUS (AE_AML_INTERNAL);
+    }
+
     /* An additional reference for the attached objects */
 
     AcpiUtAddReference (ObjDesc->IndexField.DataObj);
@@ -622,12 +630,12 @@ AcpiExPrepIndexFieldValue (
 
     /* Debug info */
 
-    DEBUG_PRINTP (ACPI_INFO, ("bitoff=%X off=%X gran=%X Index %p Data %p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "bitoff=%X off=%X gran=%X Index %p Data %p\n",
         ObjDesc->IndexField.StartFieldBitOffset, ObjDesc->IndexField.BaseByteOffset,
         ObjDesc->Field.AccessBitWidth, ObjDesc->IndexField.IndexObj,
         ObjDesc->IndexField.DataObj));
 
-    DEBUG_PRINTP (ACPI_INFO, ("set NamedObj %p (%4.4s) val = %p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "set NamedObj %p (%4.4s) val = %p\n",
         Node, &(Node->Name), ObjDesc));
 
 

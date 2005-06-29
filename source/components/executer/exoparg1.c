@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmonad - ACPI AML execution for monadic (1 operand) operators
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -319,7 +319,7 @@ AcpiExMonadic2R (
 
 
 
-    /* Create a return object of type NUMBER for most opcodes */
+    /* Create a return object of type Integer for most opcodes */
 
     switch (WalkState->Opcode)
     {
@@ -382,7 +382,7 @@ AcpiExMonadic2R (
             RetDesc->Integer.Value <<= 1;
         }
 
-        /* Since returns must be 1-based, subtract from 33 (65) */
+        /* Since the bit position is one-based, subtract from 33 (65) */
 
         RetDesc->Integer.Value = Temp32 == 0 ? 0 : (ACPI_INTEGER_BIT_SIZE + 1) - Temp32;
         break;
@@ -567,7 +567,7 @@ AcpiExMonadic2R (
     case AML_SHIFT_RIGHT_BIT_OP:    /*  ShiftRightBit (Source, BitNum) */
 
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s is unimplemented\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s is obsolete and not implemented\n",
                         AcpiPsGetOpcodeName (WalkState->Opcode)));
         Status = AE_SUPPORT;
         goto Cleanup;
@@ -666,7 +666,7 @@ AcpiExMonadic2 (
     case AML_INCREMENT_OP:          /* Increment (Operand)  */
 
         /*
-         * Since we are expecting an Reference on the top of the stack, it
+         * Since we are expecting a Reference operand, it
          * can be either an Node or an internal object.
          *
          * TBD: [Future] This may be the prototype code for all cases where
@@ -746,7 +746,7 @@ AcpiExMonadic2 (
             case AML_ONES_OP:
             case AML_REVISION_OP:
 
-                /* Constants are of type Number */
+                /* Constants are of type Integer */
 
                 Type = ACPI_TYPE_INTEGER;
                 break;
@@ -844,31 +844,23 @@ AcpiExMonadic2 (
         {
             switch (ObjDesc->Common.Type)
             {
-
             case ACPI_TYPE_BUFFER:
-
                 Value = ObjDesc->Buffer.Length;
                 break;
 
-
             case ACPI_TYPE_STRING:
-
                 Value = ObjDesc->String.Length;
                 break;
 
-
             case ACPI_TYPE_PACKAGE:
-
                 Value = ObjDesc->Package.Count;
                 break;
 
             case INTERNAL_TYPE_REFERENCE:
-
                 Value = 4;
                 break;
 
             default:
-
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Not Buf/Str/Pkg - found type %X\n",
                     ObjDesc->Common.Type));
                 Status = AE_AML_OPERAND_TYPE;
