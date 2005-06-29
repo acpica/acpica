@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -176,6 +176,7 @@ extern UINT32                   Gbl_TotalLines;
 extern struct stat              Gbl_StatBuf;
 extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
+extern UINT32                   Gbl_FileType;
 extern BOOLEAN                  Gbl_VerboseMode;
 extern BOOLEAN                  Gbl_BatchMode;
 extern BOOLEAN                  Gbl_MadeChanges;
@@ -187,8 +188,12 @@ extern BOOLEAN                  Gbl_WidenDeclarations;
 #define VERBOSE_PRINT(a)        if (Gbl_VerboseMode) printf PARAM_LIST(a)
 
 
-#define REPLACE_WHOLE_WORD      0
-#define REPLACE_SUBSTRINGS      1
+#define REPLACE_WHOLE_WORD      0x00
+#define REPLACE_SUBSTRINGS      0x01
+#define REPLACE_MASK            0x01
+
+#define EXTRA_INDENT_C          0x02
+#define INDENT_MASK             0x02
 
 
 /* Conversion table structs */

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -135,6 +135,7 @@ UINT32                  Gbl_TotalLines = 0;
 struct stat             Gbl_StatBuf;
 char                    *Gbl_FileBuffer;
 UINT32                  Gbl_FileSize;
+UINT32                  Gbl_FileType;
 BOOLEAN                 Gbl_VerboseMode = FALSE;
 BOOLEAN                 Gbl_BatchMode = FALSE;
 BOOLEAN                 Gbl_DebugStatementsMode = FALSE;
@@ -211,15 +212,20 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Declarations first */
 
-    "UINT32_BIT  ",             "u32                 ",             REPLACE_WHOLE_WORD,
-    "UINT64      ",             "u64                 ",             REPLACE_WHOLE_WORD,
-    "UINT32      ",             "u32                 ",             REPLACE_WHOLE_WORD,
-    "UINT16      ",             "u16                 ",             REPLACE_WHOLE_WORD,
-    "UINT8       ",             "u8                  ",             REPLACE_WHOLE_WORD,
-    "BOOLEAN     ",             "u8                  ",             REPLACE_WHOLE_WORD,
-    "char        ",             "char                ",             REPLACE_WHOLE_WORD,
-    "void        ",             "void                ",             REPLACE_WHOLE_WORD,
-    "int         ",             "int                 ",             REPLACE_WHOLE_WORD,
+    "UINT32_BIT  ",             "u32                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "INT64       ",             "s64                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "UINT64      ",             "u64                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "UINT32      ",             "u32                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "INT32       ",             "s32                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "UINT16      ",             "u16                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "INT16       ",             "s16                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "UINT8       ",             "u8                  ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "BOOLEAN     ",             "u8                  ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "char        ",             "char                ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "void        ",             "void                ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "char *      ",             "char *              ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "void *      ",             "void *              ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
+    "int         ",             "int                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C,
 
     /* Now do embedded typecasts */
 
@@ -238,19 +244,8 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "INT16",                    "s16",                      REPLACE_WHOLE_WORD,
     "INT8",                     "s8",                       REPLACE_WHOLE_WORD,
 
-    /* Put back anything we broke (such as anything with _INTxx_ in it) */
+    NULL,                       NULL,                       0};
 
-/* No longer needed?
-
-    "_s32_",                    "_INT32_",          REPLACE_SUBSTRINGS,
-    "_u32_",                    "_UINT32_",          REPLACE_SUBSTRINGS,
-    "_s16_",                    "_INT16_",          REPLACE_SUBSTRINGS,
-    "_u16_",                    "_UINT16_",          REPLACE_SUBSTRINGS,
-    "_s8_",                     "_INT8_",          REPLACE_SUBSTRINGS,
-    "_u8_",                     "_UINT8_",          REPLACE_SUBSTRINGS,
-*/
-
-NULL,                       NULL,                       0};
 
 ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
 
@@ -434,20 +429,20 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     "ASL_WALK_CALLBACK",                SRC_TYPE_SIMPLE,
     "ASL_WORD_ADDRESS_DESC",            SRC_TYPE_STRUCT,
     "COMMAND_INFO",                     SRC_TYPE_STRUCT,
-    "FACS_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
+//    "FACS_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
     "FACS_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT,
     "FACS_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
-    "FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
+//    "FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
     "FADT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT,
     "FADT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
     "RSDP_DESCRIPTOR",                  SRC_TYPE_STRUCT,
-    "RSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
+//    "RSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
     "RSDT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT,
     "RSDT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
     "UINT32_STRUCT",                    SRC_TYPE_STRUCT,
     "UINT64_OVERLAY",                   SRC_TYPE_UNION,
     "UINT64_STRUCT",                    SRC_TYPE_STRUCT,
-    "XSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
+//    "XSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE,
     "XSDT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT,
 
     NULL
@@ -507,8 +502,10 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     NULL,
     LinuxEliminateMacros,
     AcpiIdentifiers,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
-     CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+     CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
+     CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | 
+     CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS | CVT_SPACES_TO_TABS8),
 
     /* C header files */
@@ -518,7 +515,8 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxConditionalIdentifiers,
     NULL,
     AcpiIdentifiers,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+     CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
      CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS| CVT_REDUCE_TYPEDEFS | CVT_SPACES_TO_TABS8),
 };
@@ -543,7 +541,8 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+     CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
@@ -552,7 +551,8 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+     CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 };
 
 
@@ -590,15 +590,15 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
-    "(c) 1999 - 2003",      "(c) 1999 - 2003",     REPLACE_WHOLE_WORD,
+    "(c) 1999 - 2003",      "(c) 1999 - 2003",          REPLACE_WHOLE_WORD,
 
 #if 0
-    "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",           REPLACE_WHOLE_WORD,
-    "ACPI_NATIVE_UINT *",        "ACPI_NATIVE_UINT *",           REPLACE_WHOLE_WORD,
-    "ACPI_NATIVE_UINT",          "ACPI_NATIVE_UINT",           REPLACE_WHOLE_WORD,
-    "ACPI_NATIVE_INT",      "ACPI_NATIVE_INT",           REPLACE_WHOLE_WORD,
-    "ACPI_NATIVE_INT *",         "ACPI_NATIVE_INT *",           REPLACE_WHOLE_WORD,
-    "ACPI_NATIVE_INT",           "ACPI_NATIVE_INT",           REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",         REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_UINT *",   "ACPI_NATIVE_UINT *",       REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",         REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_INT",      "ACPI_NATIVE_INT",          REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_INT *",    "ACPI_NATIVE_INT *",        REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_INT",      "ACPI_NATIVE_INT",          REPLACE_WHOLE_WORD,
 #endif
 
     NULL,                    NULL, 0
@@ -618,7 +618,8 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+     CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
@@ -627,7 +628,8 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+     CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 };
 
 
@@ -733,7 +735,6 @@ AsDisplayStats (void)
     printf ("%6d Long lines found\n", Gbl_LongLines);
     printf ("%6.1f Ratio of code to whitespace\n", ((float) Gbl_SourceLines / (float) Gbl_WhiteLines));
     printf ("%6.1f Ratio of code to comments\n", ((float) Gbl_SourceLines / (float) Gbl_CommentLines));
-
     return;
 }
 
@@ -785,8 +786,9 @@ main (
     UINT32                  FileType;
 
 
-    printf ("ACPI Source Code Conversion Utility ");
-    printf ("version [%s]\n", __DATE__);
+    printf ("ACPI Source Code Conversion Utility");
+    printf (" version %8.8X", ((UINT32) ACPI_CA_VERSION));
+    printf (" [%s]\n\n",  __DATE__);
 
     if (argc < 2)
     {

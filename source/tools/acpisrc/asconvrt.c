@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.41 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -514,7 +514,7 @@ AsReplaceString (
 
         else
         {
-            if (Type == REPLACE_WHOLE_WORD)
+            if ((Type & REPLACE_MASK) == REPLACE_WHOLE_WORD)
             {
                 if (!AsMatchExactWord (SubString1, TargetLength))
                 {
@@ -524,6 +524,14 @@ AsReplaceString (
             }
 
             SubBuffer = AsReplaceData (SubString1, TargetLength, Replacement, ReplacementLength);
+/*
+            if (((Type & INDENT_MASK) == EXTRA_INDENT_C) &&
+                (Gbl_FileType == FILE_TYPE_SOURCE))
+            {
+                SubBuffer = AsReplaceData (SubBuffer, 0, "    ", 4);
+            }
+*/
+
             ReplaceCount++;
         }
     }
@@ -1202,9 +1210,14 @@ AsInsertPrefix (
 
             if (!strncmp (SubString - InsertLength, InsertString, InsertLength))
             {
-                /* Already present, add spaces after to align structure members */
+                /* Add spaces if not already at the end-of-line */
 
-                AsInsertData (SubBuffer + KeywordLength, "        ", 8);
+                if (*(SubBuffer + KeywordLength) != '\n')
+                {
+                    /* Already present, add spaces after to align structure members */
+
+                    AsInsertData (SubBuffer + KeywordLength, "        ", 8);
+                }
                 goto Next;
             }
 

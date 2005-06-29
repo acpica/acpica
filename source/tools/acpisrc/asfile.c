@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -594,6 +594,8 @@ AsProcessOneFile (
         printf ("Could not allocate buffer for file pathnames\n");
         return -1;
     }
+
+    Gbl_FileType = FileType;
 
     /* Generate the source pathname and read the file */
 
