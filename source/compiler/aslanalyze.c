@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -1092,6 +1092,16 @@ AnMethodAnalysisWalkEnd (
 
         Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
         Op->Asl.ParentMethod = MethodInfo->Op;      /* Used in the "typing" pass later */
+
+        /*
+         * If there is a peer node after the return statement, then this
+         * node is unreachable code -- i.e., it won't be executed because of the
+         * preceeding Return().
+         */
+        if (Op->Asl.Next)
+        {
+            AslError (ASL_WARNING, ASL_MSG_UNREACHABLE_CODE, Op->Asl.Next, NULL);
+        }
         break;
 
 
