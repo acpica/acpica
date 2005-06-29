@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -170,6 +170,8 @@ typedef struct asl_parse_node
     UINT32                      AcpiBtype;
     UINT32                      AmlLength;
     UINT32                      AmlSubtreeLength;
+    UINT32                      FinalAmlLength;
+    UINT32                      FinalAmlOffset;
     UINT8                       AmlOpcodeLength;
     UINT8                       AmlPkgLenBytes;
     UINT16                      Flags;
@@ -278,7 +280,8 @@ typedef enum
     ASL_FILE_HEX_OUTPUT,
     ASL_FILE_NAMESPACE_OUTPUT,
     ASL_FILE_DEBUG_OUTPUT,
-    ASL_FILE_ASM_SOURCE_OUTPUT
+    ASL_FILE_ASM_SOURCE_OUTPUT,
+    ASL_FILE_C_SOURCE_OUTPUT
 
 } ASL_FILE_TYPES;
 
