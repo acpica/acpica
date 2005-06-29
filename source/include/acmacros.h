@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
+ *       $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -233,6 +233,7 @@
 #define ROUND_UP_TO_32BITS(a)           ROUND_UP(a,4)
 #define ROUND_UP_TO_NATIVE_WORD(a)      ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
 
+#define ROUND_PTR_UP_TO_4(a,b)          ((b *)(((NATIVE_UINT)(a) + 3) & ~3))
 
 #ifdef DEBUG_ASSERT
 #undef DEBUG_ASSERT
@@ -240,19 +241,19 @@
 
 
 /*
- * An ACPI_HANDLE (which is actually an ACPI_NAMED_OBJECT*) can appear in some contexts,
- * such as on apObjStack, where a pointer to an ACPI_OBJECT_INTERNAL can also
+ * An ACPI_HANDLE (which is actually an ACPI_NAMESPACE_NODE *) can appear in some contexts,
+ * such as on apObjStack, where a pointer to an ACPI_OPERAND_OBJECT  can also
  * appear.  This macro is used to distinguish them.
  *
  * The DataType field is the first field in both structures.
  */
 
-#define VALID_DESCRIPTOR_TYPE(d,t)      (((ACPI_NAMED_OBJECT*)d)->DataType == t)
+#define VALID_DESCRIPTOR_TYPE(d,t)      (((ACPI_NAMESPACE_NODE *)d)->DataType == t)
 
 
 /* Macro to test the object type */
 
-#define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OBJECT_INTERNAL *)d)->Common.Type == (UINT8)t)
+#define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OPERAND_OBJECT  *)d)->Common.Type == (UINT8)t)
 
 /* Macro to check the table flags for SINGLE or MULTIPLE tables are allowed */
 
@@ -351,7 +352,7 @@
 
 #ifdef ACPI_DEBUG
 
-#define MODULE_NAME(name)               static char *_THIS_MODULE = name
+#define MODULE_NAME(name)               static char *_THIS_MODULE = name;
 
 /*
  * Function entry tracing.
