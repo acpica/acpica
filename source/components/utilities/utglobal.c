@@ -134,6 +134,7 @@
  *
  ******************************************************************************/
 
+char                        *Gbl_AcpiCaVersion = ACPI_CA_VERSION;
 
 /* 
  * We want the debug switches statically initialized so they 
@@ -159,56 +160,6 @@ UINT32                      Gbl_NestingLevel = 0;
 UINT32                      Gbl_SystemFlags = 0;
 UINT32                      Gbl_StartupFlags = 0;
 
-/* 
- * Human-readable decode of exception codes, mostly for debugging
- * These need to match the corresponding defines
- * Note that AE_PENDING is not an error, but indicates
- * that other alternatives should be checked.
- */
-char                        *Gbl_ExceptionNames[] = 
-{ 
-    "AE_OK",
-    "AE_PENDING",
-    "AE_AML_ERROR",
-    "AE_RETURN_VALUE",
-    "AE_ERROR",
-    "AE_NO_ACPI_TABLES",
-    "AE_NO_NAMESPACE",
-    "AE_NO_MEMORY",
-    "AE_BAD_SIGNATURE",
-    "AE_BAD_HEADER",
-    "AE_BAD_CHECKSUM",
-    "AE_BAD_PARAMETER",
-    "AE_BAD_CHARACTER",
-    "AE_BAD_PATHNAME",
-    "AE_BAD_DATA",
-    "AE_NOT_FOUND",
-    "AE_NOT_EXIST",
-    "AE_EXIST",
-    "AE_TYPE",
-    "AE_NULL_ENTRY",
-    "AE_BUFFER_OVERFLOW",
-    "AE_STACK_OVERFLOW",
-    "AE_STACK_UNDERFLOW",
-    "AE_NOT_IMPLEMENTED",
-    "AE_VERSION_MISMATCH",
-    "AE_SUPPORT",
-    "AE_SHARE",
-    "AE_LIMIT",
-    "AE_TIME",
-    "AE_TERMINATE",
-    "AE_DEPTH",
-    "AE_TRUE",
-    "AE_FALSE",
-    "AE_UNKNOWN_STATUS"
-};
-
-
-
-/* Message strings */
-
-char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
-char                        *Gbl_AcpiCaVersion = ACPI_CA_VERSION;
 
 
 
@@ -296,12 +247,89 @@ UINT8                       Gbl_NsProperties[] =
 };
 
 
+/******************************************************************************
+ *
+ * Table globals
+ *
+ ******************************************************************************/
 
+
+ACPI_TABLE_DESC             Gbl_AcpiTables[NUM_ACPI_TABLES];
+
+
+ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES] =
+{
+               /* Name,   Signature,  Signature size,    How many allowed?,   Supported?  Global typed pointer */
+
+    /* RSDP */ {"RSDP",   RSDP_SIG, sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
+    /* APIC */ {APIC_SIG, APIC_SIG, sizeof (APIC_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_APIC},
+    /* DSDT */ {DSDT_SIG, DSDT_SIG, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_DSDT},
+    /* FACP */ {FACP_SIG, FACP_SIG, sizeof (FACP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACP},
+    /* FACS */ {FACS_SIG, FACS_SIG, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACS},
+    /* PSDT */ {PSDT_SIG, PSDT_SIG, sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
+    /* RSDT */ {RSDT_SIG, RSDT_SIG, sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
+    /* SSDT */ {SSDT_SIG, SSDT_SIG, sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
+    /* SBST */ {SBST_SIG, SBST_SIG, sizeof (SBST_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_SBST},
+    /* BOOT */ {BOOT_SIG, BOOT_SIG, sizeof (BOOT_SIG)-1, ACPI_TABLE_SINGLE,   AE_SUPPORT, NULL}
+};
+
+ACPI_INIT_DATA Gbl_AcpiInitData;
+
+
+
+/******************************************************************************
+ *
+ * Strings and procedures used for debug only
+ *
+ ******************************************************************************/
 
 #ifdef ACPI_DEBUG
-char                        Gbl_BadType[] = "UNDEFINED";
 
-#define TYPE_NAME_LENGTH    9                   /* Maximum length of each string */
+char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
+static char                 Gbl_BadType[] = "UNDEFINED";
+
+
+/* Names for the mutexes used in the subsystem */
+
+static char                 *Gbl_MutexNames[] =
+{
+    "MTX_Execute",
+    "MTX_Interpreter",
+    "MTX_Namespace",
+    "MTX_Memory",
+    "MTX_Gp_Event",
+    "MTX_Fixed_Event",
+    "MTX_Op_Regions",
+    "MTX_Debug_Command",
+    "MTX_Debugger"
+};
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmGetMutexName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ * 
+ * DESCRIPTION: Translate a mutex ID into a name string (Debug only)
+ *
+ ****************************************************************************/
+
+char *
+CmGetMutexName (
+    UINT32                  MutexId)
+{
+
+    if (MutexId > MAX_MTX)
+    {
+        return ("Invalid Mutex ID");
+    }
+
+    return (Gbl_MutexNames[MutexId]);
+}
+
 
 /* 
  * Elements of Gbl_NsTypeNames below must match
@@ -312,7 +340,9 @@ char                        Gbl_BadType[] = "UNDEFINED";
  * indicatewhat type is actually going to be stored for this entry.
  */
 
-char                        *Gbl_NsTypeNames[] =  /* printable names of types */
+#define TYPE_NAME_LENGTH    9                       /* Maximum length of each string */
+
+static char                 *Gbl_NsTypeNames[] =    /* printable names of ACPI types */
 {
     "Untyped",
     "Number",
@@ -358,51 +388,136 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
 };
 
 
-/* Names for the mutexes used in the subsystem */
 
-char                        *Gbl_MutexNames[] =
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmGetTypeName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ * 
+ * DESCRIPTION: Translate a Type ID into a name string (Debug only)
+ *
+ ****************************************************************************/
+
+char *
+CmGetTypeName (
+    UINT32                  Type)
 {
-    "MTX_Execute",
-    "MTX_Interpreter",
-    "MTX_Namespace",
-    "MTX_Memory",
-    "MTX_Gp_Event",
-    "MTX_Fixed_Event",
-    "MTX_Op_Regions",
-    "MTX_Debug_Command",
-    "MTX_Debugger"
-};
 
+    if (Type > MAX_MTX)
+    {
+        return (Gbl_BadType);
+    }
+
+    return (Gbl_NsTypeNames[Type]);
+}
 
 #endif
 
-/******************************************************************************
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmValidObjectType
  *
- * Table globals
+ * PARAMETERS:  None.
  *
- ******************************************************************************/
+ * RETURN:      TRUE if valid object type
+ * 
+ * DESCRIPTION: Validate an object type
+ *
+ ****************************************************************************/
 
-
-ACPI_TABLE_DESC             Gbl_AcpiTables[NUM_ACPI_TABLES];
-
-
-ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES] =
+BOOLEAN
+CmValidObjectType (
+    UINT32                  Type)
 {
-               /* Name,   Signature,  Signature size,    How many allowed?,   Supported?  Global typed pointer */
+    
+    if (Type > ACPI_TYPE_MAX)
+    {
+        if ((Type < INTERNAL_TYPE_BEGIN) ||
+            (Type > INTERNAL_TYPE_MAX))
+        {
+            return FALSE;
+        }
+    }
 
-    /* RSDP */ {"RSDP",   RSDP_SIG, sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
-    /* APIC */ {APIC_SIG, APIC_SIG, sizeof (APIC_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_APIC},
-    /* DSDT */ {DSDT_SIG, DSDT_SIG, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_DSDT},
-    /* FACP */ {FACP_SIG, FACP_SIG, sizeof (FACP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACP},
-    /* FACS */ {FACS_SIG, FACS_SIG, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACS},
-    /* PSDT */ {PSDT_SIG, PSDT_SIG, sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
-    /* RSDT */ {RSDT_SIG, RSDT_SIG, sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
-    /* SSDT */ {SSDT_SIG, SSDT_SIG, sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
-    /* SBST */ {SBST_SIG, SBST_SIG, sizeof (SBST_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_SBST},
-    /* BOOT */ {BOOT_SIG, BOOT_SIG, sizeof (BOOT_SIG)-1, ACPI_TABLE_SINGLE,   AE_SUPPORT, NULL}
+    return TRUE;
+}
+
+
+/* 
+ * Human-readable decode of exception codes, mostly for debugging
+ * These need to match the corresponding defines
+ * Note that AE_PENDING is not an error, but indicates
+ * that other alternatives should be checked.
+ */
+static char                 *Gbl_ExceptionNames[] = 
+{ 
+    "AE_OK",
+    "AE_PENDING",
+    "AE_AML_ERROR",
+    "AE_RETURN_VALUE",
+    "AE_ERROR",
+    "AE_NO_ACPI_TABLES",
+    "AE_NO_NAMESPACE",
+    "AE_NO_MEMORY",
+    "AE_BAD_SIGNATURE",
+    "AE_BAD_HEADER",
+    "AE_BAD_CHECKSUM",
+    "AE_BAD_PARAMETER",
+    "AE_BAD_CHARACTER",
+    "AE_BAD_PATHNAME",
+    "AE_BAD_DATA",
+    "AE_NOT_FOUND",
+    "AE_NOT_EXIST",
+    "AE_EXIST",
+    "AE_TYPE",
+    "AE_NULL_ENTRY",
+    "AE_BUFFER_OVERFLOW",
+    "AE_STACK_OVERFLOW",
+    "AE_STACK_UNDERFLOW",
+    "AE_NOT_IMPLEMENTED",
+    "AE_VERSION_MISMATCH",
+    "AE_SUPPORT",
+    "AE_SHARE",
+    "AE_LIMIT",
+    "AE_TIME",
+    "AE_TERMINATE",
+    "AE_DEPTH",
+    "AE_TRUE",
+    "AE_FALSE",
+    "AE_UNKNOWN_STATUS"
 };
 
-ACPI_INIT_DATA Gbl_AcpiInitData;
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmFormatException
+ *
+ * PARAMETERS:  Status              - Acpi status to be formatted
+ *
+ * RETURN:      Formatted status string
+ *
+ * DESCRIPTION: Convert an ACPI exception to a string
+ *
+ ****************************************************************************/
+
+char *
+CmFormatException (
+    ACPI_STATUS             Status)
+{
+
+    if (Status > ACPI_MAX_STATUS)
+    {
+        return "UNKNOWN_STATUS";
+    }
+
+    return (Gbl_ExceptionNames [Status]);
+}
+
 
 
 /****************************************************************************
