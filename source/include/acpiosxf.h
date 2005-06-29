@@ -12,7 +12,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -397,6 +397,23 @@ UINT32
 AcpiOsGetLine (
     char                    *Buffer);
 
+
+/*
+ * Directory manipulation
+ */
+
+void *
+AcpiOsOpenDirectory (
+    char                    *Pathname,
+    char                    *WildcardSpec);
+
+char *
+AcpiOsGetNextFilename (
+    void                    *DirHandle);
+
+void
+AcpiOsCloseDirectory (
+    void                    *DirHandle);
 
 /*
  * Debug
