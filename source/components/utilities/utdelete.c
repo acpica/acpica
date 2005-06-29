@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.94 $
+ *              $Revision: 1.96 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,6 +119,7 @@
 #include "acpi.h"
 #include "acinterp.h"
 #include "acnamesp.h"
+#include "acevents.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utdelete")
@@ -205,6 +206,15 @@ AcpiUtDeleteInternalObj (
         /* Free the (variable length) element pointer array */
 
         ObjPointer = Object->Package.Elements;
+        break;
+
+
+    case ACPI_TYPE_DEVICE:
+
+        if (Object->Device.GpeBlock)
+        {
+            (void) AcpiEvDeleteGpeBlock (Object->Device.GpeBlock);
+        }
         break;
 
 
