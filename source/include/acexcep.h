@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.47 $
+ *       $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -116,13 +116,6 @@
 
 #ifndef __ACEXCEP_H__
 #define __ACEXCEP_H__
-
-/*
- * TBD: Temp until global rename
- */
-
-#define AcpiUtFormatException AcpiFormatException
-
 
 
 /*
