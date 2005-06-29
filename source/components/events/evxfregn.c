@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -331,7 +331,8 @@ AcpiInstallAddressSpaceHandler (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
         "Installing address handler for region %s(%X) on Device %4.4s %p(%p)\n",
-        AcpiUtGetRegionName (SpaceId), SpaceId, Node->Name.Ascii, Node, ObjDesc));
+        AcpiUtGetRegionName (SpaceId), SpaceId,
+        AcpiUtGetNodeName (Node), Node, ObjDesc));
 
     /*
      * Install the handler
