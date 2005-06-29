@@ -15,15 +15,18 @@
  |                                  legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.2 $
- | $Date: 2005/06/29 16:43:40 $
+ | $Revision: 1.3 $
+ | $Date: 2005/06/29 16:43:41 $
  | $Log: evsci.c,v $
- | Revision 1.2  2005/06/29 16:43:40  aystarik
- | Detabified.
+ | Revision 1.3  2005/06/29 16:43:41  aystarik
+ | First BeOS build.
  |
  | 
- | date	99.01.12.00.08.00;	author grsmith1;	state Exp;
+ | date	99.01.13.22.49.00;	author grsmith1;	state Exp;
  |
+ * 
+ * 3     1/13/99 2:49p Grsmith1
+ * First BeOS build.
  * 
  * 2     1/11/99 4:08p Grsmith1
  * Detabified.
@@ -81,7 +84,7 @@ int iInitializeSCI (int iProgramSCI)
 {
     int iErrorMask=0, iStatusOfIrq;
 
-//  enter_function (GetMasterLogHandle(), LOGFILE, "iInitializeSCI",
+/  enter_function (GetMasterLogHandle(), LOGFILE, "iInitializeSCI",
 //      "iProgramSCI=%d", iProgramSCI);
 
     //  Set up the System Control Interrupt (SCI) as required.
@@ -203,9 +206,9 @@ int iVerifyAcpiTablesPresent (char *pcTestName)
 {
     int iErrorMask=0;
 
-//  enter_function (GetMasterLogHandle(), LOGFILE, "iVerifyAcpiTablesPresent",
-//      NULL);
-
+/*  enter_function (GetMasterLogHandle(), LOGFILE, "iVerifyAcpiTablesPresent",
+      NULL);
+*/
     if (__iAcpiLibInitStatus == E_NO_ACPI_TBLS)
     {
         printf_bu ("\nACPI tables are required for %s but not available",
@@ -217,9 +220,9 @@ int iVerifyAcpiTablesPresent (char *pcTestName)
             "\nCommand line help is available with the '/?' switch.\n");
     }
 
-//  exit_function (GetMasterLogHandle(), LOGFILE,
-//      "iVerifyAcpiTablesPresent", "iErrorMask=%d", iErrorMask);
-
+/*  exit_function (GetMasterLogHandle(), LOGFILE,
+      "iVerifyAcpiTablesPresent", "iErrorMask=%d", iErrorMask);
+*/
     return iErrorMask;
 
 }   /*  iVerifyAcpiTablesPresent    */
@@ -247,10 +250,10 @@ int AcpiEnable (char *pcTestName, int iFlags)
 {
     int iErrorMask=0;
 
-//  enter_function (GetMasterLogHandle(), LOGFILE,
-//      "iInstallSCIHandlerXferToACPI", "pcTestName=%p, iFlags=%d",
-//      pcTestName, iFlags);
-
+/*  enter_function (GetMasterLogHandle(), LOGFILE,
+      "iInstallSCIHandlerXferToACPI", "pcTestName=%p, iFlags=%d",
+      pcTestName, iFlags);
+*/
     if (NULL == pcTestName)
         pcTestName = "";    /*  create valid pointer    */
 
@@ -289,10 +292,10 @@ int AcpiEnable (char *pcTestName, int iFlags)
 
         /*  do not change the SCI sensitivity while in legacy mode  */
 
-// TOO LOW LEVEL FOR OS-independent code!!
-//
-//      iErrorMask |= iInitializeSCI (FALSE);
+/* TOO LOW LEVEL FOR OS-independent code!!
 
+      iErrorMask |= iInitializeSCI (FALSE);
+*/
         if (0 == iErrorMask)
         {   /*  SCI configured correctly    */
 
@@ -315,8 +318,9 @@ int AcpiEnable (char *pcTestName, int iFlags)
                     printf_bu ("\nTransition to ACPI mode successful\n");
 
                     /*  verify SCI sensitivity while in ACPI mode   */
-// Nope, DON'T DO IT
-//                  iErrorMask |= iInitializeSCI (iFlags & PROGRAM_SCI_LEVEL_SENSITIVITY);
+/* Nope, DON'T DO IT
+                    iErrorMask |= iInitializeSCI (iFlags & PROGRAM_SCI_LEVEL_SENSITIVITY);
+*/
                 }
 
                 else
@@ -337,9 +341,9 @@ int AcpiEnable (char *pcTestName, int iFlags)
         }   /*  SCI configured correctly    */
     }   /*  ACPI tables are available or not required   */
 
-//  exit_function (GetMasterLogHandle(), LOGFILE,
-//      "iInstallSCIHandlerXferToACPI", "iErrorMask=%d", iErrorMask);
-
+/*  exit_function (GetMasterLogHandle(), LOGFILE,
+      "iInstallSCIHandlerXferToACPI", "iErrorMask=%d", iErrorMask);
+*/
     return iErrorMask;
 
 }   /*  iInstallSCIHandlerXferToACPI    */
@@ -362,9 +366,9 @@ int AcpiDisable ()
 {
     int iErrorMask=0;
 
-//  enter_function (GetMasterLogHandle(), LOGFILE,
-//      "vUninstallSCIHandlerXferToLegacy", NULL);
-
+/*  enter_function (GetMasterLogHandle(), LOGFILE,
+      "vUninstallSCIHandlerXferToLegacy", NULL);
+*/
     /*  restore IRQ before returning to legacy mode */
 
     if (IRQ_EDGE == iEdgeLevelSave)
@@ -422,9 +426,9 @@ int AcpiDisable ()
 
     vUninstallSciHandler();
 
-//  exit_function (GetMasterLogHandle(), LOGFILE,
-//      "vUninstallSCIHandlerXferToLegacy", "iErrorMask=%d", iErrorMask);
-
+/*  exit_function (GetMasterLogHandle(), LOGFILE,
+      "vUninstallSCIHandlerXferToLegacy", "iErrorMask=%d", iErrorMask);
+*/
     return iErrorMask;
 
 }   /*  iUninstallSCIHandlerXferToLegacy    */
