@@ -126,23 +126,6 @@ extern void CheckTrashA(char *Where,
 #endif
 
 
-/* What are these ?? TBD */
-
-extern INT32        OBJECT_DESCRIPTOR_PER_AMLPRIV;
-extern INT32        OBJECT_DESCRIPTOR_IS_VOID;
-
-
-
-/* Macros to allocate and deallocate structures */
-/* GET RID OF THESE, confusing!! TBD!! */
-
-#ifdef DELETE
-#undef DELETE
-#endif
-
-#define  x_NEW(type)          ((type *)OsdCallocate (sizeof(type)))
-#define  x_DELETE(ptr)        OsdFree ((void *)(ptr)), (ptr) = 0
-
 /* 
  * Macro to test for out-of-range subscript
  * No parens needed around Array in expansion since the actual parameter
@@ -154,34 +137,8 @@ extern INT32        OBJECT_DESCRIPTOR_IS_VOID;
     (UINT32)(Subscript) >= (sizeof(Array)/sizeof(Array[0])))
 
 
-/* Object Stack */
-
-#ifdef __ISIDATA_C__
-void            *ObjStack[AML_EXPR_MAX_NEST];  /* values are NsHandle or ObjHandle */
-INT32           ObjStackTop = 0;
-
-#else
-extern void     *ObjStack[];  /* values are NsHandle or ObjHandle */
-extern INT32    ObjStackTop;
-#endif
-
-
 #define PUSH_PKG_LENGTH         1
 #define DO_NOT_PUSH_PKG_LENGTH  0
-
-
-/* 
- * Method Stack, containing locals and args
- * per level, 0-7 are Local# and 8-14 are Arg#
- */
-
-#define LCLBASE             0
-#define NUMLCL              8
-#define ARGBASE             (LCLBASE+NUMLCL)
-#define NUMARG              7
-
-extern OBJECT_DESCRIPTOR    *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
-extern INT32                MethodStackTop;
 
 
 
