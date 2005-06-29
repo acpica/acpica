@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -197,10 +197,13 @@ AcpiExEnterInterpreter (void)
 void
 AcpiExExitInterpreter (void)
 {
+    ACPI_STATUS             Status;
+
+
     ACPI_FUNCTION_TRACE ("ExExitInterpreter");
 
 
-    AcpiUtReleaseMutex (ACPI_MTX_EXECUTE);
+    Status = AcpiUtReleaseMutex (ACPI_MTX_EXECUTE);
 
     return_VOID;
 }
