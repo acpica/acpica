@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.35 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -153,6 +153,7 @@ AcpiExCheckObjectType (
 {
     PROC_NAME ("ExCheckObjectType");
 
+
     if (TypeNeeded == ACPI_TYPE_ANY)
     {
         /* All types OK, so we don't perform any typechecks */
@@ -213,7 +214,7 @@ AcpiExResolveOperands (
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
         return_ACPI_STATUS (AE_AML_BAD_OPCODE);
     }
@@ -222,7 +223,7 @@ AcpiExResolveOperands (
     ArgTypes = OpInfo->RuntimeArgs;
     if (ArgTypes == ARGI_INVALID_OPCODE)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - %X is not a valid AML opcode\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - %X is not a valid AML opcode\n",
             Opcode));
 
         return_ACPI_STATUS (AE_AML_INTERNAL);
@@ -239,12 +240,11 @@ AcpiExResolveOperands (
      * to) the required type; if stack underflows; or upon
      * finding a NULL stack entry (which should not happen).
      */
-
     while (GET_CURRENT_ARG_TYPE (ArgTypes))
     {
         if (!StackPtr || !*StackPtr)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null stack entry at %X\n", 
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null stack entry at %X\n",
                 StackPtr));
 
             return_ACPI_STATUS (AE_AML_INTERNAL);
@@ -284,9 +284,8 @@ AcpiExResolveOperands (
                 /*
                  * Decode the Reference
                  */
-
                 OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-                if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+                if (OpInfo->Class == AML_CLASS_UNKNOWN)
                 {
                     return_ACPI_STATUS (AE_AML_BAD_OPCODE);
                 }
@@ -302,6 +301,7 @@ AcpiExResolveOperands (
                 case AML_INDEX_OP:
                 case AML_ARG_OP:
                 case AML_LOCAL_OP:
+                case AML_REVISION_OP:
 
                     DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                         "Reference Opcode: %s\n", OpInfo->Name)));
@@ -333,7 +333,6 @@ AcpiExResolveOperands (
         /*
          * Get one argument type, point to the next
          */
-
         ThisArgType = GET_CURRENT_ARG_TYPE (ArgTypes);
         INCREMENT_ARG_LIST (ArgTypes);
 
@@ -342,7 +341,6 @@ AcpiExResolveOperands (
          * Handle cases where the object does not need to be
          * resolved to a value
          */
-
         switch (ThisArgType)
         {
 
@@ -375,7 +373,6 @@ AcpiExResolveOperands (
                  * Convert an indirect name ptr to direct name ptr and put
                  * it on the stack
                  */
-
                 TempNode = ObjDesc->Reference.Object;
                 AcpiUtRemoveReference (ObjDesc);
                 (*StackPtr) = TempNode;
@@ -393,7 +390,6 @@ AcpiExResolveOperands (
              * Instead, we just want to store the reference object.
              * -- All others must be resolved below.
              */
-
             if ((Opcode == AML_STORE_OP) &&
                 ((*StackPtr)->Common.Type == INTERNAL_TYPE_REFERENCE) &&
                 ((*StackPtr)->Reference.Opcode == AML_INDEX_OP))
@@ -407,7 +403,6 @@ AcpiExResolveOperands (
         /*
          * Resolve this object to a value
          */
-
         Status = AcpiExResolveToValue (StackPtr, WalkState);
         if (ACPI_FAILURE (Status))
         {
@@ -470,7 +465,6 @@ AcpiExResolveOperands (
         /*
          * The more complex cases allow multiple resolved object types
          */
-
         case ARGI_INTEGER:   /* Number */
 
             /*
