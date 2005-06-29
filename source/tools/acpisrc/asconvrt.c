@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -663,7 +663,6 @@ AsMixedCaseToUnderscores (
 
     while (*SubBuffer)
     {
-
         /*
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
@@ -711,6 +710,13 @@ AsMixedCaseToUnderscores (
             continue;
         }
 
+        /* Ignore standard escape sequences (\n, \r, etc.)  Not Hex or Octal escapes */
+
+        if (SubBuffer[0] == '\\')
+        {
+            SubBuffer += 2;
+            continue;
+        }
 
         /*
          * Convert each pair of letters that matches the form:
