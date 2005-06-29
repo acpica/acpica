@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.56 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 #include <ctype.h>
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslanalyze")
+        ACPI_MODULE_NAME    ("aslanalyze")
 
 
 /*******************************************************************************
@@ -521,7 +521,7 @@ AnCheckForReservedMethod (
 
     for (i = 0; ReservedMethods[i].Name; i++)
     {
-        if (!STRCMP (Node->ExternalName, ReservedMethods[i].Name))
+        if (!ACPI_STRCMP (Node->ExternalName, ReservedMethods[i].Name))
         {
             Gbl_ReservedMethods++;
 
@@ -635,7 +635,7 @@ AnMethodAnalysisWalkBegin (
     char                    ArgName[] = "Arg0";
 
 
-    PROC_NAME ("AnMethodAnalysisWalkBegin");
+    ACPI_FUNCTION_NAME ("AnMethodAnalysisWalkBegin");
 
 
     switch (Node->ParseOpcode)
@@ -1179,6 +1179,15 @@ AnOperandTypecheckWalkEnd (
     case AML_CLASS_CREATE:
     case AML_CLASS_CONTROL:
     case AML_CLASS_RETURN_VALUE:
+
+        /* TBD: Change class or fix typechecking for these */
+
+        if ((Node->AmlOpcode == AML_BUFFER_OP) ||
+            (Node->AmlOpcode == AML_PACKAGE_OP) ||
+            (Node->AmlOpcode == AML_VAR_PACKAGE_OP))
+        {
+            break;
+        }
 
         RuntimeArgTypes2 = 0;
         while ((ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes)))
