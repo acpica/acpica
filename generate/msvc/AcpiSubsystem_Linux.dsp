@@ -233,19 +233,19 @@ SOURCE=..\..\source_linux\components\interpreter\executer\exnames.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\executer\exoparg1.c
+SOURCE=..\..\source_linux\components\interpreter\executer\exoparg1.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\executer\exoparg2.c
+SOURCE=..\..\source_linux\components\interpreter\executer\exoparg2.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\executer\exoparg3.c
+SOURCE=..\..\source_linux\components\interpreter\executer\exoparg3.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\executer\exoparg6.c
+SOURCE=..\..\source_linux\components\interpreter\executer\exoparg6.c
 # End Source File
 # Begin Source File
 
