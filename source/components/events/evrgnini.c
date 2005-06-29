@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.47 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -257,7 +257,7 @@ AcpiEvPciConfigRegionSetup (
          *  routine checks before we get here, but we check again just in case.
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-            "Attempting to init a region %X, with no handler\n", RegionObj));
+            "Attempting to init a region %p, with no handler\n", RegionObj));
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
@@ -517,12 +517,20 @@ AcpiEvInitializeRegion (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    if (RegionObj->Common.Flags & AOPOBJ_OBJECT_INITIALIZED)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
     Node = AcpiNsGetParentObject (RegionObj->Region.Node);
+
+
     SpaceId = RegionObj->Region.SpaceId;
 
     RegionObj->Region.AddrHandler = NULL;
     RegionObj->Region.Extra->Extra.Method_REG = NULL;
-    RegionObj->Region.Flags &= ~(AOPOBJ_INITIALIZED);
+    RegionObj->Common.Flags &= ~(AOPOBJ_SETUP_COMPLETE);
+    RegionObj->Common.Flags |= AOPOBJ_OBJECT_INITIALIZED;
 
     /*
      *  Find any "_REG" associated with this region definition
@@ -590,6 +598,7 @@ AcpiEvInitializeRegion (
                      */
                     AcpiEvAssociateRegionAndHandler (HandlerObj, RegionObj,
                             AcpiNsLocked);
+
                     return_ACPI_STATUS (AE_OK);
                 }
 
