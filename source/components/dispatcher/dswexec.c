@@ -172,13 +172,13 @@ DsExecBeginOp (
      */
 
     if ((WalkState->ControlState) &&
-        (WalkState->ControlState->Exec == CONTROL_CONDITIONAL_EXECUTING))
+        (WalkState->ControlState->Common.State == CONTROL_CONDITIONAL_EXECUTING))
     {
         DEBUG_PRINT (TRACE_EXEC, ("BeginOp: Exec predicate Op=%X State=%X\n",
                         Op, WalkState));
 
-        WalkState->ControlState->Exec           = CONTROL_PREDICATE_EXECUTING;
-        WalkState->ControlState->PredicateOp    = Op;         /* Save start of predicate */
+        WalkState->ControlState->Common.State          = CONTROL_PREDICATE_EXECUTING;
+        WalkState->ControlState->Control.PredicateOp    = Op;         /* Save start of predicate */
     }
 
 /*
@@ -539,7 +539,7 @@ DsExecEndOp (
 
         /* Tell the walk loop to preempt this running method and execute the new method */
 
-        Status = AE_PENDING;
+        Status = AE_CTRL_PENDING;
 
         /* Return now; we don't want to disturb anything, especially the operand count! */
 
@@ -608,12 +608,12 @@ DsExecEndOp (
      */
 
     if ((WalkState->ControlState) &&
-        (WalkState->ControlState->Exec == CONTROL_PREDICATE_EXECUTING) &&
-        (WalkState->ControlState->PredicateOp == Op))
+        (WalkState->ControlState->Common.State == CONTROL_PREDICATE_EXECUTING) &&
+        (WalkState->ControlState->Control.PredicateOp == Op))
     {
         /* Completed the predicate, the result must be a number */
 
-        WalkState->ControlState->Exec = 0;
+        WalkState->ControlState->Common.State = 0;
 
 /* TBD: REDO now that we have the resultobj mechanism */
 
@@ -664,18 +664,18 @@ DsExecEndOp (
 
         if (ObjDesc->Number.Value)
         {
-            WalkState->ControlState->Predicate = TRUE;
+            WalkState->ControlState->Common.Value = TRUE;
         }
         else
         {
             /* Predicate is FALSE, we will just toss the rest of the package */
 
-            WalkState->ControlState->Predicate = FALSE;
-            Status = AE_FALSE;
+            WalkState->ControlState->Common.Value = FALSE;
+            Status = AE_CTRL_FALSE;
         }
 
         DEBUG_PRINT (TRACE_EXEC, ("ExecEndOp: Completed a predicate eval=%X Op=%X\n",
-                        WalkState->ControlState->Predicate, Op));
+                        WalkState->ControlState->Common.Value, Op));
 
          /* Break to debugger to display result */
 
@@ -688,7 +688,7 @@ DsExecEndOp (
 
         //DsObjStackPop (1, WalkState);
 
-        WalkState->ControlState->Exec = CONTROL_NORMAL;
+        WalkState->ControlState->Common.State = CONTROL_NORMAL;
     }
 
 
