@@ -146,6 +146,11 @@ ACPI_STATUS
 AcpiGetSystemInfo(
     ACPI_BUFFER             *RetBuffer);
 
+ACPI_STATUS
+AcpiFormatException (
+    ACPI_STATUS             Exception,
+    ACPI_BUFFER             *OutBuffer);
+
 
 /*
  * ACPI table manipulation interfaces
@@ -300,6 +305,7 @@ AcpiRemoveAddressSpaceHandler (
     ACPI_HANDLE             Device, 
     UINT32                  SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler);
+
 
 /*
  * Resource interfaces
