@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.57 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -173,7 +173,6 @@ AcpiPsGetNextWalkOp (
             return_ACPI_STATUS (AE_OK);
         }
 
-
         /*
          * No more children, this Op is complete.  Save Next and Parent
          * in case the Op object gets deleted by the callback routine
@@ -222,7 +221,6 @@ AcpiPsGetNextWalkOp (
          * the tree
          */
     }
-
     else
     {
         /*
@@ -231,7 +229,6 @@ AcpiPsGetNextWalkOp (
          */
         Parent = Op;
     }
-
 
     /*
      * Look for a sibling of the current Op's parent
@@ -287,9 +284,10 @@ AcpiPsGetNextWalkOp (
     }
 
 
-    /* Got all the way to the top of the tree, we must be done! */
-    /* However, the code should have terminated in the loop above */
-
+    /* 
+     * Got all the way to the top of the tree, we must be done!
+     * However, the code should have terminated in the loop above
+     */
     WalkState->NextOp       = NULL;
 
     return_ACPI_STATUS (AE_OK);
@@ -311,7 +309,7 @@ AcpiPsGetNextWalkOp (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 AcpiPsDeleteCompletedOp (
     ACPI_WALK_STATE         *WalkState)
 {
@@ -361,15 +359,12 @@ AcpiPsDeleteParseTree (
         return_VOID;
     }
 
-    WalkState->ParserState          = NULL;
     WalkState->ParseFlags           = 0;
     WalkState->DescendingCallback   = NULL;
     WalkState->AscendingCallback    = NULL;
 
-
     WalkState->Origin = SubtreeRoot;
     WalkState->NextOp = SubtreeRoot;
-
 
     /* Head downward in the tree */
 
