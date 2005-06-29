@@ -154,9 +154,10 @@ DbDumpParserDescriptor (
 
     OsdPrintf ("Parser Op Descriptor:\n");
     OsdPrintf ("%20.20s : %4.4X\n", "Opcode", Op->Opcode);
-    OsdPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name);
-    OsdPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Value);
 
+    DEBUG_ONLY_MEMBERS (OsdPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name));
+
+    OsdPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Value);
     OsdPrintf ("%20.20s : %p\n", "Parent", Op->Parent);
     OsdPrintf ("%20.20s : %p\n", "NextOp", Op->Next);
 }
@@ -427,7 +428,7 @@ DbDisplayInternalObject (
                 break;
 
             case AML_OnesOp:
-                OsdPrintf ("[Const]     Number 0x%.8X", 0xFFFFFFFFF);
+                OsdPrintf ("[Const]     Number 0x%.8X", ACPI_UINT32_MAX);
                 break;
 
             case AML_OneOp:
