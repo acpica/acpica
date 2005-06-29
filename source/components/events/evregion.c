@@ -577,7 +577,7 @@ EvAddrHandlerHelper (
     /*
      *  Devices are handled different than regions
      */
-    if (VALID_OBJECT_TYPE (ObjDesc, ACPI_TYPE_Device))
+    if (IS_THIS_OBJECT_TYPE (ObjDesc, ACPI_TYPE_Device))
     {
         /*
          *  See if this guy has any handlers
