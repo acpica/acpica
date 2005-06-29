@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -566,7 +566,7 @@ LsWriteNodeToListing (
     ASL_PARSE_NODE          *Node)
 {
     const ACPI_OPCODE_INFO  *OpInfo;
-    UINT8                   Optype;
+    UINT32                  OpClass;
 
 
     if (!Gbl_ListingFlag)
@@ -620,22 +620,18 @@ LsWriteNodeToListing (
      * at once
      */
 
-    OpInfo = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
-    Optype = (UINT8) ACPI_GET_OP_CLASS (OpInfo);
+    OpInfo  = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
+    OpClass = ACPI_GET_OP_CLASS (OpInfo);
 
-    switch (Optype)
+    switch (OpClass)
     {
-    case OPTYPE_BOGUS:
-    case OPTYPE_CONSTANT:           /* argument type only */
-    case OPTYPE_LITERAL:            /* argument type only */
-    case OPTYPE_DATA_TERM:          /* argument type only */
-    case OPTYPE_LOCAL_VARIABLE:     /* argument type only */
-    case OPTYPE_METHOD_ARGUMENT:    /* argument type only */
+    case AML_CLASS_ARGUMENT:       /* argument type only */
+    case AML_CLASS_INTERNAL:
 
         break;
 
 
-    case OPTYPE_NAMED_OBJECT:
+    case AML_CLASS_NAMED_OBJECT:
 
         switch (Node->AmlOpcode)
         {
@@ -656,7 +652,8 @@ LsWriteNodeToListing (
         }
         break;
 
-    case OPTYPE_UNDEFINED:
+
+    case AML_CLASS_UNKNOWN:
     default:
 
         LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber);
