@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.43 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -1171,9 +1171,9 @@ AcpiOsWritePciConfiguration (
 /* TEMPORARY STUB FUNCTION */
 void
 AcpiOsDerivePciId(
-    ACPI_HANDLE	            rhandle,
+    ACPI_HANDLE             rhandle,
     ACPI_HANDLE             chandle,
-    ACPI_PCI_ID	            **PciId)
+    ACPI_PCI_ID             **PciId)
 {
 
 }
