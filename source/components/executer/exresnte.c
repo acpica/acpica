@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresnte - AML Interpreter object resolution
- *              $Revision: 1.28 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amresnte")
 
 
@@ -136,12 +136,13 @@
  * FUNCTION:    AcpiAmlResolveNodeToValue
  *
  * PARAMETERS:  StackPtr        - Pointer to a location on a stack that contains
- *                                a pointer to an Node
+ *                                a pointer to a Node
+ *              WalkState       - Current state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Resolve a ACPI_NAMESPACE_NODE (Node,
- *              A.K.A. a "direct name pointer")
+ * DESCRIPTION: Resolve a Namespace node (AKA a "direct name pointer") to
+ *              a valued object
  *
  * Note: for some of the data types, the pointer attached to the Node
  * can be either a pointer to an actual internal object or a pointer into the
@@ -162,31 +163,30 @@ AcpiAmlResolveNodeToValue (
 
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OPERAND_OBJECT     *ValDesc = NULL;
+    ACPI_OPERAND_OBJECT     *ValDesc;
     ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
     ACPI_NAMESPACE_NODE     *Node;
     UINT8                   *AmlPointer = NULL;
     OBJECT_TYPE_INTERNAL    EntryType;
+    ACPI_INTEGER            TempVal;
+    OBJECT_TYPE_INTERNAL    ObjectType;
     BOOLEAN                 Locked;
     BOOLEAN                 AttachedAmlPointer = FALSE;
     UINT8                   AmlOpcode = 0;
-    ACPI_INTEGER            TempVal;
-    OBJECT_TYPE_INTERNAL    ObjectType;
 
 
     FUNCTION_TRACE ("AmlResolveEntryToValue");
 
-    Node = *StackPtr;
 
 
     /*
-     * The stack pointer is a "Direct name ptr", and points to a
-     * a ACPI_NAMESPACE_NODE (Node).  Get the pointer that is attached to
-     * the Node.
+     * The stack pointer points to a ACPI_NAMESPACE_NODE (Node).  Get the 
+     * object that is attached to the Node.
      */
 
-    ValDesc     = AcpiNsGetAttachedObject ((ACPI_HANDLE) Node);
-    EntryType   = AcpiNsGetType ((ACPI_HANDLE) Node);
+    Node      = *StackPtr;
+    ValDesc   = AcpiNsGetAttachedObject ((ACPI_HANDLE) Node);
+    EntryType = AcpiNsGetType ((ACPI_HANDLE) Node);
 
     DEBUG_PRINT (TRACE_EXEC,
         ("AmlResolveEntryToValue: Entry=%p ValDesc=%p Type=%X\n",
@@ -201,8 +201,8 @@ AcpiAmlResolveNodeToValue (
     if (AcpiTbSystemTablePointer (ValDesc))
     {
         AttachedAmlPointer = TRUE;
-        AmlOpcode = *((UINT8 *) ValDesc);
-        AmlPointer = ((UINT8 *) ValDesc) + 1;
+        AmlOpcode  = *((UINT8 *) ValDesc);
+        AmlPointer =  ((UINT8 *) ValDesc) + 1;
 
         DEBUG_PRINT (TRACE_EXEC,
             ("AmlResolveEntryToValue: Unparsed AML: %p Len=%X\n",
