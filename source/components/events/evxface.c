@@ -393,7 +393,7 @@ AcpiInstallGpeHandler (
 
     /* Now we can enable the GPE */
 
-    EvEnableGpe (GpeNumber);
+    HwEnableGpe (GpeNumber);
 
     FUNCTION_EXIT;
     return AE_OK;
@@ -443,7 +443,7 @@ AcpiRemoveGpeHandler (
 
     /* Disable the GPE before removing the handler */
 
-    EvDisableGpe (GpeNumber);
+    HwDisableGpe (GpeNumber);
 
 
     /* Remove the handler */
