@@ -1,5 +1,6 @@
+
 /******************************************************************************
- *
+ * 
  * Name: actbl64.h - ACPI tables specific to IA64
  *
  *****************************************************************************/
@@ -37,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -122,8 +123,8 @@ typedef UINT64              IO_ADDRESS;             /* Only for clarity in decla
 
 /* IA64 Root System Description Table */
 
-typedef struct
-{
+typedef struct  
+{                                                   
     ACPI_TABLE_HEADER       header;                 /* Table header */
     UINT32                  ReservedPad;            /* IA64 alignment, must be 0 */
     void                    *TableOffsetEntry [1];  /* Array of pointers to other */
@@ -133,9 +134,9 @@ typedef struct
 
 /* IA64 Firmware ACPI Control Structure */
 
-typedef struct
-{
-    NATIVE_CHAR             Signature[4];           /* signature "FACS" */
+typedef struct  
+{                                           
+    char                    Signature[4];           /* signature "FACS" */
     UINT32                  Length;                 /* length of structure, in bytes */
     UINT32                  HardwareSignature;      /* hardware configuration signature */
     UINT32                  Reserved4;              /* must be 0 */
@@ -148,10 +149,11 @@ typedef struct
 } FIRMWARE_ACPI_CONTROL_STRUCTURE;
 
 
+
 /* IA64 Fixed ACPI Description Table */
 
-typedef struct
-{
+typedef struct  
+{                                           
     ACPI_TABLE_HEADER       header;                 /* table header */
     UINT32                  ReservedPad;            /* IA64 alignment, must be 0 */
     ACPI_TBLPTR             FirmwareCtrl;           /* Physical address of FACS */
@@ -164,14 +166,14 @@ typedef struct
     UINT8                   S4BiosReq;              /* Value to write to SMI CMD to enter S4BIOS state */
     UINT8                   Reserved2;              /* reserved - must be zero */
     UINT64                  SmiCmd;                 /* Port address of SMI command port */
-    UINT64                  Pm1aEvtBlk;             /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
-    UINT64                  Pm1bEvtBlk;             /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
+    UINT64                  Pm1aEvtBlk;             /* Port address of Power Mgt 1a Event Reg Blk */
+    UINT64                  Pm1bEvtBlk;             /* Port address of Power Mgt 1b Event Reg Blk */
     UINT64                  Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
     UINT64                  Pm1bCntBlk;             /* Port address of Power Mgt 1b Control Reg Blk */
     UINT64                  Pm2CntBlk;              /* Port address of Power Mgt 2 Control Reg Blk */
     UINT64                  PmTmrBlk;               /* Port address of Power Mgt Timer Ctrl Reg Blk */
-    UINT64                  Gpe0Blk;                /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
-    UINT64                  Gpe1Blk;                /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
+    UINT64                  Gpe0Blk;                /* Port addr of General Purpose Event 0 Reg Blk */
+    UINT64                  Gpe1Blk;                /* Port addr of General Purpose Event 1 Reg Blk */
     UINT8                   Pm1EvtLen;              /* Byte Length of ports at pm1X_evt_blk */
     UINT8                   Pm1CntLen;              /* Byte Length of ports at pm1X_cnt_blk */
     UINT8                   Pm2CntLen;              /* Byte Length of ports at pm2_cnt_blk */
@@ -180,8 +182,8 @@ typedef struct
     UINT8                   Gpe1BlkLen;             /* Byte Length of ports at gpe1_blk */
     UINT8                   Gpe1Base;               /* offset in gpe model where gpe1 events start */
     UINT8                   Reserved3;              /* reserved */
-    UINT16                  Plvl2Lat;               /* worst case HW latency to enter/exit C2 state */
-    UINT16                  Plvl3Lat;               /* worst case HW latency to enter/exit C3 state */
+    UINT16                  PLvl2Lat;               /* worst case HW latency to enter/exit C2 state */
+    UINT16                  PLvl3Lat;               /* worst case HW latency to enter/exit C3 state */
     UINT8                   DayAlrm;                /* index to day-of-month alarm in RTC CMOS RAM */
     UINT8                   MonAlrm;                /* index to month-of-year alarm in RTC CMOS RAM */
     UINT8                   Century;                /* index to century in RTC CMOS RAM */
@@ -189,11 +191,11 @@ typedef struct
     UINT32_BIT              FlushCash       : 1;    /* PAL_FLUSH_CACHE is correctly supported */
     UINT32_BIT              Reserved5       : 1;    /* reserved - must be zero */
     UINT32_BIT              ProcC1          : 1;    /* all processors support C1 state */
-    UINT32_BIT              Plvl2Up         : 1;    /* C2 state works on MP system */
+    UINT32_BIT              PLvl2Up         : 1;    /* C2 state works on MP system */
     UINT32_BIT              PwrButton       : 1;    /* Power button is handled as a generic feature */
     UINT32_BIT              SleepButton     : 1;    /* Sleep button is handled as a generic feature, or not present */
     UINT32_BIT              FixedRTC        : 1;    /* RTC wakeup stat not in fixed register space */
-    UINT32_BIT              Rtcs4           : 1;    /* RTC wakeup stat not possible from S4 */
+    UINT32_BIT              RTCS4           : 1;    /* RTC wakeup stat not possible from S4 */
     UINT32_BIT              TmrValExt       : 1;    /* tmr_val is 32 bits */
     UINT32_BIT              DockCap         : 1;    /* Supports Docking */
     UINT32_BIT              Reserved6       : 22;    /* reserved - must be zero */

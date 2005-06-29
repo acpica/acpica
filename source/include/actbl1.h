@@ -155,19 +155,19 @@ typedef struct
     UINT8                   Model;                  /* System Interrupt Model */
     UINT8                   Reserved1;              /* reserved */
     UINT16                  SciInt;                 /* System vector of SCI interrupt */
-    IO_ADDRESS              SmiCmd;                 /* Port address of SMI command port */
+    ACPI_IO_ADDRESS         SmiCmd;                 /* Port address of SMI command port */
     UINT8                   AcpiEnable;             /* value to write to smi_cmd to enable ACPI */
     UINT8                   AcpiDisable;            /* value to write to smi_cmd to disable ACPI */
     UINT8                   S4BiosReq;              /* Value to write to SMI CMD to enter S4BIOS state */
     UINT8                   Reserved2;              /* reserved - must be zero */
-    IO_ADDRESS              Pm1aEvtBlk;             /* Port address of Power Mgt 1a Event Reg Blk */
-    IO_ADDRESS              Pm1bEvtBlk;             /* Port address of Power Mgt 1b Event Reg Blk */
-    IO_ADDRESS              Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
-    IO_ADDRESS              Pm1bCntBlk;             /* Port address of Power Mgt 1b Control Reg Blk */
-    IO_ADDRESS              Pm2CntBlk;              /* Port address of Power Mgt 2 Control Reg Blk */
-    IO_ADDRESS              PmTmrBlk;               /* Port address of Power Mgt Timer Ctrl Reg Blk */
-    IO_ADDRESS              Gpe0Blk;                /* Port addr of General Purpose Event 0 Reg Blk */
-    IO_ADDRESS              Gpe1Blk;                /* Port addr of General Purpose Event 1 Reg Blk */
+    ACPI_IO_ADDRESS         Pm1aEvtBlk;             /* Port address of Power Mgt 1a Event Reg Blk */
+    ACPI_IO_ADDRESS         Pm1bEvtBlk;             /* Port address of Power Mgt 1b Event Reg Blk */
+    ACPI_IO_ADDRESS         Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
+    ACPI_IO_ADDRESS         Pm1bCntBlk;             /* Port address of Power Mgt 1b Control Reg Blk */
+    ACPI_IO_ADDRESS         Pm2CntBlk;              /* Port address of Power Mgt 2 Control Reg Blk */
+    ACPI_IO_ADDRESS         PmTmrBlk;               /* Port address of Power Mgt Timer Ctrl Reg Blk */
+    ACPI_IO_ADDRESS         Gpe0Blk;                /* Port addr of General Purpose Event 0 Reg Blk */
+    ACPI_IO_ADDRESS         Gpe1Blk;                /* Port addr of General Purpose Event 1 Reg Blk */
     UINT8                   Pm1EvtLen;              /* Byte Length of ports at pm1X_evt_blk */
     UINT8                   Pm1CntLen;              /* Byte Length of ports at pm1X_cnt_blk */
     UINT8                   Pm2CntLen;              /* Byte Length of ports at pm2_cnt_blk */

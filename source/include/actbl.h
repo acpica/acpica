@@ -117,7 +117,6 @@
 #ifndef __ACTABLES_H__
 #define __ACTABLES_H__
 
-typedef NATIVE_UINT         IO_ADDRESS;             /* Only for clarity in declarations */
 
 /*
  *  Values for description table header signatures
