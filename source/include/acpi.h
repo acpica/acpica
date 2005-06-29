@@ -29,6 +29,7 @@
  * We want to keep these to a minimum.
  */
 #include <stdio.h>
+#include <limits.h>
 
 
 /* 
@@ -120,10 +121,26 @@ extern INT32            AcpiHook;           /* strong link that lives in acpilib
 
 extern char             WhyBuf[WHYBUF_SIZE];
 extern char             *Why;
+extern char             *WhyFail;
 
 
 extern INT32            DebugLevel;
 extern INT32            DebugLayer;
+
+
+/* Interpreter globals */
+
+extern INT32            LastPkgLen;
+extern UINT8            LastFieldFlag;
+extern char             *RV[];
+extern char             *FENames[];
+extern NsHandle         LastMethod;
+extern INT32            SkipField;
+
+extern UINT8            *PCodeBase;
+extern UINT8            *PCode;
+extern INT32            PCodeBlockLen;
+extern INT32            PCodeLen;
 
 
 
