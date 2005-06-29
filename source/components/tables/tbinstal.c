@@ -251,7 +251,7 @@ TbRecognizeTable (
 
     /* Return the table type via the info struct */
 
-    TableInfo->Type = TableType;
+    TableInfo->Type = (UINT8) TableType;
 
 
     /*
@@ -273,7 +273,7 @@ TbRecognizeTable (
          * displayed when table is displayed,  Displaying it here for now 
          */
     
-        DUMP_BUFFER (TableHeader, 32, 0);
+        DUMP_BUFFER (TableHeader, 32);
     }
 
 

@@ -326,7 +326,7 @@ TbChecksum (
 
         for (rover = Buffer; rover < limit; rover++)
         {
-            sum += *rover;
+            sum = (UINT8) (sum + *rover);
         }
     }
 
