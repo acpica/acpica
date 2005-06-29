@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -484,7 +484,6 @@ LdNamespace1Begin (
         {
         case ACPI_TYPE_ANY:         /* Scope nodes are untyped (ANY) */
         case ACPI_TYPE_DEVICE:
-        case ACPI_TYPE_METHOD:
         case ACPI_TYPE_POWER:
         case ACPI_TYPE_PROCESSOR:
         case ACPI_TYPE_THERMAL:
