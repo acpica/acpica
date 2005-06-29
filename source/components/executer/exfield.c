@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -247,10 +247,10 @@ AcpiExReadDataFromField (
         Buffer = &BufferDesc->Integer.Value;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "Obj=%p Type=%X Buf=%p Len=%X\n",
         ObjDesc, ObjDesc->Common.Type, Buffer, Length));
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "FieldWrite: BitLen=%X BitOff=%X ByteOff=%X\n",
         ObjDesc->CommonField.BitLength,
         ObjDesc->CommonField.StartFieldBitOffset,
@@ -385,10 +385,10 @@ AcpiExWriteDataToField (
         Length = RequiredLength;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "Obj=%p Type=%X Buf=%p Len=%X\n",
         ObjDesc, ObjDesc->Common.Type, Buffer, Length));
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "FieldRead: BitLen=%X BitOff=%X ByteOff=%X\n",
         ObjDesc->CommonField.BitLength,
         ObjDesc->CommonField.StartFieldBitOffset,
