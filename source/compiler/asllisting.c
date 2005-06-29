@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -866,7 +866,7 @@ LsWriteNodeToListing (
         }
         if (FileId == ASL_FILE_ASM_INCLUDE_OUTPUT)
         {
-            FlPrintFile (FileId, "extrn %s_%s_Header\n",
+            FlPrintFile (FileId, "extrn %s_%s_Header : byte\n",
                 Gbl_TableSignature, Gbl_TableId);
         }
         if (FileId == ASL_FILE_C_INCLUDE_OUTPUT)
@@ -916,7 +916,7 @@ LsWriteNodeToListing (
 
 
     default:
-        /* All other opcodes have and AML opcode */
+        /* All other opcodes have an AML opcode */
         break;
     }
 
@@ -956,9 +956,15 @@ LsWriteNodeToListing (
         {
         case AML_SCOPE_OP:
         case AML_ALIAS_OP:
+
+            /* These opcodes do not declare a new object, ignore them */
+
             break;
 
         default:
+
+            /* All other named object opcodes come here */
+
             switch (FileId)
             {
             case ASL_FILE_ASM_SOURCE_OUTPUT:
@@ -966,12 +972,20 @@ LsWriteNodeToListing (
             case ASL_FILE_ASM_INCLUDE_OUTPUT:
             case ASL_FILE_C_INCLUDE_OUTPUT:
 
+                /*
+                 * For named objects, we will create a valid symbol so that the
+                 * AML code can be referenced from C or ASM
+                 */
                 if (Op->Asl.ExternalName)
                 {
+                    /* Get the full pathname associated with this node */
+
                     Pathname = AcpiNsGetExternalPathname (Op->Asl.Node);
                     Length = strlen (Pathname);
                     if (Length >= 4)
                     {
+                        /* Convert all dots in the path to underscores */
+
                         for (i = 0; i < Length; i++)
                         {
                             if (Pathname[i] == '.')
@@ -979,6 +993,8 @@ LsWriteNodeToListing (
                                 Pathname[i] = '_';
                             }
                         }
+
+                        /* Create the appropriate symbol in the output file */
 
                         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
                         {
@@ -992,7 +1008,7 @@ LsWriteNodeToListing (
                         }
                         if (FileId == ASL_FILE_ASM_INCLUDE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "extrn %s_%s_%s\n",
+                            FlPrintFile (FileId, "extrn %s_%s_%s : byte\n",
                                 Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                         if (FileId == ASL_FILE_C_INCLUDE_OUTPUT)
