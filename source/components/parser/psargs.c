@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.68 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -649,9 +649,9 @@ AcpiPsGetNextField (
          * Get AccessType and AccessAttrib and merge into the field Op
          * AccessType is first operand, AccessAttribute is second
          */
-        Field->Common.Value.Integer32 = (ACPI_GET8 (ParserState->Aml) << 8);
+        Field->Common.Value.Integer = (ACPI_GET8 (ParserState->Aml) << 8);
         ParserState->Aml++;
-        Field->Common.Value.Integer32 |= ACPI_GET8 (ParserState->Aml);
+        Field->Common.Value.Integer |= ACPI_GET8 (ParserState->Aml);
         ParserState->Aml++;
         break;
 
