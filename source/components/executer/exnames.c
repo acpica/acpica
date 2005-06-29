@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -542,9 +542,12 @@ AcpiExGetNameString (
         Status = AE_AML_BAD_NAME;
     }
 
-    if ((ACPI_FAILURE (Status)) && NameString)
+    if (ACPI_FAILURE (Status))
     {
-        ACPI_MEM_FREE (NameString);
+        if (NameString)
+        {
+            ACPI_MEM_FREE (NameString);
+        }
         return_ACPI_STATUS (Status);
     }
 
