@@ -25,7 +25,7 @@ CFG=AcpiSubsystem - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi Components/Subsystem", CQBAAAAA"
 # PROP Scc_LocalPath "..\.."
-CPP=xicl6.exe
+CPP=cl.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiSubsystem - Win32 Release"
@@ -48,7 +48,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"bin\acpica.lib"
 # Begin Special Build Tool
@@ -78,7 +78,7 @@ PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\librarie
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"bin\acpica.lib"
 # Begin Special Build Tool
@@ -191,10 +191,6 @@ SOURCE=..\..\subsystem\Hardware\hwacpi.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Hardware\hwcpu32.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Hardware\hwgpe.c
 # End Source File
 # Begin Source File
@@ -203,7 +199,11 @@ SOURCE=..\..\Subsystem\Hardware\hwregs.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Hardware\hwxface.c
+SOURCE=..\..\Subsystem\Hardware\hwsleep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Hardware\hwtimer.c
 # End Source File
 # End Group
 # Begin Group "Interpreter"
