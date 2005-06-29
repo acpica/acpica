@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.174 $
+ *       $Revision: 1.175 $
  *
  *****************************************************************************/
 
@@ -271,7 +271,7 @@
 
 /* Number of strings associated with the _OSI reserved method */
 
-#define ACPI_NUM_OSI_STRINGS            9
+#define ACPI_NUM_OSI_STRINGS            10
 
 
 /******************************************************************************
