@@ -271,10 +271,11 @@ INT32 NsProperties[] = {     /* properties of types */
     0,                      /* While            */
     NEWSCOPE,               /* Scope            */
     LOCAL,                  /* DefAny           */
-    0                       /* Lvalue           */
+    0,                      /* Lvalue           */
+    0                       /* Invalid          */
 };
 
-char BadType[] = "ERROR: unused type encoding found in table";
+char BadType[] = "ERROR: Unused type value";
 
 
 /* 
@@ -325,8 +326,9 @@ char *NsTypeNames[] = { /* printable names of types */
     "Else",
     "While",
     "Scope",
-    "ERROR: DefAny found in table", /* should never happen */
-    "ERROR: Lvalue found in table"  /* should never happen */
+    "DefAny",
+    "Lvalue",
+    "Invalid"
 };
 
 
