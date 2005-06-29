@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.120 $
+ *       $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -390,9 +390,8 @@ AcpiNsNameOfCurrentScope (
 
 ACPI_STATUS
 AcpiNsHandleToPathname (
-    ACPI_HANDLE             ObjHandle,
-    ACPI_SIZE               *BufSize,
-    NATIVE_CHAR             *UserBuffer);
+    ACPI_HANDLE             TargetHandle,
+    ACPI_BUFFER             *Buffer);
 
 BOOLEAN
 AcpiNsPatternMatch (
@@ -412,7 +411,7 @@ AcpiNsGetPathnameLength (
 
 
 /*
- * Object management for NTEs - nsobject
+ * Object management for namespace nodes - nsobject
  */
 
 ACPI_STATUS
