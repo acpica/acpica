@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.205 $
+ *       $Revision: 1.206 $
  *
  *****************************************************************************/
 
@@ -426,15 +426,13 @@ typedef UINT32                          ACPI_TABLE_TYPE;
  * Types associated with names.  The first group of
  * values correspond to the definition of the ACPI
  * ObjectType operator (See the ACPI Spec).  Therefore,
- * only add to the first group if the spec changes!
+ * only add to the first group if the spec changes.
  *
  * Types must be kept in sync with the AcpiNsProperties
  * and AcpiNsTypeNames arrays
  */
 
 typedef UINT32                          ACPI_OBJECT_TYPE;
-typedef UINT8                           ACPI_OBJECT_TYPE8;
-
 
 #define ACPI_TYPE_ANY                   0x00
 #define ACPI_TYPE_INTEGER               0x01  /* Byte/Word/Dword/Zero/One/Ones */

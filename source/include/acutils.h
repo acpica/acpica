@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.122 $
+ *       $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -193,7 +193,7 @@ AcpiUtGetMutexName (
 
 NATIVE_CHAR *
 AcpiUtGetTypeName (
-    UINT32                  Type);
+    ACPI_OBJECT_TYPE        Type);
 
 NATIVE_CHAR *
 AcpiUtGetRegionName (
@@ -209,7 +209,7 @@ AcpiUtHexToAsciiChar (
 
 BOOLEAN
 AcpiUtValidObjectType (
-    UINT32                  Type);
+    ACPI_OBJECT_TYPE        Type);
 
 ACPI_OWNER_ID
 AcpiUtAllocateOwnerId (
@@ -560,7 +560,7 @@ AcpiUtCreateInternalObjectDbg (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
-    ACPI_OBJECT_TYPE8       Type);
+    ACPI_OBJECT_TYPE        Type);
 
 void *
 AcpiUtAllocateObjectDescDbg (
