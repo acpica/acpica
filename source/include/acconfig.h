@@ -193,7 +193,7 @@
 
 /* Max reference count (for debug only) */
 
-#define MAX_REFERENCE_COUNT         196
+#define MAX_REFERENCE_COUNT         0x200
 
 #endif /* _CONFIG_H */
 
