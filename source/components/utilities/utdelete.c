@@ -123,9 +123,8 @@
 #include <tables.h>
 
 
-#define _THIS_MODULE        "cmdelete.c"
 #define _COMPONENT          MISCELLANEOUS
-
+        MODULE_NAME         ("cmdelete");
 
 
 /******************************************************************************
@@ -573,7 +572,13 @@ CmDeleteInternalObj (
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj %p [%s]\n",
                                 Object, Gbl_NsTypeNames[Object->Common.Type]));
 
+        /* Memory allocation metrics.  Call the macro here since we only
+         * care about dynamically allocated objects.
+         */
+        DECREMENT_OBJECT_METRICS(Object->Common.Size);
+        
         CmFree (Object);
+        
     }
 
     return_VOID;
