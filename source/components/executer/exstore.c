@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -297,6 +297,7 @@ AcpiExStore (
     case AML_ZERO_OP:
     case AML_ONE_OP:
     case AML_ONES_OP:
+    case AML_REVISION_OP:
 
         /*
          * Storing to a constant is a no-op -- see ACPI Specification
@@ -516,7 +517,7 @@ AcpiExStoreObjectToIndex (
             Length = ValDesc->Buffer.Length;
             for (i = 0; i < Length; i++)
             {
-                Value = *(ValDesc->Buffer.Pointer + i);
+                Value = ValDesc->Buffer.Pointer[i];
                 ObjDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
             }
             break;
@@ -530,7 +531,7 @@ AcpiExStoreObjectToIndex (
             Length = ValDesc->String.Length;
             for (i = 0; i < Length; i++)
             {
-                Value = *(ValDesc->String.Pointer + i);
+                Value = ValDesc->String.Pointer[i];
                 ObjDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
             }
             break;

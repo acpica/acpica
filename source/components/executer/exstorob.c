@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: amstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.31 $
+ * Module Name: exstorob - AML Interpreter object store support, store to object
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __AMSTOROB_C__
+#define __EXSTOROB_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -127,12 +127,12 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("amstorob")
+        MODULE_NAME         ("exstorob")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlCopyBufferToBuffer
+ * FUNCTION:    AcpiExCopyBufferToBuffer
  *
  * PARAMETERS:  SourceDesc          - Source object to copy
  *              TargetDesc          - Destination object of the copy
@@ -144,7 +144,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlCopyBufferToBuffer (
+AcpiExCopyBufferToBuffer (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc)
 {
@@ -164,7 +164,7 @@ AcpiAmlCopyBufferToBuffer (
      */
     if (TargetDesc->Buffer.Length == 0)
     {
-        TargetDesc->Buffer.Pointer = AcpiCmAllocate (Length);
+        TargetDesc->Buffer.Pointer = ACPI_MEM_ALLOCATE (Length);
         if (!TargetDesc->Buffer.Pointer)
         {
             return (AE_NO_MEMORY);
@@ -181,8 +181,8 @@ AcpiAmlCopyBufferToBuffer (
     {
         /* Clear existing buffer and copy in the new one */
 
-        MEMSET(TargetDesc->Buffer.Pointer, 0, TargetDesc->Buffer.Length);
-        MEMCPY(TargetDesc->Buffer.Pointer, Buffer, Length);
+        MEMSET (TargetDesc->Buffer.Pointer, 0, TargetDesc->Buffer.Length);
+        MEMCPY (TargetDesc->Buffer.Pointer, Buffer, Length);
     }
 
     else
@@ -190,10 +190,10 @@ AcpiAmlCopyBufferToBuffer (
         /*
          * Truncate the source, copy only what will fit
          */
-        MEMCPY(TargetDesc->Buffer.Pointer, Buffer, TargetDesc->Buffer.Length);
+        MEMCPY (TargetDesc->Buffer.Pointer, Buffer, TargetDesc->Buffer.Length);
 
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlCopyBufferToBuffer: Truncating src buffer from %X to %X\n",
+            ("ExCopyBufferToBuffer: Truncating src buffer from %X to %X\n",
             Length, TargetDesc->Buffer.Length));
     }
 
@@ -203,7 +203,7 @@ AcpiAmlCopyBufferToBuffer (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlCopyStringToString
+ * FUNCTION:    AcpiExCopyStringToString
  *
  * PARAMETERS:  SourceDesc          - Source object to copy
  *              TargetDesc          - Destination object of the copy
@@ -215,7 +215,7 @@ AcpiAmlCopyBufferToBuffer (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlCopyStringToString (
+AcpiExCopyStringToString (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc)
 {
@@ -236,8 +236,8 @@ AcpiAmlCopyStringToString (
     {
         /* Clear old string and copy in the new one */
 
-        MEMSET(TargetDesc->String.Pointer, 0, TargetDesc->String.Length);
-        MEMCPY(TargetDesc->String.Pointer, Buffer, Length);
+        MEMSET (TargetDesc->String.Pointer, 0, TargetDesc->String.Length);
+        MEMCPY (TargetDesc->String.Pointer, Buffer, Length);
     }
 
     else
@@ -247,15 +247,15 @@ AcpiAmlCopyStringToString (
          * large enough to hold the value
          */
         if (TargetDesc->String.Pointer &&
-            !AcpiTbSystemTablePointer (TargetDesc->String.Pointer))
+           (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
         {
             /*
              * Only free if not a pointer into the DSDT
              */
-            AcpiCmFree(TargetDesc->String.Pointer);
+            ACPI_MEM_FREE (TargetDesc->String.Pointer);
         }
 
-        TargetDesc->String.Pointer = AcpiCmAllocate (Length + 1);
+        TargetDesc->String.Pointer = ACPI_MEM_ALLOCATE (Length + 1);
         if (!TargetDesc->String.Pointer)
         {
             return (AE_NO_MEMORY);
@@ -263,7 +263,7 @@ AcpiAmlCopyStringToString (
         TargetDesc->String.Length = Length;
 
 
-        MEMCPY(TargetDesc->String.Pointer, Buffer, Length);
+        MEMCPY (TargetDesc->String.Pointer, Buffer, Length);
     }
 
     return (AE_OK);
