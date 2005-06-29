@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.64 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -148,9 +148,11 @@ AcpiExSystemWaitSemaphore (
     UINT32                  Timeout)
 {
     ACPI_STATUS             Status;
+    ACPI_STATUS             Status2;
 
 
-    FUNCTION_TRACE ("AcpiExSystemWaitSemaphore");
+    FUNCTION_TRACE ("ExSystemWaitSemaphore");
+
 
     Status = AcpiOsWaitSemaphore (Semaphore, 1, 0);
     if (ACPI_SUCCESS (Status))
@@ -166,17 +168,17 @@ AcpiExSystemWaitSemaphore (
 
         Status = AcpiOsWaitSemaphore (Semaphore, 1, Timeout);
 
-        DEBUG_PRINT (TRACE_EXEC, ("*** Thread awake after blocking, %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "*** Thread awake after blocking, %s\n",
             AcpiFormatException (Status)));
 
         /* Reacquire the interpreter */
 
-        Status = AcpiExEnterInterpreter ();
-        if (ACPI_SUCCESS (Status))
+        Status2 = AcpiExEnterInterpreter ();
+        if (ACPI_FAILURE (Status2))
         {
-            /* Restore the timeout exception */
+            /* Report fatal error, could not acquire interpreter */
 
-            Status = AE_TIME;
+            return_ACPI_STATUS (Status2);
         }
     }
 
@@ -190,16 +192,21 @@ AcpiExSystemWaitSemaphore (
  *
  * PARAMETERS:  HowLong             - The amount of time to stall
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Suspend running thread for specified amount of time.
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AcpiExSystemDoStall (
     UINT32                  HowLong)
 {
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_ENTRY ();
+
 
     if (HowLong > 1000) /* 1 millisecond */
     {
@@ -211,13 +218,15 @@ AcpiExSystemDoStall (
 
         /* And now we must get the interpreter again */
 
-        AcpiExEnterInterpreter ();
+        Status = AcpiExEnterInterpreter ();
     }
 
     else
     {
         AcpiOsSleep (0, (HowLong / 1000) + 1);
     }
+
+    return (Status);
 }
 
 
@@ -233,10 +242,16 @@ AcpiExSystemDoStall (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AcpiExSystemDoSuspend (
     UINT32                  HowLong)
 {
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_ENTRY ();
+
+
     /* Since this thread will sleep, we must release the interpreter */
 
     AcpiExExitInterpreter ();
@@ -246,7 +261,8 @@ AcpiExSystemDoSuspend (
 
     /* And now we must get the interpreter again */
 
-    AcpiExEnterInterpreter ();
+    Status = AcpiExEnterInterpreter ();
+    return (Status);
 }
 
 
@@ -273,7 +289,8 @@ AcpiExSystemAcquireMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("AcpiExSystemAcquireMutex", ObjDesc);
+    FUNCTION_TRACE_PTR ("ExSystemAcquireMutex", ObjDesc);
+
 
     if (!ObjDesc)
     {
@@ -283,7 +300,6 @@ AcpiExSystemAcquireMutex (
     /*
      * Support for the _GL_ Mutex object -- go get the global lock
      */
-
     if (ObjDesc->Mutex.Semaphore == AcpiGbl_GlobalLockSemaphore)
     {
         Status = AcpiEvAcquireGlobalLock ();
@@ -318,7 +334,7 @@ AcpiExSystemReleaseMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("AcpiExSystemReleaseMutex");
+    FUNCTION_TRACE ("ExSystemReleaseMutex");
 
 
     if (!ObjDesc)
@@ -360,7 +376,7 @@ AcpiExSystemSignalEvent (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("AcpiExSystemSignalEvent");
+    FUNCTION_TRACE ("ExSystemSignalEvent");
 
 
     if (ObjDesc)
@@ -395,7 +411,7 @@ AcpiExSystemWaitEvent (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("AcpiExSystemWaitEvent");
+    FUNCTION_TRACE ("ExSystemWaitEvent");
 
 
     if (ObjDesc)
@@ -403,7 +419,6 @@ AcpiExSystemWaitEvent (
         Status = AcpiExSystemWaitSemaphore (ObjDesc->Event.Semaphore,
                                              (UINT32) TimeDesc->Integer.Value);
     }
-
 
     return_ACPI_STATUS (Status);
 }
@@ -429,11 +444,13 @@ AcpiExSystemResetEvent (
     void                    *TempSemaphore;
 
 
+    FUNCTION_ENTRY ();
+
+
     /*
      * We are going to simply delete the existing semaphore and
      * create a new one!
      */
-
     Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 0, &TempSemaphore);
     if (ACPI_SUCCESS (Status))
     {
