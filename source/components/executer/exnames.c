@@ -136,9 +136,11 @@
  * FUNCTION:    AmlAllocateNameString
  *
  * PARAMETERS:  PrefixCount         - Count of parent levels. Special cases:
- *                                    -1  => root
- *                                    0   => none
+ *                                    (-1) = root,  0 = none
  *              NumNameSegs         - count of 4-character name segments
+ *
+ * RETURN:      A pointer to the allocated string segment.  This segment must
+ *              be deleted by the caller.
  *
  * DESCRIPTION: Ensure allocated name string is long enough,
  *              and set up prefix if any.
@@ -176,6 +178,11 @@ AmlAllocateNameString (
         SizeNeeded = INITIAL_NAME_BUF_SIZE;
     }
 
+
+    /* 
+     * Allocate a buffer for the name.
+     * This buffer must be deleted by the caller!
+     */
 
     NameString = CmAllocate ((ACPI_SIZE) SizeNeeded);
     if (!NameString)
@@ -277,20 +284,29 @@ AmlDecodePackageLength (
 {
     INT32                   NumBytes = 0;
 
+
     FUNCTION_TRACE ("AmlDecodePackageLength");
 
 
     if (LastPkgLen < PKG_Type1)
+    {
         NumBytes = 1;
-    
+    }
+
     else if (LastPkgLen < PKG_Type2)
+    {
         NumBytes = 2;
-    
+    }
+
     else if (LastPkgLen < PKG_Type3)
+    {
         NumBytes = 3;
-    
+    }
+
     else if (LastPkgLen < PKG_Type4)
+    {
         NumBytes = 4;
+    }
 
     FUNCTION_EXIT;
     return NumBytes;
