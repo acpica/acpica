@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.6 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -149,17 +149,21 @@ typedef struct asl_parse_node
     struct asl_parse_node       *Parent;
     struct asl_parse_node       *Peer;
     struct asl_parse_node       *Child;
+    struct asl_parse_node       *ParentMethod;
     ACPI_NAMESPACE_NODE         *NsNode;
     union asl_node_value        Value;
     char                        *Filename;
     char                        *ExternalName;
     char                        *Namepath;
+    UINT32                      Column;
     UINT32                      LineNumber;
     UINT32                      LogicalLineNumber;
+    UINT32                      LogicalByteOffset;
     UINT32                      EndLine;
     UINT32                      EndLogicalLine;
     UINT16                      AmlOpcode;
     UINT16                      ParseOpcode;
+    UINT32                      AcpiBtype;
     UINT32                      AmlLength;
     UINT32                      AmlSubtreeLength;
     UINT8                       AmlOpcodeLength;
@@ -184,17 +188,20 @@ typedef struct asl_parse_node
 #define NODE_METHOD_NO_RETVAL       0x0100
 #define NODE_METHOD_SOME_NO_RETVAL  0x0200
 #define NODE_RESULT_NOT_USED        0x0400
-
+#define NODE_METHOD_TYPED           0x0800
 
 /* Keeps information about individual control methods */
 
 typedef struct asl_method_info
 {
     UINT8                   NumArguments;
-    UINT8                   LocalInitialized[8];
+    UINT8                   LocalInitialized[MTH_NUM_LOCALS];
+    UINT8                   ArgInitialized[MTH_NUM_ARGS];
     UINT32                  NumReturnNoValue;
     UINT32                  NumReturnWithValue;
+    ASL_PARSE_NODE          *Node;
     struct asl_method_info  *Next;
+    UINT8                   HasBeenTyped;
 
 } ASL_METHOD_INFO;
 
@@ -213,6 +220,7 @@ typedef struct asl_analysis_walk_info
 typedef struct asl_mapping_entry
 {
     UINT32                      Value;
+    UINT32                      AcpiBtype;   /* Object type or return type */
     UINT16                      AmlOpcode;
     UINT8                       Flags;
 
@@ -248,10 +256,12 @@ typedef struct asl_error_msg
 {
     UINT32                      LineNumber;
     UINT32                      LogicalLineNumber;
+    UINT32                      LogicalByteOffset;
     UINT32                      Column;
     char                        *Message;
     struct asl_error_msg        *Next;
     char                        *Filename;
+    UINT32                      FilenameLength;
     UINT8                       MessageId;
     UINT8                       Level;
 
@@ -280,6 +290,7 @@ void (*ASL_WALK_CALLBACK) (
 
 #define ASL_ERROR               0
 #define ASL_WARNING             1
+#define ASL_REMARK              2
 
 
 typedef enum
@@ -298,13 +309,15 @@ typedef enum
     ASL_MSG_INVALID_PRIORITY,
     ASL_MSG_INVALID_PERFORMANCE,
     ASL_MSG_LOCAL_INIT,
-    ASL_MSG_ARG_INVALID,
+    ASL_MSG_ARG_INIT,
     ASL_MSG_UNSUPPORTED,
     ASL_MSG_RESERVED_WORD,
     ASL_MSG_BUFFER_LENGTH,
     ASL_MSG_PACKAGE_LENGTH,
     ASL_MSG_RETURN_TYPES,
     ASL_MSG_NOT_FOUND,
+    ASL_MSG_NOT_REACHABLE,
+    ASL_MSG_NOT_EXIST,
     ASL_MSG_NESTED_COMMENT,
     ASL_MSG_RESERVED_ARG_COUNT_HI,
     ASL_MSG_RESERVED_ARG_COUNT_LO,
@@ -317,6 +330,13 @@ typedef enum
     ASL_MSG_BACKWARDS_OFFSET,
     ASL_MSG_UNKNOWN_RESERVED_NAME,
     ASL_MSG_NAME_EXISTS,
+    ASL_MSG_INVALID_TYPE,
+    ASL_MSG_MULTIPLE_TYPES,
+    ASL_MSG_SYNTAX,
+    ASL_MSG_NOT_METHOD,
+    ASL_MSG_LONG_LINE,
+    ASL_MSG_RECURSION,
+    ASL_MSG_NOT_PARAMETER,
 
 } ASL_MESSAGE_IDS;
 
