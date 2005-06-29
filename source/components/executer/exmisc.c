@@ -123,8 +123,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "ieopexec.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("ieopexec");
 
 
  
@@ -164,6 +164,7 @@ AmlExecCreateField (
     ACPI_OBJECT_INTERNAL    *CntDesc = NULL;
     ACPI_OBJECT_INTERNAL    *OffDesc = NULL;
     ACPI_OBJECT_INTERNAL    *SrcDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *FieldDesc;
     ACPI_OBJECT_TYPE        ResType;
     ACPI_STATUS             Status;
     char                    *OpName = NULL;
@@ -317,24 +318,25 @@ AmlExecCreateField (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-        /* Reuse "OffDesc" pointer to build result */
 
-        if (OffDesc->Common.ReferenceCount > 1)
+        /* Allocate a temporary object for the field */
+
+        FieldDesc = CmCreateInternalObject (ACPI_TYPE_FieldUnit);
+        if (!FieldDesc)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Reusing a descriptor %p with multiple ref count %d\n",
-                            OffDesc, OffDesc->Common.ReferenceCount));
+            return_ACPI_STATUS (AE_NO_MEMORY);
         }
-        
-        OffDesc->Common.Type            = (UINT8) ACPI_TYPE_FieldUnit;
-        OffDesc->Common.ReferenceCount  = 1;
-        OffDesc->FieldUnit.Access       = (UINT16) ACCESS_AnyAcc;
-        OffDesc->FieldUnit.LockRule     = (UINT16) GLOCK_NeverLock;
-        OffDesc->FieldUnit.UpdateRule   = (UINT16) UPDATE_Preserve;
-        OffDesc->FieldUnit.Length       = BitCount;
-        OffDesc->FieldUnit.BitOffset    = (UINT16) BitOffset % 8;
-        OffDesc->FieldUnit.Offset       = BitOffset / 8;
-        OffDesc->FieldUnit.Container    = SrcDesc;
-        OffDesc->FieldUnit.Sequence     = SrcDesc->Buffer.Sequence;
+
+        /* Construct the field object */
+
+        FieldDesc->FieldUnit.Access       = (UINT16) ACCESS_AnyAcc;
+        FieldDesc->FieldUnit.LockRule     = (UINT16) GLOCK_NeverLock;
+        FieldDesc->FieldUnit.UpdateRule   = (UINT16) UPDATE_Preserve;
+        FieldDesc->FieldUnit.Length       = BitCount;
+        FieldDesc->FieldUnit.BitOffset    = (UINT16) BitOffset % 8;
+        FieldDesc->FieldUnit.Offset       = BitOffset / 8;
+        FieldDesc->FieldUnit.Container    = SrcDesc;
+        FieldDesc->FieldUnit.Sequence     = SrcDesc->Buffer.Sequence;
 
         /* An additional reference for SrcDesc */
 
@@ -415,33 +417,12 @@ AmlExecCreateField (
 
     /* Store constructed field descriptor in result location */
     
-    Status = AmlExecStore (OffDesc, ResDesc);
+    Status = AmlExecStore (FieldDesc, ResDesc);
 
 
-    /*
-     * In the default case (below) in AmlExecStore above, the OffDesc will be
-     * copied to the DestDesc.  Therefore, we must delete the OffDesc, but ONLY
-     * in the cases below!
-     */
+    /* All done with the temp field descriptor */
 
-    /* TBD: this is a bit ugly, likewise with the switch above */
-
-    switch (ResType)                /* Type of Name's existing value */
-    {
-
-    case ACPI_TYPE_FieldUnit:
-
-    case INTERNAL_TYPE_Alias:
-    case INTERNAL_TYPE_BankField:
-    case INTERNAL_TYPE_DefField:
-    case INTERNAL_TYPE_IndexField:
-
-        break;
-
-    default:
-        CmDeleteInternalObject (OffDesc);
-        break;
-    }
+    CmDeleteInternalObject (FieldDesc);
 
 
     /* 
