@@ -138,6 +138,11 @@ FlatMove (
     UINT32              Src,
     UINT16              Size);
 
+int ACPI_INTERNAL_VAR_XFACE
+FlatMove32 (
+    UINT32              Dest,
+    UINT32              Src,
+    UINT16              Size);
 
 ACPI_NATIVE_INT
 AfWriteBuffer (
@@ -151,9 +156,9 @@ AfGenerateFilename (char *TableId);
 
 ACPI_STATUS
 AfFindTable(
-    char                    *TableName,
-    UINT8                   **TablePtr,
-    UINT32                  *TableLength);
+    char                *TableName,
+    UINT8               **TablePtr,
+    UINT32              *TableLength);
 
 void
 AfDumpTables (void);

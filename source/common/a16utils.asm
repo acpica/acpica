@@ -11,7 +11,9 @@ TITLE   BU_ASM.ASM -- ASM support for DOS BU_LIB
 ;*  magnetic, optical, chemical, manual, or otherwise, without
 ;*  the prior written permission of Intel Corporation.
 ;****************************************************************************
-; BU_ASM.ASM -- ASM support for DOS BU_LIB
+;
+;  To assemble with MASM61 -- ml /c a16utils.asm
+;
 ;****************************************************************************
 
 .286
@@ -82,6 +84,8 @@ PUBLIC  _dAPAwake, _dAPDone, _dAPFuncPtr, _wProcNumber, _bSPValid
 PUBLIC  _wCSegDS, _wCSegES, _wCSegSS, _wCSegSP, _wASegDS, _wASegES
 PUBLIC  _dAPHltJmp
 
+
+
     emsfilename     DB      'EMMXXXX0',0
 
     _dAPAwake   DD 0
@@ -110,11 +114,14 @@ PUBLIC  _dAPHltJmp
                     ; 4G flat data segment
             DD 0ffffh   ; base 0, limit 0xfffff
             DD 008f9200h    ; data, CPL=0, 16-bit, 4K granularity, r/w
+    _old_es     DW 0
+    _old_ds     DW 0
     _old_fs     DW 0
     _old_gs     DW 0
     _dAPHltJmp  DD 0        ; jump to halt location
 
 .CODE
+EXTERNDEF pascal cprint:proc
 
 PUBLIC  ems_present
 ems_present PROC C
@@ -448,8 +455,116 @@ vFlatFsGs       PROC C
 
     ret
 vFlatFsGs       ENDP
+
+
+PUBLIC  vRealEsDs
+vRealEsDs       PROC C
+
+    ; TBD:  verify this on an AMD K6-2 266 MHz
+    ; Assert A20M# via system control port A (This is a
+    ; system dependent feature).
+    in  al, 92h
+    and al, 0fdh
+    out 92h, al     ; re-assert A20M#
+
+    GOPROT
+
+    mov ax, 8
+    mov gs, ax
+
+    GOREAL
+
+    mov ax, [_old_es]   ; restore original
+    mov es, ax
+    mov ax, [_old_gs]   ; restore original
+    mov gs, ax
+    sti
+    ret
+vRealEsDs       ENDP
+
+;--------------------------------------------------------------------
+PUBLIC  vFlatEsDs
+vFlatEsDs       PROC C
+    cli
+    mov ax, es
+    mov [_old_es], ax   ; save  original
+    mov ax, gs
+    mov [_old_gs], ax   ; save  original
+
+    ; Deassert A20M# via system control port A (This is a
+    ; system dependent feature)
+    in  al, 92h
+    or  al, 2
+    out 92h, al     ; de-assert A20M#
+
+    GOPROT
+
+    mov ax, 10h
+    mov es, ax
+    mov gs, ax
+
+    GOREAL
+
+    ret
+vFlatEsDs       ENDP
+
+PUBLIC print
+print PROC PASCAL Seq:DWORD
+
+
+    pushad
+    mov     eax, Seq
+    push    eax
+    call    cprint
+    popad
+
+    ret
+print ENDP
+
+PUBLIC  DoMove
+DoMove       PROC    
+
+    push    edx
+;    GOPROT
+    pop     edx
+
+    mov     ecx, edx
+    shr     ecx, 2          ; byte count / 4 = dword count
+    cmp     ecx, 0
+    je      DoBytes 
+
+NextDword:
+    xor     eax, eax
+    lock or eax, gs:[esi]
+;    mov     eax, gs:[esi]
+
+    mov     gs:[edi], eax
+
+    add     esi, 4
+    add     edi, 4
+    loop    NextDword
+
+DoBytes:
+    mov     ecx, edx
+    and     ecx, 3
+    cmp     ecx, 0
+    je      Exit            ; no extra bytes to move
+
+NextByte:
+    mov     al, byte ptr gs:[esi]
+    mov     byte ptr gs:[edi], al
+    inc     esi
+    inc     edi
+    loop    NextByte
+
+Exit:
+;    GOREAL
+    ret       
+    
+DoMove       ENDP
     .586
 
+ 
 ;--------------------------------------------------------------------
 
 PUBLIC  _WriteApic
@@ -645,38 +760,156 @@ vOut32  ENDP
 ;--------------------------------------------------------------------
 
 ;   int FlatMove (DWORD dPhysicalDestination, DWORD dPhysicalSource, size_t sSize)
-PUBLIC  FlatMove
-FlatMove   PROC    C dDest:DWORD, dSrc:DWORD, sSize:WORD
-    call    vm86        ; check if VM86 mode
-    cmp ax, 0
-    jne NotRealMode ; skip memory move if not in real mode
+PUBLIC  FlatMoveX
+FlatMoveX   PROC    C dDest:DWORD, dSrc:DWORD, sSize:WORD
+    call    vm86            ; check if VM86 mode
+    cmp     ax, 0
+    jne     NotRealMode     ; skip memory move if not in real mode
 
-    call    vFlatFsGs   ; set up FS and GS as 4GB limit selectors with
-                ; base 0:0 and de-assert A20M#
-
+    call    vFlatFsGs       ; set up FS and GS as 4GB limit selectors with
+                            ; base 0:0 and de-assert A20M#
+    
     movzx   ecx, sSize
-    cmp ecx, 0
-    je  SKipMemoryMove  ; skip memory move if 0==sSize
+    cmp     ecx, 0
+    je      SKipMemoryMove  ; skip memory move if 0==sSize
 
-    mov eax, dDest
-    cmp eax, 400h
-    jbe SkipMemoryMove  ; skip memory move if destination is 40:0
-                ; BIOS Data Area or less (IVT)
+    mov     eax, dDest
+    cmp     eax, 400h
+    jbe     SkipMemoryMove  ; skip memory move if destination is 40:0
+                            ; BIOS Data Area or less (IVT)
 
-    mov ebx, dSrc
+    mov     ebx, dSrc
 NextByte:
-    mov dl, gs:[ebx][ecx - 1]
-    mov gs:[eax][ecx - 1], dl
+    mov     dl, gs:[ebx][ecx - 1]
+    mov     gs:[eax][ecx - 1], dl
     loop    NextByte
 
     call    vRealFsGs
-    xor ax, ax
+    xor     ax, ax
 NotRealMode:
     ret
 
 SkipMemoryMove:
-    mov ax, 1       ; return error code
+    mov ax, 1               ; return error code
     ret
-FlatMove   ENDP
+FlatMoveX   ENDP
 
+
+;   int FlatMove32 (DWORD dPhysicalDestination, DWORD dPhysicalSource, size_t sSize)
+PUBLIC  FlatMove32
+FlatMove32   PROC    C      dDest:DWORD, dSrc:DWORD, sSize:WORD  
+
+    call    vm86            ; check if VM86 mode
+    cmp     ax, 0
+    jne     NotRealMode     ; skip memory move if not in real mode
+     
+    call    vFlatFsGs       ; set up FS and GS as 4GB limit selectors with
+                            ; base 0:0 and de-assert A20M#
+    movzx   edx, sSize 
+    mov     esi, dSrc
+    mov     edi, dDest
+
+    push    edx
+    call    print
+    push    esi
+    call    print
+    push    edi
+    call    print
+    
+    cmp     edx, 0
+    je      SkipMemoryMove  ; skip memory move if 0==sSize
+
+    cmp     edi, 400h
+    jbe     SkipMemoryMove  ; skip memory move if destination is 40:0
+                            ; BIOS Data Area or less (IVT)
+    call    DoMove          ; edx=Count, esi=src, edi=dst
+
+    movzx   ecx, sSize
+    shr     ecx, 2
+    mov     edi, dDest
+PrintLoop:
+    mov     eax, gs:[edi]
+    push    eax
+    call    print
+    add     edi, 4
+    loop    PrintLoop
+
+    call    vRealFsGs
+    xor     ax, ax
+
+NotRealMode:
+    ret
+
+SkipMemoryMove:
+    call    print
+    call    vRealEsDs
+    mov     ax, 1           ; return error code
+    ret         
+    
+FlatMove32  ENDP
+
+
+;   int FlatMove32 (DWORD dPhysicalDestination, DWORD dPhysicalSource, size_t sSize)
+PUBLIC  FlatMove32x
+FlatMove32x   PROC    C dDest:DWORD, dSrc:DWORD, sSize:WORD
+    call    vm86            ; check if VM86 mode
+    cmp     ax, 0
+    jne     NotRealMode     ; skip memory move if not in real mode
+
+    call    vFlatFsGs       ; set up FS and GS as 4GB limit selectors with
+                            ; base 0:0 and de-assert A20M#
+    movzx   ecx, sSize
+    cmp     ecx, 0
+    je      SKipMemoryMove  ; skip memory move if 0==sSize
+
+    mov     eax, dDest
+    cmp     eax, 400h
+    jbe     SkipMemoryMove  ; skip memory move if destination is 40:0
+                            ; BIOS Data Area or less (IVT) 
+                            
+    mov     ebx, dSrc
+    mov     esi, 0
+
+    push    ecx
+    call    print
+    push    ebx
+    call    print
+    push    eax
+    call    print
+
+    shr     ecx, 2          ; byte count / 4 = dword count
+    cmp     ecx, 0
+    je      DoBytes
+
+NextDword:
+    mov     edx, dword ptr gs:[ebx][esi]
+    mov     dword ptr gs:[eax][esi], edx
+    push    edx
+    call    print
+    add     esi, 4
+    loop    NextDword
+
+DoBytes:
+    movzx   ecx, sSize
+    and     ecx, 3
+    cmp     ecx, 0
+    je      Exit            ; no extra bytes to move
+
+NextByte:
+    mov     dl, gs:[ebx][esi]
+    mov     gs:[eax][esi], dl
+    inc     esi
+    loop    NextByte
+
+Exit:
+    call    vRealFsGs
+    xor     ax, ax
+
+NotRealMode:
+    ret
+
+SkipMemoryMove:
+    mov ax, 1               ; return error code
+    ret
+FlatMove32x   ENDP
 END
