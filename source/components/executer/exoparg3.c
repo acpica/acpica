@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -318,8 +318,10 @@ AcpiExOpcode_3A_1T_1R (
             }
             break;
 
-        default: /* Can't happen */
-            break;
+        default:                        /* Should not happen */
+
+            Status = AE_AML_OPERAND_TYPE;
+            goto Cleanup;
         }
 
         if (Length > 0)
@@ -357,14 +359,14 @@ Cleanup:
 
     /* Delete return object on error */
 
-    if (ACPI_FAILURE (Status))
+    if (ACPI_FAILURE (Status) || WalkState->ResultObj)
     {
         AcpiUtRemoveReference (ReturnDesc);
     }
 
     /* Set the return object and exit */
 
-    if (!WalkState->ResultObj)
+    else
     {
         WalkState->ResultObj = ReturnDesc;
     }
