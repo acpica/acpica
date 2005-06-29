@@ -541,11 +541,20 @@ typedef struct _AcpiSysInfo
 } ACPI_SYSTEM_INFO;
 
 
+/*
+ *  System Initiailization data.  This data is passed to ACPIInitialize
+ *  copyied to global data and retained by ACPI CA
+ */
+
+typedef struct _AcpiInitData 
+{
+    void    *RSDP_PhysicalAddress;  /*  Address of RSDP, needed it it is    */
+                                    /*  not found in the IA32 manner        */
+} ACPI_INIT_DATA;
 
 /*
  * Various handlers and callback procedures
  */
-
 
 typedef 
 UINT32 (*FIXED_EVENT_HANDLER) (
